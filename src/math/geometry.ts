@@ -1,10 +1,13 @@
-// Plane geometry on a grid: triangles, quadrilaterals, circles and a Pythagoras view.
+// Plane geometry on a grid: triangles, quadrilaterals, circles, Pythagoras, angle facts and a protractor.
 // Points live in grid units (y up); everything is measured from them and drawn to SVG.
 import type { RenderedSvg } from "./latex";
 
 export type Pt = [number, number];
-export type GeoShape = "triangle" | "quad" | "circle" | "pythagoras";
-export const GEO_SHAPES: GeoShape[] = ["triangle", "quad", "circle", "pythagoras"];
+export type GeoShape = "triangle" | "quad" | "circle" | "pythagoras" | "angles" | "protractor";
+export const GEO_SHAPES: GeoShape[] = ["triangle", "quad", "circle", "pythagoras", "angles", "protractor"];
+
+/** Angle-fact scenes: a straight line, around a point, vertically opposite, parallel lines + transversal. */
+export type AngleMode = "line" | "point" | "vertical" | "parallel";
 
 export type GeometrySpec = {
   type: "geometry";
@@ -16,14 +19,25 @@ export type GeometrySpec = {
   grid: boolean;
   snap: boolean;
   caption?: string; // classification in the UI language, stored at insert time
+  mode?: AngleMode; // shape "angles"
+  hide?: boolean; // shape "protractor": hide the reading so the student measures it
+  factNames?: [string, string, string]; // corresponding / alternate / co-interior, in the UI language
 };
 
-export const POINT_NAMES: Record<GeoShape, string[]> = {
-  triangle: ["A", "B", "C"],
-  quad: ["A", "B", "C", "D"],
-  circle: ["O", "P"],
-  pythagoras: ["C", "A", "B"],
-};
+export function pointNames(spec: GeometrySpec): string[] {
+  switch (spec.shape) {
+    case "triangle": return ["A", "B", "C"];
+    case "quad": return ["A", "B", "C", "D"];
+    case "circle": return ["O", "P"];
+    case "pythagoras": return ["C", "A", "B"];
+    case "protractor": return ["O", "A", "B"];
+    case "angles":
+      return { line: ["O", "L", "P"], point: ["O", "P", "Q", "R"], vertical: ["O", "P", "Q"], parallel: ["P", "Q"] }[spec.mode ?? "line"];
+  }
+}
+
+/** Protractor arms have this length (grid units); the protractor itself is a bit smaller. */
+export const ARM = 5;
 
 // ---------- Plane ↔ pixels ----------
 
@@ -51,6 +65,11 @@ const sumLine = (name: string, parts: { short: string; value: number }[]) => {
   return `${name} = ${parts.map((x) => x.short).join(" + ")} ${exact ? "=" : "≈"} ${fmt(total)}`;
 };
 const deg = (v: number) => (Number.isFinite(v) ? `${Math.round(v * 10) / 10}°` : "—");
+
+/** Direction of v→p in degrees, 0..360, counter-clockwise from +x. */
+const dirDeg = (v: Pt, p: Pt) => ((Math.atan2(p[1] - v[1], p[0] - v[0]) * 180) / Math.PI + 360) % 360;
+const unit = (a: Pt): Pt => mul(a, 1 / (len(a) || 1));
+const mirror = (o: Pt, p: Pt): Pt => sub(mul(o, 2), p); // point reflection of p through o
 
 /** A length as "5", "√13" (short, for the drawing) and "√13 ≈ 3.61" (long, for formulas). */
 function lengthText(p: Pt, q: Pt): { short: string; long: string; value: number } {
@@ -91,7 +110,8 @@ function interiorAngles(pts: Pt[]): number[] {
 
 export type ClassKey =
   | "equilateral" | "isosceles" | "scalene" | "right" | "acute" | "obtuse"
-  | "square" | "rectangle" | "rhombus" | "parallelogram" | "trapezium" | "kite" | "quadrilateral" | "degenerate";
+  | "square" | "rectangle" | "rhombus" | "parallelogram" | "trapezium" | "kite" | "quadrilateral" | "degenerate"
+  | "straight" | "angleAcute" | "angleRight" | "angleObtuse" | "factLine" | "factPoint" | "factVertical" | "factParallel";
 
 export type Measured = { lines: string[]; classes: ClassKey[] };
 
@@ -181,7 +201,123 @@ export function measure(spec: GeometrySpec): Measured {
         classes: ["right"],
       };
     }
+    case "angles": {
+      const s = angleScene(spec);
+      if (!s) return { lines: [], classes: ["degenerate"] };
+      const fact: ClassKey = { line: "factLine", point: "factPoint", vertical: "factVertical", parallel: "factParallel" }[spec.mode ?? "line"] as ClassKey;
+      return { lines: s.lines, classes: [fact] };
+    }
+    case "protractor": {
+      const [O, A, B] = p;
+      const theta = angleAt(A, O, B);
+      const shown = Math.abs(theta - Math.round(theta)) < 1e-6 ? `${Math.round(theta)}°` : deg(theta);
+      const kind: ClassKey = Math.abs(theta - 90) < 0.05 ? "angleRight" : Math.abs(theta - 180) < 0.05 ? "straight" : theta < 90 ? "angleAcute" : "angleObtuse";
+      return { lines: [`∠AOB = ${spec.hide ? "?" : shown}`], classes: spec.hide ? [] : [kind] };
+    }
   }
+}
+
+// ---------- Angle facts ----------
+
+type Sector = { from: Pt; to: Pt; value: number; name: string; color: string };
+type Scene = { vertex: Pt; sectors: Sector[] }[];
+
+const ORANGE = "#e8590c", BLUE = "#1971c2", GREEN = "#2f9e44", PURPLE = "#9c36b5";
+
+/** The arcs to draw and the fact lines, for an angle-facts spec (null if degenerate). */
+function angleScene(spec: GeometrySpec): { scene: Scene; lines: string[] } | null {
+  const p = spec.pts;
+  const zero = (a: Pt, b: Pt) => dist(a, b) < 1e-9;
+  switch (spec.mode ?? "line") {
+    case "line": {
+      const [O, L, P] = p;
+      if (zero(O, L) || zero(O, P)) return null;
+      const L2 = mirror(O, L);
+      const a = angleAt(L, O, P), b = angleAt(P, O, L2);
+      return {
+        scene: [{ vertex: O, sectors: [{ from: L, to: P, value: a, name: "a", color: ORANGE }, { from: P, to: L2, value: b, name: "b", color: BLUE }] }],
+        lines: [`a + b = ${deg(a)} + ${deg(b)} = 180°`],
+      };
+    }
+    case "point": {
+      const [O, ...rays] = p;
+      if (rays.some((r) => zero(O, r))) return null;
+      const sorted = [...rays].sort((u, v) => dirDeg(O, u) - dirDeg(O, v));
+      const names = ["a", "b", "c"], colors = [ORANGE, BLUE, GREEN];
+      const sectors = sorted.map((r, i) => {
+        const next = sorted[(i + 1) % sorted.length];
+        const value = (dirDeg(O, next) - dirDeg(O, r) + 360) % 360;
+        return { from: r, to: next, value, name: names[i], color: colors[i] };
+      });
+      return {
+        scene: [{ vertex: O, sectors }],
+        lines: [`a + b + c = ${sectors.map((x) => deg(x.value)).join(" + ")} = 360°`],
+      };
+    }
+    case "vertical": {
+      const [O, P, Q] = p;
+      if (zero(O, P) || zero(O, Q)) return null;
+      const P2 = mirror(O, P), Q2 = mirror(O, Q);
+      const a = angleAt(P, O, Q), b = 180 - a;
+      if (a < 1e-6 || b < 1e-6) return null; // the lines coincide
+      return {
+        scene: [{
+          vertex: O,
+          sectors: [
+            { from: P, to: Q, value: a, name: "a", color: ORANGE },
+            { from: Q, to: P2, value: b, name: "b", color: BLUE },
+            { from: P2, to: Q2, value: a, name: "c", color: ORANGE },
+            { from: Q2, to: P, value: b, name: "d", color: BLUE },
+          ],
+        }],
+        lines: [`a = c = ${deg(a)},   b = d = ${deg(b)}`, `a + b = ${deg(a)} + ${deg(b)} = 180°`],
+      };
+    }
+    case "parallel": {
+      const [P, Q] = p;
+      if (Math.abs(P[1] - Q[1]) < 1e-9) return null;
+      const [U, D] = P[1] > Q[1] ? [P, Q] : [Q, P]; // upper and lower crossing points
+      const up = unit(sub(U, D));
+      const phi = angleAt([1, 0], [0, 0], up); // angle between the parallels and the transversal
+      // Four angles at each crossing, numbered 1–4 at the upper line and 5–8 at the lower one.
+      const at = (X: Pt, first: number): { vertex: Pt; sectors: Sector[] } => {
+        const E = add(X, [1, 0]), W = add(X, [-1, 0]), Up = add(X, up), Dn = sub(X, up);
+        return {
+          vertex: X,
+          sectors: [
+            { from: Up, to: W, value: 180 - phi, name: String(first), color: ORANGE },
+            { from: E, to: Up, value: phi, name: String(first + 1), color: BLUE },
+            { from: W, to: Dn, value: phi, name: String(first + 2), color: BLUE },
+            { from: Dn, to: E, value: 180 - phi, name: String(first + 3), color: ORANGE },
+          ],
+        };
+      };
+      const [corr, alt, coint] = spec.factNames ?? ["Corresponding", "Alternate", "Co-interior"];
+      return {
+        scene: [at(U, 1), at(D, 5)],
+        lines: [
+          `∠2 = ∠3 = ∠6 = ∠7 = ${deg(phi)},   ∠1 = ∠4 = ∠5 = ∠8 = ${deg(180 - phi)}`,
+          `${corr}: ∠2 = ∠6 = ${deg(phi)}`,
+          `${alt}: ∠3 = ∠6 = ${deg(phi)}`,
+          `${coint}: ∠4 + ∠6 = ${deg(180 - phi)} + ${deg(phi)} = 180°`,
+        ],
+      };
+    }
+  }
+}
+
+/** Where the infinite line through p and q enters and leaves the plane. */
+function lineAcrossPlane(p: Pt, q: Pt): [Pt, Pt] {
+  const d = sub(q, p);
+  const ts: number[] = [];
+  const box = [0, PLANE.w, 0, PLANE.h];
+  if (Math.abs(d[0]) > 1e-12) ts.push((box[0] - p[0]) / d[0], (box[1] - p[0]) / d[0]);
+  if (Math.abs(d[1]) > 1e-12) ts.push((box[2] - p[1]) / d[1], (box[3] - p[1]) / d[1]);
+  const inside = ts
+    .map((t) => add(p, mul(d, t)))
+    .filter(([x, y]) => x >= -1e-6 && x <= PLANE.w + 1e-6 && y >= -1e-6 && y <= PLANE.h + 1e-6);
+  inside.sort((a, b) => dot(sub(a, p), d) - dot(sub(b, p), d));
+  return [inside[0] ?? p, inside[inside.length - 1] ?? q];
 }
 
 // ---------- Drawing ----------
@@ -211,8 +347,8 @@ function sideLabel(p: Pt, q: Pt, text: string, centre: [number, number], color =
   return label(mx + nx * 14, my + ny * 14, text, { color, bold: true });
 }
 
-/** Angle arc (or right-angle square) at v, on the interior side, with its value. */
-function angleMark(prev: Pt, v: Pt, next: Pt, interior: number, color = "#e8590c") {
+/** Angle arc (or right-angle square) at v, on the interior side, with its value (or `o.text`). */
+function angleMark(prev: Pt, v: Pt, next: Pt, interior: number, color = "#e8590c", o: { text?: string; r?: number; labelR?: number } = {}) {
   if (!Number.isFinite(interior)) return "";
   const [vx, vy] = toPx(v);
   const [px, py] = toPx(prev);
@@ -223,13 +359,14 @@ function angleMark(prev: Pt, v: Pt, next: Pt, interior: number, color = "#e8590c
   while (delta > Math.PI) delta -= 2 * Math.PI;
   const reflex = interior > 180 + 1e-9;
   const mid = a1 + delta / 2 + (reflex ? Math.PI : 0);
-  const txt = label(vx + Math.cos(mid) * 36, vy + Math.sin(mid) * 36, `${Math.round(interior * 10) / 10}°`, { size: 12, color });
+  const lr = o.labelR ?? 36;
+  const txt = label(vx + Math.cos(mid) * lr, vy + Math.sin(mid) * lr, o.text ?? `${Math.round(interior * 10) / 10}°`, { size: o.text ? 13 : 12, color, bold: !!o.text });
   if (Math.abs(interior - 90) < 0.05) {
     const s = 12;
     const u = [Math.cos(a1), Math.sin(a1)], w = [Math.cos(a1 + delta), Math.sin(a1 + delta)];
     return `<path d="M${r1(vx + u[0] * s)},${r1(vy + u[1] * s)} L${r1(vx + (u[0] + w[0]) * s)},${r1(vy + (u[1] + w[1]) * s)} L${r1(vx + w[0] * s)},${r1(vy + w[1] * s)}" fill="none" stroke="${color}" stroke-width="1.8"/>` + txt;
   }
-  const R = 20;
+  const R = o.r ?? 20;
   const end = a1 + delta;
   const sweep = reflex ? (delta > 0 ? 0 : 1) : delta > 0 ? 1 : 0;
   return (
@@ -262,6 +399,26 @@ function vertexNames(pts: Pt[], names: string[]) {
     .join("");
 }
 
+/** Names for angle-fact points, kept clear of the arcs at the vertex. */
+function angleNames(spec: GeometrySpec, names: string[]) {
+  const p = spec.pts;
+  if (spec.mode === "parallel") {
+    // Crossing points: name sits on the parallel line, to the left, beyond the arcs.
+    return p.map((q, i) => { const [x, y] = toPx(q); return label(x - 56, y - 12, names[i], { size: 16, bold: true, italic: true }); }).join("");
+  }
+  const [O, ...rays] = p;
+  const [ox, oy] = toPx(O);
+  // Vertex: opposite the average ray direction (or down-left if the rays balance out).
+  let dx = 0, dy = 0;
+  for (const r of rays) { const [rx, ry] = toPx(r); const l = Math.hypot(rx - ox, ry - oy) || 1; dx += (rx - ox) / l; dy += (ry - oy) / l; }
+  const l = Math.hypot(dx, dy);
+  const [ux, uy] = l > 0.3 ? [-dx / l, -dy / l] : [-0.7, 0.7];
+  const out = [label(ox + ux * 20, oy + uy * 20, names[0], { size: 16, bold: true, italic: true })];
+  // Ray ends: just beyond the point, along the ray.
+  rays.forEach((r, i) => { const [rx, ry] = toPx(r); const L2 = Math.hypot(rx - ox, ry - oy) || 1; out.push(label(rx + ((rx - ox) / L2) * 16, ry + ((ry - oy) / L2) * 16, names[i + 1], { size: 16, bold: true, italic: true })); });
+  return out.join("");
+}
+
 /** Right-angle square at `at`, between directions to p and q. */
 function rightMark(at: Pt, p: Pt, q: Pt, color: string) {
   return angleMark(p, at, q, 90, color).replace(/<text[\s\S]*<\/text>/, "");
@@ -280,7 +437,11 @@ export function pythagorasSquares([C, A, B]: Pt[]): Pt[][] {
 
 /** True if every point (and, for Pythagoras, every square corner) lies on the plane. */
 export function fitsPlane(shape: GeoShape, pts: Pt[]): boolean {
-  const all = shape === "pythagoras" ? pythagorasSquares(pts).flat() : pts;
+  // The protractor needs room for a full half-disc on either side of O.
+  const all =
+    shape === "pythagoras" ? pythagorasSquares(pts).flat()
+    : shape === "protractor" ? [...pts, add(pts[0], [ARM, ARM]), sub(pts[0], [ARM, ARM])]
+    : pts;
   return all.every(([x, y]) => x >= -1e-9 && y >= -1e-9 && x <= PLANE.w + 1e-9 && y <= PLANE.h + 1e-9);
 }
 
@@ -291,7 +452,7 @@ function drawShape(spec: GeometrySpec): string {
   switch (spec.shape) {
     case "triangle":
     case "quad": {
-      const names = POINT_NAMES[spec.shape];
+      const names = pointNames(spec);
       out.push(poly(p, blue.fill, blue.stroke));
       const centre = centroidPx(p);
       if (spec.shape === "triangle" && spec.area && Math.abs(polyArea2(p)) > 1e-9) {
@@ -355,6 +516,81 @@ function drawShape(spec: GeometrySpec): string {
       [C, A, B].forEach((q) => out.push(dotAt(q)));
       break;
     }
+    case "angles": {
+      const mode = spec.mode ?? "line";
+      const names = pointNames(spec);
+      // Lines: extended across the plane (rays for "around a point").
+      if (mode === "line") out.push(seg(...lineAcrossPlane(p[0], p[1]), INK, "", 2.5), seg(p[0], p[2], INK, "", 2.5));
+      if (mode === "point") p.slice(1).forEach((r) => out.push(seg(p[0], r, INK, "", 2.5)));
+      if (mode === "vertical") out.push(seg(...lineAcrossPlane(p[0], p[1]), INK, "", 2.5), seg(...lineAcrossPlane(p[0], p[2]), INK, "", 2.5));
+      if (mode === "parallel") {
+        const [P, Q] = p;
+        for (const X of [P, Q]) {
+          out.push(seg([0, X[1]], [PLANE.w, X[1]], INK, "", 2.5));
+          // Parallel marks (">") near the right end of each line.
+          const [cx, cy] = toPx([PLANE.w - 1.2, X[1]]);
+          out.push(`<path d="M${r1(cx - 5)},${r1(cy - 6)} L${r1(cx + 3)},${r1(cy)} L${r1(cx - 5)},${r1(cy + 6)}" fill="none" stroke="${INK}" stroke-width="2"/>`);
+        }
+        out.push(seg(...lineAcrossPlane(P, Q), PURPLE, "", 2.5));
+      }
+      const s = angleScene(spec);
+      if (s) {
+        const big = mode === "parallel" ? { r: 22, labelR: 38 } : { r: 30, labelR: 62 };
+        for (const { vertex, sectors } of s.scene)
+          for (const x of sectors)
+            out.push(angleMark(x.from, vertex, x.to, x.value, x.color, { ...big, text: mode === "parallel" ? x.name : `${x.name} = ${deg(x.value)}` }));
+      }
+      p.forEach((q) => out.push(dotAt(q)));
+      out.push(angleNames(spec, names));
+      break;
+    }
+    case "protractor": {
+      const [O, A, B] = p;
+      const [ox, oy] = toPx(O);
+      const RP = (ARM - 0.6) * PLANE.u; // protractor radius in px
+      const beta = dirDeg(O, A); // the protractor's 0° line lies along OA
+      const side = cross(sub(A, O), sub(B, O)) < 0 ? -1 : 1; // which half the protractor covers
+      const at = (d: number, r: number): [number, number] => {
+        const rad = (d * Math.PI) / 180;
+        return [ox + Math.cos(rad) * r, oy - Math.sin(rad) * r];
+      };
+      const P0 = at(beta, RP), P90 = at(beta + 90 * side, RP), P180 = at(beta + 180 * side, RP);
+      const sweep = side > 0 ? 0 : 1; // counter-clockwise in math = sweep 0 in SVG (y down)
+      out.push(
+        `<path d="M${r1(P0[0])},${r1(P0[1])} A${r1(RP)},${r1(RP)} 0 0 ${sweep} ${r1(P90[0])},${r1(P90[1])} A${r1(RP)},${r1(RP)} 0 0 ${sweep} ${r1(P180[0])},${r1(P180[1])} Z" fill="#fff3bf" fill-opacity="0.8" stroke="#f08c00" stroke-width="1.5"/>`,
+      );
+      const inner = RP * 0.32;
+      const I0 = at(beta, inner), I90 = at(beta + 90 * side, inner), I180 = at(beta + 180 * side, inner);
+      out.push(`<path d="M${r1(I0[0])},${r1(I0[1])} A${r1(inner)},${r1(inner)} 0 0 ${sweep} ${r1(I90[0])},${r1(I90[1])} A${r1(inner)},${r1(inner)} 0 0 ${sweep} ${r1(I180[0])},${r1(I180[1])}" fill="none" stroke="#f08c00" stroke-width="1"/>`);
+      // Ticks every degree; two number scales like a real protractor (outer from OA, inner from the other side).
+      const ticks: string[] = [];
+      for (let k = 0; k <= 180; k++) {
+        const d = beta + side * k;
+        const l = k % 10 === 0 ? 16 : k % 5 === 0 ? 10 : 5;
+        const [x1, y1] = at(d, RP);
+        const [x2, y2] = at(d, RP - l);
+        ticks.push(`M${r1(x1)},${r1(y1)}L${r1(x2)},${r1(y2)}`);
+        if (k % 10 === 0) {
+          const [tx, ty] = at(d, RP - 26);
+          const [ix, iy] = at(d, RP - 41);
+          out.push(`<text x="${r1(tx)}" y="${r1(ty)}" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="600" fill="#5c3d00">${k}</text>`);
+          out.push(`<text x="${r1(ix)}" y="${r1(iy)}" text-anchor="middle" dominant-baseline="central" font-size="8.5" fill="#a07a2c">${180 - k}</text>`);
+        }
+      }
+      out.push(`<path d="${ticks.join("")}" stroke="#5c3d00" stroke-width="0.9"/>`);
+      out.push(`<circle cx="${r1(ox)}" cy="${r1(oy)}" r="5" fill="none" stroke="#f08c00" stroke-width="1.5"/>`);
+      // The two arms; OB's crossing on the scale is where you read the angle.
+      out.push(seg(O, A, BLUE, "", 3), seg(O, B, ORANGE, "", 3));
+      const theta = angleAt(A, O, B);
+      if (Number.isFinite(theta)) {
+        const [hx, hy] = at(beta + side * theta, RP);
+        out.push(`<circle cx="${r1(hx)}" cy="${r1(hy)}" r="6" fill="none" stroke="${ORANGE}" stroke-width="2.5"/>`);
+        out.push(angleMark(A, O, B, theta, ORANGE, { r: 22, labelR: 40, text: spec.hide ? "?" : undefined }));
+      }
+      p.forEach((q) => out.push(dotAt(q)));
+      out.push(vertexNames(p, pointNames(spec)));
+      break;
+    }
   }
   return out.join("");
 }
@@ -391,6 +627,12 @@ export function renderGeometry(spec: GeometrySpec): RenderedSvg {
 
 // ---------- Presets ----------
 
+/** The end of a protractor arm from O at the given direction (degrees). */
+export function armAt(O: Pt, d: number): Pt {
+  const rad = (d * Math.PI) / 180;
+  return [Math.round((O[0] + ARM * Math.cos(rad)) * 1e4) / 1e4, Math.round((O[1] + ARM * Math.sin(rad)) * 1e4) / 1e4];
+}
+
 const base = { lengths: true, angles: true, area: true, grid: true, snap: true } as const;
 export const GEO_PRESETS: { key: string; spec: GeometrySpec }[] = [
   { key: "tri345", spec: { type: "geometry", shape: "triangle", pts: [[2, 2], [6, 2], [2, 5]], ...base } },
@@ -405,6 +647,12 @@ export const GEO_PRESETS: { key: string; spec: GeometrySpec }[] = [
   { key: "circle", spec: { type: "geometry", shape: "circle", pts: [[8, 6], [11, 6]], ...base } },
   { key: "pyth345", spec: { type: "geometry", shape: "pythagoras", pts: [[4, 5], [7, 5], [4, 9]], ...base } },
   { key: "pyth23", spec: { type: "geometry", shape: "pythagoras", pts: [[5, 4], [8, 4], [5, 6]], ...base } },
+  { key: "anglesLine", spec: { type: "geometry", shape: "angles", mode: "line", pts: [[8, 4], [12, 4], [10, 9]], ...base } },
+  { key: "anglesPoint", spec: { type: "geometry", shape: "angles", mode: "point", pts: [[8, 6], [13, 7], [5, 10], [6, 2]], ...base } },
+  { key: "anglesVertical", spec: { type: "geometry", shape: "angles", mode: "vertical", pts: [[8, 6], [12, 8], [11, 2]], ...base } },
+  { key: "anglesParallel", spec: { type: "geometry", shape: "angles", mode: "parallel", pts: [[7, 9], [10, 3]], ...base } },
+  { key: "protractorAcute", spec: { type: "geometry", shape: "protractor", pts: [[8, 5.5], armAt([8, 5.5], 0), armAt([8, 5.5], 57)], ...base } },
+  { key: "protractorObtuse", spec: { type: "geometry", shape: "protractor", pts: [[8, 5.5], armAt([8, 5.5], 20), armAt([8, 5.5], 145)], ...base } },
 ];
 
 export const DEFAULT_GEOMETRY: GeometrySpec = GEO_PRESETS[0].spec;

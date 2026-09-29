@@ -300,3 +300,4 @@ input.invalid { border-color: var(--danger); }
 .geo-readout { font-weight: 600; font-size: 15px; line-height: 1.7; }
 .geo-class { color: var(--accent); }
 .geo-coords { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); }
+.chip.selected { border-color: var(--accent); background: var(--surface); }

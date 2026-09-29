@@ -40,6 +40,11 @@ UI in English, Russian and Georgian.
     square, rectangle, rhombus, parallelogram, trapezium, kite
   - *Circle*: r, d, C = 2πr, S = πr², C : d = π
   - *Pythagoras*: squares on all three sides of a right triangle — a² + b² = c² you can count on the grid
+  - *Angle facts*: angles on a straight line (180°), around a point (360°), vertically opposite
+    (equal, same colour), and parallel lines cut by a transversal — corresponding, alternate and
+    co-interior angles, numbered 1–8
+  - *Protractor*: a real-looking protractor laid along arm OA (1° ticks, inner and outer scales);
+    drag the arms, snap to 1° or 5°, and "hide the answer" so students read it themselves
 - **[ ] Matrices** — exact fractions throughout
   - *Calculate with steps*: A ± B, A·B (each entry expanded), k·A, Aᵀ, det A (cofactor expansion),
     A⁻¹ (formula for 2×2, Gauss–Jordan on [A | I] for larger), and solving Ax = b by row reduction
