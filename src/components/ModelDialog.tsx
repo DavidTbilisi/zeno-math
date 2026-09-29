@@ -1,0 +1,296 @@
+import { useMemo, useState } from "react";
+import { useI18n } from "../i18n";
+import type { RenderedSvg } from "../math/latex";
+import {
+  DEFAULT_MODELS,
+  MODEL_COLORS,
+  PRESETS,
+  renderModel,
+  type BarModelSpec,
+  type BondSpec,
+  type FractionSpec,
+  type ModelSpec,
+  type ModelType,
+  type PercentSpec,
+} from "../math/models";
+import { svgToDataUrl } from "../math/svg";
+import { Modal } from "./Modal";
+
+type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
+
+const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond"];
+const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
+
+export function ModelDialog({ initial, onSubmit, onClose }: {
+  initial?: ModelSpec;
+  onSubmit: (spec: ModelSpec, rendered: RenderedSvg) => void;
+  onClose: () => void;
+}) {
+  const { t } = useI18n();
+  const [type, setType] = useState<ModelType>(initial?.type ?? "bar");
+  const [specs, setSpecs] = useState<Specs>(() => ({ ...DEFAULT_MODELS, ...(initial ? { [initial.type]: initial } : {}) }));
+  const spec = specs[type];
+  const update = <K extends ModelType>(k: K, next: Specs[K]) => setSpecs((s) => ({ ...s, [k]: next }));
+
+  const result = useMemo(() => {
+    try {
+      return { rendered: renderModel(spec) };
+    } catch {
+      return { error: t.invalidParts };
+    }
+  }, [spec, t]);
+
+  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond };
+
+  return (
+    <Modal
+      title={initial ? t.editModel : t.models}
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn" onClick={onClose}>{t.cancel}</button>
+          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+            {initial ? t.update : t.insert}
+          </button>
+        </>
+      }
+    >
+      {!initial && (
+        <div className="tabs" role="tablist">
+          {TYPES.map((k) => (
+            <button key={k} role="tab" aria-selected={k === type} className={`tab${k === type ? " active" : ""}`} onClick={() => setType(k)}>
+              {tabLabel[k]}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="field">
+        <span>{t.examples}</span>
+        <div className="snippets">
+          {PRESETS[type].map((p) => (
+            <button key={p.key} className="chip text" onClick={() => update(type, structuredClone(p.spec) as never)}>
+              {t.presets[p.key as keyof typeof t.presets]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {spec.type === "bar" && <BarEditor spec={spec} onChange={(s) => update("bar", s)} />}
+      {spec.type === "fraction" && <FractionEditor spec={spec} onChange={(s) => update("fraction", s)} />}
+      {spec.type === "percent" && <PercentEditor spec={spec} onChange={(s) => update("percent", s)} />}
+      {spec.type === "bond" && <BondEditor spec={spec} onChange={(s) => update("bond", s)} />}
+
+      <div className="field">
+        <span>{t.preview}</span>
+        <div className="preview">
+          {result.rendered ? (
+            <img src={svgToDataUrl(result.rendered.svg)} alt="" style={{ maxWidth: "100%" }} />
+          ) : (
+            <span className="error">{result.error}</span>
+          )}
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function Dot({ i }: { i: number }) {
+  const c = MODEL_COLORS[i % MODEL_COLORS.length];
+  return <span className="dot" style={{ background: c.fill, borderColor: c.stroke }} />;
+}
+
+function BarEditor({ spec, onChange }: { spec: BarModelSpec; onChange: (s: BarModelSpec) => void }) {
+  const { t } = useI18n();
+  const setRow = (i: number, patch: Partial<BarModelSpec["rows"][number]>) =>
+    onChange({ ...spec, rows: spec.rows.map((r, j) => (j === i ? { ...r, ...patch } : r)) });
+
+  return (
+    <>
+      <div className="field">
+        <div className="model-rows">
+          <div className="model-row head">
+            <span />
+            <span>{t.rowLabel}</span>
+            <span>{t.segments}</span>
+            <span>{t.total}</span>
+            <span />
+          </div>
+          {spec.rows.map((r, i) => (
+            <div key={i} className="model-row">
+              <Dot i={i} />
+              <input value={r.label} onChange={(e) => setRow(i, { label: e.target.value })} />
+              <input className="mono" value={r.segments} spellCheck={false} onChange={(e) => setRow(i, { segments: e.target.value })} />
+              <input value={r.total} onChange={(e) => setRow(i, { total: e.target.value })} />
+              {spec.rows.length > 1 ? (
+                <button className="icon-btn" aria-label={t.remove} onClick={() => onChange({ ...spec, rows: spec.rows.filter((_, j) => j !== i) })}>
+                  ×
+                </button>
+              ) : (
+                <span />
+              )}
+            </div>
+          ))}
+        </div>
+        {spec.rows.length < 5 && (
+          <button className="btn small add-fn" onClick={() => onChange({ ...spec, rows: [...spec.rows, { label: "", segments: "", total: "" }] })}>
+            + {t.addRow}
+          </button>
+        )}
+        <small className="hint">{t.segmentsHint}</small>
+      </div>
+      <div className="range-grid">
+        <label>
+          <span>{t.grandTotal}</span>
+          <input value={spec.grandTotal} onChange={(e) => onChange({ ...spec, grandTotal: e.target.value })} />
+        </label>
+        <label className="check">
+          <input type="checkbox" checked={spec.showNumbers} onChange={(e) => onChange({ ...spec, showNumbers: e.target.checked })} />
+          <span>{t.showNumbers}</span>
+        </label>
+      </div>
+    </>
+  );
+}
+
+function FractionEditor({ spec, onChange }: { spec: FractionSpec; onChange: (s: FractionSpec) => void }) {
+  const { t } = useI18n();
+  const setRow = (i: number, patch: Partial<FractionSpec["rows"][number]>) =>
+    onChange({ ...spec, rows: spec.rows.map((r, j) => (j === i ? { ...r, ...patch } : r)) });
+
+  return (
+    <>
+      <div className="field">
+        <span>{t.fractions}</span>
+        <div className="frac-list">
+          {spec.rows.map((r, i) => (
+            <div key={i} className="frac-edit">
+              <Dot i={i} />
+              <div className="frac-inputs">
+                <input type="number" min={0} max={r.d * 3} value={r.n} onChange={(e) => setRow(i, { n: clampInt(e.target.value, 0, r.d * 3) })} />
+                <hr />
+                <input
+                  type="number"
+                  min={1}
+                  max={24}
+                  value={r.d}
+                  onChange={(e) => {
+                    const d = clampInt(e.target.value, 1, 24);
+                    setRow(i, { d, n: Math.min(r.n, d * 3) });
+                  }}
+                />
+              </div>
+              {spec.rows.length > 1 && (
+                <button className="icon-btn" aria-label={t.remove} onClick={() => onChange({ ...spec, rows: spec.rows.filter((_, j) => j !== i) })}>
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
+          {spec.rows.length < 6 && (
+            <button className="btn small" onClick={() => onChange({ ...spec, rows: [...spec.rows, { ...spec.rows[spec.rows.length - 1] }] })}>
+              +
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="range-grid">
+        <div className="segmented" role="radiogroup" aria-label={t.shape}>
+          {(["bar", "circle"] as const).map((s) => (
+            <button key={s} role="radio" aria-checked={spec.shape === s} className={spec.shape === s ? "active" : ""} onClick={() => onChange({ ...spec, shape: s })}>
+              {s === "bar" ? t.shapeBar : t.shapeCircle}
+            </button>
+          ))}
+        </div>
+        <label className="check">
+          <input type="checkbox" checked={spec.unitLabels} onChange={(e) => onChange({ ...spec, unitLabels: e.target.checked })} />
+          <span>{t.unitLabels}</span>
+        </label>
+      </div>
+    </>
+  );
+}
+
+function PercentEditor({ spec, onChange }: { spec: PercentSpec; onChange: (s: PercentSpec) => void }) {
+  const { t } = useI18n();
+  return (
+    <>
+      <div className="field">
+        <span>
+          {t.percentValue}: {spec.percent}%
+        </span>
+        <div className="percent-row">
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={spec.percent}
+            onChange={(e) => onChange({ ...spec, percent: Number(e.target.value) })}
+          />
+          <input
+            type="number"
+            min={0}
+            max={100}
+            step="any"
+            value={spec.percent}
+            onChange={(e) => onChange({ ...spec, percent: Math.min(100, Math.max(0, Number(e.target.value) || 0)) })}
+          />
+        </div>
+      </div>
+      <div className="range-grid">
+        <label>
+          <span>{t.ofQuantity}</span>
+          <input
+            type="number"
+            step="any"
+            placeholder="—"
+            value={spec.of ?? ""}
+            onChange={(e) => onChange({ ...spec, of: e.target.value === "" ? null : Number(e.target.value) })}
+          />
+        </label>
+        <div className="segmented" role="radiogroup">
+          {(["bar", "grid"] as const).map((s) => (
+            <button key={s} role="radio" aria-checked={spec.style === s} className={spec.style === s ? "active" : ""} onClick={() => onChange({ ...spec, style: s })}>
+              {s === "bar" ? t.styleBar : t.styleGrid}
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function BondEditor({ spec, onChange }: { spec: BondSpec; onChange: (s: BondSpec) => void }) {
+  const { t } = useI18n();
+  return (
+    <div className="range-grid">
+      <label>
+        <span>{t.whole}</span>
+        <input className="bond-input" value={spec.whole} onChange={(e) => onChange({ ...spec, whole: e.target.value })} />
+      </label>
+      <label>
+        <span>{t.parts}</span>
+        <div>
+          {spec.parts.map((p, i) => (
+            <input
+              key={i}
+              className="bond-input"
+              value={p}
+              onChange={(e) => onChange({ ...spec, parts: spec.parts.map((q, j) => (j === i ? e.target.value : q)) })}
+            />
+          ))}
+          {spec.parts.length < 4 && (
+            <button className="btn small" title={t.addPart} onClick={() => onChange({ ...spec, parts: [...spec.parts, "?"] })}>
+              +
+            </button>
+          )}
+          {spec.parts.length > 2 && (
+            <button className="icon-btn" aria-label={t.remove} onClick={() => onChange({ ...spec, parts: spec.parts.slice(0, -1) })}>
+              ×
+            </button>
+          )}
+        </div>
+      </label>
+    </div>
+  );
+}

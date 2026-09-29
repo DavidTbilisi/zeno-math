@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    image: repetime-free
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    environment:
+      # Set a password to require HTTP basic auth (any username). Leave empty for no auth.
+      APP_PASSWORD: ${APP_PASSWORD:-}
+    volumes:
+      - data:/data
+
+volumes:
+  data:
