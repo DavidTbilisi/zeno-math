@@ -33,6 +33,13 @@ UI in English, Russian and Georgian.
     volume |det M|, î ĵ k̂ land on the (green / red / blue) columns, the z = 0 grid is transformed,
     and a slider animates from I to M; the snapshot includes the matrix and det
   - *Unit cubes*: volume as counting — an a × b × c cuboid, or build your own stacks on a plan grid
+- **📐 Geometry** — drag points on a grid and everything is measured live
+  - *Triangle*: side lengths (exact, e.g. √13), angles that always sum to 180°, the height from C
+    with ½ · c · h, and its type (right / acute / obtuse · equilateral / isosceles / scalene)
+  - *Quadrilateral*: angles sum to 360° (reflex corners too), perimeter, area, and a live name —
+    square, rectangle, rhombus, parallelogram, trapezium, kite
+  - *Circle*: r, d, C = 2πr, S = πr², C : d = π
+  - *Pythagoras*: squares on all three sides of a right triangle — a² + b² = c² you can count on the grid
 - **[ ] Matrices** — exact fractions throughout
   - *Calculate with steps*: A ± B, A·B (each entry expanded), k·A, Aᵀ, det A (cofactor expansion),
     A⁻¹ (formula for 2×2, Gauss–Jordan on [A | I] for larger), and solving Ax = b by row reduction
@@ -85,6 +92,8 @@ src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editin
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
+src/math/geometry.ts      plane geometry: measurements, classification, drawing
+src/components/GeometryDialog.tsx  the drag-the-points geometry editor
 src/math/multiply.ts      multiplication models (groups, array, number line, area) → SVG
 src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
 src/components/PlaceValueMat.tsx  the drag & drop place-value mat

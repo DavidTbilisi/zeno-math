@@ -288,3 +288,15 @@ input.invalid { border-color: var(--danger); }
 .mult-inputs { align-items: center; gap: 10px; }
 .mult-inputs input { width: 90px; font-size: 18px; text-align: center; }
 .mult-sign { font-size: 22px; font-weight: 700; }
+
+/* Geometry dialog */
+.geo-plane { position: relative; width: 100%; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #ffffff; }
+.geo-plane > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.geo-overlay { touch-action: none; }
+.geo-handle { cursor: grab; }
+.geo-handle circle:last-of-type { fill: #ffffff; stroke: #1971c2; stroke-width: 3; transition: r 0.1s; }
+.geo-handle:hover circle:last-of-type, .geo-handle.active circle:last-of-type { fill: #d0ebff; r: 11; }
+.geo-handle.active { cursor: grabbing; }
+.geo-readout { font-weight: 600; font-size: 15px; line-height: 1.7; }
+.geo-class { color: var(--accent); }
+.geo-coords { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); }

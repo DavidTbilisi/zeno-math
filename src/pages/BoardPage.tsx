@@ -21,6 +21,8 @@ import type { PlotSpec } from "../math/plot";
 import { svgToDataUrl } from "../math/svg";
 import type { Spec3D } from "../three/spec";
 import { MatrixDialog, type MatrixSpec } from "../components/MatrixDialog";
+import { GeometryDialog } from "../components/GeometryDialog";
+import type { GeometrySpec } from "../math/geometry";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
 type MathData =
@@ -28,14 +30,16 @@ type MathData =
   | { kind: "graph"; data: PlotSpec; w: number; h: number }
   | { kind: "model"; data: ModelSpec; w: number; h: number }
   | { kind: "3d"; data: Spec3D; w: number; h: number }
-  | { kind: "matrix"; data: MatrixSpec; w: number; h: number };
+  | { kind: "matrix"; data: MatrixSpec; w: number; h: number }
+  | { kind: "geometry"; data: GeometrySpec; w: number; h: number };
 
 type Dialog =
   | { kind: "formula"; editing?: ExcalidrawImageElement }
   | { kind: "graph"; editing?: ExcalidrawImageElement }
   | { kind: "model"; editing?: ExcalidrawImageElement; start?: ModelType }
   | { kind: "3d"; editing?: ExcalidrawImageElement }
-  | { kind: "matrix"; editing?: ExcalidrawImageElement };
+  | { kind: "matrix"; editing?: ExcalidrawImageElement }
+  | { kind: "geometry"; editing?: ExcalidrawImageElement };
 
 type SaveState = "saved" | "saving" | "error";
 
@@ -52,7 +56,7 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
 const ThreeDialog = lazy(() => import("../components/ThreeDialog"));
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
-  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix"].includes(el.customData?.kind)
+  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry"].includes(el.customData?.kind)
     ? (el.customData as MathData)
     : undefined;
 
@@ -256,11 +260,12 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix }[mathOf(selectedMath)!.kind]}</span>
+            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
         <button className="btn primary" onClick={() => setDialog({ kind: "model", start: "placeValue" })} title={t.counting}>🧮 <span className="btn-label">{t.counting}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "model" })} title={t.models}>▦ <span className="btn-label">{t.models}</span></button>
+        <button className="btn primary" onClick={() => setDialog({ kind: "geometry" })} title={t.geometry}>📐 <span className="btn-label">{t.geometry}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "formula" })} title={t.formula}>∑ <span className="btn-label">{t.formula}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "graph" })} title={t.graph}>📈 <span className="btn-label">{t.graph}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "matrix" })} title={t.matrices}>[ ] <span className="btn-label">{t.matrices}</span></button>
@@ -335,6 +340,16 @@ export function BoardPage({ id }: { id: string }) {
             }}
           />
         </Suspense>
+      )}
+      {dialog?.kind === "geometry" && (
+        <GeometryDialog
+          initial={dialog.editing ? (mathOf(dialog.editing)!.data as GeometrySpec) : undefined}
+          onClose={() => setDialog(null)}
+          onSubmit={(data, rendered) => {
+            placeImage(svgImage(rendered), { kind: "geometry", data, w: rendered.width, h: rendered.height }, dialog.editing);
+            setDialog(null);
+          }}
+        />
       )}
       {dialog?.kind === "matrix" && (
         <MatrixDialog
