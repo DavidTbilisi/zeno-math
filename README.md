@@ -8,6 +8,12 @@ counting with bar models and fractions all the way to matrices and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
+- **🧮 Counting — place-value mat (Singapore method, concrete stage)**: drag base-ten blocks
+  (hundreds, tens, ones) onto a Hundreds | Tens | Ones mat — mouse or touch
+  - Trade by dragging: a ten onto Ones breaks into 10 ones; a one onto Tens groups 10 ones into a ten
+    (same for hundreds); drag off the mat to remove. Ones sit in ten-frames so tens are easy to see
+  - Shows the number in expanded form (`125 = 100 + 10 + 15` flags that regrouping is needed)
+  - 🎲 Challenge: "Make 347" with the total hidden, and a Check button (correct / too many / not enough)
 - **▦ Models (Singapore method, pictorial stage)**
   - *Bar models*: part–whole, comparison, units; braces for totals, `?` for the unknown,
     `[1, 1]=?` to put a brace under some parts (e.g. "2/5 of 60")
@@ -76,6 +82,8 @@ src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editin
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
+src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
+src/components/PlaceValueMat.tsx  the drag & drop place-value mat
 src/math/fraction.ts      exact rational arithmetic
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG

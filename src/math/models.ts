@@ -1,6 +1,7 @@
 // Singapore-method pictorial models rendered to standalone SVG:
 // bar models, fraction bars/circles, percent grids/bars and number bonds.
 import type { RenderedSvg } from "./latex";
+import { renderPlaceValue, type PlaceValueSpec } from "./placeValue";
 
 export const MODEL_COLORS = [
   { stroke: "#1971c2", fill: "#a5d8ff" },
@@ -17,7 +18,7 @@ export type FractionRow = { n: number; d: number };
 export type FractionSpec = { type: "fraction"; rows: FractionRow[]; shape: "bar" | "circle"; unitLabels: boolean };
 export type PercentSpec = { type: "percent"; percent: number; of: number | null; style: "grid" | "bar" };
 export type BondSpec = { type: "bond"; whole: string; parts: string[] };
-export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec;
+export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec;
 export type ModelType = ModelSpec["type"];
 
 const INK = "#1e1e1e";
@@ -378,6 +379,8 @@ export function renderModel(spec: ModelSpec): RenderedSvg {
       return renderPercent(spec);
     case "bond":
       return renderBond(spec);
+    case "placeValue":
+      return renderPlaceValue(spec);
   }
 }
 
@@ -388,6 +391,7 @@ export const DEFAULT_MODELS: { [K in ModelType]: Extract<ModelSpec, { type: K }>
   fraction: { type: "fraction", rows: [{ n: 3, d: 4 }], shape: "bar", unitLabels: true },
   percent: { type: "percent", percent: 25, of: 80, style: "bar" },
   bond: { type: "bond", whole: "10", parts: ["7", "?"] },
+  placeValue: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true },
 };
 
 export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec, { type: K }> }[] } = {
@@ -437,6 +441,12 @@ export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec
     { key: "percentOf", spec: DEFAULT_MODELS.percent },
     { key: "hundredGrid", spec: { type: "percent", percent: 35, of: null, style: "grid" } },
     { key: "discount", spec: { type: "percent", percent: 20, of: 150, style: "bar" } },
+  ],
+  placeValue: [
+    { key: "pvEmpty", spec: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true } },
+    { key: "pv234", spec: { type: "placeValue", h: 2, t: 3, o: 4, showTotal: true } },
+    { key: "pvRegroup", spec: { type: "placeValue", h: 0, t: 1, o: 15, showTotal: true } },
+    { key: "pvBorrow", spec: { type: "placeValue", h: 1, t: 0, o: 3, showTotal: true } },
   ],
   bond: [
     { key: "bond10", spec: DEFAULT_MODELS.bond },

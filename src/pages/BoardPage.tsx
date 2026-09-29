@@ -15,7 +15,7 @@ import { LangSelect, useI18n } from "../i18n";
 import { FormulaDialog, type FormulaData } from "../components/FormulaDialog";
 import { GraphDialog } from "../components/GraphDialog";
 import { ModelDialog } from "../components/ModelDialog";
-import type { ModelSpec } from "../math/models";
+import type { ModelSpec, ModelType } from "../math/models";
 import type { RenderedSvg } from "../math/latex";
 import type { PlotSpec } from "../math/plot";
 import { svgToDataUrl } from "../math/svg";
@@ -33,7 +33,7 @@ type MathData =
 type Dialog =
   | { kind: "formula"; editing?: ExcalidrawImageElement }
   | { kind: "graph"; editing?: ExcalidrawImageElement }
-  | { kind: "model"; editing?: ExcalidrawImageElement }
+  | { kind: "model"; editing?: ExcalidrawImageElement; start?: ModelType }
   | { kind: "3d"; editing?: ExcalidrawImageElement }
   | { kind: "matrix"; editing?: ExcalidrawImageElement };
 
@@ -259,6 +259,7 @@ export function BoardPage({ id }: { id: string }) {
             ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
+        <button className="btn primary" onClick={() => setDialog({ kind: "model", start: "placeValue" })} title={t.counting}>🧮 <span className="btn-label">{t.counting}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "model" })} title={t.models}>▦ <span className="btn-label">{t.models}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "formula" })} title={t.formula}>∑ <span className="btn-label">{t.formula}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "graph" })} title={t.graph}>📈 <span className="btn-label">{t.graph}</span></button>
@@ -348,6 +349,7 @@ export function BoardPage({ id }: { id: string }) {
       {dialog?.kind === "model" && (
         <ModelDialog
           initial={dialog.editing ? (mathOf(dialog.editing)!.data as ModelSpec) : undefined}
+          start={dialog.start}
           onClose={() => setDialog(null)}
           onSubmit={(data, rendered) => {
             placeImage(svgImage(rendered), { kind: "model", data, w: rendered.width, h: rendered.height }, dialog.editing);

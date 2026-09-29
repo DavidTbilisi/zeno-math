@@ -15,19 +15,21 @@ import {
 } from "../math/models";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { PlaceValueMat } from "./PlaceValueMat";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond"];
+const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
-export function ModelDialog({ initial, onSubmit, onClose }: {
+export function ModelDialog({ initial, start, onSubmit, onClose }: {
   initial?: ModelSpec;
+  start?: ModelType;
   onSubmit: (spec: ModelSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [type, setType] = useState<ModelType>(initial?.type ?? "bar");
+  const [type, setType] = useState<ModelType>(initial?.type ?? start ?? "bar");
   const [specs, setSpecs] = useState<Specs>(() => ({ ...DEFAULT_MODELS, ...(initial ? { [initial.type]: initial } : {}) }));
   const spec = specs[type];
   const update = <K extends ModelType>(k: K, next: Specs[K]) => setSpecs((s) => ({ ...s, [k]: next }));
@@ -40,7 +42,7 @@ export function ModelDialog({ initial, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond };
+  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue };
 
   return (
     <Modal
@@ -76,11 +78,13 @@ export function ModelDialog({ initial, onSubmit, onClose }: {
         </div>
       </div>
 
+      {spec.type === "placeValue" && <PlaceValueMat spec={spec} onChange={(s) => update("placeValue", s)} />}
       {spec.type === "bar" && <BarEditor spec={spec} onChange={(s) => update("bar", s)} />}
       {spec.type === "fraction" && <FractionEditor spec={spec} onChange={(s) => update("fraction", s)} />}
       {spec.type === "percent" && <PercentEditor spec={spec} onChange={(s) => update("percent", s)} />}
       {spec.type === "bond" && <BondEditor spec={spec} onChange={(s) => update("bond", s)} />}
 
+      {spec.type !== "placeValue" && (
       <div className="field">
         <span>{t.preview}</span>
         <div className="preview">
@@ -91,6 +95,7 @@ export function ModelDialog({ initial, onSubmit, onClose }: {
           )}
         </div>
       </div>
+      )}
     </Modal>
   );
 }
