@@ -43,6 +43,10 @@ UI in English, Russian and Georgian.
   - *Angle facts*: angles on a straight line (180°), around a point (360°), vertically opposite
     (equal, same colour), and parallel lines cut by a transversal — corresponding, alternate and
     co-interior angles, numbered 1–8
+  - *Symmetry*: reflect a shape in any mirror line (vertical, horizontal, diagonal or tilted) with
+    right-angle connectors and equal-distance ticks and A(4, 2) → A′(12, 2); find all lines of symmetry
+    and the order of rotational symmetry automatically (square 4/4, parallelogram 0/2); and a practice
+    mode where students drag the image points and press Check (correct points turn green)
   - *Protractor*: a real-looking protractor laid along arm OA (1° ticks, inner and outer scales);
     drag the arms, snap to 1° or 5°, and "hide the answer" so students read it themselves
 - **[ ] Matrices** — exact fractions throughout

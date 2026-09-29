@@ -14,6 +14,7 @@ import {
   PLANE_PX,
   planeSvg,
   pointNames,
+  reflectPt,
   renderGeometry,
   toPx,
   type GeometrySpec,
@@ -49,6 +50,10 @@ function movePoint(s: GeometrySpec, i: number, to: Pt): Pt[] | null {
       if (s.mode === "parallel") return Math.abs(pts[0][1] - pts[1][1]) < 0.5 ? null : pts; // the lines must stay apart
       return pts.slice(1).some((r) => same(r, pts[0])) ? null : pts;
     }
+    case "symmetry": {
+      pts[i] = to;
+      return s.sym !== "lines" && same(pts[0], pts[1]) ? null : pts; // the mirror needs two different points
+    }
     default:
       pts[i] = to;
       return pts;
@@ -62,7 +67,8 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
 }) {
   const { t } = useI18n();
   const [spec, setSpec] = useState<GeometrySpec>(initial ?? DEFAULT_GEOMETRY);
-  const [active, setActive] = useState<number | null>(null);
+  const [active, setActive] = useState<string | null>(null);
+  const [checked, setChecked] = useState<boolean[] | null>(null); // practice: which image points are right
   const overlay = useRef<SVGSVGElement>(null);
   const latest = useRef(spec);
   latest.current = spec;
@@ -70,15 +76,17 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
   // The spec as drawn: fact names follow the UI language.
   const view: GeometrySpec = { ...spec, factNames: [t.factCorresponding, t.factAlternate, t.factCoInterior] };
   const m = useMemo(() => measure(view), [spec, t]);
-  const caption = m.classes.map((c) => t.geoClass[c]).join(" · ");
+  const caption = m.sym
+    ? `${t.symLinesCount}: ${m.sym.lines} · ${t.symOrder}: ${m.sym.order}`
+    : m.classes.map((c) => t.geoClass[c]).join(" · ");
 
   const set = (patch: Partial<GeometrySpec>) => setSpec((s) => ({ ...s, ...patch }));
 
   // Window listeners attach synchronously on pointerdown so fast drags/taps are never lost.
-  const startDrag = (i: number) => (e: React.PointerEvent) => {
+  const startDrag = (i: number, target: "pt" | "guess" = "pt") => (e: React.PointerEvent) => {
     if (e.button !== 0) return;
     e.preventDefault();
-    setActive(i);
+    setActive(`${target}${i}`);
     const move = (ev: PointerEvent) => {
       const svg = overlay.current;
       const ctm = svg?.getScreenCTM();
@@ -89,10 +97,21 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
       const step = s.snap && s.shape !== "protractor" ? 1 : 0.1;
       x = Math.round(Math.min(PLANE.w, Math.max(0, Math.round(x / step) * step)) * 10) / 10;
       y = Math.round(Math.min(PLANE.h, Math.max(0, Math.round(y / step) * step)) * 10) / 10;
+      if (target === "guess") {
+        const guess = (s.guess ?? []).map((q, j) => (j === i ? ([x, y] as Pt) : q));
+        if (!same(guess[i], s.guess![i])) {
+          setSpec({ ...s, guess });
+          setChecked(null);
+        }
+        return;
+      }
       const pts = movePoint(s, i, [x, y]);
       // Skip rejected moves and ones that would push part of the figure off the plane.
-      if (!pts || !fitsPlane(s.shape, pts)) return;
-      if (pts.some((q, j) => !same(q, s.pts[j]))) setSpec({ ...s, pts });
+      if (!pts || !fitsPlane({ ...s, pts })) return;
+      if (pts.some((q, j) => !same(q, s.pts[j]))) {
+        setSpec({ ...s, pts });
+        setChecked(null);
+      }
     };
     const up = () => {
       window.removeEventListener("pointermove", move);
@@ -107,8 +126,22 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
 
   const presets = GEO_PRESETS.filter((p) => p.spec.shape === spec.shape);
   const names = pointNames(spec);
-  const presetActive = (p: GeometrySpec) => spec.shape === "angles" && p.mode === spec.mode;
-  const hint = spec.shape === "angles" ? t.angleHints[spec.mode ?? "line"] : t.geoDragHint[spec.shape];
+  const presetActive = (p: GeometrySpec) => (spec.shape === "angles" && p.mode === spec.mode) || (spec.shape === "symmetry" && p.sym === spec.sym && JSON.stringify(p.pts) === JSON.stringify(spec.pts));
+  const hint =
+    spec.shape === "angles" ? t.angleHints[spec.mode ?? "line"]
+    : spec.shape === "symmetry" ? t.symHints[spec.sym ?? "reflect"]
+    : t.geoDragHint[spec.shape];
+  const practice = spec.shape === "symmetry" && spec.sym === "practice";
+  const check = () => {
+    const [M, N, ...shape] = spec.pts;
+    setChecked(
+      shape.map((q, i) => {
+        const g = spec.guess?.[i];
+        const im = reflectPt(q, M, N);
+        return !!g && Math.hypot(im[0] - g[0], im[1] - g[1]) < 0.05;
+      }),
+    );
+  };
   const plainShape = spec.shape === "triangle" || spec.shape === "quad";
 
   return (
@@ -146,7 +179,10 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
             <button
               key={p.key}
               className={`chip text${presetActive(p.spec) ? " selected" : ""}`}
-              onClick={() => set({ pts: p.spec.pts.map((q) => [...q] as Pt), mode: p.spec.mode })}
+              onClick={() => {
+                set({ pts: p.spec.pts.map((q) => [...q] as Pt), mode: p.spec.mode, sym: p.spec.sym, guess: p.spec.guess?.map((q) => [...q] as Pt), reveal: false });
+                setChecked(null);
+              }}
             >
               {t.geoPresets[p.key as keyof typeof t.geoPresets]}
             </button>
@@ -160,16 +196,42 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
           {spec.pts.map((p, i) => {
             const [x, y] = toPx(p);
             return (
-              <g key={i} className={`geo-handle${active === i ? " active" : ""}`} onPointerDown={startDrag(i)}>
+              <g key={i} className={`geo-handle${active === `pt${i}` ? " active" : ""}`} onPointerDown={startDrag(i)}>
                 <circle cx={x} cy={y} r={16} fill="transparent" />
                 <circle cx={x} cy={y} r={9} />
                 <title>{`${names[i]} (${p[0]}, ${p[1]})`}</title>
               </g>
             );
           })}
+          {practice &&
+            spec.guess?.map((g, i) => {
+              const [x, y] = toPx(g);
+              const state = checked ? (checked[i] ? " right" : " wrong") : "";
+              return (
+                <g key={`g${i}`} className={`geo-handle guess${state}${active === `guess${i}` ? " active" : ""}`} onPointerDown={startDrag(i, "guess")}>
+                  <circle cx={x} cy={y} r={16} fill="transparent" />
+                  <circle cx={x} cy={y} r={9} />
+                  <title>{`${names[i + 2]}′ (${g[0]}, ${g[1]})`}</title>
+                </g>
+              );
+            })}
         </svg>
       </div>
       <small className="hint">{hint}</small>
+      {practice && (
+        <div className="pv-toolbar">
+          <button className="btn small primary" onClick={check}>{t.check}</button>
+          {checked && (
+            <span className={`pv-verdict ${checked.every(Boolean) ? "correct" : "notEnough"}`}>
+              {checked.every(Boolean) ? t.symAllRight : t.symScore.replace("{n}", String(checked.filter(Boolean).length)).replace("{total}", String(checked.length))}
+            </span>
+          )}
+          <label className="check inline">
+            <input type="checkbox" checked={!!spec.reveal} onChange={(e) => set({ reveal: e.target.checked })} />
+            <span>{t.symReveal}</span>
+          </label>
+        </div>
+      )}
 
       <div className="geo-readout">
         {caption && <div className="geo-class">{caption}</div>}

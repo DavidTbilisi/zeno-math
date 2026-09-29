@@ -301,3 +301,6 @@ input.invalid { border-color: var(--danger); }
 .geo-class { color: var(--accent); }
 .geo-coords { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); }
 .chip.selected { border-color: var(--accent); background: var(--surface); }
+.geo-handle.guess circle:last-of-type { stroke: #e8590c; }
+.geo-handle.guess.right circle:last-of-type { stroke: #2f9e44; fill: #d3f9d8; }
+.geo-handle.guess.wrong circle:last-of-type { stroke: #e03131; fill: #ffe3e3; }

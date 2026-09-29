@@ -3,8 +3,11 @@
 import type { RenderedSvg } from "./latex";
 
 export type Pt = [number, number];
-export type GeoShape = "triangle" | "quad" | "circle" | "pythagoras" | "angles" | "protractor";
-export const GEO_SHAPES: GeoShape[] = ["triangle", "quad", "circle", "pythagoras", "angles", "protractor"];
+export type GeoShape = "triangle" | "quad" | "circle" | "pythagoras" | "angles" | "protractor" | "symmetry";
+export const GEO_SHAPES: GeoShape[] = ["triangle", "quad", "circle", "pythagoras", "angles", "protractor", "symmetry"];
+
+/** Symmetry scenes: reflect a shape in a mirror line, find its lines of symmetry, or practise reflecting. */
+export type SymMode = "reflect" | "lines" | "practice";
 
 /** Angle-fact scenes: a straight line, around a point, vertically opposite, parallel lines + transversal. */
 export type AngleMode = "line" | "point" | "vertical" | "parallel";
@@ -21,6 +24,9 @@ export type GeometrySpec = {
   caption?: string; // classification in the UI language, stored at insert time
   mode?: AngleMode; // shape "angles"
   hide?: boolean; // shape "protractor": hide the reading so the student measures it
+  sym?: SymMode; // shape "symmetry"; pts = [M, N (mirror), ...polygon] except "lines" = [...polygon]
+  guess?: Pt[]; // "practice": where the student put each image point
+  reveal?: boolean; // "practice": show the true image
   factNames?: [string, string, string]; // corresponding / alternate / co-interior, in the UI language
 };
 
@@ -31,6 +37,10 @@ export function pointNames(spec: GeometrySpec): string[] {
     case "circle": return ["O", "P"];
     case "pythagoras": return ["C", "A", "B"];
     case "protractor": return ["O", "A", "B"];
+    case "symmetry": {
+      const letters = "ABCDEFGH".split("");
+      return spec.sym === "lines" ? letters.slice(0, spec.pts.length) : ["M", "N", ...letters.slice(0, spec.pts.length - 2)];
+    }
     case "angles":
       return { line: ["O", "L", "P"], point: ["O", "P", "Q", "R"], vertical: ["O", "P", "Q"], parallel: ["P", "Q"] }[spec.mode ?? "line"];
   }
@@ -111,9 +121,10 @@ function interiorAngles(pts: Pt[]): number[] {
 export type ClassKey =
   | "equilateral" | "isosceles" | "scalene" | "right" | "acute" | "obtuse"
   | "square" | "rectangle" | "rhombus" | "parallelogram" | "trapezium" | "kite" | "quadrilateral" | "degenerate"
-  | "straight" | "angleAcute" | "angleRight" | "angleObtuse" | "factLine" | "factPoint" | "factVertical" | "factParallel";
+  | "straight" | "angleAcute" | "angleRight" | "angleObtuse" | "factLine" | "factPoint" | "factVertical" | "factParallel"
+  | "factReflect";
 
-export type Measured = { lines: string[]; classes: ClassKey[] };
+export type Measured = { lines: string[]; classes: ClassKey[]; sym?: { lines: number; order: number } };
 
 const EPS = 1e-6;
 const eq = (a: number, b: number) => Math.abs(a - b) < EPS * Math.max(1, Math.abs(a), Math.abs(b)) * 1000;
@@ -206,6 +217,20 @@ export function measure(spec: GeometrySpec): Measured {
       if (!s) return { lines: [], classes: ["degenerate"] };
       const fact: ClassKey = { line: "factLine", point: "factPoint", vertical: "factVertical", parallel: "factParallel" }[spec.mode ?? "line"] as ClassKey;
       return { lines: s.lines, classes: [fact] };
+    }
+    case "symmetry": {
+      if (spec.sym === "lines") {
+        const a = symmetryOf(p);
+        return { lines: [], classes: [], sym: { lines: a.axes.length, order: a.order } };
+      }
+      const [M, N, ...poly] = p;
+      if (dist(M, N) < 1e-9) return { lines: [], classes: ["degenerate"] };
+      if (spec.sym === "practice") return { lines: [], classes: ["factReflect"] };
+      const names = pointNames(spec).slice(2);
+      const pairs = poly.map((q, i) => `${names[i]}(${fmt(q[0])}, ${fmt(q[1])}) → ${names[i]}′(${fmt(reflectPt(q, M, N)[0])}, ${fmt(reflectPt(q, M, N)[1])})`);
+      const lines: string[] = [];
+      for (let i = 0; i < pairs.length; i += 2) lines.push(pairs.slice(i, i + 2).join("     "));
+      return { lines, classes: ["factReflect"] };
     }
     case "protractor": {
       const [O, A, B] = p;
@@ -318,6 +343,54 @@ function lineAcrossPlane(p: Pt, q: Pt): [Pt, Pt] {
     .filter(([x, y]) => x >= -1e-6 && x <= PLANE.w + 1e-6 && y >= -1e-6 && y <= PLANE.h + 1e-6);
   inside.sort((a, b) => dot(sub(a, p), d) - dot(sub(b, p), d));
   return [inside[0] ?? p, inside[inside.length - 1] ?? q];
+}
+
+// ---------- Symmetry ----------
+
+/** Reflection of q in the line through m and n. */
+export function reflectPt(q: Pt, m: Pt, n: Pt): Pt {
+  const { foot } = footOnLine(q, m, n);
+  return sub(mul(foot, 2), q);
+}
+
+const centreOf = (pts: Pt[]): Pt => mul(pts.reduce((a, q) => add(a, q), [0, 0] as Pt), 1 / pts.length);
+
+const rotate = (q: Pt, c: Pt, deg: number): Pt => {
+  const r = (deg * Math.PI) / 180;
+  const d = sub(q, c);
+  return add(c, [d[0] * Math.cos(r) - d[1] * Math.sin(r), d[0] * Math.sin(r) + d[1] * Math.cos(r)]);
+};
+
+/** Does the point set `img` equal `pts` (as a set)? */
+const sameSet = (img: Pt[], pts: Pt[]) => img.every((q) => pts.some((r) => dist(q, r) < 1e-6));
+
+/**
+ * Lines of symmetry and order of rotational symmetry of a polygon. Every mirror line of a polygon
+ * passes through its centre and through a vertex or an edge midpoint, so those are the only candidates.
+ */
+export function symmetryOf(pts: Pt[]): { centre: Pt; axes: Pt[]; order: number } {
+  const n = pts.length;
+  const centre = centreOf(pts);
+  if (n < 3 || Math.abs(polyArea2(pts)) < 1e-9) return { centre, axes: [], order: 1 };
+  const candidates = [...pts, ...pts.map((q, i) => mul(add(q, pts[(i + 1) % n]), 0.5))]
+    .map((q) => sub(q, centre))
+    .filter((d) => len(d) > 1e-9);
+  const axes: Pt[] = [];
+  for (const d of candidates) {
+    const other = add(centre, d);
+    if (!sameSet(pts.map((q) => reflectPt(q, centre, other)), pts)) continue;
+    // Same line as one already found? (directions equal up to sign)
+    if (axes.some((a) => Math.abs(cross(unit(a), unit(d))) < 1e-9)) continue;
+    axes.push(d);
+  }
+  let order = 1;
+  for (let k = n; k >= 2; k--) {
+    if (sameSet(pts.map((q) => rotate(q, centre, 360 / k)), pts)) {
+      order = k;
+      break;
+    }
+  }
+  return { centre, axes, order };
 }
 
 // ---------- Drawing ----------
@@ -436,11 +509,13 @@ export function pythagorasSquares([C, A, B]: Pt[]): Pt[][] {
 }
 
 /** True if every point (and, for Pythagoras, every square corner) lies on the plane. */
-export function fitsPlane(shape: GeoShape, pts: Pt[]): boolean {
+export function fitsPlane(spec: GeometrySpec): boolean {
+  const { shape, pts } = spec;
   // The protractor needs room for a full half-disc on either side of O.
   const all =
     shape === "pythagoras" ? pythagorasSquares(pts).flat()
     : shape === "protractor" ? [...pts, add(pts[0], [ARM, ARM]), sub(pts[0], [ARM, ARM])]
+    : shape === "symmetry" && spec.sym !== "lines" ? [...pts, ...pts.slice(2).map((q) => reflectPt(q, pts[0], pts[1])), ...(spec.guess ?? [])]
     : pts;
   return all.every(([x, y]) => x >= -1e-9 && y >= -1e-9 && x <= PLANE.w + 1e-9 && y <= PLANE.h + 1e-9);
 }
@@ -542,6 +617,72 @@ function drawShape(spec: GeometrySpec): string {
       }
       p.forEach((q) => out.push(dotAt(q)));
       out.push(angleNames(spec, names));
+      break;
+    }
+    case "symmetry": {
+      const names = pointNames(spec);
+      const primeLabel = (q: Pt, name: string, away: Pt, color: string) => {
+        const [x, y] = toPx(q);
+        const [ax, ay] = toPx(away);
+        const l = Math.hypot(x - ax, y - ay) || 1;
+        return label(x + ((x - ax) / l) * 16, y + ((y - ay) / l) * 16, name, { size: 15, bold: true, italic: true, color });
+      };
+      if (spec.sym === "lines") {
+        const { centre, axes, order } = symmetryOf(p);
+        for (const d of axes) out.push(seg(...lineAcrossPlane(centre, add(centre, d)), ORANGE, 'stroke-dasharray="10 6"', 2.5));
+        out.push(poly(p, blue.fill, blue.stroke, 0.45));
+        if (order > 1) {
+          const [cx, cy] = toPx(centre);
+          out.push(`<circle cx="${r1(cx)}" cy="${r1(cy)}" r="6" fill="${PURPLE}" stroke="#ffffff" stroke-width="2"/>`);
+        }
+        p.forEach((q) => out.push(dotAt(q)));
+        out.push(p.map((q, i) => primeLabel(q, names[i], centreOf(p), INK)).join(""));
+        break;
+      }
+      const [M, N, ...shape] = p;
+      const mirror = lineAcrossPlane(M, N);
+      const images = shape.map((q) => reflectPt(q, M, N));
+      const showImage = spec.sym === "reflect" || spec.reveal;
+      // Mirror line.
+      out.push(seg(...mirror, PURPLE, 'stroke-dasharray="12 6"', 3));
+      if (showImage) {
+        // Connectors: each point and its image are equally far from the mirror, at right angles to it.
+        shape.forEach((q, i) => {
+          const im = images[i];
+          if (dist(q, im) < 1e-9) return;
+          const { foot } = footOnLine(q, M, N);
+          out.push(seg(q, im, "#adb5bd", 'stroke-dasharray="4 4"', 1.5));
+          out.push(rightMark(foot, q, add(foot, sub(N, M)), "#adb5bd"));
+          // Equal-length ticks on both halves.
+          for (const half of [q, im]) {
+            const mid = mul(add(half, foot), 0.5);
+            const [mx, my] = toPx(mid);
+            const dir = unit(sub(im, q));
+            const nrm: Pt = [-dir[1], dir[0]];
+            out.push(`<line x1="${r1(mx - nrm[0] * 5)}" y1="${r1(my + nrm[1] * 5)}" x2="${r1(mx + nrm[0] * 5)}" y2="${r1(my - nrm[1] * 5)}" stroke="#868e96" stroke-width="1.5"/>`);
+          }
+        });
+        out.push(poly(images, "#ffd8a8", ORANGE, 0.55));
+      }
+      out.push(poly(shape, blue.fill, blue.stroke, 0.55));
+      shape.forEach((q) => out.push(dotAt(q)));
+      out.push(shape.map((q, i) => primeLabel(q, names[i + 2], centreOf(shape), INK)).join(""));
+      if (showImage) {
+        images.forEach((q) => out.push(dotAt(q, ORANGE)));
+        out.push(images.map((q, i) => primeLabel(q, `${names[i + 2]}′`, centreOf(images), ORANGE)).join(""));
+      }
+      if (spec.sym === "practice" && spec.guess) {
+        // The student's image points.
+        spec.guess.forEach((g, i) => {
+          const [gx, gy] = toPx(g);
+          out.push(`<circle cx="${r1(gx)}" cy="${r1(gy)}" r="6" fill="#ffffff" stroke="${ORANGE}" stroke-width="2.5"/>`);
+          // With the answer shown, a correct guess sits on its image, which is already labelled.
+          if (!(showImage && images[i] && dist(g, images[i]) < 0.05))
+            out.push(label(gx + 14, gy - 14, `${names[i + 2]}′`, { size: 15, bold: true, italic: true, color: ORANGE }));
+        });
+        if (spec.guess.length > 2) out.push(`<polygon points="${spec.guess.map((q) => toPx(q).map(r1).join(",")).join(" ")}" fill="none" stroke="${ORANGE}" stroke-width="1.5" stroke-dasharray="5 4"/>`);
+      }
+      out.push(dotAt(M, PURPLE), dotAt(N, PURPLE));
       break;
     }
     case "protractor": {
@@ -652,6 +793,15 @@ export const GEO_PRESETS: { key: string; spec: GeometrySpec }[] = [
   { key: "anglesVertical", spec: { type: "geometry", shape: "angles", mode: "vertical", pts: [[8, 6], [12, 8], [11, 2]], ...base } },
   { key: "anglesParallel", spec: { type: "geometry", shape: "angles", mode: "parallel", pts: [[7, 9], [10, 3]], ...base } },
   { key: "protractorAcute", spec: { type: "geometry", shape: "protractor", pts: [[8, 5.5], armAt([8, 5.5], 0), armAt([8, 5.5], 57)], ...base } },
+  { key: "symReflectV", spec: { type: "geometry", shape: "symmetry", sym: "reflect", pts: [[8, 1], [8, 11], [3, 2], [3, 9], [6, 8], [3, 6]], ...base } },
+  { key: "symReflectH", spec: { type: "geometry", shape: "symmetry", sym: "reflect", pts: [[1, 6], [15, 6], [4, 7], [9, 8], [6, 11]], ...base } },
+  { key: "symReflectD", spec: { type: "geometry", shape: "symmetry", sym: "reflect", pts: [[1, 1], [11, 11], [2, 5], [3, 9], [5, 7]], ...base } },
+  { key: "symRect", spec: { type: "geometry", shape: "symmetry", sym: "lines", pts: [[3, 3], [13, 3], [13, 9], [3, 9]], ...base } },
+  { key: "symSquare", spec: { type: "geometry", shape: "symmetry", sym: "lines", pts: [[5, 2], [11, 2], [11, 8], [5, 8]], ...base } },
+  { key: "symIsosceles", spec: { type: "geometry", shape: "symmetry", sym: "lines", pts: [[4, 2], [12, 2], [8, 10]], ...base } },
+  { key: "symKite", spec: { type: "geometry", shape: "symmetry", sym: "lines", pts: [[8, 1], [11, 6], [8, 9], [5, 6]], ...base } },
+  { key: "symParallelogram", spec: { type: "geometry", shape: "symmetry", sym: "lines", pts: [[2, 3], [10, 3], [13, 8], [5, 8]], ...base } },
+  { key: "symPractice", spec: { type: "geometry", shape: "symmetry", sym: "practice", pts: [[8, 1], [8, 11], [3, 3], [6, 4], [4, 8]], guess: [[8, 3], [8, 4], [8, 8]], ...base } },
   { key: "protractorObtuse", spec: { type: "geometry", shape: "protractor", pts: [[8, 5.5], armAt([8, 5.5], 20), armAt([8, 5.5], 145)], ...base } },
 ];
 
