@@ -142,7 +142,7 @@ function serveStatic(res: ServerResponse, path: string) {
 
 createServer(async (req, res) => {
   if (!authorized(req)) {
-    res.writeHead(401, { "WWW-Authenticate": 'Basic realm="RepeTime Free"' }).end();
+    res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Zeno"' }).end();
     return;
   }
   const path = new URL(req.url ?? "/", "http://localhost").pathname;
@@ -154,5 +154,5 @@ createServer(async (req, res) => {
     if (!res.headersSent) send(res, 400, { error: (err as Error).message });
   }
 }).listen(PORT, () => {
-  console.log(`RepeTime Free listening on http://localhost:${PORT} (data: ${DATA_DIR})`);
+  console.log(`Zeno listening on http://localhost:${PORT} (data: ${DATA_DIR})`);
 });

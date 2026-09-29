@@ -10,8 +10,8 @@ export const LANGS: { code: Lang; label: string; excalidraw: string }[] = [
 ];
 
 const en = {
-  appName: "RepeTime Free",
-  tagline: "A free math whiteboard for learning on your own",
+  appName: "Zeno",
+  tagline: "Math from zero to advanced — every small step counts",
   myBoards: "My boards",
   newBoard: "New board",
   untitled: "Untitled board",
@@ -165,8 +165,8 @@ const en = {
 type Dict = typeof en;
 
 const ru: Dict = {
-  appName: "RepeTime Free",
-  tagline: "Бесплатная математическая доска для самостоятельного обучения",
+  appName: "Zeno",
+  tagline: "Математика с нуля до высшей — каждый маленький шаг важен",
   myBoards: "Мои доски",
   newBoard: "Новая доска",
   untitled: "Доска без названия",
@@ -318,8 +318,8 @@ const ru: Dict = {
 };
 
 const ka: Dict = {
-  appName: "RepeTime Free",
-  tagline: "უფასო მათემატიკური დაფა დამოუკიდებელი სწავლისთვის",
+  appName: "Zeno",
+  tagline: "მათემატიკა ნულიდან მაღალ დონემდე — ყოველი პატარა ნაბიჯი მნიშვნელოვანია",
   myBoards: "ჩემი დაფები",
   newBoard: "ახალი დაფა",
   untitled: "უსათაურო დაფა",

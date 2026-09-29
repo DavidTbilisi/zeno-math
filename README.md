@@ -1,6 +1,10 @@
-# RepeTime Free
+# Zeno
 
-A free, open-source, self-hostable **math whiteboard for learning on your own**.
+*Math from zero to advanced — every small step counts.*
+
+Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
+Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
+counting with bar models and fractions all the way to matrices and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG

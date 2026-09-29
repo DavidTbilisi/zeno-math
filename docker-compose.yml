@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    image: repetime-free
+    image: zeno-math
     restart: unless-stopped
     ports:
       - "8787:8787"

@@ -1,8 +1,8 @@
 {
-  "name": "repetime-free",
+  "name": "zeno-math",
   "private": true,
   "version": "0.1.0",
-  "description": "Free, self-hostable math whiteboard for self-learners",
+  "description": "Zeno: a free, self-hostable math whiteboard, from zero to advanced, one small step at a time",
   "license": "MIT",
   "type": "module",
   "scripts": {
