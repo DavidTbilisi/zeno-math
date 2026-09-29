@@ -2,6 +2,7 @@
 // bar models, fraction bars/circles, percent grids/bars and number bonds.
 import type { RenderedSvg } from "./latex";
 import { renderPlaceValue, type PlaceValueSpec } from "./placeValue";
+import { renderMultiply, type MultiplySpec } from "./multiply";
 
 export const MODEL_COLORS = [
   { stroke: "#1971c2", fill: "#a5d8ff" },
@@ -18,7 +19,7 @@ export type FractionRow = { n: number; d: number };
 export type FractionSpec = { type: "fraction"; rows: FractionRow[]; shape: "bar" | "circle"; unitLabels: boolean };
 export type PercentSpec = { type: "percent"; percent: number; of: number | null; style: "grid" | "bar" };
 export type BondSpec = { type: "bond"; whole: string; parts: string[] };
-export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec;
+export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | MultiplySpec;
 export type ModelType = ModelSpec["type"];
 
 const INK = "#1e1e1e";
@@ -381,6 +382,8 @@ export function renderModel(spec: ModelSpec): RenderedSvg {
       return renderBond(spec);
     case "placeValue":
       return renderPlaceValue(spec);
+    case "multiply":
+      return renderMultiply(spec);
   }
 }
 
@@ -392,6 +395,7 @@ export const DEFAULT_MODELS: { [K in ModelType]: Extract<ModelSpec, { type: K }>
   percent: { type: "percent", percent: 25, of: 80, style: "bar" },
   bond: { type: "bond", whole: "10", parts: ["7", "?"] },
   placeValue: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true },
+  multiply: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 },
 };
 
 export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec, { type: K }> }[] } = {
@@ -441,6 +445,14 @@ export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec
     { key: "percentOf", spec: DEFAULT_MODELS.percent },
     { key: "hundredGrid", spec: { type: "percent", percent: 35, of: null, style: "grid" } },
     { key: "discount", spec: { type: "percent", percent: 20, of: 150, style: "bar" } },
+  ],
+  multiply: [
+    { key: "mulGroups", spec: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 } },
+    { key: "mulArray", spec: { type: "multiply", style: "array", a: 4, b: 6, step: 999 } },
+    { key: "mulJumps", spec: { type: "multiply", style: "numberline", a: 5, b: 3, step: 999 } },
+    { key: "mulDistributive", spec: { type: "multiply", style: "area", a: 7, b: 12, step: 999 } },
+    { key: "mulArea", spec: { type: "multiply", style: "area", a: 23, b: 14, step: 999 } },
+    { key: "mulBig", spec: { type: "multiply", style: "area", a: 123, b: 45, step: 999 } },
   ],
   placeValue: [
     { key: "pvEmpty", spec: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true } },

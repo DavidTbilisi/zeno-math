@@ -20,6 +20,9 @@ UI in English, Russian and Georgian.
   - *Fractions*: bars or circles, stacked fraction walls (equivalence, comparison), improper fractions
   - *Percent*: hundred grid, or percent bar in tenths with a double number line ("25% of 80")
   - *Number bonds*: a whole and 2–4 parts
+  - *Multiplication*, from counting to algebra, each with a step-by-step slider:
+    equal groups (3 × 4 = 4 + 4 + 4, with skip counts), arrays (rows with running totals; b × a = a × b),
+    number-line jumps, and the place-value area model (23 × 14 = 200 + 80 + 30 + 12 = 322)
 - **🧊 3D (three.js)** — rotate with the mouse, then insert a snapshot (stays editable, camera angle is saved)
   - *Solids*: cuboid, prism (regular 3–8-gon base), square pyramid, cylinder, cone, sphere —
     dimension labels, see-through mode, volume & surface-area formulas
@@ -82,6 +85,7 @@ src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editin
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
+src/math/multiply.ts      multiplication models (groups, array, number line, area) → SVG
 src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
 src/components/PlaceValueMat.tsx  the drag & drop place-value mat
 src/math/fraction.ts      exact rational arithmetic

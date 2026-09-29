@@ -16,10 +16,11 @@ import {
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { PlaceValueMat } from "./PlaceValueMat";
+import { MULTIPLY_LIMITS, MULTIPLY_STYLES, stepCount, type MultiplySpec } from "../math/multiply";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue"];
+const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
@@ -42,7 +43,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue };
+  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication };
 
   return (
     <Modal
@@ -78,6 +79,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
         </div>
       </div>
 
+      {spec.type === "multiply" && <MultiplyEditor spec={spec} onChange={(s) => update("multiply", s)} />}
       {spec.type === "placeValue" && <PlaceValueMat spec={spec} onChange={(s) => update("placeValue", s)} />}
       {spec.type === "bar" && <BarEditor spec={spec} onChange={(s) => update("bar", s)} />}
       {spec.type === "fraction" && <FractionEditor spec={spec} onChange={(s) => update("fraction", s)} />}
@@ -211,6 +213,53 @@ function FractionEditor({ spec, onChange }: { spec: FractionSpec; onChange: (s: 
           <input type="checkbox" checked={spec.unitLabels} onChange={(e) => onChange({ ...spec, unitLabels: e.target.checked })} />
           <span>{t.unitLabels}</span>
         </label>
+      </div>
+    </>
+  );
+}
+
+function MultiplyEditor({ spec, onChange }: { spec: MultiplySpec; onChange: (s: MultiplySpec) => void }) {
+  const { t } = useI18n();
+  const lim = MULTIPLY_LIMITS[spec.style];
+  const n = stepCount(spec);
+  const shown = Math.min(spec.step, n);
+  const setStyle = (style: MultiplySpec["style"]) => {
+    const l = MULTIPLY_LIMITS[style];
+    onChange({ ...spec, style, a: Math.min(spec.a, l.a), b: Math.min(spec.b, l.b), step: 999 });
+  };
+  const setNum = (k: "a" | "b", v: string) => onChange({ ...spec, [k]: clampInt(v, 1, lim[k]), step: 999 });
+
+  return (
+    <>
+      <div className="segmented wrap" role="radiogroup">
+        {MULTIPLY_STYLES.map((s) => (
+          <button key={s} role="radio" aria-checked={spec.style === s} className={spec.style === s ? "active" : ""} onClick={() => setStyle(s)}>
+            {t.multStyles[s]}
+          </button>
+        ))}
+      </div>
+      <div className="range-grid mult-inputs">
+        <input type="number" min={1} max={lim.a} value={spec.a} aria-label="a" onChange={(e) => setNum("a", e.target.value)} />
+        <span className="mult-sign">×</span>
+        <input type="number" min={1} max={lim.b} value={spec.b} aria-label="b" onChange={(e) => setNum("b", e.target.value)} />
+        <span className="mult-sign">= {spec.a * spec.b}</span>
+      </div>
+      <small className="hint">{t.multHint[spec.style]}</small>
+      <div className="field">
+        <span>
+          {t.stepByStep}: {shown} / {n}
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={n}
+          step={1}
+          value={shown}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({ ...spec, step: v >= n ? 999 : v });
+          }}
+        />
       </div>
     </>
   );

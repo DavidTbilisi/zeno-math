@@ -283,3 +283,8 @@ input.invalid { border-color: var(--danger); }
 .pv-message { color: var(--danger); font-size: 14px; font-weight: 600; }
 .pv-ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: 0.85; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3)); }
 @keyframes pv-pop { from { transform: scale(0.6); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+
+/* Multiplication editor */
+.mult-inputs { align-items: center; gap: 10px; }
+.mult-inputs input { width: 90px; font-size: 18px; text-align: center; }
+.mult-sign { font-size: 22px; font-weight: 700; }
