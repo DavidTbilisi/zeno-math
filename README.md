@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to real analysis, statistics, matrices and 3D geometry.
+counting with bar models and fractions all the way to real analysis, integration techniques, differential equations, statistics, matrices and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -78,6 +78,17 @@ UI in English, Russian and Georgian.
     theorem): long division when improper, repeated factors, one irreducible quadratic (ln + arctan), exact fractions
   - *Trig substitution*: x = a sin θ, a tan θ, a sec θ for six standard forms, with the reference triangle
     that brings the answer back to x
+- **y′ Differential equations** — solved step by step and checked against the equation
+  - *Slope field*: dy/dx = f(x, y) as a field of dashes, with RK4 solution curves through your starting points
+  - *Euler's method*: the step table yₙ₊₁ = yₙ + h·f(xₙ, yₙ), the Euler polygon against an accurate solution,
+    and the error (halve h, halve the error)
+  - *First order*: growth/decay (doubling time, half-life), Newton's cooling (equilibrium), logistic growth
+    (partial fractions, fastest growth at K/2) and y′ + py = b·eᶜᵗ with an integrating factor — resonant case included
+  - *Second order*: a·y″ + b·y′ + c·y = F·cos(ωt) — characteristic equation, the three root cases, C₁ and C₂
+    from the initial values, over/critical/under-damped with the decay envelope, forcing and resonance (amplitude ∝ t)
+  - *Phase plane*: x′ = f(x, y), y′ = g(x, y) with direction arrows and trajectories; for linear systems the matrix,
+    trace, determinant, eigenvalues, eigenvector lines and the type (saddle, node, spiral, centre); predator–prey
+    and the damped pendulum as nonlinear examples
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -136,6 +147,7 @@ src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editin
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
+src/math/ode.ts           differential equations: slope fields, Euler, first/second order, phase planes
 src/math/integration.ts   integration techniques: substitution, by parts, partial fractions, trig substitution
 src/math/statistics.ts    statistics & probability pictures: data, scatter, chance, trees, distributions, CLT
 src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX header + captions)
