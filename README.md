@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to number theory, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to combinatorics, number theory, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -55,6 +55,15 @@ UI in English, Russian and Georgian.
     with every row operation shown — unique, parametric (x = 3 − 2t) or no solution (∅)
   - *Transformation*: a 2×2 matrix acting on the plane — bent grid, unit square → parallelogram
     with area |det|, basis vectors on the columns, an "F" that flips when det < 0, and a slider from I to M
+- **ⁿCₖ Combinatorics** — exact counts (BigInt), with every case listed when small
+  - *Counting*: permutations, combinations, sequences and multisets on an "order matters? / repetition?" grid,
+    all outcomes listed (permutations grouped by combination, so P = C · r!), and anagrams of words (MISSISSIPPI)
+  - *Pascal's triangle*: a row and the binomial expansion of (a + b)ⁿ, the addition rule, the hockey stick,
+    odd entries forming Sierpiński's triangle, and the shallow diagonals giving Fibonacci numbers
+  - *Stars and bars*: k identical balls in n boxes (empty allowed or not) with the diagrams and tuples
+  - *Inclusion–exclusion*: two- or three-set Venn diagrams from set sizes, or "divisible by 2, 3 or 5 up to N"
+  - *Special numbers*: Catalan numbers with all Dyck paths and bracket strings, derangements (→ 1/e), Stirling
+    numbers of the second kind with Bell numbers and set partitions, and integer partitions as Ferrers diagrams
 - **ℤ Number theory** — exact, with every step shown
   - *Primes*: the sieve of Eratosthenes up to 400, prime by prime with a slider; crossed-out numbers coloured by
     their smallest prime factor, and why primes up to √n suffice
@@ -209,6 +218,7 @@ src/math/fraction.ts      exact rational arithmetic
 src/math/algo.ts          algorithms: specs, presets, words (renderers in algoArrays.ts and algoGraphs.ts)
 src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, complexity + cell/table helpers
 src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), BST/AVL, heaps
+src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures

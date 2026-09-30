@@ -37,6 +37,8 @@ import { AlgoDialog } from "../components/AlgoDialog";
 import type { AlgoSpec } from "../math/algo";
 import { NtDialog } from "../components/NtDialog";
 import type { NtSpec } from "../math/numtheory";
+import { CombDialog } from "../components/CombDialog";
+import type { CombSpec } from "../math/combinatorics";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
 type MathData =
@@ -52,7 +54,8 @@ type MathData =
   | { kind: "ode"; data: OdeSpec; w: number; h: number }
   | { kind: "trig"; data: TrigSpec; w: number; h: number }
   | { kind: "algo"; data: AlgoSpec; w: number; h: number }
-  | { kind: "nt"; data: NtSpec; w: number; h: number };
+  | { kind: "nt"; data: NtSpec; w: number; h: number }
+  | { kind: "comb"; data: CombSpec; w: number; h: number };
 
 type Dialog =
   | { kind: "formula"; editing?: ExcalidrawImageElement }
@@ -67,7 +70,8 @@ type Dialog =
   | { kind: "ode"; editing?: ExcalidrawImageElement }
   | { kind: "trig"; editing?: ExcalidrawImageElement }
   | { kind: "algo"; editing?: ExcalidrawImageElement }
-  | { kind: "nt"; editing?: ExcalidrawImageElement };
+  | { kind: "nt"; editing?: ExcalidrawImageElement }
+  | { kind: "comb"; editing?: ExcalidrawImageElement };
 
 type SaveState = "saved" | "saving" | "error";
 
@@ -84,7 +88,7 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
 const ThreeDialog = lazy(() => import("../components/ThreeDialog"));
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
-  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt"].includes(el.customData?.kind)
+  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt", "comb"].includes(el.customData?.kind)
     ? (el.customData as MathData)
     : undefined;
 
@@ -288,13 +292,14 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt }[mathOf(selectedMath)!.kind]}</span>
+            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt, comb: t.editComb }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
         <button className="btn primary" onClick={() => setDialog({ kind: "model", start: "placeValue" })} title={t.counting}>🧮 <span className="btn-label">{t.counting}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "model" })} title={t.models}>▦ <span className="btn-label">{t.models}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "geometry" })} title={t.geometry}>📐 <span className="btn-label">{t.geometry}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "nt" })} title={t.nt}>ℤ <span className="btn-label">{t.nt}</span></button>
+        <button className="btn primary" onClick={() => setDialog({ kind: "comb" })} title={t.comb}>ⁿCₖ <span className="btn-label">{t.comb}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "trig" })} title={t.trig}>θ <span className="btn-label">{t.trig}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "formula" })} title={t.formula}>∑ <span className="btn-label">{t.formula}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "graph" })} title={t.graph}>📈 <span className="btn-label">{t.graph}</span></button>
@@ -422,6 +427,16 @@ export function BoardPage({ id }: { id: string }) {
           onClose={() => setDialog(null)}
           onSubmit={(data, rendered) => {
             placeImage(svgImage(rendered), { kind: "ode", data, w: rendered.width, h: rendered.height }, dialog.editing);
+            setDialog(null);
+          }}
+        />
+      )}
+      {dialog?.kind === "comb" && (
+        <CombDialog
+          initial={dialog.editing ? (mathOf(dialog.editing)!.data as CombSpec) : undefined}
+          onClose={() => setDialog(null)}
+          onSubmit={(data, rendered) => {
+            placeImage(svgImage(rendered), { kind: "comb", data, w: rendered.width, h: rendered.height }, dialog.editing);
             setDialog(null);
           }}
         />
