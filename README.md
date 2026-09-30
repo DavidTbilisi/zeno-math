@@ -81,6 +81,26 @@ UI in English, Russian and Georgian.
     largest clique as a lower bound
   - *Walks*: the adjacency matrix and Aᵏ, the walks listed, and triangles from trace(A³) / 6
   - *Spanning trees*: Kirchhoff's matrix-tree theorem on the Laplacian, Cayley's nⁿ⁻², and every tree drawn when few
+- **∧ Logic** — propositional logic and the reasoning puzzles of aptitude tests; type formulas with ¬ ∧ ∨ → ↔ ⊕
+  (or ~ & | -> <-> ^, or words), with a symbol palette
+  - *Truth tables*: built column by column from the subformulas; tautology, contradiction or satisfiable
+  - *Equivalence*: two formulas side by side (De Morgan, contrapositive vs converse, distributivity), the rows
+    where they differ, and one-way implication
+  - *Normal forms*: a Karnaugh map (1–4 variables) with the loops of a minimal sum of products, wrap-around groups
+    and don't-cares (`m(1,3,7) + d(0,2)`), the canonical Σm / ΠM forms and the minimal product of sums
+  - *Circuits*: the formula as AND / OR / NOT / XOR / NAND / NOR gates, with the wires coloured by the input values
+  - *Arguments*: validity by truth table with the counterexample row, and the rule named — modus ponens / tollens,
+    hypothetical and disjunctive syllogism, transposition, dilemma — or the fallacy (affirming the consequent,
+    denying the antecedent)
+  - *Constraint boards*: grouping (bins with capacities) and ordering (slots) puzzles in a compact notation —
+    `A@Chveli`, `C=G`, `A≠B`, `X<Y`, `[X·Y]`, `X∉m`, `F@Kala → E@Chveli` — with every conditional written
+    together with its contrapositive, what is forced and ruled out before any question, an "if …" assumption worked
+    on a copy of the board, and a sweep of the answer options showing which constraint kills each one; options
+    that are statements (`C@Kala`) are marked must be true / must be false / could be / fixes the whole board
+  - *Truth-tellers & liars*: Smullyan's islands solved by checking X ↔ (what X says) in every row
+  - *Sets*: Venn diagrams (1–3 sets) of ∪ ∩ ∖ Δ ′ expressions, two expressions compared, and x ∈ … as logic
+  - The examples include the 2025 NAEC master's exam in logical reasoning (variant I): the grouping and
+    scheduling scenarios (items 12–17), the statues (8), the truth-teller (11) and the deduction items
 - **ⁿCₖ Combinatorics** — exact counts (BigInt), with every case listed when small
   - *Counting*: permutations, combinations, sequences and multisets on an "order matters? / repetition?" grid,
     all outcomes listed (permutations grouped by combination, so P = C · r!), and anagrams of words (MISSISSIPPI)
@@ -188,7 +208,7 @@ UI in English, Russian and Georgian.
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models), **Geometry** (geometry,
   trigonometry, 3D), **Algebra** (formulas, graphs, matrices, analysis, integrals, ODEs) and **Discrete**
-  (number theory, combinatorics, graph theory, algorithms, statistics)
+  (number theory, combinatorics, graph theory, logic, algorithms, statistics)
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
 - Boards autosave to SQLite on your own server; works fully offline (no CDNs)
 
@@ -315,6 +335,8 @@ src/math/algo.ts          algorithms: specs, presets, words (renderers in algoAr
 src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, complexity + cell/table helpers
 src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), BST/AVL, heaps
 src/math/graphtheory.ts   graph theory: properties, Euler, Hamilton, colouring, walks, spanning trees
+src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh maps / minimal forms, circuits, arguments, Venn
+src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and truth-teller / liar puzzles
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
