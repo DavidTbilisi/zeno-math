@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to combinatorics, number theory, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -55,6 +55,16 @@ UI in English, Russian and Georgian.
     with every row operation shown — unique, parametric (x = 3 − 2t) or no solution (∅)
   - *Transformation*: a 2×2 matrix acting on the plane — bent grid, unit square → parallelogram
     with area |det|, basis vectors on the columns, an "F" that flips when det < 0, and a slider from I to M
+- **⬡ Graph theory** — type any (multi)graph as an edge list, or start from K₅, K₃,₃, Petersen, the cube, …;
+  force-directed, circular or two-ring layouts, and the same graph carries over between topics
+  - *Properties*: degrees and the handshake lemma, components, bipartite (2-colouring, or an odd cycle as proof),
+    trees, regular, simple and complete graphs
+  - *Euler trails*: the parity test, Königsberg's bridges, and the trail found by Hierholzer's algorithm, numbered
+  - *Hamiltonian cycles*: backtracking search for a cycle or path (dodecahedron, Petersen has none), Dirac's theorem
+  - *Colouring*: the exact chromatic number vs Welsh–Powell greedy (with a crown graph where greedy fails), and the
+    largest clique as a lower bound
+  - *Walks*: the adjacency matrix and Aᵏ, the walks listed, and triangles from trace(A³) / 6
+  - *Spanning trees*: Kirchhoff's matrix-tree theorem on the Laplacian, Cayley's nⁿ⁻², and every tree drawn when few
 - **ⁿCₖ Combinatorics** — exact counts (BigInt), with every case listed when small
   - *Counting*: permutations, combinations, sequences and multisets on an "order matters? / repetition?" grid,
     all outcomes listed (permutations grouped by combination, so P = C · r!), and anagrams of words (MISSISSIPPI)
@@ -218,6 +228,7 @@ src/math/fraction.ts      exact rational arithmetic
 src/math/algo.ts          algorithms: specs, presets, words (renderers in algoArrays.ts and algoGraphs.ts)
 src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, complexity + cell/table helpers
 src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), BST/AVL, heaps
+src/math/graphtheory.ts   graph theory: properties, Euler, Hamilton, colouring, walks, spanning trees
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations

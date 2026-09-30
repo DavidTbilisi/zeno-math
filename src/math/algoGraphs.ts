@@ -8,15 +8,16 @@ import type { RenderedSvg } from "./latex";
 
 // ---------- graphs ----------
 
-type Edge = { u: string; v: string; w: number; id: number };
+export type Edge = { u: string; v: string; w: number; id: number };
 type Adj = Map<string, { to: string; w: number; id: number }[]>;
 
 const byName = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true });
 
-function parseGraph(spec: GraphSpec, words: AlgoWords) {
-  const toks = spec.edges.split(/[,;\n]+/).map((t) => t.trim()).filter(Boolean);
+/** Parses "A-B 4, B-C" into nodes (in order of appearance) and edges; weights are optional. */
+export function parseEdges(text: string, words: { noEdges: string; tooMany: string; badEdge: string }, maxNodes = 12, maxEdges = 30) {
+  const toks = text.split(/[,;\n]+/).map((t) => t.trim()).filter(Boolean);
   if (!toks.length) throw new Error(words.noEdges);
-  if (toks.length > 30) throw new Error(fill(words.tooMany, { n: 30 }));
+  if (toks.length > maxEdges) throw new Error(fill(words.tooMany, { n: maxEdges }));
   const nodes: string[] = [];
   const edges: Edge[] = [];
   let weighted = false;
@@ -27,7 +28,12 @@ function parseGraph(spec: GraphSpec, words: AlgoWords) {
     if (m[3] !== undefined) weighted = true;
     edges.push({ u: m[1], v: m[2], w: m[3] === undefined ? 1 : Number(m[3].replace("−", "-")), id: edges.length });
   }
-  if (nodes.length > 12) throw new Error(fill(words.tooMany, { n: 12 }));
+  if (nodes.length > maxNodes) throw new Error(fill(words.tooMany, { n: maxNodes }));
+  return { nodes, edges, weighted };
+}
+
+function parseGraph(spec: GraphSpec, words: AlgoWords) {
+  const { nodes, edges, weighted } = parseEdges(spec.edges, words);
   const adjOf = (directed: boolean): Adj => {
     const adj: Adj = new Map(nodes.map((n) => [n, []]));
     for (const e of edges) {
@@ -59,19 +65,50 @@ function layers(nodes: string[], edges: Edge[]): Map<string, number> | null {
   return seen === nodes.length ? level : null;
 }
 
-type Look = {
+export type Look = {
   hl: Set<number>;
   fills: Map<string, Role>;
   badge: Map<string, string>;
   under: Map<string, string>;
+  /** Free node colours (graph colouring), overriding fills. */
+  colors?: Map<string, { fill: string; stroke: string }>;
+  /** Small labels on edges (e.g. the order of an Euler trail). */
+  edgeLabel?: Map<number, string>;
+  /** Colour of the highlighted edges (default blue). */
+  hlColor?: string;
 };
 
-function drawGraph(nodes: string[], edges: Edge[], directed: boolean, weighted: boolean, look: Look, H: number, layered: boolean): string {
-  const rx = new Map(nodes.map((n) => [n, Math.max(17, n.length * 4.2 + 9)]));
-  const RY = 16;
+export type LayoutOptions = { layered?: boolean; circle?: boolean; shells?: boolean };
+
+export const nodeRx = (name: string) => Math.max(17, name.length * 4.2 + 9);
+
+/** Node positions: layers for a DAG, a circle on request, otherwise a force-directed layout. */
+export function layoutGraph(nodes: string[], edges: Edge[], H: number, opts: LayoutOptions = {}): Map<string, [number, number]> {
+  const rx = new Map(nodes.map((n) => [n, nodeRx(n)]));
   const pos = new Map<string, [number, number]>();
-  const lv = layered ? layers(nodes, edges) : null;
-  if (lv && Math.max(...lv.values()) > 0) {
+  const lv = opts.layered ? layers(nodes, edges) : null;
+  if (opts.shells) {
+    // Two concentric rings, inner vertex k under outer vertex k (Petersen, prisms, cubes).
+    const n = nodes.length;
+    const m = Math.ceil(n / 2);
+    const R = Math.min(H / 2 - 26, W / 2 - 16 - Math.max(...rx.values()));
+    nodes.forEach((name, k) => {
+      const outer = k < m;
+      const j = outer ? k : k - m;
+      const size = outer ? m : n - m;
+      const t = -Math.PI / 2 + (2 * Math.PI * j) / size + (m % 2 ? 0 : Math.PI / m);
+      const r = outer ? R : R * 0.5;
+      pos.set(name, [W / 2 + r * Math.cos(t), H / 2 + r * Math.sin(t)]);
+    });
+  } else if (opts.circle) {
+    const n = nodes.length;
+    const maxRx = Math.max(...rx.values());
+    const R = Math.min(H / 2 - 26, W / 2 - 16 - maxRx);
+    nodes.forEach((name, k) => {
+      const t = -Math.PI / 2 + (2 * Math.PI * k) / n;
+      pos.set(name, [W / 2 + R * Math.cos(t), H / 2 + R * Math.sin(t)]);
+    });
+  } else if (lv && Math.max(...lv.values()) > 0) {
     // Layers left to right; within a layer, order by the mean place of the predecessors (fewer crossings).
     const L = Math.max(...lv.values()) + 1;
     const place = new Map<string, number>();
@@ -137,6 +174,13 @@ function drawGraph(nodes: string[], edges: Edge[], directed: boolean, weighted: 
       pos.set(name, [W / 2 - spanX / 2 + fx * spanX, 26 + fy * (H - 60)]);
     });
   }
+  return pos;
+}
+
+export function drawGraph(nodes: string[], edges: Edge[], directed: boolean, weighted: boolean, look: Look, H: number, opts: LayoutOptions = {}, given?: Map<string, [number, number]>): string {
+  const rx = new Map(nodes.map((n) => [n, nodeRx(n)]));
+  const RY = 16;
+  const pos = given ?? layoutGraph(nodes, edges, H, opts);
   // Distance from an ellipse's centre to its edge in direction (dx, dy).
   const trim = (name: string, dx: number, dy: number) => {
     const a = rx.get(name)! + 2;
@@ -159,11 +203,14 @@ function drawGraph(nodes: string[], edges: Edge[], directed: boolean, weighted: 
     const [x1, y1] = pos.get(e.u)!;
     const [x2, y2] = pos.get(e.v)!;
     const hl = look.hl.has(e.id);
-    const twin = directed && edges.some((f) => f.u === e.v && f.v === e.u);
-    const dx = x2 - x1;
-    const dy = y2 - y1;
+    // Parallel edges (and directed pairs) bend apart symmetrically, measured in one fixed direction.
+    const same = edges.filter((f) => (f.u === e.u && f.v === e.v) || (f.u === e.v && f.v === e.u));
+    const twin = same.length > 1;
+    const flip = byName(e.u, e.v) > 0 ? -1 : 1;
+    const dx = (x2 - x1) * flip;
+    const dy = (y2 - y1) * flip;
     const len = Math.hypot(dx, dy) || 1;
-    const off = twin ? 16 : 0;
+    const off = twin ? (same.indexOf(e) - (same.length - 1) / 2) * 46 : 0;
     const cx = (x1 + x2) / 2 - (dy / len) * off;
     const cy = (y1 + y2) / 2 + (dx / len) * off;
     const t1 = trim(e.u, cx - x1, cy - y1);
@@ -174,12 +221,22 @@ function drawGraph(nodes: string[], edges: Edge[], directed: boolean, weighted: 
     const sy = y1 + ((cy - y1) / l1) * t1;
     const ex = x2 + ((cx - x2) / l2) * t2;
     const ey = y2 + ((cy - y2) / l2) * t2;
-    const stroke = hl ? C.blue : "#adb5bd";
+    const stroke = hl ? look.hlColor ?? C.blue : "#adb5bd";
     const d = twin ? `M${r2(sx)} ${r2(sy)} Q${r2(cx)} ${r2(cy)} ${r2(ex)} ${r2(ey)}` : `M${r2(sx)} ${r2(sy)} L${r2(ex)} ${r2(ey)}`;
     parts.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${hl ? 3.6 : 1.7}"${directed ? ` marker-end="url(#${hl ? "g-ah-hl" : "g-ah"})"` : ""}/>`);
-    if (weighted) {
-      const mx = twin ? (sx + 2 * cx + ex) / 4 : (sx + ex) / 2;
-      const my = twin ? (sy + 2 * cy + ey) / 4 : (sy + ey) / 2;
+    const mx = twin ? (sx + 2 * cx + ex) / 4 : (sx + ex) / 2;
+    const my = twin ? (sy + 2 * cy + ey) / 4 : (sy + ey) / 2;
+    const el = look.edgeLabel?.get(e.id);
+    // Off-centre on straight edges, so labels of crossing diagonals do not collide.
+    const tl = twin ? 0.5 : e.id % 2 ? 0.38 : 0.62;
+    const lx = twin ? mx : sx + (ex - sx) * tl;
+    const ly = twin ? my : sy + (ey - sy) * tl;
+    if (el)
+      labels.push(
+        `<circle cx="${r2(lx)}" cy="${r2(ly)}" r="10" fill="#ffffff" stroke="${look.hlColor ?? C.blue}" stroke-width="1.6"/>`,
+        txt(lx, ly + 4, el, { size: 11, anchor: "middle", bold: true, color: look.hlColor ?? C.blue }),
+      );
+    else if (weighted) {
       labels.push(
         `<text x="${r2(mx)}" y="${r2(my + 4.5)}" ${FONT} font-size="13" font-weight="700" fill="${hl ? C.blue : "#495057"}" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">${nt(e.w)}</text>`,
       );
@@ -188,7 +245,7 @@ function drawGraph(nodes: string[], edges: Edge[], directed: boolean, weighted: 
   parts.push(...labels);
   for (const name of nodes) {
     const [x, y] = pos.get(name)!;
-    const role = ROLES[look.fills.get(name) ?? "plain"];
+    const role = { ...ROLES[look.fills.get(name) ?? "plain"], ...(look.colors?.get(name) ?? {}) };
     const a = rx.get(name)!;
     parts.push(
       `<ellipse cx="${r2(x)}" cy="${r2(y)}" rx="${r2(a)}" ry="${RY}" fill="${role.fill}" stroke="${role.stroke}" stroke-width="2"/>`,
@@ -373,7 +430,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
   caps.push({ text: w.graphInfo[algo], color: "#495057" });
 
   const H = 300;
-  const pic = drawGraph(nodes, edges, directed, weighted, look, H, algo === "topo");
+  const pic = drawGraph(nodes, edges, directed, weighted, look, H, { layered: algo === "topo" });
   const tw = cols.reduce((s, c) => s + c.w, 0);
   const tb = rows.length ? table(Math.max(16, (W - tw) / 2), H + 14, cols, rows) : { svg: "", h: -14 };
   const V = nodes.length;
