@@ -186,6 +186,9 @@ UI in English, Russian and Georgian.
     from log n to n! with running times at 10⁸ operations per second
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
+- The tools sit in four menus on the top bar: **Arithmetic** (counting, models), **Geometry** (geometry,
+  trigonometry, 3D), **Algebra** (formulas, graphs, matrices, analysis, integrals, ODEs) and **Discrete**
+  (number theory, combinatorics, graph theory, algorithms, statistics)
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
 - Boards autosave to SQLite on your own server; works fully offline (no CDNs)
 

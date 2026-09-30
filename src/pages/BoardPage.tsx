@@ -15,6 +15,7 @@ import { LangSelect, useI18n } from "../i18n";
 import { FormulaDialog, type FormulaData } from "../components/FormulaDialog";
 import { GraphDialog } from "../components/GraphDialog";
 import { ModelDialog } from "../components/ModelDialog";
+import { ToolMenu } from "../components/ToolMenu";
 import type { ModelSpec, ModelType } from "../math/models";
 import type { RenderedSvg } from "../math/latex";
 import type { PlotSpec } from "../math/plot";
@@ -299,22 +300,30 @@ export function BoardPage({ id }: { id: string }) {
             ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt, comb: t.editComb, gt: t.editGt }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
-        <button className="btn primary" onClick={() => setDialog({ kind: "model", start: "placeValue" })} title={t.counting}>🧮 <span className="btn-label">{t.counting}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "model" })} title={t.models}>▦ <span className="btn-label">{t.models}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "geometry" })} title={t.geometry}>📐 <span className="btn-label">{t.geometry}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "nt" })} title={t.nt}>ℤ <span className="btn-label">{t.nt}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "comb" })} title={t.comb}>ⁿCₖ <span className="btn-label">{t.comb}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "gt" })} title={t.gt}>⬡ <span className="btn-label">{t.gt}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "trig" })} title={t.trig}>θ <span className="btn-label">{t.trig}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "formula" })} title={t.formula}>∑ <span className="btn-label">{t.formula}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "graph" })} title={t.graph}>📈 <span className="btn-label">{t.graph}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "analysis" })} title={t.analysis}>ε <span className="btn-label">{t.analysis}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "integral" })} title={t.integrals}>∫ <span className="btn-label">{t.integrals}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "ode" })} title={t.odes}>y′ <span className="btn-label">{t.odes}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "statistics" })} title={t.statistics}>📊 <span className="btn-label">{t.statistics}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "matrix" })} title={t.matrices}>[ ] <span className="btn-label">{t.matrices}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "algo" })} title={t.algo}>⇅ <span className="btn-label">{t.algo}</span></button>
-        <button className="btn primary" onClick={() => setDialog({ kind: "3d" })} title={t.threeD}>🧊 <span className="btn-label">{t.threeD}</span></button>
+        <ToolMenu icon="🧮" label={t.groupArithmetic} items={[
+          { icon: "🧮", label: t.counting, onPick: () => setDialog({ kind: "model", start: "placeValue" }) },
+          { icon: "▦", label: t.models, onPick: () => setDialog({ kind: "model" }) },
+        ]} />
+        <ToolMenu icon="📐" label={t.groupGeometryShort} title={t.groupGeometry} items={[
+          { icon: "📐", label: t.geometry, onPick: () => setDialog({ kind: "geometry" }) },
+          { icon: "θ", label: t.trig, onPick: () => setDialog({ kind: "trig" }) },
+          { icon: "🧊", label: t.threeD, onPick: () => setDialog({ kind: "3d" }) },
+        ]} />
+        <ToolMenu icon="∑" label={t.groupAlgebraShort} title={t.groupAlgebra} items={[
+          { icon: "∑", label: t.formula, onPick: () => setDialog({ kind: "formula" }) },
+          { icon: "📈", label: t.graph, onPick: () => setDialog({ kind: "graph" }) },
+          { icon: "[ ]", label: t.matrices, onPick: () => setDialog({ kind: "matrix" }) },
+          { icon: "ε", label: t.analysis, onPick: () => setDialog({ kind: "analysis" }) },
+          { icon: "∫", label: t.integrals, onPick: () => setDialog({ kind: "integral" }) },
+          { icon: "y′", label: t.odes, onPick: () => setDialog({ kind: "ode" }) },
+        ]} />
+        <ToolMenu icon="ℤ" label={t.groupDiscreteShort} title={t.groupDiscrete} items={[
+          { icon: "ℤ", label: t.nt, onPick: () => setDialog({ kind: "nt" }) },
+          { icon: "ⁿCₖ", label: t.comb, onPick: () => setDialog({ kind: "comb" }) },
+          { icon: "⬡", label: t.gt, onPick: () => setDialog({ kind: "gt" }) },
+          { icon: "⇅", label: t.algo, onPick: () => setDialog({ kind: "algo" }) },
+          { icon: "📊", label: t.statistics, onPick: () => setDialog({ kind: "statistics" }) },
+        ]} />
         <LangSelect />
       </header>
 
