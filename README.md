@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to number theory, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -55,6 +55,19 @@ UI in English, Russian and Georgian.
     with every row operation shown — unique, parametric (x = 3 − 2t) or no solution (∅)
   - *Transformation*: a 2×2 matrix acting on the plane — bent grid, unit square → parallelogram
     with area |det|, basis vectors on the columns, an "F" that flips when det < 0, and a slider from I to M
+- **ℤ Number theory** — exact, with every step shown
+  - *Primes*: the sieve of Eratosthenes up to 400, prime by prime with a slider; crossed-out numbers coloured by
+    their smallest prime factor, and why primes up to √n suffice
+  - *Factorization*: a factor tree (or a division ladder for many factors) up to 10¹², the canonical form,
+    d(n), σ(n) and φ(n) worked out, divisors in pairs, and perfect / abundant / deficient
+  - *GCD & LCM*: Euclid's algorithm beside squares cut from an a × b rectangle; the extended Euclid table with
+    Bézout's identity; a·x + b·y = c with the general solution, lattice points on the line and non-negative solutions
+  - *Modular arithmetic*: a mod m on a clock, + and × tables of ℤ_m (units, zero divisors, fields), fast powers
+    by repeated squaring with Fermat / Euler, and modular inverses
+  - *Congruences*: a·x ≡ b (mod m) with all solutions, and systems solved step by step with the Chinese remainder
+    theorem (also for non-coprime moduli), drawn as rows of matching numbers
+  - *Number bases*: any base 2–36, place-value expansion, repeated division read from bottom to top, and the
+    grouping shortcut between bases 2, 4, 8, 16, 32
 - **θ Trigonometry**
   - *Unit circle*: P = (cos θ, sin θ) with the cos (green), sin (red) and tan (orange) segments, the sine wave traced
     alongside, exact values for every multiple of 15° (sin 75° = (√6 + √2)/4), degrees or radians, quadrant
@@ -196,6 +209,7 @@ src/math/fraction.ts      exact rational arithmetic
 src/math/algo.ts          algorithms: specs, presets, words (renderers in algoArrays.ts and algoGraphs.ts)
 src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, complexity + cell/table helpers
 src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), BST/AVL, heaps
+src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
