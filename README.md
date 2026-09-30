@@ -55,7 +55,7 @@ UI in English, Russian and Georgian.
     with every row operation shown — unique, parametric (x = 3 − 2t) or no solution (∅)
   - *Transformation*: a 2×2 matrix acting on the plane — bent grid, unit square → parallelogram
     with area |det|, basis vectors on the columns, an "F" that flips when det < 0, and a slider from I to M
-- **∫ Analysis** — the definitions of real analysis, drawn and checked numerically
+- **ε Analysis** — the definitions of real analysis, drawn and checked numerically
   - *Sequences ε–N*: aₙ against the band L ± ε; N is found automatically (checked up to n = 5000),
     terms turn green from N on — and (−1)ⁿ shows what "no N works" looks like
   - *Limits ε–δ*: the ε-band, the largest δ that works (x² → 4, sin x / x → 1, (x² − 1)/(x − 1) → 2,
@@ -68,6 +68,16 @@ UI in English, Russian and Georgian.
     1/n² → π²/6, alternating → ln 2, 1/n! → e, Leibniz → π
   - *Taylor*: Tₙ from symbolic derivatives with exact coefficients (x − x³/6), and a green strip
     where |f − Tₙ| < 0.01 that widens with the order up to the radius of convergence (1/(1 − x))
+- **∫ Integrals** — integration techniques, every step shown and every answer checked
+  (differentiating F must give back f; definite values are compared with Simpson's rule)
+  - *Substitution*: ∫ c·x^(m−1)·g(a·xᵐ + b) dx with g = uⁿ, eᵘ, sin, cos or 1/u — du, the integral in u,
+    back to x, new limits, and side-by-side pictures showing the x-area equals the u-area
+  - *By parts*: the DI table for xⁿ·eᵃˣ, xⁿ·sin ax, xⁿ·cos ax (arrows with + − + signs), LIATE for xⁿ ln x,
+    and the cyclic case eᵃˣ sin bx where I comes back and is solved for
+  - *Partial fractions*: any numerator over a denominator that factors over ℚ (found by the rational root
+    theorem): long division when improper, repeated factors, one irreducible quadratic (ln + arctan), exact fractions
+  - *Trig substitution*: x = a sin θ, a tan θ, a sec θ for six standard forms, with the reference triangle
+    that brings the answer back to x
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -126,6 +136,7 @@ src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editin
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
+src/math/integration.ts   integration techniques: substitution, by parts, partial fractions, trig substitution
 src/math/statistics.ts    statistics & probability pictures: data, scatter, chance, trees, distributions, CLT
 src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX header + captions)
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor

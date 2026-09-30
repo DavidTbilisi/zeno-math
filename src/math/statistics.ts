@@ -3,7 +3,7 @@
 // binomial / Poisson / normal distributions, and the central limit theorem.
 // Simulations use a seeded generator so a picture on the board re-renders identically.
 import { Frac } from "./fraction";
-import { latexToSvg, type RenderedSvg } from "./latex";
+import type { RenderedSvg } from "./latex";
 import { niceStep } from "./plot";
 import {
   axes,
@@ -23,6 +23,7 @@ import {
   nt,
   PLOT,
   r2,
+  texAt,
   tn,
   vline,
   type Caption,
@@ -159,18 +160,6 @@ const median = (a: number[]) => {
   return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
 };
 
-/** A LaTeX snippet placed inside the picture (centred vertically on y). */
-function texAt(tex: string, x: number, y: number, anchor: "start" | "middle" | "end" = "middle", scale = 1, color?: string) {
-  const r = latexToSvg(tex, color);
-  const w = r.width * scale;
-  const h = r.height * scale;
-  const x0 = anchor === "start" ? x : anchor === "middle" ? x - w / 2 : x - w;
-  const svg = r.svg
-    .replace(/width="[\d.]+"/, `width="${r2(w)}"`)
-    .replace(/height="[\d.]+"/, `height="${r2(h)}"`)
-    .replace(/^<svg/, `<svg x="${r2(x0)}" y="${r2(y - h / 2)}"`);
-  return { svg: `<rect x="${r2(x0 - 2)}" y="${r2(y - h / 2 - 1)}" width="${r2(w + 4)}" height="${r2(h + 2)}" fill="#ffffff" opacity="0.85"/>${svg}`, w };
-}
 
 const bar = (f: Frame, x0: number, x1: number, y: number, fillColor: string, stroke: string, strokeWidth = 1) => {
   const [a, b, yt, yb] = [f.sx(x0), f.sx(x1), f.sy(Math.max(y, 0)), f.sy(Math.min(y, 0))];

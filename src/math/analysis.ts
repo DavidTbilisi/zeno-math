@@ -10,6 +10,7 @@ import {
   clampInt,
   nf,
   nt,
+  simpson,
   tn,
   paren,
   floorSig,
@@ -339,13 +340,6 @@ function renderDerivative(s: DerivativeSpec, w: AnalysisWords): RenderedSvg {
 
 const RIEMANN_SYM: Record<RiemannMethod, string> = { left: "L", right: "R", mid: "M", trap: "T", lower: "\\underline{S}", upper: "\\overline{S}" };
 
-/** Simpson's rule; NaN if f is undefined anywhere on the way. */
-function simpson(fn: (x: number) => number, a: number, b: number, n = 2000): number {
-  const hh = (b - a) / n;
-  let sum = fn(a) + fn(b);
-  for (let i = 1; i < n; i++) sum += fn(a + i * hh) * (i % 2 ? 4 : 2);
-  return (sum * hh) / 3;
-}
 
 function renderRiemann(s: RiemannSpec, w: AnalysisWords): RenderedSvg {
   const fn = fnOf(s.expr, "x");

@@ -228,3 +228,24 @@ export function compose(tex: string, body: string, bodyH: number, captions: Capt
 
 export const PLOT = { left: 48, top: 6, w: W - 48 - 18, h: 380 };
 export const BODY_H = PLOT.top + PLOT.h + 16;
+
+/** A LaTeX snippet placed inside the picture (centred vertically on y). */
+export function texAt(tex: string, x: number, y: number, anchor: "start" | "middle" | "end" = "middle", scale = 1, color?: string) {
+  const r = latexToSvg(tex, color);
+  const w = r.width * scale;
+  const h = r.height * scale;
+  const x0 = anchor === "start" ? x : anchor === "middle" ? x - w / 2 : x - w;
+  const svg = r.svg
+    .replace(/width="[\d.]+"/, `width="${r2(w)}"`)
+    .replace(/height="[\d.]+"/, `height="${r2(h)}"`)
+    .replace(/^<svg/, `<svg x="${r2(x0)}" y="${r2(y - h / 2)}"`);
+  return { svg: `<rect x="${r2(x0 - 2)}" y="${r2(y - h / 2 - 1)}" width="${r2(w + 4)}" height="${r2(h + 2)}" fill="#ffffff" opacity="0.85"/>${svg}`, w };
+}
+
+/** Simpson's rule; NaN if f is undefined anywhere on the way. */
+export function simpson(fn: (x: number) => number, a: number, b: number, n = 2000): number {
+  const hh = (b - a) / n;
+  let sum = fn(a) + fn(b);
+  for (let i = 1; i < n; i++) sum += fn(a + i * hh) * (i % 2 ? 4 : 2);
+  return (sum * hh) / 3;
+}
