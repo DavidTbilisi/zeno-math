@@ -304,3 +304,11 @@ input.invalid { border-color: var(--danger); }
 .geo-handle.guess circle:last-of-type { stroke: #e8590c; }
 .geo-handle.guess.right circle:last-of-type { stroke: #2f9e44; fill: #d3f9d8; }
 .geo-handle.guess.wrong circle:last-of-type { stroke: #e03131; fill: #ffe3e3; }
+
+/* Analysis dialog */
+.slider-row { display: flex; gap: 10px; align-items: center; }
+.slider-row > span { min-width: 110px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.slider-row input[type="range"] { flex: 1; padding: 0; border: none; }
+.slider-row output { min-width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
+/* Long dialogs scroll; their rows (tabs especially) must not be squashed. */
+.modal-body > * { flex-shrink: 0; }

@@ -35,7 +35,7 @@ export function compileExpr(expr: string): EvalFunction {
   return code;
 }
 
-function niceStep(range: number, target = 10): number {
+export function niceStep(range: number, target = 10): number {
   const raw = range / target;
   const mag = 10 ** Math.floor(Math.log10(raw));
   const norm = raw / mag;

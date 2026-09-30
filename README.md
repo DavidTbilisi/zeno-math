@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to matrices and 3D geometry.
+counting with bar models and fractions all the way to real analysis, matrices and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -55,6 +55,19 @@ UI in English, Russian and Georgian.
     with every row operation shown — unique, parametric (x = 3 − 2t) or no solution (∅)
   - *Transformation*: a 2×2 matrix acting on the plane — bent grid, unit square → parallelogram
     with area |det|, basis vectors on the columns, an "F" that flips when det < 0, and a slider from I to M
+- **∫ Analysis** — the definitions of real analysis, drawn and checked numerically
+  - *Sequences ε–N*: aₙ against the band L ± ε; N is found automatically (checked up to n = 5000),
+    terms turn green from N on — and (−1)ⁿ shows what "no N works" looks like
+  - *Limits ε–δ*: the ε-band, the largest δ that works (x² → 4, sin x / x → 1, (x² − 1)/(x − 1) → 2,
+    one-sided √x), the ε × δ box the curve must stay in, and sign(x) at 0 where no δ exists
+  - *Derivative*: secant through (a, f(a)) and (a + h, f(a + h)) with Δy / h, the tangent f′(a),
+    an optional f′(x) curve, and |x| at 0 flagged as not differentiable (left slope −1, right 1)
+  - *Riemann sums*: left, right, midpoint, trapezoid, lower and upper sums with n up to 100,
+    negative area in red, and the error against the integral
+  - *Series*: terms aₙ and partial sums Sₙ side by side — geometric, harmonic (diverges),
+    1/n² → π²/6, alternating → ln 2, 1/n! → e, Leibniz → π
+  - *Taylor*: Tₙ from symbolic derivatives with exact coefficients (x − x³/6), and a green strip
+    where |f − Tₙ| < 0.01 that widens with the order up to the radius of convergence (1/(1 − x))
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
@@ -101,6 +114,7 @@ src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editin
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
+src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
 src/components/GeometryDialog.tsx  the drag-the-points geometry editor
 src/math/multiply.ts      multiplication models (groups, array, number line, area) → SVG
