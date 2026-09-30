@@ -28,6 +28,10 @@ UI in English, Russian and Georgian.
     lowest common denominator (lcm), cross-cancelling (with struck-out factors), keep–change–flip, simplifying by
     the gcd and back to a mixed number; bars on the common denominator, the area model for ×, and
     "how many times does it fit" for ÷
+  - *Percentages & ratios*: step-by-step solvers with Singapore bar models — p% of a number (the 1% method),
+    what percent, the whole from a part, increase/decrease with a multiplier, percentage change, reverse
+    percentages (with the classic mistake shown in red), simple vs compound interest; simplifying ratios (also
+    decimals and fractions), sharing a total in a ratio, one part known, and proportions with a ratio table
   - *Division*: long division step by step (divide, multiply, subtract, bring down) in three school layouts —
     the English bracket, the European corner layout (уголком / კუთხით) and short division with carried
     remainders; remainders as mixed numbers, decimal places, and repeating decimals (1 ÷ 7 = 0.(142857))
@@ -229,6 +233,7 @@ src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX heade
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
 src/components/GeometryDialog.tsx  the drag-the-points geometry editor
+src/math/percratio.ts     percentages and ratios: steps + percent bars and unit bar models
 src/math/fracop.ts        fraction arithmetic: steps (lcm, cancelling, reciprocal, gcd) + bar / area / fitting pictures
 src/math/division.ts      long division: bracket, corner and short layouts, decimals and repeating decimals
 src/math/multiply.ts      multiplication models (groups, array, number line, area, lattice) → SVG

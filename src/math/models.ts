@@ -5,6 +5,7 @@ import { renderPlaceValue, type PlaceValueSpec } from "./placeValue";
 import { renderMultiply, type MultiplySpec } from "./multiply";
 import { renderDivision, type DivisionSpec } from "./division";
 import { renderFracOp, type FracOpSpec } from "./fracop";
+import { renderPercRatio, type PercRatioSpec } from "./percratio";
 
 export const MODEL_COLORS = [
   { stroke: "#1971c2", fill: "#a5d8ff" },
@@ -21,7 +22,7 @@ export type FractionRow = { n: number; d: number };
 export type FractionSpec = { type: "fraction"; rows: FractionRow[]; shape: "bar" | "circle"; unitLabels: boolean };
 export type PercentSpec = { type: "percent"; percent: number; of: number | null; style: "grid" | "bar" };
 export type BondSpec = { type: "bond"; whole: string; parts: string[] };
-export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | MultiplySpec | DivisionSpec | FracOpSpec;
+export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | MultiplySpec | DivisionSpec | FracOpSpec | PercRatioSpec;
 export type ModelType = ModelSpec["type"];
 
 const INK = "#1e1e1e";
@@ -390,6 +391,8 @@ export function renderModel(spec: ModelSpec): RenderedSvg {
       return renderDivision(spec);
     case "fracop":
       return renderFracOp(spec);
+    case "percratio":
+      return renderPercRatio(spec);
   }
 }
 
@@ -404,6 +407,7 @@ export const DEFAULT_MODELS: { [K in ModelType]: Extract<ModelSpec, { type: K }>
   multiply: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 },
   division: { type: "division", style: "bracket", a: 624, b: 12, decimals: 0, step: 999 },
   fracop: { type: "fracop", op: "+", a: "2/3", b: "3/4", step: 999 },
+  percratio: { type: "percratio", kind: "of", p: "15", a: "240", b: "1", ratio: "2:3", up: true, step: 999 },
 };
 
 export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec, { type: K }> }[] } = {
@@ -463,6 +467,21 @@ export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec
     { key: "mulBig", spec: { type: "multiply", style: "area", a: 123, b: 45, step: 999 } },
     { key: "mulLattice", spec: { type: "multiply", style: "lattice", a: 234, b: 56, step: 999 } },
     { key: "mulLatticeBig", spec: { type: "multiply", style: "lattice", a: 4567, b: 382, step: 999 } },
+  ],
+  percratio: [
+    { key: "prOf", spec: { type: "percratio", kind: "of", p: "15", a: "240", b: "1", ratio: "2:3", up: true, step: 999 } },
+    { key: "prWhat", spec: { type: "percratio", kind: "whatPercent", p: "20", a: "18", b: "24", ratio: "2:3", up: true, step: 999 } },
+    { key: "prReverse", spec: { type: "percratio", kind: "reverse", p: "30", a: "45", b: "1", ratio: "2:3", up: true, step: 999 } },
+    { key: "prSale", spec: { type: "percratio", kind: "change", p: "25", a: "80", b: "1", ratio: "2:3", up: false, step: 999 } },
+    { key: "prRaise", spec: { type: "percratio", kind: "change", p: "12", a: "250", b: "1", ratio: "2:3", up: true, step: 999 } },
+    { key: "prChange", spec: { type: "percratio", kind: "percentChange", p: "20", a: "40", b: "52", ratio: "2:3", up: true, step: 999 } },
+    { key: "prBefore", spec: { type: "percratio", kind: "reverseChange", p: "20", a: "96", b: "1", ratio: "2:3", up: true, step: 999 } },
+    { key: "prInterest", spec: { type: "percratio", kind: "interest", p: "5", a: "1000", b: "10", ratio: "2:3", up: true, step: 999 } },
+    { key: "prSimplify", spec: { type: "percratio", kind: "simplify", p: "20", a: "80", b: "1", ratio: "12:18:30", up: true, step: 999 } },
+    { key: "prSimplifyFrac", spec: { type: "percratio", kind: "simplify", p: "20", a: "80", b: "1", ratio: "1/2 : 3/4", up: true, step: 999 } },
+    { key: "prShare", spec: { type: "percratio", kind: "share", p: "20", a: "45", b: "1", ratio: "2:3", up: true, step: 999 } },
+    { key: "prPart", spec: { type: "percratio", kind: "partKnown", p: "20", a: "24", b: "1", ratio: "3:5", up: true, step: 999 } },
+    { key: "prProportion", spec: { type: "percratio", kind: "proportion", p: "20", a: "15", b: "1", ratio: "3:4", up: true, step: 999 } },
   ],
   fracop: [
     { key: "foAdd", spec: { type: "fracop", op: "+", a: "2/3", b: "3/4", step: 999 } },

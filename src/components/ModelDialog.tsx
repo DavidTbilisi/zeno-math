@@ -19,10 +19,11 @@ import { PlaceValueMat } from "./PlaceValueMat";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, stepCount, type MultiplySpec } from "../math/multiply";
 import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, type DivisionSpec } from "../math/division";
 import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
+import { PERCENT_KINDS, percRatioStepCount, RATIO_KINDS, type PercRatioSpec } from "../math/percratio";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "division", "fracop"];
+const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "division", "fracop", "percratio"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
@@ -45,7 +46,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, division: t.division, fracop: t.fracOps };
+  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, division: t.division, fracop: t.fracOps, percratio: t.percRatio };
 
   return (
     <Modal
@@ -84,6 +85,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
       {spec.type === "multiply" && <MultiplyEditor spec={spec} onChange={(s) => update("multiply", s)} />}
       {spec.type === "division" && <DivisionEditor spec={spec} onChange={(s) => update("division", s)} />}
       {spec.type === "fracop" && <FracOpEditor spec={spec} onChange={(s) => update("fracop", s)} />}
+      {spec.type === "percratio" && <PercRatioEditor spec={spec} onChange={(s) => update("percratio", s)} />}
       {spec.type === "placeValue" && <PlaceValueMat spec={spec} onChange={(s) => update("placeValue", s)} />}
       {spec.type === "bar" && <BarEditor spec={spec} onChange={(s) => update("bar", s)} />}
       {spec.type === "fraction" && <FractionEditor spec={spec} onChange={(s) => update("fraction", s)} />}
@@ -249,6 +251,65 @@ function MultiplyEditor({ spec, onChange }: { spec: MultiplySpec; onChange: (s: 
         <span className="mult-sign">= {spec.a * spec.b}</span>
       </div>
       <small className="hint">{t.multHint[spec.style]}</small>
+      <div className="field">
+        <span>
+          {t.stepByStep}: {shown} / {n}
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={n}
+          step={1}
+          value={shown}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({ ...spec, step: v >= n ? 999 : v });
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
+function PercRatioEditor({ spec, onChange }: { spec: PercRatioSpec; onChange: (s: PercRatioSpec) => void }) {
+  const { t } = useI18n();
+  const n = percRatioStepCount(spec);
+  const shown = Math.min(spec.step, n);
+  const set = (patch: Partial<PercRatioSpec>) => onChange({ ...spec, ...patch, step: 999 });
+  const fields = t.prFields[spec.kind] as Partial<Record<"p" | "a" | "b" | "ratio", string>>;
+  const kinds = (list: readonly PercRatioSpec["kind"][], title: string) => (
+    <div className="field">
+      <span>{title}</span>
+      <div className="segmented wrap" role="radiogroup">
+        {list.map((k) => (
+          <button key={k} role="radio" aria-checked={spec.kind === k} className={spec.kind === k ? "active" : ""} onClick={() => set({ kind: k })}>
+            {t.prKinds[k]}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+  return (
+    <>
+      {kinds(PERCENT_KINDS, t.prPercent)}
+      {kinds(RATIO_KINDS, t.prRatio)}
+      <div className="range-grid">
+        {(["ratio", "p", "a", "b"] as const).map((key) =>
+          fields[key] ? (
+            <label key={key}>
+              <span>{fields[key]}</span>
+              <input type="text" className="mono" style={{ width: key === "ratio" ? 150 : 90 }} spellCheck={false} value={spec[key]} onChange={(e) => set({ [key]: e.target.value })} />
+            </label>
+          ) : null,
+        )}
+        {(spec.kind === "change" || spec.kind === "reverseChange") && (
+          <div className="segmented" role="radiogroup">
+            <button role="radio" aria-checked={spec.up} className={spec.up ? "active" : ""} onClick={() => set({ up: true })}>{t.prUp}</button>
+            <button role="radio" aria-checked={!spec.up} className={!spec.up ? "active" : ""} onClick={() => set({ up: false })}>{t.prDown}</button>
+          </div>
+        )}
+      </div>
+      <small className="hint">{t.prHints[spec.kind]}</small>
       <div className="field">
         <span>
           {t.stepByStep}: {shown} / {n}
