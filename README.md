@@ -65,6 +65,17 @@ UI in English, Russian and Georgian.
     mode where students drag the image points and press Check (correct points turn green)
   - *Protractor*: a real-looking protractor laid along arm OA (1° ticks, inner and outer scales);
     drag the arms, snap to 1° or 5°, and "hide the answer" so students read it themselves
+- **ℂ Complex numbers** — type z as `3+4i`, `2e^(iπ/3)`, `2∠150°` or `sqrt(-4)`; exact values where they are simple
+  (√2/2, π/3), and every picture in the complex plane
+  - *Forms*: a + bi ↔ r(cos θ + i sin θ) ↔ re^{iθ}, with |z|, the argument from arctan and the quadrant, the conjugate
+    and 1/z
+  - *Operations*: + − × ÷ step by step (i² = −1, multiplying by the conjugate) — adding as a parallelogram,
+    multiplying and dividing as lengths multiplied / divided and angles added / subtracted
+  - *Powers*: De Moivre's theorem with the angle reduced mod 2π, the spiral of powers, and the cycle of iⁿ
+  - *Roots*: all n-th roots as the corners of a regular polygon on a circle
+  - *Quadratics*: a negative discriminant, the conjugate pair of roots next to the parabola that never meets the
+    x-axis, and Vieta's check
+  - *Euler's formula*: e^{iθ} = cos θ + i sin θ on the unit circle, and e^{iπ} + 1 = 0
 - **[ ] Matrices** — exact fractions throughout
   - *Calculate with steps*: A ± B, A·B (each entry expanded), k·A, Aᵀ, det A (cofactor expansion),
     A⁻¹ (formula for 2×2, Gauss–Jordan on [A | I] for larger), and solving Ax = b by row reduction
@@ -214,7 +225,7 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models), **Geometry** (geometry,
-  trigonometry, 3D), **Algebra** (formulas, graphs, matrices, analysis, integrals, ODEs) and **Discrete**
+  trigonometry, 3D), **Algebra** (formulas, graphs, matrices, complex numbers, analysis, integrals, ODEs) and **Discrete**
   (number theory, combinatorics, graph theory, logic, algorithms, statistics)
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
 - Boards autosave to SQLite on your own server; works fully offline (no CDNs)
@@ -349,6 +360,7 @@ src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
+src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG
 src/three/                3D: spec + formulas (spec.ts), scene building (build.ts), viewer & PNG snapshot (viewer.ts)

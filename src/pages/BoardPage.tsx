@@ -43,6 +43,8 @@ import type { CombSpec } from "../math/combinatorics";
 import { GtDialog } from "../components/GtDialog";
 import type { GtSpec } from "../math/graphtheory";
 import { LogicDialog } from "../components/LogicDialog";
+import { ComplexDialog } from "../components/ComplexDialog";
+import type { CxSpec } from "../math/complex";
 import type { LogicSpec } from "../math/logic";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
@@ -62,7 +64,8 @@ type MathData =
   | { kind: "nt"; data: NtSpec; w: number; h: number }
   | { kind: "comb"; data: CombSpec; w: number; h: number }
   | { kind: "gt"; data: GtSpec; w: number; h: number }
-  | { kind: "logic"; data: LogicSpec; w: number; h: number };
+  | { kind: "logic"; data: LogicSpec; w: number; h: number }
+  | { kind: "complex"; data: CxSpec; w: number; h: number };
 
 type Dialog =
   | { kind: "formula"; editing?: ExcalidrawImageElement }
@@ -80,7 +83,8 @@ type Dialog =
   | { kind: "nt"; editing?: ExcalidrawImageElement }
   | { kind: "comb"; editing?: ExcalidrawImageElement }
   | { kind: "gt"; editing?: ExcalidrawImageElement }
-  | { kind: "logic"; editing?: ExcalidrawImageElement };
+  | { kind: "logic"; editing?: ExcalidrawImageElement }
+  | { kind: "complex"; editing?: ExcalidrawImageElement };
 
 type SaveState = "saved" | "saving" | "error";
 
@@ -97,7 +101,7 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
 const ThreeDialog = lazy(() => import("../components/ThreeDialog"));
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
-  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt", "comb", "gt", "logic"].includes(el.customData?.kind)
+  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt", "comb", "gt", "logic", "complex"].includes(el.customData?.kind)
     ? (el.customData as MathData)
     : undefined;
 
@@ -301,7 +305,7 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt, comb: t.editComb, gt: t.editGt, logic: t.editLogic }[mathOf(selectedMath)!.kind]}</span>
+            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt, comb: t.editComb, gt: t.editGt, logic: t.editLogic, complex: t.editComplex }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
         <ToolMenu icon="🧮" label={t.groupArithmetic} items={[
@@ -317,6 +321,7 @@ export function BoardPage({ id }: { id: string }) {
           { icon: "∑", label: t.formula, onPick: () => setDialog({ kind: "formula" }) },
           { icon: "📈", label: t.graph, onPick: () => setDialog({ kind: "graph" }) },
           { icon: "[ ]", label: t.matrices, onPick: () => setDialog({ kind: "matrix" }) },
+          { icon: "ℂ", label: t.complex, onPick: () => setDialog({ kind: "complex" }) },
           { icon: "ε", label: t.analysis, onPick: () => setDialog({ kind: "analysis" }) },
           { icon: "∫", label: t.integrals, onPick: () => setDialog({ kind: "integral" }) },
           { icon: "y′", label: t.odes, onPick: () => setDialog({ kind: "ode" }) },
@@ -446,6 +451,16 @@ export function BoardPage({ id }: { id: string }) {
           onClose={() => setDialog(null)}
           onSubmit={(data, rendered) => {
             placeImage(svgImage(rendered), { kind: "ode", data, w: rendered.width, h: rendered.height }, dialog.editing);
+            setDialog(null);
+          }}
+        />
+      )}
+      {dialog?.kind === "complex" && (
+        <ComplexDialog
+          initial={dialog.editing ? (mathOf(dialog.editing)!.data as CxSpec) : undefined}
+          onClose={() => setDialog(null)}
+          onSubmit={(data, rendered) => {
+            placeImage(svgImage(rendered), { kind: "complex", data, w: rendered.width, h: rendered.height }, dialog.editing);
             setDialog(null);
           }}
         />
