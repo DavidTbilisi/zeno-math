@@ -18,10 +18,11 @@ import { Modal } from "./Modal";
 import { PlaceValueMat } from "./PlaceValueMat";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, stepCount, type MultiplySpec } from "../math/multiply";
 import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, type DivisionSpec } from "../math/division";
+import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "division"];
+const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "division", "fracop"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
@@ -44,7 +45,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, division: t.division };
+  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, division: t.division, fracop: t.fracOps };
 
   return (
     <Modal
@@ -82,6 +83,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
 
       {spec.type === "multiply" && <MultiplyEditor spec={spec} onChange={(s) => update("multiply", s)} />}
       {spec.type === "division" && <DivisionEditor spec={spec} onChange={(s) => update("division", s)} />}
+      {spec.type === "fracop" && <FracOpEditor spec={spec} onChange={(s) => update("fracop", s)} />}
       {spec.type === "placeValue" && <PlaceValueMat spec={spec} onChange={(s) => update("placeValue", s)} />}
       {spec.type === "bar" && <BarEditor spec={spec} onChange={(s) => update("bar", s)} />}
       {spec.type === "fraction" && <FractionEditor spec={spec} onChange={(s) => update("fraction", s)} />}
@@ -247,6 +249,46 @@ function MultiplyEditor({ spec, onChange }: { spec: MultiplySpec; onChange: (s: 
         <span className="mult-sign">= {spec.a * spec.b}</span>
       </div>
       <small className="hint">{t.multHint[spec.style]}</small>
+      <div className="field">
+        <span>
+          {t.stepByStep}: {shown} / {n}
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={n}
+          step={1}
+          value={shown}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({ ...spec, step: v >= n ? 999 : v });
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
+function FracOpEditor({ spec, onChange }: { spec: FracOpSpec; onChange: (s: FracOpSpec) => void }) {
+  const { t } = useI18n();
+  const n = fracOpStepCount(spec);
+  const shown = Math.min(spec.step, n);
+  const set = (patch: Partial<FracOpSpec>) => onChange({ ...spec, ...patch, step: 999 });
+  return (
+    <>
+      <div className="segmented" role="radiogroup">
+        {FRAC_OPS.map((op) => (
+          <button key={op} role="radio" aria-checked={spec.op === op} className={`math-label${spec.op === op ? " active" : ""}`} onClick={() => set({ op })}>
+            {op === "-" ? "−" : op}
+          </button>
+        ))}
+      </div>
+      <div className="range-grid mult-inputs">
+        <input type="text" className="mono" spellCheck={false} value={spec.a} aria-label="a" onChange={(e) => set({ a: e.target.value })} />
+        <span className="mult-sign">{spec.op === "-" ? "−" : spec.op}</span>
+        <input type="text" className="mono" spellCheck={false} value={spec.b} aria-label="b" onChange={(e) => set({ b: e.target.value })} />
+      </div>
+      <small className="hint">{t.fracOpHint[spec.op]}</small>
       <div className="field">
         <span>
           {t.stepByStep}: {shown} / {n}
