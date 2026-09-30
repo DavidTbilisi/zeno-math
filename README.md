@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to real analysis, matrices and 3D geometry.
+counting with bar models and fractions all the way to real analysis, statistics, matrices and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -68,6 +68,18 @@ UI in English, Russian and Georgian.
     1/n² → π²/6, alternating → ln 2, 1/n! → e, Leibniz → π
   - *Taylor*: Tₙ from symbolic derivatives with exact coefficients (x − x³/6), and a green strip
     where |f − Tₙ| < 0.01 that widens with the order up to the radius of convergence (1/(1 − x))
+- **📊 Statistics** — probability and statistics, with every number worked out
+  - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
+    range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
+  - *Scatter*: least-squares line ŷ = a + bx through (x̄, ȳ), residuals, r and r², and the correlation in words
+  - *Chance*: simulate a coin, a die or two dice up to 10 000 times — observed vs theoretical frequencies,
+    and the relative frequency settling at p on a log scale (law of large numbers); seeded, so it re-renders the same
+  - *Tree diagram*: two-stage trees with exact fractions (or decimals), products at the ends, total
+    probability P(B) and Bayes P(A | B) — e.g. the medical test where a positive result means only 16 %
+  - *Distributions*: binomial B(n, p), Poisson Po(λ) and normal N(μ, σ²) with a shaded P(a ≤ X ≤ b),
+    E(X), σ and z-scores
+  - *Sample means*: the central limit theorem — means of n dice, coins or a skewed population pile up
+    into N(μ, σ²/n) as n grows
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
@@ -114,6 +126,8 @@ src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editin
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
+src/math/statistics.ts    statistics & probability pictures: data, scatter, chance, trees, distributions, CLT
+src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX header + captions)
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
 src/components/GeometryDialog.tsx  the drag-the-points geometry editor

@@ -198,7 +198,7 @@ export function AnalysisDialog({ initial, onSubmit, onClose }: {
   );
 }
 
-function Slider({ label, min, max, step, value, shown, onChange }: {
+export function Slider({ label, min, max, step, value, shown, onChange }: {
   label: string;
   min: number;
   max: number;

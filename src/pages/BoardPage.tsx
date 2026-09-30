@@ -25,6 +25,8 @@ import { GeometryDialog } from "../components/GeometryDialog";
 import type { GeometrySpec } from "../math/geometry";
 import { AnalysisDialog } from "../components/AnalysisDialog";
 import type { AnalysisSpec } from "../math/analysis";
+import { StatsDialog } from "../components/StatsDialog";
+import type { StatSpec } from "../math/statistics";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
 type MathData =
@@ -34,7 +36,8 @@ type MathData =
   | { kind: "3d"; data: Spec3D; w: number; h: number }
   | { kind: "matrix"; data: MatrixSpec; w: number; h: number }
   | { kind: "geometry"; data: GeometrySpec; w: number; h: number }
-  | { kind: "analysis"; data: AnalysisSpec; w: number; h: number };
+  | { kind: "analysis"; data: AnalysisSpec; w: number; h: number }
+  | { kind: "statistics"; data: StatSpec; w: number; h: number };
 
 type Dialog =
   | { kind: "formula"; editing?: ExcalidrawImageElement }
@@ -43,7 +46,8 @@ type Dialog =
   | { kind: "3d"; editing?: ExcalidrawImageElement }
   | { kind: "matrix"; editing?: ExcalidrawImageElement }
   | { kind: "geometry"; editing?: ExcalidrawImageElement }
-  | { kind: "analysis"; editing?: ExcalidrawImageElement };
+  | { kind: "analysis"; editing?: ExcalidrawImageElement }
+  | { kind: "statistics"; editing?: ExcalidrawImageElement };
 
 type SaveState = "saved" | "saving" | "error";
 
@@ -60,7 +64,7 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
 const ThreeDialog = lazy(() => import("../components/ThreeDialog"));
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
-  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis"].includes(el.customData?.kind)
+  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics"].includes(el.customData?.kind)
     ? (el.customData as MathData)
     : undefined;
 
@@ -264,7 +268,7 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis }[mathOf(selectedMath)!.kind]}</span>
+            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
         <button className="btn primary" onClick={() => setDialog({ kind: "model", start: "placeValue" })} title={t.counting}>🧮 <span className="btn-label">{t.counting}</span></button>
@@ -273,6 +277,7 @@ export function BoardPage({ id }: { id: string }) {
         <button className="btn primary" onClick={() => setDialog({ kind: "formula" })} title={t.formula}>∑ <span className="btn-label">{t.formula}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "graph" })} title={t.graph}>📈 <span className="btn-label">{t.graph}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "analysis" })} title={t.analysis}>∫ <span className="btn-label">{t.analysis}</span></button>
+        <button className="btn primary" onClick={() => setDialog({ kind: "statistics" })} title={t.statistics}>📊 <span className="btn-label">{t.statistics}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "matrix" })} title={t.matrices}>[ ] <span className="btn-label">{t.matrices}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "3d" })} title={t.threeD}>🧊 <span className="btn-label">{t.threeD}</span></button>
         <LangSelect />
@@ -362,6 +367,16 @@ export function BoardPage({ id }: { id: string }) {
           onClose={() => setDialog(null)}
           onSubmit={(data, rendered) => {
             placeImage(svgImage(rendered), { kind: "analysis", data, w: rendered.width, h: rendered.height }, dialog.editing);
+            setDialog(null);
+          }}
+        />
+      )}
+      {dialog?.kind === "statistics" && (
+        <StatsDialog
+          initial={dialog.editing ? (mathOf(dialog.editing)!.data as StatSpec) : undefined}
+          onClose={() => setDialog(null)}
+          onSubmit={(data, rendered) => {
+            placeImage(svgImage(rendered), { kind: "statistics", data, w: rendered.width, h: rendered.height }, dialog.editing);
             setDialog(null);
           }}
         />
