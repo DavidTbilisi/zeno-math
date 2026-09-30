@@ -1,0 +1,198 @@
+// Algorithms and data structures: step-by-step traces of sorting and searching, graph algorithms
+// (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), binary search trees, AVL trees and heaps,
+// stacks, queues and hash tables, dynamic programming tables with traceback, and complexity
+// (the master theorem and growth rates). Every picture is one standalone SVG.
+import type { RenderedSvg } from "./latex";
+import { renderDp, renderDs, renderGrowth, renderSearch, renderSort } from "./algoArrays";
+import { renderGraph, renderTree } from "./algoGraphs";
+
+export type SortAlgo = "bubble" | "insertion" | "selection" | "merge" | "quick";
+export type SearchAlgo = "binary" | "linear";
+export type GraphAlgo = "bfs" | "dfs" | "dijkstra" | "prim" | "kruskal" | "topo";
+export type TreeKind = "bst" | "avl" | "minheap" | "maxheap";
+export type DsKind = "stack" | "queue" | "chaining" | "probing";
+export type DpProblem = "lcs" | "edit" | "knapsack" | "coins";
+export type GrowthMode = "master" | "compare";
+
+export const SORT_ALGOS: SortAlgo[] = ["bubble", "insertion", "selection", "merge", "quick"];
+export const SEARCH_ALGOS: SearchAlgo[] = ["binary", "linear"];
+export const GRAPH_ALGOS: GraphAlgo[] = ["bfs", "dfs", "dijkstra", "prim", "kruskal", "topo"];
+export const TREE_KINDS: TreeKind[] = ["bst", "avl", "minheap", "maxheap"];
+export const DS_KINDS: DsKind[] = ["stack", "queue", "chaining", "probing"];
+export const DP_PROBLEMS: DpProblem[] = ["lcs", "edit", "knapsack", "coins"];
+export const GROWTH_MODES: GrowthMode[] = ["master", "compare"];
+
+export type SortSpec = { topic: "sort"; algo: SortAlgo; data: string };
+export type SearchSpec = { topic: "search"; algo: SearchAlgo; data: string; target: string };
+/** Edges like "A-B 4, B-C 2"; the weight is optional. */
+export type GraphSpec = { topic: "graph"; algo: GraphAlgo; edges: string; directed: boolean; start: string };
+export type TreeSpec = { topic: "tree"; kind: TreeKind; data: string };
+/** Stack/queue: ops is "push 3, push 5, pop, peek". Hashing: ops is the keys, m the table size. */
+export type DsSpec = { topic: "ds"; kind: DsKind; ops: string; m: string };
+/** lcs/edit: a, b are the strings · knapsack: a weights, b values, c capacity · coins: a coins, c amount. */
+export type DpSpec = { topic: "dp"; problem: DpProblem; a: string; b: string; c: string };
+/** master: T(n) = a·T(n/b) + Θ(n^d) · compare: growth rates up to n. */
+export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: string; d: string; n: string };
+
+export type AlgoSpec = SortSpec | SearchSpec | GraphSpec | TreeSpec | DsSpec | DpSpec | GrowthSpec;
+export type AlgoTopic = AlgoSpec["topic"];
+export type AlgoSpecOf<K extends AlgoTopic> = Extract<AlgoSpec, { topic: K }>;
+export const ALGO_TOPICS: AlgoTopic[] = ["sort", "search", "graph", "tree", "ds", "dp", "growth"];
+
+export type AlgoWords = {
+  badList: string;
+  badNumber: string;
+  tooMany: string;
+  legend: { sorted: string; sortedPart: string; run: string; pivot: string; key: string; min: string; idle: string; compared: string; found: string; ruledOut: string; path: string; match: string; taken: string; siftPath: string; siftEnd: string };
+  sortNames: Record<SortAlgo, string>;
+  sortInfo: Record<SortAlgo, string>;
+  start: string;
+  pass: string;
+  noSwaps: string;
+  insert: string;
+  select: string;
+  split: string;
+  merge: string;
+  pivot: string;
+  done: string;
+  stats: { swaps: string; shifts: string; copies: string };
+  searchNames: Record<SearchAlgo, string>;
+  sortedFirst: string;
+  found: string;
+  notFound: string;
+  binaryInfo: string;
+  linearInfo: string;
+  graphNames: Record<GraphAlgo, string>;
+  graphInfo: Record<GraphAlgo, string>;
+  badEdge: string;
+  noNode: string;
+  noEdges: string;
+  negative: string;
+  cycle: string;
+  needDirected: string;
+  undirectedOnly: string;
+  unreachable: string;
+  order: string;
+  pathTo: string;
+  mstTotal: string;
+  topoOrder: string;
+  cols: { step: string; visit: string; queue: string; stack: string; edge: string; weight: string; total: string; result: string; key: string; slot: string; probes: string; op: string; output: string };
+  added: string;
+  cycleSkip: string;
+  treeNames: Record<TreeKind, string>;
+  treeInfo: Record<TreeKind, string>;
+  inorder: string;
+  preorder: string;
+  postorder: string;
+  levelorder: string;
+  duplicates: string;
+  height: string;
+  rotations: string;
+  noRotations: string;
+  heapBuilt: string;
+  sift: string;
+  dsNames: Record<DsKind, string>;
+  dsInfo: Record<DsKind, string>;
+  badOp: string;
+  empty: string;
+  top: string;
+  front: string;
+  back: string;
+  outputs: string;
+  hashStats: string;
+  chainStats: string;
+  full: string;
+  dpNames: Record<DpProblem, string>;
+  dpInfo: Record<DpProblem, string>;
+  tooLong: string;
+  lcsResult: string;
+  editResult: string;
+  editOps: { sub: string; ins: string; del: string };
+  knapResult: string;
+  knapNothing: string;
+  coinResult: string;
+  coinNone: string;
+  greedy: string;
+  greedyFails: string;
+  greedyStuck: string;
+  amount: string;
+  coinsRow: string;
+  lastCoin: string;
+  master: { smaller: string; equal: string; larger: string };
+  levelWork: string;
+  leaves: string;
+  growthHint: string;
+  timeAt: string;
+  units: { s: string; min: string; h: string; d: string; y: string };
+};
+
+export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf<K> }[] } = {
+  sort: [
+    { label: "Bubble · 5 1 4 2 8", spec: { topic: "sort", algo: "bubble", data: "5, 1, 4, 2, 8" } },
+    { label: "Insertion · 12 11 13 5 6", spec: { topic: "sort", algo: "insertion", data: "12, 11, 13, 5, 6" } },
+    { label: "Selection · 64 25 12 22 11", spec: { topic: "sort", algo: "selection", data: "64, 25, 12, 22, 11" } },
+    { label: "Merge · 38 27 43 3 9 82 10", spec: { topic: "sort", algo: "merge", data: "38, 27, 43, 3, 9, 82, 10" } },
+    { label: "Quick · 10 80 30 90 40 50 70", spec: { topic: "sort", algo: "quick", data: "10, 80, 30, 90, 40, 50, 70" } },
+    { label: "Bubble · nearly sorted", spec: { topic: "sort", algo: "bubble", data: "1, 2, 3, 5, 4" } },
+  ],
+  search: [
+    { label: "Binary · find 23", spec: { topic: "search", algo: "binary", data: "2, 5, 8, 12, 16, 23, 38, 56, 72, 91", target: "23" } },
+    { label: "Binary · find 7 (missing)", spec: { topic: "search", algo: "binary", data: "1, 3, 4, 6, 8, 9, 11, 14", target: "7" } },
+    { label: "Linear · find 9", spec: { topic: "search", algo: "linear", data: "4, 2, 7, 1, 9, 3", target: "9" } },
+  ],
+  graph: [
+    { label: "BFS", spec: { topic: "graph", algo: "bfs", edges: "A-B, A-C, B-D, B-E, C-F, E-F, D-G", directed: false, start: "A" } },
+    { label: "DFS", spec: { topic: "graph", algo: "dfs", edges: "A-B, A-C, B-D, B-E, C-F, E-F, D-G", directed: false, start: "A" } },
+    { label: "Dijkstra", spec: { topic: "graph", algo: "dijkstra", edges: "A-B 4, A-C 2, B-C 5, B-D 10, C-E 3, E-D 4, D-F 11", directed: false, start: "A" } },
+    { label: "Prim", spec: { topic: "graph", algo: "prim", edges: "A-B 7, A-D 5, B-C 8, B-D 9, B-E 7, C-E 5, D-E 15, D-F 6, E-F 8, E-G 9, F-G 11", directed: false, start: "A" } },
+    { label: "Kruskal", spec: { topic: "graph", algo: "kruskal", edges: "A-B 7, A-D 5, B-C 8, B-D 9, B-E 7, C-E 5, D-E 15, D-F 6, E-F 8, E-G 9, F-G 11", directed: false, start: "A" } },
+    { label: "Topological sort", spec: { topic: "graph", algo: "topo", edges: "shirt-tie, tie-jacket, pants-shoes, pants-belt, belt-jacket, shirt-belt, socks-shoes", directed: true, start: "" } },
+  ],
+  tree: [
+    { label: "BST · 50 30 70 20 40 60 80", spec: { topic: "tree", kind: "bst", data: "50, 30, 70, 20, 40, 60, 80, 35, 65" } },
+    { label: "BST · sorted input", spec: { topic: "tree", kind: "bst", data: "1, 2, 3, 4, 5, 6" } },
+    { label: "AVL · 1 … 7", spec: { topic: "tree", kind: "avl", data: "1, 2, 3, 4, 5, 6, 7" } },
+    { label: "AVL · 30 20 10 25 28", spec: { topic: "tree", kind: "avl", data: "30, 20, 10, 25, 28, 40, 50" } },
+    { label: "Max-heap", spec: { topic: "tree", kind: "maxheap", data: "4, 10, 3, 5, 1, 8, 9, 2, 7" } },
+    { label: "Min-heap", spec: { topic: "tree", kind: "minheap", data: "9, 5, 6, 2, 3, 7, 1, 4" } },
+  ],
+  ds: [
+    { label: "Stack", spec: { topic: "ds", kind: "stack", ops: "push 3, push 7, push 1, pop, push 9, peek, pop, pop", m: "7" } },
+    { label: "Queue", spec: { topic: "ds", kind: "queue", ops: "enqueue 3, enqueue 7, enqueue 1, dequeue, enqueue 9, peek, dequeue, dequeue", m: "7" } },
+    { label: "Hashing · chaining", spec: { topic: "ds", kind: "chaining", ops: "15, 11, 27, 8, 12, 22, 5, 19, 26, 34", m: "7" } },
+    { label: "Hashing · linear probing", spec: { topic: "ds", kind: "probing", ops: "89, 18, 49, 58, 69, 25, 32", m: "10" } },
+  ],
+  dp: [
+    { label: "LCS · ABCBDAB, BDCABA", spec: { topic: "dp", problem: "lcs", a: "ABCBDAB", b: "BDCABA", c: "" } },
+    { label: "Edit distance · kitten → sitting", spec: { topic: "dp", problem: "edit", a: "kitten", b: "sitting", c: "" } },
+    { label: "Knapsack · capacity 7", spec: { topic: "dp", problem: "knapsack", a: "1, 3, 4, 5", b: "1, 4, 5, 7", c: "7" } },
+    { label: "Coins · 1 3 4, amount 6", spec: { topic: "dp", problem: "coins", a: "1, 3, 4", b: "", c: "6" } },
+    { label: "Coins · 1 5 10 25, amount 30", spec: { topic: "dp", problem: "coins", a: "1, 5, 10, 25", b: "", c: "30" } },
+  ],
+  growth: [
+    { label: "Merge sort · T(n) = 2T(n/2) + n", spec: { topic: "growth", mode: "master", a: "2", b: "2", d: "1", n: "20" } },
+    { label: "Binary search · T(n) = T(n/2) + 1", spec: { topic: "growth", mode: "master", a: "1", b: "2", d: "0", n: "20" } },
+    { label: "Karatsuba · T(n) = 3T(n/2) + n", spec: { topic: "growth", mode: "master", a: "3", b: "2", d: "1", n: "20" } },
+    { label: "T(n) = 2T(n/2) + n²", spec: { topic: "growth", mode: "master", a: "2", b: "2", d: "2", n: "20" } },
+    { label: "Growth rates", spec: { topic: "growth", mode: "compare", a: "2", b: "2", d: "1", n: "20" } },
+  ],
+};
+
+export function renderAlgo(spec: AlgoSpec, words: AlgoWords): RenderedSvg {
+  switch (spec.topic) {
+    case "sort":
+      return renderSort(spec, words);
+    case "search":
+      return renderSearch(spec, words);
+    case "graph":
+      return renderGraph(spec, words);
+    case "tree":
+      return renderTree(spec, words);
+    case "ds":
+      return renderDs(spec, words);
+    case "dp":
+      return renderDp(spec, words);
+    case "growth":
+      return renderGrowth(spec, words);
+  }
+}

@@ -33,6 +33,8 @@ import { OdeDialog } from "../components/OdeDialog";
 import type { OdeSpec } from "../math/ode";
 import { TrigDialog } from "../components/TrigDialog";
 import type { TrigSpec } from "../math/trig";
+import { AlgoDialog } from "../components/AlgoDialog";
+import type { AlgoSpec } from "../math/algo";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
 type MathData =
@@ -46,7 +48,8 @@ type MathData =
   | { kind: "statistics"; data: StatSpec; w: number; h: number }
   | { kind: "integral"; data: IntegralSpec; w: number; h: number }
   | { kind: "ode"; data: OdeSpec; w: number; h: number }
-  | { kind: "trig"; data: TrigSpec; w: number; h: number };
+  | { kind: "trig"; data: TrigSpec; w: number; h: number }
+  | { kind: "algo"; data: AlgoSpec; w: number; h: number };
 
 type Dialog =
   | { kind: "formula"; editing?: ExcalidrawImageElement }
@@ -59,7 +62,8 @@ type Dialog =
   | { kind: "statistics"; editing?: ExcalidrawImageElement }
   | { kind: "integral"; editing?: ExcalidrawImageElement }
   | { kind: "ode"; editing?: ExcalidrawImageElement }
-  | { kind: "trig"; editing?: ExcalidrawImageElement };
+  | { kind: "trig"; editing?: ExcalidrawImageElement }
+  | { kind: "algo"; editing?: ExcalidrawImageElement };
 
 type SaveState = "saved" | "saving" | "error";
 
@@ -76,7 +80,7 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
 const ThreeDialog = lazy(() => import("../components/ThreeDialog"));
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
-  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig"].includes(el.customData?.kind)
+  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo"].includes(el.customData?.kind)
     ? (el.customData as MathData)
     : undefined;
 
@@ -280,7 +284,7 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig }[mathOf(selectedMath)!.kind]}</span>
+            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
         <button className="btn primary" onClick={() => setDialog({ kind: "model", start: "placeValue" })} title={t.counting}>🧮 <span className="btn-label">{t.counting}</span></button>
@@ -294,6 +298,7 @@ export function BoardPage({ id }: { id: string }) {
         <button className="btn primary" onClick={() => setDialog({ kind: "ode" })} title={t.odes}>y′ <span className="btn-label">{t.odes}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "statistics" })} title={t.statistics}>📊 <span className="btn-label">{t.statistics}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "matrix" })} title={t.matrices}>[ ] <span className="btn-label">{t.matrices}</span></button>
+        <button className="btn primary" onClick={() => setDialog({ kind: "algo" })} title={t.algo}>⇅ <span className="btn-label">{t.algo}</span></button>
         <button className="btn primary" onClick={() => setDialog({ kind: "3d" })} title={t.threeD}>🧊 <span className="btn-label">{t.threeD}</span></button>
         <LangSelect />
       </header>
@@ -412,6 +417,16 @@ export function BoardPage({ id }: { id: string }) {
           onClose={() => setDialog(null)}
           onSubmit={(data, rendered) => {
             placeImage(svgImage(rendered), { kind: "ode", data, w: rendered.width, h: rendered.height }, dialog.editing);
+            setDialog(null);
+          }}
+        />
+      )}
+      {dialog?.kind === "algo" && (
+        <AlgoDialog
+          initial={dialog.editing ? (mathOf(dialog.editing)!.data as AlgoSpec) : undefined}
+          onClose={() => setDialog(null)}
+          onSubmit={(data, rendered) => {
+            placeImage(svgImage(rendered), { kind: "algo", data, w: rendered.width, h: rendered.height }, dialog.editing);
             setDialog(null);
           }}
         />

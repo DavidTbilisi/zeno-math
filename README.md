@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra and 3D geometry.
+counting with bar models and fractions all the way to trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -121,6 +121,21 @@ UI in English, Russian and Georgian.
   - *Eigenvalues*: det(λI − A) exactly (Faddeev–LeVerrier), rational roots with multiplicity, eigenspaces as
     null spaces of A − λI, A = PDP⁻¹ when diagonalisable, non-diagonalisable and complex cases, and a
     picture of v and A·v on the eigenvector lines
+- **⇅ Algorithms** — algorithms and data structures, traced step by step with every count shown
+  - *Sorting*: bubble, insertion, selection, merge and quicksort (Lomuto) — one row per pass, split, merge or
+    partition, with comparisons and swaps counted and the complexity explained
+  - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed) and linear search
+  - *Graphs*: type edges like `A-B 4, B-C 2`; BFS (levels, queue), DFS (recursion stack), Dijkstra (distance
+    table, shortest-path tree), Prim and Kruskal (minimum spanning tree, cycle checks) and Kahn's topological sort
+    (layered drawing, cycle detection); force-directed layout, directed or undirected
+  - *Trees & heaps*: binary search trees with all four traversals, AVL trees with balance factors and
+    LL/RR/LR/RL rotations, and min/max-heaps built by heapify — the tree and the array side by side
+  - *Stacks, queues, hashing*: push/pop/peek traces, and hash tables with chaining or linear probing
+    (probe sequences, collisions, load factor)
+  - *Dynamic programming*: LCS, edit distance, 0/1 knapsack and coin change as filled tables with the
+    traceback path — and greedy coin change shown failing where it does
+  - *Complexity*: the master theorem with the recursion tree and the work on each level, and growth rates
+    from log n to n! with running times at 10⁸ operations per second
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
@@ -178,6 +193,9 @@ src/math/multiply.ts      multiplication models (groups, array, number line, are
 src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
 src/components/PlaceValueMat.tsx  the drag & drop place-value mat
 src/math/fraction.ts      exact rational arithmetic
+src/math/algo.ts          algorithms: specs, presets, words (renderers in algoArrays.ts and algoGraphs.ts)
+src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, complexity + cell/table helpers
+src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), BST/AVL, heaps
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
