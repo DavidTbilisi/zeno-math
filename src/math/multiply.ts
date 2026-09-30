@@ -1,10 +1,10 @@
 // Multiplication models, from counting to algebra: equal groups, arrays, number-line jumps
-// and the place-value area model. a × b reads "a groups of b". `step` reveals the model
+// the place-value area model and the lattice (gelosia) method. a × b reads "a groups of b". `step` reveals the model
 // one group / row / jump / cell at a time (a large value shows everything).
 import type { RenderedSvg } from "./latex";
 
-export type MultiplyStyle = "groups" | "array" | "numberline" | "area";
-export const MULTIPLY_STYLES: MultiplyStyle[] = ["groups", "array", "numberline", "area"];
+export type MultiplyStyle = "groups" | "array" | "numberline" | "area" | "lattice";
+export const MULTIPLY_STYLES: MultiplyStyle[] = ["groups", "array", "numberline", "area", "lattice"];
 
 export type MultiplySpec = { type: "multiply"; style: MultiplyStyle; a: number; b: number; step: number };
 
@@ -13,6 +13,7 @@ export const MULTIPLY_LIMITS: Record<MultiplyStyle, { a: number; b: number }> = 
   array: { a: 12, b: 12 },
   numberline: { a: 10, b: 12 },
   area: { a: 999, b: 999 },
+  lattice: { a: 99999, b: 99999 },
 };
 
 const INK = "#1e1e1e";
@@ -51,6 +52,10 @@ export function placeParts(n: number): number[] {
 /** How many reveal steps a model has. */
 export function stepCount(spec: MultiplySpec): number {
   if (spec.style === "area") return placeParts(spec.a).length * placeParts(spec.b).length;
+  if (spec.style === "lattice") {
+    const [m, n] = [String(spec.a).length, String(spec.b).length];
+    return m * n + m + n; // every cell, then every diagonal
+  }
   return spec.a;
 }
 
@@ -191,6 +196,96 @@ function area({ a, b }: MultiplySpec, k: number) {
   return wrap(Math.max(W, PAD * 2 + width(eq, 22)), eqY + PAD, out.join(""));
 }
 
+/**
+ * Lattice (gelosia) multiplication: a's digits across the top, b's down the right. Each cell holds
+ * the product of its two digits, tens above the diagonal and units below; the diagonal bands are
+ * then added from the bottom right, carrying into the next band, and the answer is read down the
+ * left side and along the bottom. Steps: every cell (row by row), then every band.
+ */
+function lattice({ a, b }: MultiplySpec, k: number) {
+  const A = String(a).split("").map(Number);
+  const B = String(b).split("").map(Number);
+  const m = A.length;
+  const n = B.length;
+  const S = Math.min(72, 380 / Math.max(m, n));
+  const D = S * 0.62; // how far the bands reach out of the grid
+  const x0 = PAD + D + 20;
+  const y0 = PAD + 34;
+  const cellsShown = Math.min(k, m * n);
+  const bandsShown = Math.max(0, k - m * n);
+  const place = (i: number, j: number) => m - 1 - j + (n - 1 - i); // place value of a cell's units digit
+  // Band sums, carries and the answer digits.
+  const sums: number[][] = Array.from({ length: m + n }, () => []);
+  for (let i = 0; i < n; i++)
+    for (let j = 0; j < m; j++) {
+      const p = A[j] * B[i];
+      sums[place(i, j)].push(p % 10);
+      sums[place(i, j) + 1].push(Math.floor(p / 10));
+    }
+  const carryIn: number[] = [0];
+  const digit: number[] = [];
+  sums.forEach((list, q) => {
+    const total = list.reduce((s, v) => s + v, 0) + carryIn[q];
+    digit.push(total % 10);
+    carryIn.push(Math.floor(total / 10));
+  });
+  const BAND = ["#d0ebff", "#fff3bf"];
+  const out: string[] = [];
+  const bandFill = (q: number) => (q < bandsShown ? (q === bandsShown - 1 && bandsShown < m + n ? "#ffd8a8" : BAND[q % 2]) : "#ffffff");
+  for (let i = 0; i < n; i++)
+    for (let j = 0; j < m; j++) {
+      const x = x0 + j * S;
+      const y = y0 + i * S;
+      const q = place(i, j);
+      out.push(
+        `<polygon points="${x},${y} ${x + S},${y} ${x},${y + S}" fill="${bandFill(q + 1)}"/>`,
+        `<polygon points="${x + S},${y} ${x + S},${y + S} ${x},${y + S}" fill="${bandFill(q)}"/>`,
+        `<rect x="${x}" y="${y}" width="${S}" height="${S}" fill="none" stroke="${INK}" stroke-width="1.6"/>`,
+        `<line x1="${x + S}" y1="${y}" x2="${x}" y2="${y + S}" stroke="#868e96" stroke-width="1.2"/>`,
+      );
+      if (i * m + j < cellsShown) {
+        const p = A[j] * B[i];
+        const fs = S * 0.34;
+        out.push(text(x + S * 0.3, y + S * 0.4, String(Math.floor(p / 10)), { size: fs, bold: true, color: "#1971c2" }));
+        out.push(text(x + S * 0.7, y + S * 0.86, String(p % 10), { size: fs, bold: true, color: "#e8590c" }));
+      }
+    }
+  // The diagonals continue out of the grid to separate the answer digits.
+  const ext = (x: number, y: number) => `<line x1="${x}" y1="${y}" x2="${x - D}" y2="${y + D}" stroke="#868e96" stroke-width="1.2"/>`;
+  for (let j = 1; j <= m; j++) out.push(ext(x0 + j * S, y0 + n * S));
+  for (let i = 0; i <= n; i++) out.push(ext(x0, y0 + i * S));
+  // Digit labels: a on top, b on the right.
+  A.forEach((d, j) => out.push(text(x0 + j * S + S / 2, y0 - 12, String(d), { size: 22, bold: true })));
+  B.forEach((d, i) => out.push(text(x0 + m * S + 20, y0 + i * S + S / 2 + 8, String(d), { size: 22, bold: true })));
+  out.push(text(x0 + m * S + 20, y0 - 12, "×", { size: 20, color: "#868e96" }));
+  // Answer digits (and carries) for the bands added so far.
+  const at = (q: number): [number, number] =>
+    q < m ? [x0 + (m - 1 - q + 0.5) * S - D * 0.5, y0 + n * S + D * 0.62] : [x0 - D * 0.5, y0 + (m + n - 1 - q + 0.5) * S + D * 0.62];
+  for (let q = 0; q < bandsShown; q++) {
+    const [x, y] = at(q);
+    const lead = q === m + n - 1 && digit[q] === 0;
+    out.push(text(x, y, String(digit[q]), { size: 24, bold: true, color: lead ? "#ced4da" : "#2f9e44" }));
+    if (carryIn[q + 1] && q + 1 < m + n) {
+      const [cx, cy] = at(q + 1);
+      out.push(text(cx - 13, cy - 16, String(carryIn[q + 1]), { size: 13, bold: true, color: "#e8590c" }));
+    }
+  }
+  let y = y0 + n * S + D + 30;
+  // The addition in the band just summed.
+  if (bandsShown > 0 && bandsShown < m + n) {
+    const q = bandsShown - 1;
+    const terms = sums[q].map(String);
+    const total = sums[q].reduce((s, v) => s + v, 0) + carryIn[q];
+    const line = `${terms.join(" + ")}${carryIn[q] ? ` + ${carryIn[q]}` : ""} = ${total}`;
+    out.push(text(PAD, y, line, { anchor: "start", size: 17, color: "#495057" }));
+    y += 32;
+  }
+  const done = k >= m * n + m + n;
+  const eq = done ? `${a} × ${b} = ${a * b}` : `${a} × ${b} = ?`;
+  out.push(text(PAD, y, eq, { anchor: "start", size: 22, bold: true }));
+  return wrap(Math.max(x0 + m * S + 44, PAD * 2 + width(eq, 22)), y + PAD, out.join(""));
+}
+
 export function renderMultiply(spec: MultiplySpec): RenderedSvg {
   const lim = MULTIPLY_LIMITS[spec.style];
   if (!(spec.a >= 1 && spec.b >= 1 && spec.a <= lim.a && spec.b <= lim.b)) throw new Error("range");
@@ -204,5 +299,7 @@ export function renderMultiply(spec: MultiplySpec): RenderedSvg {
       return numberline(spec, k);
     case "area":
       return area(spec, k);
+    case "lattice":
+      return lattice(spec, k);
   }
 }

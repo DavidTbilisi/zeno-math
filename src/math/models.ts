@@ -453,6 +453,8 @@ export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec
     { key: "mulDistributive", spec: { type: "multiply", style: "area", a: 7, b: 12, step: 999 } },
     { key: "mulArea", spec: { type: "multiply", style: "area", a: 23, b: 14, step: 999 } },
     { key: "mulBig", spec: { type: "multiply", style: "area", a: 123, b: 45, step: 999 } },
+    { key: "mulLattice", spec: { type: "multiply", style: "lattice", a: 234, b: 56, step: 999 } },
+    { key: "mulLatticeBig", spec: { type: "multiply", style: "lattice", a: 4567, b: 382, step: 999 } },
   ],
   placeValue: [
     { key: "pvEmpty", spec: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true } },
