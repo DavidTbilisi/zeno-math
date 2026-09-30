@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to real analysis, integration techniques, differential equations, statistics, linear algebra and 3D geometry.
+counting with bar models and fractions all the way to trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -55,6 +55,17 @@ UI in English, Russian and Georgian.
     with every row operation shown — unique, parametric (x = 3 − 2t) or no solution (∅)
   - *Transformation*: a 2×2 matrix acting on the plane — bent grid, unit square → parallelogram
     with area |det|, basis vectors on the columns, an "F" that flips when det < 0, and a slider from I to M
+- **θ Trigonometry**
+  - *Unit circle*: P = (cos θ, sin θ) with the cos (green), sin (red) and tan (orange) segments, the sine wave traced
+    alongside, exact values for every multiple of 15° (sin 75° = (√6 + √2)/4), degrees or radians, quadrant
+    signs (All Students Take Calculus) and the reference angle
+  - *Right triangle*: SOH CAH TOA from any two of a, b, c, θ — every step, given parts in blue
+  - *Solve a triangle*: SSS and SAS with the law of cosines, ASA/AAS with the law of sines, and the ambiguous
+    SSA case — two triangles, one, or none — with areas ½·ab·sin C
+  - *Graphs*: y = A·sin/cos/tan(B(x − C)) + D against the base graph, with amplitude, period, phase shift and
+    midline marked, tan asymptotes, degrees or radians
+  - *Equations*: sin/cos/tan x = k — the principal angle, all solutions in one turn on the unit circle and the graph,
+    and the general solution (x = ±150° + 360°n)
 - **ε Analysis** — the definitions of real analysis, drawn and checked numerically
   - *Sequences ε–N*: aₙ against the band L ± ε; N is found automatically (checked up to n = 5000),
     terms turn green from N on — and (−1)ⁿ shows what "no N works" looks like
@@ -167,6 +178,7 @@ src/math/multiply.ts      multiplication models (groups, array, number line, are
 src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
 src/components/PlaceValueMat.tsx  the drag & drop place-value mat
 src/math/fraction.ts      exact rational arithmetic
+src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG
