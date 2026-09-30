@@ -92,6 +92,12 @@ UI in English, Russian and Georgian.
   - *Arguments*: validity by truth table with the counterexample row, and the rule named — modus ponens / tollens,
     hypothetical and disjunctive syllogism, transposition, dilemma — or the fallacy (affirming the consequent,
     denying the antecedent)
+  - *Strengthen / weaken*: the argument written with letters (a legend says what each means), premises, background
+    links and a conclusion; an argument map with the unstated premise found automatically (the simplest extra premise
+    that makes it valid), a pattern card (what people say → what to do, correlation → cause, sample → everyone,
+    analogy, plan → goal, criterion → decision) with its typical gap, strengtheners and weakeners, and every answer
+    option judged — closes the gap, needed, strengthens, weakens, defeats, irrelevant or denies a premise — by how it
+    moves the share of cases where the conclusion holds
   - *Constraint boards*: grouping (bins with capacities) and ordering (slots) puzzles in a compact notation —
     `A@Chveli`, `C=G`, `A≠B`, `X<Y`, `[X·Y]`, `X∉m`, `F@Kala → E@Chveli` — with every conditional written
     together with its contrapositive, what is forced and ruled out before any question, an "if …" assumption worked
@@ -100,7 +106,8 @@ UI in English, Russian and Georgian.
   - *Truth-tellers & liars*: Smullyan's islands solved by checking X ↔ (what X says) in every row
   - *Sets*: Venn diagrams (1–3 sets) of ∪ ∩ ∖ Δ ′ expressions, two expressions compared, and x ∈ … as logic
   - The examples include the 2025 NAEC master's exam in logical reasoning (variant I): the grouping and
-    scheduling scenarios (items 12–17), the statues (8), the truth-teller (11) and the deduction items
+    scheduling scenarios (items 12–17), the statues (8), the truth-teller (11), strengthen / weaken (5, 9) and the
+    deduction items
 - **ⁿCₖ Combinatorics** — exact counts (BigInt), with every case listed when small
   - *Counting*: permutations, combinations, sequences and multisets on an "order matters? / repetition?" grid,
     all outcomes listed (permutations grouped by combination, so P = C · r!), and anagrams of words (MISSISSIPPI)
@@ -336,6 +343,7 @@ src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, 
 src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), BST/AVL, heaps
 src/math/graphtheory.ts   graph theory: properties, Euler, Hamilton, colouring, walks, spanning trees
 src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh maps / minimal forms, circuits, arguments, Venn
+src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern cards, options judged by support
 src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and truth-teller / liar puzzles
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases

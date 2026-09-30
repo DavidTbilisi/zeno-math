@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { useI18n } from "../i18n";
 import { LOGIC_PRESETS, LOGIC_TOPICS, renderLogic, type LogicSpec, type LogicTopic } from "../math/logic";
 import { BOARD_MODES, BOARD_PRESETS, type BoardSpec } from "../math/logicPuzzles";
+import { SW_ASKS, SW_PATTERNS, SW_PRESETS, type SwPattern, type SwSpec } from "../math/logicArgue";
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
@@ -44,6 +45,51 @@ function BoardFields({ spec, set }: { spec: LogicSpec; set: (patch: Partial<Logi
       {area("rules", t.boardRules, 4)}
       {line("ask", t.boardAsk)}
       {area("options", t.boardOptions, 3)}
+    </>
+  );
+}
+
+/** Legend, premises, background links, conclusion and options for a strengthen / weaken question. */
+function SwFields({ spec, set }: { spec: LogicSpec; set: (patch: Partial<LogicSpec>) => void }) {
+  const { t } = useI18n();
+  const s = spec.sw ?? SW_PRESETS[0].spec.sw!;
+  const put = (patch: Partial<SwSpec>) => set({ sw: { ...s, ...patch } });
+  const area = (key: "legend" | "options", label: string, rows: number) => (
+    <label className="field">
+      <span>{label}</span>
+      <textarea className="mono" rows={rows} spellCheck={false} value={s[key]} onChange={(e) => put({ [key]: e.target.value })} />
+    </label>
+  );
+  const line = (key: "premises" | "links" | "conclusion", label: string) => (
+    <label className="field">
+      <span>{label}</span>
+      <input className="mono" spellCheck={false} value={s[key]} onChange={(e) => put({ [key]: e.target.value })} />
+    </label>
+  );
+  return (
+    <>
+      <div className="segmented" role="radiogroup">
+        {SW_ASKS.map((a) => (
+          <button key={a} role="radio" aria-checked={s.ask === a} className={s.ask === a ? "active" : ""} onClick={() => put({ ask: a })}>
+            {t.swAsks[a]}
+          </button>
+        ))}
+      </div>
+      <label className="field">
+        <span>{t.swPattern}</span>
+        <select value={s.pattern} onChange={(e) => put({ pattern: e.target.value as SwPattern })}>
+          {SW_PATTERNS.map((p) => (
+            <option key={p} value={p}>
+              {t.logicWords.sw.patterns[p].name}
+            </option>
+          ))}
+        </select>
+      </label>
+      {area("legend", t.swLegend, 4)}
+      {line("premises", t.swPremises)}
+      {line("links", t.swLinks)}
+      {line("conclusion", t.swConclusion)}
+      {area("options", t.swOptions, 4)}
     </>
   );
 }
@@ -143,6 +189,8 @@ export function LogicDialog({ initial, onSubmit, onClose }: {
 
       {topic === "board" ? (
         <BoardFields spec={spec} set={set} />
+      ) : topic === "strengthen" ? (
+        <SwFields spec={spec} set={set} />
       ) : topic === "knights" ? (
         <label className="field">
           <span>{t.knightsStatements}</span>
@@ -174,7 +222,7 @@ export function LogicDialog({ initial, onSubmit, onClose }: {
         field("f", t.logicFormula)
       )}
 
-      {topic !== "board" && topic !== "knights" && <div className="snippets">
+      {topic !== "board" && topic !== "knights" && topic !== "strengthen" && <div className="snippets">
         {symbols.map((sym) => (
           <button key={sym} className="chip" onMouseDown={(e) => e.preventDefault()} onClick={() => insert(sym)}>
             {sym}

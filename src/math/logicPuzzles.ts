@@ -67,10 +67,10 @@ export type KnightsWords = {
 // ---------- shared drawing ----------
 
 /** Rough text width, enough to lay out boxes (Georgian letters run wider). */
-const tw = (s: string, size: number) => [...s].reduce((a, ch) => a + (/[Ⴀ-ჿ]/.test(ch) ? 0.8 : /[A-ZА-Я@≠∉]/.test(ch) ? 0.68 : 0.56) * size, 0);
+export const tw = (s: string, size: number) => [...s].reduce((a, ch) => a + (/[Ⴀ-ჿ]/.test(ch) ? 0.8 : /[A-ZА-Я@≠∉]/.test(ch) ? 0.68 : 0.56) * size, 0);
 
 /** Like compose, but with a plain-text title (names may be in any script). */
-function composeText(title: string, body: string, bodyH: number, captions: Caption[]): RenderedSvg {
+export function composeText(title: string, body: string, bodyH: number, captions: Caption[]): RenderedSvg {
   const top = 48;
   const lines = captions.flatMap((c) => wrap(c.text).map((text) => ({ text, color: c.color ?? C.ink })));
   const capTop = top + bodyH + 12;

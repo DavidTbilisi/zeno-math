@@ -5,12 +5,13 @@
 import { txt } from "./algoArrays";
 import { C, compose, fill, r2, W, type Caption } from "./chart";
 import { latexToSvg, type RenderedSvg } from "./latex";
+import { renderStrengthen, SW_PRESETS, type SwSpec, type SwWords } from "./logicArgue";
 import { BOARD_PRESETS, KNIGHTS_PRESETS, renderBoard, renderKnights, type BoardSpec, type BoardWords, type KnightsWords } from "./logicPuzzles";
 
-export type LogicTopic = "table" | "equiv" | "nf" | "circuit" | "argument" | "sets" | "board" | "knights";
-export const LOGIC_TOPICS: LogicTopic[] = ["table", "equiv", "nf", "circuit", "argument", "board", "knights", "sets"];
+export type LogicTopic = "table" | "equiv" | "nf" | "circuit" | "argument" | "strengthen" | "sets" | "board" | "knights";
+export const LOGIC_TOPICS: LogicTopic[] = ["table", "equiv", "nf", "circuit", "argument", "strengthen", "board", "knights", "sets"];
 /** f: the formula (premises for arguments); g: the second formula / conclusion; vals: circuit inputs; tf: T/F instead of 1/0. */
-export type LogicSpec = { topic: LogicTopic; f: string; g: string; vals: string; tf: boolean; board?: BoardSpec };
+export type LogicSpec = { topic: LogicTopic; f: string; g: string; vals: string; tf: boolean; board?: BoardSpec; sw?: SwSpec };
 
 export type LogicWords = {
   T: string;
@@ -48,6 +49,7 @@ export type LogicWords = {
   setsInfo: string;
   board: BoardWords;
   knights: KnightsWords;
+  sw: SwWords;
 };
 
 // ---------- formulas ----------
@@ -218,7 +220,7 @@ export function evalNode(n: Node, env: Record<string, boolean>): boolean {
   }
 }
 
-function varsOf(nodes: Node[]): string[] {
+export function varsOf(nodes: Node[]): string[] {
   const s = new Set<string>();
   const walk = (n: Node) => {
     if (n.t === "var") s.add(n.name);
@@ -1031,6 +1033,7 @@ export const LOGIC_PRESETS: { [K in LogicTopic]: { label: string; spec: LogicSpe
     { label: "NAEC 2025 · 6 (II)", spec: s("argument", "y -> v; ~v", "~y") },
     { label: "NAEC 2025 · 7", spec: s("argument", "s -> (a -> z); b -> ~z", "s -> (a -> ~b)") },
   ],
+  strengthen: SW_PRESETS,
   board: BOARD_PRESETS,
   knights: KNIGHTS_PRESETS,
   sets: [
@@ -1061,5 +1064,7 @@ export function renderLogic(spec: LogicSpec, words: LogicWords): RenderedSvg {
       return renderBoard(spec.board ?? BOARD_PRESETS[0].spec.board!, words);
     case "knights":
       return renderKnights(spec.f, words);
+    case "strengthen":
+      return renderStrengthen(spec.sw ?? SW_PRESETS[0].spec.sw!, words);
   }
 }
