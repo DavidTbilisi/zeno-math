@@ -3,6 +3,7 @@
 import type { RenderedSvg } from "./latex";
 import { renderPlaceValue, type PlaceValueSpec } from "./placeValue";
 import { renderMultiply, type MultiplySpec } from "./multiply";
+import { renderDivision, type DivisionSpec } from "./division";
 
 export const MODEL_COLORS = [
   { stroke: "#1971c2", fill: "#a5d8ff" },
@@ -19,7 +20,7 @@ export type FractionRow = { n: number; d: number };
 export type FractionSpec = { type: "fraction"; rows: FractionRow[]; shape: "bar" | "circle"; unitLabels: boolean };
 export type PercentSpec = { type: "percent"; percent: number; of: number | null; style: "grid" | "bar" };
 export type BondSpec = { type: "bond"; whole: string; parts: string[] };
-export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | MultiplySpec;
+export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | MultiplySpec | DivisionSpec;
 export type ModelType = ModelSpec["type"];
 
 const INK = "#1e1e1e";
@@ -384,6 +385,8 @@ export function renderModel(spec: ModelSpec): RenderedSvg {
       return renderPlaceValue(spec);
     case "multiply":
       return renderMultiply(spec);
+    case "division":
+      return renderDivision(spec);
   }
 }
 
@@ -396,6 +399,7 @@ export const DEFAULT_MODELS: { [K in ModelType]: Extract<ModelSpec, { type: K }>
   bond: { type: "bond", whole: "10", parts: ["7", "?"] },
   placeValue: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true },
   multiply: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 },
+  division: { type: "division", style: "bracket", a: 624, b: 12, decimals: 0, step: 999 },
 };
 
 export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec, { type: K }> }[] } = {
@@ -455,6 +459,16 @@ export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec
     { key: "mulBig", spec: { type: "multiply", style: "area", a: 123, b: 45, step: 999 } },
     { key: "mulLattice", spec: { type: "multiply", style: "lattice", a: 234, b: 56, step: 999 } },
     { key: "mulLatticeBig", spec: { type: "multiply", style: "lattice", a: 4567, b: 382, step: 999 } },
+  ],
+  division: [
+    { key: "div624", spec: { type: "division", style: "bracket", a: 624, b: 12, decimals: 0, step: 999 } },
+    { key: "div625", spec: { type: "division", style: "bracket", a: 625, b: 12, decimals: 0, step: 999 } },
+    { key: "divZero", spec: { type: "division", style: "bracket", a: 8136, b: 4, decimals: 0, step: 999 } },
+    { key: "divBig", spec: { type: "division", style: "bracket", a: 98765, b: 43, decimals: 0, step: 999 } },
+    { key: "divDecimal", spec: { type: "division", style: "bracket", a: 7, b: 8, decimals: 4, step: 999 } },
+    { key: "divRepeat", spec: { type: "division", style: "bracket", a: 1, b: 7, decimals: 10, step: 999 } },
+    { key: "divCorner", spec: { type: "division", style: "corner", a: 9372, b: 12, decimals: 0, step: 999 } },
+    { key: "divShort", spec: { type: "division", style: "short", a: 7236, b: 6, decimals: 0, step: 999 } },
   ],
   placeValue: [
     { key: "pvEmpty", spec: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true } },

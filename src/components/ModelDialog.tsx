@@ -17,10 +17,11 @@ import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { PlaceValueMat } from "./PlaceValueMat";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, stepCount, type MultiplySpec } from "../math/multiply";
+import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, type DivisionSpec } from "../math/division";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply"];
+const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "division"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
@@ -43,7 +44,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication };
+  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, division: t.division };
 
   return (
     <Modal
@@ -80,6 +81,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
       </div>
 
       {spec.type === "multiply" && <MultiplyEditor spec={spec} onChange={(s) => update("multiply", s)} />}
+      {spec.type === "division" && <DivisionEditor spec={spec} onChange={(s) => update("division", s)} />}
       {spec.type === "placeValue" && <PlaceValueMat spec={spec} onChange={(s) => update("placeValue", s)} />}
       {spec.type === "bar" && <BarEditor spec={spec} onChange={(s) => update("bar", s)} />}
       {spec.type === "fraction" && <FractionEditor spec={spec} onChange={(s) => update("fraction", s)} />}
@@ -245,6 +247,50 @@ function MultiplyEditor({ spec, onChange }: { spec: MultiplySpec; onChange: (s: 
         <span className="mult-sign">= {spec.a * spec.b}</span>
       </div>
       <small className="hint">{t.multHint[spec.style]}</small>
+      <div className="field">
+        <span>
+          {t.stepByStep}: {shown} / {n}
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={n}
+          step={1}
+          value={shown}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({ ...spec, step: v >= n ? 999 : v });
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
+function DivisionEditor({ spec, onChange }: { spec: DivisionSpec; onChange: (s: DivisionSpec) => void }) {
+  const { t } = useI18n();
+  const n = divisionStepCount(spec);
+  const shown = Math.min(spec.step, n);
+  const set = (patch: Partial<DivisionSpec>) => onChange({ ...spec, ...patch, step: 999 });
+  return (
+    <>
+      <div className="segmented wrap" role="radiogroup">
+        {DIVISION_STYLES.map((s) => (
+          <button key={s} role="radio" aria-checked={spec.style === s} className={spec.style === s ? "active" : ""} onClick={() => set({ style: s })}>
+            {t.divStyles[s]}
+          </button>
+        ))}
+      </div>
+      <div className="range-grid mult-inputs">
+        <input type="number" min={0} max={DIVISION_LIMITS.a} value={spec.a} aria-label="a" onChange={(e) => set({ a: clampInt(e.target.value, 0, DIVISION_LIMITS.a) })} />
+        <span className="mult-sign">{spec.style === "corner" ? ":" : "÷"}</span>
+        <input type="number" min={1} max={DIVISION_LIMITS.b} value={spec.b} aria-label="b" onChange={(e) => set({ b: clampInt(e.target.value, 1, DIVISION_LIMITS.b) })} />
+        <label>
+          <span>{t.divDecimals}</span>
+          <input type="number" min={0} max={DIVISION_LIMITS.decimals} value={spec.decimals} onChange={(e) => set({ decimals: clampInt(e.target.value, 0, DIVISION_LIMITS.decimals) })} />
+        </label>
+      </div>
+      <small className="hint">{t.divHint[spec.style]}</small>
       <div className="field">
         <span>
           {t.stepByStep}: {shown} / {n}

@@ -24,6 +24,9 @@ UI in English, Russian and Georgian.
     equal groups (3 × 4 = 4 + 4 + 4, with skip counts), arrays (rows with running totals; b × a = a × b),
     number-line jumps, the place-value area model (23 × 14 = 200 + 80 + 30 + 12 = 322), and the
     lattice (gelosia) method — digit products split by diagonals, bands added with carries, read down and along
+  - *Division*: long division step by step (divide, multiply, subtract, bring down) in three school layouts —
+    the English bracket, the European corner layout (уголком / კუთხით) and short division with carried
+    remainders; remainders as mixed numbers, decimal places, and repeating decimals (1 ÷ 7 = 0.(142857))
 - **🧊 3D (three.js)** — rotate with the mouse, then insert a snapshot (stays editable, camera angle is saved)
   - *Solids*: cuboid, prism (regular 3–8-gon base), square pyramid, cylinder, cone, sphere —
     dimension labels, see-through mode, volume & surface-area formulas
@@ -222,6 +225,7 @@ src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX heade
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
 src/components/GeometryDialog.tsx  the drag-the-points geometry editor
+src/math/division.ts      long division: bracket, corner and short layouts, decimals and repeating decimals
 src/math/multiply.ts      multiplication models (groups, array, number line, area, lattice) → SVG
 src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
 src/components/PlaceValueMat.tsx  the drag & drop place-value mat
