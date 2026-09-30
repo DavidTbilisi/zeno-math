@@ -25,7 +25,7 @@ export type MatrixCalcSpec = {
 };
 
 /** Errors carry an i18n key so the dialog can show a translated message. */
-export type MatrixErrorKey = "empty" | "invalid" | "sameSize" | "mulSize" | "square" | "solveSize";
+export type MatrixErrorKey = "empty" | "invalid" | "sameSize" | "mulSize" | "square" | "solveSize" | "notBasis";
 export class MatrixError extends Error {
   key: MatrixErrorKey;
   constructor(key: MatrixErrorKey) {
@@ -49,22 +49,22 @@ export function parseMatrix(cells: string[][]): Mat {
 
 // ---------- LaTeX helpers ----------
 
-const env = (rows: string[][], name = "pmatrix") =>
+export const env = (rows: string[][], name = "pmatrix") =>
   `\\begin{${name}} ${rows.map((r) => r.join(" & ")).join(" \\\\ ")} \\end{${name}}`;
-const texM = (m: Mat, name = "pmatrix") => env(m.map((r) => r.map((x) => x.tex())), name);
+export const texM = (m: Mat, name = "pmatrix") => env(m.map((r) => r.map((x) => x.tex())), name);
 /** Augmented matrix with a bar before column `split`. */
-const texAug = (m: Mat, split: number) => {
+export const texAug = (m: Mat, split: number) => {
   const cols = m[0].length;
   const spec = "c".repeat(split) + (split < cols ? "|" + "c".repeat(cols - split) : "");
   return `\\left(\\begin{array}{${spec}} ${m.map((r) => r.map((x) => x.tex()).join(" & ")).join(" \\\\ ")} \\end{array}\\right)`;
 };
-const lines = (ls: string[]) => `\\begin{aligned} ${ls.join(" \\\\[4pt] ")} \\end{aligned}`;
+export const lines = (ls: string[]) => `\\begin{aligned} ${ls.join(" \\\\[4pt] ")} \\end{aligned}`;
 
 // ---------- Arithmetic ----------
 
 const map2 = (a: Mat, b: Mat, f: (x: Frac, y: Frac) => Frac) => a.map((r, i) => r.map((x, j) => f(x, b[i][j])));
 
-function mul(a: Mat, b: Mat): Mat {
+export function mul(a: Mat, b: Mat): Mat {
   return a.map((row) => b[0].map((_, j) => row.reduce((s, x, k) => s.add(x.mul(b[k][j])), Frac.ZERO)));
 }
 
@@ -85,7 +85,7 @@ export function det(m: Mat): Frac {
 type GJStep = { ops: string[]; m: Mat };
 
 /** Gauss–Jordan elimination on the first `cols` columns, recording grouped row operations. */
-function gaussJordan(start: Mat, cols: number): { steps: GJStep[]; result: Mat; pivots: number[] } {
+export function gaussJordan(start: Mat, cols: number): { steps: GJStep[]; result: Mat; pivots: number[] } {
   let m = start.map((r) => [...r]);
   const steps: GJStep[] = [];
   const pivots: number[] = [];
@@ -120,7 +120,7 @@ function gaussJordan(start: Mat, cols: number): { steps: GJStep[]; result: Mat; 
   return { steps, result: m, pivots };
 }
 
-function stepLines(start: Mat, steps: GJStep[], split: number): string[] {
+export function stepLines(start: Mat, steps: GJStep[], split: number): string[] {
   // Row operations sit right-aligned in the left column, next to a plain arrow
   // (stretchy \xrightarrow labels overlap their arrow in MathJax's standalone SVG).
   const arrow = "\\;\\longrightarrow\\;";

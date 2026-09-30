@@ -4,9 +4,10 @@ import { latexToSvg, type RenderedSvg } from "../math/latex";
 import { DEFAULT_MATRIX, MATRIX_OPS, MatrixError, matrixLatex, needsB, OP_LABELS, type MatrixCalcSpec } from "../math/matrix";
 import { DEFAULT_TRANSFORM, TRANSFORM_PRESETS, transformToSvg, type TransformSpec } from "../math/transform";
 import { svgToDataUrl } from "../math/svg";
+import { DEFAULT_SPACE, renderSpace, SPACE_LABELS, SPACE_OPS, SPACE_PRESETS, type SpaceSpec } from "../math/vectorspace";
 import { Modal } from "./Modal";
 
-export type MatrixSpec = MatrixCalcSpec | TransformSpec;
+export type MatrixSpec = MatrixCalcSpec | TransformSpec | SpaceSpec;
 
 const MAX = 4;
 
@@ -19,10 +20,12 @@ export function MatrixDialog({ initial, onSubmit, onClose }: {
   const [tab, setTab] = useState<MatrixSpec["type"]>(initial?.type ?? "calc");
   const [calc, setCalc] = useState<MatrixCalcSpec>(initial?.type === "calc" ? initial : DEFAULT_MATRIX);
   const [tf, setTf] = useState<TransformSpec>(initial?.type === "transform" ? initial : DEFAULT_TRANSFORM);
-  const spec: MatrixSpec = tab === "calc" ? calc : tf;
+  const [space, setSpace] = useState<SpaceSpec>(initial?.type === "space" ? initial : DEFAULT_SPACE);
+  const spec: MatrixSpec = tab === "calc" ? calc : tab === "transform" ? tf : space;
 
   const result = useMemo((): { rendered?: RenderedSvg; error?: string } => {
     try {
+      if (spec.type === "space") return { rendered: renderSpace(spec, t.spaceWords) };
       return { rendered: spec.type === "calc" ? latexToSvg(matrixLatex(spec)) : transformToSvg(spec) };
     } catch (e) {
       return { error: e instanceof MatrixError ? t.matrixErrors[e.key] : (e as Error).message };
@@ -44,15 +47,21 @@ export function MatrixDialog({ initial, onSubmit, onClose }: {
     >
       {!initial && (
         <div className="tabs" role="tablist">
-          {(["calc", "transform"] as const).map((k) => (
+          {(["calc", "transform", "space"] as const).map((k) => (
             <button key={k} role="tab" aria-selected={k === tab} className={`tab${k === tab ? " active" : ""}`} onClick={() => setTab(k)}>
-              {k === "calc" ? t.matrixCalc : t.matrixTransform}
+              {k === "calc" ? t.matrixCalc : k === "transform" ? t.matrixTransform : t.matrixSpaces}
             </button>
           ))}
         </div>
       )}
 
-      {tab === "calc" ? <CalcControls spec={calc} onChange={setCalc} /> : <TransformControls spec={tf} onChange={setTf} />}
+      {tab === "calc" ? (
+        <CalcControls spec={calc} onChange={setCalc} />
+      ) : tab === "transform" ? (
+        <TransformControls spec={tf} onChange={setTf} />
+      ) : (
+        <SpaceControls spec={space} onChange={setSpace} />
+      )}
 
       <div className="field">
         <span>{t.preview}</span>
@@ -220,6 +229,65 @@ function TransformControls({ spec, onChange }: { spec: TransformSpec; onChange: 
           <span>{t.showShape}</span>
         </label>
       </div>
+    </>
+  );
+}
+
+function SpaceControls({ spec, onChange }: { spec: SpaceSpec; onChange: (s: SpaceSpec) => void }) {
+  const { t } = useI18n();
+  const set = (patch: Partial<SpaceSpec>) => onChange({ ...spec, ...patch });
+  const rows = spec.A.length;
+  const w = Array.from({ length: rows }, (_, i) => spec.w[i] ?? "0");
+  return (
+    <>
+      <div className="segmented wrap" role="radiogroup" aria-label={t.operation}>
+        {SPACE_OPS.map((op) => (
+          <button key={op} role="radio" aria-checked={spec.op === op} className={`math-label${spec.op === op ? " active" : ""}`} onClick={() => set({ op })}>
+            {SPACE_LABELS[op]}
+          </button>
+        ))}
+      </div>
+      <small className="hint">{t.spaceHints[spec.op]}</small>
+      <div className="field">
+        <span>{t.examples}</span>
+        <div className="snippets">
+          {SPACE_PRESETS.filter((p) => p.op === spec.op).map((p) => (
+            <button key={p.label} className="chip text" onClick={() => set({ A: p.A, w: p.w ?? spec.w })}>
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="matrix-editors">
+        <MatrixEditor name={spec.op === "coords" ? "B" : spec.op === "span" || spec.op === "gram" ? "v" : "A"} cells={spec.A} onChange={(A) => set({ A })} />
+        {spec.op === "coords" && (
+          <div className="matrix-editor">
+            <div className="matrix-head">
+              <span className="matrix-name">w</span>
+            </div>
+            <div className="matrix-grid" style={{ gridTemplateColumns: "auto" }}>
+              {w.map((v, i) => (
+                <input
+                  key={i}
+                  className="matrix-cell"
+                  value={v}
+                  inputMode="decimal"
+                  aria-label={`w${i + 1}`}
+                  onChange={(e) => set({ w: w.map((x, j) => (j === i ? e.target.value : x)) })}
+                  onFocus={(e) => e.target.select()}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      <small className="hint">{t.matrixCellHint}</small>
+      {spec.op !== "eigen" && spec.op !== "gram" && (
+        <label className="check inline">
+          <input type="checkbox" checked={spec.steps} onChange={(e) => set({ steps: e.target.checked })} />
+          <span>{t.showSteps}</span>
+        </label>
+      )}
     </>
   );
 }

@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to real analysis, integration techniques, differential equations, statistics, matrices and 3D geometry.
+counting with bar models and fractions all the way to real analysis, integration techniques, differential equations, statistics, linear algebra and 3D geometry.
 UI in English, Russian and Georgian.
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
@@ -101,6 +101,15 @@ UI in English, Russian and Georgian.
     E(X), σ and z-scores
   - *Sample means*: the central limit theorem — means of n dice, coins or a skewed population pile up
     into N(μ, σ²/n) as n grows
+- **Vector spaces** (in *[ ] Matrices*) — exact fractions, pictures for ℝ² and ℝ³
+  - *Span & independence*: row reduction to the pivots, rank = dim span, a basis from the pivot columns,
+    the dependency relation (2v₁ + 3v₂ − v₃ = 0), and the span drawn as a line or plane
+  - *Four fundamental subspaces*: C(A), R(A), N(A), N(Aᵀ) with bases and dimensions, and rank–nullity
+  - *Coordinates*: [w]_B by solving B·c = w, drawn on the skewed grid of the basis
+  - *Gram–Schmidt*: projections subtracted step by step, orthonormal vectors with simplified radicals (√10/4)
+  - *Eigenvalues*: det(λI − A) exactly (Faddeev–LeVerrier), rational roots with multiplicity, eigenspaces as
+    null spaces of A − λI, A = PDP⁻¹ when diagonalisable, non-diagonalisable and complex cases, and a
+    picture of v and A·v on the eigenvector lines
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
@@ -158,6 +167,7 @@ src/math/multiply.ts      multiplication models (groups, array, number line, are
 src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
 src/components/PlaceValueMat.tsx  the drag & drop place-value mat
 src/math/fraction.ts      exact rational arithmetic
+src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG
 src/three/                3D: spec + formulas (spec.ts), scene building (build.ts), viewer & PNG snapshot (viewer.ts)
