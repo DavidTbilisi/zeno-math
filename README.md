@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -76,6 +76,21 @@ UI in English, Russian and Georgian.
     mode where students drag the image points and press Check (correct points turn green)
   - *Protractor*: a real-looking protractor laid along arm OA (1° ticks, inner and outer scales);
     drag the arms, snap to 1° or 5°, and "hide the answer" so students read it themselves
+- **xy Coordinate geometry** — type points, lines and circles; exact fractions and surds, every step named, on a grid
+  with equal units
+  - *Points*: Δx and Δy as the legs of a right triangle, the distance by Pythagoras (√13, 8√5/5), the midpoint, the
+    gradient, and the point dividing AB in a ratio
+  - *Equation of a line*: from an equation in any form, two points, a point and m, or m and c — rearranged to
+    y = mx + c, the intercepts, the general form ax + by + c = 0, and the rise/run triangle on the graph
+  - *Parallel & perpendicular*: the parallel and the perpendicular through a point (m₁·m₂ = −1), the foot of the
+    perpendicular with its right angle, and the distance |ax₀ + by₀ + c| / √(a² + b²)
+  - *Where lines meet*: substitution when one line is y = …, elimination otherwise; parallel and coincident lines
+  - *Circles*: x² + y² + Dx + Ey + F = 0 by completing the square, or centre and radius (or a point on it) to the
+    equation; a point inside, on or outside, the tangent at a point, and a line cutting, touching or missing the circle
+    by the discriminant, with exact intersection points
+  - *Shapes*: side lengths and gradients, parallel sides (arrow ticks) and right angles, the name (right-angled
+    isosceles triangle, square, rectangle, rhombus, parallelogram, trapezium, kite) and the area by the shoelace
+    formula, drawn as the criss-cross it is named after
 - **⚖ Equations & polynomials** — school algebra one line at a time, in exact fractions, every step labelled with what
   was done to both sides
   - *Linear equations*: take the smaller x-term from both sides, then the number, then divide; a balance scale with
@@ -210,6 +225,19 @@ UI in English, Russian and Georgian.
     1/n² → π²/6, alternating → ln 2, 1/n! → e, Leibniz → π
   - *Taylor*: Tₙ from symbolic derivatives with exact coefficients (x − x³/6), and a green strip
     where |f − Tₙ| < 0.01 that widens with the order up to the radius of convergence (1/(1 − x))
+- **f′ Derivatives** — a small symbolic engine opens every pending derivative (u)′ one rule at a time, names the rule,
+  simplifies, and checks the answer against a numerical derivative
+  - *First principles*: f(x + h) expanded, f(x) taken away, ÷ h, h → 0 — for polynomials — with the secants through x₀
+    closing in on the tangent
+  - *Rules*: sum, constant multiple, power, product, quotient and chain rules, eˣ, aˣ, ln, log_b, all six trig functions,
+    arcsin / arccos / arctan, sinh / cosh / tanh and xˣ; f and f′ drawn together
+  - *Chain rule*: the function split into layers y = f(u), u = g(v), …, each differentiated, multiplied along a drawn
+    chain x → v → u → y, and x put back
+  - *Tangent & normal*: f(a) and f′(a) exactly where possible (also at π/2), the tangent y − f(a) = f′(a)(x − a) and the
+    normal with gradient −1/f′(a), on equal units so the right angle shows
+  - *Stationary points*: f′(x) = 0 solved exactly (rational roots, then the formula with surds such as 1 ± √2),
+    maximum / minimum / point of inflection by the second derivative (or the sign of f′ when f″ = 0), a sign chart
+    with ↗ ↘, and where f is increasing or decreasing
 - **∫ Integrals** — integration techniques, every step shown and every answer checked
   (differentiating F must give back f; definite values are compared with Simpson's rule)
   - *Substitution*: ∫ c·x^(m−1)·g(a·xᵐ + b) dx with g = uⁿ, eᵘ, sin, cos or 1/u — du, the integral in u,
@@ -286,8 +314,8 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex numbers, analysis, integrals,
-  ODEs) and
+  coordinate geometry, trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex
+  numbers, analysis, derivatives, integrals, ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics)
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -416,7 +444,10 @@ The tests check that every example of every tool renders in English, Russian and
 keys; the logic parser; the NAEC 2025 answers; complex-number arithmetic against mathjs; that solved equations and
 inequalities satisfy the input, expansions and factorisations multiply back and all four quadratic methods agree;
 that simplified powers, surds, standard forms and logarithms keep the value of the input, and that solutions of exponential
-and log equations satisfy them (with false roots thrown out); that
+and log equations satisfy them (with false roots thrown out); that midpoints, lines, feet of perpendiculars, meeting points,
+centres, radii and areas from coordinate geometry agree with the input; that derivatives of hundreds of random expressions
+match numerical ones, and stationary points, tangents and the chain rule agree with them; that no picture repeats an
+attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
 bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
@@ -465,6 +496,8 @@ src/math/algebra.ts       equations & polynomials: linear, inequalities, expandi
 src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
+src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
+src/math/derive.ts        derivatives: expression trees, rules one level at a time, simplifier, chain, tangents, stationary points
 src/math/mental.ts        mental math: base multiplication, digit-sum check, roots, cubing, magic squares, Major System
 src/math/tactics.ts       problem-solving tactics: symmetry, pigeonhole, domino tiling by colouring
 src/math/matrix.ts        matrix operations → LaTeX with worked steps

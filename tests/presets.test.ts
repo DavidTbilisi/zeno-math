@@ -25,6 +25,7 @@ import { renderTactics, TACTICS_PRESETS } from "../src/math/tactics.ts";
 import { ALGEBRA_PRESETS, renderAlgebra } from "../src/math/algebra.ts";
 import { POWERS_PRESETS, renderPowers } from "../src/math/powers.ts";
 import { COORD_PRESETS, renderCoord } from "../src/math/coordgeom.ts";
+import { DERIV_PRESETS, renderDeriv } from "../src/math/derive.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -51,6 +52,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["algebra", specs(ALGEBRA_PRESETS), (s, t) => renderAlgebra(s, t.algebraWords)],
   ["powers", specs(POWERS_PRESETS), (s, t) => renderPowers(s, t.powersWords)],
   ["coordinate geometry", specs(COORD_PRESETS), (s, t) => renderCoord(s, t.coordWords)],
+  ["derivatives", specs(DERIV_PRESETS), (s, t) => renderDeriv(s, t.derivWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 
