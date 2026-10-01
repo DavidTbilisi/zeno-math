@@ -212,18 +212,27 @@ UI in English, Russian and Georgian.
     null spaces of A − λI, A = PDP⁻¹ when diagonalisable, non-diagonalisable and complex cases, and a
     picture of v and A·v on the eigenvector lines
 - **⇅ Algorithms** — algorithms and data structures, traced step by step with every count shown
-  - *Sorting*: bubble, insertion, selection, merge and quicksort (Lomuto) — one row per pass, split, merge or
-    partition, with comparisons and swaps counted and the complexity explained
-  - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed) and linear search
+  - *Sorting*: bubble, insertion, selection, Shell, merge, quicksort (Lomuto), heap and counting sort — one row
+    per pass, split, merge or partition, with arrows showing where every value moved, the partition being worked
+    on bracketed, comparisons and swaps counted, and the complexity explained; as cells or as bars
+  - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed), linear search,
+    two pointers (a pair with a given sum) and a sliding window (the best sum of k neighbours)
   - *Graphs*: type edges like `A-B 4, B-C 2`; BFS (levels, queue), DFS (recursion stack), Dijkstra (distance
-    table, shortest-path tree), Prim and Kruskal (minimum spanning tree, cycle checks) and Kahn's topological sort
-    (layered drawing, cycle detection); force-directed layout, directed or undirected
+    table, shortest-path tree), Bellman–Ford (negative edges, early stop, the negative cycle named), Floyd–Warshall
+    (all-pairs table, each improvement marked with the vertex it went through), Prim and Kruskal (minimum spanning
+    tree, cycle checks), union–find (sets after every edge) and Kahn's topological sort (layered drawing, cycle
+    detection); directed or undirected
   - *Trees & heaps*: binary search trees with all four traversals, AVL trees with balance factors and
     LL/RR/LR/RL rotations, and min/max-heaps built by heapify — the tree and the array side by side
   - *Stacks, queues, hashing*: push/pop/peek traces, and hash tables with chaining or linear probing
     (probe sequences, collisions, load factor)
   - *Dynamic programming*: LCS, edit distance, 0/1 knapsack and coin change as filled tables with the
     traceback path — and greedy coin change shown failing where it does
+  - *Recursion*: call trees for Fibonacci (repeated calls marked — or cut short with memoisation), factorial and
+    the towers of Hanoi (every move numbered); N-queens by backtracking (the first steps, dead ends, the board and
+    the number of solutions); subset sum as a take / skip tree with branches over the target cut
+  - *Strings*: naive matching (every shift), KMP (prefix table, shifts that skip what is known to match) and
+    Rabin–Karp (rolling hash, spurious hits) — character comparisons counted against the naive algorithm
   - *Complexity*: the master theorem with the recursion tree and the work on each level, and growth rates
     from log n to n! with running times at 10⁸ operations per second
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
@@ -370,9 +379,12 @@ src/math/multiply.ts      multiplication models (groups, array, number line, are
 src/math/placeValue.ts    base-ten blocks: layout, trading rules, board image
 src/components/PlaceValueMat.tsx  the drag & drop place-value mat
 src/math/fraction.ts      exact rational arithmetic
-src/math/algo.ts          algorithms: specs, presets, words (renderers in algoArrays.ts and algoGraphs.ts)
+src/math/algo.ts          algorithms: specs, presets, words (renderers in the algo*.ts files below)
 src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, complexity + cell/table helpers
-src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), BST/AVL, heaps
+src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Bellman–Ford, Floyd–Warshall, Prim, Kruskal, union–find,
+                          topological sort), BST/AVL, heaps
+src/math/algoRecur.ts     recursion trees (Fibonacci, factorial, Hanoi), N-queens, subset sum
+src/math/algoStrings.ts   string matching: naive, KMP, Rabin–Karp
 src/math/graphtheory.ts   graph theory: properties, Euler, Hamilton, colouring, walks, spanning trees
 src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh maps / minimal forms, circuits, arguments, Venn
 src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern cards, options judged by support

@@ -7,9 +7,12 @@ import {
   DS_KINDS,
   GRAPH_ALGOS,
   GROWTH_MODES,
+  RECUR_PROBLEMS,
   renderAlgo,
   SEARCH_ALGOS,
   SORT_ALGOS,
+  SORT_VIEWS,
+  STRING_ALGOS,
   TREE_KINDS,
   type AlgoSpec,
   type AlgoSpecOf,
@@ -106,6 +109,10 @@ export function AlgoDialog({ initial, onSubmit, onClose }: {
         <>
           {segmented(SORT_ALGOS, (a) => w.sortNames[a], spec.algo, (algo) => set({ algo }))}
           {row(t.algoData, "data")}
+          <div className="range-grid">
+            <span className="hint">{t.algoView}</span>
+            {segmented(SORT_VIEWS, (v) => t.algoViews[v], spec.view ?? "cells", (view) => set({ view }))}
+          </div>
         </>
       )}
 
@@ -113,7 +120,7 @@ export function AlgoDialog({ initial, onSubmit, onClose }: {
         <>
           {segmented(SEARCH_ALGOS, (a) => w.searchNames[a], spec.algo, (algo) => set({ algo }))}
           {row(t.algoData, "data")}
-          <div className="range-grid">{text(t.algoTarget, "target", 90)}</div>
+          <div className="range-grid">{text(spec.algo === "twoptr" ? t.algoSum : spec.algo === "window" ? t.algoWindow : t.algoTarget, "target", 90)}</div>
         </>
       )}
 
@@ -122,7 +129,7 @@ export function AlgoDialog({ initial, onSubmit, onClose }: {
           {segmented(GRAPH_ALGOS, (a) => w.graphNames[a], spec.algo, (algo) => set({ algo, ...(algo === "topo" ? { directed: true } : {}) }))}
           {row(t.algoEdges, "edges")}
           <div className="range-grid">
-            {spec.algo !== "topo" && spec.algo !== "kruskal" && text(t.algoStart, "start", 90)}
+            {!["topo", "kruskal", "floyd", "unionfind"].includes(spec.algo) && text(t.algoStart, "start", 90)}
             <label className="check">
               <input type="checkbox" checked={spec.directed} onChange={(e) => set({ directed: e.target.checked })} />
               <span>{t.algoDirected}</span>
@@ -168,6 +175,36 @@ export function AlgoDialog({ initial, onSubmit, onClose }: {
               <div className="range-grid">{text(t.algoAmount, "c")}</div>
             </>
           )}
+        </>
+      )}
+
+      {spec.topic === "recur" && (
+        <>
+          {segmented(RECUR_PROBLEMS, (p) => w.recur.names[p], spec.problem, (problem) => set({ problem }))}
+          {spec.problem === "subsets" ? (
+            <>
+              {row(t.algoNumbers, "data")}
+              <div className="range-grid">{text(t.algoGoal, "target", 90)}</div>
+            </>
+          ) : (
+            <div className="range-grid">
+              {text("n", "n")}
+              {spec.problem === "fib" && (
+                <label className="check">
+                  <input type="checkbox" checked={spec.memo} onChange={(e) => set({ memo: e.target.checked })} />
+                  <span>{t.algoMemo}</span>
+                </label>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {spec.topic === "string" && (
+        <>
+          {segmented(STRING_ALGOS, (a) => w.str.names[a], spec.algo, (algo) => set({ algo }))}
+          {row(t.algoText, "text")}
+          {row(t.algoPattern, "pattern")}
         </>
       )}
 

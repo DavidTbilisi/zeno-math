@@ -266,11 +266,14 @@ export function drawGraph(nodes: string[], edges: Edge[], directed: boolean, wei
 export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
   const { nodes, edges, weighted, adjOf } = parseGraph(spec, w);
   const algo = spec.algo;
+  const g = w.graphMore;
   const start = spec.start.trim() || nodes[0];
-  if (algo !== "topo" && algo !== "kruskal" && !nodes.includes(start)) throw new Error(fill(w.noNode, { v: start }));
+  // Algorithms that work from a start vertex.
+  const fromStart = algo !== "topo" && algo !== "kruskal" && algo !== "floyd" && algo !== "unionfind";
+  if (fromStart && !nodes.includes(start)) throw new Error(fill(w.noNode, { v: start }));
   if (algo === "topo" && !spec.directed) throw new Error(w.needDirected);
   const mst = algo === "prim" || algo === "kruskal";
-  const directed = spec.directed && !mst;
+  const directed = spec.directed && !mst && algo !== "unionfind";
   const adj = adjOf(directed);
   const look: Look = { hl: new Set(), fills: new Map(), badge: new Map(), under: new Map() };
   let cols: TCol[] = [];
@@ -399,6 +402,153 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     const root = find(start);
     for (const n of nodes) if (find(n) === root) reached.add(n);
     caps.push({ text: fill(w.mstTotal, { w: nt(total) }), color: C.blue });
+  } else if (algo === "bellman") {
+    // Relax every edge V − 1 times (stop early when nothing changes); one more pass finds a negative cycle.
+    const colW = Math.min(64, Math.floor((W - 32 - 70) / nodes.length));
+    cols = [{ head: g.cols.pass, w: 70 }, ...nodes.map((n) => ({ head: n, w: colW }))];
+    const dist = new Map(nodes.map((n) => [n, Infinity]));
+    const prev = new Map<string, { from: string; id: number }>();
+    dist.set(start, 0);
+    const arcs = edges.flatMap((e) => (directed ? [{ ...e }] : [{ ...e }, { ...e, u: e.v, v: e.u }]));
+    const relax = () => {
+      const changed = new Set<string>();
+      for (const e of arcs) {
+        const du = dist.get(e.u)!;
+        if (Number.isFinite(du) && du + e.w < dist.get(e.v)!) {
+          dist.set(e.v, du + e.w);
+          prev.set(e.v, { from: e.u, id: e.id });
+          changed.add(e.v);
+        }
+      }
+      return changed;
+    };
+    const show = (changed: Set<string>, head: string) =>
+      rows.push({
+        cells: [head, ...nodes.map((n) => (Number.isFinite(dist.get(n)!) ? nt(dist.get(n)!) : "∞"))],
+        colors: [undefined, ...nodes.map((n) => (changed.has(n) ? C.orange : Number.isFinite(dist.get(n)!) ? C.ink : C.grey))],
+        fills: [undefined, ...nodes.map((n) => (changed.has(n) ? ROLES.compare.fill : undefined))],
+        bold: [false, ...nodes.map((n) => changed.has(n))],
+      });
+    show(new Set([start]), "0");
+    let early = 0;
+    for (let k = 1; k < nodes.length; k++) {
+      const changed = relax();
+      show(changed, String(k));
+      if (!changed.size) {
+        early = k;
+        break;
+      }
+    }
+    const bad = early ? new Set<string>() : relax();
+    if (bad.size) {
+      show(bad, g.check);
+      // Walk back V steps along the predecessors to land on the cycle, then read it off in order.
+      let x = [...bad][0];
+      for (let i = 0; i < nodes.length; i++) x = prev.get(x)!.from;
+      const cyc = [x];
+      for (let y = prev.get(x)!.from; y !== x; y = prev.get(y)!.from) cyc.unshift(y);
+      cyc.forEach((n) => look.fills.set(n, "min"));
+      cyc.forEach((n, i) => {
+        const to = cyc[(i + 1) % cyc.length];
+        const e = edges.find((e) => (e.u === n && e.v === to) || (!directed && e.u === to && e.v === n));
+        if (e) look.hl.add(e.id);
+      });
+      look.hlColor = C.red;
+      caps.push({ text: fill(g.negCycle, { nodes: [...cyc, cyc[0]].join(" → ") }), color: C.red });
+      if (!directed && edges.some((e) => e.w < 0)) caps.push({ text: g.undirectedNegative, color: C.orange });
+    } else {
+      if (early) caps.push({ text: fill(g.earlyStop, { k: early }), color: C.green });
+      for (const n of nodes) if (Number.isFinite(dist.get(n)!)) reached.add(n), look.under.set(n, nt(dist.get(n)!));
+      for (const p of prev.values()) look.hl.add(p.id);
+      const paths = nodes
+        .filter((n) => n !== start && reached.has(n))
+        .map((n) => {
+          const path = [n];
+          while (path[0] !== start && path.length <= nodes.length) path.unshift(prev.get(path[0])!.from);
+          return fill(w.pathTo, { v: n, path: path.join(arrow), d: nt(dist.get(n)!) });
+        });
+      caps.push({ text: paths.join(" · "), color: C.blue });
+    }
+    for (const n of nodes) if (Number.isFinite(dist.get(n)!)) reached.add(n);
+  } else if (algo === "floyd") {
+    // Distances between every pair; a cell turns orange when going through k is shorter (k in brackets).
+    if (nodes.length > 8) throw new Error(fill(w.tooMany, { n: 8 }));
+    const V = nodes.length;
+    const ix = new Map(nodes.map((n, i) => [n, i]));
+    const d = nodes.map((_, i) => nodes.map((_, j) => (i === j ? 0 : Infinity)));
+    const via: (string | null)[][] = nodes.map(() => nodes.map(() => null));
+    for (const e of edges) {
+      const [i, j] = [ix.get(e.u)!, ix.get(e.v)!];
+      d[i][j] = Math.min(d[i][j], e.w);
+      if (!directed) d[j][i] = Math.min(d[j][i], e.w);
+    }
+    const updates: string[] = [];
+    for (let k = 0; k < V; k++) {
+      let u = 0;
+      for (let i = 0; i < V; i++)
+        for (let j = 0; j < V; j++)
+          if (d[i][k] + d[k][j] < d[i][j]) {
+            d[i][j] = d[i][k] + d[k][j];
+            via[i][j] = nodes[k];
+            u++;
+          }
+      updates.push(`${nodes[k]}: ${u}`);
+    }
+    const colW = Math.min(70, Math.floor((W - 32 - 44) / V));
+    cols = [{ head: "", w: 44 }, ...nodes.map((n) => ({ head: n, w: colW }))];
+    nodes.forEach((n, i) =>
+      rows.push({
+        cells: [n, ...nodes.map((_, j) => (Number.isFinite(d[i][j]) ? `${nt(d[i][j])}${via[i][j] ? ` (${via[i][j]})` : ""}` : "∞"))],
+        colors: [C.grey, ...nodes.map((_, j) => (i === j ? C.grey : via[i][j] ? C.orange : Number.isFinite(d[i][j]) ? C.ink : "#ced4da"))],
+        fills: [undefined, ...nodes.map((_, j) => (via[i][j] ? ROLES.compare.fill : undefined))],
+        bold: [true, ...nodes.map((_, j) => !!via[i][j])],
+      }),
+    );
+    nodes.forEach((n) => reached.add(n));
+    const neg = nodes.filter((_, i) => d[i][i] < 0);
+    if (neg.length) {
+      neg.forEach((n) => look.fills.set(n, "min"));
+      caps.push({ text: fill(g.negCycle, { nodes: neg.join(", ") }), color: C.red });
+    }
+    caps.push({ text: fill(g.fwUpdates, { list: updates.join(" · ") }), color: C.blue });
+  } else if (algo === "unionfind") {
+    // Union by size with path compression; each edge either joins two sets or closes a cycle.
+    cols = [{ head: w.cols.step, w: 50 }, { head: w.cols.edge, w: 90 }, { head: "find", w: 90 }, { head: g.cols.sets, w: 310 }];
+    const parent = new Map(nodes.map((n) => [n, n]));
+    const size = new Map(nodes.map((n) => [n, 1]));
+    const find = (x: string): string => {
+      const p = parent.get(x)!;
+      if (p === x) return x;
+      const r = find(p);
+      parent.set(x, r);
+      return r;
+    };
+    const setsText = () => {
+      const groups = new Map<string, string[]>();
+      for (const n of nodes) groups.set(find(n), [...(groups.get(find(n)) ?? []), n]);
+      return [...groups.values()].map((gr) => `{${gr.join(" ")}}`).join(" ");
+    };
+    for (const e of edges) {
+      const [ru, rv] = [find(e.u), find(e.v)];
+      const join = ru !== rv;
+      if (join) {
+        const [big, small] = size.get(ru)! >= size.get(rv)! ? [ru, rv] : [rv, ru];
+        parent.set(small, big);
+        size.set(big, size.get(big)! + size.get(small)!);
+        look.hl.add(e.id);
+      }
+      rows.push({
+        cells: [String(rows.length + 1), `${e.u} – ${e.v}`, `${ru}, ${rv}`, join ? setsText() : `✗ ${g.sameSet}`],
+        colors: [undefined, join ? C.blue : C.grey, join ? C.ink : C.red, join ? C.ink : C.red],
+        bold: [false, join],
+      });
+    }
+    // Colour each final set.
+    const palette = [ROLES.key, ROLES.sorted, ROLES.compare, ROLES.pivot, ROLES.min, { fill: "#fff3bf", stroke: "#f08c00", text: C.ink }];
+    const roots = [...new Set(nodes.map(find))];
+    look.colors = new Map(nodes.map((n) => [n, palette[roots.indexOf(find(n)) % palette.length]]));
+    nodes.forEach((n) => reached.add(n));
+    caps.push({ text: fill(g.components, { k: roots.length, sets: setsText() }), color: C.blue });
   } else {
     cols = [{ head: w.cols.step, w: 60 }, { head: w.cols.output, w: 110 }, { head: w.cols.queue, w: 300 }];
     const indeg = new Map(nodes.map((n) => [n, 0]));
@@ -423,19 +573,19 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     } else caps.push({ text: fill(w.topoOrder, { order: out.join(arrow) }), color: C.blue });
   }
 
-  for (const n of nodes) if (!look.fills.has(n)) look.fills.set(n, reached.has(n) ? (n === start && algo !== "topo" && algo !== "kruskal" ? "compare" : "key") : "idle");
+  for (const n of nodes) if (!look.fills.has(n)) look.fills.set(n, reached.has(n) ? (n === start && fromStart ? "compare" : "key") : "idle");
   const missing = nodes.filter((n) => !reached.has(n));
   if (missing.length && algo !== "topo") caps.push({ text: fill(w.unreachable, { nodes: missing.join(", ") }), color: C.orange });
-  if (mst && spec.directed) caps.push({ text: w.undirectedOnly, color: C.orange });
+  if ((mst || algo === "unionfind") && spec.directed) caps.push({ text: w.undirectedOnly, color: C.orange });
   caps.push({ text: w.graphInfo[algo], color: "#495057" });
 
   const H = 300;
-  const pic = drawGraph(nodes, edges, directed, weighted, look, H, { layered: algo === "topo" });
+  const pic = drawGraph(nodes, edges, directed, weighted, look, H, { layered: algo === "topo", circle: algo === "unionfind" });
   const tw = cols.reduce((s, c) => s + c.w, 0);
   const tb = rows.length ? table(Math.max(16, (W - tw) / 2), H + 14, cols, rows) : { svg: "", h: -14 };
   const V = nodes.length;
   const E = edges.length;
-  const cost = { bfs: "O(V + E)", dfs: "O(V + E)", topo: "O(V + E)", dijkstra: "O((V + E)\\log V)", prim: "O(E \\log V)", kruskal: "O(E \\log E)" }[algo];
+  const cost = { bfs: "O(V + E)", dfs: "O(V + E)", topo: "O(V + E)", dijkstra: "O((V + E)\\log V)", prim: "O(E \\log V)", kruskal: "O(E \\log E)", bellman: "O(V \\cdot E)", floyd: "O(V^3)", unionfind: "O(E\\,\\alpha(V))" }[algo];
   return compose(`V = ${V},\\quad E = ${E},\\qquad ${cost}`, pic + tb.svg, H + 14 + tb.h, caps);
 }
 

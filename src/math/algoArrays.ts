@@ -100,11 +100,30 @@ export function table(x: number, y: number, cols: TCol[], rows: TRow[], rowH = 2
 
 // ---------- array rows (sorting, searching) ----------
 
-export type Row = { vals: (number | string)[]; roles: Role[]; note: string; gaps?: Set<number>; marks?: string[]; noteColor?: string };
+/**
+ * One array state. moves: [from, to] pairs — a value at index `from` in the previous row is at `to` here
+ * (drawn as arrows between the rows). range: the part of the array being worked on (a bracket under it).
+ */
+export type Row = {
+  vals: (number | string)[];
+  roles: Role[];
+  note: string;
+  gaps?: Set<number>;
+  marks?: string[];
+  noteColor?: string;
+  moves?: [number, number][];
+  range?: [number, number];
+};
 const show = (v: number | string) => (typeof v === "number" ? nt(v) : v);
 
-/** One array state per row, index numbers on top and a short note on the right. */
-export function drawRows(rows: Row[], n: number, y0 = 0, maxW = 380): { svg: string; h: number } {
+/** Where values went from one row to the next, given which original item sits at each index. */
+export function movesBetween(before: number[], after: number[]): [number, number][] {
+  const at = new Map(before.map((id, i) => [id, i]));
+  return after.flatMap((id, j): [number, number][] => (at.get(id) !== j && at.has(id) ? [[at.get(id)!, j]] : []));
+}
+
+/** One array state per row, index numbers on top and a short note on the right; optionally as bars. */
+export function drawRows(rows: Row[], n: number, y0 = 0, maxW = 380, bars = false): { svg: string; h: number } {
   const cw = Math.min(44, Math.floor(maxW / n));
   const gap = 7;
   const size = Math.min(14, 7 + cw * 0.18);
@@ -117,20 +136,57 @@ export function drawRows(rows: Row[], n: number, y0 = 0, maxW = 380): { svg: str
     if (row.gaps) for (const k of row.gaps) if (k < i) g++;
     return 16 + i * cw + g * gap;
   };
+  // Bars share one scale: the smallest value (or 0) at the bottom.
+  const nums = rows.flatMap((r) => r.vals.filter((v): v is number => typeof v === "number"));
+  const lo = Math.min(0, ...nums);
+  const hi = Math.max(lo + 1e-9, ...nums);
+  const cellH = bars ? 60 : 28;
+  const lane = rows.some((r) => r.moves?.length) ? 16 : 0;
+  const drawCell = (x: number, y: number, v: number | string, role: Role) => {
+    if (!bars || typeof v !== "number") return cell(x, y, cw - 3, cellH, show(v), role, size);
+    const r = ROLES[role];
+    const bh = 4 + ((v - lo) / (hi - lo)) * (cellH - 20);
+    return (
+      `<rect x="${r2(x)}" y="${r2(y + cellH - 15 - bh)}" width="${r2(cw - 3)}" height="${r2(bh)}" rx="2" fill="${r.fill}" stroke="${r.stroke}" stroke-width="1.3"/>` +
+      txt(x + (cw - 3) / 2, y + cellH - 3, show(v), { size: Math.min(11, size), color: role === "idle" ? "#adb5bd" : C.ink, anchor: "middle" })
+    );
+  };
   for (let i = 0; i < n; i++) parts.push(txt(xOf(rows[0], i) + cw / 2 - 1, y0 + 10, String(i), { size: 10, color: C.grey, anchor: "middle" }));
   let y = y0 + 16;
+  let prev: { row: Row; bottom: number } | null = null;
   for (const row of rows) {
-    for (let i = 0; i < n; i++) parts.push(cell(xOf(row, i) + 1, y, cw - 3, 28, show(row.vals[i]), row.roles[i], size));
+    if (prev && row.moves?.length) {
+      // Arrows from where each moved value was to where it is now.
+      const y1 = prev.bottom + 1;
+      const y2 = y - 1;
+      for (const [from, to] of row.moves) {
+        const x1 = xOf(prev.row, from) + cw / 2 - 1;
+        const x2 = xOf(row, to) + cw / 2 - 1;
+        parts.push(
+          `<path d="M${r2(x1)},${r2(y1)} C${r2(x1)},${r2((y1 + y2) / 2)} ${r2(x2)},${r2((y1 + y2) / 2)} ${r2(x2)},${r2(y2 - 3)}" fill="none" stroke="${C.orange}" stroke-width="1.3" opacity="0.85"/>` +
+            `<path d="M${r2(x2)},${r2(y2)} l-3,-5 h6 z" fill="${C.orange}"/>`,
+        );
+      }
+    }
+    for (let i = 0; i < n; i++) parts.push(drawCell(xOf(row, i) + 1, y, row.vals[i], row.roles[i]));
+    if (row.range) {
+      const [a, b] = row.range;
+      const xa = xOf(row, a) + 2;
+      const xb = xOf(row, b) + cw - 4;
+      const yb = y + cellH + 3;
+      parts.push(`<path d="M${r2(xa)},${r2(yb - 2)} V${r2(yb)} H${r2(xb)} V${r2(yb - 2)}" fill="none" stroke="${C.purple}" stroke-width="1.5"/>`);
+    }
     const noteLines = wrap(row.note, noteChars);
-    noteLines.forEach((l, k) => parts.push(txt(noteX, y + 18 + (k - (noteLines.length - 1) / 2) * 15, l, { size: 12.5, color: row.noteColor ?? "#495057" })));
-    let h = Math.max(36, noteLines.length * 15 + 8);
+    noteLines.forEach((l, k) => parts.push(txt(noteX, y + cellH / 2 + 4 + (k - (noteLines.length - 1) / 2) * 15, l, { size: 12.5, color: row.noteColor ?? "#495057" })));
+    let h = Math.max(cellH + 8, noteLines.length * 15 + 8);
     if (row.marks) {
-      row.marks.forEach((m, i) => m && parts.push(txt(xOf(row, i) + cw / 2 - 1, y + 42, m, { size: 10.5, color: C.blue, anchor: "middle", bold: true })));
+      row.marks.forEach((m, i) => m && parts.push(txt(xOf(row, i) + cw / 2 - 1, y + cellH + 14, m, { size: 10.5, color: C.blue, anchor: "middle", bold: true })));
       h += 14;
     }
-    y += h;
+    prev = { row, bottom: y + cellH + (row.range ? 4 : 0) };
+    y += h + lane;
   }
-  return { svg: parts.join(""), h: y - y0 };
+  return { svg: parts.join(""), h: y - lane - y0 };
 }
 
 const arrTex = (a: number[]) => `\\left[\\,${a.map(tn).join(",\\ ")}\\,\\right]`;
@@ -141,12 +197,24 @@ export function renderSort(spec: SortSpec, w: AlgoWords): RenderedSvg {
   const a0 = parseNums(spec.data, w, 16);
   if (a0.length < 2) throw new Error(fill(w.badList, { s: spec.data }));
   const n = a0.length;
+  const m = w.sortMore;
+  if (spec.algo === "counting") return renderCounting(spec, a0, w);
   const a = a0.slice();
+  // ids[i]: which input item is at index i now — rows compare it with the previous row to draw the moves.
+  const ids = a0.map((_, i) => i);
+  let shown = ids.slice();
   const rows: Row[] = [{ vals: a0.slice(), roles: Array(n).fill("plain"), note: w.start }];
+  const push = (row: Row) => {
+    rows.push({ ...row, moves: movesBetween(shown, ids) });
+    shown = ids.slice();
+  };
   let c = 0;
   let s = 0;
   let stat: keyof AlgoWords["stats"] = "swaps";
-  const swap = (i: number, j: number) => ([a[i], a[j]] = [a[j], a[i]]);
+  const swap = (i: number, j: number) => {
+    [a[i], a[j]] = [a[j], a[i]];
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  };
   const roles = (f: (i: number) => Role) => Array.from({ length: n }, (_, i) => f(i));
   let legendItems: { role: Role; text: string }[] = [{ role: "sorted", text: w.legend.sorted }];
 
@@ -158,36 +226,77 @@ export function renderSort(spec: SortSpec, w: AlgoWords): RenderedSvg {
         if (a[j] > a[j + 1]) swap(j, j + 1), s++, swapped++;
       }
       const done = swapped === 0 || k === n - 1;
-      rows.push({ vals: a.slice(), roles: roles((i) => (done || i >= n - k ? "sorted" : "plain")), note: swapped === 0 ? fill(w.noSwaps, { k }) : fill(w.pass, { k, s: swapped }) });
+      push({ vals: a.slice(), roles: roles((i) => (done || i >= n - k ? "sorted" : "plain")), note: swapped === 0 ? fill(w.noSwaps, { k }) : fill(w.pass, { k, s: swapped }) });
       if (swapped === 0) break;
     }
-  } else if (spec.algo === "insertion") {
+  } else if (spec.algo === "insertion" || spec.algo === "shell") {
     stat = "shifts";
-    for (let i = 1; i < n; i++) {
-      const key = a[i];
-      let j = i - 1;
-      let shifts = 0;
-      while (j >= 0) {
-        c++;
-        if (a[j] > key) (a[j + 1] = a[j]), j--, shifts++;
-        else break;
+    // Shell sort is insertion sort on every gap-th element, with the gap halving down to 1.
+    const gaps: number[] = [];
+    if (spec.algo === "shell") for (let g = n >> 1; g >= 1; g >>= 1) gaps.push(g);
+    else gaps.push(1);
+    for (const g of gaps) {
+      let passShifts = 0;
+      for (let i = g; i < n; i++) {
+        const key = a[i];
+        const id = ids[i];
+        let j = i - g;
+        let shifts = 0;
+        while (j >= 0) {
+          c++;
+          if (a[j] > key) (a[j + g] = a[j]), (ids[j + g] = ids[j]), (j -= g), shifts++;
+          else break;
+        }
+        a[j + g] = key;
+        ids[j + g] = id;
+        s += shifts;
+        passShifts += shifts;
+        if (spec.algo === "insertion")
+          push({ vals: a.slice(), roles: roles((k) => (k === j + 1 ? "key" : i === n - 1 || k <= i ? "sorted" : "plain")), note: fill(w.insert, { v: nt(key), n: shifts }) });
       }
-      a[j + 1] = key;
-      s += shifts;
-      rows.push({ vals: a.slice(), roles: roles((k) => (k === j + 1 ? "key" : i === n - 1 || k <= i ? "sorted" : "plain")), note: fill(w.insert, { v: nt(key), n: shifts }) });
+      if (spec.algo === "shell")
+        push({
+          vals: a.slice(),
+          // Colour one gap group (indices 0, g, 2g, …) so the "sorted every g-th element" is visible.
+          roles: roles((k) => (g === 1 ? "sorted" : k % g === 0 ? "key" : "plain")),
+          note: fill(m.shellGap, { g, s: passShifts }),
+        });
     }
-    legendItems = [{ role: "key", text: w.legend.key }, { role: "sorted", text: w.legend.sortedPart }];
+    legendItems = spec.algo === "insertion" ? [{ role: "key", text: w.legend.key }, { role: "sorted", text: w.legend.sortedPart }] : [{ role: "key", text: m.gapGroup }, ...legendItems];
   } else if (spec.algo === "selection") {
     for (let i = 0; i < n - 1; i++) {
-      let m = i;
+      let mi = i;
       for (let j = i + 1; j < n; j++) {
         c++;
-        if (a[j] < a[m]) m = j;
+        if (a[j] < a[mi]) mi = j;
       }
-      if (m !== i) swap(i, m), s++;
-      rows.push({ vals: a.slice(), roles: roles((k) => (k === i ? "min" : k < i || i === n - 2 ? "sorted" : "plain")), note: fill(w.select, { v: nt(a[i]), i }) });
+      if (mi !== i) swap(i, mi), s++;
+      push({ vals: a.slice(), roles: roles((k) => (k === i ? "min" : k < i || i === n - 2 ? "sorted" : "plain")), note: fill(w.select, { v: nt(a[i]), i }) });
     }
     legendItems = [{ role: "min", text: w.legend.min }, ...legendItems];
+  } else if (spec.algo === "heap") {
+    // Build a max-heap in place, then move the root to the end and sift down, n − 1 times.
+    const sift = (i: number, end: number) => {
+      for (;;) {
+        const l = 2 * i + 1;
+        const r = l + 1;
+        let big = i;
+        if (l < end && (c++, a[l] > a[big])) big = l;
+        if (r < end && (c++, a[r] > a[big])) big = r;
+        if (big === i) return;
+        swap(i, big), s++;
+        i = big;
+      }
+    };
+    for (let i = (n >> 1) - 1; i >= 0; i--) sift(i, n);
+    push({ vals: a.slice(), roles: roles((k) => (k === 0 ? "pivot" : "plain")), note: fill(m.heapBuild, { top: nt(a[0]) }) });
+    for (let end = n - 1; end >= 1; end--) {
+      const top = a[0];
+      swap(0, end), s++;
+      sift(0, end);
+      push({ vals: a.slice(), roles: roles((k) => (k >= end || end === 1 ? "sorted" : k === 0 ? "pivot" : "plain")), note: fill(m.heapMove, { v: nt(top), i: end }) });
+    }
+    legendItems = [{ role: "pivot", text: m.heapRoot }, ...legendItems];
   } else if (spec.algo === "merge") {
     stat = "copies";
     legendItems = [{ role: "sorted", text: w.legend.run }];
@@ -205,24 +314,27 @@ export function renderSort(spec: SortSpec, w: AlgoWords): RenderedSvg {
     const D = Math.max(...segs.map((g) => g.d));
     const parts = (d: number) => segs.filter((g) => g.d === d || (g.d < d && g.hi - g.lo === 1));
     const gapsOf = (d: number) => new Set(parts(d).filter((g) => g.hi < n).map((g) => g.hi - 1));
-    for (let d = 1; d <= D; d++) rows.push({ vals: a0.slice(), roles: Array(n).fill("plain"), gaps: gapsOf(d), note: fill(w.split, { k: parts(d).length }) });
+    for (let d = 1; d <= D; d++) push({ vals: a0.slice(), roles: Array(n).fill("plain"), gaps: gapsOf(d), note: fill(w.split, { k: parts(d).length }) });
     for (let d = D - 1; d >= 0; d--) {
       const merged = segs.filter((g) => g.d === d && g.hi - g.lo > 1);
       for (const g of merged) {
         const mid = (g.lo + g.hi) >> 1;
         const out: number[] = [];
+        const outIds: number[] = [];
         let i = g.lo;
         let j = mid;
+        const take = (k: number) => (out.push(a[k]), outIds.push(ids[k]));
         while (i < mid && j < g.hi) {
           c++;
-          out.push(a[i] <= a[j] ? a[i++] : a[j++]);
+          if (a[i] <= a[j]) take(i++);
+          else take(j++);
         }
-        while (i < mid) out.push(a[i++]);
-        while (j < g.hi) out.push(a[j++]);
-        out.forEach((v, k) => (a[g.lo + k] = v));
+        while (i < mid) take(i++);
+        while (j < g.hi) take(j++);
+        out.forEach((v, k) => ((a[g.lo + k] = v), (ids[g.lo + k] = outIds[k])));
         s += out.length;
       }
-      rows.push({ vals: a.slice(), roles: roles((k) => (merged.some((g) => k >= g.lo && k < g.hi) ? "sorted" : "plain")), gaps: gapsOf(d), note: fill(w.merge, { k: parts(d).length }) });
+      push({ vals: a.slice(), roles: roles((k) => (merged.some((g) => k >= g.lo && k < g.hi) ? "sorted" : "plain")), gaps: gapsOf(d), note: fill(w.merge, { k: parts(d).length }) });
     }
   } else {
     const final = new Set<number>();
@@ -240,32 +352,144 @@ export function renderSort(spec: SortSpec, w: AlgoWords): RenderedSvg {
       }
       if (i !== hi) swap(i, hi), s++;
       final.add(i);
-      rows.push({
+      push({
         vals: a.slice(),
         roles: roles((k) => (k === i ? "pivot" : k >= lo && k <= hi ? "plain" : final.has(k) ? "sorted" : "idle")),
         note: fill(w.pivot, { p: nt(p), i }),
+        range: [lo, hi],
       });
       qs(lo, i - 1);
       qs(i + 1, hi);
     };
     qs(0, n - 1);
-    rows.push({ vals: a.slice(), roles: Array(n).fill("sorted"), note: w.done });
+    push({ vals: a.slice(), roles: Array(n).fill("sorted"), note: w.done });
     legendItems = [{ role: "pivot", text: w.legend.pivot }, ...legendItems, { role: "idle", text: w.legend.idle }];
   }
 
-  const body = drawRows(rows, n);
+  const body = drawRows(rows, n, 0, 380, spec.view === "bars");
   const leg = legendRow(legendItems, body.h + 8);
   const sorted = a0.slice().sort((x, y) => x - y);
   const caps: Caption[] = [
     { text: `${w.sortNames[spec.algo]}: ${fill(w.stats[stat], { c, s, n })}`, color: C.blue },
+    { text: m.moved, color: C.orange },
     { text: w.sortInfo[spec.algo], color: "#495057" },
   ];
   return compose(`${arrTex(a0)} \\;\\longrightarrow\\; ${arrTex(sorted)}`, body.svg + leg.svg, body.h + 8 + leg.h, caps);
 }
 
+/** Counting sort: count each value, turn the counts into end positions, then place right to left (stable). */
+function renderCounting(spec: SortSpec, a0: number[], w: AlgoWords): RenderedSvg {
+  const m = w.sortMore;
+  const n = a0.length;
+  const lo = Math.min(...a0);
+  const hi = Math.max(...a0);
+  if (!a0.every(Number.isInteger) || hi - lo > 24) throw new Error(m.countRange);
+  const K = hi - lo + 1;
+  const count = Array(K).fill(0);
+  for (const v of a0) count[v - lo]++;
+  const ends = count.map((_, k) => count.slice(0, k + 1).reduce((x, y) => x + y, 0));
+  const pos = ends.slice();
+  const out: number[] = Array(n);
+  const outIds: number[] = Array(n);
+  for (let i = n - 1; i >= 0; i--) {
+    const k = a0[i] - lo;
+    pos[k]--;
+    out[pos[k]] = a0[i];
+    outIds[pos[k]] = i;
+  }
+  const rows: Row[] = [
+    { vals: a0.slice(), roles: Array(n).fill("plain"), note: w.start },
+    { vals: out, roles: Array(n).fill("sorted"), note: m.countPlace, moves: movesBetween(a0.map((_, i) => i), outIds).concat(outIds.flatMap((id, j): [number, number][] => (id === j ? [[j, j]] : []))) },
+  ];
+  const body = drawRows(rows, n, 0, 380, spec.view === "bars");
+  // The count table under the rows: one column per value from min to max.
+  const colW = Math.max(22, Math.min(40, Math.floor((W - 32 - 80) / K)));
+  const tb = table(16, body.h + 12, [{ head: "", w: 80 }, ...Array.from({ length: K }, (_, k) => ({ head: nt(lo + k), w: colW }))], [
+    { cells: [m.countRow, ...count.map((x) => String(x))], colors: [C.grey, ...count.map((x) => (x ? C.ink : "#ced4da"))] },
+    { cells: [m.countEnds, ...ends.map((x) => String(x))], colors: [C.grey, ...count.map((x) => (x ? C.blue : "#ced4da"))], bold: [false, ...count.map((x) => x > 0)] },
+  ]);
+  const caps: Caption[] = [
+    { text: `${w.sortNames.counting}: ${fill(m.countStats, { n, k: K })}`, color: C.blue },
+    { text: w.sortInfo.counting, color: "#495057" },
+  ];
+  const sorted = a0.slice().sort((x, y) => x - y);
+  return compose(`${arrTex(a0)} \\;\\longrightarrow\\; ${arrTex(sorted)}`, body.svg + tb.svg, body.h + 12 + tb.h, caps);
+}
+
 // ---------- searching ----------
 
+/** Two pointers on a sorted array (a pair with sum t), or a sliding window (the best sum of k neighbours). */
+function renderScan(spec: SearchSpec, w: AlgoWords): RenderedSvg {
+  const m = w.searchMore;
+  const input = parseNums(spec.data, w, 16);
+  const n = input.length;
+  const rows: Row[] = [];
+  const caps: Caption[] = [];
+  let tex: string;
+  if (spec.algo === "twoptr") {
+    const t = parseNum(spec.target, w);
+    const a = input.slice().sort((x, y) => x - y);
+    if (!a.every((v, i) => v === input[i])) caps.push({ text: w.sortedFirst, color: C.orange });
+    let [l, r] = [0, n - 1];
+    let k = 0;
+    let hit = false;
+    while (l < r) {
+      k++;
+      const sum = a[l] + a[r];
+      const marks = Array(n).fill("");
+      marks[l] = "L";
+      marks[r] = "R";
+      hit = sum === t;
+      const roles = Array.from({ length: n }, (_, i): Role => (i === l || i === r ? (hit ? "sorted" : "compare") : i < l || i > r ? "idle" : "plain"));
+      const head = `${nt(a[l])} + ${nt(a[r])} = ${nt(sum)}`;
+      if (hit) {
+        rows.push({ vals: a, roles, marks, note: `${head}  ✓`, noteColor: C.green });
+        caps.push({ text: fill(m.pairFound, { x: nt(a[l]), y: nt(a[r]), t: nt(t), i: l, j: r, k }), color: C.green });
+        break;
+      }
+      rows.push({ vals: a, roles, marks, note: sum < t ? `${head} < ${nt(t)}  →  L + 1` : `${head} > ${nt(t)}  →  R − 1` });
+      if (sum < t) l++;
+      else r--;
+    }
+    if (!hit) caps.push({ text: fill(m.pairNone, { t: nt(t), k }), color: C.red });
+    caps.push({ text: fill(m.twoptrInfo, { n, pairs: (n * (n - 1)) / 2 }), color: "#495057" });
+    tex = `a_L + a_R \\overset{?}{=} ${tn(t)}`;
+  } else {
+    const k = parseNum(spec.target, w, (v) => Number.isInteger(v) && v >= 1 && v <= n);
+    let sum = input.slice(0, k).reduce((x, y) => x + y, 0);
+    let best = { i: 0, s: sum };
+    let adds = k - 1;
+    for (let i = 0; i + k <= n; i++) {
+      if (i > 0) {
+        const s0 = sum;
+        sum += input[i + k - 1] - input[i - 1];
+        adds += 2;
+        if (sum > best.s) best = { i, s: sum };
+        rows.push({
+          vals: input,
+          roles: Array.from({ length: n }, (_, j): Role => (j >= i && j < i + k ? (j === i + k - 1 ? "compare" : "key") : j === i - 1 ? "idle" : "plain")),
+          note: `${nt(s0)} − ${nt(input[i - 1])} + ${nt(input[i + k - 1])} = ${nt(sum)}${best.i === i ? `  ★ ${m.best}` : ""}`,
+          noteColor: best.i === i ? C.green : undefined,
+        });
+      } else rows.push({ vals: input, roles: Array.from({ length: n }, (_, j): Role => (j < k ? "key" : "plain")), note: `${fill(m.windowSum, { s: nt(sum) })}  ★`, noteColor: C.green });
+    }
+    rows.push({ vals: input, roles: Array.from({ length: n }, (_, j): Role => (j >= best.i && j < best.i + k ? "sorted" : "idle")), note: `max = ${nt(best.s)}`, noteColor: C.green });
+    caps.push({ text: fill(m.windowBest, { i: best.i, j: best.i + k - 1, s: nt(best.s) }), color: C.green });
+    caps.push({ text: fill(m.windowInfo, { adds, naive: (n - k + 1) * (k - 1) }), color: "#495057" });
+    tex = `k = ${k},\\qquad S_{i+1} = S_i - a_i + a_{i+k}`;
+  }
+  const body = drawRows(rows, n);
+  const leg = legendRow(
+    spec.algo === "twoptr"
+      ? [{ role: "compare", text: w.legend.compared }, { role: "sorted", text: w.legend.found }, { role: "idle", text: w.legend.ruledOut }]
+      : [{ role: "key", text: m.window }, { role: "compare", text: m.entering }, { role: "idle", text: m.leaving }],
+    body.h + 8,
+  );
+  return compose(tex, body.svg + leg.svg, body.h + 8 + leg.h, caps);
+}
+
 export function renderSearch(spec: SearchSpec, w: AlgoWords): RenderedSvg {
+  if (spec.algo === "twoptr" || spec.algo === "window") return renderScan(spec, w);
   const input = parseNums(spec.data, w, 16);
   const t = parseNum(spec.target, w);
   const binary = spec.algo === "binary";
