@@ -107,7 +107,12 @@ input.invalid { border-color: var(--danger); }
 .title-input { min-width: 120px; width: 260px; border-color: transparent; font-weight: 600; background: transparent; }
 .title-input:hover { border-color: var(--border); }
 .save-state { font-size: 12px; color: var(--muted); white-space: nowrap; }
-.save-state.error { color: var(--danger); }
+.save-state.error, .save-state.conflict { color: var(--danger); }
+.conflict-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 12px;
+  background: var(--surface); border-bottom: 2px solid var(--danger); font-size: 13px;
+}
+.conflict-bar span { flex: 1 1 240px; }
 .tool-menu-btn .caret { font-size: 10px; opacity: 0.8; margin-left: -2px; }
 .tool-menu-btn.open { background: var(--accent-hover); }
 .tool-menu {
@@ -216,7 +221,7 @@ input.invalid { border-color: var(--danger); }
 @media (max-width: 640px) {
   .board-bar { gap: 4px; padding: 6px; }
   .board-bar .title-input { min-width: 48px; padding: 0 6px; }
-  .board-bar .save-state:not(.error) { display: none; }
+  .board-bar .save-state:not(.error):not(.conflict) { display: none; }
   .board-bar .tool-menu-btn { padding: 0 9px; }
   .board-bar .tool-menu-btn .caret { display: none; }
   .board-bar .lang-select { width: 62px; padding: 0 4px; }

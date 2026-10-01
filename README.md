@@ -326,6 +326,23 @@ npm run dev
 
 Environment variables: `PORT` (8787), `DATA_DIR` (`./data`), `STATIC_DIR` (`./dist`), `APP_PASSWORD` (empty = no auth).
 
+The build writes `.br` / `.gz` copies of the assets, and the server sends those to browsers that accept them. Each tool and each
+language is a separate chunk, loaded the first time it is used.
+
+Autosave doesn't silently overwrite: if the board was saved in another tab or on another device since you opened it, Zeno pauses
+saving and asks whether to reload that version or keep yours.
+
+## Tests
+
+```bash
+npm test           # node:test, no extra dependencies
+npm run typecheck
+```
+
+The tests check that every example of every tool renders in English, Russian and Georgian; that the three languages have the same
+keys; the logic parser; the NAEC 2025 answers; complex-number arithmetic against mathjs; and the API's conflict check and
+compression. GitHub Actions runs typecheck, tests and build on every push.
+
 ## Project layout
 
 ```
@@ -364,7 +381,8 @@ src/math/complex.ts       complex numbers: forms, operations, powers, roots, qua
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG
 src/three/                3D: spec + formulas (spec.ts), scene building (build.ts), viewer & PNG snapshot (viewer.ts)
-src/i18n.tsx              en / ru / ka strings
+src/i18n.tsx              language provider; strings in src/locales/{en,ru,ka}.ts, loaded on demand
+tests/                    npm test (node:test); scripts/ts-register.mjs lets Node import the app's .ts files
 ```
 
 ## Roadmap ideas

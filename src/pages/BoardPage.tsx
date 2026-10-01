@@ -10,40 +10,26 @@ import type { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperati
 import type { ExcalidrawElement, ExcalidrawImageElement, FileId } from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 
-import { api, type Board } from "../api";
+import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
-import { FormulaDialog, type FormulaData } from "../components/FormulaDialog";
-import { GraphDialog } from "../components/GraphDialog";
-import { ModelDialog } from "../components/ModelDialog";
+import type { FormulaData } from "../components/FormulaDialog";
 import { ToolMenu } from "../components/ToolMenu";
 import type { ModelSpec, ModelType } from "../math/models";
 import type { RenderedSvg } from "../math/latex";
 import type { PlotSpec } from "../math/plot";
 import { svgToDataUrl } from "../math/svg";
 import type { Spec3D } from "../three/spec";
-import { MatrixDialog, type MatrixSpec } from "../components/MatrixDialog";
-import { GeometryDialog } from "../components/GeometryDialog";
+import type { MatrixSpec } from "../components/MatrixDialog";
 import type { GeometrySpec } from "../math/geometry";
-import { AnalysisDialog } from "../components/AnalysisDialog";
 import type { AnalysisSpec } from "../math/analysis";
-import { StatsDialog } from "../components/StatsDialog";
 import type { StatSpec } from "../math/statistics";
-import { IntegralDialog } from "../components/IntegralDialog";
 import type { IntegralSpec } from "../math/integration";
-import { OdeDialog } from "../components/OdeDialog";
 import type { OdeSpec } from "../math/ode";
-import { TrigDialog } from "../components/TrigDialog";
 import type { TrigSpec } from "../math/trig";
-import { AlgoDialog } from "../components/AlgoDialog";
 import type { AlgoSpec } from "../math/algo";
-import { NtDialog } from "../components/NtDialog";
 import type { NtSpec } from "../math/numtheory";
-import { CombDialog } from "../components/CombDialog";
 import type { CombSpec } from "../math/combinatorics";
-import { GtDialog } from "../components/GtDialog";
 import type { GtSpec } from "../math/graphtheory";
-import { LogicDialog } from "../components/LogicDialog";
-import { ComplexDialog } from "../components/ComplexDialog";
 import type { CxSpec } from "../math/complex";
 import type { LogicSpec } from "../math/logic";
 
@@ -86,7 +72,8 @@ type Dialog =
   | { kind: "logic"; editing?: ExcalidrawImageElement }
   | { kind: "complex"; editing?: ExcalidrawImageElement };
 
-type SaveState = "saved" | "saving" | "error";
+// "conflict": someone saved this board elsewhere since we loaded it; autosave pauses until the user picks.
+type SaveState = "saved" | "saving" | "error" | "conflict";
 
 type PlacedImage = { dataURL: string; mimeType: "image/svg+xml" | "image/png"; width: number; height: number };
 
@@ -97,8 +84,24 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
   height: r.height,
 });
 
-// three.js is large; load the 3D dialog only when it's opened.
+// Every tool dialog (and the math behind it) loads the first time it's opened.
 const ThreeDialog = lazy(() => import("../components/ThreeDialog"));
+const FormulaDialog = lazy(() => import("../components/FormulaDialog").then((m) => ({ default: m.FormulaDialog })));
+const GraphDialog = lazy(() => import("../components/GraphDialog").then((m) => ({ default: m.GraphDialog })));
+const ModelDialog = lazy(() => import("../components/ModelDialog").then((m) => ({ default: m.ModelDialog })));
+const MatrixDialog = lazy(() => import("../components/MatrixDialog").then((m) => ({ default: m.MatrixDialog })));
+const GeometryDialog = lazy(() => import("../components/GeometryDialog").then((m) => ({ default: m.GeometryDialog })));
+const AnalysisDialog = lazy(() => import("../components/AnalysisDialog").then((m) => ({ default: m.AnalysisDialog })));
+const StatsDialog = lazy(() => import("../components/StatsDialog").then((m) => ({ default: m.StatsDialog })));
+const IntegralDialog = lazy(() => import("../components/IntegralDialog").then((m) => ({ default: m.IntegralDialog })));
+const OdeDialog = lazy(() => import("../components/OdeDialog").then((m) => ({ default: m.OdeDialog })));
+const TrigDialog = lazy(() => import("../components/TrigDialog").then((m) => ({ default: m.TrigDialog })));
+const AlgoDialog = lazy(() => import("../components/AlgoDialog").then((m) => ({ default: m.AlgoDialog })));
+const NtDialog = lazy(() => import("../components/NtDialog").then((m) => ({ default: m.NtDialog })));
+const CombDialog = lazy(() => import("../components/CombDialog").then((m) => ({ default: m.CombDialog })));
+const GtDialog = lazy(() => import("../components/GtDialog").then((m) => ({ default: m.GtDialog })));
+const LogicDialog = lazy(() => import("../components/LogicDialog").then((m) => ({ default: m.LogicDialog })));
+const ComplexDialog = lazy(() => import("../components/ComplexDialog").then((m) => ({ default: m.ComplexDialog })));
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
   el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt", "comb", "gt", "logic", "complex"].includes(el.customData?.kind)
@@ -124,10 +127,14 @@ export function BoardPage({ id }: { id: string }) {
 
   const lastSaved = useRef({ version: -1, files: 0 });
   const saveTimer = useRef<number | undefined>(undefined);
+  // The server's updatedAt as of our last load or save.
+  const base = useRef(0);
+  const conflict = useRef(false);
 
   useEffect(() => {
     api.get(id).then(
       (b) => {
+        base.current = b.updatedAt;
         setBoard(b);
         setTitle(b.title);
       },
@@ -135,9 +142,9 @@ export function BoardPage({ id }: { id: string }) {
     );
   }, [id]);
 
-  const saveNow = useCallback(async () => {
+  const saveNow = useCallback(async (overwrite = false) => {
     const ex = excalidraw.current;
-    if (!ex) return;
+    if (!ex || (conflict.current && !overwrite)) return;
     const elements = ex.getSceneElements();
     const allFiles = ex.getFiles();
     const used = new Set(elements.flatMap((e) => (e.type === "image" && e.fileId ? [e.fileId] : [])));
@@ -147,11 +154,16 @@ export function BoardPage({ id }: { id: string }) {
 
     setSaveState("saving");
     try {
-      await api.save(id, { scene: { elements, files, appState: { viewBackgroundColor, gridModeEnabled, theme } } });
-      lastSaved.current = { version: getSceneVersion(elements), files: Object.keys(allFiles).length };
+      const scene = { elements, files, appState: { viewBackgroundColor, gridModeEnabled, theme } };
+      const saved = await api.save(id, { scene, baseUpdatedAt: overwrite ? undefined : base.current });
+      base.current = saved.updatedAt;
+      conflict.current = false;
+      // onChange sees deleted elements too, so compare against the same list (or every deletion re-saves forever).
+      lastSaved.current = { version: getSceneVersion(ex.getSceneElementsIncludingDeleted()), files: Object.keys(allFiles).length };
       setSaveState("saved");
-    } catch {
-      setSaveState("error");
+    } catch (e) {
+      conflict.current = e instanceof ApiError && e.status === 409;
+      setSaveState(conflict.current ? "conflict" : "error");
     }
   }, [id]);
 
@@ -185,6 +197,7 @@ export function BoardPage({ id }: { id: string }) {
       lastSaved.current = { version, files: Object.keys(files).length }; // initial load
       return;
     }
+    if (conflict.current) return;
     setSaveState("saving");
     window.clearTimeout(saveTimer.current);
     saveTimer.current = window.setTimeout(() => {
@@ -197,7 +210,9 @@ export function BoardPage({ id }: { id: string }) {
     const next = title.trim() || t.untitled;
     setTitle(next);
     if (board && next !== board.title) {
-      await api.save(id, { title: next });
+      const saved = await api.save(id, { title: next });
+      // Move our base forward only if nothing else was saved in between; otherwise the next drawing save reports the conflict.
+      if (saved.previous === base.current) base.current = saved.updatedAt;
       setBoard({ ...board, title: next });
     }
   };
@@ -300,7 +315,7 @@ export function BoardPage({ id }: { id: string }) {
           onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
         />
         <span className={`save-state ${saveState}`}>
-          {saveState === "saving" ? t.saving : saveState === "saved" ? t.saved : t.saveError}
+          {saveState === "saving" ? t.saving : saveState === "saved" ? t.saved : saveState === "conflict" ? t.saveConflict : t.saveError}
         </span>
         <div className="spacer" />
         {selectedMath && (
@@ -336,6 +351,13 @@ export function BoardPage({ id }: { id: string }) {
         ]} />
         <LangSelect />
       </header>
+      {saveState === "conflict" && (
+        <div className="conflict-bar" role="alert">
+          <span>{t.conflictText}</span>
+          <button className="btn" onClick={() => location.reload()}>{t.conflictReload}</button>
+          <button className="btn" onClick={() => void saveNow(true)}>{t.conflictKeep}</button>
+        </div>
+      )}
 
       <div
         className="canvas-wrap"
@@ -373,6 +395,7 @@ export function BoardPage({ id }: { id: string }) {
         </Excalidraw>
       </div>
 
+      <Suspense fallback={null}>
       {dialog?.kind === "formula" && (
         <FormulaDialog
           initial={dialog.editing ? (mathOf(dialog.editing)!.data as FormulaData) : undefined}
@@ -546,6 +569,7 @@ export function BoardPage({ id }: { id: string }) {
           }}
         />
       )}
+      </Suspense>
     </div>
   );
 }

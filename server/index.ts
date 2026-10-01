@@ -3,7 +3,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync, statSync } from "node:fs";
-import { extname, join, normalize, resolve } from "node:path";
+import { extname, join, normalize, resolve, sep } from "node:path";
 import { randomUUID, timingSafeEqual } from "node:crypto";
 
 const PORT = Number(process.env.PORT ?? 8787);
@@ -102,7 +102,14 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   }
   if (req.method === "PUT") {
     const body = await readJson(req);
-    const now = Date.now();
+    const last = db.prepare("SELECT updated_at AS updatedAt FROM boards WHERE id = ?").get(id) as { updatedAt: number } | undefined;
+    if (!last) return send(res, 404, { error: "not found" });
+    // A client that sends the updatedAt it last saw is refused if someone else saved since (another tab or device).
+    if (typeof body.baseUpdatedAt === "number" && last.updatedAt !== body.baseUpdatedAt) {
+      return send(res, 409, { error: "conflict", updatedAt: last.updatedAt });
+    }
+    // Strictly increasing, so two saves in the same millisecond still differ.
+    const now = Math.max(Date.now(), last.updatedAt + 1);
     const result = db
       .prepare("UPDATE boards SET title = COALESCE(?, title), scene = COALESCE(?, scene), updated_at = ? WHERE id = ?")
       .run(
@@ -111,7 +118,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
         now,
         id,
       );
-    return send(res, result.changes ? 200 : 404, result.changes ? { updatedAt: now } : { error: "not found" });
+    return send(res, result.changes ? 200 : 404, result.changes ? { updatedAt: now, previous: last.updatedAt } : { error: "not found" });
   }
   if (req.method === "DELETE") {
     db.prepare("DELETE FROM boards WHERE id = ?").run(id);
@@ -120,21 +127,42 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   return send(res, 405, { error: "method not allowed" });
 }
 
-function serveStatic(res: ServerResponse, path: string) {
-  let file = normalize(join(STATIC_DIR, decodeURIComponent(path)));
-  if (!file.startsWith(STATIC_DIR)) return send(res, 403);
+const isFile = (file: string) => {
   try {
-    if (!statSync(file).isFile()) throw new Error();
+    return statSync(file).isFile();
   } catch {
-    file = join(STATIC_DIR, "index.html"); // SPA fallback
+    return false;
   }
+};
+
+// Keep what's been read in memory; a rebuild (new modification time) is picked up without a restart.
+const fileCache = new Map<string, { mtime: number; data: Buffer }>();
+function readCached(file: string): Buffer {
+  const mtime = statSync(file).mtimeMs;
+  let hit = fileCache.get(file);
+  if (!hit || hit.mtime !== mtime) fileCache.set(file, (hit = { mtime, data: readFileSync(file) }));
+  return hit.data;
+}
+
+function serveStatic(req: IncomingMessage, res: ServerResponse, path: string) {
+  let file = normalize(join(STATIC_DIR, decodeURIComponent(path)));
+  if (file !== STATIC_DIR && !file.startsWith(STATIC_DIR + sep)) return send(res, 403);
+  if (!isFile(file)) file = join(STATIC_DIR, "index.html"); // SPA fallback
+  // Send the .br / .gz copy written by scripts/compress.mjs when the browser accepts it.
+  const accept = String(req.headers["accept-encoding"] ?? "");
+  const encoding = [["br", ".br"], ["gzip", ".gz"]].find(([name, ext]) => accept.includes(name) && isFile(file + ext));
   try {
-    const cache = file.includes(`${join(STATIC_DIR, "assets")}`) || file.includes("fonts")
+    const cache = file.startsWith(join(STATIC_DIR, "assets") + sep) || file.startsWith(join(STATIC_DIR, "fonts") + sep)
       ? "public, max-age=31536000, immutable"
       : "no-cache";
     res
-      .writeHead(200, { "Content-Type": MIME[extname(file)] ?? "application/octet-stream", "Cache-Control": cache })
-      .end(readFileSync(file));
+      .writeHead(200, {
+        "Content-Type": MIME[extname(file)] ?? "application/octet-stream",
+        "Cache-Control": cache,
+        Vary: "Accept-Encoding",
+        ...(encoding ? { "Content-Encoding": encoding[0] } : {}),
+      })
+      .end(readCached(encoding ? file + encoding[1] : file));
   } catch {
     send(res, 404, { error: "frontend not built — run `npm run build`" });
   }
@@ -148,7 +176,7 @@ createServer(async (req, res) => {
   const path = new URL(req.url ?? "/", "http://localhost").pathname;
   try {
     if (path.startsWith("/api/")) await handleApi(req, res, path);
-    else serveStatic(res, path);
+    else serveStatic(req, res, path);
   } catch (err) {
     console.error(err);
     if (!res.headersSent) send(res, 400, { error: (err as Error).message });
