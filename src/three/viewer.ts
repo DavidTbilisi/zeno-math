@@ -128,7 +128,7 @@ export class Viewer {
     const pad = Math.round(12 * dpr);
     const fontPx = 17 * dpr;
     const lineH = Math.round(26 * dpr);
-    const font = `600 ${fontPx}px "Segoe UI", Helvetica, Arial, sans-serif`;
+    const font = `600 ${fontPx}px "Segoe UI", Helvetica, Arial, "Noto Sans Georgian", Sylfaen, sans-serif`;
     tctx.font = font;
     const capW = Math.max(0, ...caption.map((l) => tctx.measureText(l).width));
     const cw = x1 - x0 + 1;

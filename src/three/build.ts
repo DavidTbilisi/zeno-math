@@ -64,7 +64,7 @@ function face(geo: THREE.BufferGeometry, color: number, ctx: Ctx, edges = true) 
 
 function label(text: string, pos: THREE.Vector3, ctx: Ctx, color = "#1e1e1e", scale = 1) {
   const fs = 56;
-  const font = `600 ${fs}px "Segoe UI", Helvetica, Arial, sans-serif`;
+  const font = `600 ${fs}px "Segoe UI", Helvetica, Arial, "Noto Sans Georgian", Sylfaen, sans-serif`;
   const canvas = document.createElement("canvas");
   const g = canvas.getContext("2d")!;
   g.font = font;

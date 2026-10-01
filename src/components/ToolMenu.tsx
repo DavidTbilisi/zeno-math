@@ -70,6 +70,8 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
               className="tool-menu-item"
               onClick={() => {
                 setOpen(false);
+                // The dialog returns focus to whatever had it when it opened: the menu button, not this vanishing item.
+                btn.current?.focus();
                 it.onPick();
               }}
             >

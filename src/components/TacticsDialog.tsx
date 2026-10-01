@@ -4,17 +4,19 @@ import type { RenderedSvg } from "../math/latex";
 import { PIGEON_MODES, renderTactics, TACTICS_PRESETS, TACTICS_TOPICS, type TacticsSpec, type TacticsTopic } from "../math/tactics";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = Record<TacticsTopic, TacticsSpec>;
 
-export function TacticsDialog({ initial, onSubmit, onClose }: {
+export function TacticsDialog({ initial, start, onSubmit, onClose }: {
   initial?: TacticsSpec;
+  start?: string;
   onSubmit: (spec: TacticsSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const f = t.tacticsFields;
-  const [topic, setTopic] = useState<TacticsTopic>(initial?.topic ?? "symmetry");
+  const [topic, setTopic] = useState<TacticsTopic>(initial?.topic ?? startOr(start, TACTICS_TOPICS, "symmetry"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(TACTICS_TOPICS.map((k) => [k, TACTICS_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -57,13 +59,7 @@ export function TacticsDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {TACTICS_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.tacticsTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={TACTICS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.tacticsTopics[k]} />
       )}
       <small className="hint">{t.tacticsHints[topic]}</small>
 
@@ -81,13 +77,7 @@ export function TacticsDialog({ initial, onSubmit, onClose }: {
       {topic === "symmetry" && <div className="range-grid">{field("n", f.n)}</div>}
       {topic === "pigeonhole" && (
         <>
-          <div className="segmented" role="radiogroup">
-            {PIGEON_MODES.map((m) => (
-              <button key={m} role="radio" aria-checked={spec.mode === m} className={spec.mode === m ? "active" : ""} onClick={() => set({ mode: m })}>
-                {t.pigeonModes[m]}
-              </button>
-            ))}
-          </div>
+          <Segmented items={PIGEON_MODES} value={spec.mode} onChange={(m) => set({ mode: m })} label={(m) => t.pigeonModes[m]} />
           {spec.mode === "count" ? (
             <div className="range-grid">
               {field("p", f.p)}

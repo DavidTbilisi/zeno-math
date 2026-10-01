@@ -14,6 +14,7 @@ const MAX_BODY = 25 * 1024 * 1024;
 
 mkdirSync(DATA_DIR, { recursive: true });
 const db = new DatabaseSync(join(DATA_DIR, "boards.db"));
+db.exec("PRAGMA journal_mode = WAL");
 db.exec(`
   CREATE TABLE IF NOT EXISTS boards (
     id TEXT PRIMARY KEY,
@@ -36,23 +37,62 @@ const MIME: Record<string, string> = {
   ".wasm": "application/wasm",
 };
 
-function send(res: ServerResponse, status: number, body?: unknown) {
+// Sent with every response. The page itself also gets a CSP: everything from this server, no inline scripts
+// (Excalidraw needs inline styles, data:/blob: images and WebAssembly for font subsetting).
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "same-origin",
+  "X-Frame-Options": "SAMEORIGIN",
+};
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'wasm-unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  // Fonts come from /fonts; Excalidraw always lists its CDN as a fallback source after it.
+  "font-src 'self' data: https://esm.sh",
+  "connect-src 'self' data: blob:",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'self'",
+].join("; ");
+
+/** A refusal with a status and a message that is safe to show the client. */
+class HttpError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
+
+function send(res: ServerResponse, status: number, body?: unknown, headers: Record<string, string> = {}) {
   if (body === undefined) {
-    res.writeHead(status).end();
+    res.writeHead(status, headers).end();
     return;
   }
-  res.writeHead(status, { "Content-Type": "application/json" }).end(JSON.stringify(body));
+  res.writeHead(status, { "Content-Type": "application/json", ...headers }).end(JSON.stringify(body));
 }
 
 async function readJson(req: IncomingMessage): Promise<any> {
+  // JSON only: a cross-site <form> can't send this content type without the browser asking first.
+  if (!String(req.headers["content-type"] ?? "").startsWith("application/json")) throw new HttpError(415, "expected application/json");
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > MAX_BODY) throw new Error("body too large");
+    if (size > MAX_BODY) throw new HttpError(413, "body too large");
     chunks.push(chunk);
   }
-  return chunks.length ? JSON.parse(Buffer.concat(chunks).toString("utf8")) : {};
+  if (!chunks.length) return {};
+  try {
+    const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    if (body === null || typeof body !== "object" || Array.isArray(body)) throw new Error();
+    return body;
+  } catch {
+    throw new HttpError(400, "invalid JSON");
+  }
 }
 
 // Optional HTTP basic auth, enabled when APP_PASSWORD is set (any username).
@@ -72,6 +112,20 @@ function cleanTitle(value: unknown): string {
 
 async function handleApi(req: IncomingMessage, res: ServerResponse, path: string) {
   const [, , resource, id] = path.split("/"); // "", "api", "boards", id?
+  if (resource === "health" && req.method === "GET") {
+    db.prepare("SELECT 1").get();
+    return send(res, 200, { ok: true });
+  }
+  // Every board in one file, for backups.
+  if (resource === "export" && req.method === "GET") {
+    const rows = db
+      .prepare("SELECT id, title, scene, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY created_at")
+      .all() as { scene: string }[];
+    const stamp = new Date().toISOString().slice(0, 10);
+    return send(res, 200, { app: "zeno", exportedAt: Date.now(), boards: rows.map((r) => ({ ...r, scene: JSON.parse(r.scene) })) }, {
+      "Content-Disposition": `attachment; filename="zeno-boards-${stamp}.json"`,
+    });
+  }
   if (resource !== "boards") return send(res, 404, { error: "not found" });
 
   if (!id) {
@@ -102,6 +156,11 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   }
   if (req.method === "PUT") {
     const body = await readJson(req);
+    // A scene that clients can't load would break the board for everyone.
+    const scene = body.scene;
+    if (scene !== undefined && (scene === null || typeof scene !== "object" || Array.isArray(scene) || !Array.isArray(scene.elements))) {
+      return send(res, 400, { error: "scene must be an object with an elements array" });
+    }
     const last = db.prepare("SELECT updated_at AS updatedAt FROM boards WHERE id = ?").get(id) as { updatedAt: number } | undefined;
     if (!last) return send(res, 404, { error: "not found" });
     // A client that sends the updatedAt it last saw is refused if someone else saved since (another tab or device).
@@ -160,6 +219,7 @@ function serveStatic(req: IncomingMessage, res: ServerResponse, path: string) {
         "Content-Type": MIME[extname(file)] ?? "application/octet-stream",
         "Cache-Control": cache,
         Vary: "Accept-Encoding",
+        ...(extname(file) === ".html" ? { "Content-Security-Policy": CSP } : {}),
         ...(encoding ? { "Content-Encoding": encoding[0] } : {}),
       })
       .end(readCached(encoding ? file + encoding[1] : file));
@@ -168,19 +228,36 @@ function serveStatic(req: IncomingMessage, res: ServerResponse, path: string) {
   }
 }
 
-createServer(async (req, res) => {
-  if (!authorized(req)) {
+const server = createServer(async (req, res) => {
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
+  const path = new URL(req.url ?? "/", "http://localhost").pathname;
+  // The health check reveals nothing, so Docker can probe it without the password.
+  if (path !== "/api/health" && !authorized(req)) {
     res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Zeno"' }).end();
     return;
   }
-  const path = new URL(req.url ?? "/", "http://localhost").pathname;
   try {
     if (path.startsWith("/api/")) await handleApi(req, res, path);
     else serveStatic(req, res, path);
   } catch (err) {
+    if (err instanceof HttpError) {
+      // An oversized upload is not read to the end: answer, then close the connection so it isn't reused.
+      if (!res.headersSent) send(res, err.status, { error: err.message }, err.status === 413 ? { Connection: "close" } : {});
+      if (err.status === 413) res.once("finish", () => req.destroy());
+      return;
+    }
     console.error(err);
-    if (!res.headersSent) send(res, 400, { error: (err as Error).message });
+    if (!res.headersSent) send(res, 500, { error: "internal error" });
   }
 }).listen(PORT, () => {
   console.log(`Zeno listening on http://localhost:${PORT} (data: ${DATA_DIR})`);
 });
+
+// Docker stops containers with SIGTERM: finish, close the database cleanly, exit.
+for (const signal of ["SIGTERM", "SIGINT"] as const) {
+  process.on(signal, () => {
+    server.close();
+    db.close();
+    process.exit(0);
+  });
+}

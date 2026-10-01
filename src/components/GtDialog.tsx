@@ -4,17 +4,19 @@ import { GT_LAYOUTS, GT_PRESETS, GT_TOPICS, renderGt, type GtSpec, type GtTopic 
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, startOr } from "./ui";
 
 type Specs = Record<GtTopic, GtSpec>;
 
-export function GtDialog({ initial, onSubmit, onClose }: {
+export function GtDialog({ initial, start, onSubmit, onClose }: {
   initial?: GtSpec;
+  start?: string;
   onSubmit: (spec: GtSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const w = t.gtWords;
-  const [topic, setTopic] = useState<GtTopic>(initial?.topic ?? "props");
+  const [topic, setTopic] = useState<GtTopic>(initial?.topic ?? startOr(start, GT_TOPICS, "props"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(GT_TOPICS.map((k) => [k, GT_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -86,13 +88,7 @@ export function GtDialog({ initial, onSubmit, onClose }: {
         <span className="fn-prefix" style={{ fontStyle: "normal" }}>{t.gtEdges}</span>
         <input className="mono" spellCheck={false} value={spec.edges} onChange={(e) => set({ edges: e.target.value })} />
       </div>
-      <div className="segmented wrap" role="radiogroup">
-        {GT_LAYOUTS.map((l) => (
-          <button key={l} role="radio" aria-checked={spec.layout === l} className={spec.layout === l ? "active" : ""} onClick={() => set({ layout: l })}>
-            {t.gtLayouts[l]}
-          </button>
-        ))}
-      </div>
+      <Segmented className="wrap" items={GT_LAYOUTS} value={spec.layout} onChange={(l) => set({ layout: l })} label={(l) => t.gtLayouts[l]} />
       {spec.topic === "walks" && (
         <div className="range-grid">
           {text(t.gtFrom, "a")}

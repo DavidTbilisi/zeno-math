@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   CaptureUpdateAction,
   convertToExcalidrawElements,
@@ -12,71 +12,17 @@ import "@excalidraw/excalidraw/index.css";
 
 import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
-import type { FormulaData } from "../components/FormulaDialog";
 import { ToolMenu } from "../components/ToolMenu";
-import type { ModelSpec, ModelType } from "../math/models";
+import { CommandPalette } from "../components/CommandPalette";
 import type { RenderedSvg } from "../math/latex";
-import type { PlotSpec } from "../math/plot";
-import { svgToDataUrl } from "../math/svg";
-import type { Spec3D } from "../three/spec";
-import type { MatrixSpec } from "../components/MatrixDialog";
-import type { GeometrySpec } from "../math/geometry";
-import type { AnalysisSpec } from "../math/analysis";
-import type { StatSpec } from "../math/statistics";
-import type { IntegralSpec } from "../math/integration";
-import type { OdeSpec } from "../math/ode";
-import type { TrigSpec } from "../math/trig";
-import type { AlgoSpec } from "../math/algo";
-import type { NtSpec } from "../math/numtheory";
-import type { CombSpec } from "../math/combinatorics";
-import type { GtSpec } from "../math/graphtheory";
-import type { CxSpec } from "../math/complex";
-import type { MentalSpec } from "../math/mental";
-import type { TacticsSpec } from "../math/tactics";
-import type { LogicSpec } from "../math/logic";
+import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
+import { isToolKind, MENUS, TOOLS, type ToolKind } from "../tools";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
-type MathData =
-  | { kind: "formula"; data: FormulaData; w: number; h: number }
-  | { kind: "graph"; data: PlotSpec; w: number; h: number }
-  | { kind: "model"; data: ModelSpec; w: number; h: number }
-  | { kind: "3d"; data: Spec3D; w: number; h: number }
-  | { kind: "matrix"; data: MatrixSpec; w: number; h: number }
-  | { kind: "geometry"; data: GeometrySpec; w: number; h: number }
-  | { kind: "analysis"; data: AnalysisSpec; w: number; h: number }
-  | { kind: "statistics"; data: StatSpec; w: number; h: number }
-  | { kind: "integral"; data: IntegralSpec; w: number; h: number }
-  | { kind: "ode"; data: OdeSpec; w: number; h: number }
-  | { kind: "trig"; data: TrigSpec; w: number; h: number }
-  | { kind: "algo"; data: AlgoSpec; w: number; h: number }
-  | { kind: "nt"; data: NtSpec; w: number; h: number }
-  | { kind: "comb"; data: CombSpec; w: number; h: number }
-  | { kind: "gt"; data: GtSpec; w: number; h: number }
-  | { kind: "logic"; data: LogicSpec; w: number; h: number }
-  | { kind: "complex"; data: CxSpec; w: number; h: number }
-  | { kind: "mental"; data: MentalSpec; w: number; h: number }
-  | { kind: "tactics"; data: TacticsSpec; w: number; h: number };
+type MathData = { kind: ToolKind; data: unknown; w: number; h: number };
 
-type Dialog =
-  | { kind: "formula"; editing?: ExcalidrawImageElement }
-  | { kind: "graph"; editing?: ExcalidrawImageElement }
-  | { kind: "model"; editing?: ExcalidrawImageElement; start?: ModelType }
-  | { kind: "3d"; editing?: ExcalidrawImageElement }
-  | { kind: "matrix"; editing?: ExcalidrawImageElement }
-  | { kind: "geometry"; editing?: ExcalidrawImageElement }
-  | { kind: "analysis"; editing?: ExcalidrawImageElement }
-  | { kind: "statistics"; editing?: ExcalidrawImageElement }
-  | { kind: "integral"; editing?: ExcalidrawImageElement }
-  | { kind: "ode"; editing?: ExcalidrawImageElement }
-  | { kind: "trig"; editing?: ExcalidrawImageElement }
-  | { kind: "algo"; editing?: ExcalidrawImageElement }
-  | { kind: "nt"; editing?: ExcalidrawImageElement }
-  | { kind: "comb"; editing?: ExcalidrawImageElement }
-  | { kind: "gt"; editing?: ExcalidrawImageElement }
-  | { kind: "logic"; editing?: ExcalidrawImageElement }
-  | { kind: "complex"; editing?: ExcalidrawImageElement }
-  | { kind: "mental"; editing?: ExcalidrawImageElement }
-  | { kind: "tactics"; editing?: ExcalidrawImageElement };
+/** The open tool dialog: a new picture (optionally on a given topic), or the picture being edited. */
+type Dialog = { kind: ToolKind; editing?: ExcalidrawImageElement; start?: string };
 
 // "conflict": someone saved this board elsewhere since we loaded it; autosave pauses until the user picks.
 type SaveState = "saved" | "saving" | "error" | "conflict";
@@ -90,31 +36,8 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
   height: r.height,
 });
 
-// Every tool dialog (and the math behind it) loads the first time it's opened.
-const ThreeDialog = lazy(() => import("../components/ThreeDialog"));
-const FormulaDialog = lazy(() => import("../components/FormulaDialog").then((m) => ({ default: m.FormulaDialog })));
-const GraphDialog = lazy(() => import("../components/GraphDialog").then((m) => ({ default: m.GraphDialog })));
-const ModelDialog = lazy(() => import("../components/ModelDialog").then((m) => ({ default: m.ModelDialog })));
-const MatrixDialog = lazy(() => import("../components/MatrixDialog").then((m) => ({ default: m.MatrixDialog })));
-const GeometryDialog = lazy(() => import("../components/GeometryDialog").then((m) => ({ default: m.GeometryDialog })));
-const AnalysisDialog = lazy(() => import("../components/AnalysisDialog").then((m) => ({ default: m.AnalysisDialog })));
-const StatsDialog = lazy(() => import("../components/StatsDialog").then((m) => ({ default: m.StatsDialog })));
-const IntegralDialog = lazy(() => import("../components/IntegralDialog").then((m) => ({ default: m.IntegralDialog })));
-const OdeDialog = lazy(() => import("../components/OdeDialog").then((m) => ({ default: m.OdeDialog })));
-const TrigDialog = lazy(() => import("../components/TrigDialog").then((m) => ({ default: m.TrigDialog })));
-const AlgoDialog = lazy(() => import("../components/AlgoDialog").then((m) => ({ default: m.AlgoDialog })));
-const NtDialog = lazy(() => import("../components/NtDialog").then((m) => ({ default: m.NtDialog })));
-const CombDialog = lazy(() => import("../components/CombDialog").then((m) => ({ default: m.CombDialog })));
-const GtDialog = lazy(() => import("../components/GtDialog").then((m) => ({ default: m.GtDialog })));
-const LogicDialog = lazy(() => import("../components/LogicDialog").then((m) => ({ default: m.LogicDialog })));
-const ComplexDialog = lazy(() => import("../components/ComplexDialog").then((m) => ({ default: m.ComplexDialog })));
-const MentalDialog = lazy(() => import("../components/MentalDialog").then((m) => ({ default: m.MentalDialog })));
-const TacticsDialog = lazy(() => import("../components/TacticsDialog").then((m) => ({ default: m.TacticsDialog })));
-
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
-  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt", "comb", "gt", "logic", "complex", "mental", "tactics"].includes(el.customData?.kind)
-    ? (el.customData as MathData)
-    : undefined;
+  el?.type === "image" && isToolKind(el.customData?.kind) ? (el.customData as MathData) : undefined;
 
 function selectedMathElement(api: ExcalidrawImperativeAPI): ExcalidrawImageElement | undefined {
   const ids = Object.keys(api.getAppState().selectedElementIds);
@@ -130,6 +53,10 @@ export function BoardPage({ id }: { id: string }) {
   const [title, setTitle] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [palette, setPalette] = useState(false);
+  // The board's theme as last seen; "" until Excalidraw reports it.
+  const theme = useRef("");
+  const paletteOpener = useRef<HTMLElement | null>(null);
   const [selectedMath, setSelectedMath] = useState<ExcalidrawImageElement | undefined>();
   const excalidraw = useRef<ExcalidrawImperativeAPI | null>(null);
 
@@ -138,6 +65,14 @@ export function BoardPage({ id }: { id: string }) {
   // The server's updatedAt as of our last load or save.
   const base = useRef(0);
   const conflict = useRef(false);
+  // One save at a time: another one sent meanwhile would carry the same base and be refused as a conflict.
+  const saving = useRef(false);
+  const again = useRef<"" | "save" | "overwrite">("");
+  // After a failed save (server down, offline), try again later.
+  const retryTimer = useRef<number | undefined>(undefined);
+  const retries = useRef(0);
+  const stateRef = useRef<SaveState>("saved");
+  stateRef.current = saveState;
 
   useEffect(() => {
     api.get(id).then(
@@ -150,7 +85,7 @@ export function BoardPage({ id }: { id: string }) {
     );
   }, [id]);
 
-  const saveNow = useCallback(async (overwrite = false) => {
+  const saveOnce = useCallback(async (overwrite: boolean, keepalive: boolean) => {
     const ex = excalidraw.current;
     if (!ex || (conflict.current && !overwrite)) return;
     const elements = ex.getSceneElements();
@@ -163,35 +98,110 @@ export function BoardPage({ id }: { id: string }) {
     setSaveState("saving");
     try {
       const scene = { elements, files, appState: { viewBackgroundColor, gridModeEnabled, theme } };
-      const saved = await api.save(id, { scene, baseUpdatedAt: overwrite ? undefined : base.current });
+      const version = getSceneVersion(ex.getSceneElementsIncludingDeleted());
+      const saved = await api.save(id, { scene, baseUpdatedAt: overwrite ? undefined : base.current }, keepalive);
       base.current = saved.updatedAt;
       conflict.current = false;
+      retries.current = 0;
       // onChange sees deleted elements too, so compare against the same list (or every deletion re-saves forever).
-      lastSaved.current = { version: getSceneVersion(ex.getSceneElementsIncludingDeleted()), files: Object.keys(allFiles).length };
+      lastSaved.current = { version, files: Object.keys(allFiles).length };
       setSaveState("saved");
     } catch (e) {
       conflict.current = e instanceof ApiError && e.status === 409;
       setSaveState(conflict.current ? "conflict" : "error");
+      if (!conflict.current && !keepalive) {
+        const delay = [2000, 5000, 15000, 30000][Math.min(retries.current++, 3)];
+        window.clearTimeout(retryTimer.current);
+        retryTimer.current = window.setTimeout(() => void saveNowRef.current(), delay);
+      }
     }
   }, [id]);
 
-  // Flush pending changes when leaving the page.
+  const saveNow = useCallback(async (overwrite = false, keepalive = false) => {
+    window.clearTimeout(retryTimer.current);
+    if (saving.current) {
+      // Save again (with the new base) once the current one is back.
+      again.current = overwrite || again.current === "overwrite" ? "overwrite" : "save";
+      return;
+    }
+    saving.current = true;
+    try {
+      await saveOnce(overwrite, keepalive);
+      while (again.current && (!conflict.current || again.current === "overwrite")) {
+        const next = again.current;
+        again.current = "";
+        await saveOnce(next === "overwrite", false);
+      }
+    } finally {
+      saving.current = false;
+      again.current = "";
+    }
+  }, [saveOnce]);
+  const saveNowRef = useRef(saveNow);
+  saveNowRef.current = saveNow;
+
   useEffect(() => {
-    const flush = () => {
+    // Flush pending changes when leaving the board (keepalive lets the request outlive the page).
+    const flush = (keepalive: boolean) => {
       if (saveTimer.current !== undefined) {
         window.clearTimeout(saveTimer.current);
         saveTimer.current = undefined;
-        void saveNow();
+        void saveNow(false, keepalive);
       }
     };
-    window.addEventListener("beforeunload", flush);
+    // Ask before closing the tab while something is unsaved.
+    const onUnload = (e: BeforeUnloadEvent) => {
+      const unsaved = saveTimer.current !== undefined || saving.current || stateRef.current !== "saved";
+      flush(true);
+      if (unsaved) e.preventDefault();
+    };
+    const onOnline = () => stateRef.current === "error" && void saveNow();
+    window.addEventListener("beforeunload", onUnload);
+    window.addEventListener("online", onOnline);
     return () => {
-      window.removeEventListener("beforeunload", flush);
-      flush();
+      window.removeEventListener("beforeunload", onUnload);
+      window.removeEventListener("online", onOnline);
+      window.clearTimeout(retryTimer.current);
+      flush(false);
     };
   }, [saveNow]);
 
+  /** Re-colours every math picture for the board's theme (light pictures on a dark board would glare). */
+  const retheme = (theme: string) => {
+    const ex = excalidraw.current;
+    if (!ex) return;
+    const files = ex.getFiles();
+    const added: BinaryFileData[] = [];
+    const swap = new Map<string, FileId>();
+    for (const el of ex.getSceneElements()) {
+      if (!mathOf(el) || el.type !== "image" || !el.fileId) continue;
+      const file = files[el.fileId];
+      const svg = file?.mimeType === "image/svg+xml" ? dataUrlToSvg(file.dataURL) : null;
+      if (!svg) continue;
+      const next = themedSvg(svg, theme);
+      if (next === svg) continue;
+      const fileId = crypto.randomUUID() as FileId;
+      added.push({ id: fileId, dataURL: svgToDataUrl(next) as DataURL, mimeType: "image/svg+xml", created: Date.now() });
+      swap.set(el.id, fileId);
+    }
+    if (!swap.size) return;
+    ex.addFiles(added);
+    ex.updateScene({
+      elements: ex.getSceneElementsIncludingDeleted().map((el) =>
+        swap.has(el.id)
+          ? { ...el, fileId: swap.get(el.id)!, version: el.version + 1, versionNonce: Math.floor(Math.random() * 2 ** 31), updated: Date.now() }
+          : el,
+      ),
+      captureUpdate: CaptureUpdateAction.NEVER,
+    });
+  };
+
   const onChange = (elements: readonly ExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
+    // The theme changed (or the board just opened): bring the pictures along, outside Excalidraw's own update.
+    if (appState.theme !== theme.current) {
+      theme.current = appState.theme;
+      window.setTimeout(() => retheme(appState.theme), 0);
+    }
     // Track whether the current selection is an editable formula/graph.
     const ids = Object.keys(appState.selectedElementIds);
     const sel = ids.length === 1 ? elements.find((e) => e.id === ids[0]) : undefined;
@@ -218,10 +228,14 @@ export function BoardPage({ id }: { id: string }) {
     const next = title.trim() || t.untitled;
     setTitle(next);
     if (board && next !== board.title) {
-      const saved = await api.save(id, { title: next });
-      // Move our base forward only if nothing else was saved in between; otherwise the next drawing save reports the conflict.
-      if (saved.previous === base.current) base.current = saved.updatedAt;
-      setBoard({ ...board, title: next });
+      try {
+        const saved = await api.save(id, { title: next });
+        // Move our base forward only if nothing else was saved in between; otherwise the next drawing save reports the conflict.
+        if (saved.previous === base.current) base.current = saved.updatedAt;
+        setBoard({ ...board, title: next });
+      } catch {
+        setSaveState("error");
+      }
     }
   };
 
@@ -299,6 +313,30 @@ export function BoardPage({ id }: { id: string }) {
     setDialog({ kind: math.kind, editing: el });
   };
 
+  const openPalette = () => {
+    paletteOpener.current = document.activeElement as HTMLElement | null;
+    setPalette(true);
+  };
+  // Ctrl+K (when nothing is selected — with a selection it's Excalidraw's "add link") or "/" outside a text field.
+  const shortcutState = useRef({ open: false });
+  shortcutState.current.open = palette || !!dialog;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (shortcutState.current.open) return;
+      const el = e.target as HTMLElement | null;
+      const typing = !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+      const selected = Object.keys(excalidraw.current?.getAppState().selectedElementIds ?? {}).length > 0;
+      const ctrlK = (e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "k" && !selected;
+      const slash = e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey && !typing;
+      if (!ctrlK && !slash) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openPalette();
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, []);
+
   if (missing) {
     return (
       <div className="center-msg">
@@ -310,6 +348,7 @@ export function BoardPage({ id }: { id: string }) {
   if (!board) return <div className="center-msg">{t.loading}</div>;
 
   const scene = board.scene;
+  const openTool = dialog && TOOLS[dialog.kind];
   return (
     <div className="board-page">
       <header className="board-bar">
@@ -328,37 +367,17 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt, comb: t.editComb, gt: t.editGt, logic: t.editLogic, complex: t.editComplex, mental: t.editMental, tactics: t.editTactics }[mathOf(selectedMath)!.kind]}</span>
+            ✎ <span className="btn-label">{t[TOOLS[mathOf(selectedMath)!.kind].edit]}</span>
           </button>
         )}
-        <ToolMenu icon="🧮" label={t.groupArithmetic} items={[
-          { icon: "🧮", label: t.counting, onPick: () => setDialog({ kind: "model", start: "placeValue" }) },
-          { icon: "▦", label: t.models, onPick: () => setDialog({ kind: "model" }) },
-          { icon: "🧠", label: t.mental, onPick: () => setDialog({ kind: "mental" }) },
-        ]} />
-        <ToolMenu icon="📐" label={t.groupGeometryShort} title={t.groupGeometry} items={[
-          { icon: "📐", label: t.geometry, onPick: () => setDialog({ kind: "geometry" }) },
-          { icon: "θ", label: t.trig, onPick: () => setDialog({ kind: "trig" }) },
-          { icon: "🧊", label: t.threeD, onPick: () => setDialog({ kind: "3d" }) },
-        ]} />
-        <ToolMenu icon="∑" label={t.groupAlgebraShort} title={t.groupAlgebra} items={[
-          { icon: "∑", label: t.formula, onPick: () => setDialog({ kind: "formula" }) },
-          { icon: "📈", label: t.graph, onPick: () => setDialog({ kind: "graph" }) },
-          { icon: "[ ]", label: t.matrices, onPick: () => setDialog({ kind: "matrix" }) },
-          { icon: "ℂ", label: t.complex, onPick: () => setDialog({ kind: "complex" }) },
-          { icon: "ε", label: t.analysis, onPick: () => setDialog({ kind: "analysis" }) },
-          { icon: "∫", label: t.integrals, onPick: () => setDialog({ kind: "integral" }) },
-          { icon: "y′", label: t.odes, onPick: () => setDialog({ kind: "ode" }) },
-        ]} />
-        <ToolMenu icon="ℤ" label={t.groupDiscreteShort} title={t.groupDiscrete} items={[
-          { icon: "ℤ", label: t.nt, onPick: () => setDialog({ kind: "nt" }) },
-          { icon: "ⁿCₖ", label: t.comb, onPick: () => setDialog({ kind: "comb" }) },
-          { icon: "⬡", label: t.gt, onPick: () => setDialog({ kind: "gt" }) },
-          { icon: "∧", label: t.logic, onPick: () => setDialog({ kind: "logic" }) },
-          { icon: "♟", label: t.tactics, onPick: () => setDialog({ kind: "tactics" }) },
-          { icon: "⇅", label: t.algo, onPick: () => setDialog({ kind: "algo" }) },
-          { icon: "📊", label: t.statistics, onPick: () => setDialog({ kind: "statistics" }) },
-        ]} />
+        <button className="btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}>🔍</button>
+        {MENUS.map((m) => (
+          <ToolMenu key={m.label} icon={m.icon} label={t[m.label]} title={m.title && t[m.title]} items={m.items.map((it) => ({
+            icon: it.icon,
+            label: t[it.label],
+            onPick: () => setDialog({ kind: it.kind, start: it.start }),
+          }))} />
+        ))}
         <LangSelect />
       </header>
       {saveState === "conflict" && (
@@ -406,200 +425,36 @@ export function BoardPage({ id }: { id: string }) {
       </div>
 
       <Suspense fallback={null}>
-      {dialog?.kind === "formula" && (
-        <FormulaDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as FormulaData) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "formula", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "graph" && (
-        <GraphDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as PlotSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "graph", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "3d" && (
-        <Suspense fallback={null}>
-          <ThreeDialog
-            initial={dialog.editing ? (mathOf(dialog.editing)!.data as Spec3D) : undefined}
+        {openTool && dialog && (
+          <openTool.Dialog
+            key={dialog.editing?.id ?? dialog.kind}
+            initial={dialog.editing && mathOf(dialog.editing)!.data}
+            start={dialog.start}
             onClose={() => setDialog(null)}
             onSubmit={(data, image) => {
-              placeImage({ ...image, mimeType: "image/png" }, { kind: "3d", data, w: image.width, h: image.height }, dialog.editing);
+              const placed: PlacedImage = openTool.png
+                ? { dataURL: image.dataURL!, mimeType: "image/png", width: image.width, height: image.height }
+                : svgImage({ svg: themedSvg(image.svg!, theme.current), width: image.width, height: image.height });
+              placeImage(placed, { kind: dialog.kind, data, w: image.width, h: image.height }, dialog.editing);
               setDialog(null);
             }}
           />
-        </Suspense>
-      )}
-      {dialog?.kind === "geometry" && (
-        <GeometryDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as GeometrySpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "geometry", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "analysis" && (
-        <AnalysisDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as AnalysisSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "analysis", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "statistics" && (
-        <StatsDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as StatSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "statistics", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "integral" && (
-        <IntegralDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as IntegralSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "integral", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "ode" && (
-        <OdeDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as OdeSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "ode", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "mental" && (
-        <MentalDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as MentalSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "mental", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "tactics" && (
-        <TacticsDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as TacticsSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "tactics", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "complex" && (
-        <ComplexDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as CxSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "complex", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "logic" && (
-        <LogicDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as LogicSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "logic", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "gt" && (
-        <GtDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as GtSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "gt", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "comb" && (
-        <CombDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as CombSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "comb", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "nt" && (
-        <NtDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as NtSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "nt", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "algo" && (
-        <AlgoDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as AlgoSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "algo", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "trig" && (
-        <TrigDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as TrigSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "trig", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "matrix" && (
-        <MatrixDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as MatrixSpec) : undefined}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "matrix", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
-      {dialog?.kind === "model" && (
-        <ModelDialog
-          initial={dialog.editing ? (mathOf(dialog.editing)!.data as ModelSpec) : undefined}
-          start={dialog.start}
-          onClose={() => setDialog(null)}
-          onSubmit={(data, rendered) => {
-            placeImage(svgImage(rendered), { kind: "model", data, w: rendered.width, h: rendered.height }, dialog.editing);
-            setDialog(null);
-          }}
-        />
-      )}
+        )}
       </Suspense>
+      {palette && (
+        <CommandPalette
+          onClose={() => {
+            setPalette(false);
+            paletteOpener.current?.focus();
+          }}
+          onPick={(kind, start) => {
+            setPalette(false);
+            // The tool dialog hands focus back to whatever had it before the search.
+            paletteOpener.current?.focus();
+            setDialog({ kind, start });
+          }}
+        />
+      )}
     </div>
   );
 }

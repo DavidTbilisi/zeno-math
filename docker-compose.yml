@@ -6,10 +6,17 @@ services:
     ports:
       - "8787:8787"
     environment:
-      # Set a password to require HTTP basic auth (any username). Leave empty for no auth.
+      # Set a password to require HTTP basic auth (any username). Without one, anyone who can reach the port can
+      # read, change and delete every board.
       APP_PASSWORD: ${APP_PASSWORD:-}
     volumes:
       - data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8787/api/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
 
 volumes:
   data:

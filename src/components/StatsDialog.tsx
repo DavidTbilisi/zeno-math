@@ -15,18 +15,20 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Slider } from "./AnalysisDialog";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in StatTopic]: StatSpecOf<K> };
 
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
-export function StatsDialog({ initial, onSubmit, onClose }: {
+export function StatsDialog({ initial, start, onSubmit, onClose }: {
   initial?: StatSpec;
+  start?: string;
   onSubmit: (spec: StatSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [topic, setTopic] = useState<StatTopic>(initial?.topic ?? "data");
+  const [topic, setTopic] = useState<StatTopic>(initial?.topic ?? startOr(start, STAT_TOPICS, "data"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(STAT_TOPICS.map((k) => [k, strip(STAT_PRESETS[k][0])])) as Specs;
     s.tree = { ...s.tree, nameA: t.treeNames.marbles.a, nameB: t.treeNames.marbles.b };
@@ -102,13 +104,7 @@ export function StatsDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {STAT_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.statTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={STAT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.statTopics[k]} />
       )}
       <small className="hint">{t.statHints[topic]}</small>
 
@@ -130,13 +126,7 @@ export function StatsDialog({ initial, onSubmit, onClose }: {
             <textarea className="mono" rows={2} spellCheck={false} value={spec.values} onChange={(e) => set({ values: e.target.value })} />
           </label>
           <div className="range-grid">
-            <div className="segmented" role="radiogroup">
-              {(["dot", "hist"] as const).map((c) => (
-                <button key={c} role="radio" aria-checked={spec.chart === c} className={spec.chart === c ? "active" : ""} onClick={() => set({ chart: c })}>
-                  {c === "dot" ? t.statDot : t.statHist}
-                </button>
-              ))}
-            </div>
+            <Segmented items={(["dot", "hist"] as const)} value={spec.chart} onChange={(c) => set({ chart: c })} label={(c) => c === "dot" ? t.statDot : t.statHist} />
             {spec.chart === "hist" && (
               <label>
                 <span>{t.statBins}</span>
@@ -168,13 +158,7 @@ export function StatsDialog({ initial, onSubmit, onClose }: {
 
       {spec.topic === "chance" && (
         <>
-          <div className="segmented wrap" role="radiogroup">
-            {EXPERIMENTS.map((x) => (
-              <button key={x} role="radio" aria-checked={spec.experiment === x} className={spec.experiment === x ? "active" : ""} onClick={() => set({ experiment: x })}>
-                {t.statExperiments[x]}
-              </button>
-            ))}
-          </div>
+          <Segmented className="wrap" items={EXPERIMENTS} value={spec.experiment} onChange={(x) => set({ experiment: x })} label={(x) => t.statExperiments[x]} />
           {/* Trials on a log scale: 10 … 10 000. */}
           <Slider
             label={t.statTrials}
@@ -201,13 +185,7 @@ export function StatsDialog({ initial, onSubmit, onClose }: {
 
       {spec.topic === "dist" && (
         <>
-          <div className="segmented wrap" role="radiogroup">
-            {DIST_KINDS.map((k) => (
-              <button key={k} role="radio" aria-checked={spec.kind === k} className={spec.kind === k ? "active" : ""} onClick={() => set({ kind: k })}>
-                {t.distKinds[k]}
-              </button>
-            ))}
-          </div>
+          <Segmented className="wrap" items={DIST_KINDS} value={spec.kind} onChange={(k) => set({ kind: k })} label={(k) => t.distKinds[k]} />
           {spec.kind === "binomial" && <Slider label="n" min={1} max={60} step={1} value={spec.n} onChange={(v) => set({ n: v })} />}
           <div className="range-grid">
             {spec.kind === "binomial" && text("p", "p")}
@@ -226,13 +204,7 @@ export function StatsDialog({ initial, onSubmit, onClose }: {
 
       {spec.topic === "clt" && (
         <>
-          <div className="segmented wrap" role="radiogroup">
-            {CLT_SOURCES.map((x) => (
-              <button key={x} role="radio" aria-checked={spec.source === x} className={spec.source === x ? "active" : ""} onClick={() => set({ source: x })}>
-                {t.cltSources[x]}
-              </button>
-            ))}
-          </div>
+          <Segmented className="wrap" items={CLT_SOURCES} value={spec.source} onChange={(x) => set({ source: x })} label={(x) => t.cltSources[x]} />
           <Slider label={t.sampleSize} min={1} max={50} step={1} value={spec.n} onChange={(v) => set({ n: v })} />
           <Slider label={t.samplesCount} min={100} max={5000} step={100} value={spec.samples} onChange={(v) => set({ samples: v })} />
           <button className="btn small add-fn" onClick={() => set({ seed: newSeed() })}>🎲 {t.newSample}</button>

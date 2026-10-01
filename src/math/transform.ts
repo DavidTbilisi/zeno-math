@@ -99,7 +99,7 @@ export function transformToSvg(spec: TransformSpec): RenderedSvg {
   const cell = (x: number, y: number, v: number, color: string) =>
     `<text x="${x}" y="${y}" text-anchor="middle" fill="${color}" font-weight="600">${fmt(v)}</text>`;
   out.push(
-    `<g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18">` +
+    `<g font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif" font-size="18">` +
       `<text x="${PAD}" y="${PAD + 30}" font-style="italic" font-weight="600" fill="#1e1e1e">M =</text>` +
       `<path d="M${mx + 8},${PAD + 4} q-8,0 -8,8 v36 q0,8 8,8" fill="none" stroke="#1e1e1e" stroke-width="1.6"/>` +
       cell(mx + 26, PAD + 22, a, "#2f9e44") + cell(mx + 26, PAD + 46, c, "#2f9e44") +

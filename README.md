@@ -76,6 +76,21 @@ UI in English, Russian and Georgian.
     mode where students drag the image points and press Check (correct points turn green)
   - *Protractor*: a real-looking protractor laid along arm OA (1° ticks, inner and outer scales);
     drag the arms, snap to 1° or 5°, and "hide the answer" so students read it themselves
+- **⚖ Equations & polynomials** — school algebra one line at a time, in exact fractions, every step labelled with what
+  was done to both sides
+  - *Linear equations*: take the smaller x-term from both sides, then the number, then divide; a balance scale with
+    x-bags and unit weights when the numbers are small, the crossed-out items being the ones taken from both pans;
+    "every number" and "no solution" cases; a check by substitution
+  - *Inequalities*: the same steps, with the sign flipping (in red) when dividing by a negative; two-sided ones such as
+    −3 < 2x + 1 ≤ 7 on all three parts; the answer on a number line with open or filled dots
+  - *Expand brackets*: the grid method — every term times every term, like terms collected in the colour of their power;
+    up to three brackets, `(x + 1)^3` and a number in front
+  - *Factor*: common factor (and x) first, then the ac method — the table of pairs p·q = ac with the one adding to b
+    ticked, the middle term split, grouped, and the common bracket; differences of squares and perfect squares named;
+    "doesn't factor" with the discriminant when no pair exists
+  - *Quadratic equations*, four ways: factoring and the zero product, completing the square (drawn as a square with
+    two strips and the missing corner), the formula with the discriminant (exact surds, complex roots pointed to the
+    Complex numbers tool), and vertex form with the parabola, vertex, axis, roots and y-intercept
 - **ℂ Complex numbers** — type z as `3+4i`, `2e^(iπ/3)`, `2∠150°` or `sqrt(-4)`; exact values where they are simple
   (√2/2, π/3), and every picture in the complex plane
   - *Forms*: a + bi ↔ r(cos θ + i sin θ) ↔ re^{iθ}, with |z|, the argument from arctan and the quadrant, the conjugate
@@ -256,8 +271,13 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  trigonometry, 3D), **Algebra** (formulas, graphs, matrices, complex numbers, analysis, integrals, ODEs) and **Discrete**
-  (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics)
+  trigonometry, 3D), **Algebra** (formulas, graphs, equations, matrices, complex numbers, analysis, integrals, ODEs) and
+  **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics)
+- **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
+  ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
+- Dialogs work from the keyboard: focus moves in and back, Tab stays inside, arrow keys move between tabs and options;
+  on a phone they take the whole screen
+- On a dark board the pictures turn dark too (and back again), and Georgian text in them uses the system's Georgian font
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
 - Boards autosave to SQLite on your own server; works fully offline (no CDNs)
 
@@ -331,9 +351,10 @@ A selection of the pictures Zeno draws (all generated, all editable):
 docker compose up -d --build
 ```
 
-Open http://localhost:8787. Data lives in the `data` Docker volume.
+Open http://localhost:8787. Data lives in the `data` Docker volume; the container reports its health from `/api/health`.
 
-To require a password (HTTP basic auth, any username):
+**Without a password, anyone who can reach the port can read, change and delete every board.** That is fine on your own
+computer; on a network, set one (HTTP basic auth, any username):
 
 ```bash
 APP_PASSWORD=choose-something docker compose up -d --build
@@ -361,7 +382,12 @@ The build writes `.br` / `.gz` copies of the assets, and the server sends those 
 language is a separate chunk, loaded the first time it is used.
 
 Autosave doesn't silently overwrite: if the board was saved in another tab or on another device since you opened it, Zeno pauses
-saving and asks whether to reload that version or keep yours.
+saving and asks whether to reload that version or keep yours. Saves go one at a time; a failed one is retried (2 s, 5 s, 15 s,
+30 s, and as soon as the browser is back online), and closing the tab with unsaved changes asks first.
+
+Backups: the home page links to `/api/export`, every board in one JSON file. The server sends a Content-Security-Policy and the
+usual security headers, accepts only JSON request bodies (so a form on another site can't post to it) and refuses scenes it
+couldn't load back.
 
 ## Tests
 
@@ -371,15 +397,21 @@ npm run typecheck
 ```
 
 The tests check that every example of every tool renders in English, Russian and Georgian; that the three languages have the same
-keys; the logic parser; the NAEC 2025 answers; complex-number arithmetic against mathjs; and the API's conflict check and
-compression. GitHub Actions runs typecheck, tests and build on every push.
+keys; the logic parser; the NAEC 2025 answers; complex-number arithmetic against mathjs; that solved equations and
+inequalities satisfy the input, expansions and factorisations multiply back and all four quadratic methods agree; that
+dark pictures turn back into the same light ones; and the API: conflicts, compression,
+bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
+builds the Docker image and saves a board in it.
 
 ## Project layout
 
 ```
 server/index.ts           HTTP server: /api/boards CRUD (SQLite) + static files
 src/pages/HomePage.tsx    board list
-src/pages/BoardPage.tsx   whiteboard, autosave, formula/graph insertion & editing
+src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
+src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
+src/components/ui.tsx     shared dialog controls: Tabs, Segmented, startOr
+src/components/CommandPalette.tsx  the tool search (Ctrl+K or /)
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)
@@ -411,6 +443,8 @@ src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
+src/math/algebra.ts       equations & polynomials: linear, inequalities, expanding, factoring, quadratics (exact)
+src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/mental.ts        mental math: base multiplication, digit-sum check, roots, cubing, magic squares, Major System
 src/math/tactics.ts       problem-solving tactics: symmetry, pigeonhole, domino tiling by colouring

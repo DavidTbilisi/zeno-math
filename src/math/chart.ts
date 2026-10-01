@@ -39,7 +39,7 @@ export const sub = (n: number) => String(n).replace(/\d/g, (d) => SUB[Number(d)]
 // ---------- drawing ----------
 
 export const W = 640;
-export const FONT = `font-family="Helvetica, Arial, sans-serif"`;
+export const FONT = `font-family="Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
 export const C = { blue: "#1971c2", red: "#e03131", green: "#2f9e44", orange: "#e8590c", purple: "#9c36b5", ink: "#1e1e1e", grey: "#868e96" };
 
 export type Frame = {

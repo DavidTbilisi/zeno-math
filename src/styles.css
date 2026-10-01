@@ -137,7 +137,8 @@ input.invalid { border-color: var(--danger); }
   background: rgba(10, 14, 20, 0.45);
 }
 .modal {
-  width: min(640px, 100%); max-height: calc(100vh - 32px);
+  width: min(640px, 100%); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px);
+  outline: none;
   display: flex; flex-direction: column;
   background: var(--surface); border-radius: 14px; box-shadow: var(--shadow);
 }
@@ -154,7 +155,7 @@ input.invalid { border-color: var(--danger); }
   min-height: 90px; display: flex; align-items: center; justify-content: center; padding: 12px;
   border: 1px solid var(--border); border-radius: 10px; background: #ffffff; overflow: auto;
 }
-.error { color: #e03131; font-size: 13px; }
+.error { color: var(--danger); font-size: 13px; }
 .snippets { display: flex; flex-wrap: wrap; gap: 4px; }
 .chip {
   min-width: 34px; height: 30px; padding: 0 8px;
@@ -339,3 +340,31 @@ input.invalid { border-color: var(--danger); }
 .slider-row output { min-width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
 /* Long dialogs scroll; their rows (tabs especially) must not be squashed. */
 .modal-body > * { flex-shrink: 0; }
+
+/* Phones: dialogs take the whole screen. */
+@media (max-width: 640px) {
+  .modal-backdrop { padding: 0; }
+  .modal { width: 100%; height: 100%; max-height: none; border-radius: 0; }
+}
+
+/* Tool search (Ctrl+K or /) */
+.palette-backdrop {
+  position: fixed; inset: 0; z-index: 110;
+  display: flex; justify-content: center; align-items: flex-start; padding: max(16px, 12vh) 16px 16px;
+  background: rgba(10, 14, 20, 0.35);
+}
+.palette {
+  width: min(560px, 100%); max-height: 70vh; display: flex; flex-direction: column;
+  background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden;
+}
+.palette-input { border: none; border-bottom: 1px solid var(--border); border-radius: 0; padding: 14px 16px; font-size: 16px; outline: none; }
+.palette-list { list-style: none; margin: 0; padding: 6px; overflow-y: auto; }
+.palette-list li {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; min-width: 0;
+}
+.palette-list li.active { background: var(--chip); }
+.palette-title { font-weight: 600; white-space: nowrap; }
+.palette-sub { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.palette-sub::before { content: "›"; margin-right: 8px; }
+.palette-via { margin-left: auto; font-size: 12px; color: var(--accent); white-space: nowrap; }
+.palette-none { padding: 10px 16px 14px; }

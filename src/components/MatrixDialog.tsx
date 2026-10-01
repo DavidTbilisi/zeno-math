@@ -6,18 +6,20 @@ import { DEFAULT_TRANSFORM, TRANSFORM_PRESETS, transformToSvg, type TransformSpe
 import { svgToDataUrl } from "../math/svg";
 import { DEFAULT_SPACE, renderSpace, SPACE_LABELS, SPACE_OPS, SPACE_PRESETS, type SpaceSpec } from "../math/vectorspace";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 export type MatrixSpec = MatrixCalcSpec | TransformSpec | SpaceSpec;
 
 const MAX = 4;
 
-export function MatrixDialog({ initial, onSubmit, onClose }: {
+export function MatrixDialog({ initial, start, onSubmit, onClose }: {
   initial?: MatrixSpec;
+  start?: string;
   onSubmit: (spec: MatrixSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [tab, setTab] = useState<MatrixSpec["type"]>(initial?.type ?? "calc");
+  const [tab, setTab] = useState<MatrixSpec["type"]>(initial?.type ?? startOr(start, ["calc", "transform", "space"] as const, "calc"));
   const [calc, setCalc] = useState<MatrixCalcSpec>(initial?.type === "calc" ? initial : DEFAULT_MATRIX);
   const [tf, setTf] = useState<TransformSpec>(initial?.type === "transform" ? initial : DEFAULT_TRANSFORM);
   const [space, setSpace] = useState<SpaceSpec>(initial?.type === "space" ? initial : DEFAULT_SPACE);
@@ -46,13 +48,7 @@ export function MatrixDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {(["calc", "transform", "space"] as const).map((k) => (
-            <button key={k} role="tab" aria-selected={k === tab} className={`tab${k === tab ? " active" : ""}`} onClick={() => setTab(k)}>
-              {k === "calc" ? t.matrixCalc : k === "transform" ? t.matrixTransform : t.matrixSpaces}
-            </button>
-          ))}
-        </div>
+        <Tabs items={(["calc", "transform", "space"] as const)} value={tab} onChange={setTab} label={(k) => k === "calc" ? t.matrixCalc : k === "transform" ? t.matrixTransform : t.matrixSpaces} />
       )}
 
       {tab === "calc" ? (
@@ -84,13 +80,7 @@ function CalcControls({ spec, onChange }: { spec: MatrixCalcSpec; onChange: (s: 
 
   return (
     <>
-      <div className="segmented wrap" role="radiogroup" aria-label={t.operation}>
-        {MATRIX_OPS.map((op) => (
-          <button key={op} role="radio" aria-checked={spec.op === op} className={`math-label${spec.op === op ? " active" : ""}`} onClick={() => set({ op })}>
-            {OP_LABELS[op]}
-          </button>
-        ))}
-      </div>
+      <Segmented className="wrap" itemClassName="math-label" ariaLabel={t.operation} items={MATRIX_OPS} value={spec.op} onChange={(op) => set({ op })} label={(op) => OP_LABELS[op]} />
       {opHint[spec.op] && <small className="hint">{opHint[spec.op]}</small>}
       <div className="matrix-editors">
         <MatrixEditor name="A" cells={spec.A} onChange={(A) => set({ A })} augmented={spec.op === "solve"} />
@@ -240,13 +230,7 @@ function SpaceControls({ spec, onChange }: { spec: SpaceSpec; onChange: (s: Spac
   const w = Array.from({ length: rows }, (_, i) => spec.w[i] ?? "0");
   return (
     <>
-      <div className="segmented wrap" role="radiogroup" aria-label={t.operation}>
-        {SPACE_OPS.map((op) => (
-          <button key={op} role="radio" aria-checked={spec.op === op} className={`math-label${spec.op === op ? " active" : ""}`} onClick={() => set({ op })}>
-            {SPACE_LABELS[op]}
-          </button>
-        ))}
-      </div>
+      <Segmented className="wrap" itemClassName="math-label" ariaLabel={t.operation} items={SPACE_OPS} value={spec.op} onChange={(op) => set({ op })} label={(op) => SPACE_LABELS[op]} />
       <small className="hint">{t.spaceHints[spec.op]}</small>
       <div className="field">
         <span>{t.examples}</span>

@@ -14,6 +14,7 @@ import {
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in IntTopic]: IntSpecOf<K> };
 
@@ -21,13 +22,14 @@ const OUTER_LABELS = { power: "uⁿ", exp: "eᵘ", sin: "sin u", cos: "cos u", r
 const PARTS_LABELS = { exp: "xⁿ eᵃˣ", sin: "xⁿ sin ax", cos: "xⁿ cos ax", ln: "xⁿ ln x", expsin: "eᵃˣ sin bx", expcos: "eᵃˣ cos bx" };
 const TRIG_LABELS = { asin: "1 / √(a² − x²)", sqrtA: "√(a² − x²)", atan: "1 / (a² + x²)", asinh: "1 / √(x² + a²)", acosh: "1 / √(x² − a²)", x2sqrt: "1 / (x² √(a² − x²))" };
 
-export function IntegralDialog({ initial, onSubmit, onClose }: {
+export function IntegralDialog({ initial, start, onSubmit, onClose }: {
   initial?: IntegralSpec;
+  start?: string;
   onSubmit: (spec: IntegralSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [topic, setTopic] = useState<IntTopic>(initial?.topic ?? "sub");
+  const [topic, setTopic] = useState<IntTopic>(initial?.topic ?? startOr(start, INT_TOPICS, "sub"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(INT_TOPICS.map((k) => [k, INT_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -58,13 +60,7 @@ export function IntegralDialog({ initial, onSubmit, onClose }: {
     </label>
   );
   const segmented = <K extends string>(keys: readonly K[], labels: Record<K, string>, value: K, onPick: (k: K) => void) => (
-    <div className="segmented wrap" role="radiogroup">
-      {keys.map((k) => (
-        <button key={k} role="radio" aria-checked={value === k} className={`math-label${value === k ? " active" : ""}`} onClick={() => onPick(k)}>
-          {labels[k]}
-        </button>
-      ))}
-    </div>
+    <Segmented className="wrap" itemClassName="math-label" items={keys} value={value} onChange={(k) => onPick(k)} label={(k) => labels[k]} />
   );
   const bounds = (
     <>
@@ -87,13 +83,7 @@ export function IntegralDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {INT_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.intTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={INT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.intTopics[k]} />
       )}
       <small className="hint">{t.intHints[topic]}</small>
 

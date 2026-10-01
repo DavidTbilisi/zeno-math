@@ -26,7 +26,7 @@ export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | P
 export type ModelType = ModelSpec["type"];
 
 const INK = "#1e1e1e";
-const FONT = `font-family="Segoe UI, Helvetica, Arial, sans-serif"`;
+const FONT = `font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
 const PAD = 16;
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

@@ -60,7 +60,7 @@ const ORANGE = "#e8590c";
 const GREEN = "#2f9e44";
 const GREY = "#adb5bd";
 const FONT = `font-family="Consolas, 'Courier New', monospace"`;
-const SANS = `font-family="Segoe UI, Helvetica, Arial, sans-serif"`;
+const SANS = `font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const ch = (x: number, y: number, s: string, color = INK, size = 22, bold = false) =>
   `<text x="${r1(x)}" y="${r1(y)}" ${FONT} font-size="${size}" text-anchor="middle" fill="${color}"${bold ? ' font-weight="700"' : ""}>${s}</text>`;

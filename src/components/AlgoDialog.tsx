@@ -21,17 +21,19 @@ import {
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in AlgoTopic]: AlgoSpecOf<K> };
 
-export function AlgoDialog({ initial, onSubmit, onClose }: {
+export function AlgoDialog({ initial, start, onSubmit, onClose }: {
   initial?: AlgoSpec;
+  start?: string;
   onSubmit: (spec: AlgoSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const w = t.algoWords;
-  const [topic, setTopic] = useState<AlgoTopic>(initial?.topic ?? "sort");
+  const [topic, setTopic] = useState<AlgoTopic>(initial?.topic ?? startOr(start, ALGO_TOPICS, "sort"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(ALGO_TOPICS.map((k) => [k, ALGO_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -61,13 +63,7 @@ export function AlgoDialog({ initial, onSubmit, onClose }: {
     </div>
   );
   const segmented = <K extends string>(keys: readonly K[], label: (k: K) => string, current: K, onPick: (k: K) => void) => (
-    <div className="segmented wrap" role="radiogroup">
-      {keys.map((k) => (
-        <button key={k} role="radio" aria-checked={current === k} className={`math-label${current === k ? " active" : ""}`} onClick={() => onPick(k)}>
-          {label(k)}
-        </button>
-      ))}
-    </div>
+    <Segmented className="wrap" itemClassName="math-label" items={keys} value={current} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
 
   return (
@@ -84,13 +80,7 @@ export function AlgoDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {ALGO_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.algoTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={ALGO_TOPICS} value={topic} onChange={setTopic} label={(k) => t.algoTopics[k]} />
       )}
       <small className="hint">{t.algoHints[topic]}</small>
 

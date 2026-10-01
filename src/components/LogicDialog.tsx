@@ -6,6 +6,7 @@ import { SW_ASKS, SW_PATTERNS, SW_PRESETS, type SwPattern, type SwSpec } from ".
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = Record<LogicTopic, LogicSpec>;
 type Field = "f" | "g" | "vals";
@@ -33,13 +34,7 @@ function BoardFields({ spec, set }: { spec: LogicSpec; set: (patch: Partial<Logi
   );
   return (
     <>
-      <div className="segmented" role="radiogroup">
-        {BOARD_MODES.map((m) => (
-          <button key={m} role="radio" aria-checked={b.mode === m} className={b.mode === m ? "active" : ""} onClick={() => put({ mode: m })}>
-            {t.boardModes[m]}
-          </button>
-        ))}
-      </div>
+      <Segmented items={BOARD_MODES} value={b.mode} onChange={(m) => put({ mode: m })} label={(m) => t.boardModes[m]} />
       {line("places", b.mode === "bins" ? t.boardPlaces : t.boardSlots)}
       {line("pool", t.boardPool)}
       {area("rules", t.boardRules, 4)}
@@ -68,13 +63,7 @@ function SwFields({ spec, set }: { spec: LogicSpec; set: (patch: Partial<LogicSp
   );
   return (
     <>
-      <div className="segmented" role="radiogroup">
-        {SW_ASKS.map((a) => (
-          <button key={a} role="radio" aria-checked={s.ask === a} className={s.ask === a ? "active" : ""} onClick={() => put({ ask: a })}>
-            {t.swAsks[a]}
-          </button>
-        ))}
-      </div>
+      <Segmented items={SW_ASKS} value={s.ask} onChange={(a) => put({ ask: a })} label={(a) => t.swAsks[a]} />
       <label className="field">
         <span>{t.swPattern}</span>
         <select value={s.pattern} onChange={(e) => put({ pattern: e.target.value as SwPattern })}>
@@ -94,14 +83,15 @@ function SwFields({ spec, set }: { spec: LogicSpec; set: (patch: Partial<LogicSp
   );
 }
 
-export function LogicDialog({ initial, onSubmit, onClose }: {
+export function LogicDialog({ initial, start, onSubmit, onClose }: {
   initial?: LogicSpec;
+  start?: string;
   onSubmit: (spec: LogicSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const w = t.logicWords;
-  const [topic, setTopic] = useState<LogicTopic>(initial?.topic ?? "table");
+  const [topic, setTopic] = useState<LogicTopic>(initial?.topic ?? startOr(start, LOGIC_TOPICS, "table"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(LOGIC_TOPICS.map((k) => [k, LOGIC_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -166,13 +156,7 @@ export function LogicDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {LOGIC_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.logicTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={LOGIC_TOPICS} value={topic} onChange={setTopic} label={(k) => t.logicTopics[k]} />
       )}
       <small className="hint">{t.logicHints[topic]}</small>
 
@@ -231,13 +215,7 @@ export function LogicDialog({ initial, onSubmit, onClose }: {
       </div>}
 
       {showTf && (
-        <div className="segmented" role="radiogroup">
-          {([true, false] as const).map((tf) => (
-            <button key={String(tf)} role="radio" aria-checked={spec.tf === tf} className={spec.tf === tf ? "active" : ""} onClick={() => set({ tf })}>
-              {tf ? t.logicStyle.tf : t.logicStyle.bits}
-            </button>
-          ))}
-        </div>
+        <Segmented items={([true, false] as const)} value={spec.tf} onChange={(tf) => set({ tf })} label={(tf) => tf ? t.logicStyle.tf : t.logicStyle.bits} />
       )}
 
       <div className="field">

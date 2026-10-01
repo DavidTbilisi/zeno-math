@@ -15,6 +15,7 @@ import {
 } from "../math/models";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 import { PlaceValueMat } from "./PlaceValueMat";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, stepCount, type MultiplySpec } from "../math/multiply";
 import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, type DivisionSpec } from "../math/division";
@@ -28,12 +29,12 @@ const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
   initial?: ModelSpec;
-  start?: ModelType;
+  start?: string;
   onSubmit: (spec: ModelSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [type, setType] = useState<ModelType>(initial?.type ?? start ?? "bar");
+  const [type, setType] = useState<ModelType>(initial?.type ?? startOr(start, TYPES, "bar"));
   const [specs, setSpecs] = useState<Specs>(() => ({ ...DEFAULT_MODELS, ...(initial ? { [initial.type]: initial } : {}) }));
   const spec = specs[type];
   const update = <K extends ModelType>(k: K, next: Specs[K]) => setSpecs((s) => ({ ...s, [k]: next }));
@@ -62,13 +63,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {TYPES.map((k) => (
-            <button key={k} role="tab" aria-selected={k === type} className={`tab${k === type ? " active" : ""}`} onClick={() => setType(k)}>
-              {tabLabel[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={TYPES} value={type} onChange={setType} label={(k) => tabLabel[k]} />
       )}
 
       <div className="field">
@@ -208,13 +203,7 @@ function FractionEditor({ spec, onChange }: { spec: FractionSpec; onChange: (s: 
         </div>
       </div>
       <div className="range-grid">
-        <div className="segmented" role="radiogroup" aria-label={t.shape}>
-          {(["bar", "circle"] as const).map((s) => (
-            <button key={s} role="radio" aria-checked={spec.shape === s} className={spec.shape === s ? "active" : ""} onClick={() => onChange({ ...spec, shape: s })}>
-              {s === "bar" ? t.shapeBar : t.shapeCircle}
-            </button>
-          ))}
-        </div>
+        <Segmented ariaLabel={t.shape} items={(["bar", "circle"] as const)} value={spec.shape} onChange={(s) => onChange({ ...spec, shape: s })} label={(s) => s === "bar" ? t.shapeBar : t.shapeCircle} />
         <label className="check">
           <input type="checkbox" checked={spec.unitLabels} onChange={(e) => onChange({ ...spec, unitLabels: e.target.checked })} />
           <span>{t.unitLabels}</span>
@@ -237,13 +226,7 @@ function MultiplyEditor({ spec, onChange }: { spec: MultiplySpec; onChange: (s: 
 
   return (
     <>
-      <div className="segmented wrap" role="radiogroup">
-        {MULTIPLY_STYLES.map((s) => (
-          <button key={s} role="radio" aria-checked={spec.style === s} className={spec.style === s ? "active" : ""} onClick={() => setStyle(s)}>
-            {t.multStyles[s]}
-          </button>
-        ))}
-      </div>
+      <Segmented className="wrap" items={MULTIPLY_STYLES} value={spec.style} onChange={(s) => setStyle(s)} label={(s) => t.multStyles[s]} />
       <div className="range-grid mult-inputs">
         <input type="number" min={1} max={lim.a} value={spec.a} aria-label="a" onChange={(e) => setNum("a", e.target.value)} />
         <span className="mult-sign">×</span>
@@ -280,13 +263,7 @@ function PercRatioEditor({ spec, onChange }: { spec: PercRatioSpec; onChange: (s
   const kinds = (list: readonly PercRatioSpec["kind"][], title: string) => (
     <div className="field">
       <span>{title}</span>
-      <div className="segmented wrap" role="radiogroup">
-        {list.map((k) => (
-          <button key={k} role="radio" aria-checked={spec.kind === k} className={spec.kind === k ? "active" : ""} onClick={() => set({ kind: k })}>
-            {t.prKinds[k]}
-          </button>
-        ))}
-      </div>
+      <Segmented className="wrap" items={list} value={spec.kind} onChange={(k) => set({ kind: k })} label={(k) => t.prKinds[k]} />
     </div>
   );
   return (
@@ -337,13 +314,7 @@ function FracOpEditor({ spec, onChange }: { spec: FracOpSpec; onChange: (s: Frac
   const set = (patch: Partial<FracOpSpec>) => onChange({ ...spec, ...patch, step: 999 });
   return (
     <>
-      <div className="segmented" role="radiogroup">
-        {FRAC_OPS.map((op) => (
-          <button key={op} role="radio" aria-checked={spec.op === op} className={`math-label${spec.op === op ? " active" : ""}`} onClick={() => set({ op })}>
-            {op === "-" ? "−" : op}
-          </button>
-        ))}
-      </div>
+      <Segmented itemClassName="math-label" items={FRAC_OPS} value={spec.op} onChange={(op) => set({ op })} label={(op) => op === "-" ? "−" : op} />
       <div className="range-grid mult-inputs">
         <input type="text" className="mono" spellCheck={false} value={spec.a} aria-label="a" onChange={(e) => set({ a: e.target.value })} />
         <span className="mult-sign">{spec.op === "-" ? "−" : spec.op}</span>
@@ -377,13 +348,7 @@ function DivisionEditor({ spec, onChange }: { spec: DivisionSpec; onChange: (s: 
   const set = (patch: Partial<DivisionSpec>) => onChange({ ...spec, ...patch, step: 999 });
   return (
     <>
-      <div className="segmented wrap" role="radiogroup">
-        {DIVISION_STYLES.map((s) => (
-          <button key={s} role="radio" aria-checked={spec.style === s} className={spec.style === s ? "active" : ""} onClick={() => set({ style: s })}>
-            {t.divStyles[s]}
-          </button>
-        ))}
-      </div>
+      <Segmented className="wrap" items={DIVISION_STYLES} value={spec.style} onChange={(s) => set({ style: s })} label={(s) => t.divStyles[s]} />
       <div className="range-grid mult-inputs">
         <input type="number" min={0} max={DIVISION_LIMITS.a} value={spec.a} aria-label="a" onChange={(e) => set({ a: clampInt(e.target.value, 0, DIVISION_LIMITS.a) })} />
         <span className="mult-sign">{spec.style === "corner" ? ":" : "÷"}</span>
@@ -451,13 +416,7 @@ function PercentEditor({ spec, onChange }: { spec: PercentSpec; onChange: (s: Pe
             onChange={(e) => onChange({ ...spec, of: e.target.value === "" ? null : Number(e.target.value) })}
           />
         </label>
-        <div className="segmented" role="radiogroup">
-          {(["bar", "grid"] as const).map((s) => (
-            <button key={s} role="radio" aria-checked={spec.style === s} className={spec.style === s ? "active" : ""} onClick={() => onChange({ ...spec, style: s })}>
-              {s === "bar" ? t.styleBar : t.styleGrid}
-            </button>
-          ))}
-        </div>
+        <Segmented items={(["bar", "grid"] as const)} value={spec.style} onChange={(s) => onChange({ ...spec, style: s })} label={(s) => s === "bar" ? t.styleBar : t.styleGrid} />
       </div>
     </>
   );

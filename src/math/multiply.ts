@@ -17,7 +17,7 @@ export const MULTIPLY_LIMITS: Record<MultiplyStyle, { a: number; b: number }> = 
 };
 
 const INK = "#1e1e1e";
-const FONT = `font-family="Segoe UI, Helvetica, Arial, sans-serif"`;
+const FONT = `font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
 const PAD = 16;
 const DOT = { fill: "#a5d8ff", stroke: "#1971c2" };
 const ALT = { fill: "#b2f2bb", stroke: "#2f9e44" };

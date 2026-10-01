@@ -17,6 +17,7 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Slider } from "./AnalysisDialog";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in TrigTopic]: TrigSpecOf<K> };
 
@@ -24,13 +25,14 @@ const GIVEN_LABELS = { oppAdj: "a, b", oppHyp: "a, c", adjHyp: "b, c", angOpp: "
 const GIVEN_KEYS = { oppAdj: ["opp", "adj"], oppHyp: ["opp", "hyp"], adjHyp: ["adj", "hyp"], angOpp: ["ang", "opp"], angAdj: ["ang", "adj"], angHyp: ["ang", "hyp"] };
 const CASE_KEYS = { SSS: ["a", "b", "c"], SAS: ["b", "c", "A"], ASA: ["A", "B", "c"], AAS: ["A", "B", "a"], SSA: ["a", "b", "A"] };
 
-export function TrigDialog({ initial, onSubmit, onClose }: {
+export function TrigDialog({ initial, start, onSubmit, onClose }: {
   initial?: TrigSpec;
+  start?: string;
   onSubmit: (spec: TrigSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [topic, setTopic] = useState<TrigTopic>(initial?.topic ?? "circle");
+  const [topic, setTopic] = useState<TrigTopic>(initial?.topic ?? startOr(start, TRIG_TOPICS, "circle"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(TRIG_TOPICS.map((k) => [k, TRIG_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -60,13 +62,7 @@ export function TrigDialog({ initial, onSubmit, onClose }: {
     </label>
   );
   const segmented = <K extends string>(keys: readonly K[], label: (k: K) => string, value: K, onPick: (k: K) => void) => (
-    <div className="segmented wrap" role="radiogroup">
-      {keys.map((k) => (
-        <button key={k} role="radio" aria-checked={value === k} className={`math-label${value === k ? " active" : ""}`} onClick={() => onPick(k)}>
-          {label(k)}
-        </button>
-      ))}
-    </div>
+    <Segmented className="wrap" itemClassName="math-label" items={keys} value={value} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
   const unitToggle = (unit: AngleUnit) => segmented(["deg", "rad"] as const, (u) => (u === "deg" ? t.degrees : t.radians), unit, (u) => set({ unit: u } as Partial<TrigSpec>));
   const sideLabel: Record<string, string> = { opp: `a (${t.trigWords.opp})`, adj: `b (${t.trigWords.adj})`, hyp: `c (${t.trigWords.hyp})`, ang: "θ (°)" };
@@ -85,13 +81,7 @@ export function TrigDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {TRIG_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.trigTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={TRIG_TOPICS} value={topic} onChange={setTopic} label={(k) => t.trigTopics[k]} />
       )}
       <small className="hint">{t.trigHints[topic]}</small>
 

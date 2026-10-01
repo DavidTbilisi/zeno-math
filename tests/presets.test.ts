@@ -22,6 +22,7 @@ import { TRIG_PRESETS, renderTrig } from "../src/math/trig.ts";
 import { DEFAULT_SPACE, renderSpace, SPACE_PRESETS } from "../src/math/vectorspace.ts";
 import { MENTAL_PRESETS, renderMental } from "../src/math/mental.ts";
 import { renderTactics, TACTICS_PRESETS } from "../src/math/tactics.ts";
+import { ALGEBRA_PRESETS, renderAlgebra } from "../src/math/algebra.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -45,6 +46,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["trigonometry", specs(TRIG_PRESETS), (s, t) => renderTrig(s, t.trigWords)],
   ["mental math", specs(MENTAL_PRESETS), (s, t) => renderMental(s, t.mentalWords)],
   ["tactics", specs(TACTICS_PRESETS), (s, t) => renderTactics(s, t.tacticsWords)],
+  ["algebra", specs(ALGEBRA_PRESETS), (s, t) => renderAlgebra(s, t.algebraWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 

@@ -4,6 +4,7 @@ import { CX_OPS, CX_PRESETS, CX_TOPICS, renderComplex, type CxSpec, type CxTopic
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = Record<CxTopic, CxSpec>;
 type Field = "z" | "w" | "n" | "a" | "b" | "c" | "t";
@@ -11,14 +12,15 @@ type Field = "z" | "w" | "n" | "a" | "b" | "c" | "t";
 const SYMBOLS = ["i", "π", "√(", "∠", "°", "e^(i", ")"];
 const OP_LABEL: Record<string, string> = { "+": "+", "-": "−", "*": "×", "/": "÷" };
 
-export function ComplexDialog({ initial, onSubmit, onClose }: {
+export function ComplexDialog({ initial, start, onSubmit, onClose }: {
   initial?: CxSpec;
+  start?: string;
   onSubmit: (spec: CxSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const w = t.cxWords;
-  const [topic, setTopic] = useState<CxTopic>(initial?.topic ?? "form");
+  const [topic, setTopic] = useState<CxTopic>(initial?.topic ?? startOr(start, CX_TOPICS, "form"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(CX_TOPICS.map((k) => [k, CX_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -80,13 +82,7 @@ export function ComplexDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {CX_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.cxTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={CX_TOPICS} value={topic} onChange={setTopic} label={(k) => t.cxTopics[k]} />
       )}
       <small className="hint">{t.cxHints[topic]}</small>
 
@@ -116,13 +112,7 @@ export function ComplexDialog({ initial, onSubmit, onClose }: {
         {topic === "euler" && field("t", t.cxAngle, 140)}
       </div>
       {topic === "ops" && (
-        <div className="segmented" role="radiogroup">
-          {CX_OPS.map((op) => (
-            <button key={op} role="radio" aria-checked={spec.op === op} className={spec.op === op ? "active" : ""} onClick={() => set({ op })}>
-              {OP_LABEL[op]}
-            </button>
-          ))}
-        </div>
+        <Segmented items={CX_OPS} value={spec.op} onChange={(op) => set({ op })} label={(op) => OP_LABEL[op]} />
       )}
       <div className="snippets">
         {SYMBOLS.map((sym) => (

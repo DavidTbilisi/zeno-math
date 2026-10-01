@@ -16,17 +16,19 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Slider } from "./AnalysisDialog";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in NtTopic]: NtSpecOf<K> };
 
-export function NtDialog({ initial, onSubmit, onClose }: {
+export function NtDialog({ initial, start, onSubmit, onClose }: {
   initial?: NtSpec;
+  start?: string;
   onSubmit: (spec: NtSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const w = t.ntWords;
-  const [topic, setTopic] = useState<NtTopic>(initial?.topic ?? "sieve");
+  const [topic, setTopic] = useState<NtTopic>(initial?.topic ?? startOr(start, NT_TOPICS, "sieve"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(NT_TOPICS.map((k) => [k, NT_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -50,13 +52,7 @@ export function NtDialog({ initial, onSubmit, onClose }: {
     </label>
   );
   const segmented = <K extends string>(keys: readonly K[], label: (k: K) => string, current: K, onPick: (k: K) => void) => (
-    <div className="segmented wrap" role="radiogroup">
-      {keys.map((k) => (
-        <button key={k} role="radio" aria-checked={current === k} className={`math-label${current === k ? " active" : ""}`} onClick={() => onPick(k)}>
-          {label(k)}
-        </button>
-      ))}
-    </div>
+    <Segmented className="wrap" itemClassName="math-label" items={keys} value={current} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
 
   // The sieve slider runs over the primes up to √n.
@@ -76,13 +72,7 @@ export function NtDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {NT_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.ntTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={NT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.ntTopics[k]} />
       )}
       <small className="hint">{t.ntHints[topic]}</small>
 

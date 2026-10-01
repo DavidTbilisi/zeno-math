@@ -114,7 +114,7 @@ export function plotToSvg(spec: PlotSpec): RenderedSvg {
     `<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#495057"/></marker></defs>`,
     `<line x1="${PAD - 6}" y1="${axisX}" x2="${W - PAD + 12}" y2="${axisX}" stroke="#495057" stroke-width="1.3" marker-end="url(#a)"/>`,
     `<line x1="${axisY}" y1="${H - PAD + 6}" x2="${axisY}" y2="${PAD - 12}" stroke="#495057" stroke-width="1.3" marker-end="url(#a)"/>`,
-    `<g font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#495057">${labels.join("")}` +
+    `<g font-family="Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif" font-size="11" fill="#495057">${labels.join("")}` +
       `<text x="${W - PAD + 8}" y="${axisX - 8}" font-style="italic" font-size="13">x</text>` +
       `<text x="${axisY + 8}" y="${PAD - 6}" font-style="italic" font-size="13">y</text></g>`,
   );
@@ -149,7 +149,7 @@ export function plotToSvg(spec: PlotSpec): RenderedSvg {
   series.forEach((s, i) => {
     const y = PAD + 8 + i * 18;
     parts.push(
-      `<g font-family="Helvetica, Arial, sans-serif" font-size="13"><rect x="${PAD + 6}" y="${y - 11}" width="${
+      `<g font-family="Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif" font-size="13"><rect x="${PAD + 6}" y="${y - 11}" width="${
         Math.min(240, 40 + s.expr.length * 7.2)
       }" height="16" fill="#ffffff" opacity="0.85"/>` +
         `<line x1="${PAD + 8}" y1="${y - 3}" x2="${PAD + 24}" y2="${y - 3}" stroke="${s.color}" stroke-width="3"/>` +

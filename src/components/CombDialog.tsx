@@ -15,17 +15,19 @@ import {
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in CombTopic]: CombSpecOf<K> };
 
-export function CombDialog({ initial, onSubmit, onClose }: {
+export function CombDialog({ initial, start, onSubmit, onClose }: {
   initial?: CombSpec;
+  start?: string;
   onSubmit: (spec: CombSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const w = t.combWords;
-  const [topic, setTopic] = useState<CombTopic>(initial?.topic ?? "count");
+  const [topic, setTopic] = useState<CombTopic>(initial?.topic ?? startOr(start, COMB_TOPICS, "count"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(COMB_TOPICS.map((k) => [k, COMB_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -49,13 +51,7 @@ export function CombDialog({ initial, onSubmit, onClose }: {
     </label>
   );
   const segmented = <K extends string>(keys: readonly K[], label: (k: K) => string, current: K, onPick: (k: K) => void) => (
-    <div className="segmented wrap" role="radiogroup">
-      {keys.map((k) => (
-        <button key={k} role="radio" aria-checked={current === k} className={`math-label${current === k ? " active" : ""}`} onClick={() => onPick(k)}>
-          {label(k)}
-        </button>
-      ))}
-    </div>
+    <Segmented className="wrap" itemClassName="math-label" items={keys} value={current} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
 
   return (
@@ -72,13 +68,7 @@ export function CombDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {COMB_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.combTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={COMB_TOPICS} value={topic} onChange={setTopic} label={(k) => t.combTopics[k]} />
       )}
       <small className="hint">{t.combHints[topic]}</small>
 

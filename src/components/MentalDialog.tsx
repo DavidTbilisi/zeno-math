@@ -4,19 +4,21 @@ import type { RenderedSvg } from "../math/latex";
 import { CHECK_OPS, MAJOR_SYSTEMS, MENTAL_PRESETS, MENTAL_TOPICS, renderMental, type MentalSpec, type MentalTopic } from "../math/mental";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = Record<MentalTopic, MentalSpec>;
 const OP_LABEL = { "+": "+", "-": "−", "*": "×", "/": "÷" };
 
-export function MentalDialog({ initial, onSubmit, onClose }: {
+export function MentalDialog({ initial, start, onSubmit, onClose }: {
   initial?: MentalSpec;
+  start?: string;
   onSubmit: (spec: MentalSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t, lang } = useI18n();
   const w = t.mentalWords;
   const f = t.mentalFields;
-  const [topic, setTopic] = useState<MentalTopic>(initial?.topic ?? "multiply");
+  const [topic, setTopic] = useState<MentalTopic>(initial?.topic ?? startOr(start, MENTAL_TOPICS, "multiply"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(MENTAL_TOPICS.map((k) => [k, MENTAL_PRESETS[k][0].spec])) as Specs;
     // The Major System follows the language: БЦК for Russian, the Latin table otherwise.
@@ -47,13 +49,7 @@ export function MentalDialog({ initial, onSubmit, onClose }: {
     </div>
   );
   const segmented = <K extends string>(keys: readonly K[], label: (k: K) => string, current: K, onPick: (k: K) => void) => (
-    <div className="segmented" role="radiogroup">
-      {keys.map((k) => (
-        <button key={k} role="radio" aria-checked={current === k} className={current === k ? "active" : ""} onClick={() => onPick(k)}>
-          {label(k)}
-        </button>
-      ))}
-    </div>
+    <Segmented items={keys} value={current} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
 
   return (
@@ -70,13 +66,7 @@ export function MentalDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {MENTAL_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.mentalTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={MENTAL_TOPICS} value={topic} onChange={setTopic} label={(k) => t.mentalTopics[k]} />
       )}
       <small className="hint">{t.mentalHints[topic]}</small>
 

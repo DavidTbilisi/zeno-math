@@ -5,18 +5,20 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Slider } from "./AnalysisDialog";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in OdeTopic]: OdeSpecOf<K> };
 
 const FIRST_LABELS = { growth: "y′ = ky", affine: "y′ = k(y − A)", logistic: "y′ = ry(1 − y/K)", linear: "y′ + py = b·eᶜᵗ" };
 
-export function OdeDialog({ initial, onSubmit, onClose }: {
+export function OdeDialog({ initial, start, onSubmit, onClose }: {
   initial?: OdeSpec;
+  start?: string;
   onSubmit: (spec: OdeSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [topic, setTopic] = useState<OdeTopic>(initial?.topic ?? "field");
+  const [topic, setTopic] = useState<OdeTopic>(initial?.topic ?? startOr(start, ODE_TOPICS, "field"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(ODE_TOPICS.map((k) => [k, ODE_PRESETS[k][0].spec])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -77,13 +79,7 @@ export function OdeDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {ODE_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.odeTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={ODE_TOPICS} value={topic} onChange={setTopic} label={(k) => t.odeTopics[k]} />
       )}
       <small className="hint">{t.odeHints[topic]}</small>
 
@@ -123,13 +119,7 @@ export function OdeDialog({ initial, onSubmit, onClose }: {
 
       {spec.topic === "first" && (
         <>
-          <div className="segmented wrap" role="radiogroup">
-            {FIRST_KINDS.map((k) => (
-              <button key={k} role="radio" aria-checked={spec.kind === k} className={`math-label${spec.kind === k ? " active" : ""}`} onClick={() => set({ kind: k })}>
-                {FIRST_LABELS[k]}
-              </button>
-            ))}
-          </div>
+          <Segmented className="wrap" itemClassName="math-label" items={FIRST_KINDS} value={spec.kind} onChange={(k) => set({ kind: k })} label={(k) => FIRST_LABELS[k]} />
           <div className="range-grid">
             {(spec.kind === "growth" || spec.kind === "affine") && text("k", "k", 110)}
             {spec.kind === "affine" && text("A", "A")}

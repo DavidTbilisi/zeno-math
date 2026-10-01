@@ -12,6 +12,7 @@ import {
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in AnalysisTopic]: SpecOf<K> };
 
@@ -33,13 +34,14 @@ function presetLabel(p: AnalysisSpec): string {
   }
 }
 
-export function AnalysisDialog({ initial, onSubmit, onClose }: {
+export function AnalysisDialog({ initial, start, onSubmit, onClose }: {
   initial?: AnalysisSpec;
+  start?: string;
   onSubmit: (spec: AnalysisSpec, rendered: RenderedSvg) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const [topic, setTopic] = useState<AnalysisTopic>(initial?.topic ?? "sequence");
+  const [topic, setTopic] = useState<AnalysisTopic>(initial?.topic ?? startOr(start, ANALYSIS_TOPICS, "sequence"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(ANALYSIS_TOPICS.map((k) => [k, ANALYSIS_PRESETS[k][0]])) as Specs;
     return initial ? { ...s, [initial.topic]: initial } : s;
@@ -84,13 +86,7 @@ export function AnalysisDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {ANALYSIS_TOPICS.map((k) => (
-            <button key={k} role="tab" aria-selected={k === topic} className={`tab${k === topic ? " active" : ""}`} onClick={() => setTopic(k)}>
-              {t.analysisTopics[k]}
-            </button>
-          ))}
-        </div>
+        <Tabs items={ANALYSIS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.analysisTopics[k]} />
       )}
       <small className="hint">{t.analysisHints[topic]}</small>
 
@@ -172,13 +168,7 @@ export function AnalysisDialog({ initial, onSubmit, onClose }: {
       {spec.topic === "riemann" && (
         <>
           <Slider label="n" min={1} max={100} step={1} value={spec.n} onChange={(v) => set({ n: v })} />
-          <div className="segmented wrap" role="radiogroup">
-            {RIEMANN_METHODS.map((m) => (
-              <button key={m} role="radio" aria-checked={spec.method === m} className={spec.method === m ? "active" : ""} onClick={() => set({ method: m })}>
-                {t.analysisWords.methods[m]}
-              </button>
-            ))}
-          </div>
+          <Segmented className="wrap" items={RIEMANN_METHODS} value={spec.method} onChange={(m) => set({ method: m })} label={(m) => t.analysisWords.methods[m]} />
         </>
       )}
       {spec.topic === "series" && <Slider label={t.analysisTerms} min={2} max={120} step={1} value={spec.nMax} onChange={(v) => set({ nMax: v })} />}

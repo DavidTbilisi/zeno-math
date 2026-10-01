@@ -18,3 +18,18 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t zeno-math .
+      # Start it on a named volume, like docker-compose does, and check it can write boards.
+      - run: docker run -d --name zeno -p 8787:8787 -v zeno-data:/data zeno-math
+      - name: Health and a saved board
+        run: |
+          for i in $(seq 1 30); do curl -fs http://127.0.0.1:8787/api/health && break; sleep 1; done
+          curl -fs -X POST -H 'Content-Type: application/json' -d '{"title":"CI"}' http://127.0.0.1:8787/api/boards
+          curl -fs http://127.0.0.1:8787/api/boards | grep -q '"CI"'
+      - if: failure()
+        run: docker logs zeno

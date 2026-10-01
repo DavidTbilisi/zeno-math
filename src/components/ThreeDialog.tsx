@@ -19,6 +19,7 @@ import {
 } from "../three/spec";
 import { Viewer, type Snapshot } from "../three/viewer";
 import { Modal } from "./Modal";
+import { Segmented, Tabs, startOr } from "./ui";
 
 const BASIS_COLORS = ["#2f9e44", "#e03131", "#1971c2"];
 const fmtEntry = (v: number) => String(Math.round(v * 100) / 100).replace("-", "−");
@@ -28,15 +29,16 @@ const num = (v: string, min: number, max: number, fallback: number) => {
   return Number.isFinite(n) && v.trim() !== "" ? Math.min(max, Math.max(min, n)) : fallback;
 };
 
-export default function ThreeDialog({ initial, onSubmit, onClose }: {
+export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
   initial?: Spec3D;
+  start?: string;
   onSubmit: (spec: Spec3D, image: Snapshot) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
   const [solid, setSolid] = useState<SolidSpec>(initial?.type === "solid" ? initial : DEFAULT_SOLID);
   const [cubes, setCubes] = useState<CubesSpec>(initial?.type === "cubes" ? initial : DEFAULT_CUBES);
-  const [tab, setTab] = useState<Spec3D["type"]>(initial?.type ?? "solid");
+  const [tab, setTab] = useState<Spec3D["type"]>(initial?.type ?? startOr(start, ["solid", "cubes", "transform3d"] as const, "solid"));
   const [tf, setTf] = useState<Transform3DSpec>(initial?.type === "transform3d" ? initial : DEFAULT_TRANSFORM3D);
   const spec: Spec3D = tab === "solid" ? solid : tab === "cubes" ? cubes : tf;
 
@@ -91,13 +93,7 @@ export default function ThreeDialog({ initial, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <div className="tabs" role="tablist">
-          {(["solid", "cubes", "transform3d"] as const).map((k) => (
-            <button key={k} role="tab" aria-selected={k === tab} className={`tab${k === tab ? " active" : ""}`} onClick={() => setTab(k)}>
-              {k === "solid" ? t.solids : k === "cubes" ? t.unitCubes : t.matrix3d}
-            </button>
-          ))}
-        </div>
+        <Tabs items={(["solid", "cubes", "transform3d"] as const)} value={tab} onChange={setTab} label={(k) => k === "solid" ? t.solids : k === "cubes" ? t.unitCubes : t.matrix3d} />
       )}
 
       {tab === "solid" && <SolidControls spec={solid} onChange={setSolid} shapeLabel={shapeLabel} />}
@@ -234,13 +230,7 @@ function CubesControls({ spec, onChange }: { spec: CubesSpec; onChange: (s: Cube
 
   return (
     <>
-      <div className="segmented" role="radiogroup">
-        {(["cuboid", "stacks"] as const).map((m) => (
-          <button key={m} role="radio" aria-checked={spec.mode === m} className={spec.mode === m ? "active" : ""} onClick={() => set({ mode: m })}>
-            {m === "cuboid" ? t.cubesCuboid : t.cubesStacks}
-          </button>
-        ))}
-      </div>
+      <Segmented items={(["cuboid", "stacks"] as const)} value={spec.mode} onChange={(m) => set({ mode: m })} label={(m) => m === "cuboid" ? t.cubesCuboid : t.cubesStacks} />
 
       {spec.mode === "cuboid" ? (
         <div className="range-grid">

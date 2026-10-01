@@ -159,7 +159,7 @@ export function renderPlaceValue(spec: PlaceValueSpec): RenderedSvg {
   const width = 3 * COL_W + 2 * PAD;
   const matH = HEAD + body + FOOT;
   const height = PAD + matH + (spec.showTotal ? 44 : 0) + PAD;
-  const font = `font-family="Segoe UI, Helvetica, Arial, sans-serif"`;
+  const font = `font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
 
   const parts: string[] = [`<rect x="${PAD}" y="${PAD}" width="${3 * COL_W}" height="${matH}" rx="10" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>`];
   PV_KINDS.forEach((k, i) => {

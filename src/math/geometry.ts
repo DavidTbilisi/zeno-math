@@ -396,7 +396,7 @@ export function symmetryOf(pts: Pt[]): { centre: Pt; axes: Pt[]; order: number }
 // ---------- Drawing ----------
 
 const INK = "#1e1e1e";
-const FONT = `font-family="Segoe UI, Helvetica, Arial, sans-serif"`;
+const FONT = `font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
 const HALO = `stroke="#ffffff" stroke-width="4" stroke-linejoin="round" paint-order="stroke"`;
 const r1 = (v: number) => Math.round(v * 10) / 10;
 
