@@ -145,6 +145,10 @@ UI in English, Russian and Georgian.
   - *Unit circle*: P = (cos θ, sin θ) with the cos (green), sin (red) and tan (orange) segments, the sine wave traced
     alongside, exact values for every multiple of 15° (sin 75° = (√6 + √2)/4), degrees or radians, quadrant
     signs (All Students Take Calculus) and the reference angle
+  - *Compass*: the unit circle as a compass — North/South is the sign of sin, East/West the sign of cos, and each
+    quadrant is remembered by its two neighbours. Cue words per direction (your own, or the language's default:
+    nose / eat cookies / soup / wet milk), the sector θ lands in with the signs of sin, cos and tan, and the compass
+    bearing of the same direction (clockwise from North) next to the angle (anticlockwise from East)
   - *Right triangle*: SOH CAH TOA from any two of a, b, c, θ — every step, given parts in blue
   - *Solve a triangle*: SSS and SAS with the law of cosines, ASA/AAS with the law of sines, and the ambiguous
     SSA case — two triangles, one, or none — with areas ½·ab·sin C

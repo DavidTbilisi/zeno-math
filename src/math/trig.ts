@@ -5,7 +5,7 @@
 import { compile, parse } from "mathjs";
 import { Frac } from "./fraction";
 import type { RenderedSvg } from "./latex";
-import { axes, C, compose, curve, dot, esc, fill, FONT, hline, lbl, makeFrame, nt, r2, tn, vline, type Caption } from "./chart";
+import { axes, C, compose, curve, dot, esc, fill, FONT, hline, lbl, makeFrame, nt, r2, tn, vline, W, type Caption } from "./chart";
 
 export type AngleUnit = "deg" | "rad";
 export type TrigFn = "sin" | "cos" | "tan";
@@ -16,15 +16,17 @@ export const TRI_CASES: TriCase[] = ["SSS", "SAS", "ASA", "AAS", "SSA"];
 export const TRIG_FNS: TrigFn[] = ["sin", "cos", "tan"];
 
 export type CircleSpec = { topic: "circle"; angle: number; unit: AngleUnit };
+/** n, e, s, w: the user's own cue words for the four directions (blank = the language's default). */
+export type CompassSpec = { topic: "compass"; angle: number; unit: AngleUnit; n: string; e: string; s: string; w: string };
 export type RightSpec = { topic: "right"; given: RightGiven; opp: string; adj: string; hyp: string; ang: string };
 /** Sides a, b, c are opposite angles A, B, C (degrees). Which ones are used depends on the case. */
 export type TriangleSpec = { topic: "triangle"; kase: TriCase; a: string; b: string; c: string; A: string; B: string; C: string };
 export type GraphSpec = { topic: "graph"; fn: TrigFn; A: string; B: string; C: string; D: string; unit: AngleUnit };
 export type EquationSpec = { topic: "equation"; fn: TrigFn; k: string; unit: AngleUnit };
-export type TrigSpec = CircleSpec | RightSpec | TriangleSpec | GraphSpec | EquationSpec;
+export type TrigSpec = CircleSpec | CompassSpec | RightSpec | TriangleSpec | GraphSpec | EquationSpec;
 export type TrigTopic = TrigSpec["topic"];
 export type TrigSpecOf<K extends TrigTopic> = Extract<TrigSpec, { topic: K }>;
-export const TRIG_TOPICS: TrigTopic[] = ["circle", "right", "triangle", "graph", "equation"];
+export const TRIG_TOPICS: TrigTopic[] = ["circle", "compass", "right", "triangle", "graph", "equation"];
 
 export type TrigWords = {
   quadrant: string;
@@ -47,6 +49,18 @@ export type TrigWords = {
   solutions: string;
   noSolution: string;
   badNumber: string;
+  compass: {
+    dirs: Record<"n" | "e" | "s" | "w" | "ne" | "nw" | "sw" | "se", string>;
+    names: Record<"n" | "e" | "s" | "w" | "ne" | "nw" | "sw" | "se", string>;
+    cues: Record<"n" | "e" | "s" | "w", string>;
+    legendDirs: string;
+    legendQuads: string;
+    pos: string;
+    neg: string;
+    says: string;
+    axis: string;
+    bearing: string;
+  };
 };
 
 export const TRIG_PRESETS: { [K in TrigTopic]: { label: string; spec: TrigSpecOf<K> }[] } = {
@@ -57,6 +71,13 @@ export const TRIG_PRESETS: { [K in TrigTopic]: { label: string; spec: TrigSpecOf
     { label: "300°", spec: { topic: "circle", angle: 300, unit: "deg" } },
     { label: "5π/6", spec: { topic: "circle", angle: 150, unit: "rad" } },
     { label: "−45°", spec: { topic: "circle", angle: -45, unit: "deg" } },
+  ],
+  compass: [
+    { label: "30°", spec: { topic: "compass", angle: 30, unit: "deg", n: "", e: "", s: "", w: "" } },
+    { label: "135°", spec: { topic: "compass", angle: 135, unit: "deg", n: "", e: "", s: "", w: "" } },
+    { label: "4π/3", spec: { topic: "compass", angle: 240, unit: "rad", n: "", e: "", s: "", w: "" } },
+    { label: "300°", spec: { topic: "compass", angle: 300, unit: "deg", n: "", e: "", s: "", w: "" } },
+    { label: "90°", spec: { topic: "compass", angle: 90, unit: "deg", n: "", e: "", s: "", w: "" } },
   ],
   right: [
     { label: "3, 4 → ?", spec: { topic: "right", given: "oppAdj", opp: "3", adj: "4", hyp: "5", ang: "30" } },
@@ -250,6 +271,167 @@ function renderCircle(s: CircleSpec, w: TrigWords): RenderedSvg {
   ];
   if (quad) captions.push({ text: fill(w.refAngle, { r: angleText(ref, s.unit) }), color: C.orange });
   return compose(tex, parts.join(""), 380, captions);
+}
+
+// ---------- compass ----------
+
+type Dir8 = "n" | "e" | "s" | "w" | "ne" | "nw" | "sw" | "se";
+// Quadrant tints (I to IV) and their stronger outline colours.
+const QUAD_FILL = ["#d3f9d8", "#f3d9fa", "#fff3bf", "#c5f6fa"];
+const QUAD_INK = [C.green, C.purple, "#f08c00", "#1098ad"];
+const QUAD_DIR: Dir8[] = ["ne", "nw", "sw", "se"];
+
+/** The unit circle as a compass: up/down (N/S) is the sign of sin, right/left (E/W) the sign of cos,
+ *  and every quadrant is named and remembered by its two neighbouring directions. */
+function renderCompass(s: CompassSpec, w: TrigWords): RenderedSvg {
+  const cw = w.compass;
+  const cue = { n: s.n.trim() || cw.cues.n, e: s.e.trim() || cw.cues.e, s: s.s.trim() || cw.cues.s, w: s.w.trim() || cw.cues.w };
+  const deg = s.angle;
+  const t = deg * RAD;
+  const [c, sn] = [Math.cos(t), Math.sin(t)];
+  const ex = exact(deg);
+  const q = mod(deg, 360);
+  const quad = near(q % 90, 0) || near(q % 90, 90) ? 0 : Math.floor(q / 90) + 1;
+  const R = 150;
+  const [cx, cy] = [190, 196];
+  const at = (a: number, r: number): [number, number] => [cx + r * Math.cos(a * RAD), cy - r * Math.sin(a * RAD)];
+  const parts: string[] = [];
+
+  // Quadrant wedges; the one θ lands in is solid and outlined.
+  QUAD_FILL.forEach((fillColor, i) => {
+    const [x0, y0] = at(90 * i, R);
+    const [x1, y1] = at(90 * (i + 1), R);
+    const on = quad === i + 1;
+    parts.push(
+      `<path d="M${cx},${cy}L${r2(x0)},${r2(y0)}A${R},${R} 0 0 0 ${r2(x1)},${r2(y1)}z" fill="${fillColor}" opacity="${on ? 1 : 0.4}"` +
+        (on ? ` stroke="${QUAD_INK[i]}" stroke-width="2.5"` : "") + `/>`,
+    );
+  });
+  // Rim with ticks every 15°, axes, and the cardinal letters (N/S red like sin, E/W green like cos).
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#868e96" stroke-width="1.6"/>`);
+  for (let a = 0; a < 360; a += 15) {
+    const [x0, y0] = at(a, R);
+    const [x1, y1] = at(a, R - (a % 45 === 0 ? 10 : 5));
+    parts.push(`<line x1="${r2(x0)}" y1="${r2(y0)}" x2="${r2(x1)}" y2="${r2(y1)}" stroke="#868e96" stroke-width="1.2"/>`);
+  }
+  parts.push(
+    `<line x1="${cx - R}" y1="${cy}" x2="${cx + R}" y2="${cy}" stroke="#495057" stroke-width="1.2"/>`,
+    `<line x1="${cx}" y1="${cy - R}" x2="${cx}" y2="${cy + R}" stroke="#495057" stroke-width="1.2"/>`,
+  );
+  const axisOn: Dir8 | null = quad ? null : (["e", "n", "w", "s"] as const)[Math.round(q / 90) % 4];
+  const cards: [Dir8, number, string, string][] = [
+    ["n", 90, C.red, "sin +"],
+    ["e", 0, C.green, "cos +"],
+    ["s", 270, C.red, "sin −"],
+    ["w", 180, C.green, "cos −"],
+  ];
+  for (const [d, a, color, rule] of cards) {
+    const [lx, ly] = at(a, R + 16);
+    const big = axisOn === d ? 24 : 20;
+    parts.push(txt(lx, ly + 7, cw.dirs[d], color, "middle", big));
+    // Cue word and its rule just inside the rim.
+    const inside: Record<string, [number, number, string]> = {
+      n: [cx, cy - R + 26, "middle"],
+      s: [cx, cy + R - 26, "middle"],
+      e: [cx + R - 14, cy - 8, "end"],
+      w: [cx - R + 14, cy - 8, "start"],
+    };
+    const [ix, iy, anchor] = inside[d];
+    const dy = d === "s" ? -16 : 16;
+    parts.push(txt(ix, d === "s" ? iy + 4 : iy, cue[d as "n"], color, anchor, 12), txt(ix, (d === "s" ? iy + 4 : iy) + (d === "s" ? dy : 22), rule, color, anchor, 12));
+  }
+  // Each quadrant: its name and the two cues it is made of.
+  QUAD_DIR.forEach((d, i) => {
+    // Step the label aside when the needle runs through the middle of its quadrant.
+    const mid = 45 + 90 * i;
+    const off = mod(deg - mid + 180, 360) - 180;
+    const aside = Math.abs(off) < 22;
+    const [x, y] = at(aside ? mid + (off >= 0 ? -21 : 21) : mid, R * (aside ? 0.52 : 0.6));
+    const v = i < 2 ? "n" : "s";
+    const h = i === 0 || i === 3 ? "e" : "w";
+    const on = quad === i + 1;
+    parts.push(
+      txt(x, y - 14, cw.dirs[d], QUAD_INK[i], "middle", on ? 17 : 15),
+      txt(x, y + 2, cue[v], C.red, "middle", 11),
+      txt(x, y + 16, cue[h], C.green, "middle", 11),
+    );
+  });
+
+  // θ from East anticlockwise (orange) and the compass bearing from North clockwise (blue, dashed).
+  const bearing = mod(90 - deg, 360);
+  const [px, py] = at(deg, R);
+  parts.push(
+    `<path d="${arcPath(cx, cy, 24, 0, t)}" fill="none" stroke="${C.orange}" stroke-width="2.2"/>`,
+    `<path d="${arcPath(cx, cy, 40, Math.PI / 2, Math.PI / 2 - bearing * RAD)}" fill="none" stroke="${C.blue}" stroke-width="1.8" stroke-dasharray="5 3"/>`,
+    arrow(cx, cy, px, py, C.ink, 2.6),
+    dot(cx, cy, C.ink, 3.5),
+    dot(px, py, C.ink, 5),
+  );
+  const [tx, ty] = at(deg / 2, 33);
+  parts.push(txt(tx, ty + 4, "θ", C.orange, "middle", 13));
+
+  // Legend: the four rules and the four quadrants, the current one highlighted.
+  const lx = 372;
+  const card = (y: number, h: number, title: string) =>
+    `<rect x="${lx}" y="${y}" width="${W - lx - 12}" height="${h}" rx="8" fill="#f8f9fa" stroke="#dee2e6"/>` + txt(lx + 12, y + 20, title, C.ink, "start", 13);
+  parts.push(card(40, 128, cw.legendDirs));
+  cards.forEach(([d, , color, rule], i) => {
+    const y = 40 + 44 + 22 * i;
+    if (axisOn === d) parts.push(`<rect x="${lx + 6}" y="${y - 15}" width="${W - lx - 24}" height="21" rx="4" fill="${color}" opacity="0.12"/>`);
+    parts.push(txt(lx + 14, y, cw.dirs[d], color, "start", 13), txt(lx + 46, y, `${cue[d as "n"]} → ${rule}`, color, "start", 12));
+  });
+  parts.push(card(184, 128, cw.legendQuads));
+  const signs = [["+", "+", "+"], ["+", "−", "−"], ["−", "−", "+"], ["−", "+", "−"]];
+  QUAD_DIR.forEach((d, i) => {
+    const y = 184 + 44 + 22 * i;
+    if (quad === i + 1) parts.push(`<rect x="${lx + 6}" y="${y - 15}" width="${W - lx - 24}" height="21" rx="4" fill="${QUAD_FILL[i]}"/>`);
+    const [ss, cs, ts] = signs[i];
+    parts.push(
+      txt(lx + 14, y, `${cw.dirs[d]} (${["I", "II", "III", "IV"][i]})`, QUAD_INK[i], "start", 13),
+      txt(lx + 92, y, `sin ${ss}`, C.red, "start", 12),
+      txt(lx + 140, y, `cos ${cs}`, C.green, "start", 12),
+      txt(lx + 192, y, `tan ${ts}`, C.orange, "start", 12),
+    );
+  });
+
+  // Header: the values with their signs.
+  const cmp = (v: number) => (Math.abs(v) < 1e-12 ? "= 0" : v > 0 ? "> 0" : "< 0");
+  const valTex = (e: string | undefined, v: number) => (e ?? tn(v));
+  const tanTex = Math.abs(c) < 1e-12 ? "\\text{—}" : `${ex ? valTex(ex.tan ?? undefined, sn / c) : tn(sn / c)} ${cmp(sn / c)}`;
+  const tex =
+    `\\theta = ${angleTex(deg, "deg")} = ${radTex(deg)} \\qquad ` +
+    `{\\color{#e03131}\\sin\\theta = ${ex ? ex.sin : tn(sn)} ${Math.abs(sn) < 1e-12 ? "" : cmp(sn)}} \\quad ` +
+    `{\\color{#2f9e44}\\cos\\theta = ${ex ? ex.cos : tn(c)} ${Math.abs(c) < 1e-12 ? "" : cmp(c)}} \\quad ` +
+    `{\\color{#e8590c}\\tan\\theta = ${tanTex}}`;
+
+  const a = angleText(deg, s.unit);
+  const captions: Caption[] = [];
+  if (quad) {
+    const v = quad <= 2 ? "n" : "s";
+    const h = quad === 1 || quad === 4 ? "e" : "w";
+    captions.push({
+      text: fill(cw.says, {
+        a,
+        dir: cw.names[QUAD_DIR[quad - 1]],
+        v: cw.names[v],
+        h: cw.names[h],
+        vcue: cue[v],
+        hcue: cue[h],
+        vs: v === "n" ? "> 0" : "< 0",
+        hs: h === "e" ? "> 0" : "< 0",
+        ts: (v === "n") === (h === "e") ? cw.pos : cw.neg,
+      }),
+      color: QUAD_INK[quad - 1],
+    });
+  } else {
+    const d = axisOn!;
+    const fn = d === "n" || d === "s" ? "sin" : "cos";
+    captions.push({ text: fill(cw.axis, { a, dir: cw.names[d], cue: cue[d as "n"], fn, val: d === "n" || d === "e" ? "1" : "−1", other: fn === "sin" ? "cos" : "sin" }) });
+  }
+  const b = Math.round(bearing * 100) / 100;
+  const bText = Number.isInteger(b) ? `${String(b).padStart(3, "0")}°` : `${nt(b, 2)}°`;
+  captions.push({ text: fill(cw.bearing, { b: bText }), color: C.blue });
+  return compose(tex, parts.join(""), 372, captions);
 }
 
 // ---------- right triangles ----------
@@ -596,6 +778,8 @@ export function renderTrig(spec: TrigSpec, words: TrigWords): RenderedSvg {
   switch (spec.topic) {
     case "circle":
       return renderCircle(spec, words);
+    case "compass":
+      return renderCompass(spec, words);
     case "right":
       return renderRight(spec, words);
     case "triangle":

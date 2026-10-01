@@ -112,6 +112,30 @@ export function TrigDialog({ initial, onSubmit, onClose }: {
         </>
       )}
 
+      {spec.topic === "compass" && (
+        <>
+          {unitToggle(spec.unit)}
+          <Slider label={t.trigAngle} min={-360} max={720} step={1} value={spec.angle} shown={`${spec.angle}°`} onChange={(angle) => set({ angle })} />
+          <div className="field">
+            <span>{t.trigCues}</span>
+            <div className="range-grid">
+              {(["n", "e", "s", "w"] as const).map((d) => (
+                <label key={d}>
+                  <span>{t.trigWords.compass.dirs[d]}</span>
+                  <input
+                    type="text"
+                    style={{ width: 130 }}
+                    placeholder={t.trigWords.compass.cues[d]}
+                    value={spec[d]}
+                    onChange={(e) => set({ [d]: e.target.value } as Partial<TrigSpec>)}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
       {spec.topic === "right" && (
         <>
           {segmented(RIGHT_GIVENS, (g) => GIVEN_LABELS[g], spec.given, (given) => set({ given }))}
