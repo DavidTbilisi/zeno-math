@@ -24,6 +24,7 @@ import { MENTAL_PRESETS, renderMental } from "../src/math/mental.ts";
 import { renderTactics, TACTICS_PRESETS } from "../src/math/tactics.ts";
 import { ALGEBRA_PRESETS, renderAlgebra } from "../src/math/algebra.ts";
 import { POWERS_PRESETS, renderPowers } from "../src/math/powers.ts";
+import { COORD_PRESETS, renderCoord } from "../src/math/coordgeom.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -49,6 +50,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["tactics", specs(TACTICS_PRESETS), (s, t) => renderTactics(s, t.tacticsWords)],
   ["algebra", specs(ALGEBRA_PRESETS), (s, t) => renderAlgebra(s, t.algebraWords)],
   ["powers", specs(POWERS_PRESETS), (s, t) => renderPowers(s, t.powersWords)],
+  ["coordinate geometry", specs(COORD_PRESETS), (s, t) => renderCoord(s, t.coordWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 
@@ -68,6 +70,10 @@ for (const [tool, list, render] of TOOLS) {
         }
         assert.match(r.svg, /^<svg/, where);
         assert.doesNotMatch(r.svg, /NaN|undefined/, where);
+        for (const tag of r.svg.match(/<[a-zA-Z][^>]*>/g) ?? []) {
+          const names = [...tag.matchAll(/\s([\w:-]+)="/g)].map((m) => m[1]);
+          assert.equal(new Set(names).size, names.length, `${where}: repeated attribute in ${tag.slice(0, 120)}`);
+        }
         assert.ok(r.width > 0 && r.height > 0 && Number.isFinite(r.width + r.height), where);
       });
     }

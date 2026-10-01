@@ -16,7 +16,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -60,6 +60,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   mental: { Dialog: load(() => import("./components/MentalDialog"), "MentalDialog"), edit: "editMental", topics: (t) => t.mentalTopics, hints: (t) => t.mentalHints },
   tactics: { Dialog: load(() => import("./components/TacticsDialog"), "TacticsDialog"), edit: "editTactics", topics: (t) => t.tacticsTopics, hints: (t) => t.tacticsHints },
   algebra: { Dialog: load(() => import("./components/AlgebraDialog"), "AlgebraDialog"), edit: "editAlgebra", topics: (t) => t.algebraTopics, hints: (t) => t.algebraHints },
+  coord: { Dialog: load(() => import("./components/CoordDialog"), "CoordDialog"), edit: "editCoord", topics: (t) => t.coordTopics, hints: (t) => t.coordHints },
   powers: { Dialog: load(() => import("./components/PowersDialog"), "PowersDialog"), edit: "editPowers", topics: (t) => t.powersTopics, hints: (t) => t.powersHints },
 };
 
@@ -80,6 +81,7 @@ export const MENUS: MenuGroup[] = [
   {
     icon: "📐", label: "groupGeometryShort", title: "groupGeometry", items: [
       { kind: "geometry", icon: "📐", label: "geometry" },
+      { kind: "coord", icon: "xy", label: "coord" },
       { kind: "trig", icon: "θ", label: "trig" },
       { kind: "3d", icon: "🧊", label: "threeD" },
     ],
