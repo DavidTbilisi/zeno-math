@@ -4,7 +4,7 @@
 // solved four ways — factoring, completing the square (drawn as a square), the formula, and vertex form.
 // Arithmetic is exact (fractions), so every step shows what a pupil would write.
 import { cell, table, txt } from "./algoArrays";
-import { axes, C, compose, curve, fill, lbl, makeFrame, nf, r2, W, type Caption } from "./chart";
+import { axes, C, compose, curve, fill, lbl, makeFrame, nf, r2, texLines as lines, W, type Caption, type TexLine as Line } from "./chart";
 import { latexToSvg, type RenderedSvg } from "./latex";
 
 export type AlgebraTopic = "linear" | "inequality" | "expand" | "factor" | "quadratic";
@@ -239,30 +239,6 @@ function splitRel(src: string): { parts: string[]; rels: Rel[] } {
 }
 
 // ---------- drawing ----------
-
-type Line = { tex: string; op?: string; color?: string };
-
-/** Equation lines, one under another, each with what was done on the right. */
-function lines(rows: Line[], y0: number, x0 = 28): { svg: string; h: number } {
-  const parts: string[] = [];
-  let y = y0;
-  for (const r of rows) {
-    const t = latexToSvg(r.tex, r.color ?? C.ink);
-    const k = Math.min(1, (W - x0 - 230) / t.width);
-    const w = t.width * k;
-    const h = t.height * k;
-    const rowH = Math.max(30, h + 10);
-    parts.push(
-      t.svg
-        .replace(/width="[\d.]+"/, `width="${r2(w)}"`)
-        .replace(/height="[\d.]+"/, `height="${r2(h)}"`)
-        .replace(/^<svg/, `<svg x="${x0}" y="${r2(y + (rowH - h) / 2)}"`),
-    );
-    if (r.op) parts.push(txt(W - 24, y + rowH / 2 + 5, r.op, { color: r.color === C.red ? C.red : C.blue, anchor: "end", bold: true, size: 13 }));
-    y += rowH;
-  }
-  return { svg: parts.join(""), h: y - y0 };
-}
 
 const sideTex = (a: Q, b: Q, v: string) => polyTex([b, a], v);
 

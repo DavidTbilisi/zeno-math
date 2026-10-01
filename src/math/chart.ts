@@ -226,6 +226,33 @@ export function compose(tex: string, body: string, bodyH: number, captions: Capt
   return { svg, width: W, height: H };
 }
 
+export type TexLine = { tex: string; op?: string; color?: string };
+
+/** Equation lines, one under another, each with what was done on the right. */
+export function texLines(rows: TexLine[], y0: number, x0 = 28): { svg: string; h: number } {
+  const parts: string[] = [];
+  let y = y0;
+  for (const r of rows) {
+    const t = latexToSvg(r.tex, r.color ?? C.ink);
+    const k = Math.min(1, (W - x0 - 230) / t.width);
+    const w = t.width * k;
+    const h = t.height * k;
+    const rowH = Math.max(30, h + 10);
+    parts.push(
+      t.svg
+        .replace(/width="[\d.]+"/, `width="${r2(w)}"`)
+        .replace(/height="[\d.]+"/, `height="${r2(h)}"`)
+        .replace(/^<svg/, `<svg x="${x0}" y="${r2(y + (rowH - h) / 2)}"`),
+    );
+    if (r.op)
+      parts.push(
+        `<text x="${W - 24}" y="${r2(y + rowH / 2 + 5)}" ${FONT} font-size="13" fill="${r.color === C.red ? C.red : C.blue}" text-anchor="end" font-weight="700">${esc(r.op)}</text>`,
+      );
+    y += rowH;
+  }
+  return { svg: parts.join(""), h: y - y0 };
+}
+
 export const PLOT = { left: 48, top: 6, w: W - 48 - 18, h: 380 };
 export const BODY_H = PLOT.top + PLOT.h + 16;
 

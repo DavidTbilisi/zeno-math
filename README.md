@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, trigonometry, real analysis, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -91,6 +91,19 @@ UI in English, Russian and Georgian.
   - *Quadratic equations*, four ways: factoring and the zero product, completing the square (drawn as a square with
     two strips and the missing corner), the formula with the discriminant (exact surds, complex roots pointed to the
     Complex numbers tool), and vertex form with the parabola, vertex, axis, roots and y-intercept
+- **xⁿ Powers, roots & logs** — exact wherever the answer is exact, every step named
+  - *Index laws*: brackets opened ((ab)ⁿ, (a/b)ⁿ, (aᵐ)ⁿ, ⁿ√a = a^(1/n)), powers of the same base added or subtracted,
+    a⁰ = 1 and a⁻ⁿ = 1/aⁿ, 8^(2/3) = (∛8)² = 4; with whole powers every factor is drawn as a chip, and chips above
+    and below the line cancel; a check by substituting numbers for the letters
+  - *Scientific notation*: a number into standard form and back, with the decimal point hopping place by place;
+    × ÷ (multiply the numbers, add the powers) and + − (both with the larger power), then back to 1 ≤ a < 10
+  - *Surds*: the largest square (or cube) factor out of the root, drawn as pairs of prime factors leaving the root sign;
+    expanding brackets, √a·√b = √(ab), collecting like surds, and rationalising with √r/√r, ∛r² or the conjugate
+  - *Logarithms*: log_b x as "which power of b gives x?" — written as powers of a common base (log₉ 27 = 3/2), the
+    power, product and quotient laws, change of base with the two whole powers it lies between, and y = log_b x
+    mirrored from y = bˣ in the line y = x
+  - *Exponential equations*: a common base and equal powers (9ˣ = 27ˣ⁻¹), or taking logs (2²ˣ = 3ˣ⁺¹); log equations
+    combined into one log, the domain worked out first, and a root that makes an argument negative thrown out
 - **ℂ Complex numbers** — type z as `3+4i`, `2e^(iπ/3)`, `2∠150°` or `sqrt(-4)`; exact values where they are simple
   (√2/2, π/3), and every picture in the complex plane
   - *Forms*: a + bi ↔ r(cos θ + i sin θ) ↔ re^{iθ}, with |z|, the argument from arctan and the quadrant, the conjugate
@@ -273,7 +286,8 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  trigonometry, 3D), **Algebra** (formulas, graphs, equations, matrices, complex numbers, analysis, integrals, ODEs) and
+  trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex numbers, analysis, integrals,
+  ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics)
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -400,7 +414,9 @@ npm run typecheck
 
 The tests check that every example of every tool renders in English, Russian and Georgian; that the three languages have the same
 keys; the logic parser; the NAEC 2025 answers; complex-number arithmetic against mathjs; that solved equations and
-inequalities satisfy the input, expansions and factorisations multiply back and all four quadratic methods agree; that
+inequalities satisfy the input, expansions and factorisations multiply back and all four quadratic methods agree;
+that simplified powers, surds, standard forms and logarithms keep the value of the input, and that solutions of exponential
+and log equations satisfy them (with false roots thrown out); that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
 bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
@@ -448,6 +464,7 @@ src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenval
 src/math/algebra.ts       equations & polynomials: linear, inequalities, expanding, factoring, quadratics (exact)
 src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
+src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/mental.ts        mental math: base multiplication, digit-sum check, roots, cubing, magic squares, Major System
 src/math/tactics.ts       problem-solving tactics: symmetry, pigeonhole, domino tiling by colouring
 src/math/matrix.ts        matrix operations → LaTeX with worked steps

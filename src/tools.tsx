@@ -16,7 +16,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -60,6 +60,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   mental: { Dialog: load(() => import("./components/MentalDialog"), "MentalDialog"), edit: "editMental", topics: (t) => t.mentalTopics, hints: (t) => t.mentalHints },
   tactics: { Dialog: load(() => import("./components/TacticsDialog"), "TacticsDialog"), edit: "editTactics", topics: (t) => t.tacticsTopics, hints: (t) => t.tacticsHints },
   algebra: { Dialog: load(() => import("./components/AlgebraDialog"), "AlgebraDialog"), edit: "editAlgebra", topics: (t) => t.algebraTopics, hints: (t) => t.algebraHints },
+  powers: { Dialog: load(() => import("./components/PowersDialog"), "PowersDialog"), edit: "editPowers", topics: (t) => t.powersTopics, hints: (t) => t.powersHints },
 };
 
 export const isToolKind = (k: unknown): k is ToolKind => typeof k === "string" && Object.hasOwn(TOOLS, k);
@@ -88,6 +89,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "formula", icon: "∑", label: "formula" },
       { kind: "graph", icon: "📈", label: "graph" },
       { kind: "algebra", icon: "⚖", label: "algebra" },
+      { kind: "powers", icon: "xⁿ", label: "powers" },
       { kind: "matrix", icon: "[ ]", label: "matrices" },
       { kind: "complex", icon: "ℂ", label: "complex" },
       { kind: "analysis", icon: "ε", label: "analysis" },
