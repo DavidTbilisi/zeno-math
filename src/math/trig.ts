@@ -16,8 +16,27 @@ export const TRI_CASES: TriCase[] = ["SSS", "SAS", "ASA", "AAS", "SSA"];
 export const TRIG_FNS: TrigFn[] = ["sin", "cos", "tan"];
 
 export type CircleSpec = { topic: "circle"; angle: number; unit: AngleUnit };
-/** n, e, s, w: the user's own cue words for the four directions (blank = the language's default). */
-export type CompassSpec = { topic: "compass"; angle: number; unit: AngleUnit; n: string; e: string; s: string; w: string };
+/**
+ * n, e, s, w: the user's own cue words for the four directions (blank = the language's default).
+ * quads: how the quadrants are labelled — by their two neighbouring cues, or by an image of their own
+ * (ne, nw, sw, se), each carrying a feeling for its sign pattern.
+ */
+export type CompassQuads = "neighbours" | "images";
+export const COMPASS_QUADS: CompassQuads[] = ["neighbours", "images"];
+export type CompassSpec = {
+  topic: "compass";
+  angle: number;
+  unit: AngleUnit;
+  n: string;
+  e: string;
+  s: string;
+  w: string;
+  quads?: CompassQuads;
+  ne?: string;
+  nw?: string;
+  sw?: string;
+  se?: string;
+};
 export type RightSpec = { topic: "right"; given: RightGiven; opp: string; adj: string; hyp: string; ang: string };
 /** Sides a, b, c are opposite angles A, B, C (degrees). Which ones are used depends on the case. */
 export type TriangleSpec = { topic: "triangle"; kase: TriCase; a: string; b: string; c: string; A: string; B: string; C: string };
@@ -53,6 +72,11 @@ export type TrigWords = {
     dirs: Record<"n" | "e" | "s" | "w" | "ne" | "nw" | "sw" | "se", string>;
     names: Record<"n" | "e" | "s" | "w" | "ne" | "nw" | "sw" | "se", string>;
     cues: Record<"n" | "e" | "s" | "w", string>;
+    images: Record<"ne" | "nw" | "sw" | "se", string>;
+    feels: Record<"ne" | "nw" | "sw" | "se", string>;
+    quads: Record<CompassQuads, string>;
+    gaze: string;
+    diagonal: string;
     legendDirs: string;
     legendQuads: string;
     pos: string;
@@ -78,6 +102,8 @@ export const TRIG_PRESETS: { [K in TrigTopic]: { label: string; spec: TrigSpecOf
     { label: "4π/3", spec: { topic: "compass", angle: 240, unit: "rad", n: "", e: "", s: "", w: "" } },
     { label: "300°", spec: { topic: "compass", angle: 300, unit: "deg", n: "", e: "", s: "", w: "" } },
     { label: "90°", spec: { topic: "compass", angle: 90, unit: "deg", n: "", e: "", s: "", w: "" } },
+    { label: "225° · images", spec: { topic: "compass", angle: 225, unit: "deg", n: "", e: "", s: "", w: "", quads: "images" } },
+    { label: "120° · images", spec: { topic: "compass", angle: 120, unit: "deg", n: "", e: "", s: "", w: "", quads: "images" } },
   ],
   right: [
     { label: "3, 4 → ?", spec: { topic: "right", given: "oppAdj", opp: "3", adj: "4", hyp: "5", ang: "30" } },
@@ -286,6 +312,8 @@ const QUAD_DIR: Dir8[] = ["ne", "nw", "sw", "se"];
 function renderCompass(s: CompassSpec, w: TrigWords): RenderedSvg {
   const cw = w.compass;
   const cue = { n: s.n.trim() || cw.cues.n, e: s.e.trim() || cw.cues.e, s: s.s.trim() || cw.cues.s, w: s.w.trim() || cw.cues.w };
+  const images = s.quads === "images";
+  const image = { ne: s.ne?.trim() || cw.images.ne, nw: s.nw?.trim() || cw.images.nw, sw: s.sw?.trim() || cw.images.sw, se: s.se?.trim() || cw.images.se };
   const deg = s.angle;
   const t = deg * RAD;
   const [c, sn] = [Math.cos(t), Math.sin(t)];
@@ -350,11 +378,11 @@ function renderCompass(s: CompassSpec, w: TrigWords): RenderedSvg {
     const v = i < 2 ? "n" : "s";
     const h = i === 0 || i === 3 ? "e" : "w";
     const on = quad === i + 1;
-    parts.push(
-      txt(x, y - 14, cw.dirs[d], QUAD_INK[i], "middle", on ? 17 : 15),
-      txt(x, y + 2, cue[v], C.red, "middle", 11),
-      txt(x, y + 16, cue[h], C.green, "middle", 11),
-    );
+    parts.push(txt(x, y - 14, cw.dirs[d], QUAD_INK[i], "middle", on ? 17 : 15));
+    if (images)
+      // The diagonal's own image, and the feeling that carries its sign pattern.
+      parts.push(txt(x, y + 2, image[d as "ne"], QUAD_INK[i], "middle", 11), txt(x, y + 16, cw.feels[d as "ne"], C.grey, "middle", 10));
+    else parts.push(txt(x, y + 2, cue[v], C.red, "middle", 11), txt(x, y + 16, cue[h], C.green, "middle", 11));
   });
 
   // θ from East anticlockwise (orange) and the compass bearing from North clockwise (blue, dashed).
@@ -442,6 +470,9 @@ function renderCompass(s: CompassSpec, w: TrigWords): RenderedSvg {
   const b = Math.round(bearing * 100) / 100;
   const bText = Number.isInteger(b) ? `${String(b).padStart(3, "0")}°` : `${nt(b, 2)}°`;
   captions.push({ text: fill(cw.bearing, { b: bText }), color: C.blue });
+  // Exactly on a diagonal (45°, 135°, …): sin and cos have the same size.
+  if (near(mod(deg - 45, 90), 0)) captions.push({ text: cw.diagonal, color: QUAD_INK[quad - 1] });
+  captions.push({ text: cw.gaze, color: "#495057" });
   return compose(tex, parts.join(""), 372, captions);
 }
 

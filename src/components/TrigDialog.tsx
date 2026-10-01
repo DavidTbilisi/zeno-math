@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useI18n } from "../i18n";
 import {
+  COMPASS_QUADS,
   renderTrig,
   RIGHT_GIVENS,
   TRI_CASES,
@@ -133,6 +134,26 @@ export function TrigDialog({ initial, onSubmit, onClose }: {
               ))}
             </div>
           </div>
+          <div className="field">
+            <span>{t.trigQuads}</span>
+            {segmented(COMPASS_QUADS, (q) => t.trigWords.compass.quads[q], spec.quads ?? "neighbours", (quads) => set({ quads } as Partial<TrigSpec>))}
+          </div>
+          {spec.quads === "images" && (
+            <div className="range-grid">
+              {(["nw", "ne", "sw", "se"] as const).map((d) => (
+                <label key={d}>
+                  <span>{t.trigWords.compass.dirs[d]}</span>
+                  <input
+                    type="text"
+                    style={{ width: 130 }}
+                    placeholder={t.trigWords.compass.images[d]}
+                    value={spec[d] ?? ""}
+                    onChange={(e) => set({ [d]: e.target.value } as Partial<TrigSpec>)}
+                  />
+                </label>
+              ))}
+            </div>
+          )}
         </>
       )}
 

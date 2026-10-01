@@ -20,6 +20,8 @@ import { ODE_PRESETS, renderOde } from "../src/math/ode.ts";
 import { STAT_PRESETS, renderStatistics } from "../src/math/statistics.ts";
 import { TRIG_PRESETS, renderTrig } from "../src/math/trig.ts";
 import { DEFAULT_SPACE, renderSpace, SPACE_PRESETS } from "../src/math/vectorspace.ts";
+import { MENTAL_PRESETS, renderMental } from "../src/math/mental.ts";
+import { renderTactics, TACTICS_PRESETS } from "../src/math/tactics.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -41,6 +43,8 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["ODEs", specs(ODE_PRESETS), (s, t) => renderOde(s, t.odeWords)],
   ["statistics", specs(STAT_PRESETS).map(({ names, ...s }) => s), (s, t) => renderStatistics(s, t.statWords)],
   ["trigonometry", specs(TRIG_PRESETS), (s, t) => renderTrig(s, t.trigWords)],
+  ["mental math", specs(MENTAL_PRESETS), (s, t) => renderMental(s, t.mentalWords)],
+  ["tactics", specs(TACTICS_PRESETS), (s, t) => renderTactics(s, t.tacticsWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 

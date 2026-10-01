@@ -31,6 +31,8 @@ import type { NtSpec } from "../math/numtheory";
 import type { CombSpec } from "../math/combinatorics";
 import type { GtSpec } from "../math/graphtheory";
 import type { CxSpec } from "../math/complex";
+import type { MentalSpec } from "../math/mental";
+import type { TacticsSpec } from "../math/tactics";
 import type { LogicSpec } from "../math/logic";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
@@ -51,7 +53,9 @@ type MathData =
   | { kind: "comb"; data: CombSpec; w: number; h: number }
   | { kind: "gt"; data: GtSpec; w: number; h: number }
   | { kind: "logic"; data: LogicSpec; w: number; h: number }
-  | { kind: "complex"; data: CxSpec; w: number; h: number };
+  | { kind: "complex"; data: CxSpec; w: number; h: number }
+  | { kind: "mental"; data: MentalSpec; w: number; h: number }
+  | { kind: "tactics"; data: TacticsSpec; w: number; h: number };
 
 type Dialog =
   | { kind: "formula"; editing?: ExcalidrawImageElement }
@@ -70,7 +74,9 @@ type Dialog =
   | { kind: "comb"; editing?: ExcalidrawImageElement }
   | { kind: "gt"; editing?: ExcalidrawImageElement }
   | { kind: "logic"; editing?: ExcalidrawImageElement }
-  | { kind: "complex"; editing?: ExcalidrawImageElement };
+  | { kind: "complex"; editing?: ExcalidrawImageElement }
+  | { kind: "mental"; editing?: ExcalidrawImageElement }
+  | { kind: "tactics"; editing?: ExcalidrawImageElement };
 
 // "conflict": someone saved this board elsewhere since we loaded it; autosave pauses until the user picks.
 type SaveState = "saved" | "saving" | "error" | "conflict";
@@ -102,9 +108,11 @@ const CombDialog = lazy(() => import("../components/CombDialog").then((m) => ({ 
 const GtDialog = lazy(() => import("../components/GtDialog").then((m) => ({ default: m.GtDialog })));
 const LogicDialog = lazy(() => import("../components/LogicDialog").then((m) => ({ default: m.LogicDialog })));
 const ComplexDialog = lazy(() => import("../components/ComplexDialog").then((m) => ({ default: m.ComplexDialog })));
+const MentalDialog = lazy(() => import("../components/MentalDialog").then((m) => ({ default: m.MentalDialog })));
+const TacticsDialog = lazy(() => import("../components/TacticsDialog").then((m) => ({ default: m.TacticsDialog })));
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
-  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt", "comb", "gt", "logic", "complex"].includes(el.customData?.kind)
+  el?.type === "image" && ["formula", "graph", "model", "3d", "matrix", "geometry", "analysis", "statistics", "integral", "ode", "trig", "algo", "nt", "comb", "gt", "logic", "complex", "mental", "tactics"].includes(el.customData?.kind)
     ? (el.customData as MathData)
     : undefined;
 
@@ -320,12 +328,13 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt, comb: t.editComb, gt: t.editGt, logic: t.editLogic, complex: t.editComplex }[mathOf(selectedMath)!.kind]}</span>
+            ✎ <span className="btn-label">{{ formula: t.editFormula, graph: t.editGraph, model: t.editModel, "3d": t.edit3d, matrix: t.editMatrix, geometry: t.editGeometry, analysis: t.editAnalysis, statistics: t.editStatistics, integral: t.editIntegral, ode: t.editOde, trig: t.editTrig, algo: t.editAlgo, nt: t.editNt, comb: t.editComb, gt: t.editGt, logic: t.editLogic, complex: t.editComplex, mental: t.editMental, tactics: t.editTactics }[mathOf(selectedMath)!.kind]}</span>
           </button>
         )}
         <ToolMenu icon="🧮" label={t.groupArithmetic} items={[
           { icon: "🧮", label: t.counting, onPick: () => setDialog({ kind: "model", start: "placeValue" }) },
           { icon: "▦", label: t.models, onPick: () => setDialog({ kind: "model" }) },
+          { icon: "🧠", label: t.mental, onPick: () => setDialog({ kind: "mental" }) },
         ]} />
         <ToolMenu icon="📐" label={t.groupGeometryShort} title={t.groupGeometry} items={[
           { icon: "📐", label: t.geometry, onPick: () => setDialog({ kind: "geometry" }) },
@@ -346,6 +355,7 @@ export function BoardPage({ id }: { id: string }) {
           { icon: "ⁿCₖ", label: t.comb, onPick: () => setDialog({ kind: "comb" }) },
           { icon: "⬡", label: t.gt, onPick: () => setDialog({ kind: "gt" }) },
           { icon: "∧", label: t.logic, onPick: () => setDialog({ kind: "logic" }) },
+          { icon: "♟", label: t.tactics, onPick: () => setDialog({ kind: "tactics" }) },
           { icon: "⇅", label: t.algo, onPick: () => setDialog({ kind: "algo" }) },
           { icon: "📊", label: t.statistics, onPick: () => setDialog({ kind: "statistics" }) },
         ]} />
@@ -474,6 +484,26 @@ export function BoardPage({ id }: { id: string }) {
           onClose={() => setDialog(null)}
           onSubmit={(data, rendered) => {
             placeImage(svgImage(rendered), { kind: "ode", data, w: rendered.width, h: rendered.height }, dialog.editing);
+            setDialog(null);
+          }}
+        />
+      )}
+      {dialog?.kind === "mental" && (
+        <MentalDialog
+          initial={dialog.editing ? (mathOf(dialog.editing)!.data as MentalSpec) : undefined}
+          onClose={() => setDialog(null)}
+          onSubmit={(data, rendered) => {
+            placeImage(svgImage(rendered), { kind: "mental", data, w: rendered.width, h: rendered.height }, dialog.editing);
+            setDialog(null);
+          }}
+        />
+      )}
+      {dialog?.kind === "tactics" && (
+        <TacticsDialog
+          initial={dialog.editing ? (mathOf(dialog.editing)!.data as TacticsSpec) : undefined}
+          onClose={() => setDialog(null)}
+          onSubmit={(data, rendered) => {
+            placeImage(svgImage(rendered), { kind: "tactics", data, w: rendered.width, h: rendered.height }, dialog.editing);
             setDialog(null);
           }}
         />

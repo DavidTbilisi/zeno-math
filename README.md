@@ -18,6 +18,17 @@ UI in English, Russian and Georgian.
     (same for hundreds); drag off the mat to remove. Ones sit in ten-frames so tens are easy to see
   - Shows the number in expanded form (`125 = 100 + 10 + 15` flags that regrouping is needed)
   - 🎲 Challenge: "Make 347" with the total hidden, and a Check button (correct / too many / not enough)
+- **🧠 Mental math** — Vedic speed mathematics and the Major System (after the Neural OS notes)
+  - *Near a base*: one generator, (B + a)(B + b) = B·(B + a + b) + a·b — the classic two-column layout (offsets, the
+    cross, the product, carries and borrows) and an area picture of why it works; any base (10, 100, 50, …)
+  - *Digit-sum check*: casting out nines for +, −, ×, ÷, with nines and pairs that make 9 struck out — and an
+    example of a wrong answer it cannot catch (swapped digits)
+  - *Square and cube roots* of perfect powers: the last-digit table gives the last digit(s), the bracket between
+    consecutive tens (or cubes) gives the first, the midpoint breaks the tie
+  - *Cubing* two-digit numbers (Anurupya): a geometric progression a³, a²b, ab², b³, the middle terms doubled, then
+    the columns added with carries
+  - *Magic squares* of odd order by the walk (middle of the right column, south-east, west when blocked), all sums shown
+  - *Major System*: digits ↔ consonants (Latin, or the Russian БЦК), with your words decoded back to check each pair
 - **▦ Models (Singapore method, pictorial stage)**
   - *Bar models*: part–whole, comparison, units; braces for totals, `?` for the unknown,
     `[1, 1]=?` to put a brace under some parts (e.g. "2/5 of 60")
@@ -148,7 +159,9 @@ UI in English, Russian and Georgian.
   - *Compass*: the unit circle as a compass — North/South is the sign of sin, East/West the sign of cos, and each
     quadrant is remembered by its two neighbours. Cue words per direction (your own, or the language's default:
     nose / eat cookies / soup / wet milk), the sector θ lands in with the signs of sin, cos and tan, and the compass
-    bearing of the same direction (clockwise from North) next to the angle (anticlockwise from East)
+    bearing of the same direction (clockwise from North) next to the angle (anticlockwise from East). Or label the
+    quadrants with diagonal images of their own and the feeling that carries the signs (straw — clean, all +; sick
+    nose — mixed; man in soup — heavy, all −; cookie in milk — mixed, calmer), plus a gaze drill
   - *Right triangle*: SOH CAH TOA from any two of a, b, c, θ — every step, given parts in blue
   - *Solve a triangle*: SSS and SAS with the law of cosines, ASA/AAS with the law of sines, and the ambiguous
     SSA case — two triangles, one, or none — with areas ½·ab·sin C
@@ -211,6 +224,11 @@ UI in English, Russian and Georgian.
   - *Eigenvalues*: det(λI − A) exactly (Faddeev–LeVerrier), rational roots with multiplicity, eigenspaces as
     null spaces of A − λI, A = PDP⁻¹ when diagonalisable, non-diagonalisable and complex cases, and a
     picture of v and A·v on the eigenvector lines
+- **♟ Problem-solving tactics** (after Zeitz, *The Art and Craft of Problem Solving*)
+  - *Symmetry*: 1 + 2 + … + n as a staircase and its turned copy filling an n × (n + 1) rectangle, with Gauss's pairing
+  - *Pigeonhole*: p pigeons in h holes, or numbers sorted into boxes by remainder — two in one box differ by a multiple of n
+  - *Colouring*: can dominoes tile a board with squares removed? The chessboard colouring rules it out when the
+    colours do not balance; otherwise a search draws a tiling or shows that none exists
 - **⇅ Algorithms** — algorithms and data structures, traced step by step with every count shown
   - *Sorting*: bubble, insertion, selection, Shell, merge, quicksort (Lomuto), heap and counting sort — one row
     per pass, split, merge or partition, with arrows showing where every value moved, the partition being worked
@@ -237,9 +255,9 @@ UI in English, Russian and Georgian.
     from log n to n! with running times at 10⁸ operations per second
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
-- The tools sit in four menus on the top bar: **Arithmetic** (counting, models), **Geometry** (geometry,
+- The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
   trigonometry, 3D), **Algebra** (formulas, graphs, matrices, complex numbers, analysis, integrals, ODEs) and **Discrete**
-  (number theory, combinatorics, graph theory, logic, algorithms, statistics)
+  (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics)
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
 - Boards autosave to SQLite on your own server; works fully offline (no CDNs)
 
@@ -394,6 +412,8 @@ src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Dioph
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
+src/math/mental.ts        mental math: base multiplication, digit-sum check, roots, cubing, magic squares, Major System
+src/math/tactics.ts       problem-solving tactics: symmetry, pigeonhole, domino tiling by colouring
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG
 src/three/                3D: spec + formulas (spec.ts), scene building (build.ts), viewer & PNG snapshot (viewer.ts)
