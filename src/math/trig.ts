@@ -380,17 +380,28 @@ function renderCompass(s: CompassSpec, w: TrigWords): RenderedSvg {
     if (axisOn === d) parts.push(`<rect x="${lx + 6}" y="${y - 15}" width="${W - lx - 24}" height="21" rx="4" fill="${color}" opacity="0.12"/>`);
     parts.push(txt(lx + 14, y, cw.dirs[d], color, "start", 13), txt(lx + 46, y, `${cue[d as "n"]} → ${rule}`, color, "start", 12));
   });
-  parts.push(card(184, 128, cw.legendQuads));
-  const signs = [["+", "+", "+"], ["+", "−", "−"], ["−", "−", "+"], ["−", "+", "−"]];
+  // Quadrants as a 2×2 grid laid out like the compass: sin is a red ↑/↓ (North/South), cos a green →/← (East/West),
+  // and tan = sin / cos is + exactly when the two arrows agree.
+  parts.push(card(184, 178, cw.legendQuads));
+  const cellW = (W - lx - 12 - 22) / 2;
+  const cellH = 64;
   QUAD_DIR.forEach((d, i) => {
-    const y = 184 + 44 + 22 * i;
-    if (quad === i + 1) parts.push(`<rect x="${lx + 6}" y="${y - 15}" width="${W - lx - 24}" height="21" rx="4" fill="${QUAD_FILL[i]}"/>`);
-    const [ss, cs, ts] = signs[i];
+    const up = i < 2;
+    const right = i === 0 || i === 3;
+    const x = lx + 8 + (right ? cellW + 6 : 0);
+    const y = 184 + 32 + (up ? 0 : cellH + 6);
+    const on = quad === i + 1;
     parts.push(
-      txt(lx + 14, y, `${cw.dirs[d]} (${["I", "II", "III", "IV"][i]})`, QUAD_INK[i], "start", 13),
-      txt(lx + 92, y, `sin ${ss}`, C.red, "start", 12),
-      txt(lx + 140, y, `cos ${cs}`, C.green, "start", 12),
-      txt(lx + 192, y, `tan ${ts}`, C.orange, "start", 12),
+      `<rect x="${r2(x)}" y="${y}" width="${r2(cellW)}" height="${cellH}" rx="6" fill="${QUAD_FILL[i]}" opacity="${on ? 1 : 0.55}"` +
+        (on ? ` stroke="${QUAD_INK[i]}" stroke-width="2.5"` : "") + `/>`,
+      txt(x + 8, y + 16, `${cw.dirs[d]} (${["I", "II", "III", "IV"][i]})`, QUAD_INK[i], "start", 12),
+      txt(x + 8, y + 35, "sin", C.red, "start", 12),
+      arrow(x + 44, up ? y + 39 : y + 23, x + 44, up ? y + 23 : y + 39, C.red, 2),
+      txt(x + 56, y + 35, up ? "+" : "−", C.red, "start", 13),
+      txt(x + 8, y + 54, "cos", C.green, "start", 12),
+      arrow(right ? x + 36 : x + 52, y + 50, right ? x + 52 : x + 36, y + 50, C.green, 2),
+      txt(x + 56, y + 54, right ? "+" : "−", C.green, "start", 13),
+      txt(x + cellW - 8, y + 46, `tan ${up === right ? "+" : "−"}`, C.orange, "end", 13),
     );
   });
 
