@@ -39,15 +39,18 @@ export function AlgoDialog({ initial, start, onSubmit, onClose }: {
     return initial ? { ...s, [initial.topic]: initial } : s;
   });
   const spec = specs[topic];
-  const set = (patch: Partial<AlgoSpec>) => setSpecs({ ...specs, [topic]: { ...spec, ...patch } });
+  // Changing the input shows the whole trace again; the slider then steps through the new one.
+  const set = (patch: Partial<AlgoSpec>) => setSpecs({ ...specs, [topic]: { ...spec, ...patch, step: undefined } });
 
-  const result = useMemo((): { rendered?: RenderedSvg; error?: string } => {
+  const result = useMemo((): { rendered?: ReturnType<typeof renderAlgo>; error?: string } => {
     try {
       return { rendered: renderAlgo(spec, w) };
     } catch (e) {
       return { error: (e as Error).message };
     }
   }, [spec, w]);
+  const steps = result.rendered?.steps ?? 0;
+  const shown = Math.min(spec.step ?? steps, steps);
 
   const value = (key: string) => (spec as Record<string, unknown>)[key] as string;
   const text = (label: string, key: string, width = 70) => (
@@ -214,6 +217,25 @@ export function AlgoDialog({ initial, start, onSubmit, onClose }: {
             <div className="range-grid">{text(t.algoN, "n")}</div>
           )}
         </>
+      )}
+
+      {steps > 0 && (
+        <div className="field">
+          <span>
+            {t.stepByStep}: {shown} / {steps}
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={steps}
+            step={1}
+            value={shown}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              setSpecs({ ...specs, [topic]: { ...spec, step: v >= steps ? undefined : v } });
+            }}
+          />
+        </div>
       )}
 
       <div className="field">

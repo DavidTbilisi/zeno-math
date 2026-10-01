@@ -1,7 +1,7 @@
 // String matching for the Algorithms tool: the naive algorithm (every shift), Knuth–Morris–Pratt
 // (prefix table, and shifts that skip what is already known to match) and Rabin–Karp (rolling hash,
 // spurious hits checked character by character).
-import type { AlgoWords, StringSpec } from "./algo";
+import type { AlgoWords, Steps, StringSpec } from "./algo";
 import { cell, legendRow, table, txt, type Role } from "./algoArrays";
 import { C, compose, fill, wrap, W, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
@@ -28,7 +28,7 @@ function drawAttempts(text: string[], pat: string[], tries: Attempt[], y0: numbe
   return { svg: parts.join(""), h: y - y0 };
 }
 
-export function renderString(spec: StringSpec, w: AlgoWords): RenderedSvg {
+export function renderString(spec: StringSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const sw = w.str;
   const text = [...spec.text.replace(/\s+/g, " ").trim()];
   const pat = [...spec.pattern.replace(/\s+/g, " ").trim()];
@@ -142,17 +142,17 @@ export function renderString(spec: StringSpec, w: AlgoWords): RenderedSvg {
       }
       rows.push({ cells: [String(s), win, String(hw), result], colors: [C.grey, C.ink, hw === hp ? C.orange : C.ink, color], fills: [undefined, undefined, hw === hp ? "#ffe8cc" : undefined, undefined] });
     }
-    const tb = table(16, 0, [{ head: sw.cols.shift, w: 60 }, { head: sw.cols.window, w: 120 }, { head: "h", w: 60 }, { head: `h = ${hp}?`, w: 220 }], rows, 21);
+    const tb = table(16, 0, [{ head: sw.cols.shift, w: 60 }, { head: sw.cols.window, w: 120 }, { head: "h", w: 60 }, { head: `h = ${hp}?`, w: 220 }], st.cut(rows, 0), 21);
     extra = tb.svg;
     extraH = tb.h + 4;
     tex = `h(P) = ${hp},\\quad h = \\sum c_i\\, ${d}^{m-1-i} \\bmod ${q},\\quad h_{s+1} = (h_s - c_s\\, ${d}^{m-1})\\cdot ${d} + c_{s+m}`;
-    caps.push({ text: fill(sw.rkStats, { k: rows.length, s: spurious }), color: spurious ? C.orange : C.blue });
+    caps.push(...st.final({ text: fill(sw.rkStats, { k: rows.length, s: spurious }), color: spurious ? C.orange : C.blue }));
   }
 
   let body = extra;
   let h = extraH;
   if (spec.algo !== "rk") {
-    const at = drawAttempts(text, pat, tries, h);
+    const at = drawAttempts(text, pat, st.cut(tries, 0), h);
     body += at.svg;
     h += at.h;
     const l = legendRow(
@@ -166,9 +166,9 @@ export function renderString(spec: StringSpec, w: AlgoWords): RenderedSvg {
     );
     body += l.svg;
     h += 6 + l.h;
-    caps.push({ text: spec.algo === "naive" ? fill(sw.compsNaive, { c: comps }) : fill(sw.comps, { c: comps, naive }), color: C.blue });
+    caps.push(...st.final({ text: spec.algo === "naive" ? fill(sw.compsNaive, { c: comps }) : fill(sw.comps, { c: comps, naive }), color: C.blue }));
   }
-  caps.unshift(found.length ? { text: fill(sw.found, { k: found.length, list: found.join(", ") }), color: C.green } : { text: sw.notFound, color: C.red });
+  caps.unshift(...st.final(found.length ? { text: fill(sw.found, { k: found.length, list: found.join(", ") }), color: C.green } : { text: sw.notFound, color: C.red }));
   caps.push({ text: sw.info[spec.algo], color: "#495057" });
   return compose(tex || "T,\\ P", body, h, caps);
 }

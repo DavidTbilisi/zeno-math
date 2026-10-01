@@ -1,7 +1,7 @@
 // Graph and tree pictures for the Algorithms tool: BFS, DFS, Dijkstra, Prim, Kruskal and Kahn's
 // topological sort on an edge list (drawn on a circle, or in layers for a DAG) with a trace table;
 // binary search trees and AVL trees (with rotations) and heaps built by heapify.
-import type { AlgoWords, GraphSpec, TreeSpec } from "./algo";
+import type { AlgoWords, GraphSpec, Steps, TreeSpec } from "./algo";
 import { drawRows, legendRow, parseNums, ROLES, table, txt, type Role, type Row, type TCol, type TRow } from "./algoArrays";
 import { C, compose, esc, fill, FONT, nt, r2, W, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
@@ -263,7 +263,7 @@ export function drawGraph(nodes: string[], edges: Edge[], directed: boolean, wei
   return parts.join("");
 }
 
-export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
+export function renderGraph(spec: GraphSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const { nodes, edges, weighted, adjOf } = parseGraph(spec, w);
   const algo = spec.algo;
   const g = w.graphMore;
@@ -290,6 +290,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
       const q = [start];
       reached.add(start);
       while (q.length) {
+        if (!st.take()) break;
         const u = q.shift()!;
         order.push(u);
         for (const nb of adj.get(u)!)
@@ -309,15 +310,16 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
         order.push(u);
         rows.push({ cells: [String(order.length), u, [...path, u].join(arrow)], bold: [false, true], colors: [undefined, C.blue] });
         for (const nb of adj.get(u)!)
-          if (!reached.has(nb.to)) {
+          if (!reached.has(nb.to) && st.take()) {
             look.hl.add(nb.id);
             visit(nb.to, [...path, u]);
           }
       };
-      visit(start, []);
+      reached.add(start);
+      if (st.take()) visit(start, []);
     }
     order.forEach((v, i) => look.badge.set(v, String(i + 1)));
-    caps.push({ text: fill(w.order, { order: order.join(arrow) }), color: C.blue });
+    caps.push(...st.final({ text: fill(w.order, { order: order.join(arrow) }), color: C.blue }));
   } else if (algo === "dijkstra") {
     const neg = edges.find((e) => e.w < 0);
     if (neg) throw new Error(w.negative);
@@ -330,7 +332,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     for (;;) {
       let u: string | null = null;
       for (const n of nodes) if (!done.has(n) && Number.isFinite(dist.get(n)!) && (u === null || dist.get(n)! < dist.get(u)!)) u = n;
-      if (u === null) break;
+      if (u === null || !st.take()) break;
       const before = new Set(done);
       done.add(u);
       const improved = new Set<string>();
@@ -352,13 +354,11 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     for (const n of done) reached.add(n);
     for (const p of prev.values()) look.hl.add(p.id);
     for (const n of done) look.under.set(n, nt(dist.get(n)!));
-    const paths = nodes
-      .filter((n) => n !== start && done.has(n))
-      .map((n) => {
-        const path = [n];
-        while (path[0] !== start) path.unshift(prev.get(path[0])!.from);
-        return fill(w.pathTo, { v: n, path: path.join(arrow), d: nt(dist.get(n)!) });
-      });
+    const paths = st.final(...nodes.filter((n) => n !== start && done.has(n))).map((n) => {
+      const path = [n];
+      while (path[0] !== start) path.unshift(prev.get(path[0])!.from);
+      return fill(w.pathTo, { v: n, path: path.join(arrow), d: nt(dist.get(n)!) });
+    });
     if (paths.length <= 6) for (const p of paths) caps.push({ text: p, color: C.blue });
     else caps.push({ text: paths.join(" · "), color: C.blue });
   } else if (algo === "prim") {
@@ -370,13 +370,13 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
       for (const u of reached)
         for (const nb of adj.get(u)!)
           if (!reached.has(nb.to) && (!best || nb.w < best.w || (nb.w === best.w && byName(u + nb.to, best.u + best.to) < 0))) best = { u, ...nb };
-      if (!best) break;
+      if (!best || !st.take()) break;
       reached.add(best.to);
       look.hl.add(best.id);
       total += best.w;
       rows.push({ cells: [String(rows.length + 1), `${best.u} – ${best.to}`, nt(best.w), nt(total)], bold: [false, true, false, true], colors: [undefined, C.blue] });
     }
-    caps.push({ text: fill(w.mstTotal, { w: nt(total) }), color: C.blue });
+    caps.push(...st.final({ text: fill(w.mstTotal, { w: nt(total) }), color: C.blue }));
   } else if (algo === "kruskal") {
     cols = [{ head: w.cols.step, w: 60 }, { head: w.cols.edge, w: 150 }, { head: w.cols.weight, w: 90 }, { head: w.cols.result, w: 200 }];
     const parent = new Map(nodes.map((n) => [n, n]));
@@ -385,7 +385,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     let taken = 0;
     const sorted = edges.slice().sort((a, b) => a.w - b.w || a.id - b.id);
     for (const e of sorted) {
-      if (taken === nodes.length - 1) break;
+      if (taken === nodes.length - 1 || !st.take()) break;
       const ok = find(e.u) !== find(e.v);
       if (ok) {
         parent.set(find(e.u), find(e.v));
@@ -401,7 +401,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     }
     const root = find(start);
     for (const n of nodes) if (find(n) === root) reached.add(n);
-    caps.push({ text: fill(w.mstTotal, { w: nt(total) }), color: C.blue });
+    caps.push(...st.final({ text: fill(w.mstTotal, { w: nt(total) }), color: C.blue }));
   } else if (algo === "bellman") {
     // Relax every edge V − 1 times (stop early when nothing changes); one more pass finds a negative cycle.
     const colW = Math.min(64, Math.floor((W - 32 - 70) / nodes.length));
@@ -432,6 +432,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     show(new Set([start]), "0");
     let early = 0;
     for (let k = 1; k < nodes.length; k++) {
+      if (!st.take()) break;
       const changed = relax();
       show(changed, String(k));
       if (!changed.size) {
@@ -439,8 +440,9 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
         break;
       }
     }
-    const bad = early ? new Set<string>() : relax();
-    if (bad.size) {
+    // The extra pass is a step only when it finds a negative cycle.
+    const bad = early || !st.room() ? new Set<string>() : relax();
+    if (bad.size && st.take()) {
       show(bad, g.check);
       // Walk back V steps along the predecessors to land on the cycle, then read it off in order.
       let x = [...bad][0];
@@ -457,7 +459,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
       caps.push({ text: fill(g.negCycle, { nodes: [...cyc, cyc[0]].join(" → ") }), color: C.red });
       if (!directed && edges.some((e) => e.w < 0)) caps.push({ text: g.undirectedNegative, color: C.orange });
     } else {
-      if (early) caps.push({ text: fill(g.earlyStop, { k: early }), color: C.green });
+      if (early) caps.push(...st.final({ text: fill(g.earlyStop, { k: early }), color: C.green }));
       for (const n of nodes) if (Number.isFinite(dist.get(n)!)) reached.add(n), look.under.set(n, nt(dist.get(n)!));
       for (const p of prev.values()) look.hl.add(p.id);
       const paths = nodes
@@ -467,7 +469,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
           while (path[0] !== start && path.length <= nodes.length) path.unshift(prev.get(path[0])!.from);
           return fill(w.pathTo, { v: n, path: path.join(arrow), d: nt(dist.get(n)!) });
         });
-      caps.push({ text: paths.join(" · "), color: C.blue });
+      caps.push(...st.final({ text: paths.join(" · "), color: C.blue }));
     }
     for (const n of nodes) if (Number.isFinite(dist.get(n)!)) reached.add(n);
   } else if (algo === "floyd") {
@@ -483,7 +485,10 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
       if (!directed) d[j][i] = Math.min(d[j][i], e.w);
     }
     const updates: string[] = [];
+    let lastK = -1;
     for (let k = 0; k < V; k++) {
+      if (!st.take()) break;
+      lastK = k;
       let u = 0;
       for (let i = 0; i < V; i++)
         for (let j = 0; j < V; j++)
@@ -505,12 +510,14 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
       }),
     );
     nodes.forEach((n) => reached.add(n));
+    // Part-way, the vertex the last round went through stands out.
+    if (st.partial && lastK >= 0) look.fills.set(nodes[lastK], "pivot");
     const neg = nodes.filter((_, i) => d[i][i] < 0);
     if (neg.length) {
       neg.forEach((n) => look.fills.set(n, "min"));
       caps.push({ text: fill(g.negCycle, { nodes: neg.join(", ") }), color: C.red });
     }
-    caps.push({ text: fill(g.fwUpdates, { list: updates.join(" · ") }), color: C.blue });
+    caps.push(...st.final({ text: fill(g.fwUpdates, { list: updates.join(" · ") }), color: C.blue }));
   } else if (algo === "unionfind") {
     // Union by size with path compression; each edge either joins two sets or closes a cycle.
     cols = [{ head: w.cols.step, w: 50 }, { head: w.cols.edge, w: 90 }, { head: "find", w: 90 }, { head: g.cols.sets, w: 310 }];
@@ -529,6 +536,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
       return [...groups.values()].map((gr) => `{${gr.join(" ")}}`).join(" ");
     };
     for (const e of edges) {
+      if (!st.take()) break;
       const [ru, rv] = [find(e.u), find(e.v)];
       const join = ru !== rv;
       if (join) {
@@ -548,7 +556,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     const roots = [...new Set(nodes.map(find))];
     look.colors = new Map(nodes.map((n) => [n, palette[roots.indexOf(find(n)) % palette.length]]));
     nodes.forEach((n) => reached.add(n));
-    caps.push({ text: fill(g.components, { k: roots.length, sets: setsText() }), color: C.blue });
+    caps.push(...st.final({ text: fill(g.components, { k: roots.length, sets: setsText() }), color: C.blue }));
   } else {
     cols = [{ head: w.cols.step, w: 60 }, { head: w.cols.output, w: 110 }, { head: w.cols.queue, w: 300 }];
     const indeg = new Map(nodes.map((n) => [n, 0]));
@@ -556,6 +564,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
     const q = nodes.filter((n) => !indeg.get(n));
     const out: string[] = [];
     while (q.length) {
+      if (!st.take()) break;
       const u = q.shift()!;
       out.push(u);
       reached.add(u);
@@ -566,7 +575,9 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
       rows.push({ cells: [String(out.length), u, q.join(", ") || "—"], bold: [false, true], colors: [undefined, C.blue] });
     }
     out.forEach((v, i) => look.badge.set(v, String(i + 1)));
-    if (out.length < nodes.length) {
+    if (st.partial) {
+      // Not finished yet: what is left is not a cycle.
+    } else if (out.length < nodes.length) {
       const left = nodes.filter((n) => !reached.has(n));
       left.forEach((n) => look.fills.set(n, "min"));
       caps.push({ text: fill(w.cycle, { nodes: left.join(", ") }), color: C.red });
@@ -575,7 +586,7 @@ export function renderGraph(spec: GraphSpec, w: AlgoWords): RenderedSvg {
 
   for (const n of nodes) if (!look.fills.has(n)) look.fills.set(n, reached.has(n) ? (n === start && fromStart ? "compare" : "key") : "idle");
   const missing = nodes.filter((n) => !reached.has(n));
-  if (missing.length && algo !== "topo") caps.push({ text: fill(w.unreachable, { nodes: missing.join(", ") }), color: C.orange });
+  if (missing.length && algo !== "topo" && !st.partial) caps.push({ text: fill(w.unreachable, { nodes: missing.join(", ") }), color: C.orange });
   if ((mst || algo === "unionfind") && spec.directed) caps.push({ text: w.undirectedOnly, color: C.orange });
   caps.push({ text: w.graphInfo[algo], color: "#495057" });
 
@@ -595,11 +606,11 @@ type TNode = { v: number; l: TNode | null; r: TNode | null; h: number };
 const ht = (t: TNode | null) => (t ? t.h : -1);
 const upd = (t: TNode) => (t.h = 1 + Math.max(ht(t.l), ht(t.r)));
 
-export function renderTree(spec: TreeSpec, w: AlgoWords): RenderedSvg {
-  return spec.kind === "minheap" || spec.kind === "maxheap" ? renderHeap(spec, w) : renderSearchTree(spec, w);
+export function renderTree(spec: TreeSpec, w: AlgoWords, st: Steps): RenderedSvg {
+  return spec.kind === "minheap" || spec.kind === "maxheap" ? renderHeap(spec, w, st) : renderSearchTree(spec, w, st);
 }
 
-function renderSearchTree(spec: TreeSpec, w: AlgoWords): RenderedSvg {
+function renderSearchTree(spec: TreeSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const vals = parseNums(spec.data, w, 24);
   const avl = spec.kind === "avl";
   const rotations: string[] = [];
@@ -641,7 +652,11 @@ function renderSearchTree(spec: TreeSpec, w: AlgoWords): RenderedSvg {
   };
   let root: TNode | null = null;
   const seen = new Set<number>();
-  for (const v of vals) {
+  // One insertion per step; the first one is always there.
+  let last = vals[0];
+  for (const [i, v] of vals.entries()) {
+    if (i > 0 && !st.take()) break;
+    last = v;
     if (seen.has(v)) {
       dups.push(v);
       continue;
@@ -685,7 +700,7 @@ function renderSearchTree(spec: TreeSpec, w: AlgoWords): RenderedSvg {
         parts.push(`<line x1="${r2(x)}" y1="${r2(y)}" x2="${r2(cx)}" y2="${r2(cy)}" stroke="#868e96" stroke-width="1.6"/>`);
       }
   for (const [t, [x, y]] of pos) {
-    const role = t === root ? ROLES.compare : ROLES.key;
+    const role = st.partial && t.v === last ? ROLES.sorted : t === root ? ROLES.compare : ROLES.key;
     parts.push(`<circle cx="${r2(x)}" cy="${r2(y)}" r="${r2(rad)}" fill="${role.fill}" stroke="${role.stroke}" stroke-width="2"/>`);
     parts.push(txt(x, y + 4.5, nt(t.v), { size: Math.min(13.5, rad * 0.8), anchor: "middle", bold: true }));
     if (avl) {
@@ -695,13 +710,13 @@ function renderSearchTree(spec: TreeSpec, w: AlgoWords): RenderedSvg {
   }
   const bodyH = 22 + H * levelH + rad + 8;
   const list = (a: number[]) => a.map((v) => nt(v)).join(", ");
-  const caps: Caption[] = [
+  const caps: Caption[] = st.final(
     { text: fill(w.inorder, { list: list(inorder.map((t) => t.v)) }), color: C.green },
     { text: fill(w.preorder, { list: list(pre) }), color: C.ink },
     { text: fill(w.postorder, { list: list(post) }), color: C.ink },
     { text: fill(w.levelorder, { list: list(level) }), color: C.ink },
     { text: fill(w.height, { h: H, n, b: Math.floor(Math.log2(n)) }), color: C.blue },
-  ];
+  );
   if (avl) caps.push(rotations.length ? { text: fill(w.rotations, { list: rotations.join(", ") }), color: C.purple } : { text: w.noRotations, color: C.purple });
   if (dups.length) caps.push({ text: fill(w.duplicates, { v: list(dups) }), color: C.orange });
   caps.push({ text: w.treeInfo[spec.kind], color: "#495057" });
@@ -709,7 +724,7 @@ function renderSearchTree(spec: TreeSpec, w: AlgoWords): RenderedSvg {
   return compose(`${tex}, \\qquad n = ${n},\\quad h = ${H}`, parts.join(""), bodyH, caps);
 }
 
-function renderHeap(spec: TreeSpec, w: AlgoWords): RenderedSvg {
+function renderHeap(spec: TreeSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const a = parseNums(spec.data, w, 15);
   const max = spec.kind === "maxheap";
   const better = (x: number, y: number) => (max ? x > y : x < y);
@@ -736,7 +751,9 @@ function renderHeap(spec: TreeSpec, w: AlgoWords): RenderedSvg {
       rows.push({ vals: a.slice(), roles: Array.from({ length: n }, (_, j): Role => (j === k ? "key" : path.includes(j) ? "compare" : "plain")), note: fill(w.sift, { v: nt(v), s: path.length - 1 }) });
     }
   }
-  // Tree picture of the finished heap.
+  // Tree picture of the heap as it stands after the last row shown, coloured like that row.
+  const shown = st.cut(rows);
+  const now = shown[shown.length - 1];
   const levels = Math.floor(Math.log2(n)) + 1;
   const levelH = 54;
   const parts: string[] = [];
@@ -752,13 +769,13 @@ function renderHeap(spec: TreeSpec, w: AlgoWords): RenderedSvg {
   }
   for (let i = 0; i < n; i++) {
     const [x, y] = p(i);
-    const role = i === 0 ? ROLES.sorted : ROLES.key;
+    const role = st.partial ? ROLES[now.roles[i]] : i === 0 ? ROLES.sorted : ROLES.key;
     parts.push(`<circle cx="${r2(x)}" cy="${r2(y)}" r="17" fill="${role.fill}" stroke="${role.stroke}" stroke-width="2"/>`);
-    parts.push(txt(x, y + 4.5, nt(a[i]), { size: 13, anchor: "middle", bold: true }));
+    parts.push(txt(x, y + 4.5, nt(now.vals[i] as number), { size: 13, anchor: "middle", bold: true }));
     parts.push(txt(x, y + 30, String(i), { size: 10, anchor: "middle", color: C.grey }));
   }
   const treeH = 22 + (levels - 1) * levelH + 40;
-  const tr = drawRows(rows, n, treeH);
+  const tr = drawRows(shown, n, treeH);
   const leg = legendRow(
     [
       { role: "compare", text: w.legend.siftPath },
@@ -767,7 +784,7 @@ function renderHeap(spec: TreeSpec, w: AlgoWords): RenderedSvg {
     treeH + tr.h + 6,
   );
   const caps: Caption[] = [
-    { text: fill(w.heapBuilt, { s: swaps, top: nt(a[0]) }), color: C.blue },
+    ...st.final({ text: fill(w.heapBuilt, { s: swaps, top: nt(a[0]) }), color: C.blue }),
     { text: w.treeInfo[spec.kind], color: "#495057" },
   ];
   const rel = max ? "\\ge" : "\\le";

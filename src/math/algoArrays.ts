@@ -2,7 +2,7 @@
 // queues and hash tables, dynamic-programming tables with traceback, and complexity (master
 // theorem recursion tree, growth-rate chart and running-time table). Also the shared cell,
 // table and legend helpers that the graph and tree pictures use.
-import type { AlgoWords, DpSpec, DsSpec, GrowthSpec, SearchSpec, SortSpec } from "./algo";
+import type { AlgoWords, DpSpec, DsSpec, GrowthSpec, SearchSpec, SortSpec, Steps } from "./algo";
 import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nf, nt, r2, texAt, tn, W, wrap, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 
@@ -193,12 +193,12 @@ const arrTex = (a: number[]) => `\\left[\\,${a.map(tn).join(",\\ ")}\\,\\right]`
 
 // ---------- sorting ----------
 
-export function renderSort(spec: SortSpec, w: AlgoWords): RenderedSvg {
+export function renderSort(spec: SortSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const a0 = parseNums(spec.data, w, 16);
   if (a0.length < 2) throw new Error(fill(w.badList, { s: spec.data }));
   const n = a0.length;
   const m = w.sortMore;
-  if (spec.algo === "counting") return renderCounting(spec, a0, w);
+  if (spec.algo === "counting") return renderCounting(spec, a0, w, st);
   const a = a0.slice();
   // ids[i]: which input item is at index i now — rows compare it with the previous row to draw the moves.
   const ids = a0.map((_, i) => i);
@@ -366,11 +366,11 @@ export function renderSort(spec: SortSpec, w: AlgoWords): RenderedSvg {
     legendItems = [{ role: "pivot", text: w.legend.pivot }, ...legendItems, { role: "idle", text: w.legend.idle }];
   }
 
-  const body = drawRows(rows, n, 0, 380, spec.view === "bars");
+  const body = drawRows(st.cut(rows), n, 0, 380, spec.view === "bars");
   const leg = legendRow(legendItems, body.h + 8);
   const sorted = a0.slice().sort((x, y) => x - y);
   const caps: Caption[] = [
-    { text: `${w.sortNames[spec.algo]}: ${fill(w.stats[stat], { c, s, n })}`, color: C.blue },
+    ...st.final({ text: `${w.sortNames[spec.algo]}: ${fill(w.stats[stat], { c, s, n })}`, color: C.blue }),
     { text: m.moved, color: C.orange },
     { text: w.sortInfo[spec.algo], color: "#495057" },
   ];
@@ -378,7 +378,7 @@ export function renderSort(spec: SortSpec, w: AlgoWords): RenderedSvg {
 }
 
 /** Counting sort: count each value, turn the counts into end positions, then place right to left (stable). */
-function renderCounting(spec: SortSpec, a0: number[], w: AlgoWords): RenderedSvg {
+function renderCounting(spec: SortSpec, a0: number[], w: AlgoWords, st: Steps): RenderedSvg {
   const m = w.sortMore;
   const n = a0.length;
   const lo = Math.min(...a0);
@@ -401,15 +401,17 @@ function renderCounting(spec: SortSpec, a0: number[], w: AlgoWords): RenderedSvg
     { vals: a0.slice(), roles: Array(n).fill("plain"), note: w.start },
     { vals: out, roles: Array(n).fill("sorted"), note: m.countPlace, moves: movesBetween(a0.map((_, i) => i), outIds).concat(outIds.flatMap((id, j): [number, number][] => (id === j ? [[j, j]] : []))) },
   ];
-  const body = drawRows(rows, n, 0, 380, spec.view === "bars");
+  // Steps: the count row, the end positions, then the placing.
+  const k = st.count(3);
+  const body = drawRows(rows.slice(0, k < 3 ? 1 : 2), n, 0, 380, spec.view === "bars");
   // The count table under the rows: one column per value from min to max.
   const colW = Math.max(22, Math.min(40, Math.floor((W - 32 - 80) / K)));
   const tb = table(16, body.h + 12, [{ head: "", w: 80 }, ...Array.from({ length: K }, (_, k) => ({ head: nt(lo + k), w: colW }))], [
     { cells: [m.countRow, ...count.map((x) => String(x))], colors: [C.grey, ...count.map((x) => (x ? C.ink : "#ced4da"))] },
     { cells: [m.countEnds, ...ends.map((x) => String(x))], colors: [C.grey, ...count.map((x) => (x ? C.blue : "#ced4da"))], bold: [false, ...count.map((x) => x > 0)] },
-  ]);
+  ].slice(0, k));
   const caps: Caption[] = [
-    { text: `${w.sortNames.counting}: ${fill(m.countStats, { n, k: K })}`, color: C.blue },
+    ...st.final({ text: `${w.sortNames.counting}: ${fill(m.countStats, { n, k: K })}`, color: C.blue }),
     { text: w.sortInfo.counting, color: "#495057" },
   ];
   const sorted = a0.slice().sort((x, y) => x - y);
@@ -419,7 +421,7 @@ function renderCounting(spec: SortSpec, a0: number[], w: AlgoWords): RenderedSvg
 // ---------- searching ----------
 
 /** Two pointers on a sorted array (a pair with sum t), or a sliding window (the best sum of k neighbours). */
-function renderScan(spec: SearchSpec, w: AlgoWords): RenderedSvg {
+function renderScan(spec: SearchSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const m = w.searchMore;
   const input = parseNums(spec.data, w, 16);
   const n = input.length;
@@ -444,14 +446,14 @@ function renderScan(spec: SearchSpec, w: AlgoWords): RenderedSvg {
       const head = `${nt(a[l])} + ${nt(a[r])} = ${nt(sum)}`;
       if (hit) {
         rows.push({ vals: a, roles, marks, note: `${head}  ✓`, noteColor: C.green });
-        caps.push({ text: fill(m.pairFound, { x: nt(a[l]), y: nt(a[r]), t: nt(t), i: l, j: r, k }), color: C.green });
+        caps.push(...st.final({ text: fill(m.pairFound, { x: nt(a[l]), y: nt(a[r]), t: nt(t), i: l, j: r, k }), color: C.green }));
         break;
       }
       rows.push({ vals: a, roles, marks, note: sum < t ? `${head} < ${nt(t)}  →  L + 1` : `${head} > ${nt(t)}  →  R − 1` });
       if (sum < t) l++;
       else r--;
     }
-    if (!hit) caps.push({ text: fill(m.pairNone, { t: nt(t), k }), color: C.red });
+    if (!hit) caps.push(...st.final({ text: fill(m.pairNone, { t: nt(t), k }), color: C.red }));
     caps.push({ text: fill(m.twoptrInfo, { n, pairs: (n * (n - 1)) / 2 }), color: "#495057" });
     tex = `a_L + a_R \\overset{?}{=} ${tn(t)}`;
   } else {
@@ -474,11 +476,11 @@ function renderScan(spec: SearchSpec, w: AlgoWords): RenderedSvg {
       } else rows.push({ vals: input, roles: Array.from({ length: n }, (_, j): Role => (j < k ? "key" : "plain")), note: `${fill(m.windowSum, { s: nt(sum) })}  ★`, noteColor: C.green });
     }
     rows.push({ vals: input, roles: Array.from({ length: n }, (_, j): Role => (j >= best.i && j < best.i + k ? "sorted" : "idle")), note: `max = ${nt(best.s)}`, noteColor: C.green });
-    caps.push({ text: fill(m.windowBest, { i: best.i, j: best.i + k - 1, s: nt(best.s) }), color: C.green });
+    caps.push(...st.final({ text: fill(m.windowBest, { i: best.i, j: best.i + k - 1, s: nt(best.s) }), color: C.green }));
     caps.push({ text: fill(m.windowInfo, { adds, naive: (n - k + 1) * (k - 1) }), color: "#495057" });
     tex = `k = ${k},\\qquad S_{i+1} = S_i - a_i + a_{i+k}`;
   }
-  const body = drawRows(rows, n);
+  const body = drawRows(st.cut(rows), n);
   const leg = legendRow(
     spec.algo === "twoptr"
       ? [{ role: "compare", text: w.legend.compared }, { role: "sorted", text: w.legend.found }, { role: "idle", text: w.legend.ruledOut }]
@@ -488,8 +490,8 @@ function renderScan(spec: SearchSpec, w: AlgoWords): RenderedSvg {
   return compose(tex, body.svg + leg.svg, body.h + 8 + leg.h, caps);
 }
 
-export function renderSearch(spec: SearchSpec, w: AlgoWords): RenderedSvg {
-  if (spec.algo === "twoptr" || spec.algo === "window") return renderScan(spec, w);
+export function renderSearch(spec: SearchSpec, w: AlgoWords, st: Steps): RenderedSvg {
+  if (spec.algo === "twoptr" || spec.algo === "window") return renderScan(spec, w, st);
   const input = parseNums(spec.data, w, 16);
   const t = parseNum(spec.target, w);
   const binary = spec.algo === "binary";
@@ -544,7 +546,7 @@ export function renderSearch(spec: SearchSpec, w: AlgoWords): RenderedSvg {
       }
     }
   }
-  const body = drawRows(rows, n);
+  const body = drawRows(st.cut(rows), n);
   const leg = legendRow(
     [
       { role: "compare", text: w.legend.compared },
@@ -555,7 +557,7 @@ export function renderSearch(spec: SearchSpec, w: AlgoWords): RenderedSvg {
   );
   const caps: Caption[] = [];
   if (binary && !wasSorted) caps.push({ text: w.sortedFirst, color: C.orange });
-  caps.push(at >= 0 ? { text: fill(w.found, { t: T, i: at, k }), color: C.green } : { text: fill(w.notFound, { t: T, k }), color: C.red });
+  caps.push(...st.final(at >= 0 ? { text: fill(w.found, { t: T, i: at, k }), color: C.green } : { text: fill(w.notFound, { t: T, k }), color: C.red }));
   caps.push({ text: binary ? fill(w.binaryInfo, { b: Math.floor(Math.log2(n)) + 1, n }) : w.linearInfo, color: "#495057" });
   const tex = binary ? `\\mathit{mid} = \\left\\lfloor \\frac{\\mathit{lo} + \\mathit{hi}}{2} \\right\\rfloor, \\qquad t = ${tn(t)}` : `t = ${tn(t)}`;
   return compose(tex, body.svg + leg.svg, body.h + 8 + leg.h, caps);
@@ -581,12 +583,12 @@ function parseOps(s: string, w: AlgoWords): Op[] {
   });
 }
 
-export function renderDs(spec: DsSpec, w: AlgoWords): RenderedSvg {
-  if (spec.kind === "stack" || spec.kind === "queue") return renderLinear(spec, w);
-  return renderHash(spec, w);
+export function renderDs(spec: DsSpec, w: AlgoWords, st: Steps): RenderedSvg {
+  if (spec.kind === "stack" || spec.kind === "queue") return renderLinear(spec, w, st);
+  return renderHash(spec, w, st);
 }
 
-function renderLinear(spec: DsSpec, w: AlgoWords): RenderedSvg {
+function renderLinear(spec: DsSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const ops = parseOps(spec.ops, w);
   const stack = spec.kind === "stack";
   const items: string[] = [];
@@ -617,28 +619,29 @@ function renderLinear(spec: DsSpec, w: AlgoWords): RenderedSvg {
   const x0 = 150;
   const outX = x0 + most * cw + 24;
   const parts: string[] = [];
-  steps.forEach((st, i) => {
+  const shown = st.cut(steps, 0);
+  shown.forEach((step, i) => {
     const y = i * 36;
-    parts.push(txt(16, y + 19, st.label, { size: 13, color: C.ink, bold: true }));
-    if (!st.items.length) parts.push(`<rect x="${x0}" y="${y}" width="${cw * 1.5}" height="28" rx="3" fill="none" stroke="#dee2e6" stroke-dasharray="4 3"/>`);
-    st.items.forEach((v, j) => {
-      const last = j === st.items.length - 1;
+    parts.push(txt(16, y + 19, step.label, { size: 13, color: C.ink, bold: true }));
+    if (!step.items.length) parts.push(`<rect x="${x0}" y="${y}" width="${cw * 1.5}" height="28" rx="3" fill="none" stroke="#dee2e6" stroke-dasharray="4 3"/>`);
+    step.items.forEach((v, j) => {
+      const last = j === step.items.length - 1;
       const role: Role = stack ? (last ? "key" : "plain") : j === 0 ? "compare" : last ? "key" : "plain";
       parts.push(cell(x0 + j * cw + 1, y, cw - 3, 28, v, role, Math.min(14, 6 + cw * 0.2)));
     });
-    if (st.out) parts.push(txt(outX, y + 19, st.out, { size: 13.5, color: st.bad ? C.red : C.green, bold: true }));
+    if (step.out) parts.push(txt(outX, y + 19, step.out, { size: 13.5, color: step.bad ? C.red : C.green, bold: true }));
   });
-  const h = steps.length * 36;
+  const h = shown.length * 36;
   const leg = legendRow(stack ? [{ role: "key", text: w.top }] : [{ role: "compare", text: w.front }, { role: "key", text: w.back }], h + 6);
   const caps: Caption[] = [
-    { text: fill(w.outputs, { list: outs.join(", ") || "—" }), color: C.blue },
+    ...st.final({ text: fill(w.outputs, { list: outs.join(", ") || "—" }), color: C.blue }),
     { text: w.dsInfo[spec.kind], color: "#495057" },
   ];
   const tex = stack ? `\\mathrm{push},\\ \\mathrm{pop},\\ \\mathrm{peek}:\\ O(1)` : `\\mathrm{enqueue},\\ \\mathrm{dequeue},\\ \\mathrm{peek}:\\ O(1)`;
   return compose(tex, parts.join("") + leg.svg, h + 6 + leg.h, caps);
 }
 
-function renderHash(spec: DsSpec, w: AlgoWords): RenderedSvg {
+function renderHash(spec: DsSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const keys = parseNums(spec.ops, w, 24, true);
   const m = parseNum(spec.m, w, (v) => Number.isInteger(v) && v >= 2 && v <= 23);
   const h = (k: number) => ((k % m) + m) % m;
@@ -651,7 +654,7 @@ function renderHash(spec: DsSpec, w: AlgoWords): RenderedSvg {
   if (spec.kind === "chaining") {
     const chains: number[][] = Array.from({ length: m }, () => []);
     let collisions = 0;
-    for (const k of keys) {
+    for (const k of st.cut(keys, 0)) {
       if (chains[h(k)].length) collisions++;
       chains[h(k)].push(k);
     }
@@ -669,7 +672,7 @@ function renderHash(spec: DsSpec, w: AlgoWords): RenderedSvg {
     });
     parts.unshift(`<defs><marker id="hash-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${C.grey}"/></marker></defs>`);
     bodyH = m * 32;
-    caps.push({ text: fill(w.chainStats, { n: keys.length, m, a: nt(keys.length / m, 2), c: collisions, l: longest }), color: C.blue });
+    caps.push(...st.final({ text: fill(w.chainStats, { n: keys.length, m, a: nt(keys.length / m, 2), c: collisions, l: longest }), color: C.blue }));
   } else {
     const slots: (number | null)[] = Array(m).fill(null);
     const moved = new Set<number>();
@@ -678,6 +681,7 @@ function renderHash(spec: DsSpec, w: AlgoWords): RenderedSvg {
     let collided = 0;
     let fullAt: number | null = null;
     for (const k of keys) {
+      if (!st.take()) break;
       const seq: number[] = [];
       let placed = -1;
       for (let p = 0; p < m; p++) {
@@ -711,7 +715,7 @@ function renderHash(spec: DsSpec, w: AlgoWords): RenderedSvg {
       parts.push(cell(16 + i * cw + 1, y + 16, cw - 3, 28, v === null ? "" : nt(v), v === null ? "idle" : moved.has(i) ? "compare" : "key", Math.min(13, 6 + cw * 0.2)));
     }
     bodyH = y + 50;
-    caps.push({ text: fill(w.hashStats, { n: keys.length, m, a: nt(keys.length / m, 2), c: collided, p: total, avg: nt(total / Math.max(1, rows.length + (fullAt === null ? 0 : 1)), 2) }), color: C.blue });
+    caps.push(...st.final({ text: fill(w.hashStats, { n: keys.length, m, a: nt(keys.length / m, 2), c: collided, p: total, avg: nt(total / Math.max(1, rows.length + (fullAt === null ? 0 : 1)), 2) }), color: C.blue }));
     if (fullAt !== null) caps.push({ text: fill(w.full, { k: nt(fullAt) }), color: C.red });
   }
   caps.push({ text: w.dsInfo[spec.kind], color: "#495057" });
@@ -738,19 +742,33 @@ function grid(x0: number, y0: number, cs: number, headW: number, rowHeads: strin
   return { svg: parts.join(""), h: 24 + rowHeads.length * cs, w: headW + colHeads.length * cs };
 }
 
-export function renderDp(spec: DpSpec, w: AlgoWords): RenderedSvg {
+export function renderDp(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
   switch (spec.problem) {
     case "lcs":
     case "edit":
-      return renderStrings(spec, w);
+      return renderStrings(spec, w, st);
     case "knapsack":
-      return renderKnapsack(spec, w);
+      return renderKnapsack(spec, w, st);
     case "coins":
-      return renderCoins(spec, w);
+      return renderCoins(spec, w, st);
   }
 }
 
-function renderStrings(spec: DpSpec, w: AlgoWords): RenderedSvg {
+/**
+ * A DP table part-way: rows after `filled` are still blank, the row just filled is highlighted, and the
+ * traceback (roles and arrows) only shows once it is the step.
+ */
+function blankAfter(vals: string[][], roles: Role[][], arrows: string[][] | undefined, filled: number, traced: boolean) {
+  vals.forEach((r, i) =>
+    r.forEach((_, j) => {
+      if (i > filled) (vals[i][j] = ""), (roles[i][j] = "idle");
+      else if (!traced) roles[i][j] = i === filled && i > 0 ? "key" : "plain";
+      if (arrows && !traced) arrows[i][j] = "";
+    }),
+  );
+}
+
+function renderStrings(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const X = [...spec.a.trim()];
   const Y = [...spec.b.trim()];
   if (!X.length || !Y.length) throw new Error(fill(w.badList, { s: spec.a.trim() ? spec.b : spec.a }));
@@ -801,7 +819,10 @@ function renderStrings(spec: DpSpec, w: AlgoWords): RenderedSvg {
     if (roles[i][j] === "plain") roles[i][j] = "compare";
   }
   const cs = Math.min(38, Math.floor((W - 32 - 40) / (m + 1)));
-  const g = grid(16 + Math.max(0, (W - 32 - 40 - cs * (m + 1)) / 2), 0, cs, 40, ["ε", ...X], ["ε", ...Y], T.map((r) => r.map(String)), roles, arrows);
+  const filled = st.count(n + 1);
+  const vals = T.map((r) => r.map(String));
+  blankAfter(vals, roles, arrows, filled, filled > n);
+  const g = grid(16 + Math.max(0, (W - 32 - 40 - cs * (m + 1)) / 2), 0, cs, 40, ["ε", ...X], ["ε", ...Y], vals, roles, arrows);
   const leg = legendRow(
     [
       { role: "compare", text: w.legend.path },
@@ -813,15 +834,17 @@ function renderStrings(spec: DpSpec, w: AlgoWords): RenderedSvg {
     ? `L_{i,j} = \\begin{cases} L_{i-1,j-1} + 1, & x_i = y_j \\\\ \\max\\left(L_{i-1,j},\\ L_{i,j-1}\\right), & x_i \\neq y_j \\end{cases}`
     : `D_{i,j} = \\min\\left(D_{i-1,j} + 1,\\ D_{i,j-1} + 1,\\ D_{i-1,j-1} + [x_i \\neq y_j]\\right)`;
   const caps: Caption[] = [
-    lcs
-      ? { text: fill(w.lcsResult, { s: out.join(""), n: T[n][m] }), color: C.green }
-      : { text: fill(w.editResult, { d: T[n][m], a: X.join(""), b: Y.join(""), ops: ops.join(", ") || "—" }), color: C.green },
+    ...st.final(
+      lcs
+        ? { text: fill(w.lcsResult, { s: out.join(""), n: T[n][m] }), color: C.green }
+        : { text: fill(w.editResult, { d: T[n][m], a: X.join(""), b: Y.join(""), ops: ops.join(", ") || "—" }), color: C.green },
+    ),
     { text: w.dpInfo[spec.problem], color: "#495057" },
   ];
   return compose(tex, g.svg + leg.svg, g.h + 10 + leg.h, caps);
 }
 
-function renderKnapsack(spec: DpSpec, w: AlgoWords): RenderedSvg {
+function renderKnapsack(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const ws = parseNums(spec.a, w, 8, true);
   const vs = parseNums(spec.b, w, 8);
   if (ws.length !== vs.length) throw new Error(fill(w.badList, { s: spec.b }));
@@ -844,7 +867,10 @@ function renderKnapsack(spec: DpSpec, w: AlgoWords): RenderedSvg {
   roles[0][c] = "compare";
   const headW = 70;
   const cs = Math.min(36, Math.floor((W - 32 - headW) / (cap + 1)));
-  const g = grid(16, 0, cs, headW, ["∅", ...ws.map((x, i) => `(${nt(x)}, ${nt(vs[i])})`)], Array.from({ length: cap + 1 }, (_, k) => String(k)), V.map((r) => r.map((x) => nt(x))), roles);
+  const filled = st.count(n + 1);
+  const vals = V.map((r) => r.map((x) => nt(x)));
+  blankAfter(vals, roles, undefined, filled, filled > n);
+  const g = grid(16, 0, cs, headW, ["∅", ...ws.map((x, i) => `(${nt(x)}, ${nt(vs[i])})`)], Array.from({ length: cap + 1 }, (_, k) => String(k)), vals, roles);
   const leg = legendRow(
     [
       { role: "compare", text: w.legend.path },
@@ -854,15 +880,17 @@ function renderKnapsack(spec: DpSpec, w: AlgoWords): RenderedSvg {
   );
   const tw = take.reduce((s, i) => s + ws[i - 1], 0);
   const caps: Caption[] = [
-    take.length
-      ? { text: fill(w.knapResult, { items: take.map((i) => `#${i}`).join(", "), w: nt(tw), c: cap, v: nt(V[n][cap]) }), color: C.green }
-      : { text: w.knapNothing, color: C.red },
+    ...st.final(
+      take.length
+        ? { text: fill(w.knapResult, { items: take.map((i) => `#${i}`).join(", "), w: nt(tw), c: cap, v: nt(V[n][cap]) }), color: C.green }
+        : { text: w.knapNothing, color: C.red },
+    ),
     { text: w.dpInfo.knapsack, color: "#495057" },
   ];
   return compose(`V_{i,c} = \\max\\left(V_{i-1,c},\\ V_{i-1,\\,c-w_i} + v_i\\right)`, g.svg + leg.svg, g.h + 10 + leg.h, caps);
 }
 
-function renderCoins(spec: DpSpec, w: AlgoWords): RenderedSvg {
+function renderCoins(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const coins = [...new Set(parseNums(spec.a, w, 8, true))].sort((x, y) => x - y);
   if (coins.some((x) => x <= 0)) throw new Error(fill(w.badNumber, { s: spec.a }));
   const A = parseNum(spec.c, w, (v) => Number.isInteger(v) && v >= 1 && v <= 40);
@@ -872,6 +900,8 @@ function renderCoins(spec: DpSpec, w: AlgoWords): RenderedSvg {
   for (let x = 1; x <= A; x++)
     for (const c of coins)
       if (c <= x && best[x - c] + 1 < best[x]) (best[x] = best[x - c] + 1), (last[x] = c);
+  // Steps: the amounts 1 … A one at a time, then the traceback.
+  const filled = st.count(A + 1);
   const path = new Set<number>();
   const used: number[] = [];
   if (Number.isFinite(best[A]))
@@ -894,8 +924,11 @@ function renderCoins(spec: DpSpec, w: AlgoWords): RenderedSvg {
       headW,
       [w.coinsRow, w.lastCoin],
       xs.map(String),
-      [xs.map((x) => (Number.isFinite(best[x]) ? String(best[x]) : "∞")), xs.map((x) => (x && last[x] ? String(last[x]) : "–"))],
-      [xs.map((x): Role => (path.has(x) ? (x === A ? "sorted" : "compare") : "plain")), xs.map((x): Role => (path.has(x) && x ? "compare" : "idle"))],
+      [xs.map((x) => (x > filled ? "" : Number.isFinite(best[x]) ? String(best[x]) : "∞")), xs.map((x) => (x > filled ? "" : x && last[x] ? String(last[x]) : "–"))],
+      [
+        xs.map((x): Role => (x > filled ? "idle" : filled <= A ? (x === filled ? "key" : "plain") : path.has(x) ? (x === A ? "sorted" : "compare") : "plain")),
+        xs.map((x): Role => (filled > A && path.has(x) && x ? "compare" : "idle")),
+      ],
     );
     parts.push(txt(16 + headW - 8, y + 16, w.amount, { size: 12, color: C.grey, anchor: "end" }), g.svg);
     y += g.h + 14;
@@ -908,11 +941,14 @@ function renderCoins(spec: DpSpec, w: AlgoWords): RenderedSvg {
   let rest = A;
   for (const c of coins.slice().reverse()) while (c <= rest) greedy.push(c), (rest -= c);
   const caps: Caption[] = [];
-  if (used.length) caps.push({ text: fill(w.coinResult, { n: used.length, a: A, coins: used.slice().sort((x, y) => y - x).join(" + ") }), color: C.green });
-  else caps.push({ text: fill(w.coinNone, { a: A }), color: C.red });
-  if (used.length && rest === 0 && greedy.length > used.length) caps.push({ text: fill(w.greedyFails, { g: greedy.join(" + "), n: greedy.length }), color: C.orange });
-  else if (used.length && rest === 0) caps.push({ text: fill(w.greedy, { g: greedy.join(" + ") }), color: "#495057" });
-  else if (used.length) caps.push({ text: fill(w.greedyStuck, { g: greedy.join(" + ") || "0", r: rest }), color: C.orange });
+  // The answer and the greedy comparison wait for the last step.
+  if (!st.partial) {
+    if (used.length) caps.push({ text: fill(w.coinResult, { n: used.length, a: A, coins: used.slice().sort((x, y) => y - x).join(" + ") }), color: C.green });
+    else caps.push({ text: fill(w.coinNone, { a: A }), color: C.red });
+    if (used.length && rest === 0 && greedy.length > used.length) caps.push({ text: fill(w.greedyFails, { g: greedy.join(" + "), n: greedy.length }), color: C.orange });
+    else if (used.length && rest === 0) caps.push({ text: fill(w.greedy, { g: greedy.join(" + ") }), color: "#495057" });
+    else if (used.length) caps.push({ text: fill(w.greedyStuck, { g: greedy.join(" + ") || "0", r: rest }), color: C.orange });
+  }
   caps.push({ text: w.dpInfo.coins, color: "#495057" });
   return compose(`C(x) = 1 + \\min_{c \\,\\le\\, x} C(x - c), \\qquad C(0) = 0`, parts.join(""), y - 14, caps);
 }

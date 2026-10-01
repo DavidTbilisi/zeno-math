@@ -1,9 +1,10 @@
 // The Algorithms tool states the right answers: shortest paths, best windows, queens, call counts,
-// string-matching comparisons — and every sort survives random input in both views.
+// string-matching comparisons — every sort survives random input in both views, and every example
+// can be stepped through with the slider.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
-import { renderAlgo, SORT_ALGOS, type AlgoSpec } from "../src/math/algo.ts";
+import { ALGO_PRESETS, ALGO_TOPICS, renderAlgo, SORT_ALGOS, type AlgoSpec } from "../src/math/algo.ts";
 
 const w = en.algoWords;
 const text = (spec: AlgoSpec) => [...renderAlgo(spec, w).svg.matchAll(/<text[^>]*>(.*?)<\/text>/g)].map((m) => m[1].replace(/<[^>]+>/g, "").replace(/&amp;/g, "&")).join(" ").replace(/\s+/g, " ");
@@ -60,4 +61,23 @@ test("string matching", () => {
   has(s("rk", "abracadabra", "abra"), "Found 2 time(s), at shift(s) 0, 7", "1 spurious hit(s)");
   has(s("kmp", "aaaa", "aa"), "Found 3 time(s), at shift(s) 0, 1, 2");
   has(s("naive", "hello", "xyz"), "The pattern does not occur in the text");
+});
+
+test("the step slider: every example, every step", () => {
+  for (const topic of ALGO_TOPICS)
+    for (const { label, spec } of ALGO_PRESETS[topic]) {
+      const full = renderAlgo(spec, w);
+      assert.equal(full.steps > 0, topic !== "growth", `${label}: ${full.steps} steps`);
+      for (let step = 0; step <= full.steps; step++) {
+        const r = renderAlgo({ ...spec, step }, w);
+        assert.equal(r.steps, full.steps, `${label} @ ${step}`);
+        assert.doesNotMatch(r.svg, /NaN|undefined|Infinity/, `${label} @ ${step}`);
+        if (step < full.steps) assert.notEqual(r.svg, full.svg, `${label} @ ${step} looks finished`);
+      }
+      assert.equal(renderAlgo({ ...spec, step: full.steps }, w).svg, full.svg, `${label}: the last step is the whole picture`);
+    }
+  // The answer waits for the last step.
+  const bfs = ALGO_PRESETS.graph[0].spec;
+  assert.ok(text(bfs).includes("Visiting order"));
+  assert.ok(!text({ ...bfs, step: 2 }).includes("Visiting order"));
 });

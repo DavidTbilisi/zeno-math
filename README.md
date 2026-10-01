@@ -245,6 +245,8 @@ UI in English, Russian and Georgian.
   - *Colouring*: can dominoes tile a board with squares removed? The chessboard colouring rules it out when the
     colours do not balance; otherwise a search draws a tiling or shows that none exists
 - **⇅ Algorithms** — algorithms and data structures, traced step by step with every count shown
+  - A step slider on every trace: rows, table rows, graph and tree states, calls and board positions appear one
+    step at a time (the newest one highlighted), and the answer is only stated on the last step
   - *Sorting*: bubble, insertion, selection, Shell, merge, quicksort (Lomuto), heap and counting sort — one row
     per pass, split, merge or partition, with arrows showing where every value moved, the partition being worked
     on bracketed, comparisons and swaps counted, and the complexity explained; as cells or as bars

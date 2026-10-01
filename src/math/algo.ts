@@ -31,23 +31,24 @@ export const DS_KINDS: DsKind[] = ["stack", "queue", "chaining", "probing"];
 export const DP_PROBLEMS: DpProblem[] = ["lcs", "edit", "knapsack", "coins"];
 export const GROWTH_MODES: GrowthMode[] = ["master", "compare"];
 
-export type SortSpec = { topic: "sort"; algo: SortAlgo; data: string; view?: SortView };
+export type SortSpec = { topic: "sort"; algo: SortAlgo; data: string; view?: SortView; step?: number };
 /** target: the value to find (binary, linear), the sum of the pair (two pointers) or the window size k. */
-export type SearchSpec = { topic: "search"; algo: SearchAlgo; data: string; target: string };
+export type SearchSpec = { topic: "search"; algo: SearchAlgo; data: string; target: string; step?: number };
 /** Edges like "A-B 4, B-C 2"; the weight is optional. */
-export type GraphSpec = { topic: "graph"; algo: GraphAlgo; edges: string; directed: boolean; start: string };
-export type TreeSpec = { topic: "tree"; kind: TreeKind; data: string };
+export type GraphSpec = { topic: "graph"; algo: GraphAlgo; edges: string; directed: boolean; start: string; step?: number };
+export type TreeSpec = { topic: "tree"; kind: TreeKind; data: string; step?: number };
 /** Stack/queue: ops is "push 3, push 5, pop, peek". Hashing: ops is the keys, m the table size. */
-export type DsSpec = { topic: "ds"; kind: DsKind; ops: string; m: string };
+export type DsSpec = { topic: "ds"; kind: DsKind; ops: string; m: string; step?: number };
 /** lcs/edit: a, b are the strings · knapsack: a weights, b values, c capacity · coins: a coins, c amount. */
-export type DpSpec = { topic: "dp"; problem: DpProblem; a: string; b: string; c: string };
+export type DpSpec = { topic: "dp"; problem: DpProblem; a: string; b: string; c: string; step?: number };
 /** master: T(n) = a·T(n/b) + Θ(n^d) · compare: growth rates up to n. */
-export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: string; d: string; n: string };
+export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: string; d: string; n: string; step?: number };
 
 /** n for fib / fact / hanoi / queens; data (the numbers) and target for subsets; memo for fib. */
-export type RecurSpec = { topic: "recur"; problem: RecurProblem; n: string; memo: boolean; data: string; target: string };
-export type StringSpec = { topic: "string"; algo: StringAlgo; text: string; pattern: string };
+export type RecurSpec = { topic: "recur"; problem: RecurProblem; n: string; memo: boolean; data: string; target: string; step?: number };
+export type StringSpec = { topic: "string"; algo: StringAlgo; text: string; pattern: string; step?: number };
 
+/** step: how many steps of the trace to show (the slider); missing means all of them. */
 export type AlgoSpec = SortSpec | SearchSpec | GraphSpec | TreeSpec | DsSpec | DpSpec | GrowthSpec | RecurSpec | StringSpec;
 export type AlgoTopic = AlgoSpec["topic"];
 export type AlgoSpecOf<K extends AlgoTopic> = Extract<AlgoSpec, { topic: K }>;
@@ -263,25 +264,70 @@ export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf
   ],
 };
 
-export function renderAlgo(spec: AlgoSpec, words: AlgoWords): RenderedSvg {
+/**
+ * The step slider. A renderer either cuts its finished list of rows (cut, count) or stops its loop when
+ * take() says no; captions that give the answer away go through final(), so they wait for the last step.
+ */
+export class Steps {
+  total = 0;
+  readonly limit: number;
+  constructor(limit = Infinity) {
+    this.limit = limit;
+  }
+  get partial() {
+    return this.limit < Infinity;
+  }
+  /** Is there room for another step (without counting it)? */
+  room(): boolean {
+    return this.total < this.limit;
+  }
+  /** Room for one more step? Counts it when there is. */
+  take(): boolean {
+    if (this.total >= this.limit) return false;
+    this.total++;
+    return true;
+  }
+  /** n more steps; returns how many of them to show. */
+  count(n: number): number {
+    this.total += n;
+    return Math.min(this.limit, n);
+  }
+  /** The first `keep` items are always shown, the rest one per step. */
+  cut<T>(items: T[], keep = 1): T[] {
+    return items.slice(0, keep + this.count(Math.max(0, items.length - keep)));
+  }
+  final<T>(...items: T[]): T[] {
+    return this.partial ? [] : items;
+  }
+}
+
+function draw(spec: AlgoSpec, words: AlgoWords, st: Steps): RenderedSvg {
   switch (spec.topic) {
     case "sort":
-      return renderSort(spec, words);
+      return renderSort(spec, words, st);
     case "search":
-      return renderSearch(spec, words);
+      return renderSearch(spec, words, st);
     case "graph":
-      return renderGraph(spec, words);
+      return renderGraph(spec, words, st);
     case "tree":
-      return renderTree(spec, words);
+      return renderTree(spec, words, st);
     case "ds":
-      return renderDs(spec, words);
+      return renderDs(spec, words, st);
     case "dp":
-      return renderDp(spec, words);
+      return renderDp(spec, words, st);
     case "growth":
       return renderGrowth(spec, words);
     case "recur":
-      return renderRecur(spec, words);
+      return renderRecur(spec, words, st);
     case "string":
-      return renderString(spec, words);
+      return renderString(spec, words, st);
   }
+}
+
+/** The picture at spec.step, and how many steps there are in all (0: nothing to step through). */
+export function renderAlgo(spec: AlgoSpec, words: AlgoWords): RenderedSvg & { steps: number } {
+  const all = new Steps();
+  const full = draw(spec, words, all);
+  if (spec.step === undefined || spec.step >= all.total) return { ...full, steps: all.total };
+  return { ...draw(spec, words, new Steps(Math.max(0, Math.floor(spec.step)))), steps: all.total };
 }
