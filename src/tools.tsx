@@ -16,7 +16,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -63,6 +63,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   coord: { Dialog: load(() => import("./components/CoordDialog"), "CoordDialog"), edit: "editCoord", topics: (t) => t.coordTopics, hints: (t) => t.coordHints },
   deriv: { Dialog: load(() => import("./components/DerivDialog"), "DerivDialog"), edit: "editDeriv", topics: (t) => t.derivTopics, hints: (t) => t.derivHints },
   applied: { Dialog: load(() => import("./components/AppDialog"), "AppDialog"), edit: "editApplied", topics: (t) => t.appTopics, hints: (t) => t.appHints },
+  inference: { Dialog: load(() => import("./components/InfDialog"), "InfDialog"), edit: "editInference", topics: (t) => t.infTopics, hints: (t) => t.infHints },
   powers: { Dialog: load(() => import("./components/PowersDialog"), "PowersDialog"), edit: "editPowers", topics: (t) => t.powersTopics, hints: (t) => t.powersHints },
 };
 
@@ -112,6 +113,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "tactics", icon: "♟", label: "tactics" },
       { kind: "algo", icon: "⇅", label: "algo" },
       { kind: "statistics", icon: "📊", label: "statistics" },
+      { kind: "inference", icon: "H₀", label: "inference" },
     ],
   },
 ];

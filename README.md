@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -283,6 +283,18 @@ UI in English, Russian and Georgian.
     E(X), σ and z-scores
   - *Sample means*: the central limit theorem — means of n dice, coins or a skewed population pile up
     into N(μ, σ²/n) as n grows
+- **H₀ Inference** — confidence intervals and hypothesis tests, worked step by step with the distribution drawn
+  - *Confidence interval*: for a mean (t when σ is unknown, z when it is known; from x̄, s, n or from the data)
+    or a proportion — standard error, critical value, margin of error and the interval, with the middle C % shaded
+  - *What 95 % means*: 40 intervals from simulated samples, the ones that miss μ in red, and the share over 2000 more
+  - *Hypothesis test*: one-sample z, t or proportion test against ≠, < or > — H₀ and H₁, the statistic, the
+    p-value shaded on the null distribution next to the rejection region, and the decision both ways (|t| > t*, p < α)
+  - *Two samples*: Welch's t for two means, the paired t on the differences, two proportions with the pooled
+    estimate — plus the interval for the difference and whether it contains 0
+  - *χ² tests*: goodness of fit (equal or given proportions, e.g. Mendel's 9 : 3 : 3 : 1) and independence in a
+    two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
+  - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
+  - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
 - **Vector spaces** (in *[ ] Matrices*) — exact fractions, pictures for ℝ² and ℝ³
   - *Span & independence*: row reduction to the pivots, rank = dim span, a basis from the pivot columns,
     the dependency relation (2v₁ + 3v₂ − v₃ = 0), and the span drawn as a line or plane
@@ -328,7 +340,7 @@ UI in English, Russian and Georgian.
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
   coordinate geometry, trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex
   numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
-  **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics)
+  **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference)
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
 - Dialogs work from the keyboard: focus moves in and back, Tab stays inside, arrow keys move between tabs and options;
@@ -459,8 +471,10 @@ that simplified powers, surds, standard forms and logarithms keep the value of t
 and log equations satisfy them (with false roots thrown out); that midpoints, lines, feet of perpendiculars, meeting points,
 centres, radii and areas from coordinate geometry agree with the input; that derivatives of hundreds of random expressions
 match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
-distances travelled, optima and rates match independent numerical computations; that no picture repeats an
-attribute; that
+distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
+functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
+pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
+intervals catch μ; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
 bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
@@ -480,6 +494,7 @@ src/math/models.ts        Singapore-method models → SVG (bar model, fractions,
 src/math/ode.ts           differential equations: slope fields, Euler, first/second order, phase planes
 src/math/integration.ts   integration techniques: substitution, by parts, partial fractions, trig substitution
 src/math/statistics.ts    statistics & probability pictures: data, scatter, chance, trees, distributions, CLT
+src/math/inference.ts     inference: confidence intervals, coverage, z/t/proportion tests, two samples, χ², power
 src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX header + captions)
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
