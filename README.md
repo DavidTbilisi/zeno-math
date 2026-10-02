@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, logarithms, sequences and series, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -120,6 +120,29 @@ UI in English, Russian and Georgian.
   - *Quadratic equations*, four ways: factoring and the zero product, completing the square (drawn as a square with
     two strips and the missing corner), the formula with the discriminant (exact surds, complex roots pointed to the
     Complex numbers tool), and vertex form with the parabola, vertex, axis, roots and y-intercept
+- **x³ Polynomials** — beyond quadratics, every number exact
+  - *Division*: long division set out as on paper (the quotient over the bar, each product subtracted, the next term
+    brought down, 0x² for a missing power), synthetic division for a linear divisor (also bx − a), dividend =
+    divisor × quotient + remainder, the fraction form, and the remainder theorem f(a) as a check
+  - *Factor theorem*: f(x) with unknown coefficients and conditions — "(x − 2) is a factor", "remainder −12 when
+    divided by (x + 1)", f(1) = 0 — each substituted into an equation, solved together by elimination (labelled
+    (1) + (2), 2×(1) − (2)), f written out and factorised, the conditions as points on the graph; with no unknowns,
+    the remainders; with no conditions, a search through the ±p/q candidates
+  - *Factor & solve*: cubics and quartics — x or a number taken out, a hidden quadratic (x⁴ − 5x² + 4, x⁶ − 9x³ + 8)
+    by u = xᵏ, otherwise the rational root candidates tried one by one and each root divided out (synthetic division
+    tables), then factorising or the quadratic formula with surds, and numbers when no rational root is left;
+    repeated roots named; inequalities f(x) > 0 with a sign table (one row per factor) and the answer as inequalities,
+    as intervals and on the graph
+  - *Binomial expansion*: (2x − 3)⁵ term by term from Σ C(n, r)aⁿ⁻ʳbʳ with Pascal's triangle; one term (x³ in
+    (2x − 3)⁸, the term independent of x in (x + 2/x)⁶) from the general term; the first few terms and an estimate
+    such as 1.02⁸; any other power — (1 + 2x)⁻¹, √(4 + x), 1/(1 − 3x)² — as the binomial series, aⁿ taken out, with
+    the interval of validity and a graph of the series hugging the curve inside it
+  - *Line & curve*: one linear and one other equation (parabola, circle, ellipse, hyperbola xy = 6, a cubic) —
+    make x or y the subject, substitute, collect, the discriminant decides between two points, a tangent and none,
+    exact points (surds included) and both graphs with equal units
+  - *Partial fractions*: linear, repeated and quadratic factors in the denominator, an improper fraction divided first;
+    the identity, the letters found by putting x = each root (cover-up) and the rest by comparing coefficients, and a
+    check at a number
 - **xⁿ Powers, roots & logs** — exact wherever the answer is exact, every step named
   - *Index laws*: brackets opened ((ab)ⁿ, (a/b)ⁿ, (aᵐ)ⁿ, ⁿ√a = a^(1/n)), powers of the same base added or subtracted,
     a⁰ = 1 and a⁻ⁿ = 1/aⁿ, 8^(2/3) = (∛8)² = 4; with whole powers every factor is drawn as a chip, and chips above
@@ -357,7 +380,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 32 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 33 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -411,7 +434,7 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, powers & logs, sequences &
+  coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, polynomials, powers & logs, sequences &
   series,
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
@@ -550,12 +573,16 @@ infinity, telescoping sums, "first n" answers and recurrence limits match adding
 give values and points outside don't, every value lands in the stated range, f(f⁻¹(y)) = y, transformed key points lie
 on the new graph and stationary points have f′ = 0; that true trig identities built from random expressions are
 proved and false ones refused, every solution of a trig equation satisfies it and no sign change is missed, and
-R-forms, exact values and values from given ratios match plain floating-point trigonometry; that derivatives of hundreds of random expressions
+R-forms, exact values and values from given ratios match plain floating-point trigonometry; that random polynomial
+divisions satisfy dividend = divisor × quotient + remainder, unknown coefficients come back from their conditions, every
+root of a cubic or quartic is a root and no sign change is missed, polynomial inequalities agree with the sign of f,
+binomial expansions and series match arithmetic, the points where a line meets a curve lie on both (as many as the
+discriminant says) and partial fractions add back up to the fraction; that derivatives of hundreds of random expressions
 match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (32 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (33 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
@@ -610,6 +637,8 @@ src/math/complex.ts       complex numbers: forms, operations, powers, roots, qua
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/functions.ts     functions: domain & range, composites, inverses, transformations, curve sketching + pictures
 src/math/identities.ts    trig identities: exact values, R-form, proofs, equations (exact surds) + pictures
+src/math/polynomials.ts   polynomials: division, factor/remainder theorems, cubics & inequalities, binomial, line & curve,
+                          partial fractions (exact) + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

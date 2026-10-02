@@ -37,5 +37,7 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       return (await import("./functions")).renderFunctions(s, t.fnWords);
     case "identities":
       return (await import("./identities")).renderIdentities(s, t.idWords);
+    case "polynomials":
+      return (await import("./polynomials")).renderPolynomials(s, t.polyWords);
   }
 }
