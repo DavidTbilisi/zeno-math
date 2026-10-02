@@ -2,7 +2,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
-import { derivOf, evalE, renderDeriv, type DerivTopic } from "../src/math/derive.ts";
+import { derivOf, renderDeriv, type DerivTopic } from "../src/math/derive.ts";
+import { evalE } from "../src/math/expr.ts";
 
 const w = en.derivWords;
 const textOf = (svg: string) => [...svg.matchAll(/<text[^>]*>(.*?)<\/text>/g)].map((m) => m[1]).join(" ").replace(/\s+/g, " ");

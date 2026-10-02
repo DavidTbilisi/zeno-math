@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics, linear algebra, algorithms & data structures and 3D geometry.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -248,6 +248,18 @@ UI in English, Russian and Georgian.
     theorem): long division when improper, repeated factors, one irreducible quadratic (ln + arctan), exact fractions
   - *Trig substitution*: x = a sin θ, a tan θ, a sec θ for six standard forms, with the reference triangle
     that brings the answer back to x
+- **∫⌒ Applied calculus** — exact for polynomials (surd limits included), standard antiderivatives otherwise, and every
+  answer checked by Simpson's rule
+  - *Area*: under a curve or between two — where they meet, which is on top, each piece integrated, pieces below the
+    axis counted as positive (with the signed integral beside it), e.g. 8√2/3 between x² and 2; exact at π and e too
+  - *Volumes of revolution*: discs, washers (two curves) and shells about the y-axis, the answer as a multiple of π,
+    and the solid drawn with its cross-sections
+  - *Motion*: s(t) → v and a, when it is at rest, positions, displacement against distance travelled, graphs of s, v
+    and a, and the path drawn on a line
+  - *Optimisation*: the open box from a sheet, the fence by a river, the can of least metal and the nearest point on a
+    parabola — the function, its range, f′ = 0, the second-derivative test and a picture
+  - *Related rates*: the sliding ladder, the balloon, the filling cone and the ripple — the linking equation,
+    differentiated with respect to t, and the numbers put in
 - **y′ Differential equations** — solved step by step and checked against the equation
   - *Slope field*: dy/dx = f(x, y) as a field of dashes, with RK4 solution curves through your starting points
   - *Euler's method*: the step table yₙ₊₁ = yₙ + h·f(xₙ, yₙ), the Euler polygon against an accurate solution,
@@ -315,7 +327,7 @@ UI in English, Russian and Georgian.
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
   coordinate geometry, trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex
-  numbers, analysis, derivatives, integrals, ODEs) and
+  numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics)
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -446,7 +458,8 @@ inequalities satisfy the input, expansions and factorisations multiply back and 
 that simplified powers, surds, standard forms and logarithms keep the value of the input, and that solutions of exponential
 and log equations satisfy them (with false roots thrown out); that midpoints, lines, feet of perpendiculars, meeting points,
 centres, radii and areas from coordinate geometry agree with the input; that derivatives of hundreds of random expressions
-match numerical ones, and stationary points, tangents and the chain rule agree with them; that no picture repeats an
+match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
+distances travelled, optima and rates match independent numerical computations; that no picture repeats an
 attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
 bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
@@ -497,7 +510,9 @@ src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
-src/math/derive.ts        derivatives: expression trees, rules one level at a time, simplifier, chain, tangents, stationary points
+src/math/expr.ts          expressions in x: parser, LaTeX, tidy-up and simplifier, exact a + b√s, real roots of polynomials
+src/math/derive.ts        derivatives: rules one level at a time, first principles, chain, tangents, stationary points
+src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
 src/math/mental.ts        mental math: base multiplication, digit-sum check, roots, cubing, magic squares, Major System
 src/math/tactics.ts       problem-solving tactics: symmetry, pigeonhole, domino tiling by colouring
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
