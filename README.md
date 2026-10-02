@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, sequences and series, coordinate geometry, vectors, lines and planes, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, logarithms, sequences and series, coordinate geometry, vectors, lines and planes, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -133,6 +133,19 @@ UI in English, Russian and Georgian.
     mirrored from y = bˣ in the line y = x
   - *Exponential equations*: a common base and equal powers (9ˣ = 27ˣ⁻¹), or taking logs (2²ˣ = 3ˣ⁺¹); log equations
     combined into one log, the domain worked out first, and a root that makes an argument negative thrown out
+- **f(x) Functions & graphs** — exact for polynomials and fractions of them, numerical (and said so) for the rest;
+  |x| works everywhere (`|x − 2|`, `abs(x)`)
+  - *Domain & range*: every restriction found and solved — denominators, even roots, logs, arcsin, tan's gaps
+    (x ≠ π/2 + kπ) — and the range from the stationary values, the values at closed ends and the limits at open
+    ones (1/(x² − 1) → (−∞, −1] ∪ (0, ∞)); the domain drawn along the x-axis and the range along the y-axis
+  - *Composite & inverse*: fg(x) and gf(x) with their domains, fg(2) through two function machines; f⁻¹ by undoing
+    the layers one at a time (subtract, divide, square, take logs …), by collecting y for (ax + b)/(cx + d), or by
+    completing the square — refused, with a suggested restriction, when f is not one-to-one; f and f⁻¹ mirrored in y = x
+  - *Transformations*: y = a·f(b·x + c) + d split into its steps in the right order (stretch, reflect, translate),
+    y = |f(x)| and y = f(|x|), one small picture per step with the key points carried along
+  - *Curve sketching*: factorised, holes, intercepts, vertical asymptotes with the side each branch goes, horizontal
+    or oblique asymptotes (by division) and where the curve crosses them, stationary points exactly (2 ± √3) with
+    their type, and sign charts of f and f′ drawn over the graph
 - **aₙ Sequences & series** — exact fractions while they stay small; the terms and the partial sums drawn side by side
   - *Find the rule*: type the first terms; the difference table finds linear, quadratic and cubic rules (the term
     before the first, take away an², Newton's forward differences), constant ratios give a geometric rule, otherwise
@@ -326,7 +339,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 30 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 31 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -380,7 +393,8 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  coordinate geometry, vectors, trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, sequences & series,
+  coordinate geometry, vectors, trigonometry, 3D), **Algebra** (formulas, graphs, functions, equations, powers & logs, sequences &
+  series,
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
   **Practice** by area
@@ -514,12 +528,14 @@ that simplified powers, surds, standard forms and logarithms keep the value of t
 and log equations satisfy them (with false roots thrown out); that midpoints, lines, feet of perpendiculars, meeting points,
 centres, radii and areas from coordinate geometry agree with the input; that the angles, areas, volumes, meeting points,
 feet of perpendiculars and distances from the vectors tool match plain floating-point geometry; that terms, sums, sums to
-infinity, telescoping sums, "first n" answers and recurrence limits match adding and iterating term by term; that derivatives of hundreds of random expressions
+infinity, telescoping sums, "first n" answers and recurrence limits match adding and iterating term by term; that points inside a stated domain
+give values and points outside don't, every value lands in the stated range, f(f⁻¹(y)) = y, transformed key points lie
+on the new graph and stationary points have f′ = 0; that derivatives of hundreds of random expressions
 match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (30 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (31 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
@@ -572,6 +588,7 @@ src/math/algebra.ts       equations & polynomials: linear, inequalities, expandi
 src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
+src/math/functions.ts     functions: domain & range, composites, inverses, transformations, curve sketching + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

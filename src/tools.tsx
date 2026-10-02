@@ -17,7 +17,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -75,6 +75,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   },
   powers: { Dialog: load(() => import("./components/PowersDialog"), "PowersDialog"), edit: "editPowers", topics: (t) => t.powersTopics, hints: (t) => t.powersHints },
   sequences: { Dialog: load(() => import("./components/SeqDialog"), "SeqDialog"), edit: "editSequences", topics: (t) => t.seqTopics, hints: (t) => t.seqHints },
+  functions: { Dialog: load(() => import("./components/FnDialog"), "FnDialog"), edit: "editFunctions", topics: (t) => t.fnTopics, hints: (t) => t.fnHints },
 };
 
 export const isToolKind = (k: unknown): k is ToolKind => typeof k === "string" && Object.hasOwn(TOOLS, k);
@@ -104,6 +105,7 @@ export const MENUS: MenuGroup[] = [
     icon: "∑", label: "groupAlgebraShort", title: "groupAlgebra", items: [
       { kind: "formula", icon: "∑", label: "formula" },
       { kind: "graph", icon: "📈", label: "graph" },
+      { kind: "functions", icon: "f(x)", label: "functionsTool" },
       { kind: "algebra", icon: "⚖", label: "algebra" },
       { kind: "powers", icon: "xⁿ", label: "powers" },
       { kind: "sequences", icon: "aₙ", label: "sequences" },

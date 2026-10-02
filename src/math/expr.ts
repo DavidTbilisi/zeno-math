@@ -15,8 +15,8 @@ export const minus = (t: string) => t.replace(/-/g, "−");
 
 // ---------- expressions ----------
 
-export type Fn = "sin" | "cos" | "tan" | "sec" | "csc" | "cot" | "ln" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh";
-export const FNS: Fn[] = ["sin", "cos", "tan", "sec", "csc", "cot", "ln", "asin", "acos", "atan", "sinh", "cosh", "tanh"];
+export type Fn = "sin" | "cos" | "tan" | "sec" | "csc" | "cot" | "ln" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh" | "abs";
+export const FNS: Fn[] = ["sin", "cos", "tan", "sec", "csc", "cot", "ln", "asin", "acos", "atan", "sinh", "cosh", "tanh", "abs"];
 
 export type E =
   | { k: "num"; v: Frac }
@@ -120,7 +120,7 @@ export function evalE(e: E, x: number, env: Record<string, number> = {}): number
       const a = R(e.a);
       const f: Record<Fn, (t: number) => number> = {
         sin: Math.sin, cos: Math.cos, tan: Math.tan, sec: (t) => 1 / Math.cos(t), csc: (t) => 1 / Math.sin(t), cot: (t) => 1 / Math.tan(t),
-        ln: Math.log, asin: Math.asin, acos: Math.acos, atan: Math.atan, sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
+        ln: Math.log, asin: Math.asin, acos: Math.acos, atan: Math.atan, sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh, abs: Math.abs,
       };
       return f[e.f](a);
     }
@@ -139,10 +139,26 @@ export const NORMAL: [RegExp, string][] = [
 ];
 export const NAMES = ["sqrt", "cbrt", "exp", "log", "pi", "asin", "acos", "atan", "sinh", "cosh", "tanh", ...FNS].sort((a, b) => b.length - a.length);
 
+/** |u| as abs(u): a bar opens when none is open, or right after an operator or a bracket; otherwise it closes. */
+function bars(s: string): string {
+  let out = "";
+  let open = 0;
+  for (const c of s) {
+    if (c !== "|") {
+      out += c;
+      continue;
+    }
+    const prev = out.trimEnd().slice(-1);
+    if (!open || !prev || "+-*/^(".includes(prev)) (out += "abs("), open++;
+    else (out += ")"), open--;
+  }
+  return out;
+}
+
 /** + − × ÷ ^, brackets, implicit products (2x, 3 sin x), functions with or without brackets (sin 2x, sin^2 x).
  *  Letters other than x are allowed only when listed in `vars`. */
 export function parseE(src: string, vars: readonly string[] = []): E {
-  const s = NORMAL.reduce((acc, [re, to]) => acc.replace(re, to), src).replace(/\s+/g, " ").trim();
+  const s = bars(NORMAL.reduce((acc, [re, to]) => acc.replace(re, to), src).replace(/\s+/g, " ").trim());
   type Tok = { t: "num" | "id" | "op"; v: string };
   const toks: Tok[] = [];
   for (let i = 0; i < s.length; ) {
@@ -272,7 +288,7 @@ export function parseE(src: string, vars: readonly string[] = []): E {
 
 export const FN_TEX: Record<Fn, string> = {
   sin: "\\sin", cos: "\\cos", tan: "\\tan", sec: "\\sec", csc: "\\csc", cot: "\\cot", ln: "\\ln",
-  asin: "\\arcsin", acos: "\\arccos", atan: "\\arctan", sinh: "\\sinh", cosh: "\\cosh", tanh: "\\tanh",
+  asin: "\\arcsin", acos: "\\arccos", atan: "\\arctan", sinh: "\\sinh", cosh: "\\cosh", tanh: "\\tanh", abs: "",
 };
 export const expTex = (f: Frac) => (f.isInt() ? `${f.n}` : `${f.n}/${f.d}`);
 /** Order of factors on the page: number, x and its powers, constants, functions, brackets. */
@@ -347,13 +363,14 @@ export function tex(e: E): string {
         if (p.n === 1 && p.d === 2) return `\\sqrt{${tex(e.b)}}`;
         if (p.n === 1 && p.d > 2) return `\\sqrt[${p.d}]{${tex(e.b)}}`;
         // sin²x
+        if (e.b.k === "fn" && e.b.f === "abs") return `${tex(e.b)}^{${expTex(p)}}`;
         if ((e.b.k === "fn" && e.b.f !== "ln") && p.isInt() && p.n > 0) return `${FN_TEX[e.b.f]}^{${p.n}} ${argTex(e.b.a)}`;
       }
       const b = e.b.k === "var" || e.b.k === "e" || e.b.k === "pi" || (isNum(e.b) && e.b.v.isInt() && !e.b.v.isNeg()) ? tex(e.b) : `\\left(${tex(e.b)}\\right)`;
       return `${b}^{${isNum(e.e) ? expTex(e.e.v) : tex(e.e)}}`;
     }
     case "fn":
-      return `${FN_TEX[e.f]} ${argTex(e.a)}`;
+      return e.f === "abs" ? `\\left|${tex(e.a)}\\right|` : `${FN_TEX[e.f]} ${argTex(e.a)}`;
     case "log":
       return `\\log_{${e.base.tex()}} ${argTex(e.a)}`;
     case "d":
@@ -565,6 +582,8 @@ export function simp(e0: E): E {
         const q = ((k.mul(F(2)).n % 4) + 4 + (e.f === "cos" ? 1 : 0)) % 4; // sin(qπ/2): 0, 1, 0, −1
         return N([0, 1, 0, -1][q]);
       }
+      if (e.f === "abs" && isNum(a)) return N(a.v.abs());
+      if (e.f === "abs" && a.k === "fn" && a.f === "abs") return a;
       if (e.f === "ln" && isN(a, 1)) return N(0);
       if (e.f === "ln" && a.k === "e") return N(1);
       if (e.f === "ln" && a.k === "pow" && a.b.k === "e") return a.e;

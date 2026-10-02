@@ -18,7 +18,7 @@ export type DerivSpec = { topic: DerivTopic; src: string; at: string };
 
 type RuleKey =
   | "sum" | "const" | "constMul" | "power" | "product" | "quotient" | "chain" | "exp" | "expA" | "logDiff"
-  | "ln" | "log" | "sin" | "cos" | "tan" | "sec" | "csc" | "cot" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh";
+  | "ln" | "log" | "sin" | "cos" | "tan" | "sec" | "csc" | "cot" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh" | "abs";
 
 export type DerivWords = {
   bad: string;
@@ -87,6 +87,8 @@ function outerDerivative(f: Fn, a: E): E {
       return fn("sinh", a);
     case "tanh":
       return pow(sq(fn("cosh", a)), -1);
+    case "abs":
+      return mul(a, pow(fn("abs", a), -1));
   }
 }
 
@@ -179,7 +181,7 @@ function openD(e: E, rules: Set<RuleKey>): E {
   }
 }
 /** The main rules first in the step labels. */
-const RULE_ORDER: RuleKey[] = ["product", "quotient", "chain", "logDiff", "sum", "constMul", "power", "exp", "expA", "ln", "log", "sin", "cos", "tan", "sec", "csc", "cot", "asin", "acos", "atan", "sinh", "cosh", "tanh", "const"];
+const RULE_ORDER: RuleKey[] = ["product", "quotient", "chain", "logDiff", "sum", "constMul", "power", "exp", "expA", "ln", "log", "sin", "cos", "tan", "sec", "csc", "cot", "asin", "acos", "atan", "sinh", "cosh", "tanh", "abs", "const"];
 
 /** Lines "= …" from (f)′ down to the simplified derivative. */
 export function differentiate(f: E): { rows: TexLine[]; result: E; used: RuleKey[] } {
