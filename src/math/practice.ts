@@ -15,9 +15,9 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference";
+export type SolutionKind = "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors";
 export type Format =
-  | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes";
+  | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes";
 
 type Answer =
   | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean }
@@ -78,6 +78,12 @@ export type PracticeWords = {
     trigexact: string;
     rightSide: string;
     rightAngle: string;
+    vecCombo: string;
+    vecLength: string;
+    vecPerp: string;
+    vecDot: string;
+    vecAngle: string;
+    vecAngleExact: string;
     differentiate: string;
     gradient: string;
     tangent: string;
@@ -821,6 +827,103 @@ const GENS: Record<SkillId, Gen> = {
     };
   },
 
+  vectors(r, L, w) {
+    const vec = (n: number, lo: number, hi: number) => Array.from({ length: n }, () => r.int(lo, hi));
+    const vs = (v: (number | string)[]) => `(${v.join(", ")})`;
+    const col = (v: number[]) => `\\begin{pmatrix} ${v.join(" \\\\ ")} \\end{pmatrix}`;
+    const sol = (topic: string, src: string) => ({ kind: "vectors" as const, spec: { topic, src } });
+    if (L === 1) {
+      const [a, b] = [vec(2, -6, 6), vec(2, -6, 6)];
+      const [p, q] = [r.pick([1, 2, 3, -2] as const), r.pick([1, 2, 3, -1, -2, -3] as const)];
+      const res = a.map((x, i) => p * x + q * b[i]);
+      const k = (c: number, first: boolean) => (Math.abs(c) === 1 ? (c < 0 && first ? "-" : "") : String(first ? c : Math.abs(c)));
+      const e = `${k(p, true)}a ${q < 0 ? "-" : "+"} ${k(q, false)}b`;
+      return {
+        prompt: fill(w.prompts.vecCombo, { a: vs(a), b: vs(b) }),
+        q: e.replace(/([ab])/g, "\\mathbf{$1}"),
+        answer: { k: "tuple", vs: res, tol: 1e-9 },
+        show: col(res),
+        plain: `(${res.join("; ")})`,
+        format: "vector",
+        solution: sol("basics", `a = ${vs(a)}; b = ${vs(b)}; ${e}`),
+      };
+    }
+    if (L === 2) {
+      const A = vec(3, -5, 5);
+      let d: number[];
+      do d = vec(3, -6, 6);
+      while (d.filter(Boolean).length < 2);
+      const B = A.map((x, i) => x + d[i]);
+      const d2 = d.reduce((s, x) => s + x * x, 0);
+      const { out, s } = sqrtSplit(fr(d2));
+      const v = Math.sqrt(d2);
+      return {
+        prompt: fill(w.prompts.vecLength, { a: `A${vs(A)}`, b: `B${vs(B)}` }),
+        q: "",
+        answer: num(v, 1e-9, { surd: true }),
+        show: s === 1 ? String(out.n) : `${surdTex(fr(0), out, s)} \\approx ${dp(v, 2)}`,
+        plain: s === 1 ? String(out.n) : `${out.n === 1 ? "" : out.n}sqrt(${s})`,
+        format: "exact",
+        solution: sol("basics", `A${vs(A)}; B${vs(B)}`),
+      };
+    }
+    // a = (k, p, q), b = (m, k, n) are perpendicular when k·m + p·k + q·n = 0.
+    let p: number, q: number, m: number, n: number;
+    do [p, q, m, n] = [r.nz(-5, 5), r.nz(-5, 5), r.nz(-5, 5), r.nz(-5, 5)];
+    while (m + p === 0);
+    const kv = fr(-q * n, m + p);
+    const at = (v: (number | string)[]) => v.map((x) => (x === "k" ? `${kv.n}/${kv.d}` : x));
+    return {
+      prompt: fill(w.prompts.vecPerp, { a: vs(["k", p, q]), b: vs([m, "k", n]) }),
+      q: "",
+      answer: num(kv.toNumber(), 1e-9, { lowest: true }),
+      show: kv.tex(),
+      plain: plainFrac(kv),
+      format: "fraction",
+      solution: sol("dot", `a = ${vs(at(["k", p, q]))}; b = ${vs(at([m, "k", n]))}`),
+    };
+  },
+  dotangle(r, L, w) {
+    const vs = (v: number[]) => `(${v.join(", ")})`;
+    const sol = (a: number[], b: number[]) => ({ kind: "vectors" as const, spec: { topic: "dot", src: `a = ${vs(a)}; b = ${vs(b)}` } });
+    const nonzero = (n: number) => {
+      for (;;) {
+        const v = Array.from({ length: n }, () => r.int(-5, 5));
+        if (v.filter(Boolean).length >= 2) return v;
+      }
+    };
+    const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0);
+    if (L === 1) {
+      const [a, b] = [nonzero(3), nonzero(3)];
+      const v = dot(a, b);
+      return { prompt: fill(w.prompts.vecDot, { a: vs(a), b: vs(b) }), q: "", answer: num(v), show: String(v), plain: String(v), format: "number", solution: sol(a, b) };
+    }
+    if (L === 2) {
+      const n = r.pick([2, 3] as const);
+      let a: number[], b: number[], c: number;
+      do [a, b] = [nonzero(n), nonzero(n)], (c = dot(a, b) / Math.hypot(...a) / Math.hypot(...b));
+      while (Math.abs(c) > 0.98 || Math.abs(c) < 1e-9);
+      const v = (Math.acos(c) * 180) / Math.PI;
+      return { prompt: fill(w.prompts.vecAngle, { a: vs(a), b: vs(b) }), q: "", answer: num(v, 0.0051), show: `${dp(v, 2)}^\\circ`, plain: dp(v, 2), format: "dp2", solution: sol(a, b) };
+    }
+    // Pairs with a whole-number angle, scaled and turned so they look different every time.
+    const [a0, b0, deg] = r.pick([
+      [[1, 1, 0], [0, 1, 1], 60],
+      [[1, 0, 1], [0, 1, 1], 60],
+      [[1, 0, 0], [1, 1, 0], 45],
+      [[1, 1, 0], [-1, 0, 1], 120],
+      [[1, 0, 0], [-1, 1, 0], 135],
+      [[2, 1, 1], [1, 1, 0], 30],
+      [[2, 1, 1], [-1, -1, 0], 150],
+      [[1, 2, 2], [2, -2, 1], 90],
+      [[1, 1, 1], [1, 1, -2], 90],
+    ] as const);
+    const perm = r.pick([[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]] as const);
+    const signs = [r.sign(), r.sign(), r.sign()];
+    const turn = (v: readonly number[], k: number) => perm.map((j, i) => signs[i] * k * v[j] || 0);
+    const [a, b] = [turn(a0, r.int(1, 3)), turn(b0, r.int(1, 2))];
+    return { prompt: fill(w.prompts.vecAngleExact, { a: vs(a), b: vs(b) }), q: "", answer: num(deg), show: `${deg}^\\circ`, plain: String(deg), format: "number", solution: sol(a, b) };
+  },
   differentiate(r, L, w) {
     let src: string;
     if (L === 1) {

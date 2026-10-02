@@ -29,5 +29,7 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       return (await import("./numtheory")).renderNt(s, t.ntWords);
     case "inference":
       return (await import("./inference")).renderInference(s, t.infWords);
+    case "vectors":
+      return (await import("./vectors")).renderVectors(s, t.vecWords);
   }
 }

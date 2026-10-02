@@ -155,6 +155,20 @@ export function yRange(values: number[], must: number[] = []): [number, number] 
 export function lbl(x: number, y: number, text: string, color: string, anchor = "start", size = 13, italic = true): string {
   return `<text x="${r2(x)}" y="${r2(y)}" ${FONT} font-size="${size}" ${italic ? `font-style="italic"` : ""} font-weight="600" fill="${color}" text-anchor="${anchor}" paint-order="stroke" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="round">${esc(text)}</text>`;
 }
+/** An arrow from (x0, y0) to (x1, y1) in pixels, its head at the end; a dot when it has no length. */
+export function arrow(x0: number, y0: number, x1: number, y1: number, color: string, width = 2.6, dashed = false): string {
+  const [dx, dy] = [x1 - x0, y1 - y0];
+  const L = Math.hypot(dx, dy);
+  if (L < 1e-6) return `<circle cx="${r2(x1)}" cy="${r2(y1)}" r="3.5" fill="${color}"/>`;
+  const [ux, uy] = [dx / L, dy / L];
+  const h = Math.min(12, L * 0.4);
+  const [bx, by] = [x1 - ux * h, y1 - uy * h];
+  return (
+    `<line x1="${r2(x0)}" y1="${r2(y0)}" x2="${r2(bx)}" y2="${r2(by)}" stroke="${color}" stroke-width="${width}" ${dashed ? `stroke-dasharray="6 4"` : ""}/>` +
+    `<path d="M${r2(x1)},${r2(y1)}L${r2(bx - uy * h * 0.45)},${r2(by + ux * h * 0.45)}L${r2(bx + uy * h * 0.45)},${r2(by - ux * h * 0.45)}z" fill="${color}"/>`
+  );
+}
+
 export const dot = (x: number, y: number, color: string, r = 4, hollow = false) =>
   `<circle cx="${r2(x)}" cy="${r2(y)}" r="${r}" fill="${hollow ? "#ffffff" : color}" stroke="${color}" stroke-width="${hollow ? 2 : 1}"/>`;
 export const hline = (f: Frame, y: number, color: string, extra = "") =>

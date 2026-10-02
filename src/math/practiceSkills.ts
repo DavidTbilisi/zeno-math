@@ -5,7 +5,7 @@ export const AREAS: Area[] = ["number", "algebra", "geometry", "calculus", "data
 export const SKILLS = {
   number: ["times", "fractions", "percent", "hcf", "primes"],
   algebra: ["linear", "expand", "factor", "quadratic", "simultaneous", "indices", "logs", "surds"],
-  geometry: ["line", "distance", "trigexact", "righttri"],
+  geometry: ["line", "distance", "trigexact", "righttri", "vectors", "dotangle"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite"],
   data: ["average", "probability", "counting", "ci"],
 } as const satisfies Record<Area, readonly string[]>;

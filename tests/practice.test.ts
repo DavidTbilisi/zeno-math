@@ -140,3 +140,24 @@ test("worksheets: same seed, same sheet; any language", () => {
   const r = renderPractice(spec, ru.pracWords);
   assert.ok(r.svg.includes("Ответы"));
 });
+
+test("vector answers match the vectors in the question", () => {
+  const vecs = (s: string) => [...s.matchAll(/\(([^()]*)\)/g)].map((m) => m[1].split(", ").map(Number));
+  const dot = (a: number[], b: number[]) => a.reduce((t, x, i) => t + x * b[i], 0);
+  for (let seed = 1; seed <= 80; seed++) {
+    for (const level of LEVELS) {
+      const ex = exercise("dotangle", level, seed, w);
+      const [a, b] = vecs(ex.prompt);
+      const want = level === 1 ? dot(a, b) : (Math.acos(dot(a, b) / Math.hypot(...a) / Math.hypot(...b)) * 180) / Math.PI;
+      assert.equal(check(ex, String(level === 1 ? want : Math.round(want * 100) / 100), w).ok, true, `${ex.prompt} → ${want}`);
+    }
+    const len = exercise("vectors", 2, seed, w);
+    const [A, B] = vecs(len.prompt);
+    assert.equal(check(len, String(Math.hypot(...A.map((x, i) => B[i] - x))), w).ok, true, len.prompt);
+    // Perpendicular: put k into both vectors and the dot product is 0.
+    const perp = exercise("vectors", 3, seed, w);
+    const k = Number(perp.plain.split("/")[0]) / Number(perp.plain.split("/")[1] ?? 1);
+    const [p, q] = [...perp.prompt.matchAll(/\(([^()]*)\)/g)].map((m) => m[1].split(", ").map((x) => (x === "k" ? k : Number(x))));
+    assert.ok(Math.abs(dot(p, q)) < 1e-9, `${perp.prompt}: k = ${perp.plain}`);
+  }
+});

@@ -4,7 +4,7 @@
 import { Frac } from "./fraction";
 import type { RenderedSvg } from "./latex";
 import { gaussJordan, lines, MatrixError, parseMatrix, stepLines, texM, type Mat } from "./matrix";
-import { axes, C, compose, fill, lbl, makeFrame, r2, type Caption } from "./chart";
+import { arrow, axes, C, compose, fill, lbl, makeFrame, r2, type Caption } from "./chart";
 
 export type SpaceOp = "span" | "subspaces" | "coords" | "gram" | "eigen";
 export const SPACE_OPS: SpaceOp[] = ["span", "subspaces", "coords", "gram", "eigen"];
@@ -201,19 +201,6 @@ const linL = (r: Frac) => (r.isZero() ? "\\lambda" : `(\\lambda ${r.isNeg() ? "+
 
 type Arrow = { v: number[]; color: string; label: string; dashed?: boolean; from?: number[] };
 
-function arrowSvg(x0: number, y0: number, x1: number, y1: number, color: string, width = 2.6, dashed = false): string {
-  const [dx, dy] = [x1 - x0, y1 - y0];
-  const L = Math.hypot(dx, dy);
-  if (L < 1e-6) return `<circle cx="${r2(x1)}" cy="${r2(y1)}" r="3.5" fill="${color}"/>`;
-  const [ux, uy] = [dx / L, dy / L];
-  const h = Math.min(12, L * 0.4);
-  const [bx, by] = [x1 - ux * h, y1 - uy * h];
-  return (
-    `<line x1="${r2(x0)}" y1="${r2(y0)}" x2="${r2(bx)}" y2="${r2(by)}" stroke="${color}" stroke-width="${width}" ${dashed ? `stroke-dasharray="6 4"` : ""}/>` +
-    `<path d="M${r2(x1)},${r2(y1)}L${r2(bx - uy * h * 0.45)},${r2(by + ux * h * 0.45)}L${r2(bx + uy * h * 0.45)},${r2(by - ux * h * 0.45)}z" fill="${color}"/>`
-  );
-}
-
 /** ℝ² picture: equal scales, arrows, optional span line/plane, extra SVG in data coordinates. */
 function picture2d(arrows: Arrow[], opts: { spanLine?: number[]; spanAll?: boolean; extra?: (sx: (x: number) => number, sy: (y: number) => number) => string; reach?: number } = {}): string {
   const R = Math.max(1, ...arrows.flatMap((a) => a.v.map(Math.abs)), ...arrows.flatMap((a) => (a.from ?? [0, 0]).map((x, i) => Math.abs(x + a.v[i]))), opts.reach ?? 0) * 1.25;
@@ -232,7 +219,7 @@ function picture2d(arrows: Arrow[], opts: { spanLine?: number[]; spanAll?: boole
   for (const a of arrows) {
     const [fx, fy] = a.from ?? [0, 0];
     const [x1, y1] = [fr.sx(fx + a.v[0]), fr.sy(fy + a.v[1])];
-    parts.push(arrowSvg(fr.sx(fx), fr.sy(fy), x1, y1, a.color, 2.6, a.dashed));
+    parts.push(arrow(fr.sx(fx), fr.sy(fy), x1, y1, a.color, 2.6, a.dashed));
     if (a.label) {
       const [dx, dy] = [a.v[0], -a.v[1]];
       const L = Math.hypot(dx, dy) || 1;
@@ -284,7 +271,7 @@ function picture3d(arrows: Arrow[], span?: { line?: number[]; plane?: [number[],
   for (const ar of arrows) {
     const [x0, y0] = P([0, 0, 0]);
     const [x1, y1] = P(ar.v);
-    parts.push(arrowSvg(x0, y0, x1, y1, ar.color, 2.6, ar.dashed));
+    parts.push(arrow(x0, y0, x1, y1, ar.color, 2.6, ar.dashed));
     if (ar.label) parts.push(lbl(x1 + 8, y1 - 6, ar.label, ar.color, "start", 14));
   }
   return parts.join("");

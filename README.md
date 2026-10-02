@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, vectors, lines and planes, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -91,6 +91,20 @@ UI in English, Russian and Georgian.
   - *Shapes*: side lengths and gradients, parallel sides (arrow ticks) and right angles, the name (right-angled
     isosceles triangle, square, rectangle, rhombus, parallelogram, trapezium, kite) and the area by the shoelace
     formula, drawn as the criss-cross it is named after
+- **↗ Vectors** — in 2D and 3D, exactly (fractions and simplified surds); 2D on a grid, 3D in a view turned so
+  that no arrow, line or plane is seen end-on, with dashed drops to the floor to show depth
+  - *Vectors*: name vectors and points (a = (2, 1, −1), 3i − 2j + 6k, A(1, 2, 0)) and type an expression (2a − 3b,
+    AB, AB + BC): written out, scaled, added, drawn nose to tail; the length, the unit vector, parallel vectors
+  - *Dot product*: a·b, the angle (exact when it is a whole number of degrees: 60°, 120°), acute/right/obtuse,
+    the angle ABC from three points, and the scalar and vector projection drawn as a shadow
+  - *Cross product*: by the 3×3 determinant expanded along i, j, k and checked against both vectors, the areas of
+    the parallelogram and the triangle, and the scalar triple product with the volumes of the box and the tetrahedron
+  - *Lines*: from two points, r = a + t·d or (x − 1)/2 = (y + 1)/3 = z — vector, parametric and Cartesian equations;
+    the foot of the perpendicular from a point and the distance; two lines meeting, parallel or skew (with the
+    shortest distance and the common perpendicular), and the angle between them
+  - *Planes*: from ax + by + cz = d, r·n = d, a point and a normal, three points or r = a + λu + μv; the
+    distance and foot from a point, where a line meets a plane (or why it doesn't) and the angle, and two planes:
+    their line of intersection and the angle, or the gap between parallel planes
 - **⚖ Equations & polynomials** — school algebra one line at a time, in exact fractions, every step labelled with what
   was done to both sides
   - *Linear equations*: take the smaller x-term from both sides, then the number, then divide; a balance scale with
@@ -295,7 +309,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 26 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 28 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -349,7 +363,7 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  coordinate geometry, trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex
+  coordinate geometry, vectors, trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex
   numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
   **Practice** by area
@@ -481,12 +495,13 @@ keys; the logic parser; the NAEC 2025 answers; complex-number arithmetic against
 inequalities satisfy the input, expansions and factorisations multiply back and all four quadratic methods agree;
 that simplified powers, surds, standard forms and logarithms keep the value of the input, and that solutions of exponential
 and log equations satisfy them (with false roots thrown out); that midpoints, lines, feet of perpendiculars, meeting points,
-centres, radii and areas from coordinate geometry agree with the input; that derivatives of hundreds of random expressions
+centres, radii and areas from coordinate geometry agree with the input; that the angles, areas, volumes, meeting points,
+feet of perpendiculars and distances from the vectors tool match plain floating-point geometry; that derivatives of hundreds of random expressions
 match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (26 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (28 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
@@ -540,6 +555,7 @@ src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
+src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures
 src/math/expr.ts          expressions in x: parser, LaTeX, tidy-up and simplifier, exact a + b√s, real roots of polynomials
 src/math/derive.ts        derivatives: rules one level at a time, first principles, chain, tangents, stationary points
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
@@ -554,7 +570,7 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 
 ## Roadmap ideas
 
-- Practice: more skills (vectors, complex numbers, matrices, sequences), timed quizzes, progress synced to the server
+- Practice: more skills (complex numbers, matrices, sequences), timed quizzes, progress synced to the server
 - Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools
