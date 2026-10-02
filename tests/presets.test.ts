@@ -30,6 +30,7 @@ import { APP_PRESETS, renderApplied } from "../src/math/applied.ts";
 import { INF_PRESETS, renderInference } from "../src/math/inference.ts";
 import { PRACTICE_PRESETS, renderPractice } from "../src/math/practice.ts";
 import { renderVectors, VEC_PRESETS } from "../src/math/vectors.ts";
+import { renderSequences, SEQ_PRESETS } from "../src/math/sequences.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -61,6 +62,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["inference", specs(INF_PRESETS), (s, t) => renderInference(s, t.infWords)],
   ["practice", specs(PRACTICE_PRESETS), (s, t) => renderPractice(s, t.pracWords)],
   ["vectors", specs(VEC_PRESETS), (s, t) => renderVectors(s, t.vecWords)],
+  ["sequences", specs(SEQ_PRESETS), (s, t) => renderSequences(s, t.seqWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 

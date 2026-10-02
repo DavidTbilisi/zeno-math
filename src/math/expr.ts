@@ -139,8 +139,9 @@ export const NORMAL: [RegExp, string][] = [
 ];
 export const NAMES = ["sqrt", "cbrt", "exp", "log", "pi", "asin", "acos", "atan", "sinh", "cosh", "tanh", ...FNS].sort((a, b) => b.length - a.length);
 
-/** + − × ÷ ^, brackets, implicit products (2x, 3 sin x), functions with or without brackets (sin 2x, sin^2 x). */
-export function parseE(src: string): E {
+/** + − × ÷ ^, brackets, implicit products (2x, 3 sin x), functions with or without brackets (sin 2x, sin^2 x).
+ *  Letters other than x are allowed only when listed in `vars`. */
+export function parseE(src: string, vars: readonly string[] = []): E {
   const s = NORMAL.reduce((acc, [re, to]) => acc.replace(re, to), src).replace(/\s+/g, " ").trim();
   type Tok = { t: "num" | "id" | "op"; v: string };
   const toks: Tok[] = [];
@@ -258,8 +259,8 @@ export function parseE(src: string): E {
         : fn(p.v as Fn, arg);
       return outer ? pow(body, outer) : body;
     }
-    if (p.v !== "x") throw new Error(msgs.onlyX);
-    return X;
+    if (p.v !== "x" && !vars.includes(p.v)) throw new Error(msgs.onlyX);
+    return p.v === "x" ? X : V(p.v);
   };
   if (!toks.length) throw bad();
   const e = expr();
