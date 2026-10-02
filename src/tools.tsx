@@ -2,6 +2,7 @@
 // The board page, the menus and the tool search are all built from this list.
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 import type { Dict } from "./locales/en";
+import { AREAS, SKILLS } from "./math/practiceSkills";
 
 /** Keys of the dictionary that hold a plain string. */
 type Word = { [K in keyof Dict]: Dict[K] extends string ? K : never }[keyof Dict];
@@ -16,7 +17,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -64,6 +65,13 @@ export const TOOLS: Record<ToolKind, Tool> = {
   deriv: { Dialog: load(() => import("./components/DerivDialog"), "DerivDialog"), edit: "editDeriv", topics: (t) => t.derivTopics, hints: (t) => t.derivHints },
   applied: { Dialog: load(() => import("./components/AppDialog"), "AppDialog"), edit: "editApplied", topics: (t) => t.appTopics, hints: (t) => t.appHints },
   inference: { Dialog: load(() => import("./components/InfDialog"), "InfDialog"), edit: "editInference", topics: (t) => t.infTopics, hints: (t) => t.infHints },
+  practice: {
+    Dialog: load(() => import("./components/PracticeDialog"), "PracticeDialog"),
+    edit: "editPractice",
+    topics: (t) => ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData }),
+    hints: (t) => t.practiceHints,
+    names: (t) => Object.fromEntries(AREAS.map((a) => [a, Object.fromEntries(SKILLS[a].map((s) => [s, t.pracWords.skills[s]]))])),
+  },
   powers: { Dialog: load(() => import("./components/PowersDialog"), "PowersDialog"), edit: "editPowers", topics: (t) => t.powersTopics, hints: (t) => t.powersHints },
 };
 
@@ -114,6 +122,15 @@ export const MENUS: MenuGroup[] = [
       { kind: "algo", icon: "⇅", label: "algo" },
       { kind: "statistics", icon: "📊", label: "statistics" },
       { kind: "inference", icon: "H₀", label: "inference" },
+    ],
+  },
+  {
+    icon: "🎯", label: "practice", items: [
+      { kind: "practice", icon: "🔢", label: "practiceNumber", start: "number" },
+      { kind: "practice", icon: "⚖", label: "practiceAlgebra", start: "algebra" },
+      { kind: "practice", icon: "📐", label: "practiceGeometry", start: "geometry" },
+      { kind: "practice", icon: "∫", label: "practiceCalculus", start: "calculus" },
+      { kind: "practice", icon: "🎲", label: "practiceData", start: "data" },
     ],
   },
 ];

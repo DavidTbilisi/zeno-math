@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, logarithms, coordinate geometry, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -295,6 +295,17 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
+- **🎯 Practice** — questions made fresh for 26 skills in five areas (number, algebra, geometry & trigonometry,
+  calculus, probability & statistics), at three levels
+  - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
+    points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
+  - The form counts when the question asks for one: "lowest terms", "simplify the surd", "not fully factorised",
+    "multiply out the brackets" and "check your rounding" are said, not marked wrong
+  - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
+    the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
+  - Progress per skill is kept in the browser, and a missed question comes back three questions later
+  - *Worksheet*: 4–20 questions on one skill or mixed, with an answer key, put on the board in one click (and
+    re-opened to change them)
 - **Vector spaces** (in *[ ] Matrices*) — exact fractions, pictures for ℝ² and ℝ³
   - *Span & independence*: row reduction to the pivots, rank = dim span, a basis from the pivot columns,
     the dependency relation (2v₁ + 3v₂ − v₃ = 0), and the span drawn as a line or plane
@@ -340,7 +351,8 @@ UI in English, Russian and Georgian.
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
   coordinate geometry, trigonometry, 3D), **Algebra** (formulas, graphs, equations, powers & logs, matrices, complex
   numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
-  **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference)
+  **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
+  **Practice** by area
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
 - Dialogs work from the keyboard: focus moves in and back, Tab stays inside, arrow keys move between tabs and options;
@@ -474,7 +486,9 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that no picture repeats an attribute; that
+intervals catch μ; that every practice question (26 skills × 3 levels × 60 seeds) accepts its own answer and
+rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
+renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
 bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
@@ -495,6 +509,7 @@ src/math/ode.ts           differential equations: slope fields, Euler, first/sec
 src/math/integration.ts   integration techniques: substitution, by parts, partial fractions, trig substitution
 src/math/statistics.ts    statistics & probability pictures: data, scatter, chance, trees, distributions, CLT
 src/math/inference.ts     inference: confidence intervals, coverage, z/t/proportion tests, two samples, χ², power
+src/math/practice.ts      practice: question generators, answer checking, worksheets; practiceSolve.ts draws solutions
 src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX header + captions)
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
@@ -539,8 +554,7 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 
 ## Roadmap ideas
 
-- Practice mode: exercise bank by topic with auto-checked answers (numeric / symbolic equivalence)
-- Spaced repetition of mistakes and key formulas
-- Progress tracking per topic
+- Practice: more skills (vectors, complex numbers, matrices, sequences), timed quizzes, progress synced to the server
+- Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools
