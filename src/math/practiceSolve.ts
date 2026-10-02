@@ -35,5 +35,7 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       return (await import("./sequences")).renderSequences(s, t.seqWords);
     case "functions":
       return (await import("./functions")).renderFunctions(s, t.fnWords);
+    case "identities":
+      return (await import("./identities")).renderIdentities(s, t.idWords);
   }
 }

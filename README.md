@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, logarithms, sequences and series, coordinate geometry, vectors, lines and planes, trigonometry, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, logarithms, sequences and series, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -256,6 +256,24 @@ UI in English, Russian and Georgian.
     midline marked, tan asymptotes, degrees or radians
   - *Equations*: sin/cos/tan x = k — the principal angle, all solutions in one turn on the unit circle and the graph,
     and the general solution (x = ±150° + 360°n)
+- **≡ Trig identities** — exact numbers are sums of surds, and every line of a proof is checked numerically
+  - *Compound angles*: exact values from the compound, double and half angle formulas — sin 75° = sin(45° + 30°) =
+    (√6 + √2)/4, tan 15° = 2 − √3 by rationalising, cos 22.5° = √(2 + √2)/2 with its sign from the quadrant; given
+    ratios (sin A = 3/5, A acute; cos B = −5/13, B obtuse) the other ratios by sin² + cos² = 1 and the quadrant, then
+    sin(A ± B), cos 2A, tan(A + B) …; or an expansion (sin 3x = 3 sin x − 4 sin³x, cos(x + 60°)) — with the unit
+    circle and the quadrant triangles
+  - *R sin(x + α)*: a sin x + b cos x as one wave — compare coefficients, R = √(a² + b²), tan α (exact when α is a
+    multiple of 15°), in any of the four forms, the largest and smallest values and where they are, and
+    a sin x + b cos x = k solved over an interval; the R–α triangle and the two waves adding up to one
+  - *Prove an identity*: each side is rewritten in sin and cos of one angle (compound and double angles, sec, cosec,
+    cot), put over one fraction, then sin² + cos² = 1 (used five ways) and cancelling common factors; of all the
+    routes, the shortest one where the two sides meet is shown, starting from the longer side, with the formulas
+    used. A false identity gets a counterexample and the two different graphs
+  - *Equations*: 2cos²x + 3 sin x = 3 → a quadratic in sin x, factorised; sin 2x = cos x → cos x(2 sin x − 1) = 0;
+    3 tan²x − 2 sec x = 2 → a quadratic in cos x; 2 sin²x = sin x cos x → ÷ cos x for tan; sin(2x − 30°) = ½ by
+    θ = 2x − 30° over the stretched interval; sin x + √3 cos x = 1 by the R-form — every solution in the interval,
+    exact when possible, in degrees or radians, with values where a side has none thrown out, and numerically
+    (and said so) when no identity helps
 - **ε Analysis** — the definitions of real analysis, drawn and checked numerically
   - *Sequences ε–N*: aₙ against the band L ± ε; N is found automatically (checked up to n = 5000),
     terms turn green from N on — and (−1)ⁿ shows what "no N works" looks like
@@ -339,7 +357,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 31 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 32 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -393,7 +411,7 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  coordinate geometry, vectors, trigonometry, 3D), **Algebra** (formulas, graphs, functions, equations, powers & logs, sequences &
+  coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, powers & logs, sequences &
   series,
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
@@ -530,12 +548,14 @@ centres, radii and areas from coordinate geometry agree with the input; that the
 feet of perpendiculars and distances from the vectors tool match plain floating-point geometry; that terms, sums, sums to
 infinity, telescoping sums, "first n" answers and recurrence limits match adding and iterating term by term; that points inside a stated domain
 give values and points outside don't, every value lands in the stated range, f(f⁻¹(y)) = y, transformed key points lie
-on the new graph and stationary points have f′ = 0; that derivatives of hundreds of random expressions
+on the new graph and stationary points have f′ = 0; that true trig identities built from random expressions are
+proved and false ones refused, every solution of a trig equation satisfies it and no sign change is missed, and
+R-forms, exact values and values from given ratios match plain floating-point trigonometry; that derivatives of hundreds of random expressions
 match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (31 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (32 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
@@ -589,6 +609,7 @@ src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/functions.ts     functions: domain & range, composites, inverses, transformations, curve sketching + pictures
+src/math/identities.ts    trig identities: exact values, R-form, proofs, equations (exact surds) + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

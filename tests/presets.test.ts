@@ -32,6 +32,7 @@ import { PRACTICE_PRESETS, renderPractice } from "../src/math/practice.ts";
 import { renderVectors, VEC_PRESETS } from "../src/math/vectors.ts";
 import { renderSequences, SEQ_PRESETS } from "../src/math/sequences.ts";
 import { renderFunctions, FN_PRESETS } from "../src/math/functions.ts";
+import { renderIdentities, ID_PRESETS } from "../src/math/identities.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -65,6 +66,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["vectors", specs(VEC_PRESETS), (s, t) => renderVectors(s, t.vecWords)],
   ["sequences", specs(SEQ_PRESETS), (s, t) => renderSequences(s, t.seqWords)],
   ["functions", specs(FN_PRESETS), (s, t) => renderFunctions(s, t.fnWords)],
+  ["identities", specs(ID_PRESETS), (s, t) => renderIdentities(s, t.idWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 
