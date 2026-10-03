@@ -17,7 +17,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -79,6 +79,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   identities: { Dialog: load(() => import("./components/IdDialog"), "IdDialog"), edit: "editIdentities", topics: (t) => t.idTopics, hints: (t) => t.idHints },
   polynomials: { Dialog: load(() => import("./components/PolyDialog"), "PolyDialog"), edit: "editPolynomials", topics: (t) => t.polyTopics, hints: (t) => t.polyHints },
   euclid: { Dialog: load(() => import("./components/EuclidDialog"), "EuclidDialog"), edit: "editEuclid", topics: (t) => t.euclidTopics, hints: (t) => t.euclidHints },
+  numerical: { Dialog: load(() => import("./components/NumDialog"), "NumDialog"), edit: "editNumerical", topics: (t) => t.numTopics, hints: (t) => t.numHints },
 };
 
 export const isToolKind = (k: unknown): k is ToolKind => typeof k === "string" && Object.hasOwn(TOOLS, k);
@@ -122,6 +123,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "integral", icon: "∫", label: "integrals" },
       { kind: "applied", icon: "∫⌒", label: "applied" },
       { kind: "ode", icon: "y′", label: "odes" },
+      { kind: "numerical", icon: "≈", label: "numericalTool" },
     ],
   },
   {

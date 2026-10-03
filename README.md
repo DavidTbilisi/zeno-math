@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -380,6 +380,23 @@ UI in English, Russian and Georgian.
   - *Phase plane*: x′ = f(x, y), y′ = g(x, y) with direction arrows and trajectories; for linear systems the matrix,
     trace, determinant, eigenvalues, eigenvector lines and the type (saddle, node, spiral, centre); predator–prey
     and the damped pendulum as nonlinear examples
+- **≈ Numerical methods** — every value in a table, every step drawn, and the ways each method can fail
+  - *Change of sign*: f(a) and f(b), a decimal search one place at a time and the bounds check that proves a root
+    to k d.p. (f(2.085) < 0 < f(2.095) ⇒ α = 2.09); with no interval, the whole numbers from −10 to 10 are tried; it
+    warns when a sign change comes from a break (1/(x − 2)) or when the signs agree but there is a touching root or
+    a hidden pair of roots
+  - *Bisection*: the table of aₙ, bₙ, mₙ and f(mₙ), the shrinking intervals drawn, the error bound (b − a)/2ⁿ⁺¹, and
+    stopping when both ends round alike; *false position* cuts where the chord crosses instead
+  - *Newton–Raphson*: f′(x) found symbolically, the first step substituted, the table with the error |xₙ − α| (the
+    digits double), the tangents drawn down to the axis; a flat tangent, a cycle (0 → 1 → 0) or running away
+    (∛x) is recognised; the *secant method* with two starting values
+  - *Iteration*: x = g(x) (or xₙ₊₁ = …) with the staircase or cobweb on y = x, g′(α) and the |g′(α)| < 1 test, and
+    a check that the limit solves the original equation — so a rearrangement that diverges is explained
+  - *Trapezium & Simpson*: the strip width, the ordinates, the rules with the numbers put in (mid-ordinate too),
+    the exact integral when there is one, the error and its percentage, over- or underestimate from the sign of f″,
+    and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
+  - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
+    around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -404,7 +421,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 36 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 38 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -460,7 +477,7 @@ UI in English, Russian and Georgian.
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
   school geometry, coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, polynomials, powers & logs, sequences &
   series,
-  matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
+  matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs, numerical methods) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
   **Practice** by area
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
@@ -605,12 +622,16 @@ discriminant says) and partial fractions add back up to the fraction; that circl
 measured on the figure drawn from them, unknowns in x come back, similar triangles keep one scale factor and the
 congruence and similarity tests decide correctly, images of rotations, enlargements, reflections and translations
 match the formulas and describing an image finds the transformation that made it, volumes and surface areas match the
-formulas and a length found from a volume gives it back, and constructions and loci satisfy their conditions; that derivatives of hundreds of random expressions
+formulas and a length found from a volume gives it back, and constructions and loci satisfy their conditions; that a change of sign is reported exactly when there is one
+(breaks, touching roots and hidden pairs caught), bisection, false position, Newton–Raphson, the secant method and
+fixed-point iteration land on the true root rounded correctly with every step following its formula, flat tangents,
+cycles and divergence are recognised, the trapezium, mid-ordinate and Simpson's rules match their formulas, are exact
+where theory says, err the way f″ says and shrink at orders 2 and 4, and difference quotients match theirs; that derivatives of hundreds of random expressions
 match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (36 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (38 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
@@ -669,6 +690,8 @@ src/math/polynomials.ts   polynomials: division, factor/remainder theorems, cubi
                           partial fractions (exact) + pictures
 src/math/euclid.ts        school geometry: circle theorems, similarity & congruence, transformations, surface area &
                           volume, constructions & loci + figures
+src/math/numerical.ts     numerical methods: change of sign, bisection, Newton–Raphson, iteration, trapezium &
+                          Simpson, numerical derivatives + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

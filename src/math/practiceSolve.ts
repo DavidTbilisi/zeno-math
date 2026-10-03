@@ -41,5 +41,7 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       return (await import("./polynomials")).renderPolynomials(s, t.polyWords);
     case "euclid":
       return (await import("./euclid")).renderEuclid(s, t.euclidWords);
+    case "numerical":
+      return (await import("./numerical")).renderNumerical(s, t.numWords);
   }
 }

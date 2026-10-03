@@ -16,7 +16,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid";
+export type SolutionKind = "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes";
 
@@ -111,6 +111,11 @@ export type PracticeWords = {
     stationary: string;
     integrate: string;
     definite: string;
+    numNewton: string;
+    numRoot: string;
+    numIterate: string;
+    numTrapezium: string;
+    numSimpson: string;
     mean: string;
     median: string;
     mode: string;
@@ -1475,6 +1480,83 @@ const GENS: Record<SkillId, Gen> = {
       plain: dp(v, 6),
       format: "dp3",
       solution: { kind: "applied", spec: { topic: "area", f: src, g: "", a, b, c: "", opt: "" } },
+    };
+  },
+
+  numroots(r, L, w) {
+    const sol = (topic: string, src: string) => ({ kind: "numerical" as const, spec: { topic, src } });
+    if (L === 2) {
+      // x_(n+1) = ∛(ax + b) or √(ax + b): three steps
+      const cube = r.next() < 0.5;
+      const [a, b] = [r.int(2, 5), r.int(1, 9)];
+      const x0 = r.int(1, 3);
+      const g = (x: number) => (cube ? Math.cbrt(a * x + b) : Math.sqrt(a * x + b));
+      const x3 = g(g(g(x0)));
+      const src = `${cube ? "cbrt" : "sqrt"}(${a}x + ${b})`;
+      return {
+        prompt: fill(w.prompts.numIterate, { a: x0 }),
+        q: `x_{n+1} = ${cube ? "\\sqrt[3]" : "\\sqrt"}{${a}x_n + ${b}}`,
+        answer: num(x3, 0.0006),
+        show: dp(x3, 3),
+        plain: dp(x3, 6),
+        format: "dp3",
+        solution: sol("iterate", `x = ${src}; x0 = ${x0}; 3 steps`),
+      };
+    }
+    // Newton–Raphson: one step (level 1) or to the root (level 3)
+    let src: string;
+    let x0: number;
+    const pick = L === 1 ? 0 : r.int(0, 3);
+    if (pick === 0) {
+      x0 = r.int(1, 3);
+      const b = r.int(-2, 4);
+      const c = -(x0 ** 3 + b * x0) + r.nz(-3, 3);
+      src = polyStr([c, b, 0, 1]);
+    } else if (pick === 1) {
+      let k = r.int(3, 40);
+      while (Number.isInteger(Math.sqrt(k))) k++;
+      [src, x0] = [`x^2 - ${k}`, Math.floor(Math.sqrt(k))];
+    } else if (pick === 2) [src, x0] = [`e^x - ${r.int(3, 4)}x`, r.pick([0, 2])];
+    else [src, x0] = [r.pick(["x - cos x", "x + ln x - 2", "x^3 + x - 3"]), r.pick([1, 2])];
+    const f = parseE(src);
+    const d = simp(derive(f));
+    const step = (x: number) => x - evalE(f, x) / evalE(d, x);
+    let v = step(x0);
+    if (L === 3) for (let i = 0; i < 30; i++) v = step(v);
+    return {
+      prompt: fill(L === 1 ? w.prompts.numNewton : w.prompts.numRoot, { a: x0 }),
+      q: `f(x) = ${T(src)}`,
+      answer: num(v, 0.0006),
+      show: dp(v, 3),
+      plain: dp(v, 6),
+      format: "dp3",
+      solution: sol("newton", L === 1 ? `${src}; x0 = ${x0}; 1 step` : `${src}; x0 = ${x0}; 3 dp`),
+    };
+  },
+
+  numint(r, L, w) {
+    const fs: [string, number, number][] =
+      L === 1
+        ? [[`x^2 + ${r.int(1, 5)}`, 0, 2], ["x^3", 1, 3], ["sqrt x", 0, 4], [`${r.int(2, 6)}/x`, 1, 3]]
+        : [["e^x", 0, 1], ["ln x", 1, 3], ["sqrt(1 + x^2)", 0, 2], ["1/(1 + x)", 0, 2], ["e^(-x^2)", 0, 1], ["sqrt(1 + x^3)", 0, 2]];
+    const [src, a, b] = r.pick(fs);
+    const n = L === 1 ? r.pick([2, 4]) : 4;
+    const simpsonRule = L === 3;
+    const f = parseE(src);
+    const h = (b - a) / n;
+    const ys = Array.from({ length: n + 1 }, (_, i) => evalE(f, a + i * h));
+    const inner = ys.slice(1, n);
+    const v = simpsonRule
+      ? (h / 3) * (ys[0] + ys[n] + inner.reduce((s, y, i) => s + y * (i % 2 ? 2 : 4), 0))
+      : (h / 2) * (ys[0] + ys[n] + 2 * inner.reduce((s, y) => s + y, 0));
+    return {
+      prompt: fill(simpsonRule ? w.prompts.numSimpson : w.prompts.numTrapezium, { n }),
+      q: `\\int_{${a}}^{${b}} ${T(src)} \\, dx`,
+      answer: num(v, 0.0006),
+      show: dp(v, 3),
+      plain: dp(v, 6),
+      format: "dp3",
+      solution: { kind: "numerical", spec: { topic: "integrate", src: `${src}; [${a}, ${b}]; n = ${n}; ${simpsonRule ? "simpson" : "trapezium"}` } },
     };
   },
 
