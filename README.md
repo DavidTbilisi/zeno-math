@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -76,6 +76,30 @@ UI in English, Russian and Georgian.
     mode where students drag the image points and press Check (correct points turn green)
   - *Protractor*: a real-looking protractor laid along arm OA (1° ticks, inner and outer scales);
     drag the arms, snap to 1° or 5°, and "hide the answer" so students read it themselves
+- **⊙ School geometry** — type what you know; every answer comes with its reason and a figure drawn to fit
+  - *Circle theorems*: the angle at the centre, the angle in a semicircle, angles in the same segment, cyclic
+    quadrilaterals, tangent and radius, two tangents from a point, the alternate segment, the perpendicular from the
+    centre to a chord, intersecting chords and tangent–secant (AE × EB = CE × ED, PT² = PA × PB). Each angle or length
+    is found with its reason (isosceles triangle, angles in a triangle, Pythagoras, SOH CAH TOA…), unknowns such as
+    ∠A = 2x, ∠C = x + 30 are solved for, and the figure is drawn to the angles found: given in blue, found in green,
+    still unknown in red
+  - *Similar & congruent*: ABC ~ DEF with the scale factor, every missing side and angle, x in the sides, the A-shape
+    (DE ∥ BC, AD + DB = AB) and the X-shape; ABC, DEF says which test proves it — SSS, SAS, ASA, AAS, RHS for
+    congruence, AA, SSS, SAS for similarity — with tick marks and arcs on the matching parts, and why two sides and a
+    non-included angle are not enough; and lengths 2 : 3 → areas 4 : 9 → volumes 8 : 27 in any direction
+  - *Transformations*: translate by a vector, reflect in any line (y = x, x = 2, y = −x + 3), rotate about any centre,
+    enlarge by any factor (fractional and negative too), one after another, with the rule (x, y) ↦ (−y + 3, x + 1),
+    each corner's image and the construction lines on a grid; two in a row are named as one when they can be; and
+    object → image finds the single transformation — the centre and angle of a rotation from perpendicular bisectors,
+    the centre and factor of an enlargement from rays, the mirror line, or the vector
+  - *Surface area & volume*: cube, cuboid, triangular prism, cylinder, cone, sphere, hemisphere, pyramid and frustum,
+    exact in π (90π ≈ 282.74 cm³), the slant height by Pythagoras, a missing length from the volume or the surface
+    area (V = 36π gives r = 3), solids stacked with + (the touching faces are taken off) or with a hole through
+    them, a drawing with the measurements and the net with the area of each face
+  - *Constructions & loci*: the perpendicular bisector, the angle bisector, the perpendicular from or at a point, a
+    triangle from three sides, and angles of 60°, 30°, 90° and 45° — compass arcs, numbered steps and the line's
+    equation; loci (r from a point or a segment, equidistant from two points or two lines, closer to A than B, inside
+    a shape) joined with "and", the region that meets every condition shaded and where the loci meet marked
 - **xy Coordinate geometry** — type points, lines and circles; exact fractions and surds, every step named, on a grid
   with equal units
   - *Points*: Δx and Δy as the legs of a right triangle, the distance by Pythagoras (√13, 8√5/5), the midpoint, the
@@ -380,7 +404,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 33 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 36 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -434,7 +458,7 @@ UI in English, Russian and Georgian.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
-  coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, polynomials, powers & logs, sequences &
+  school geometry, coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, polynomials, powers & logs, sequences &
   series,
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
@@ -577,12 +601,16 @@ R-forms, exact values and values from given ratios match plain floating-point tr
 divisions satisfy dividend = divisor × quotient + remainder, unknown coefficients come back from their conditions, every
 root of a cubic or quartic is a root and no sign change is missed, polynomial inequalities agree with the sign of f,
 binomial expansions and series match arithmetic, the points where a line meets a curve lie on both (as many as the
-discriminant says) and partial fractions add back up to the fraction; that derivatives of hundreds of random expressions
+discriminant says) and partial fractions add back up to the fraction; that circle theorem answers obey the theorems and match the angles
+measured on the figure drawn from them, unknowns in x come back, similar triangles keep one scale factor and the
+congruence and similarity tests decide correctly, images of rotations, enlargements, reflections and translations
+match the formulas and describing an image finds the transformation that made it, volumes and surface areas match the
+formulas and a length found from a volume gives it back, and constructions and loci satisfy their conditions; that derivatives of hundreds of random expressions
 match numerical ones, and stationary points, tangents and the chain rule agree with them; that areas, volumes,
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (33 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (36 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
@@ -639,6 +667,8 @@ src/math/functions.ts     functions: domain & range, composites, inverses, trans
 src/math/identities.ts    trig identities: exact values, R-form, proofs, equations (exact surds) + pictures
 src/math/polynomials.ts   polynomials: division, factor/remainder theorems, cubics & inequalities, binomial, line & curve,
                           partial fractions (exact) + pictures
+src/math/euclid.ts        school geometry: circle theorems, similarity & congruence, transformations, surface area &
+                          volume, constructions & loci + figures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

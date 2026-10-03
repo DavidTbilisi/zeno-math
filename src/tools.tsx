@@ -17,7 +17,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -78,6 +78,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   functions: { Dialog: load(() => import("./components/FnDialog"), "FnDialog"), edit: "editFunctions", topics: (t) => t.fnTopics, hints: (t) => t.fnHints },
   identities: { Dialog: load(() => import("./components/IdDialog"), "IdDialog"), edit: "editIdentities", topics: (t) => t.idTopics, hints: (t) => t.idHints },
   polynomials: { Dialog: load(() => import("./components/PolyDialog"), "PolyDialog"), edit: "editPolynomials", topics: (t) => t.polyTopics, hints: (t) => t.polyHints },
+  euclid: { Dialog: load(() => import("./components/EuclidDialog"), "EuclidDialog"), edit: "editEuclid", topics: (t) => t.euclidTopics, hints: (t) => t.euclidHints },
 };
 
 export const isToolKind = (k: unknown): k is ToolKind => typeof k === "string" && Object.hasOwn(TOOLS, k);
@@ -97,6 +98,7 @@ export const MENUS: MenuGroup[] = [
   {
     icon: "📐", label: "groupGeometryShort", title: "groupGeometry", items: [
       { kind: "geometry", icon: "📐", label: "geometry" },
+      { kind: "euclid", icon: "⊙", label: "euclidTool" },
       { kind: "coord", icon: "xy", label: "coord" },
       { kind: "vectors", icon: "↗", label: "vectors" },
       { kind: "trig", icon: "θ", label: "trig" },

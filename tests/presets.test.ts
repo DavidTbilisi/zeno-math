@@ -34,6 +34,7 @@ import { renderSequences, SEQ_PRESETS } from "../src/math/sequences.ts";
 import { renderFunctions, FN_PRESETS } from "../src/math/functions.ts";
 import { renderIdentities, ID_PRESETS } from "../src/math/identities.ts";
 import { renderPolynomials, POLY_PRESETS } from "../src/math/polynomials.ts";
+import { renderEuclid, EUCLID_PRESETS } from "../src/math/euclid.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -69,6 +70,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["functions", specs(FN_PRESETS), (s, t) => renderFunctions(s, t.fnWords)],
   ["identities", specs(ID_PRESETS), (s, t) => renderIdentities(s, t.idWords)],
   ["polynomials", specs(POLY_PRESETS), (s, t) => renderPolynomials(s, t.polyWords)],
+  ["school geometry", specs(EUCLID_PRESETS), (s, t) => renderEuclid(s, t.euclidWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 

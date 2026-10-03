@@ -4,6 +4,7 @@
 import { antiderivative } from "./applied";
 import { C, esc, fill, FONT, r2, W, wrap } from "./chart";
 import { derive } from "./derive";
+import { circleFigure, solidFigure } from "./euclid";
 import { evalE, exprMessages, fromPoly, parseE, simp, sqrtSplit, tex, toPoly, type E } from "./expr";
 import { Frac } from "./fraction";
 import { tUpper, zUpper } from "./inference";
@@ -15,7 +16,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials";
+export type SolutionKind = "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes";
 
@@ -80,6 +81,15 @@ export type PracticeWords = {
     idMax: string;
     polyRem: string;
     polyCoef: string;
+    circleFind: string;
+    similarSide: string;
+    similarA: string;
+    scaleArea: string;
+    scaleVolume: string;
+    scaleAreaVolume: string;
+    volume: string;
+    surface: string;
+    solidDim: string;
     rightSide: string;
     rightAngle: string;
     vecCombo: string;
@@ -1014,6 +1024,159 @@ const GENS: Record<SkillId, Gen> = {
       format: "dp2",
       solution: { kind: "trig", spec },
     };
+  },
+
+  circles(r, L, w) {
+    // An angle (or a length) from a circle theorem, with the figure.
+    const make = (src: string, given: string, ask: string, v: number, angle = true) => {
+      const full = `${src}; find ${ask}`;
+      const fig = circleFigure(full);
+      return {
+        prompt: fill(w.prompts.circleFind, { a: angle ? `∠${ask}` : ask }),
+        q: given,
+        pic: fig ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${fig.svg}</g>`, h: fig.h } : undefined,
+        answer: num(v, 1e-6),
+        show: angle ? `${v}^\\circ` : String(v),
+        plain: String(v),
+        format: "number" as const,
+        solution: { kind: "euclid" as const, spec: { topic: "circle", src: full } },
+      };
+    };
+    const deg = (n: string, v: number) => `\\angle ${n} = ${v}^\\circ`;
+    if (L === 1) {
+      const kind = r.int(0, 2);
+      const a = r.int(25, 70);
+      if (kind === 0) return r.next() < 0.5 ? make(`centre; AOB = ${2 * a}`, deg("AOB", 2 * a), "ACB", a) : make(`centre; ACB = ${a}`, deg("ACB", a), "AOB", 2 * a);
+      if (kind === 1) return make(`semicircle; CAB = ${a}`, deg("CAB", a), "CBA", 90 - a);
+      return make(`segment; ACB = ${a}`, deg("ACB", a), "ADB", a);
+    }
+    if (L === 2) {
+      if (r.next() < 0.5) {
+        const [A, B] = [r.int(55, 125), r.int(55, 125)];
+        const src = `cyclic; A = ${A}; B = ${B}`;
+        const q = `${deg("DAB", A)},\\quad ${deg("ABC", B)}`;
+        return r.next() < 0.5 ? make(src, q, "BCD", 180 - A) : make(src, q, "CDA", 180 - B);
+      }
+      const P = 2 * r.int(15, 50);
+      return r.next() < 0.5 ? make(`tangents; APB = ${P}`, deg("APB", P), "AOB", 180 - P) : make(`tangents; APB = ${P}`, deg("APB", P), "PAB", (180 - P) / 2);
+    }
+    const kind = r.int(0, 2);
+    if (kind === 0) {
+      const [a, b] = [r.int(40, 75), r.int(40, 75)];
+      return make(`alternate; TAB = ${a}; SAC = ${b}`, `${deg("TAB", a)},\\quad ${deg("SAC", b)}`, "BAC", 180 - a - b);
+    }
+    if (kind === 1) {
+      const P = 2 * r.int(15, 50);
+      return make(`tangents; APB = ${P}`, deg("APB", P), "OAB", P / 2);
+    }
+    const [m, h, k] = r.pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10], [9, 12, 15], [12, 16, 20]] as const);
+    const [half, om] = r.next() < 0.5 ? [m, h] : [h, m];
+    return make(`chord; AB = ${2 * half}; OA = ${k}`, `AB = ${2 * half},\\quad OA = ${k}`, "OM", om, false);
+  },
+
+  similarity(r, L, w) {
+    const sol = (src: string) => ({ kind: "euclid" as const, spec: { topic: "similar", src } });
+    const out = (prompt: string, q: string, v: number, src: string) => ({
+      prompt,
+      q,
+      answer: num(v, 1e-6),
+      show: dp(v, 3),
+      plain: dp(v, 3),
+      format: "number" as const,
+      solution: sol(src),
+    });
+    if (L === 1) {
+      const a = 2 * r.int(1, 5);
+      const k = r.pick([2, 3, 1.5, 0.5, 2.5]);
+      const b = r.int(3, 9);
+      const [de, ef] = [a * k, b * k];
+      return out(fill(w.prompts.similarSide, { a: "ABC", b: "DEF", s: "EF" }), `AB = ${a},\\quad BC = ${b},\\quad DE = ${dp(de, 3)}`, ef, `ABC ~ DEF; AB = ${a}; BC = ${b}; DE = ${dp(de, 3)}; find EF`);
+    }
+    if (L === 2) {
+      const [a, b, m] = [r.int(2, 6), r.int(2, 8), r.int(1, 3)];
+      return out(w.prompts.similarA, `AD = ${a},\\quad DB = ${b},\\quad DE = ${a * m}`, m * (a + b), `ADE ~ ABC; AD = ${a}; DB = ${b}; DE = ${a * m}; find BC`);
+    }
+    const [a, b] = r.pick([[2, 3], [3, 4], [2, 5], [3, 5], [1, 2], [1, 3], [4, 5]] as const);
+    const m = r.int(1, 4);
+    const kind = r.int(0, 2);
+    if (kind === 0) return out(fill(w.prompts.scaleArea, { a, b, A: a * a * m }), "", b * b * m, `lengths ${a} : ${b}; area ${a * a * m} : ?`);
+    if (kind === 1) return out(fill(w.prompts.scaleVolume, { a, b, V: a ** 3 * m }), "", b ** 3 * m, `lengths ${a} : ${b}; volume ${a ** 3 * m} : ?`);
+    return out(fill(w.prompts.scaleAreaVolume, { a: a * a, b: b * b, V: a ** 3 * m }), "", b ** 3 * m, `areas ${a * a} : ${b * b}; volume ${a ** 3 * m} : ?`);
+  },
+
+  volume(r, L, w) {
+    const sol = (src: string) => ({ kind: "euclid" as const, spec: { topic: "solids", src } });
+    const pic = (src: string, ask?: string) => {
+      const f = solidFigure(src, ask);
+      return f ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${f.svg}</g>`, h: f.h } : undefined;
+    };
+    const out = (prompt: string, q: string, v: number, src: string, figSrc: string, ask?: string) => {
+      const whole = Math.abs(v - Math.round(v)) < 1e-9;
+      return {
+        prompt,
+        q,
+        pic: pic(figSrc, ask),
+        answer: num(v, whole ? 1e-9 : 0.0051),
+        show: whole ? String(Math.round(v)) : dp(v, 2),
+        plain: whole ? String(Math.round(v)) : dp(v, 2),
+        format: whole ? ("number" as const) : ("dp2" as const),
+        solution: sol(src),
+      };
+    };
+    if (L === 1) {
+      const kind = r.int(0, 2);
+      if (kind === 0) {
+        const [l, wd, h] = [r.int(2, 9), r.int(2, 9), r.int(2, 9)];
+        const src = `cuboid ${l} x ${wd} x ${h}`;
+        return out(w.prompts.volume, "", l * wd * h, src, src);
+      }
+      if (kind === 1) {
+        const [b, h, l] = [2 * r.int(2, 5), r.int(2, 8), r.int(4, 12)];
+        const src = `prism b = ${b} h = ${h} l = ${l}`;
+        return out(w.prompts.volume, "", (b * h * l) / 2, src, src);
+      }
+      const [rr, h] = [r.int(2, 8), r.int(3, 15)];
+      const src = `cylinder r = ${rr} h = ${h}`;
+      return out(w.prompts.volume, "", Math.PI * rr * rr * h, src, src);
+    }
+    if (L === 2) {
+      const kind = r.int(0, 3);
+      if (kind === 0) {
+        const [rr, h] = [r.int(2, 8), r.int(3, 15)];
+        const src = `cylinder r = ${rr} h = ${h}`;
+        return out(w.prompts.surface, "", 2 * Math.PI * rr * rr + 2 * Math.PI * rr * h, src, src);
+      }
+      if (kind === 1) {
+        const [rr, h, l] = r.pick([[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17], [9, 12, 15]] as const);
+        const src = `cone r = ${rr} h = ${h}`;
+        return r.next() < 0.5 ? out(w.prompts.volume, "", (Math.PI * rr * rr * h) / 3, src, src) : out(w.prompts.surface, "", Math.PI * rr * rr + Math.PI * rr * l, src, src);
+      }
+      if (kind === 2) {
+        const rr = r.int(2, 10);
+        const src = `sphere r = ${rr}`;
+        return r.next() < 0.5 ? out(w.prompts.volume, "", (4 / 3) * Math.PI * rr ** 3, src, src) : out(w.prompts.surface, "", 4 * Math.PI * rr * rr, src, src);
+      }
+      const [a, h] = [2 * r.int(2, 6), r.int(3, 12)];
+      const src = `pyramid a = ${a} h = ${h}`;
+      return out(w.prompts.volume, "", (a * a * h) / 3, src, src);
+    }
+    // A length from the volume.
+    const kind = r.int(0, 2);
+    if (kind === 0) {
+      const rr = r.int(2, 8);
+      const V = r.int(100, 900);
+      const h = V / (Math.PI * rr * rr);
+      return out(fill(w.prompts.solidDim, { V, d: "h" }), `V = ${V}`, h, `cylinder r = ${rr} V = ${V}`, `cylinder r = ${rr} h = ${h}`, "h");
+    }
+    if (kind === 1) {
+      const V = r.int(100, 2000);
+      const rr = Math.cbrt((3 * V) / (4 * Math.PI));
+      return out(fill(w.prompts.solidDim, { V, d: "r" }), `V = ${V}`, rr, `sphere V = ${V}`, `sphere r = ${rr}`, "r");
+    }
+    const rr = r.int(2, 8);
+    const V = r.int(50, 600);
+    const h = (3 * V) / (Math.PI * rr * rr);
+    return out(fill(w.prompts.solidDim, { V, d: "h" }), `V = ${V}`, h, `cone r = ${rr} V = ${V}`, `cone r = ${rr} h = ${h}`, "h");
   },
 
   identities(r, L, w) {
