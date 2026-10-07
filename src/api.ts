@@ -1,3 +1,5 @@
+import type { Attempt, SendResult, Student } from "./learner";
+
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
 export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene };
@@ -29,4 +31,24 @@ export const api = {
   save: (id: string, data: { title?: string; scene?: BoardScene; baseUpdatedAt?: number }, keepalive = false) =>
     req<{ updatedAt: number; previous: number }>("PUT", `/api/boards/${id}`, data, keepalive),
   remove: (id: string) => req<void>("DELETE", `/api/boards/${id}`),
+};
+
+/** The practice study (server/research.ts): joining a class, signing back in, and uploading finished questions. */
+export const study = {
+  join: (classCode: string) => req<Student>("POST", "/api/students", { class: classCode }),
+  student: (code: string) => req<Student & { answered: number }>("GET", `/api/students/${encodeURIComponent(code)}`),
+  forget: (code: string) => req<void>("DELETE", `/api/students/${encodeURIComponent(code)}`),
+  async send(a: Attempt, keepalive: boolean): Promise<SendResult> {
+    try {
+      await req("POST", "/api/attempts", a, keepalive);
+      return "stored";
+    } catch (e) {
+      // Unknown student (their record was deleted) or a refused record: sending it again won't help.
+      if (e instanceof ApiError && (e.status === 400 || e.status === 404 || e.status === 413)) {
+        console.warn("practice attempt not stored:", e.message);
+        return "drop";
+      }
+      return "retry";
+    }
+  },
 };

@@ -9,6 +9,9 @@ services:
       # Set a password to require HTTP basic auth (any username). Without one, anyone who can reach the port can
       # read, change and delete every board.
       APP_PASSWORD: ${APP_PASSWORD:-}
+      # Needed to create classes and download the class study's data (X-Teacher-Password header). Without one,
+      # anyone who can reach the port can.
+      TEACHER_PASSWORD: ${TEACHER_PASSWORD:-}
     volumes:
       - data:/data
     healthcheck:

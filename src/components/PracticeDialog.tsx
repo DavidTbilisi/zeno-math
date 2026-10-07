@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { study } from "../api";
 import { useI18n } from "../i18n";
+import { finish, localSlot, loadStudent, logAnswer, Outbox, saveStudent, startLog, toAttempt, type QuestionLog, type Student } from "../learner";
 import type { Dict } from "../locales/en";
 import { fill } from "../math/chart";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
@@ -10,6 +12,7 @@ import {
 import { renderSolution } from "../math/practiceSolve";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
+import { StudentPanel } from "./StudentPanel";
 import { Segmented, startOr, Tabs } from "./ui";
 
 type Mode = "practise" | "sheet";
@@ -46,6 +49,9 @@ const areaLabel = (t: Dict, a: Area) =>
   ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData })[a];
 
 type Current = { ex: Exercise; review: boolean };
+
+/** Finished questions of a student in a class study, on their way to the server. */
+const outbox = new Outbox(localSlot("zeno.outbox.v1"), study.send);
 
 export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   initial?: PracticeSpec;
@@ -85,6 +91,49 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   const [solution, setSolution] = useState<{ src?: string; error?: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // ---------- the class study: what happens on each question is saved under the student's code ----------
+
+  const [student, setStudent] = useState<Student | null>(loadStudent);
+  const [pending, setPending] = useState(() => outbox.items().length);
+  const log = useRef<QuestionLog>(startLog());
+  // The question and student as of the last render, for leaving from listeners and on close.
+  const live = useRef({ cur, student });
+  live.current = { cur, student };
+  const sendQueued = (keepalive = false) => {
+    setPending(outbox.items().length);
+    void outbox.flush(keepalive).then(setPending);
+  };
+  /** Records the question the student is leaving (moving on, changing topic, closing) and starts a fresh log. */
+  const leaveQuestion = (keepalive = false) => {
+    const { cur, student } = live.current;
+    const attempt = student && toAttempt(log.current, cur.ex, cur.review, student);
+    if (attempt) outbox.add(attempt);
+    log.current = startLog();
+    sendQueued(keepalive);
+  };
+  useEffect(() => {
+    sendQueued(); // anything left from an earlier visit
+    const onHide = () => leaveQuestion(true);
+    const onOnline = () => sendQueued();
+    window.addEventListener("pagehide", onHide);
+    window.addEventListener("online", onOnline);
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      window.removeEventListener("online", onOnline);
+      leaveQuestion(true);
+    };
+  }, []);
+  const changeStudent = (s: Student | null, forgot = false) => {
+    // What was done so far on this question belongs to whoever was signed in while doing it.
+    if (forgot && student) {
+      outbox.discard(student.code);
+      log.current = startLog();
+    } else leaveQuestion();
+    setStudent(s);
+    saveStudent(s);
+    setPending(outbox.items().length);
+  };
+
   // The words can change (language switch): rebuild the same question in the new language.
   useEffect(() => {
     setCur((c) => ({ ...c, ex: exercise(c.ex.skill, c.ex.level, c.ex.seed, w) }));
@@ -97,6 +146,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   /** The first final outcome of a question goes into the stats; a miss is queued for review. */
   const settle = (ok: boolean) => {
     const ex = cur.ex;
+    finish(log.current, ok ? "solved" : "revealed");
     const s = progress.stats[ex.skill] ?? { seen: 0, right: 0 };
     const mistakes = progress.mistakes.filter((m) => !(m.skill === ex.skill && m.level === ex.level && m.seed === ex.seed));
     if (!ok) mistakes.push({ skill: ex.skill, level: ex.level, seed: ex.seed, due: progress.answered + 1 + REVIEW_AFTER });
@@ -105,6 +155,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   };
 
   const showSolution = (ex: Exercise) => {
+    log.current.solutionViewed = true;
     setSolution({});
     const done = (r: RenderedSvg) => setSolution({ src: svgToDataUrl(r.svg) });
     if (ex.solution)
@@ -118,6 +169,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   const onCheck = () => {
     if (done) return;
     const v = check(cur.ex, input, w);
+    logAnswer(log.current, input, v);
     setVerdict(v);
     if (v.ok) {
       settle(true);
@@ -136,6 +188,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     showSolution(cur.ex);
   };
   const next = () => {
+    leaveQuestion();
     const c = nextExercise(area, pick, level, progress);
     setCur(c);
     setInput("");
@@ -150,6 +203,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     setArea(a);
     setPick(p);
     setLevel(L);
+    leaveQuestion();
     const c = nextExercise(a, p, L, progress);
     setCur(c);
     setInput("");
@@ -293,6 +347,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
               )}
             </div>
           )}
+          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
           {progress.answered > 0 && (
             <button
               className="btn small add-fn"

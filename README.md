@@ -430,6 +430,8 @@ UI in English, Russian and Georgian.
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
     the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
   - Progress per skill is kept in the browser, and a missed question comes back three questions later
+  - *Class study*: a student joins a class with its code and gets a student code of their own (no name or email);
+    each question they work on is then saved on the server for research — see [Class study](#class-study)
   - *Worksheet*: 4–20 questions on one skill or mixed, with an answer key, put on the board in one click (and
     re-opened to change them)
 - **Vector spaces** (in *[ ] Matrices*) — exact fractions, pictures for ℝ² and ℝ³
@@ -583,7 +585,8 @@ Development (Vite hot reload on :5173, API on :8787):
 npm run dev
 ```
 
-Environment variables: `PORT` (8787), `DATA_DIR` (`./data`), `STATIC_DIR` (`./dist`), `APP_PASSWORD` (empty = no auth).
+Environment variables: `PORT` (8787), `DATA_DIR` (`./data`), `STATIC_DIR` (`./dist`), `APP_PASSWORD` (empty = no auth),
+`TEACHER_PASSWORD` (empty = anyone can create classes and download the study data; see below).
 
 The build writes `.br` / `.gz` copies of the assets, and the server sends those to browsers that accept them. Each tool and each
 language is a separate chunk, loaded the first time it is used.
@@ -595,6 +598,32 @@ saving and asks whether to reload that version or keep yours. Saves go one at a 
 Backups: the home page links to `/api/export`, every board in one JSON file. The server sends a Content-Security-Policy and the
 usual security headers, accepts only JSON request bodies (so a form on another site can't post to it) and refuses scenes it
 couldn't load back.
+
+## Class study
+
+Zeno can record practice for a study that compares ways of choosing exercises (an adaptive learner model against a
+fixed sequence). A teacher makes a class; students join it in the Practice dialog with the class code. Each student is
+given a student code to write down (it brings their record back on any device) and is assigned a condition at random,
+in blocks of four, so every class is split two-and-two as it fills. Only the codes are stored: no names or emails.
+
+From then on, every question a student tries is saved: the skill, level and seed (so the exact question can be
+rebuilt), each answer typed with its verdict (correct, close, wrong, or sent back for its form) and the time it took,
+whether the answer was revealed or the worked solution looked at, and how long the question took in all. Finished
+questions wait in the browser until the server has them, so a dropped connection loses nothing, and a retried upload
+is stored once. A student can delete everything saved under their code from the dialog.
+
+```bash
+# make a class (send the header only if TEACHER_PASSWORD is set)
+curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' -d '{"name":"7B"}'
+# classes, with how many students are in each condition
+curl localhost:8787/api/classes -H 'X-Teacher-Password: …'
+# every attempt as CSV (add ?class=CODE for one class); students appear as s1, s2, … and never by their code
+curl -OJ localhost:8787/api/research/attempts.csv -H 'X-Teacher-Password: …'
+```
+
+Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data. The condition
+is stored but nothing uses it yet; adaptive selection is the next step. Before collecting data from real students,
+check what consent and ethics approval your school or university requires.
 
 ## Tests
 
@@ -635,13 +664,17 @@ intervals catch μ; that every practice question (38 skills × 3 levels × 60 se
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
-bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
+bad requests, path traversal, password, headers and export; and the class study: the teacher password, randomisation
+in balanced blocks, attempts refused when they don't add up, summaries worked out from the answers, retried uploads
+stored once, deletion, an export without sign-in codes, and an outbox that keeps attempts in order until they are sent. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
 
 ## Project layout
 
 ```
 server/index.ts           HTTP server: /api/boards CRUD (SQLite) + static files
+server/research.ts        class study: classes, students randomised to a condition, practice attempts, CSV export
+src/learner.ts            the student's side of the study: question log, attempt records, outbox kept until sent
 src/pages/HomePage.tsx    board list
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
@@ -709,7 +742,8 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 
 ## Roadmap ideas
 
-- Practice: more skills (complex numbers, matrices), timed quizzes, progress synced to the server
+- Practice: more skills (complex numbers, matrices), timed quizzes
+- Class study: an Elo-style learner model, adaptive exercise selection, a mastery dashboard, pre-/post-tests
 - Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools

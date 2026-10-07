@@ -1,0 +1,279 @@
+// Learner records for the adaptive-practice study: classes, students randomised to a condition, and one row for each
+// practice question a student works on. No names or emails are kept: a student is a code they write down. Exports name
+// students by a number ("s17") instead, so a published data set can't be used to sign in.
+import type { IncomingMessage, ServerResponse } from "node:http";
+import type { DatabaseSync } from "node:sqlite";
+import { randomInt, timingSafeEqual } from "node:crypto";
+import { ALL_SKILLS, areaOf, type SkillId } from "../src/math/practiceSkills.ts";
+import { HttpError, readJson, send } from "./http.ts";
+
+const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
+// An attempt is a few hundred bytes; nothing legitimate comes near this.
+const MAX_ATTEMPT_BODY = 64 * 1024;
+
+export const RESEARCH_RESOURCES = new Set(["classes", "students", "attempts", "research"]);
+
+export const CONDITIONS = ["adaptive", "fixed"] as const;
+export type Condition = (typeof CONDITIONS)[number];
+/** Each block hands out every condition twice in a random order, so a class never drifts more than 2 apart. */
+const BLOCK: readonly Condition[] = ["adaptive", "adaptive", "fixed", "fixed"];
+
+export const OUTCOMES = ["solved", "revealed", "skipped"] as const;
+/** correct; close (nearly: a sign or rounding slip); wrong; form (right idea, wrong form: sent back, not counted). */
+export const VERDICTS = ["correct", "close", "wrong", "form"] as const;
+const MAX_ANSWERS = 50;
+const MAX_INPUT = 200;
+const DAY = 24 * 60 * 60 * 1000;
+
+// No 0/O, 1/I/L: codes are read off paper and typed in by children.
+const ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+const randomCode = (n: number) => Array.from({ length: n }, () => ALPHABET[randomInt(ALPHABET.length)]).join("");
+const STUDENT_LEN = 8;
+const CLASS_LEN = 6;
+/** Upper case, without spaces and dashes; a student code is shown as XXXX-XXXX. */
+export function normalizeCode(value: unknown): string {
+  const raw = String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  return raw.length === STUDENT_LEN ? `${raw.slice(0, 4)}-${raw.slice(4)}` : raw;
+}
+
+export function initResearch(db: DatabaseSync) {
+  db.exec("PRAGMA foreign_keys = ON");
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS classes (
+      code TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      -- the conditions still to hand out from the current randomisation block (JSON array)
+      block TEXT NOT NULL DEFAULT '[]',
+      created_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS students (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT NOT NULL UNIQUE,
+      class_code TEXT NOT NULL REFERENCES classes(code),
+      condition TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS attempts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      -- made by the client, so a retried upload isn't stored twice
+      client_id TEXT NOT NULL UNIQUE,
+      student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+      skill TEXT NOT NULL,
+      level INTEGER NOT NULL,
+      seed INTEGER NOT NULL,
+      review INTEGER NOT NULL,
+      outcome TEXT NOT NULL,
+      -- the rest is worked out from answers when the row is stored
+      first_correct INTEGER NOT NULL,
+      wrongs INTEGER NOT NULL,
+      retries INTEGER NOT NULL,
+      solution_viewed INTEGER NOT NULL,
+      ms_first INTEGER,
+      ms_total INTEGER NOT NULL,
+      answers TEXT NOT NULL,
+      shown_at INTEGER NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS attempts_student ON attempts(student_id, id);
+  `);
+}
+
+function teacher(req: IncomingMessage) {
+  if (!TEACHER_PASSWORD) return;
+  const given = Buffer.from(String(req.headers["x-teacher-password"] ?? ""));
+  const want = Buffer.from(TEACHER_PASSWORD);
+  if (given.length !== want.length || !timingSafeEqual(given, want)) throw new HttpError(403, "teacher password required");
+}
+
+function shuffled<T>(items: readonly T[]): T[] {
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const isInt = (v: unknown, lo: number, hi: number): v is number => Number.isInteger(v) && (v as number) >= lo && (v as number) <= hi;
+const oneOf = <T extends string>(items: readonly T[], v: unknown): v is T => items.includes(v as T);
+
+type Answer = { input: string; verdict: (typeof VERDICTS)[number]; ms: number };
+export type AttemptRow = {
+  clientId: string;
+  skill: SkillId;
+  level: number;
+  seed: number;
+  review: boolean;
+  outcome: (typeof OUTCOMES)[number];
+  firstCorrect: boolean;
+  wrongs: number;
+  retries: number;
+  solutionViewed: boolean;
+  msFirst: number | null;
+  msTotal: number;
+  answers: Answer[];
+  shownAt: number;
+};
+
+/** Checks an uploaded attempt and works out the summary columns from its answers, so they can't disagree. */
+export function parseAttempt(body: Record<string, unknown>): AttemptRow {
+  const bad = (what: string) => new HttpError(400, `invalid ${what}`);
+  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers } = body;
+  if (typeof clientId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(clientId)) throw bad("clientId");
+  if (!oneOf(ALL_SKILLS, skill)) throw bad("skill");
+  if (!isInt(level, 1, 3)) throw bad("level");
+  if (!isInt(seed, 0, 2 ** 31)) throw bad("seed");
+  if (typeof review !== "boolean") throw bad("review");
+  if (!oneOf(OUTCOMES, outcome)) throw bad("outcome");
+  if (typeof solutionViewed !== "boolean") throw bad("solutionViewed");
+  if (!isInt(msTotal, 0, DAY)) throw bad("msTotal");
+  if (!isInt(shownAt, 0, Number.MAX_SAFE_INTEGER)) throw bad("shownAt");
+  if (!Array.isArray(answers) || answers.length > MAX_ANSWERS) throw bad("answers");
+  const list: Answer[] = answers.map((a) => {
+    if (!a || typeof a !== "object" || typeof a.input !== "string" || !oneOf(VERDICTS, a.verdict) || !isInt(a.ms, 0, DAY)) throw bad("answer");
+    return { input: a.input.slice(0, MAX_INPUT), verdict: a.verdict, ms: a.ms };
+  });
+  // What happened has to match the answers: solved ends on a correct one; nothing follows a correct one; a skip had a try.
+  const correctAt = list.findIndex((a) => a.verdict === "correct");
+  if (correctAt >= 0 && correctAt !== list.length - 1) throw bad("answers");
+  if ((outcome === "solved") !== (correctAt >= 0)) throw bad("outcome");
+  if (outcome === "skipped" && !list.length) throw bad("outcome");
+  const counted = list.filter((a) => a.verdict !== "form");
+  return {
+    clientId,
+    skill,
+    level,
+    seed,
+    review,
+    outcome,
+    firstCorrect: counted[0]?.verdict === "correct",
+    wrongs: counted.filter((a) => a.verdict !== "correct").length,
+    retries: list.length - counted.length,
+    solutionViewed,
+    msFirst: list[0]?.ms ?? null,
+    msTotal,
+    answers: list,
+    shownAt,
+  };
+}
+
+const csvCell = (v: unknown) => {
+  const s = v === null || v === undefined ? "" : String(v);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+const CSV_COLUMNS = [
+  "attempt", "student", "class", "condition", "area", "skill", "level", "seed", "review", "outcome", "first_correct", "wrongs",
+  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "shown_at", "created_at",
+] as const;
+
+export async function handleResearch(req: IncomingMessage, res: ServerResponse, resource: string, id: string | undefined, query: URLSearchParams, db: DatabaseSync) {
+  const findStudent = (code: unknown) =>
+    db.prepare("SELECT id, code, class_code AS class, condition FROM students WHERE code = ?").get(normalizeCode(code)) as
+      { id: number; code: string; class: string; condition: Condition } | undefined;
+
+  if (resource === "classes" && !id) {
+    teacher(req);
+    if (req.method === "GET") {
+      const rows = db.prepare(`
+        SELECT c.code, c.name, c.created_at AS createdAt,
+          (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code) AS students,
+          (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.condition = 'adaptive') AS adaptive,
+          (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.condition = 'fixed') AS fixed,
+          (SELECT COUNT(*) FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = c.code) AS attempts
+        FROM classes c ORDER BY c.created_at
+      `).all();
+      return send(res, 200, rows);
+    }
+    if (req.method === "POST") {
+      const body = await readJson(req, MAX_ATTEMPT_BODY);
+      const name = String(body.name ?? "").trim().slice(0, 100) || "Class";
+      const now = Date.now();
+      let code = randomCode(CLASS_LEN);
+      while (db.prepare("SELECT 1 FROM classes WHERE code = ?").get(code)) code = randomCode(CLASS_LEN);
+      db.prepare("INSERT INTO classes (code, name, created_at) VALUES (?, ?, ?)").run(code, name, now);
+      return send(res, 201, { code, name, createdAt: now });
+    }
+    return send(res, 405, { error: "method not allowed" });
+  }
+
+  if (resource === "students") {
+    if (!id && req.method === "POST") {
+      const body = await readJson(req, MAX_ATTEMPT_BODY);
+      const klass = db.prepare("SELECT code, block FROM classes WHERE code = ?").get(normalizeCode(body.class)) as
+        { code: string; block: string } | undefined;
+      if (!klass) return send(res, 404, { error: "no such class" });
+      // node:sqlite is synchronous, so nothing else runs between reading the block and writing it back.
+      let block = JSON.parse(klass.block) as Condition[];
+      if (!block.length) block = shuffled(BLOCK);
+      const condition = block.shift()!;
+      let code = randomCode(STUDENT_LEN);
+      while (findStudent(code)) code = randomCode(STUDENT_LEN);
+      code = normalizeCode(code);
+      db.prepare("UPDATE classes SET block = ? WHERE code = ?").run(JSON.stringify(block), klass.code);
+      db.prepare("INSERT INTO students (code, class_code, condition, created_at) VALUES (?, ?, ?, ?)").run(code, klass.code, condition, Date.now());
+      return send(res, 201, { code, class: klass.code, condition });
+    }
+    if (!id) return send(res, 405, { error: "method not allowed" });
+    const student = findStudent(decodeURIComponent(id));
+    if (!student) return send(res, 404, { error: "no such student" });
+    if (req.method === "GET") {
+      const { n } = db.prepare("SELECT COUNT(*) AS n FROM attempts WHERE student_id = ?").get(student.id) as { n: number };
+      return send(res, 200, { code: student.code, class: student.class, condition: student.condition, answered: n });
+    }
+    // Knowing the code is enough to wipe the record: it is all that ties the answers to the student.
+    if (req.method === "DELETE") {
+      db.prepare("DELETE FROM students WHERE id = ?").run(student.id);
+      return send(res, 204);
+    }
+    return send(res, 405, { error: "method not allowed" });
+  }
+
+  if (resource === "attempts" && !id) {
+    if (req.method !== "POST") return send(res, 405, { error: "method not allowed" });
+    const body = await readJson(req, MAX_ATTEMPT_BODY);
+    const student = findStudent(body.student);
+    if (!student) return send(res, 404, { error: "no such student" });
+    const a = parseAttempt(body);
+    const result = db.prepare(`
+      INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, first_correct, wrongs, retries,
+        solution_viewed, ms_first, ms_total, answers, shown_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      a.clientId, student.id, a.skill, a.level, a.seed, Number(a.review), a.outcome, Number(a.firstCorrect), a.wrongs, a.retries,
+      Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, Date.now(),
+    );
+    // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
+    return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
+  }
+
+  // Every attempt as CSV, for R / pandas; ?class=CODE for one class.
+  if (resource === "research" && id === "attempts.csv" && req.method === "GET") {
+    teacher(req);
+    const klass = query.get("class");
+    const rows = db.prepare(`
+      SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, s.condition, a.skill, a.level, a.seed, a.review,
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.shown_at, a.created_at
+      FROM attempts a JOIN students s ON s.id = a.student_id
+      WHERE ? IS NULL OR s.class_code = ?
+      ORDER BY a.id
+    `).all(klass && normalizeCode(klass), klass && normalizeCode(klass)) as Record<string, unknown>[];
+    const lines = rows.map((r) => {
+      const row: Record<(typeof CSV_COLUMNS)[number], unknown> = {
+        ...(r as Record<string, unknown>),
+        area: areaOf(r.skill as SkillId),
+        n_answers: (JSON.parse(r.answers as string) as unknown[]).length,
+        shown_at: new Date(r.shown_at as number).toISOString(),
+        created_at: new Date(r.created_at as number).toISOString(),
+      } as never;
+      return CSV_COLUMNS.map((c) => csvCell(row[c])).join(",");
+    });
+    const stamp = new Date().toISOString().slice(0, 10);
+    res.writeHead(200, {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="zeno-attempts-${stamp}.csv"`,
+    }).end([CSV_COLUMNS.join(","), ...lines].join("\n") + "\n");
+    return;
+  }
+
+  return send(res, 404, { error: "not found" });
+}

@@ -166,6 +166,20 @@ export type PracticeWords = {
     answerHere: string;
     solving: string;
     reset: string;
+    joinClass: string;
+    classCode: string;
+    join: string;
+    haveCode: string;
+    signIn: string;
+    joinedAs: string;
+    keepCode: string;
+    signOut: string;
+    forget: string;
+    forgetSure: string;
+    noClass: string;
+    noStudent: string;
+    offline: string;
+    unsaved: string;
   };
 };
 

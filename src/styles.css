@@ -378,3 +378,7 @@ input.invalid { border-color: var(--danger); }
 .practice-verdict.close { color: #e8590c; background: color-mix(in srgb, #e8590c 10%, transparent); }
 .practice-verdict.bad { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
 .practice-review { color: #e8590c; }
+.practice-class { display: flex; flex-direction: column; gap: 6px; }
+.practice-join summary { cursor: pointer; width: fit-content; }
+.practice-join[open] summary { margin-bottom: 6px; }
+.practice-class input { flex: 1; min-width: 0; }

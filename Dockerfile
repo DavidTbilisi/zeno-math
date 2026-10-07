@@ -10,6 +10,8 @@ WORKDIR /app
 ENV NODE_ENV=production PORT=8787 DATA_DIR=/data STATIC_DIR=/app/dist
 COPY --from=build /app/dist ./dist
 COPY server ./server
+# The server checks practice attempts against the app's list of skills.
+COPY src/math/practiceSkills.ts ./src/math/practiceSkills.ts
 # The volume starts as a copy of this directory, so it has to belong to the user the server runs as.
 RUN mkdir -p /data && chown node:node /data
 VOLUME /data
