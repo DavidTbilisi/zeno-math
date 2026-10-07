@@ -484,6 +484,25 @@ UI in English, Russian and Georgian.
   **Practice** by area
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
+- **🎛 Live pieces**: the first group of the Shapes tab, and on the board they answer clicks — click the middle of
+  one to use it, drag its edge to move it, and every change is saved with the board and can be undone:
+  - *Clock with hands*: drag either hand (they're geared, like a real clock), digital time on or off, snap to five
+    minutes, 🎲 for a random time to read
+  - *Dice to roll* (one to three, with the totals so far), a *spinner to spin* (2–10 sections, counts per section) and
+    a *coin to toss* (heads and tails counted)
+  - *Fractions to shade* (a circle or a bar in 1–12 parts, the fraction written under it), a *ten frame* (or two)
+    with red and yellow counters that reads 3 + 1 = 4, and a *hundred square* to colour by hand or show the multiples
+    of 2–12
+  - *Dot multiplication*: two rows of k squares for numbers from k to 2k; tap a square to fill the dots through it,
+    and the four steps — add the dots, count each as 2k, multiply the empty squares, add — work out the product
+  - *Graph with sliders*: type functions on the board; every letter in them (a, b, c, k…) gets a slider with its own
+    range and a ▶ to play it; a point to slide along the curve with its coordinates and tangent gradient; scroll to
+    zoom, drag to move
+  - *Chance experiment*: a coin, a die (4 to 20 sides), two dice, a spinner or a bag of coloured counters, run ×1, ×10,
+    ×100 or ×1000 at a click (up to a million); the results as counts or relative frequencies against theory, and
+    "over time" one outcome's relative frequency settling on p on a log scale
+  - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
+    the sliders' values put in); the graph and the experiment are in the Algebra and Discrete menus too
 - **📐 Shapes**: a tab in the board's side panel (next to Excalidraw's Library) with 72 ready-made maths pieces in
   seven groups — a ruler, half and full protractors with both scales, set squares and a clock face; axes with a grid,
   the first quadrant, axes for sketching, 3D axes, number lines, the unit circle, square grid paper and isometric dot
@@ -866,6 +885,9 @@ src/components/ui.tsx     shared dialog controls: Tabs, Segmented, startOr
 src/components/CommandPalette.tsx  the tool search (Ctrl+K or /)
 src/math/shapes.ts        the ready-made maths shapes (instruments, axes, figures, solids, number, algebra, data)
 src/components/ShapesPanel.tsx  their side-panel tab: thumbnails, click or drag onto the board
+src/math/live.ts          the live pieces' arithmetic: geared clock, chance devices and tallies, dot multiplication
+src/math/liveGraph.ts     the live graph's letters, curves, zoom and frozen copies (mathjs)
+src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)

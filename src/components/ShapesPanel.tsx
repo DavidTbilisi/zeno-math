@@ -1,7 +1,8 @@
 // The "Maths shapes" tab of the board's side panel: every ready-made piece from math/shapes.ts, by group, each shown
 // as a thumbnail in the board's theme. A click adds the piece in the middle of the view; dragging drops it where the
 // pointer is (handed over as a library item, which Excalidraw places itself). What lands on the board is ordinary
-// elements in one group, so every line and label can still be moved, recoloured or retyped.
+// elements in one group, so every line and label can still be moved, recoloured or retyped; a live piece lands as
+// one element that answers clicks (see live/).
 import { useEffect, useState } from "react";
 import {
   CaptureUpdateAction,
@@ -17,6 +18,7 @@ import type { ExcalidrawElement, NonDeleted } from "@excalidraw/excalidraw/eleme
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useI18n } from "../i18n";
 import { SHAPE_GROUPS, SHAPES, type Piece, type ShapeDef, type ShapeWords } from "../math/shapes";
+import { liveElement } from "../live/element";
 
 export const SHAPES_TAB = "maths";
 const INK = "#1e1e1e";
@@ -79,6 +81,33 @@ export function toElements(pieces: Piece[]): NonDeleted<ExcalidrawElement>[] {
   });
 }
 
+/**
+ * Adds new elements in the middle of the view, slid down past anything they would cover (as formulas and graphs
+ * are), selects them and brings them into view.
+ */
+export function placeOnBoard(ex: ExcalidrawImperativeAPI, els: ExcalidrawElement[]) {
+  const [x0, y0, x1, y1] = getCommonBounds(els);
+  const [w, h] = [x1 - x0, y1 - y0];
+  const { scrollX, scrollY, zoom, width, height, defaultSidebarDockedPreference } = ex.getAppState();
+  const x = width / 2 / zoom.value - scrollX - w / 2;
+  const scene = ex.getSceneElementsIncludingDeleted();
+  const y = freeY(scene, x, height / 2 / zoom.value - scrollY - h / 2, w, h);
+  const placed = els.map((el) => ({ ...el, x: el.x + x - x0, y: el.y + y - y0 }));
+  const group = placed[0].groupIds[0];
+  ex.updateScene({
+    elements: [...scene, ...placed],
+    appState: {
+      selectedElementIds: Object.fromEntries(placed.map((el) => [el.id, true])),
+      selectedGroupIds: group ? { [group]: true } : {},
+      // Like Excalidraw's own library: the panel closes unless it's docked beside the board (1229 px is
+      // Excalidraw's breakpoint for docking), so on a phone the new shape isn't hidden under it.
+      openSidebar: defaultSidebarDockedPreference && width > 1229 ? ex.getAppState().openSidebar : null,
+    },
+    captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+  });
+  ex.scrollToContent(placed, { animate: true });
+}
+
 function Tile({ shape, words, name, thumb, onInsert }: { shape: ShapeDef; words: ShapeWords; name: string; thumb?: string; onInsert: (s: ShapeDef) => void }) {
   return (
     <button
@@ -87,7 +116,7 @@ function Tile({ shape, words, name, thumb, onInsert }: { shape: ShapeDef; words:
       draggable
       onClick={() => onInsert(shape)}
       onDragStart={(e) => {
-        const item = { id: crypto.randomUUID(), status: "unpublished" as const, created: Date.now(), elements: toElements(shape.build(words)) };
+        const item = { id: crypto.randomUUID(), status: "unpublished" as const, created: Date.now(), elements: shape.live ? [liveElement(shape.live)] : toElements(shape.build(words)) };
         e.dataTransfer.setData(MIME_TYPES.excalidrawlib, serializeLibraryAsJSON([item]));
         e.dataTransfer.effectAllowed = "copy";
       }}
@@ -142,28 +171,7 @@ export function ShapesPanel({ api, theme }: { api: () => ExcalidrawImperativeAPI
 
   const insert = (shape: ShapeDef) => {
     const ex = api();
-    if (!ex) return;
-    const els = toElements(shape.build(words));
-    const [x0, y0, x1, y1] = getCommonBounds(els);
-    const [w, h] = [x1 - x0, y1 - y0];
-    const { scrollX, scrollY, zoom, width, height, defaultSidebarDockedPreference } = ex.getAppState();
-    // Start in the middle of the view, then slide down past anything it would cover, as formulas and graphs do.
-    const x = width / 2 / zoom.value - scrollX - w / 2;
-    const scene = ex.getSceneElementsIncludingDeleted();
-    const y = freeY(scene, x, height / 2 / zoom.value - scrollY - h / 2, w, h);
-    const placed = els.map((el) => ({ ...el, x: el.x + x - x0, y: el.y + y - y0 }));
-    ex.updateScene({
-      elements: [...scene, ...placed],
-      appState: {
-        selectedElementIds: Object.fromEntries(placed.map((el) => [el.id, true])),
-        selectedGroupIds: { [placed[0].groupIds[0]]: true },
-        // Like Excalidraw's own library: the panel closes unless it's docked beside the board (1229 px is
-        // Excalidraw's breakpoint for docking), so on a phone the new shape isn't hidden under it.
-        openSidebar: defaultSidebarDockedPreference && width > 1229 ? ex.getAppState().openSidebar : null,
-      },
-      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
-    });
-    ex.scrollToContent(placed, { animate: true });
+    if (ex) placeOnBoard(ex, shape.live ? [liveElement(shape.live)] : toElements(shape.build(words)));
   };
 
   const svg = thumbs.key === key ? thumbs.svg : {};
@@ -173,6 +181,7 @@ export function ShapesPanel({ api, theme }: { api: () => ExcalidrawImperativeAPI
       {SHAPE_GROUPS.map((g) => (
         <section key={g}>
           <h3>{w.groups[g]}</h3>
+          {g === "live" && <p className="hint">{w.liveHint}</p>}
           <div className="shape-grid">
             {SHAPES.filter((s) => s.group === g).map((s) => (
               <Tile key={s.id} shape={s} words={words} name={w.names[s.id as keyof typeof w.names]} thumb={svg[s.id]} onInsert={insert} />
