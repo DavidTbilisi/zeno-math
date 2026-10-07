@@ -4,7 +4,9 @@ services:
     image: zeno-math
     restart: unless-stopped
     ports:
-      - "8787:8787"
+      # BIND_ADDRESS=127.0.0.1 keeps the port on this machine only, for when a reverse proxy (Caddy, nginx…) serves it
+      # over HTTPS; the default is reachable from the network.
+      - "${BIND_ADDRESS:-0.0.0.0}:8787:8787"
     environment:
       # Set a password to require HTTP basic auth (any username). Without one, anyone who can reach the port can
       # read, change and delete every board.

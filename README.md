@@ -582,6 +582,23 @@ computer; on a network, set one (HTTP basic auth, any username):
 APP_PASSWORD=choose-something docker compose up -d --build
 ```
 
+Basic auth sends the password with every request, so on a shared network put Zeno behind HTTPS. With
+`BIND_ADDRESS=127.0.0.1` the port only listens on the machine itself, and a reverse proxy serves it to the network.
+A minimal Caddyfile for a local network with no domain (Caddy's own certificate authority; install its root
+certificate, `pki/authorities/local/root.crt` in Caddy's data folder, on the devices that use Zeno):
+
+```caddyfile
+:8443 {
+	tls internal {
+		on_demand
+	}
+	reverse_proxy 127.0.0.1:8787
+}
+```
+
+With a domain pointing at the server, `zeno.example.org { reverse_proxy 127.0.0.1:8787 }` gets a trusted
+certificate automatically.
+
 ## Run without Docker
 
 Requires Node.js ≥ 23.6 (uses built-in `node:sqlite` and native TypeScript support).
