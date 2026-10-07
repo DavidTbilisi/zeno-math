@@ -430,6 +430,7 @@ UI in English, Russian and Georgian.
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
     the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
   - Progress per skill is kept in the browser, and a missed question comes back three questions later
+  - Screen readers hear each question: its words, and its maths as MathML (the picture is hidden from them)
   - *Class study*: a student joins a class with its code and gets a student code of their own (no name or email);
     each question they work on is then saved on the server for research — see [Class study](#class-study) and [docs/study.md](docs/study.md)
   - *Worksheet*: 4–20 questions on one skill or mixed, with an answer key, put on the board in one click (and
@@ -662,6 +663,10 @@ Environment variables:
 The build writes `.br` / `.gz` copies of the assets, and the server sends those to browsers that accept them. Each tool and each
 language is a separate chunk, loaded the first time it is used.
 
+**Read-only links.** **🔗 Share** on a board makes a link that shows it in view mode. The link follows the board as
+you save, so a class can follow along on their own devices, and **Stop sharing** ends it. It is for showing, not
+for keeping a board private. Anyone who can open Zeno can open the board itself; see [docs/api.md](docs/api.md).
+
 Autosave doesn't silently overwrite: if the board was saved in another tab or on another device since you opened it, Zeno pauses
 saving and asks whether to reload that version or keep yours. Saves go one at a time; a failed one is retried (2 s, 5 s, 15 s,
 30 s, and as soon as the browser is back online), and closing the tab with unsaved changes asks first.
@@ -882,5 +887,5 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 - Practice: more skills (complex numbers, matrices), timed quizzes
 - Class study: a delayed post-test (retention), re-scoring test answers offline with the current checker
 - Spaced repetition of key formulas
-- Share a board read-only / real-time collaboration (Yjs)
+- Real-time collaboration (Yjs), teacher-written questions
 - Parametric & implicit plots, points and tangent lines, geometry tools

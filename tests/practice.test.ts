@@ -8,6 +8,7 @@ import { ru } from "../src/locales/ru.ts";
 import { ALL_SKILLS, check, exercise, LEVELS, renderPractice, renderSteps, type Exercise } from "../src/math/practice.ts";
 import { renderSolution } from "../src/math/practiceSolve.ts";
 import { parseE, tex } from "../src/math/expr.ts";
+import { latexToMathML } from "../src/math/latex.ts";
 
 const w = en.pracWords;
 
@@ -177,5 +178,16 @@ test("a negative leading coefficient is written in front of its term, in every q
     for (let seed = 1; seed <= 100; seed++) {
       const ex = exercise(skill, level, seed, w);
       for (const s of [ex.q, ex.show]) assert.doesNotMatch(s, /(?:\^\{\d+\}|(?<![\\a-z])x) -\d/, `${skill} ${level} seed ${seed}: ${s}`);
+    }
+});
+
+test("every practice question's maths can be read aloud: its LaTeX becomes MathML", () => {
+  assert.match(latexToMathML("\\frac{1}{2} + x^{2}"), /<math[^>]*>[\s\S]*<mfrac>[\s\S]*<msup>/);
+  assert.throws(() => latexToMathML("\\frac{1}{"), /unreadable/);
+  for (const skill of ALL_SKILLS)
+    for (const level of LEVELS) {
+      const ex = exercise(skill, level, 3, w);
+      if (ex.q) assert.match(latexToMathML(ex.q), /^<math/, `${skill} ${level}: ${ex.q}`);
+      assert.match(latexToMathML(ex.show), /^<math/, `${skill} ${level} answer: ${ex.show}`);
     }
 });

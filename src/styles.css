@@ -544,3 +544,43 @@ input.invalid { border-color: var(--danger); }
 .live-slider input[type="range"] { flex: 1; min-width: 0; padding: 0; }
 .live .live-bound { flex: none; width: 34px; padding: 2px; font-size: 12px; text-align: center; }
 .live-slider .live-btn { flex: none; padding: 2px 7px; }
+
+/* Read by screen readers, not shown: the words and MathML behind a picture of maths. */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* The class's tests on paper: a preview over the page, and the only thing printed. */
+.print-overlay { position: fixed; inset: 0; z-index: 50; overflow: auto; background: var(--bg); padding: 16px; }
+.print-actions { justify-content: flex-end; max-width: 820px; margin: 0 auto 12px; }
+.print-sheet { max-width: 820px; margin: 0 auto; background: #fff; color: #1e1e1e; padding: 24px 32px; border-radius: 8px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15); }
+.print-page + .print-page { margin-top: 32px; border-top: 1px dashed #ced4da; padding-top: 24px; }
+.print-page h1 { font-size: 20px; margin: 0 0 6px; }
+.print-page h2 { font-size: 18px; margin: 0 0 10px; }
+.print-meta { margin: 0 0 4px; }
+.print-blank { display: inline-block; width: 180px; border-bottom: 1px solid #495057; }
+.print-note { font-size: 12px; color: #495057; margin: 0 0 14px; }
+.print-items > li, .print-key li { break-inside: avoid; margin: 0 0 14px; }
+.print-items img, .print-key img { max-width: 100%; display: block; }
+.print-line { border-bottom: 1px solid #adb5bd; height: 30px; }
+@media print {
+  @page { margin: 14mm; }
+  body * { visibility: hidden; }
+  .print-sheet, .print-sheet * { visibility: visible; }
+  .print-overlay { position: static; overflow: visible; padding: 0; background: #fff; }
+  .print-sheet { position: absolute; left: 0; top: 0; width: 100%; max-width: none; box-shadow: none; padding: 0; }
+  .print-actions { display: none; }
+  .print-page + .print-page { break-before: page; margin-top: 0; border-top: none; padding-top: 0; }
+}
+
+/* The board's read-only link. */
+.share { position: relative; }
+.share > .btn.shared { box-shadow: inset 0 0 0 2px var(--accent); }
+/* Fixed, like the tool menus, so the bar's overflow can't clip it; placed under its button. */
+.share-box {
+  position: fixed; z-index: 90; width: min(340px, calc(100vw - 32px));
+  display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 10px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.share-box p { margin: 0; }
+.share-box input { width: 100%; }
+.shared-title { padding: 0 8px; }
+

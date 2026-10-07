@@ -6,6 +6,8 @@ import { SVG } from "mathjax-full/js/output/svg.js";
 import { liteAdaptor } from "mathjax-full/js/adaptors/liteAdaptor.js";
 import { RegisterHTMLHandler } from "mathjax-full/js/handlers/html.js";
 import { AllPackages } from "mathjax-full/js/input/tex/AllPackages.js";
+import { SerializedMmlVisitor } from "mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js";
+import { STATE } from "mathjax-full/js/core/MathItem.js";
 
 const adaptor = liteAdaptor();
 RegisterHTMLHandler(adaptor);
@@ -44,4 +46,16 @@ export function latexToSvg(tex: string, color = "#1e1e1e"): RenderedSvg {
     .replace(/currentColor/g, color);
   if (!svg.includes("xmlns=")) svg = svg.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
   return { svg, width, height };
+}
+
+const mmlVisitor = new SerializedMmlVisitor();
+/**
+ * LaTeX as MathML, for screen readers: the SVG pictures say nothing to them, but NVDA (with MathCAT), JAWS and
+ * VoiceOver read MathML aloud and let a student step through it.
+ */
+export function latexToMathML(tex: string): string {
+  const node = doc.convert(tex, { display: true, end: STATE.CONVERT });
+  const mml = mmlVisitor.visitTree(node);
+  if (/<merror/.test(mml)) throw new Error("unreadable LaTeX");
+  return mml;
 }

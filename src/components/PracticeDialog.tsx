@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
@@ -458,6 +459,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
           )}
           <div className="preview">
             {"error" in card ? <span className="error">{card.error}</span> : <img src={svgToDataUrl(card.svg)} alt="" style={{ maxWidth: "100%" }} />}
+            <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
           </div>
           <label className="field">
             <span>{w.ui.answerHere} <span className="hint">({w.formats[cur.ex.format]})</span></span>
@@ -500,6 +502,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
               <span>{w.answer}</span>
               <div className="preview">
                 <img src={svgToDataUrl(latexToSvg(cur.ex.show, "#2f9e44").svg)} alt="" style={{ maxWidth: "100%" }} />
+                <SpokenMath tex={cur.ex.show} />
               </div>
               {done === "solved" && !solution && (cur.ex.solution || cur.ex.steps) && (
                 <button className="btn small add-fn" onClick={() => showSolution(cur.ex)}>{w.ui.reveal}</button>

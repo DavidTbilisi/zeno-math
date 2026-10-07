@@ -115,7 +115,7 @@ test("the server records its schema version, backs up on start, and refuses a da
   await server.stop();
   const db = new DatabaseSync(join(data, "boards.db"));
   const { user_version } = db.prepare("PRAGMA user_version").get() as { user_version: number };
-  assert.equal(user_version, 3);
+  assert.equal(user_version, 4);
   assert.equal(backups(join(data, "backups")).length, 1, "a first backup on start");
   db.exec("PRAGMA user_version = 99");
   db.close();

@@ -105,6 +105,13 @@ npm run analyse -- zeno-tests.csv
 Only students who finished both tests are analysed; the script says how many in each group did. Report the
 practice time per group from the dashboard alongside it.
 
+**On paper.** **Print the tests** on the teacher page shows both forms of the class's test, with a line for each
+answer and an answer key per form; print it, or save it as a PDF. These are the questions the students' browsers
+build, so a paper test can be a backup when the network fails.
+
+**Screen readers.** Each question's words and maths (as MathML) are in the page for screen readers, on the screen
+and on paper, so a student who can't see the picture can still take part.
+
 Students see what taking part means before they join a class: what is saved, that the class is split into two
 groups at random, that taking part is up to them, and how to delete everything. **Join** waits until they tick that
 they agree. Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data.

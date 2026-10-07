@@ -4,7 +4,9 @@ import type { SkillId } from "./math/practiceSkills";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
-export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene };
+export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene; shareToken?: string | null };
+/** A board seen through its read-only link: no id, so nothing that could edit it. */
+export type SharedBoard = { title: string; updatedAt: number; scene: BoardScene };
 
 export class ApiError extends Error {
   constructor(message: string, readonly status: number) {
@@ -33,6 +35,10 @@ export const api = {
   save: (id: string, data: { title?: string; scene?: BoardScene; baseUpdatedAt?: number }, keepalive = false) =>
     req<{ updatedAt: number; previous: number }>("PUT", `/api/boards/${id}`, data, keepalive),
   remove: (id: string) => req<void>("DELETE", `/api/boards/${id}`),
+  /** The board's read-only link (made the first time), and taking it away. */
+  share: (id: string) => req<{ token: string }>("POST", `/api/boards/${id}/share`, {}),
+  unshare: (id: string) => req<void>("DELETE", `/api/boards/${id}/share`),
+  shared: (token: string) => req<SharedBoard>("GET", `/api/shared/${encodeURIComponent(token)}`),
 };
 
 /** The practice study (server/research.ts): joining a class, signing back in, and uploading finished questions. */

@@ -27,9 +27,12 @@ method and path on these resources must answer 404 or 405, so a route added with
 | GET | `/api/export` | anyone | every board with its scene, as a JSON download (`zeno-boards-DATE.json`) |
 | GET | `/api/boards` | anyone | the board list: `[{ id, title, createdAt, updatedAt }]`, newest first |
 | POST | `/api/boards` | anyone | a new board from `{ title? }` (trimmed, at most 200 characters): 201 with `{ id, title, createdAt, updatedAt }` |
-| GET | `/api/boards/:id` | anyone | `{ id, title, scene, updatedAt }`; 404 if there is no such board |
+| GET | `/api/boards/:id` | anyone | `{ id, title, scene, updatedAt, shareToken }`; 404 if there is no such board |
 | PUT | `/api/boards/:id` | anyone | save `{ title?, scene?, baseUpdatedAt? }`; see *Saving a board* |
 | DELETE | `/api/boards/:id` | anyone | delete the board: 204 |
+| POST | `/api/boards/:id/share` | anyone | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
+| DELETE | `/api/boards/:id/share` | anyone | take the read-only link away: 204; the old link stops working |
+| GET | `/api/shared/:token` | anyone | the shared board, `{ title, scene, updatedAt }`, without its id; 404 once the link is taken away |
 | GET | `/api/classes` | teacher | every class: code, name, skills, phase, sessionEnds, testLength, students per condition, attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength? }`: 201 with its code |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
@@ -57,6 +60,15 @@ built app: hashed assets are cached for a year, and the page itself comes with a
   "keep mine"; keeping it saves again without `baseUpdatedAt`.
 - **On success** the answer is 200 `{ updatedAt, previous }`. `updatedAt` always increases, even for two saves in
   the same millisecond.
+
+## Read-only links
+
+`/#/s/<token>` shows a board in Excalidraw's view mode and follows it as its owner saves (it asks again every few
+seconds). The token is 16 random bytes and says nothing about the board's id, so the link can't be turned into one
+that edits.
+
+It is a way of presenting, not of keeping a board private. With `APP_PASSWORD` set, a viewer needs the site password
+like everyone else, and with it could open any board for editing. Without one, the home page lists every board.
 
 ## The class study
 

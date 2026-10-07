@@ -40,6 +40,8 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
 
   // Class practice: a question chosen by the study; a wrong answer, the solution, the next question.
   await expect(student.getByText(/Chosen for you:/)).toBeVisible();
+  // The question is a picture; a screen reader gets its words (and its maths as MathML) instead.
+  expect((await student.locator(".preview .sr-only").first().textContent())!.trim().length).toBeGreaterThan(5);
   await student.getByLabel("Your answer").fill("12345");
   await student.getByRole("button", { name: "Check" }).click();
   await expect(student.getByText("Not quite — try again.")).toBeVisible();

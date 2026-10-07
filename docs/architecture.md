@@ -34,7 +34,7 @@ code they write down, and the exports name them `s1`, `s2`, ….
 ```mermaid
 flowchart TB
   subgraph browser [Browser: React 19 + Vite]
-    pages[Pages<br/>Home · Board · Teacher]
+    pages[Pages<br/>Home · Board · Shared · Teacher]
     board[Excalidraw board<br/>autosave, conflicts, dark mode]
     tools[33 tool dialogs<br/>loaded on demand]
     live[Live pieces<br/>embeddables drawn in React]
