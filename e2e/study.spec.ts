@@ -22,6 +22,8 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await teacher.locator(".new-class").getByLabel("Questions per test").fill("4");
   await teacher.locator(".new-class").getByRole("button", { name: "Algebra" }).click();
   await teacher.getByRole("button", { name: "Create class" }).click();
+  // The page shows the new class once the server has made it; until then it shows whichever was selected before.
+  await expect(teacher.locator(".class-head h2")).toHaveText("E2E class");
   const code = (await teacher.locator(".class-code strong").textContent())!.trim();
   expect(code).toMatch(/^[A-Z0-9]{6}$/);
 
