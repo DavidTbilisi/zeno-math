@@ -2,9 +2,12 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   CaptureUpdateAction,
   convertToExcalidrawElements,
+  DefaultSidebar,
   Excalidraw,
   getSceneVersion,
   MainMenu,
+  Sidebar,
+  useHandleLibrary,
 } from "@excalidraw/excalidraw";
 import type { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type { ExcalidrawElement, ExcalidrawImageElement, FileId } from "@excalidraw/excalidraw/element/types";
@@ -14,6 +17,7 @@ import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
 import { ToolMenu } from "../components/ToolMenu";
 import { CommandPalette } from "../components/CommandPalette";
+import { ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
 import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { isToolKind, MENUS, TOOLS, type ToolKind } from "../tools";
@@ -35,6 +39,26 @@ const svgImage = (r: RenderedSvg): PlacedImage => ({
   width: r.width,
   height: r.height,
 });
+
+// The personal library (Excalidraw's Library tab) is kept in this browser, for every board.
+const LIBRARY_KEY = "zeno.library";
+const libraryStore = {
+  load: () => {
+    try {
+      const saved = localStorage.getItem(LIBRARY_KEY);
+      return saved ? { libraryItems: JSON.parse(saved) } : null;
+    } catch {
+      return null;
+    }
+  },
+  save: ({ libraryItems }: { libraryItems: unknown }) => {
+    try {
+      localStorage.setItem(LIBRARY_KEY, JSON.stringify(libraryItems));
+    } catch {
+      /* storage full or unavailable: the library lasts until the page closes */
+    }
+  },
+};
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
   el?.type === "image" && isToolKind(el.customData?.kind) ? (el.customData as MathData) : undefined;
@@ -59,6 +83,26 @@ export function BoardPage({ id }: { id: string }) {
   const paletteOpener = useRef<HTMLElement | null>(null);
   const [selectedMath, setSelectedMath] = useState<ExcalidrawImageElement | undefined>();
   const excalidraw = useRef<ExcalidrawImperativeAPI | null>(null);
+  // The same API as state, for the library hook, which waits for it.
+  const [excalidrawApi, setExcalidrawApi] = useState<ExcalidrawImperativeAPI | null>(null);
+  // The theme for the shape thumbnails.
+  const [boardTheme, setBoardTheme] = useState("light");
+  useHandleLibrary({ excalidrawAPI: excalidrawApi, adapter: libraryStore });
+  useEffect(() => {
+    // "Browse libraries" sends the chosen library back to the window named here, so it lands on this board.
+    if (!window.name) window.name = "zeno";
+    // Another tab changed the library: take its version, or our next save would drop what it added.
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== LIBRARY_KEY || !excalidrawApi) return;
+      try {
+        void excalidrawApi.updateLibrary({ libraryItems: e.newValue ? JSON.parse(e.newValue) : [], merge: false });
+      } catch {
+        /* unreadable: keep ours */
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [excalidrawApi]);
 
   const lastSaved = useRef({ version: -1, files: 0 });
   const saveTimer = useRef<number | undefined>(undefined);
@@ -200,6 +244,7 @@ export function BoardPage({ id }: { id: string }) {
     // The theme changed (or the board just opened): bring the pictures along, outside Excalidraw's own update.
     if (appState.theme !== theme.current) {
       theme.current = appState.theme;
+      setBoardTheme(appState.theme);
       window.setTimeout(() => retheme(appState.theme), 0);
     }
     // Track whether the current selection is an editable formula/graph.
@@ -371,6 +416,9 @@ export function BoardPage({ id }: { id: string }) {
           </button>
         )}
         <button className="btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}>🔍</button>
+        <button className="btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
+          📐 <span className="btn-label">{t.shapes.button}</span>
+        </button>
         {MENUS.map((m) => (
           <ToolMenu key={m.label} icon={m.icon} label={t[m.label]} title={m.title && t[m.title]} items={m.items.map((it) => ({
             icon: it.icon,
@@ -401,7 +449,10 @@ export function BoardPage({ id }: { id: string }) {
         }}
       >
         <Excalidraw
-          excalidrawAPI={(a) => (excalidraw.current = a)}
+          excalidrawAPI={(a) => {
+            excalidraw.current = a;
+            setExcalidrawApi(a);
+          }}
           langCode={excalidrawLang}
           initialData={{
             elements: (scene.elements ?? []) as ExcalidrawElement[],
@@ -421,6 +472,14 @@ export function BoardPage({ id }: { id: string }) {
             <MainMenu.DefaultItems.ToggleTheme />
             <MainMenu.DefaultItems.ChangeCanvasBackground />
           </MainMenu>
+          <DefaultSidebar>
+            <DefaultSidebar.TabTriggers>
+              <Sidebar.TabTrigger tab={SHAPES_TAB} title={t.shapes.title} aria-label={t.shapes.title}>{shapesIcon}</Sidebar.TabTrigger>
+            </DefaultSidebar.TabTriggers>
+            <Sidebar.Tab tab={SHAPES_TAB}>
+              <ShapesPanel api={() => excalidraw.current} theme={boardTheme} />
+            </Sidebar.Tab>
+          </DefaultSidebar>
         </Excalidraw>
       </div>
 
