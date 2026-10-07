@@ -1,10 +1,11 @@
-// Ready-made maths pieces for the board's side panel: instruments (ruler, protractor, set squares), axes and number
-// lines, labelled figures, 3D solids with their hidden edges dashed, fraction and place-value pieces, algebra tiles,
-// Venn diagrams and other templates for data and chance. A piece is a list of plain parts (paths, ellipses,
+// Ready-made maths pieces for the board's side panel: instruments (ruler, protractors, set squares, a clock), axes,
+// number lines and grid paper, labelled figures, 3D solids with their hidden edges dashed and their nets, fraction and
+// place-value pieces, algebra tiles, Venn diagrams and other templates for data and chance. A piece is a list of plain parts (paths, ellipses,
 // rectangles, text) that the board turns into ordinary Excalidraw elements, grouped: what lands on the board is
 // editable line by line, not a picture. Coordinates are in pixels with y pointing down; angles are in degrees,
-// anticlockwise from the positive x-axis, as in maths. Labels are symbols and numbers only, so no piece needs
-// translating; the names in the panel come from the locales.
+// anticlockwise from the positive x-axis, as in maths. Labels are symbols and numbers, apart from the few words a
+// piece can't do without (the probability scale's, the sides of a trigonometry triangle), which it is handed from
+// the locales along with the names in the panel.
 
 export type Pt = readonly [number, number];
 type Style = { color?: string; width?: number; dashed?: boolean; fill?: string };
@@ -16,7 +17,18 @@ export type Piece =
 
 export const SHAPE_GROUPS = ["measure", "graphs", "geometry", "solids", "number", "algebra", "stats"] as const;
 export type ShapeGroup = (typeof SHAPE_GROUPS)[number];
-export type ShapeDef = { id: string; group: ShapeGroup; build: () => Piece[] };
+/** The words some pieces write on themselves, in the board's language. */
+export type ShapeWords = {
+  impossible: string;
+  unlikely: string;
+  evens: string;
+  likely: string;
+  certain: string;
+  opposite: string;
+  adjacent: string;
+  hypotenuse: string;
+};
+export type ShapeDef = { id: string; group: ShapeGroup; build: (words: ShapeWords) => Piece[] };
 
 // Excalidraw's own palette, so the pieces match what the toolbar offers (and its dark mode turns them round).
 const GRID = "#ced4da";
@@ -89,6 +101,8 @@ function rightAngle(corner: Pt, p: Pt, q: Pt, size = 14): Piece {
 function comb(ticks: [Pt, Pt][], s: Style = THIN): Piece {
   return path(ticks.flatMap(([base, end]) => [base, end, base]), s);
 }
+/** A tick across a horizontal line at (x, y), reaching h either side, as two strokes out from the line for comb. */
+const across = (x: number, y: number, h: number): [Pt, Pt][] => [[[x, y], [x, y - h]], [[x, y], [x, y + h]]];
 /** Grid lines as two paths that snake back and forth; the turns run along the outer lines. */
 function grid(x0: number, y0: number, cols: number, rows: number, cell: number, s: Style = { color: GRID, width: 1 }): Piece[] {
   const x1 = x0 + cols * cell;
@@ -161,6 +175,40 @@ function setSquare30(): Piece[] {
   return [poly([a, b, c]), rightAngle(b, a, c), text(22, 42, "60°", 14), text(230, h - 18, "30°", 14)];
 }
 
+function protractor360(): Piece[] {
+  const [c, r] = [190, 180];
+  const marks: [Pt, Pt][] = Array.from({ length: 72 }, (_, i) => {
+    const d = i * 5;
+    return [polar(c, c, r, d), polar(c, c, r - (d % 10 ? 9 : 16), d)];
+  });
+  return [
+    ellipse(c, c, r),
+    comb(marks),
+    ellipse(c, c, 60, 60, THIN),
+    seg([c - 60, c], [c + 60, c], THIN),
+    seg([c, c - 60], [c, c + 60], THIN),
+    // Anticlockwise outside, clockwise inside, both from the right, like the half protractor.
+    ...Array.from({ length: 36 }, (_, i) => text(...polar(c, c, r - 30, i * 10), String(i * 10), 11)),
+    ...Array.from({ length: 36 }, (_, i) => text(...polar(c, c, r - 52, i * 10), String((360 - i * 10) % 360), 10, "center", MUTED)),
+    dot([c, c], 3),
+  ];
+}
+
+function clock(): Piece[] {
+  const [c, r] = [130, 120];
+  // Clockwise from twelve: minute m sits at 90 − 6m degrees.
+  const marks: [Pt, Pt][] = Array.from({ length: 60 }, (_, m) => [polar(c, c, r, 90 - 6 * m), polar(c, c, r - (m % 5 ? 6 : 14), 90 - 6 * m)]);
+  return [
+    ellipse(c, c, r),
+    comb(marks),
+    ...Array.from({ length: 12 }, (_, i) => text(...polar(c, c, r - 32, 90 - 30 * (i + 1)), String(i + 1), 20)),
+    // Ten past ten: the hands apart and both easy to take hold of.
+    seg([c, c], polar(c, c, 60, 90 - 30 * (10 + 10 / 60)), { width: 5 }),
+    seg([c, c], polar(c, c, 92, 90 - 6 * 10), { width: 3 }),
+    dot([c, c], 5),
+  ];
+}
+
 // ——— Axes and number lines ———
 
 function axes(): Piece[] {
@@ -204,7 +252,7 @@ function numberLine(): Piece[] {
   const xs = Array.from({ length: 2 * n + 1 }, (_, i) => 20 + i * u);
   return [
     arrow([0, y], [40 + 2 * n * u, y], true),
-    comb(xs.map((x) => [[x, y - 8], [x, y + 8]] as [Pt, Pt]), { width: 2 }),
+    comb(xs.flatMap((x) => across(x, y, 8)), { width: 2 }),
     ...xs.map((x, i) => text(x, y + 24, num(i - n), 16)),
   ];
 }
@@ -214,11 +262,7 @@ function numberLine01(): Piece[] {
   const labels = ["0", "1/4", "1/2", "3/4", "1"];
   return [
     seg([x0, y], [x0 + len, y]),
-    comb(labels.map((_, i) => {
-      const x = x0 + (i * len) / 4;
-      const h = i % 4 ? 8 : 14;
-      return [[x, y - h], [x, y + h]] as [Pt, Pt];
-    }), { width: 2 }),
+    comb(labels.flatMap((_, i) => across(x0 + (i * len) / 4, y, i % 4 ? 8 : 14)), { width: 2 }),
     ...labels.map((l, i) => text(x0 + (i * len) / 4, y + 30, l, 16)),
   ];
 }
@@ -242,6 +286,35 @@ function unitCircle(): Piece[] {
     text(c - 8, c + r + 12, "−1", 13, "right"),
     text(336, c, "x", 18, "left"),
     text(c + 9, 6, "y", 18, "left"),
+  ];
+}
+
+const gridPaper = (): Piece[] => grid(0, 0, 16, 12, 25);
+
+function isometricDots(): Piece[] {
+  // Columns of dots with every other one shifted half a step, so the dots make triangles with vertical sides.
+  const s = 28;
+  const dx = s * Math.cos(rad(30));
+  const ink = { fill: MUTED, color: MUTED, width: 1 };
+  const out: Piece[] = [];
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 11 - (i % 2); j++) out.push(ellipse(i * dx, j * s + ((i % 2) * s) / 2, 2.5, 2.5, ink));
+  return out;
+}
+
+function axes3d(): Piece[] {
+  const o: Pt = [150, 190];
+  const x = polar(o[0], o[1], 170, 220);
+  return [
+    arrow(o, x),
+    arrow(o, [380, o[1]]),
+    arrow(o, [o[0], 10]),
+    seg(o, polar(o[0], o[1], 60, 40), HIDDEN),
+    seg(o, [o[0] - 60, o[1]], HIDDEN),
+    seg(o, [o[0], o[1] + 60], HIDDEN),
+    text(x[0] - 8, x[1] + 4, "x", 18, "right"),
+    text(386, o[1], "y", 18, "left"),
+    text(o[0] + 9, 10, "z", 18, "left"),
+    text(o[0] + 8, o[1] + 14, "O", 14, "left"),
   ];
 }
 
@@ -285,6 +358,35 @@ function parallel(): Piece[] {
   const out: Piece[] = [seg([0, 80], [360, 80]), seg([0, 200], [360, 200]), seg([80, 280], [280, 0])];
   out.push(...chevrons([20, 80], [100, 80], 1), ...chevrons([20, 200], [100, 200], 1));
   for (const y of [80, 200]) out.push(path(arc(t(y)[0], y, 24, 24, 0, lean, 4), { color: RED, width: 2 }));
+  return out;
+}
+
+function trigTriangle(w: ShapeWords): Piece[] {
+  const A: Pt = [20, 220];
+  const B: Pt = [320, 220];
+  const C: Pt = [320, 40];
+  const theta = (Math.atan2(A[1] - C[1], C[0] - A[0]) * 180) / Math.PI;
+  return [
+    poly([A, B, C]),
+    rightAngle(B, A, C, 16),
+    path(arc(A[0], A[1], 50, 50, 0, theta, 3), { color: RED, width: 2 }),
+    text(...polar(A[0], A[1], 70, theta / 2), "θ", 18, "center", RED),
+    text(170, 242, w.adjacent, 16),
+    text(334, 130, w.opposite, 16, "left"),
+    // Ending near C, so the label runs up-left, away from the slope.
+    text(208, 88, w.hypotenuse, 16, "right"),
+  ];
+}
+
+function transversalAngles(): Piece[] {
+  const phi = 60;
+  const [y1, y2] = [100, 240];
+  const xAt = (y: number) => 200 + (y1 - y) / Math.tan(rad(phi));
+  const out: Piece[] = [seg([0, y1], [380, y1]), seg([0, y2], [380, y2]), seg([xAt(340), 340], [xAt(0), 0])];
+  out.push(...chevrons([20, y1], [100, y1], 1), ...chevrons([20, y2], [100, y2], 1));
+  // a b / c d round the top crossing and e f / g h round the bottom one, each in the middle of its angle.
+  const middles = [(phi + 180) / 2, phi / 2, 180 + phi / 2, (540 + phi) / 2];
+  [y1, y2].forEach((y, k) => middles.forEach((m, i) => out.push(text(...polar(xAt(y), y, 30, m), "abcdefgh"[4 * k + i], 16, "center", RED))));
   return out;
 }
 
@@ -409,6 +511,64 @@ function prism(): Piece[] {
   ];
 }
 
+// Nets: every face its own outline, so each can be coloured, labelled or moved away on its own.
+const FACE = { fill: FILL.blue };
+
+function netCube(): Piece[] {
+  const s = 60;
+  const at: Pt[] = [[0, 1], [1, 1], [2, 1], [3, 1], [1, 0], [1, 2]];
+  return at.map(([i, j]) => rect(i * s, j * s, s, s, FACE));
+}
+
+function netCuboid(): Piece[] {
+  const [l, w, h] = [120, 60, 80];
+  return [
+    rect(0, w, w, h, FACE),
+    rect(w, w, l, h, FACE),
+    rect(w + l, w, w, h, FACE),
+    rect(2 * w + l, w, l, h, FACE),
+    rect(w, 0, l, w, FACE),
+    rect(w, w + h, l, w, FACE),
+  ];
+}
+
+function netPrism(): Piece[] {
+  const [a, len] = [90, 160];
+  const t = a * Math.sin(rad(60));
+  return [
+    ...[0, 1, 2].map((i) => rect(i * a, t, a, len, FACE)),
+    poly([[a, t], [2 * a, t], [1.5 * a, 0]], FACE),
+    poly([[a, t + len], [2 * a, t + len], [1.5 * a, 2 * t + len]], FACE),
+  ];
+}
+
+function netPyramid(): Piece[] {
+  const [s, t] = [110, 95];
+  const [x0, x1] = [t, t + s];
+  return [
+    rect(x0, x0, s, s, FACE),
+    poly([[x0, x0], [x1, x0], [x0 + s / 2, 0]], FACE),
+    poly([[x1, x0], [x1, x1], [x1 + t, x0 + s / 2]], FACE),
+    poly([[x0, x1], [x1, x1], [x0 + s / 2, x1 + t]], FACE),
+    poly([[x0, x0], [x0, x1], [0, x0 + s / 2]], FACE),
+  ];
+}
+
+function netCylinder(): Piece[] {
+  const [r, h] = [40, 120];
+  const w = 2 * Math.PI * r;
+  return [
+    rect(0, 2 * r, w, h, FACE),
+    ellipse(w / 2, r, r, r, FACE),
+    ellipse(w / 2, 3 * r + h, r, r, FACE),
+    seg([w / 2, r], [w / 2 + r, r], THIN),
+    dot([w / 2, r], 3),
+    text(w / 2 + r / 2, r - 11, "r", 16),
+    text(w / 2, 2 * r + h - 16, "2πr", 16),
+    text(-8, 2 * r + h / 2, "h", 16, "right"),
+  ];
+}
+
 // ——— Number ———
 
 function fractionWall(): Piece[] {
@@ -446,14 +606,61 @@ function tenRod(): Piece[] {
 }
 const oneCube = (): Piece[] => [rect(0, 0, BLOCK, BLOCK, { fill: FILL.yellow })];
 
+function placeValue(): Piece[] {
+  // Headed by the place values themselves, so the chart reads the same in every language; the heavy line is the
+  // decimal point (a point or a comma, as the class writes it).
+  const [w, top, h] = [62, 40, 56];
+  const heads = ["1000", "100", "10", "1", "1/10", "1/100"];
+  return [
+    ...heads.flatMap((t, i) => [rect(i * w, 0, w, top, { fill: FILL.gray, width: 1 }), text(i * w + w / 2, top / 2, t, 16), rect(i * w, top, w, h, THIN), rect(i * w, top + h, w, h, THIN)]),
+    seg([4 * w, 0], [4 * w, top + 2 * h], { width: 4 }),
+  ];
+}
+
+function barModel(): Piece[] {
+  const [w, h] = [360, 48];
+  return [rect(0, 0, w, h, { fill: FILL.blue }), text(w / 2, h / 2, "?", 20), ...[0, 1, 2].map((i) => rect((i * w) / 3, h + 16, w / 3, h, { fill: FILL.yellow }))];
+}
+
+function partWhole(): Piece[] {
+  const r = 44;
+  const whole: Pt = [150, r];
+  const parts: Pt[] = [[60, 190], [240, 190]];
+  return [
+    ...parts.map((p) => {
+      const u = unit(sub(p, whole));
+      return seg(along(whole, u, r), along(p, u, -r));
+    }),
+    ellipse(whole[0], whole[1], r, r, { fill: FILL.blue }),
+    ...parts.map(([x, y]) => ellipse(x, y, r, r, { fill: FILL.yellow })),
+  ];
+}
+
+/** A table with a shaded heading row and column numbered 1 to n, the corner marked, and the cells filled or left blank. */
+function headedTable(n: number, s: number, corner: string, cell?: (i: number, j: number) => string): Piece[] {
+  const out: Piece[] = [
+    rect(0, 0, (n + 1) * s, s, { fill: FILL.gray, width: 1 }),
+    rect(0, s, s, n * s, { fill: FILL.gray, width: 1 }),
+    ...grid(0, 0, n + 1, n + 1, s, THIN),
+    text(s / 2, s / 2, corner, 18),
+  ];
+  for (let i = 1; i <= n; i++) {
+    out.push(text(i * s + s / 2, s / 2, String(i), 15), text(s / 2, i * s + s / 2, String(i), 15));
+    if (cell) for (let j = 1; j <= n; j++) out.push(text(j * s + s / 2, i * s + s / 2, cell(i, j), 13));
+  }
+  return out;
+}
+
+const multiplicationSquare = () => headedTable(10, 34, "×", (i, j) => String(i * j));
+
 // ——— Algebra ———
 
-// x is deliberately not a whole number of units, so the tiles can't be measured against each other.
+// x and y are deliberately not whole numbers of units, nor of each other, so the tiles can't be measured against
+// each other. A negative tile is its positive's size in red, so the two make a zero pair.
 const X = 90;
+const Y = 65;
 const ONE = 25;
-const tileX2 = (): Piece[] => [rect(0, 0, X, X, { fill: FILL.blue }), text(X / 2, X / 2, "x²", 20)];
-const tileX = (): Piece[] => [rect(0, 0, X, ONE, { fill: FILL.green }), text(X / 2, ONE / 2, "x", 16)];
-const tile1 = (): Piece[] => [rect(0, 0, ONE, ONE, { fill: FILL.yellow }), text(ONE / 2, ONE / 2, "1", 14)];
+const tile = (w: number, h: number, fill: string, label: string, size: number) => (): Piece[] => [rect(0, 0, w, h, { fill }), text(w / 2, h / 2, label, size)];
 
 function balance(): Piece[] {
   const pan = (cx: number): Piece[] => [
@@ -568,21 +775,48 @@ function dice(): Piece[] {
   });
 }
 
+function probabilityScale(w: ShapeWords): Piece[] {
+  const [x0, len, y] = [40, 440, 60];
+  const x = (p: number) => x0 + p * len;
+  return [
+    seg([x(0), y], [x(1), y], { width: 3 }),
+    comb([0, 0.25, 0.5, 0.75, 1].flatMap((p, i) => across(x(p), y, i % 2 ? 8 : 14)), { width: 2 }),
+    // Numbers below at 0, ½ and 1, words above them; the in-between words go below, clear of the numbers.
+    text(x(0), y + 30, "0", 16),
+    text(x(0.5), y + 30, "1/2", 16),
+    text(x(1), y + 30, "1", 16),
+    text(x(0), y - 32, w.impossible, 14),
+    text(x(0.5), y - 32, w.evens, 14),
+    text(x(1), y - 32, w.certain, 14),
+    text(x(0.25), y + 30, w.unlikely, 14),
+    text(x(0.75), y + 30, w.likely, 14),
+  ];
+}
+
+const sampleSpace = () => headedTable(6, 44, "+");
+
 export const SHAPES: readonly ShapeDef[] = [
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
   { id: "setSquare30", group: "measure", build: setSquare30 },
+  { id: "protractor360", group: "measure", build: protractor360 },
+  { id: "clock", group: "measure", build: clock },
   { id: "axes", group: "graphs", build: axes },
   { id: "axesQ1", group: "graphs", build: axesQ1 },
   { id: "axesSketch", group: "graphs", build: axesSketch },
   { id: "numberLine", group: "graphs", build: numberLine },
   { id: "numberLine01", group: "graphs", build: numberLine01 },
   { id: "unitCircle", group: "graphs", build: unitCircle },
+  { id: "gridPaper", group: "graphs", build: gridPaper },
+  { id: "isometricDots", group: "graphs", build: isometricDots },
+  { id: "axes3d", group: "graphs", build: axes3d },
   { id: "angle", group: "geometry", build: angle },
   { id: "rightTriangle", group: "geometry", build: rightTriangle },
+  { id: "trigTriangle", group: "geometry", build: trigTriangle },
   { id: "triangle", group: "geometry", build: triangle },
   { id: "parallel", group: "geometry", build: parallel },
+  { id: "transversalAngles", group: "geometry", build: transversalAngles },
   { id: "circleParts", group: "geometry", build: circleParts },
   { id: "pentagon", group: "geometry", build: regular(5, 90) },
   { id: "hexagon", group: "geometry", build: regular(6, 0) },
@@ -598,6 +832,11 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "sphere", group: "solids", build: sphere },
   { id: "pyramid", group: "solids", build: pyramid },
   { id: "prism", group: "solids", build: prism },
+  { id: "netCube", group: "solids", build: netCube },
+  { id: "netCuboid", group: "solids", build: netCuboid },
+  { id: "netPrism", group: "solids", build: netPrism },
+  { id: "netPyramid", group: "solids", build: netPyramid },
+  { id: "netCylinder", group: "solids", build: netCylinder },
   { id: "fractionWall", group: "number", build: fractionWall },
   { id: "quarters", group: "number", build: fractionCircle(4) },
   { id: "eighths", group: "number", build: fractionCircle(8) },
@@ -606,9 +845,18 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "hundredFlat", group: "number", build: hundredFlat },
   { id: "tenRod", group: "number", build: tenRod },
   { id: "oneCube", group: "number", build: oneCube },
-  { id: "tileX2", group: "algebra", build: tileX2 },
-  { id: "tileX", group: "algebra", build: tileX },
-  { id: "tile1", group: "algebra", build: tile1 },
+  { id: "placeValue", group: "number", build: placeValue },
+  { id: "barModel", group: "number", build: barModel },
+  { id: "partWhole", group: "number", build: partWhole },
+  { id: "multiplicationSquare", group: "number", build: multiplicationSquare },
+  { id: "tileX2", group: "algebra", build: tile(X, X, FILL.blue, "x²", 20) },
+  { id: "tileX", group: "algebra", build: tile(X, ONE, FILL.green, "x", 16) },
+  { id: "tile1", group: "algebra", build: tile(ONE, ONE, FILL.yellow, "1", 14) },
+  { id: "tileY", group: "algebra", build: tile(Y, ONE, FILL.violet, "y", 16) },
+  { id: "tileXY", group: "algebra", build: tile(X, Y, FILL.pink, "xy", 18) },
+  { id: "tileNegX2", group: "algebra", build: tile(X, X, FILL.red, "−x²", 20) },
+  { id: "tileNegX", group: "algebra", build: tile(X, ONE, FILL.red, "−x", 16) },
+  { id: "tileNeg1", group: "algebra", build: tile(ONE, ONE, FILL.red, "−1", 12) },
   { id: "balance", group: "algebra", build: balance },
   { id: "functionMachine", group: "algebra", build: functionMachine },
   { id: "venn2", group: "stats", build: venn2 },
@@ -618,6 +866,8 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "boxPlot", group: "stats", build: boxPlot },
   { id: "spinner", group: "stats", build: spinner },
   { id: "dice", group: "stats", build: dice },
+  { id: "probabilityScale", group: "stats", build: probabilityScale },
+  { id: "sampleSpace", group: "stats", build: sampleSpace },
 ];
 
 /** The box around a piece's points (text counts as its anchor point). */
