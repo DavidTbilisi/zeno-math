@@ -625,6 +625,39 @@ Set `TEACHER_PASSWORD` whenever students use the server, or any of them could do
 is stored but nothing uses it yet; adaptive selection is the next step. Before collecting data from real students,
 check what consent and ethics approval your school or university requires.
 
+### Learner model
+
+`src/model/elo.ts` estimates what each student knows with an Elo-style rating (Pelánek 2016; Klinkenberg et al. 2011,
+Math Garden). The chance of a right first answer is σ(ability − difficulty). Ability has three layers (overall, area,
+skill), so a skill the student hasn't tried starts from what they showed in its area. Difficulty belongs to a skill
+(shared by its levels) plus a smaller adjustment for each level. Each answer moves every term by the surprise (result
+− prediction), with steps that shrink as evidence builds up. `mastery()` gives the chance of a right answer at each
+level of a skill.
+
+`npm run model` replays answers in order, predicting each from the ones before it. It reports log-loss, RMSE, AUC,
+accuracy and calibration for the model, two simpler versions of it (ablations) and three counting baselines:
+
+```bash
+npm run model -- zeno-attempts.csv          # the CSV export
+npm run model -- zeno-attempts.csv --fit    # also search α, β for the lowest log-loss
+npm run model -- --simulate                 # synthetic learners with a known truth (src/model/simulate.ts)
+```
+
+On the built-in simulation (120 students × 150 questions):
+
+| model | log-loss | AUC |
+|---|---|---|
+| Elo, three layers | 0.556 | 0.787 |
+| Elo, no area layer | 0.562 | 0.782 |
+| Elo, skill layer only | 0.601 | 0.739 |
+| per skill & level rate | 0.630 | 0.699 |
+| per student & skill rate | 0.656 | 0.655 |
+| overall rate | 0.693 | 0.485 |
+
+The defaults were chosen on simulated classes, which are built with the same structure as the model, so these numbers
+only show that it works. Real answers will be noisier. Refit with `--fit` once real data exists, and report those
+numbers.
+
 ## Tests
 
 ```bash
@@ -666,7 +699,10 @@ renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
 bad requests, path traversal, password, headers and export; and the class study: the teacher password, randomisation
 in balanced blocks, attempts refused when they don't add up, summaries worked out from the answers, retried uploads
-stored once, deletion, an export without sign-in codes, and an outbox that keeps attempts in order until they are sent. GitHub Actions runs typecheck, tests and build on every push, and
+stored once, deletion, an export without sign-in codes, and an outbox that keeps attempts in order until they are sent;
+and the learner model: ratings move the right way by shrinking steps, an untried skill starts from the area, levels keep
+their order, the metrics match hand-worked values, the export reads back into the model, and on simulated learners it
+beats every baseline, is calibrated within 0.05, and ranks the true difficulties (ρ > 0.9) and students (ρ > 0.85). GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
 
 ## Project layout
@@ -675,6 +711,10 @@ builds the Docker image and saves a board in it.
 server/index.ts           HTTP server: /api/boards CRUD (SQLite) + static files
 server/research.ts        class study: classes, students randomised to a condition, practice attempts, CSV export
 src/learner.ts            the student's side of the study: question log, attempt records, outbox kept until sent
+src/model/elo.ts          learner model: Elo ratings of students (overall / area / skill) and questions, mastery
+src/model/evaluate.ts     replay, metrics (log-loss, RMSE, AUC, calibration), baselines, reading the CSV export
+src/model/simulate.ts     synthetic learners with a known truth, for tests and the simulation study
+scripts/evaluate-model.ts `npm run model`: the metrics for a CSV export or a simulated class
 src/pages/HomePage.tsx    board list
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
@@ -743,7 +783,7 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 ## Roadmap ideas
 
 - Practice: more skills (complex numbers, matrices), timed quizzes
-- Class study: an Elo-style learner model, adaptive exercise selection, a mastery dashboard, pre-/post-tests
+- Class study: adaptive exercise selection, a mastery dashboard, pre-/post-tests
 - Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools

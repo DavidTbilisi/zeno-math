@@ -1,6 +1,6 @@
 // The practice study's API: classes need the teacher password, students are randomised in balanced blocks, attempts are
 // checked and summarised from their answers, a retried upload is stored once, deleting a student deletes their answers,
-// and the CSV export names students by number, never by code.
+// the CSV export names students by number, never by code, and the learner model reads it back.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
@@ -8,6 +8,8 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { normalizeCode, parseAttempt } from "../server/research.ts";
+import { EloModel } from "../src/model/elo.ts";
+import { observationsFromCsv, replay } from "../src/model/evaluate.ts";
 
 const PORT = 20000 + Math.floor(Math.random() * 20000);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -164,6 +166,26 @@ test("deleting a student deletes their answers", async () => {
   assert.equal((await call("GET", `/api/students/${student}`)).status, 404);
   const csv = (await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string;
   assert.equal(csv.trim().split("\n").length, 1, "only the header is left");
+});
+
+test("the learner model replays the export", async () => {
+  const { code } = await newClass();
+  const s1 = (await call("POST", "/api/students", { class: code })).body.code;
+  const s2 = (await call("POST", "/api/students", { class: code })).body.code;
+  const right = { outcome: "solved", answers: [{ input: "3", verdict: "correct", ms: 900 }] };
+  await call("POST", "/api/attempts", attempt(s1, right));
+  await call("POST", "/api/attempts", attempt(s2));
+  await call("POST", "/api/attempts", attempt(s2, { skill: "factor", level: 1, outcome: "revealed", answers: [] }));
+  await call("POST", "/api/attempts", attempt(s1, { outcome: "skipped", answers: [{ input: "6/2", verdict: "form", ms: 9 }] }));
+  const csv = (await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string;
+  const obs = observationsFromCsv(csv);
+  // The skip after only a form message says nothing, so three of the four count.
+  assert.deepEqual(obs.map((o) => [o.skill, o.level, o.correct]), [["linear", 2, true], ["linear", 2, false], ["factor", 1, false]]);
+  assert.equal(obs[1].student, obs[2].student); // both s2
+  assert.notEqual(obs[0].student, obs[1].student);
+  const ps = replay(new EloModel(), obs);
+  assert.ok(ps.every(({ p }) => p > 0 && p < 1));
+  assert.equal(ps[0].p, 0.5); // nothing known before the first answer
 });
 
 test("codes and summaries", () => {
