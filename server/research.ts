@@ -9,6 +9,7 @@ import { CURRICULUM, inCurriculumOrder } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
 import { RECENT } from "../src/model/policy.ts";
+import { dashboard } from "./dashboard.ts";
 import { HttpError, readJson, send } from "./http.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
@@ -324,6 +325,13 @@ export async function handleResearch(
     );
     // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
     return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
+  }
+
+  // The teacher's dashboard for one class (?class=CODE).
+  if (resource === "research" && id === "dashboard" && req.method === "GET") {
+    teacher(req);
+    const data = dashboard(db, normalizeCode(query.get("class")));
+    return data ? send(res, 200, data) : send(res, 404, { error: "no such class" });
   }
 
   // Every attempt as CSV, for R / pandas; ?class=CODE for one class.

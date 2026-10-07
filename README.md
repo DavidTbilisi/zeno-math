@@ -632,6 +632,21 @@ class-wide difficulties and its student's own ratings from the server (`/api/stu
 forward after every answer, so class practice keeps going if the connection drops mid-lesson. The server can only
 refuse a class-practice attempt that claims the other condition's policy.
 
+Teachers follow a class at **`#/teacher`** (linked from the home page; it asks for `TEACHER_PASSWORD` when one is
+set). There they can make classes and hand out the codes, and see for each class:
+
+- **The two groups** side by side: students, questions answered, right first time, the model's expected chance and how
+  far class practice was from the 75 % target, the median time per question, how often the worked solution was opened,
+  and how often a question was left unfinished.
+- **Mastery by skill:** one row per student, one column per skill, shaded by the chance of a right first answer at
+  medium level. The scale has five bins, validated as an ordinal colour ramp for both light and dark mode, and grey
+  means no answers yet. Each group's average sits on top. Hovering a cell gives all three levels; "show numbers" puts
+  the percentages in the cells.
+- **Whether the model predicts well:** the chance logged when each question appeared, against what the student then
+  did, as a calibration plot (bigger dots rest on more answers), with log-loss, AUC and a table view.
+
+The same data is at `/api/research/dashboard?class=CODE`, and the CSV download is on the page.
+
 ```bash
 # make a class (send the header only if TEACHER_PASSWORD is set); skills: skill ids and/or areas, default all
 curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
@@ -752,7 +767,9 @@ beats every baseline, is calibrated within 0.05, and ranks the true difficulties
 and class practice: the curriculum covers every skill with prerequisites first, the fixed sequence walks level by level,
 the adaptive choice aims at the target, moves on after mastery, goes up and down a level and interleaves, a class's
 skills and plan come back right, attempts must match the student's condition, the browser moves its plan on as the
-server will, a database from before class practice is upgraded, and simulated studies treat both conditions alike. GitHub Actions runs typecheck, tests and build on every push, and
+server will, a database from before class practice is upgraded, and simulated studies treat both conditions alike;
+and the dashboard: teacher-only, mastery for every student and skill, group figures and logged-prediction calibration
+that match hand-worked values. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
 
 ## Project layout
@@ -767,6 +784,9 @@ src/model/simulate.ts     synthetic learners with a known truth, for tests and t
 src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
 src/components/StudentPanel.tsx  joining a class, signing back in, deleting your answers
+server/dashboard.ts       the teacher's dashboard data: mastery per student and skill, the two groups, calibration
+src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes, codes, groups, mastery heatmap, calibration
+src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashboard's charts and their readouts
 scripts/evaluate-model.ts `npm run model`: the metrics for a CSV export or a simulated class
 scripts/simulate-study.ts `npm run simulate`: adaptive against fixed on simulated classes, across assumptions
 src/pages/HomePage.tsx    board list
@@ -837,7 +857,7 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 ## Roadmap ideas
 
 - Practice: more skills (complex numbers, matrices), timed quizzes
-- Class study: a mastery dashboard, pre-/post-tests
+- Class study: pre-/post-tests and timed sessions
 - Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools

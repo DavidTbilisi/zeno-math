@@ -51,6 +51,8 @@ const call = async (method: string, path: string, body?: unknown, headers: Recor
 
 const newClass = async (name = "7B") => (await call("POST", "/api/classes", { name }, TEACHER)).body as { code: string };
 
+const close = (a: number, b: number) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≉ ${b}`);
+
 let n = 0;
 const attempt = (student: string, extra: Record<string, unknown> = {}) => ({
   clientId: `test-${Date.now()}-${n++}`,
@@ -288,4 +290,45 @@ test("a database from before class practice gets the new columns", async () => {
   assert.ok(plan.body.state.students.me);
   const csv = (await call("GET", "/api/research/attempts.csv", undefined, TEACHER, base)).body as string;
   assert.match(csv.split("\n")[1], /^1,s1,OLDOLD,fixed,free,,/);
+});
+
+test("the dashboard: mastery for every student and skill, the two groups, and the logged predictions", async () => {
+  const { code } = (await call("POST", "/api/classes", { name: "Dash", skills: ["linear", "expand"] }, TEACHER)).body;
+  assert.equal((await call("GET", `/api/research/dashboard?class=${code}`)).status, 403);
+  assert.equal((await call("GET", "/api/research/dashboard?class=NOPE22", undefined, TEACHER)).status, 404);
+  const empty = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.deepEqual(empty.students, []);
+  assert.equal(empty.calibration.n, 0);
+  assert.equal(empty.conditions.adaptive.rightFirst, null);
+
+  const joined = [];
+  for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: code })).body);
+  const right = { outcome: "solved", msTotal: 4000, answers: [{ input: "3", verdict: "correct", ms: 4000 }] };
+  for (const s of joined) {
+    // Class practice, with the model's chance logged; then a free question that was revealed without a try.
+    await call("POST", "/api/attempts", attempt(s.code, { ...right, policy: s.condition, predicted: 0.7, skill: "linear", level: 1 }));
+    await call("POST", "/api/attempts", attempt(s.code, { outcome: "revealed", answers: [], solutionViewed: true, skill: "expand", predicted: 0.4 }));
+  }
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.deepEqual(d.class.skills, ["linear", "expand"]);
+  assert.equal(d.students.length, 4);
+  const s = d.students[0];
+  assert.match(s.id, /^s\d+$/);
+  assert.equal(s.answered, 2);
+  assert.equal(s.rightFirst, 0.5);
+  assert.deepEqual(Object.keys(s.mastery), ["linear", "expand"]);
+  assert.equal(s.mastery.linear.n, 1);
+  assert.ok(s.mastery.linear.p[0] > s.mastery.linear.p[1] && s.mastery.linear.p[1] > s.mastery.linear.p[2]);
+  for (const c of ["adaptive", "fixed"]) {
+    const g = d.conditions[c];
+    assert.deepEqual([g.students, g.answered, g.classPractice, g.rightFirst, g.solutionViewed, g.skipped], [2, 4, 2, 0.5, 0.5, 0]);
+    close(g.predicted, 0.7);
+    close(g.offTarget, 0.05);
+    assert.equal(g.medianSeconds, (4 + 41) / 2); // the right answers took 4 s, the revealed questions 41 s
+  }
+  // Eight logged predictions: 0.7 came true four times, 0.4 failed four times.
+  assert.equal(d.calibration.n, 8);
+  assert.equal(d.calibration.auc, 1);
+  const bins = d.calibration.bins.filter((b: { n: number }) => b.n);
+  assert.deepEqual(bins.map((b: { n: number; observed: number }) => [b.n, b.observed]), [[4, 0], [4, 1]]);
 });

@@ -1,4 +1,6 @@
+import type { Dashboard } from "../server/dashboard";
 import type { Attempt, Plan, SendResult, Student } from "./learner";
+import type { SkillId } from "./math/practiceSkills";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
@@ -10,13 +12,13 @@ export class ApiError extends Error {
   }
 }
 
-async function req<T>(method: string, url: string, body?: unknown, keepalive = false): Promise<T> {
+async function req<T>(method: string, url: string, body?: unknown, keepalive = false, headers: Record<string, string> = {}): Promise<T> {
   const json = body === undefined ? undefined : JSON.stringify(body);
   const res = await fetch(url, {
     method,
     // Browsers refuse keepalive requests over 64 KB; a bigger one goes out normally and may not finish.
     keepalive: keepalive && (json?.length ?? 0) < 60000,
-    headers: json === undefined ? undefined : { "Content-Type": "application/json" },
+    headers: json === undefined ? headers : { "Content-Type": "application/json", ...headers },
     body: json,
   });
   if (!res.ok) throw new ApiError(`${method} ${url}: ${res.status}`, res.status);
@@ -53,3 +55,31 @@ export const study = {
     }
   },
 };
+
+export type ClassSummary = {
+  code: string;
+  name: string;
+  skills: SkillId[];
+  createdAt: number;
+  students: number;
+  adaptive: number;
+  fixed: number;
+  attempts: number;
+};
+export type { Dashboard };
+
+/** The teacher's side of the study. The password goes in a header (empty when the server doesn't ask for one). */
+export function teacherApi(password: string) {
+  const headers: Record<string, string> = password ? { "X-Teacher-Password": password } : {};
+  return {
+    classes: () => req<ClassSummary[]>("GET", "/api/classes", undefined, false, headers),
+    create: (name: string, skills?: string[]) => req<ClassSummary>("POST", "/api/classes", { name, skills }, false, headers),
+    dashboard: (code: string) => req<Dashboard>("GET", `/api/research/dashboard?class=${encodeURIComponent(code)}`, undefined, false, headers),
+    /** The CSV export as a file to save (a plain link can't send the password header). */
+    async csv(code?: string): Promise<Blob> {
+      const res = await fetch(`/api/research/attempts.csv${code ? `?class=${encodeURIComponent(code)}` : ""}`, { headers });
+      if (!res.ok) throw new ApiError(`GET attempts.csv: ${res.status}`, res.status);
+      return res.blob();
+    },
+  };
+}
