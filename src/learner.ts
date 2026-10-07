@@ -1,12 +1,22 @@
 // The student's side of the practice study: the code they joined a class with, the record of the question they are
 // on, and an outbox that keeps finished questions in this browser until the server has them (classroom Wi-Fi drops).
 import type { Exercise, Verdict } from "./math/practice";
+import type { SkillId } from "./math/practiceSkills";
+import { EloModel, type ModelState } from "./model/elo";
+import { evidence } from "./model/evaluate";
+import { RECENT } from "./model/policy";
 
 export type Condition = "adaptive" | "fixed";
 export type Student = { code: string; class: string; condition: Condition };
 /** correct; close (nearly); wrong; form (right idea, wrong form: sent back without counting as a miss). */
 export type AnswerVerdict = "correct" | "close" | "wrong" | "form";
 export type Outcome = "solved" | "revealed" | "skipped";
+/** Who chose the question: the student's condition (class practice), the student (free practice), or the review of misses. */
+export type ChosenBy = Condition | "free" | "review";
+/** How a question came to be asked, recorded with it. */
+export type Origin = { policy: ChosenBy; review: boolean; predicted: number | null };
+/** What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me". */
+export type Plan = { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: ModelState };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 
 /** What the server stores for one question (see server/research.ts, which works out the summary columns). */
@@ -18,6 +28,9 @@ export type Attempt = {
   seed: number;
   review: boolean;
   outcome: Outcome;
+  policy: ChosenBy;
+  /** The learner model's chance of a right first answer when the question was shown (null without a model). */
+  predicted: number | null;
   solutionViewed: boolean;
   msTotal: number;
   answers: LoggedAnswer[];
@@ -52,7 +65,7 @@ export function finish(log: QuestionLog, outcome: Exclude<Outcome, "skipped">, n
 const newId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
 
 /** The record of a question the student is leaving, or null when there is nothing to learn from it (never tried). */
-export function toAttempt(log: QuestionLog, ex: Exercise, review: boolean, student: Student, now = performance.now(), id = newId()): Attempt | null {
+export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, student: Student, now = performance.now(), id = newId()): Attempt | null {
   if (!log.outcome && !log.answers.length) return null;
   return {
     clientId: id,
@@ -60,13 +73,35 @@ export function toAttempt(log: QuestionLog, ex: Exercise, review: boolean, stude
     skill: ex.skill,
     level: ex.level,
     seed: ex.seed,
-    review,
+    review: origin.review,
     outcome: log.outcome ?? "skipped",
+    policy: origin.policy,
+    predicted: origin.predicted,
     solutionViewed: log.solutionViewed,
     msTotal: log.msTotal ?? ms(log, now),
     answers: log.answers,
     shownAt: log.shownAt,
   };
+}
+
+/** The student's own name in the model the browser keeps (the server sends their ratings under it). */
+export const ME = "me";
+/** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
+export type ClassPlan = { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: EloModel };
+export const toClassPlan = (p: Plan): ClassPlan =>
+  ({ condition: p.condition, skills: p.skills, position: p.position, recent: p.recent, model: EloModel.fromState(p.state) });
+/** What the server will do once it has the attempt: the model learns from it, the fixed sequence moves on. */
+export function applyAttempt(plan: ClassPlan, a: Attempt) {
+  const correct = attemptEvidence(a);
+  if (correct !== null) plan.model.update({ student: ME, skill: a.skill, level: a.level, correct });
+  if (a.policy === "fixed") plan.position++;
+  plan.recent = [...plan.recent, a.skill].slice(-RECENT);
+}
+
+/** What the attempt tells the learner model, by the same rule the server uses (null: nothing). */
+export function attemptEvidence(a: Attempt): boolean | null {
+  const counted = a.answers.filter((x) => x.verdict !== "form");
+  return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct");
 }
 
 // ---------- storage ----------

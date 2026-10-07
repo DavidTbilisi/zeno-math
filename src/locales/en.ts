@@ -3693,6 +3693,12 @@ export const en = {
       noStudent: "No student has that code.",
       offline: "Couldn't reach the server. Try again.",
       unsaved: "{n} answered questions waiting to be saved",
+      classPractice: "Class practice",
+      freePractice: "Free practice",
+      chosen: "Chosen for you: {skill}, {level}",
+      loadingPlan: "Getting your questions…",
+      planError: "Couldn't load your class practice. Free practice still works.",
+      retry: "Try again",
     },
   },
 };

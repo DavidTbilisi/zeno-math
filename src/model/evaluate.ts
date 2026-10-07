@@ -116,18 +116,23 @@ export function parseCsv(text: string): Record<string, string>[] {
 }
 
 /**
- * The observation an exported attempt gives, or null when it says nothing about what the student knows.
- * Right first time counts as right; a first counted answer that was wrong or nearly right counts as wrong; so does
- * revealing the answer without trying. A question left after only form messages ("lowest terms") is skipped: the
- * student had the right idea and never got as far as a counted answer.
+ * What an attempt says about the student, the same wherever it is read (server, browser, CSV): right first time is
+ * right; a first counted answer that was wrong or nearly right is wrong; so is revealing the answer without trying.
+ * null for a question left after only form messages ("lowest terms"): the student had the right idea and never got
+ * as far as a counted answer. counted = answers that weren't sent back for their form.
  */
+export function evidence(counted: number, outcome: string, firstCorrect: boolean): boolean | null {
+  if (counted > 0) return firstCorrect;
+  return outcome === "revealed" ? false : null;
+}
+
+/** The observation an exported attempt gives, or null when it says nothing about what the student knows. */
 export function observation(row: Record<string, string>): (Observation & { condition: string; attempt: number }) | null {
   const skill = row.skill as SkillId;
   const level = Number(row.level) as Level;
   if (!ALL_SKILLS.includes(skill) || ![1, 2, 3].includes(level)) return null;
-  const counted = Number(row.n_answers) - Number(row.retries);
-  if (counted <= 0 && row.outcome !== "revealed") return null;
-  return { student: row.student, skill, level, correct: counted > 0 && row.first_correct === "1", condition: row.condition, attempt: Number(row.attempt) };
+  const correct = evidence(Number(row.n_answers) - Number(row.retries), row.outcome, row.first_correct === "1");
+  return correct === null ? null : { student: row.student, skill, level, correct, condition: row.condition, attempt: Number(row.attempt) };
 }
 /** Every usable attempt in the order it was stored. */
 export const observationsFromCsv = (text: string) =>

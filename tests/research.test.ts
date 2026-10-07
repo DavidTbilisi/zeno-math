@@ -1,10 +1,13 @@
 // The practice study's API: classes need the teacher password, students are randomised in balanced blocks, attempts are
 // checked and summarised from their answers, a retried upload is stored once, deleting a student deletes their answers,
-// the CSV export names students by number, never by code, and the learner model reads it back.
+// the CSV export names students by number, never by code, and the learner model reads it back. Class practice: a
+// class's skills, the plan a student's browser chooses from, attempts that must come from the student's own condition,
+// and a database from before these columns that gets them on start.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { normalizeCode, parseAttempt } from "../server/research.ts";
@@ -15,26 +18,29 @@ const PORT = 20000 + Math.floor(Math.random() * 20000);
 const BASE = `http://127.0.0.1:${PORT}`;
 const TEACHER = { "X-Teacher-Password": "chalk" };
 const dir = mkdtempSync(join(tmpdir(), "zeno-research-"));
-let server: ChildProcess;
+const servers: ChildProcess[] = [];
 
-before(async () => {
-  server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "server/index.ts"], {
-    env: { ...process.env, PORT: String(PORT), DATA_DIR: join(dir, "data"), STATIC_DIR: join(dir, "dist"), APP_PASSWORD: "", TEACHER_PASSWORD: "chalk" },
+async function start(port: number, data: string) {
+  const server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "server/index.ts"], {
+    env: { ...process.env, PORT: String(port), DATA_DIR: join(dir, data), STATIC_DIR: join(dir, "dist"), APP_PASSWORD: "", TEACHER_PASSWORD: "chalk" },
     stdio: "pipe",
   });
+  servers.push(server);
   await new Promise<void>((ok, fail) => {
     server.stdout!.on("data", (d) => String(d).includes("listening") && ok());
     server.on("exit", (code) => fail(new Error(`server exited with ${code}`)));
   });
-});
+}
+
+before(() => start(PORT, "data"));
 
 after(async () => {
-  if (server.exitCode === null) await new Promise((ok) => (server.once("exit", ok), server.kill()));
+  for (const server of servers) if (server.exitCode === null) await new Promise((ok) => (server.once("exit", ok), server.kill()));
   rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 });
 
-const call = async (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) => {
-  const res = await fetch(BASE + path, {
+const call = async (method: string, path: string, body?: unknown, headers: Record<string, string> = {}, base = BASE) => {
+  const res = await fetch(base + path, {
     method,
     headers: { "Content-Type": "application/json", ...headers },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -197,4 +203,89 @@ test("codes and summaries", () => {
   assert.equal(a.wrongs, 0);
   assert.equal(a.retries, 1);
   assert.equal(parseAttempt({ ...attempt("X"), answers: [{ input: "x".repeat(500), verdict: "correct", ms: 1 }] }).answers[0].input.length, 200);
+});
+
+test("a class practises the skills it was given, in curriculum order", async () => {
+  const made = await call("POST", "/api/classes", { name: "9C", skills: ["average", "algebra", "linear"] }, TEACHER);
+  assert.equal(made.status, 201);
+  assert.deepEqual(made.body.skills.slice(0, 4), ["average", "linear", "expand", "factor"]);
+  assert.equal(made.body.skills.length, 13); // the 12 algebra skills and averages
+  assert.equal((await call("POST", "/api/classes", { skills: ["astrology"] }, TEACHER)).status, 400);
+  assert.equal((await call("POST", "/api/classes", { skills: [] }, TEACHER)).status, 400);
+  const all = (await call("POST", "/api/classes", { name: "everything" }, TEACHER)).body;
+  assert.equal(all.skills.length, 38);
+  const listed = (await call("GET", "/api/classes", undefined, TEACHER)).body as { code: string; skills: string[] }[];
+  assert.deepEqual(listed.find((c) => c.code === made.body.code)!.skills, made.body.skills);
+});
+
+test("the plan: condition, skills, place in the fixed sequence, recent skills and the student's own ratings", async () => {
+  const { code } = (await call("POST", "/api/classes", { skills: ["volume", "circles"] }, TEACHER)).body;
+  const joined = (await call("POST", "/api/students", { class: code })).body;
+  const plan = async () => (await call("GET", `/api/students/${joined.code}/plan`)).body;
+  const fresh = await plan();
+  assert.deepEqual({ ...fresh, state: undefined }, { condition: joined.condition, skills: ["volume", "circles"], position: 0, recent: [], state: undefined });
+  assert.deepEqual(fresh.state.students, {});
+
+  const mine = { policy: joined.condition, predicted: 0.71, skill: "volume" };
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, mine))).status, 201);
+  // The other condition's policy, or a review that isn't marked as one, is refused.
+  const other = joined.condition === "fixed" ? "adaptive" : "fixed";
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: other }))).status, 400);
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: "review" }))).status, 400);
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: "fixed", review: true }))).status, 400);
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { predicted: 1.5 }))).status, 400);
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: "review", review: true, skill: "circles" }))).status, 201);
+
+  const after = await plan();
+  assert.equal(after.position, joined.condition === "fixed" ? 1 : 0);
+  assert.deepEqual(after.recent, ["volume", "circles"]);
+  // Only this student's ratings come back, under "me"; difficulties are everyone's.
+  assert.deepEqual(Object.keys(after.state.students), ["me"]);
+  assert.ok(after.state.skills.volume && after.state.levels["volume:2"]);
+  assert.equal((await call("GET", `/api/students/${joined.code}/nope`)).status, 404);
+
+  const csv = (await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string;
+  const [head, first] = csv.split("\n");
+  const cols = head.split(",");
+  const cells = first.split(",");
+  assert.equal(cells[cols.indexOf("policy")], joined.condition);
+  assert.equal(cells[cols.indexOf("predicted")], "0.71");
+
+  // Deleting the student takes their answers out of the model as well.
+  const before = (await plan()).state.skills.circles[1];
+  const second = (await call("POST", "/api/students", { class: code })).body.code;
+  await call("POST", "/api/attempts", attempt(second, { skill: "circles" }));
+  const count = async () => (await call("GET", `/api/students/${second}/plan`)).body.state.skills.circles[1];
+  assert.equal(await count(), before + 1);
+  await call("DELETE", `/api/students/${joined.code}`);
+  assert.equal(await count(), 1);
+});
+
+test("a database from before class practice gets the new columns", async () => {
+  const data = join(dir, "old");
+  mkdirSync(data, { recursive: true });
+  const db = new DatabaseSync(join(data, "boards.db"));
+  db.exec(`
+    CREATE TABLE classes (code TEXT PRIMARY KEY, name TEXT NOT NULL, block TEXT NOT NULL DEFAULT '[]', created_at INTEGER NOT NULL);
+    CREATE TABLE students (id INTEGER PRIMARY KEY AUTOINCREMENT, code TEXT NOT NULL UNIQUE, class_code TEXT NOT NULL REFERENCES classes(code),
+      condition TEXT NOT NULL, created_at INTEGER NOT NULL);
+    CREATE TABLE attempts (id INTEGER PRIMARY KEY AUTOINCREMENT, client_id TEXT NOT NULL UNIQUE, student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+      skill TEXT NOT NULL, level INTEGER NOT NULL, seed INTEGER NOT NULL, review INTEGER NOT NULL, outcome TEXT NOT NULL, first_correct INTEGER NOT NULL,
+      wrongs INTEGER NOT NULL, retries INTEGER NOT NULL, solution_viewed INTEGER NOT NULL, ms_first INTEGER, ms_total INTEGER NOT NULL, answers TEXT NOT NULL,
+      shown_at INTEGER NOT NULL, created_at INTEGER NOT NULL);
+    INSERT INTO classes VALUES ('OLDOLD', 'old', '[]', 1);
+    INSERT INTO students VALUES (1, 'AAAA-BBBB', 'OLDOLD', 'fixed', 1);
+    INSERT INTO attempts VALUES (1, 'old-attempt-1', 1, 'linear', 2, 5, 0, 'solved', 1, 0, 0, 0, 900, 900, '[]', 1, 1);
+  `);
+  db.close();
+  const port = PORT + 1;
+  await start(port, "old");
+  const base = `http://127.0.0.1:${port}`;
+  const plan = await call("GET", "/api/students/AAAA-BBBB/plan", undefined, {}, base);
+  assert.equal(plan.status, 200);
+  assert.equal(plan.body.skills.length, 38); // no skills stored: the whole curriculum
+  assert.equal(plan.body.position, 0); // the old attempt counts as free practice
+  assert.ok(plan.body.state.students.me);
+  const csv = (await call("GET", "/api/research/attempts.csv", undefined, TEACHER, base)).body as string;
+  assert.match(csv.split("\n")[1], /^1,s1,OLDOLD,fixed,free,,/);
 });

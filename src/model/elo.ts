@@ -39,6 +39,12 @@ export const DEFAULT_PARAMS: EloParams = {
 
 type Rating = { v: number; n: number };
 type StudentState = { global: Rating; area: Map<Area, Rating>; skill: Map<SkillId, Rating> };
+/** Each rating as [value, answers it rests on]. */
+export type ModelState = {
+  skills: Record<string, [number, number]>;
+  levels: Record<string, [number, number]>;
+  students: Record<string, { global: [number, number]; area: Record<string, [number, number]>; skill: Record<string, [number, number]> }>;
+};
 export type Mastery = { skill: SkillId; n: number; ability: number; p: Record<Level, number> };
 
 export const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
@@ -105,19 +111,29 @@ export class EloModel {
     return { skill, n: this.students.get(student)?.skill.get(skill)?.n ?? 0, ability: this.ability(student, skill), p: { 1: at(1), 2: at(2), 3: at(3) } };
   }
 
-  /** What the model has learnt: every rating, for the dashboard and for checking the model against the data. */
-  snapshot() {
+  /** What the model has learnt, as plain JSON: every difficulty, and the ratings of the students asked for (all if none). */
+  state(students?: readonly string[]): ModelState {
+    const pair = (r: Rating): [number, number] => [r.v, r.n];
+    const pairs = <K extends string>(m: Map<K, Rating>) => Object.fromEntries([...m].map(([k, r]) => [k, pair(r)]));
+    const ids = students ?? [...this.students.keys()];
     return {
-      items: Object.fromEntries([...this.levels].map(([k, r]) => {
-        const [skill, level] = k.split(":") as [SkillId, string];
-        return [k, { d: this.difficulty(skill, Number(level) as Level), n: r.n }];
+      skills: pairs(this.skills),
+      levels: pairs(this.levels),
+      students: Object.fromEntries(ids.flatMap((id) => {
+        const s = this.students.get(id);
+        return s ? [[id, { global: pair(s.global), area: pairs(s.area), skill: pairs(s.skill) }]] : [];
       })),
-      students: Object.fromEntries([...this.students].map(([id, s]) => [id, {
-        global: s.global.v,
-        n: s.global.n,
-        area: Object.fromEntries([...s.area].map(([a, r]) => [a, r.v])),
-        skill: Object.fromEntries([...s.skill].map(([k, r]) => [k, { v: r.v, n: r.n }])),
-      }])),
     };
+  }
+  /** A model that carries on from a saved state (the server's, sent to a student's browser). */
+  static fromState(state: ModelState, params: Partial<EloParams> = {}): EloModel {
+    const m = new EloModel(params);
+    const rating = ([v, n]: [number, number]): Rating => ({ v, n });
+    const map = <K extends string>(o: Record<string, [number, number]>) => new Map(Object.entries(o).map(([k, r]) => [k as K, rating(r)]));
+    m.skills = map<SkillId>(state.skills);
+    m.levels = map(state.levels);
+    for (const [id, s] of Object.entries(state.students))
+      m.students.set(id, { global: rating(s.global), area: map<Area>(s.area), skill: map<SkillId>(s.skill) });
+    return m;
   }
 }

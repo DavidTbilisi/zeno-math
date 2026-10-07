@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { study } from "../api";
+import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
-import { finish, localSlot, loadStudent, logAnswer, Outbox, saveStudent, startLog, toAttempt, type QuestionLog, type Student } from "../learner";
+import {
+  applyAttempt, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, type ClassPlan, type Origin,
+  type QuestionLog, type Student,
+} from "../learner";
+import { choose as choosePolicy } from "../model/policy";
 import type { Dict } from "../locales/en";
 import { fill } from "../math/chart";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
@@ -48,7 +52,8 @@ const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 const areaLabel = (t: Dict, a: Area) =>
   ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData })[a];
 
-type Current = { ex: Exercise; review: boolean };
+type Current = { ex: Exercise } & Origin;
+const freeOrigin: Origin = { policy: "free", review: false, predicted: null };
 
 /** Finished questions of a student in a class study, on their way to the server. */
 const outbox = new Outbox(localSlot("zeno.outbox.v1"), study.send);
@@ -73,16 +78,29 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
 
   // ---------- practise ----------
 
-  const nextExercise = (a: Area, p: Pick, L: Level, prog: Progress): Current => {
-    const fits = (m: Mistake) => (p === "mixed" ? areaOf(m.skill) === a : m.skill === p);
+  // The class study's plan (null until loaded, or when nobody is signed in); kept in a ref because answering moves it on.
+  const planRef = useRef<ClassPlan | null>(null);
+  const predicted = (skill: SkillId, L: Level) => planRef.current?.model.predict({ student: ME, skill, level: L }) ?? null;
+  /**
+   * The next question. Missed ones come back first; then, in class practice, the student's condition chooses
+   * (fixed sequence or adaptive), otherwise the topic and level picked above.
+   */
+  const nextExercise = (a: Area, p: Pick, L: Level, prog: Progress, plan: ClassPlan | null): Current => {
+    const fits = (m: Mistake) => (plan ? plan.skills.includes(m.skill) : p === "mixed" ? areaOf(m.skill) === a : m.skill === p);
     const due = prog.mistakes.find((m) => fits(m) && m.due <= prog.answered);
-    if (due) return { ex: exercise(due.skill, due.level, due.seed, w), review: true };
+    if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
+    if (plan) {
+      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent });
+      return { ex: exercise(c.skill, c.level, newSeed(), w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
+    }
     const skills = SKILLS[a] as readonly SkillId[];
     const skill = p === "mixed" ? skills[Math.floor(Math.random() * skills.length)] : p;
-    return { ex: exercise(skill, L, newSeed(), w), review: false };
+    return { ex: exercise(skill, L, newSeed(), w), ...freeOrigin, predicted: predicted(skill, L) };
   };
   const [cur, setCur] = useState<Current>(() =>
-    initial?.count === 1 && initial.skill !== "mixed" ? { ex: exercise(initial.skill, initial.level, initial.seed, w), review: false } : nextExercise(area, pick, level, progress),
+    initial?.count === 1 && initial.skill !== "mixed"
+      ? { ex: exercise(initial.skill, initial.level, initial.seed, w), ...freeOrigin }
+      : nextExercise(area, pick, level, progress, null),
   );
   const [input, setInput] = useState("");
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -95,10 +113,14 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
 
   const [student, setStudent] = useState<Student | null>(loadStudent);
   const [pending, setPending] = useState(() => outbox.items().length);
+  /** Class practice (the study chooses the questions) or free practice (the student does); only when signed in. */
+  const [inClass, setInClass] = useState(() => !!student && !initial);
+  const [planStatus, setPlanStatus] = useState<"none" | "loading" | "ready" | "error" | "gone">("none");
   const log = useRef<QuestionLog>(startLog());
-  // The question and student as of the last render, for leaving from listeners and on close.
-  const live = useRef({ cur, student });
-  live.current = { cur, student };
+  // State as of the last render, for listeners, the plan arriving, and closing.
+  const live = useRef({ cur, student, inClass, progress, area, pick, level });
+  live.current = { cur, student, inClass, progress, area, pick, level };
+  const classPlan = () => (live.current.student && live.current.inClass ? planRef.current : null);
   const sendQueued = (keepalive = false) => {
     setPending(outbox.items().length);
     void outbox.flush(keepalive).then(setPending);
@@ -106,12 +128,35 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   /** Records the question the student is leaving (moving on, changing topic, closing) and starts a fresh log. */
   const leaveQuestion = (keepalive = false) => {
     const { cur, student } = live.current;
-    const attempt = student && toAttempt(log.current, cur.ex, cur.review, student);
-    if (attempt) outbox.add(attempt);
+    const attempt = student && toAttempt(log.current, cur.ex, cur, student);
+    if (attempt) {
+      outbox.add(attempt);
+      // Free practice and reviews tell the model about the student too.
+      if (planRef.current) applyAttempt(planRef.current, attempt);
+    }
     log.current = startLog();
     sendQueued(keepalive);
   };
+  /** Fetches the student's plan; once it is here, a class question replaces one the student hasn't started on. */
+  const loadPlan = async (s: Student) => {
+    planRef.current = null;
+    setPlanStatus("loading");
+    try {
+      await outbox.flush(); // so the server's plan already counts what this browser has done
+      const plan = toClassPlan(await study.plan(s.code));
+      for (const a of outbox.items()) if (a.student === s.code) applyAttempt(plan, a); // still waiting to be sent
+      if (live.current.student?.code !== s.code) return; // signed out meanwhile
+      planRef.current = plan;
+      setPlanStatus("ready");
+      const { inClass, progress, area, pick, level } = live.current;
+      if (inClass && !log.current.answers.length && !log.current.outcome) show(nextExercise(area, pick, level, progress, plan));
+    } catch (e) {
+      // gone: the server has no such student (their answers were deleted, or the server was reset).
+      if (live.current.student?.code === s.code) setPlanStatus(e instanceof ApiError && e.status === 404 ? "gone" : "error");
+    }
+  };
   useEffect(() => {
+    if (student) void loadPlan(student);
     sendQueued(); // anything left from an earlier visit
     const onHide = () => leaveQuestion(true);
     const onOnline = () => sendQueued();
@@ -132,6 +177,21 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     setStudent(s);
     saveStudent(s);
     setPending(outbox.items().length);
+    live.current.student = s;
+    planRef.current = null;
+    setPlanStatus("none");
+    if (s) {
+      setInClass(true);
+      setMode("practise");
+      void loadPlan(s);
+    }
+  };
+  const switchPractice = (toClass: boolean) => {
+    setInClass(toClass);
+    live.current.inClass = toClass;
+    if (toClass) setMode("practise");
+    leaveQuestion();
+    show(nextExercise(area, pick, level, progress, classPlan()));
   };
 
   // The words can change (language switch): rebuild the same question in the new language.
@@ -187,30 +247,27 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     setDone((d) => d ?? "revealed");
     showSolution(cur.ex);
   };
-  const next = () => {
-    leaveQuestion();
-    const c = nextExercise(area, pick, level, progress);
+  /** Puts a new question up with a clean slate. */
+  function show(c: Current) {
     setCur(c);
     setInput("");
     setVerdict(null);
     setWrongs(0);
     setDone(null);
     setSolution(null);
+  }
+  const next = () => {
+    leaveQuestion();
+    show(nextExercise(area, pick, level, progress, classPlan()));
     inputRef.current?.focus();
   };
-  // A new topic or level starts a new question.
+  // A new topic or level starts a new question (free practice only: class practice has no topic menus).
   const choose = (a: Area, p: Pick, L: Level) => {
     setArea(a);
     setPick(p);
     setLevel(L);
     leaveQuestion();
-    const c = nextExercise(a, p, L, progress);
-    setCur(c);
-    setInput("");
-    setVerdict(null);
-    setWrongs(0);
-    setDone(null);
-    setSolution(null);
+    show(nextExercise(a, p, L, progress, null));
     setSheetSeed(newSeed());
   };
 
@@ -254,6 +311,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     onSubmit(spec, renderPractice(spec, w));
   };
 
+  const classOn = !!student && inClass;
   const stat = (s: SkillId) => progress.stats[s];
   const skills = SKILLS[area] as readonly SkillId[];
 
@@ -264,34 +322,61 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
+          <button className="btn primary" disabled={classOn && planStatus !== "ready" ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
             {initial ? t.update : t.insert}
           </button>
         </>
       }
     >
-      <Tabs items={AREAS} value={area} onChange={(a) => choose(a, "mixed", level)} label={(a) => areaLabel(t, a)} />
-      <small className="hint">{t.practiceHints[area]}</small>
-
-      <div className="snippets">
-        {(["mixed", ...skills] as Pick[]).map((s) => {
-          const st = s === "mixed" ? undefined : stat(s);
-          return (
-            <button key={s} className={`chip text${pick === s ? " selected" : ""}`} aria-pressed={pick === s} onClick={() => choose(area, s, level)}>
-              {s === "mixed" ? w.mixed : w.skills[s]}
-              {st && st.seen > 0 && <span className="practice-stat"> {fill(w.ui.progress, { right: st.right, seen: st.seen })}</span>}
-            </button>
-          );
-        })}
-      </div>
-      <div className="field-row">
-        <Segmented items={LEVELS} value={level} onChange={(L) => choose(area, pick, L)} label={(L) => w.levels[String(L) as "1" | "2" | "3"]} />
-        <Segmented items={["practise", "sheet"] as const} value={mode} onChange={setMode} label={(m) => (m === "practise" ? w.ui.practise : w.ui.sheet)} />
-      </div>
-
-      {mode === "practise" ? (
+      {student && (
+        <Segmented items={[true, false]} value={inClass} onChange={switchPractice} label={(c) => (c ? w.ui.classPractice : w.ui.freePractice)} />
+      )}
+      {!classOn && (
         <>
-          {cur.review && <small className="hint practice-review">↻ {w.ui.review}</small>}
+          <Tabs items={AREAS} value={area} onChange={(a) => choose(a, "mixed", level)} label={(a) => areaLabel(t, a)} />
+          <small className="hint">{t.practiceHints[area]}</small>
+
+          <div className="snippets">
+            {(["mixed", ...skills] as Pick[]).map((s) => {
+              const st = s === "mixed" ? undefined : stat(s);
+              return (
+                <button key={s} className={`chip text${pick === s ? " selected" : ""}`} aria-pressed={pick === s} onClick={() => choose(area, s, level)}>
+                  {s === "mixed" ? w.mixed : w.skills[s]}
+                  {st && st.seen > 0 && <span className="practice-stat"> {fill(w.ui.progress, { right: st.right, seen: st.seen })}</span>}
+                </button>
+              );
+            })}
+          </div>
+          <div className="field-row">
+            <Segmented items={LEVELS} value={level} onChange={(L) => choose(area, pick, L)} label={(L) => w.levels[String(L) as "1" | "2" | "3"]} />
+            <Segmented items={["practise", "sheet"] as const} value={mode} onChange={setMode} label={(m) => (m === "practise" ? w.ui.practise : w.ui.sheet)} />
+          </div>
+        </>
+      )}
+
+      {classOn && planStatus !== "ready" ? (
+        <>
+          <div className="field-row">
+            {planStatus === "gone" ? (
+              <span className="error">{w.ui.noStudent}</span>
+            ) : planStatus === "error" ? (
+              <>
+                <span className="error">{w.ui.planError}</span>
+                <button className="btn small" onClick={() => student && void loadPlan(student)}>{w.ui.retry}</button>
+              </>
+            ) : (
+              <span className="hint">{w.ui.loadingPlan}</span>
+            )}
+          </div>
+          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
+        </>
+      ) : mode === "practise" ? (
+        <>
+          {cur.review ? (
+            <small className="hint practice-review">↻ {w.ui.review}</small>
+          ) : (
+            classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
+          )}
           <div className="preview">
             {"error" in card ? <span className="error">{card.error}</span> : <img src={svgToDataUrl(card.svg)} alt="" style={{ maxWidth: "100%" }} />}
           </div>

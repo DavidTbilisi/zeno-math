@@ -180,6 +180,12 @@ export type PracticeWords = {
     noStudent: string;
     offline: string;
     unsaved: string;
+    classPractice: string;
+    freePractice: string;
+    chosen: string;
+    loadingPlan: string;
+    planError: string;
+    retry: string;
   };
 };
 

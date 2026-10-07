@@ -1,4 +1,4 @@
-import type { Attempt, SendResult, Student } from "./learner";
+import type { Attempt, Plan, SendResult, Student } from "./learner";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
@@ -37,6 +37,7 @@ export const api = {
 export const study = {
   join: (classCode: string) => req<Student>("POST", "/api/students", { class: classCode }),
   student: (code: string) => req<Student & { answered: number }>("GET", `/api/students/${encodeURIComponent(code)}`),
+  plan: (code: string) => req<Plan>("GET", `/api/students/${encodeURIComponent(code)}/plan`),
   forget: (code: string) => req<void>("DELETE", `/api/students/${encodeURIComponent(code)}`),
   async send(a: Attempt, keepalive: boolean): Promise<SendResult> {
     try {

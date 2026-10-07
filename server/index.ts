@@ -77,8 +77,8 @@ function cleanTitle(value: unknown): string {
 }
 
 async function handleApi(req: IncomingMessage, res: ServerResponse, path: string, query: URLSearchParams) {
-  const [, , resource, id] = path.split("/"); // "", "api", "boards", id?
-  if (RESEARCH_RESOURCES.has(resource)) return handleResearch(req, res, resource, id, query, db);
+  const [, , resource, id, sub] = path.split("/"); // "", "api", "boards", id?, sub?
+  if (RESEARCH_RESOURCES.has(resource)) return handleResearch(req, res, resource, id, sub, query, db);
   if (resource === "health" && req.method === "GET") {
     db.prepare("SELECT 1").get();
     return send(res, 200, { ok: true });

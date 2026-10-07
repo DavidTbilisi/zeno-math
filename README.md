@@ -612,18 +612,38 @@ whether the answer was revealed or the worked solution looked at, and how long t
 questions wait in the browser until the server has them, so a dropped connection loses nothing, and a retried upload
 is stored once. A student can delete everything saved under their code from the dialog.
 
+A signed-in student practises in one of two ways:
+
+- **Class practice:** the study chooses each question from the class's skills, and the student's condition decides
+  how (`src/model/policy.ts`):
+  - *fixed*: the skills in curriculum order, each at levels 1, 2 and 3 with two questions per level, then round again.
+  - *adaptive*: the skill and level where the learner model gives the student about a 75 % chance of a right first
+    answer, as in Math Garden. It skips skills the student has mastered (80 % at level 3) and skills whose
+    prerequisites they've shown weakness in (under 50 % at level 2). A skill from the last three questions counts as
+    further from the target, so practice interleaves.
+
+  Everything else is the same for both groups: the feedback, the worked solutions, and missed questions coming back
+  three questions later.
+- **Free practice:** the student picks the topic and level, as without a class.
+
+Each attempt records who chose it (`adaptive`, `fixed`, `free` or `review`) and the model's chance of a right answer
+when the question appeared (`predicted`), so the model can be checked against what happened. The browser gets the
+class-wide difficulties and its student's own ratings from the server (`/api/students/:code/plan`). It carries them
+forward after every answer, so class practice keeps going if the connection drops mid-lesson. The server can only
+refuse a class-practice attempt that claims the other condition's policy.
+
 ```bash
-# make a class (send the header only if TEACHER_PASSWORD is set)
-curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' -d '{"name":"7B"}'
+# make a class (send the header only if TEACHER_PASSWORD is set); skills: skill ids and/or areas, default all
+curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
+  -d '{"name":"7B","skills":["algebra","average"]}'
 # classes, with how many students are in each condition
 curl localhost:8787/api/classes -H 'X-Teacher-Password: …'
 # every attempt as CSV (add ?class=CODE for one class); students appear as s1, s2, … and never by their code
 curl -OJ localhost:8787/api/research/attempts.csv -H 'X-Teacher-Password: …'
 ```
 
-Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data. The condition
-is stored but nothing uses it yet; adaptive selection is the next step. Before collecting data from real students,
-check what consent and ethics approval your school or university requires.
+Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data. Before
+collecting data from real students, check what consent and ethics approval your school or university requires.
 
 ### Learner model
 
@@ -657,6 +677,32 @@ On the built-in simulation (120 students × 150 questions):
 The defaults were chosen on simulated classes, which are built with the same structure as the model, so these numbers
 only show that it works. Real answers will be noisier. Refit with `--fit` once real data exists, and report those
 numbers.
+
+### Simulation study
+
+`npm run simulate` runs the two conditions on simulated classes (60 students, 60 questions each, algebra; change these
+with `--skills`, `--students`, `--questions` and `--runs`). It reports Cohen's d of adaptive over fixed in test-score
+gain. The result depends on things a simulation has to assume: how much a question teaches (*flat*: always the same;
+*zpd*: most at an even chance), how much practising a skill helps the skills built on it (*transfer*), and how fast
+students learn (*rate*):
+
+| learning | transfer | rate | d | adaptive ahead in |
+|---|---|---|---|---|
+| flat | 0 | 0.02 | 0.13 | 60 % of classes |
+| flat | 0 | 0.1 | −0.16 | 30 % |
+| flat | 0.3 | 0.02 | 0.64 | 90 % |
+| flat | 0.6 | 0.1 | 0.24 | 90 % |
+| zpd | 0 | 0.02 | 0.02 | 50 % |
+| zpd | 0 | 0.1 | −0.36 | 10 % |
+| zpd | 0.3 | 0.02 | 0.39 | 100 % |
+| zpd | 0.6 | 0.1 | 0.12 | 70 % |
+
+In every row, adaptive questions are much nearer the target: 0.12 from a 75 % chance on average, against 0.27 for the
+fixed sequence. Whether that means more learning depends on the assumptions, from a clear loss to a clear gain. Adaptive
+practice spends more time on the skills others build on. That pays off when practice transfers, and costs when it
+doesn't. So the simulation can't answer the research question, but it does show the effect is unlikely to be large. At
+80 % power, d = 0.5 needs about 64 students per group and d = 0.3 about 175; a pre-test correlating 0.6 with the
+post-test cuts that by about a third (ANCOVA).
 
 ## Tests
 
@@ -702,7 +748,11 @@ in balanced blocks, attempts refused when they don't add up, summaries worked ou
 stored once, deletion, an export without sign-in codes, and an outbox that keeps attempts in order until they are sent;
 and the learner model: ratings move the right way by shrinking steps, an untried skill starts from the area, levels keep
 their order, the metrics match hand-worked values, the export reads back into the model, and on simulated learners it
-beats every baseline, is calibrated within 0.05, and ranks the true difficulties (ρ > 0.9) and students (ρ > 0.85). GitHub Actions runs typecheck, tests and build on every push, and
+beats every baseline, is calibrated within 0.05, and ranks the true difficulties (ρ > 0.9) and students (ρ > 0.85);
+and class practice: the curriculum covers every skill with prerequisites first, the fixed sequence walks level by level,
+the adaptive choice aims at the target, moves on after mastery, goes up and down a level and interleaves, a class's
+skills and plan come back right, attempts must match the student's condition, the browser moves its plan on as the
+server will, a database from before class practice is upgraded, and simulated studies treat both conditions alike. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
 
 ## Project layout
@@ -714,7 +764,11 @@ src/learner.ts            the student's side of the study: question log, attempt
 src/model/elo.ts          learner model: Elo ratings of students (overall / area / skill) and questions, mastery
 src/model/evaluate.ts     replay, metrics (log-loss, RMSE, AUC, calibration), baselines, reading the CSV export
 src/model/simulate.ts     synthetic learners with a known truth, for tests and the simulation study
+src/model/curriculum.ts   the fixed order of the skills and what each builds on
+src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
+src/components/StudentPanel.tsx  joining a class, signing back in, deleting your answers
 scripts/evaluate-model.ts `npm run model`: the metrics for a CSV export or a simulated class
+scripts/simulate-study.ts `npm run simulate`: adaptive against fixed on simulated classes, across assumptions
 src/pages/HomePage.tsx    board list
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
@@ -783,7 +837,7 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 ## Roadmap ideas
 
 - Practice: more skills (complex numbers, matrices), timed quizzes
-- Class study: adaptive exercise selection, a mastery dashboard, pre-/post-tests
+- Class study: a mastery dashboard, pre-/post-tests
 - Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools

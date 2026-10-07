@@ -1,12 +1,12 @@
 // The learner model: ratings move the right way and by less as evidence builds up, a new skill starts from the
 // student's area and overall ability, and on simulated learners with a known truth the model beats counting, is
-// calibrated, and finds the true difficulties and the true order of the students. Also the metrics, and reading the
-// CSV export into observations.
+// calibrated, and finds the true difficulties and the true order of the students. The simulation study runs both
+// conditions alike, and adaptive questions sit nearer the target. Also the metrics, and reading the CSV export.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { EloModel, type Observation } from "../src/model/elo.ts";
 import { auc, calibration, evaluate, globalRate, itemRate, logLoss, observation, parseCsv, studentSkillRate } from "../src/model/evaluate.ts";
-import { simulateRandom } from "../src/model/simulate.ts";
+import { makeWorld, runStudy, simulateRandom, summarise } from "../src/model/simulate.ts";
 import { ALL_SKILLS, LEVELS } from "../src/math/practice.ts";
 
 const close = (a: number, b: number, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol, `${a} ≉ ${b}`);
@@ -113,4 +113,31 @@ test("the CSV export becomes observations", () => {
   assert.deepEqual(obs[2] && { student: obs[2].student, skill: obs[2].skill, level: obs[2].level, condition: obs[2].condition }, {
     student: "s2", skill: "factor", level: 1, condition: "adaptive",
   });
+});
+
+test("the simulation study runs both conditions alike, and adaptive questions sit nearer the target", () => {
+  const params = { students: 20, questions: 30, seed: 5 };
+  const result = runStudy(params);
+  assert.deepEqual(runStudy(params), result, "the same seed gives the same study");
+  assert.equal(result.learners.filter((l) => l.condition === "adaptive").length, 10);
+  assert.equal(result.chosen.adaptive.length, 10 * 30);
+  assert.equal(result.chosen.fixed.length, 10 * 30);
+  const s = summarise(result);
+  assert.ok(s.adaptive.gain > 0 && s.fixed.gain > 0, "practice teaches");
+  assert.ok(s.adaptive.offTarget < s.fixed.offTarget - 0.05, `off target: adaptive ${s.adaptive.offTarget}, fixed ${s.fixed.offTarget}`);
+  assert.ok(Number.isFinite(s.d));
+});
+
+test("simulated learning: zpd teaches most at an even chance, transfer reaches the skills built on it", () => {
+  const gainOn = (opts: Parameters<typeof makeWorld>[0], skill: "linear" | "expand", level: 1 | 2 | 3) => {
+    const world = makeWorld({ students: 1, seed: 3, ...opts });
+    const l = world.learners[0];
+    const before = { linear: l.ability.get("linear")!, expand: l.ability.get("expand")! };
+    world.answer(l, "linear", level);
+    return l.ability.get(skill)! - before[skill];
+  };
+  close(gainOn({ learning: "flat" }, "linear", 1), 0.02);
+  assert.ok(gainOn({ learning: "zpd" }, "linear", 2) <= 0.02);
+  assert.equal(gainOn({ transfer: 0 }, "expand", 2), 0);
+  close(gainOn({ transfer: 0.5 }, "expand", 2), 0.01); // expand builds on linear
 });
