@@ -103,7 +103,7 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     };
   };
   const conditions = { adaptive: group("adaptive"), fixed: group("fixed") };
-  // Cohen's d of the gain, adaptive over fixed, with the pooled SD: a first look; the thesis analysis belongs in R.
+  // Cohen's d of the gain, adaptive over fixed, with the pooled SD: a first look; the planned analysis is `npm run analyse`.
   const [a, f] = [conditions.adaptive.gain, conditions.fixed.gain];
   const pooled = a.n >= 2 && f.n >= 2 ? Math.sqrt(((a.n - 1) * a.sd! ** 2 + (f.n - 1) * f.sd! ** 2) / (a.n + f.n - 2)) : null;
   const effect = pooled ? (a.mean! - f.mean!) / pooled : null;
