@@ -1,13 +1,14 @@
 // The student's side of the study: verdicts map onto what the server stores, a question nobody tried isn't recorded,
 // the outbox keeps attempts until the server has them, in order, without losing any added while it sends, and leaving
-// a question moves the class plan on (model, fixed-sequence position, recent skills) just as the server will.
+// a question moves the class plan on (model, fixed-sequence position, recent skills) just as the server will, and a
+// newer phase from the teacher keeps what the browser has carried forward.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { check, exercise } from "../src/math/practice.ts";
 import {
-  applyAttempt, attemptEvidence, finish, logAnswer, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, type Attempt, type Origin, type SendResult,
-  type Slot,
+  applyAttempt, attemptEvidence, finish, logAnswer, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, withProtocol, type Attempt, type Origin,
+  type Protocol, type SendResult, type Slot,
 } from "../src/learner.ts";
 import { EloModel } from "../src/model/elo.ts";
 
@@ -20,6 +21,9 @@ const memory = (): Slot & { value: string | null } => {
 };
 const fake = (id: string) => ({ clientId: id }) as Attempt;
 const free: Origin = { policy: "free", review: false, predicted: null };
+const protocol: Protocol = {
+  class: "7BXYZ2", phase: "open", sessionEnds: null, testLength: 12, tests: { pre: { form: "A", answered: [] }, post: { form: "B", answered: [] } },
+};
 
 test("verdicts", () => {
   assert.equal(verdictOf({ ok: true }), "correct");
@@ -96,7 +100,7 @@ test("the outbox survives a failing network and keeps attempts added mid-send", 
 });
 
 test("leaving a question moves the class plan on the way the server will", () => {
-  const plan = toClassPlan({ condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: new EloModel().state() });
+  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: new EloModel().state() });
   const base = { clientId: "x", student: student.code, level: 2 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, shownAt: 0, predicted: 0.5 };
   const right: Attempt = { ...base, skill: "linear", outcome: "solved", policy: "fixed", answers: [{ input: "3", verdict: "correct", ms: 1 }] };
   const before = plan.model.predict({ student: ME, skill: "linear", level: 2 });
@@ -113,4 +117,9 @@ test("leaving a question moves the class plan on the way the server will", () =>
   assert.equal(attemptEvidence(formOnly), null);
   assert.equal(attemptEvidence({ ...formOnly, outcome: "revealed", answers: [] }), false);
   assert.equal(attemptEvidence({ ...right, answers: [{ input: "6/2", verdict: "form", ms: 1 }, ...right.answers] }), true);
+
+  // The teacher moves the class on: the new phase and tests arrive, the model and sequence carried forward stay.
+  const moved = withProtocol(plan, { ...protocol, phase: "session", sessionEnds: 123, tests: { ...protocol.tests, pre: { form: "A", answered: [0, 1] } } });
+  assert.deepEqual([moved.phase, moved.sessionEnds, moved.tests.pre.answered, moved.position], ["session", 123, [0, 1], 5]);
+  assert.equal(moved.model, plan.model);
 });

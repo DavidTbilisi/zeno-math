@@ -2,7 +2,8 @@
 // checked and summarised from their answers, a retried upload is stored once, deleting a student deletes their answers,
 // the CSV export names students by number, never by code, and the learner model reads it back. Class practice: a
 // class's skills, the plan a student's browser chooses from, attempts that must come from the student's own condition,
-// and a database from before these columns that gets them on start.
+// and a database from before these columns that gets them on start. The protocol: phases and timed sessions set by the
+// teacher, counterbalanced test forms, one stored answer per test question, and the results on the dashboard.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
@@ -13,6 +14,7 @@ import { join } from "node:path";
 import { normalizeCode, parseAttempt } from "../server/research.ts";
 import { EloModel } from "../src/model/elo.ts";
 import { observationsFromCsv, replay } from "../src/model/evaluate.ts";
+import { testItems } from "../src/model/testForms.ts";
 
 const PORT = 20000 + Math.floor(Math.random() * 20000);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -225,7 +227,8 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   const joined = (await call("POST", "/api/students", { class: code })).body;
   const plan = async () => (await call("GET", `/api/students/${joined.code}/plan`)).body;
   const fresh = await plan();
-  assert.deepEqual({ ...fresh, state: undefined }, { condition: joined.condition, skills: ["volume", "circles"], position: 0, recent: [], state: undefined });
+  const { condition, skills, position, recent } = fresh;
+  assert.deepEqual({ condition, skills, position, recent }, { condition: joined.condition, skills: ["volume", "circles"], position: 0, recent: [] });
   assert.deepEqual(fresh.state.students, {});
 
   const mine = { policy: joined.condition, predicted: 0.71, skill: "volume" };
@@ -331,4 +334,94 @@ test("the dashboard: mastery for every student and skill, the two groups, and th
   assert.equal(d.calibration.auc, 1);
   const bins = d.calibration.bins.filter((b: { n: number }) => b.n);
   assert.deepEqual(bins.map((b: { n: number; observed: number }) => [b.n, b.observed]), [[4, 0], [4, 1]]);
+});
+
+test("the protocol: phases and sessions, counterbalanced forms, one answer per test question, results on the dashboard", async () => {
+  const skills = ["linear", "expand", "factor"];
+  assert.equal((await call("POST", "/api/classes", { skills, testLength: 3 }, TEACHER)).status, 400);
+  assert.equal((await call("POST", "/api/classes", { skills, testLength: 31 }, TEACHER)).status, 400);
+  const { code, testLength, phase } = (await call("POST", "/api/classes", { name: "Proto", skills, testLength: 6 }, TEACHER)).body;
+  assert.deepEqual([testLength, phase], [6, "open"]);
+
+  // Phases are the teacher's; a session needs its length.
+  const move = (body: unknown, headers: Record<string, string> = TEACHER) => call("POST", `/api/classes/${code}/phase`, body, headers);
+  assert.equal((await move({ phase: "pretest" }, {})).status, 403);
+  assert.equal((await move({ phase: "lunch" })).status, 400);
+  assert.equal((await move({ phase: "session" })).status, 400);
+  assert.equal((await call("POST", "/api/classes/NOPE22/phase", { phase: "open" }, TEACHER)).status, 404);
+  const session = (await move({ phase: "session", minutes: 20 })).body;
+  assert.ok(Math.abs(session.sessionEnds - (Date.now() + 20 * 60_000)) < 5000);
+
+  const students = [];
+  for (let i = 0; i < 8; i++) students.push((await call("POST", "/api/students", { class: code })).body);
+  const plans = await Promise.all(students.map(async (s) => (await call("GET", `/api/students/${s.code}/plan`)).body));
+  assert.deepEqual([plans[0].phase, plans[0].sessionEnds, plans[0].testLength, plans[0].class], ["session", session.sessionEnds, 6, code]);
+  // Within each condition, half take form A first.
+  for (const c of ["adaptive", "fixed"]) {
+    const firsts = plans.filter((p) => p.condition === c).map((p) => p.tests.pre.form);
+    assert.deepEqual([...firsts].sort(), ["A", "A", "B", "B"], c);
+    assert.ok(plans.filter((p) => p.condition === c).every((p) => p.tests.post.form !== p.tests.pre.form));
+  }
+  await move({ phase: "pretest" });
+  assert.equal((await call("GET", `/api/students/${students[0].code}/plan`)).body.phase, "pretest");
+
+  let k = 0;
+  const answer = (student: string, phase: string, item: number, verdict: string, input = "1") =>
+    call("POST", "/api/tests", { clientId: `t-${Date.now()}-${k++}`, student, phase, item, input, verdict, retries: 0, ms: 9000 });
+  const s0 = students[0].code;
+  assert.equal((await answer(s0, "pre", 6, "correct")).status, 400); // only 6 questions: 0–5
+  assert.equal((await answer(s0, "mid", 0, "correct")).status, 400);
+  assert.equal((await answer(s0, "pre", 0, "great")).status, 400);
+  assert.equal((await answer("AAAA-BBBB", "pre", 0, "correct")).status, 404);
+  assert.equal((await answer(s0, "pre", 0, "correct", "=1+2")).status, 201);
+  const again = await answer(s0, "pre", 0, "wrong");
+  assert.deepEqual([again.status, again.body.stored], [200, false]); // the first answer stands
+
+  // Everyone takes both tests. Pre-test: 3 of 6 right (2 or 4 for some); post-test: adaptive gains more.
+  const prePattern = [3, 2, 3, 4];
+  const postPattern = { adaptive: [5, 6, 4, 5], fixed: [4, 3, 4, 5] } as Record<string, number[]>;
+  const seen = { adaptive: 0, fixed: 0 } as Record<string, number>;
+  for (const s of students) {
+    const i = seen[s.condition]++;
+    for (let item = 0; item < 6; item++) {
+      if (!(s.code === s0 && item === 0)) await answer(s.code, "pre", item, item < prePattern[i] ? "correct" : "wrong");
+      await answer(s.code, "post", item, item < postPattern[s.condition][i] ? "correct" : item === 5 ? "skipped" : "close");
+    }
+  }
+  const after = (await call("GET", `/api/students/${s0}/plan`)).body;
+  assert.deepEqual(after.tests.pre.answered, [0, 1, 2, 3, 4, 5]);
+
+  // The server worked out each question from the form; what was typed comes back as a JSON string.
+  const csv = (await call("GET", `/api/research/tests.csv?class=${code}`, undefined, TEACHER)).body as string;
+  const [head, ...lines] = csv.trim().split("\n");
+  assert.equal(lines.length, 8 * 12);
+  const cols = head.split(",");
+  const first = lines.find((l) => l.includes('"""=1+2"""'))!;
+  assert.ok(first, "the typed answer is quoted, not a formula");
+  const cells = first.match(/("([^"]|"")*"|[^,]*)(,|$)/g)!.map((c) => c.replace(/,$/, ""));
+  const row = Object.fromEntries(cols.map((c, i) => [c, cells[i]]));
+  const q = testItems(code, skills as never, plans[0].tests.pre.form, 6)[0];
+  assert.deepEqual([row.phase, row.form, row.item, row.skill, row.level, row.seed, row.correct], ["pre", plans[0].tests.pre.form, "0", q.skill, String(q.level), String(q.seed), "1"]);
+
+  // Practice time counts the questions class practice chose.
+  await call("POST", "/api/attempts", attempt(s0, { policy: students[0].condition, msTotal: 120_000 }));
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.deepEqual([d.class.phase, d.class.testLength], ["pretest", 6]);
+  const me = d.students.find((x: { code: string }) => x.code === s0);
+  assert.equal(me.practiceMinutes, 2);
+  assert.deepEqual([me.pre.complete, me.post.complete], [true, true]);
+  const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  for (const c of ["adaptive", "fixed"]) {
+    const g = d.conditions[c];
+    assert.deepEqual([g.pre.n, g.post.n, g.gain.n], [4, 4, 4]);
+    close(g.pre.mean, mean(prePattern) / 6);
+    close(g.post.mean, mean(postPattern[c]) / 6);
+  }
+  assert.ok(d.tests.effect > 0, `d = ${d.tests.effect}`);
+  assert.equal(d.tests.forms.A.n + d.tests.forms.B.n, 8);
+
+  // Deleting a student takes their test answers too.
+  await call("DELETE", `/api/students/${s0}`);
+  const left = (await call("GET", `/api/research/tests.csv?class=${code}`, undefined, TEACHER)).body as string;
+  assert.equal(left.trim().split("\n").length - 1, 7 * 12);
 });

@@ -632,6 +632,24 @@ class-wide difficulties and its student's own ratings from the server (`/api/stu
 forward after every answer, so class practice keeps going if the connection drops mid-lesson. The server can only
 refuse a class-practice attempt that claims the other condition's policy.
 
+**The protocol.** The teacher runs the study from the dashboard by setting what the class is doing now. Students see
+the change within half a minute:
+
+- *Open practice:* class practice whenever students like, untimed.
+- *Pre-test* / *post-test:* the test, for students who haven't finished it. Class practice waits.
+- *Timed session:* class practice with a countdown, the same window for everyone in the room, so both groups get equal
+  practice time. When it ends, class practice stops; free practice stays open.
+- *Closed:* no class practice.
+
+The two tests come in parallel forms, A and B. Both ask about the same skills at the same levels in the same order, but
+with different questions, built from the class code, so every browser and the server build the same form. Within each
+condition, students alternate between taking A first and B first, so a harder form can't pass for learning; the
+dashboard compares the forms on the pre-test. A test shows no marks and no solutions. Only a wrong-*form* message
+("lowest terms") allows another try, so notation isn't penalised. Passing a question counts as an answer. Each question
+is answered once; the server works out which question it was from the form, so a client can't answer a question that
+wasn't on its test. Test answers never reach the learner model, so the outcome measure stays independent of what the
+adaptive condition learns from. The test length is set per class (4–30 questions, default 12).
+
 Teachers follow a class at **`#/teacher`** (linked from the home page; it asks for `TEACHER_PASSWORD` when one is
 set). There they can make classes and hand out the codes, and see for each class:
 
@@ -642,6 +660,10 @@ set). There they can make classes and hand out the codes, and see for each class
   medium level. The scale has five bins, validated as an ordinal colour ramp for both light and dark mode, and grey
   means no answers yet. Each group's average sits on top. Hovering a cell gives all three levels; "show numbers" puts
   the percentages in the cells.
+- **The pre- and post-test:** scores per group as mean (SD, n) over completed tests, the gain for students who
+  completed both, Cohen's d of the gain as a first look, and the form check. Each student's scores also appear beside
+  their row in the heatmap, in brackets while a test is unfinished.
+- **Practice time per student,** from the questions class practice chose: the check that both groups got equal time.
 - **Whether the model predicts well:** the chance logged when each question appeared, against what the student then
   did, as a calibration plot (bigger dots rest on more answers), with log-loss, AUC and a table view.
 
@@ -655,7 +677,15 @@ curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H '
 curl localhost:8787/api/classes -H 'X-Teacher-Password: …'
 # every attempt as CSV (add ?class=CODE for one class); students appear as s1, s2, … and never by their code
 curl -OJ localhost:8787/api/research/attempts.csv -H 'X-Teacher-Password: …'
+# every test answer: student, condition, form order, test, form, question, skill, level, seed, what was typed (as JSON), verdict
+curl -OJ localhost:8787/api/research/tests.csv -H 'X-Teacher-Password: …'
+# move a class on: open | pretest | session (with minutes) | posttest | closed
+curl -X POST localhost:8787/api/classes/CODE/phase -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
+  -d '{"phase":"session","minutes":20}'
 ```
+
+For the thesis, analyse the post-test with the pre-test as a covariate (ANCOVA), with the form order as a factor. Report
+the form check, the practice time per group, and how many students completed both tests in each group.
 
 Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data. Before
 collecting data from real students, check what consent and ethics approval your school or university requires.
@@ -769,7 +799,10 @@ the adaptive choice aims at the target, moves on after mastery, goes up and down
 skills and plan come back right, attempts must match the student's condition, the browser moves its plan on as the
 server will, a database from before class practice is upgraded, and simulated studies treat both conditions alike;
 and the dashboard: teacher-only, mastery for every student and skill, group figures and logged-prediction calibration
-that match hand-worked values. GitHub Actions runs typecheck, tests and build on every push, and
+that match hand-worked values; and the protocol: the forms are stable, parallel and spread over the skills, every test
+question accepts its own answer in all three languages, phases and sessions are the teacher's alone, forms are
+counterbalanced within each condition, each test question is stored once and worked out by the server, typed answers
+can't become spreadsheet formulas, and the dashboard's test figures match. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
 
 ## Project layout
@@ -784,7 +817,10 @@ src/model/simulate.ts     synthetic learners with a known truth, for tests and t
 src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
 src/components/StudentPanel.tsx  joining a class, signing back in, deleting your answers
-server/dashboard.ts       the teacher's dashboard data: mastery per student and skill, the two groups, calibration
+server/dashboard.ts       the teacher's dashboard data: mastery per student and skill, the two groups, tests, calibration
+server/protocol.ts        the study protocol: class phases, timed sessions, counterbalanced test forms, test answers
+src/model/testForms.ts    the pre-/post-test forms A and B, built from the class code
+src/components/TestRunner.tsx  taking a test: one question at a time, no marks, form messages only
 src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes, codes, groups, mastery heatmap, calibration
 src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashboard's charts and their readouts
 scripts/evaluate-model.ts `npm run model`: the metrics for a CSV export or a simulated class
@@ -857,7 +893,7 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 ## Roadmap ideas
 
 - Practice: more skills (complex numbers, matrices), timed quizzes
-- Class study: pre-/post-tests and timed sessions
+- Class study: a delayed post-test (retention), re-scoring test answers offline with the current checker
 - Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools

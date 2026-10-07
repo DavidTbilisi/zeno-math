@@ -11,12 +11,13 @@ import { evidence } from "../src/model/evaluate.ts";
 import { RECENT } from "../src/model/policy.ts";
 import { dashboard } from "./dashboard.ts";
 import { HttpError, readJson, send } from "./http.ts";
+import { classProtocol, initProtocol, nextTestOrder, parseTestLength, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
 // An attempt is a few hundred bytes; nothing legitimate comes near this.
 const MAX_ATTEMPT_BODY = 64 * 1024;
 
-export const RESEARCH_RESOURCES = new Set(["classes", "students", "attempts", "research"]);
+export const RESEARCH_RESOURCES = new Set(["classes", "students", "attempts", "tests", "research"]);
 
 export const CONDITIONS = ["adaptive", "fixed"] as const;
 export type Condition = (typeof CONDITIONS)[number];
@@ -93,6 +94,7 @@ export function initResearch(db: DatabaseSync) {
   add("attempts", "policy", "TEXT NOT NULL DEFAULT 'free'");
   // the learner model's chance of a right first answer when the question was shown
   add("attempts", "predicted", "REAL");
+  initProtocol(db);
 }
 
 /** A class's skills from what a teacher sent: skill ids and area names (all of that area), in curriculum order. */
@@ -223,18 +225,35 @@ const CSV_COLUMNS = [
   "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "shown_at", "created_at",
 ] as const;
 
+const TEST_CSV_COLUMNS = [
+  "response", "student", "class", "condition", "test_order", "phase", "form", "item", "area", "skill", "level", "seed", "input", "verdict",
+  "correct", "retries", "ms", "created_at",
+] as const;
+function sendCsv(res: ServerResponse, name: string, columns: readonly string[], rows: Record<string, unknown>[]) {
+  const stamp = new Date().toISOString().slice(0, 10);
+  res.writeHead(200, {
+    "Content-Type": "text/csv; charset=utf-8",
+    "Content-Disposition": `attachment; filename="zeno-${name}-${stamp}.csv"`,
+  }).end([columns.join(","), ...rows.map((r) => columns.map((c) => csvCell(r[c])).join(","))].join("\n") + "\n");
+}
+
 export async function handleResearch(
   req: IncomingMessage, res: ServerResponse, resource: string, id: string | undefined, sub: string | undefined, query: URLSearchParams, db: DatabaseSync,
 ) {
   const findStudent = (code: unknown) =>
-    db.prepare("SELECT id, code, class_code AS class, condition FROM students WHERE code = ?").get(normalizeCode(code)) as
-      { id: number; code: string; class: string; condition: Condition } | undefined;
+    db.prepare("SELECT id, code, class_code AS class, condition, test_order FROM students WHERE code = ?").get(normalizeCode(code)) as
+      { id: number; code: string; class: string; condition: Condition; test_order: string | null } | undefined;
+
+  if (resource === "classes" && id && sub === "phase" && req.method === "POST") {
+    teacher(req);
+    return setPhase(req, res, db, normalizeCode(decodeURIComponent(id)));
+  }
 
   if (resource === "classes" && !id) {
     teacher(req);
     if (req.method === "GET") {
       const rows = db.prepare(`
-        SELECT c.code, c.name, c.skills, c.created_at AS createdAt,
+        SELECT c.code, c.name, c.skills, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code) AS students,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.condition = 'adaptive') AS adaptive,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.condition = 'fixed') AS fixed,
@@ -247,11 +266,12 @@ export async function handleResearch(
       const body = await readJson(req, MAX_ATTEMPT_BODY);
       const name = String(body.name ?? "").trim().slice(0, 100) || "Class";
       const skills = parseSkills(body.skills);
+      const testLength = parseTestLength(body.testLength);
       const now = Date.now();
       let code = randomCode(CLASS_LEN);
       while (db.prepare("SELECT 1 FROM classes WHERE code = ?").get(code)) code = randomCode(CLASS_LEN);
-      db.prepare("INSERT INTO classes (code, name, skills, created_at) VALUES (?, ?, ?, ?)").run(code, name, skills && JSON.stringify(skills), now);
-      return send(res, 201, { code, name, skills: skills ?? [...CURRICULUM], createdAt: now });
+      db.prepare("INSERT INTO classes (code, name, skills, test_length, created_at) VALUES (?, ?, ?, ?, ?)").run(code, name, skills && JSON.stringify(skills), testLength, now);
+      return send(res, 201, { code, name, skills: skills ?? [...CURRICULUM], createdAt: now, phase: "open", sessionEnds: null, testLength });
     }
     return send(res, 405, { error: "method not allowed" });
   }
@@ -270,7 +290,8 @@ export async function handleResearch(
       while (findStudent(code)) code = randomCode(STUDENT_LEN);
       code = normalizeCode(code);
       db.prepare("UPDATE classes SET block = ? WHERE code = ?").run(JSON.stringify(block), klass.code);
-      db.prepare("INSERT INTO students (code, class_code, condition, created_at) VALUES (?, ?, ?, ?)").run(code, klass.code, condition, Date.now());
+      db.prepare("INSERT INTO students (code, class_code, condition, test_order, created_at) VALUES (?, ?, ?, ?, ?)")
+        .run(code, klass.code, condition, nextTestOrder(db, klass.code, condition), Date.now());
       return send(res, 201, { code, class: klass.code, condition });
     }
     if (!id) return send(res, 405, { error: "method not allowed" });
@@ -286,11 +307,14 @@ export async function handleResearch(
       const state = currentModel(db).state([`s${student.id}`]);
       const me = state.students[`s${student.id}`];
       return send(res, 200, {
+        class: student.class,
         condition: student.condition,
         skills: classSkills(skills),
         position,
         recent,
         state: { ...state, students: me ? { me } : {} },
+        ...classProtocol(db, student.class),
+        tests: studentTests(db, student),
       });
     }
     if (sub) return send(res, 404, { error: "not found" });
@@ -306,6 +330,8 @@ export async function handleResearch(
     }
     return send(res, 405, { error: "method not allowed" });
   }
+
+  if (resource === "tests" && !id && req.method === "POST") return recordTestAnswer(req, res, db, findStudent);
 
   if (resource === "attempts" && !id) {
     if (req.method !== "POST") return send(res, 405, { error: "method not allowed" });
@@ -345,22 +371,33 @@ export async function handleResearch(
       WHERE ? IS NULL OR s.class_code = ?
       ORDER BY a.id
     `).all(klass && normalizeCode(klass), klass && normalizeCode(klass)) as Record<string, unknown>[];
-    const lines = rows.map((r) => {
-      const row: Record<(typeof CSV_COLUMNS)[number], unknown> = {
-        ...(r as Record<string, unknown>),
-        area: areaOf(r.skill as SkillId),
-        n_answers: (JSON.parse(r.answers as string) as unknown[]).length,
-        shown_at: new Date(r.shown_at as number).toISOString(),
-        created_at: new Date(r.created_at as number).toISOString(),
-      } as never;
-      return CSV_COLUMNS.map((c) => csvCell(row[c])).join(",");
-    });
-    const stamp = new Date().toISOString().slice(0, 10);
-    res.writeHead(200, {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="zeno-attempts-${stamp}.csv"`,
-    }).end([CSV_COLUMNS.join(","), ...lines].join("\n") + "\n");
-    return;
+    return sendCsv(res, "attempts", CSV_COLUMNS, rows.map((r) => ({
+      ...r,
+      area: areaOf(r.skill as SkillId),
+      n_answers: (JSON.parse(r.answers as string) as unknown[]).length,
+      shown_at: new Date(r.shown_at as number).toISOString(),
+      created_at: new Date(r.created_at as number).toISOString(),
+    })));
+  }
+
+  // Every test answer as CSV, one row per student, test and question; ?class=CODE for one class. What was typed is a
+  // JSON string, so a spreadsheet never reads an answer like "=1+2" as a formula.
+  if (resource === "research" && id === "tests.csv" && req.method === "GET") {
+    teacher(req);
+    const klass = query.get("class");
+    const rows = db.prepare(`
+      SELECT t.id AS response, 's' || s.id AS student, s.class_code AS class, s.condition, COALESCE(s.test_order, '') AS test_order,
+        t.phase, t.form, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct, t.retries, t.ms, t.created_at
+      FROM test_responses t JOIN students s ON s.id = t.student_id
+      WHERE ? IS NULL OR s.class_code = ?
+      ORDER BY s.id, t.phase DESC, t.item
+    `).all(klass && normalizeCode(klass), klass && normalizeCode(klass)) as Record<string, unknown>[];
+    return sendCsv(res, "tests", TEST_CSV_COLUMNS, rows.map((r) => ({
+      ...r,
+      area: areaOf(r.skill as SkillId),
+      input: JSON.stringify(r.input),
+      created_at: new Date(r.created_at as number).toISOString(),
+    })));
   }
 
   return send(res, 404, { error: "not found" });

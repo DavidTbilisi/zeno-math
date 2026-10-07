@@ -186,6 +186,16 @@ export type PracticeWords = {
     loadingPlan: string;
     planError: string;
     retry: string;
+    preTest: string;
+    postTest: string;
+    testIntro: string;
+    testProgress: string;
+    submit: string;
+    pass: string;
+    testDone: string;
+    timeLeft: string;
+    sessionOver: string;
+    classClosed: string;
   };
 };
 

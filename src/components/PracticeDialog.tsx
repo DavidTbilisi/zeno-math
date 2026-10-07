@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, type ClassPlan, type Origin,
-  type QuestionLog, type Student,
+  applyAttempt, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, withProtocol, type ClassPlan,
+  type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { choose as choosePolicy } from "../model/policy";
 import type { Dict } from "../locales/en";
@@ -17,6 +17,7 @@ import { renderSolution } from "../math/practiceSolve";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
+import { TestRunner } from "./TestRunner";
 import { Segmented, startOr, Tabs } from "./ui";
 
 type Mode = "practise" | "sheet";
@@ -57,6 +58,20 @@ const freeOrigin: Origin = { policy: "free", review: false, predicted: null };
 
 /** Finished questions of a student in a class study, on their way to the server. */
 const outbox = new Outbox(localSlot("zeno.outbox.v1"), study.send);
+/** Their test answers, the same way. */
+const testOutbox = new Outbox<TestAnswer>(localSlot("zeno.testbox.v1"), study.sendTest);
+const queued = () => outbox.items().length + testOutbox.items().length;
+/** How often the dialog asks whether the teacher has moved the class on (a new phase, a session starting). */
+const PROTOCOL_POLL_MS = 30_000;
+/** Test answers still waiting to be sent count as answered, so the test doesn't ask the same question twice. */
+function markQueuedTests(plan: ClassPlan, studentCode: string) {
+  for (const a of testOutbox.items())
+    if (a.student === studentCode && !plan.tests[a.phase].answered.includes(a.item)) plan.tests[a.phase].answered.push(a.item);
+}
+const clock = (ms: number) => {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+};
 
 export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   initial?: PracticeSpec;
@@ -112,7 +127,9 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   // ---------- the class study: what happens on each question is saved under the student's code ----------
 
   const [student, setStudent] = useState<Student | null>(loadStudent);
-  const [pending, setPending] = useState(() => outbox.items().length);
+  const [pending, setPending] = useState(queued);
+  // The plan lives in a ref (answering moves it on); this re-renders when it changes in place.
+  const [, planChanged] = useReducer((n: number) => n + 1, 0);
   /** Class practice (the study chooses the questions) or free practice (the student does); only when signed in. */
   const [inClass, setInClass] = useState(() => !!student && !initial);
   const [planStatus, setPlanStatus] = useState<"none" | "loading" | "ready" | "error" | "gone">("none");
@@ -122,8 +139,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   live.current = { cur, student, inClass, progress, area, pick, level };
   const classPlan = () => (live.current.student && live.current.inClass ? planRef.current : null);
   const sendQueued = (keepalive = false) => {
-    setPending(outbox.items().length);
-    void outbox.flush(keepalive).then(setPending);
+    setPending(queued());
+    void Promise.all([outbox.flush(keepalive), testOutbox.flush(keepalive)]).then(([a, b]) => setPending(a + b));
   };
   /** Records the question the student is leaving (moving on, changing topic, closing) and starts a fresh log. */
   const leaveQuestion = (keepalive = false) => {
@@ -142,9 +159,10 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     planRef.current = null;
     setPlanStatus("loading");
     try {
-      await outbox.flush(); // so the server's plan already counts what this browser has done
+      await Promise.all([outbox.flush(), testOutbox.flush()]); // so the server's plan already counts what this browser has done
       const plan = toClassPlan(await study.plan(s.code));
       for (const a of outbox.items()) if (a.student === s.code) applyAttempt(plan, a); // still waiting to be sent
+      markQueuedTests(plan, s.code);
       if (live.current.student?.code !== s.code) return; // signed out meanwhile
       planRef.current = plan;
       setPlanStatus("ready");
@@ -155,6 +173,30 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
       if (live.current.student?.code === s.code) setPlanStatus(e instanceof ApiError && e.status === 404 ? "gone" : "error");
     }
   };
+  // The teacher moves the class on from the dashboard: pick up the new phase, keeping the model this browser carries.
+  useEffect(() => {
+    if (!student || !inClass || planStatus !== "ready") return;
+    const timer = setInterval(async () => {
+      try {
+        const fresh = await study.plan(student.code);
+        if (!planRef.current || live.current.student?.code !== student.code) return;
+        planRef.current = withProtocol(planRef.current, fresh);
+        markQueuedTests(planRef.current, student.code);
+        planChanged();
+      } catch {
+        // offline for now: the next poll tries again
+      }
+    }, PROTOCOL_POLL_MS);
+    return () => clearInterval(timer);
+  }, [student, inClass, planStatus]);
+  // A timed session's clock.
+  const sessionEnds = planRef.current?.phase === "session" ? planRef.current.sessionEnds : null;
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    if (sessionEnds === null) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [sessionEnds]);
   useEffect(() => {
     if (student) void loadPlan(student);
     sendQueued(); // anything left from an earlier visit
@@ -172,11 +214,12 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     // What was done so far on this question belongs to whoever was signed in while doing it.
     if (forgot && student) {
       outbox.discard(student.code);
+      testOutbox.discard(student.code);
       log.current = startLog();
     } else leaveQuestion();
     setStudent(s);
     saveStudent(s);
-    setPending(outbox.items().length);
+    setPending(queued());
     live.current.student = s;
     planRef.current = null;
     setPlanStatus("none");
@@ -312,6 +355,13 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   };
 
   const classOn = !!student && inClass;
+  // What the class's phase allows right now (class practice only; free practice is always open).
+  const plan = classOn && planStatus === "ready" ? planRef.current : null;
+  const testPhase = plan?.phase === "pretest" ? "pre" : plan?.phase === "posttest" ? "post" : null;
+  const blocked = !plan ? null
+    : plan.phase === "closed" ? w.ui.classClosed
+    : plan.phase === "session" && plan.sessionEnds !== null && now >= plan.sessionEnds ? w.ui.sessionOver
+    : null;
   const stat = (s: SkillId) => progress.stats[s];
   const skills = SKILLS[area] as readonly SkillId[];
 
@@ -322,7 +372,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={classOn && planStatus !== "ready" ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
+          <button className="btn primary" disabled={classOn && (planStatus !== "ready" || !!testPhase || !!blocked) ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
             {initial ? t.update : t.insert}
           </button>
         </>
@@ -370,8 +420,33 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
           </div>
           <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
         </>
+      ) : plan && student && testPhase ? (
+        <>
+          <TestRunner
+            key={testPhase}
+            plan={plan}
+            phase={testPhase}
+            student={student}
+            w={w}
+            outbox={testOutbox}
+            onAnswered={(item) => {
+              plan.tests[testPhase].answered.push(item);
+              planChanged();
+              sendQueued();
+            }}
+          />
+          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
+        </>
+      ) : blocked ? (
+        <>
+          <div className="practice-verdict ok" role="status">{blocked}</div>
+          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
+        </>
       ) : mode === "practise" ? (
         <>
+          {plan?.phase === "session" && plan.sessionEnds !== null && (
+            <strong className="practice-clock" role="timer">{fill(w.ui.timeLeft, { time: clock(plan.sessionEnds - now) })}</strong>
+          )}
           {cur.review ? (
             <small className="hint practice-review">↻ {w.ui.review}</small>
           ) : (

@@ -5,6 +5,7 @@ import type { SkillId } from "./math/practiceSkills";
 import { EloModel, type ModelState } from "./model/elo";
 import { evidence } from "./model/evaluate";
 import { RECENT } from "./model/policy";
+import type { Form, TestPhase } from "./model/testForms";
 
 export type Condition = "adaptive" | "fixed";
 export type Student = { code: string; class: string; condition: Condition };
@@ -15,8 +16,18 @@ export type Outcome = "solved" | "revealed" | "skipped";
 export type ChosenBy = Condition | "free" | "review";
 /** How a question came to be asked, recorded with it. */
 export type Origin = { policy: ChosenBy; review: boolean; predicted: number | null };
+/** What the class is doing, set by the teacher (see server/protocol.ts). */
+export type Phase = "open" | "pretest" | "session" | "posttest" | "closed";
+/** Where the student is with the class's protocol: its phase, a timed session's end, and their two tests. */
+export type Protocol = {
+  class: string;
+  phase: Phase;
+  sessionEnds: number | null;
+  testLength: number;
+  tests: Record<TestPhase, { form: Form; answered: number[] }>;
+};
 /** What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me". */
-export type Plan = { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: ModelState };
+export type Plan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: ModelState };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 
 /** What the server stores for one question (see server/research.ts, which works out the summary columns). */
@@ -62,7 +73,7 @@ export function finish(log: QuestionLog, outcome: Exclude<Outcome, "skipped">, n
   log.msTotal = ms(log, now);
 }
 
-const newId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
+export const newId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
 
 /** The record of a question the student is leaving, or null when there is nothing to learn from it (never tried). */
 export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, student: Student, now = performance.now(), id = newId()): Attempt | null {
@@ -87,9 +98,24 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
 /** The student's own name in the model the browser keeps (the server sends their ratings under it). */
 export const ME = "me";
 /** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
-export type ClassPlan = { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: EloModel };
-export const toClassPlan = (p: Plan): ClassPlan =>
-  ({ condition: p.condition, skills: p.skills, position: p.position, recent: p.recent, model: EloModel.fromState(p.state) });
+export type ClassPlan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: EloModel };
+export const toClassPlan = ({ state, ...rest }: Plan): ClassPlan => ({ ...rest, model: EloModel.fromState(state) });
+/** A newer plan's protocol (the teacher may have moved the class on) over the plan the browser has been carrying forward. */
+export const withProtocol = (plan: ClassPlan, p: Protocol): ClassPlan =>
+  ({ ...plan, class: p.class, phase: p.phase, sessionEnds: p.sessionEnds, testLength: p.testLength, tests: p.tests });
+
+/** One answer on a test. Nothing is shown to the student; the server works out which question it was. */
+export type TestAnswer = {
+  clientId: string;
+  student: string;
+  phase: TestPhase;
+  item: number;
+  input: string;
+  verdict: "correct" | "close" | "wrong" | "skipped";
+  /** Answers sent back for their form ("lowest terms") before this one. */
+  retries: number;
+  ms: number;
+};
 /** What the server will do once it has the attempt: the model learns from it, the fixed sequence moves on. */
 export function applyAttempt(plan: ClassPlan, a: Attempt) {
   const correct = attemptEvidence(a);
@@ -140,17 +166,17 @@ export const saveStudent = (s: Student | null) => studentSlot.set(s && JSON.stri
 /** stored: the server has it (or had it already); drop: it never will (unknown student, refused); retry: try later. */
 export type SendResult = "stored" | "drop" | "retry";
 
-/** Attempts waiting for the server, oldest first. Kept in a slot so a closed tab or a dropped connection loses nothing. */
-export class Outbox {
+/** Records waiting for the server, oldest first. Kept in a slot so a closed tab or a dropped connection loses nothing. */
+export class Outbox<T extends { clientId: string; student: string } = Attempt> {
   private chain: Promise<unknown> = Promise.resolve();
   private slot: Slot;
-  private send: (a: Attempt, keepalive: boolean) => Promise<SendResult>;
-  constructor(slot: Slot, send: (a: Attempt, keepalive: boolean) => Promise<SendResult>) {
+  private send: (a: T, keepalive: boolean) => Promise<SendResult>;
+  constructor(slot: Slot, send: (a: T, keepalive: boolean) => Promise<SendResult>) {
     this.slot = slot;
     this.send = send;
   }
 
-  items(): Attempt[] {
+  items(): T[] {
     try {
       const list = JSON.parse(this.slot.get() ?? "[]");
       return Array.isArray(list) ? list : [];
@@ -158,10 +184,10 @@ export class Outbox {
       return [];
     }
   }
-  private write(list: Attempt[]) {
+  private write(list: T[]) {
     this.slot.set(list.length ? JSON.stringify(list) : null);
   }
-  add(a: Attempt) {
+  add(a: T) {
     this.write([...this.items(), a]);
   }
   /** Drops what a student left behind on this browser (they signed out and asked for their records to be deleted). */

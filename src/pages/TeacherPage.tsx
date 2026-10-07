@@ -1,13 +1,22 @@
-// The teacher's page for the class study (#/teacher): make classes and hand out their codes, then follow each class:
-// the two groups side by side, mastery by skill for every student, and whether the learner model's predictions come
-// true. The teacher password (TEACHER_PASSWORD on the server) is kept for this tab only.
+// The teacher's page for the class study (#/teacher): make classes and hand out their codes, run the protocol (open
+// practice, pre-test, timed sessions, post-test), then follow each class: the two groups side by side, the tests,
+// mastery by skill for every student, and whether the learner model's predictions come true. The teacher password
+// (TEACHER_PASSWORD on the server) is kept for this tab only.
 import { useEffect, useMemo, useState } from "react";
 import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
 import { CalibrationChart } from "../components/CalibrationChart";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { LangSelect, useI18n } from "../i18n";
 import { fill } from "../math/chart";
+import type { Phase } from "../learner";
 import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
+import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH } from "../model/testForms";
+
+const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "closed"];
+const clock = (ms: number) => {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+};
 
 const KEY = "zeno.teacher";
 const remembered = () => {
@@ -43,6 +52,10 @@ export function TeacherPage() {
   const [showNumbers, setShowNumbers] = useState(false);
   const [showCodes, setShowCodes] = useState(false);
   const [showTable, setShowTable] = useState(false);
+  const [testLength, setTestLength] = useState(DEFAULT_TEST_LENGTH);
+  const [minutes, setMinutes] = useState(20);
+  const [askMinutes, setAskMinutes] = useState(false);
+  const [now, setNow] = useState(Date.now);
   const api = useMemo(() => teacherApi(password), [password]);
 
   const pct = useMemo(() => {
@@ -50,7 +63,8 @@ export function TeacherPage() {
     return (v: number) => f.format(v);
   }, [lang]);
   const num = (v: number | null, digits = 0) => (v === null ? "—" : v.toLocaleString(lang, { maximumFractionDigits: digits }));
-  const share = (v: number | null) => (v === null ? "—" : pct(v));
+  // Rounded first, so a tiny negative shows as 0 % rather than "-0 %".
+  const share = (v: number | null) => (v === null ? "—" : pct(Math.round(v * 100) / 100 || 0));
   const areaLabel = (a: Area) =>
     ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData })[a];
   const skillName = (k: SkillId) => t.pracWords.skills[k];
@@ -89,27 +103,47 @@ export function TeacherPage() {
 
   const create = async () => {
     try {
-      const made = await api.create(name.trim(), areas.length ? areas : undefined);
+      const made = await api.create(name.trim(), areas.length ? areas : undefined, testLength);
       setName("");
       setAreas([]);
+      setTestLength(DEFAULT_TEST_LENGTH);
       setClasses(await api.classes());
       setSelected(made.code);
     } catch {
       setFailed(true);
     }
   };
-  const download = async () => {
+  /** Moves the selected class on, then shows it as the server now has it. */
+  const moveTo = async (phase: Phase) => {
+    if (!selected) return;
     try {
-      const blob = await api.csv(selected ?? undefined);
+      await api.setPhase(selected, phase, phase === "session" ? minutes : undefined);
+      setAskMinutes(false);
+      setClasses(await api.classes());
+    } catch {
+      setFailed(true);
+    }
+  };
+  const download = async (kind: "attempts" | "tests") => {
+    try {
+      const blob = await api.csv(kind, selected ?? undefined);
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `zeno-${selected ?? "all"}-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `zeno-${kind}-${selected ?? "all"}-${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(a.href);
     } catch {
       setFailed(true);
     }
   };
+
+  // A running session's clock (hooks stay above the password gate's early return).
+  const sessionEnds = classes.find((c) => c.code === selected && c.phase === "session")?.sessionEnds ?? null;
+  useEffect(() => {
+    if (sessionEnds === null) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [sessionEnds]);
 
   const header = (
     <header className="home-header">
@@ -149,6 +183,8 @@ export function TeacherPage() {
     );
 
   const current = classes.find((c) => c.code === selected);
+  const describe = (g: { n: number; mean: number | null; sd: number | null }) =>
+    g.n ? fill(w.meanSd, { mean: share(g.mean), sd: g.sd === null ? "—" : num(g.sd * 100, 1), n: g.n }) : "—";
   const groups = data && (["adaptive", "fixed"] as const).map((c) => [c, data.conditions[c]] as const);
   const rows: [string, (g: Dashboard["conditions"]["fixed"]) => string][] = [
     [w.metrics.students, (g) => num(g.students)],
@@ -160,6 +196,7 @@ export function TeacherPage() {
     [w.metrics.medianTime, (g) => (g.medianSeconds === null ? "—" : fill(w.seconds, { n: num(g.medianSeconds) }))],
     [w.metrics.solutionViewed, (g) => share(g.solutionViewed)],
     [w.metrics.skipped, (g) => share(g.skipped)],
+    [w.practiceMinutes, (g) => (g.practiceMinutes === null ? "—" : fill(w.minutesValue, { n: num(g.practiceMinutes, 1) }))],
   ];
 
   return (
@@ -196,6 +233,11 @@ export function TeacherPage() {
               <span>{w.className}</span>
               <input value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
             </label>
+            <label className="field">
+              <span>{w.testLength}</span>
+              <input type="number" min={MIN_TEST_LENGTH} max={MAX_TEST_LENGTH} value={testLength}
+                onChange={(e) => setTestLength(Math.min(MAX_TEST_LENGTH, Math.max(MIN_TEST_LENGTH, Math.round(Number(e.target.value) || DEFAULT_TEST_LENGTH))))} />
+            </label>
             <span className="hint">{w.skillsHint}</span>
             <div className="snippets">
               {AREAS.map((a) => (
@@ -224,10 +266,45 @@ export function TeacherPage() {
                 </p>
                 <p className="hint">{w.codeHint}</p>
               </div>
-              <div className="field-row">
+              <div className="field-row wrap">
                 <button className="btn" onClick={() => selected && void load(selected)}>{w.refresh}</button>
-                <button className="btn" onClick={() => void download()}>⤓ {w.download}</button>
+                <button className="btn" onClick={() => void download("attempts")}>⤓ {w.download}</button>
+                <button className="btn" onClick={() => void download("tests")}>⤓ {w.downloadTests}</button>
               </div>
+            </section>
+          )}
+
+          {current && (
+            <section className="card">
+              <h3>{w.phase}</h3>
+              <div className="phase-buttons" role="group" aria-label={w.phase}>
+                {PHASES.map((p) => (
+                  <button
+                    key={p}
+                    className={`btn small${current.phase === p ? " primary" : ""}`}
+                    aria-pressed={current.phase === p}
+                    onClick={() => (p === "session" ? setAskMinutes(true) : void moveTo(p))}
+                  >
+                    {w.phases[p]}
+                  </button>
+                ))}
+              </div>
+              {askMinutes && (
+                <div className="field-row">
+                  <label className="field-row">
+                    <span>{w.minutes}</span>
+                    <input type="number" min={1} max={240} value={minutes} style={{ width: 80 }}
+                      onChange={(e) => setMinutes(Math.min(240, Math.max(1, Math.round(Number(e.target.value) || 20))))} />
+                  </label>
+                  <button className="btn primary small" onClick={() => void moveTo("session")}>{w.start}</button>
+                </div>
+              )}
+              {sessionEnds !== null && (
+                <strong className="practice-clock" role="timer">
+                  {now < sessionEnds ? fill(w.sessionLeft, { time: clock(sessionEnds - now) }) : w.sessionEnded}
+                </strong>
+              )}
+              <p className="hint">{w.phaseHint}</p>
             </section>
           )}
 
@@ -254,6 +331,44 @@ export function TeacherPage() {
                     ))}
                   </tbody>
                 </table>
+              </section>
+
+              <section className="card">
+                <h3>{w.tests}</h3>
+                <p className="hint">{w.testsHint}</p>
+                {groups!.some(([, g]) => g.pre.n || g.post.n) ? (
+                  <>
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th />
+                          {groups!.map(([c]) => <th key={c} scope="col">{c === "adaptive" ? w.adaptive : w.fixed}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {([[w.pre, "pre"], [w.post, "post"], [w.gain, "gain"]] as const).map(([label, key]) => (
+                          <tr key={key}>
+                            <th scope="row">{label}</th>
+                            {groups!.map(([c, g]) => <td key={c}>{describe(g[key])}</td>)}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <dl className="stat-tiles">
+                      <div><dt>{w.effect}</dt><dd>{num(data.tests.effect, 2)}</dd></div>
+                    </dl>
+                    <p className="hint">{w.effectHint}</p>
+                    <h3>{w.formCheck}</h3>
+                    <table className="data-table">
+                      <tbody>
+                        <tr><th scope="row">{w.formA}</th><td>{describe(data.tests.forms.A)}</td></tr>
+                        <tr><th scope="row">{w.formB}</th><td>{describe(data.tests.forms.B)}</td></tr>
+                      </tbody>
+                    </table>
+                  </>
+                ) : (
+                  <p className="muted">{w.noTests}</p>
+                )}
               </section>
 
               {!!data.students.length && (

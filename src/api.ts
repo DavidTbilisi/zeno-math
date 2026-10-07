@@ -1,5 +1,5 @@
 import type { Dashboard } from "../server/dashboard";
-import type { Attempt, Plan, SendResult, Student } from "./learner";
+import type { Attempt, Phase, Plan, SendResult, Student, TestAnswer } from "./learner";
 import type { SkillId } from "./math/practiceSkills";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
@@ -41,20 +41,24 @@ export const study = {
   student: (code: string) => req<Student & { answered: number }>("GET", `/api/students/${encodeURIComponent(code)}`),
   plan: (code: string) => req<Plan>("GET", `/api/students/${encodeURIComponent(code)}/plan`),
   forget: (code: string) => req<void>("DELETE", `/api/students/${encodeURIComponent(code)}`),
-  async send(a: Attempt, keepalive: boolean): Promise<SendResult> {
-    try {
-      await req("POST", "/api/attempts", a, keepalive);
-      return "stored";
-    } catch (e) {
-      // Unknown student (their record was deleted) or a refused record: sending it again won't help.
-      if (e instanceof ApiError && (e.status === 400 || e.status === 404 || e.status === 413)) {
-        console.warn("practice attempt not stored:", e.message);
-        return "drop";
-      }
-      return "retry";
-    }
-  },
+  send: (a: Attempt, keepalive: boolean) => upload("/api/attempts", a, keepalive),
+  sendTest: (a: TestAnswer, keepalive: boolean) => upload("/api/tests", a, keepalive),
 };
+
+/** Uploads one record from an outbox: stored, dropped (refused, or the student is gone), or to try again later. */
+async function upload(url: string, record: unknown, keepalive: boolean): Promise<SendResult> {
+  try {
+    await req("POST", url, record, keepalive);
+    return "stored";
+  } catch (e) {
+    // Unknown student (their record was deleted) or a refused record: sending it again won't help.
+    if (e instanceof ApiError && (e.status === 400 || e.status === 404 || e.status === 413)) {
+      console.warn("study record not stored:", e.message);
+      return "drop";
+    }
+    return "retry";
+  }
+}
 
 export type ClassSummary = {
   code: string;
@@ -65,6 +69,9 @@ export type ClassSummary = {
   adaptive: number;
   fixed: number;
   attempts: number;
+  phase: Phase;
+  sessionEnds: number | null;
+  testLength: number;
 };
 export type { Dashboard };
 
@@ -73,12 +80,16 @@ export function teacherApi(password: string) {
   const headers: Record<string, string> = password ? { "X-Teacher-Password": password } : {};
   return {
     classes: () => req<ClassSummary[]>("GET", "/api/classes", undefined, false, headers),
-    create: (name: string, skills?: string[]) => req<ClassSummary>("POST", "/api/classes", { name, skills }, false, headers),
+    create: (name: string, skills?: string[], testLength?: number) =>
+      req<ClassSummary>("POST", "/api/classes", { name, skills, testLength }, false, headers),
+    /** Moves the class on; minutes starts a timed session. */
+    setPhase: (code: string, phase: Phase, minutes?: number) =>
+      req<{ phase: Phase; sessionEnds: number | null }>("POST", `/api/classes/${encodeURIComponent(code)}/phase`, { phase, minutes }, false, headers),
     dashboard: (code: string) => req<Dashboard>("GET", `/api/research/dashboard?class=${encodeURIComponent(code)}`, undefined, false, headers),
-    /** The CSV export as a file to save (a plain link can't send the password header). */
-    async csv(code?: string): Promise<Blob> {
-      const res = await fetch(`/api/research/attempts.csv${code ? `?class=${encodeURIComponent(code)}` : ""}`, { headers });
-      if (!res.ok) throw new ApiError(`GET attempts.csv: ${res.status}`, res.status);
+    /** A CSV export as a file to save (a plain link can't send the password header). */
+    async csv(kind: "attempts" | "tests", code?: string): Promise<Blob> {
+      const res = await fetch(`/api/research/${kind}.csv${code ? `?class=${encodeURIComponent(code)}` : ""}`, { headers });
+      if (!res.ok) throw new ApiError(`GET ${kind}.csv: ${res.status}`, res.status);
       return res.blob();
     },
   };

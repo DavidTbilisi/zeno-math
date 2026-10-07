@@ -378,6 +378,7 @@ input.invalid { border-color: var(--danger); }
 .practice-verdict.close { color: #e8590c; background: color-mix(in srgb, #e8590c 10%, transparent); }
 .practice-verdict.bad { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
 .practice-review { color: #e8590c; }
+.practice-clock { font-variant-numeric: tabular-nums; align-self: flex-end; }
 .practice-class { display: flex; flex-direction: column; gap: 6px; }
 .practice-join summary { cursor: pointer; width: fit-content; }
 .practice-join[open] summary { margin-bottom: 6px; }
@@ -469,3 +470,4 @@ input.invalid { border-color: var(--danger); }
   padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text);
   box-shadow: var(--shadow); font-size: 12px; }
 .chart-tip strong { font-size: 15px; }
+.phase-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
