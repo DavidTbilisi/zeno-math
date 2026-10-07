@@ -1,16 +1,18 @@
-// Minimal self-hosted backend: stores boards in SQLite and serves the built frontend.
+// Minimal self-hosted backend: stores boards (and the practice study's learner records, see research.ts) in SQLite and
+// serves the built frontend.
 // Runs directly with Node >= 23.6 (native TypeScript type stripping, built-in node:sqlite).
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { randomUUID, timingSafeEqual } from "node:crypto";
+import { HttpError, readJson, send } from "./http.ts";
+import { handleResearch, initResearch, RESEARCH_RESOURCES } from "./research.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
 const DATA_DIR = resolve(process.env.DATA_DIR ?? "data");
 const STATIC_DIR = resolve(process.env.STATIC_DIR ?? "dist");
 const APP_PASSWORD = process.env.APP_PASSWORD ?? "";
-const MAX_BODY = 25 * 1024 * 1024;
 
 mkdirSync(DATA_DIR, { recursive: true });
 const db = new DatabaseSync(join(DATA_DIR, "boards.db"));
@@ -24,6 +26,7 @@ db.exec(`
     updated_at INTEGER NOT NULL
   )
 `);
+initResearch(db);
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -58,43 +61,6 @@ const CSP = [
   "frame-ancestors 'self'",
 ].join("; ");
 
-/** A refusal with a status and a message that is safe to show the client. */
-class HttpError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
-
-function send(res: ServerResponse, status: number, body?: unknown, headers: Record<string, string> = {}) {
-  if (body === undefined) {
-    res.writeHead(status, headers).end();
-    return;
-  }
-  res.writeHead(status, { "Content-Type": "application/json", ...headers }).end(JSON.stringify(body));
-}
-
-async function readJson(req: IncomingMessage): Promise<any> {
-  // JSON only: a cross-site <form> can't send this content type without the browser asking first.
-  if (!String(req.headers["content-type"] ?? "").startsWith("application/json")) throw new HttpError(415, "expected application/json");
-  const chunks: Buffer[] = [];
-  let size = 0;
-  for await (const chunk of req) {
-    size += chunk.length;
-    if (size > MAX_BODY) throw new HttpError(413, "body too large");
-    chunks.push(chunk);
-  }
-  if (!chunks.length) return {};
-  try {
-    const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
-    if (body === null || typeof body !== "object" || Array.isArray(body)) throw new Error();
-    return body;
-  } catch {
-    throw new HttpError(400, "invalid JSON");
-  }
-}
-
 // Optional HTTP basic auth, enabled when APP_PASSWORD is set (any username).
 function authorized(req: IncomingMessage): boolean {
   if (!APP_PASSWORD) return true;
@@ -110,8 +76,9 @@ function cleanTitle(value: unknown): string {
   return String(value ?? "").trim().slice(0, 200) || "Untitled";
 }
 
-async function handleApi(req: IncomingMessage, res: ServerResponse, path: string) {
-  const [, , resource, id] = path.split("/"); // "", "api", "boards", id?
+async function handleApi(req: IncomingMessage, res: ServerResponse, path: string, query: URLSearchParams) {
+  const [, , resource, id, sub] = path.split("/"); // "", "api", "boards", id?, sub?
+  if (RESEARCH_RESOURCES.has(resource)) return handleResearch(req, res, resource, id, sub, query, db);
   if (resource === "health" && req.method === "GET") {
     db.prepare("SELECT 1").get();
     return send(res, 200, { ok: true });
@@ -230,14 +197,15 @@ function serveStatic(req: IncomingMessage, res: ServerResponse, path: string) {
 
 const server = createServer(async (req, res) => {
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
-  const path = new URL(req.url ?? "/", "http://localhost").pathname;
+  const url = new URL(req.url ?? "/", "http://localhost");
+  const path = url.pathname;
   // The health check reveals nothing, so Docker can probe it without the password.
   if (path !== "/api/health" && !authorized(req)) {
     res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Zeno"' }).end();
     return;
   }
   try {
-    if (path.startsWith("/api/")) await handleApi(req, res, path);
+    if (path.startsWith("/api/")) await handleApi(req, res, path, url.searchParams);
     else serveStatic(req, res, path);
   } catch (err) {
     if (err instanceof HttpError) {

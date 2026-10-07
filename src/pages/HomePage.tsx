@@ -96,6 +96,9 @@ export function HomePage() {
             <a href="/api/export" download>⤓ {t.backupAll}</a>
           </p>
         )}
+        <p className="muted small">
+          <a href="#/teacher">{t.teacher.link}</a>
+        </p>
       </main>
     </div>
   );

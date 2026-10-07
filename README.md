@@ -430,6 +430,8 @@ UI in English, Russian and Georgian.
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
     the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
   - Progress per skill is kept in the browser, and a missed question comes back three questions later
+  - *Class study*: a student joins a class with its code and gets a student code of their own (no name or email);
+    each question they work on is then saved on the server for research — see [Class study](#class-study)
   - *Worksheet*: 4–20 questions on one skill or mixed, with an answer key, put on the board in one click (and
     re-opened to change them)
 - **Vector spaces** (in *[ ] Matrices*) — exact fractions, pictures for ℝ² and ℝ³
@@ -583,7 +585,8 @@ Development (Vite hot reload on :5173, API on :8787):
 npm run dev
 ```
 
-Environment variables: `PORT` (8787), `DATA_DIR` (`./data`), `STATIC_DIR` (`./dist`), `APP_PASSWORD` (empty = no auth).
+Environment variables: `PORT` (8787), `DATA_DIR` (`./data`), `STATIC_DIR` (`./dist`), `APP_PASSWORD` (empty = no auth),
+`TEACHER_PASSWORD` (empty = anyone can create classes and download the study data; see below).
 
 The build writes `.br` / `.gz` copies of the assets, and the server sends those to browsers that accept them. Each tool and each
 language is a separate chunk, loaded the first time it is used.
@@ -595,6 +598,156 @@ saving and asks whether to reload that version or keep yours. Saves go one at a 
 Backups: the home page links to `/api/export`, every board in one JSON file. The server sends a Content-Security-Policy and the
 usual security headers, accepts only JSON request bodies (so a form on another site can't post to it) and refuses scenes it
 couldn't load back.
+
+## Class study
+
+Zeno can record practice for a study that compares ways of choosing exercises (an adaptive learner model against a
+fixed sequence). A teacher makes a class; students join it in the Practice dialog with the class code. Each student is
+given a student code to write down (it brings their record back on any device) and is assigned a condition at random,
+in blocks of four, so every class is split two-and-two as it fills. Only the codes are stored: no names or emails.
+
+From then on, every question a student tries is saved: the skill, level and seed (so the exact question can be
+rebuilt), each answer typed with its verdict (correct, close, wrong, or sent back for its form) and the time it took,
+whether the answer was revealed or the worked solution looked at, and how long the question took in all. Finished
+questions wait in the browser until the server has them, so a dropped connection loses nothing, and a retried upload
+is stored once. A student can delete everything saved under their code from the dialog.
+
+A signed-in student practises in one of two ways:
+
+- **Class practice:** the study chooses each question from the class's skills, and the student's condition decides
+  how (`src/model/policy.ts`):
+  - *fixed*: the skills in curriculum order, each at levels 1, 2 and 3 with two questions per level, then round again.
+  - *adaptive*: the skill and level where the learner model gives the student about a 75 % chance of a right first
+    answer, as in Math Garden. It skips skills the student has mastered (80 % at level 3) and skills whose
+    prerequisites they've shown weakness in (under 50 % at level 2). A skill from the last three questions counts as
+    further from the target, so practice interleaves.
+
+  Everything else is the same for both groups: the feedback, the worked solutions, and missed questions coming back
+  three questions later.
+- **Free practice:** the student picks the topic and level, as without a class.
+
+Each attempt records who chose it (`adaptive`, `fixed`, `free` or `review`) and the model's chance of a right answer
+when the question appeared (`predicted`), so the model can be checked against what happened. The browser gets the
+class-wide difficulties and its student's own ratings from the server (`/api/students/:code/plan`). It carries them
+forward after every answer, so class practice keeps going if the connection drops mid-lesson. The server can only
+refuse a class-practice attempt that claims the other condition's policy.
+
+**The protocol.** The teacher runs the study from the dashboard by setting what the class is doing now. Students see
+the change within half a minute:
+
+- *Open practice:* class practice whenever students like, untimed.
+- *Pre-test* / *post-test:* the test, for students who haven't finished it. Class practice waits.
+- *Timed session:* class practice with a countdown, the same window for everyone in the room, so both groups get equal
+  practice time. When it ends, class practice stops; free practice stays open.
+- *Closed:* no class practice.
+
+The two tests come in parallel forms, A and B. Both ask about the same skills at the same levels in the same order, but
+with different questions, built from the class code, so every browser and the server build the same form. Within each
+condition, students alternate between taking A first and B first, so a harder form can't pass for learning; the
+dashboard compares the forms on the pre-test. A test shows no marks and no solutions. Only a wrong-*form* message
+("lowest terms") allows another try, so notation isn't penalised. Passing a question counts as an answer. Each question
+is answered once; the server works out which question it was from the form, so a client can't answer a question that
+wasn't on its test. Test answers never reach the learner model, so the outcome measure stays independent of what the
+adaptive condition learns from. The test length is set per class (4–30 questions, default 12).
+
+Teachers follow a class at **`#/teacher`** (linked from the home page; it asks for `TEACHER_PASSWORD` when one is
+set). There they can make classes and hand out the codes, and see for each class:
+
+- **The two groups** side by side: students, questions answered, right first time, the model's expected chance and how
+  far class practice was from the 75 % target, the median time per question, how often the worked solution was opened,
+  and how often a question was left unfinished.
+- **Mastery by skill:** one row per student, one column per skill, shaded by the chance of a right first answer at
+  medium level. The scale has five bins, validated as an ordinal colour ramp for both light and dark mode, and grey
+  means no answers yet. Each group's average sits on top. Hovering a cell gives all three levels; "show numbers" puts
+  the percentages in the cells.
+- **The pre- and post-test:** scores per group as mean (SD, n) over completed tests, the gain for students who
+  completed both, Cohen's d of the gain as a first look, and the form check. Each student's scores also appear beside
+  their row in the heatmap, in brackets while a test is unfinished.
+- **Practice time per student,** from the questions class practice chose: the check that both groups got equal time.
+- **Whether the model predicts well:** the chance logged when each question appeared, against what the student then
+  did, as a calibration plot (bigger dots rest on more answers), with log-loss, AUC and a table view.
+
+The same data is at `/api/research/dashboard?class=CODE`, and the CSV download is on the page.
+
+```bash
+# make a class (send the header only if TEACHER_PASSWORD is set); skills: skill ids and/or areas, default all
+curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
+  -d '{"name":"7B","skills":["algebra","average"]}'
+# classes, with how many students are in each condition
+curl localhost:8787/api/classes -H 'X-Teacher-Password: …'
+# every attempt as CSV (add ?class=CODE for one class); students appear as s1, s2, … and never by their code
+curl -OJ localhost:8787/api/research/attempts.csv -H 'X-Teacher-Password: …'
+# every test answer: student, condition, form order, test, form, question, skill, level, seed, what was typed (as JSON), verdict
+curl -OJ localhost:8787/api/research/tests.csv -H 'X-Teacher-Password: …'
+# move a class on: open | pretest | session (with minutes) | posttest | closed
+curl -X POST localhost:8787/api/classes/CODE/phase -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
+  -d '{"phase":"session","minutes":20}'
+```
+
+For the thesis, analyse the post-test with the pre-test as a covariate (ANCOVA), with the form order as a factor. Report
+the form check, the practice time per group, and how many students completed both tests in each group.
+
+Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data. Before
+collecting data from real students, check what consent and ethics approval your school or university requires.
+
+### Learner model
+
+`src/model/elo.ts` estimates what each student knows with an Elo-style rating (Pelánek 2016; Klinkenberg et al. 2011,
+Math Garden). The chance of a right first answer is σ(ability − difficulty). Ability has three layers (overall, area,
+skill), so a skill the student hasn't tried starts from what they showed in its area. Difficulty belongs to a skill
+(shared by its levels) plus a smaller adjustment for each level. Each answer moves every term by the surprise (result
+− prediction), with steps that shrink as evidence builds up. `mastery()` gives the chance of a right answer at each
+level of a skill.
+
+`npm run model` replays answers in order, predicting each from the ones before it. It reports log-loss, RMSE, AUC,
+accuracy and calibration for the model, two simpler versions of it (ablations) and three counting baselines:
+
+```bash
+npm run model -- zeno-attempts.csv          # the CSV export
+npm run model -- zeno-attempts.csv --fit    # also search α, β for the lowest log-loss
+npm run model -- --simulate                 # synthetic learners with a known truth (src/model/simulate.ts)
+```
+
+On the built-in simulation (120 students × 150 questions):
+
+| model | log-loss | AUC |
+|---|---|---|
+| Elo, three layers | 0.556 | 0.787 |
+| Elo, no area layer | 0.562 | 0.782 |
+| Elo, skill layer only | 0.601 | 0.739 |
+| per skill & level rate | 0.630 | 0.699 |
+| per student & skill rate | 0.656 | 0.655 |
+| overall rate | 0.693 | 0.485 |
+
+The defaults were chosen on simulated classes, which are built with the same structure as the model, so these numbers
+only show that it works. Real answers will be noisier. Refit with `--fit` once real data exists, and report those
+numbers.
+
+### Simulation study
+
+`npm run simulate` runs the two conditions on simulated classes (60 students, 60 questions each, algebra; change these
+with `--skills`, `--students`, `--questions` and `--runs`). It reports Cohen's d of adaptive over fixed in test-score
+gain. The result depends on things a simulation has to assume: how much a question teaches (*flat*: always the same;
+*zpd*: most at an even chance), how much practising a skill helps the skills built on it (*transfer*), and how fast
+students learn (*rate*):
+
+| learning | transfer | rate | d | adaptive ahead in |
+|---|---|---|---|---|
+| flat | 0 | 0.02 | 0.13 | 60 % of classes |
+| flat | 0 | 0.1 | −0.16 | 30 % |
+| flat | 0.3 | 0.02 | 0.64 | 90 % |
+| flat | 0.6 | 0.1 | 0.24 | 90 % |
+| zpd | 0 | 0.02 | 0.02 | 50 % |
+| zpd | 0 | 0.1 | −0.36 | 10 % |
+| zpd | 0.3 | 0.02 | 0.39 | 100 % |
+| zpd | 0.6 | 0.1 | 0.12 | 70 % |
+
+In every row, adaptive questions are much nearer the target: 0.12 from a 75 % chance on average, against 0.27 for the
+fixed sequence. Whether that means more learning depends on the assumptions, from a clear loss to a clear gain. Adaptive
+practice spends more time on the skills others build on. That pays off when practice transfers, and costs when it
+doesn't. So the simulation can't answer the research question, but it does show the effect is unlikely to be large. At
+80 % power, d = 0.5 needs about 64 students per group and d = 0.3 about 175; a pre-test correlating 0.6 with the
+post-test cuts that by about a third (ANCOVA).
 
 ## Tests
 
@@ -635,13 +788,43 @@ intervals catch μ; that every practice question (38 skills × 3 levels × 60 se
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
-bad requests, path traversal, password, headers and export. GitHub Actions runs typecheck, tests and build on every push, and
+bad requests, path traversal, password, headers and export; and the class study: the teacher password, randomisation
+in balanced blocks, attempts refused when they don't add up, summaries worked out from the answers, retried uploads
+stored once, deletion, an export without sign-in codes, and an outbox that keeps attempts in order until they are sent;
+and the learner model: ratings move the right way by shrinking steps, an untried skill starts from the area, levels keep
+their order, the metrics match hand-worked values, the export reads back into the model, and on simulated learners it
+beats every baseline, is calibrated within 0.05, and ranks the true difficulties (ρ > 0.9) and students (ρ > 0.85);
+and class practice: the curriculum covers every skill with prerequisites first, the fixed sequence walks level by level,
+the adaptive choice aims at the target, moves on after mastery, goes up and down a level and interleaves, a class's
+skills and plan come back right, attempts must match the student's condition, the browser moves its plan on as the
+server will, a database from before class practice is upgraded, and simulated studies treat both conditions alike;
+and the dashboard: teacher-only, mastery for every student and skill, group figures and logged-prediction calibration
+that match hand-worked values; and the protocol: the forms are stable, parallel and spread over the skills, every test
+question accepts its own answer in all three languages, phases and sessions are the teacher's alone, forms are
+counterbalanced within each condition, each test question is stored once and worked out by the server, typed answers
+can't become spreadsheet formulas, and the dashboard's test figures match. GitHub Actions runs typecheck, tests and build on every push, and
 builds the Docker image and saves a board in it.
 
 ## Project layout
 
 ```
 server/index.ts           HTTP server: /api/boards CRUD (SQLite) + static files
+server/research.ts        class study: classes, students randomised to a condition, practice attempts, CSV export
+src/learner.ts            the student's side of the study: question log, attempt records, outbox kept until sent
+src/model/elo.ts          learner model: Elo ratings of students (overall / area / skill) and questions, mastery
+src/model/evaluate.ts     replay, metrics (log-loss, RMSE, AUC, calibration), baselines, reading the CSV export
+src/model/simulate.ts     synthetic learners with a known truth, for tests and the simulation study
+src/model/curriculum.ts   the fixed order of the skills and what each builds on
+src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
+src/components/StudentPanel.tsx  joining a class, signing back in, deleting your answers
+server/dashboard.ts       the teacher's dashboard data: mastery per student and skill, the two groups, tests, calibration
+server/protocol.ts        the study protocol: class phases, timed sessions, counterbalanced test forms, test answers
+src/model/testForms.ts    the pre-/post-test forms A and B, built from the class code
+src/components/TestRunner.tsx  taking a test: one question at a time, no marks, form messages only
+src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes, codes, groups, mastery heatmap, calibration
+src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashboard's charts and their readouts
+scripts/evaluate-model.ts `npm run model`: the metrics for a CSV export or a simulated class
+scripts/simulate-study.ts `npm run simulate`: adaptive against fixed on simulated classes, across assumptions
 src/pages/HomePage.tsx    board list
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
@@ -709,7 +892,8 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 
 ## Roadmap ideas
 
-- Practice: more skills (complex numbers, matrices), timed quizzes, progress synced to the server
+- Practice: more skills (complex numbers, matrices), timed quizzes
+- Class study: a delayed post-test (retention), re-scoring test answers offline with the current checker
 - Spaced repetition of key formulas
 - Share a board read-only / real-time collaboration (Yjs)
 - Parametric & implicit plots, points and tangent lines, geometry tools
