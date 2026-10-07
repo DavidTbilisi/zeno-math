@@ -17,7 +17,7 @@ import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
 import { ToolMenu } from "../components/ToolMenu";
 import { CommandPalette } from "../components/CommandPalette";
-import { ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
+import { freeY, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
 import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { isToolKind, MENUS, TOOLS, type ToolKind } from "../tools";
@@ -322,18 +322,7 @@ export function BoardPage({ id }: { id: string }) {
     // Start at the viewport center, then slide down past anything it would cover.
     const { scrollX, scrollY, zoom, width, height } = ex.getAppState();
     const x = width / 2 / zoom.value - scrollX - rendered.width / 2;
-    let y = height / 2 / zoom.value - scrollY - rendered.height / 2;
-    const live = elements.filter((e) => !e.isDeleted);
-    for (let moved = true; moved; ) {
-      moved = false;
-      for (const e of live) {
-        const overlaps = x < e.x + e.width && x + rendered.width > e.x && y < e.y + e.height && y + rendered.height > e.y;
-        if (overlaps) {
-          y = e.y + e.height + 24;
-          moved = true;
-        }
-      }
-    }
+    const y = freeY(elements, x, height / 2 / zoom.value - scrollY - rendered.height / 2, rendered.width, rendered.height);
     const [el] = convertToExcalidrawElements([
       {
         type: "image",
