@@ -240,7 +240,7 @@ function bktLogLikelihood(sequences: readonly Uint8Array[], p: BktParams) {
   }
   return ll;
 }
-/** The grid point with the highest likelihood: brute-force fitting, as in Baker et al. (2010). */
+/** The grid point with the highest likelihood: brute-force fitting, a common way to fit BKT. */
 export function fitBkt(sequences: readonly Uint8Array[]): BktParams {
   let best: BktParams = { init: 0.5, learn: 0.1, guess: 0.2, slip: 0.1 };
   let bestLl = -Infinity;
