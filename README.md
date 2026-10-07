@@ -737,11 +737,27 @@ curl -X POST localhost:8787/api/classes/CODE/phase -H 'Content-Type: application
   -d '{"phase":"session","minutes":20}'
 ```
 
-For the thesis, analyse the post-test with the pre-test as a covariate (ANCOVA), with the form order as a factor. Report
-the form check, the practice time per group, and how many students completed both tests in each group.
+**The analysis** is fixed before any data exists (`src/model/analysis.ts`) and runs on the tests export:
 
-Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data. Before
-collecting data from real students, check what consent and ethics approval your school or university requires.
+```bash
+npm run analyse -- zeno-tests.csv
+```
+
+- *Primary:* ANCOVA. The post-test score is modelled from the condition and the pre-test score, with the form order
+  (A or B first) and the class as factors when they vary. The condition's coefficient is the effect of adaptive over
+  fixed practice, reported in percentage points with a 95 % confidence interval and a two-sided p-value. It also gives
+  the adjusted means and d in post-test SDs.
+- *Secondary:* Welch's t-test on gains.
+- *Check:* form A against form B on the pre-test.
+
+Only students who finished both tests are analysed; the script says how many in each group did. Report the
+practice time per group from the dashboard alongside it.
+
+Students see what taking part means before they join a class: what is saved, that the class is split into two
+groups at random, that taking part is up to them, and how to delete everything. **Join** waits until they tick that
+they agree. Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data.
+Before collecting data from real students, check what consent and ethics approval your school or university
+requires; for children, a parent's consent usually comes first.
 
 ### Learner model
 
@@ -752,55 +768,225 @@ skill), so a skill the student hasn't tried starts from what they showed in its 
 − prediction), with steps that shrink as evidence builds up. `mastery()` gives the chance of a right answer at each
 level of a skill.
 
-`npm run model` replays answers in order, predicting each from the ones before it. It reports log-loss, RMSE, AUC,
-accuracy and calibration for the model, two simpler versions of it (ablations) and three counting baselines:
+`npm run model` judges the model on students it has never seen. A fifth of the students are held out (chosen by a
+hash of their id, so the split is the same on every run). Every model fits, or warms up, on the rest, then predicts
+the held-out students' answers one by one, learning from each after predicting it. It reports log-loss, RMSE, AUC,
+accuracy and calibration for:
+
+- the model, and versions of it without its middle layers (ablations);
+- two standard student models:
+  - *PFA*, Performance Factors Analysis (Pavlik, Cen & Koedinger 2009): a logistic regression on each skill's earlier
+    right and wrong answers.
+  - *BKT*, Bayesian Knowledge Tracing (Corbett & Anderson 1994): a skill is known or not, with guess and slip. Its
+    parameters per skill come from a grid search on the training students (Baker et al. 2010).
+- three counting baselines.
 
 ```bash
-npm run model -- zeno-attempts.csv          # the CSV export
-npm run model -- zeno-attempts.csv --fit    # also search α, β for the lowest log-loss
-npm run model -- --simulate                 # synthetic learners with a known truth (src/model/simulate.ts)
+npm run model -- zeno-attempts.csv                  # the CSV export
+npm run model -- --observations assistments.json    # a public data set (below)
+npm run model -- --simulate                         # synthetic learners with a known truth (src/model/simulate.ts)
+#   --fit                    also search α, β on the training students and score the best on the held-out ones
+#   --test-share 0.2 --seed 1    how many students are held out, and which
+#   --calibration bins.csv   every model's calibration bins, for a plot
 ```
 
-On the built-in simulation (120 students × 150 questions):
+On the built-in simulation (120 students × 150 questions; 18 held out):
 
 | model | log-loss | AUC |
 |---|---|---|
-| Elo, three layers | 0.556 | 0.787 |
-| Elo, no area layer | 0.562 | 0.782 |
-| Elo, skill layer only | 0.601 | 0.739 |
-| per skill & level rate | 0.630 | 0.699 |
-| per student & skill rate | 0.656 | 0.655 |
-| overall rate | 0.693 | 0.485 |
+| Elo, three layers | 0.550 | 0.789 |
+| Elo, no area layer | 0.558 | 0.782 |
+| Elo, skill layer only | 0.597 | 0.741 |
+| PFA | 0.642 | 0.678 |
+| BKT | 0.641 | 0.679 |
+| per student & skill rate | 0.654 | 0.653 |
+| per skill & level rate | 0.626 | 0.704 |
+| overall rate | 0.693 | 0.505 |
 
 The defaults were chosen on simulated classes, which are built with the same structure as the model, so these numbers
-only show that it works. Real answers will be noisier. Refit with `--fit` once real data exists, and report those
-numbers.
+only show that it works. PFA and BKT know nothing of levels, which the simulation has; on data without levels that
+doesn't hold them back.
+
+**On real answers.** Until a class uses Zeno, the model can be tried on a public data set of real students. The data
+set is ASSISTments 2009–2010 "skill builder" (Feng, Heffernan & Koedinger 2009): thousands of middle-school
+students' first attempts at maths problems, each tagged with the skills it practises. (The importer prints the exact
+numbers it keeps.) Download `skill_builder_data.csv` (the corrected
+version) from the ASSISTments data site, then:
+
+```bash
+npm run import-assistments -- skill_builder_data.csv      # writes assistments.json
+npm run model -- --observations assistments.json --fit --calibration assistments-bins.csv
+```
+
+The importer keeps main problems only (not the scaffolding questions a wrong answer opens), with a skill and a 0/1
+first-attempt result, in the order they were answered. A problem with two skills counts once for each. Every
+question is level 2, since the data has no levels. The model's area layer uses a rough grouping of the skill names
+into topics (number, algebra, geometry, data, other); `elo, one area` in the output shows what that grouping adds.
+Report this table: it is the evidence on real answers.
 
 ### Simulation study
 
-`npm run simulate` runs the two conditions on simulated classes (60 students, 60 questions each, algebra; change these
-with `--skills`, `--students`, `--questions` and `--runs`). It reports Cohen's d of adaptive over fixed in test-score
-gain. The result depends on things a simulation has to assume: how much a question teaches (*flat*: always the same;
-*zpd*: most at an even chance), how much practising a skill helps the skills built on it (*transfer*), and how fast
-students learn (*rate*):
+`npm run simulate` runs the two conditions on simulated classes: 60 students, 60 questions each, on the 12 algebra
+skills, 10 classes per row. Change these with `--skills`, `--students`, `--questions`, `--runs` and
+`--test-length`. The result depends on what a simulation has to assume, so it is run across all of these:
 
-| learning | transfer | rate | d | adaptive ahead in |
+- **The world**, meaning how answers come from what a learner knows (`src/model/simulate.ts`):
+  - *elo*: σ(ability − difficulty), the learner model's own form.
+  - *irt2pl*: the same, with a discrimination per skill.
+  - *bkt*: a skill is known or not, with guesses and slips. A world unlike the model's checks that the result isn't
+    an artefact of simulating the model's own assumptions.
+- **Learning**, meaning how much a question teaches:
+  - *flat*: always the same.
+  - *zpd*: most at an even chance.
+- **Transfer**: how much practising a skill helps the skills built on it.
+- **Rate**: how fast students learn.
+
+Cohen's d of adaptive over fixed in true gain (the learner's real chance on every skill and level, before and
+after):
+
+| world | learning | rate | transfer 0 | transfer 0.3 | transfer 0.6 |
+|---|---|---|---|---|---|
+| elo | flat | 0.02 | 0.13 | 0.64 | 0.78 |
+| elo | flat | 0.1 | −0.16 | 0.26 | 0.24 |
+| elo | zpd | 0.02 | 0.02 | 0.39 | 0.52 |
+| elo | zpd | 0.1 | −0.36 | −0.04 | 0.12 |
+| irt2pl | flat | 0.02 | 0.21 | 0.72 | 0.86 |
+| irt2pl | flat | 0.1 | 0.05 | 0.37 | 0.47 |
+| irt2pl | zpd | 0.02 | 0.14 | 0.52 | 0.67 |
+| irt2pl | zpd | 0.1 | −0.16 | 0.13 | 0.24 |
+| bkt | flat | 0.02 | −0.53 | −0.14 | −0.19 |
+| bkt | flat | 0.1 | −0.49 | −0.19 | −0.08 |
+| bkt | zpd | 0.02 | −0.07 | −0.00 | −0.03 |
+| bkt | zpd | 0.1 | −0.33 | −0.13 | 0.01 |
+
+**Adaptive questions sit nearer the target.** In the elo and irt2pl worlds they are about 0.12 from a 75 % chance on
+average, against about 0.27 for the fixed sequence. In the elo and irt2pl worlds, adaptive practice helps when practice transfers to later
+skills. In the bkt world it is no better, and often worse. There, a question with a 75 % chance is mostly one on a
+skill the student already knows (80–95 % right), so adaptive practice drills what is known rather than what isn't.
+
+`npm run simulate -- --grid` also tries adaptive practice aiming at 60 % and at 85 %, and random questions. The
+table gives the mean d over each world's 12 assumption sets. In brackets: how many sets had a 95 % interval above
+zero (↑) and how many below (↓):
+
+| world | adaptive (75 %) vs fixed | adaptive 60 % vs fixed | adaptive 85 % vs fixed | adaptive vs random |
 |---|---|---|---|---|
-| flat | 0 | 0.02 | 0.13 | 60 % of classes |
-| flat | 0 | 0.1 | −0.16 | 30 % |
-| flat | 0.3 | 0.02 | 0.64 | 90 % |
-| flat | 0.6 | 0.1 | 0.24 | 90 % |
-| zpd | 0 | 0.02 | 0.02 | 50 % |
-| zpd | 0 | 0.1 | −0.36 | 10 % |
-| zpd | 0.3 | 0.02 | 0.39 | 100 % |
-| zpd | 0.6 | 0.1 | 0.12 | 70 % |
+| elo | +0.21 (5↑ 1↓) | +0.69 (12↑ 0↓) | −0.15 (2↑ 5↓) | +0.33 (8↑ 2↓) |
+| irt2pl | +0.35 (7↑ 0↓) | +0.71 (11↑ 0↓) | +0.03 (3↑ 3↓) | +0.41 (8↑ 0↓) |
+| bkt | −0.18 (0↑ 4↓) | +0.18 (7↑ 0↓) | −0.44 (0↑ 10↓) | −0.19 (0↑ 6↓) |
 
-In every row, adaptive questions are much nearer the target: 0.12 from a 75 % chance on average, against 0.27 for the
-fixed sequence. Whether that means more learning depends on the assumptions, from a clear loss to a clear gain. Adaptive
-practice spends more time on the skills others build on. That pays off when practice transfers, and costs when it
-doesn't. So the simulation can't answer the research question, but it does show the effect is unlikely to be large. At
-80 % power, d = 0.5 needs about 64 students per group and d = 0.3 about 175; a pre-test correlating 0.6 with the
-post-test cuts that by about a third (ANCOVA).
+**A 60 % target is the robust choice.** Aiming at a 60 % chance is never worse than the fixed sequence, in any world
+under any assumption, and better in 30 of the 36 sets. A simulation can't say what harder questions do to
+motivation, which is why Math Garden aims at 75 %. Still, this is the strongest reason to reconsider `TARGET` in
+`src/model/policy.ts` before a real study.
+
+**Power.** `npm run simulate -- --power` runs the planned ANCOVA on what a class would actually see: 12-question
+tests, answered right or wrong by chance. It counts how often p < 0.05, over 100 studies per row, so each figure is
+good to about ±4 points. The table gives the range over each world's 8 assumption sets. In brackets is the highest
+share of studies that came out significant for adaptive (A) or for fixed (F):
+
+| design | world | 40 students | 80 students | 160 students |
+|---|---|---|---|---|
+| 12 skills, 60 questions, 12-question tests | elo | 3–5 % (A 3, F 3) | 3–7 % (A 1, F 6) | 1–4 % (A 3, F 1) |
+| | irt2pl | 3–9 % (A 5, F 4) | 4–7 % (A 3, F 5) | 2–4 % (A 3, F 3) |
+| | bkt | 6–38 % (A 4, F 38) | 6–68 % (A 2, F 68) | 5–86 % (A 3, F 86) |
+| 4 skills, 120 questions, 24-question tests | elo | 4–13 % (A 2, F 12) | 3–23 % (A 5, F 23) | 5–39 % (A 7, F 39) |
+| | irt2pl | 3–18 % (A 3, F 17) | 5–22 % (A 6, F 22) | 8–33 % (A 11, F 33) |
+| | bkt | 4–19 % (A 3, F 19) | 1–25 % (A 6, F 25) | 2–41 % (A 8, F 41) |
+
+The second design is `--skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160`.
+
+**What the power table means for the thesis.** As designed, the study can't detect the difference the simulation
+predicts:
+
+- **The gains are too small for the test.** With 60 questions over 12 skills, each skill gets about five questions,
+  and the true gains are a few points. A 12-question test can't see that against how much students differ. Even the
+  elo-world gains that look clear in true ability (d up to 0.8) shrink to d ≈ 0.05 on the test.
+- **A focused study shows fixed more often than adaptive.** Concentrating the practice on fewer skills, with more
+  questions and a longer test, raises the power. But what it then detects is mostly the fixed sequence's advantage,
+  at the faster learning rate or in the bkt world.
+
+So the thesis can't rest on a significant class result. It rests on four things:
+
+1. the model's accuracy on real answers;
+2. the simulations, with their assumptions stated;
+3. the dry run, showing the system and analysis are ready;
+4. this power analysis, as the reason a real study needs a focused design and probably a 60 % target.
+
+The CSVs behind these tables are in `docs/results/`.
+
+### Dry run
+
+`npm run dry-run` rehearses the whole study with simulated students against the real server, through its HTTP API:
+
+1. It makes a class and joins 40 students, who are randomised in blocks.
+2. It runs the pre-test, a practice session and the post-test. Each student answers like a browser would:
+   - test questions are rebuilt from the class code;
+   - practice is chosen by the student's condition from the plan the server sends, carried forward between refreshes;
+   - answers are typed and marked by the real checker.
+3. It downloads both exports and runs the analysis on them.
+
+It checks the study's guarantees and fails if one breaks:
+
+- the groups are balanced;
+- the forms are counterbalanced within each condition;
+- each test is on its form;
+- every test is complete;
+- every practice question is stored, and a retried upload is stored once;
+- class practice follows each student's condition;
+- the model's prediction is logged with each question;
+- the planned analysis runs on the export.
+
+```bash
+npm run dry-run                                         # 40 students, 30 questions, 12-question tests (~10 s)
+npm run dry-run -- --students 60 --world bkt --out dry-run
+npm run analyse -- dry-run/tests.csv
+npm run model -- dry-run/attempts.csv
+```
+
+A smaller dry run is part of `npm test`, so CI checks the whole pipeline on every push.
+
+### Answer checker
+
+A test score is only as good as its marking. `tests/fixtures/answers.json` has 285 typed answers to questions from
+all 38 skills, each marked the way a teacher would:
+
+- correct;
+- close (a rounding slip);
+- wrong;
+- form (the right idea, sent back: not simplified, not factorised, not exact, a root missing, unreadable).
+
+`npm run checker-agreement` compares the checker's verdicts with that marking:
+
+| teacher \ checker | correct | close | wrong | form |
+|---|---|---|---|---|
+| correct (138) | 135 | 0 | 1 | 2 |
+| close (16) | 0 | 0 | 3 | 13 |
+| wrong (97) | 0 | 0 | 97 | 0 |
+| form (34) | 2 | 0 | 8 | 24 |
+
+The checker agrees 89.8 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+
+- `13*17` for "work out 13 × 17";
+- an integral without `+ C`.
+
+It rejects one right answer: `50%` as a probability.
+
+Its other disagreements are mild:
+
+- **Rounding slips are sent back, not marked close.** The checker never gives "close", so a slip costs a retry
+  rather than a mark.
+- **A rounded decimal for an exact answer is marked wrong.** A teacher would ask for the exact value instead.
+- **A few forms it can't read come back as unreadable**, such as `76.24 to 82.16`.
+
+Building the corpus found two real faults, now fixed:
+
+- About one question in forty (2.6 % of 22,800 sampled) showed its expression wrong. `-3x^3` came out as
+  `x^{3} -3` in functions, calculus and expansion questions.
+- Lists of exact answers like `-4 - 2sqrt(3); -4 + 2sqrt(3)` couldn't be read, because the closing bracket of
+  `sqrt(3)` was taken for the list's.
+
+Exact roots, "or" between roots and `±` are now accepted. `tests/checker.test.ts` fails if agreement drops or the
+checker starts crediting wrong answers.
 
 ## Tests
 
@@ -855,8 +1041,13 @@ and the dashboard: teacher-only, mastery for every student and skill, group figu
 that match hand-worked values; and the protocol: the forms are stable, parallel and spread over the skills, every test
 question accepts its own answer in all three languages, phases and sessions are the teacher's alone, forms are
 counterbalanced within each condition, each test question is stored once and worked out by the server, typed answers
-can't become spreadsheet formulas, and the dashboard's test figures match. GitHub Actions runs typecheck, tests and build on every push, and
-builds the Docker image and saves a board in it.
+can't become spreadsheet formulas, and the dashboard's test figures match; and the evidence: the CSV reader survives
+any split of its input, the ASSISTments importer keeps the right rows, the held-out split keeps students whole, PFA
+and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
+t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
+of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
+of 285 typed answers at least 89 % of the time, crediting at most two wrong answers. GitHub Actions runs typecheck,
+tests and build on every push, and builds the Docker image and saves a board in it.
 
 ## Project layout
 
@@ -876,8 +1067,17 @@ src/model/testForms.ts    the pre-/post-test forms A and B, built from the class
 src/components/TestRunner.tsx  taking a test: one question at a time, no marks, form messages only
 src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes, codes, groups, mastery heatmap, calibration
 src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashboard's charts and their readouts
-scripts/evaluate-model.ts `npm run model`: the metrics for a CSV export or a simulated class
-scripts/simulate-study.ts `npm run simulate`: adaptive against fixed on simulated classes, across assumptions
+src/model/datasets.ts     public data sets (ASSISTments) as observations, read as a stream
+src/model/analysis.ts     the study's planned analysis: ANCOVA, Welch's test, least squares, scores from the export
+src/math/distributions.ts normal, t and χ² tails and their inverses (no imports, for the server and scripts too)
+scripts/evaluate-model.ts `npm run model`: the model against PFA, BKT and baselines on held-out students
+scripts/import-assistments.ts  `npm run import-assistments`: the ASSISTments file as observations
+scripts/simulate-study.ts `npm run simulate`: the conditions on simulated classes, across worlds and assumptions; power
+scripts/analyse-study.ts  `npm run analyse`: the planned analysis on the tests export
+scripts/dry-run-study.ts  `npm run dry-run`: the whole study with simulated students through the real server
+scripts/checker-agreement.ts  `npm run checker-agreement`: the answer checker against labelled answers
+docs/evaluation/          the usability study protocol (tasks, SUS in three languages, results template)
+docs/results/             the simulation results the README quotes, as CSV
 src/pages/HomePage.tsx    board list
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics

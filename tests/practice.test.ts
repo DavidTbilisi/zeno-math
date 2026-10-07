@@ -7,6 +7,7 @@ import { en } from "../src/locales/en.ts";
 import { ru } from "../src/locales/ru.ts";
 import { ALL_SKILLS, check, exercise, LEVELS, renderPractice, renderSteps, type Exercise } from "../src/math/practice.ts";
 import { renderSolution } from "../src/math/practiceSolve.ts";
+import { parseE, tex } from "../src/math/expr.ts";
 
 const w = en.pracWords;
 
@@ -63,7 +64,13 @@ test("answers in other forms", () => {
   const quad = find("quadratic", 1, (ex) => ex.answer.k === "set" && ex.answer.vs[0] < 0 && ex.answer.vs[1] > 0);
   if (quad.answer.k !== "set") throw new Error();
   const [r1, r2] = quad.answer.vs;
-  for (const s of [`${r2}; ${r1}`, `x = ${r1}, x = ${r2}`, `x=${r2}; x=${r1}`, `${r1} and ${r2}`]) assert.equal(check(quad, s, w).ok, true, s);
+  for (const s of [`${r2}; ${r1}`, `x = ${r1}, x = ${r2}`, `x=${r2}; x=${r1}`, `${r1} and ${r2}`, `x = ${r1} or x = ${r2}`, `${r1} или ${r2}`])
+    assert.equal(check(quad, s, w).ok, true, s);
+  // Exact roots: the bracket closing sqrt(3) belongs to the root, not to the list; ± gives both.
+  const surdRoots = find("quadratic", 3, (ex) => ex.plain === "-7.464; -0.536");
+  for (const s of ["-4 - 2sqrt(3); -4 + 2sqrt(3)", "(-4 + 2sqrt(3); -4 - 2sqrt(3))", "-4 ± 2sqrt(3)", "x = -4 +- 2sqrt(3)", "[-7.464, -0.536]"])
+    assert.equal(check(surdRoots, s, w).ok, true, s);
+  assert.equal(check(surdRoots, "-4 ± 3sqrt(2)", w).ok, false);
   assert.equal(check(quad, String(r1), w).why, w.reasons.count.replace("{n}", "2"), "one root missing");
 
   const fac = find("factor", 1, (ex) => /^\(x [+-] \d\)\(x [+-] \d\)$/.test(ex.plain));
@@ -160,4 +167,15 @@ test("vector answers match the vectors in the question", () => {
     const [p, q] = [...perp.prompt.matchAll(/\(([^()]*)\)/g)].map((m) => m[1].split(", ").map((x) => (x === "k" ? k : Number(x))));
     assert.ok(Math.abs(dot(p, q)) < 1e-9, `${perp.prompt}: k = ${perp.plain}`);
   }
+});
+
+test("a negative leading coefficient is written in front of its term, in every question that has one", () => {
+  // "-3x^3" parses as (−1·3)·x³; it used to come out as "x^{3} -3", in about one question in forty.
+  assert.equal(tex(parseE("-3x^3 - 2x^2 + 9")), "-3 x^{3} - 2 x^{2} + 9");
+  assert.equal(tex(parseE("-5x - 6")), "-5 x - 6");
+  for (const [skill, level] of [["differentiate", 1], ["functions", 1], ["functions", 2], ["stationary", 1], ["tangent", 1], ["integrate", 1], ["expand", 3]] as const)
+    for (let seed = 1; seed <= 100; seed++) {
+      const ex = exercise(skill, level, seed, w);
+      for (const s of [ex.q, ex.show]) assert.doesNotMatch(s, /(?:\^\{\d+\}|(?<![\\a-z])x) -\d/, `${skill} ${level} seed ${seed}: ${s}`);
+    }
 });

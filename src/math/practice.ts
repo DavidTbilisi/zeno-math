@@ -167,6 +167,12 @@ export type PracticeWords = {
     solving: string;
     reset: string;
     joinClass: string;
+    /** What joining a class study means, shown before a student joins; consentAgree is the box they tick. */
+    consentTitle: string;
+    consentSaved: string;
+    consentGroups: string;
+    consentStop: string;
+    consentAgree: string;
     classCode: string;
     join: string;
     haveCode: string;
@@ -1784,11 +1790,33 @@ function value(s: string): number {
   const e = parseE(t);
   return evalE(e, NaN);
 }
-/** Split a list of values: on ";", or on ", " / "," between values when there is no decimal comma ambiguity. */
+/**
+ * Without the brackets around a whole list: "(2; 3)", "[76.2, 82.2)". Only a pair that encloses everything goes, so
+ * the bracket closing sqrt(3) in "-4 + 2sqrt(3)" stays.
+ */
+function unwrap(s: string): string {
+  let t = s.trim();
+  while (/^[([{]/.test(t) && /[)\]}]$/.test(t)) {
+    let depth = 0;
+    let closesAt = -1;
+    for (let i = 0; i < t.length && closesAt < 0; i++) {
+      if ("([{".includes(t[i])) depth++;
+      else if (")]}".includes(t[i]) && --depth === 0) closesAt = i;
+    }
+    if (closesAt !== t.length - 1) break;
+    t = t.slice(1, -1).trim();
+  }
+  return t;
+}
+/** Split a list of values: on ";", or on ", " / "," / "and" / "or" between values when there is no decimal comma ambiguity. */
 function parts(s: string): string[] {
-  const t = s.replace(/^[\s([{]+|[\s)\]}]+$/g, "");
-  if (t.includes(";")) return t.split(";").map((p) => p.trim()).filter(Boolean);
-  return t.split(/,\s+|\s+and\s+|\s+и\s+|\s+და\s+/).map((p) => p.trim()).filter(Boolean);
+  const t = unwrap(s);
+  const ps = t.includes(";") ? t.split(";") : t.split(/,\s+|\s+(?:and|or)\s+|\s+(?:и|или)\s+|\s+(?:და|ან)\s+/);
+  // "-4 ± 2sqrt(3)" is two values.
+  return ps.map((p) => p.trim()).filter(Boolean).flatMap((p) => {
+    const [a, b, ...rest] = p.split(/±|\+-|\+\/-/);
+    return b === undefined || rest.length ? [p] : [`${a.trim()} - (${b.trim()})`, `${a.trim()} + (${b.trim()})`];
+  });
 }
 const near = (a: number, b: number, tol: number) => Math.abs(a - b) <= tol + 1e-9 * Math.max(1, Math.abs(b));
 
