@@ -43,6 +43,8 @@ export type AdaptiveOptions = {
   recent?: readonly SkillId[];
   /** Breaks exact ties; Math.random in the app, a seeded generator in simulations. */
   random?: () => number;
+  /** The chance of a right first answer to aim at: TARGET in the app; simulations try others. */
+  target?: number;
 };
 
 /** The skills the student may practise now: prerequisites met and not mastered (all of them once everything is). */
@@ -56,11 +58,12 @@ export function openSkills(model: EloModel, student: string, skills: readonly Sk
 export function adaptiveChoice(model: EloModel, student: string, skills: readonly SkillId[], options: AdaptiveOptions = {}): Choice {
   const recent = (options.recent ?? []).slice(-RECENT);
   const random = options.random ?? Math.random;
+  const target = options.target ?? TARGET;
   let best: (Choice & { score: number; tie: number }) | null = null;
   for (const skill of openSkills(model, student, skills)) {
     const penalty = RECENCY_PENALTY * recent.filter((k) => k === skill).length;
     for (const level of LEVELS) {
-      const score = Math.abs(model.predict({ student, skill, level }) - TARGET) + penalty;
+      const score = Math.abs(model.predict({ student, skill, level }) - target) + penalty;
       const tie = random();
       if (!best || score < best.score - 1e-12 || (Math.abs(score - best.score) <= 1e-12 && tie < best.tie)) best = { skill, level, score, tie };
     }

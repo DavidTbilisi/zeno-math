@@ -10,11 +10,14 @@
 // kept per level, so the levels of a skill keep their order until the answers really say otherwise. After each answer every term moves by the surprise (result − prediction), scaled by an uncertainty U(n) =
 // α / (1 + β·n) that shrinks as the term collects evidence: new students and questions move fast, settled ones slowly.
 // Imports name their .ts files: the server runs this with plain Node, which doesn't guess extensions.
-import { areaOf, type Area, type SkillId } from "../math/practiceSkills.ts";
+import { areaOf, type SkillId } from "../math/practiceSkills.ts";
 
 export type Level = 1 | 2 | 3;
-/** One answer the model learns from: was the student's first counted answer to a question correct? */
-export type Observation = { student: string; skill: SkillId; level: Level; correct: boolean };
+/**
+ * One answer the model learns from: was the student's first counted answer to a question correct? The skill is one of
+ * Zeno's (SkillId) in the app, and any name in a public data set the model is tried on (scripts/import-assistments.ts).
+ */
+export type Observation = { student: string; skill: string; level: Level; correct: boolean };
 
 export type EloParams = {
   /** Uncertainty U(n) = alpha / (1 + beta·n). */
@@ -26,6 +29,8 @@ export type EloParams = {
   difficultyWeights: { skill: number; level: number };
   /** How much harder each level starts than the one below (level 2 starts at 0). */
   levelStep: number;
+  /** The area a skill belongs to (the middle layer of ability): Zeno's areas by default, a data set's own grouping otherwise. */
+  areaOf: (skill: string) => string;
 };
 // Chosen on simulated classes (src/model/simulate.ts, seeds apart from the tests'); refit on real answers with
 // `npm run model -- attempts.csv --fit`. Every answer moves three layers, so the total step is about 2·alpha.
@@ -35,20 +40,21 @@ export const DEFAULT_PARAMS: EloParams = {
   weights: { global: 0.4, area: 0.6, skill: 1 },
   difficultyWeights: { skill: 1, level: 0.5 },
   levelStep: 0.8,
+  areaOf: (skill) => areaOf(skill as SkillId) ?? "other",
 };
 
 type Rating = { v: number; n: number };
-type StudentState = { global: Rating; area: Map<Area, Rating>; skill: Map<SkillId, Rating> };
+type StudentState = { global: Rating; area: Map<string, Rating>; skill: Map<string, Rating> };
 /** Each rating as [value, answers it rests on]. */
 export type ModelState = {
   skills: Record<string, [number, number]>;
   levels: Record<string, [number, number]>;
   students: Record<string, { global: [number, number]; area: Record<string, [number, number]>; skill: Record<string, [number, number]> }>;
 };
-export type Mastery = { skill: SkillId; n: number; ability: number; p: Record<Level, number> };
+export type Mastery = { skill: string; n: number; ability: number; p: Record<Level, number> };
 
 export const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
-const itemKey = (skill: SkillId, level: Level) => `${skill}:${level}`;
+const itemKey = (skill: string, level: Level) => `${skill}:${level}`;
 const rating = (): Rating => ({ v: 0, n: 0 });
 const get = <K>(m: Map<K, Rating>, k: K) => m.get(k) ?? m.set(k, rating()).get(k)!;
 
@@ -57,7 +63,7 @@ export class EloModel {
   readonly params: EloParams;
   private students = new Map<string, StudentState>();
   /** b: the difficulty of each skill, whatever the level. */
-  private skills = new Map<SkillId, Rating>();
+  private skills = new Map<string, Rating>();
   /** r: what each level of a skill adds on top of b and the level step. */
   private levels = new Map<string, Rating>();
   constructor(params: Partial<EloParams> = {}) {
@@ -75,12 +81,12 @@ export class EloModel {
   }
 
   /** The student's ability on a skill: the three layers added up (0 for someone the model hasn't seen). */
-  ability(student: string, skill: SkillId): number {
+  ability(student: string, skill: string): number {
     const s = this.students.get(student);
     if (!s) return 0;
-    return s.global.v + (s.area.get(areaOf(skill))?.v ?? 0) + (s.skill.get(skill)?.v ?? 0);
+    return s.global.v + (s.area.get(this.params.areaOf(skill))?.v ?? 0) + (s.skill.get(skill)?.v ?? 0);
   }
-  difficulty(skill: SkillId, level: Level): number {
+  difficulty(skill: string, level: Level): number {
     return (this.skills.get(skill)?.v ?? 0) + (level - 2) * this.params.levelStep + (this.levels.get(itemKey(skill, level))?.v ?? 0);
   }
   /** P(the student answers a question of this skill and level right first time). */
@@ -93,7 +99,7 @@ export class EloModel {
     const s = this.student(o.student);
     const w = this.params.weights;
     // Every rating moves by its own uncertainty, read before any of them is counted.
-    const layers: [Rating, number][] = [[s.global, w.global], [get(s.area, areaOf(o.skill)), w.area], [get(s.skill, o.skill), w.skill]];
+    const layers: [Rating, number][] = [[s.global, w.global], [get(s.area, this.params.areaOf(o.skill)), w.area], [get(s.skill, o.skill), w.skill]];
     for (const [r, weight] of layers) {
       r.v += weight * this.uncertainty(r.n) * surprise;
       r.n++;
@@ -106,7 +112,7 @@ export class EloModel {
   }
 
   /** How well the student knows a skill: the chance of a right first answer at each level, and how many answers that rests on. */
-  mastery(student: string, skill: SkillId): Mastery {
+  mastery(student: string, skill: string): Mastery {
     const at = (level: Level) => this.predict({ student, skill, level });
     return { skill, n: this.students.get(student)?.skill.get(skill)?.n ?? 0, ability: this.ability(student, skill), p: { 1: at(1), 2: at(2), 3: at(3) } };
   }
@@ -130,10 +136,10 @@ export class EloModel {
     const m = new EloModel(params);
     const rating = ([v, n]: [number, number]): Rating => ({ v, n });
     const map = <K extends string>(o: Record<string, [number, number]>) => new Map(Object.entries(o).map(([k, r]) => [k as K, rating(r)]));
-    m.skills = map<SkillId>(state.skills);
+    m.skills = map(state.skills);
     m.levels = map(state.levels);
     for (const [id, s] of Object.entries(state.students))
-      m.students.set(id, { global: rating(s.global), area: map<Area>(s.area), skill: map<SkillId>(s.skill) });
+      m.students.set(id, { global: rating(s.global), area: map(s.area), skill: map(s.skill) });
     return m;
   }
 }

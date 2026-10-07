@@ -383,6 +383,9 @@ input.invalid { border-color: var(--danger); }
 .practice-join summary { cursor: pointer; width: fit-content; }
 .practice-join[open] summary { margin-bottom: 6px; }
 .practice-class input { flex: 1; min-width: 0; }
+.practice-class input[type="checkbox"] { flex: none; }
+.practice-consent { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+.practice-consent ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
 
 /* Class study: the teacher's dashboard */
 :root {

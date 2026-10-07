@@ -308,6 +308,8 @@ export function splitMul(e: E): { c: Frac; top: E[]; bottom: E[] } {
   const bottom: E[] = [];
   for (const f of fs) {
     if (isNum(f)) c = c.mul(f.v);
+    // A typed "-3x^3" parses as (−1·3)·x³: a product of numbers is part of the coefficient, not a factor after x³.
+    else if (f.k === "mul" && f.fs.every(isNum)) for (const g of f.fs) c = c.mul((g as { v: Frac }).v);
     else if (f.k === "pow" && isNum(f.e) && f.e.v.isNeg()) bottom.push(f.e.v.isInt() && f.e.v.n === -1 ? f.b : pow(f.b, N(f.e.v.neg())));
     else top.push(f);
   }

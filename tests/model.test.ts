@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { EloModel, type Observation } from "../src/model/elo.ts";
 import { auc, calibration, evaluate, globalRate, itemRate, logLoss, observation, parseCsv, studentSkillRate } from "../src/model/evaluate.ts";
-import { makeWorld, runStudy, simulateRandom, summarise } from "../src/model/simulate.ts";
+import { makeWorld, runStudy, simulateRandom, summarise, WORLDS } from "../src/model/simulate.ts";
 import { ALL_SKILLS, LEVELS } from "../src/math/practice.ts";
 
 const close = (a: number, b: number, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol, `${a} ≉ ${b}`);
@@ -119,13 +119,46 @@ test("the simulation study runs both conditions alike, and adaptive questions si
   const params = { students: 20, questions: 30, seed: 5 };
   const result = runStudy(params);
   assert.deepEqual(runStudy(params), result, "the same seed gives the same study");
-  assert.equal(result.learners.filter((l) => l.condition === "adaptive").length, 10);
-  assert.equal(result.chosen.adaptive.length, 10 * 30);
-  assert.equal(result.chosen.fixed.length, 10 * 30);
+  assert.deepEqual(result.arms, ["adaptive", "fixed"]);
+  assert.equal(result.learners.filter((l) => l.arm === 0).length, 10);
+  assert.equal(result.chosen[0].length, 10 * 30);
+  assert.equal(result.chosen[1].length, 10 * 30);
   const s = summarise(result);
-  assert.ok(s.adaptive.gain > 0 && s.fixed.gain > 0, "practice teaches");
-  assert.ok(s.adaptive.offTarget < s.fixed.offTarget - 0.05, `off target: adaptive ${s.adaptive.offTarget}, fixed ${s.fixed.offTarget}`);
-  assert.ok(Number.isFinite(s.d));
+  assert.ok(s.a.gain > 0 && s.b.gain > 0, "practice teaches");
+  assert.ok(s.a.offTarget < s.b.offTarget - 0.05, `off target: adaptive ${s.a.offTarget}, fixed ${s.b.offTarget}`);
+  assert.ok(Number.isFinite(s.d) && Number.isFinite(s.dTest));
+  // The test a class sits is a noisy reading of the truth: whole questions out of twelve, close to it on average.
+  for (const l of result.learners) assert.ok(Number.isInteger(l.preTest * 12) && Number.isInteger(l.postTest * 12));
+  const meanOf = (f: (l: (typeof result.learners)[number]) => number) => result.learners.reduce((t, l) => t + f(l), 0) / result.learners.length;
+  assert.ok(Math.abs(meanOf((l) => l.preTest) - meanOf((l) => l.pre)) < 0.1, "the test is about right on average");
+});
+
+test("every simulated world teaches with practice, and adaptive and random arms run like the others", () => {
+  for (const world of WORLDS) {
+    const s = summarise(runStudy({ students: 20, questions: 30, seed: 9, world }));
+    assert.ok(s.a.gain > 0 && s.b.gain > 0, `${world}: practice teaches`);
+  }
+  const vsRandom = runStudy({ students: 20, questions: 20, seed: 9, arms: [{ policy: "adaptive", target: 0.6 }, { policy: "random" }] });
+  assert.deepEqual(vsRandom.arms, ["adaptive 0.6", "random"]);
+  assert.deepEqual(vsRandom.targets, [0.6, 0.75]);
+  const s = summarise(vsRandom);
+  assert.ok(s.a.offTarget < s.b.offTarget, "adaptive is nearer its own target than random choice is");
+});
+
+test("the BKT world: a known skill is answered right but for slips, an unknown one only by guessing, and practice can teach it", () => {
+  const world = makeWorld({ students: 200, seed: 4, world: "bkt", learnRate: 0.4 });
+  const l = world.learners.find((x) => !x.known.get("linear"))!;
+  assert.equal(world.chance(l, "linear", 2), 0.2);
+  let answered = 0;
+  while (!l.known.get("linear") && answered < 1000) world.answer(l, "linear", 2), answered++;
+  assert.ok(l.known.get("linear"), "practice teaches it in the end");
+  assert.equal(world.chance(l, "linear", 3), 0.8);
+  // Abler learners know more skills at the start.
+  const knownShare = (x: (typeof world.learners)[number]) => [...x.known.values()].filter(Boolean).length / x.known.size;
+  const byAbility = [...world.learners].sort((a, b) => a.ability.get("linear")! - b.ability.get("linear")!);
+  const lowHalf = byAbility.slice(0, 100).reduce((t, x) => t + knownShare(x), 0);
+  const highHalf = byAbility.slice(100).reduce((t, x) => t + knownShare(x), 0);
+  assert.ok(highHalf > lowHalf);
 });
 
 test("simulated learning: zpd teaches most at an even chance, transfer reaches the skills built on it", () => {
