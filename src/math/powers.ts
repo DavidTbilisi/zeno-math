@@ -360,7 +360,6 @@ const strip = (n: Node): Node => (n.k === "paren" ? strip(n.a) : n);
 
 // ---------- LaTeX of what was typed ----------
 
-const isE = (n: Node) => n.k === "var" && n.name === "e";
 function texNode(n: Node, times = "\\cdot", over?: (n: Node) => string | undefined): string {
   const T = (m: Node) => texNode(m, times, over);
   const o = over?.(n);
@@ -2043,7 +2042,7 @@ function renderExpEquation(L0: Node, R0: Node, w: PowersWords, typed: [string, s
   const b = L.base;
   const powTex = (base: EV, p: Poly) => `${baseTex(base)}^{${polyTex(p)}}`;
   // 1. Divide by the number in front.
-  let K = evDiv(R.k, L.k);
+  const K = evDiv(R.k, L.k);
   if (!evIsOne(L.k)) {
     rows.push({ tex: `${powTex(b, L.p)} = ${R.base ? `${evIsOne(K) ? "" : texEV(K)}${powTex(R.base, R.p)}` : texEV(K)}`, op: fill(E.divideBy, { k: plainEV(L.k) }) });
   }

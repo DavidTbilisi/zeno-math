@@ -74,8 +74,8 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
   latest.current = spec;
 
   // The spec as drawn: fact names follow the UI language.
-  const view: GeometrySpec = { ...spec, factNames: [t.factCorresponding, t.factAlternate, t.factCoInterior] };
-  const m = useMemo(() => measure(view), [spec, t]);
+  const view: GeometrySpec = useMemo(() => ({ ...spec, factNames: [t.factCorresponding, t.factAlternate, t.factCoInterior] }), [spec, t]);
+  const m = useMemo(() => measure(view), [view]);
   const caption = m.sym
     ? `${t.symLinesCount}: ${m.sym.lines} · ${t.symOrder}: ${m.sym.order}`
     : m.classes.map((c) => t.geoClass[c]).join(" · ");

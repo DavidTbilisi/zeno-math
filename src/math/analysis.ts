@@ -6,18 +6,13 @@ import { compile, derivative, parse, type EvalFunction, type MathNode } from "ma
 import type { RenderedSvg } from "./latex";
 import {
   fill,
-  esc,
   clampInt,
-  nf,
   nt,
   simpson,
   tn,
   paren,
   floorSig,
-  SUB,
   sub,
-  W,
-  FONT,
   C,
   makeFrame,
   r2,
@@ -31,11 +26,9 @@ import {
   vline,
   band,
   legend,
-  wrap,
   compose,
   PLOT,
   BODY_H,
-  type Frame,
   type Caption,
 } from "./chart";
 

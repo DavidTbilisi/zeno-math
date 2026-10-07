@@ -411,7 +411,7 @@ export function renderSpace(spec: SpaceSpec, w: SpaceWords): RenderedSvg {
       vs.forEach((v, j) => {
         let u = v.slice();
         const parts: string[] = [];
-        us.forEach((ui, i) => {
+        us.forEach((ui) => {
           const k = dot(v, ui).div(dot(ui, ui));
           u = sub(u, scale(ui, k));
           if (!k.isZero()) parts.push(`${k.isNeg() ? "+" : "-"} ${k.abs().isOne() ? "" : k.abs().tex()}${colTex(ui)}`);

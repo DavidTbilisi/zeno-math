@@ -11,6 +11,7 @@ import { evidence } from "../src/model/evaluate.ts";
 import { RECENT } from "../src/model/policy.ts";
 import { dashboard } from "./dashboard.ts";
 import { HttpError, readJson, send } from "./http.ts";
+import { clientOf, passwords } from "./limiter.ts";
 import { classProtocol, initProtocol, nextTestOrder, parseTestLength, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
@@ -133,9 +134,16 @@ const forgetModel = (db: DatabaseSync) => models.delete(db);
 
 function teacher(req: IncomingMessage) {
   if (!TEACHER_PASSWORD) return;
-  const given = Buffer.from(String(req.headers["x-teacher-password"] ?? ""));
+  const client = clientOf(req);
+  const wait = passwords.retryAfter(client);
+  if (wait) throw new HttpError(429, "too many wrong passwords; try again later", { "Retry-After": String(wait) });
+  const sent = String(req.headers["x-teacher-password"] ?? "");
+  const given = Buffer.from(sent);
   const want = Buffer.from(TEACHER_PASSWORD);
-  if (given.length !== want.length || !timingSafeEqual(given, want)) throw new HttpError(403, "teacher password required");
+  if (given.length !== want.length || !timingSafeEqual(given, want)) {
+    if (sent) passwords.fail(client);
+    throw new HttpError(403, "teacher password required");
+  }
 }
 
 function shuffled<T>(items: readonly T[]): T[] {

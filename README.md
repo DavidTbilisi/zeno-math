@@ -622,6 +622,16 @@ certificate, `pki/authorities/local/root.crt` in Caddy's data folder, on the dev
 With a domain pointing at the server, `zeno.example.org { reverse_proxy 127.0.0.1:8787 }` gets a trusted
 certificate automatically.
 
+Behind a proxy, also set `TRUST_PROXY=1`. Wrong passwords are limited per client: after 10 in 10 minutes, that
+client gets 429 and waits until the oldest leaves the window, without its password even being checked. Behind a
+proxy, every request arrives from the proxy's address. Without `TRUST_PROXY`, a class mistyping the site password
+would lock itself out together. With it, Zeno counts per client, using the address the proxy adds last to
+`X-Forwarded-For`; a client can't forge that one.
+
+```bash
+APP_PASSWORD=… TEACHER_PASSWORD=… BIND_ADDRESS=127.0.0.1 TRUST_PROXY=1 docker compose up -d --build
+```
+
 ## Run without Docker
 
 Requires Node.js ≥ 23.6 (uses built-in `node:sqlite` and native TypeScript support).
@@ -638,8 +648,16 @@ Development (Vite hot reload on :5173, API on :8787):
 npm run dev
 ```
 
-Environment variables: `PORT` (8787), `DATA_DIR` (`./data`), `STATIC_DIR` (`./dist`), `APP_PASSWORD` (empty = no auth),
-`TEACHER_PASSWORD` (empty = anyone can create classes and download the study data; see below).
+Environment variables:
+
+- `PORT`: 8787 by default.
+- `DATA_DIR`: `./data` by default.
+- `STATIC_DIR`: `./dist` by default.
+- `APP_PASSWORD`: empty means no auth.
+- `TEACHER_PASSWORD`: empty means anyone can create classes and download the study data; see below.
+- `TRUST_PROXY`: 1 behind a reverse proxy, as above.
+- `PASSWORD_ATTEMPTS` and `PASSWORD_WINDOW_MINUTES`: 10 and 10 by default.
+- `BACKUP_KEEP`: daily backups to keep, 7 by default; 0 turns them off.
 
 The build writes `.br` / `.gz` copies of the assets, and the server sends those to browsers that accept them. Each tool and each
 language is a separate chunk, loaded the first time it is used.
@@ -648,7 +666,14 @@ Autosave doesn't silently overwrite: if the board was saved in another tab or on
 saving and asks whether to reload that version or keep yours. Saves go one at a time; a failed one is retried (2 s, 5 s, 15 s,
 30 s, and as soon as the browser is back online), and closing the tab with unsaved changes asks first.
 
-Backups: the home page links to `/api/export`, every board in one JSON file. The server sends a Content-Security-Policy and the
+Backups:
+
+- **A daily copy.** Once a day, and when it starts, the server writes a copy of the whole database (boards and
+  study data) to `DATA_DIR/backups/`, keeping the newest seven. The copy is made with SQLite's `VACUUM INTO`, which is
+  safe while the server is running. The copies sit on the same disk, so also copy that folder somewhere else.
+- **Boards as JSON.** The home page links to `/api/export`, every board in one JSON file.
+
+The database records its schema version, and a newer Zeno's database is refused rather than misread. The server sends a Content-Security-Policy and the
 usual security headers, accepts only JSON request bodies (so a form on another site can't post to it) and refuses scenes it
 couldn't load back.
 
@@ -681,7 +706,18 @@ More for a thesis: [docs/architecture.md](docs/architecture.md) (design, diagram
 ```bash
 npm test           # node:test, no extra dependencies
 npm run typecheck
+npm run lint       # ESLint: recommended, typescript-eslint, React's rules of hooks
+npm run coverage   # the tests, failing below 95 % of lines / 88 % of branches / 95 % of functions in src/math and src/model
+npm run build && npm run e2e   # Playwright: the built app in Chromium against a fresh server (npx playwright install chromium first)
 ```
+
+Coverage today is about 97 % of lines, 91 % of branches and 97 % of functions in `src/math` and `src/model`. Server
+code runs in spawned servers, which Node's coverage doesn't follow, so it is tested but not measured. The end-to-end
+tests cover two journeys:
+
+- **A board:** make a board, add a shape and a live piece, use the piece, and find it after a reload.
+- **The class study:** a teacher makes a class; a student agrees, joins and answers a question that reaches the
+  server; then the teacher starts the pre-test and the student gets it.
 
 The tests check that every example of every tool renders in English, Russian and Georgian; that the three languages have the same
 keys; the logic parser; the NAEC 2025 answers; complex-number arithmetic against mathjs; that solved equations and
@@ -734,8 +770,9 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 285 typed answers at least 89 % of the time, crediting at most two wrong answers. GitHub Actions runs typecheck,
-tests and build on every push, and builds the Docker image and saves a board in it.
+of 285 typed answers at least 89 % of the time, crediting at most two wrong answers. GitHub Actions runs the typecheck,
+lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image and saves a board in
+it.
 
 ## Project layout
 

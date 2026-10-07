@@ -3,3 +3,6 @@ dist
 data
 public/fonts
 *.log
+test-results
+playwright-report
+dry-run

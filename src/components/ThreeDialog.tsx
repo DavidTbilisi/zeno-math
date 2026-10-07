@@ -54,6 +54,8 @@ export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
       v.dispose();
       viewer.current = null;
     };
+    // The viewer is made once, for the scene and view the dialog opened with; later changes go to viewer.current.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -3,7 +3,7 @@
 // expanding brackets with the grid method, factoring quadratics by the ac method, and quadratic equations
 // solved four ways — factoring, completing the square (drawn as a square), the formula, and vertex form.
 // Arithmetic is exact (fractions), so every step shows what a pupil would write.
-import { cell, table, txt } from "./algoArrays";
+import { table, txt } from "./algoArrays";
 import { axes, C, compose, curve, fill, lbl, makeFrame, nf, r2, texLines as lines, W, type Caption, type TexLine as Line } from "./chart";
 import { latexToSvg, type RenderedSvg } from "./latex";
 

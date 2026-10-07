@@ -32,6 +32,8 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const item = index >= 0 ? items[index] : null;
+  // An item is its skill, level and seed: a new object with the same three is the same question.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const ex = useMemo(() => item && exercise(item.skill, item.level, item.seed, w), [item?.skill, item?.level, item?.seed, w]);
   const card = useMemo(() => {
     if (!item) return null;
@@ -40,6 +42,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
     } catch {
       return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item?.skill, item?.level, item?.seed, w]);
   const typed = useMemo(() => {
     const p = ex && preview(ex, input);

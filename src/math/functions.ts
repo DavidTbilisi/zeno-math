@@ -152,7 +152,10 @@ const plainOfTex = (t: string) =>
     .replace(/\\left|\\right|\\,|\\;|\\quad/g, "")
     .replace(/\\(ln|log|sin|cos|tan|arcsin|arccos|arctan|sec|csc|cot)\b/g, "$1")
     .replace(/[{}]/g, "")
+    // \u0001 and \u0002 stand in for the braces that must stay while the others are taken out.
+    // eslint-disable-next-line no-control-regex
     .replace(/\u0001/g, "{")
+    // eslint-disable-next-line no-control-regex
     .replace(/\u0002/g, "}")
     .replace(/\s*\\cdot\s*/g, "·")
     .replace(/-/g, "−");
@@ -211,7 +214,6 @@ const eqPlain = (n: Num) => `${n.approx ? "≈" : "="} ${n.plain}`;
 
 // a + b√s that can be divided.
 const qsC = (a: Frac, b: Frac, s: number): QS => (b.isZero() || s === 1 ? { a: s === 1 ? a.add(b) : a, b: ZERO, s: 1 } : { a, b, s });
-const qsSub = (x: QS, y: QS) => qsAdd(x, { a: y.a.neg(), b: y.b.neg(), s: y.s });
 function qsDiv(x: QS, y: QS): QS | null {
   const den = y.a.mul(y.a).sub(y.b.mul(y.b).mul(F(y.s)));
   if (den.isZero()) return null;

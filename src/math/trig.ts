@@ -5,7 +5,7 @@
 import { compile, parse } from "mathjs";
 import { Frac } from "./fraction";
 import type { RenderedSvg } from "./latex";
-import { axes, C, compose, curve, dot, esc, fill, FONT, hline, lbl, makeFrame, nt, r2, tn, vline, W, type Caption } from "./chart";
+import { axes, C, compose, curve, dot, esc, fill, FONT, hline, makeFrame, nt, r2, tn, vline, W, type Caption } from "./chart";
 
 export type AngleUnit = "deg" | "rad";
 export type TrigFn = "sin" | "cos" | "tan";

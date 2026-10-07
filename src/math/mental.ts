@@ -4,7 +4,7 @@
 // Anurupya cubing of two-digit numbers, odd magic squares by the directional walk, and the Major
 // System (digits ↔ consonants) with words decoded back to check them.
 import { cell, table, txt, type Role } from "./algoArrays";
-import { C, compose, fill, r2, W, wrap, type Caption } from "./chart";
+import { C, compose, fill, r2, W, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 
 export type MentalTopic = "multiply" | "check" | "sqrt" | "cbrt" | "cube" | "magic" | "major";

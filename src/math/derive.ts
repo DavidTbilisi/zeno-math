@@ -4,9 +4,9 @@
 // dy/du · du/dv · dv/dx, tangents and normals at a point, and stationary points with the second-derivative test
 // and a sign chart. A small symbolic engine (expression trees, a tidy-up and a simplifier) does the work; numbers are
 // exact fractions, and every derivative is checked against a numerical one.
-import { axes, C, compose, curve, dot, esc, fill, FONT, lbl, makeFrame, nf, r2, texLines, W, yRange, type Caption, type Frame, type TexLine } from "./chart";
+import { axes, C, compose, curve, dot, esc, fill, FONT, lbl, makeFrame, r2, texLines, W, yRange, type Caption, type Frame, type TexLine } from "./chart";
 import {
-  add, D, div, E_, exprMessages, F, fn, fromPoly, has, isN, isNum, key, mul, N, neg, pdeg, peval, pow, qsNum, qsPlain, qsTex, realRoots,
+  add, D, div, E_, exprMessages, F, fn, fromPoly, has, isNum, key, mul, N, neg, pdeg, peval, pow, qsNum, qsPlain, qsTex, realRoots,
   simp, sub, substitute, tex, tidy, toPoly, V, X, approx, evalE, parseE, type E, type Fn, type QS,
 } from "./expr";
 import { Frac } from "./fraction";
