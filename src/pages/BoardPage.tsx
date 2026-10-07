@@ -10,14 +10,17 @@ import {
   useHandleLibrary,
 } from "@excalidraw/excalidraw";
 import type { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import type { ExcalidrawElement, ExcalidrawImageElement, FileId } from "@excalidraw/excalidraw/element/types";
+import type { ExcalidrawElement, ExcalidrawImageElement, FileId, NonDeletedExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 
 import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
 import { ToolMenu } from "../components/ToolMenu";
 import { CommandPalette } from "../components/CommandPalette";
-import { freeY, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
+import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
+import { isLiveLink, liveDataOf, liveElement } from "../live/element";
+import { LiveView, type LiveHost } from "../live/LiveView";
+import type { LiveKind } from "../math/live";
 import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { isToolKind, MENUS, TOOLS, type ToolKind } from "../tools";
@@ -58,6 +61,12 @@ const libraryStore = {
       /* storage full or unavailable: the library lasts until the page closes */
     }
   },
+};
+
+// Live pieces offered in the tool menus too (all of them are in the Shapes panel), by menu.
+const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" }[]> = {
+  groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],
+  groupDiscreteShort: [{ kind: "chance", icon: "🎲", name: "liveChance" }],
 };
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
@@ -218,7 +227,7 @@ export function BoardPage({ id }: { id: string }) {
     const added: BinaryFileData[] = [];
     const swap = new Map<string, FileId>();
     for (const el of ex.getSceneElements()) {
-      if (!mathOf(el) || el.type !== "image" || !el.fileId) continue;
+      if (el.type !== "image" || !el.fileId || !(mathOf(el) || el.customData?.snapshot)) continue;
       const file = files[el.fileId];
       const svg = file?.mimeType === "image/svg+xml" ? dataUrlToSvg(file.dataURL) : null;
       if (!svg) continue;
@@ -284,8 +293,11 @@ export function BoardPage({ id }: { id: string }) {
     }
   };
 
-  /** Adds a rendered image to the canvas, or swaps the image of an existing formula/graph/model. */
-  const placeImage = (rendered: PlacedImage, math: MathData, editing?: ExcalidrawImageElement) => {
+  /**
+   * Adds a rendered image to the canvas (at `at`, or in the middle of the view), or swaps the image of an existing
+   * formula/graph/model. Without `math` it's a plain picture, such as a copy of a live piece.
+   */
+  const placeImage = (rendered: PlacedImage, math: MathData | undefined, editing?: ExcalidrawImageElement, at?: { x: number; y: number }) => {
     const ex = excalidraw.current!;
     const fileId = crypto.randomUUID() as FileId;
     const file: BinaryFileData = {
@@ -319,10 +331,10 @@ export function BoardPage({ id }: { id: string }) {
       return;
     }
 
-    // Start at the viewport center, then slide down past anything it would cover.
+    // Start at the viewport center (or where asked), then slide down past anything it would cover.
     const { scrollX, scrollY, zoom, width, height } = ex.getAppState();
-    const x = width / 2 / zoom.value - scrollX - rendered.width / 2;
-    const y = freeY(elements, x, height / 2 / zoom.value - scrollY - rendered.height / 2, rendered.width, rendered.height);
+    const x = at?.x ?? width / 2 / zoom.value - scrollX - rendered.width / 2;
+    const y = freeY(elements, x, at?.y ?? height / 2 / zoom.value - scrollY - rendered.height / 2, rendered.width, rendered.height);
     const [el] = convertToExcalidrawElements([
       {
         type: "image",
@@ -333,7 +345,7 @@ export function BoardPage({ id }: { id: string }) {
         height: rendered.height,
       },
     ]);
-    const withData = { ...el, customData: math } as ExcalidrawElement;
+    const withData = { ...el, customData: math ?? { snapshot: true } } as ExcalidrawElement;
     ex.updateScene({
       elements: [...elements, withData],
       appState: { selectedElementIds: { [withData.id]: true } },
@@ -341,6 +353,57 @@ export function BoardPage({ id }: { id: string }) {
     });
     ex.scrollToContent(withData, { animate: true });
   };
+
+  // What a live piece on the board can ask of it: write its new state into its element, or put a copy beside it.
+  const besides = (id: string) => {
+    const el = excalidraw.current?.getSceneElements().find((e) => e.id === id);
+    return el ? { x: el.x + el.width + 32, y: el.y } : undefined;
+  };
+  const liveHost = useRef<LiveHost>(null as unknown as LiveHost);
+  liveHost.current = {
+    update: (id, data) => {
+      const ex = excalidraw.current;
+      if (!ex) return;
+      let next: ExcalidrawElement | undefined;
+      const elements = ex.getSceneElementsIncludingDeleted().map((el) =>
+        el.id === id
+          ? (next = { ...el, customData: data, version: el.version + 1, versionNonce: Math.floor(Math.random() * 2 ** 31), updated: Date.now() })
+          : el,
+      );
+      // Excalidraw knows the piece being used by the element object itself, so point it at the new one, or each
+      // change would need another click to carry on.
+      const { activeEmbeddable } = ex.getAppState();
+      ex.updateScene({
+        elements,
+        ...(next && activeEmbeddable?.element.id === id
+          ? { appState: { activeEmbeddable: { element: next as NonDeletedExcalidrawElement, state: activeEmbeddable.state } } }
+          : {}),
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+      });
+    },
+    snapshot: (id, svgEl) => {
+      const svg = new XMLSerializer().serializeToString(svgEl);
+      const width = Number(svgEl.getAttribute("width"));
+      const height = Number(svgEl.getAttribute("height"));
+      placeImage(svgImage({ svg: themedSvg(svg, theme.current), width, height }), undefined, undefined, besides(id));
+    },
+    freezeGraph: async (id, state) => {
+      const [{ substitute }, { plotToSvg }] = await Promise.all([import("../math/liveGraph"), import("../math/plot")]);
+      const values = Object.fromEntries(Object.entries(state.params).map(([k, p]) => [k, p.v]));
+      const spec = {
+        functions: state.fns.filter((f) => f.expr.trim()).map((f) => ({ ...f, expr: substitute(f.expr, values) })),
+        ...state.view,
+        grid: true,
+      };
+      try {
+        const r = plotToSvg(spec);
+        placeImage(svgImage({ ...r, svg: themedSvg(r.svg, theme.current) }), { kind: "graph", data: spec, w: r.width, h: r.height }, undefined, besides(id));
+      } catch {
+        /* a function that doesn't draw: nothing to copy */
+      }
+    },
+  };
+  const addLive = (kind: LiveKind) => excalidraw.current && placeOnBoard(excalidraw.current, [liveElement(kind)]);
 
   const openEditor = (el: ExcalidrawImageElement) => {
     const math = mathOf(el)!;
@@ -409,11 +472,14 @@ export function BoardPage({ id }: { id: string }) {
           📐 <span className="btn-label">{t.shapes.button}</span>
         </button>
         {MENUS.map((m) => (
-          <ToolMenu key={m.label} icon={m.icon} label={t[m.label]} title={m.title && t[m.title]} items={m.items.map((it) => ({
-            icon: it.icon,
-            label: t[it.label],
-            onPick: () => setDialog({ kind: it.kind, start: it.start }),
-          }))} />
+          <ToolMenu key={m.label} icon={m.icon} label={t[m.label]} title={m.title && t[m.title]} items={[
+            ...m.items.map((it) => ({
+              icon: it.icon,
+              label: t[it.label],
+              onPick: () => setDialog({ kind: it.kind, start: it.start }),
+            })),
+            ...(LIVE_IN_MENUS[m.label] ?? []).map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], onPick: () => addLive(it.kind) })),
+          ]} />
         ))}
         <LangSelect />
       </header>
@@ -450,6 +516,12 @@ export function BoardPage({ id }: { id: string }) {
             scrollToContent: true,
           }}
           onChange={onChange}
+          // Live pieces are embeddables with an address of ours; anything else is checked as Excalidraw always does.
+          validateEmbeddable={(link) => (isLiveLink(link) ? true : undefined)}
+          // (One whose data is missing or damaged shows nothing, rather than Excalidraw trying to load its address.)
+          renderEmbeddable={(el) => (isLiveLink(el.link) ? liveDataOf(el) ? <LiveView element={el} host={liveHost.current} /> : <div /> : null)}
+          // A live piece's address leads nowhere: its link button does nothing.
+          onLinkOpen={(el, e) => isLiveLink(el.link) && e.preventDefault()}
           UIOptions={{ canvasActions: { loadScene: true, saveToActiveFile: false } }}
         >
           <MainMenu>

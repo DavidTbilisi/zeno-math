@@ -7,6 +7,8 @@
 // piece can't do without (the probability scale's, the sides of a trigonometry triangle), which it is handed from
 // the locales along with the names in the panel.
 
+import type { LiveKind } from "./live";
+
 export type Pt = readonly [number, number];
 type Style = { color?: string; width?: number; dashed?: boolean; fill?: string };
 export type Piece =
@@ -15,7 +17,7 @@ export type Piece =
   | ({ kind: "rect"; x: number; y: number; w: number; h: number; round?: boolean } & Style)
   | { kind: "text"; x: number; y: number; text: string; size: number; align: "left" | "center" | "right"; color?: string };
 
-export const SHAPE_GROUPS = ["measure", "graphs", "geometry", "solids", "number", "algebra", "stats"] as const;
+export const SHAPE_GROUPS = ["live", "measure", "graphs", "geometry", "solids", "number", "algebra", "stats"] as const;
 export type ShapeGroup = (typeof SHAPE_GROUPS)[number];
 /** The words some pieces write on themselves, in the board's language. */
 export type ShapeWords = {
@@ -28,7 +30,8 @@ export type ShapeWords = {
   adjacent: string;
   hypotenuse: string;
 };
-export type ShapeDef = { id: string; group: ShapeGroup; build: (words: ShapeWords) => Piece[] };
+/** A piece; a live one (`live` set) goes on the board as a piece that responds to clicks, and `build` is its preview. */
+export type ShapeDef = { id: string; group: ShapeGroup; build: (words: ShapeWords) => Piece[]; live?: LiveKind };
 
 // Excalidraw's own palette, so the pieces match what the toolbar offers (and its dark mode turns them round).
 const GRID = "#ced4da";
@@ -795,7 +798,74 @@ function probabilityScale(w: ShapeWords): Piece[] {
 
 const sampleSpace = () => headedTable(6, 44, "+");
 
+// ——— Previews of the live pieces ———
+
+function diePreview(): Piece[] {
+  const s = 80;
+  const face = (x: number, pips: Pt[]): Piece[] => [rect(x, 0, s, s, {}, true), ...pips.map(([px, py]) => dot([x + px * s, py * s], 7))];
+  return [...face(0, [[0.25, 0.25], [0.5, 0.5], [0.75, 0.75]]), ...face(110, [[0.25, 0.25], [0.75, 0.25], [0.5, 0.5], [0.25, 0.75], [0.75, 0.75]])];
+}
+
+const coinPreview = (): Piece[] => [ellipse(70, 70, 66, 66, { fill: FILL.yellow }), ellipse(70, 70, 54, 54, THIN), text(70, 70, "1", 44)];
+
+const fractionsPreview = (): Piece[] => fractionCircle(4)().map((p, i) => (i === 0 && p.kind === "path" ? { ...p, fill: FILL.blue } : p));
+
+function tenFramePreview(): Piece[] {
+  const cells = [1, 1, 1, 2, 2, 0, 0, 0, 0, 0];
+  return [...tenFrame(), ...cells.flatMap((c, i) => (c ? [ellipse((i % 5) * 56 + 28, Math.floor(i / 5) * 56 + 28, 20, 20, { fill: c === 1 ? FILL.red : FILL.yellow })] : []))];
+}
+
+function hundredPreview(): Piece[] {
+  const s = 24;
+  const marked = Array.from({ length: 33 }, (_, i) => 3 * (i + 1) - 1);
+  return [...marked.map((i) => rect((i % 10) * s, Math.floor(i / 10) * s, s, s, { fill: FILL.yellow, width: 1, color: "transparent" })), ...grid(0, 0, 10, 10, s, THIN)];
+}
+
+function dotsPreview(): Piece[] {
+  const s = 56;
+  return [0, 1].flatMap((row) => Array.from({ length: 5 }, (_, i): Piece[] => {
+    const filled = i < (row ? 1 : 3);
+    return [rect(i * (s + 4), row * (s + 16), s, s, THIN), ...(filled ? [ellipse(i * (s + 4) + s / 2, row * (s + 16) + s / 2, 18, 18, { fill: "#40c057", color: "#2f9e44" })] : [])];
+  }).flat());
+}
+
+function graphPreview(): Piece[] {
+  const o: Pt = [150, 150];
+  const parabola = Array.from({ length: 41 }, (_, i): Pt => {
+    const x = -2 + i / 10;
+    return [o[0] + x * 50, o[1] - (x * x - 1) * 40];
+  }).filter(([, y]) => y >= 0);
+  return [
+    arrow([10, o[1]], [290, o[1]]),
+    arrow([o[0], 200], [o[0], 0]),
+    path(parabola, { color: BLUE, width: 3 }),
+    seg([20, 230], [280, 230], { width: 3, color: MUTED }),
+    ellipse(190, 230, 10, 10, { fill: BLUE, color: BLUE }),
+    text(6, 230, "a", 18, "right"),
+  ];
+}
+
+function chancePreview(): Piece[] {
+  const heights = [52, 66, 58, 70, 49, 61];
+  return [
+    seg([0, 120], [300, 120], THIN),
+    ...heights.map((h, i) => rect(14 + i * 48, 120 - h, 34, h, { fill: FILL.blue, width: 1 })),
+    seg([0, 60], [300, 60], { color: RED, dashed: true, width: 2 }),
+    ...heights.map((_, i) => text(31 + i * 48, 136, String(i + 1), 14)),
+  ];
+}
+
 export const SHAPES: readonly ShapeDef[] = [
+  { id: "liveClock", group: "live", build: clock, live: "clock" },
+  { id: "liveDice", group: "live", build: diePreview, live: "dice" },
+  { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
+  { id: "liveCoin", group: "live", build: coinPreview, live: "coin" },
+  { id: "liveFractions", group: "live", build: fractionsPreview, live: "fractions" },
+  { id: "liveTenFrame", group: "live", build: tenFramePreview, live: "tenFrame" },
+  { id: "liveHundred", group: "live", build: hundredPreview, live: "hundred" },
+  { id: "liveDots", group: "live", build: dotsPreview, live: "dots" },
+  { id: "liveGraph", group: "live", build: graphPreview, live: "graph" },
+  { id: "liveChance", group: "live", build: chancePreview, live: "chance" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
