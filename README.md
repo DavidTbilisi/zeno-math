@@ -484,6 +484,19 @@ UI in English, Russian and Georgian.
   **Practice** by area
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
+- **📐 Shapes**: a tab in the board's side panel (next to Excalidraw's Library) with 49 ready-made maths pieces in
+  seven groups — a ruler, a protractor with both scales and set squares; axes with a grid, the first quadrant, axes
+  for sketching, number lines and the unit circle; angles, labelled triangles, parallel lines with a transversal,
+  circle parts, regular polygons and quadrilaterals with their equal-side and parallel marks; a cube, cuboid,
+  cylinder, cone, sphere, pyramid and prism with hidden edges dashed; a fraction wall, fraction circles, a ten frame,
+  a hundred square and place-value blocks; algebra tiles, balance scales and a function machine; Venn diagrams, a
+  tree diagram, a two-way table, a box plot, a spinner and dice. Click one to add it in the middle of the view or
+  drag it into place. They arrive as ordinary Excalidraw elements in one group, so every line and label can be
+  moved, recoloured or retyped, and they follow the board into dark mode
+- **Libraries**: Excalidraw's Library tab is kept in the browser between visits (and in step across tabs), and
+  *Browse libraries* adds sets from libraries.excalidraw.com (“Math Teacher Library”, “Mathematical Symbols”,
+  “3d coordinate systems + graphs”…) straight to the open board's library; that's the one thing that needs the
+  internet
 - Dialogs work from the keyboard: focus moves in and back, Tab stays inside, arrow keys move between tabs and options;
   on a phone they take the whole screen
 - On a dark board the pictures turn dark too (and back again), and Georgian text in them uses the system's Georgian font
@@ -830,6 +843,8 @@ src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, da
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
 src/components/ui.tsx     shared dialog controls: Tabs, Segmented, startOr
 src/components/CommandPalette.tsx  the tool search (Ctrl+K or /)
+src/math/shapes.ts        the ready-made maths shapes (instruments, axes, figures, solids, number, algebra, data)
+src/components/ShapesPanel.tsx  their side-panel tab: thumbnails, click or drag onto the board
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
 src/math/models.ts        Singapore-method models → SVG (bar model, fractions, percent, number bond)

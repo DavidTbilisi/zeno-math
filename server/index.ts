@@ -54,7 +54,8 @@ const CSP = [
   "img-src 'self' data: blob:",
   // Fonts come from /fonts; Excalidraw always lists its CDN as a fallback source after it.
   "font-src 'self' data: https://esm.sh",
-  "connect-src 'self' data: blob:",
+  // Libraries chosen on libraries.excalidraw.com ("Browse libraries" in the Library tab) are fetched from there.
+  "connect-src 'self' data: blob: https://libraries.excalidraw.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",

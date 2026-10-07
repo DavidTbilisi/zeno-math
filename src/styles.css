@@ -471,3 +471,19 @@ input.invalid { border-color: var(--danger); }
   box-shadow: var(--shadow); font-size: 12px; }
 .chart-tip strong { font-size: 15px; }
 .phase-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Maths shapes: a tab of Excalidraw's side panel, so it takes the board's theme from Excalidraw's own variables. */
+.shapes-panel { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 0 0.75rem 1rem; color: var(--text-primary-color); }
+.shapes-panel .hint { margin: 0 0 0.5rem; color: var(--text-primary-color); opacity: 0.7; }
+.shapes-panel h3 { margin: 0.9rem 0 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--color-on-surface); }
+.shape-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
+.shape-tile {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px;
+  border: 1px solid var(--default-border-color); border-radius: var(--border-radius-lg, 8px);
+  background: transparent; color: inherit; font: inherit; cursor: grab;
+}
+.shape-tile:hover { background: var(--button-hover-bg); }
+.shape-tile:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+.shape-thumb { display: flex; align-items: center; justify-content: center; width: 100%; height: 56px; }
+.shape-thumb svg { max-width: 100%; max-height: 100%; width: auto; height: auto; }
+.shape-name { font-size: 11px; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }

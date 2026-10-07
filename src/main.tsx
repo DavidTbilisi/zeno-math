@@ -11,7 +11,9 @@ const TeacherPage = lazy(() => import("./pages/TeacherPage").then((m) => ({ defa
 function useHashRoute(): string {
   const [hash, setHash] = useState(location.hash);
   useEffect(() => {
-    const onHash = () => setHash(location.hash);
+    // A library coming back from libraries.excalidraw.com ("#addLibrary=…") is the open board's business: its
+    // library handler takes it and puts the board's address back, so the route stays where it is.
+    const onHash = () => !location.hash.includes("addLibrary=") && setHash(location.hash);
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
