@@ -209,6 +209,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
       window.removeEventListener("online", onOnline);
       leaveQuestion(true);
     };
+    // Once, when the dialog opens: later students are loaded by changeStudent.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const changeStudent = (s: Student | null, forgot = false) => {
     // What was done so far on this question belongs to whoever was signed in while doing it.
@@ -342,6 +344,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     } catch (e) {
       return { error: (e as Error).message };
     }
+    // sheetSpec is rebuilt every render from exactly these.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, area, pick, level, sheetSeed, count, withAnswers, w]);
 
   const insert = () => {

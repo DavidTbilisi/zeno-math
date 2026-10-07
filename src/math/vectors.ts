@@ -263,7 +263,7 @@ function normal(src: string): string {
     .replace(/[⋅•]/g, "·")
     .replace(/[₀-₉]/g, (c) => String(SUBS.indexOf(c)))
     .replace(/\\vec\s*\{([^}]*)\}/g, "$1")
-    .replace(/[→⃗]/g, "")
+    .replace(/→|\u20d7/g, "")
     .replace(/\blambda\b/g, "λ")
     .replace(/\bmu\b/g, "μ")
     .replace(/\s+/g, " ")

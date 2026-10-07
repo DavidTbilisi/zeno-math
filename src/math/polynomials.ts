@@ -221,7 +221,6 @@ function pdivmod(a: P, b: P): { q: P; r: P } {
 }
 const pval = (p: P, x: Frac): Frac => p.reduceRight((acc, c) => chk(chk(acc.mul(x)).add(c)), ZERO);
 const pnum = (p: P, x: number) => p.reduceRight((acc, c) => acc * x + c.toNumber(), 0);
-const pqs = (p: P, x: QS): QS => p.reduceRight<QS>((acc, c) => qsAdd(qsMul(acc, x), qs(c)), qs(ZERO));
 const pderiv = (p: P): P => (p.length <= 1 ? [ZERO] : ptrim(p.slice(1).map((c, i) => chk(c.mul(F(i + 1))))));
 const lcmDen = (cs: Frac[]) => cs.reduce((acc, c) => (acc * c.d) / gcd(acc, c.d), 1);
 /** p = k·q with q whole, coprime and leading positive. */
@@ -1387,7 +1386,6 @@ function genChoose(n: Frac, r: number): Frac {
   for (let i = 0; i < r; i++) c = chk(chk(c.mul(n.sub(F(i)))).div(F(i + 1)));
   return c;
 }
-const fact = (r: number): number => (r <= 1 ? 1 : r * fact(r - 1));
 
 function renderBinomial(src: string): RenderedSvg {
   const W_ = words.binomial;

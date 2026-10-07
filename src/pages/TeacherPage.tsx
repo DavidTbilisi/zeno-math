@@ -34,7 +34,8 @@ const remember = (password: string) => {
   }
 };
 
-type Access = "checking" | "locked" | "wrong" | "open" | "offline";
+/** waiting: too many wrong passwords; the server won't check another for a few minutes. */
+type Access = "checking" | "locked" | "wrong" | "waiting" | "open" | "offline";
 
 export function TeacherPage() {
   const { t, lang } = useI18n();
@@ -79,11 +80,14 @@ export function TeacherPage() {
       setAccess("open");
       setSelected((s) => s ?? list.at(-1)?.code ?? null);
     } catch (e) {
-      setAccess(e instanceof ApiError && e.status === 403 ? (typedIn ? "wrong" : "locked") : "offline");
+      const status = e instanceof ApiError ? e.status : 0;
+      setAccess(status === 403 ? (typedIn ? "wrong" : "locked") : status === 429 ? "waiting" : "offline");
     }
   };
   useEffect(() => {
     void unlock(password, false);
+    // Once, with the password remembered from last time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const load = async (code: string) => {
@@ -99,6 +103,8 @@ export function TeacherPage() {
   };
   useEffect(() => {
     if (access === "open" && selected) void load(selected);
+    // load is a plain function of this render; the class shown changes only with access and selection.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [access, selected]);
 
   const create = async () => {
@@ -177,6 +183,7 @@ export function TeacherPage() {
             </label>
             <button className="btn primary" type="submit">{w.open}</button>
             {access === "wrong" && <p className="error" role="alert">{w.wrongPassword}</p>}
+            {access === "waiting" && <p className="error" role="alert">{w.tooManyTries}</p>}
           </form>
         )}
       </div>

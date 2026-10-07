@@ -3717,6 +3717,7 @@ export const en = {
     password: "Teacher password",
     open: "Open",
     wrongPassword: "That password isn't right.",
+    tooManyTries: "Too many wrong passwords. Try again in a few minutes.",
     loadFailed: "Couldn't reach the server. Try again.",
     classes: "Classes",
     noClasses: "No classes yet. Make one below.",

@@ -231,12 +231,6 @@ function polyTex(p: P, v = "n"): string {
   }
   return out || "0";
 }
-const polyPlain = (p: P, v = "n") =>
-  polyTex(p, v)
-    .replace(/\\frac\{(\d+)\}\{(\d+)\}/g, "$1/$2")
-    .replace(/\^\{(\d+)\}/g, (_, d: string) => d.replace(/\d/g, (x) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(x)]))
-    .replace(/-/g, "−");
-
 const igcd = (a: number, b: number): number => (b ? igcd(b, a % b) : Math.abs(a));
 function divisors(n: number): number[] {
   n = Math.abs(n);
@@ -1509,7 +1503,6 @@ function termAt(e: E, k: number, idx: string): Q {
   return x;
 }
 const qadd = (a: Q, b: Q): Q => (typeof a === "number" || typeof b === "number" ? qnum(a) + qnum(b) : exact(() => add(a, b)) ?? a.toNumber() + b.toNumber());
-const qneg = (a: Q): Q => (typeof a === "number" ? -a : a.neg());
 
 function renderSigma(src: string): RenderedSvg {
   const W_ = words.sigma;
@@ -1533,7 +1526,7 @@ function renderSigma(src: string): RenderedSvg {
     rows.push({ tex: `= ${firstTex}${lastTex}`, op: words.terms });
   }
 
-  let parts = plain ? null : partsOf(e);
+  const parts = plain ? null : partsOf(e);
   let total: Q = ZERO;
   /** For a sum up to n: the closed form in LaTeX and as a function of n. */
   const closed: { tex: string; at: (n: number) => number }[] = [];

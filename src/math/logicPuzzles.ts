@@ -5,7 +5,7 @@
 import { txt } from "./algoArrays";
 import { C, compose, esc, fill, FONT, r2, W, wrap, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
-import { evalNode, fit, GREEN_BG, parseFormula, RED_BG, rowsFor, toTexWith, truthTable, type LogicSpec, type LogicWords, type Node, type TCol } from "./logic";
+import { evalNode, GREEN_BG, parseFormula, RED_BG, rowsFor, toTexWith, truthTable, type LogicSpec, type LogicWords, type Node, type TCol } from "./logic";
 
 export type BoardMode = "bins" | "slots";
 export const BOARD_MODES: BoardMode[] = ["bins", "slots"];
@@ -359,7 +359,7 @@ function left(svg: string, width: number, h: number): { svg: string; h: number }
   return { svg: `<g transform="translate(24 0) scale(${r2(k * 1000) / 1000})">${svg}</g>`, h: h * k };
 }
 
-function drawBins(b: Board, s: Solved, w: BoardWords): { svg: string; h: number } {
+function drawBins(b: Board, s: Solved, _w: BoardWords): { svg: string; h: number } {
   const parts: string[] = [];
   const boxes = b.places.map((p, pi) => {
     const forced = b.items.filter((_, i) => s.count && s.possible[i].filter(Boolean).length === 1 && s.possible[i][pi]);

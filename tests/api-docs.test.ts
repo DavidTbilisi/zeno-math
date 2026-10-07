@@ -33,7 +33,9 @@ const call = async (method: string, path: string, body?: unknown) => {
   let error: string | undefined;
   try {
     error = JSON.parse(text).error;
-  } catch {}
+  } catch {
+    // not JSON: no error message
+  }
   return { status: res.status, error };
 };
 /** The router's own answers for a path or method it doesn't have, as opposed to a route saying "no such student". */

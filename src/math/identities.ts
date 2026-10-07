@@ -2,10 +2,10 @@
 // a·sin x + b·cos x as R·sin(x + α), proofs (each side rewritten in sin and cos of one angle, put over one fraction,
 // then sin² + cos² = 1 and cancelling — the shortest route on which the two sides meet), and equations that need an
 // identity first (a quadratic in sin, cos or tan, a common factor, the R-form). Exact numbers are sums of surds.
-import { axes, C, compose, curve, dot, esc, fill, FONT, hline, lbl, legend, makeFrame, nt, r2, texLines, tn, vline, W, yRange, sampleY, type Caption, type TexLine } from "./chart";
+import { axes, C, compose, curve, dot, fill, lbl, legend, makeFrame, nt, r2, texLines, tn, W, yRange, sampleY, type Caption, type TexLine } from "./chart";
 import { add, div, evalE, exprMessages, fn, gcd, isNum, key, mul, N, neg, parseE, pow, qsNum, qsTex, realRoots, sqrtSplit, sub, tex, tidy, V, type E, type Fn } from "./expr";
 import { Frac } from "./fraction";
-import { latexToSvg, type RenderedSvg } from "./latex";
+import type { RenderedSvg } from "./latex";
 
 export type IdTopic = "compound" | "rform" | "prove" | "equation";
 export const ID_TOPICS: IdTopic[] = ["compound", "rform", "prove", "equation"];
@@ -205,6 +205,7 @@ class Sd {
   inv(): Sd {
     if (this.isZero()) throw new Error(words.zeroDiv);
     let num: Sd = Sd.ONE;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- a loop variable that starts at this, not a closure
     let den: Sd = this;
     for (let guard = 0; guard < 12; guard++) {
       const q = den.rat();
@@ -440,6 +441,7 @@ class P {
   divExact(f: P): P | null {
     const lt = (p: P) => p.ts.reduce((b, t) => (t.i > b.i || (t.i === b.i && t.j > b.j) ? t : b));
     const F0 = lt(f);
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- a loop variable that starts at this, not a closure
     let r: P = this;
     const q: Mono[] = [];
     for (let guard = 0; !r.isZero(); guard++) {
@@ -1813,12 +1815,7 @@ const BASIC = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 3
 function renderCompound(src: string): Built {
   if (/(sin|cos|tan)\s*[A-Z]\s*=/.test(src)) return renderRatios(src);
   const { s, unit, theta } = prep(src);
-  let e: E;
-  try {
-    e = tidy(readE(s));
-  } catch (err) {
-    throw err;
-  }
+  const e: E = tidy(readE(s));
   const hasX = JSON.stringify(e).includes(`"name":"x"`);
   if (hasX) return renderExpand(src);
   if (e.k !== "fn" || !TRIG.includes(e.f)) throw new Error(words.need.compound);
@@ -1983,7 +1980,6 @@ function renderRatios(src: string): Built {
   const quads = new Map<string, number>();
   const queries: { f: "sin" | "cos" | "tan"; a: string; op: "" | "+" | "-" | "2"; b: string }[] = [];
   const rows: TexLine[] = [];
-  const caps: Caption[] = [];
   const isAcute = new RegExp(`\\b([A-Z])\\b.*\\b(acute|${words.compound.acute})`, "i");
   const isObtuse = new RegExp(`\\b([A-Z])\\b.*\\b(obtuse|${words.compound.obtuse})`, "i");
   for (const raw of parts) {

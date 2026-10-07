@@ -34,6 +34,8 @@ export function LiveGraph({ state, set, w, svgRef }: PieceProps<"graph">) {
   const fns = exprs.map((expr, i) => ({ expr, color: cur.fns[i]?.color ?? PLOT_COLORS[i % PLOT_COLORS.length] }));
   const params = syncParams({ ...cur, fns });
   const scope = Object.fromEntries(Object.entries(params).map(([k, p]) => [k, p.v]));
+  // exprs is a new array every render; its text says when it changed.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const compiled = useMemo(() => exprs.map((e) => (e.trim() ? compileWith(e) : null)), [exprs.join("\n")]);
   const { xMin, xMax, yMin, yMax } = cur.view;
   const px = (x: number) => ((x - xMin) / (xMax - xMin)) * PW;
@@ -65,7 +67,8 @@ export function LiveGraph({ state, set, w, svgRef }: PieceProps<"graph">) {
       cancelAnimationFrame(frame);
       commit();
     };
-    // Restarts only when another letter starts playing.
+    // Restarts only when another letter starts playing, not on every frame it sets.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing]);
 
   // Scrolling zooms about the pointer (and isn't passed on, or the board would zoom too).
@@ -85,6 +88,8 @@ export function LiveGraph({ state, set, w, svgRef }: PieceProps<"graph">) {
     };
     svg.addEventListener("wheel", onWheel, { passive: false });
     return () => svg.removeEventListener("wheel", onWheel);
+    // Added once to the piece's own svg (it reads the latest state through latest.current).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const drag = useRef<{ kind: "pan"; from: [number, number]; view: LiveGraphState["view"] } | { kind: "trace" } | null>(null);

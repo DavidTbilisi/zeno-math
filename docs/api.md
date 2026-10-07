@@ -10,6 +10,9 @@ the study's routes. Errors come back as `{ "error": "…" }` with the status.
 - *anyone*: anyone who passed the site password. With `APP_PASSWORD` set, every route except `/api/health` needs HTTP
   basic auth (any username).
 - *teacher*: also needs the header `X-Teacher-Password` when `TEACHER_PASSWORD` is set; otherwise 403.
+
+After 10 wrong passwords (site or teacher) in 10 minutes, a client gets **429** with `Retry-After`, whatever it
+sends, until the oldest of them leaves the window.
 - *student*: anyone holding a student code. The code is the only thing tying answers to a student, so knowing it is
   enough.
 

@@ -6,9 +6,11 @@ export const MAX_BODY = 25 * 1024 * 1024;
 /** A refusal with a status and a message that is safe to show the client. */
 export class HttpError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  headers: Record<string, string>;
+  constructor(status: number, message: string, headers: Record<string, string> = {}) {
     super(message);
     this.status = status;
+    this.headers = headers;
   }
 }
 
@@ -20,6 +22,8 @@ export function send(res: ServerResponse, status: number, body?: unknown, header
   res.writeHead(status, { "Content-Type": "application/json", ...headers }).end(JSON.stringify(body));
 }
 
+// Any JSON object: each route checks the fields it uses, so callers read them loosely.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function readJson(req: IncomingMessage, maxBody = MAX_BODY): Promise<any> {
   // JSON only: a cross-site <form> can't send this content type without the browser asking first.
   if (!String(req.headers["content-type"] ?? "").startsWith("application/json")) throw new HttpError(415, "expected application/json");

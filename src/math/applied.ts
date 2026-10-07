@@ -7,7 +7,7 @@
 import { axes, C, compose, curve, dot, esc, fill, FONT, lbl, makeFrame, r2, simpson, texLines, W, yRange, type Caption, type Frame, type TexLine } from "./chart";
 import { derive } from "./derive";
 import {
-  add, approx, coefOf, E_, evalE, exprMessages, F, fn, fromPoly, has, isNum, minus, mul, N, neg, parseE, pdeg, peval, pow, qs, qsAdd, qsNum,
+  add, approx, coefOf, E_, evalE, exprMessages, F, fn, fromPoly, has, isNum, minus, mul, N, parseE, pdeg, peval, pow, qs, qsAdd, qsNum,
   qsPlain, qsTex, realRoots, simp, sqrtSplit, sub, substitute, tex, toPoly, V, X, type E, type QS,
 } from "./expr";
 import { Frac } from "./fraction";
@@ -576,7 +576,6 @@ function renderOptimise(s: AppSpec, w: AppWords): RenderedSvg {
   const kind = (OPT_KINDS as string[]).includes(s.opt) ? (s.opt as OptKind) : "box";
   const rows: TexLine[] = [];
   const caps: Caption[] = [];
-  const pt = (q: QS) => ({ q, v: qsNum(q) });
   if (kind === "can") {
     const Vc = param(s.a, 330);
     const S = add(mul(N(2), PI, pow(X, 2)), mul(N(Vc.mul(F(2))), pow(X, -1)));

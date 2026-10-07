@@ -14,6 +14,11 @@ services:
       # Needed to create classes and download the class study's data (X-Teacher-Password header). Without one,
       # anyone who can reach the port can.
       TEACHER_PASSWORD: ${TEACHER_PASSWORD:-}
+      # Set to 1 behind a reverse proxy (with BIND_ADDRESS=127.0.0.1), so wrong passwords are counted per client
+      # (from X-Forwarded-For) rather than for everyone at once: 10 wrong in 10 minutes and a client waits.
+      TRUST_PROXY: ${TRUST_PROXY:-}
+      # Daily copies of the database in the volume's backups/ folder; how many to keep (0: none).
+      BACKUP_KEEP: ${BACKUP_KEEP:-7}
     volumes:
       - data:/data
     healthcheck:

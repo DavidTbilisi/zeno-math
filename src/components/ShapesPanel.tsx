@@ -166,7 +166,8 @@ export function ShapesPanel({ api, theme }: { api: () => ExcalidrawImperativeAPI
     return () => {
       live = false;
     };
-    // The words change only with the language, which is part of the key.
+    // The words and theme change only with the language and theme, which are part of the key.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
   const insert = (shape: ShapeDef) => {

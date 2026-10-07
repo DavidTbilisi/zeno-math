@@ -7,6 +7,8 @@ import { mkdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { randomUUID, timingSafeEqual } from "node:crypto";
 import { HttpError, readJson, send } from "./http.ts";
+import { clientOf, passwords } from "./limiter.ts";
+import { scheduleBackups } from "./backup.ts";
 import { handleResearch, initResearch, RESEARCH_RESOURCES } from "./research.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
@@ -27,6 +29,16 @@ db.exec(`
   )
 `);
 initResearch(db);
+// The schema this code writes. A database from a newer Zeno is refused rather than half understood; an older one has
+// just been brought up to date by the CREATE / ADD COLUMN steps above.
+const SCHEMA_VERSION = 3;
+const { user_version: found } = db.prepare("PRAGMA user_version").get() as { user_version: number };
+if (found > SCHEMA_VERSION) {
+  console.error(`The database in ${DATA_DIR} is from a newer version of Zeno (schema ${found}; this one knows ${SCHEMA_VERSION}). Update Zeno.`);
+  process.exit(1);
+}
+db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+scheduleBackups(db, DATA_DIR, process.env.BACKUP_KEEP === undefined ? 7 : Number(process.env.BACKUP_KEEP));
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -203,9 +215,16 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
   // The health check reveals nothing, so Docker can probe it without the password.
-  if (path !== "/api/health" && !authorized(req)) {
-    res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Zeno"' }).end();
-    return;
+  if (path !== "/api/health" && APP_PASSWORD) {
+    const client = clientOf(req);
+    const wait = passwords.retryAfter(client);
+    if (wait) return send(res, 429, { error: "too many wrong passwords; try again later" }, { "Retry-After": String(wait) });
+    if (!authorized(req)) {
+      // A browser's first request carries no password: only a wrong one counts.
+      if (req.headers.authorization) passwords.fail(client);
+      res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Zeno"' }).end();
+      return;
+    }
   }
   try {
     if (path.startsWith("/api/")) await handleApi(req, res, path, url.searchParams);
@@ -213,7 +232,7 @@ const server = createServer(async (req, res) => {
   } catch (err) {
     if (err instanceof HttpError) {
       // An oversized upload is not read to the end: answer, then close the connection so it isn't reused.
-      if (!res.headersSent) send(res, err.status, { error: err.message }, err.status === 413 ? { Connection: "close" } : {});
+      if (!res.headersSent) send(res, err.status, { error: err.message }, { ...err.headers, ...(err.status === 413 ? { Connection: "close" } : {}) });
       if (err.status === 413) res.once("finish", () => req.destroy());
       return;
     }

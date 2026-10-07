@@ -3,8 +3,8 @@
 // principle — by counts, or numbers sorted into boxes by their remainder; and invariants by colouring —
 // can dominoes tile a board with some squares removed? The chessboard colouring settles it when the
 // colours do not balance, and otherwise a search either finds a tiling or shows there is none.
-import { cell, txt } from "./algoArrays";
-import { C, compose, fill, r2, W, type Caption } from "./chart";
+import { txt } from "./algoArrays";
+import { C, compose, fill, W, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 
 export type TacticsTopic = "symmetry" | "pigeonhole" | "tiling";

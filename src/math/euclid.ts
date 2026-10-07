@@ -327,16 +327,6 @@ function tx(t: string, color: string = C.ink): RenderedSvg {
   }
   return r;
 }
-/** A LaTeX snippet with its vertical centre at y. */
-function put(t: string, x: number, y: number, anchor: "start" | "middle" | "end" = "middle", color: string = C.ink, scale = 1): string {
-  const r = tx(t, color);
-  const [w, h] = [r.width * scale, r.height * scale];
-  const x0 = anchor === "start" ? x : anchor === "middle" ? x - w / 2 : x - w;
-  return r.svg
-    .replace(/width="[\d.]+"/, `width="${r2(w)}"`)
-    .replace(/height="[\d.]+"/, `height="${r2(h)}"`)
-    .replace(/^<svg/, `<svg x="${r2(x0)}" y="${r2(y - h / 2)}"`);
-}
 const line = (x1: number, y1: number, x2: number, y2: number, color: string, width = 1.6, extra = "") =>
   `<line x1="${r2(x1)}" y1="${r2(y1)}" x2="${r2(x2)}" y2="${r2(y2)}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" ${extra}/>`;
 const DASH = `stroke-dasharray="5 4"`;
@@ -1564,7 +1554,7 @@ function renderSimilar(src: string): RenderedSvg {
     const V = p1[sv];
     const [j, k2] = [0, 1, 2].filter((i) => i !== sv);
     const side = vsub(p1[k2], p1[j]);
-    let turn = (cross ? 90 : 0) - degOf(Math.atan2(side[1], side[0]));
+    const turn = (cross ? 90 : 0) - degOf(Math.atan2(side[1], side[0]));
     p1 = p1.map((p) => rot(vsub(p, V), turn));
     const c = centroid(p1);
     if (cross ? c[0] > 0 : c[1] > 0) p1 = p1.map((p) => rot(p, 180));
@@ -3263,7 +3253,6 @@ function renderLocus(src: string, named: Record<string, P>): RenderedSvg {
   for (const c0 of conds) {
     const c = c0.replace(/^(?:the\s+)?(?:locus\s+of\s+)?(?:points?\s+)?(?:that\s+are\s+|which\s+are\s+|are\s+)?/i, "").replace(/\s+/g, " ").trim();
     let m: RegExpExecArray | null;
-    const lc = c.toLowerCase();
     if ((m = /^(?:inside|within|in)\s+(?:the\s+)?(?:rectangle|square|polygon|triangle|field|garden|shape)?\s*((?:[A-Z]\s*){3,})$/.exec(c))) {
       const pts = m[1].replace(/\s/g, "").split("").map(P_);
       regions.push({ k: "poly", pts });
@@ -3446,7 +3435,7 @@ function renderLocus(src: string, named: Record<string, P>): RenderedSvg {
         if (g.k !== "half") out += path(g).replace("/>", ` fill="none" stroke="${g.k === "poly" ? C.ink : C.blue}" stroke-width="${g.k === "poly" ? 2.2 : 1.8}" ${dash}/>`);
       }
       for (const g of curves) {
-        if (g.k === "line") out += longLine(px, g.p, vadd(g.p, g.u), regions.some((r) => r.k === "half") && !curves.some((c) => c.k !== "line") && false ? C.grey : C.purple, 2.2);
+        if (g.k === "line") out += longLine(px, g.p, vadd(g.p, g.u), C.purple, 2.2);
         else out += path(g).replace("/>", ` fill="none" stroke="${C.purple}" stroke-width="2.4"/>`);
       }
       return out;

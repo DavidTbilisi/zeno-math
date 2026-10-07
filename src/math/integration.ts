@@ -121,7 +121,6 @@ function toFrac(x: number, w: IntWords): Frac {
   throw new Error(w.badPoly);
 }
 
-const powF = (f: Frac, k: number) => Array.from({ length: k }).reduce<Frac>((acc) => acc.mul(f), Frac.ONE);
 const fj = (f: Frac) => `(${f.n}/${f.d})`;
 const isMinusOne = (f: Frac) => f.n === -1 && f.d === 1;
 

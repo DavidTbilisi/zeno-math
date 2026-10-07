@@ -52,6 +52,8 @@ export function GraphDialog({ initial, onSubmit, onClose }: {
     } catch (e) {
       return { error: (e as Error).message };
     }
+    // spec is rebuilt on every render; its JSON says when it really changed (errors come from the same inputs).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(spec), t]);
 
   const updateFn = (i: number, patch: Partial<PlotSpec["functions"][number]>) =>

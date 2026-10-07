@@ -225,11 +225,23 @@ model, so the outcome measure is independent of what the adaptive condition lear
 - the answer checker against teacher marking;
 - a dry run of the whole study through the real server.
 
-CI runs the typecheck, the tests and the build on every push, and builds and smoke-tests the Docker image.
+CI runs on every push:
+
+- the typecheck;
+- ESLint;
+- the tests, with coverage thresholds for `src/math` and `src/model`;
+- the build;
+- Playwright end-to-end tests of a board and of the class study in Chromium;
+- a Docker build and smoke test.
+
+**Data safety.** A daily `VACUUM INTO` copy of the database goes to `DATA_DIR/backups/`, keeping seven. The schema
+version is recorded in `PRAGMA user_version`, and a database from a newer Zeno is refused.
 
 **Security.**
 
 - An optional site password, and a teacher password, both compared in constant time.
+- Brute-force protection: 10 wrong passwords in 10 minutes and that client waits, with 429. Behind a proxy
+  (`TRUST_PROXY`), the client is the address the proxy adds last to `X-Forwarded-For`.
 - JSON-only request bodies, so a cross-site form can't post, with size limits.
 - A strict Content-Security-Policy with no inline scripts, plus `nosniff`, `X-Frame-Options` and `Referrer-Policy`.
 - Path-traversal checks on static files.
