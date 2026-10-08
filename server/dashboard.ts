@@ -12,7 +12,7 @@ import { currentModel } from "./research.ts";
 
 type AttemptRow = {
   student_id: number; condition: string; policy: string; predicted: number | null; skill: SkillId; level: Level;
-  outcome: string; first_correct: number; wrongs: number; solution_viewed: number; ms_total: number; created_at: number;
+  outcome: string; first_correct: number; counted: number; solution_viewed: number; ms_total: number; created_at: number;
 };
 const share = (xs: readonly boolean[]) => (xs.length ? xs.filter(Boolean).length / xs.length : null);
 const mean = (xs: readonly number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null);
@@ -29,7 +29,7 @@ function median(xs: readonly number[]) {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 }
 /** Right first time, wrong, or nothing to say, by the rule the model learns by. */
-const verdict = (a: AttemptRow) => evidence(a.wrongs + (a.outcome === "solved" ? 1 : 0), a.outcome, a.first_correct === 1);
+const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1);
 
 export function dashboard(db: DatabaseSync, classCode: string) {
   const klass = db.prepare("SELECT code, name, skills, created_at AS createdAt FROM classes WHERE code = ?").get(classCode) as
@@ -39,8 +39,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   const students = db.prepare("SELECT id, code, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
     { id: number; code: string; condition: string }[];
   const attempts = db.prepare(`
-    SELECT a.student_id, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct, a.wrongs,
-      a.solution_viewed, a.ms_total, a.created_at
+    SELECT a.student_id, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
+      json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
     FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
   `).all(classCode) as AttemptRow[];
 

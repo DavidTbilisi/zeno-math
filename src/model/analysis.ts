@@ -138,6 +138,22 @@ export function scoresFromTests(rows: readonly Record<string, string>[]): Studen
   return [...students.values()];
 }
 
+/**
+ * Per condition: test answers, how many arrived long after their test ended (late), and how many the student's browser
+ * marked differently from the server (client_verdict). Reported beside the analysis, which keeps every answer as the
+ * server marked it; exports from before these columns count none.
+ */
+export function answerChecks(rows: readonly Record<string, string>[]): Record<string, { answers: number; late: number; remarked: number }> {
+  const out: Record<string, { answers: number; late: number; remarked: number }> = {};
+  for (const r of rows) {
+    const c = (out[r.condition] ??= { answers: 0, late: 0, remarked: 0 });
+    c.answers++;
+    if (r.late === "1") c.late++;
+    if (r.client_verdict) c.remarked++;
+  }
+  return out;
+}
+
 export type StudyAnalysis = {
   /** Students in each condition, and how many of them finished both tests. */
   students: Record<string, { all: number; complete: number }>;

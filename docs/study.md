@@ -34,8 +34,10 @@ A signed-in student practises in one of two ways:
 Each attempt records who chose it (`adaptive`, `fixed`, `free` or `review`) and the model's chance of a right answer
 when the question appeared (`predicted`), so the model can be checked against what happened. The browser gets the
 class-wide difficulties and its student's own ratings from the server (`/api/students/:code/plan`). It carries them
-forward after every answer, so class practice keeps going if the connection drops mid-lesson. The server can only
-refuse a class-practice attempt that claims the other condition's policy.
+forward after every answer, so class practice keeps going if the connection drops mid-lesson. The server refuses a
+class-practice attempt that claims the other condition's policy, and marks every answer again with the same checker:
+the verdicts stored, and the summaries the model learns from, are the server's, with the browser's kept beside any it
+gave differently.
 
 **The protocol.** The teacher runs the study from the dashboard by setting what the class is doing now. Students see
 the change within half a minute:
@@ -46,13 +48,19 @@ the change within half a minute:
   practice time. When it ends, class practice stops; free practice stays open.
 - *Closed:* no class practice.
 
+The browser waits for the phase, and the server logs every change. An answer that reaches the server more than five
+minutes after its phase ended (a test answer after its test, class practice after the practice time) is kept and
+marked `late`: a tablet that was offline uploads when it can, and nothing is lost. The analysis says how many there
+were.
+
 The two tests come in parallel forms, A and B. Both ask about the same skills at the same levels in the same order, but
 with different questions, built from the class code, so every browser and the server build the same form. Within each
 condition, students alternate between taking A first and B first, so a harder form can't pass for learning; the
 dashboard compares the forms on the pre-test. A test shows no marks and no solutions. Only a wrong-*form* message
 ("lowest terms") allows another try, so notation isn't penalised. Passing a question counts as an answer. Each question
 is answered once; the server works out which question it was from the form, so a client can't answer a question that
-wasn't on its test. Test answers never reach the learner model, so the outcome measure stays independent of what the
+wasn't on its test, and marks the answer itself. A test can't be answered before the teacher starts it. Test answers
+never reach the learner model, so the outcome measure stays independent of what the
 adaptive condition learns from. The test length is set per class (4–30 questions, default 12).
 
 Teachers follow a class at **`#/teacher`** (linked from the home page; it asks for `TEACHER_PASSWORD` when one is
@@ -106,8 +114,10 @@ npm run analyse -- zeno-tests.csv
   phase (see [Answer checker](#answer-checker)). It works on any export, including ones made before the checker
   named mistakes, because skill, level and seed fix the question.
 
-Only students who finished both tests are analysed; the script says how many in each group did. Report the
-practice time per group from the dashboard alongside it.
+Only students who finished both tests are analysed; the script says how many in each group did. It also counts, per
+group, the test answers that came late and those the browser marked differently from the server (the analysis uses
+the server's verdicts and keeps every answer). Report these and the practice time per group from the dashboard
+alongside it.
 
 **On paper.** **Print the tests** on the teacher page shows both forms of the class's test, with a line for each
 answer and an answer key per form; print it, or save it as a PDF. These are the questions the students' browsers
@@ -298,7 +308,10 @@ It checks the study's guarantees and fails if one breaks:
 - every practice question is stored, and a retried upload is stored once;
 - class practice follows each student's condition;
 - the model's prediction is logged with each question;
-- the planned analysis runs on the export.
+- the planned analysis runs on the export;
+- every wrong test answer could be typed;
+- the server marked every answer as the browser did;
+- nothing arrived after its phase.
 
 ```bash
 npm run dry-run                                         # 40 students, 30 questions, 12-question tests (~10 s)

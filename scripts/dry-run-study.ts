@@ -172,6 +172,12 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
     { name: "the model's prediction logged with each question", ok: classPractice.every((a) => a.predicted !== ""), detail: "" },
     { name: "the planned analysis runs on the export", ok: analysis.ancova !== null, detail: analysis.ancova ? `effect ${(analysis.ancova.estimate * 100).toFixed(1)} points, p = ${analysis.ancova.p.toFixed(3)}` : "too few students" },
     { name: "every wrong test answer could be typed", ok: unanswerable === 0, detail: unanswerable ? `${unanswerable} passed instead` : "" },
+    {
+      name: "the server marked every answer as the browser did",
+      ok: testRows.every((t) => !t.client_verdict) && attemptRows.every((a) => a.remarked === "0"),
+      detail: `${testRows.length + attemptRows.length} test answers and practice questions marked again`,
+    },
+    { name: "nothing arrived after its phase", ok: [...testRows, ...attemptRows].every((r) => r.late === "0"), detail: "" },
   ];
   const predicted = classPractice.map((a) => ({ p: Number(a.predicted), correct: a.first_correct === "1" }));
   return { classCode: klass, testsCsv, attemptsCsv, analysis, checks, predictedLogLoss: logLoss(predicted) };

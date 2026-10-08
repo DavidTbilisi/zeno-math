@@ -2,7 +2,7 @@
 // the tests export read into per-student scores and analysed, finished tests only.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { analyseStudy, ancova, inverse, ols, scoresFromTests, twoSided, welch, type StudyRow } from "../src/model/analysis.ts";
+import { analyseStudy, ancova, answerChecks, inverse, ols, scoresFromTests, twoSided, welch, type StudyRow } from "../src/model/analysis.ts";
 import { tUpper } from "../src/math/distributions.ts";
 
 const close = (a: number, b: number, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol, `${a} ≉ ${b}`);
@@ -97,6 +97,13 @@ test("the tests export becomes scores per student, and only students who finishe
   close(r.gains!.estimate, 5 / 12 - 1 / 12);
   // Form check: every finished pre-test (s7's too), A against B.
   close(r.forms!.estimate, (1 + 2 + 1 + 3 + 0) / 5 / 4 - (2 + 2 + 2) / 3 / 4);
+});
+
+test("late answers and the browser's disagreements are counted per condition, from any export", () => {
+  const rows: Record<string, string>[] = [...sit("s1", "adaptive", "AB", 1, 3), ...sit("s2", "fixed", "AB", 2, 2)];
+  rows[0] = { ...rows[0], late: "1" };
+  rows[9] = { ...rows[9], client_verdict: "correct", late: "0" };
+  assert.deepEqual(answerChecks(rows), { adaptive: { answers: 8, late: 1, remarked: 0 }, fixed: { answers: 8, late: 0, remarked: 1 } });
 });
 
 test("with too few finished tests there is no comparison, rather than a meaningless one", () => {

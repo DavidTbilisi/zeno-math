@@ -51,5 +51,13 @@ jobs:
           for i in $(seq 1 30); do curl -fs http://127.0.0.1:8787/api/health && break; sleep 1; done
           curl -fs -X POST -H 'Content-Type: application/json' -d '{"title":"CI"}' http://127.0.0.1:8787/api/boards
           curl -fs http://127.0.0.1:8787/api/boards | grep -q '"CI"'
+      # The bundled checker loads: a practice answer the browser called right is marked wrong by the server.
+      - name: The server marks answers
+        run: |
+          api=http://127.0.0.1:8787/api
+          class=$(curl -fs -X POST -H 'Content-Type: application/json' -d '{"skills":["times"]}' $api/classes | jq -r .code)
+          student=$(curl -fs -X POST -H 'Content-Type: application/json' -d "{\"class\":\"$class\"}" $api/students | jq -r .code)
+          curl -fs -X POST -H 'Content-Type: application/json' $api/attempts -d "{\"clientId\":\"ci-attempt-1\",\"student\":\"$student\",\"skill\":\"times\",\"level\":1,\"seed\":1,\"review\":false,\"outcome\":\"solved\",\"solutionViewed\":false,\"msTotal\":1000,\"shownAt\":1,\"answers\":[{\"input\":\"-1\",\"verdict\":\"correct\",\"ms\":1000}]}"
+          curl -fs "$api/research/attempts.csv?class=$class" | grep -q '""client"":""correct""'
       - if: failure()
         run: docker logs zeno

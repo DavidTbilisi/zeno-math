@@ -9,6 +9,7 @@
     "dev": "node scripts/copy-assets.mjs && concurrently -n web,api -c blue,green \"vite\" \"node --watch server/index.ts\"",
     "build": "node scripts/copy-assets.mjs && vite build && node scripts/compress.mjs",
     "start": "node server/index.ts",
+    "build:checker": "vite build -c vite.checker.config.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "coverage": "node --import ./scripts/ts-register.mjs --test --experimental-test-coverage --test-coverage-include=\"src/math/**\" --test-coverage-include=\"src/model/**\" --test-coverage-exclude=\"tests/**\" --test-coverage-lines=95 --test-coverage-branches=88 --test-coverage-functions=95 \"tests/*.test.ts\"",

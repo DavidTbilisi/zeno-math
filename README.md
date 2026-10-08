@@ -777,16 +777,18 @@ server will, a database from before class practice is upgraded, and simulated st
 and the dashboard: teacher-only, mastery for every student and skill, group figures and logged-prediction calibration
 that match hand-worked values; and the protocol: the forms are stable, parallel and spread over the skills, every test
 question accepts its own answer in all three languages, phases and sessions are the teacher's alone, forms are
-counterbalanced within each condition, each test question is stored once and worked out by the server, typed answers
-can't become spreadsheet formulas, and the dashboard's test figures match; and the evidence: the CSV reader survives
+counterbalanced within each condition, each test question is stored once and worked out by the server, the server
+marks every answer itself and keeps the browser's verdict where it differs, a test can't be answered before it starts
+and what arrives long after its phase is marked late, typed answers can't become spreadsheet formulas, and the
+dashboard's test figures match; and the evidence: the CSV reader survives
 any split of its input, the ASSISTments importer keeps the right rows, the held-out split keeps students whole, PFA
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
 of 333 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
-lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image and saves a board in
-it.
+lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
+it and checks that it marks a practice answer itself.
 
 ## Project layout
 
@@ -801,7 +803,8 @@ src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
 src/components/StudentPanel.tsx  joining a class, signing back in, deleting your answers
 server/dashboard.ts       the teacher's dashboard data: mastery per student and skill, the two groups, tests, calibration
-server/protocol.ts        the study protocol: class phases, timed sessions, counterbalanced test forms, test answers
+server/protocol.ts        the study protocol: class phases (logged), timed sessions, counterbalanced test forms, test answers
+server/marking.ts, checker.ts  every answer marked again on the server with the browser's checker (bundled for Docker)
 src/model/testForms.ts    the pre-/post-test forms A and B, built from the class code
 src/components/TestRunner.tsx  taking a test: one question at a time, no marks, form messages only
 src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes, codes, groups, mastery heatmap, calibration

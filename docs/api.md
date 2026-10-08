@@ -135,9 +135,14 @@ The answers must agree with the outcome, or the attempt is refused with 400:
 - `solved` ends on a correct answer, and nothing follows a correct one.
 - A `skipped` question had at least one try.
 
-The summary columns (right first time, wrong answers, form retries) are worked out from the answers on the server,
-so they can't disagree. The answer is 201 `{ stored: true }`. A repeat of a stored `clientId` (a retried upload)
-gives 200 `{ stored: false }` and is not stored twice.
+The server marks every answer again with the same checker (the question follows from skill, level and seed) and
+stores its own verdict; where the browser's differed, the answer keeps it as `client`, and `remarked` counts them. The
+summary columns (right first time, wrong answers, form retries) are worked out from the server's verdicts, so they
+can't disagree; the outcome stays as the browser sent it. Class practice (`adaptive` or `fixed`) that arrives more
+than five minutes after the class's practice time ended (open practice, or a session until its time is up) is stored
+with `late` set, for the analysis to report: an offline tablet's questions aren't lost. The answer is 201
+`{ stored: true }`. A repeat of a stored `clientId` (a retried upload) gives 200 `{ stored: false }` and is not
+stored twice.
 
 ### Test answers
 
@@ -152,8 +157,11 @@ gives 200 `{ stored: false }` and is not stored twice.
 - **`retries`**: the form messages before this answer.
 
 The server works out the question itself (skill, level, seed) from the class code, the student's form and `item`,
-so a client can't answer a question that wasn't on its test. One answer per student, test and question: a repeat
-keeps the first, with 200 `{ stored: false }`.
+so a client can't answer a question that wasn't on its test, and marks what was typed itself: the stored `verdict`
+is the server's (`form` if the browser should have sent it back), with the browser's as `client_verdict` where they
+differ. A test the class hasn't started yet is refused with 400 (`the post-test hasn't started`). An answer that
+arrives more than five minutes after its test ended is stored with `late` set. One answer per student, test and
+question: a repeat keeps the first, with 200 `{ stored: false }`.
 
 ### Dashboard
 
@@ -181,9 +189,9 @@ Both CSVs name students `s1`, `s2`, … by their row number, never by their code
 used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=1+2` as a formula.
 
 - **`attempts.csv`** columns: attempt, student, class, condition, policy, predicted, area, skill, level, seed,
-  review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, shown_at,
-  created_at.
+  review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, remarked,
+  late, shown_at, created_at.
 - **`tests.csv`** columns: response, student, class, condition, test_order, phase, form, item, area, skill, level,
-  seed, input, verdict, correct, retries, ms, created_at.
+  seed, input, verdict, correct, client_verdict, late, retries, ms, created_at.
 
 `npm run model` reads the first and `npm run analyse` the second.

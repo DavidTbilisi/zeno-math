@@ -44,8 +44,15 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await expect(student.getByText(/Chosen for you:/)).toBeVisible();
   // The question is a picture; a screen reader gets its words (and its maths as MathML) instead.
   expect((await student.locator(".preview .sr-only").first().textContent())!.trim().length).toBeGreaterThan(5);
-  await student.getByLabel("Your answer").fill("12345");
-  await student.getByRole("button", { name: "Check" }).click();
+  // A wrong answer of the right kind: an answer of the wrong kind (one root of two, a number for an inequality) is
+  // sent back for its form, so try kinds until one is marked wrong.
+  for (const wrong of ["12345", "12345; 12346", "x > 12345", "x^7 + 12345"]) {
+    await student.getByLabel("Your answer").fill(wrong);
+    await student.getByRole("button", { name: "Check" }).click();
+    const verdict = student.locator(".practice-verdict");
+    await expect(verdict).toBeVisible();
+    if (await verdict.evaluate((e) => e.classList.contains("bad"))) break;
+  }
   await expect(student.getByText("Not quite — try again.")).toBeVisible();
   await student.getByRole("button", { name: "Show solution" }).click();
   await student.getByRole("button", { name: "Next" }).click();
