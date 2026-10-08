@@ -377,6 +377,8 @@ input.invalid { border-color: var(--danger); }
 .practice-verdict.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
 .practice-verdict.close { color: #e8590c; background: color-mix(in srgb, #e8590c 10%, transparent); }
 .practice-verdict.bad { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
+/* What the mistake was: in ordinary ink, so it reads as help rather than a second scolding. */
+.practice-hint { margin-top: 4px; font-weight: 400; color: var(--text); }
 .practice-review { color: #e8590c; }
 .practice-clock { font-variant-numeric: tabular-nums; align-self: flex-end; }
 .practice-class { display: flex; flex-direction: column; gap: 6px; }

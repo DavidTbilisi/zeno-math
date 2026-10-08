@@ -421,12 +421,18 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 38 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 42 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
   - The form counts when the question asks for one: "lowest terms", "simplify the surd", "not fully factorised",
-    "multiply out the brackets" and "check your rounding" are said, not marked wrong
+    "multiply out the brackets", "standard form" and "check your rounding" are said, not marked wrong
+  - A wrong answer that a known mistake gives is named, with a way to see it: tops and bottoms of fractions added,
+    (a + b)² as a² + b², a negative power taken as a negative number, × and ÷ worked from left to right after + and −,
+    digits cut off instead of rounded, an inequality's sign not turned round, the right size with the wrong sign, and
+    more (17 in all, in [src/math/mistakes.ts](src/math/mistakes.ts)); it still counts as a miss
+  - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
+    and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
     the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
   - Progress per skill is kept in the browser, and a missed question comes back three questions later
@@ -700,7 +706,8 @@ The full description is in **[docs/study.md](docs/study.md)**:
   public ASSISTments data (`npm run model`);
 - the simulation study across three kinds of simulated learner, and its power analysis (`npm run simulate`);
 - a dry run of the whole study through the real server (`npm run dry-run`);
-- the answer checker against a teacher's marking (`npm run checker-agreement`).
+- the answer checker against a teacher's marking, and how often it names the mistake a teacher sees (`npm run checker-agreement`);
+- which mistakes each group made, from either export (`npm run mistakes`).
 
 More for a thesis: [docs/architecture.md](docs/architecture.md) (design, diagrams, decisions),
 [docs/api.md](docs/api.md) (every route), [docs/thesis/](docs/thesis/) (outline, references) and
@@ -752,9 +759,10 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (38 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (42 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
-renders; that no picture repeats an attribute; that
+renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
+right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
 dark pictures turn back into the same light ones; and the API: conflicts, compression,
 bad requests, path traversal, password, headers and export; and the class study: the teacher password, randomisation
 in balanced blocks, attempts refused when they don't add up, summaries worked out from the answers, retried uploads
@@ -775,7 +783,8 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 285 typed answers at least 89 % of the time, crediting at most two wrong answers. GitHub Actions runs the typecheck,
+of 333 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image and saves a board in
 it.
 
@@ -806,6 +815,8 @@ scripts/simulate-study.ts `npm run simulate`: the conditions on simulated classe
 scripts/analyse-study.ts  `npm run analyse`: the planned analysis on the tests export
 scripts/dry-run-study.ts  `npm run dry-run`: the whole study with simulated students through the real server
 scripts/checker-agreement.ts  `npm run checker-agreement`: the answer checker against labelled answers
+scripts/mistakes.ts       `npm run mistakes`: the known mistakes in an export's wrong answers, per condition
+src/math/mistakes.ts      the mistakes the checker names (each question lists the answers they would give)
 docs/study.md             the class study in full: protocol, analysis, learner model, simulations, dry run, checker
 docs/architecture.md      design, diagrams (context, building blocks, data model, a question end to end), decisions
 docs/api.md               every HTTP route (checked against the server by tests/api-docs.test.ts)

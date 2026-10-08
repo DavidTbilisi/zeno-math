@@ -19,6 +19,7 @@
     "analyse": "node --disable-warning=ExperimentalWarning scripts/analyse-study.ts",
     "dry-run": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dry-run-study.ts",
     "checker-agreement": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/checker-agreement.ts",
+    "mistakes": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/mistakes.ts",
     "test": "node --import ./scripts/ts-register.mjs --test \"tests/*.test.ts\""
   },
   "dependencies": {

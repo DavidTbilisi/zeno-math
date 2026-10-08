@@ -84,8 +84,9 @@ of success) help students learn more than a fixed curriculum sequence?
 - **The whiteboard:** Excalidraw integration, autosave with conflict handling, tool dialogs loaded on demand, live
   pieces (`src/pages/BoardPage.tsx`, `src/live/`). Keep this brief: it is the platform, not the research.
 - **The practice engine:**
-  - question generators for 38 skills × 3 levels;
+  - question generators for 42 skills × 3 levels;
   - the answer checker, with its verdicts correct, close, wrong, and form (sent back);
+  - the mistakes it names: each question lists the answers its known mistakes would give (`src/math/mistakes.ts`);
   - worked solutions.
   - Sources: `src/math/practice.ts`, `src/math/expr.ts`.
 - **The learner model:** the three-layer Elo rating, with uncertainty that shrinks as evidence builds
@@ -102,12 +103,13 @@ of success) help students learn more than a fixed curriculum sequence?
 
 ### 5.1 Correctness
 
-- **The test suite** (`npm test`, about 260 tests) and CI. Describe how each area is checked against an independent
+- **The test suite** (`npm test`, about 280 tests) and CI. Describe how each area is checked against an independent
   computation, not against itself.
 - **The answer checker against teacher marking** (`npm run checker-agreement`; `tests/fixtures/answers.json`):
-  - 285 answers across all 38 skills, with 89.8 % agreement;
+  - 333 answers across all 42 skills, with 91.3 % agreement;
   - every wrong answer is marked wrong;
-  - two wrong answers credited, one right answer refused.
+  - two wrong answers credited, one right answer refused;
+  - the mistake named in all 31 wrong answers where a teacher names one, and in none of the other 92.
   - Discuss the disagreements: rounding slips are sent back rather than marked close, and rounded decimals for exact
     answers are marked wrong.
   - Report the two display and parsing faults found and fixed. A wrong expression was shown in 2.6 % of questions.
@@ -171,7 +173,9 @@ of success) help students learn more than a fixed curriculum sequence?
   - Simulated students don't get bored, give up or help each other.
 - **Construct.**
   - The test measures the expected score on the class's skills with 12 items, so it is noisy.
-  - Its marking depends on the checker: 89.8 % agreement, with lenient "send back" choices.
+  - Its marking depends on the checker: 91.3 % agreement, with lenient "send back" choices.
+  - The mistakes the checker names are the author's catalogue, not found in students' answers; how often each occurs
+    in a class is for a real study to show (`npm run mistakes`).
   - Equal practice *time* is controlled in a real class, but in the simulation, equal question *counts*.
 - **Conclusion.**
   - Simulation results come from 10 classes per cell, with 95 % intervals over classes; power figures from 100
@@ -210,6 +214,7 @@ Each command is deterministic for a given commit (seeds are fixed). The run time
 | Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~15 min |
 | Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~25 min |
 | Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
-| Checker agreement | `npm run checker-agreement` | ~2 s |
+| Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
+| Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
 
 Record the commit hash (`git rev-parse HEAD`) with every table in the thesis.

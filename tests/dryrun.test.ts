@@ -6,6 +6,8 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { dryRun, startServer } from "../scripts/dry-run-study.ts";
+import { tallyMistakes } from "../scripts/mistakes.ts";
+import { parseCsv } from "../src/model/evaluate.ts";
 
 const dir = mkdtempSync(join(tmpdir(), "zeno-dry-run-test-"));
 after(() => rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }));
@@ -18,6 +20,14 @@ test("a dry run of the study through the server keeps every guarantee and can be
       for (const c of result.checks) assert.ok(c.ok, `${world}: ${c.name} (${c.detail})`);
       assert.equal(result.analysis.testLength, 4);
       assert.ok(Number.isFinite(result.predictedLogLoss));
+      // The mistakes behind the wrong answers can be found again from the exports alone.
+      const total = (o: Record<string, number>) => Object.values(o).reduce((a, b) => a + b, 0);
+      const practice = tallyMistakes(parseCsv(result.attemptsCsv));
+      assert.ok(total(practice.wrong) > 0 && total(practice.named) > 0, `${world}: ${JSON.stringify(practice.named)} of ${JSON.stringify(practice.wrong)}`);
+      assert.deepEqual(Object.keys(practice.wrong).sort(), ["adaptive", "fixed"]);
+      const tests = tallyMistakes(parseCsv(result.testsCsv));
+      assert.ok(Object.keys(tests.wrong).every((g) => /^(adaptive|fixed) (pre|post)$/.test(g)), Object.keys(tests.wrong).join());
+      assert.ok(total(tests.named) > 0, `${world} tests: ${JSON.stringify(tests.named)} of ${JSON.stringify(tests.wrong)}`);
     }
   } finally {
     await server.stop();

@@ -220,11 +220,12 @@ function parsePoly(src: string, ctx: { v: string }): Poly {
   return p;
 }
 
-type Rel = "<" | "<=" | ">" | ">=" | "=";
-const REL_TEX: Record<Rel, string> = { "<": "<", "<=": "\\le", ">": ">", ">=": "\\ge", "=": "=" };
+export type Rel = "<" | "<=" | ">" | ">=" | "=";
+export const REL_TEX: Record<Rel, string> = { "<": "<", "<=": "\\le", ">": ">", ">=": "\\ge", "=": "=" };
 const FLIP: Record<Rel, Rel> = { "<": ">", "<=": ">=", ">": "<", ">=": "<=", "=": "=" };
 
-function splitRel(src: string): { parts: string[]; rels: Rel[] } {
+/** An equation or inequality cut at its relation signs (≤, ≥, =<, => read as <=, >=). */
+export function splitRel(src: string): { parts: string[]; rels: Rel[] } {
   const s = normal(src);
   const parts: string[] = [];
   const rels: Rel[] = [];

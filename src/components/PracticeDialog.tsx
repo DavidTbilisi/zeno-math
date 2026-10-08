@@ -494,6 +494,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
           {verdict && (
             <div className={`practice-verdict ${verdict.ok ? "ok" : verdict.close || verdict.why ? "close" : "bad"}`} role="status">
               {verdict.ok ? `✓ ${w.ui.correct}` : verdict.why ?? `✗ ${w.ui.wrong}`}
+              {verdict.hint && <div className="practice-hint">{verdict.hint}</div>}
             </div>
           )}
           {done === "revealed" && <div className="practice-verdict close" role="status">{w.ui.revealed}</div>}
