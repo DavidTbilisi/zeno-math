@@ -819,6 +819,7 @@ scripts/analyse-study.ts  `npm run analyse`: the planned analysis on the tests e
 scripts/dry-run-study.ts  `npm run dry-run`: the whole study with simulated students through the real server
 scripts/checker-agreement.ts  `npm run checker-agreement`: the answer checker against labelled answers
 scripts/mistakes.ts       `npm run mistakes`: the known mistakes in an export's wrong answers, per condition
+scripts/thesis-figures.ts `npm run figures`: the thesis figures (diagrams, calibration, screenshots) made again from the code
 src/math/mistakes.ts      the mistakes the checker names (each question lists the answers they would give)
 docs/study.md             the class study in full: protocol, analysis, learner model, simulations, dry run, checker
 docs/architecture.md      design, diagrams (context, building blocks, data model, a question end to end), decisions

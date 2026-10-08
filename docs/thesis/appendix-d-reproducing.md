@@ -16,6 +16,7 @@ its test forms) is random, so its effect estimate varies between runs while its 
 | Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
 | Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
 | Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
+| Figures (`docs/thesis/figures/`) | `npm run build`, then `npm run figures` (needs the network for Mermaid) | ~1 min |
 
 The ASSISTments data set is not in the repository. Download `skill_builder_data.csv` (the corrected 2009–2010
 version) from the ASSISTments data site [@assistments2010data].

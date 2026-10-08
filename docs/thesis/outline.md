@@ -224,5 +224,6 @@ Each command is deterministic for a given commit (seeds are fixed). The run time
 | Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
 | Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
 | Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
+| Figures | `npm run build`, then `npm run figures` | ~1 min |
 
 Record the commit hash (`git rev-parse HEAD`) with every table in the thesis.
