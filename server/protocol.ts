@@ -11,6 +11,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import { CURRICULUM } from "../src/model/curriculum.ts";
 import { DEFAULT_TEST_LENGTH, formFor, MAX_TEST_LENGTH, MIN_TEST_LENGTH, testItems, type TestOrder, type TestPhase } from "../src/model/testForms.ts";
+import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { mark } from "./marking.ts";
 
@@ -29,7 +30,7 @@ export const GRACE = 5 * 60_000;
 
 export function initProtocol(db: DatabaseSync) {
   const add = (table: string, column: string, type: string) => {
-    const has = (db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
+    const has = (stmt(db, `PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
     if (!has) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
   };
   add("classes", "phase", "TEXT NOT NULL DEFAULT 'open'");
@@ -72,27 +73,29 @@ export function initProtocol(db: DatabaseSync) {
   // A class from before the log gets the history its data shows: open from when it was made, each test from its first
   // stored answer, and its phase now from now on. So an answer still waiting in a browser for a test that ran before
   // this update is kept (late, if its test has since ended), not refused.
-  const unlogged = db.prepare("SELECT code, phase, session_ends AS sessionEnds, created_at AS createdAt FROM classes c WHERE NOT EXISTS (SELECT 1 FROM class_phases p WHERE p.class_code = c.code)")
+  const unlogged = stmt(db, "SELECT code, phase, session_ends AS sessionEnds, created_at AS createdAt FROM classes c WHERE NOT EXISTS (SELECT 1 FROM class_phases p WHERE p.class_code = c.code)")
     .all() as { code: string; phase: Phase; sessionEnds: number | null; createdAt: number }[];
-  const firstAnswers = db.prepare(`
+  const firstAnswers = stmt(db, `
     SELECT t.phase, MIN(t.created_at) AS at FROM test_responses t JOIN students s ON s.id = t.student_id WHERE s.class_code = ? GROUP BY t.phase ORDER BY at
   `);
   const now = Date.now();
-  for (const c of unlogged) {
-    logPhase(db, c.code, "open", null, c.createdAt);
-    for (const t of firstAnswers.all(c.code) as { phase: TestPhase; at: number }[]) logPhase(db, c.code, t.phase === "pre" ? "pretest" : "posttest", null, t.at);
-    logPhase(db, c.code, c.phase, c.sessionEnds, now);
-  }
+  if (unlogged.length) transaction(db, () => {
+    for (const c of unlogged) {
+      logPhase(db, c.code, "open", null, c.createdAt);
+      for (const t of firstAnswers.all(c.code) as { phase: TestPhase; at: number }[]) logPhase(db, c.code, t.phase === "pre" ? "pretest" : "posttest", null, t.at);
+      logPhase(db, c.code, c.phase, c.sessionEnds, now);
+    }
+  });
 }
 
 /** Records that a class has entered a phase (when it is made, and on every change). */
 export const logPhase = (db: DatabaseSync, classCode: string, phase: Phase, sessionEnds: number | null, at: number) =>
-  db.prepare("INSERT INTO class_phases (class_code, phase, session_ends, started_at) VALUES (?, ?, ?, ?)").run(classCode, phase, sessionEnds, at);
+  stmt(db, "INSERT INTO class_phases (class_code, phase, session_ends, started_at) VALUES (?, ?, ?, ?)").run(classCode, phase, sessionEnds, at);
 
 export type PhaseWindow = { phase: Phase; start: number; end: number };
 /** The class's phases in order, each from its start to the next change (or the end of its session). */
 export function phaseWindows(db: DatabaseSync, classCode: string): PhaseWindow[] {
-  const rows = db.prepare("SELECT phase, session_ends AS sessionEnds, started_at AS start FROM class_phases WHERE class_code = ? ORDER BY started_at, id")
+  const rows = stmt(db, "SELECT phase, session_ends AS sessionEnds, started_at AS start FROM class_phases WHERE class_code = ? ORDER BY started_at, id")
     .all(classCode) as { phase: Phase; sessionEnds: number | null; start: number }[];
   return rows.map((r, i) => ({
     phase: r.phase,
@@ -108,7 +111,7 @@ export const PRACTICE_PHASES: readonly Phase[] = ["open", "session"];
 
 /** Counterbalancing: within a class and condition, students alternate between taking form A first and form B first. */
 export function nextTestOrder(db: DatabaseSync, classCode: string, condition: string): TestOrder {
-  const { n } = db.prepare("SELECT COUNT(*) AS n FROM students WHERE class_code = ? AND condition = ?").get(classCode, condition) as { n: number };
+  const { n } = stmt(db, "SELECT COUNT(*) AS n FROM students WHERE class_code = ? AND condition = ?").get(classCode, condition) as { n: number };
   return n % 2 ? "BA" : "AB";
 }
 /** A student from before tests existed gets an order from their number. */
@@ -116,7 +119,7 @@ export const testOrderOf = (s: { id: number; test_order: string | null }): TestO
 
 export type ClassProtocol = { phase: Phase; sessionEnds: number | null; testLength: number };
 export const classProtocol = (db: DatabaseSync, classCode: string): ClassProtocol =>
-  db.prepare("SELECT phase, session_ends AS sessionEnds, test_length AS testLength FROM classes WHERE code = ?").get(classCode) as ClassProtocol;
+  stmt(db, "SELECT phase, session_ends AS sessionEnds, test_length AS testLength FROM classes WHERE code = ?").get(classCode) as ClassProtocol;
 
 export function parseTestLength(value: unknown): number {
   if (value === undefined || value === null) return DEFAULT_TEST_LENGTH;
@@ -127,7 +130,7 @@ export function parseTestLength(value: unknown): number {
 
 /** What the student's browser needs about the tests: for each, the form to take and which questions are answered. */
 export function studentTests(db: DatabaseSync, student: { id: number; test_order: string | null }) {
-  const done = db.prepare("SELECT phase, item FROM test_responses WHERE student_id = ? ORDER BY item").all(student.id) as { phase: TestPhase; item: number }[];
+  const done = stmt(db, "SELECT phase, item FROM test_responses WHERE student_id = ? ORDER BY item").all(student.id) as { phase: TestPhase; item: number }[];
   const order = testOrderOf(student);
   const of = (phase: TestPhase) => ({ form: formFor(order, phase), answered: done.filter((d) => d.phase === phase).map((d) => d.item) });
   return { pre: of("pre"), post: of("post") };
@@ -147,7 +150,7 @@ export async function setPhase(req: IncomingMessage, res: ServerResponse, db: Da
       throw new HttpError(400, `minutes must be a whole number from 1 to ${MAX_SESSION_MINUTES}`);
     sessionEnds = Date.now() + minutes * 60_000;
   }
-  const result = db.prepare("UPDATE classes SET phase = ?, session_ends = ? WHERE code = ?").run(phase, sessionEnds, classCode);
+  const result = stmt(db, "UPDATE classes SET phase = ?, session_ends = ? WHERE code = ?").run(phase, sessionEnds, classCode);
   if (!result.changes) return send(res, 404, { error: "no such class" });
   logPhase(db, classCode, phase, sessionEnds, Date.now());
   return send(res, 200, { phase, sessionEnds });
@@ -179,14 +182,14 @@ export async function recordTestAnswer(
   const testPhase: Phase = phase === "pre" ? "pretest" : "posttest";
   if (!windows.some((w) => w.phase === testPhase && w.start <= now)) throw new HttpError(400, `the ${phase}-test hasn't started`);
   const late = !onTime(windows, [testPhase], now);
-  const { skills } = db.prepare("SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
+  const { skills } = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
   const form = formFor(testOrderOf(student), phase);
   const q = testItems(student.class, skills ? JSON.parse(skills) : CURRICULUM, form, testLength)[item];
   const typed = input.slice(0, 200);
   // A pass stays a pass; anything typed is marked here. A "form" verdict means the browser should have sent it back.
   const marked = verdict === "skipped" ? "skipped" : mark(q, typed);
   // One answer per question: a repeat (a retried upload, or a second try from another tab) keeps the first.
-  const result = db.prepare(`
+  const result = stmt(db, `
     INSERT OR IGNORE INTO test_responses (client_id, student_id, phase, form, item, skill, level, seed, input, verdict, client_verdict, late, retries, ms, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(clientId, student.id, phase, form, item, q.skill, q.level, q.seed, typed, marked, marked === verdict ? null : verdict, Number(late), retries, ms, now);
@@ -196,7 +199,7 @@ export async function recordTestAnswer(
 export type TestScore = { phase: TestPhase; form: string; answered: number; correct: number };
 /** Each student's scores: answers given and right, per test. */
 export function testScores(db: DatabaseSync, classCode: string) {
-  return db.prepare(`
+  return stmt(db, `
     SELECT t.student_id AS studentId, t.phase, t.form, COUNT(*) AS answered, SUM(t.verdict = 'correct') AS correct
     FROM test_responses t JOIN students s ON s.id = t.student_id WHERE s.class_code = ?
     GROUP BY t.student_id, t.phase

@@ -622,6 +622,8 @@ certificate, `pki/authorities/local/root.crt` in Caddy's data folder, on the dev
 	tls internal {
 		on_demand
 	}
+	# The app's own files come pre-compressed; this compresses the API's JSON and CSV too.
+	encode zstd gzip
 	reverse_proxy 127.0.0.1:8787
 }
 ```

@@ -45,6 +45,18 @@ test("a board's read-only link shows it without its id, follows its saves, and s
   assert.deepEqual(updated.body.scene, scene, "the link shows what was saved last");
   assert.ok(updated.body.updatedAt > shared.body.updatedAt);
 
+  // A viewer asks every few seconds: with the ETag it was given, nothing is sent again until the next save.
+  const tagged = await fetch(`${server.base}/api/shared/${token}`);
+  const etag = tagged.headers.get("etag");
+  assert.equal(etag, `"${updated.body.updatedAt}"`, "the ETag is the save time");
+  const same = await fetch(`${server.base}/api/shared/${token}`, { headers: { "If-None-Match": etag! } });
+  assert.equal(same.status, 304);
+  assert.equal(await same.text(), "");
+  await call("PUT", `/api/boards/${board.id}`, { title: "Lesson 2" });
+  const changed = await fetch(`${server.base}/api/shared/${token}`, { headers: { "If-None-Match": etag! } });
+  assert.equal(changed.status, 200, "saved since: the board is sent again");
+  assert.equal((await changed.json()).title, "Lesson 2");
+
   assert.equal((await call("DELETE", `/api/boards/${board.id}/share`)).status, 204);
   assert.equal((await call("GET", `/api/shared/${token}`)).status, 404, "a link taken away stops working");
   const fresh = await call("POST", `/api/boards/${board.id}/share`);

@@ -20,13 +20,18 @@ export function SharedBoardPage({ token }: { token: string }) {
   const [gone, setGone] = useState(false);
   const excalidraw = useRef<ExcalidrawImperativeAPI | null>(null);
   const seen = useRef(-1);
+  const etag = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     let live = true;
     const follow = async () => {
       try {
-        const b = await api.shared(token);
-        if (!live || b.updatedAt === seen.current) return;
+        // With the last answer's ETag sent along, the server sends the scene again only once it has changed.
+        const got = await api.shared(token, etag.current);
+        if (!live || !got) return;
+        const b = got.board;
+        etag.current = got.etag || undefined;
+        if (b.updatedAt === seen.current) return;
         const first = seen.current < 0;
         seen.current = b.updatedAt;
         const ex = excalidraw.current;

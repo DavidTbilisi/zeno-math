@@ -6,9 +6,10 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
-import { HttpError, readJson, send } from "./http.ts";
+import { HttpError, readJson, send, sendJsonText } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { scheduleBackups } from "./backup.ts";
+import { rawJson, stmt } from "./db.ts";
 import { handleResearch, initResearch, RESEARCH_RESOURCES } from "./research.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
@@ -19,6 +20,12 @@ const APP_PASSWORD = process.env.APP_PASSWORD ?? "";
 mkdirSync(DATA_DIR, { recursive: true });
 const db = new DatabaseSync(join(DATA_DIR, "boards.db"));
 db.exec("PRAGMA journal_mode = WAL");
+// In WAL mode NORMAL is safe against crashes (a power cut can lose the last transactions, never corrupt the file) and
+// syncs the disk far less often. busy_timeout: a backup (VACUUM INTO) or another process holding the file waits instead
+// of failing at once.
+db.exec("PRAGMA synchronous = NORMAL");
+db.exec("PRAGMA busy_timeout = 5000");
+db.exec("PRAGMA temp_store = MEMORY");
 db.exec(`
   CREATE TABLE IF NOT EXISTS boards (
     id TEXT PRIMARY KEY,
@@ -98,23 +105,27 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   // No route goes deeper than /api/resource/id/sub.
   if (deeper.length) return send(res, 404, { error: "not found" });
   if (RESEARCH_RESOURCES.has(resource)) return handleResearch(req, res, resource, id, sub, query, db);
-  // A board shared read-only, by its token: the scene and title, never the id.
+  // A board shared read-only, by its token: the scene and title, never the id. Viewers ask every few seconds, so the
+  // answer carries the save time as its ETag, and a viewer that sends it back gets 304 and no scene until the next save.
   if (resource === "shared" && id && sub === undefined && req.method === "GET") {
-    const row = db.prepare("SELECT title, scene, updated_at AS updatedAt FROM boards WHERE share_token = ?").get(id) as
+    const row = stmt(db, "SELECT title, scene, updated_at AS updatedAt FROM boards WHERE share_token = ?").get(id) as
       { title: string; scene: string; updatedAt: number } | undefined;
-    return row ? send(res, 200, { ...row, scene: JSON.parse(row.scene) }) : send(res, 404, { error: "no such shared board" });
+    if (!row) return send(res, 404, { error: "no such shared board" });
+    const etag = `"${row.updatedAt}"`;
+    if (req.headers["if-none-match"] === etag) return send(res, 304, undefined, { ETag: etag });
+    return sendJsonText(res, 200, rawJson({ title: row.title, updatedAt: row.updatedAt }, { scene: row.scene }), { ETag: etag, "Cache-Control": "no-cache" });
   }
   // Making a read-only link (or giving back the one there is), and taking it away.
   if (resource === "boards" && id && sub === "share") {
-    const row = db.prepare("SELECT share_token AS token FROM boards WHERE id = ?").get(id) as { token: string | null } | undefined;
+    const row = stmt(db, "SELECT share_token AS token FROM boards WHERE id = ?").get(id) as { token: string | null } | undefined;
     if (!row) return send(res, 404, { error: "no such board" });
     if (req.method === "POST") {
       const token = row.token ?? randomBytes(16).toString("base64url");
-      db.prepare("UPDATE boards SET share_token = ? WHERE id = ?").run(token, id);
+      stmt(db, "UPDATE boards SET share_token = ? WHERE id = ?").run(token, id);
       return send(res, row.token ? 200 : 201, { token });
     }
     if (req.method === "DELETE") {
-      db.prepare("UPDATE boards SET share_token = NULL WHERE id = ?").run(id);
+      stmt(db, "UPDATE boards SET share_token = NULL WHERE id = ?").run(id);
       return send(res, 204);
     }
     return send(res, 405, { error: "method not allowed" });
@@ -122,16 +133,16 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   // Nothing below has a third level, and only boards take an id: /api/boards/x/anything is not a board.
   if (sub !== undefined || (id !== undefined && resource !== "boards")) return send(res, 404, { error: "not found" });
   if (resource === "health" && req.method === "GET") {
-    db.prepare("SELECT 1").get();
+    stmt(db, "SELECT 1").get();
     return send(res, 200, { ok: true });
   }
-  // Every board in one file, for backups.
+  // Every board in one file, for backups. Scenes are stored as JSON and go out as they are.
   if (resource === "export" && req.method === "GET") {
-    const rows = db
-      .prepare("SELECT id, title, scene, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY created_at")
-      .all() as { scene: string }[];
+    const rows = stmt(db, "SELECT id, title, scene, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY created_at")
+      .all() as { id: string; title: string; scene: string; createdAt: number; updatedAt: number }[];
     const stamp = new Date().toISOString().slice(0, 10);
-    return send(res, 200, { app: "zeno", exportedAt: Date.now(), boards: rows.map((r) => ({ ...r, scene: JSON.parse(r.scene) })) }, {
+    const boards = `[${rows.map(({ scene, ...r }) => rawJson(r, { scene })).join(",")}]`;
+    return sendJsonText(res, 200, rawJson({ app: "zeno", exportedAt: Date.now() }, { boards }), {
       "Content-Disposition": `attachment; filename="zeno-boards-${stamp}.json"`,
     });
   }
@@ -139,29 +150,25 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
 
   if (!id) {
     if (req.method === "GET") {
-      const rows = db
-        .prepare("SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY updated_at DESC")
-        .all();
+      const rows = stmt(db, "SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY updated_at DESC").all();
       return send(res, 200, rows);
     }
     if (req.method === "POST") {
       const body = await readJson(req);
       const now = Date.now();
       const board = { id: randomUUID(), title: cleanTitle(body.title), createdAt: now, updatedAt: now };
-      db.prepare("INSERT INTO boards (id, title, scene, created_at, updated_at) VALUES (?, ?, '{}', ?, ?)").run(
-        board.id, board.title, now, now,
-      );
+      stmt(db, "INSERT INTO boards (id, title, scene, created_at, updated_at) VALUES (?, ?, '{}', ?, ?)").run(board.id, board.title, now, now);
       return send(res, 201, board);
     }
     return send(res, 405, { error: "method not allowed" });
   }
 
   if (req.method === "GET") {
-    const row = db
-      .prepare("SELECT id, title, scene, updated_at AS updatedAt, share_token AS shareToken FROM boards WHERE id = ?")
-      .get(id) as { scene: string } | undefined;
+    const row = stmt(db, "SELECT id, title, scene, updated_at AS updatedAt, share_token AS shareToken FROM boards WHERE id = ?")
+      .get(id) as { id: string; title: string; scene: string; updatedAt: number; shareToken: string | null } | undefined;
     if (!row) return send(res, 404, { error: "not found" });
-    return send(res, 200, { ...row, scene: JSON.parse(row.scene) });
+    const { scene, ...rest } = row;
+    return sendJsonText(res, 200, rawJson(rest, { scene }));
   }
   if (req.method === "PUT") {
     const body = await readJson(req);
@@ -170,7 +177,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
     if (scene !== undefined && (scene === null || typeof scene !== "object" || Array.isArray(scene) || !Array.isArray(scene.elements))) {
       return send(res, 400, { error: "scene must be an object with an elements array" });
     }
-    const last = db.prepare("SELECT updated_at AS updatedAt FROM boards WHERE id = ?").get(id) as { updatedAt: number } | undefined;
+    const last = stmt(db, "SELECT updated_at AS updatedAt FROM boards WHERE id = ?").get(id) as { updatedAt: number } | undefined;
     if (!last) return send(res, 404, { error: "not found" });
     // A client that sends the updatedAt it last saw is refused if someone else saved since (another tab or device).
     if (typeof body.baseUpdatedAt === "number" && last.updatedAt !== body.baseUpdatedAt) {
@@ -178,18 +185,16 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
     }
     // Strictly increasing, so two saves in the same millisecond still differ.
     const now = Math.max(Date.now(), last.updatedAt + 1);
-    const result = db
-      .prepare("UPDATE boards SET title = COALESCE(?, title), scene = COALESCE(?, scene), updated_at = ? WHERE id = ?")
-      .run(
-        body.title === undefined ? null : cleanTitle(body.title),
-        body.scene === undefined ? null : JSON.stringify(body.scene),
-        now,
-        id,
-      );
+    const result = stmt(db, "UPDATE boards SET title = COALESCE(?, title), scene = COALESCE(?, scene), updated_at = ? WHERE id = ?").run(
+      body.title === undefined ? null : cleanTitle(body.title),
+      body.scene === undefined ? null : JSON.stringify(body.scene),
+      now,
+      id,
+    );
     return send(res, result.changes ? 200 : 404, result.changes ? { updatedAt: now, previous: last.updatedAt } : { error: "not found" });
   }
   if (req.method === "DELETE") {
-    db.prepare("DELETE FROM boards WHERE id = ?").run(id);
+    stmt(db, "DELETE FROM boards WHERE id = ?").run(id);
     return send(res, 204);
   }
   return send(res, 405, { error: "method not allowed" });
@@ -212,17 +217,23 @@ function readCached(file: string): Buffer {
   return hit.data;
 }
 
+const ASSET_DIRS = [join(STATIC_DIR, "assets") + sep, join(STATIC_DIR, "fonts") + sep];
+
 function serveStatic(req: IncomingMessage, res: ServerResponse, path: string) {
+  if (req.method !== "GET" && req.method !== "HEAD") return send(res, 405, { error: "method not allowed" });
   let file = normalize(join(STATIC_DIR, decodeURIComponent(path)));
   if (file !== STATIC_DIR && !file.startsWith(STATIC_DIR + sep)) return send(res, 403);
-  if (!isFile(file)) file = join(STATIC_DIR, "index.html"); // SPA fallback
+  if (!isFile(file)) {
+    // A chunk from before a rebuild is gone for good: a 404 tells the browser so (the page reloads), where the SPA
+    // fallback would hand it index.html as JavaScript.
+    if (ASSET_DIRS.some((dir) => file.startsWith(dir))) return send(res, 404, { error: "not found" });
+    file = join(STATIC_DIR, "index.html"); // SPA fallback
+  }
   // Send the .br / .gz copy written by scripts/compress.mjs when the browser accepts it.
   const accept = String(req.headers["accept-encoding"] ?? "");
   const encoding = [["br", ".br"], ["gzip", ".gz"]].find(([name, ext]) => accept.includes(name) && isFile(file + ext));
   try {
-    const cache = file.startsWith(join(STATIC_DIR, "assets") + sep) || file.startsWith(join(STATIC_DIR, "fonts") + sep)
-      ? "public, max-age=31536000, immutable"
-      : "no-cache";
+    const cache = ASSET_DIRS.some((dir) => file.startsWith(dir)) ? "public, max-age=31536000, immutable" : "no-cache";
     res
       .writeHead(200, {
         "Content-Type": MIME[extname(file)] ?? "application/octet-stream",
@@ -269,12 +280,21 @@ const server = createServer(async (req, res) => {
 }).listen(PORT, () => {
   console.log(`Zeno listening on http://localhost:${PORT} (data: ${DATA_DIR})`);
 });
+// A reverse proxy keeps connections to us open between requests; Node's default (5 s) is shorter than a proxy's idle
+// time, so now and then one would be closed just as the proxy reused it (a 502 for the client). Longer than Caddy's 60 s.
+server.keepAliveTimeout = 65_000;
+server.headersTimeout = 66_000;
 
-// Docker stops containers with SIGTERM: finish, close the database cleanly, exit.
+// Docker stops containers with SIGTERM: stop taking requests, finish the ones in hand, close the database cleanly, exit.
 for (const signal of ["SIGTERM", "SIGINT"] as const) {
   process.on(signal, () => {
-    server.close();
-    db.close();
-    process.exit(0);
+    const done = () => {
+      db.exec("PRAGMA optimize");
+      db.close();
+      process.exit(0);
+    };
+    server.close(done);
+    // In case a request hangs: Docker would kill the process after 10 s anyway.
+    setTimeout(done, 3000).unref();
   });
 }
