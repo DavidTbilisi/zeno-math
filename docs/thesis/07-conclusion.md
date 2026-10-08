@@ -23,11 +23,13 @@ depends on. This chapter gives those answers, says what remains open, and lists 
 3. **Is the study, as designed, able to detect the effect, and what design would be?**
    No. With 12 skills, 60 practice questions and 12-question tests, the planned study finds a significant difference no
    more often than chance in the elo and irt2pl worlds, at any class size up to 160 students. A focused design with 4
-   skills, 120 questions and 24-question tests does better, but still detects adaptive practice's advantage in at most
-   11 % of studies. Detecting the small effects the simulation predicts would take on the order of several hundred to
-   several thousand students per group, depending on the effect and on how strongly the pre-test predicts the
-   post-test. A real study should therefore be focused, run over several sessions, use a longer test, compare a 60 %
-   target with 75 % rather than assume it, and pool many classes.
+   skills, 120 questions and 24-question tests does better, but at the 75 % target it still detects adaptive
+   practice's advantage in at most 11 % of studies. At a 60 % target the same focused design detects adaptive
+   practice instead: if a question teaches most when the learner has an even chance (zpd learning), 180 to 1,100
+   students in total give 80 % power in the elo and irt2pl worlds; if every question teaches the same, no feasible
+   study could detect the difference. A real study should therefore be focused, run over several sessions, use a
+   longer test, aim at 60 % (compared with 75 % if there are students enough for a third arm), and pool several
+   classes to reach a few hundred students.
 
 4. **Is the system ready to run the study?**
    Yes. Randomisation in blocks of four, counterbalanced parallel forms, teacher-controlled phases, equal practice time,

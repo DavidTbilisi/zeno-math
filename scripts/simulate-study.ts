@@ -6,10 +6,12 @@
 //   npm run simulate -- --power           power of the planned analysis (ANCOVA on the class tests) by class size
 //   --skills algebra,average  --students 60  --questions 60  --runs 10  --test-length 12
 //   --sizes 20,40,80,160  (power: total students per study)   --worlds elo,bkt   --csv results.csv   --json
+//   --target 0.6  the chance of success adaptive practice aims at (75 % unless given)
 import { writeFileSync } from "node:fs";
 import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { ancova } from "../src/model/analysis.ts";
 import { inCurriculumOrder } from "../src/model/curriculum.ts";
+import { TARGET } from "../src/model/policy.ts";
 import { tUpper } from "../src/math/distributions.ts";
 import { isSimSkill, mean, runStudy, sd, SIM_SKILLS, summarise, WORLDS, type Arm, type SimParams, type StudyParams } from "../src/model/simulate.ts";
 
@@ -39,13 +41,17 @@ const power = args.includes("--power");
 const runs = positive("--runs", power ? "100" : "10");
 const csvFile = opt("--csv", "");
 const json = args.includes("--json");
+const targetArg = opt("--target", "");
+const target = targetArg ? Number(targetArg) : undefined;
+if (target !== undefined && !(target > 0 && target < 1)) fail("--target must be a chance between 0 and 1");
 
 type Assumption = Pick<SimParams, "world" | "learning" | "transfer" | "learnRate">;
 const assumptions = (transfers: number[], rates: number[]): Assumption[] =>
   worlds.flatMap((world) => (["flat", "zpd"] as const).flatMap((learning) => transfers.flatMap((transfer) => rates.map((learnRate) => ({ world, learning, transfer, learnRate })))));
-const ADAPTIVE_FIXED: [Arm, Arm] = [{ policy: "adaptive" }, { policy: "fixed" }];
+const ADAPTIVE: Arm = target === undefined ? { policy: "adaptive" } : { policy: "adaptive", target };
+const ADAPTIVE_FIXED: [Arm, Arm] = [ADAPTIVE, { policy: "fixed" }];
 const comparisons: [Arm, Arm][] = args.includes("--grid")
-  ? [ADAPTIVE_FIXED, [{ policy: "adaptive" }, { policy: "random" }], [{ policy: "adaptive", target: 0.6 }, { policy: "fixed" }], [{ policy: "adaptive", target: 0.85 }, { policy: "fixed" }]]
+  ? [ADAPTIVE_FIXED, [ADAPTIVE, { policy: "random" }], [{ policy: "adaptive", target: 0.6 }, { policy: "fixed" }], [{ policy: "adaptive", target: 0.85 }, { policy: "fixed" }]]
   : [ADAPTIVE_FIXED];
 const study = (a: Assumption, arms: [Arm, Arm], students: number, run: number, extra: Partial<StudyParams> = {}) =>
   runStudy({ ...a, arms, skills, students, questions, testLength, seed: (run + 1) * 101, ...extra });
@@ -74,16 +80,19 @@ if (power) {
       adaptiveWins: significant.filter((x) => x.estimate > 0).length / runs,
       fixedWins: significant.filter((x) => x.estimate < 0).length / runs,
       d: mean(results.map((x) => x.d)),
+      t: mean(results.map((x) => x.t)),
     };
   }));
   csv(rows);
-  if (json) console.log(JSON.stringify({ skills, questions, testLength, runs, rows }, null, 2));
+  if (json) console.log(JSON.stringify({ skills, questions, testLength, runs, target: target ?? TARGET, rows }, null, 2));
   else {
-    console.log(`Power of the planned ANCOVA (p < 0.05), ${runs} simulated studies per row: ${questions} questions each, ${testLength}-question tests, on ${skills.join(", ")}\n`);
-    console.log(`${"world".padEnd(7)}${"learning".padEnd(9)}${pad("transfer", 9)}${pad("rate", 6)}${pad("students", 10)}${pad("power", 8)}${pad("adaptive", 10)}${pad("fixed", 7)}${pad("d", 7)}`);
+    console.log(`Power of the planned ANCOVA (p < 0.05), ${runs} simulated studies per row: ${questions} questions each, ${testLength}-question tests, on ${skills.join(", ")}, adaptive aiming at ${Math.round((target ?? TARGET) * 100)} %\n`);
+    console.log(`${"world".padEnd(7)}${"learning".padEnd(9)}${pad("transfer", 9)}${pad("rate", 6)}${pad("students", 10)}${pad("power", 8)}${pad("adaptive", 10)}${pad("fixed", 7)}${pad("d", 7)}${pad("t", 7)}`);
     for (const r of rows)
-      console.log(`${r.world.padEnd(7)}${r.learning.padEnd(9)}${pad(r.transfer, 9)}${pad(r.learnRate, 6)}${pad(r.students, 10)}${pad(`${Math.round(r.power * 100)}%`, 8)}${pad(`${Math.round(r.adaptiveWins * 100)}%`, 10)}${pad(`${Math.round(r.fixedWins * 100)}%`, 7)}${pad(r.d.toFixed(2), 7)}`);
+      console.log(`${r.world.padEnd(7)}${r.learning.padEnd(9)}${pad(r.transfer, 9)}${pad(r.learnRate, 6)}${pad(r.students, 10)}${pad(`${Math.round(r.power * 100)}%`, 8)}${pad(`${Math.round(r.adaptiveWins * 100)}%`, 10)}${pad(`${Math.round(r.fixedWins * 100)}%`, 7)}${pad(r.d.toFixed(2), 7)}${pad(r.t.toFixed(2), 7)}`);
     console.log("\npower: share of studies with p < 0.05. adaptive / fixed: share significant in that condition's favour. d: mean adjusted effect in SDs of the post-test.");
+    console.log("t: mean t-statistic of the effect; it grows with the square root of the class size, and 80 % power needs about 2.8, so a");
+    console.log("class of students × (2.8 / t)² would have about 80 % power for the effect in that row's direction.");
   }
 } else {
   const students = positive("--students", "60");

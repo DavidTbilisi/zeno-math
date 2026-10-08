@@ -87,8 +87,9 @@ The thesis makes the following contributions. Each is listed with the section th
   of the three simulated worlds, and hurts in the third. Aiming at 60 % is never worse than the fixed sequence under
   any of the 36 assumption sets tested, and better in 30 of them (section 5.3).
 - **A power analysis and a design recommendation.** The study as first planned (12 skills, 60 questions, 12-question
-  tests) has power close to the 5 % false-positive rate in two of the three worlds. The thesis recommends a focused
-  design with fewer skills, longer practice and tests, and a 60 % target (section 5.4).
+  tests) has power close to the 5 % false-positive rate in two of the three worlds. A focused design with fewer
+  skills, longer practice and tests, and a 60 % target would have 80 % power with 180 to 1,100 students in total, if
+  questions near an even chance teach most, and the thesis recommends it (section 5.4).
 - **A study protocol rehearsed end to end.** A dry run with simulated students joins a class through the real HTTP API,
   runs the pre-test, a practice session and the post-test, downloads the exports and runs the pre-registered
   analysis; it checks the study's guarantees on every push to the repository (section 5.4).

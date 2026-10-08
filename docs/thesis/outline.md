@@ -154,9 +154,11 @@ of success) help students learn more than a fixed curriculum sequence?
   (`npm run dry-run`; it also runs in CI).
 - **Power** (`npm run simulate -- --power`; `docs/results/power*.csv`):
   - The planned design (12 skills, 60 questions, 12-question tests) has power near α in the elo and irt2pl worlds.
-  - A focused design detects mostly fixed's advantage.
-  - Conclusion: recommend a real study with fewer skills, longer practice and tests, and a 60 % target, and say how
-    large it would need to be.
+  - A focused design at 75 % detects mostly fixed's advantage.
+  - At 60 % it detects adaptive's: 180–1,100 students in total for 80 % power under zpd learning in the elo and
+    irt2pl worlds, and no feasible size under flat learning (`--target 0.6`, `docs/results/power-focused-60.csv`).
+  - Conclusion: recommend a real study with fewer skills, longer practice and tests, a 60 % target and a few hundred
+    students, and say that it also tests whether learning is concentrated near an even chance.
 
 ### 5.5 Usability
 
@@ -221,6 +223,7 @@ Each command is deterministic for a given commit (seeds are fixed). The run time
 | Simulation grid | `npm run simulate -- --grid --csv docs/results/simulation-grid.csv` | ~3 min |
 | Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~15 min |
 | Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~25 min |
+| Power, focused design at 60 % | `npm run simulate -- --power --target 0.6 --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320 --csv docs/results/power-focused-60.csv` | ~1 h |
 | Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
 | Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
 | Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |

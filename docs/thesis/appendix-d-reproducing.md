@@ -13,6 +13,7 @@ its test forms) is random, so its effect estimate varies between runs while its 
 | Simulation grid | `npm run simulate -- --grid --csv docs/results/simulation-grid.csv` | ~3 min |
 | Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~15 min |
 | Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~25 min |
+| Power, focused design at 60 % | `npm run simulate -- --power --target 0.6 --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320 --csv docs/results/power-focused-60.csv` | ~1 h |
 | Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
 | Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
 | Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
@@ -23,6 +24,10 @@ version) from the ASSISTments data site [@assistments2010data].
 
 The simulations use the 38 skills Zeno had when the results in `docs/results/` were made (`SIM_SKILLS` in
 `src/model/simulate.ts`). Skills added later do not change any simulated number.
+
+The power runs are the slow ones. Each row depends only on its world, assumption set and size, so a run can be split
+with `--worlds` and `--sizes` and the parts run in parallel; the rows are the same either way. Their `t` column, the
+mean t-statistic, gives the sizes for 80 % power in Table 5.10 as students × (2.8 / t)².
 
 **Record the commit.** Run `git rev-parse HEAD` and record the hash with every table in the thesis. A later commit may
 change a generator, the checker or the model, and with it the numbers.
