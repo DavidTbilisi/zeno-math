@@ -1,6 +1,7 @@
 // Function plots rendered to a standalone SVG string (embeddable in Excalidraw as an image).
 import { compile, type EvalFunction } from "mathjs";
 import type { RenderedSvg } from "./latex";
+import { niceStep } from "./scale";
 
 export type PlotFn = { expr: string; color: string };
 export type PlotSpec = {
@@ -35,12 +36,7 @@ export function compileExpr(expr: string): EvalFunction {
   return code;
 }
 
-export function niceStep(range: number, target = 10): number {
-  const raw = range / target;
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  const norm = raw / mag;
-  return (norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10) * mag;
-}
+export { niceStep };
 
 function fmt(v: number): string {
   const r = Math.round(v * 1e6) / 1e6;

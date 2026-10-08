@@ -5,7 +5,7 @@
 import { evaluate } from "mathjs";
 import { axes, C, compose, curve, dot, fill, lbl, makeFrame, r2, W, yRange, type Caption, type Frame } from "./chart";
 import type { RenderedSvg } from "./latex";
-import { niceStep } from "./plot";
+import { niceStep } from "./scale";
 import { texBox } from "./logic";
 
 export type CxTopic = "form" | "ops" | "powers" | "roots" | "quadratic" | "euler";

@@ -5,7 +5,7 @@
 // The distribution functions are computed here (incomplete gamma and beta functions), not looked up in tables.
 import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nt, r2, texLines, tn, W, type Caption, type Frame, type TexLine } from "./chart";
 import type { RenderedSvg } from "./latex";
-import { niceStep } from "./plot";
+import { niceStep } from "./scale";
 import { chiSf, chiUpper, invertSf, lnGamma, normCdf, normSf, tSf, tUpper, zUpper } from "./distributions";
 
 export type InfTopic = "ci" | "coverage" | "test" | "two" | "chi" | "power";

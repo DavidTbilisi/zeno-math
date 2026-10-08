@@ -5,7 +5,7 @@ import { useState, type KeyboardEvent } from "react";
 import { ApiError, study } from "../api";
 import type { Student } from "../learner";
 import type { PracticeWords } from "../math/practice";
-import { fill } from "../math/chart";
+import { fill } from "../math/text";
 
 export function StudentPanel({ student, pending, ui, onChange }: {
   student: Student | null;

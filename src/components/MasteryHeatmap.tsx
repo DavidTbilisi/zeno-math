@@ -4,7 +4,7 @@
 // light mode, lighter = more in dark mode); grey means no answers on the skill yet. Hovering a cell gives all three
 // levels; "show numbers" puts the percentages in the cells, so nothing depends on colour or hover alone.
 import type { Dashboard } from "../api";
-import { fill } from "../math/chart";
+import { fill } from "../math/text";
 import type { SkillId } from "../math/practiceSkills";
 import { useChartTip } from "./ChartTip";
 

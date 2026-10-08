@@ -2,10 +2,10 @@
 // follows. Only a form message ("lowest terms", "check your rounding") asks for another try, as in practice, so the
 // test measures the maths rather than the notation. Passing a question counts as an answer. Answers go through an
 // outbox, like practice, so a dropped connection loses nothing.
-import { useMemo, useRef, useState } from "react";
+import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
 import { newId, type ClassPlan, type Outbox, type Student, type TestAnswer } from "../learner";
-import { fill } from "../math/chart";
+import { fill } from "../math/text";
 import { latexToSvg } from "../math/latex";
 import { areaOf, check, exercise, preview, renderPractice, type PracticeWords } from "../math/practice";
 import { testItems, type TestPhase } from "../model/testForms";
@@ -45,15 +45,17 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item?.skill, item?.level, item?.seed, w]);
+  // The typed answer as maths, rendered by MathJax: that takes a moment, so it follows the typing rather than hold it up.
+  const shown = useDeferredValue(input);
   const typed = useMemo(() => {
-    const p = ex && preview(ex, input);
+    const p = ex && preview(ex, shown);
     if (!p) return null;
     try {
       return svgToDataUrl(latexToSvg(p).svg);
     } catch {
       return null;
     }
-  }, [ex, input]);
+  }, [ex, shown]);
 
   if (!item || !ex) return <div className="practice-verdict ok" role="status">✓ {w.ui.testDone}</div>;
 
