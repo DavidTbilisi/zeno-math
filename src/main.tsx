@@ -7,6 +7,7 @@ import "./styles.css";
 // Excalidraw + MathJax are heavy; load them only when a board is opened.
 const BoardPage = lazy(() => import("./pages/BoardPage").then((m) => ({ default: m.BoardPage })));
 const TeacherPage = lazy(() => import("./pages/TeacherPage").then((m) => ({ default: m.TeacherPage })));
+const SharedBoardPage = lazy(() => import("./pages/SharedBoardPage").then((m) => ({ default: m.SharedBoardPage })));
 
 function useHashRoute(): string {
   const [hash, setHash] = useState(location.hash);
@@ -23,6 +24,13 @@ function useHashRoute(): string {
 function App() {
   const hash = useHashRoute();
   const boardId = hash.match(/^#\/b\/([\w-]+)/)?.[1];
+  const shareToken = hash.match(/^#\/s\/([\w-]+)/)?.[1];
+  if (shareToken)
+    return (
+      <Suspense fallback={<div className="center-msg">…</div>}>
+        <SharedBoardPage key={shareToken} token={shareToken} />
+      </Suspense>
+    );
   if (hash.startsWith("#/teacher"))
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>

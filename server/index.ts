@@ -5,7 +5,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, resolve, sep } from "node:path";
-import { randomUUID, timingSafeEqual } from "node:crypto";
+import { randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { scheduleBackups } from "./backup.ts";
@@ -28,10 +28,14 @@ db.exec(`
     updated_at INTEGER NOT NULL
   )
 `);
+// A board shared read-only has a token: the link /#/s/<token> shows it without the board's id (which would edit it).
+if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some((c) => c.name === "share_token"))
+  db.exec("ALTER TABLE boards ADD COLUMN share_token TEXT");
+db.exec("CREATE UNIQUE INDEX IF NOT EXISTS boards_share_token ON boards(share_token)");
 initResearch(db);
 // The schema this code writes. A database from a newer Zeno is refused rather than half understood; an older one has
 // just been brought up to date by the CREATE / ADD COLUMN steps above.
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 const { user_version: found } = db.prepare("PRAGMA user_version").get() as { user_version: number };
 if (found > SCHEMA_VERSION) {
   console.error(`The database in ${DATA_DIR} is from a newer version of Zeno (schema ${found}; this one knows ${SCHEMA_VERSION}). Update Zeno.`);
@@ -90,8 +94,31 @@ function cleanTitle(value: unknown): string {
 }
 
 async function handleApi(req: IncomingMessage, res: ServerResponse, path: string, query: URLSearchParams) {
-  const [, , resource, id, sub] = path.split("/"); // "", "api", "boards", id?, sub?
+  const [, , resource, id, sub, ...deeper] = path.split("/"); // "", "api", "boards", id?, sub?
+  // No route goes deeper than /api/resource/id/sub.
+  if (deeper.length) return send(res, 404, { error: "not found" });
   if (RESEARCH_RESOURCES.has(resource)) return handleResearch(req, res, resource, id, sub, query, db);
+  // A board shared read-only, by its token: the scene and title, never the id.
+  if (resource === "shared" && id && sub === undefined && req.method === "GET") {
+    const row = db.prepare("SELECT title, scene, updated_at AS updatedAt FROM boards WHERE share_token = ?").get(id) as
+      { title: string; scene: string; updatedAt: number } | undefined;
+    return row ? send(res, 200, { ...row, scene: JSON.parse(row.scene) }) : send(res, 404, { error: "no such shared board" });
+  }
+  // Making a read-only link (or giving back the one there is), and taking it away.
+  if (resource === "boards" && id && sub === "share") {
+    const row = db.prepare("SELECT share_token AS token FROM boards WHERE id = ?").get(id) as { token: string | null } | undefined;
+    if (!row) return send(res, 404, { error: "no such board" });
+    if (req.method === "POST") {
+      const token = row.token ?? randomBytes(16).toString("base64url");
+      db.prepare("UPDATE boards SET share_token = ? WHERE id = ?").run(token, id);
+      return send(res, row.token ? 200 : 201, { token });
+    }
+    if (req.method === "DELETE") {
+      db.prepare("UPDATE boards SET share_token = NULL WHERE id = ?").run(id);
+      return send(res, 204);
+    }
+    return send(res, 405, { error: "method not allowed" });
+  }
   // Nothing below has a third level, and only boards take an id: /api/boards/x/anything is not a board.
   if (sub !== undefined || (id !== undefined && resource !== "boards")) return send(res, 404, { error: "not found" });
   if (resource === "health" && req.method === "GET") {
@@ -131,7 +158,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
 
   if (req.method === "GET") {
     const row = db
-      .prepare("SELECT id, title, scene, updated_at AS updatedAt FROM boards WHERE id = ?")
+      .prepare("SELECT id, title, scene, updated_at AS updatedAt, share_token AS shareToken FROM boards WHERE id = ?")
       .get(id) as { scene: string } | undefined;
     if (!row) return send(res, 404, { error: "not found" });
     return send(res, 200, { ...row, scene: JSON.parse(row.scene) });

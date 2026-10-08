@@ -16,6 +16,7 @@ import "@excalidraw/excalidraw/index.css";
 import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
 import { ToolMenu } from "../components/ToolMenu";
+import { ShareBox } from "../components/ShareBox";
 import { CommandPalette } from "../components/CommandPalette";
 import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
 import { isLiveLink, liveDataOf, liveElement } from "../live/element";
@@ -481,6 +482,7 @@ export function BoardPage({ id }: { id: string }) {
             ...(LIVE_IN_MENUS[m.label] ?? []).map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], onPick: () => addLive(it.kind) })),
           ]} />
         ))}
+        <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })} />
         <LangSelect />
       </header>
       {saveState === "conflict" && (

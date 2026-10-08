@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
 import { CalibrationChart } from "../components/CalibrationChart";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
+import { PrintableTests } from "../components/PrintableTests";
 import { LangSelect, useI18n } from "../i18n";
 import { fill } from "../math/chart";
 import type { Phase } from "../learner";
@@ -43,6 +44,7 @@ export function TeacherPage() {
   const [password, setPassword] = useState(remembered);
   const [typed, setTyped] = useState("");
   const [access, setAccess] = useState<Access>("checking");
+  const [printing, setPrinting] = useState(false);
   const [classes, setClasses] = useState<ClassSummary[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [data, setData] = useState<Dashboard | null>(null);
@@ -277,9 +279,11 @@ export function TeacherPage() {
                 <button className="btn" onClick={() => selected && void load(selected)}>{w.refresh}</button>
                 <button className="btn" onClick={() => void download("attempts")}>⤓ {w.download}</button>
                 <button className="btn" onClick={() => void download("tests")}>⤓ {w.downloadTests}</button>
+                <button className="btn" onClick={() => setPrinting(true)}>🖨 {w.printTests}</button>
               </div>
             </section>
           )}
+          {printing && current && <PrintableTests klass={current} w={w} pw={t.pracWords} onClose={() => setPrinting(false)} />}
 
           {current && (
             <section className="card">

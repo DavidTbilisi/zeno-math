@@ -52,8 +52,10 @@ test("every route in the API reference exists, and nothing else on its resources
   const klass = (await (await fetch(`${server.base}/api/classes`, { method: "POST", headers: { "Content-Type": "application/json", "X-Teacher-Password": "chalk" }, body: "{}" })).json()).code as string;
   const join = async () => (await (await fetch(`${server.base}/api/students`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ class: klass }) })).json()).code as string;
   const [student, leaver] = [await join(), await join()];
+  const token = (await (await fetch(`${server.base}/api/boards/${board}/share`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).json()).token as string;
   const fill = (path: string, method: string) =>
     path
+      .replace(":token", token)
       .replace(":id", method === "DELETE" ? doomed : board)
       .replace(":code/phase", `${klass}/phase`)
       .replace(":code", method === "DELETE" ? leaver : student) + (path.endsWith("/dashboard") ? `?class=${klass}` : "");
@@ -68,6 +70,7 @@ test("every route in the API reference exists, and nothing else on its resources
     ...documented.map((d) => d.path),
     "/api/boards/:id/extra", "/api/classes/:code", "/api/classes/:code/students", "/api/students/:code/attempts",
     "/api/attempts/:id", "/api/tests/:id", "/api/research", "/api/research/students.csv", "/api/health/:id", "/api/export/:id", "/api/nothing",
+    "/api/shared", "/api/shared/:token/scene", "/api/boards/:id/share/x", "/api/students/:code/plan/x", "/api/classes/:code/phase/x",
   ]);
   const listed = new Set(documented.map((d) => key(d.method, d.path)));
   for (const shape of shapes)

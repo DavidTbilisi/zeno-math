@@ -3,6 +3,7 @@
 // test measures the maths rather than the notation. Passing a question counts as an answer. Answers go through an
 // outbox, like practice, so a dropped connection loses nothing.
 import { useMemo, useRef, useState } from "react";
+import { SpokenMath } from "./SpokenMath";
 import { newId, type ClassPlan, type Outbox, type Student, type TestAnswer } from "../learner";
 import { fill } from "../math/chart";
 import { latexToSvg } from "../math/latex";
@@ -92,7 +93,10 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
         <span className="hint">{fill(w.ui.testProgress, { i: index + 1, n: items.length })}</span>
       </div>
       <small className="hint">{w.ui.testIntro}</small>
-      <div className="preview">{card && <img src={card} alt="" style={{ maxWidth: "100%" }} />}</div>
+      <div className="preview">
+        {card && <img src={card} alt="" style={{ maxWidth: "100%" }} />}
+        <SpokenMath text={ex.prompt} tex={ex.q} />
+      </div>
       <label className="field">
         <span>{w.ui.answerHere} <span className="hint">({w.formats[ex.format]})</span></span>
         <div className="field-row">
