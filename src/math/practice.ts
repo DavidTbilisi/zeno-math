@@ -1,6 +1,7 @@
 // Practice: questions made from a seed for each skill and level, answers checked (numbers, fractions, surds, sets of
 // roots, points, expressions up to equivalence — in the form the question asks for), and a worked solution from the
 // tool that covers the topic. A worksheet is a numbered set of questions with an optional answer key.
+import { REL_TEX, splitRel, type Rel } from "./algebra";
 import { antiderivative } from "./applied";
 import { C, esc, fill, FONT, r2, W, wrap } from "./chart";
 import { derive } from "./derive";
@@ -9,6 +10,7 @@ import { evalE, exprMessages, fromPoly, parseE, simp, sqrtSplit, tex, toPoly, ty
 import { Frac } from "./fraction";
 import { tUpper, zUpper } from "./inference";
 import { latexToSvg, type RenderedSvg } from "./latex";
+import type { MistakeId } from "./mistakes";
 import { AREAS, SKILLS, type Area, type SkillId } from "./practiceSkills";
 
 export { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "./practiceSkills";
@@ -18,14 +20,23 @@ export const LEVELS: Level[] = [1, 2, 3];
 /** The tools whose pictures serve as worked solutions. */
 export type SolutionKind = "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical";
 export type Format =
-  | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes";
+  | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
+  | "inequality" | "standard";
 
-type Answer =
-  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean }
+/** One end of the solution set of an inequality: closed when the number itself is included. */
+export type Bound = { v: number; closed: boolean };
+/** A predictable mistake and the answer it gives (with the numbers its message names). */
+type Trap = { id: MistakeId; a: Answer; vars?: Record<string, string | number> };
+type Answer = (
+  /** std: the answer is asked for in standard form, a × 10ⁿ. */
+  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean }
   | { k: "set"; vs: number[]; tol: number }
   | { k: "tuple"; vs: number[]; tol: number }
   | { k: "expr"; e: E; mode?: "factor" | "expand" | "plusC" | "line" }
-  | { k: "primes"; n: number };
+  | { k: "primes"; n: number }
+  /** x between lo and hi; a missing end is unbounded. */
+  | { k: "ineq"; lo: Bound | null; hi: Bound | null }
+) & { traps?: Trap[] };
 
 export type Exercise = {
   skill: SkillId;
@@ -131,10 +142,33 @@ export type PracticeWords = {
     ciZ: string;
     ciT: string;
     ciP: string;
+    intRise: string;
+    intFall: string;
+    intDiff: string;
+    roundTo10: string;
+    roundTo100: string;
+    roundTo1000: string;
+    roundDp1: string;
+    roundDp2: string;
+    roundSf1: string;
+    roundSf: string;
+    stdForm: string;
+    stdMul: string;
+    estimate: string;
+    boundLow: string;
+    boundHigh: string;
+    boundTotal: string;
+    precWhole: string;
+    precDp1: string;
+    precTen: string;
+    ineqSolve: string;
+    ineqWord: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
   formats: Record<Format, string>;
+  /** What each recognised mistake is, said kindly: the slip, and how to see it. */
+  mistakes: Record<MistakeId, string>;
   reasons: {
     empty: string;
     unreadable: string;
@@ -145,6 +179,9 @@ export type PracticeWords = {
     notPrime: string;
     count: string;
     rounding: string;
+    notNumber: string;
+    notIneq: string;
+    notStandard: string;
   };
   answer: string;
   answers: string;
@@ -296,6 +333,85 @@ export function plainE(e: E): string {
   }
 }
 
+// ---------- order of operations ----------
+
+/** How an expression is worked out: the right way, or as a known mistake would. */
+type OrderMode = "right" | "leftToRight" | "mulBeforePow" | "grouped";
+type OrderNode = { v: number } | { op: string; l: OrderNode; r: OrderNode; par: boolean };
+const PREC: Record<OrderMode, Record<string, number>> = {
+  right: { "+": 1, "-": 1, "*": 2, "/": 2, "^": 3 },
+  // + − × ÷ all alike, from left to right.
+  leftToRight: { "+": 1, "-": 1, "*": 1, "/": 1, "^": 3 },
+  // multiplying before the power: 3·2² as (3·2)² (only asked where a × stands in front of a power).
+  mulBeforePow: { "+": 1, "-": 1, "*": 3, "/": 2, "^": 2.5 },
+  // the right order, but a chain of the same kind grouped from the right (a − b − c as a − (b − c)): see rightAssoc.
+  grouped: { "+": 1, "-": 1, "*": 2, "/": 2, "^": 3 },
+};
+/** "a + b * (c - d) ^ 2" with numbers for the letters, as a tree. */
+function orderTree(src: string, mode: OrderMode): OrderNode {
+  const toks = src.match(/\d+|[-+*/^()]/g) ?? [];
+  let i = 0;
+  const prec = PREC[mode];
+  const rightAssoc = (op: string) => op === "^" || mode === "grouped";
+  const atom = (): OrderNode => {
+    const t = toks[i++];
+    if (t !== "(") return { v: Number(t) };
+    const inner = expr(0);
+    i++;
+    return "op" in inner ? { ...inner, par: true } : inner;
+  };
+  const expr = (min: number): OrderNode => {
+    let lhs = atom();
+    for (;;) {
+      const op = toks[i];
+      if (op === undefined || op === ")" || prec[op] < min) return lhs;
+      i++;
+      lhs = { op, l: lhs, r: expr(rightAssoc(op) ? prec[op] : prec[op] + 1), par: false };
+    }
+  };
+  return expr(0);
+}
+const orderApply = (a: number, op: string, b: number) => (op === "+" ? a + b : op === "-" ? a - b : op === "*" ? a * b : op === "/" ? a / b : a ** b);
+const orderValue = (n: OrderNode): number => ("v" in n ? n.v : orderApply(orderValue(n.l), n.op, orderValue(n.r)));
+/** One operation done, the leftmost of those that can be: the next line of working. */
+function orderStep(n: OrderNode): OrderNode {
+  if ("v" in n) return n;
+  if ("op" in n.l) return { ...n, l: orderStep(n.l) };
+  if ("op" in n.r) return { ...n, r: orderStep(n.r) };
+  return { v: orderApply(n.l.v, n.op, n.r.v) };
+}
+/** In LaTeX; a negative number inside the working keeps brackets, so 4 × (−3)² isn't read as 4 × −3². */
+function orderTex(n: OrderNode, whole = true): string {
+  if ("v" in n) return n.v < 0 && !whole ? `(${n.v})` : String(n.v);
+  const sym: Record<string, string> = { "+": "+", "-": "-", "*": "\\times", "/": "\\div" };
+  const inner = n.op === "^" ? `${orderTex(n.l, false)}^{${orderTex(n.r, false)}}` : `${orderTex(n.l, false)} ${sym[n.op]} ${orderTex(n.r, false)}`;
+  return n.par ? `(${inner})` : inner;
+}
+/** The shapes of question at each level: never a ÷ b(c + d), whose meaning people disagree on. */
+const ORDER_FORMS: Record<Level, string[]> = {
+  1: ["a + b * c", "a - b * c", "a * b - c", "a + b / c", "a - b - c", "a * b + c * d", "a / b * c", "a - b + c"],
+  2: ["(a + b) * c", "a * (b - c)", "a + b ^ 2", "c * a ^ 2", "a - (b - c)", "a ^ 2 - b * c", "(a + b) ^ 2 / c"],
+  3: ["a * (b + c * d)", "(a + b) ^ 2 - c * d", "a - 2 * (b - c) ^ 2", "(a - (b + c)) * d", "a + b * (c - d) ^ 2", "(a * b - c) / d"],
+};
+
+// ---------- rounding ----------
+// A number is kept as a whole mantissa m and its decimal places p (m / 10^p), so rounding is exact.
+
+/** m/10^p rounded to k decimal places (k < 0: to tens, hundreds…), halves up, as a mantissa at p places. */
+const roundM = (m: number, p: number, k: number) => Math.round(m / 10 ** (p - k)) * 10 ** (p - k);
+/** The same, digits just cut off. */
+const cutM = (m: number, p: number, k: number) => Math.floor(m / 10 ** (p - k)) * 10 ** (p - k);
+/** Rounded one place at a time from the last digit: the double-rounding mistake. */
+function stagesM(m: number, p: number, k: number): number {
+  let x = m;
+  for (let j = p - 1; j >= k; j--) x = roundM(x, p, j);
+  return x;
+}
+/** m/10^p with k decimal places shown (none when k ≤ 0). */
+const fmtM = (m: number, p: number, k = p) => (m / 10 ** p).toFixed(Math.max(0, Math.min(k, p)));
+/** A decimal without trailing zeros, safe from floating dust: 7.350000001 → "7.35". */
+const tidy = (v: number) => String(Number(v.toFixed(10)));
+
 // ---------- the generators ----------
 
 type Gen = (r: Rng, L: Level, w: PracticeWords) => Omit<Exercise, "skill" | "level" | "seed">;
@@ -324,6 +440,13 @@ const GENS: Record<SkillId, Gen> = {
     }
     if (op === "-" && a.f.toNumber() < b.f.toNumber()) [a, b] = [b, a];
     const res = op === "+" ? a.f.add(b.f) : op === "-" ? a.f.sub(b.f) : op === "×" ? a.f.mul(b.f) : a.f.div(b.f);
+    const traps: Trap[] = [];
+    if (op === "+" && !a.whole && !b.whole) {
+      // Tops added and bottoms added: always between the two, so smaller than the larger one.
+      const big = a.f.toNumber() > b.f.toNumber() ? a : b;
+      traps.push({ id: "addAcross", a: num(fr(a.n + b.n, a.d + b.d).toNumber()), vars: { r: `${a.n + b.n}/${a.d + b.d}`, big: `${big.n}/${big.d}` } });
+    }
+    if (op === "÷" && !b.f.div(a.f).sub(res).isZero()) traps.push({ id: "flipFirst", a: num(b.f.div(a.f).toNumber()) });
     const ftex = (p: typeof a) => `${p.whole ? p.whole : ""}\\frac{${p.n}}{${p.d}}`;
     const ftxt = (p: typeof a) => (p.whole ? `${p.whole} ${p.n}/${p.d}` : `${p.n}/${p.d}`);
     const opTex = { "+": "+", "-": "-", "×": "\\times", "÷": "\\div" }[op];
@@ -332,7 +455,7 @@ const GENS: Record<SkillId, Gen> = {
     return {
       prompt: w.prompts.fractions,
       q: `${ftex(a)} ${opTex} ${ftex(b)}`,
-      answer: num(res.toNumber(), 1e-9, { lowest: true }),
+      answer: { ...num(res.toNumber(), 1e-9, { lowest: true }), traps },
       show,
       plain: plainFrac(res),
       format: "fraction",
@@ -443,10 +566,12 @@ const GENS: Record<SkillId, Gen> = {
   expand(r, L, w) {
     let src: string;
     let cs: number[];
+    const traps: Trap[] = [];
     if (L === 1) {
       const [a, b] = [r.nz(-9, 9), r.nz(-9, 9)];
       src = `${bracket(1, a)}${bracket(1, b)}`;
       cs = pmul([a, 1], [b, 1]);
+      if (a + b !== 0) traps.push({ id: "noMiddle", a: { k: "expr", e: parseE(polyStr([a * b, 0, 1])) }, vars: { L: (1 + a) * (1 + b), R: 1 + a * b } });
     } else if (L === 2) {
       const [a, b, c, d] = [r.int(2, 5), r.nz(-7, 7), r.int(1, 5), r.nz(-7, 7)];
       src = `${bracket(a, b)}${bracket(c, d)}`;
@@ -457,6 +582,7 @@ const GENS: Record<SkillId, Gen> = {
         const [a, b] = [r.int(2, 5), r.nz(-7, 7)];
         src = `${bracket(a, b)}^2`;
         cs = pmul([b, a], [b, a]);
+        traps.push({ id: "squareTerms", a: { k: "expr", e: parseE(polyStr([b * b, 0, a * a])) }, vars: { L: (a + b) ** 2, R: a * a + b * b } });
       } else if (kind === 1) {
         const [a, b, c] = [r.nz(-5, 5), r.nz(-5, 5), r.nz(-6, 6)];
         src = `${bracket(1, a)}(${polyStr([c, b, 1])})`;
@@ -468,7 +594,7 @@ const GENS: Record<SkillId, Gen> = {
       }
     }
     const out = polyStr(cs);
-    return { prompt: w.prompts.expand, q: T(src), answer: { k: "expr", e: parseE(out), mode: "expand" }, show: T(out), plain: out, format: "expr", solution: { kind: "algebra", spec: { topic: "expand", eq: src, method: "factor" } } };
+    return { prompt: w.prompts.expand, q: T(src), answer: { k: "expr", e: parseE(out), mode: "expand", traps }, show: T(out), plain: out, format: "expr", solution: { kind: "algebra", spec: { topic: "expand", eq: src, method: "factor" } } };
   },
 
   factor(r, L, w) {
@@ -624,6 +750,7 @@ const GENS: Record<SkillId, Gen> = {
     let src: string;
     let v: Frac;
     let q: string;
+    const traps: Trap[] = [];
     if (L === 1) {
       const a = r.int(2, 5);
       const kind = r.int(0, 1);
@@ -638,6 +765,7 @@ const GENS: Record<SkillId, Gen> = {
         src = `${a}^(-${n})`;
         q = `${a}^{-${n}}`;
         v = fr(1, a ** n);
+        traps.push({ id: "negPower", a: num(-(a ** n)) });
       }
     } else {
       const [k, d] = r.pick([[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [2, 3], [3, 3], [4, 3], [2, 4], [3, 4], [2, 5]] as const);
@@ -648,15 +776,18 @@ const GENS: Record<SkillId, Gen> = {
         src = `${base}^(${n}/${d})`;
         q = `${base}^{\\frac{${n}}{${d}}}`;
         v = fr(k ** n);
+        if ((base * n) / d !== k ** n) traps.push({ id: "powTimes", a: num((base * n) / d) });
       } else {
         const [p, qq] = r.pick([[2, 3], [3, 2], [1, 2], [2, 5], [3, 4], [1, 3]] as const);
         const [P, Q] = [p ** d, qq ** d];
         src = `(${P}/${Q})^(-${n}/${d})`;
         q = `\\left(\\frac{${P}}{${Q}}\\right)^{-\\frac{${n}}{${d}}}`;
         v = fr(qq ** n, p ** n);
+        // Not turned over, or taken to make the answer negative.
+        traps.push({ id: "negPower", a: num((p / qq) ** n) }, { id: "negPower", a: num(-((qq / p) ** n)) });
       }
     }
-    return { prompt: w.prompts.evaluate, q, answer: num(v.toNumber()), show: v.tex(), plain: plainFrac(v), format: "exact", solution: { kind: "powers", spec: { topic: "laws", src } } };
+    return { prompt: w.prompts.evaluate, q, answer: { ...num(v.toNumber()), traps }, show: v.tex(), plain: plainFrac(v), format: "exact", solution: { kind: "powers", spec: { topic: "laws", src } } };
   },
 
   logs(r, L, w) {
@@ -1756,6 +1887,288 @@ const GENS: Record<SkillId, Gen> = {
       solution: { kind: "inference", spec: { ...base, kind: L === 1 ? "z" : "t", a: String(m), b: String(s), c: String(n) } },
     };
   },
+
+  integers(r, L, w) {
+    const par = (n: number) => (n < 0 ? `(${n})` : String(n));
+    const minus = (n: number) => (n < 0 ? `−${-n}` : String(n));
+    const out = (prompt: string, q: string, v: number, steps: string[], traps: Trap[] = []) => ({
+      prompt, q, answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number" as const, steps,
+    });
+    if (L === 1) {
+      const a = r.int(1, 20);
+      const kind = r.int(0, 2);
+      if (kind === 0) {
+        // From below zero: −a ± b.
+        const b = r.int(2, 20);
+        const plus = r.next() < 0.5;
+        const q = `${-a} ${plus ? "+" : "-"} ${b}`;
+        return out(w.prompts.times, q, plus ? b - a : -a - b, [`${q} = ${plus ? b - a : -a - b}`]);
+      }
+      if (kind === 1) {
+        // Past zero: a − b with b > a.
+        const b = a + r.int(1, 12);
+        return out(w.prompts.times, `${a} - ${b}`, a - b, [`${a} - ${b} = -(${b} - ${a}) = ${a - b}`]);
+      }
+      const b = r.int(1, 20);
+      return out(w.prompts.times, `${a} + (${-b})`, a - b, [`${a} + (${-b}) = ${a} - ${b} = ${a - b}`]);
+    }
+    if (L === 2) {
+      const kind = r.int(0, 2);
+      if (kind === 0) {
+        const [a, b] = [r.nz(-15, 15), r.int(2, 15)];
+        const q = `${a} - (${-b})`;
+        return out(w.prompts.times, q, a + b, [`${q} = ${a} + ${b} = ${a + b}`], [{ id: "subNeg", a: num(a - b), vars: { b } }]);
+      }
+      if (kind === 1) {
+        const [a, b] = [r.int(-12, 8), r.int(3, 15)];
+        const rise = r.next() < 0.5;
+        const v = rise ? a + b : a - b;
+        return out(fill(rise ? w.prompts.intRise : w.prompts.intFall, { a: minus(a), b }), "", v, [`${a} ${rise ? "+" : "-"} ${b} = ${v}`]);
+      }
+      const [a, b] = [-r.int(2, 15), r.int(1, 20)];
+      return out(fill(w.prompts.intDiff, { a: minus(a), b }), "", b - a, [`${b} - (${a}) = ${b} + ${-a} = ${b - a}`], [{ id: "subNeg", a: num(b + a), vars: { b: -a } }]);
+    }
+    const kind = r.int(0, 2);
+    let [a, b] = [r.int(2, 12) * r.sign(), r.int(2, 12) * r.sign()];
+    if (a > 0 && b > 0) a = -a;
+    if (kind === 0) return out(w.prompts.times, `${a} \\times ${par(b)}`, a * b, [`${a} \\times ${par(b)} = ${a * b}`]);
+    if (kind === 1) return out(w.prompts.times, `${a * b} \\div ${par(b)}`, a, [`${a * b} \\div ${par(b)} = ${a}`]);
+    [a, b] = [r.int(2, 9) * r.sign(), r.int(2, 9) * r.sign()];
+    const c = r.int(2, 15);
+    const q = `${a} \\times ${par(b)} - (${-c})`;
+    return out(w.prompts.times, q, a * b + c, [`${q} = ${a * b} + ${c} = ${a * b + c}`], [{ id: "subNeg", a: num(a * b - c), vars: { b: c } }]);
+  },
+
+  order(r, L, w) {
+    const form = r.pick(ORDER_FORMS[L]);
+    let src = "";
+    let tree: OrderNode = { v: 0 };
+    let lines: OrderNode[] = [];
+    for (let tries = 0; ; tries++) {
+      src = form.replace(/[a-d]/g, () => String(r.int(2, L === 1 ? 12 : 9)));
+      tree = orderTree(src, "right");
+      lines = [tree];
+      while ("op" in lines.at(-1)!) lines.push(orderStep(lines.at(-1)!));
+      // Every number in every line whole (so every ÷ comes out exact) and a modest answer.
+      const leaves = (n: OrderNode): number[] => ("v" in n ? [n.v] : [...leaves(n.l), ...leaves(n.r)]);
+      const whole = lines.every((n) => leaves(n).every(Number.isInteger));
+      if ((whole && Math.abs(orderValue(tree)) <= 999) || tries > 400) break;
+    }
+    const v = orderValue(tree);
+    const traps: Trap[] = [];
+    for (const mode of ["leftToRight", "mulBeforePow", "grouped"] as const) {
+      if (mode === "mulBeforePow" && !/\* (\w|\([^()]*\)) \^/.test(form)) continue;
+      const t = orderValue(orderTree(src, mode));
+      if (Number.isFinite(t) && Math.abs(t - v) > 1e-9 && !traps.some((x) => x.a.k === "num" && Math.abs(x.a.v - t) < 1e-9)) traps.push({ id: mode, a: num(t) });
+    }
+    return {
+      prompt: w.prompts.times,
+      q: orderTex(tree),
+      answer: { ...num(v), traps },
+      show: String(v),
+      plain: String(v),
+      format: "number",
+      steps: lines.map((n, i) => (i === 0 ? orderTex(n) : `= ${orderTex(n)}`)),
+    };
+  },
+
+  rounding(r, L, w) {
+    /** Rounding m/10^p to k places, with the traps the numbers allow; placeLost when the zeros hold places. */
+    const rounded = (m: number, p: number, k: number, prompt: string) => {
+      const want = roundM(m, p, k);
+      const traps: Trap[] = [];
+      const add = (id: MistakeId, x: number) => {
+        if (Math.abs(x - want / 10 ** p) > 1e-9 && !traps.some((t) => t.a.k === "num" && Math.abs(t.a.v - x) < 1e-9)) traps.push({ id, a: num(x) });
+      };
+      add("truncated", cutM(m, p, k) / 10 ** p);
+      add("doubleRound", stagesM(m, p, k) / 10 ** p);
+      if (k < 0) add("placeLost", want / 10 ** (p - k));
+      const shown = fmtM(want, p, k);
+      return { prompt, q: "", answer: { ...num(want / 10 ** p), traps }, show: shown, plain: shown, format: "number" as const, steps: [`${fmtM(m, p)} \\approx ${shown}`] };
+    };
+    /** A mantissa whose dropped digits aren't exactly a half (where people disagree on which way to go). */
+    const noTie = (lo: number, hi: number, p: number, k: number) => {
+      for (;;) {
+        const m = r.int(lo, hi);
+        if (m % 10 ** (p - k) !== 10 ** (p - k) / 2 && m % 10) return m;
+      }
+    };
+    if (L === 1) {
+      if (r.next() < 0.5) {
+        const k = r.pick([-1, -2, -3]);
+        const m = noTie(1000, 99999, 0, k);
+        return rounded(m, 0, k, fill(k === -1 ? w.prompts.roundTo10 : k === -2 ? w.prompts.roundTo100 : w.prompts.roundTo1000, { n: m }));
+      }
+      const k = r.pick([1, 2]);
+      const m = noTie(1001, 99999, 3, k);
+      return rounded(m, 3, k, fill(k === 1 ? w.prompts.roundDp1 : w.prompts.roundDp2, { n: fmtM(m, 3) }));
+    }
+    if (L === 2) {
+      const kind = r.int(0, 3);
+      if (kind === 0) {
+        const s = r.int(1, 3);
+        const prompt = (n: string) => (s === 1 ? fill(w.prompts.roundSf1, { n }) : fill(w.prompts.roundSf, { n, s }));
+        if (r.next() < 0.5) {
+          const digits = r.int(4, 6);
+          const m = noTie(10 ** (digits - 1) + 1, 10 ** digits - 1, 0, s - digits);
+          return rounded(m, 0, s - digits, prompt(String(m)));
+        }
+        // 0.0xxxx: the first significant figure is in the second decimal place.
+        const m = noTie(1001, 9999, 5, 1 + s);
+        return rounded(m, 5, 1 + s, prompt(fmtM(m, 5)));
+      }
+      if (kind === 1) {
+        const mant = r.int(101, 999);
+        const e = r.next() < 0.5 ? r.int(4, 8) : -r.int(2, 6);
+        const n = (mant / 100) * 10 ** e;
+        const text = e > 0 ? String(mant * 10 ** (e - 2)) : (mant / 100 / 10 ** -e).toFixed(2 - e);
+        const m = tidy(mant / 100);
+        return {
+          prompt: fill(w.prompts.stdForm, { n: text }),
+          q: "",
+          answer: { ...num(n), std: true },
+          show: `${m} \\times 10^{${e}}`,
+          plain: `${m}*10^${e}`,
+          format: "standard",
+          steps: [`${text} = ${m} \\times 10^{${e}}`],
+        };
+      }
+      if (kind === 2) {
+        const [A, B, m1, m2] = [r.int(11, 99), r.int(11, 99), r.int(-6, 9), r.int(-6, 9)];
+        let mant = (A * B) / 100;
+        let e = m1 + m2;
+        if (mant >= 10) [mant, e] = [mant / 10, e + 1];
+        const m = tidy(mant);
+        return {
+          prompt: w.prompts.stdMul,
+          q: `(${tidy(A / 10)} \\times 10^{${m1}}) \\times (${tidy(B / 10)} \\times 10^{${m2}})`,
+          answer: { ...num(Number(m) * 10 ** e), std: true },
+          show: `${m} \\times 10^{${e}}`,
+          plain: `${m}*10^${e}`,
+          format: "standard",
+          steps: [`${tidy(A / 10)} \\times ${tidy(B / 10)} = ${tidy((A * B) / 100)}`, `10^{${m1}} \\times 10^{${m2}} = 10^{${m1 + m2}}`, `= ${m} \\times 10^{${e}}`],
+        };
+      }
+      // Estimating: each number to 1 significant figure, then multiply.
+      const [x, y] = [r.int(110, 989) / 100, r.int(110, 989) * 10 ** r.int(-1, 1)];
+      const sf1 = (v: number) => {
+        const e = Math.floor(Math.log10(v));
+        return [Math.round(v / 10 ** e) * 10 ** e, Math.floor(v / 10 ** e) * 10 ** e];
+      };
+      const [[x1, xc], [y1, yc]] = [sf1(x), sf1(y)];
+      const v = Number((x1 * y1).toPrecision(12));
+      const traps: Trap[] = [];
+      const cut = Number((xc * yc).toPrecision(12));
+      if (cut !== v) traps.push({ id: "truncated", a: num(cut) });
+      return {
+        prompt: w.prompts.estimate,
+        q: `${tidy(x)} \\times ${tidy(y)}`,
+        answer: { ...num(v), traps },
+        show: tidy(v),
+        plain: tidy(v),
+        format: "number",
+        steps: [`${tidy(x)} \\times ${tidy(y)} \\approx ${tidy(x1)} \\times ${tidy(y1)} = ${tidy(v)}`],
+      };
+    }
+    if (r.next() < 0.7) {
+      const prec = r.pick(["whole", "dp1", "ten"] as const);
+      const unit = prec === "whole" ? 1 : prec === "dp1" ? 0.1 : 10;
+      const x = prec === "whole" ? r.int(3, 200) : prec === "dp1" ? r.int(11, 999) / 10 : 10 * r.int(2, 60);
+      const low = r.next() < 0.5;
+      const v = Number((x + (low ? -unit / 2 : unit / 2)).toFixed(2));
+      const p = prec === "whole" ? w.prompts.precWhole : prec === "dp1" ? w.prompts.precDp1 : w.prompts.precTen;
+      const far = Number((x + (low ? -unit : unit)).toFixed(2));
+      return {
+        prompt: fill(low ? w.prompts.boundLow : w.prompts.boundHigh, { x: tidy(x), p }),
+        q: "",
+        answer: { ...num(v), traps: [{ id: "fullUnit", a: num(far), vars: { p } }] },
+        show: tidy(v),
+        plain: tidy(v),
+        format: "number",
+        steps: [`${tidy(x)} ${low ? "-" : "+"} \\frac{${tidy(unit)}}{2} = ${tidy(v)}`],
+      };
+    }
+    const [n, x] = [r.int(3, 12), r.int(5, 40)];
+    const v = n * (x + 0.5);
+    return {
+      prompt: fill(w.prompts.boundTotal, { n, x }),
+      q: "",
+      answer: { ...num(v), traps: [{ id: "fullUnit", a: num(n * (x + 1)), vars: { p: w.prompts.precWhole } }] },
+      show: tidy(v),
+      plain: tidy(v),
+      format: "number",
+      steps: [`${x} + 0.5 = ${x + 0.5}`, `${n} \\times ${x + 0.5} = ${tidy(v)}`],
+    };
+  },
+
+  inequalities(r, L, w) {
+    const RELS = ["<", "<=", ">", ">="] as const;
+    /** x rel v as ends of the set. */
+    const ends = (rel: string, v: number): [Bound | null, Bound | null] => (rel[0] === ">" ? [{ v, closed: rel === ">=" }, null] : [null, { v, closed: rel === "<=" }]);
+    const result = (eq: string, q: string, lo: Bound | null, hi: Bound | null, flipped: boolean) => {
+      const toggle = (b: Bound | null) => b && { ...b, closed: !b.closed };
+      const traps: Trap[] = [{ id: "boundary", a: { k: "ineq", lo: toggle(lo), hi: toggle(hi) } }];
+      // Not flipped: the ends swap sides (x > 4 for x < 4), each keeping its own sign.
+      if (flipped) traps.unshift({ id: "noFlip", a: { k: "ineq", lo: hi, hi: lo } });
+      return { prompt: w.prompts.ineqSolve, q, answer: { k: "ineq" as const, lo, hi, traps }, show: ineqTex(lo, hi), plain: ineqPlain(lo, hi), format: "inequality" as const, solution: { kind: "algebra" as const, spec: { topic: "inequality", eq, method: "factor" } } };
+    };
+    const side = (s: string) => T(s);
+    if (L < 3) {
+      const rel = r.pick(RELS);
+      const x0 = r.nz(-9, 9);
+      let left: string;
+      let right: string;
+      let coef: number;
+      if (L === 1) {
+        const a = r.int(2, 9);
+        const b = r.nz(-15, 15);
+        if (r.next() < 0.5) {
+          [left, right, coef] = [polyStr([b, a]), String(a * x0 + b), a];
+        } else {
+          // ax + b rel cx + d, with c < a: no flip.
+          const c = r.int(1, a - 1);
+          [left, right, coef] = [polyStr([b, a]), polyStr([(a - c) * x0 + b, c]), a - c];
+        }
+      } else {
+        const a = r.int(2, 9);
+        const b = r.int(-12, 15);
+        if (r.next() < 0.5) {
+          // b − ax rel c
+          [left, right, coef] = [polyStr([b, -a]), String(b - a * x0), -a];
+        } else {
+          const c = a + r.int(1, 5);
+          [left, right, coef] = [polyStr([b, a]), polyStr([b + (a - c) * x0, c]), a - c];
+        }
+      }
+      const final = coef < 0 ? FLIP[rel] : rel;
+      const [lo, hi] = ends(final, x0);
+      return result(`${left} ${rel} ${right}`, `${side(left)} ${REL_TEX[rel]} ${side(right)}`, lo, hi, coef < 0);
+    }
+    if (r.next() < 0.6) {
+      const x1 = r.int(-8, 4);
+      const x2 = x1 + r.int(2, 8);
+      const a = r.int(2, 5) * (r.next() < 0.35 ? -1 : 1);
+      const b = r.int(-9, 9);
+      const [r1, r2] = [r.pick(["<", "<="] as const), r.pick(["<", "<="] as const)];
+      const [L1, L2] = a > 0 ? [a * x1 + b, a * x2 + b] : [a * x2 + b, a * x1 + b];
+      const lo = a > 0 ? { v: x1, closed: r1 === "<=" } : { v: x1, closed: r2 === "<=" };
+      const hi = a > 0 ? { v: x2, closed: r2 === "<=" } : { v: x2, closed: r1 === "<=" };
+      const mid = polyStr([b, a]);
+      return result(`${L1} ${r1} ${mid} ${r2} ${L2}`, `${L1} ${REL_TEX[r1]} ${side(mid)} ${REL_TEX[r2]} ${L2}`, lo, hi, a < 0);
+    }
+    const [m, p, b] = [50 * r.int(4, 20), r.int(60, 95), r.int(15, 45)];
+    const v = Math.floor((m - p) / b);
+    return {
+      prompt: fill(w.prompts.ineqWord, { m, p, b }),
+      q: "",
+      answer: num(v),
+      show: String(v),
+      plain: String(v),
+      format: "number",
+      solution: { kind: "algebra", spec: { topic: "inequality", eq: `${b}n + ${p} <= ${m}`, method: "factor" } },
+    };
+  },
+
 };
 
 /** A decimal that is really a simple fraction (gradients, values of derivatives) back to the fraction. */
@@ -1776,7 +2189,11 @@ export function exercise(skill: SkillId, level: Level, seed: number, w: Practice
 
 // ---------- checking an answer ----------
 
-export type Verdict = { ok: boolean; why?: string; close?: boolean };
+/**
+ * ok; or not, with why when the answer is sent back without counting (its form, unreadable), close when it is nearly
+ * right, and mistake + hint when it is the answer a known mistake gives (still wrong: it counts as a miss).
+ */
+export type Verdict = { ok: boolean; why?: string; close?: boolean; mistake?: MistakeId; hint?: string };
 
 const SAMPLES = [-2.71, -1.33, -0.62, 0.37, 0.91, 1.73, 2.29, 3.11, 0.17, 1.19, 2.63, -0.23, 4.37, 5.71, 7.13, -4.61];
 
@@ -1866,18 +2283,129 @@ function expanded(e: E): boolean {
   return terms.every((t) => !(t.k === "mul" && t.fs.some(sumInside)) && !(t.k === "pow" && sumInside(t.b)));
 }
 
+/** "6.3e-4" and "6.3x10^4" as 6.3*10^(-4) and 6.3*10^4: read so only where standard form is asked for (e is Euler's number elsewhere). */
+const stdText = (s: string) => s.replace(/(\d)\s*[eE]\s*([+-]?\d+)/g, "$1*10^($2)").replace(/(\d)\s*[xX×·]\s*10/g, "$1*10");
+/** a × 10ⁿ with 1 ≤ |a| < 10. */
+const isStandard = (s: string) => /^-?[1-9](\.\d+)?\*10\^\(?[+-]?\d+\)?$/.test(s.replace(/\s+/g, "").replace(/[−–]/g, "-"));
+/** An answer that reads as an expression in a letter, where a number was asked for. */
+function hasLetter(s: string): boolean {
+  try {
+    return Number.isFinite(evalE(parseE(bare(s)), 1.37));
+  } catch {
+    return false;
+  }
+}
+
+const INF = /^\+?\s*(∞|inf(inity)?)$/i;
+const NEG_INF = /^[-−]\s*(∞|inf(inity)?)$/i;
+const FLIP: Record<Rel, Rel> = { "<": ">", "<=": ">=", ">": "<", ">=": "<=", "=": "=" };
+/** "x >= 4", "4 ≤ x", "-1 < x <= 3", "[4, ∞)", "(-2; 3]" as the ends of the set; null if it isn't an inequality. */
+export function readIneq(src: string): { lo: Bound | null; hi: Bound | null } | null {
+  try {
+    return ineqEnds(src.trim());
+  } catch {
+    return null;
+  }
+}
+function ineqEnds(t: string): { lo: Bound | null; hi: Bound | null } | null {
+  if (/^[[(].*[\])]$/.test(t) && !/[<>=≤≥]/.test(t)) {
+    const inner = t.slice(1, -1);
+    const ends = inner.split(inner.includes(";") ? ";" : ",").map((x) => x.trim());
+    if (ends.length !== 2) return null;
+    const lo = NEG_INF.test(ends[0]) ? null : { v: value(ends[0]), closed: t[0] === "[" };
+    const hi = INF.test(ends[1]) ? null : { v: value(ends[1]), closed: t.at(-1) === "]" };
+    if ((!lo && !hi) || [lo, hi].some((b) => b && !Number.isFinite(b.v))) return null;
+    return { lo, hi };
+  }
+  const { parts, rels } = splitRel(t);
+  const isVar = (p: string) => /^[a-z]$/i.test(p.trim());
+  if (rels.includes("=")) return null;
+  if (rels.length === 1) {
+    const [l, r] = parts;
+    const [side, rel] = isVar(l) ? [r, rels[0]] : isVar(r) ? [l, FLIP[rels[0]]] : [null, rels[0]];
+    const v = side === null ? NaN : value(side);
+    if (!Number.isFinite(v)) return null;
+    return rel[0] === ">" ? { lo: { v, closed: rel === ">=" }, hi: null } : { lo: null, hi: { v, closed: rel === "<=" } };
+  }
+  if (rels.length !== 2 || !isVar(parts[1])) return null;
+  const [a, b] = [value(parts[0]), value(parts[2])];
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  if (rels.every((r) => r[0] === "<")) return { lo: { v: a, closed: rels[0] === "<=" }, hi: { v: b, closed: rels[1] === "<=" } };
+  if (rels.every((r) => r[0] === ">")) return { lo: { v: b, closed: rels[1] === ">=" }, hi: { v: a, closed: rels[0] === ">=" } };
+  return null;
+}
+const boundTex = (b: Bound, below: boolean) => (below ? (b.closed ? "\\le" : "<") : b.closed ? "\\ge" : ">");
+/** x ≥ 4, −1 < x ≤ 3 in LaTeX. */
+export function ineqTex(lo: Bound | null, hi: Bound | null, v = "x"): string {
+  const n = (b: Bound) => toFrac(b.v).tex();
+  if (lo && hi) return `${n(lo)} ${boundTex(lo, true)} ${v} ${boundTex(hi, true)} ${n(hi)}`;
+  if (lo) return `${v} ${boundTex(lo, false)} ${n(lo)}`;
+  return `${v} ${boundTex(hi!, true)} ${n(hi!)}`;
+}
+/** The same, typed: x >= 4, -1 < x <= 3. */
+export function ineqPlain(lo: Bound | null, hi: Bound | null, v = "x"): string {
+  const n = (b: Bound) => plainFrac(toFrac(b.v));
+  const op = (b: Bound, below: boolean) => (below ? (b.closed ? "<=" : "<") : b.closed ? ">=" : ">");
+  if (lo && hi) return `${n(lo)} ${op(lo, true)} ${v} ${op(hi, true)} ${n(hi)}`;
+  if (lo) return `${v} ${op(lo, false)} ${n(lo)}`;
+  return `${v} ${op(hi!, true)} ${n(hi!)}`;
+}
+
+/** Negating an expression, for the sign trap. */
+const negE = (e: E): E => parseE(`-(${plainE(e)})`);
+/** The question's traps, then "right size, wrong sign" unless the answer is 0 or one of them is already that. */
+function trapsOf(a: Answer): Trap[] {
+  const own = a.traps ?? [];
+  const sign = ((): Answer | null => {
+    if (a.k === "num") return a.v === 0 || own.some((t) => t.a.k === "num" && near(t.a.v, -a.v, a.tol)) ? null : { k: "num", v: -a.v, tol: a.tol, std: a.std };
+    if (a.k === "set") {
+      const neg = a.vs.map((v) => -v).sort((x, y) => x - y);
+      const same = [...a.vs].sort((x, y) => x - y).every((v, i) => near(v, neg[i], a.tol));
+      return same ? null : { k: "set", vs: neg, tol: a.tol };
+    }
+    if (a.k === "expr") {
+      if (SAMPLES.every((x) => Math.abs(evalE(a.e, x)) < 1e-9 || !Number.isFinite(evalE(a.e, x)))) return null;
+      return { k: "expr", e: negE(a.e), mode: a.mode === "plusC" ? "plusC" : undefined };
+    }
+    return null;
+  })();
+  return sign ? [...own, { id: "sign", a: sign }] : own;
+}
+
+/** What a student would type to give each of a question's own traps (for the tests and the dry run). */
+export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
+  return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
+    // A fraction as a student would write it (9/17, not 0.5294…).
+    const f = a.k === "num" ? toFrac(a.v) : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : null;
+    return input === null ? [] : [{ id, input }];
+  });
+}
+
 export function check(ex: Exercise, input: string, w: PracticeWords): Verdict {
   exprMessages(w);
   const src = input.trim();
   if (!src) return { ok: false, why: w.reasons.empty };
-  const a = ex.answer;
+  const v = judge(ex.answer, src, w);
+  // A form message or a near miss says more than naming a mistake would.
+  if (v.ok || v.why || v.close) return v;
+  for (const t of trapsOf(ex.answer)) if (judge(t.a, src, w).ok) return { ok: false, mistake: t.id, hint: fill(w.mistakes[t.id], t.vars ?? {}) };
+  return v;
+}
+
+/** The answer against one expected answer: no traps. */
+function judge(a: Answer, input: string, w: PracticeWords): Verdict {
+  const src = a.k === "num" && a.std ? stdText(input) : input;
   try {
     switch (a.k) {
       case "num": {
         const v = value(src);
-        if (!Number.isFinite(v)) return { ok: false, why: fill(w.reasons.unreadable, { s: src }) };
-        if (!near(v, a.v, a.tol)) return a.tol >= 0.0005 && near(v, a.v, a.tol * 20) ? { ok: false, close: true, why: w.reasons.rounding } : { ok: false };
+        if (!Number.isFinite(v)) return { ok: false, why: fill(hasLetter(src) ? w.reasons.notNumber : w.reasons.unreadable, { s: input }) };
+        // Standard form spans powers of ten, so it is compared relatively: 9 × 10⁻¹⁰ isn't 7.31 × 10⁻¹².
+        if (a.std ? Math.abs(v - a.v) > 1e-9 * Math.abs(a.v) : !near(v, a.v, a.tol))
+          return a.tol >= 0.0005 && near(v, a.v, a.tol * 20) ? { ok: false, close: true, why: w.reasons.rounding } : { ok: false };
         const t = bare(src);
+        if (a.std && !isStandard(t)) return { ok: false, close: true, why: w.reasons.notStandard };
         if (a.lowest) {
           const m = t.match(/(\d+)\s*\/\s*(\d+)\s*$/);
           if (m && gcd(Number(m[1]), Number(m[2])) !== 1) return { ok: false, close: true, why: w.reasons.notLowest };
@@ -1944,9 +2472,15 @@ export function check(ex: Exercise, input: string, w: PracticeWords): Verdict {
         if (prod !== a.n) return { ok: false };
         return allPrime ? { ok: true } : { ok: false, close: true, why: fill(w.reasons.notPrime, { n: a.n }) };
       }
+      case "ineq": {
+        const got = readIneq(src);
+        if (!got) return { ok: false, why: w.reasons.notIneq };
+        const same = (x: Bound | null, y: Bound | null) => (!x && !y) || (!!x && !!y && near(x.v, y.v, 1e-9) && x.closed === y.closed);
+        return same(got.lo, a.lo) && same(got.hi, a.hi) ? { ok: true } : { ok: false };
+      }
     }
   } catch {
-    return { ok: false, why: fill(w.reasons.unreadable, { s: src }) };
+    return { ok: false, why: fill(w.reasons.unreadable, { s: input }) };
   }
 }
 const isPrime = (n: number) => {
@@ -1961,10 +2495,16 @@ export function preview(ex: Exercise, input: string): string | null {
   if (!s) return null;
   try {
     if (ex.answer.k === "set" || ex.answer.k === "tuple") return parts(s).map((p) => tex(parseE(bare(p)))).join(", \\; ");
+    if (ex.answer.k === "ineq") {
+      const got = readIneq(s);
+      // The variable: a letter on its own ("inf" is not one).
+      return got && ineqTex(got.lo, got.hi, s.match(/(?<![a-z])[a-z](?![a-z])/i)?.[0] ?? "x");
+    }
     let t = s.replace(/[′']/g, "");
     if (ex.answer.k === "expr" && t.includes("=")) t = t.slice(t.lastIndexOf("=") + 1);
     if (ex.answer.k === "expr" && ex.answer.mode === "plusC") return tex(parseE(t.replace(/\+\s*[cC]\s*$/, ""))) + " + C";
     if (ex.answer.k === "num") {
+      if (ex.answer.std) t = stdText(t);
       const mixed = bare(t).match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
       if (mixed) return `${mixed[1]}${mixed[2]}\\frac{${mixed[3]}}{${mixed[4]}}`;
       t = bare(t);

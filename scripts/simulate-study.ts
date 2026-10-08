@@ -7,11 +7,11 @@
 //   --skills algebra,average  --students 60  --questions 60  --runs 10  --test-length 12
 //   --sizes 20,40,80,160  (power: total students per study)   --worlds elo,bkt   --csv results.csv   --json
 import { writeFileSync } from "node:fs";
-import { ALL_SKILLS, AREAS, SKILLS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
+import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { ancova } from "../src/model/analysis.ts";
 import { inCurriculumOrder } from "../src/model/curriculum.ts";
 import { tUpper } from "../src/math/distributions.ts";
-import { mean, runStudy, sd, summarise, WORLDS, type Arm, type SimParams, type StudyParams } from "../src/model/simulate.ts";
+import { isSimSkill, mean, runStudy, sd, SIM_SKILLS, summarise, WORLDS, type Arm, type SimParams, type StudyParams } from "../src/model/simulate.ts";
 
 const args = process.argv.slice(2);
 const opt = (name: string, fallback: string) => {
@@ -23,8 +23,8 @@ const fail = (message: string) => {
   process.exit(2);
 };
 const skillArg = opt("--skills", "algebra").split(",");
-const skills = inCurriculumOrder(skillArg.flatMap((s): readonly string[] => (AREAS.includes(s as Area) ? SKILLS[s as Area] : [s]))) as SkillId[];
-const unknown = skillArg.filter((s) => !AREAS.includes(s as Area) && !ALL_SKILLS.includes(s as SkillId));
+const skills = inCurriculumOrder(skillArg.flatMap((s): readonly string[] => (AREAS.includes(s as Area) ? SIM_SKILLS[s as Area] : [s]))) as SkillId[];
+const unknown = skillArg.filter((s) => !AREAS.includes(s as Area) && !isSimSkill(s as SkillId));
 if (unknown.length || !skills.length) fail(`unknown skills: ${unknown.join(", ")}`);
 const worlds = opt("--worlds", WORLDS.join(",")).split(",") as SimParams["world"][];
 if (worlds.some((w) => !WORLDS.includes(w))) fail(`worlds are ${WORLDS.join(", ")}`);

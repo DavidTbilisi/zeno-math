@@ -6,6 +6,7 @@
 // teacher, counterbalanced test forms, one stored answer per test question, and the results on the dashboard.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
+import { ALL_SKILLS } from "../src/math/practiceSkills.ts";
 import { spawn, type ChildProcess } from "node:child_process";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
@@ -212,12 +213,12 @@ test("codes and summaries", () => {
 test("a class practises the skills it was given, in curriculum order", async () => {
   const made = await call("POST", "/api/classes", { name: "9C", skills: ["average", "algebra", "linear"] }, TEACHER);
   assert.equal(made.status, 201);
-  assert.deepEqual(made.body.skills.slice(0, 4), ["average", "linear", "expand", "factor"]);
-  assert.equal(made.body.skills.length, 13); // the 12 algebra skills and averages
+  assert.deepEqual(made.body.skills.slice(0, 4), ["average", "linear", "inequalities", "expand"]);
+  assert.equal(made.body.skills.length, 14); // the 13 algebra skills and averages
   assert.equal((await call("POST", "/api/classes", { skills: ["astrology"] }, TEACHER)).status, 400);
   assert.equal((await call("POST", "/api/classes", { skills: [] }, TEACHER)).status, 400);
   const all = (await call("POST", "/api/classes", { name: "everything" }, TEACHER)).body;
-  assert.equal(all.skills.length, 38);
+  assert.equal(all.skills.length, ALL_SKILLS.length);
   const listed = (await call("GET", "/api/classes", undefined, TEACHER)).body as { code: string; skills: string[] }[];
   assert.deepEqual(listed.find((c) => c.code === made.body.code)!.skills, made.body.skills);
 });
@@ -288,7 +289,9 @@ test("a database from before class practice gets the new columns", async () => {
   const base = `http://127.0.0.1:${port}`;
   const plan = await call("GET", "/api/students/AAAA-BBBB/plan", undefined, {}, base);
   assert.equal(plan.status, 200);
-  assert.equal(plan.body.skills.length, 38); // no skills stored: the whole curriculum
+  // No skills stored meant every skill there was: the 38 from before, not the ones added since.
+  assert.equal(plan.body.skills.length, 38);
+  assert.ok(!plan.body.skills.includes("inequalities"));
   assert.equal(plan.body.position, 0); // the old attempt counts as free practice
   assert.ok(plan.body.state.students.me);
   const csv = (await call("GET", "/api/research/attempts.csv", undefined, TEACHER, base)).body as string;

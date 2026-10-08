@@ -14,14 +14,14 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { en } from "../src/locales/en.ts";
-import { check, exercise, type Exercise } from "../src/math/practice.ts";
-import { SKILLS, type SkillId } from "../src/math/practiceSkills.ts";
+import { check, exercise, trapInputs, type Exercise } from "../src/math/practice.ts";
+import type { SkillId } from "../src/math/practiceSkills.ts";
 import { applyAttempt, finish, logAnswer, ME, startLog, toAttempt, toClassPlan, verdictOf, type ClassPlan, type Plan } from "../src/learner.ts";
 import { analyseStudy, scoresFromTests, type StudyAnalysis } from "../src/model/analysis.ts";
 import { inCurriculumOrder } from "../src/model/curriculum.ts";
 import { logLoss, parseCsv } from "../src/model/evaluate.ts";
 import { choose } from "../src/model/policy.ts";
-import { makeWorld, rng, type SimParams } from "../src/model/simulate.ts";
+import { makeWorld, rng, SIM_SKILLS, type SimParams } from "../src/model/simulate.ts";
 import { testItems, type TestPhase } from "../src/model/testForms.ts";
 
 const w = en.pracWords;
@@ -57,15 +57,18 @@ export async function startServer(dataDir: string, port: number, teacher: string
   };
 }
 
-/** A typed answer the checker judges plainly wrong (not "nearly", not sent back for its form), or null if none is found. */
+/**
+ * A typed answer the checker judges plainly wrong (not "nearly", not sent back for its form), or null if none is found:
+ * the answer a known mistake gives when the question has one (or the wrong sign), so the exports hold mistakes to find.
+ */
 function wrongInput(ex: Exercise): string | null {
-  for (const input of ["12345", "x", "-7", "12345; 12345", "12345; 12345; 12345", "(12345, 12345)", "x^7", "2"])
+  for (const input of [...trapInputs(ex).map((t) => t.input), `-(${ex.plain})`, "12345", "x", "-7", "12345; 12345", "12345; 12345; 12345", "(12345, 12345)", "x^7", "2"])
     if (input !== ex.plain && verdictOf(check(ex, input, w)) === "wrong") return input;
   return null;
 }
 
 export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
-  const skills = o.skills ?? inCurriculumOrder(SKILLS.algebra);
+  const skills = o.skills ?? inCurriculumOrder(SIM_SKILLS.algebra);
   const teacher = { "X-Teacher-Password": o.teacher };
   const call = async (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) => {
     const res = await fetch(o.base + path, { method, headers: { "Content-Type": "application/json", ...headers }, body: body === undefined ? undefined : JSON.stringify(body) });

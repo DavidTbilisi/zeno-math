@@ -1,5 +1,5 @@
 {
- "about": "Typed answers to practice questions (each at seed 7), marked as a teacher would: correct; close (a rounding slip); wrong; form (the right idea, sent back: not simplified, not factorised, not exact, a root missing, unreadable). Used by scripts/checker-agreement.ts and tests/checker.test.ts to measure how often the answer checker agrees.",
+ "about": "Typed answers to practice questions (each at seed 7), marked as a teacher would: correct; close (a rounding slip); wrong; form (the right idea, sent back: not simplified, not factorised, not exact, a root missing, unreadable). A wrong answer may also name the mistake a teacher would see in it (mistake). Used by scripts/checker-agreement.ts and tests/checker.test.ts to measure how often the answer checker agrees.",
  "answers": [
   {
    "skill": "times",
@@ -122,7 +122,8 @@
    "level": 1,
    "seed": 7,
    "input": "2/4",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "addAcross"
   },
   {
    "skill": "fractions",
@@ -174,7 +175,8 @@
    "seed": 7,
    "input": "6/11",
    "label": "wrong",
-   "note": "added tops and bottoms"
+   "note": "added tops and bottoms",
+   "mistake": "addAcross"
   },
   {
    "skill": "fractions",
@@ -267,7 +269,8 @@
    "seed": 7,
    "input": "5",
    "label": "wrong",
-   "note": "the question asks for a negative decrease"
+   "note": "the question asks for a negative decrease",
+   "mistake": "sign"
   },
   {
    "skill": "percent",
@@ -462,7 +465,8 @@
    "level": 1,
    "seed": 7,
    "input": "8",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "linear",
@@ -506,7 +510,8 @@
    "level": 3,
    "seed": 7,
    "input": "17/7",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "linear",
@@ -564,7 +569,8 @@
    "level": 1,
    "seed": 7,
    "input": "x^2 + 72",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "noMiddle"
   },
   {
    "skill": "expand",
@@ -586,7 +592,8 @@
    "seed": 7,
    "input": "4x^2 + 49",
    "label": "wrong",
-   "note": "the classic (a + b)² = a² + b²"
+   "note": "the classic (a + b)² = a² + b²",
+   "mistake": "squareTerms"
   },
   {
    "skill": "expand",
@@ -730,7 +737,8 @@
    "level": 1,
    "seed": 7,
    "input": "-5",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "polynomials",
@@ -819,7 +827,8 @@
    "level": 1,
    "seed": 7,
    "input": "9; 8",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "quadratic",
@@ -871,7 +880,8 @@
    "level": 3,
    "seed": 7,
    "input": "7.464; 0.536",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "simultaneous",
@@ -935,14 +945,16 @@
    "level": 3,
    "seed": 7,
    "input": "1/3",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "negPower"
   },
   {
    "skill": "indices",
    "level": 3,
    "seed": 7,
    "input": "-3",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "negPower"
   },
   {
    "skill": "indices",
@@ -963,7 +975,8 @@
    "level": 2,
    "seed": 7,
    "input": "4",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "logs",
@@ -1151,7 +1164,8 @@
    "level": 2,
    "seed": 7,
    "input": "7",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "line",
@@ -1505,7 +1519,8 @@
    "level": 2,
    "seed": 7,
    "input": "24/7",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "identities",
@@ -1696,7 +1711,8 @@
    "level": 2,
    "seed": 7,
    "input": "0; -2",
-   "label": "wrong"
+   "label": "wrong",
+   "mistake": "sign"
   },
   {
    "skill": "integrate",
@@ -2059,6 +2075,367 @@
    "input": "(72.3, 85.7)",
    "label": "wrong",
    "note": "as percentages"
+  },
+  {
+   "skill": "integers",
+   "level": 1,
+   "seed": 7,
+   "input": "-21",
+   "label": "correct"
+  },
+  {
+   "skill": "integers",
+   "level": 1,
+   "seed": 7,
+   "input": "−21",
+   "label": "correct",
+   "note": "a typographic minus"
+  },
+  {
+   "skill": "integers",
+   "level": 1,
+   "seed": 7,
+   "input": "21",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "integers",
+   "level": 1,
+   "seed": 7,
+   "input": "-19",
+   "label": "wrong"
+  },
+  {
+   "skill": "integers",
+   "level": 2,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "integers",
+   "level": 2,
+   "seed": 7,
+   "input": "-29",
+   "label": "wrong",
+   "mistake": "subNeg",
+   "note": "took away 15 instead of adding it"
+  },
+  {
+   "skill": "integers",
+   "level": 2,
+   "seed": 7,
+   "input": "-1",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "integers",
+   "level": 2,
+   "seed": 7,
+   "input": "29",
+   "label": "wrong"
+  },
+  {
+   "skill": "integers",
+   "level": 3,
+   "seed": 7,
+   "input": "-18",
+   "label": "correct"
+  },
+  {
+   "skill": "integers",
+   "level": 3,
+   "seed": 7,
+   "input": "x = -18",
+   "label": "correct"
+  },
+  {
+   "skill": "integers",
+   "level": 3,
+   "seed": 7,
+   "input": "18",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "order",
+   "level": 1,
+   "seed": 7,
+   "input": "110",
+   "label": "correct"
+  },
+  {
+   "skill": "order",
+   "level": 1,
+   "seed": 7,
+   "input": "126",
+   "label": "wrong",
+   "mistake": "leftToRight"
+  },
+  {
+   "skill": "order",
+   "level": 1,
+   "seed": 7,
+   "input": "108",
+   "label": "wrong"
+  },
+  {
+   "skill": "order",
+   "level": 2,
+   "seed": 7,
+   "input": "77",
+   "label": "correct"
+  },
+  {
+   "skill": "order",
+   "level": 2,
+   "seed": 7,
+   "input": "65",
+   "label": "wrong",
+   "note": "ignored the brackets"
+  },
+  {
+   "skill": "order",
+   "level": 3,
+   "seed": 7,
+   "input": "102",
+   "label": "correct"
+  },
+  {
+   "skill": "order",
+   "level": 3,
+   "seed": 7,
+   "input": "192",
+   "label": "wrong",
+   "mistake": "leftToRight"
+  },
+  {
+   "skill": "order",
+   "level": 3,
+   "seed": 7,
+   "input": "x",
+   "label": "form",
+   "note": "a letter, not a number"
+  },
+  {
+   "skill": "rounding",
+   "level": 1,
+   "seed": 7,
+   "input": "97710",
+   "label": "correct"
+  },
+  {
+   "skill": "rounding",
+   "level": 1,
+   "seed": 7,
+   "input": "9771",
+   "label": "wrong",
+   "mistake": "placeLost"
+  },
+  {
+   "skill": "rounding",
+   "level": 1,
+   "seed": 7,
+   "input": "97720",
+   "label": "wrong"
+  },
+  {
+   "skill": "rounding",
+   "level": 1,
+   "seed": 7,
+   "input": "97700",
+   "label": "wrong",
+   "note": "to the nearest 100"
+  },
+  {
+   "skill": "rounding",
+   "level": 2,
+   "seed": 7,
+   "input": "0.07",
+   "label": "correct"
+  },
+  {
+   "skill": "rounding",
+   "level": 2,
+   "seed": 7,
+   "input": ".07",
+   "label": "correct"
+  },
+  {
+   "skill": "rounding",
+   "level": 2,
+   "seed": 7,
+   "input": "0.073",
+   "label": "wrong",
+   "note": "2 significant figures"
+  },
+  {
+   "skill": "rounding",
+   "level": 2,
+   "seed": 7,
+   "input": "0.1",
+   "label": "wrong"
+  },
+  {
+   "skill": "rounding",
+   "level": 3,
+   "seed": 7,
+   "input": "196.5",
+   "label": "correct"
+  },
+  {
+   "skill": "rounding",
+   "level": 3,
+   "seed": 7,
+   "input": "196,5",
+   "label": "correct",
+   "note": "a decimal comma"
+  },
+  {
+   "skill": "rounding",
+   "level": 3,
+   "seed": 7,
+   "input": "197",
+   "label": "wrong",
+   "mistake": "fullUnit"
+  },
+  {
+   "skill": "rounding",
+   "level": 3,
+   "seed": 7,
+   "input": "195.5",
+   "label": "wrong",
+   "note": "the lower bound"
+  },
+  {
+   "skill": "inequalities",
+   "level": 1,
+   "seed": 7,
+   "input": "x < -8",
+   "label": "correct"
+  },
+  {
+   "skill": "inequalities",
+   "level": 1,
+   "seed": 7,
+   "input": "x<-8",
+   "label": "correct"
+  },
+  {
+   "skill": "inequalities",
+   "level": 1,
+   "seed": 7,
+   "input": "-8 > x",
+   "label": "correct"
+  },
+  {
+   "skill": "inequalities",
+   "level": 1,
+   "seed": 7,
+   "input": "x <= -8",
+   "label": "wrong",
+   "mistake": "boundary"
+  },
+  {
+   "skill": "inequalities",
+   "level": 1,
+   "seed": 7,
+   "input": "x > -8",
+   "label": "wrong"
+  },
+  {
+   "skill": "inequalities",
+   "level": 1,
+   "seed": 7,
+   "input": "-8",
+   "label": "form",
+   "note": "a number, not an inequality"
+  },
+  {
+   "skill": "inequalities",
+   "level": 2,
+   "seed": 7,
+   "input": "x > -8",
+   "label": "correct"
+  },
+  {
+   "skill": "inequalities",
+   "level": 2,
+   "seed": 7,
+   "input": "(-8, ∞)",
+   "label": "correct"
+  },
+  {
+   "skill": "inequalities",
+   "level": 2,
+   "seed": 7,
+   "input": "x < -8",
+   "label": "wrong",
+   "mistake": "noFlip",
+   "note": "divided by -3 without turning the sign"
+  },
+  {
+   "skill": "inequalities",
+   "level": 2,
+   "seed": 7,
+   "input": "x ≥ -8",
+   "label": "wrong",
+   "mistake": "boundary"
+  },
+  {
+   "skill": "inequalities",
+   "level": 3,
+   "seed": 7,
+   "input": "-8 < x < 0",
+   "label": "correct"
+  },
+  {
+   "skill": "inequalities",
+   "level": 3,
+   "seed": 7,
+   "input": "(-8; 0)",
+   "label": "correct"
+  },
+  {
+   "skill": "inequalities",
+   "level": 3,
+   "seed": 7,
+   "input": "-8 <= x <= 0",
+   "label": "wrong",
+   "mistake": "boundary"
+  },
+  {
+   "skill": "inequalities",
+   "level": 3,
+   "seed": 7,
+   "input": "-8 < x < 1",
+   "label": "wrong"
+  },
+  {
+   "skill": "quadratic",
+   "level": 2,
+   "seed": 7,
+   "input": "7/2; -6",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "differentiate",
+   "level": 2,
+   "seed": 7,
+   "input": "2sin(2x)",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "linear",
+   "level": 2,
+   "seed": 7,
+   "input": "-4",
+   "label": "wrong",
+   "mistake": "sign"
   }
  ]
 }

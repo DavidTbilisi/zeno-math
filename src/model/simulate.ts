@@ -15,11 +15,21 @@
 // when it is far too easy or too hard (the zone of proximal development, as a gain of 4p(1 − p)). Likewise transfer:
 // whether practising a skill also helps the skills built on it (0: not at all, as the learner model assumes). Report
 // results across these assumptions and worlds, never for one alone.
-import { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "../math/practiceSkills.ts";
+import { AREAS, FIRST_SKILLS, type Area, type SkillId } from "../math/practiceSkills.ts";
 import { EloModel, sigmoid, type Level, type Observation } from "./elo.ts";
 import { inCurriculumOrder, PREREQUISITES } from "./curriculum.ts";
 import { choose, TARGET, type Policy } from "./policy.ts";
 import { testItems } from "./testForms.ts";
+
+/**
+ * The skills simulated learners have: Zeno's skills as they were when the results in docs/results were made. The world
+ * draws its random numbers skill by skill, so simulating a skill added later would change every number in them; new
+ * skills are left out until the results are made again.
+ */
+export const SIM_SKILLS = FIRST_SKILLS;
+const ALL_SKILLS: SkillId[] = AREAS.flatMap((a) => [...SIM_SKILLS[a]]);
+const areaOf = (s: SkillId): Area => AREAS.find((a) => (SIM_SKILLS[a] as readonly SkillId[]).includes(s))!;
+export const isSimSkill = (s: SkillId) => ALL_SKILLS.includes(s);
 
 export type SimParams = {
   students: number;
@@ -94,7 +104,7 @@ export function makeWorld(params: Partial<SimParams> = {}): World {
   });
   const difficulty = (skill: SkillId, level: Level) => base.get(skill)! + (level - 2) * p.levelGap;
   const dependants = new Map<SkillId, SkillId[]>();
-  for (const [k, pres] of Object.entries(PREREQUISITES)) for (const pre of pres!) dependants.set(pre, [...(dependants.get(pre) ?? []), k as SkillId]);
+  for (const [k, pres] of Object.entries(PREREQUISITES)) for (const pre of pres!) if (isSimSkill(k as SkillId)) dependants.set(pre, [...(dependants.get(pre) ?? []), k as SkillId]);
 
   if (p.world === "bkt") {
     // Ability against the skill's middle difficulty is the chance of knowing it at the start.
@@ -147,7 +157,7 @@ export function simulateRandom(params: Partial<SimParams> = {}) {
   const observations: Observation[] = [];
   for (let q = 0; q < p.questions; q++)
     for (const l of world.learners) {
-      const skill = r.pick(SKILLS[r.pick(AREAS)] as readonly SkillId[]);
+      const skill = r.pick(SIM_SKILLS[r.pick(AREAS)] as readonly SkillId[]);
       const level = r.pick([1, 2, 3] as const);
       observations.push({ student: l.id, skill, level, correct: world.answer(l, skill, level) });
     }
@@ -194,7 +204,7 @@ export type StudyResult = {
  * Reviews of missed questions are left out: they are the same in both conditions.
  */
 export function runStudy(params: Partial<StudyParams> = {}): StudyResult {
-  const p: StudyParams = { ...DEFAULT_SIM, skills: inCurriculumOrder(SKILLS.algebra), arms: [{ policy: "adaptive" }, { policy: "fixed" }], testLength: 12, ...params };
+  const p: StudyParams = { ...DEFAULT_SIM, skills: inCurriculumOrder(SIM_SKILLS.algebra), arms: [{ policy: "adaptive" }, { policy: "fixed" }], testLength: 12, ...params };
   const world = makeWorld(p);
   const model = new EloModel();
   const r = rng(p.seed + 2);

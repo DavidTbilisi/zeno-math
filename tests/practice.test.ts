@@ -26,6 +26,8 @@ function wrong(ex: Exercise): string {
       return `${ex.plain.replace(/\+\s*C$/, "")} + x`;
     case "primes":
       return `${ex.plain} * 2`;
+    case "ineq":
+      return ex.plain.replace(/-?\d+$/, (v) => String(Number(v) + 1));
   }
 }
 

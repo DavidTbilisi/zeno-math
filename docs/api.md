@@ -78,7 +78,8 @@ like everyone else, and with it could open any board for editing. Without one, t
 
 - **`name`**: up to 100 characters; "Class" if empty.
 - **`skills`**: skill ids and/or area names. An area means all its skills. Anything unknown gives 400. The list is
-  kept in curriculum order; leaving it out means every skill.
+  kept in curriculum order; leaving it out means every skill there is when the class is made. The list is stored, so
+  skills added to Zeno later don't join a class that has started.
 - **`testLength`**: 4–30 questions; 12 if left out.
 
 The class code is 6 characters from an alphabet without look-alikes (no 0/O, 1/I/L).

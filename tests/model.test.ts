@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { EloModel, type Observation } from "../src/model/elo.ts";
 import { auc, calibration, evaluate, globalRate, itemRate, logLoss, observation, parseCsv, studentSkillRate } from "../src/model/evaluate.ts";
-import { makeWorld, runStudy, simulateRandom, summarise, WORLDS } from "../src/model/simulate.ts";
+import { isSimSkill, makeWorld, runStudy, simulateRandom, summarise, WORLDS } from "../src/model/simulate.ts";
 import { ALL_SKILLS, LEVELS } from "../src/math/practice.ts";
 
 const close = (a: number, b: number, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol, `${a} ≉ ${b}`);
@@ -69,13 +69,14 @@ test("on simulated learners the model beats counting, is calibrated and finds th
   for (const bin of elo.calibration.filter((b) => b.n >= 300))
     assert.ok(Math.abs(bin.predicted - bin.observed) < 0.05, `bin ${bin.from}: ${bin.predicted} predicted, ${bin.observed} observed`);
 
-  // The 114 difficulties (38 skills × 3 levels) in the right order.
-  const items = ALL_SKILLS.flatMap((k) => LEVELS.map((L) => [k, L] as const));
+  // The 114 difficulties (the 38 simulated skills × 3 levels) in the right order.
+  const skills = ALL_SKILLS.filter(isSimSkill);
+  const items = skills.flatMap((k) => LEVELS.map((L) => [k, L] as const));
   const rho = spearman(items.map(([k, L]) => world.difficulty(k, L)), items.map(([k, L]) => model.difficulty(k, L)));
   assert.ok(rho > 0.9, `difficulty rank correlation ${rho}`);
 
   // Students in the right order, by their ability averaged over every skill.
-  const mean = (f: (k: (typeof ALL_SKILLS)[number]) => number) => ALL_SKILLS.reduce((s, k) => s + f(k), 0) / ALL_SKILLS.length;
+  const mean = (f: (k: (typeof ALL_SKILLS)[number]) => number) => skills.reduce((s, k) => s + f(k), 0) / skills.length;
   const truth = world.learners.map((l) => mean((k) => l.ability.get(k)!));
   const found = world.learners.map((l) => mean((k) => model.ability(l.id, k)));
   const rhoStudents = spearman(truth, found);

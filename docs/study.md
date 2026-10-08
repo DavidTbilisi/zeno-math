@@ -75,7 +75,7 @@ set). There they can make classes and hand out the codes, and see for each class
 The same data is at `/api/research/dashboard?class=CODE`, and the CSV download is on the page.
 
 ```bash
-# make a class (send the header only if TEACHER_PASSWORD is set); skills: skill ids and/or areas, default all
+# make a class (send the header only if TEACHER_PASSWORD is set); skills: skill ids and/or areas, default every skill there is when the class is made (kept if skills are added later)
 curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
   -d '{"name":"7B","skills":["algebra","average"]}'
 # classes, with how many students are in each condition
@@ -101,6 +101,10 @@ npm run analyse -- zeno-tests.csv
   the adjusted means and d in post-test SDs.
 - *Secondary:* Welch's t-test on gains.
 - *Check:* form A against form B on the pre-test.
+- *Descriptive:* which mistakes each group made. `npm run mistakes -- zeno-tests.csv` (or the attempts export)
+  checks every wrong answer again against its question and counts the known mistakes it shows, per condition and
+  phase (see [Answer checker](#answer-checker)). It works on any export, including ones made before the checker
+  named mistakes, because skill, level and seed fix the question.
 
 Only students who finished both tests are analysed; the script says how many in each group did. Report the
 practice time per group from the dashboard alongside it.
@@ -187,7 +191,8 @@ Report this table: it is the evidence on real answers.
 
 `npm run simulate` runs the two conditions on simulated classes: 60 students, 60 questions each, on the 12 algebra
 skills, 10 classes per row. Change these with `--skills`, `--students`, `--questions`, `--runs` and
-`--test-length`. The result depends on what a simulation has to assume, so it is run across all of these:
+`--test-length`. Simulated learners have the 38 skills Zeno had when the results in `docs/results/` were made
+(`SIM_SKILLS`): the world draws its random numbers skill by skill, so a skill added later would change every number. The result depends on what a simulation has to assume, so it is run across all of these:
 
 - **The world**, meaning how answers come from what a learner knows (`src/model/simulate.ts`):
   - *elo*: σ(ability − difficulty), the learner model's own form.
@@ -306,8 +311,8 @@ A smaller dry run is part of `npm test`, so CI checks the whole pipeline on ever
 
 ## Answer checker
 
-A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 285 typed answers to questions from
-all 38 skills, each marked the way a teacher would:
+A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 333 typed answers to questions from
+all 42 skills, each marked the way a teacher would:
 
 - correct;
 - close (a rounding slip);
@@ -318,12 +323,12 @@ all 38 skills, each marked the way a teacher would:
 
 | teacher \ checker | correct | close | wrong | form |
 |---|---|---|---|---|
-| correct (138) | 135 | 0 | 1 | 2 |
+| correct (158) | 155 | 0 | 1 | 2 |
 | close (16) | 0 | 0 | 3 | 13 |
-| wrong (97) | 0 | 0 | 97 | 0 |
-| form (34) | 2 | 0 | 8 | 24 |
+| wrong (123) | 0 | 0 | 123 | 0 |
+| form (36) | 2 | 0 | 8 | 26 |
 
-The checker agrees 89.8 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+The checker agrees 91.3 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
 
 - `13*17` for "work out 13 × 17";
 - an integral without `+ C`.
@@ -336,6 +341,17 @@ Its other disagreements are mild:
   rather than a mark.
 - **A rounded decimal for an exact answer is marked wrong.** A teacher would ask for the exact value instead.
 - **A few forms it can't read come back as unreadable**, such as `76.24 to 82.16`.
+
+**Naming the mistake.** Many wrong answers are predictable: ½ + ⅓ answered as 2/5 (tops and bottoms added),
+(2x + 7)² as 4x² + 49, x > −8 where dividing by a negative should have turned the sign round. Each question lists the
+answers the known mistakes would give from its own numbers ([`src/math/mistakes.ts`](../src/math/mistakes.ts) has the
+17 of them), and "right size, wrong sign" is tried on every question. A wrong answer that matches one is still marked
+wrong and counts as a miss; in practice the student also reads what the slip was and a number to test it with. Tests
+give no feedback, so the names appear only in the exports' analysis.
+
+31 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 31,
+and names none in the 92 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
+found in students' answers, so this says what the checker can recognise, not how often students make each mistake.
 
 Building the corpus found two real faults, now fixed:
 

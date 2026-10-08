@@ -4,7 +4,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import { randomInt, timingSafeEqual } from "node:crypto";
-import { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "../src/math/practiceSkills.ts";
+import { ALL_SKILLS, AREAS, FIRST_SKILLS, SKILLS, areaOf, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM, inCurriculumOrder } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
@@ -54,7 +54,7 @@ export function initResearch(db: DatabaseSync) {
       -- the conditions still to hand out from the current randomisation block (JSON array)
       block TEXT NOT NULL DEFAULT '[]',
       created_at INTEGER NOT NULL
-      -- skills TEXT (added below): the skills the class practises, in curriculum order (JSON array; NULL = all)
+      -- skills TEXT (added below): the skills the class practises, in curriculum order (JSON array; stored when the class is made, so skills added later stay out)
     );
     CREATE TABLE IF NOT EXISTS students (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -92,6 +92,9 @@ export function initResearch(db: DatabaseSync) {
     if (!has) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
   };
   add("classes", "skills", "TEXT");
+  // A class made without a skill list used to store none, meaning every skill. Skills added since mustn't join a class
+  // that has started (its tests are spread over its skills), so those classes keep the list they had; new ones store it.
+  db.prepare("UPDATE classes SET skills = ? WHERE skills IS NULL").run(JSON.stringify(inCurriculumOrder(AREAS.flatMap((a) => [...FIRST_SKILLS[a]]))));
   add("attempts", "policy", "TEXT NOT NULL DEFAULT 'free'");
   // the learner model's chance of a right first answer when the question was shown
   add("attempts", "predicted", "REAL");
@@ -278,8 +281,9 @@ export async function handleResearch(
       const now = Date.now();
       let code = randomCode(CLASS_LEN);
       while (db.prepare("SELECT 1 FROM classes WHERE code = ?").get(code)) code = randomCode(CLASS_LEN);
-      db.prepare("INSERT INTO classes (code, name, skills, test_length, created_at) VALUES (?, ?, ?, ?, ?)").run(code, name, skills && JSON.stringify(skills), testLength, now);
-      return send(res, 201, { code, name, skills: skills ?? [...CURRICULUM], createdAt: now, phase: "open", sessionEnds: null, testLength });
+      const stored = skills ?? [...CURRICULUM];
+      db.prepare("INSERT INTO classes (code, name, skills, test_length, created_at) VALUES (?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), testLength, now);
+      return send(res, 201, { code, name, skills: stored, createdAt: now, phase: "open", sessionEnds: null, testLength });
     }
     return send(res, 405, { error: "method not allowed" });
   }

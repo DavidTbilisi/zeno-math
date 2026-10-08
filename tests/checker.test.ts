@@ -21,3 +21,12 @@ test("the checker agrees with the teacher's marking at least as often as it did"
   // Every wrong answer is marked wrong: nothing a teacher would mark wrong is credited or sent back.
   assert.equal(r.matrix.wrong.wrong, answers.filter((a) => a.label === "wrong").length);
 });
+
+test("the checker names the mistake a teacher sees, and rarely one the teacher doesn't", () => {
+  const { diagnosis: g } = agreement(answers);
+  assert.ok(g.labelled >= 30, `${g.labelled} answers with a mistake`);
+  const missed = g.differences.filter((d) => d.mistake).map((d) => `${d.skill} ${d.input}: ${d.mistake}, named ${d.named ?? "none"}`);
+  assert.equal(g.named, g.labelled, missed.join("; "));
+  const extra = g.differences.filter((d) => !d.mistake).map((d) => `${d.skill} ${d.input}: ${d.named}`);
+  assert.ok(g.falselyNamed / g.plain < 0.02, extra.join("; "));
+});
