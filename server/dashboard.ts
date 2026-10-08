@@ -7,6 +7,7 @@ import { CURRICULUM } from "../src/model/curriculum.ts";
 import type { Level } from "../src/model/elo.ts";
 import { auc, calibration, evidence, logLoss, type Prediction } from "../src/model/evaluate.ts";
 import { TARGET } from "../src/model/policy.ts";
+import { stmt } from "./db.ts";
 import { classProtocol, testScores } from "./protocol.ts";
 import { currentModel } from "./research.ts";
 
@@ -32,13 +33,13 @@ function median(xs: readonly number[]) {
 const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1);
 
 export function dashboard(db: DatabaseSync, classCode: string) {
-  const klass = db.prepare("SELECT code, name, skills, created_at AS createdAt FROM classes WHERE code = ?").get(classCode) as
+  const klass = stmt(db, "SELECT code, name, skills, created_at AS createdAt FROM classes WHERE code = ?").get(classCode) as
     { code: string; name: string; skills: string | null; createdAt: number } | undefined;
   if (!klass) return null;
   const skills: SkillId[] = klass.skills ? JSON.parse(klass.skills) : [...CURRICULUM];
-  const students = db.prepare("SELECT id, code, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
+  const students = stmt(db, "SELECT id, code, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
     { id: number; code: string; condition: string }[];
-  const attempts = db.prepare(`
+  const attempts = stmt(db, `
     SELECT a.student_id, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
       json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
     FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
@@ -55,7 +56,11 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   }
   const complete = (t?: { answered: number }) => !!t && t.answered >= protocol.testLength;
   const byStudent = new Map<number, AttemptRow[]>();
-  for (const a of attempts) byStudent.set(a.student_id, [...(byStudent.get(a.student_id) ?? []), a]);
+  for (const a of attempts) {
+    const mine = byStudent.get(a.student_id);
+    if (mine) mine.push(a);
+    else byStudent.set(a.student_id, [a]);
+  }
   const rows = students.map((s) => {
     const mine = byStudent.get(s.id) ?? [];
     const verdicts = mine.map(verdict).filter((v) => v !== null);

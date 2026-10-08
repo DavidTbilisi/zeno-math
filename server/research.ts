@@ -10,6 +10,7 @@ import { EloModel, type Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
 import { RECENT } from "../src/model/policy.ts";
 import { dashboard } from "./dashboard.ts";
+import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { mark } from "./marking.ts";
@@ -86,16 +87,18 @@ export function initResearch(db: DatabaseSync) {
       created_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS attempts_student ON attempts(student_id, id);
+    -- a class's students (the dashboard, the exports and counterbalancing all start from them)
+    CREATE INDEX IF NOT EXISTS students_class ON students(class_code, condition);
   `);
   // Columns added after the first version; databases made before get them here.
   const add = (table: string, column: string, type: string) => {
-    const has = (db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
+    const has = (stmt(db, `PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
     if (!has) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
   };
   add("classes", "skills", "TEXT");
   // A class made without a skill list used to store none, meaning every skill. Skills added since mustn't join a class
   // that has started (its tests are spread over its skills), so those classes keep the list they had; new ones store it.
-  db.prepare("UPDATE classes SET skills = ? WHERE skills IS NULL").run(JSON.stringify(inCurriculumOrder(AREAS.flatMap((a) => [...FIRST_SKILLS[a]]))));
+  stmt(db, "UPDATE classes SET skills = ? WHERE skills IS NULL").run(JSON.stringify(inCurriculumOrder(AREAS.flatMap((a) => [...FIRST_SKILLS[a]]))));
   add("attempts", "policy", "TEXT NOT NULL DEFAULT 'free'");
   // the learner model's chance of a right first answer when the question was shown
   add("attempts", "predicted", "REAL");
@@ -127,7 +130,7 @@ const models = new WeakMap<DatabaseSync, { model: EloModel; lastId: number }>();
 export function currentModel(db: DatabaseSync): EloModel {
   let cache = models.get(db);
   if (!cache) models.set(db, (cache = { model: new EloModel(), lastId: 0 }));
-  const rows = db.prepare(`
+  const rows = stmt(db, `
     SELECT id, student_id, skill, level, outcome, first_correct, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
   `).all(cache.lastId) as { id: number; student_id: number; skill: SkillId; level: Level; outcome: string; first_correct: number; counted: number }[];
   for (const r of rows) {
@@ -261,8 +264,14 @@ export async function handleResearch(
   req: IncomingMessage, res: ServerResponse, resource: string, id: string | undefined, sub: string | undefined, query: URLSearchParams, db: DatabaseSync,
 ) {
   const findStudent = (code: unknown) =>
-    db.prepare("SELECT id, code, class_code AS class, condition, test_order FROM students WHERE code = ?").get(normalizeCode(code)) as
+    stmt(db, "SELECT id, code, class_code AS class, condition, test_order FROM students WHERE code = ?").get(normalizeCode(code)) as
       { id: number; code: string; class: string; condition: Condition; test_order: string | null } | undefined;
+  // An export of one class or of all of them: two statements, so the one for a class goes by the students_class index
+  // (a "? IS NULL OR class_code = ?" condition would make SQLite scan every row either way).
+  const forClass = (klass: string | null, sql: string) =>
+    (klass
+      ? stmt(db, sql.replace("{where}", "WHERE s.class_code = ?")).all(normalizeCode(klass))
+      : stmt(db, sql.replace("{where}", "")).all()) as Record<string, unknown>[];
 
   if (resource === "classes" && id && sub === "phase" && req.method === "POST") {
     teacher(req);
@@ -272,7 +281,8 @@ export async function handleResearch(
   if (resource === "classes" && !id) {
     teacher(req);
     if (req.method === "GET") {
-      const rows = db.prepare(`
+      // Each count goes by the students_class index (and from there attempts_student), so no table is scanned.
+      const rows = stmt(db, `
         SELECT c.code, c.name, c.skills, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code) AS students,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.condition = 'adaptive') AS adaptive,
@@ -289,9 +299,9 @@ export async function handleResearch(
       const testLength = parseTestLength(body.testLength);
       const now = Date.now();
       let code = randomCode(CLASS_LEN);
-      while (db.prepare("SELECT 1 FROM classes WHERE code = ?").get(code)) code = randomCode(CLASS_LEN);
+      while (stmt(db, "SELECT 1 FROM classes WHERE code = ?").get(code)) code = randomCode(CLASS_LEN);
       const stored = skills ?? [...CURRICULUM];
-      db.prepare("INSERT INTO classes (code, name, skills, test_length, created_at) VALUES (?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), testLength, now);
+      stmt(db, "INSERT INTO classes (code, name, skills, test_length, created_at) VALUES (?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), testLength, now);
       logPhase(db, code, "open", null, now);
       return send(res, 201, { code, name, skills: stored, createdAt: now, phase: "open", sessionEnds: null, testLength });
     }
@@ -301,20 +311,24 @@ export async function handleResearch(
   if (resource === "students") {
     if (!id && req.method === "POST") {
       const body = await readJson(req, MAX_ATTEMPT_BODY);
-      const klass = db.prepare("SELECT code, block FROM classes WHERE code = ?").get(normalizeCode(body.class)) as
-        { code: string; block: string } | undefined;
-      if (!klass) return send(res, 404, { error: "no such class" });
-      // node:sqlite is synchronous, so nothing else runs between reading the block and writing it back.
-      let block = JSON.parse(klass.block) as Condition[];
-      if (!block.length) block = shuffled(BLOCK);
-      const condition = block.shift()!;
-      let code = randomCode(STUDENT_LEN);
-      while (findStudent(code)) code = randomCode(STUDENT_LEN);
-      code = normalizeCode(code);
-      db.prepare("UPDATE classes SET block = ? WHERE code = ?").run(JSON.stringify(block), klass.code);
-      db.prepare("INSERT INTO students (code, class_code, condition, test_order, created_at) VALUES (?, ?, ?, ?, ?)")
-        .run(code, klass.code, condition, nextTestOrder(db, klass.code, condition), Date.now());
-      return send(res, 201, { code, class: klass.code, condition });
+      const classCode = normalizeCode(body.class);
+      // One transaction: the condition leaves the block and the student is stored together, or neither is. (node:sqlite
+      // is synchronous, so nothing else runs in between anyway.)
+      const joined = transaction(db, () => {
+        const klass = stmt(db, "SELECT code, block FROM classes WHERE code = ?").get(classCode) as { code: string; block: string } | undefined;
+        if (!klass) return null;
+        let block = JSON.parse(klass.block) as Condition[];
+        if (!block.length) block = shuffled(BLOCK);
+        const condition = block.shift()!;
+        let code = randomCode(STUDENT_LEN);
+        while (findStudent(code)) code = randomCode(STUDENT_LEN);
+        code = normalizeCode(code);
+        stmt(db, "UPDATE classes SET block = ? WHERE code = ?").run(JSON.stringify(block), klass.code);
+        stmt(db, "INSERT INTO students (code, class_code, condition, test_order, created_at) VALUES (?, ?, ?, ?, ?)")
+          .run(code, klass.code, condition, nextTestOrder(db, klass.code, condition), Date.now());
+        return { code, class: klass.code, condition };
+      });
+      return joined ? send(res, 201, joined) : send(res, 404, { error: "no such class" });
     }
     if (!id) return send(res, 405, { error: "method not allowed" });
     const student = findStudent(decodeURIComponent(id));
@@ -322,9 +336,9 @@ export async function handleResearch(
     // What the student's browser needs to choose questions: their condition and skills, where they are in the fixed
     // sequence, their last skills, and the model (the class-wide difficulties and their own ratings, under "me").
     if (sub === "plan" && req.method === "GET") {
-      const { skills } = db.prepare("SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
-      const { position } = db.prepare("SELECT COUNT(*) AS position FROM attempts WHERE student_id = ? AND policy = 'fixed'").get(student.id) as { position: number };
-      const recent = (db.prepare("SELECT skill FROM attempts WHERE student_id = ? ORDER BY id DESC LIMIT ?").all(student.id, RECENT) as { skill: SkillId }[])
+      const { skills } = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
+      const { position } = stmt(db, "SELECT COUNT(*) AS position FROM attempts WHERE student_id = ? AND policy = 'fixed'").get(student.id) as { position: number };
+      const recent = (stmt(db, "SELECT skill FROM attempts WHERE student_id = ? ORDER BY id DESC LIMIT ?").all(student.id, RECENT) as { skill: SkillId }[])
         .map((r) => r.skill).reverse();
       const state = currentModel(db).state([`s${student.id}`]);
       const me = state.students[`s${student.id}`];
@@ -341,12 +355,12 @@ export async function handleResearch(
     }
     if (sub) return send(res, 404, { error: "not found" });
     if (req.method === "GET") {
-      const { n } = db.prepare("SELECT COUNT(*) AS n FROM attempts WHERE student_id = ?").get(student.id) as { n: number };
+      const { n } = stmt(db, "SELECT COUNT(*) AS n FROM attempts WHERE student_id = ?").get(student.id) as { n: number };
       return send(res, 200, { code: student.code, class: student.class, condition: student.condition, answered: n });
     }
     // Knowing the code is enough to wipe the record: it is all that ties the answers to the student.
     if (req.method === "DELETE") {
-      db.prepare("DELETE FROM students WHERE id = ?").run(student.id);
+      stmt(db, "DELETE FROM students WHERE id = ?").run(student.id);
       forgetModel(db);
       return send(res, 204);
     }
@@ -367,7 +381,7 @@ export async function handleResearch(
     const now = Date.now();
     // Class practice belongs in practice time; arriving long after it ended, it is kept and marked late.
     const late = classPractice && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
-    const result = db.prepare(`
+    const result = stmt(db, `
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
         retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -389,18 +403,17 @@ export async function handleResearch(
   // Every attempt as CSV, for R / pandas; ?class=CODE for one class.
   if (resource === "research" && id === "attempts.csv" && req.method === "GET") {
     teacher(req);
-    const klass = query.get("class");
-    const rows = db.prepare(`
+    const rows = forClass(query.get("class"), `
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
-        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.remarked, a.late, a.shown_at, a.created_at
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.remarked, a.late, a.shown_at, a.created_at,
+        json_array_length(a.answers) AS n_answers
       FROM attempts a JOIN students s ON s.id = a.student_id
-      WHERE ? IS NULL OR s.class_code = ?
+      {where}
       ORDER BY a.id
-    `).all(klass && normalizeCode(klass), klass && normalizeCode(klass)) as Record<string, unknown>[];
+    `);
     return sendCsv(res, "attempts", CSV_COLUMNS, rows.map((r) => ({
       ...r,
       area: areaOf(r.skill as SkillId),
-      n_answers: (JSON.parse(r.answers as string) as unknown[]).length,
       shown_at: new Date(r.shown_at as number).toISOString(),
       created_at: new Date(r.created_at as number).toISOString(),
     })));
@@ -410,15 +423,14 @@ export async function handleResearch(
   // JSON string, so a spreadsheet never reads an answer like "=1+2" as a formula.
   if (resource === "research" && id === "tests.csv" && req.method === "GET") {
     teacher(req);
-    const klass = query.get("class");
-    const rows = db.prepare(`
+    const rows = forClass(query.get("class"), `
       SELECT t.id AS response, 's' || s.id AS student, s.class_code AS class, s.condition, COALESCE(s.test_order, '') AS test_order,
         t.phase, t.form, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct,
         t.client_verdict, t.late, t.retries, t.ms, t.created_at
       FROM test_responses t JOIN students s ON s.id = t.student_id
-      WHERE ? IS NULL OR s.class_code = ?
+      {where}
       ORDER BY s.id, t.phase DESC, t.item
-    `).all(klass && normalizeCode(klass), klass && normalizeCode(klass)) as Record<string, unknown>[];
+    `);
     return sendCsv(res, "tests", TEST_CSV_COLUMNS, rows.map((r) => ({
       ...r,
       area: areaOf(r.skill as SkillId),

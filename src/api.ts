@@ -38,7 +38,14 @@ export const api = {
   /** The board's read-only link (made the first time), and taking it away. */
   share: (id: string) => req<{ token: string }>("POST", `/api/boards/${id}/share`, {}),
   unshare: (id: string) => req<void>("DELETE", `/api/boards/${id}/share`),
-  shared: (token: string) => req<SharedBoard>("GET", `/api/shared/${encodeURIComponent(token)}`),
+  /** A shared board; with the etag of the copy in hand, null while it is still the latest (the scene isn't sent again). */
+  shared: async (token: string, etag?: string): Promise<{ board: SharedBoard; etag: string } | null> => {
+    const url = `/api/shared/${encodeURIComponent(token)}`;
+    const res = await fetch(url, { headers: etag ? { "If-None-Match": etag } : {} });
+    if (res.status === 304) return null;
+    if (!res.ok) throw new ApiError(`GET ${url}: ${res.status}`, res.status);
+    return { board: await res.json(), etag: res.headers.get("ETag") ?? "" };
+  },
 };
 
 /** The practice study (server/research.ts): joining a class, signing back in, and uploading finished questions. */

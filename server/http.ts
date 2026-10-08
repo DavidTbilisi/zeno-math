@@ -22,6 +22,11 @@ export function send(res: ServerResponse, status: number, body?: unknown, header
   res.writeHead(status, { "Content-Type": "application/json", ...headers }).end(JSON.stringify(body));
 }
 
+/** Sends JSON that is already a string (see rawJson in db.ts). */
+export function sendJsonText(res: ServerResponse, status: number, text: string, headers: Record<string, string> = {}) {
+  res.writeHead(status, { "Content-Type": "application/json", ...headers }).end(text);
+}
+
 // Any JSON object: each route checks the fields it uses, so callers read them loosely.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function readJson(req: IncomingMessage, maxBody = MAX_BODY): Promise<any> {
