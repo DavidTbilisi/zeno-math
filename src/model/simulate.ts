@@ -28,7 +28,8 @@ import { testItems } from "./testForms.ts";
  */
 export const SIM_SKILLS = FIRST_SKILLS;
 const ALL_SKILLS: SkillId[] = AREAS.flatMap((a) => [...SIM_SKILLS[a]]);
-const areaOf = (s: SkillId): Area => AREAS.find((a) => (SIM_SKILLS[a] as readonly SkillId[]).includes(s))!;
+const AREA_OF = new Map<SkillId, Area>(AREAS.flatMap((a) => SIM_SKILLS[a].map((s) => [s, a] as const)));
+const areaOf = (s: SkillId): Area => AREA_OF.get(s)!;
 export const isSimSkill = (s: SkillId) => ALL_SKILLS.includes(s);
 
 export type SimParams = {
@@ -224,7 +225,8 @@ export function runStudy(params: Partial<StudyParams> = {}): StudyResult {
       chosen[s.arm].push(world.chance(s.l, c.skill, c.level));
       model.update({ student: s.l.id, skill: c.skill, level: c.level, correct: world.answer(s.l, c.skill, c.level) });
       s.position++;
-      s.recent = [...s.recent, c.skill].slice(-3);
+      s.recent.push(c.skill);
+      if (s.recent.length > 3) s.recent.shift();
     }
   const targetOf = (a: Arm) => (a.policy === "adaptive" ? a.target ?? TARGET : TARGET);
   return {

@@ -219,14 +219,14 @@ Each command is deterministic for a given commit (seeds are fixed). The run time
 | Test suite | `npm test` | ~3 min |
 | Model on simulated classes | `npm run model -- --simulate --fit` | ~7 s |
 | Model on ASSISTments | `npm run import-assistments -- skill_builder_data.csv` then `npm run model -- --observations assistments.json --fit --calibration bins.csv` | minutes |
-| Simulation, adaptive vs fixed | `npm run simulate` | ~30 s |
-| Simulation grid | `npm run simulate -- --grid --csv docs/results/simulation-grid.csv` | ~3 min |
-| Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~15 min |
-| Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~25 min |
-| Power, focused design at 60 % | `npm run simulate -- --power --target 0.6 --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320 --csv docs/results/power-focused-60.csv` | ~1 h |
+| Simulation, adaptive vs fixed | `npm run simulate` | ~10 s |
+| Simulation grid | `npm run simulate -- --grid --csv docs/results/simulation-grid.csv` | ~1 min |
+| Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~4 min |
+| Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~2 min |
+| Power, focused design at 60 % | `npm run simulate -- --power --target 0.6 --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320 --csv docs/results/power-focused-60.csv` | ~4 min |
 | Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
 | Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
 | Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
-| Figures | `npm run build`, then `npm run figures` | ~1 min |
+| Figures | `npm run build`, then `npm run figures` | ~30 s |
 
 Record the commit hash (`git rev-parse HEAD`) with every table in the thesis.

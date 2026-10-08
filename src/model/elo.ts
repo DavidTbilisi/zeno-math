@@ -54,9 +54,12 @@ export type ModelState = {
 export type Mastery = { skill: string; n: number; ability: number; p: Record<Level, number> };
 
 export const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
+/** How a level's rating is named in a saved state: "skill:level". */
 const itemKey = (skill: string, level: Level) => `${skill}:${level}`;
 const rating = (): Rating => ({ v: 0, n: 0 });
 const get = <K>(m: Map<K, Rating>, k: K) => m.get(k) ?? m.set(k, rating()).get(k)!;
+/** A skill's level ratings, indexed by level (1 to 3; [0] unused). */
+type LevelRatings = (Rating | undefined)[];
 
 export class EloModel {
   readonly name = "elo";
@@ -64,8 +67,8 @@ export class EloModel {
   private students = new Map<string, StudentState>();
   /** b: the difficulty of each skill, whatever the level. */
   private skills = new Map<string, Rating>();
-  /** r: what each level of a skill adds on top of b and the level step. */
-  private levels = new Map<string, Rating>();
+  /** r: what each level of a skill adds on top of b and the level step (by skill, then level, so no key is built per prediction). */
+  private levels = new Map<string, LevelRatings>();
   constructor(params: Partial<EloParams> = {}) {
     const d = DEFAULT_PARAMS;
     this.params = { ...d, ...params, weights: { ...d.weights, ...params.weights }, difficultyWeights: { ...d.difficultyWeights, ...params.difficultyWeights } };
@@ -87,11 +90,20 @@ export class EloModel {
     return s.global.v + (s.area.get(this.params.areaOf(skill))?.v ?? 0) + (s.skill.get(skill)?.v ?? 0);
   }
   difficulty(skill: string, level: Level): number {
-    return (this.skills.get(skill)?.v ?? 0) + (level - 2) * this.params.levelStep + (this.levels.get(itemKey(skill, level))?.v ?? 0);
+    return (this.skills.get(skill)?.v ?? 0) + (level - 2) * this.params.levelStep + (this.levels.get(skill)?.[level]?.v ?? 0);
+  }
+  private levelRating(skill: string, level: Level): Rating {
+    let at = this.levels.get(skill);
+    if (!at) this.levels.set(skill, (at = []));
+    return (at[level] ??= rating());
   }
   /** P(the student answers a question of this skill and level right first time). */
   predict(o: Pick<Observation, "student" | "skill" | "level">): number {
-    return sigmoid(this.ability(o.student, o.skill) - this.difficulty(o.skill, o.level));
+    return this.predictAt(o.student, o.skill, o.level);
+  }
+  /** The same, without an object to build: the adaptive policy asks many times per question. */
+  predictAt(student: string, skill: string, level: Level): number {
+    return sigmoid(this.ability(student, skill) - this.difficulty(skill, level));
   }
 
   update(o: Observation) {
@@ -105,7 +117,7 @@ export class EloModel {
       r.n++;
     }
     const dw = this.params.difficultyWeights;
-    for (const [r, weight] of [[get(this.skills, o.skill), dw.skill], [get(this.levels, itemKey(o.skill, o.level)), dw.level]] as const) {
+    for (const [r, weight] of [[get(this.skills, o.skill), dw.skill], [this.levelRating(o.skill, o.level), dw.level]] as const) {
       r.v -= weight * this.uncertainty(r.n) * surprise;
       r.n++;
     }
@@ -124,7 +136,7 @@ export class EloModel {
     const ids = students ?? [...this.students.keys()];
     return {
       skills: pairs(this.skills),
-      levels: pairs(this.levels),
+      levels: Object.fromEntries([...this.levels].flatMap(([skill, at]) => at.flatMap((r, level) => (r ? [[itemKey(skill, level as Level), pair(r)]] : [])))),
       students: Object.fromEntries(ids.flatMap((id) => {
         const s = this.students.get(id);
         return s ? [[id, { global: pair(s.global), area: pairs(s.area), skill: pairs(s.skill) }]] : [];
@@ -137,7 +149,12 @@ export class EloModel {
     const rating = ([v, n]: [number, number]): Rating => ({ v, n });
     const map = <K extends string>(o: Record<string, [number, number]>) => new Map(Object.entries(o).map(([k, r]) => [k as K, rating(r)]));
     m.skills = map(state.skills);
-    m.levels = map(state.levels);
+    for (const [key, r] of Object.entries(state.levels)) {
+      // The skill's name may hold a colon (a data set's own skills); the level is what follows the last one.
+      const cut = key.lastIndexOf(":");
+      const at = m.levelRating(key.slice(0, cut), Number(key.slice(cut + 1)) as Level);
+      [at.v, at.n] = r;
+    }
     for (const [id, s] of Object.entries(state.students))
       m.students.set(id, { global: rating(s.global), area: map(s.area), skill: map(s.skill) });
     return m;

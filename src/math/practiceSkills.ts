@@ -22,4 +22,6 @@ export const FIRST_SKILLS = {
   data: ["average", "probability", "counting", "ci"],
 } as const satisfies Record<Area, readonly SkillId[]>;
 export const ALL_SKILLS: SkillId[] = AREAS.flatMap((a) => [...SKILLS[a]]);
-export const areaOf = (s: SkillId): Area => AREAS.find((a) => (SKILLS[a] as readonly string[]).includes(s))!;
+const AREA_OF = new Map<string, Area>(AREAS.flatMap((a) => SKILLS[a].map((s) => [s, a] as const)));
+/** The area a skill belongs to (the learner model asks on every prediction, so this is a lookup, not a search). */
+export const areaOf = (s: SkillId): Area => AREA_OF.get(s)!;

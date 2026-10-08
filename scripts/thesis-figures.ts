@@ -17,7 +17,8 @@ import { parseCsv } from "../src/model/evaluate.ts";
 import { dryRun } from "./dry-run-study.ts";
 
 const OUT = "docs/thesis/figures";
-const MERMAID = "https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js";
+// The copy Excalidraw brings along, so the figures are made offline and from a version the lockfile pins.
+const MERMAID = "node_modules/mermaid/dist/mermaid.min.js";
 /** Pixels per CSS pixel: sharp enough for print at the width of a page. */
 const SCALE = 3;
 const TEACHER = "figures";
@@ -30,7 +31,7 @@ async function diagrams(page: Page) {
   const blocks = [...readFileSync("docs/architecture.md", "utf8").matchAll(/```mermaid\n([\s\S]*?)```/g)].map((m) => m[1]);
   if (blocks.length !== DIAGRAMS.length) throw new Error(`docs/architecture.md has ${blocks.length} diagrams, expected ${DIAGRAMS.length}`);
   await page.setContent(`<!doctype html><html><body style="margin:0;background:#fff"><div id="out" style="display:inline-block;padding:16px"></div></body></html>`);
-  await page.addScriptTag({ url: MERMAID });
+  await page.addScriptTag({ path: MERMAID });
   await page.evaluate(() => (window as unknown as { mermaid: { initialize(o: object): void } }).mermaid.initialize({
     startOnLoad: false,
     theme: "neutral",
