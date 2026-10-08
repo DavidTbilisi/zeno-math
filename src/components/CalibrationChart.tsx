@@ -4,7 +4,7 @@
 // as sure as a group of a hundred. One series, so no legend: the heading says what is plotted. Each dot has a
 // hover / focus readout, and the table view lists every group.
 import type { Dashboard } from "../api";
-import { fill } from "../math/chart";
+import { fill } from "../math/text";
 import { useChartTip } from "./ChartTip";
 
 type Words = { predictedAxis: string; observedAxis: string; binTip: string };

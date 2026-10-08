@@ -1,8 +1,9 @@
 export function svgToDataUrl(svg: string): string {
   const bytes = new TextEncoder().encode(svg);
-  let bin = "";
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return `data:image/svg+xml;base64,${btoa(bin)}`;
+  // In slices: String.fromCharCode takes its bytes as arguments, and a worksheet's SVG has hundreds of thousands.
+  const parts: string[] = [];
+  for (let i = 0; i < bytes.length; i += 0x8000) parts.push(String.fromCharCode(...bytes.subarray(i, i + 0x8000)));
+  return `data:image/svg+xml;base64,${btoa(parts.join(""))}`;
 }
 
 export function dataUrlToSvg(url: string): string | null {

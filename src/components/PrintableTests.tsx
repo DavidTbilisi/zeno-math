@@ -5,7 +5,7 @@
 import { useMemo } from "react";
 import type { ClassSummary } from "../api";
 import type { Dict } from "../locales/en";
-import { fill } from "../math/chart";
+import { fill } from "../math/text";
 import { latexToSvg } from "../math/latex";
 import { areaOf, exercise, renderPractice, type PracticeWords } from "../math/practice";
 import { svgToDataUrl } from "../math/svg";

@@ -2,7 +2,7 @@
 // type (2x, sin^2 x, sqrt(x), e^(2x), log_2(x)), LaTeX that reads like a textbook, a tidy-up that keeps the shape
 // of a step and a simplifier that collects like terms, plus exact numbers a + b√s and the real roots of
 // polynomials. The Derivatives and Applied calculus tools are built on it.
-import { fill, nf } from "./chart";
+import { fill, nf } from "./text";
 import { Frac } from "./fraction";
 
 /** Error messages, in the language of the tool that is rendering. */

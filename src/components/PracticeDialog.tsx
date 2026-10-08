@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
@@ -8,7 +8,7 @@ import {
 } from "../learner";
 import { choose as choosePolicy } from "../model/policy";
 import type { Dict } from "../locales/en";
-import { fill } from "../math/chart";
+import { fill } from "../math/text";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
 import {
   AREAS, areaOf, check, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, type Area, type Exercise, type Level, type PracticeSpec,
@@ -16,6 +16,7 @@ import {
 } from "../math/practice";
 import { renderSolution } from "../math/practiceSolve";
 import { svgToDataUrl } from "../math/svg";
+import { Countdown } from "./Countdown";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
@@ -69,10 +70,6 @@ function markQueuedTests(plan: ClassPlan, studentCode: string) {
   for (const a of testOutbox.items())
     if (a.student === studentCode && !plan.tests[a.phase].answered.includes(a.item)) plan.tests[a.phase].answered.push(a.item);
 }
-const clock = (ms: number) => {
-  const s = Math.max(0, Math.ceil(ms / 1000));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-};
 
 export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   initial?: PracticeSpec;
@@ -190,14 +187,6 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
     }, PROTOCOL_POLL_MS);
     return () => clearInterval(timer);
   }, [student, inClass, planStatus]);
-  // A timed session's clock.
-  const sessionEnds = planRef.current?.phase === "session" ? planRef.current.sessionEnds : null;
-  const [now, setNow] = useState(Date.now);
-  useEffect(() => {
-    if (sessionEnds === null) return;
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, [sessionEnds]);
   useEffect(() => {
     if (student) void loadPlan(student);
     sendQueued(); // anything left from an earlier visit
@@ -320,20 +309,23 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   const card = useMemo(() => {
     const ex = cur.ex;
     try {
-      return renderPractice({ area: areaOf(ex.skill), skill: ex.skill, level: ex.level, seed: ex.seed, count: 1, answers: false }, w);
+      return { src: svgToDataUrl(renderPractice({ area: areaOf(ex.skill), skill: ex.skill, level: ex.level, seed: ex.seed, count: 1, answers: false }, w).svg) };
     } catch (e) {
       return { error: (e as Error).message };
     }
   }, [cur, w]);
+  // The typed answer as maths, rendered by MathJax: that takes a moment, so it follows the typing rather than hold it up.
+  const shown = useDeferredValue(input);
   const typed = useMemo(() => {
-    const p = preview(cur.ex, input);
+    const p = preview(cur.ex, shown);
     if (!p) return null;
     try {
       return svgToDataUrl(latexToSvg(p).svg);
     } catch {
       return null;
     }
-  }, [cur, input]);
+  }, [cur, shown]);
+  const answerSrc = useMemo(() => (done ? svgToDataUrl(latexToSvg(cur.ex.show, "#2f9e44").svg) : null), [cur, done]);
 
   // ---------- worksheet ----------
 
@@ -341,7 +333,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   const sheet = useMemo(() => {
     if (mode !== "sheet") return null;
     try {
-      return { rendered: renderPractice(sheetSpec, w) };
+      const rendered = renderPractice(sheetSpec, w);
+      return { rendered, src: svgToDataUrl(rendered.svg) };
     } catch (e) {
       return { error: (e as Error).message };
     }
@@ -363,9 +356,17 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   // What the class's phase allows right now (class practice only; free practice is always open).
   const plan = classOn && planStatus === "ready" ? planRef.current : null;
   const testPhase = plan?.phase === "pretest" ? "pre" : plan?.phase === "posttest" ? "post" : null;
+  // When a timed session runs out, one more render finds it over (the clock itself ticks on its own).
+  const sessionEnds = plan?.phase === "session" ? plan.sessionEnds : null;
+  const [, sessionEnded] = useReducer((n: number) => n + 1, 0);
+  useEffect(() => {
+    if (sessionEnds === null || sessionEnds <= Date.now()) return;
+    const timer = setTimeout(sessionEnded, sessionEnds - Date.now() + 50);
+    return () => clearTimeout(timer);
+  }, [sessionEnds]);
   const blocked = !plan ? null
     : plan.phase === "closed" ? w.ui.classClosed
-    : plan.phase === "session" && plan.sessionEnds !== null && now >= plan.sessionEnds ? w.ui.sessionOver
+    : plan.phase === "session" && plan.sessionEnds !== null && Date.now() >= plan.sessionEnds ? w.ui.sessionOver
     : null;
   const stat = (s: SkillId) => progress.stats[s];
   const skills = SKILLS[area] as readonly SkillId[];
@@ -450,7 +451,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
       ) : mode === "practise" ? (
         <>
           {plan?.phase === "session" && plan.sessionEnds !== null && (
-            <strong className="practice-clock" role="timer">{fill(w.ui.timeLeft, { time: clock(plan.sessionEnds - now) })}</strong>
+            <Countdown until={plan.sessionEnds} left={(time) => fill(w.ui.timeLeft, { time })} />
           )}
           {cur.review ? (
             <small className="hint practice-review">↻ {w.ui.review}</small>
@@ -458,7 +459,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
             classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
           )}
           <div className="preview">
-            {"error" in card ? <span className="error">{card.error}</span> : <img src={svgToDataUrl(card.svg)} alt="" style={{ maxWidth: "100%" }} />}
+            {"error" in card ? <span className="error">{card.error}</span> : <img src={card.src} alt="" style={{ maxWidth: "100%" }} />}
             <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
           </div>
           <label className="field">
@@ -502,7 +503,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
             <div className="field">
               <span>{w.answer}</span>
               <div className="preview">
-                <img src={svgToDataUrl(latexToSvg(cur.ex.show, "#2f9e44").svg)} alt="" style={{ maxWidth: "100%" }} />
+                {answerSrc && <img src={answerSrc} alt="" style={{ maxWidth: "100%" }} />}
                 <SpokenMath tex={cur.ex.show} />
               </div>
               {done === "solved" && !solution && (cur.ex.solution || cur.ex.steps) && (
@@ -539,7 +540,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
             <button className="btn small" onClick={() => setSheetSeed(newSeed())}>🎲 {w.ui.newSet}</button>
           </div>
           <div className="preview">
-            {sheet?.rendered ? <img src={svgToDataUrl(sheet.rendered.svg)} alt="" style={{ maxWidth: "100%" }} /> : <span className="error">{sheet?.error}</span>}
+            {sheet?.src ? <img src={sheet.src} alt="" style={{ maxWidth: "100%" }} /> : <span className="error">{sheet?.error}</span>}
           </div>
         </>
       )}

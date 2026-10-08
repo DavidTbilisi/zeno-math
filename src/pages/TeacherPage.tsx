@@ -2,22 +2,22 @@
 // practice, pre-test, timed sessions, post-test), then follow each class: the two groups side by side, the tests,
 // mastery by skill for every student, and whether the learner model's predictions come true. The teacher password
 // (TEACHER_PASSWORD on the server) is kept for this tab only.
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
-import { CalibrationChart } from "../components/CalibrationChart";
+import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
-import { PrintableTests } from "../components/PrintableTests";
 import { LangSelect, useI18n } from "../i18n";
-import { fill } from "../math/chart";
+import { fill } from "../math/text";
 import type { Phase } from "../learner";
 import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
 import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH } from "../model/testForms";
 
+// Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
+// first shown, so the dashboard itself doesn't carry them.
+const PrintableTests = lazy(() => import("../components/PrintableTests").then((m) => ({ default: m.PrintableTests })));
+const CalibrationChart = lazy(() => import("../components/CalibrationChart").then((m) => ({ default: m.CalibrationChart })));
+
 const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "closed"];
-const clock = (ms: number) => {
-  const s = Math.max(0, Math.ceil(ms / 1000));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-};
 
 const KEY = "zeno.teacher";
 const remembered = () => {
@@ -58,7 +58,6 @@ export function TeacherPage() {
   const [testLength, setTestLength] = useState(DEFAULT_TEST_LENGTH);
   const [minutes, setMinutes] = useState(20);
   const [askMinutes, setAskMinutes] = useState(false);
-  const [now, setNow] = useState(Date.now);
   const api = useMemo(() => teacherApi(password), [password]);
 
   const pct = useMemo(() => {
@@ -145,13 +144,8 @@ export function TeacherPage() {
     }
   };
 
-  // A running session's clock (hooks stay above the password gate's early return).
+  // A running session's clock.
   const sessionEnds = classes.find((c) => c.code === selected && c.phase === "session")?.sessionEnds ?? null;
-  useEffect(() => {
-    if (sessionEnds === null) return;
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, [sessionEnds]);
 
   const header = (
     <header className="home-header">
@@ -283,7 +277,11 @@ export function TeacherPage() {
               </div>
             </section>
           )}
-          {printing && current && <PrintableTests klass={current} w={w} pw={t.pracWords} onClose={() => setPrinting(false)} />}
+          {printing && current && (
+            <Suspense fallback={null}>
+              <PrintableTests klass={current} w={w} pw={t.pracWords} onClose={() => setPrinting(false)} />
+            </Suspense>
+          )}
 
           {current && (
             <section className="card">
@@ -310,11 +308,7 @@ export function TeacherPage() {
                   <button className="btn primary small" onClick={() => void moveTo("session")}>{w.start}</button>
                 </div>
               )}
-              {sessionEnds !== null && (
-                <strong className="practice-clock" role="timer">
-                  {now < sessionEnds ? fill(w.sessionLeft, { time: clock(sessionEnds - now) }) : w.sessionEnded}
-                </strong>
-              )}
+              {sessionEnds !== null && <Countdown until={sessionEnds} left={(time) => fill(w.sessionLeft, { time })} ended={w.sessionEnded} />}
               <p className="hint">{w.phaseHint}</p>
             </section>
           )}
@@ -406,7 +400,9 @@ export function TeacherPage() {
                 <p className="hint">{w.calibrationHint}</p>
                 {data.calibration.n ? (
                   <div className="calib-row">
-                    <CalibrationChart bins={data.calibration.bins} words={w} pct={pct} />
+                    <Suspense fallback={<div className="calib-chart" />}>
+                      <CalibrationChart bins={data.calibration.bins} words={w} pct={pct} />
+                    </Suspense>
                     <div className="calib-side">
                       <dl className="stat-tiles">
                         <div><dt>{w.answers}</dt><dd>{num(data.calibration.n)}</dd></div>

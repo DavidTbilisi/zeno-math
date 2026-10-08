@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CaptureUpdateAction,
   convertToExcalidrawElements,
@@ -10,7 +10,9 @@ import {
   useHandleLibrary,
 } from "@excalidraw/excalidraw";
 import type { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import type { ExcalidrawElement, ExcalidrawImageElement, FileId, NonDeletedExcalidrawElement } from "@excalidraw/excalidraw/element/types";
+import type {
+  ExcalidrawElement, ExcalidrawEmbeddableElement, ExcalidrawImageElement, FileId, NonDeleted, NonDeletedExcalidrawElement,
+} from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 
 import { api, ApiError, type Board } from "../api";
@@ -28,6 +30,14 @@ import { isToolKind, MENUS, TOOLS, type ToolKind } from "../tools";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
 type MathData = { kind: ToolKind; data: unknown; w: number; h: number };
+
+// Excalidraw's props are made once: a new object on every render would have it re-render the canvas each time the
+// save state changes.
+const UI_OPTIONS = { canvasActions: { loadScene: true, saveToActiveFile: false } };
+// Live pieces are embeddables with an address of ours; anything else is checked as Excalidraw always does.
+const validateEmbeddable = (link: string) => (isLiveLink(link) ? true : undefined);
+// A live piece's address leads nowhere: its link button does nothing.
+const onLinkOpen = (el: { link: string | null }, e: { preventDefault: () => void }) => isLiveLink(el.link) && e.preventDefault();
 
 /** The open tool dialog: a new picture (optionally on a given topic), or the picture being edited. */
 type Dialog = { kind: ToolKind; editing?: ExcalidrawImageElement; start?: string };
@@ -435,6 +445,26 @@ export function BoardPage({ id }: { id: string }) {
     return () => window.removeEventListener("keydown", onKey, true);
   }, []);
 
+  const scene = board?.scene;
+  const initialData = useMemo(
+    () => scene && {
+      elements: (scene.elements ?? []) as ExcalidrawElement[],
+      files: (scene.files ?? {}) as BinaryFiles,
+      appState: scene.appState as Partial<AppState>,
+      scrollToContent: true,
+    },
+    [scene],
+  );
+  const setApi = useCallback((a: ExcalidrawImperativeAPI) => {
+    excalidraw.current = a;
+    setExcalidrawApi(a);
+  }, []);
+  // (One whose data is missing or damaged shows nothing, rather than Excalidraw trying to load its address.)
+  const renderEmbeddable = useCallback(
+    (el: NonDeleted<ExcalidrawEmbeddableElement>) => (isLiveLink(el.link) ? liveDataOf(el) ? <LiveView element={el} host={liveHost.current} /> : <div /> : null),
+    [],
+  );
+
   if (missing) {
     return (
       <div className="center-msg">
@@ -443,9 +473,8 @@ export function BoardPage({ id }: { id: string }) {
       </div>
     );
   }
-  if (!board) return <div className="center-msg">{t.loading}</div>;
+  if (!board || !initialData) return <div className="center-msg">{t.loading}</div>;
 
-  const scene = board.scene;
   const openTool = dialog && TOOLS[dialog.kind];
   return (
     <div className="board-page">
@@ -506,25 +535,14 @@ export function BoardPage({ id }: { id: string }) {
         }}
       >
         <Excalidraw
-          excalidrawAPI={(a) => {
-            excalidraw.current = a;
-            setExcalidrawApi(a);
-          }}
+          excalidrawAPI={setApi}
           langCode={excalidrawLang}
-          initialData={{
-            elements: (scene.elements ?? []) as ExcalidrawElement[],
-            files: (scene.files ?? {}) as BinaryFiles,
-            appState: scene.appState as Partial<AppState>,
-            scrollToContent: true,
-          }}
+          initialData={initialData}
           onChange={onChange}
-          // Live pieces are embeddables with an address of ours; anything else is checked as Excalidraw always does.
-          validateEmbeddable={(link) => (isLiveLink(link) ? true : undefined)}
-          // (One whose data is missing or damaged shows nothing, rather than Excalidraw trying to load its address.)
-          renderEmbeddable={(el) => (isLiveLink(el.link) ? liveDataOf(el) ? <LiveView element={el} host={liveHost.current} /> : <div /> : null)}
-          // A live piece's address leads nowhere: its link button does nothing.
-          onLinkOpen={(el, e) => isLiveLink(el.link) && e.preventDefault()}
-          UIOptions={{ canvasActions: { loadScene: true, saveToActiveFile: false } }}
+          validateEmbeddable={validateEmbeddable}
+          renderEmbeddable={renderEmbeddable}
+          onLinkOpen={onLinkOpen}
+          UIOptions={UI_OPTIONS}
         >
           <MainMenu>
             <MainMenu.DefaultItems.LoadScene />

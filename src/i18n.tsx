@@ -17,7 +17,8 @@ const LOADERS: Record<Lang, () => Promise<Dict>> = {
   ka: () => import("./locales/ka").then((m) => m.ka),
 };
 const loaded: Partial<Record<Lang, Dict>> = {};
-const load = async (l: Lang) => (loaded[l] ??= await LOADERS[l]());
+const loading: Partial<Record<Lang, Promise<Dict>>> = {};
+const load = (l: Lang) => (loading[l] ??= LOADERS[l]().then((t) => (loaded[l] = t)));
 
 function detectLang(): Lang {
   try {
@@ -29,6 +30,9 @@ function detectLang(): Lang {
   const nav = navigator.language.slice(0, 2);
   return nav === "ru" || nav === "ka" ? nav : "en";
 }
+// The page shows nothing until its words are here, so they are asked for as soon as this module runs, not once React
+// has mounted and run its effects: one round trip less before the first paint.
+void load(detectLang());
 
 type I18n = { lang: Lang; setLang: (l: Lang) => void; t: Dict; excalidrawLang: string };
 

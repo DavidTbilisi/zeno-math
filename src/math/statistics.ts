@@ -4,7 +4,7 @@
 // Simulations use a seeded generator so a picture on the board re-renders identically.
 import { Frac } from "./fraction";
 import type { RenderedSvg } from "./latex";
-import { niceStep } from "./plot";
+import { niceStep } from "./scale";
 import { rng } from "./random";
 import {
   axes,

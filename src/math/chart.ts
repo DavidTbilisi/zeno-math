@@ -1,20 +1,14 @@
 // Shared drawing helpers for the Analysis and Statistics pictures: number formatting, plot frames
 // with axes, curves, labels, and composing a LaTeX header + plot + captions into one standalone SVG.
 import { latexToSvg, type RenderedSvg } from "./latex";
-import { niceStep } from "./plot";
+import { niceStep } from "./scale";
+import { fill, nf } from "./text";
 
-export const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k: string) => String(v[k] ?? ""));
+// fill and nf live in text.ts (no imports) so that messages can be filled in without loading MathJax; the pictures
+// here still get them from this module.
+export { fill, nf };
 export const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 export const clampInt = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(Number.isFinite(v) ? v : lo)));
-
-/** Up to `digits` decimals, no trailing zeros; tiny numbers in scientific notation. */
-export function nf(v: number, digits = 4): string {
-  if (!Number.isFinite(v)) return Number.isNaN(v) ? "—" : v > 0 ? "∞" : "−∞";
-  if (v !== 0 && Math.abs(v) < 10 ** -digits) return v.toExponential(1);
-  if (Math.abs(v) >= 1e7) return v.toExponential(3);
-  const s = String(Math.round(v * 10 ** digits) / 10 ** digits);
-  return s === "-0" ? "0" : s;
-}
 /** Number for captions (proper minus sign). */
 export const nt = (v: number, digits = 4) => nf(v, digits).replace(/^-/, "−").replace("e-", "e−");
 /** Number for LaTeX. */
