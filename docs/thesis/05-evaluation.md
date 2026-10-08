@@ -242,8 +242,12 @@ time) (`npm run model -- --simulate --fit`, commit 28f046d).
 On simulated data each layer of the Elo model helps: dropping the area layer costs 0.008 in log-loss, and keeping
 only the skill layer costs 0.047. The three-layer model is also well calibrated: in eight of the ten bins the observed
 share right is within 0.04 of the prediction; the largest gaps are in the 0.2–0.3 bin (0.251 predicted, 0.207
-observed) and the 0.6–0.7 bin (0.649 predicted, 0.577 observed). The fit search chooses α = 0.4, β = 0.05, the
-defaults, so on this data `--fit` changes nothing.
+observed) and the 0.6–0.7 bin (0.649 predicted, 0.577 observed). PFA and BKT overestimate the chance of a right answer in
+the middle of the range. The fit search chooses α = 0.4, β = 0.05, the defaults, so on this data `--fit` changes nothing.
+
+![Calibration on the held-out simulated students: the predicted chance of a right first answer against the share
+answered right, in bins of 0.1. Bins with fewer than 20 answers are left out (two of PFA's).
+(`npm run figures`.)](figures/calibration-simulated.png)
 
 These figures show only that the model works as built. The simulated learners share the model's structure: abilities
 in three layers, a difficulty per skill and level. The defaults were chosen on classes like these, though with

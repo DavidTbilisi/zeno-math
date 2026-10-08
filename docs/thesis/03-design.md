@@ -86,7 +86,7 @@ stores everything in one SQLite file. Three kinds of user reach it through a bro
 dashboard), the students (practice and tests), and the researcher, who downloads CSV exports and runs the analysis
 scripts on their own machine. No data leaves the school's machine.
 
-![System context (docs/architecture.md, "System context")](figures/TODO-context.png)
+![System context (docs/architecture.md, "System context")](figures/context.png)
 
 ### Building blocks
 
@@ -102,7 +102,7 @@ Figure 3.2 shows the building blocks. They fall into three groups.
   (`server/research.ts`), the protocol of phases and tests (`server/protocol.ts`), and the dashboard
   (`server/dashboard.ts`).
 
-![Building blocks (docs/architecture.md, "Building blocks")](figures/TODO-blocks.png)
+![Building blocks (docs/architecture.md, "Building blocks")](figures/blocks.png)
 
 The most important property of this structure is that **the same model code runs on both sides**. The server
 rebuilds each student's learner model from the stored attempts and sends it to the browser. The browser then updates
@@ -127,7 +127,7 @@ Figure 3.3 shows the data model. There are five tables.
 - `test_responses`: one row per test question answered, with the test, the form, the item number, the skill, level
   and seed, what was typed and its verdict. The pair (student, test, item) is unique.
 
-![Data model (docs/architecture.md, "Data model")](figures/TODO-data-model.png)
+![Data model (docs/architecture.md, "Data model")](figures/data-model.png)
 
 Deleting a student deletes their attempts and test answers through `ON DELETE CASCADE`. The learner model itself is
 not stored. The server replays the attempts when the model is first needed, keeps it in memory and adds attempts as
@@ -137,7 +137,7 @@ Figure 3.4 shows one practice question from end to end: the browser fetches the 
 checks the answer locally, puts the attempt in the outbox, and uploads it until the server confirms that it is
 stored.
 
-![A practice question, end to end (docs/architecture.md)](figures/TODO-practice-sequence.png)
+![A practice question, end to end (docs/architecture.md)](figures/practice-sequence.png)
 
 ## 3.4 Design decisions
 
@@ -288,7 +288,7 @@ practice after the practice time) is stored but marked late. Refusing it would b
 change only every 30 seconds and keeps answers while the network is down, so an honest tablet that was offline would
 lose its answers. Instead, the analysis reports how many answers came late in each group.
 
-![The study protocol (docs/architecture.md, "The study protocol")](figures/TODO-protocol.png)
+![The study protocol (docs/architecture.md, "The study protocol")](figures/protocol.png)
 
 ### Equal practice time
 

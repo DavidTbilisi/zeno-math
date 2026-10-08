@@ -207,9 +207,8 @@ Orlin's popular book on mathematics [CITATION NEEDED: Orlin (2025), Russian edit
 and the catalogue are this thesis's own. The tests give no feedback, so no hint is ever shown during a pre- or
 post-test.
 
-![A practice question with a mistake named under the verdict.](figures/TODO-practice-mistake-hint.png)
-
-**[TODO: screenshot of the practice dialog showing the `addAcross` hint, e.g. from `e2e/practice.spec.ts`.]**
+![A practice question with a mistake named under the verdict: 4/9 + 5/8 answered as 9/17, the tops and the bottoms
+added. The answer still counts as a miss.](figures/practice-mistake-hint.png)
 
 Because questions are rebuilt from their seeds, the mistakes can also be found *after* the fact. `npm run mistakes`
 (`scripts/mistakes.ts`) reads either export, rebuilds each question, marks every wrong answer again and counts the
@@ -506,9 +505,12 @@ both test forms with answer keys, for use as a paper backup. For a selected clas
 
 The dashboard uses the same `evidence` rule, the same model and the same `TARGET` constant as the rest of the system.
 
-![The teacher dashboard for a class: groups, tests, mastery heatmap and calibration.](figures/TODO-teacher-dashboard.png)
+![The teacher dashboard after a dry run of 24 simulated students: the two groups side by side, and the pre- and
+post-test with the form check.](figures/dashboard-groups.png)
 
-**[TODO: screenshot of the teacher dashboard after a dry run (`npm run dry-run`), light mode.]**
+![The same dashboard: mastery of each skill for every student, with each group's average on top and the test scores
+beside it, and the calibration of the model's logged predictions. Fixed practice had not yet reached the later skills
+after 30 questions, so their cells are grey.](figures/dashboard-mastery.png)
 
 ## 4.8 Summary
 
