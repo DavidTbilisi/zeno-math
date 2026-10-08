@@ -35,7 +35,7 @@ db.exec("CREATE UNIQUE INDEX IF NOT EXISTS boards_share_token ON boards(share_to
 initResearch(db);
 // The schema this code writes. A database from a newer Zeno is refused rather than half understood; an older one has
 // just been brought up to date by the CREATE / ADD COLUMN steps above.
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 const { user_version: found } = db.prepare("PRAGMA user_version").get() as { user_version: number };
 if (found > SCHEMA_VERSION) {
   console.error(`The database in ${DATA_DIR} is from a newer version of Zeno (schema ${found}; this one knows ${SCHEMA_VERSION}). Update Zeno.`);

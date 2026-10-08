@@ -3,12 +3,14 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN npm run build && npm run build:checker
 
 FROM node:24-alpine
 WORKDIR /app
-ENV NODE_ENV=production PORT=8787 DATA_DIR=/data STATIC_DIR=/app/dist
+ENV NODE_ENV=production PORT=8787 DATA_DIR=/data STATIC_DIR=/app/dist ZENO_CHECKER=/app/dist-server/checker.js
 COPY --from=build /app/dist ./dist
+# The answer checker, bundled with mathjs and MathJax: the server marks every answer again (server/marking.ts).
+COPY --from=build /app/dist-server ./dist-server
 COPY server ./server
 # The server checks practice attempts against the app's list of skills and runs the learner model.
 COPY src/math/practiceSkills.ts ./src/math/practiceSkills.ts

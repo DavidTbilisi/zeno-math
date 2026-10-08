@@ -12,7 +12,8 @@ import { RECENT } from "../src/model/policy.ts";
 import { dashboard } from "./dashboard.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
-import { classProtocol, initProtocol, nextTestOrder, parseTestLength, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
+import { mark } from "./marking.ts";
+import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
 // An attempt is a few hundred bytes; nothing legitimate comes near this.
@@ -28,7 +29,7 @@ const BLOCK: readonly Condition[] = ["adaptive", "adaptive", "fixed", "fixed"];
 export const OUTCOMES = ["solved", "revealed", "skipped"] as const;
 /** Who chose the question: the student's condition (class practice), the student (free practice), or the review of misses. */
 export const POLICIES = ["adaptive", "fixed", "free", "review"] as const;
-/** correct; close (nearly: a sign or rounding slip); wrong; form (right idea, wrong form: sent back, not counted). */
+/** correct; close (nearly); wrong (a named mistake too); form (right idea, wrong form: sent back, not counted). */
 export const VERDICTS = ["correct", "close", "wrong", "form"] as const;
 const MAX_ANSWERS = 50;
 const MAX_INPUT = 200;
@@ -98,6 +99,10 @@ export function initResearch(db: DatabaseSync) {
   add("attempts", "policy", "TEXT NOT NULL DEFAULT 'free'");
   // the learner model's chance of a right first answer when the question was shown
   add("attempts", "predicted", "REAL");
+  // How many of the answers the server marked differently from the browser (each keeps the browser's verdict as "client").
+  add("attempts", "remarked", "INTEGER NOT NULL DEFAULT 0");
+  // 1: class practice that arrived more than GRACE after the class's practice time ended (protocol.ts).
+  add("attempts", "late", "INTEGER NOT NULL DEFAULT 0");
   initProtocol(db);
 }
 
@@ -122,11 +127,12 @@ const models = new WeakMap<DatabaseSync, { model: EloModel; lastId: number }>();
 export function currentModel(db: DatabaseSync): EloModel {
   let cache = models.get(db);
   if (!cache) models.set(db, (cache = { model: new EloModel(), lastId: 0 }));
-  const rows = db.prepare("SELECT id, student_id, skill, level, outcome, first_correct, wrongs FROM attempts WHERE id > ? ORDER BY id")
-    .all(cache.lastId) as { id: number; student_id: number; skill: SkillId; level: Level; outcome: string; first_correct: number; wrongs: number }[];
+  const rows = db.prepare(`
+    SELECT id, student_id, skill, level, outcome, first_correct, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
+  `).all(cache.lastId) as { id: number; student_id: number; skill: SkillId; level: Level; outcome: string; first_correct: number; counted: number }[];
   for (const r of rows) {
-    // Counted answers: the wrong and nearly right ones, and the right one that solved it.
-    const correct = evidence(r.wrongs + (r.outcome === "solved" ? 1 : 0), r.outcome, r.first_correct === 1);
+    // Counted answers are those not sent back for their form, as the export reads them (evaluate.ts, observation).
+    const correct = evidence(r.counted, r.outcome, r.first_correct === 1);
     if (correct !== null) cache.model.update({ student: `s${r.student_id}`, skill: r.skill, level: r.level, correct });
     cache.lastId = r.id;
   }
@@ -161,7 +167,9 @@ function shuffled<T>(items: readonly T[]): T[] {
 const isInt = (v: unknown, lo: number, hi: number): v is number => Number.isInteger(v) && (v as number) >= lo && (v as number) <= hi;
 const oneOf = <T extends string>(items: readonly T[], v: unknown): v is T => items.includes(v as T);
 
-type Answer = { input: string; verdict: (typeof VERDICTS)[number]; ms: number };
+type Verdict = (typeof VERDICTS)[number];
+/** An answer as stored: the server's verdict, and the browser's as client where it differed. */
+type Answer = { input: string; verdict: Verdict; ms: number; client?: Verdict };
 export type AttemptRow = {
   clientId: string;
   skill: SkillId;
@@ -206,25 +214,26 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   if (correctAt >= 0 && correctAt !== list.length - 1) throw bad("answers");
   if ((outcome === "solved") !== (correctAt >= 0)) throw bad("outcome");
   if (outcome === "skipped" && !list.length) throw bad("outcome");
+  return { clientId, skill, level, seed, review, outcome, policy, predicted, ...summary(list), solutionViewed, msFirst: list[0]?.ms ?? null, msTotal, answers: list, shownAt };
+}
+
+/** The summary columns, from the answers: a form message doesn't count as a try. */
+function summary(list: readonly Answer[]) {
   const counted = list.filter((a) => a.verdict !== "form");
-  return {
-    clientId,
-    skill,
-    level,
-    seed,
-    review,
-    outcome,
-    policy,
-    predicted,
-    firstCorrect: counted[0]?.verdict === "correct",
-    wrongs: counted.filter((a) => a.verdict !== "correct").length,
-    retries: list.length - counted.length,
-    solutionViewed,
-    msFirst: list[0]?.ms ?? null,
-    msTotal,
-    answers: list,
-    shownAt,
-  };
+  return { firstCorrect: counted[0]?.verdict === "correct", wrongs: counted.filter((a) => a.verdict !== "correct").length, retries: list.length - counted.length };
+}
+
+/**
+ * The attempt with every answer marked again by the server (marking.ts), and the summary worked out from those
+ * verdicts. What the student did (the outcome) is the browser's account and stays as sent; where the verdicts differ,
+ * remarked says how many, and the export shows both.
+ */
+export function markAttempt(a: AttemptRow): AttemptRow & { remarked: number } {
+  const answers = a.answers.map((x): Answer => {
+    const verdict = mark(a, x.input);
+    return verdict === x.verdict ? x : { ...x, verdict, client: x.verdict };
+  });
+  return { ...a, ...summary(answers), answers, remarked: answers.filter((x) => x.client).length };
 }
 
 const csvCell = (v: unknown) => {
@@ -233,12 +242,12 @@ const csvCell = (v: unknown) => {
 };
 const CSV_COLUMNS = [
   "attempt", "student", "class", "condition", "policy", "predicted", "area", "skill", "level", "seed", "review", "outcome", "first_correct", "wrongs",
-  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "shown_at", "created_at",
+  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "remarked", "late", "shown_at", "created_at",
 ] as const;
 
 const TEST_CSV_COLUMNS = [
   "response", "student", "class", "condition", "test_order", "phase", "form", "item", "area", "skill", "level", "seed", "input", "verdict",
-  "correct", "retries", "ms", "created_at",
+  "correct", "client_verdict", "late", "retries", "ms", "created_at",
 ] as const;
 function sendCsv(res: ServerResponse, name: string, columns: readonly string[], rows: Record<string, unknown>[]) {
   const stamp = new Date().toISOString().slice(0, 10);
@@ -283,6 +292,7 @@ export async function handleResearch(
       while (db.prepare("SELECT 1 FROM classes WHERE code = ?").get(code)) code = randomCode(CLASS_LEN);
       const stored = skills ?? [...CURRICULUM];
       db.prepare("INSERT INTO classes (code, name, skills, test_length, created_at) VALUES (?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), testLength, now);
+      logPhase(db, code, "open", null, now);
       return send(res, 201, { code, name, skills: stored, createdAt: now, phase: "open", sessionEnds: null, testLength });
     }
     return send(res, 405, { error: "method not allowed" });
@@ -350,16 +360,20 @@ export async function handleResearch(
     const body = await readJson(req, MAX_ATTEMPT_BODY);
     const student = findStudent(body.student);
     if (!student) return send(res, 404, { error: "no such student" });
-    const a = parseAttempt(body);
+    const a = markAttempt(parseAttempt(body));
     // Class practice is chosen by the student's own condition; anything else would mix the groups up.
-    if ((a.policy === "adaptive" || a.policy === "fixed") && a.policy !== student.condition) throw new HttpError(400, "invalid policy");
+    const classPractice = a.policy === "adaptive" || a.policy === "fixed";
+    if (classPractice && a.policy !== student.condition) throw new HttpError(400, "invalid policy");
+    const now = Date.now();
+    // Class practice belongs in practice time; arriving long after it ended, it is kept and marked late.
+    const late = classPractice && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
     const result = db.prepare(`
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
-        retries, solution_viewed, ms_first, ms_total, answers, shown_at, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       a.clientId, student.id, a.skill, a.level, a.seed, Number(a.review), a.outcome, a.policy, a.predicted, Number(a.firstCorrect), a.wrongs, a.retries,
-      Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, Date.now(),
+      Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), now,
     );
     // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
     return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
@@ -378,7 +392,7 @@ export async function handleResearch(
     const klass = query.get("class");
     const rows = db.prepare(`
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
-        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.shown_at, a.created_at
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.remarked, a.late, a.shown_at, a.created_at
       FROM attempts a JOIN students s ON s.id = a.student_id
       WHERE ? IS NULL OR s.class_code = ?
       ORDER BY a.id
@@ -399,7 +413,8 @@ export async function handleResearch(
     const klass = query.get("class");
     const rows = db.prepare(`
       SELECT t.id AS response, 's' || s.id AS student, s.class_code AS class, s.condition, COALESCE(s.test_order, '') AS test_order,
-        t.phase, t.form, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct, t.retries, t.ms, t.created_at
+        t.phase, t.form, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct,
+        t.client_verdict, t.late, t.retries, t.ms, t.created_at
       FROM test_responses t JOIN students s ON s.id = t.student_id
       WHERE ? IS NULL OR s.class_code = ?
       ORDER BY s.id, t.phase DESC, t.item

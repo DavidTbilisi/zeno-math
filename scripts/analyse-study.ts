@@ -3,7 +3,7 @@
 //   npm run analyse -- zeno-tests.csv          the CSV from /api/research/tests.csv (the teacher page's download)
 //   add --json for machine-readable output
 import { readFileSync } from "node:fs";
-import { analyseStudy, scoresFromTests, type Estimate } from "../src/model/analysis.ts";
+import { analyseStudy, answerChecks, scoresFromTests, type Estimate } from "../src/model/analysis.ts";
 import { parseCsv } from "../src/model/evaluate.ts";
 
 const args = process.argv.slice(2);
@@ -12,10 +12,12 @@ if (!file) {
   console.error("usage: npm run analyse -- <tests.csv> [--json]");
   process.exit(2);
 }
-const result = analyseStudy(scoresFromTests(parseCsv(readFileSync(file, "utf8"))));
+const rows = parseCsv(readFileSync(file, "utf8"));
+const result = analyseStudy(scoresFromTests(rows));
+const checks = answerChecks(rows);
 
 if (args.includes("--json")) {
-  console.log(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify({ ...result, checks }, null, 2));
 } else {
   const pct = (x: number) => `${(x * 100).toFixed(1)} %`;
   const pts = (x: number) => `${x >= 0 ? "+" : "−"}${Math.abs(x * 100).toFixed(1)}`;
@@ -34,4 +36,8 @@ if (args.includes("--json")) {
   } else console.log("Primary (ANCOVA): not enough students who finished both tests in each condition");
   if (result.gains) console.log(`Secondary (Welch's t-test on gains): adaptive − fixed\n  ${line(result.gains)}`);
   if (result.forms) console.log(`Check (pre-test, form A − form B; near 0 if the forms are parallel)\n  ${line(result.forms)}`);
+  // Report these with the result: answers sent long after their test ended, and the browser disagreeing with the server.
+  console.log("\nAnswers (all kept, as the server marked them):");
+  for (const [c, n] of Object.entries(checks))
+    console.log(`  ${c.padEnd(9)} ${n.answers} answers; ${n.late} late (sent after their test had ended); ${n.remarked} marked differently by the browser`);
 }

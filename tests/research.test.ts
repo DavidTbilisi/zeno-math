@@ -3,7 +3,8 @@
 // the CSV export names students by number, never by code, and the learner model reads it back. Class practice: a
 // class's skills, the plan a student's browser chooses from, attempts that must come from the student's own condition,
 // and a database from before these columns that gets them on start. The protocol: phases and timed sessions set by the
-// teacher, counterbalanced test forms, one stored answer per test question, and the results on the dashboard.
+// teacher, counterbalanced test forms, one stored answer per test question, and the results on the dashboard. Every
+// answer is marked again by the server, and what arrives long after its phase is kept but marked late.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { ALL_SKILLS } from "../src/math/practiceSkills.ts";
@@ -12,10 +13,14 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { normalizeCode, parseAttempt } from "../server/research.ts";
+import { initResearch, normalizeCode, parseAttempt } from "../server/research.ts";
+import { GRACE, initProtocol, logPhase, onTime, phaseWindows, PRACTICE_PHASES } from "../server/protocol.ts";
 import { EloModel } from "../src/model/elo.ts";
-import { observationsFromCsv, replay } from "../src/model/evaluate.ts";
+import { observationsFromCsv, parseCsv, replay } from "../src/model/evaluate.ts";
 import { testItems } from "../src/model/testForms.ts";
+import { verdictOf } from "../src/learner.ts";
+import { en } from "../src/locales/en.ts";
+import { check, exercise, type SkillId } from "../src/math/practice.ts";
 
 const PORT = 20000 + Math.floor(Math.random() * 20000);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -54,27 +59,41 @@ const call = async (method: string, path: string, body?: unknown, headers: Recor
 
 const newClass = async (name = "7B") => (await call("POST", "/api/classes", { name }, TEACHER)).body as { code: string };
 
+/** Rows back into CSV, for code that reads an export. */
+const csvOf = (rows: Record<string, string>[]) =>
+  [Object.keys(rows[0]).join(","), ...rows.map((r) => Object.values(r).map((v) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)).join(","))].join("\n");
+
 const close = (a: number, b: number) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≉ ${b}`);
 
+/** Something to type that the checker marks this way for the question (the server marks every answer again). */
+function typed(q: { skill: string; level: number; seed: number }, verdict: string): string {
+  // A question that doesn't exist, or a verdict that doesn't, is for a request that is refused anyway.
+  if (!ALL_SKILLS.includes(q.skill as SkillId) || ![1, 2, 3].includes(q.level) || !["correct", "close", "wrong", "form"].includes(verdict)) return "1";
+  const ex = exercise(q.skill as SkillId, q.level as 1 | 2 | 3, q.seed, en.pracWords);
+  const input = verdict === "correct" ? ex.plain : verdict === "form" ? "((" : "12345";
+  assert.equal(verdictOf(check(ex, input, en.pracWords)), verdict === "close" ? "wrong" : verdict, `${q.skill}: ${input}`);
+  return input;
+}
+
 let n = 0;
-const attempt = (student: string, extra: Record<string, unknown> = {}) => ({
-  clientId: `test-${Date.now()}-${n++}`,
-  student,
-  skill: "linear",
-  level: 2,
-  seed: 12345,
-  review: false,
-  outcome: "solved",
-  solutionViewed: false,
-  msTotal: 41000,
-  shownAt: Date.now() - 41000,
-  answers: [
-    { input: "x = 3", verdict: "wrong", ms: 15000 },
-    { input: "6/2", verdict: "form", ms: 30000 },
-    { input: "3", verdict: "correct", ms: 41000 },
-  ],
-  ...extra,
-});
+/** An attempt; an answer without an input gets one the checker gives its verdict. */
+function attempt(student: string, extra: Record<string, unknown> = {}) {
+  const a = {
+    clientId: `test-${Date.now()}-${n++}`,
+    student,
+    skill: "linear",
+    level: 2,
+    seed: 12345,
+    review: false,
+    outcome: "solved",
+    solutionViewed: false,
+    msTotal: 41000,
+    shownAt: Date.now() - 41000,
+    answers: [{ verdict: "wrong", ms: 15000 }, { verdict: "form", ms: 30000 }, { verdict: "correct", ms: 41000 }] as { input?: string; verdict: string; ms: number }[],
+    ...extra,
+  };
+  return { ...a, answers: a.answers.map((x) => ({ ...x, input: x.input ?? typed(a, x.verdict) })) };
+}
 
 test("classes need the teacher password", async () => {
   assert.equal((await call("POST", "/api/classes", { name: "x" })).status, 403);
@@ -147,7 +166,7 @@ test("attempts are stored once, with their summary worked out from the answers",
   assert.equal(row.retries, "1");
   assert.equal(row.ms_first, "15000");
   assert.equal(row.n_answers, "3");
-  assert.deepEqual(JSON.parse(row.answers.slice(1, -1).replace(/""/g, '"')).map((x: { input: string }) => x.input), ["x = 3", "6/2", "3"]);
+  assert.deepEqual(JSON.parse(row.answers.slice(1, -1).replace(/""/g, '"')).map((x: { input: string }) => x.input), ["12345", "((", "6"]);
 });
 
 test("attempts that don't add up are refused", async () => {
@@ -183,11 +202,11 @@ test("the learner model replays the export", async () => {
   const { code } = await newClass();
   const s1 = (await call("POST", "/api/students", { class: code })).body.code;
   const s2 = (await call("POST", "/api/students", { class: code })).body.code;
-  const right = { outcome: "solved", answers: [{ input: "3", verdict: "correct", ms: 900 }] };
+  const right = { outcome: "solved", answers: [{ verdict: "correct", ms: 900 }] };
   await call("POST", "/api/attempts", attempt(s1, right));
   await call("POST", "/api/attempts", attempt(s2));
   await call("POST", "/api/attempts", attempt(s2, { skill: "factor", level: 1, outcome: "revealed", answers: [] }));
-  await call("POST", "/api/attempts", attempt(s1, { outcome: "skipped", answers: [{ input: "6/2", verdict: "form", ms: 9 }] }));
+  await call("POST", "/api/attempts", attempt(s1, { outcome: "skipped", answers: [{ verdict: "form", ms: 9 }] }));
   const csv = (await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string;
   const obs = observationsFromCsv(csv);
   // The skip after only a form message says nothing, so three of the four count.
@@ -281,7 +300,7 @@ test("a database from before class practice gets the new columns", async () => {
       shown_at INTEGER NOT NULL, created_at INTEGER NOT NULL);
     INSERT INTO classes VALUES ('OLDOLD', 'old', '[]', 1);
     INSERT INTO students VALUES (1, 'AAAA-BBBB', 'OLDOLD', 'fixed', 1);
-    INSERT INTO attempts VALUES (1, 'old-attempt-1', 1, 'linear', 2, 5, 0, 'solved', 1, 0, 0, 0, 900, 900, '[]', 1, 1);
+    INSERT INTO attempts VALUES (1, 'old-attempt-1', 1, 'linear', 2, 5, 0, 'solved', 1, 0, 0, 0, 900, 900, '[{"input":"6","verdict":"correct","ms":900}]', 1, 1);
   `);
   db.close();
   const port = PORT + 1;
@@ -309,7 +328,7 @@ test("the dashboard: mastery for every student and skill, the two groups, and th
 
   const joined = [];
   for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: code })).body);
-  const right = { outcome: "solved", msTotal: 4000, answers: [{ input: "3", verdict: "correct", ms: 4000 }] };
+  const right = { outcome: "solved", msTotal: 4000, answers: [{ verdict: "correct", ms: 4000 }] };
   for (const s of joined) {
     // Class practice, with the model's chance logged; then a free question that was revealed without a try.
     await call("POST", "/api/attempts", attempt(s.code, { ...right, policy: s.condition, predicted: 0.7, skill: "linear", level: 1 }));
@@ -355,7 +374,7 @@ test("the protocol: phases and sessions, counterbalanced forms, one answer per t
   const session = (await move({ phase: "session", minutes: 20 })).body;
   assert.ok(Math.abs(session.sessionEnds - (Date.now() + 20 * 60_000)) < 5000);
 
-  const students = [];
+  const students: { code: string; condition: string }[] = [];
   for (let i = 0; i < 8; i++) students.push((await call("POST", "/api/students", { class: code })).body);
   const plans = await Promise.all(students.map(async (s) => (await call("GET", `/api/students/${s.code}/plan`)).body));
   assert.deepEqual([plans[0].phase, plans[0].sessionEnds, plans[0].testLength, plans[0].class], ["session", session.sessionEnds, 6, code]);
@@ -369,13 +388,24 @@ test("the protocol: phases and sessions, counterbalanced forms, one answer per t
   assert.equal((await call("GET", `/api/students/${students[0].code}/plan`)).body.phase, "pretest");
 
   let k = 0;
-  const answer = (student: string, phase: string, item: number, verdict: string, input = "1") =>
-    call("POST", "/api/tests", { clientId: `t-${Date.now()}-${k++}`, student, phase, item, input, verdict, retries: 0, ms: 9000 });
+  const formOf = (student: string, phase: "pre" | "post") => plans[students.findIndex((s) => s.code === student)]?.tests[phase].form;
+  /** A test answer; without an input, one the checker gives this verdict (the server marks it again). */
+  const answer = (student: string, phase: string, item: number, verdict: string, input?: string) => {
+    const form = (phase === "pre" || phase === "post") && formOf(student, phase);
+    const q = form ? testItems(code, skills as never, form, 6)[item] : undefined;
+    const typedIn = input ?? (q && verdict !== "skipped" ? typed(q, verdict) : "");
+    return call("POST", "/api/tests", { clientId: `t-${Date.now()}-${k++}`, student, phase, item, input: typedIn, verdict, retries: 0, ms: 9000 });
+  };
   const s0 = students[0].code;
-  assert.equal((await answer(s0, "pre", 6, "correct")).status, 400); // only 6 questions: 0–5
+  // The post-test hasn't started: nothing can be answered on it yet.
+  const early = await answer(s0, "post", 0, "correct");
+  assert.deepEqual([early.status, early.body.error], [400, "the post-test hasn't started"]);
+  assert.equal((await answer(s0, "pre", 6, "correct", "1")).status, 400); // only 6 questions: 0–5
   assert.equal((await answer(s0, "mid", 0, "correct")).status, 400);
   assert.equal((await answer(s0, "pre", 0, "great")).status, 400);
   assert.equal((await answer("AAAA-BBBB", "pre", 0, "correct")).status, 404);
+  // The browser says correct; the server's checker would have sent it back (it can't be read), and that is what is
+  // stored, with what the browser said beside it.
   assert.equal((await answer(s0, "pre", 0, "correct", "=1+2")).status, 201);
   const again = await answer(s0, "pre", 0, "wrong");
   assert.deepEqual([again.status, again.body.stored], [200, false]); // the first answer stands
@@ -384,13 +414,17 @@ test("the protocol: phases and sessions, counterbalanced forms, one answer per t
   const prePattern = [3, 2, 3, 4];
   const postPattern = { adaptive: [5, 6, 4, 5], fixed: [4, 3, 4, 5] } as Record<string, number[]>;
   const seen = { adaptive: 0, fixed: 0 } as Record<string, number>;
+  const index = new Map<string, number>();
   for (const s of students) {
     const i = seen[s.condition]++;
-    for (let item = 0; item < 6; item++) {
-      if (!(s.code === s0 && item === 0)) await answer(s.code, "pre", item, item < prePattern[i] ? "correct" : "wrong");
-      await answer(s.code, "post", item, item < postPattern[s.condition][i] ? "correct" : item === 5 ? "skipped" : "close");
-    }
+    index.set(s.code, i);
+    // s0's first answer is in already, and wrong, so one of their later ones is right instead.
+    const right = (item: number) => (s.code === s0 ? item >= 1 && item <= prePattern[i] : item < prePattern[i]);
+    for (let item = 0; item < 6; item++) if (!(s.code === s0 && item === 0)) await answer(s.code, "pre", item, right(item) ? "correct" : "wrong");
   }
+  await move({ phase: "posttest" });
+  for (const s of students)
+    for (let item = 0; item < 6; item++) await answer(s.code, "post", item, item < postPattern[s.condition][index.get(s.code)!] ? "correct" : item === 5 ? "skipped" : "wrong");
   const after = (await call("GET", `/api/students/${s0}/plan`)).body;
   assert.deepEqual(after.tests.pre.answered, [0, 1, 2, 3, 4, 5]);
 
@@ -404,12 +438,14 @@ test("the protocol: phases and sessions, counterbalanced forms, one answer per t
   const cells = first.match(/("([^"]|"")*"|[^,]*)(,|$)/g)!.map((c) => c.replace(/,$/, ""));
   const row = Object.fromEntries(cols.map((c, i) => [c, cells[i]]));
   const q = testItems(code, skills as never, plans[0].tests.pre.form, 6)[0];
-  assert.deepEqual([row.phase, row.form, row.item, row.skill, row.level, row.seed, row.correct], ["pre", plans[0].tests.pre.form, "0", q.skill, String(q.level), String(q.seed), "1"]);
+  assert.deepEqual([row.phase, row.form, row.item, row.skill, row.level, row.seed], ["pre", plans[0].tests.pre.form, "0", q.skill, String(q.level), String(q.seed)]);
+  assert.deepEqual([row.verdict, row.correct, row.client_verdict, row.late], ["form", "0", "correct", "0"], "marked by the server, not the browser");
+  assert.ok(lines.every((l) => !l.includes('"""=1+2"""') === /,,0,0,\d+,[^,]+$/.test(l)), "the browser agreed everywhere else");
 
   // Practice time counts the questions class practice chose.
   await call("POST", "/api/attempts", attempt(s0, { policy: students[0].condition, msTotal: 120_000 }));
   const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
-  assert.deepEqual([d.class.phase, d.class.testLength], ["pretest", 6]);
+  assert.deepEqual([d.class.phase, d.class.testLength], ["posttest", 6]);
   const me = d.students.find((x: { code: string }) => x.code === s0);
   assert.equal(me.practiceMinutes, 2);
   assert.deepEqual([me.pre.complete, me.post.complete], [true, true]);
@@ -427,4 +463,80 @@ test("the protocol: phases and sessions, counterbalanced forms, one answer per t
   await call("DELETE", `/api/students/${s0}`);
   const left = (await call("GET", `/api/research/tests.csv?class=${code}`, undefined, TEACHER)).body as string;
   assert.equal(left.trim().split("\n").length - 1, 7 * 12);
+});
+
+test("the server marks every answer itself, and keeps the browser's verdict where they differ", async () => {
+  const { code } = await newClass();
+  const student = (await call("POST", "/api/students", { class: code })).body.code;
+  // The browser claims a right first answer for 12345; the answer is 6.
+  const claimed = { outcome: "solved", answers: [{ input: "12345", verdict: "correct", ms: 5000 }] };
+  assert.equal((await call("POST", "/api/attempts", attempt(student, claimed))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(student))).status, 201);
+  const rows = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual([rows[0].first_correct, rows[0].wrongs, rows[0].remarked, rows[0].outcome], ["0", "1", "1", "solved"]);
+  assert.deepEqual(JSON.parse(rows[0].answers), [{ input: "12345", verdict: "wrong", ms: 5000, client: "correct" }]);
+  assert.deepEqual([rows[1].first_correct, rows[1].wrongs, rows[1].retries, rows[1].remarked], ["0", "1", "1", "0"], "the browser agreed");
+  assert.ok(!rows[1].answers.includes("client"));
+  // The model learns from the server's verdict: the claimed right answer counts as a miss.
+  assert.deepEqual(observationsFromCsv(csvOf(rows)).map((o) => o.correct), [false, false]);
+});
+
+test("answers that come long after their phase are kept and marked late", async () => {
+  const { code } = (await call("POST", "/api/classes", { name: "Late", skills: ["linear"], testLength: 4 }, TEACHER)).body;
+  const s = (await call("POST", "/api/students", { class: code })).body;
+  const plan = (await call("GET", `/api/students/${s.code}/plan`)).body;
+  await call("POST", `/api/classes/${code}/phase`, { phase: "pretest" }, TEACHER);
+  await call("POST", `/api/classes/${code}/phase`, { phase: "closed" }, TEACHER);
+  // Move the class's history back an hour: open and the pre-test ended long ago (as when a tablet was offline).
+  const db = new DatabaseSync(join(dir, "data", "boards.db"));
+  db.prepare("UPDATE class_phases SET started_at = started_at - 3600000 WHERE class_code = ? AND phase <> 'closed'").run(code);
+  db.prepare("UPDATE class_phases SET started_at = started_at - 1800000 WHERE class_code = ? AND phase = 'closed'").run(code);
+  db.close();
+  const q = testItems(code, ["linear"], plan.tests.pre.form, 4)[0];
+  const test = { clientId: `late-${Date.now()}`, student: s.code, phase: "pre", item: 0, input: typed(q, "correct"), verdict: "correct", retries: 0, ms: 9000 };
+  assert.equal((await call("POST", "/api/tests", test)).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(s.code, { policy: s.condition }))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(s.code))).status, 201); // free practice is never late
+  const tests = parseCsv((await call("GET", `/api/research/tests.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual([tests[0].verdict, tests[0].late], ["correct", "1"]);
+  const attempts = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual(attempts.map((a) => [a.policy, a.late]), [[s.condition, "1"], ["free", "0"]]);
+});
+
+test("phase windows: each phase until the next, a session until its time is up, and a grace after", () => {
+  const db = new DatabaseSync(":memory:");
+  initResearch(db);
+  db.exec("INSERT INTO classes (code, name, block, created_at) VALUES ('WIN234', 'w', '[]', 0)");
+  logPhase(db, "WIN234", "open", null, 0);
+  logPhase(db, "WIN234", "session", 30 * 60_000, 10 * 60_000);
+  logPhase(db, "WIN234", "posttest", null, 60 * 60_000);
+  const w = phaseWindows(db, "WIN234");
+  assert.deepEqual(w, [
+    { phase: "open", start: 0, end: 10 * 60_000 },
+    { phase: "session", start: 10 * 60_000, end: 30 * 60_000 },
+    { phase: "posttest", start: 60 * 60_000, end: Infinity },
+  ]);
+  const at = (min: number) => min * 60_000;
+  assert.ok(onTime(w, PRACTICE_PHASES, at(20)));
+  assert.ok(onTime(w, PRACTICE_PHASES, at(30) + GRACE - 1), "the grace after the session's time is up");
+  assert.ok(!onTime(w, PRACTICE_PHASES, at(30) + GRACE));
+  assert.ok(!onTime(w, ["pretest"], at(70)), "never in the pre-test");
+  assert.ok(onTime(w, ["posttest"], at(600)));
+
+  // A class from before the log: its history is rebuilt from its stored test answers, so a pre-test answer still
+  // waiting in a browser is kept, not refused as if the pre-test had never run. When the pre-test ended isn't known,
+  // so it runs until the update.
+  db.exec(`
+    INSERT INTO classes (code, name, block, created_at) VALUES ('OLD234', 'old', '[]', 1000);
+    INSERT INTO students (id, code, class_code, condition, created_at) VALUES (90, 'OLDS-TUDE', 'OLD234', 'fixed', 1000);
+    INSERT INTO test_responses (client_id, student_id, phase, form, item, skill, level, seed, input, verdict, retries, ms, created_at)
+      VALUES ('old-test-1', 90, 'pre', 'A', 0, 'linear', 2, 5, '6', 'correct', 0, 9, 5000);
+  `);
+  initProtocol(db);
+  const old = phaseWindows(db, "OLD234");
+  assert.deepEqual(old.map((x) => [x.phase, x.start]), [["open", 1000], ["pretest", 5000], ["open", old[2].start]]);
+  assert.ok(old[2].start >= Date.now() - 60_000);
+  assert.ok(old.some((x) => x.phase === "pretest" && x.start <= Date.now()), "the pre-test has run");
+  assert.ok(onTime(old, ["pretest"], Date.now()));
+  assert.ok(!onTime(old, ["pretest"], Date.now() + 2 * GRACE), "late once the grace after the update is over");
 });

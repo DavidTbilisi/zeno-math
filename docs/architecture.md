@@ -67,8 +67,10 @@ flowchart TB
 
 **The same model code runs in the browser and on the server.** `src/model` has no browser or Node dependencies, so
 the server keeps the learner model up to date from stored attempts, and a student's browser carries it forward
-question by question. Class practice therefore keeps working when the classroom Wi-Fi drops. The server checks only
-that a class-practice question was chosen by the student's own condition.
+question by question. Class practice therefore keeps working when the classroom Wi-Fi drops. The server checks that
+a class-practice question was chosen by the student's own condition, marks every answer again with the same checker
+(`server/marking.ts`; the Docker image runs it as one bundled file, since it needs mathjs and MathJax), and notes
+answers that arrive long after their phase.
 
 **Questions are made from a seed.** Every question is generated from (skill, level, seed), so an attempt or a test
 answer stores only those three numbers and what was typed. That means:
@@ -127,8 +129,18 @@ erDiagram
     INTEGER ms_first
     INTEGER ms_total
     TEXT answers "JSON: input, verdict, ms"
+    INTEGER remarked "verdicts the browser gave differently"
+    INTEGER late "class practice long after practice time"
     INTEGER shown_at
     INTEGER created_at
+  }
+  classes ||--o{ class_phases : logs
+  class_phases {
+    INTEGER id PK
+    TEXT class_code FK
+    TEXT phase
+    INTEGER session_ends
+    INTEGER started_at
   }
   test_responses {
     INTEGER id PK
@@ -141,7 +153,9 @@ erDiagram
     INTEGER level
     INTEGER seed
     TEXT input
-    TEXT verdict "correct|close|wrong|skipped"
+    TEXT verdict "the server's: correct|close|wrong|form|skipped"
+    TEXT client_verdict "the browser's, where it differed"
+    INTEGER late "long after its test ended"
     INTEGER retries
     INTEGER ms
     INTEGER created_at
@@ -172,7 +186,7 @@ sequenceDiagram
     B->>B: check(): correct / close / wrong / form (sent back)
     B->>B: attempt into the outbox (localStorage), model and position carried forward
     B->>Z: POST /api/attempts (retried until stored)
-    Z->>Z: validate, work out summary columns, condition = policy?
+    Z->>Z: validate, mark again, work out summary columns, condition = policy?, late?
     Z->>D: INSERT OR IGNORE by client_id
     Z-->>B: 201 stored / 200 already stored
   end
@@ -205,10 +219,11 @@ model, so the outcome measure is independent of what the adaptive condition lear
 | Decision | Why | Cost |
 |---|---|---|
 | Elo-style ratings with three ability layers, not BKT or deep knowledge tracing | Learns online from the first answer, needs no training data, cheap enough for a phone, explainable to a teacher, and works for skills a student hasn't tried yet (through its area). On held-out students it beats PFA and BKT on simulated data; see `npm run model` for real data. | Assumes one difficulty per skill and level; no forgetting. |
-| Questions chosen in the browser, checked on the server | Practice survives dropped connections; the server stays simple. | A modified client could pick its own questions, but only within its own condition. |
+| Questions chosen and marked in the browser, marked again on the server | Practice survives dropped connections, and the student sees a verdict at once; the stored verdict is the server's. | A modified client could pick its own questions, but only within its own condition. The server needs the checker's dependencies, so the image carries it as one bundled file. |
 | Questions generated from seeds | Reproducible forms and analyses, re-scoring, tiny storage. | Generators must never change what a seed means once a study has started. |
 | Codes instead of accounts | No personal data; children can join with a code on paper. | A lost code can't be recovered; anyone with the code can delete the record. |
 | SQLite in one file, Node without a framework | One container, no database server, easy backup; few dependencies to audit. | One server process; no horizontal scaling (a school doesn't need it). |
+| Phases judged by when an answer arrives, with five minutes' grace, against a log of the teacher's changes | The browser hears of a change only every 30 s and keeps answers while offline; an answer that comes late is kept and marked, not lost. | Late answers are the analysis's to report; a test not yet started is refused outright. |
 | Optimistic locking for boards (`baseUpdatedAt`, 409) rather than real-time collaboration | Simple and safe: no edit is silently lost. | Two people editing one board take turns rather than seeing each other live. |
 | The analysis written before the data (`src/model/analysis.ts`) and rehearsed on simulated classes | Guards against choosing the analysis after seeing the results. | — |
 
