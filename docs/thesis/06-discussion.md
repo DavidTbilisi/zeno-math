@@ -51,12 +51,13 @@ have not yet learned, which is where any learning rule gives the most.
 
 Zeno uses 75 % by default because Math Garden does [@klinkenberg2011]. That choice is not about learning per question.
 Jansen et al. [-@jansen2013success] varied the success rate in Math Garden to study its effect on anxiety, perceived
-competence and performance. Success rate affects how students feel about practice and how much they choose to do.
-**[TODO: check the paper's exact findings for each success-rate condition and state them here in one or two
-sentences.]** A simulated student does not get discouraged, so the simulation cannot weigh a lower target's gain per
-question against a possible loss of willingness to practise. In a classroom with a fixed timed session, the effect of
-discouragement may be smaller than in free home practice, because both groups practise for the same minutes; but
-students who are discouraged may still try less hard on each question.
+competence and performance. Children practised at one of three pre-set success rates for six weeks. The higher the
+rate, the more problems they attempted and the more their maths performance improved; anxiety improved equally in all
+conditions. In that study, then, an easier target led to more practice, and the extra practice led to more learning.
+The simulation has no such mechanism: a simulated student answers every question it is given, so it cannot weigh a
+lower target's gain per question against fewer questions attempted. In a classroom with a fixed timed session the
+difference may be smaller than in Math Garden's free practice, because both groups practise for the same minutes; but
+students who meet more failure may still work more slowly or try less hard on each question.
 
 The thesis therefore recommends reconsidering the target (`TARGET` in `src/model/policy.ts`) before a classroom study,
 and suggests 60 % as the candidate, but does not claim that 60 % is better for real students. A classroom study could

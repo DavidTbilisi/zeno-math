@@ -26,8 +26,8 @@ depends on. This chapter gives those answers, says what remains open, and lists 
    skills, 120 questions and 24-question tests does better, but still detects adaptive practice's advantage in at most
    11 % of studies. Detecting the small effects the simulation predicts would take on the order of several hundred to
    several thousand students per group, depending on the effect and on how strongly the pre-test predicts the
-   post-test. A real study should therefore be focused, run over several sessions, use a longer test and a 60 % target,
-   and pool many classes.
+   post-test. A real study should therefore be focused, run over several sessions, use a longer test, compare a 60 %
+   target with 75 % rather than assume it, and pool many classes.
 
 4. **Is the system ready to run the study?**
    Yes. Randomisation in blocks of four, counterbalanced parallel forms, teacher-controlled phases, equal practice time,
@@ -49,7 +49,8 @@ cannot say whether adaptive practice helps students learn more than a fixed sequ
 still useful. The answer depends on how students learn, in ways a simulation can describe but not settle. If adaptive
 practice does help, the effect on a short classroom test is small, and a single class could not detect it. And the
 conventional target of 75 % is a weaker choice than 60 % under every assumption tested, although the simulation cannot
-judge what a harder target does to students' willingness to practise.
+judge what a harder target does to students' willingness to practise; in Math Garden, children at higher success
+rates attempted more problems and improved more [@jansen2013success].
 
 ## 7.3 Future work
 

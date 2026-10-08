@@ -1,5 +1,6 @@
 % Works the code, README and docs cite, and the standard ones a thesis on this project needs.
-% Check every entry against the publisher's page (DOI, pages) before submitting: these were written from memory.
+% Every entry was checked on 2026-10-08 against Crossref, the publisher's page or a library record (Open Library, the
+% Library of Congress); DOIs are from Crossref. Where a detail could only be confirmed second-hand, the entry says so.
 
 % ---------- student models and adaptive practice ----------
 
@@ -10,6 +11,7 @@
   volume  = {98},
   pages   = {169--179},
   year    = {2016},
+  doi       = {10.1016/j.compedu.2016.03.017},
 }
 
 @article{klinkenberg2011,
@@ -20,6 +22,7 @@
   number  = {2},
   pages   = {1813--1824},
   year    = {2011},
+  doi       = {10.1016/j.compedu.2011.02.003},
 }
 
 @article{corbett1994,
@@ -30,22 +33,32 @@
   number  = {4},
   pages   = {253--278},
   year    = {1994},
+  doi       = {10.1007/BF01099821},
 }
 
 @inproceedings{pavlik2009pfa,
   author    = {Pavlik, Philip I. and Cen, Hao and Koedinger, Kenneth R.},
   title     = {Performance Factors Analysis -- A new alternative to knowledge tracing},
-  booktitle = {Proceedings of the 14th International Conference on Artificial Intelligence in Education (AIED 2009)},
+  booktitle = {Artificial Intelligence in Education: Building Learning Systems that Care: From Knowledge Representation to Affective Modelling (AIED 2009)},
+  editor    = {Dimitrova, Vania and Mizoguchi, Riichiro and du Boulay, Benedict and Graesser, Arthur C.},
+  series    = {Frontiers in Artificial Intelligence and Applications},
+  volume    = {200},
   pages     = {531--538},
   publisher = {IOS Press},
+  address   = {Amsterdam},
   year      = {2009},
+  doi       = {10.3233/978-1-60750-028-5-531},
 }
 
 @inproceedings{piech2015dkt,
   author    = {Piech, Chris and Bassen, Jonathan and Huang, Jonathan and Ganguli, Surya and Sahami, Mehran and Guibas, Leonidas J. and Sohl-Dickstein, Jascha},
   title     = {Deep knowledge tracing},
   booktitle = {Advances in Neural Information Processing Systems 28 (NIPS 2015)},
+  editor    = {Cortes, C. and Lawrence, N. and Lee, D. and Sugiyama, M. and Garnett, R.},
+  volume    = {28},
+  publisher = {Curran Associates, Inc.},
   year      = {2015},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2015/hash/bac9162b47c56fc8a4d2a519803d51b3-Abstract.html},
 }
 
 @article{pelanek2015metrics,
@@ -56,6 +69,7 @@
   number  = {2},
   pages   = {1--19},
   year    = {2015},
+  doi       = {10.5281/zenodo.3554665},
 }
 
 @article{feng2009assistments,
@@ -66,7 +80,8 @@
   number  = {3},
   pages   = {243--266},
   year    = {2009},
-  note    = {The paper usually cited for the ASSISTments 2009--2010 data sets},
+  doi       = {10.1007/s11257-009-9063-7},
+  note    = {The ASSISTments system; the 2009--2010 data set is cited as assistments2010data},
 }
 
 @article{jansen2013success,
@@ -76,13 +91,16 @@
   volume  = {24},
   pages   = {190--197},
   year    = {2013},
-  note    = {Math Garden at different success rates; relevant to the 60 \% versus 75 \% target},
+  doi       = {10.1016/j.lindif.2012.12.014},
+  note    = {Math Garden at three pre-set success rates; relevant to the 60 \% versus 75 \% target},
 }
 
 @book{vygotsky1978,
   author    = {Vygotsky, L. S.},
   title     = {Mind in Society: The Development of Higher Psychological Processes},
+  editor    = {Cole, Michael and John-Steiner, Vera and Scribner, Sylvia and Souberman, Ellen},
   publisher = {Harvard University Press},
+  address   = {Cambridge, MA},
   year      = {1978},
 }
 
@@ -96,6 +114,7 @@
   number  = {9},
   pages   = {920--925},
   year    = {2006},
+  doi       = {10.1016/j.jclinepi.2006.02.007},
 }
 
 @article{welch1947,
@@ -106,6 +125,7 @@
   number  = {1--2},
   pages   = {28--35},
   year    = {1947},
+  doi       = {10.1093/biomet/34.1-2.28},
 }
 
 @book{cohen1988,
@@ -113,6 +133,7 @@
   title     = {Statistical Power Analysis for the Behavioral Sciences},
   edition   = {2nd},
   publisher = {Lawrence Erlbaum Associates},
+  address   = {Hillsdale, NJ},
   year      = {1988},
 }
 
@@ -124,8 +145,10 @@
   booktitle = {Usability Evaluation in Industry},
   editor    = {Jordan, P. W. and Thomas, B. and Weerdmeester, B. A. and McClelland, I. L.},
   publisher = {Taylor \& Francis},
+  address   = {London},
   pages     = {189--194},
   year      = {1996},
+  note      = {Pages as cited by Bangor et al. (2009); the 1996 printing was not seen},
 }
 
 @article{bangor2009sus,
@@ -141,9 +164,12 @@
 @inproceedings{nielsen1993,
   author    = {Nielsen, Jakob and Landauer, Thomas K.},
   title     = {A mathematical model of the finding of usability problems},
-  booktitle = {Proceedings of INTERCHI '93},
+  booktitle = {Proceedings of the INTERACT '93 and CHI '93 Conference on Human Factors in Computing Systems (INTERCHI '93)},
   pages     = {206--213},
+  publisher = {ACM},
+  address   = {New York},
   year      = {1993},
+  doi       = {10.1145/169059.169166},
 }
 
 % ---------- software ----------
@@ -151,36 +177,35 @@
 @misc{excalidraw,
   title        = {Excalidraw},
   howpublished = {\url{https://github.com/excalidraw/excalidraw}},
-  note         = {Version 0.18; the whiteboard Zeno is built on},
+  note         = {Version 0.18.1; the whiteboard Zeno is built on},
 }
 
 @misc{mathjax,
   title        = {{MathJax}},
   howpublished = {\url{https://www.mathjax.org}},
-  note         = {Version 3; LaTeX to SVG},
+  note         = {Version 3.2 (mathjax-full 3.2.2); LaTeX to SVG},
 }
 
 % ---------- added for chapters 1-2 ----------
 
-% added; verify
 @book{elo1978,
   author    = {Elo, Arpad E.},
   title     = {The Rating of Chessplayers, Past and Present},
-  publisher = {Arco},
+  publisher = {Arco Publishing},
   address   = {New York},
   year      = {1978},
 }
 
-% added; verify
 @book{rasch1960,
   author    = {Rasch, Georg},
   title     = {Probabilistic Models for Some Intelligence and Attainment Tests},
+  series    = {Studies in Mathematical Psychology},
+  number    = {1},
   publisher = {Danish Institute for Educational Research},
   address   = {Copenhagen},
   year      = {1960},
 }
 
-% added; verify
 @inproceedings{yudelson2013,
   author    = {Yudelson, Michael V. and Koedinger, Kenneth R. and Gordon, Geoffrey J.},
   title     = {Individualized {Bayesian} Knowledge Tracing Models},
@@ -189,29 +214,32 @@
   volume    = {7926},
   pages     = {171--180},
   publisher = {Springer},
+  address   = {Berlin, Heidelberg},
   year      = {2013},
+  doi       = {10.1007/978-3-642-39112-5_18},
 }
 
-% added; verify
 @inproceedings{khajah2016,
   author    = {Khajah, Mohammad and Lindsey, Robert V. and Mozer, Michael C.},
   title     = {How deep is knowledge tracing?},
   booktitle = {Proceedings of the 9th International Conference on Educational Data Mining (EDM 2016)},
+  editor    = {Barnes, Tiffany and Chi, Min and Feng, Mingyu},
   pages     = {94--101},
   year      = {2016},
+  url       = {https://educationaldatamining.org/EDM2016/proceedings/paper_144.pdf},
 }
 
-% added; verify
 @article{wilson2019,
   author  = {Wilson, Robert C. and Shenhav, Amitai and Straccia, Mark and Cohen, Jonathan D.},
   title   = {The Eighty Five Percent Rule for optimal learning},
   journal = {Nature Communications},
   volume  = {10},
+  number  = {1},
   pages   = {4646},
   year    = {2019},
+  doi       = {10.1038/s41467-019-12552-4},
 }
 
-% added; verify
 @article{bloom1984,
   author  = {Bloom, Benjamin S.},
   title   = {The 2 Sigma Problem: The Search for Methods of Group Instruction as Effective as One-to-One Tutoring},
@@ -220,9 +248,9 @@
   number  = {6},
   pages   = {4--16},
   year    = {1984},
+  doi       = {10.3102/0013189X013006004},
 }
 
-% added; verify
 @article{vanlehn2011,
   author  = {VanLehn, Kurt},
   title   = {The relative effectiveness of human tutoring, intelligent tutoring systems, and other tutoring systems},
@@ -231,9 +259,9 @@
   number  = {4},
   pages   = {197--221},
   year    = {2011},
+  doi       = {10.1080/00461520.2011.611369},
 }
 
-% added; verify
 @article{kulik2016,
   author  = {Kulik, James A. and Fletcher, J. D.},
   title   = {Effectiveness of Intelligent Tutoring Systems: A Meta-Analytic Review},
@@ -242,9 +270,9 @@
   number  = {1},
   pages   = {42--78},
   year    = {2016},
+  doi       = {10.3102/0034654315581420},
 }
 
-% added; verify
 @article{rohrer2007,
   author  = {Rohrer, Doug and Taylor, Kelli},
   title   = {The shuffling of mathematics problems improves learning},
@@ -253,9 +281,9 @@
   number  = {6},
   pages   = {481--498},
   year    = {2007},
+  doi       = {10.1007/s11251-007-9015-8},
 }
 
-% added; verify
 @article{fawcett2006,
   author  = {Fawcett, Tom},
   title   = {An introduction to {ROC} analysis},
@@ -264,9 +292,9 @@
   number  = {8},
   pages   = {861--874},
   year    = {2006},
+  doi       = {10.1016/j.patrec.2005.10.010},
 }
 
-% added; verify
 @article{brier1950,
   author  = {Brier, Glenn W.},
   title   = {Verification of forecasts expressed in terms of probability},
@@ -275,9 +303,9 @@
   number  = {1},
   pages   = {1--3},
   year    = {1950},
+  doi       = {10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2},
 }
 
-% added; verify
 @article{hattie2007,
   author  = {Hattie, John and Timperley, Helen},
   title   = {The power of feedback},
@@ -286,9 +314,9 @@
   number  = {1},
   pages   = {81--112},
   year    = {2007},
+  doi       = {10.3102/003465430298487},
 }
 
-% added; verify
 @article{shute2008,
   author  = {Shute, Valerie J.},
   title   = {Focus on formative feedback},
@@ -297,9 +325,9 @@
   number  = {1},
   pages   = {153--189},
   year    = {2008},
+  doi       = {10.3102/0034654307313795},
 }
 
-% added; verify
 @article{brown1978,
   author  = {Brown, John Seely and Burton, Richard R.},
   title   = {Diagnostic models for procedural bugs in basic mathematical skills},
@@ -308,9 +336,9 @@
   number  = {2},
   pages   = {155--192},
   year    = {1978},
+  doi       = {10.1207/s15516709cog0202_4},
 }
 
-% added; verify
 @article{lord1967,
   author  = {Lord, Frederic M.},
   title   = {A paradox in the interpretation of group comparisons},
@@ -319,18 +347,70 @@
   number  = {5},
   pages   = {304--305},
   year    = {1967},
+  doi       = {10.1037/h0025105},
 }
 
-% added; verify (URL and access date)
 @misc{geogebraclassroom,
   title        = {{GeoGebra} Classroom},
+  organization = {GeoGebra},
   howpublished = {\url{https://www.geogebra.org/classroom}},
   note         = {Accessed 2026-10-08},
 }
 
-% added; verify (URL and access date; Desmos Classroom has been run by Amplify since 2022, check its current name)
 @misc{desmosclassroom,
-  title        = {Desmos Classroom},
-  howpublished = {\url{https://teacher.desmos.com}},
-  note         = {Accessed 2026-10-08},
+  title        = {Amplify Classroom (formerly Desmos Classroom)},
+  organization = {Amplify},
+  howpublished = {\url{https://classroom.amplify.com/}},
+  note         = {Renamed from Desmos Classroom on 28 June 2025; accessed 2026-10-08},
+}
+
+% ---------- added when the references were checked ----------
+
+@misc{assistments2010data,
+  author       = {{ASSISTments}},
+  title        = {{ASSISTments} 2009--2010 Data: Skill Builder Data},
+  howpublished = {\url{https://sites.google.com/site/assistmentsdata/home/2009-2010-assistment-data}},
+  note         = {The corrected skill builder file; the data page asks to be cited by its link. Accessed 2026-10-08},
+}
+
+@article{jansen2016selfadapting,
+  author  = {Jansen, Brenda R. J. and Hofman, Abe D. and Savi, Alexander O. and Visser, Ingmar and Van der Maas, Han L. J.},
+  title   = {Self-adapting the success rate when practicing math},
+  journal = {Learning and Individual Differences},
+  volume  = {51},
+  pages   = {1--10},
+  year    = {2016},
+  doi     = {10.1016/j.lindif.2016.08.027},
+  note    = {Gives Math Garden's three target success rates (60, 75 and 90 \%)},
+}
+
+@misc{khanmastery,
+  author       = {{Khan Academy}},
+  title        = {How do {Khan Academy's} Mastery levels work?},
+  howpublished = {\url{https://support.khanacademy.org/hc/en-us/articles/5548760867853}},
+  note         = {Khan Academy Help Center; last edited 2023-08-21, accessed 2026-10-08},
+}
+
+@misc{georgia2023pdp,
+  author       = {{Parliament of Georgia}},
+  title        = {Law of {Georgia} on Personal Data Protection, No 3144-{XI}მს-{X}მპ},
+  year         = {2023},
+  howpublished = {\url{https://matsne.gov.ge/en/document/view/5827307}},
+  note         = {Adopted 14 June 2023; Article 7 (minors) in force from 1 March 2024. Accessed 2026-10-08},
+}
+
+@misc{gdpr2016,
+  author       = {{European Parliament and Council of the European Union}},
+  title        = {Regulation ({EU}) 2016/679 (General Data Protection Regulation)},
+  year         = {2016},
+  howpublished = {Official Journal of the European Union, L 119, 4.5.2016, pp. 1--88. \url{https://eur-lex.europa.eu/eli/reg/2016/679/oj}},
+}
+
+@book{oecd2019georgia,
+  author    = {Li, Rachel Ruochen and Kitchen, Hannah and George, Bert and Richardson, Mary and Fordham, Elizabeth},
+  title     = {{OECD} Reviews of Evaluation and Assessment in Education: {Georgia}},
+  publisher = {OECD Publishing},
+  address   = {Paris},
+  year      = {2019},
+  doi       = {10.1787/94dc370e-en},
 }

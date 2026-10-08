@@ -193,7 +193,7 @@ evidence) are also chosen by grid search on the training students and the best p
 ### Data
 
 **ASSISTments.** The real-data evaluation uses the ASSISTments 2009–2010 "skill builder" data set
-[@feng2009assistments]: first attempts by several thousand US middle-school students at maths problems, each
+[@assistments2010data], from the ASSISTments system [@feng2009assistments]: first attempts by several thousand US middle-school students at maths problems, each
 tagged with the skills it practises. `npm run import-assistments` (`scripts/import-assistments.ts`) prepares it:
 
 - it keeps main problems only, not the scaffolding questions that a wrong answer opens;
@@ -371,9 +371,9 @@ higher target pushes practice towards what is already known.
 
 This does not by itself make 60 % the right target for a class. A simulated learner does not get discouraged, while
 real students may lose motivation when they get many questions wrong; that is why Math Garden aims at about 75 %
-[@klinkenberg2011; @jansen2013success]. **[TODO: check what @jansen2013success found about success rate, anxiety
-and performance, and summarise it here in one sentence.]** The simulation can weigh only the learning side of that
-trade-off. Still, it is the strongest reason to reconsider the target
+[@klinkenberg2011]. In Math Garden, children set to a higher success rate attempted more problems and improved more
+[@jansen2013success], so a lower target may teach more per question but lead to fewer questions. The simulation can
+weigh only the learning side of that trade-off. Still, it is the strongest reason to reconsider the target
 (`TARGET` in `src/model/policy.ts`) before a real study.
 
 **Limits.** The grid holds 144 comparisons, so a few intervals will exclude zero by chance; the tables are read as

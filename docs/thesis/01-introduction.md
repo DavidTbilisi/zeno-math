@@ -13,11 +13,13 @@ A class, however, usually gets one sequence of questions for everyone. The textb
 worksheet is fixed before the lesson starts. A student who is ahead spends the lesson on questions that are too easy,
 and a student who is behind spends it on questions that are too hard. Adaptive practice systems address this by
 estimating what each student knows and choosing the next question from that estimate. Several such systems exist and
-are used at scale, but most are commercial services, hosted abroad, and work only in the languages of their home
-markets. A school that wants to keep pupils' data on its own premises, that has unreliable Wi-Fi and shared devices,
-and that teaches in Georgian or Russian has few options. **[CITATION NEEDED: evidence on the availability of adaptive
-maths tools in Georgian schools, e.g. a Ministry of Education or OECD report — or soften the claim to the author's
-own experience.]**
+are used at scale, but they are hosted services that need accounts and send pupils' answers to the provider, and most
+work only in the languages of their home markets; Khan Academy, translated into Georgian by volunteers, is an
+exception (section 2.5). A school that wants to keep pupils' data on its own premises, that has unreliable Wi-Fi and
+shared devices, and that teaches in Georgian or Russian has few options. No published survey of adaptive practice
+tools in Georgian schools could be found; the OECD's review of evaluation and assessment in Georgia
+[@oecd2019georgia] is the closest general source on the country's schools and their digital resources.
+**[TODO: add the author's own experience of Georgian schools here, if it supports the claim.]**
 
 There is also a research gap. Adaptive systems are usually evaluated as whole products, against no practice or
 against classroom teaching as usual. The narrower question — does the *choice of questions by a learner model* help,
@@ -57,7 +59,7 @@ the rest. It asks five sub-questions:
 
 1. **How well does the learner model predict real students' answers, compared with standard student models?** The
    model is evaluated on a public data set of real students' answers (ASSISTments 2009–2010
-   [@feng2009assistments]) and on simulated classes, against Performance Factors Analysis, Bayesian Knowledge Tracing
+   [@assistments2010data]) and on simulated classes, against Performance Factors Analysis, Bayesian Knowledge Tracing
    and simple baselines.
 2. **Under which assumptions about learning would adaptive practice help, and how robust is that?** A simulation study
    runs both conditions in worlds that differ in how answers arise from knowledge, how much a question teaches, how
