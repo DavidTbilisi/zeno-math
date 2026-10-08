@@ -18,7 +18,7 @@ its test forms) is random, so its effect estimate varies between runs while its 
 | Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
 
 The ASSISTments data set is not in the repository. Download `skill_builder_data.csv` (the corrected 2009–2010
-version) from the ASSISTments data site [@feng2009assistments].
+version) from the ASSISTments data site [@assistments2010data].
 
 The simulations use the 38 skills Zeno had when the results in `docs/results/` were made (`SIM_SKILLS` in
 `src/model/simulate.ts`). Skills added later do not change any simulated number.

@@ -19,10 +19,12 @@ Turning this into a number requires a measure of difficulty *for this learner*. 
 the learner answers correctly. Math Garden (Rekentuin), a Dutch adaptive practice system used by many primary
 schools, chooses items so that each child succeeds about 75 % of the time [@klinkenberg2011]. A field experiment in
 Math Garden assigned children to different target success rates and looked at maths anxiety, perceived competence
-and performance [@jansen2013success]. **[TODO: state the three targets and the main findings from the paper itself;
-in particular whether the easier setting led to more items practised and how that related to performance.]** The
-choice of target is a trade-off between how much a single question can teach and how willing a learner is to keep
-going.
+and performance [@jansen2013success]. Its 207 children in grades 3–6 practised for six weeks in a control condition or
+one of three experimental conditions with a pre-set success rate; Math Garden's three settings aim at 60, 75 and 90 %
+[@jansen2016selfadapting]. Maths performance improved only in the experimental conditions, and the higher the
+success rate, the more problems the children attempted and the more their performance improved. Maths anxiety
+improved equally in all conditions, and perceived competence only modestly. The choice of target is therefore a
+trade-off between how much a single question can teach and how much practice a learner is willing to do.
 
 A theoretical argument points the same way from the other side. For a broad class of learning algorithms trained by
 gradient descent, @wilson2019 show that learning is fastest when the error rate is about 15.9 %, that is, at a success
@@ -47,8 +49,8 @@ Two systems are close to Zeno's design:
   ratings start from defaults and move with the answers. Zeno's learner model follows this approach.
 - **ASSISTments** [@feng2009assistments] is a web-based system from Worcester Polytechnic Institute, used in US middle
   schools, that tutors while it assesses: a wrong answer opens a sequence of scaffolding questions. Its logs of
-  students' answers have been released as public data sets. The 2009–2010 "skill builder" set is one of the most
-  used benchmarks for student models, and Zeno uses it to evaluate its learner model on real answers (section 5.2).
+  students' answers have been released as public data sets. The 2009–2010 "skill builder" set
+  [@assistments2010data] is one of the most used benchmarks for student models, and Zeno uses it to evaluate its learner model on real answers (section 5.2).
 
 Item selection is not only about difficulty. Mixing practice on different skills (*interleaving*), rather than
 practising one skill in a block, improved later test scores in a mathematics experiment by @rohrer2007. Zeno's
@@ -212,23 +214,25 @@ platforms.
 
 **GeoGebra Classroom** [@geogebraclassroom] lets a teacher share GeoGebra activities with a class and see each
 student's work live. GeoGebra itself is free for non-commercial use and offers graphing, geometry, a computer algebra
-system and a large library of user-made activities. **Desmos Classroom** [@desmosclassroom] offers teacher-paced
-activities built on the Desmos graphing calculator, with a dashboard of student responses. Both are strong tools for
+system and a large library of user-made activities. **Amplify Classroom**, called Desmos Classroom until June 2025
+[@desmosclassroom], offers teacher-paced activities built on the Desmos graphing calculator, with a dashboard of
+student responses. Both are strong tools for
 exploration and for the teacher to see a class's work. Neither chooses questions for each student from a model of
 what they know: the activity is the same for everyone, and the teacher adapts. Both are hosted services that require
-the teacher to have an account and send students' work to the provider's servers. **[TODO: check the current
-interface languages of GeoGebra Classroom and Desmos Classroom, in particular Georgian, before stating anything about
-them.]**
+the teacher to have an account and send students' work to the provider's servers. Neither offers its classroom in
+Georgian. GeoGebra's apps are translated into Georgian, but the geogebra.org site that hosts GeoGebra Classroom offers
+39 languages without it; Amplify Classroom offers 12, Russian among them but not Georgian (both checked in October
+2026).
 
-Adaptive practice platforms (Math Garden, ASSISTments, and commercial products such as Khan Academy's exercises
-[CITATION NEEDED: a source describing Khan Academy's mastery system]) do choose questions per student, but they are
-separate from the board the teacher works on, are hosted by their providers, and offer the curricula and languages of
-their home markets.
+Adaptive practice platforms (Math Garden, ASSISTments, and Khan Academy's exercises, which track each skill through
+mastery levels [@khanmastery]) do choose or sequence questions per student, but they are separate from the board the
+teacher works on and are hosted by their providers, with accounts. Most offer the curricula and languages of their
+home markets; Khan Academy is an exception, with a Georgian translation made by volunteers.
 
 | | Whiteboard for teaching | Questions chosen per student | Self-hosted, no accounts | Georgian interface |
 |---|---|---|---|---|
-| GeoGebra Classroom | yes | no | no | **[TODO: verify]** |
-| Desmos Classroom | partly (activities) | no | no | **[TODO: verify]** |
+| GeoGebra Classroom | yes | no | no | no (the apps are) |
+| Amplify (Desmos) Classroom | partly (activities) | no | no | no |
 | Math Garden | no | yes | no | no |
 | ASSISTments | no | partly (scaffolding on wrong answers) | no | no |
 | Zeno | yes | yes (adaptive condition) | yes | yes |

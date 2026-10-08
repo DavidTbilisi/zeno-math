@@ -26,7 +26,10 @@ teacher, cost nothing, and keep working without maintenance.
 **Three languages, and children's data.** Lessons in Georgia are taught in Georgian, and some schools teach in
 Russian; English is needed for the wider research audience. The users are mostly minors, so any data collected about
 them must be kept to the minimum the study needs, must not identify them, and must be deletable by the student.
-[CITATION NEEDED: Georgian Law on Personal Data Protection, or the GDPR's provisions on children's data]
+Georgia's Law on Personal Data Protection, in force since March 2024, lets a minor consent to the processing of their
+data from the age of 16; below that, a parent or legal representative must consent, and the processing must serve the
+child's best interests (Article 7) [@georgia2023pdp]. The GDPR sets the same age of 16 for online services in
+Article 8 [@gdpr2016].
 
 On top of this, Zeno carries a research question (chapter 1): does choosing practice questions with a learner model
 help students learn more than a fixed sequence? Answering it needs a randomised comparison that a teacher can run in
@@ -59,7 +62,7 @@ met, so that it can be checked in the code or in the tests described in chapter 
 | Id | Requirement | Met by |
 |---|---|---|
 | NFR-1 | **Self-hosted.** Runs on one machine with one container and one database file; no cloud service. | Docker image with Node and SQLite (`docker compose up`); Caddy for HTTPS |
-| NFR-2 | **No dependence on the internet.** Nothing is loaded from a CDN. | Fonts, MathJax and all libraries are bundled; the one optional exception is the Excalidraw library browser |
+| NFR-2 | **No dependence on the internet.** Nothing is loaded from a CDN. | Fonts, MathJax [@mathjax] and all libraries are bundled; the one optional exception is the Excalidraw library browser |
 | NFR-3 | **Survives a dropped connection mid-lesson.** Class practice continues and no answer is lost. | Plan carried forward in the browser and an outbox in `localStorage` (`src/learner.ts`); idempotent uploads by `client_id` |
 | NFR-4 | **No personal data.** No names or emails; exports cannot be used to sign in. | Student codes; exports name students `s1`, `s2`, … (`server/research.ts`) |
 | NFR-5 | **Reproducible study materials.** The same question and the same test form can be rebuilt at any time. | Questions generated from seeds; forms derived from the class code by a stable hash |
