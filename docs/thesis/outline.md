@@ -3,6 +3,14 @@
 A chapter plan for a bachelor's thesis on Zeno. For each chapter it gives what to argue, where the work is in the
 code, and the evidence that backs it. Citation keys are in [references.bib](references.bib).
 
+**Draft chapters:** [1 Introduction](01-introduction.md) · [2 Background](02-background.md) ·
+[3 Requirements and design](03-design.md) · [4 Implementation](04-implementation.md) ·
+[5 Evaluation](05-evaluation.md) · [6 Discussion](06-discussion.md) · [7 Conclusion](07-conclusion.md) ·
+[D Reproducing every number](appendix-d-reproducing.md). They are Pandoc Markdown with `[@key]` citations; what is
+still open is marked `[TODO: …]` or `[CITATION NEEDED: …]`. To build a PDF (with pandoc and a LaTeX engine
+installed): `pandoc 0*.md appendix-d-reproducing.md --citeproc --bibliography references.bib
+-o thesis.pdf`.
+
 **Working title:** *Adaptive practice in a self-hosted mathematics whiteboard: design, implementation, and
 evaluation before the classroom.*
 
