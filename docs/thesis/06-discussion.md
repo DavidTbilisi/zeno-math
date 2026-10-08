@@ -93,6 +93,15 @@ d values for adaptive practice vary between class sizes in the same cell, so the
 not a plan. The conclusion does not depend on the exact figure: if adaptive practice helps by as much as the simulation
 suggests, detecting it on a short test needs more students than one school, and probably more than a few.
 
+Those sizes are for the 75 % target. At 60 %, the focused design was simulated directly with up to 320 students, and
+the picture changes (Tables 5.9 and 5.10). The significant results are then almost all in adaptive practice's favour,
+and under zpd learning, where a question teaches most when the learner has an even chance, 180 to 1,100 students in
+total give 80 % power in the elo and irt2pl worlds: a few hundred per group, which is several classes rather than
+dozens of schools. Under flat learning, the effect stays too small to detect at any size a study could reach. A
+focused study at 60 % is therefore feasible, but it tests two things at once: whether adaptive practice helps, and
+whether learning is concentrated near an even chance. A null result at that size would count against the second as
+much as the first.
+
 ## 6.4 What a classroom study must look like
 
 From the simulation and power results, a classroom study that can answer the research question needs:
@@ -102,7 +111,9 @@ From the simulation and power results, a classroom study that can answer the res
 - **A longer, more reliable test.** At least 24 questions on those skills, with the parallel forms checked for
   difficulty on the pre-test as now.
 - **A reconsidered target.** 60 % rather than 75 %, or both targets as separate arms.
-- **Many classes.** Several hundred students per group at the very least, which means several schools. Classes then
+- **Many classes.** At a 60 % target, 180 to 1,100 students in total for 80 % power if learning is concentrated near
+  an even chance (Table 5.10), so about 90 to 550 per group; at 75 %, thousands. That means several classes,
+  probably in more than one school. Classes then
   become a level in the analysis; Zeno's ANCOVA already includes the class as a factor, but with many classes a
   multilevel model would be more appropriate.
 - **A delayed post-test,** to measure retention as well as immediate gain.
@@ -181,5 +192,7 @@ and a third arm would need small changes.
 The thesis has built a system that is ready to run a classroom study, checked that its parts work, and found two
 things a classroom study must take into account before it starts. First, whether adaptive practice helps depends on
 how students learn, and a 60 % target is more robust than the conventional 75 %. Second, the study as first planned
-could not detect the effect, and one that could would have to be far larger and more focused than a single class.
+could not detect the effect. One that could would have to be more focused, aim at 60 %, and have a few hundred
+students, several classes rather than one, and it could detect the effect only if questions near an even chance teach
+more than others.
 Neither finding answers the research question, but both change how it should be asked.

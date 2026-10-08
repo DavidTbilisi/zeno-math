@@ -495,6 +495,59 @@ with twice the questions and a test twice as long, raises power in every world. 
 adaptive stays at 11 % or below even with 160 students, while the share for fixed reaches 33–41 % with 160 students, at the
 faster learning rate or in the bkt world. These power runs use the planned 75 % target.
 
+**At a 60 % target, the focused design detects adaptive practice instead.** Section 5.3 found 60 % the one target
+never worse than the fixed sequence, so the focused design was run again with adaptive practice aiming at 60 %
+(`--target 0.6`), and with a fourth size of 320 students. Table 5.9 gives the result in the form of Table 5.8.
+
+| design | world | 40 students | 80 students | 160 students | 320 students |
+|---|---|---|---|---|---|
+| 4 skills, 120 questions, 24-question tests, 60 % target | elo | 2–20 % (A 20, F 4) | 5–46 % (A 46, F 14) | 8–76 % (A 76, F 13) | 8–91 % (A 91, F 24) |
+| | irt2pl | 2–20 % (A 20, F 4) | 6–42 % (A 42, F 7) | 11–71 % (A 71, F 15) | 10–89 % (A 89, F 27) |
+| | bkt | 2–21 % (A 21, F 3) | 1–45 % (A 45, F 2) | 2–71 % (A 71, F 1) | 3–96 % (A 96, F 2) |
+
+Table: Power of the planned ANCOVA for the focused design with adaptive practice aiming at 60 %, range over each
+world's assumption sets (`docs/results/power-focused-60.csv`, from `npm run simulate -- --power --target 0.6 --skills
+linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320`).
+
+At 60 %, the studies that come out significant are nearly all in adaptive practice's favour: with 320 students up to
+89–96 % of studies in each world, against at most 27 % for fixed (at the faster learning rate with flat learning in
+the elo and irt2pl worlds) and at most 2 % for fixed in the bkt world. At 75 %, the same design detected mostly
+fixed's advantage. The change in target matters more than the world.
+
+**What decides the power is how a question teaches.** Table 5.10 gives, for each assumption set, the number of
+students a study would need for 80 % power. It is estimated from the mean t-statistic of the effect at 320 students:
+t grows with the square root of the class size, and 80 % power needs a t of about 2.8, so the size needed is about
+320 × (2.8 / t)². Between 160 and 320 students, t grew by a factor of 1.2 to 1.7 where the effect was clear, close to
+the √2 the estimate assumes. The estimate agrees with the simulated power where the two can be compared: it puts 180
+students at 80 % power for the elo world under zpd learning with transfer 0.3 at the faster rate, which had 76 %
+power at 160 and 91 % at 320. Sizes well beyond 320 are extrapolations and show only the order of magnitude.
+
+| world | learning | rate 0.02, transfer 0 | rate 0.02, transfer 0.3 | rate 0.1, transfer 0 | rate 0.1, transfer 0.3 |
+|---|---|---:|---:|---:|---:|
+| elo | zpd | 1,100 | 670 | 430 | 180 |
+| | flat | 13,000 | 7,500 | 1,800 (F) | > 100,000 |
+| irt2pl | zpd | 950 | 600 | 410 | 180 |
+| | flat | 18,000 | 8,800 | 2,000 (F) | 43,000 |
+| bkt | zpd | 310 | 180 | 43,000 | 65,000 |
+| | flat | 7,600 | 1,300 | > 100,000 | > 100,000 |
+
+Table: Students in total (both groups) for 80 % power with the focused design at a 60 % target, estimated from the
+mean t-statistic at 320 students in `docs/results/power-focused-60.csv`. (F): the effect detected is fixed's
+advantage; in every other cell it is adaptive practice's.
+
+- **Under zpd learning,** where a question teaches most when the learner has an even chance, a study of 180 to 1,100
+  students in total has 80 % power in the elo and irt2pl worlds, the fewer the faster students learn and the more
+  practice transfers. In the bkt world the same holds at the slower rate, at 180 to 310 students.
+- **Under flat learning,** where every question teaches the same, the difference on the test is too small to detect
+  with any number of students a study could recruit: thousands at the least, and at the faster rate the slight
+  advantage is sometimes fixed's.
+
+So a focused study at 60 % with a few hundred students, about 90 to 550 per group, would have a good chance of
+detecting adaptive practice's advantage if questions near an even chance teach more than others, and would very
+likely find nothing if they do not. That makes the study a test of the zpd assumption as much as of adaptive
+practice, which is worth stating in its pre-registration: a null result at that size would be evidence against
+learning being concentrated near the target, not only against adaptive practice.
+
 **What this means for the thesis and for a real study.** The thesis cannot rest on a significant classroom result,
 even if a class were found: the planned study would very likely find nothing whatever the truth. It rests instead on
 the model's accuracy on real answers (5.2), the simulations with their assumptions stated (5.3), the dry run showing
@@ -504,10 +557,8 @@ design. That design would have:
 - **few skills**, so that each gets many questions;
 - **longer practice and longer tests**, so that the gain is large enough for the test to see;
 - **a 60 % target**, the one setting that 5.3 found never worse than fixed;
-- **a size chosen by a new power run** at that target. **[TODO: run
-  `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320`
-  with the target set to 0.6 (the `TARGET` in `src/model/policy.ts`, or the simulation's own option if added), and
-  report the class size needed for 80 % power in the elo and irt2pl worlds.]**
+- **several hundred students**, about 180 to 1,100 in total by Table 5.10, which means several classes and probably
+  several schools.
 
 ## 5.5 Usability
 

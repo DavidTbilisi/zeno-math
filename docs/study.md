@@ -269,22 +269,44 @@ share of studies that came out significant for adaptive (A) or for fixed (F):
 
 The second design is `--skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160`.
 
+**At a 60 % target the focused design detects adaptive practice.** `--target 0.6` sets what adaptive practice aims
+at. The focused design at 60 %, with a fourth size of 320 students (`docs/results/power-focused-60.csv`):
+
+| world | 40 students | 80 students | 160 students | 320 students |
+|---|---|---|---|---|
+| elo | 2–20 % (A 20, F 4) | 5–46 % (A 46, F 14) | 8–76 % (A 76, F 13) | 8–91 % (A 91, F 24) |
+| irt2pl | 2–20 % (A 20, F 4) | 6–42 % (A 42, F 7) | 11–71 % (A 71, F 15) | 10–89 % (A 89, F 27) |
+| bkt | 2–21 % (A 21, F 3) | 1–45 % (A 45, F 2) | 2–71 % (A 71, F 1) | 3–96 % (A 96, F 2) |
+
+Whether it can be detected depends on how a question teaches. The power output's `t` column is the mean t-statistic;
+it grows with the square root of the class size, and 80 % power needs about 2.8, so students × (2.8 / t)² is the size
+needed. From the 320-student rows:
+
+- **zpd learning** (a question teaches most at an even chance): 180 to 1,100 students in total in the elo and irt2pl
+  worlds, fewer the faster students learn and the more practice transfers; 180 to 310 in the bkt world at the slower
+  rate.
+- **flat learning** (every question teaches the same): thousands at the least, and at the faster rate the slight
+  advantage is sometimes fixed's.
+
 **What the power table means for the thesis.** As designed, the study can't detect the difference the simulation
 predicts:
 
 - **The gains are too small for the test.** With 60 questions over 12 skills, each skill gets about five questions,
   and the true gains are a few points. A 12-question test can't see that against how much students differ. Even the
   elo-world gains that look clear in true ability (d up to 0.8) shrink to d ≈ 0.05 on the test.
-- **A focused study shows fixed more often than adaptive.** Concentrating the practice on fewer skills, with more
-  questions and a longer test, raises the power. But what it then detects is mostly the fixed sequence's advantage,
-  at the faster learning rate or in the bkt world.
+- **A focused study at 75 % shows fixed more often than adaptive.** Concentrating the practice on fewer skills, with
+  more questions and a longer test, raises the power. But what it then detects is mostly the fixed sequence's
+  advantage, at the faster learning rate or in the bkt world.
+- **A focused study at 60 % could detect adaptive practice,** with a few hundred students, if questions near an even
+  chance teach more than others. A null result at that size would be evidence against that as much as against
+  adaptive practice.
 
 So the thesis can't rest on a significant class result. It rests on four things:
 
 1. the model's accuracy on real answers;
 2. the simulations, with their assumptions stated;
 3. the dry run, showing the system and analysis are ready;
-4. this power analysis, as the reason a real study needs a focused design and probably a 60 % target.
+4. this power analysis, as the reason a real study needs a focused design, a 60 % target and a few hundred students.
 
 The CSVs behind these tables are in [`docs/results/`](results/).
 
