@@ -47,23 +47,29 @@ export type AdaptiveOptions = {
   target?: number;
 };
 
-/** The skills the student may practise now: prerequisites met and not mastered (all of them once everything is). */
-export function openSkills(model: EloModel, student: string, skills: readonly SkillId[]): SkillId[] {
-  const p = (skill: SkillId, level: Level) => model.predict({ student, skill, level });
-  const unmastered = skills.filter((k) => p(k, 3) < MASTERED_AT);
-  const ready = unmastered.filter((k) => (PREREQUISITES[k] ?? []).every((pre) => !skills.includes(pre) || p(pre, 2) >= UNLOCK_AT));
-  return ready.length ? ready : unmastered.length ? unmastered : [...skills];
+/** The open skills, and the hard-question predictions they were judged by (adaptiveChoice needs those again). */
+function open(model: EloModel, student: string, skills: readonly SkillId[]): { open: SkillId[]; hard: Map<SkillId, number> } {
+  const hard = new Map(skills.map((k) => [k, model.predictAt(student, k, 3)] as const));
+  const unmastered = skills.filter((k) => hard.get(k)! < MASTERED_AT);
+  const ready = unmastered.filter((k) => (PREREQUISITES[k] ?? []).every((pre) => !skills.includes(pre) || model.predictAt(student, pre, 2) >= UNLOCK_AT));
+  return { open: ready.length ? ready : unmastered.length ? unmastered : [...skills], hard };
 }
+
+/** The skills the student may practise now: prerequisites met and not mastered (all of them once everything is). */
+export const openSkills = (model: EloModel, student: string, skills: readonly SkillId[]): SkillId[] => open(model, student, skills).open;
 
 export function adaptiveChoice(model: EloModel, student: string, skills: readonly SkillId[], options: AdaptiveOptions = {}): Choice {
   const recent = (options.recent ?? []).slice(-RECENT);
   const random = options.random ?? Math.random;
   const target = options.target ?? TARGET;
   let best: (Choice & { score: number; tie: number }) | null = null;
-  for (const skill of openSkills(model, student, skills)) {
-    const penalty = RECENCY_PENALTY * recent.filter((k) => k === skill).length;
+  const { open: candidates, hard } = open(model, student, skills);
+  for (const skill of candidates) {
+    let penalty = 0;
+    for (const k of recent) if (k === skill) penalty += RECENCY_PENALTY;
     for (const level of LEVELS) {
-      const score = Math.abs(model.predict({ student, skill, level }) - target) + penalty;
+      const p = level === 3 ? hard.get(skill)! : model.predictAt(student, skill, level);
+      const score = Math.abs(p - target) + penalty;
       const tie = random();
       if (!best || score < best.score - 1e-12 || (Math.abs(score - best.score) <= 1e-12 && tie < best.tie)) best = { skill, level, score, tie };
     }

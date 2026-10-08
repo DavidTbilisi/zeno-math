@@ -3,7 +3,14 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore: ["docs/**", "*.md"]
   pull_request:
+    paths-ignore: ["docs/**", "*.md"]
+
+# A newer push to the same branch makes the run in progress moot.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check:
@@ -31,6 +38,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # The browser is a 100 MB download; keep it between runs of the same Playwright version.
+      - uses: actions/cache@v4
+        id: playwright
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
       - if: failure()
@@ -43,7 +56,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t zeno-math .
+      - uses: docker/setup-buildx-action@v3
+      # Layers (the npm ci stage above all) come from the last run's cache; a change to the lockfile rebuilds them.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: zeno-math
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       # Start it on a named volume, like docker-compose does, and check it can write boards.
       - run: docker run -d --name zeno -p 8787:8787 -v zeno-data:/data zeno-math
       - name: Health and a saved board

@@ -9,15 +9,15 @@ its test forms) is random, so its effect estimate varies between runs while its 
 | Test suite | `npm test` | ~3 min |
 | Model on simulated classes | `npm run model -- --simulate --fit` | ~7 s |
 | Model on ASSISTments | `npm run import-assistments -- skill_builder_data.csv` then `npm run model -- --observations assistments.json --fit --calibration bins.csv` | minutes |
-| Simulation, adaptive vs fixed | `npm run simulate` | ~30 s |
-| Simulation grid | `npm run simulate -- --grid --csv docs/results/simulation-grid.csv` | ~3 min |
-| Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~15 min |
-| Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~25 min |
-| Power, focused design at 60 % | `npm run simulate -- --power --target 0.6 --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320 --csv docs/results/power-focused-60.csv` | ~1 h |
+| Simulation, adaptive vs fixed | `npm run simulate` | ~10 s |
+| Simulation grid | `npm run simulate -- --grid --csv docs/results/simulation-grid.csv` | ~1 min |
+| Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~4 min |
+| Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~2 min |
+| Power, focused design at 60 % | `npm run simulate -- --power --target 0.6 --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320 --csv docs/results/power-focused-60.csv` | ~4 min |
 | Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
 | Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
 | Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
-| Figures (`docs/thesis/figures/`) | `npm run build`, then `npm run figures` (needs the network for Mermaid) | ~1 min |
+| Figures (`docs/thesis/figures/`) | `npm run build`, then `npm run figures` | ~30 s |
 
 The ASSISTments data set is not in the repository. Download `skill_builder_data.csv` (the corrected 2009–2010
 version) from the ASSISTments data site [@assistments2010data].
@@ -25,9 +25,10 @@ version) from the ASSISTments data site [@assistments2010data].
 The simulations use the 38 skills Zeno had when the results in `docs/results/` were made (`SIM_SKILLS` in
 `src/model/simulate.ts`). Skills added later do not change any simulated number.
 
-The power runs are the slow ones. Each row depends only on its world, assumption set and size, so a run can be split
-with `--worlds` and `--sizes` and the parts run in parallel; the rows are the same either way. Their `t` column, the
-mean t-statistic, gives the sizes for 80 % power in Table 5.10 as students × (2.8 / t)².
+The power runs are the slow ones. Each simulated study is seeded on its own, so `npm run simulate` runs them on every
+core of the machine (`--jobs N` for fewer; `--jobs 1` runs them one after another), and the rows are the same however
+many threads there are; a run can also be split with `--worlds` and `--sizes`. The times above are on an 8-core
+laptop. Their `t` column, the mean t-statistic, gives the sizes for 80 % power in Table 5.10 as students × (2.8 / t)².
 
 **Record the commit.** Run `git rev-parse HEAD` and record the hash with every table in the thesis. A later commit may
 change a generator, the checker or the model, and with it the numbers.

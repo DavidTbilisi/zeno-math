@@ -7,13 +7,16 @@
 //   --skills algebra,average  --students 60  --questions 60  --runs 10  --test-length 12
 //   --sizes 20,40,80,160  (power: total students per study)   --worlds elo,bkt   --csv results.csv   --json
 //   --target 0.6  the chance of success adaptive practice aims at (75 % unless given)
+//   --jobs 4      threads the studies run on (every core unless given; 1 runs them one after another, same numbers)
 import { writeFileSync } from "node:fs";
+import { availableParallelism } from "node:os";
+import { Worker } from "node:worker_threads";
 import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
-import { ancova } from "../src/model/analysis.ts";
 import { inCurriculumOrder } from "../src/model/curriculum.ts";
 import { TARGET } from "../src/model/policy.ts";
 import { tUpper } from "../src/math/distributions.ts";
-import { isSimSkill, mean, runStudy, sd, SIM_SKILLS, summarise, WORLDS, type Arm, type SimParams, type StudyParams } from "../src/model/simulate.ts";
+import { isSimSkill, mean, runStudy, sd, SIM_SKILLS, WORLDS, type Arm, type SimParams, type StudyParams } from "../src/model/simulate.ts";
+import { outcome, type Outcome, type Task } from "./simulate-worker.ts";
 
 const args = process.argv.slice(2);
 const opt = (name: string, fallback: string) => {
@@ -44,6 +47,7 @@ const json = args.includes("--json");
 const targetArg = opt("--target", "");
 const target = targetArg ? Number(targetArg) : undefined;
 if (target !== undefined && !(target > 0 && target < 1)) fail("--target must be a chance between 0 and 1");
+const jobs = positive("--jobs", String(availableParallelism()));
 
 type Assumption = Pick<SimParams, "world" | "learning" | "transfer" | "learnRate">;
 const assumptions = (transfers: number[], rates: number[]): Assumption[] =>
@@ -53,8 +57,33 @@ const ADAPTIVE_FIXED: [Arm, Arm] = [ADAPTIVE, { policy: "fixed" }];
 const comparisons: [Arm, Arm][] = args.includes("--grid")
   ? [ADAPTIVE_FIXED, [ADAPTIVE, { policy: "random" }], [{ policy: "adaptive", target: 0.6 }, { policy: "fixed" }], [{ policy: "adaptive", target: 0.85 }, { policy: "fixed" }]]
   : [ADAPTIVE_FIXED];
-const study = (a: Assumption, arms: [Arm, Arm], students: number, run: number, extra: Partial<StudyParams> = {}) =>
-  runStudy({ ...a, arms, skills, students, questions, testLength, seed: (run + 1) * 101, ...extra });
+/** One simulated study: its seed comes from its run alone, so it is the same whichever thread runs it. */
+const study = (a: Assumption, arms: [Arm, Arm], students: number, run: number): Partial<StudyParams> =>
+  ({ ...a, arms, skills, students, questions, testLength, seed: (run + 1) * 101 });
+
+/** Every study, on `jobs` threads (in this thread with --jobs 1); the outcomes come back in the tasks' order. */
+async function runAll(tasks: Partial<StudyParams>[]): Promise<Outcome[]> {
+  if (jobs === 1 || tasks.length < 2) return tasks.map((t) => outcome(runStudy(t)));
+  // The biggest classes go first, so no thread is left with a long study while the others have finished.
+  const order = tasks.map((_, i) => i).sort((i, j) => (tasks[j].students ?? 0) - (tasks[i].students ?? 0));
+  const results: Outcome[] = new Array(tasks.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(jobs, tasks.length) }, () => new Worker(new URL("./simulate-worker.ts", import.meta.url)));
+  await Promise.all(workers.map((w) => new Promise<void>((done, failed) => {
+    const give = () => {
+      if (next >= order.length) return void w.terminate().then(() => done(), failed);
+      const id = order[next++];
+      w.postMessage({ id, params: tasks[id] } satisfies Task);
+    };
+    w.on("message", (m: { id: number; outcome: Outcome }) => {
+      results[m.id] = m.outcome;
+      give();
+    });
+    w.on("error", failed);
+    give();
+  })));
+  return results;
+}
 const pad = (s: string | number, n: number) => String(s).padStart(n);
 const csv = (rows: Record<string, unknown>[]) => {
   if (!csvFile || !rows.length) return;
@@ -67,11 +96,10 @@ if (power) {
   // assumption: the test a class sits is noisy, so this is lower than the true effect alone would suggest.
   const sizes = opt("--sizes", "20,40,80,160").split(",").map(Number);
   if (sizes.some((n) => !Number.isInteger(n) || n < 8 || n % 2)) fail("--sizes must be even whole numbers of 8 or more");
-  const rows = assumptions([0, 0.3], [0.02, 0.1]).flatMap((a) => sizes.map((students) => {
-    const results = Array.from({ length: runs }, (_, run) => {
-      const r = study(a, ADAPTIVE_FIXED, students, run);
-      return ancova(r.learners.map((l) => ({ treated: l.arm === 0 ? 1 : 0, pre: l.preTest, post: l.postTest })));
-    });
+  const cells = assumptions([0, 0.3], [0.02, 0.1]).flatMap((a) => sizes.map((students) => ({ a, students })));
+  const all = await runAll(cells.flatMap(({ a, students }) => Array.from({ length: runs }, (_, run) => study(a, ADAPTIVE_FIXED, students, run))));
+  const rows = cells.map(({ a, students }, i) => {
+    const results = all.slice(i * runs, (i + 1) * runs).map((o) => o.ancova);
     const significant = results.filter((x) => x.p < 0.05);
     return {
       ...a,
@@ -82,7 +110,7 @@ if (power) {
       d: mean(results.map((x) => x.d)),
       t: mean(results.map((x) => x.t)),
     };
-  }));
+  });
   csv(rows);
   if (json) console.log(JSON.stringify({ skills, questions, testLength, runs, target: target ?? TARGET, rows }, null, 2));
   else {
@@ -96,8 +124,10 @@ if (power) {
   }
 } else {
   const students = positive("--students", "60");
-  const rows = assumptions([0, 0.3, 0.6], [0.02, 0.1]).flatMap((a) => comparisons.map((arms) => {
-    const s = Array.from({ length: runs }, (_, run) => summarise(study(a, arms, students, run)));
+  const cells = assumptions([0, 0.3, 0.6], [0.02, 0.1]).flatMap((a) => comparisons.map((arms) => ({ a, arms })));
+  const all = await runAll(cells.flatMap(({ a, arms }) => Array.from({ length: runs }, (_, run) => study(a, arms, students, run))));
+  const rows = cells.map(({ a }, i) => {
+    const s = all.slice(i * runs, (i + 1) * runs).map((o) => o.summary);
     const ds = s.map((x) => x.d);
     const half = runs > 1 ? (tUpper(0.025, runs - 1) * sd(ds)) / Math.sqrt(runs) : NaN;
     return {
@@ -113,7 +143,7 @@ if (power) {
       offA: mean(s.map((x) => x.a.offTarget)),
       offB: mean(s.map((x) => x.b.offTarget)),
     };
-  }));
+  });
   csv(rows);
   if (json) console.log(JSON.stringify({ skills, students, questions, testLength, runs, rows }, null, 2));
   else {
