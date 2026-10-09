@@ -1,232 +1,183 @@
 # Thesis outline
 
-A chapter plan for a bachelor's thesis on Zeno. For each chapter it gives what to argue, where the work is in the
-code, and the evidence that backs it. Citation keys are in [references.bib](references.bib).
+A chapter plan for a bachelor's thesis that uses Zeno's learner-modelling code for one measurable experiment. For each
+chapter it gives what to argue, where the work is in the code, and the evidence that backs it. Citation keys are in
+[references.bib](references.bib).
 
-**Draft chapters:** [1 Introduction](01-introduction.md) · [2 Background](02-background.md) ·
-[3 Requirements and design](03-design.md) · [4 Implementation](04-implementation.md) ·
-[5 Evaluation](05-evaluation.md) · [6 Discussion](06-discussion.md) · [7 Conclusion](07-conclusion.md) ·
-[D Reproducing every number](appendix-d-reproducing.md). They are Pandoc Markdown with `[@key]` citations; what is
-still open is marked `[TODO: …]` or `[CITATION NEEDED: …]`. To build a PDF (with pandoc and a LaTeX engine
-installed): `pandoc 0*.md appendix-d-reproducing.md --citeproc --bibliography references.bib
--o thesis.pdf`.
+**Scope.** The thesis no longer evaluates an adaptive learning platform. It asks one question that public data and
+simulation can answer without a classroom: does Bayesian Knowledge Tracing decide when a skill is mastered better than
+a simple rule? Zeno stays in the thesis as the context that motivates the question (its adaptive policy needs a
+mastery decision) and as the code base the experiment runs in. It is not a contribution to be evaluated. The adaptive
+vs fixed class study, its power analysis, the dry run, the checker agreement study and the usability study move to
+future work or an appendix.
 
-**Working title:** *Adaptive practice in a self-hosted mathematics whiteboard: design, implementation, and
-evaluation before the classroom.*
+**Status of the chapter drafts.** The drafts `01-introduction.md` to `07-conclusion.md` were written for the wider
+scope and do not yet follow this outline. Most of 5.2 (models, metrics, held-out evaluation, ASSISTments import) carries
+over; the rest needs rewriting or moving.
 
-**Research question:** does choosing practice questions with a learner model (adaptive, aiming at a target chance
-of success) help students learn more than a fixed curriculum sequence?
+**Working title:** *When is a skill mastered? Bayesian Knowledge Tracing against a simple mastery rule on real and
+simulated students' answers.*
 
-**Sub-questions this thesis can answer without a classroom:**
+**Research question:** does Bayesian Knowledge Tracing (BKT) estimate a student's mastery of a skill more accurately
+than a simpler method, the exponential moving average of their answers (EMA), of which the "N right in a row" rule is
+a special case?
 
-1. How well does the learner model predict real students' answers, compared with standard student models?
-2. Under which assumptions about learning would adaptive practice help, and how robust is that?
-3. Is the study, as designed, able to detect the effect, and what design would be?
-4. Is the system ready to run the study: do randomisation, counterbalancing, marking, data collection and analysis
-   work as specified?
-5. Can teachers and students use it?
+**Methods compared.**
+
+| Method | Parameters | Gives a probability? | Declares mastery when |
+|---|---|---|---|
+| BKT [@corbett1994] | init, learn, guess, slip per skill, fitted on training students | yes | P(known) ≥ θ (0.95 is the usual choice) |
+| EMA | one decay rate α, tuned on training students | yes (the average itself) | average ≥ θ |
+| Streak rule | N | no | the last N answers were right (N = 3 is the rule the ASSISTments skill builder used) |
+
+The streak rule is the method most systems deploy; EMA is its probabilistic generalisation, needed so the
+prediction metrics can be computed for the simple side too. The Elo model and PFA already in `src/model/evaluate.ts`
+appear as reference rows in the prediction table, not as hypotheses.
+
+## Hypotheses
+
+Stated before the results are computed, with the test for each:
+
+- **H1, prediction.** On held-out ASSISTments students, BKT predicts the next first-attempt answer better than EMA:
+  lower log-loss. Test: the per-student difference in log-loss, a paired bootstrap over students (10,000
+  resamples), 95 % interval excluding zero. Secondary: RMSE, AUC, calibration.
+- **H2, mastery decisions where the truth is known.** On simulated learners whose true state is recorded, at equal
+  practice cost (mean opportunities until mastery is declared), BKT's declarations are right more often (the skill
+  is truly known when declared) than EMA's and the streak rule's. Reported as a trade-off curve over thresholds, in
+  every simulated world, not only the one built like BKT.
+- **H3, mastery decisions on real data (exploratory).** How often BKT and the streak rule agree on ASSISTments, and
+  the share right on the next answers after each method declares mastery. Exploratory because the data were
+  collected under a streak policy (see threats).
 
 ## 1. Introduction
 
-- **The problem.** Practice is most useful at the right difficulty, but a class gets one sequence for everyone.
-  Teachers in Georgia and elsewhere lack free, self-hostable tools that adapt.
-- **The aim.** A whiteboard teachers already want to use (`src/math`, 33 tools, 72 shapes and live pieces), with
-  an adaptive practice study built in.
-- **Contributions.** List them, each with its evidence:
-  - the system (chapters 3–4);
-  - the learner model and its evaluation (5.2);
-  - the simulation study across worlds (5.3);
-  - the power analysis and its design recommendation (5.4);
-  - a study protocol that has been rehearsed end to end (5.4);
-  - the measured accuracy of the answer checker (5.1);
-  - the usability study (5.5).
+- **The problem.** Mastery learning [@bloom1984] needs a decision: has this student learnt this skill? Every
+  adaptive practice system makes it, including Zeno's (`MASTERED_AT` in `src/model/policy.ts`). Deployed systems
+  mostly use simple rules (N right in a row, [@khanmastery]); the research literature mostly uses BKT. Whether the
+  extra machinery pays off is an empirical question with a measurable answer.
+- **Aim and research question**, as above. Why it is narrower than "does adaptive practice help": it needs no
+  classroom, no ethics approval and no school timetable, and every number comes from public data or simulation.
+- **Contributions:**
+  - a pre-specified comparison of BKT with EMA and the streak rule on a public data set (H1, H3);
+  - a simulation with known truth that measures mastery decisions directly, in worlds that do and do not match
+    BKT's assumptions (H2);
+  - open, deterministic code for both, with every number reproducible from Appendix D.
 
-## 2. Background and related work
+## 2. Background
 
-- **Adaptive practice:**
-  - Math Garden and the Elo approach (`klinkenberg2011`, `pelanek2016elo`);
-  - ASSISTments (`feng2009assistments`);
-  - success-rate targets and motivation (`jansen2013success`), and the zone of proximal development
-    (`vygotsky1978`).
-- **Student models:**
-  - BKT (`corbett1994`);
-  - PFA (`pavlik2009pfa`);
-  - IRT-based and Elo models;
-  - deep knowledge tracing (`piech2015dkt`), and why it is out of scope: it needs training data and is opaque to
-    teachers.
-  - How student models are judged: log-loss, RMSE, AUC and calibration (`pelanek2015metrics`).
-- **Digital maths whiteboards and classroom tools:** GeoGebra Classroom and Desmos Classroom, for what they do and
-  don't do (adaptivity, self-hosting, languages).
-- **Analysing pre/post experiments:** ANCOVA rather than gain scores (`vanbreukelen2006`), Welch's test
-  (`welch1947`), effect sizes and power (`cohen1988`).
+- **Mastery learning** [@bloom1984], and how mastery is decided in practice: Cognitive Tutors at P(known) ≥ 0.95
+  [@corbett1994], ASSISTments skill builders at three right in a row [@feng2009assistments], Khan Academy
+  [@khanmastery].
+- **BKT** [@corbett1994]: the four parameters, the update, fitting (brute-force grid as here, or EM
+  [@yudelson2013]), identifiability and degenerate fits [CITATION NEEDED: Beck & Chang 2007, "Identifiability: a
+  fundamental problem of student modeling"], and extensions it leaves out (forgetting, individualisation
+  [@yudelson2013], [@khajah2016]).
+- **Simple estimators:** running proportions, moving averages, streaks. The closest earlier work compares mastery
+  criteria directly [CITATION NEEDED: Pelánek & Řihák 2017, "Experimental analysis of mastery learning criteria",
+  UMAP] and studies BKT mastery thresholds by simulation [CITATION NEEDED: Fancsali, Nixon & Ritter 2013, EDM].
+  Verify both before citing.
+- **Judging student models:** log-loss, RMSE, AUC and calibration [@pelanek2015metrics; @fawcett2006; @brier1950];
+  why log-loss is the primary metric; why splits must be by student.
+- **Where the other models sit:** Elo-based [@pelanek2016elo; @klinkenberg2011], PFA [@pavlik2009pfa], deep knowledge
+  tracing [@piech2015dkt]. One paragraph each; they are context, not compared.
 
-## 3. Requirements and design
+## 3. Method
 
-- **Context.** A school with unreliable Wi-Fi and shared devices, no budget for accounts or cloud services, three
-  languages (Georgian, Russian, English), and minors' data.
-- **Requirements**, functional and non-functional:
-  - self-hosted;
-  - works offline mid-lesson;
-  - no personal data;
-  - reproducible study materials;
-  - accessible on phones.
-- **Architecture:** [docs/architecture.md](../architecture.md), with its context, building blocks, data model and
-  sequence diagrams.
-- **Design decisions**, each with its trade-off (the table in architecture.md):
-  - Elo rather than BKT or DKT;
-  - questions chosen in the browser and checked on the server;
-  - questions generated from seeds;
-  - codes instead of accounts;
-  - SQLite;
-  - optimistic locking.
-- **The study design:**
-  - randomisation in blocks of four;
-  - parallel forms A and B, counterbalanced within each condition;
-  - teacher-controlled phases;
-  - equal practice time;
-  - test answers kept away from the model.
-  - Sources: `server/research.ts`, `server/protocol.ts`, `src/model/testForms.ts`.
+### 3.1 Data
 
-## 4. Implementation
+- **ASSISTments 2009–2010 skill builder** [@assistments2010data], cleaned by `npm run import-assistments`
+  (`src/model/datasets.ts`): main problems only, first attempts, ordered by `order_id`, a multi-skill problem
+  counted once per skill. Report students, answers and skills kept. Sequences are per student and skill.
+- **Simulated learners** (`src/model/simulate.ts`), with the true state of each learner recorded after every
+  answer:
+  - the **bkt** world, where BKT is the true model (its home ground, so a BKT win there is expected);
+  - the **elo** and **irt2pl** worlds, where ability grows gradually and "mastered" means a true chance of a right
+    answer of at least 0.9 at level 2 (fixed in advance);
+  - a **bkt with forgetting** variant [TODO: to add], which breaks BKT's no-forgetting assumption.
 
-- **The whiteboard:** Excalidraw integration, autosave with conflict handling, tool dialogs loaded on demand, live
-  pieces (`src/pages/BoardPage.tsx`, `src/live/`). Keep this brief: it is the platform, not the research.
-- **The practice engine:**
-  - question generators for 42 skills × 3 levels;
-  - the answer checker, with its verdicts correct, close, wrong, and form (sent back);
-  - the mistakes it names: each question lists the answers its known mistakes would give (`src/math/mistakes.ts`);
-  - worked solutions.
-  - Sources: `src/math/practice.ts`, `src/math/expr.ts`.
-- **The learner model:** the three-layer Elo rating, with uncertainty that shrinks as evidence builds
-  (`src/model/elo.ts`). Give the formula from its header comment.
-- **The policies:**
-  - the fixed sequence;
-  - adaptive choice: the target chance, prerequisites, mastery, interleaving.
-  - Source: `src/model/policy.ts`, `src/model/curriculum.ts`.
-- **The client:** a plan carried forward offline, and an outbox (`src/learner.ts`, `src/components/PracticeDialog.tsx`).
-- **The server and API:** [docs/api.md](../api.md); security measures (architecture.md, "Quality").
-- **The teacher dashboard:** `server/dashboard.ts`, `src/pages/TeacherPage.tsx`.
+### 3.2 Models and fitting
 
-## 5. Evaluation
+- BKT per skill by the grid search in `fitBkt`, with guess and slip under 0.3; a pooled fit for skills unseen in
+  training (`BktModel`).
+- EMA: one α for all skills, chosen by log-loss on the training students from a grid [TODO: to add as `EmaModel`].
+- Streak rule: N from 2 to 6.
+- Every parameter and threshold is chosen on the training students only.
 
-### 5.1 Correctness
+### 3.3 Evaluation
 
-- **The test suite** (`npm test`, about 280 tests) and CI. Describe how each area is checked against an independent
-  computation, not against itself.
-- **The answer checker against teacher marking** (`npm run checker-agreement`; `tests/fixtures/answers.json`):
-  - 333 answers across all 42 skills, with 91.3 % agreement;
-  - every wrong answer is marked wrong;
-  - two wrong answers credited, one right answer refused;
-  - the mistake named in all 31 wrong answers where a teacher names one, and in none of the other 92.
-  - Discuss the disagreements: rounding slips are sent back rather than marked close, and rounded decimals for exact
-    answers are marked wrong.
-  - Report the two display and parsing faults found and fixed. A wrong expression was shown in 2.6 % of questions.
-    Building the evaluation found it.
+- **Prediction (H1):** the held-out replay of `evaluateHeldOut`: 20 % of students held out by `splitByStudent`, each
+  answer predicted before it is learnt from. Log-loss, RMSE, AUC, accuracy, calibration bins (`src/model/evaluate.ts`).
+  Add a paired bootstrap over students for the BKT − EMA difference [TODO: to add]. Repeat over five split seeds to
+  show the result does not hang on one split.
+- **Mastery decisions (H2):** for each learner and skill, the opportunity at which each method first declares
+  mastery. Measures: the share of declarations that are true (the learner knows the skill then), the share of truly
+  learnt skills never declared, and the mean opportunities to declaration. Sweep each method's threshold
+  (BKT θ from 0.80 to 0.99, EMA θ likewise, streak N from 2 to 6) and draw cost against accuracy: the method whose
+  curve lies above the other's is better at every cost [TODO: to add as a mastery module and a script].
+- **Mastery on real data (H3):** agreement between methods; the share right on the next one to three answers on the
+  skill after each declaration, where such answers exist.
 
-### 5.2 The learner model on real answers
+### 3.4 Where this sits in Zeno
 
-- **Method:** student-wise held-out evaluation; metrics (`npm run model`; `src/model/evaluate.ts`).
-- **Data:**
-  - ASSISTments 2009–2010 (`npm run import-assistments`), with its cleaning steps;
-  - the simulated classes for comparison.
-- **Results:**
-  - a table for Elo, its ablations, PFA, BKT and the counting baselines;
-  - a calibration plot (`--calibration`);
-  - the parameters fitted on the training students (`--fit`).
-- **Discussion:** what the area layer adds, and how ASSISTments differs from Zeno (no levels, US curriculum, skill
-  tags).
+One short section: the learner model, the policy's mastery threshold and why the result matters for it. Point to
+[docs/architecture.md](../architecture.md) and Appendix B for the rest of the system.
 
-### 5.3 Would adaptive practice help? A simulation study
+## 4. Results
 
-- **Method:** three worlds (elo, irt2pl, bkt) × learning × transfer × rate; four comparisons; 10 classes per cell
-  (`npm run simulate -- --grid`; `src/model/simulate.ts`).
-- **Results:** the tables in [docs/study.md](../study.md), *Simulation study*, from `docs/results/simulation-grid.csv`.
-- **Findings:**
-  - Adaptive practice at 75 % helps when practice transfers to later skills (elo, irt2pl) and hurts in the bkt world.
-  - Aiming at 60 % is never worse than fixed, under any assumption tested.
-  - Explain the mechanism in the bkt world: a 75 % question there is mostly on a skill already known.
+- **4.1 Data kept** by the importer, and the simulated settings.
+- **4.2 Prediction** (H1): the table for BKT, EMA and the reference rows (Elo, PFA, counting baselines); the
+  bootstrap interval for BKT − EMA; the calibration plot; the result across split seeds; the fitted BKT parameters
+  (how many skills hit the grid's edges or the 0.3 bound).
+- **4.3 Mastery decisions with known truth** (H2): one trade-off plot per world; the table at the usual settings
+  (BKT 0.95, streak 3, EMA at the threshold of equal cost).
+- **4.4 Mastery decisions on ASSISTments** (H3): agreement; accuracy after declaration; how many sequences end
+  before any method can declare.
 
-### 5.4 Is the study ready, and can it find the effect?
+## 5. Discussion
 
-- **The analysis**, written before the data: ANCOVA with form order and class, plus the secondary and check
-  analyses (`src/model/analysis.ts`, `npm run analyse`), validated against hand-worked values.
-- **The dry run:** the whole protocol through the real server with simulated students. Report its ten guarantees
-  (`npm run dry-run`; it also runs in CI).
-- **Power** (`npm run simulate -- --power`; `docs/results/power*.csv`):
-  - The planned design (12 skills, 60 questions, 12-question tests) has power near α in the elo and irt2pl worlds.
-  - A focused design at 75 % detects mostly fixed's advantage.
-  - At 60 % it detects adaptive's: 180–1,100 students in total for 80 % power under zpd learning in the elo and
-    irt2pl worlds, and no feasible size under flat learning (`--target 0.6`, `docs/results/power-focused-60.csv`).
-  - Conclusion: recommend a real study with fewer skills, longer practice and tests, a 60 % target and a few hundred
-    students, and say that it also tests whether learning is concentrated near an even chance.
-
-### 5.5 Usability
-
-- **Protocol:** [docs/evaluation/usability-protocol.md](../evaluation/usability-protocol.md). 5–8 participants,
-  task success and time, SUS (`brooke1996sus`, `bangor2009sus`, `nielsen1993`).
-- **Results:** per task; the mean SUS with its SD; problems ranked by severity; what was fixed.
-
-## 6. Discussion
-
-- What the evidence does and doesn't show; the 60 % target; what a real classroom study must look like.
+- What the evidence shows for each hypothesis, and whether BKT's advantage (if any) survives outside the bkt world.
+- What a system like Zeno should use to decide mastery, and at which threshold.
 
 ### Threats to validity
 
-- **Internal (simulation).**
-  - The worlds are assumptions. The learning rate, transfer and the shape of learning are not measured, so results
-    are reported across them, never for one.
-  - The elo world shares the model's structure; the irt2pl and bkt worlds are there to break that.
-  - The grid holds many comparisons. Read it as patterns, not as significance tests.
-- **External.**
-  - ASSISTments students, items and skills differ from Zeno's classes.
-  - Usability participants (classmates, student teachers) are not pupils.
-  - Simulated students don't get bored, give up or help each other.
-- **Construct.**
-  - The test measures the expected score on the class's skills with 12 items, so it is noisy.
-  - Its marking depends on the checker: 91.3 % agreement, with lenient "send back" choices.
-  - The mistakes the checker names are the author's catalogue, not found in students' answers; how often each occurs
-    in a class is for a real study to show (`npm run mistakes`).
-  - Equal practice *time* is controlled in a real class, but in the simulation, equal question *counts*.
-- **Conclusion.**
-  - Simulation results come from 10 classes per cell, with 95 % intervals over classes; power figures from 100
-    studies (±4 points).
-  - No real classroom data: the research question stays open, and the thesis says so plainly.
+- **The data were collected under a streak policy.** ASSISTments skill builders end when a student gets three right
+  in a row, so sequences stop at the streak rule's own decision: the real data cannot show the streak rule declaring
+  too early, and post-mastery answers are scarce. This is why H3 is exploratory and the known-truth comparison is
+  simulated.
+- **Home advantage.** The bkt world is built on BKT's assumptions; only the other worlds test it fairly.
+- **What "mastered" means** in the gradual worlds is a threshold chosen in advance (0.9), and results may depend on
+  it: report a second value as a check.
+- **Fitting.** Grid-search BKT is coarse; a skill whose best fit sits on the grid's edge is reported. EMA has one
+  parameter and BKT four per skill, so BKT has more room to overfit the training students.
+- **Data.** ASSISTments skill tags are coarse and multi-skill problems are duplicated; US middle-school students
+  are not Zeno's students.
+- **Multiple comparisons.** H1 is the one confirmatory test; everything else is reported as estimates with
+  intervals.
 
-## 7. Conclusion and future work
+## 6. Conclusion and future work
 
-- **Answers to the sub-questions.**
-- **Future work:**
-  - the classroom study with the recommended design;
-  - a delayed post-test for retention;
-  - forgetting in the learner model;
-  - teacher-written questions;
-  - real-time collaboration (Yjs);
-  - screen-reader-accessible maths on the board.
+- Answers to H1–H3, and the recommendation for Zeno's mastery decision.
+- **Future work:** BKT with forgetting or individual parameters; Zeno's own class data as a replication (the export
+  already gives the sequences, `observationsFromCsv`); the adaptive vs fixed class study, with the design and power
+  analysis already worked out (`docs/study.md`, `docs/results/power*.csv`).
 
 ## Appendices
 
-- A. API reference: [docs/api.md](../api.md).
-- B. Data model and diagrams: [docs/architecture.md](../architecture.md).
-- C. Usability materials: [docs/evaluation/usability-protocol.md](../evaluation/usability-protocol.md).
-- D. Reproducing the results (below).
+- A. The Zeno system in brief, and its API: [docs/architecture.md](../architecture.md), [docs/api.md](../api.md).
+- B. The answer checker's agreement with teacher marking (`npm run checker-agreement`), if kept.
+- D. Reproducing every number (below).
 
 ## Reproducing every number
 
-Each command is deterministic for a given commit (seeds are fixed). The run times are on a laptop.
+Each command is deterministic for a given commit (seeds are fixed). Record the commit hash
+(`git rev-parse HEAD`) with every table.
 
-| Result | Command | Time |
+| Result | Command | Status |
 |---|---|---|
-| Test suite | `npm test` | ~3 min |
-| Model on simulated classes | `npm run model -- --simulate --fit` | ~7 s |
-| Model on ASSISTments | `npm run import-assistments -- skill_builder_data.csv` then `npm run model -- --observations assistments.json --fit --calibration bins.csv` | minutes |
-| Simulation, adaptive vs fixed | `npm run simulate` | ~10 s |
-| Simulation grid | `npm run simulate -- --grid --csv docs/results/simulation-grid.csv` | ~1 min |
-| Power, planned design | `npm run simulate -- --power --csv docs/results/power.csv` | ~4 min |
-| Power, focused design | `npm run simulate -- --power --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160 --csv docs/results/power-focused.csv` | ~2 min |
-| Power, focused design at 60 % | `npm run simulate -- --power --target 0.6 --skills linear,expand,factor,quadratic --questions 120 --test-length 24 --sizes 40,80,160,320 --csv docs/results/power-focused-60.csv` | ~4 min |
-| Dry run | `npm run dry-run`, then `npm run analyse -- dry-run/tests.csv` | ~10 s |
-| Checker agreement and mistakes named | `npm run checker-agreement` | ~2 s |
-| Mistakes per group | `npm run mistakes -- dry-run/tests.csv` (or a real export) | ~2 s |
-| Figures | `npm run build`, then `npm run figures` | ~30 s |
-
-Record the commit hash (`git rev-parse HEAD`) with every table in the thesis.
+| ASSISTments import | `npm run import-assistments -- skill_builder_data.csv` | exists; needs the data file |
+| Prediction on ASSISTments | `npm run model -- --observations assistments.json --fit --calibration bins.csv` | exists; EMA row and bootstrap to add |
+| Prediction on simulated learners | `npm run model -- --simulate --fit` | exists |
+| Mastery trade-off, simulated | to be written | to add |
+| Mastery agreement on ASSISTments | to be written | to add |
+| Test suite | `npm test` | exists |
+| Figures | `npm run build`, then `npm run figures` | exists; new plots to add |
