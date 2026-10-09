@@ -27,11 +27,13 @@ a special case?
 | Method | Parameters | Gives a probability? | Declares mastery when |
 |---|---|---|---|
 | BKT [@corbett1994] | init, learn, guess, slip per skill, fitted on training students | yes | P(known) ≥ θ (0.95 is the usual choice) |
-| EMA | one decay rate α, tuned on training students | yes (the average itself) | average ≥ θ |
+| EMA | one decay rate α, tuned on training students; a starting score fixed from them | yes (the average itself) | average ≥ θ |
 | Streak rule | N | no | the last N answers were right (N = 3 is the rule the ASSISTments skill builder used) |
 
 The streak rule is the method most systems deploy; EMA is its probabilistic generalisation, needed so the
-prediction metrics can be computed for the simple side too. The Elo model and PFA already in `src/model/evaluate.ts`
+prediction metrics can be computed for the simple side too. The streak rule is exactly an EMA: with α = 0.6, a
+starting score of 0 and θ = 0.92, the EMA says "mastered" after the same answers as three in a row (checked on
+every sequence of up to 16 answers). The Elo model and PFA already in `src/model/evaluate.ts`
 appear as reference rows in the prediction table, not as hypotheses.
 
 ## Hypotheses
@@ -100,6 +102,8 @@ Stated before the results are computed, with the test for each:
 - BKT per skill by the grid search in `fitBkt`, with guess and slip under 0.3; a pooled fit for skills unseen in
   training (`BktModel`).
 - EMA: one α for all skills, chosen by log-loss on the training students from a grid [TODO: to add as `EmaModel`].
+  Every student's score on a skill starts at the share of right first answers among the training students (their
+  first answer on each skill), fixed before α is chosen, so the first prediction is learnt from data like the rest.
 - Streak rule: N from 2 to 6.
 - Every parameter and threshold is chosen on the training students only.
 
