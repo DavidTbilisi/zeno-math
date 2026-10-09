@@ -7,8 +7,11 @@ import { cell, table, txt, type Role } from "./algoArrays";
 import { C, compose, fill, r2, W, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 
-export type MentalTopic = "multiply" | "check" | "sqrt" | "cbrt" | "cube" | "magic" | "major";
-export const MENTAL_TOPICS: MentalTopic[] = ["multiply", "check", "sqrt", "cbrt", "cube", "magic", "major"];
+export type MentalTopic = "multiply" | "divide" | "check" | "rules" | "recip" | "sqrt" | "cbrt" | "cube" | "magic" | "major";
+export const MENTAL_TOPICS: MentalTopic[] = ["multiply", "divide", "check", "rules", "recip", "sqrt", "cbrt", "cube", "magic", "major"];
+/** base: Nikhilam "transpose and apply" (divisor just below a power of 10) · flag: Dhvajanka · table: Trachtenberg's simple method. */
+export type DivMethod = "base" | "flag" | "table";
+export const DIV_METHODS: DivMethod[] = ["base", "flag", "table"];
 export type CheckOp = "+" | "-" | "*" | "/";
 export const CHECK_OPS: CheckOp[] = ["+", "-", "*", "/"];
 export type MajorSystem = "en" | "ru";
@@ -18,7 +21,7 @@ export const MAJOR_SYSTEMS: MajorSystem[] = ["en", "ru"];
  * multiply: a × b near base (blank = the nearest power of 10) · check: a op b = c (c blank = the true result;
  * for ÷, c is "q" or "q r R") · sqrt / cbrt / cube / magic: a · major: a is the number, words the user's words.
  */
-export type MentalSpec = { topic: MentalTopic; a: string; b: string; c: string; base: string; op: CheckOp; sys: MajorSystem; words: string };
+export type MentalSpec = { topic: MentalTopic; a: string; b: string; c: string; base: string; op: CheckOp; sys: MajorSystem; words: string; method?: DivMethod };
 
 export type MentalWords = {
   bad: string;
@@ -33,6 +36,33 @@ export type MentalWords = {
   cube: { gp: string; doubled: string; sums: string; carries: string; result: string; note: string };
   magic: { constant: string; walk: string; blocked: string };
   major: { sys: Record<MajorSystem, string>; chunk: string; match: string; mismatch: string; missing: string; skeleton: string; legend: Record<MajorSystem, string> };
+  div: {
+    methods: Record<DivMethod, string>;
+    short: string;
+    zero: string;
+    twoDigits: string;
+    divisorMax: string;
+    result: string;
+    check: string;
+    complement: string;
+    far: string;
+    baseHow: string;
+    columns: string;
+    adjust: string;
+    flagSplit: string;
+    flagHow: string;
+    smaller: string;
+    fast: string;
+    cols: { step: string; digit: string; gross: string; minus: string; net: string; q: string; r: string; tail: string };
+    tableBuild: string;
+    tableCheck: string;
+    lookup: string;
+    selfCheck: string;
+    verify: string;
+    head: { label: string; multiple: string; check: string; partial: string; take: string; left: string };
+  };
+  rules: { head: { d: string; rule: string; test: string }; rule: Record<string, string>; yes: string; none: string; also: string };
+  recip: { terminates: string; repeats: string; pre: string; again: string; cols: { step: string; r: string; tenR: string; digit: string }; more: string; cyclic: string; sorted: string; use: string; tooBig: string };
 };
 
 const pretty = (n: number | bigint) => {
@@ -544,13 +574,446 @@ export function renderMental(spec: MentalSpec, words: MentalWords): RenderedSvg 
       return renderCube(spec, words);
     case "magic":
       return renderMagic(spec, words);
+    case "divide":
+      return renderDivide(spec, words);
+    case "rules":
+      return renderRules(spec, words);
+    case "recip":
+      return renderRecip(spec, words);
     case "major":
       return renderMajor(spec, words);
   }
 }
 
+// ---------- division: near a base, the flag, Trachtenberg's table ----------
+
+const digitsOf = (n: number) => String(n).split("").map(Number);
+const texNum = (n: number) => pretty(n).replace(/ /g, "\\,");
+
+function divInputs(s: MentalSpec, w: MentalWords) {
+  const N = int(s.a, w, 1e12);
+  const d = int(s.b, w, 99999);
+  if (N < 0) throw new Error(fill(w.bad, { s: s.a }));
+  if (d <= 0) throw new Error(w.div.zero);
+  return { N, d, Q: Math.floor(N / d), R: N % d };
+}
+
+function divCaps(N: number, d: number, w: MentalWords): Caption[] {
+  const v = { n: pretty(N), d: pretty(d), q: pretty(Math.floor(N / d)), r: pretty(N % d) };
+  return [
+    { text: fill(w.div.result, v), color: C.green },
+    { text: fill(w.div.check, v), color: "#495057" },
+  ];
+}
+
+/** Nikhilam ("transpose and apply"): the divisor's complement to 10^k does the dividing. */
+function renderBaseDiv(s: MentalSpec, w: MentalWords): RenderedSvg {
+  const t = w.div;
+  const { N, d, Q, R } = divInputs(s, w);
+  const k = String(d).length;
+  const B = 10 ** k;
+  const cNum = B - d;
+  const c = String(cNum).padStart(k, "0").split("").map(Number);
+  const n = digitsOf(N);
+  const m = n.length;
+  if (m <= k) throw new Error(t.short);
+  const qn = m - k;
+  // Column sums: each quotient column, times the complement, is added into the next k columns.
+  const sums = [...n];
+  const products: { row: number; col: number; v: number }[] = [];
+  const qRaw: number[] = [];
+  for (let i = 0; i < qn; i++) {
+    const q = sums[i];
+    qRaw.push(q);
+    c.forEach((cd, j) => {
+      sums[i + 1 + j] += q * cd;
+      products.push({ row: i, col: i + 1 + j, v: q * cd });
+    });
+  }
+  const cw = 40;
+  const labelW = 96;
+  const x0 = Math.max(labelW + 16, (W - (labelW + m * cw)) / 2 + labelW);
+  const parts: string[] = [];
+  let y = 8;
+  const rowH = 32;
+  const label = (yy: number, text: string, color = "#495057") => parts.push(txt(x0 - 10, yy + 19, text, { anchor: "end", size: 13, color, bold: true }));
+  label(y, `${pretty(d)} → ${String(cNum).padStart(k, "0")}`, C.purple);
+  n.forEach((v, j) => parts.push(cell(x0 + j * cw, y, cw - 4, 26, String(v), "plain", 15, true)));
+  for (let i = 0; i < qn; i++) {
+    const yy = y + rowH * (i + 1);
+    label(yy, `${qRaw[i]} × ${String(cNum).padStart(k, "0")}`);
+    for (const p of products.filter((p) => p.row === i)) parts.push(txt(x0 + p.col * cw + (cw - 4) / 2, yy + 19, String(p.v), { anchor: "middle", size: 14, color: C.purple }));
+  }
+  const sumY = y + rowH * (qn + 1) + 6;
+  parts.push(`<line x1="${x0 - 4}" y1="${sumY - 5}" x2="${x0 + m * cw}" y2="${sumY - 5}" stroke="#495057" stroke-width="1.3"/>`);
+  label(sumY, "Σ");
+  sums.forEach((v, j) => parts.push(cell(x0 + j * cw, sumY, cw - 4, 26, String(v), j < qn ? "compare" : "sorted", v > 999 ? 11 : 14, true)));
+  // The line between quotient and remainder columns.
+  const lineX = x0 + qn * cw - 2;
+  parts.push(`<line x1="${lineX}" y1="${y - 4}" x2="${lineX}" y2="${sumY + 30}" stroke="${C.red}" stroke-width="2" stroke-dasharray="5 3"/>`);
+  y = sumY + 44;
+  // Carries: the column values are place values, not digits.
+  const qCols = sums.slice(0, qn);
+  const rCols = sums.slice(qn);
+  const qVal = qCols.reduce((a, v) => a * 10 + v, 0);
+  const rVal = rCols.reduce((a, v) => a * 10 + v, 0);
+  const lines = [fill(t.columns, { cols: qCols.join(" | "), q: pretty(qVal), rcols: rCols.join(" | "), r: pretty(rVal) })];
+  let q = qVal;
+  let r = rVal;
+  while (r >= d) {
+    lines.push(fill(t.adjust, { r: pretty(r), d: pretty(d), r2: pretty(r - d), q: pretty(q + 1) }));
+    r -= d;
+    q += 1;
+  }
+  if (q !== Q || r !== R) throw new Error("internal: Nikhilam division disagrees");
+  for (const l of lines) {
+    parts.push(txt(W / 2, y + 14, l, { anchor: "middle", size: 14, color: "#495057", bold: true }));
+    y += 24;
+  }
+  const caps: Caption[] = [{ text: fill(t.complement, { d: pretty(d), c: String(cNum), B: pretty(B) }), color: C.purple }];
+  if (c[0] >= 5) caps.push({ text: fill(t.far, { c: String(cNum), d: pretty(d) }), color: C.orange });
+  caps.push({ text: fill(t.baseHow, { k }), color: "#495057" }, ...divCaps(N, d, w));
+  return compose(`${texNum(N)} \\div ${texNum(d)}`, parts.join(""), y + 4, caps);
+}
+
+/** Dhvajanka: divide by the first digit only; the other digits (the flag) are paid for one step later. */
+function renderFlagDiv(s: MentalSpec, w: MentalWords): RenderedSvg {
+  const t = w.div;
+  const { N, d, Q, R } = divInputs(s, w);
+  if (d < 10) throw new Error(t.twoDigits);
+  const dd = digitsOf(d);
+  const main = dd[0];
+  const fl = dd.slice(1);
+  const L = fl.length;
+  const n = digitsOf(N);
+  const qn = n.length - L;
+  if (qn <= 0) throw new Error(t.short);
+  const qd = String(Q).padStart(qn, "0").split("").map(Number);
+  type Row = { digit: number; gross: number; minus: string; net: number; q?: number; r: number; smaller: boolean };
+  const rows: Row[] = [];
+  let r = 0;
+  const pay = (i: number, quot: (j: number) => boolean) => {
+    const terms: string[] = [];
+    let sum = 0;
+    for (let j = 1; j <= L; j++)
+      if (quot(i - j)) {
+        terms.push(`${fl[j - 1]}×${qd[i - j]}`);
+        sum += fl[j - 1] * qd[i - j];
+      }
+    return { sum, text: terms.length ? `${terms.join(" + ")} = ${sum}` : "—" };
+  };
+  for (let i = 0; i < n.length; i++) {
+    const gross = 10 * r + n[i];
+    const p = pay(i, (x) => x >= 0 && x < qn);
+    const net = gross - p.sum;
+    if (i < qn) {
+      const q = qd[i];
+      r = net - main * q;
+      rows.push({ digit: n[i], gross, minus: p.text, net, q, r, smaller: q < Math.min(9, Math.floor(net / main)) });
+    } else {
+      r = net;
+      rows.push({ digit: n[i], gross, minus: p.text, net, r, smaller: false });
+    }
+  }
+  if (r !== R) throw new Error("internal: flag division disagrees");
+  const parts: string[] = [];
+  // The divisor as main digit with its flag.
+  const cx = W / 2;
+  parts.push(
+    txt(cx - 6, 34, String(main), { size: 30, anchor: "end", bold: true, color: C.blue }),
+    txt(cx - 2, 20, fl.join(""), { size: 18, anchor: "start", bold: true, color: C.orange }),
+  );
+  const tb = table(
+    (W - 560) / 2,
+    64,
+    [
+      { head: t.cols.step, w: 34 },
+      { head: t.cols.digit, w: 54 },
+      { head: t.cols.gross, w: 90 },
+      { head: t.cols.minus, w: 150 },
+      { head: t.cols.net, w: 60 },
+      { head: fill(t.cols.q, { m: main }), w: 106 },
+      { head: t.cols.r, w: 66 },
+    ],
+    rows.map((row, i) => {
+      const tail = row.q === undefined;
+      return {
+        cells: [
+          tail ? "R" : String(i + 1),
+          String(row.digit),
+          String(row.gross),
+          row.minus === "—" ? "—" : `− ${row.minus}`,
+          String(row.net),
+          tail ? t.cols.tail : `${row.q}${row.smaller ? " *" : ""}`,
+          String(row.r),
+        ],
+        colors: [undefined, undefined, undefined, C.orange, undefined, tail ? C.green : row.smaller ? C.red : C.blue, tail && i === rows.length - 1 ? C.green : undefined],
+        fills: tail ? Array(7).fill("#ebfbee") : undefined,
+        bold: [false, false, false, false, false, true, tail && i === rows.length - 1],
+      };
+    }),
+  );
+  parts.push(tb.svg);
+  const caps: Caption[] = [
+    { text: fill(t.flagSplit, { d: pretty(d), m: main, f: fl.join("") }), color: C.blue },
+    { text: fill(t.flagHow, { m: main, L }), color: "#495057" },
+  ];
+  if (rows.some((x) => x.smaller)) caps.push({ text: t.smaller, color: C.red });
+  if (L === 1) caps.push({ text: t.fast, color: C.purple });
+  caps.push(...divCaps(N, d, w));
+  return compose(`${texNum(N)} \\div ${texNum(d)}`, parts.join(""), 64 + tb.h + 6, caps);
+}
+
+/** Trachtenberg's simple method: a table of multiples by addition (with a digit-sum check), then look up and subtract. */
+function renderTableDiv(s: MentalSpec, w: MentalWords): RenderedSvg {
+  const t = w.div;
+  const { N, d, Q, R } = divInputs(s, w);
+  if (d > 9999) throw new Error(t.divisorMax);
+  const mult: number[] = [];
+  const check: number[] = [];
+  for (let k = 1; k <= 10; k++) {
+    mult.push(k === 1 ? d : mult[k - 2] + d);
+    check.push(k === 1 ? ds(d) : ds(check[k - 2] + ds(d)));
+  }
+  // Long division by lookup: the largest multiple that fits.
+  const steps: { partial: number; label: number; take: number; left: number }[] = [];
+  let partial = 0;
+  let started = false;
+  for (const digit of digitsOf(N)) {
+    partial = partial * 10 + digit;
+    if (!started && partial < d) continue;
+    started = true;
+    const label = Math.floor(partial / d);
+    const take = label ? mult[label - 1] : 0;
+    steps.push({ partial, label, take, left: partial - take });
+    partial -= take;
+  }
+  if (!steps.length) steps.push({ partial: N, label: 0, take: 0, left: N });
+  const parts: string[] = [];
+  const left = table(
+    16,
+    4,
+    [{ head: t.head.label, w: 44 }, { head: t.head.multiple, w: 92 }, { head: t.head.check, w: 76 }],
+    mult.map((v, i) => ({
+      cells: [`(${i + 1})`, pretty(v), `${check[i]} ✓`],
+      colors: [C.grey, i === 9 ? C.purple : undefined, C.green],
+      bold: [false, true, false],
+    })),
+  );
+  const right = table(
+    248,
+    4,
+    [{ head: t.head.partial, w: 116 }, { head: t.head.take, w: 140 }, { head: t.head.left, w: 104 }],
+    steps.map((st) => ({
+      cells: [pretty(st.partial), st.label ? `(${st.label}) ${pretty(st.take)}` : "(0) 0", pretty(st.left)],
+      colors: [undefined, C.blue, undefined],
+      bold: [false, true, false],
+    })),
+  );
+  parts.push(left.svg, right.svg);
+  // The answer, read down the labels.
+  const ansY = 4 + Math.max(left.h, right.h) + 10;
+  parts.push(txt(248 + 180, ansY + 14, `${t.head.label}: ${steps.map((st) => st.label).join(" ")}  →  ${pretty(Q)}, R ${pretty(R)}`, { anchor: "middle", size: 15, bold: true, color: C.green }));
+  const a = ds(N - R);
+  const qd = ds(Q);
+  const dv = ds(d);
+  const b = ds(qd * dv);
+  const caps: Caption[] = [
+    { text: fill(t.tableBuild, { d: pretty(d) }), color: "#495057" },
+    { text: fill(t.tableCheck, { d: pretty(d), t: pretty(mult[9]) }), color: C.purple },
+    { text: t.lookup, color: C.blue },
+    { text: t.selfCheck, color: "#495057" },
+    { text: fill(t.verify, { a, q: qd, d: dv, p: qd * dv, b, ok: a === b || (Q === 0 && a === 0) ? "✓" : "✗" }), color: C.green },
+    ...divCaps(N, d, w),
+  ];
+  return compose(`${texNum(N)} \\div ${texNum(d)}`, parts.join(""), ansY + 24, caps);
+}
+
+function renderDivide(s: MentalSpec, w: MentalWords): RenderedSvg {
+  const method = s.method ?? "base";
+  return method === "flag" ? renderFlagDiv(s, w) : method === "table" ? renderTableDiv(s, w) : renderBaseDiv(s, w);
+}
+
+// ---------- divisibility rules ----------
+
+type DivTest = { d: number; test: string; ok: boolean };
+
+function divisibility(n: number): DivTest[] {
+  const str = String(n);
+  const last = (k: number) => `…${str.slice(-k)}`;
+  const sumChain = () => {
+    const chain = [str.split("").reduce((a, c) => a + Number(c), 0)];
+    while (chain[chain.length - 1] > 9) chain.push(String(chain[chain.length - 1]).split("").reduce((a, c) => a + Number(c), 0));
+    return chain;
+  };
+  const shrink = (step: (x: number) => number, limit: number) => {
+    const vals = [n];
+    let x = n;
+    for (let i = 0; i < 40 && Math.abs(x) >= limit; i++) vals.push((x = step(x)));
+    return { vals, end: x };
+  };
+  const minus = (v: number) => (v < 0 ? `−${pretty(-v)}` : pretty(v));
+  const sc = sumChain();
+  const seven = shrink((x) => Math.trunc(x / 10) - 2 * (x % 10), 70);
+  const thirteen = shrink((x) => Math.trunc(x / 10) + 4 * (x % 10), 100);
+  const alt = str.split("").reverse().reduce((a, c, i) => a + (i % 2 ? -1 : 1) * Number(c), 0);
+  const altText = str.split("").map((c, i) => ((str.length - 1 - i) % 2 ? `− ${c}` : i === 0 ? c : `+ ${c}`)).join(" ");
+  const tests: DivTest[] = [
+    { d: 2, test: last(1), ok: Number(str.slice(-1)) % 2 === 0 },
+    { d: 3, test: sc.join(" → "), ok: sc[sc.length - 1] % 3 === 0 },
+    { d: 4, test: last(2), ok: Number(str.slice(-2)) % 4 === 0 },
+    { d: 5, test: last(1), ok: Number(str.slice(-1)) % 5 === 0 },
+    { d: 6, test: "2 · 3", ok: false },
+    { d: 7, test: seven.vals.map(minus).join(" → "), ok: seven.end % 7 === 0 },
+    { d: 8, test: last(3), ok: Number(str.slice(-3)) % 8 === 0 },
+    { d: 9, test: sc.join(" → "), ok: sc[sc.length - 1] === 9 },
+    { d: 10, test: last(1), ok: str.endsWith("0") },
+    { d: 11, test: `${altText.replace(/^− /, "−")} = ${minus(alt)}`, ok: alt % 11 === 0 },
+    { d: 13, test: thirteen.vals.map(minus).join(" → "), ok: thirteen.end % 13 === 0 },
+  ];
+  const six = tests.find((x) => x.d === 6)!;
+  const two = tests[0].ok;
+  const three = tests[1].ok;
+  six.ok = two && three;
+  six.test = `2 ${two ? "✓" : "✗"} · 3 ${three ? "✓" : "✗"}`;
+  for (const x of tests) if (x.ok !== (n % x.d === 0)) throw new Error(`internal: rule for ${x.d}`);
+  return tests;
+}
+
+function renderRules(s: MentalSpec, w: MentalWords): RenderedSvg {
+  const n = int(s.a, w, 1e12);
+  if (n <= 0) throw new Error(fill(w.bad, { s: s.a }));
+  const tests = divisibility(n);
+  const tb = table(
+    12,
+    4,
+    [{ head: w.rules.head.d, w: 40 }, { head: w.rules.head.rule, w: 262 }, { head: w.rules.head.test, w: 254 }, { head: "", w: 60 }],
+    tests.map((x) => ({
+      cells: [String(x.d), w.rules.rule[String(x.d)] ?? "", x.test, x.ok ? "✓" : "✗"],
+      colors: [x.ok ? C.green : undefined, "#495057", undefined, x.ok ? C.green : "#adb5bd"],
+      fills: x.ok ? [undefined, undefined, undefined, "#ebfbee"] : undefined,
+      bold: [true, false, false, true],
+    })),
+  );
+  const yes = tests.filter((x) => x.ok).map((x) => x.d);
+  const caps: Caption[] = [
+    { text: yes.length ? fill(w.rules.yes, { n: pretty(n), list: yes.join(", ") }) : fill(w.rules.none, { n: pretty(n) }), color: yes.length ? C.green : "#495057" },
+    { text: w.rules.also, color: "#495057" },
+  ];
+  return compose(`${texNum(n)}`, tb.svg, tb.h + 8, caps);
+}
+
+// ---------- reciprocals ----------
+
+/** 1/n by long division: the digits, where the repetition starts, and the remainders on the way. */
+export function reciprocal(n: number): { digits: number[]; pre: number; period: number; rems: number[] } {
+  const seen = new Map<number, number>();
+  const digits: number[] = [];
+  const rems: number[] = [];
+  let r = 1 % n;
+  while (r !== 0 && !seen.has(r)) {
+    seen.set(r, digits.length);
+    rems.push(r);
+    digits.push(Math.floor((10 * r) / n));
+    r = (10 * r) % n;
+  }
+  if (r === 0) return { digits, pre: digits.length, period: 0, rems };
+  const pre = seen.get(r)!;
+  rems.push(r);
+  return { digits, pre, period: digits.length - pre, rems };
+}
+
+function renderRecip(s: MentalSpec, w: MentalWords): RenderedSvg {
+  const t = w.recip;
+  const n = int(s.a, w, 9999);
+  if (n < 2) throw new Error(fill(w.bad, { s: s.a }));
+  const { digits, pre, period, rems } = reciprocal(n);
+  const preD = digits.slice(0, pre).join("");
+  const cyc = digits.slice(pre).join("");
+  const head =
+    period === 0
+      ? `\\frac{1}{${n}} = 0.${preD}`
+      : cyc.length <= 36
+        ? `\\frac{1}{${n}} = 0.${preD}\\overline{${cyc}}`
+        : `\\frac{1}{${n}} = 0.${preD}${cyc.slice(0, 30)}\\ldots`;
+  const parts: string[] = [];
+  const shown = Math.min(digits.length, 14);
+  const rows = Array.from({ length: shown }, (_, i) => ({
+    cells: [String(i + 1), String(rems[i]), String(10 * rems[i]), `${digits[i]}`],
+    colors: [C.grey, i === pre && period ? C.purple : undefined, undefined, i >= pre && period ? C.blue : C.ink] as (string | undefined)[],
+    fills: (i === pre && period ? [undefined, "#f3f0ff", undefined, undefined] : undefined) as (string | undefined)[] | undefined,
+    bold: [false, i === pre && period > 0, false, true],
+  }));
+  const tb = table(W / 2 - 190, 4, [{ head: t.cols.step, w: 40 }, { head: t.cols.r, w: 120 }, { head: t.cols.tenR, w: 90 }, { head: fill(t.cols.digit, { n }), w: 130 }], rows);
+  parts.push(tb.svg);
+  let y = 4 + tb.h + 6;
+  if (digits.length > shown) {
+    parts.push(txt(W / 2, y + 12, fill(t.more, { k: digits.length - shown }), { anchor: "middle", size: 12, color: C.grey }));
+    y += 18;
+  } else if (period) {
+    parts.push(txt(W / 2, y + 12, fill(t.again, { r: rems[pre], k: pre + 1 }), { anchor: "middle", size: 13, color: C.purple, bold: true }));
+    y += 20;
+  }
+  const caps: Caption[] = [];
+  if (period === 0) caps.push({ text: fill(t.terminates, { n, k: digits.length }), color: C.green });
+  else caps.push({ text: fill(t.repeats, { n, p: period, pre: pre ? fill(t.pre, { k: pre }) : "" }), color: C.purple });
+  // Cyclic numbers: every k/n is a rotation of the same cycle.
+  if (period === n - 1 && n <= 29) {
+    const rot = (k: number) => {
+      const start = cyc.indexOf(String(Math.floor((10 * k) / n)), 0);
+      // Find the rotation that equals k/n: compare a few digits of k/n.
+      const want = Array.from({ length: Math.min(period, 8) }, (_, i) => Math.floor((10 ** (i + 1) * k) / n) % 10).join("");
+      for (let p = 0; p < period; p++) {
+        const r = cyc.slice(p) + cyc.slice(0, p);
+        if (r.startsWith(want)) return r;
+      }
+      return cyc.slice(start) + cyc.slice(0, start);
+    };
+    const ks = Array.from({ length: Math.min(n - 1, 12) }, (_, i) => i + 1);
+    const colW = period > 10 ? 300 : 200;
+    const per = Math.floor((W - 32) / colW);
+    ks.forEach((k, i) => {
+      const x = 16 + (i % per) * colW;
+      const yy = y + 8 + Math.floor(i / per) * 22;
+      const r = rot(k);
+      parts.push(
+        `<text x="${x}" y="${yy + 14}" font-family="Consolas, Menlo, monospace" font-size="13" fill="#495057">${k}/${n} = 0.<tspan fill="${C.red}" font-weight="700">${r[0]}</tspan><tspan fill="${C.blue}">${r.slice(1)}</tspan></text>`,
+      );
+    });
+    y += 8 + Math.ceil(ks.length / per) * 22 + 4;
+    caps.push({ text: fill(t.cyclic, { n, p: period }), color: C.blue }, { text: fill(t.sorted, { n }), color: C.red });
+  }
+  const dec = `0.${digits.slice(0, Math.min(digits.length, 6)).join("")}${period || digits.length > 6 ? "…" : ""}`;
+  caps.push({ text: fill(t.use, { n, dec }), color: "#495057" });
+  return compose(head, parts.join(""), y + 4, caps);
+}
+
 const P = (topic: MentalTopic, o: Partial<MentalSpec>): MentalSpec => ({ topic, a: "", b: "", c: "", base: "", op: "*", sys: "en", words: "", ...o });
 export const MENTAL_PRESETS: { [K in MentalTopic]: { label: string; spec: MentalSpec }[] } = {
+  divide: [
+    { label: "1 234 ÷ 89 · base", spec: P("divide", { a: "1234", b: "89", method: "base" }) },
+    { label: "21 015 ÷ 98 · base", spec: P("divide", { a: "21015", b: "98", method: "base" }) },
+    { label: "1 237 513 ÷ 996 · base", spec: P("divide", { a: "1237513", b: "996", method: "base" }) },
+    { label: "73 528 ÷ 47 · flag", spec: P("divide", { a: "73528", b: "47", method: "flag" }) },
+    { label: "8 384 ÷ 32 · flag", spec: P("divide", { a: "8384", b: "32", method: "flag" }) },
+    { label: "75 846 ÷ 523 · flag", spec: P("divide", { a: "75846", b: "523", method: "flag" }) },
+    { label: "27 483 624 ÷ 62 · table", spec: P("divide", { a: "27483624", b: "62", method: "table" }) },
+  ],
+  rules: [
+    { label: "3 794", spec: P("rules", { a: "3794" }) },
+    { label: "123 456", spec: P("rules", { a: "123456" }) },
+    { label: "2 717", spec: P("rules", { a: "2717" }) },
+    { label: "5 040", spec: P("rules", { a: "5040" }) },
+    { label: "1 001", spec: P("rules", { a: "1001" }) },
+  ],
+  recip: [
+    { label: "1/7", spec: P("recip", { a: "7" }) },
+    { label: "1/13", spec: P("recip", { a: "13" }) },
+    { label: "1/17", spec: P("recip", { a: "17" }) },
+    { label: "1/12", spec: P("recip", { a: "12" }) },
+    { label: "1/16", spec: P("recip", { a: "16" }) },
+    { label: "1/41", spec: P("recip", { a: "41" }) },
+  ],
   multiply: [
     { label: "7 × 8", spec: P("multiply", { a: "7", b: "8" }) },
     { label: "97 × 94", spec: P("multiply", { a: "97", b: "94" }) },

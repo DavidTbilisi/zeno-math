@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
-import { magicSquare, renderMental, type MentalSpec } from "../src/math/mental.ts";
+import { magicSquare, reciprocal, renderMental, type DivMethod, type MentalSpec } from "../src/math/mental.ts";
 import { renderTactics, type TacticsSpec } from "../src/math/tactics.ts";
 
 const mw = en.mentalWords;
@@ -82,4 +82,60 @@ test("tactics: Gauss, pigeonhole, dominoes", () => {
   assert.ok(tile({ removed: "a1 b1" }).includes("here is a tiling with 31 dominoes"));
   assert.ok(tile({ rows: "3", cols: "4", removed: "1,2 2,1 2,4 3,3" }).includes("yet no tiling exists"));
   assert.ok(tile({ rows: "3", cols: "3", removed: "" }).includes("odd number"));
+});
+
+test("mental division: all three methods give the true quotient and remainder", () => {
+  let seed = 11;
+  const rnd = (n: number) => ((seed = (seed * 1103515245 + 12345) % 2147483648), seed % n);
+  const div = (method: DivMethod, N: number, d: number) => textOf(renderMental(M({ topic: "divide", a: String(N), b: String(d), method }), mw).svg);
+  for (let k = 0; k < 120; k++) {
+    const d = [2 + rnd(98), 10 + rnd(990), 100 + rnd(9900)][k % 3];
+    const N = d * (1 + rnd(100000)) + rnd(d) + (k % 7 === 0 ? 0 : rnd(5));
+    const want = `${pretty(N)} ÷ ${pretty(d)} = ${pretty(Math.floor(N / d))}, remainder ${pretty(N % d)}.`;
+    for (const method of ["base", "flag", "table"] as const) {
+      if (method === "flag" && d < 10) continue;
+      if (String(N).length <= String(d).length) continue;
+      const shown = div(method, N, d);
+      assert.ok(shown.includes(want), `${method} ${N} ÷ ${d}: ${shown.slice(-160)}`);
+    }
+  }
+  // The examples from the notes.
+  assert.ok(div("table", 27483624, 62).includes("443 284, remainder 16"));
+  assert.ok(div("table", 27483624, 62).includes("56 → 2 ✓"));
+  assert.ok(div("flag", 8384, 32).includes("= 262, remainder 0"));
+  assert.throws(() => renderMental(M({ topic: "divide", a: "5", b: "89", method: "base" }), mw), /more digits/);
+  assert.throws(() => renderMental(M({ topic: "divide", a: "500", b: "7", method: "flag" }), mw), /two digits/);
+});
+
+test("divisibility rules agree with the remainder", () => {
+  let seed = 3;
+  const rnd = (n: number) => ((seed = (seed * 1103515245 + 12345) % 2147483648), seed % n);
+  for (let k = 0; k < 300; k++) {
+    // Mostly multiples of the rule numbers, so every rule is hit both ways.
+    const n = (1 + rnd(5000)) * [1, 7, 11, 13, 8, 9, 1001, 4][k % 8] + (k % 5 === 0 ? 1 : 0);
+    const shown = textOf(renderMental(M({ topic: "rules", a: String(n) }), mw).svg);
+    const yes = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13].filter((d) => n % d === 0);
+    assert.ok(shown.includes(yes.length ? `is divisible by ${yes.join(", ")}.` : "divisible by none"), `${n}: ${shown.slice(-200)}`);
+  }
+});
+
+test("reciprocals: the digits, the start of the cycle and its length", () => {
+  for (let n = 2; n <= 400; n++) {
+    const { digits, pre, period } = reciprocal(n);
+    // Digits of 1/n straight from integer division.
+    const big = (10n ** BigInt(digits.length)) / BigInt(n);
+    assert.equal(digits.join(""), big.toString().padStart(digits.length, "0"), `1/${n}`);
+    // Pre-period: the larger power of 2 or 5 in n; period: the order of 10 modulo the rest.
+    let m = n;
+    let twos = 0;
+    let fives = 0;
+    while (m % 2 === 0) (m /= 2), twos++;
+    while (m % 5 === 0) (m /= 5), fives++;
+    assert.equal(pre, Math.max(twos, fives), `pre of 1/${n}`);
+    let order = 0;
+    if (m > 1) for (let p = 10 % m, k = 1; ; p = (p * 10) % m, k++) if (p === 1) { order = k; break; }
+    assert.equal(period, order, `period of 1/${n}`);
+  }
+  const seven = textOf(renderMental(M({ topic: "recip", a: "7" }), mw).svg);
+  for (const r of ["142857", "285714", "428571", "571428", "714285", "857142"]) assert.ok(seven.includes(r), r);
 });

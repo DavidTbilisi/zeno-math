@@ -18,9 +18,22 @@ UI in English, Russian and Georgian.
     (same for hundreds); drag off the mat to remove. Ones sit in ten-frames so tens are easy to see
   - Shows the number in expanded form (`125 = 100 + 10 + 15` flags that regrouping is needed)
   - 🎲 Challenge: "Make 347" with the total hidden, and a Check button (correct / too many / not enough)
-- **🧠 Mental math** — Vedic speed mathematics and the Major System (after the Neural OS notes)
+- **🧠 Mental math** — Vedic speed mathematics, Trachtenberg and the Major System (after the Neural OS notes)
   - *Near a base*: one generator, (B + a)(B + b) = B·(B + a + b) + a·b — the classic two-column layout (offsets, the
     cross, the product, carries and borrows) and an area picture of why it works; any base (10, 100, 50, …)
+  - *Division*, three ways, with every quotient and remainder checked:
+    - *near a base* (Nikhilam, "transpose and apply") for divisors just below 10ᵏ: each quotient digit times the
+      complement (11 for 89) is added under the next columns, a line splits off the remainder columns, carries and a
+      final adjustment give the answer
+    - *the flag* (Dhvajanka) for any divisor: divide by the first digit only and subtract flag × the previous quotient
+      digits as you go, with the digits that must be taken smaller marked — for two-digit divisors this is also
+      Trachtenberg's fast method
+    - *Trachtenberg's table*: the multiples 1–10 built by adding, with a digit-sum check column and the 10× row as a
+      seal, then look up and subtract; the answer verified by digit sums
+  - *Divisibility*: the tests for 2–11 and 13 (last digits, digit sums, alternating sums, the shrinking rules for 7
+    and 13) worked on your number, each verdict checked
+  - *Reciprocals*: 1/n by long division of the remainders — where the cycle starts and how long it is; for cyclic
+    numbers like 1/7 and 1/17 every k/n as a rotation of the same cycle
   - *Digit-sum check*: casting out nines for +, −, ×, ÷, with nines and pairs that make 9 struck out — and an
     example of a wrong answer it cannot catch (swapped digits)
   - *Square and cube roots* of perfect powers: the last-digit table gives the last digit(s), the bracket between
@@ -890,7 +903,8 @@ src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products
 src/math/expr.ts          expressions in x: parser, LaTeX, tidy-up and simplifier, exact a + b√s, real roots of polynomials
 src/math/derive.ts        derivatives: rules one level at a time, first principles, chain, tangents, stationary points
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
-src/math/mental.ts        mental math: base multiplication, digit-sum check, roots, cubing, magic squares, Major System
+src/math/mental.ts        mental math: base multiplication, division (base, flag, Trachtenberg), divisibility,
+                          reciprocals, digit-sum check, roots, cubing, magic squares, Major System
 src/math/tactics.ts       problem-solving tactics: symmetry, pigeonhole, domino tiling by colouring
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG

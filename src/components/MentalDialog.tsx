@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useI18n } from "../i18n";
 import type { RenderedSvg } from "../math/latex";
-import { CHECK_OPS, MAJOR_SYSTEMS, MENTAL_PRESETS, MENTAL_TOPICS, renderMental, type MentalSpec, type MentalTopic } from "../math/mental";
+import { CHECK_OPS, DIV_METHODS, MAJOR_SYSTEMS, MENTAL_PRESETS, MENTAL_TOPICS, renderMental, type MentalSpec, type MentalTopic } from "../math/mental";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
@@ -98,7 +98,21 @@ export function MentalDialog({ initial, start, onSubmit, onClose }: {
           {segmented(CHECK_OPS, (o) => OP_LABEL[o], spec.op, (op) => set({ op }))}
         </>
       )}
-      {(topic === "sqrt" || topic === "cbrt") && <div className="range-grid">{field("a", f.n, 160)}</div>}
+      {topic === "divide" && (
+        <>
+          <div className="range-grid">
+            {field("a", f.dividend, 160)}
+            {field("b", f.divisor, 100)}
+          </div>
+          <div className="range-grid">
+            <span className="hint">{f.method}</span>
+            {segmented(DIV_METHODS, (m) => w.div.methods[m], spec.method ?? "base", (method) => set({ method }))}
+          </div>
+        </>
+      )}
+      {topic === "rules" && <div className="range-grid">{field("a", f.number, 180)}</div>}
+      {topic === "recip" && <div className="range-grid">{field("a", "n", 90)}</div>}
+      {(topic === "sqrt" || topic === "cbrt") &&<div className="range-grid">{field("a", f.n, 160)}</div>}
       {(topic === "cube" || topic === "magic") && <div className="range-grid">{field("a", f.n2, 70)}</div>}
       {topic === "major" && (
         <>
