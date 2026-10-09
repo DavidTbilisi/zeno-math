@@ -108,7 +108,8 @@ Stated before the results are computed, with the test for each:
 - **Prediction (H1):** the held-out replay of `evaluateHeldOut`: 20 % of students held out by `splitByStudent`, each
   answer predicted before it is learnt from. Log-loss, RMSE, AUC, accuracy, calibration bins (`src/model/evaluate.ts`).
   Add a paired bootstrap over students for the BKT − EMA difference [TODO: to add]. Repeat over five split seeds to
-  show the result does not hang on one split.
+  show the result does not hang on one split. As a robustness check, not a second test, resample whole classes
+  instead of students where the data identify classes [TODO: check which class or teacher columns the file has].
 - **Mastery decisions (H2):** for each learner and skill, the opportunity at which each method first declares
   mastery. Measures: the share of declarations that are true (the learner knows the skill then), the share of truly
   learnt skills never declared, and the mean opportunities to declaration. Sweep each method's threshold
@@ -153,6 +154,10 @@ One short section: the learner model, the policy's mastery threshold and why the
   are not Zeno's students.
 - **Multiple comparisons.** H1 is the one confirmatory test; everything else is reported as estimates with
   intervals.
+- **Students are not independent.** The bootstrap resamples students as if each were an independent draw, but
+  students in one class share a teacher and lessons, so their answers are related and the interval comes out
+  narrower than it should. The class-level resampling in 3.3 shows how much this matters; if the file has no class
+  identifiers, say so and treat the interval as optimistic.
 
 ## 6. Conclusion and future work
 
