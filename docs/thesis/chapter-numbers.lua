@@ -1,5 +1,5 @@
 -- Numbers tables and figures by chapter (Table 5.1, Figure 3.5), as the text refers to them. The chapters carry their
--- numbers in their headings ("# 5 Evaluation", "# Appendix D ...") rather than being numbered by LaTeX, so LaTeX's
+-- numbers in their headings ("# 5 Evaluation", "# Appendix A ...") rather than being numbered by LaTeX, so LaTeX's
 -- chapter counter never moves; this sets it from each heading before the chapter starts.
 function Header(h)
   if h.level ~= 1 then return nil end
