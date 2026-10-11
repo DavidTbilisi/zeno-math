@@ -2,7 +2,9 @@
 // first-attempt answer better than the moving average (EMA)? Both models are fitted on the training students and
 // predict the same held-out answers; the difference in mean log-loss per answer (BKT − EMA, below zero when BKT is
 // better) gets a 95 % interval from the paired bootstrap over students, and a verdict by the rule fixed in advance.
-// The first split seed is the test; the others only show whether the result hangs on one split.
+// The first split seed is the test; the others only show whether the result hangs on one split. When the data set
+// names each student's class, the interval is also made by resampling whole classes, a robustness check and not a
+// second test: students in one class share a teacher and lessons, so resampling students alone is optimistic.
 //
 //   npm run h1 -- --observations assistments.json     a data set (scripts/import-assistments.ts)
 //   npm run h1 -- zeno-attempts.csv                   the CSV from /api/research/attempts.csv
@@ -38,22 +40,25 @@ if (!(smallest > 0)) fail("--smallest must be above 0");
 
 let source = "simulated class";
 let observations: Observation[];
-if (dataset) ({ source, observations } = fromFile(JSON.parse(readFileSync(dataset, "utf8")) as DatasetFile));
+let classes: Record<string, string> = {};
+if (dataset) ({ source, observations, classes } = fromFile(JSON.parse(readFileSync(dataset, "utf8")) as DatasetFile));
 else if (file) (source = file), (observations = observationsFromCsv(readFileSync(file, "utf8")));
 else observations = simulateRandom().observations;
 if (!observations.length) fail("no usable attempts in the file");
 
-const runs: (PairedTest & { seed: number; ema: EmaModel["params"] })[] = seeds.map((seed) => {
+// A student with no class stands alone, as in the student-level bootstrap.
+const classOf = (student: string) => (student in classes ? `class ${classes[student]}` : `student ${student}`);
+const byClass = Object.keys(classes).length > 0;
+
+const runs: (PairedTest & { seed: number; ema: EmaModel["params"]; byClass?: PairedTest })[] = seeds.map((seed) => {
   const { train, test } = splitByStudent(observations, testShare, seed);
   if (!train.length || !test.length) fail("too few students to hold some out");
   const bkt = new BktModel();
   const ema = new EmaModel();
-  const result = pairedLogLoss(
-    { name: bkt.name, predictions: heldOutPredictions(bkt, train, test) },
-    { name: ema.name, predictions: heldOutPredictions(ema, train, test) },
-    { resamples, seed, smallest },
-  );
-  return { seed, ema: ema.params, ...result };
+  const first = { name: bkt.name, predictions: heldOutPredictions(bkt, train, test) };
+  const second = { name: ema.name, predictions: heldOutPredictions(ema, train, test) };
+  const result = pairedLogLoss(first, second, { resamples, seed, smallest });
+  return { seed, ema: ema.params, ...result, ...(byClass && { byClass: pairedLogLoss(first, second, { resamples, seed, smallest, groupOf: classOf }) }) };
 });
 
 if (args.includes("--json")) {
@@ -65,6 +70,14 @@ if (args.includes("--json")) {
   console.log(`${"seed".padEnd(8)}${"students".padStart(9)}${"answers".padStart(10)}${"BKT".padStart(9)}${"EMA".padStart(9)}${"BKT − EMA".padStart(11)}  ${"95 % interval".padEnd(20)}verdict`);
   for (const r of runs)
     console.log(`${`${r.seed}${r === runs[0] ? " (test)" : ""}`.padEnd(8)}${n(r.students).padStart(9)}${n(r.answers).padStart(10)}${r.firstLogLoss.toFixed(4).padStart(9)}${r.secondLogLoss.toFixed(4).padStart(9)}${signed(r.difference).padStart(11)}  ${`[${signed(r.interval[0])}, ${signed(r.interval[1])}]`.padEnd(20)}${r.verdict.replace("first", "BKT").replace("second", "EMA")}`);
+  if (byClass) {
+    console.log("\nresampling whole classes (a robustness check, not a second test)");
+    console.log(`${"seed".padEnd(8)}${"groups".padStart(9)}${"95 % interval".padStart(15)}       verdict`);
+    for (const r of runs) {
+      const c = r.byClass!;
+      console.log(`${String(r.seed).padEnd(8)}${n(c.groups).padStart(9)}  ${`[${signed(c.interval[0])}, ${signed(c.interval[1])}]`.padEnd(20)}${c.verdict.replace("first", "BKT").replace("second", "EMA")}`);
+    }
+  } else if (dataset) console.log("\nthe data set names no classes: the interval resamples students only, and is optimistic if classmates are alike");
   console.log(`\nH1 is decided by seed ${runs[0].seed}: ${runs[0].verdict.replace("first", "BKT").replace("second", "EMA")}. Below zero, BKT predicts better.`);
   console.log(`EMA fitted on the training students (seed ${runs[0].seed}): α ${runs[0].ema.alpha}, start ${runs[0].ema.start.toFixed(3)}`);
 }

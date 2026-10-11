@@ -57,6 +57,27 @@ test("the ASSISTments importer keeps main problems with a skill and a 0/1 result
   await assert.rejects(fromAssistments(csvRecords(["a,b\n1,2"])), /not an ASSISTments file/);
 });
 
+test("the importer counts each student in the class they answered most in, and a file without classes reads as none", async () => {
+  const d = await fromAssistments(csvRecords([[
+    "order_id,user_id,original,correct,skill_name,student_class_id",
+    "1,u1,1,1,Area,A",
+    "2,u1,1,0,Area,B",
+    "3,u1,1,1,Area,A",
+    "4,u2,1,1,Area,B", // u2: one in B, then one in A; a tie goes to the class met first
+    "5,u2,1,0,Area,A",
+    "6,u3,1,1,Area,", // no class: left out of the classes, kept as an answer
+    "7,u4,0,1,Area,C", // scaffolding: left out, so class C never appears
+  ].join("\n")]));
+  assert.deepEqual(d.classes, { u1: "A", u2: "B" });
+  assert.deepEqual(d.counts, { rows: 7, kept: 6, students: 3, skills: 1, classes: 2, inSeveralClasses: 2 });
+  assert.deepEqual(fromFile(JSON.parse(JSON.stringify(toFile(d)))).classes, d.classes);
+  const { classes: _, ...older } = toFile(d);
+  assert.deepEqual(fromFile(older).classes, {});
+  const without = await fromAssistments(csvRecords([ASSISTMENTS.join("\n")]));
+  assert.deepEqual(without.classes, {});
+  assert.equal(without.counts.classes, undefined);
+});
+
 test("skill names fall into coarse topics, and the unplaceable into other", () => {
   assert.equal(assistmentsTopic("Circle Graph"), "data");
   assert.equal(assistmentsTopic("Pythagorean Theorem"), "geometry");

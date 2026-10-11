@@ -66,8 +66,13 @@ export type Dataset = {
   observations: Observation[];
   /** The topic of each skill, for the model's area layer. */
   areas: Record<string, string>;
-  /** What was read and what was kept. */
-  counts: { rows: number; kept: number; students: number; skills: number };
+  /**
+   * The class each student is counted in, for resampling whole classes: the one they answered most kept problems in
+   * (the first such on a tie), since a student can be in several. Empty when the file names no classes.
+   */
+  classes: Record<string, string>;
+  /** What was read and what was kept; classes and inSeveralClasses only when the file names classes. */
+  counts: { rows: number; kept: number; students: number; skills: number; classes?: number; inSeveralClasses?: number };
 };
 
 /**
@@ -75,12 +80,13 @@ export type Dataset = {
  * questions a wrong answer opens), a skill and a 0/1 first-attempt result present, and the same problem counted once
  * per skill. A problem tagged with several skills becomes one observation for each, as in most knowledge-tracing
  * work. Answers are put in the order they were given (order_id). Every question counts as level 2: the data has no
- * levels, and the model's level step then plays no part.
+ * levels, and the model's level step then plays no part. Students in one class share a teacher and lessons, so the
+ * class (student_class_id) is kept for analyses that resample classes rather than students.
  */
 export async function fromAssistments(records: AsyncIterable<string[]>, source = "ASSISTments 2009–2010 skill builder"): Promise<Dataset> {
   let header: string[] | null = null;
   let col: Record<string, number> = {};
-  const rows: { order: number; student: string; skill: string; correct: boolean }[] = [];
+  const rows: { order: number; student: string; skill: string; correct: boolean; group: string }[] = [];
   const seen = new Set<string>();
   let read = 0;
   for await (const r of records) {
@@ -104,24 +110,33 @@ export async function fromAssistments(records: AsyncIterable<string[]>, source =
     const key = `${order}\u0000${skill}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    rows.push({ order, student, skill, correct: correct === "1" });
+    rows.push({ order, student, skill, correct: correct === "1", group: get("student_class_id") });
   }
   rows.sort((a, b) => a.order - b.order);
   const observations: Observation[] = rows.map(({ student, skill, correct }) => ({ student, skill, level: 2, correct }));
   const skills = [...new Set(rows.map((r) => r.skill))];
-  return {
-    source,
-    observations,
-    areas: Object.fromEntries(skills.map((k) => [k, assistmentsTopic(k)])),
-    counts: { rows: read, kept: rows.length, students: new Set(rows.map((r) => r.student)).size, skills: skills.length },
-  };
+  // Kept problems per student and class, in the order first met, so a tie goes to the class met first.
+  const perClass = new Map<string, Map<string, number>>();
+  for (const { student, group } of rows) {
+    if (!group) continue;
+    const of = perClass.get(student) ?? perClass.set(student, new Map()).get(student)!;
+    of.set(group, (of.get(group) ?? 0) + 1);
+  }
+  const classes = Object.fromEntries([...perClass].map(([student, of]) => [student, [...of].reduce((a, b) => (b[1] > a[1] ? b : a))[0]]));
+  const counts: Dataset["counts"] = { rows: read, kept: rows.length, students: new Set(rows.map((r) => r.student)).size, skills: skills.length };
+  if (perClass.size) {
+    counts.classes = new Set(Object.values(classes)).size;
+    counts.inSeveralClasses = [...perClass.values()].filter((of) => of.size > 1).length;
+  }
+  return { source, observations, areas: Object.fromEntries(skills.map((k) => [k, assistmentsTopic(k)])), classes, counts };
 }
 
-/** The file the importer writes: observations as compact [student, skill, level, right] rows. */
-export type DatasetFile = { source: string; areas: Record<string, string>; counts: Dataset["counts"]; rows: [string, string, number, 0 | 1][] };
+/** The file the importer writes: observations as compact [student, skill, level, right] rows, and each student's class. */
+export type DatasetFile = { source: string; areas: Record<string, string>; classes?: Record<string, string>; counts: Dataset["counts"]; rows: [string, string, number, 0 | 1][] };
 export const toFile = (d: Dataset): DatasetFile => ({
   source: d.source,
   areas: d.areas,
+  classes: d.classes,
   counts: d.counts,
   rows: d.observations.map((o) => [o.student, o.skill, o.level, o.correct ? 1 : 0]),
 });
@@ -130,6 +145,8 @@ export function fromFile(f: DatasetFile): Dataset {
   return {
     source: f.source,
     areas: f.areas ?? {},
+    // Files written before classes were kept have none.
+    classes: f.classes ?? {},
     counts: f.counts,
     observations: f.rows.map(([student, skill, level, right]) => ({ student, skill, level: (level === 1 || level === 3 ? level : 2) as 1 | 2 | 3, correct: right === 1 })),
   };
