@@ -29,27 +29,27 @@ world that follows BKT's assumptions, BKT's declarations are right at least as o
 ## 6.2 The research question
 
 The research question asked whether BKT estimates a student's mastery of a skill more accurately than the exponential
-moving average. The answer from this thesis is that it depends on how students learn, and that the cost of being
-wrong is not symmetric. If learning happens in a jump, BKT is somewhat more efficient. If learning is gradual, BKT at
-any usual threshold declares mastery too early, and it can be made to wait only with a threshold like $1 - 10^{-7}$,
-set from data, at which it is about as efficient as the moving average. [TODO: what H1 adds about real students.] A
-simple rule therefore does not leave much accuracy unused: where BKT is ahead, it is ahead by one or two answers, and
-where learning is gradual it keeps up with the moving average only at thresholds that have lost their meaning as
-probabilities.
+moving average. The answer from this thesis is that it depends on how students learn, and that the cost of being wrong
+is not symmetric. If learning happens in a jump, BKT is somewhat more efficient. If learning is gradual, BKT at any
+usual threshold declares mastery too early, and it can be made to wait only with a threshold like $1 - 10^{-7}$, set
+from data, at which it is about as efficient as the moving average. [TODO: what H1 adds about real students.] A simple
+rule therefore does not leave much accuracy unused: where BKT is ahead, it is ahead by one or two answers, and where
+learning is gradual it keeps up with the moving average only at thresholds that no longer match the chance of mastery.
 
-For Zeno, whose own learner model assumes gradual learning, the recommendation is to decide mastery with an
-exponential moving average of each student's first answers on a skill, with a threshold set from the system's own data
-once classes have used it, and to treat the threshold as a stated trade-off between letting students move on early and
-keeping them practising. Its present rule, a fixed chance of 0.8 on a hard question under the Elo model, was not part
-of the comparison and should be measured in the same way before it is kept.
+For Zeno, whose own learner model assumes gradual learning, the recommendation, among the rules compared here, is to
+decide mastery with an exponential moving average of each student's first answers on a skill, with a threshold set
+from the system's own data once classes have used it, and to treat the threshold as a stated trade-off between letting
+students move on early and keeping them practising. Its present rule, a fixed chance of 0.8 on a hard question under
+the Elo model, was not part of the comparison, and it should be measured in the same way before the moving average
+replaces it.
 
 ## 6.3 Future work
 
 The most direct extension is to repeat the simulations with other seeds and other amounts of practice. A second is to
 compare the versions of BKT that relax its assumptions, with forgetting or with parameters for each student
-[@yudelson2013; @khajah2016], which may restore the meaning of its probability in the gradual worlds, so that an
-ordinary threshold works, at the cost of more parameters. A
-third is a check of the ASSISTments results with each answer kept for one skill only.
+[@yudelson2013; @khajah2016], which may bring its probability closer to the true chance of mastery in the gradual
+worlds, so that an ordinary threshold works, at the cost of more parameters. A third is a check of the ASSISTments
+results with each answer kept for one skill only.
 
 Zeno's own class data would give a replication on the students the result is meant for. The system already exports
 every first answer in the format the evaluation reads, so the prediction test and the agreement of the mastery

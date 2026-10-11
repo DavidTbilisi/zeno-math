@@ -19,7 +19,7 @@ The simulations give a clear pattern. Where learning happens as BKT assumes, all
 more cheaply than the simpler rules. In the plain BKT world this is what Proposition 2 leads one to expect, and the
 fitted model kept the precision the proposition promises for the true parameters. In the BKT world with forgetting,
 which breaks one of BKT's assumptions, BKT still needed one to two answers fewer than EMA and the streak rule for the
-same accuracy. A small chance of forgetting does not undo the advantage of a model whose picture of learning is
+same precision. A small chance of forgetting does not undo the advantage of a model whose picture of learning is
 otherwise right.
 
 Where learning is gradual, BKT fails H2 by the rule fixed in advance. In the elo and irt2pl worlds, where each question
@@ -30,20 +30,22 @@ after a few such answers its probability is close to 1. A student whose true cha
 runs of right answers quite often, and BKT declares them masters. Raising BKT's threshold from 0.80 to 0.99 made it
 wait only six answers longer and left most of its declarations wrong. EMA has no such crowding: its score approaches 1
 only through a long run of right answers, so an ordinary threshold makes it wait as long as needed. In the gradual
-worlds the EMA was also slightly cheaper than the streak rule for the same accuracy, which fits the recommendation of
+worlds the EMA was also slightly cheaper than the streak rule for the same precision, which fits the recommendation of
 @pelanek2017mastery.
 
 The check above 0.9999 shows that BKT can nevertheless be made to wait, only not at any threshold that still reads as
 a probability. With thresholds between $1 - 10^{-6.9}$ and $1 - 10^{-12.6}$, BKT met the standard in three of the four
 gradual settings, and at the higher learning rate it then needed 0.3 to 0.4 answers fewer than EMA (Table 4.7). BKT's
-probability still ranks the evidence usefully when learning is gradual; what breaks is its calibration. The "never"
-of Table 4.3 is therefore mostly a statement about the range of thresholds, not about the model, and the one setting
-where BKT still never meets the standard is one where hardly any student masters a skill at all. This check came after
-the results, so it qualifies H2's verdict without replacing it. What survives of BKT's failure is a practical point.
-In the gradual worlds the threshold BKT needs ranges over eight orders of magnitude of closeness to 1, from
-$1 - 10^{-4.5}$ to $1 - 10^{-12.6}$, and at its usual 0.95 about one declaration in ten is right (Table 4.5). A system
-using BKT where learning is gradual would have to set its threshold from data, with nothing in BKT's own probability to
-guide it. The thresholds EMA needs stay between 0.84 and 0.97.
+probability still ranks the evidence usefully when learning is gradual; what breaks is its calibration against the
+definition of mastery used here. The gradual worlds have no known state for BKT's probability to refer to, so a
+probability near 1 says only that the answers look like those of a student who knows the skill, not that the true
+chance of a right answer has reached 0.9. The "never" of Table 4.3 is therefore mostly a statement about the range of
+thresholds, not about the model, and the one setting where BKT still never meets the standard is one where hardly any
+student masters a skill at all. This check came after the results, so it qualifies H2's verdict without replacing it.
+What survives of BKT's failure is a practical point. In the gradual worlds the threshold BKT needs ranges over eight
+orders of magnitude of closeness to 1, from $1 - 10^{-4.5}$ to $1 - 10^{-12.6}$, and at its usual 0.95 about one
+declaration in ten is right (Table 4.5). A system using BKT where learning is gradual would have to set its threshold
+from data, with nothing in BKT's own probability to guide it. The thresholds EMA needs stay between 0.84 and 0.97.
 
 Two qualifications remain. The first is that meeting the standard in the gradual worlds was expensive for every
 method: 25 to 30 answers out of 30, with most students never declared. Little separates methods that all wait until
@@ -62,16 +64,16 @@ each method's declaration show, read with the caution of section 5.3.]
 ## 5.2 What a system like Zeno should use
 
 Zeno's learner model assumes that learning is gradual: every answer moves a student's ability a little, and the chance
-of a right answer rises smoothly with ability. If Zeno's students learn as its own model assumes, the gradual worlds are
-the relevant ones. There BKT at any usual threshold declares mastery when most students have not reached it. It matches
-the moving average only with a threshold such as $1 - 10^{-7}$, found from data, whose right value moves by orders of
-magnitude from one world to another, and even then it saves at most about a third of an answer. The moving average meets
-the same standard with an ordinary threshold and a single fitted parameter. If students learn more in jumps, as BKT
-assumes, BKT saves one or two answers per skill. A system that does not know which is true should prefer the rule whose
-failure is milder. BKT's failure, with a threshold not set for the world it is in, is to declare mastery when most
-students have not reached it. EMA's failure in the BKT worlds is to need one or two more answers. For practice that
-feeds later skills, an early false declaration is the more costly error, so the evidence so far points to EMA. [TODO:
-revise in the light of H1 and H3.]
+of a right answer rises smoothly with ability. If Zeno's students learn as its own model assumes, the gradual worlds
+are the relevant ones. There BKT at any usual threshold declares mastery when most students have not reached it. It
+matches the moving average only with a threshold such as $1 - 10^{-7}$, found from data, whose right value moves by
+orders of magnitude from one world to another, and even then it saves at most about a third of an answer. The moving
+average meets the same standard with an ordinary threshold and a single fitted parameter. If students learn more in
+jumps, as BKT assumes, BKT saves one or two answers per skill. A system that does not know which is true should prefer
+the rule whose failure is milder. BKT's failure, with a threshold not set for the world it is in, is to declare
+mastery when most students have not reached it. EMA's failure in the BKT worlds is to need one or two more answers.
+For practice that feeds later skills, an early false declaration is the more costly error, so of the rules compared
+here the evidence so far points to EMA. [TODO: revise in the light of H1 and H3.]
 
 The threshold matters at least as much as the method, as @pelanek2017mastery also found. The EMA thresholds that met
 the 90 % standard ranged from 0.54 to 0.97 across the simulated settings, and BKT's from 0.74 to $1 - 10^{-12.6}$, so
@@ -88,10 +90,12 @@ to a default threshold.
 
 The ASSISTments data were collected under a streak policy. The skill builders ended once a student had three right in
 a row, so a practice usually stops at the streak rule's own decision. The real data therefore cannot show the streak
-rule declaring mastery too early, and there are few answers after any declaration to judge it by. This is why H3 is
+rule declaring mastery too early, and there are few answers after any declaration to judge it by. The same policy
+shapes H1: practices mostly end soon after a run of three right, so the prediction comparison is made on sequences of
+that kind, and its result need not hold for students who keep practising for 20 or 30 questions. This is why H3 is
 exploratory and the comparison of decisions is simulated.
 
-The H2 comparison was revised after a first simulated run, from equal cost to equal accuracy (section 3.3). A change
+The H2 comparison was revised after a first simulated run, from equal cost to equal precision (section 3.3). A change
 made after seeing results can favour a conclusion. The revision chose a standard that has a meaning in every world,
 not one that favours a particular method, and the equal-cost comparison is still reported in full (Table 4.5).
 Under the original comparison, the conclusion would have been that the methods cannot be told apart, not that one is
@@ -147,10 +151,11 @@ splits reported to show whether the result depends on it, which is weaker than c
 ## 5.4 Summary
 
 In the simulations, BKT decides mastery more cheaply than simpler rules where learning happens all at once, even with
-some forgetting. Where learning is gradual, it fails to reach a high standard of accuracy at any threshold up to 0.9999,
-while the moving average reaches it by waiting longer. With thresholds far closer to 1, set from data, BKT reaches the
-standard too, at about the moving average's cost, but such thresholds no longer mean what they say as probabilities and
-change by orders of magnitude from one world to another. The comparison at equal practice, as first planned, could not
-tell the methods apart. Which world real students are closer to is the open question on which the choice depends, and
-the prediction test on real answers [TODO: H1's verdict] bears on it only indirectly. For Zeno, whose own model assumes
-gradual learning, the evidence so far favours the moving average with a threshold set from data.
+some forgetting. Where learning is gradual, it fails to reach a high standard of precision at any threshold up to
+0.9999, while the moving average reaches it by waiting longer. With thresholds far closer to 1, set from data, BKT
+reaches the standard too, at about the moving average's cost, but its probability is badly calibrated against the
+definition of mastery, and the threshold it needs changes by orders of magnitude from one world to another. The
+comparison at equal practice, as first planned, could not tell the methods apart. Which world real students are closer
+to is the open question on which the choice depends, and the prediction test on real answers [TODO: H1's verdict]
+bears on it only indirectly. For Zeno, whose own model assumes gradual learning, the evidence so far favours the
+moving average, among the rules compared, with a threshold set from data.

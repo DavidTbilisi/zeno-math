@@ -4,7 +4,7 @@
 // row. On simulated learners the truth is recorded after every answer, so each declaration is right or wrong (H2); on
 // real answers it is not, and the rules can only be compared with each other and with the answers that follow (H3).
 //
-// H2 compares the rules at equal accuracy: each method's threshold is the cheapest one whose declarations are right at
+// H2 compares the rules at equal precision: each method's threshold is the cheapest one whose declarations are right at
 // least 90 % of the time on training learners, and the comparison is how many answers each then needs on the other
 // learners. Comparing at equal practice instead (the streak rule's cost) is kept as description: in the gradual worlds
 // almost nobody has truly mastered a skill by then, so every rule is mostly wrong there and the comparison says

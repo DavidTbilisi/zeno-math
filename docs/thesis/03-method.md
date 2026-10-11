@@ -123,9 +123,10 @@ Proposition 2 settles it.
 The comparison in H2 was first set at equal cost: each method's threshold chosen so that it needs as many answers as
 the streak rule with $N = 3$, and the precision of each compared. A first simulated run showed that in the gradual
 worlds almost no student has truly mastered a skill after that many answers, so every method was mostly wrong there
-and the comparison could not tell them apart. The comparison was moved to equal accuracy, which has a meaning in every
-world. This change was made after seeing results, and section 5.3 discusses it as a threat to validity. The
-equal-cost comparison and the full trade-off between cost and precision are still reported, as description.
+and the comparison could not tell them apart. The comparison was moved to equal precision, the share of declarations
+that are right, which has a meaning in every world. This change was made after seeing results, and section 5.3
+discusses it as a threat to validity. The equal-cost comparison and the full trade-off between cost and precision are
+still reported, as description.
 
 H3, mastery decisions on real data, is exploratory. It describes how often BKT, EMA and the streak rule agree on the
 ASSISTments data, and the share of right answers among the next answers after each method declares mastery. It is
@@ -225,8 +226,10 @@ For each held-out student and skill, each method's rule gives the answer after w
 none. Three measures describe a rule. Its precision is the share of its declarations that are right, meaning the
 student knew the skill right after the declaring answer, which is the moment BKT's probability refers to. Its cost is
 the mean number of answers until it declares, where a practice in which it never declares counts all 30 answers, as a
-student who is never let go practises to the end. Its share missed is the share of practices ending with the skill
-known in which it never declared.
+student who is never let go practises to the end. The cost is therefore the answers needed within a session of 30
+questions, not the time a method would take to declare without that limit, which for a method that rarely declares can
+be much longer; the share declared is reported beside it for this reason. Its share missed is the share of practices
+ending with the skill known in which it never declared.
 
 For the H2 comparison, each method's threshold is the cheapest one, on the training students, whose precision there is
 at least 90 % (`compareAtPrecision` in `src/model/mastery.ts`). The thresholds tried for BKT and EMA run from 0.50 to

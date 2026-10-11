@@ -8,13 +8,14 @@ next one builds on it, depends on that decision [@bloom1984]. Stop too early and
 needs a skill they do not yet have. Stop too late and the student keeps answering questions they could already
 answer, time that could have gone to the next skill.
 
-Every adaptive practice system makes this decision for every student and skill, and two kinds of rule are in use. The
-systems that schools use mostly apply a simple rule based on recent answers. The ASSISTments skill builders, for
-example, ended a problem set when a student had answered three problems in a row right [@assistments2010data], and
-Khan Academy tracks each skill through mastery levels that a student climbs by answering correctly [@khanmastery]. The research literature mostly uses a statistical model of the student. In Bayesian Knowledge
-Tracing (BKT) [@corbett1994] a skill is either known or not, and the model keeps the probability that the student
-knows it. The model allows for a student who guesses right without knowing the skill and for one who slips while
-knowing it. The Cognitive Tutors declared a skill mastered when that probability reached 0.95 [@corbett1994].
+Every adaptive practice system makes this decision for every student and skill, and two kinds of rule are in use. Some
+widely used systems apply a simple rule based on recent answers. The ASSISTments skill builders, for example, ended a
+problem set when a student had answered three problems in a row right [@assistments2010data], and Khan Academy tracks
+each skill through mastery levels that a student climbs by answering correctly [@khanmastery]. Much of the research
+literature uses a statistical model of the student. In Bayesian Knowledge Tracing (BKT) [@corbett1994] a skill is
+either known or not, and the model keeps the probability that the student knows it. The model allows for a student who
+guesses right without knowing the skill and for one who slips while knowing it. The Cognitive Tutors declared a skill
+mastered when that probability reached 0.95 [@corbett1994].
 
 BKT needs four parameters for each skill, fitted on earlier students' answers, and it rests on assumptions that are
 known to be simplifications: a skill is learnt all at once, and once learnt it is never forgotten. A simple rule needs
