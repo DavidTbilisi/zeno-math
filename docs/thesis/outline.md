@@ -11,9 +11,10 @@ mastery decision) and as the code base the experiment runs in. It is not a contr
 vs fixed class study, its power analysis, the dry run, the checker agreement study and the usability study move to
 future work or an appendix.
 
-**Status of the chapter drafts.** The drafts `01-introduction.md` to `07-conclusion.md` were written for the wider
-scope and do not yet follow this outline. Most of 5.2 (models, metrics, held-out evaluation, ASSISTments import) carries
-over; the rest needs rewriting or moving.
+**Status of the chapter drafts.** The chapters `01-introduction.md` to `06-conclusion.md` and the appendices follow
+this outline (rewritten on 2026-10-11). The drafts written for the wider scope (design, implementation and evaluation
+of Zeno as a platform) are in the git history before that date. The H2 results are in; the ASSISTments results (H1,
+H3 and the data counts) are marked [TODO] in the chapters until the data file has been downloaded and run.
 
 **Working title:** *When is a skill mastered? Bayesian Knowledge Tracing against a simple mastery rule on real and
 simulated students' answers.*
@@ -129,7 +130,7 @@ Stated before the results are computed, with the test for each:
   - a pre-specified comparison of BKT with EMA and the streak rule on a public data set (H1, H3);
   - a simulation with known truth that measures mastery decisions directly, in worlds that do and do not match
     BKT's assumptions (H2);
-  - open, deterministic code for both, with every number reproducible from Appendix D.
+  - open, deterministic code for both, with every number reproducible from Appendix B.
 
 ## 2. Background
 
@@ -201,7 +202,7 @@ Stated before the results are computed, with the test for each:
 ### 3.4 Where this sits in Zeno
 
 One short section: the learner model, the policy's mastery threshold and why the result matters for it. Point to
-[docs/architecture.md](../architecture.md) and Appendix B for the rest of the system.
+[docs/architecture.md](../architecture.md) and Appendix A for the rest of the system.
 
 ## 4. Results
 
@@ -257,9 +258,9 @@ One short section: the learner model, the policy's mastery threshold and why the
 
 ## Appendices
 
-- A. The Zeno system in brief, and its API: [docs/architecture.md](../architecture.md), [docs/api.md](../api.md).
-- B. The answer checker's agreement with teacher marking (`npm run checker-agreement`), if kept.
-- D. Reproducing every number (below).
+- A. The Zeno system in brief (`appendix-a-zeno.md`), pointing to [docs/architecture.md](../architecture.md) and
+  [docs/api.md](../api.md) for the rest.
+- B. Reproducing every number (`appendix-b-reproducing.md`).
 
 ## Reproducing every number
 

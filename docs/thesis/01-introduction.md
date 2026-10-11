@@ -2,119 +2,96 @@
 
 ## 1.1 The problem
 
-Practice is where most mathematics is learned, and how useful a practice question is depends on its difficulty. A
-question the student cannot start teaches little, and neither does one they could already answer in their sleep.
-Somewhere between the two there is a range where a question is hard enough to need effort but easy enough to be
-solved. Vygotsky's zone of proximal development [@vygotsky1978] is the classic name for this idea. Studies of adaptive
-practice systems such as Math Garden give it a measurable form: a target chance of success
-[@klinkenberg2011; @jansen2013success].
+Practice is where most mathematics is learnt, and a practice system has to decide, again and again, when a student
+has practised a skill enough to move on. Mastery learning, the idea that a student should master one unit before the
+next one builds on it, depends on that decision [@bloom1984]. Stop too early and the student moves on to work that
+needs a skill they do not yet have. Stop too late and the student keeps answering questions they could already
+answer, time that could have gone to the next skill.
 
-A class, however, usually gets one sequence of questions for everyone. The textbook exercise list or the teacher's
-worksheet is fixed before the lesson starts. A student who is ahead spends the lesson on questions that are too easy,
-and a student who is behind spends it on questions that are too hard. Adaptive practice systems address this by
-estimating what each student knows and choosing the next question from that estimate. Several such systems exist and
-are used at scale, but they are hosted services that need accounts and send pupils' answers to the provider, and most
-work only in the languages of their home markets; Khan Academy, translated into Georgian by volunteers, is an
-exception (section 2.5). A school that wants to keep pupils' data on its own premises, that has unreliable Wi-Fi and
-shared devices, and that teaches in Georgian or Russian has few options. No published survey of adaptive practice
-tools in Georgian schools could be found; the OECD's review of evaluation and assessment in Georgia
-[@oecd2019georgia] is the closest general source on the country's schools and their digital resources.
-**[TODO: add the author's own experience of Georgian schools here, if it supports the claim.]**
+Every adaptive practice system makes this decision for every student and skill, and two kinds of rule are in use. The
+systems that schools use mostly apply a simple rule based on recent answers. The ASSISTments skill builders, for
+example, ended a problem set when a student had answered three problems in a row right [@assistments2010data], and
+Khan Academy tracks each skill through mastery levels that a student climbs by answering correctly [@khanmastery]. The research literature mostly uses a statistical model of the student. In Bayesian Knowledge
+Tracing (BKT) [@corbett1994] a skill is either known or not, and the model keeps the probability that the student
+knows it. The model allows for a student who guesses right without knowing the skill and for one who slips while
+knowing it. The Cognitive Tutors declared a skill mastered when that probability reached 0.95 [@corbett1994].
 
-There is also a research gap. Adaptive systems are usually evaluated as whole products, against no practice or
-against classroom teaching as usual. The narrower question — does the *choice of questions by a learner model* help,
-compared with the same questions in a fixed order, when everything else is equal? — is answered less often, and the
-answer depends on assumptions about how students learn that are rarely stated.
+BKT needs four parameters for each skill, fitted on earlier students' answers, and it rests on assumptions that are
+known to be simplifications: a skill is learnt all at once, and once learnt it is never forgotten. A simple rule needs
+nothing fitted, or one number, and a teacher can understand it at once. Whether BKT's extra machinery leads to better
+decisions is therefore a practical question with a measurable answer, and the answer matters to anyone who builds a
+practice system.
 
-## 1.2 Aim
+It matters in particular to Zeno, the system this thesis grew out of. Zeno is a self-hosted mathematics whiteboard
+for Georgian classrooms with a practice engine built in (Appendix A). It already chooses each student's next question
+from a learner model, and that choice includes deciding which skills a student has mastered and can leave behind.
+Before choosing how Zeno should make that decision, it is worth knowing whether the standard model of the field makes
+it better than a rule anyone could explain.
 
-This thesis builds and evaluates **Zeno**, a self-hosted mathematics whiteboard with an adaptive practice study built
-in. The whiteboard is meant to be something a teacher would use anyway: it is built on Excalidraw [@excalidraw] and
-adds 33 mathematics tools (graphs, geometry, algebra step by step, statistics and others), 72 ready-made maths shapes
-and live pieces, and an interface in Georgian, Russian and English. Inside it, a practice dialog generates questions
-for 42 skills in five areas, at three levels each, checks typed answers, names 17 common mistakes, and shows worked
-solutions.
+## 1.2 Aim and research question
 
-The research layer turns this dialog into an experiment. A teacher creates a class; students join with a code, with no
-accounts and no personal data, and are randomised into one of two conditions:
+The aim of this thesis is to find out whether BKT decides when a skill is mastered better than a simple rule, using
+evidence that does not require a classroom. The research question is:
 
-- **fixed**: the class's skills in curriculum order, each at levels 1, 2 and 3;
-- **adaptive**: the skill and level where an Elo-style learner model gives the student a target chance of a right first
-  answer (75 % by default), skipping mastered skills and those whose prerequisites are weak.
+> Does Bayesian Knowledge Tracing estimate a student's mastery of a skill more accurately than a simpler method, the
+> exponential moving average of their answers, of which the rule "N right in a row" is a special case?
 
-Everything else is the same for both groups: the feedback, the worked solutions, and the practice time. A pre-test and
-a post-test in parallel forms measure what was learned.
+The exponential moving average (EMA) keeps a score between 0 and 1 that moves part of the way towards 1 after each
+right answer and towards 0 after each wrong one, so recent answers count more than old ones. It is the simple rule's
+probabilistic counterpart: like BKT, it gives a number that can be read as the chance of a right answer, so both
+methods can be judged on how well they predict. The streak rule ("N right in a row") is the rule most deployed systems
+use, and it is compared as a method of its own.
 
-## 1.3 Research question
+An earlier plan for this thesis asked a wider question: whether choosing practice questions with a learner model
+helps a class learn more than a fixed sequence of questions. That question can only be answered in classrooms, with
+ethics approval for children's data, a school's timetable and, as a power analysis showed, several classes (section
+6.3). The question asked here needs none of these. Every number in the thesis comes from a public data set of real
+students' answers or from simulation, and all of it can be reproduced from the code (Appendix B).
 
-The research question of the thesis is:
+## 1.3 Approach
 
-> **Does choosing practice questions with a learner model (adaptive, aiming at a target chance of success) help
-> students learn more than a fixed curriculum sequence?**
+The question is approached in three ways, and the thesis keeps them apart because they support different kinds of
+claim.
 
-The honest position at the time of writing is that this question cannot yet be answered: **no class has used Zeno**,
-and no classroom data exist. A bachelor's project cannot wait for ethics approval, a school's timetable and a full
-study. The thesis therefore answers the parts of the question that can be answered before the classroom, and prepares
-the rest. It asks five sub-questions:
+Some claims are proved from the definitions and need no data. Proposition 1 gives the exact conditions under which the
+streak rule makes the same decisions as an EMA with a threshold, on every sequence of answers. Proposition 2 shows
+that when students learn exactly as BKT assumes and the model knows the true parameters, BKT's declarations of mastery
+are right at least as often as its threshold says. The second result means that a comparison run only in BKT's own
+world would favour BKT by construction, and so it shapes the rest of the design.
 
-1. **How well does the learner model predict real students' answers, compared with standard student models?** The
-   model is evaluated on a public data set of real students' answers (ASSISTments 2009–2010
-   [@assistments2010data]) and on simulated classes, against Performance Factors Analysis, Bayesian Knowledge Tracing
-   and simple baselines.
-2. **Under which assumptions about learning would adaptive practice help, and how robust is that?** A simulation study
-   runs both conditions in worlds that differ in how answers arise from knowledge, how much a question teaches, how
-   much practice transfers between skills, and how fast students learn.
-3. **Is the study, as designed, able to detect the effect, and what design would be?** A power analysis runs the
-   planned analysis on simulated studies of different sizes and designs.
-4. **Is the system ready to run the study?** Randomisation, counterbalancing, marking, data collection and the analysis
-   must work as specified. A dry run rehearses the whole protocol through the real server, and the answer checker is
-   compared with teacher marking.
-5. **Can teachers and students use it?** A usability study with a small number of participants measures task success,
-   time and the System Usability Scale [@brooke1996sus].
+One claim is tested on real data, and it is the only confirmatory test in the thesis. On the ASSISTments 2009–2010
+data set [@assistments2010data], which records several thousand US middle-school students answering mathematics
+problems, BKT and EMA are fitted on some students and then predict every answer of the others. Hypothesis H1 states
+that BKT predicts those answers better, measured by log-loss. The test, the size of difference that counts and the
+rule for each verdict were fixed before any result was computed.
+
+Real data cannot say whether a declaration of mastery was right, because nobody knows when a real student truly knew
+a skill. The remaining claims therefore rest on simulated students, whose true state is recorded after every answer.
+Hypothesis H2 states that in simulated worlds where students do not learn as BKT assumes (gradually, or with
+forgetting), BKT needs fewer answers than EMA and the streak rule before its declarations are right nine times in
+ten. These results hold only as far as each simulated world is believed, and each world is reported separately.
+Hypothesis H3, exploratory, describes how often the methods agree on the real data.
 
 ## 1.4 Contributions
 
-The thesis makes the following contributions. Each is listed with the section that gives its evidence.
+The thesis makes four contributions. The first is the two propositions: the exact conditions, for answer sequences of
+any length, under which "N right in a row" is a moving average with a threshold, and the precision BKT is guaranteed
+in a world that matches its assumptions (section 3.2). The second is a comparison of BKT with EMA on held-out students
+of a public data set, specified in advance, with an interval and a verdict rule fixed before the data were analysed
+(sections 3.3, 3.6 and 4.2). The third is a simulation in which the truth is known, which measures mastery decisions
+directly in worlds that do and do not match BKT's assumptions (sections 3.6 and 4.3). The fourth is the code for all
+of it, open and deterministic, inside the Zeno repository, with every number reproducible by a command listed in
+Appendix B.
 
-- **The system.** A self-hosted, offline-tolerant maths whiteboard with an adaptive practice study built in, available
-  in three languages, with no accounts and no personal data (chapters 3 and 4).
-- **The learner model and its evaluation.** A three-layer Elo-style model (overall, area and skill ability) that learns
-  from the first answer, runs in the browser and on the server, and is compared on held-out students with PFA, BKT and
-  counting baselines (section 5.2). On simulated classes it reaches a log-loss of 0.550 and an AUC of 0.789, against
-  0.642 and 0.678 for PFA. **[TODO: the result on ASSISTments, from `npm run import-assistments -- skill_builder_data.csv`
-  then `npm run model -- --observations assistments.json --fit --calibration assistments-bins.csv`.]**
-- **A simulation study across worlds.** Adaptive practice at 75 % helps when practice transfers to later skills in two
-  of the three simulated worlds, and hurts in the third. Aiming at 60 % is never worse than the fixed sequence under
-  any of the 36 assumption sets tested, and better in 30 of them (section 5.3).
-- **A power analysis and a design recommendation.** The study as first planned (12 skills, 60 questions, 12-question
-  tests) has power close to the 5 % false-positive rate in two of the three worlds. A focused design with fewer
-  skills, longer practice and tests, and a 60 % target would have 80 % power with 180 to 1,100 students in total, if
-  questions near an even chance teach most, and the thesis recommends it (section 5.4).
-- **A study protocol rehearsed end to end.** A dry run with simulated students joins a class through the real HTTP API,
-  runs the pre-test, a practice session and the post-test, downloads the exports and runs the pre-registered
-  analysis; it checks the study's guarantees on every push to the repository (section 5.4).
-- **The measured accuracy of the answer checker.** On 333 typed answers marked as a teacher would, the checker agrees
-  91.3 % of the time and marks every wrong answer wrong. Where a teacher would name the mistake behind a wrong answer
-  (31 cases), the checker names the same one in all of them, and names none in the other 92 wrong answers
-  (section 5.1).
-- **A usability study** of the board and the class study (section 5.5). **[TODO: participants, task success and the
-  mean SUS, from the protocol in docs/evaluation/usability-protocol.md.]**
-
-All code, data and results are in one repository. Every number in the thesis comes from a command listed in
-Appendix D, with fixed seeds, so it can be reproduced for a given commit.
+None of these is a new model. Both BKT and moving averages are well known, and mastery criteria have been compared
+before, most closely by @pelanek2017mastery (section 2.3). The contribution is a careful, pre-specified comparison
+with the conditions for each claim made explicit, and an answer to a design question for a real system.
 
 ## 1.5 Structure of the thesis
 
-Chapter 2 reviews adaptive practice systems, the student models used to drive them and the ways those models are
-judged, existing classroom maths tools, and the statistics of pre/post experiments. Chapter 3 sets out the context
-and requirements and the design that follows from them, including the design of the class study. Chapter 4 describes
-the implementation: the whiteboard briefly, then the practice engine, the learner model, the question-choosing
-policies, the client, the server and the teacher dashboard. Chapter 5 evaluates the system in five parts, one for each
-sub-question: correctness and the answer checker (5.1), the learner model on real answers (5.2), the simulation study
-(5.3), the readiness and power of the study (5.4), and usability (5.5). Chapter 6 discusses what the evidence does and
-does not show, and the threats to its validity. Chapter 7 answers the sub-questions and sets out future work, first
-of all the classroom study in the design the evidence recommends.
-
-In short, the thesis does not claim that adaptive practice works. It builds the instrument to find out, shows where
-and why it should work, and says what a fair test would need. The next chapter places that work among existing
-adaptive systems and student models.
+Chapter 2 reviews mastery learning and how mastery is decided in practice, BKT, simple estimators and earlier
+comparisons of mastery criteria, and how student models are judged. Chapter 3 sets out the method: the three methods,
+the two propositions, the hypotheses, the data, how the methods are fitted and how each hypothesis is evaluated, and
+where the result fits in Zeno. Chapter 4 reports the results for each hypothesis. Chapter 5 discusses what they show
+and the threats to their validity. Chapter 6 answers the research question, recommends how Zeno should decide mastery
+and sets out future work. Appendix A describes Zeno briefly, and Appendix B lists the command behind every number.

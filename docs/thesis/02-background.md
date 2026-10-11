@@ -1,304 +1,167 @@
 # 2 Background and related work
 
-This chapter covers the ideas Zeno is built on. Section 2.1 reviews adaptive practice and what is known about the
-right difficulty for a practice question. Section 2.2 describes the student models that adaptive systems use to
-estimate what a learner knows, and section 2.3 how those models are judged. Section 2.4 covers feedback on wrong
-answers and the diagnosis of mistakes. Section 2.5 looks at existing digital tools for the maths classroom, and
-section 2.6 at the statistics of the pre/post experiment Zeno is designed to run.
+This chapter covers the ideas the comparison rests on. Section 2.1 describes mastery learning and how deployed systems
+decide that a skill is mastered. Section 2.2 describes Bayesian Knowledge Tracing, and section 2.3 the simple
+estimators it is compared with, together with earlier comparisons of mastery criteria. Section 2.4 covers how student
+models are judged, and section 2.5 places the other common student models briefly. Throughout, $c \in \{0, 1\}$ is
+whether an answer was right and $\sigma(x) = 1 / (1 + e^{-x})$ is the logistic function.
 
-## 2.1 Adaptive practice
+## 2.1 Mastery learning and the mastery decision
 
-### 2.1.1 Difficulty and learning
+Mastery learning holds that most students can reach a high level in a subject if each unit is learnt to a set
+standard before the next one starts, and if the time each student spends varies to make that possible. Bloom's
+studies of mastery learning, and his "two sigma" comparison of group teaching with one-to-one tutoring, made the idea
+a benchmark for instruction and later for tutoring systems [@bloom1984]. Reviews of intelligent tutoring systems,
+many of which implement mastery learning, find that they raise test scores compared with conventional teaching
+[@kulik2016] and that step-based tutors come close to human tutors [@vanlehn2011].
 
-The idea that teaching works best a little beyond what a learner can already do alone is old. Vygotsky's *zone of
-proximal development* is the range of tasks a child cannot yet do unaided but can do with help [@vygotsky1978]. A
-practice system cannot give the help a teacher gives, but it can try to choose questions from the corresponding range:
-not yet automatic, not yet out of reach.
+A computer system that implements mastery learning has to turn "learnt to a set standard" into a rule it can apply
+after every answer. Three such rules are common in systems that have been used at scale. The Cognitive Tutors, which
+introduced BKT, estimate the probability that a student knows each skill and treat the skill as mastered once that
+probability reaches 0.95 [@corbett1994]. The ASSISTments skill builders, problem sets for practising one skill, ended
+when a student answered three problems in a row right [@assistments2010data]. Khan Academy tracks each skill through
+a series of mastery levels that a student climbs by answering correctly [@khanmastery]. The first rule depends on a
+fitted model; the second needs nothing but the last few answers.
 
-Turning this into a number requires a measure of difficulty *for this learner*. The usual measure is the chance that
-the learner answers correctly. Math Garden (Rekentuin), a Dutch adaptive practice system used by many primary
-schools, chooses items so that each child succeeds about 75 % of the time [@klinkenberg2011]. A field experiment in
-Math Garden assigned children to different target success rates and looked at maths anxiety, perceived competence
-and performance [@jansen2013success]. Its 207 children in grades 3–6 practised for six weeks in a control condition or
-one of three experimental conditions with a pre-set success rate; Math Garden's three settings aim at 60, 75 and 90 %
-[@jansen2016selfadapting]. Maths performance improved only in the experimental conditions, and the higher the
-success rate, the more problems the children attempted and the more their performance improved. Maths anxiety
-improved equally in all conditions, and perceived competence only modestly. The choice of target is therefore a
-trade-off between how much a single question can teach and how much practice a learner is willing to do.
+The choice of rule has consequences either way. A rule that declares mastery too early lets a student move on to
+work that builds on a skill they do not have. A rule that declares it too late spends practice time on questions the
+student could already answer, which costs time and, judging by experiments with the difficulty of practice, can cost
+motivation [@jansen2013success]. Every mastery rule trades these two errors against each other, usually through a
+threshold: a higher probability for BKT, a longer run for the streak rule. Comparing rules therefore means comparing
+them along the whole trade-off, or at a point on it that is fixed in advance, and this thesis does both (section 3.6).
 
-A theoretical argument points the same way from the other side. For a broad class of learning algorithms trained by
-gradient descent, @wilson2019 show that learning is fastest when the error rate is about 15.9 %, that is, at a success
-rate of about 85 %. Their model is of a learner adjusting a single decision boundary, not of a student learning
-algebra, and it does not say how a target interacts with prerequisites or transfer between skills. It is cited here
-because it shows that an "optimal" target depends on assumptions about how learning happens, which is the point
-section 5.3 makes with simulations.
+## 2.2 Bayesian Knowledge Tracing
 
-### 2.1.2 Adaptive systems in practice
+Bayesian Knowledge Tracing [@corbett1994] models each skill separately, as either known or not known. It is a hidden
+Markov model with two states and four parameters per skill. The first, $P(L_0)$, is the chance that the skill is
+known before any practice. The second, $P(T)$, is the chance of learning it at each practice opportunity. The third,
+$P(G)$, is the chance of a right answer by guessing when the skill is not known, and the fourth, $P(S)$, the chance of
+a wrong answer by slipping when it is known.
 
-Intelligent tutoring systems that adapt to the learner have been studied for decades. Bloom's "two sigma" result for
-one-to-one human tutoring set a benchmark for them [@bloom1984]. Reviews of the evidence find that step-based tutoring systems come close to human tutors
-[@vanlehn2011] and that intelligent tutoring systems on average raise test scores compared with conventional
-teaching [@kulik2016]. These reviews compare whole systems with other forms of teaching. They do not isolate the
-contribution of the *selection* of practice items, which is what Zeno's study compares: the same questions, feedback
-and time, chosen in two different ways.
-
-Two systems are close to Zeno's design:
-
-- **Math Garden** [@klinkenberg2011] rates children and items on one scale with an Elo-style rule (section 2.2.1),
-  updates both after every answer, and chooses items near a target chance of success. It has no training phase: the
-  ratings start from defaults and move with the answers. Zeno's learner model follows this approach.
-- **ASSISTments** [@feng2009assistments] is a web-based system from Worcester Polytechnic Institute, used in US middle
-  schools, that tutors while it assesses: a wrong answer opens a sequence of scaffolding questions. Its logs of
-  students' answers have been released as public data sets. The 2009–2010 "skill builder" set
-  [@assistments2010data] is one of the most used benchmarks for student models, and Zeno uses it to evaluate its learner model on real answers (section 5.2).
-
-Item selection is not only about difficulty. Mixing practice on different skills (*interleaving*), rather than
-practising one skill in a block, improved later test scores in a mathematics experiment by @rohrer2007. Zeno's
-adaptive policy interleaves on purpose (section 4.4); its fixed policy, like most textbook exercise lists, practises
-each skill in a block.
-
-## 2.2 Student models
-
-A student model estimates, from a learner's answers so far, the chance that they will answer the next question
-correctly. An adaptive system needs one to choose questions. This section describes the four families that matter for
-Zeno: item response theory and its online form, the Elo rating; Bayesian Knowledge Tracing; Performance Factors
-Analysis; and deep knowledge tracing. Throughout, $c \in \{0, 1\}$ is whether an answer was correct and
-$\sigma(x) = 1 / (1 + e^{-x})$ is the logistic function.
-
-### 2.2.1 Item response theory and the Elo rating
-
-Item response theory (IRT) models the chance of a correct answer as a function of the student's ability $\theta$ and
-the item's difficulty $b$, on the same scale. The simplest model, due to @rasch1960, is
-
-$$P(c = 1) = \sigma(\theta - b).$$
-
-When ability equals difficulty the chance is 50 %; each unit of difference multiplies the odds by $e$. The
-two-parameter logistic model adds a discrimination $a$ per item, $P(c = 1) = \sigma(a(\theta - b))$, so that some items
-separate strong and weak students more sharply than others. Classical IRT fits all parameters at once from a large
-data set, and assumes that ability does not change while the data are collected. Neither holds in a practice system:
-items are new, and the point of practice is that ability changes.
-
-The **Elo rating** was developed to rate chess players [@elo1978]. Applied to education, the student and the item are
-the two "players": a correct answer is a win for the student [@pelanek2016elo]. After each answer, both ratings move
-by the *surprise*, the difference between what happened and what was predicted:
-
-$$\theta \leftarrow \theta + K\,(c - P), \qquad b \leftarrow b - K\,(c - P),$$
-
-where $P = \sigma(\theta - b)$ is the prediction made before the answer and $K$ is a step size. An unexpected right
-answer raises the student's ability and lowers the item's difficulty; an expected one changes little. The Elo rating
-is therefore an online, approximate way to fit a Rasch model that also tracks learning. A fixed $K$ is a compromise
-between new students and items, whose ratings should move fast, and settled ones, which should move slowly. A common
-remedy is an *uncertainty function* that shrinks with the number of answers $n$ a rating has seen, for example
-$K = U(n) = \alpha / (1 + \beta n)$ [@pelanek2016elo].
-
-Elo-based models have practical advantages for a classroom system. They need no training data, they learn from the
-first answer, the computation after each answer is a few additions, and every number has a plain meaning a teacher can
-be told ("the chance that this student gets a level-2 question on this skill right"). Extensions add layers of ability
-(for example a global ability plus a deviation per skill or concept), so that a skill a student has not tried yet
-starts from what they showed elsewhere [@pelanek2016elo]. Zeno's model, described in section 4.3, has three such layers
-(overall, area and skill) and a difficulty per skill and level.
-
-### 2.2.2 Bayesian Knowledge Tracing
-
-Bayesian Knowledge Tracing (BKT) [@corbett1994] models each skill as either known or not known. It is a hidden Markov
-model with two states and four parameters per skill:
-
-- $P(L_0)$, the chance the skill is known before practice;
-- $P(T)$, the chance of learning it at each practice opportunity;
-- $P(G)$, the chance of guessing right when it is not known;
-- $P(S)$, the chance of slipping (answering wrong) when it is known.
-
-With $L$ the current probability that the skill is known, the chance of a correct answer is
+With $L$ the current probability that the skill is known, the chance of a right answer is
 
 $$P(c = 1) = L\,(1 - P(S)) + (1 - L)\,P(G).$$
 
-After observing the answer, Bayes' rule gives the probability that the skill was known,
+After the answer, Bayes' rule gives the probability that the skill was known when it was answered,
 
 $$L_{c=1} = \frac{L\,(1 - P(S))}{L\,(1 - P(S)) + (1 - L)\,P(G)}, \qquad
 L_{c=0} = \frac{L\,P(S)}{L\,P(S) + (1 - L)\,(1 - P(G))},$$
 
-and practice then gives a chance to learn: $L' = L_c + (1 - L_c)\,P(T)$. The parameters are fitted per skill on
-training data, usually by expectation–maximisation or by a search over a grid of values. Unconstrained fits can be
-*degenerate*, for example a guess rate above one half, so that knowing the skill makes a right answer less likely; it
-is usual to bound guess and slip below about 0.3.
+and the practice then gives a chance to learn, $L' = L_c + (1 - L_c)\,P(T)$. The value $L'$ is the probability that
+the student knows the skill before the next question, and it is the number a mastery threshold is applied to.
 
-BKT has been the standard model in cognitive tutors for decades. Its weaknesses for Zeno's setting are that it has no
-notion of question difficulty or level within a skill, that it treats skills as independent (a student new to a skill
-starts at $P(L_0)$ whatever they showed on related skills), and that it needs training data before it can be used.
-Individualised variants add per-student parameters [@yudelson2013], at the cost of more data.
+The model makes three assumptions that matter for this thesis. Learning happens all at once: a student moves from not
+knowing to knowing in one step, rather than becoming gradually more likely to answer right. Nothing is forgotten:
+once known, a skill stays known. And all students share the same four parameters for a skill, so a strong student and
+a weak one start from the same $P(L_0)$. Each of these is known to be a simplification. Extensions add forgetting,
+differences between students and links between skills, and with them BKT predicts real answers about as well as much
+more complex models [@khajah2016; @yudelson2013]. The standard model is studied here because it is the one deployed
+systems use, and because its assumptions can be broken on purpose in a simulation to see what that costs.
 
-### 2.2.3 Performance Factors Analysis
+The parameters are fitted per skill on earlier students' answers, by expectation–maximisation or by searching a grid
+of values for the combination that makes the observed answers most likely. Two problems are well known. First, the
+fit is not always meaningful. A fitted guess rate above one half implies that knowing the skill makes a right answer
+less likely, and it is usual to bound guess and slip below about 0.3 to rule such fits out. Second, different
+parameter values can predict the observed answers equally well while implying different probabilities that the
+student knows the skill, so the fitted value of $L$ is not fully determined by the data [@beck2007identifiability].
+That second problem matters directly for mastery decisions, which act on $L$ rather than on the predictions.
 
-Performance Factors Analysis (PFA) [@pavlik2009pfa] is a logistic regression on a student's history. In the form used
-for one skill $k$ per item, the log-odds of a correct answer are
+## 2.3 Simple estimators and earlier comparisons
 
-$$\operatorname{logit} P(c = 1) = \beta_k + \gamma_k\,s_k + \rho_k\,f_k,$$
+The simplest estimate of whether a student has learnt a skill is the share of their answers on it that were right.
+It weighs a mistake made at the start, before any practice, as heavily as one made just now, which is wrong for a
+student who is learning. Two common alternatives weigh recent answers more.
 
-where $s_k$ and $f_k$ count the student's earlier successes and failures on skill $k$, $\beta_k$ is the skill's
-easiness, and $\gamma_k$ and $\rho_k$ say how much each earlier success and failure changes the odds. When an item
-involves several skills the terms are summed over them. The parameters are fitted on training students by ordinary
-logistic regression. PFA often predicts as well as or better than BKT on the same data [@pavlik2009pfa], and it
-handles items with several skills more naturally. Like BKT, it has no student ability that carries across skills,
-and it needs a training set.
+The streak rule looks only at the end of the sequence: the skill is mastered when the last $N$ answers were all right.
+It needs no fitting, a teacher or student can see at once why it has or has not fired, and with $N = 3$ it is the
+rule of the ASSISTments skill builders. It gives no probability, so it cannot be judged as a predictor, and it ignores
+everything before the most recent wrong answer.
 
-### 2.2.4 Deep knowledge tracing
+The exponential moving average (EMA) keeps a score $s$ between 0 and 1 that starts at some value $s_0$ and after each
+answer becomes
 
-Deep knowledge tracing (DKT) [@piech2015dkt] replaces the hand-built model with a recurrent neural network. Each
-answer is encoded as a vector $x_t$ (which skill, and whether it was right); a hidden state summarises the history,
+$$s \leftarrow (1 - \alpha)\,s + \alpha\,c,$$
 
-$$h_t = \tanh(W_x x_t + W_h h_{t-1} + b_h), \qquad y_t = \sigma(W_y h_t + b_y),$$
+with $0 < \alpha < 1$. A right answer moves the score a share $\alpha$ of the way towards 1, and a wrong one the same
+share towards 0, so an answer $k$ steps back carries weight proportional to $(1 - \alpha)^k$. The score can be read as
+the predicted chance of a right answer, so EMA can be judged with the same metrics as BKT. A mastery rule follows by
+declaring mastery when $s$ reaches a threshold $\theta$. The decay $\alpha$ is the only parameter apart from the
+starting value, and it is the same for every skill. Proposition 1 in section 3.2 shows that the streak rule is exactly
+an EMA rule for some settings of $\alpha$, $\theta$ and $s_0$, which is why the research question calls the streak
+rule a special case.
 
-and $y_t$ holds the predicted chance of a right answer on every skill at the next step. In the original paper the
-network was an LSTM, and on ASSISTments it predicted much better than BKT. Later work found that much of the gap
-closes when BKT is given forgetting, ability differences between students, or skill-to-skill structure
-[@khajah2016].
+Mastery criteria have been compared directly before. @pelanek2017mastery analysed several criteria for a single,
+well-specified skill on simulated and real data, among them BKT, moving averages and streaks. They found that the
+choice of data and of the threshold mattered more than the choice of learner model, and they recommended the
+exponential moving average as a mastery criterion. @fancsali2013mastery studied by simulation how well mastery
+assessment with BKT performs at best and at worst, when the model's parameters differ from the ones that generate the
+answers. The present thesis is close to both. It differs in proving when the streak rule is an EMA rule, in fixing a
+single comparison and its verdict rule in advance, in testing prediction on held-out students of a public data set,
+and in measuring decisions in simulated worlds built to break BKT's assumptions in stated ways. It is a replication
+with a stated hypothesis, applied to a design question in a real system, not a new method.
 
-DKT is out of scope for Zeno for three reasons. It needs a large training set from the same kind of students and
-questions, which a new system does not have. It cannot explain its predictions to a teacher, whose trust in a tool
-that chooses their students' work matters. And it is far more expensive to run on a phone after every answer than
-an Elo update. Chapter 3 returns to this choice.
+## 2.4 How student models are judged
 
-### 2.2.5 Summary of the families
+A student model that gives probabilities is judged by how good those probabilities are, and @pelanek2015metrics
+reviews the metrics in use and the ways each can mislead. With $p_i$ the prediction and $c_i$ the outcome of answer
+$i$ out of $n$, the log-loss is the negative mean log-likelihood,
 
-| Model | Parameters fitted from data before use | Learns after each answer | Question difficulty | Ability shared across skills |
-|---|---|---|---|---|
-| IRT (Rasch, 2PL) | all | no | yes | one ability |
-| Elo, layered | none (step sizes only) | yes | yes | yes, through layers |
-| BKT | four per skill | yes | no | no |
-| PFA | three per skill | yes (through counts) | through the skill only | no |
-| DKT | network weights | yes | through the skill only | learned, implicitly |
+$$-\frac{1}{n}\sum_{i=1}^{n} \left[c_i \log p_i + (1 - c_i) \log(1 - p_i)\right].$$
 
-## 2.3 How student models are judged
+It punishes a confident wrong prediction heavily, and always predicting one half gives $\log 2 \approx 0.693$. The
+root mean squared error, the square root of the Brier score [@brier1950], is less dominated by a few extreme
+predictions. The area under the ROC curve (AUC) is the chance that a randomly chosen right answer got a higher
+prediction than a randomly chosen wrong one [@fawcett2006]. It measures ranking only, so a model whose probabilities
+are all too high by the same amount can still have a good AUC. Calibration compares predictions with outcomes
+directly: answers are grouped into bins by their prediction, and each bin's mean prediction is set against the share
+of right answers in it.
 
-A student model makes a probabilistic prediction for each answer, so it is judged by how good those probabilities
-are. @pelanek2015metrics reviews the metrics used in the field and the ways they can mislead. Zeno reports the
-following, with $p_i$ the prediction and $c_i$ the outcome of answer $i$ out of $N$:
+This thesis uses log-loss as its primary metric for prediction. A mastery decision acts on the probability itself,
+not on a ranking, so a metric that judges the probability is the relevant one, and log-loss is the one that punishes
+a confident wrong probability most, which is the error that makes a mastery decision wrong. The others are reported
+alongside it.
 
-- **Log-loss** (cross-entropy), $-\frac{1}{N}\sum_i \left[c_i \log p_i + (1 - c_i) \log(1 - p_i)\right]$, the negative
-  mean log-likelihood. It punishes confident wrong predictions heavily. Always predicting 0.5 gives $\log 2 \approx
-  0.693$.
-- **RMSE**, $\sqrt{\frac{1}{N}\sum_i (c_i - p_i)^2}$, the square root of the Brier score [@brier1950]. It is less
-  dominated by a few extreme predictions than log-loss, and @pelanek2015metrics argues for it as a sensible default.
-- **AUC**, the area under the ROC curve: the chance that a randomly chosen right answer got a higher prediction than a
-  randomly chosen wrong one [@fawcett2006]. It measures ranking only, so a model can have a good AUC while every
-  probability is off by the same amount. A value of 0.5 means no better than chance.
-- **Calibration**: predictions are grouped into bins (0–10 %, 10–20 %, …) and each bin's mean prediction is compared
-  with the share of right answers in it. For an adaptive system that aims at a target chance, calibration matters
-  directly: if the model says 75 % and students succeed 60 % of the time, the policy is not doing what it claims.
+How the data are split matters as much as the metric. A model judged on the students it was fitted on can memorise
+them, and a split by answers rather than by students lets the model see part of a test student's history during
+fitting. The fair test for a system that will meet new students holds out whole students: the model is fitted on the
+rest and then predicts each held-out student's answers in order, learning from each answer only after predicting it,
+as it would in use [@pelanek2015metrics].
 
-How the data are split matters as much as the metric. A model evaluated on the same students it was fitted on can
-memorise them. The fair test for a system that will meet new students is a *student-wise* split: some students are
-held out entirely, the model is fitted on the rest, and then predicts the held-out students' answers one at a time,
-updating after each one as it would in use [@pelanek2015metrics]. Zeno's evaluation (section 5.2) follows this design.
+Prediction is not the same as deciding mastery. A model can predict the next answer well on average and still declare
+mastery too early or too late, and two models that predict equally well can declare it at different times. Real data
+cannot settle which declaration was right, because a real student's true state is never observed. This is why the
+prediction comparison (H1) is made on real data and the comparison of decisions (H2) on simulated students whose
+true state is known.
 
-## 2.4 Feedback and the diagnosis of mistakes
+## 2.5 Other student models
 
-Feedback is among the strongest influences on learning, but its effect varies widely: feedback about the task and
-how to do it helps more than a bare right or wrong, and much more than praise [@hattie2007]. Reviews of formative
-feedback in computer-based settings reach a similar conclusion and recommend feedback that is specific, focused on
-the task, and short enough not to overload the learner [@shute2008].
+Three other families of student model are common, and two of them appear in this thesis only as reference rows.
 
-Many wrong answers in school mathematics are not random. @brown1978 showed that children's errors in subtraction
-follow from systematic "bugs" in otherwise sensible procedures, such as always subtracting the smaller digit from the
-larger, and that a program could identify the bug from a child's answers. Familiar examples at secondary level are
-adding the numerators and the denominators of two fractions, expanding $(a + b)^2$ as $a^2 + b^2$, and reading
-$2^{-3}$ as $-8$. Because each such procedure gives a predictable answer, a checker that knows the numbers of a
-question can compute what each mistake would give and recognise it when it is typed. Zeno does this for 17 mistakes
-(section 4.2); the wording of its hints, which name the slip, make it small and offer a number to check with, follows
-a popular-mathematics approach to such errors [CITATION NEEDED: Orlin (2025), Russian edition — author to supply].
+The Elo rating, developed to rate chess players [@elo1978], treats a student and a question as two players and a right
+answer as a win for the student [@pelanek2016elo]. After each answer, the student's ability and the question's
+difficulty move by the difference between the outcome and the predicted chance $\sigma(\theta - b)$. It is an online
+approximation of the Rasch model [@rasch1960] that also follows learning, it needs no training phase, and Math Garden
+uses it to choose questions near a target chance of success [@klinkenberg2011]. Zeno's learner model is of this kind
+(Appendix A).
 
-## 2.5 Digital tools for the maths classroom
+Performance Factors Analysis (PFA) [@pavlik2009pfa] is a logistic regression on a student's earlier right and wrong
+answers on each skill, with weights fitted on training students. It often predicts as well as BKT or better
+[@pavlik2009pfa].
 
-Two families of tools are relevant: dynamic mathematics software with classroom features, and adaptive practice
-platforms.
+Deep knowledge tracing [@piech2015dkt] replaces the hand-built model with a recurrent neural network over the whole
+history of answers. It predicted much better than BKT in its original evaluation, though much of the gap closes when
+BKT is given forgetting and differences between students [@khajah2016]. It needs a large training set and its
+estimates cannot be explained to a teacher, and it is not what deployed systems use to decide mastery, so it is not
+compared here.
 
-**GeoGebra Classroom** [@geogebraclassroom] lets a teacher share GeoGebra activities with a class and see each
-student's work live. GeoGebra itself is free for non-commercial use and offers graphing, geometry, a computer algebra
-system and a large library of user-made activities. **Amplify Classroom**, called Desmos Classroom until June 2025
-[@desmosclassroom], offers teacher-paced activities built on the Desmos graphing calculator, with a dashboard of
-student responses. Both are strong tools for
-exploration and for the teacher to see a class's work. Neither chooses questions for each student from a model of
-what they know: the activity is the same for everyone, and the teacher adapts. Both are hosted services that require
-the teacher to have an account and send students' work to the provider's servers. Neither offers its classroom in
-Georgian. GeoGebra's apps are translated into Georgian, but the geogebra.org site that hosts GeoGebra Classroom offers
-39 languages without it; Amplify Classroom offers 12, Russian among them but not Georgian (both checked in October
-2026).
+The Elo model and PFA are already implemented in the evaluation code this thesis uses, and they are reported in the
+prediction table as points of reference. They are not part of any hypothesis.
 
-Adaptive practice platforms (Math Garden, ASSISTments, and Khan Academy's exercises, which track each skill through
-mastery levels [@khanmastery]) do choose or sequence questions per student, but they are separate from the board the
-teacher works on and are hosted by their providers, with accounts. Most offer the curricula and languages of their
-home markets; Khan Academy is an exception, with a Georgian translation made by volunteers.
+## 2.6 Summary
 
-| | Whiteboard for teaching | Questions chosen per student | Self-hosted, no accounts | Georgian interface |
-|---|---|---|---|---|
-| GeoGebra Classroom | yes | no | no | no (the apps are) |
-| Amplify (Desmos) Classroom | partly (activities) | no | no | no |
-| Math Garden | no | yes | no | no |
-| ASSISTments | no | partly (scaffolding on wrong answers) | no | no |
-| Zeno | yes | yes (adaptive condition) | yes | yes |
-
-The table is not a ranking: GeoGebra and Desmos are far more mature tools than Zeno. It shows the combination Zeno
-aims at, which none of the others offers: a board teachers can use for whole-class teaching, adaptive practice from
-the same page, and a deployment that a school can run on one machine of its own.
-
-## 2.6 Analysing pre/post experiments
-
-Zeno's study is a randomised experiment with a pre-test and a post-test. This section describes how such data are
-analysed and how many students are needed.
-
-### 2.6.1 Gain scores and ANCOVA
-
-The intuitive analysis is to compute each student's *gain*, post-test minus pre-test, and compare the mean gains of
-the two groups. The alternative is analysis of covariance (ANCOVA): the post-test score is regressed on the group and
-the pre-test score,
-
-$$Y_{\text{post}} = \beta_0 + \beta_1\,\text{group} + \beta_2\,Y_{\text{pre}} + \varepsilon,$$
-
-and $\beta_1$ is the effect of the treatment, adjusted for where students started. The gain-score analysis is the
-special case $\beta_2 = 1$. When the pre-test is imperfectly correlated with the post-test, as test scores always are,
-the fitted $\beta_2$ is below 1, and forcing it to 1 adds noise. @vanbreukelen2006 shows that in *randomised* studies
-both analyses are unbiased but ANCOVA has more power, while in non-randomised studies the two can disagree because
-the groups differ at baseline (the situation of Lord's paradox [@lord1967]). Since Zeno randomises students, ANCOVA is
-the primary analysis, and further factors that vary by design, such as the order of the test forms and the class, are
-added to the model.
-
-### 2.6.2 Welch's t-test
-
-As a secondary analysis, the mean gains of the two groups can be compared with a t-test. Student's t-test assumes the
-two groups have equal variances, which an intervention may well change. Welch's test [@welch1947] drops that
-assumption:
-
-$$t = \frac{\bar x_1 - \bar x_2}{\sqrt{s_1^2/n_1 + s_2^2/n_2}},$$
-
-with degrees of freedom from the Welch–Satterthwaite approximation. With equal group sizes it loses almost nothing when
-the variances are in fact equal, so it is a safe default.
-
-### 2.6.3 Effect sizes and power
-
-A p-value says whether an effect is distinguishable from zero, not how large it is. The usual standardised effect
-size for two groups is Cohen's $d$, the difference in means divided by the pooled standard deviation [@cohen1988].
-Cohen's conventional labels are 0.2 for small, 0.5 for medium and 0.8 for large, with his own warning that they are a
-last resort when nothing better is known about the field.
-
-The *power* of a study is the chance that it finds an effect, at a chosen significance level $\alpha$, when the effect
-is really there. For a two-sided t-test at $\alpha = 0.05$, about 64 students per group give 80 % power for $d = 0.5$,
-and about 393 per group for $d = 0.2$ [@cohen1988]. ANCOVA reduces the required sample by roughly the factor
-$1 - \rho^2$, where $\rho$ is the pre/post correlation [@vanbreukelen2006]. A typical class has 20 to 30 students, so
-a study of one or two classes can only detect large effects.
-
-Formulas for power assume the effect size is known. For an adaptive practice study it is not, and it depends on how
-students learn. The effect on the *test* is also smaller than the effect on what students really know, because a short
-test measures knowledge with noise. Section 5.4 therefore estimates power by simulation: it generates many complete
-studies under stated assumptions, runs the planned analysis on each, and counts how often it gives $p < 0.05$.
-
-## 2.7 Summary
-
-Adaptive practice chooses questions near a target chance of success, and there are arguments for targets from about
-60 % to 85 %. Choosing needs a student model; among the standard ones, a layered Elo rating fits a new, self-hosted
-classroom system best because it needs no training data, learns from the first answer, and can be explained to a
-teacher, while BKT and PFA serve as baselines to compare it with. Models are judged on held-out students by log-loss,
-RMSE, AUC and calibration. Wrong answers often follow known procedures, so feedback can name the mistake. Existing
-classroom tools either support the teacher's board or choose questions per student, not both, and are hosted
-services. Finally, a randomised pre/post study is analysed with ANCOVA, and its power must be estimated before it is
-run. The next chapter turns these points, together with the conditions of the schools Zeno is meant for, into
-requirements and a design.
+Systems decide mastery either with a fitted model, of which BKT is the standard, or with a simple rule on recent
+answers, of which the streak rule is the most common. BKT gives a probability that the student knows the skill, but
+it rests on assumptions that real learning breaks, and its fitted parameters are not always identifiable. The EMA is a
+simple estimator that also gives a probability, so it can be compared with BKT on prediction, and the streak rule is
+one of its special cases. Earlier work has compared mastery criteria and found the threshold and the data to matter
+more than the model. The next chapter sets out how this thesis compares the three methods.
