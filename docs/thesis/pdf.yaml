@@ -19,10 +19,11 @@ linkcolor: blue
 urlcolor: blue
 link-citations: true
 reference-section-title: References
-# Smaller tables, and figures no taller than 0.68 of the text block so a figure and its caption fit on one page.
+# Smaller tables with captions as wide as the text, and figures no taller than 0.68 of the text block so a figure and its caption fit on one page.
 header-includes: |
   \usepackage{etoolbox}
   \AtBeginEnvironment{longtable}{\small}
+  \setlength\LTcapwidth{\linewidth}
   \newsavebox\pbox
   \AtBeginDocument{\renewcommand*\pandocbounded[1]{\sbox\pbox{#1}\ifdim\wd\pbox>\linewidth\sbox\pbox{\resizebox{\linewidth}{!}{#1}}\fi\ifdim\ht\pbox>0.68\textheight\resizebox{!}{0.68\textheight}{\usebox\pbox}\else\usebox\pbox\fi}}
 ---
