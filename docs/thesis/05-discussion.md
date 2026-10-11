@@ -37,15 +37,17 @@ The check above 0.9999 shows that BKT can nevertheless be made to wait, only not
 a probability. With thresholds between $1 - 10^{-6.9}$ and $1 - 10^{-12.6}$, BKT met the standard in three of the four
 gradual settings, and at the higher learning rate it then needed 0.3 to 0.4 answers fewer than EMA (Table 4.7). BKT's
 probability still ranks the evidence usefully when learning is gradual; what breaks is its calibration against the
-definition of mastery used here. The gradual worlds have no known state for BKT's probability to refer to, so a
-probability near 1 says only that the answers look like those of a student who knows the skill, not that the true
-chance of a right answer has reached 0.9. The "never" of Table 4.3 is therefore mostly a statement about the range of
-thresholds, not about the model, and the one setting where BKT still never meets the standard is one where hardly any
-student masters a skill at all. This check came after the results, so it qualifies H2's verdict without replacing it.
-What survives of BKT's failure is a practical point. In the gradual worlds the threshold BKT needs ranges over eight
-orders of magnitude of closeness to 1, from $1 - 10^{-4.5}$ to $1 - 10^{-12.6}$, and at its usual 0.95 about one
-declaration in ten is right (Table 4.5). A system using BKT where learning is gradual would have to set its threshold
-from data, with nothing in BKT's own probability to guide it. The thresholds EMA needs stay between 0.84 and 0.97.
+definition of mastery used here, which Table 4.8 measures directly: a $P(L)$ of 0.99 meant mastery in 15 to 55 % of
+cases, against 70 to 94 % for EMA's top scores. The gradual worlds have no known state for BKT's probability to refer
+to, so a probability near 1 says only that the answers look like those of a student who knows the skill, not that the
+true chance of a right answer has reached 0.9. The "never" of Table 4.3 is therefore mostly a statement about the
+range of thresholds, not about the model, and the one setting where BKT still never meets the standard is one where
+hardly any student masters a skill at all. This check came after the results, so it qualifies H2's verdict without
+replacing it. What survives of BKT's failure is a practical point. In the gradual worlds the threshold BKT needs
+ranges over eight orders of magnitude of closeness to 1, from $1 - 10^{-4.5}$ to $1 - 10^{-12.6}$, and at its usual
+0.95 about one declaration in ten is right (Table 4.5). A system using BKT where learning is gradual would have to set
+its threshold from data, with nothing in BKT's own probability to guide it. The thresholds EMA needs stay between 0.84
+and 0.97.
 
 Two qualifications remain. The first is that meeting the standard in the gradual worlds was expensive for every
 method: 25 to 30 answers out of 30, with most students never declared. Little separates methods that all wait until

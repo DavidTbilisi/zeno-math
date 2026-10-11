@@ -2,9 +2,10 @@
 
 This chapter reports the results for each hypothesis in turn: the data kept and the simulated settings (section 4.1),
 prediction on real answers (H1, section 4.2), mastery decisions where the truth is known (H2, section 4.3) and mastery
-decisions on real answers (H3, section 4.4). It reports what was found; chapter 5 interprets it. The simulation results
-were made at commit 88c4af7 of the Zeno repository, and the check above BKT's highest threshold (Table 4.7) at
-commit 66c2eda, with the commands in Appendix B.
+decisions on real answers (H3, section 4.4). It reports what was found; chapter 5 interprets it. The simulation
+results were made at commit 88c4af7 of the Zeno repository, the check above BKT's highest threshold (Table 4.7) at
+commit 66c2eda, and the calibration of the methods' scores (Table 4.8) at commit ba04c48, with the commands in
+Appendix B.
 
 [TODO: the ASSISTments results in sections 4.1, 4.2 and 4.4 need the data file. Download `skill_builder_data.csv`
 (the corrected 2009–2010 version), then run `npm run import-assistments -- skill_builder_data.csv`,
@@ -237,13 +238,61 @@ Against the streak rule it needs 0.13 and 0.08 answers more at the lower rate, t
 zero, and 1.04 and 1.59 fewer at the higher rate.
 
 The thresholds at which BKT meets the standard lie between $1 - 10^{-4.5}$ and $1 - 10^{-12.6}$. At such values its
-probability no longer reads as a probability: in the elo world at the higher rate, BKT's declarations are right nine
-times in ten only when it declares mastery at more than 99.9999 % certainty. The thresholds EMA needs in the same
+probability no longer matches the chance of mastery: in the elo world at the higher rate, BKT's declarations are right
+nine times in ten only when it declares mastery at more than 99.9999 % certainty. The thresholds EMA needs in the same
 settings lie between 0.84 and 0.97.
+
+### How well the scores are calibrated
+
+The check above 0.9999 suggests that what fails in the gradual worlds is BKT's probability, not the order in which it
+ranks the evidence. Table 4.8 measures this directly, as description made after the results. After every answer of
+every held-out practice, three scores are set against whether the simulated student had mastered the skill at that
+moment: BKT's $P(L)$, BKT's chance of a right answer on the next question, $P(L)(1 - P(S)) + (1 - P(L))P(G)$, and
+EMA's score. The second is included because in the gradual worlds mastery is defined on the chance of a right answer,
+which is the scale of that score and of EMA's, while $P(L)$ is about a known state those worlds do not have. For each
+score the table gives the Brier score, the mean squared difference between the score and the truth (1 if mastered, 0
+if not) over every answer, and, over the answers after which the score was 0.9 or more, the share at which the student
+had mastered the skill, with the mean score in brackets. A calibrated score has that share close to its mean. The
+Brier score also depends on how many answers come after mastery, so it compares the scores within a row, not the rows
+with each other.
+
+| World | Rate | Brier $P(L)$ | Brier $P$(right) | Brier EMA | Mastered at $P(L) \geq 0.9$ | at $P$(right) $\geq 0.9$ | at EMA $\geq 0.9$ |
+|------|----|-----:|-----:|-----:|------:|------:|------:|
+| BKT | 0.02 | 0.042 | 0.055 | 0.079 | 99.7 % (0.996) | 100.0 % (0.900) | 100.0 % (0.947) |
+| BKT | 0.1 | 0.023 | 0.032 | 0.065 | 99.7 % (0.997) | 100.0 % (0.900) | 100.0 % (0.947) |
+| BKT with forgetting | 0.02 | 0.108 | 0.118 | 0.111 | 90.4 % (0.993) | none | 97.6 % (0.946) |
+| BKT with forgetting | 0.1 | 0.079 | 0.085 | 0.099 | 94.0 % (0.996) | none | 97.7 % (0.945) |
+| elo | 0.02 | 0.401 | 0.286 | 0.256 | 17.9 % (0.989) | none | 70.1 % (0.933) |
+| elo | 0.1 | 0.339 | 0.309 | 0.227 | 54.9 % (0.992) | 84.2 % (0.946) | 93.6 % (0.953) |
+| irt2pl | 0.02 | 0.416 | 0.285 | 0.260 | 15.3 % (0.988) | none | 69.0 % (0.934) |
+| irt2pl | 0.1 | 0.395 | 0.326 | 0.252 | 46.3 % (0.991) | 86.2 % (0.947) | 89.8 % (0.953) |
+
+Table: Calibration of the methods' scores against the truth after every answer of the held-out practices: the Brier
+score of BKT's $P(L)$, of BKT's chance of a right answer and of EMA's score, and, where a score was 0.9 or more, the
+share of those answers at which the student had mastered the skill, with the mean score in brackets ("none": the
+score never reached 0.9). Mastery in the gradual worlds is a true chance of at least 0.9 (`npm run mastery`, commit
+ba04c48; description made after the results).
+
+In the BKT worlds, BKT's $P(L)$ is the best calibrated of the three scores, with the lowest Brier score in all four
+settings. When it is 0.9 or more the student knows the skill 99.7 % of the time in the plain world, as the first
+statement of Proposition 2 leads one to expect, and 90.4 % and 94.0 % of the time with forgetting, which BKT does not
+allow for. In the gradual worlds the order reverses. $P(L)$ has the highest Brier score of the three, and when it is
+0.9 or more, at a mean of 0.99, the student has mastered the skill in 15 to 18 % of cases at the lower learning rate
+and in 46 to 55 % at the higher. EMA's score, at a mean of 0.93 to 0.95, means mastery about seven times in ten at the
+lower rate and nine times in ten at the higher. EMA is not calibrated either at the lower rate, but it overstates
+mastery far less than BKT does.
+
+BKT's chance of a right answer lies between the two. Its Brier score is lower than that of $P(L)$ in the gradual
+worlds, and where it reaches 0.9 it means mastery 84 to 86 % of the time. It reaches 0.9 rarely, however, because it
+can never exceed $1 - P(S)$: on every skill whose fitted slip is above 0.1 it stays below 0.9 however many answers are
+right, and at the lower learning rate it never got there at all. Within a skill it is a rescaling of $P(L)$, so it
+declares mastery for the students in the same order. Reading BKT on the scale on which mastery is defined therefore
+makes its probability less overconfident, but it does not remove the need for an extreme threshold, which comes from
+how quickly $P(L)$ approaches 1 after a run of right answers.
 
 ## 4.4 Mastery decisions on real answers (H3)
 
-[TODO: Table 4.8 from `npm run mastery -- --observations assistments.json`: for BKT at 0.95, EMA at the streak rule's
+[TODO: Table 4.9 from `npm run mastery -- --observations assistments.json`: for BKT at 0.95, EMA at the streak rule's
 cost and the streak rule with N = 3, how often each pair both declare, only one declares or neither does, and the mean
 gap in answers where both declare; then the share right on the next three answers after each method declares, with
 the number of practices that have such answers.]
@@ -258,11 +307,12 @@ Table: Agreement between the mastery methods on held-out ASSISTments practices.
 
 ## 4.5 Summary
 
-[TODO: H1's verdict.] In the simulations, H2 holds in the BKT world with forgetting, where BKT needs one to two answers
-fewer than the simpler methods for the same precision, and fails in both gradual worlds by the rule fixed in advance,
-where no BKT threshold up to 0.9999 makes its declarations right nine times in ten while EMA and the streak rule reach
-that standard by waiting. The check above 0.9999 changes the reading: with thresholds between $1 - 10^{-6.9}$ and
-$1 - 10^{-12.6}$ BKT meets the standard in three of the four gradual settings, and at the higher learning rate it then
-needs 0.3 to 0.4 answers fewer than EMA. With a lower bar for mastery it meets the standard in all four settings, close
-to EMA in each. In BKT's own
-world, fitted BKT is as precise as Proposition 2 promises. [TODO: H3.]
+[TODO: H1's verdict.] In the simulations, H2 holds in the BKT world with forgetting, where BKT needs one to two
+answers fewer than the simpler methods for the same precision, and fails in both gradual worlds by the rule fixed in
+advance, where no BKT threshold up to 0.9999 makes its declarations right nine times in ten while EMA and the streak
+rule reach that standard by waiting. The check above 0.9999 changes the reading: with thresholds between
+$1 - 10^{-6.9}$ and $1 - 10^{-12.6}$ BKT meets the standard in three of the four gradual settings, and at the higher
+learning rate it then needs 0.3 to 0.4 answers fewer than EMA. With a lower bar for mastery it meets the standard in
+all four settings, close to EMA in each. Measured against the truth after every answer, BKT's $P(L)$ is the best
+calibrated score in the BKT worlds and the worst in the gradual ones, where a value of 0.99 means mastery in 15 to 55
+% of cases (Table 4.8). In BKT's own world, fitted BKT is as precise as Proposition 2 promises. [TODO: H3.]
