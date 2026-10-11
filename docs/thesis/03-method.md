@@ -138,7 +138,9 @@ exploratory because the data were collected under the streak rule itself (sectio
 The real answers come from the ASSISTments 2009–2010 skill builder data set [@assistments2010data], logged by the
 ASSISTments system [@feng2009assistments]. It records US middle-school students answering mathematics problems, one
 row per problem a student answered, with the skill or skills the problem practises and whether the first attempt was
-right. The corrected version of the file is used.
+right. The ASSISTments data sets are the ones most widely used to benchmark knowledge-tracing models, and for the
+2009–2010 data the corrected version is preferred, because the original contains duplicated records; results from the
+two versions should not be compared directly [@abdelrahman2023survey]. The corrected version is used here.
 
 Zeno's importer (`npm run import-assistments`, `src/model/datasets.ts`) applies the usual cleaning. It keeps main
 problems only, not the scaffolding questions that a wrong answer opens, and only rows with a skill and a first-attempt

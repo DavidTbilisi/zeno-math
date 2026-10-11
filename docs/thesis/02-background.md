@@ -136,6 +136,8 @@ true state is known.
 ## 2.5 Other student models
 
 Three other families of student model are common, and two of them appear in this thesis only as reference rows.
+@abdelrahman2023survey survey knowledge tracing as a whole, from BKT to the deep models that now predict best on most
+benchmark data sets.
 
 The Elo rating, developed to rate chess players [@elo1978], treats a student and a question as two players and a right
 answer as a win for the student [@pelanek2016elo]. After each answer, the student's ability and the question's
