@@ -121,7 +121,9 @@ so a method could meet the standard only by declaring almost nobody, and the com
 method is better. All simulations use one random seed; a second seed would show how much the numbers move.
 
 The real data come from US middle-school students in 2009 and 2010, using a system unlike Zeno, with skill tags made by
-the system's authors. Zeno's students are Georgian, and the result transfers to them only as an expectation.
+the system's authors. This is typical of the field: the public data sets for knowledge tracing are mostly mathematics
+from a few countries, and most carry no demographic information [@abdelrahman2023survey]. Zeno's students are
+Georgian, and the result transfers to them only as an expectation.
 
 ### Construct validity
 
