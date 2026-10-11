@@ -1,6 +1,7 @@
 // The thesis as one PDF: the chapters and the appendices in docs/thesis, with a title page, contents, and APA
-// citations from references.bib. Tables and figures are numbered by chapter, as the text refers to them
-// (docs/thesis/chapter-numbers.lua). Pandoc and LuaLaTeX run in a pinned container, so neither needs installing.
+// citations from references.bib and references-csl.yaml. Tables and figures are numbered by chapter, as the text
+// refers to them (docs/thesis/chapter-numbers.lua). Pandoc and LuaLaTeX run in a pinned container, so neither needs
+// installing.
 // With --talk, the title-defense talk instead, laid out to read aloud from (docs/thesis/talk-pdf.yaml).
 //
 //   npm run thesis-pdf              writes docs/thesis/thesis.pdf
@@ -27,7 +28,8 @@ const pandoc = talk
       "--metadata", `date=Draft, ${date}`,
       `--resource-path=${DIR}`,
       `--lua-filter=${DIR}/chapter-numbers.lua`,
-      "--citeproc", `--bibliography=${DIR}/references.bib`, `--csl=${DIR}/apa.csl`,
+      "--citeproc", `--bibliography=${DIR}/references.bib`, `--bibliography=${DIR}/references-csl.yaml`,
+      `--csl=${DIR}/apa.csl`,
     ];
 
 const run = spawnSync(CONTAINER, [
