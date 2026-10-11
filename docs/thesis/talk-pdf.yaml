@@ -1,0 +1,20 @@
+---
+# Settings for npm run talk-pdf (scripts/thesis-pdf.ts --talk): the title-defense talk, in a larger type to read
+# aloud from. The fonts are those of pdf.yaml.
+documentclass: article
+papersize: a4
+fontsize: 12pt
+geometry: margin=2.2cm
+mainfont: "STIX Two Text"
+mathfont: "STIX Two Math"
+sansfont: "Noto Sans"
+monofont: "Liberation Mono"
+mainfontfallback: ["Noto Sans Math:", "Noto Serif Georgian:", "Noto Sans Symbols 2:", "Noto Sans Symbols:"]
+linkcolor: blue
+urlcolor: blue
+header-includes: |
+  \usepackage{etoolbox}
+  \AtBeginEnvironment{longtable}{\small}
+  \setlength\LTcapwidth{\linewidth}
+  \linespread{1.15}
+---
