@@ -1,7 +1,7 @@
 # Title defense, 13 October 2026
 
 Tuesday, 18:00 Tbilisi time, room 303, University of Georgia. The supervisor and an expert attend. The task is to
-present what the thesis will work on. No length or slides are prescribed, so the talk below runs about three minutes
+present what the thesis will work on. No length or slides are prescribed, so the talk below runs about four minutes
 and works without slides.
 
 ## Title
@@ -23,28 +23,35 @@ more accurately than a simple rule?
 
 The simple side is a moving average of the student's recent answers. I can prove exactly when "three in a row" is
 a special case of it, and I can prove that BKT, in a world that works the way BKT assumes, is right at least as
-often as its threshold says. Those two parts are mathematics. The rest is evidence, and I have three hypotheses. First, on real students' answers, BKT predicts the next answer better than the moving average,
-measured by log-loss on students the models were not fitted on; this is the one formal test, and I have fixed in
-advance how small a difference counts as none. Second, in simulation, where I know whether each simulated student
-has really learnt the skill, BKT needs less practice than the simpler rules before its mastery decisions are right
-nine times in ten, in worlds where students do not learn the way BKT assumes. Third, exploratory: how often the two methods
-agree on real data.
+often as its threshold says. Those two parts are mathematics. The rest is evidence, and I have three hypotheses.
+First, on real students' answers, BKT predicts the next answer better than the moving average, measured by log-loss
+on students the models were not fitted on; this is the one formal test, and I have fixed in advance how small a
+difference counts as none. Second, in simulation, where I know whether each simulated student has really learnt the
+skill, BKT needs less practice than the simpler rules before its mastery decisions are right nine times in ten, in
+worlds where students do not learn the way BKT assumes. Third, exploratory: how often the methods agree on real
+data.
 
 The real data are the ASSISTments 2009–2010 data set, a public, anonymised record of several thousand US
 middle-school students answering maths problems. The simulation matters because real data cannot say when a student
 truly knows a skill. I will also simulate students who learn in ways BKT does not assume, gradually or with
 forgetting, because a comparison run only in BKT's own world would favour BKT by construction.
 
-Much of the software exists. Over the last year I built Zeno, a self-hosted maths whiteboard with a practice engine
-and a learner model for Georgian classrooms. It already contains BKT, the evaluation by held-out students, the
-standard metrics and the importer for the ASSISTments data. What remains is the moving-average method, the
-measurement of mastery decisions, the statistical test and the experiments themselves.
+The software is built. Over the last year I built Zeno, a self-hosted maths whiteboard with a practice engine and a
+learner model for Georgian classrooms, and the experiment runs inside its code: BKT, the moving average, the streak
+rule, the evaluation on held-out students, the statistical test and the simulation.
+
+The simulation has already been run, and its first result splits the second hypothesis in two. Where students learn
+in a jump, as BKT assumes, but sometimes forget, the hypothesis holds: BKT needs one to two answers fewer than the
+simpler rules for the same accuracy. Where students learn gradually, it fails: no threshold makes BKT's decisions right
+nine times in ten, because after a short run of right answers it is almost certain the student knows the skill, even
+when they do not. The moving average gets there by waiting longer. In BKT's own world it is as accurate as the
+theorem promises. What remains is the test on the real data, which decides the first hypothesis.
 
 The result is useful whichever way it goes. If BKT wins, systems using simple rules are leaving accuracy unused. If
-it does not, a one-parameter rule is the better engineering choice. Either way, Zeno will use the winner to decide
-when a student moves on. The main limitation, which I state in advance, is that the ASSISTments data were collected
-under the three-in-a-row rule, so the real data cannot show that rule stopping too early; that is why the decisive
-comparison is the simulation.
+it does not, a one-parameter rule is the better engineering choice. So far, for Zeno, whose own model assumes gradual
+learning, the evidence points to the moving average. The main limitation, which I state in advance, is that the
+ASSISTments data were collected under the three-in-a-row rule, so the real data cannot show that rule stopping too
+early; that is why the decisions themselves are compared in the simulation.
 
 ## Questions to expect
 
@@ -52,8 +59,9 @@ comparison is the simulation.
 do not fit a bachelor's schedule. Public, anonymised data and simulation answer this question without collecting any
 personal data. A classroom study is future work, and Zeno is built to run it.
 
-**What is new here, if BKT and mastery rules have been compared before?** Earlier comparisons exist (check
-Pelánek & Řihák 2017 before naming it). This thesis adds the exact conditions under which "N right in a row" is a
+**What is new here, if BKT and mastery rules have been compared before?** They have, most closely by Pelánek and
+Řihák (2017), who found the threshold and the data to matter more than the model and recommended the moving average;
+my simulation agrees with them. This thesis adds the exact conditions under which "N right in a row" is a
 moving average, proved for answer sequences of any length; a known-truth simulation in worlds that break BKT's
 assumptions; a pre-specified test on held-out students; and an answer to a practical question for a real system.
 A careful replication with a stated hypothesis is a sound bachelor's contribution.
@@ -70,9 +78,27 @@ deployed systems use to decide mastery. The question is about the decision rule,
 theorem, not a finding, so that world only checks how much fitting the parameters costs. The comparison that counts
 is in the worlds with gradual learning and forgetting, and results are reported for each world separately.
 
+**Your second hypothesis failed in two of the three worlds. Is that a problem?** No. It was stated before the
+results, with the rule for what counts as failing, and a hypothesis that can fail is the point of stating it. The
+result is informative: BKT's advantage depends on students learning in a jump, which is exactly its assumption.
+
+**Why does BKT fail where learning is gradual?** It has two states, known and not known. A few right answers in a row
+push its probability close to 1, and a student who is only partway there often gives such a run. Raising the
+threshold from 0.80 to 0.99 made it wait only about six answers longer, and most of its declarations stayed wrong. The
+moving average reaches a high threshold only through a long run, so it can be made to wait.
+
+**Is "never" just where you stopped the threshold search?** Partly, possibly. Thresholds went up to 0.9999, fixed in
+advance. With mastery defined at 0.8 instead of 0.9, BKT met the standard once, exactly at 0.9999, and tied with the
+moving average. Searching above 0.9999 is the first thing in future work.
+
+**Did you change the comparison after seeing results?** Yes, once, and the thesis says so. It was first set at equal
+practice, but at that much practice almost no simulated student had mastered anything, so every rule was mostly
+wrong and they could not be told apart. Equal accuracy has a meaning in every world. The equal-practice comparison is
+still reported.
+
 **How do you define "mastered" in the simulation?** In the BKT world, the simulated student knows the skill. In
-the gradual worlds, the true chance of a right answer is at least 0.9; the threshold is fixed in advance, and a
-second value is reported as a check.
+the gradual worlds, the true chance of a right answer is at least 0.9; the threshold is fixed in advance, and 0.8
+is reported as a check. With 0.8 the pattern is the same in three of the four gradual settings.
 
 **What if the ASSISTments data are unsuitable?** The prediction comparison works on any logged first attempts; Zeno's
 own export produces the same format, and the simulation part does not depend on the data set.
@@ -87,6 +113,10 @@ describes it briefly; the experiment is the contribution.
 | Concept | 8 pages | introduction, research question and hypotheses, background, the planned method |
 | Preliminary draft | 15 pages | the method in full, the simulation results |
 | Final thesis | 30 pages | the ASSISTments results, discussion, threats to validity, conclusion, abstracts in Georgian and English |
+
+Where it stands on 13 October: the chapters follow this scope (33 pages as a PDF), with the method in full, the
+simulation results, the discussion and the threats to validity. The ASSISTments results, the abstracts and the title
+page are still to come.
 
 ## Format rules to remember while writing
 
