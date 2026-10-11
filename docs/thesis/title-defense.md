@@ -21,11 +21,14 @@ probability that the student knows the skill, allowing for lucky guesses and car
 parameters per skill, fitted on data. My thesis asks whether that extra machinery pays off: does BKT judge mastery
 more accurately than a simple rule?
 
-The simple side is a moving average of the student's recent answers; "three in a row" is a special case of it. I
-have three hypotheses. First, on real students' answers, BKT predicts the next answer better than the moving average,
-measured by log-loss on students the models were not fitted on. Second, in simulation, where I know whether each
-simulated student has really learnt the skill, BKT's mastery decisions are right more often at the same amount of
-practice. Third, exploratory: how often the two methods agree on real data.
+The simple side is a moving average of the student's recent answers. I can prove exactly when "three in a row" is
+a special case of it, and I can prove that BKT, in a world that works the way BKT assumes, is right at least as
+often as its threshold says. Those two parts are mathematics. The rest is evidence, and I have three hypotheses. First, on real students' answers, BKT predicts the next answer better than the moving average,
+measured by log-loss on students the models were not fitted on; this is the one formal test, and I have fixed in
+advance how small a difference counts as none. Second, in simulation, where I know whether each simulated student
+has really learnt the skill, BKT's mastery decisions are right more often at the same amount of practice as three
+in a row, in worlds where students do not learn the way BKT assumes. Third, exploratory: how often the two methods
+agree on real data.
 
 The real data are the ASSISTments 2009–2010 data set, a public, anonymised record of several thousand US
 middle-school students answering maths problems. The simulation matters because real data cannot say when a student
@@ -50,15 +53,22 @@ do not fit a bachelor's schedule. Public, anonymised data and simulation answer 
 personal data. A classroom study is future work, and Zeno is built to run it.
 
 **What is new here, if BKT and mastery rules have been compared before?** Earlier comparisons exist (check
-Pelánek & Řihák 2017 before naming it). This thesis adds a known-truth simulation in worlds that break BKT's
-assumptions, a pre-specified test on held-out students, and an answer to a practical question for a real system.
+Pelánek & Řihák 2017 before naming it). This thesis adds the exact conditions under which "N right in a row" is a
+moving average, proved for answer sequences of any length; a known-truth simulation in worlds that break BKT's
+assumptions; a pre-specified test on held-out students; and an answer to a practical question for a real system.
 A careful replication with a stated hypothesis is a sound bachelor's contribution.
+
+**What exactly is proved, and what is only shown?** Two statements are proved: when the streak rule equals a
+moving average, and that BKT's declarations are right at least θ of the time when the world matches BKT. H1 is
+tested on real students. H2 is shown on simulated students, so it holds only as far as each simulated world is
+believed, which is why every world is reported separately. Which rule Zeno should use is a judgement drawn from these.
 
 **Why not deep knowledge tracing?** It needs large training data, is hard to explain to a teacher, and is not what
 deployed systems use to decide mastery. The question is about the decision rule, not the most accurate predictor.
 
-**Isn't the simulation circular?** It would be if it used only BKT's own assumptions. That is why it includes
-gradual learning and forgetting, and why results are reported for each world separately.
+**Isn't the simulation circular?** In BKT's own world, yes, and I do not count it as evidence: there BKT's win is a
+theorem, not a finding, so that world only checks how much fitting the parameters costs. The comparison that counts
+is in the worlds with gradual learning and forgetting, and results are reported for each world separately.
 
 **How do you define "mastered" in the simulation?** In the BKT world, the simulated student knows the skill. In
 the gradual worlds, the true chance of a right answer is at least 0.9; the threshold is fixed in advance, and a

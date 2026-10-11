@@ -31,10 +31,60 @@ a special case?
 | Streak rule | N | no | the last N answers were right (N = 3 is the rule the ASSISTments skill builder used) |
 
 The streak rule is the method most systems deploy; EMA is its probabilistic generalisation, needed so the
-prediction metrics can be computed for the simple side too. The streak rule is exactly an EMA: with α = 0.6, a
-starting score of 0 and θ = 0.92, the EMA says "mastered" after the same answers as three in a row (checked on
-every sequence of up to 16 answers). The Elo model and PFA already in `src/model/evaluate.ts`
+prediction metrics can be computed for the simple side too. Proposition 1 below gives the exact settings under which
+the streak rule is an EMA; the fitted EMA, which starts from the training students' share right, is in general not
+one of them, so the streak rule stays a method of its own. The Elo model and PFA already in `src/model/evaluate.ts`
 appear as reference rows in the prediction table, not as hypotheses.
+
+## What is proved, what is tested, what is shown
+
+The claims in this thesis are of three kinds, and the text keeps them apart. Two are proved from the definitions
+(Propositions 1 and 2), and need no data. One is tested on real data (H1), the only confirmatory test. The rest are
+shown on simulated learners (H2), which holds only as far as each simulated world is believed, or described on real
+data (H3). What Zeno should use is a judgement drawn from all of them, not a result.
+
+## Propositions
+
+**Proposition 1, the streak rule is an EMA.** Let the score start at s₀ in [0, 1) and after each answer x (1 right,
+0 wrong) become (1 − α)s + αx, with 0 < α < 1, and let N ≥ 2. "Mastered when the score is at least θ" says
+"mastered" after exactly the same answers as "the last N answers were right", on every sequence of answers of any
+length, if and only if
+
+(1 − α)^N ≤ 1 − θ ≤ α(1 − α)^(N−1)  and  s₀ < 1 − (1 − θ) / (1 − α)^(N−1).
+
+Proof. Follow the gap g = 1 − s. A right answer multiplies it by 1 − α; a wrong one sets it to (1 − α)g + α, which
+is more than α because g stays above 0. After N right answers in a row g ≤ (1 − α)^N ≤ 1 − θ, so the score has
+reached θ. After a wrong answer followed by k < N right ones, g > α(1 − α)^k ≥ α(1 − α)^(N−1) ≥ 1 − θ, so it has
+not. Before any wrong answer, k < N right ones leave g = (1 − s₀)(1 − α)^k > 1 − θ by the condition on s₀. Each
+condition is also needed: a long run of wrong answers brings g as close to 1 as we like, after which N right answers
+need the left inequality; a long run of right answers, one wrong and N − 1 right brings g as close to α(1 − α)^(N−1)
+from above as we like, so the right inequality is needed; and N − 1 right answers from the start need the condition
+on s₀. ∎
+
+Consequences. The band for θ is empty unless α ≥ 1/2. For N = 3 and α = 0.6 it is 0.904 ≤ θ ≤ 0.936, and at
+θ = 0.92 the start must be below 0.5. The fitted EMA starts at the training students' share of right first answers,
+which on ASSISTments is likely above 0.5 [check on the data]; it is then not the streak rule. Checked by enumeration
+of every sequence of up to 12 answers for 8,400 settings of N (2 to 4), α, θ and s₀: the two agree except at exact
+equality on a boundary, where rounding decides.
+
+**Proposition 2, BKT's declarations are right at least θ of the time in its own world.** Let the answers on a skill
+come from a BKT process with parameters p, and let the model use the same p. Then the P(known) the model holds after
+each answer and its learning step (`bktStep` in `src/model/evaluate.ts`) is exactly the probability that the learner
+knows the skill before the next question, given the answers so far. If mastery is declared the first time P(known)
+reaches θ, then among the learners for whom it is declared, the expected share who truly know the skill at that
+moment is at least θ, and with no forgetting they still know it afterwards.
+
+Proof. Let τ be the answer after which mastery is declared. Whether τ = t is decided by the first t answers alone,
+so P(known at τ and τ = t) = E[1{τ = t} · P(known at t | answers 1..t)] ≥ θ · P(τ = t). Summing over t gives
+P(known at τ | declared) ≥ θ. ∎
+
+Consequences. In a world that is exactly BKT, BKT's precision at θ is guaranteed, so "BKT wins in the bkt world" is
+not a hypothesis: up to fitting error it is a theorem. The bkt world therefore measures what fitting costs (the
+fitted model's precision against θ). It says nothing about EMA, and nothing about worlds that are not BKT. The
+world in `src/model/simulate.ts` is exactly BKT for `BktModel` only in a plain variant: one question level (its
+guess and slip depend on the level, and `BktModel` has one guess and slip per skill), flat learning and no transfer.
+Learners' starting chance of knowing a skill varies with their ability, but as nothing else depends on ability, each
+skill's answers still follow one BKT process whose init is the average starting chance.
 
 ## Hypotheses
 
@@ -42,11 +92,19 @@ Stated before the results are computed, with the test for each:
 
 - **H1, prediction.** On held-out ASSISTments students, BKT predicts the next first-attempt answer better than EMA:
   lower log-loss. Test: the per-student difference in log-loss, a paired bootstrap over students (10,000
-  resamples), 95 % interval excluding zero. Secondary: RMSE, AUC, calibration.
-- **H2, mastery decisions where the truth is known.** On simulated learners whose true state is recorded, at equal
-  practice cost (mean opportunities until mastery is declared), BKT's declarations are right more often (the skill
-  is truly known when declared) than EMA's and the streak rule's. Reported as a trade-off curve over thresholds, in
-  every simulated world, not only the one built like BKT.
+  resamples). BKT is better if the 95 % interval excludes zero on its side. With several thousand students a
+  difference too small to matter will still exclude zero, so the smallest difference that counts is fixed now:
+  0.005 in mean log-loss per answer. A difference whose interval excludes zero but whose estimate is below 0.005 is
+  reported as real but negligible; an interval wholly inside ±0.005 as no practical difference. Secondary: RMSE,
+  AUC, calibration. H1 is about prediction, not mastery decisions: it is the part of the question real data can
+  settle, and the thesis says so rather than letting it stand for the whole question.
+- **H2, mastery decisions where the truth is known.** In the worlds that are not BKT (elo, irt2pl, and bkt with
+  forgetting), at the practice cost of the streak rule with N = 3 (its mean opportunities until mastery is declared
+  in that world), BKT's declarations are right (the skill is truly known when declared) more often than EMA's and
+  the streak rule's. BKT's and EMA's thresholds are set on training learners to give that cost. Reported per world
+  as an estimate with its interval over simulated learners, never pooled across worlds. The full trade-off curves
+  over thresholds are description; where they cross, the thesis says so. The plain bkt world is not part of H2:
+  Proposition 2 settles it, and there it checks fitting.
 - **H3, mastery decisions on real data (exploratory).** How often BKT and the streak rule agree on ASSISTments, and
   the share right on the next answers after each method declares mastery. Exploratory because the data were
   collected under a streak policy (see threats).
@@ -60,6 +118,8 @@ Stated before the results are computed, with the test for each:
 - **Aim and research question**, as above. Why it is narrower than "does adaptive practice help": it needs no
   classroom, no ethics approval and no school timetable, and every number comes from public data or simulation.
 - **Contributions:**
+  - the exact conditions under which "N right in a row" is a moving average, and the precision BKT is guaranteed
+    in its own world (Propositions 1 and 2);
   - a pre-specified comparison of BKT with EMA and the streak rule on a public data set (H1, H3);
   - a simulation with known truth that measures mastery decisions directly, in worlds that do and do not match
     BKT's assumptions (H2);
@@ -92,7 +152,9 @@ Stated before the results are computed, with the test for each:
   counted once per skill. Report students, answers and skills kept. Sequences are per student and skill.
 - **Simulated learners** (`src/model/simulate.ts`), with the true state of each learner recorded after every
   answer:
-  - the **bkt** world, where BKT is the true model (its home ground, so a BKT win there is expected);
+  - the **bkt** world, where BKT is the true model (its home ground, so a BKT win there is guaranteed by
+    Proposition 2); run in its plain variant (one level, flat learning, no transfer) so the proposition applies,
+    and used to check fitting;
   - the **elo** and **irt2pl** worlds, where ability grows gradually and "mastered" means a true chance of a right
     answer of at least 0.9 at level 2 (fixed in advance);
   - a **bkt with forgetting** variant [TODO: to add], which breaks BKT's no-forgetting assumption.
@@ -113,12 +175,15 @@ Stated before the results are computed, with the test for each:
   answer predicted before it is learnt from. Log-loss, RMSE, AUC, accuracy, calibration bins (`src/model/evaluate.ts`).
   Add a paired bootstrap over students for the BKT − EMA difference [TODO: to add]. Repeat over five split seeds to
   show the result does not hang on one split. As a robustness check, not a second test, resample whole classes
-  instead of students where the data identify classes [TODO: check which class or teacher columns the file has].
+  instead of students. The 2009–2010 skill builder file is documented with `student_class_id`, `teacher_id` and
+  `school_id` columns [check against the downloaded file]; the importer (`src/model/datasets.ts`) does not keep
+  them yet [TODO: keep `student_class_id`].
 - **Mastery decisions (H2):** for each learner and skill, the opportunity at which each method first declares
-  mastery. Measures: the share of declarations that are true (the learner knows the skill then), the share of truly
-  learnt skills never declared, and the mean opportunities to declaration. Sweep each method's threshold
-  (BKT θ from 0.80 to 0.99, EMA θ likewise, streak N from 2 to 6) and draw cost against accuracy: the method whose
-  curve lies above the other's is better at every cost [TODO: to add as a mastery module and a script].
+  mastery. Measures: the share of declarations that are true (the learner knows the skill right after the
+  declaring answer, which is the moment BKT's P(known) refers to), the share of truly learnt skills never declared,
+  and the mean opportunities to declaration. The comparison H2 decides on is at the streak-3 cost, as stated
+  there. Around it, sweep each method's threshold (BKT θ from 0.80 to 0.99, EMA θ likewise, streak N from 2 to 6)
+  and draw cost against accuracy as description [TODO: to add as a mastery module and a script].
 - **Mastery on real data (H3):** agreement between methods; the share right on the next one to three answers on the
   skill after each declaration, where such answers exist.
 
@@ -133,8 +198,9 @@ One short section: the learner model, the policy's mastery threshold and why the
 - **4.2 Prediction** (H1): the table for BKT, EMA and the reference rows (Elo, PFA, counting baselines); the
   bootstrap interval for BKT − EMA; the calibration plot; the result across split seeds; the fitted BKT parameters
   (how many skills hit the grid's edges or the 0.3 bound).
-- **4.3 Mastery decisions with known truth** (H2): one trade-off plot per world; the table at the usual settings
-  (BKT 0.95, streak 3, EMA at the threshold of equal cost).
+- **4.3 Mastery decisions with known truth** (H2): per world, the precision of each method at the streak-3 cost
+  (the H2 comparison); one trade-off plot per world; the table at the usual settings (BKT 0.95, streak 3); in the
+  plain bkt world, fitted BKT's precision against the bound of Proposition 2.
 - **4.4 Mastery decisions on ASSISTments** (H3): agreement; accuracy after declaration; how many sequences end
   before any method can declare.
 
@@ -149,7 +215,9 @@ One short section: the learner model, the policy's mastery threshold and why the
   in a row, so sequences stop at the streak rule's own decision: the real data cannot show the streak rule declaring
   too early, and post-mastery answers are scarce. This is why H3 is exploratory and the known-truth comparison is
   simulated.
-- **Home advantage.** The bkt world is built on BKT's assumptions; only the other worlds test it fairly.
+- **Home advantage.** The bkt world is built on BKT's assumptions, and Proposition 2 shows BKT cannot lose there
+  except through fitting; only the other worlds test it. They are still worlds of our making: a result in them
+  holds as far as their way of learning is believed, which is why each is reported on its own.
 - **What "mastered" means** in the gradual worlds is a threshold chosen in advance (0.9), and results may depend on
   it: report a second value as a check.
 - **Fitting.** Grid-search BKT is coarse; a skill whose best fit sits on the grid's edge is reported. EMA has one
