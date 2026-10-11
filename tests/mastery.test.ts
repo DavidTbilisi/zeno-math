@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import type { Observation } from "../src/model/elo.ts";
 import { bktStep, EmaModel, emaStep, fitEma, type BktParams } from "../src/model/evaluate.ts";
 import {
-  agreement, bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules, judge,
+  agreement, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules, judge,
   PRECISION_TARGET, practicesFrom, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff, type Practice,
 } from "../src/model/mastery.ts";
 import { rng } from "../src/model/simulate.ts";
@@ -188,6 +188,15 @@ test("the cheapest rule right often enough is chosen, and none when no rule is",
   assert.equal(cheapestAtPrecision([streakRule(1)], practices, 0.9), null);
   assert.ok(FINE_THRESHOLDS.includes(0.5) && FINE_THRESHOLDS.includes(0.99) && FINE_THRESHOLDS.at(-1) === 0.9999);
   for (let i = 1; i < FINE_THRESHOLDS.length; i++) assert.ok(FINE_THRESHOLDS[i] > FINE_THRESHOLDS[i - 1]);
+  // The check above 0.9999 keeps every threshold fixed in advance and goes on, still rising, to 1 − 10^−15.
+  assert.deepEqual(BEYOND_THRESHOLDS.slice(0, FINE_THRESHOLDS.length), FINE_THRESHOLDS);
+  for (let i = 1; i < BEYOND_THRESHOLDS.length; i++) assert.ok(BEYOND_THRESHOLDS[i] > BEYOND_THRESHOLDS[i - 1]);
+  close(BEYOND_THRESHOLDS.at(-1)!, 1 - 1e-15);
+  assert.ok(BEYOND_THRESHOLDS.at(-1)! < 1);
+  const names = BEYOND_THRESHOLDS.map((t) => bktRule(() => ({ init: 0.5, learn: 0.1, guess: 0.2, slip: 0.1 }), t).name);
+  assert.equal(new Set(names).size, names.length, "every threshold has its own name");
+  assert.equal(names[FINE_THRESHOLDS.length - 1], "BKT θ 0.9999");
+  assert.equal(names.at(-1), "BKT θ 1 − 1e-15");
 });
 
 test("H2 at equal precision: each method's cheapest threshold right often enough on training learners, judged on the rest", () => {
@@ -207,6 +216,8 @@ test("H2 at equal precision: each method's cheapest threshold right often enough
   const streak = Number(rows[2].rule!.split(" ")[1]);
   assert.ok(judge(streakRule(streak), train).precision >= PRECISION_TARGET, "right often enough where it was chosen");
   if (streak > 1) assert.ok(judge(streakRule(streak - 1), train).precision < PRECISION_TARGET, "and the one below it was not");
+  // Searching further above 0.9999 cannot change a rule found below it, as a higher threshold never costs less.
+  assert.deepEqual(compareAtPrecision(train, held, fitted, PRECISION_TARGET, 200, 1, BEYOND_THRESHOLDS).map((r) => r.rule), rows.map((r) => r.rule));
   // A standard no rule can meet: every method is reported as never reaching it.
   assert.deepEqual(compareAtPrecision(train, held, fitted, 1.01, 50, 1), [{ method: "BKT", rule: null }, { method: "EMA", rule: null }, { method: "streak", rule: null }]);
 });

@@ -9,6 +9,7 @@
 //   npm run mastery -- --observations assistments.json    H3 on a data set (scripts/import-assistments.ts)
 //   --worlds bkt,elo  --students 400  --length 30  --seed 1  --test-share 0.2  --streak 3  --resamples 2000
 //   --skills algebra,average   --learn-rates 0.02,0.1   --target 0.9   --forget 0.02   --mastered-at 0.9
+//   --beyond              search BKT and EMA thresholds above 0.9999 too, up to 1 − 10^−15 (a check after the results)
 //   --curves curves.csv   every method's cost and precision at every threshold, per world, for a plot
 //   --json                machine-readable output
 import { readFileSync, writeFileSync } from "node:fs";
@@ -16,7 +17,8 @@ import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import {
-  agreement, ALL_SIM_SKILLS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, emaRule, fitRules, judge, MASTERED_AT, practicesFrom,
+  agreement, ALL_SIM_SKILLS, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules,
+  judge, MASTERED_AT, practicesFrom,
   PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff,
   type AtCost, type AtPrecision, type CurvePoint, type PracticeParams,
 } from "../src/model/mastery.ts";
@@ -46,6 +48,7 @@ const testShare = share("--test-share", 0.2);
 const streak = whole("--streak", 3);
 const resamples = whole("--resamples", 2000);
 const json = args.includes("--json");
+const thresholds = args.includes("--beyond") ? BEYOND_THRESHOLDS : FINE_THRESHOLDS;
 const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
 const interval = ([lo, hi]: [number, number]) => `[${pct(lo)}, ${pct(hi)}]`;
 
@@ -116,7 +119,7 @@ function simulated() {
         knownAtStart: knownShare(() => 0),
         knownAtEnd: knownShare((p) => p.known!.length - 1),
         ema: fitted.ema,
-        atPrecision: compareAtPrecision(train, test, fitted, target, resamples, seed),
+        atPrecision: compareAtPrecision(train, test, fitted, target, resamples, seed, thresholds),
         atCost: compareAtCost(train, test, fitted, streak, resamples, seed),
         usual: { ...judge(rule, test, decisions), threshold: 0.95, interval: bootstrapByStudent(test, precisionOf(decisions), resamples, seed) },
         curve: tradeOff(fitted, test),
@@ -130,12 +133,12 @@ function simulated() {
       for (const c of r.curve) lines.push([JSON.stringify(r.world), r.learnRate, c.method, c.threshold, c.cost.toFixed(4), c.declared.toFixed(4), c.precision.toFixed(4), c.missed.toFixed(4)].join(","));
     writeFileSync(curves, lines.join("\n") + "\n");
   }
-  if (json) return console.log(JSON.stringify({ ...base, learnRates: rates, target, forget, testShare, streak, resamples, results }, null, 2));
+  if (json) return console.log(JSON.stringify({ ...base, learnRates: rates, target, forget, testShare, streak, resamples, highestThreshold: thresholds.at(-1), results }, null, 2));
 
   const answers = (x: number) => (Number.isNaN(x) ? "–" : x.toFixed(2));
   const span = ([lo, hi]: [number, number]) => `[${answers(lo)}, ${answers(hi)}]`;
   console.log(`${base.students} simulated learners × ${skills.length} skills × ${base.length} questions at level 2; ${pct(testShare)} of learners held out, seed ${seed}`);
-  console.log(`H2: the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners)`);
+  console.log(`H2: the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
   for (const r of results) {
     console.log(`\n${r.world}, learning rate ${r.learnRate}: known after the first answer ${pct(r.knownAtStart)}, after the last ${pct(r.knownAtEnd)}; EMA α ${r.ema.alpha}, start ${r.ema.start.toFixed(3)}`);
     console.log(`  ${"rule".padEnd(16)}${"answers".padStart(8)}  ${"95 % interval".padEnd(16)}${"precision".padStart(10)}${"declared".padStart(10)}${"missed".padStart(8)}   BKT saves`);

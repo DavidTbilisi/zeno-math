@@ -20,7 +20,9 @@ export type Practice = { student: string; skill: string; answers: Uint8Array; kn
 /** Reads one practice's answers and says after how many it declares mastery, or null if it never does. */
 export type MasteryRule = { readonly name: string; declare(skill: string, answers: ArrayLike<number>): number | null };
 
-const shown = (threshold: number) => String(Number(threshold.toFixed(4)));
+// Above 0.9999 a threshold is named by how close it is to 1: 1 − 1e-7.5 is 1 − 10^−7.5.
+const shown = (threshold: number) =>
+  threshold > 0.9999 ? `1 − 1e-${Number((-Math.log10(1 - threshold)).toFixed(2))}` : String(Number(threshold.toFixed(4)));
 /** N right in a row: the rule deployed systems use (three in the ASSISTments skill builders). */
 export const streakRule = (n: number): MasteryRule => ({
   name: `streak ${n}`,
@@ -228,6 +230,16 @@ export const FINE_THRESHOLDS = [
   ...Array.from({ length: 9 }, (_, i) => 0.9991 + i / 10000),
 ].map((t) => Number(t.toFixed(4)));
 
+/**
+ * The search continued above 0.9999, as a check that came after the results: 1 − 10^−k for k from 4.1 to 15 in steps of
+ * 0.1. In the gradual worlds BKT's P(known) passes 0.9999 after a short run of right answers, and only thresholds this
+ * close to 1 make it wait; past 1 − 10^−15 the difference from 1 is lost in double precision.
+ */
+export const BEYOND_THRESHOLDS = [
+  ...FINE_THRESHOLDS,
+  ...Array.from({ length: 110 }, (_, i) => 1 - 10 ** -((41 + i) / 10)),
+];
+
 /** Of a family of rules, the one with the lowest cost on these practices among those right at least target of the time. */
 export function cheapestAtPrecision(rules: readonly MasteryRule[], practices: readonly Practice[], target: number): MasteryRule | null {
   let best: { rule: MasteryRule; cost: number } | null = null;
@@ -257,13 +269,14 @@ export type AtPrecision = {
 /**
  * H2's comparison: for BKT, EMA and the streak rule (N from 1 to the practice length), the cheapest threshold on the
  * training practices whose declarations are right at least target of the time, judged on the test practices, with
- * intervals over test students for each cost and for each method's cost minus BKT's.
+ * intervals over test students for each cost and for each method's cost minus BKT's. BKT and EMA search the same
+ * thresholds: FINE_THRESHOLDS as fixed in advance, or BEYOND_THRESHOLDS for the check above 0.9999.
  */
-export function compareAtPrecision(train: readonly Practice[], test: readonly Practice[], fitted: Fitted, target = PRECISION_TARGET, resamples = 2000, seed = 1): AtPrecision[] {
+export function compareAtPrecision(train: readonly Practice[], test: readonly Practice[], fitted: Fitted, target = PRECISION_TARGET, resamples = 2000, seed = 1, thresholds: readonly number[] = FINE_THRESHOLDS): AtPrecision[] {
   const longest = Math.max(...train.map((p) => p.answers.length));
   const families = {
-    BKT: FINE_THRESHOLDS.map((t) => bktRule(fitted.bkt, t)),
-    EMA: FINE_THRESHOLDS.map((t) => emaRule(fitted.ema, t)),
+    BKT: thresholds.map((t) => bktRule(fitted.bkt, t)),
+    EMA: thresholds.map((t) => emaRule(fitted.ema, t)),
     streak: Array.from({ length: longest }, (_, i) => streakRule(i + 1)),
   };
   const chosen = (Object.keys(families) as AtPrecision["method"][]).map((method) => ({ method, rule: cheapestAtPrecision(families[method], train, target) }));
