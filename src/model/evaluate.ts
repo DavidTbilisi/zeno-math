@@ -112,11 +112,11 @@ function hashOf(text: string, seed: number) {
   return (h ^ (h >>> 12)) >>> 0;
 }
 /** Splits by student, not by answer, so no test student's answers have been seen; the order of answers is kept. */
-export function splitByStudent(observations: readonly Observation[], testShare = 0.2, seed = 1) {
+export function splitByStudent<T extends { student: string }>(observations: readonly T[], testShare = 0.2, seed = 1) {
   const inTest = new Map<string, boolean>();
   const side = (s: string) => inTest.get(s) ?? inTest.set(s, hashOf(s, seed) / 2 ** 32 < testShare).get(s)!;
-  const train: Observation[] = [];
-  const test: Observation[] = [];
+  const train: T[] = [];
+  const test: T[] = [];
   for (const o of observations) (side(o.student) ? test : train).push(o);
   return { train, test };
 }
@@ -267,16 +267,11 @@ export class BktModel implements Predictor {
   private pooled: BktParams = { init: 0.5, learn: 0.1, guess: 0.2, slip: 0.1 };
   private known = new Map<string, number>();
   fit(train: readonly Observation[]) {
-    const bySkill = new Map<string, Map<string, number[]>>();
-    for (const o of train) {
-      const students = bySkill.get(o.skill) ?? bySkill.set(o.skill, new Map()).get(o.skill)!;
-      (students.get(o.student) ?? students.set(o.student, []).get(o.student)!).push(o.correct ? 1 : 0);
-    }
-    const sequences = new Map([...bySkill].map(([skill, students]) => [skill, [...students.values()].map((s) => Uint8Array.from(s))]));
+    const sequences = sequencesBySkill(train);
     this.pooled = fitBkt([...sequences.values()].flat());
     for (const [skill, seqs] of sequences) this.params.set(skill, fitBkt(seqs));
   }
-  private paramsOf(skill: string) {
+  paramsOf(skill: string) {
     return this.params.get(skill) ?? this.pooled;
   }
   predict(o: Observation) {
@@ -288,6 +283,79 @@ export class BktModel implements Predictor {
     const p = this.paramsOf(o.skill);
     const key = `${o.student}\u0000${o.skill}`;
     this.known.set(key, bktStep(this.known.get(key) ?? p.init, p, o.correct).known);
+  }
+}
+
+/** Each student's answers on each skill, in order, as 0s and 1s: what BKT and EMA are fitted on. */
+export function sequencesBySkill(observations: readonly Observation[]): Map<string, Uint8Array[]> {
+  const bySkill = new Map<string, Map<string, number[]>>();
+  for (const o of observations) {
+    const students = bySkill.get(o.skill) ?? bySkill.set(o.skill, new Map()).get(o.skill)!;
+    (students.get(o.student) ?? students.set(o.student, []).get(o.student)!).push(o.correct ? 1 : 0);
+  }
+  return new Map([...bySkill].map(([skill, students]) => [skill, [...students.values()].map((s) => Uint8Array.from(s))]));
+}
+
+/** The exponential moving average's two settings: how much each answer counts, and the score before any answer. */
+export type EmaParams = { alpha: number; start: number };
+const EMA_ALPHAS = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+/** One EMA step: the score after an answer. */
+export const emaStep = (score: number, alpha: number, correct: boolean) => (1 - alpha) * score + (correct ? alpha : 0);
+/** The mean log-loss of sequences of answers when each is predicted by the score before it. */
+function emaLogLoss(sequences: readonly Uint8Array[], p: EmaParams) {
+  let sum = 0;
+  let n = 0;
+  for (const seq of sequences) {
+    let score = p.start;
+    for (let i = 0; i < seq.length; i++) {
+      const q = Math.min(1 - EPS, Math.max(EPS, score));
+      sum -= seq[i] ? Math.log(q) : Math.log(1 - q);
+      score = emaStep(score, p.alpha, seq[i] === 1);
+      n++;
+    }
+  }
+  return sum / n;
+}
+/**
+ * The start is the share of right first answers (each student's first on each skill), fixed before α is chosen, so
+ * the first prediction comes from data like the rest; α is then the grid point with the lowest log-loss.
+ */
+export function fitEma(sequences: readonly Uint8Array[]): EmaParams {
+  const firsts = sequences.filter((s) => s.length);
+  const start = firsts.length ? firsts.filter((s) => s[0] === 1).length / firsts.length : 0.5;
+  let best: EmaParams = { alpha: EMA_ALPHAS[0], start };
+  let bestLoss = Infinity;
+  for (const alpha of EMA_ALPHAS) {
+    const loss = emaLogLoss(sequences, { alpha, start });
+    if (loss < bestLoss) (bestLoss = loss), (best = { alpha, start });
+  }
+  return best;
+}
+
+/**
+ * The exponential moving average of a student's answers on a skill (right 1, wrong 0), read as the chance of a right
+ * answer next: the simple rival to BKT. One α and one start for all skills, fitted on the training students; given
+ * settings are used as they are. "N right in a row" is an EMA for some settings (docs/thesis/outline.md,
+ * Proposition 1), but not in general for the fitted ones.
+ */
+export class EmaModel implements Predictor {
+  readonly name = "EMA";
+  params: EmaParams;
+  private scores = new Map<string, number>();
+  private fixed: boolean;
+  constructor(params?: EmaParams) {
+    this.params = params ?? { alpha: 0.3, start: 0.5 };
+    this.fixed = params !== undefined;
+  }
+  fit(train: readonly Observation[]) {
+    if (!this.fixed) this.params = fitEma([...sequencesBySkill(train).values()].flat());
+  }
+  predict(o: Observation) {
+    return this.scores.get(`${o.student}\u0000${o.skill}`) ?? this.params.start;
+  }
+  update(o: Observation) {
+    const key = `${o.student}\u0000${o.skill}`;
+    this.scores.set(key, emaStep(this.scores.get(key) ?? this.params.start, this.params.alpha, o.correct));
   }
 }
 

@@ -157,13 +157,14 @@ Stated before the results are computed, with the test for each:
     and used to check fitting;
   - the **elo** and **irt2pl** worlds, where ability grows gradually and "mastered" means a true chance of a right
     answer of at least 0.9 at level 2 (fixed in advance);
-  - a **bkt with forgetting** variant [TODO: to add], which breaks BKT's no-forgetting assumption.
+  - a **bkt with forgetting** variant (`forget` in `SimParams`: the chance that a question on a known skill leaves
+    it unknown, 0.02 unless given), which breaks BKT's no-forgetting assumption.
 
 ### 3.2 Models and fitting
 
 - BKT per skill by the grid search in `fitBkt`, with guess and slip under 0.3; a pooled fit for skills unseen in
   training (`BktModel`).
-- EMA: one α for all skills, chosen by log-loss on the training students from a grid [TODO: to add as `EmaModel`].
+- EMA: one α for all skills, chosen by log-loss on the training students from a grid (`EmaModel` and `fitEma` in `src/model/evaluate.ts`).
   Every student's score on a skill starts at the share of right first answers among the training students (their
   first answer on each skill), fixed before α is chosen, so the first prediction is learnt from data like the rest.
 - Streak rule: N from 2 to 6.
@@ -183,7 +184,7 @@ Stated before the results are computed, with the test for each:
   declaring answer, which is the moment BKT's P(known) refers to), the share of truly learnt skills never declared,
   and the mean opportunities to declaration. The comparison H2 decides on is at the streak-3 cost, as stated
   there. Around it, sweep each method's threshold (BKT θ from 0.80 to 0.99, EMA θ likewise, streak N from 2 to 6)
-  and draw cost against accuracy as description [TODO: to add as a mastery module and a script].
+  and draw cost against accuracy as description (`src/model/mastery.ts`, `npm run mastery`).
 - **Mastery on real data (H3):** agreement between methods; the share right on the next one to three answers on the
   skill after each declaration, where such answers exist.
 
@@ -252,9 +253,9 @@ Each command is deterministic for a given commit (seeds are fixed). Record the c
 | Result | Command | Status |
 |---|---|---|
 | ASSISTments import | `npm run import-assistments -- skill_builder_data.csv` | exists; needs the data file |
-| Prediction on ASSISTments | `npm run model -- --observations assistments.json --fit --calibration bins.csv` | exists; EMA row and bootstrap to add |
+| Prediction on ASSISTments | `npm run model -- --observations assistments.json --fit --calibration bins.csv` | exists, with the EMA row; bootstrap to add |
 | Prediction on simulated learners | `npm run model -- --simulate --fit` | exists |
-| Mastery trade-off, simulated | to be written | to add |
-| Mastery agreement on ASSISTments | to be written | to add |
+| Mastery decisions, simulated (H2) | `npm run mastery -- --curves mastery-curves.csv` | exists |
+| Mastery agreement on ASSISTments (H3) | `npm run mastery -- --observations assistments.json` | exists; needs the data file |
 | Test suite | `npm test` | exists |
 | Figures | `npm run build`, then `npm run figures` | exists; new plots to add |
