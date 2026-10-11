@@ -10,7 +10,9 @@ commit, because every random choice is seeded. The run times below were measured
 | H1, the paired bootstrap (section 4.2) | `npm run h1 -- --observations assistments.json` | minutes |
 | H2, settings and comparison (Tables 4.1, 4.3 to 4.5) | `npm run mastery -- --curves mastery-curves.csv` | ~2.5 min |
 | H2 with mastery at 0.8 (Table 4.6) | `npm run mastery -- --worlds elo,irt2pl --mastered-at 0.8` | ~1 min |
-| H3 on ASSISTments (Table 4.7) | `npm run mastery -- --observations assistments.json` | minutes |
+| BKT above 0.9999, mastery at 0.9 (Table 4.7) | `npm run mastery -- --worlds elo,irt2pl --beyond` | ~1.5 min |
+| BKT above 0.9999, mastery at 0.8 (Table 4.7) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.8` | ~1.5 min |
+| H3 on ASSISTments (Table 4.8) | `npm run mastery -- --observations assistments.json` | minutes |
 | Proposition 1 and 2 checks | `npm test` (`tests/mastery.test.ts`) | ~3 min for the whole suite |
 | The thesis as a PDF | `npm run thesis-pdf` | ~1 min |
 
@@ -28,4 +30,5 @@ command.
 | Tables | Commit |
 |---|---|
 | 4.1, 4.3 to 4.6 | 88c4af7 |
-| 4.2, 4.7 and the ASSISTments counts | [TODO] |
+| 4.7 | 66c2eda |
+| 4.2, 4.8 and the ASSISTments counts | [TODO] |

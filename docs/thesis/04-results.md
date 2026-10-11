@@ -3,7 +3,8 @@
 This chapter reports the results for each hypothesis in turn: the data kept and the simulated settings (section 4.1),
 prediction on real answers (H1, section 4.2), mastery decisions where the truth is known (H2, section 4.3) and mastery
 decisions on real answers (H3, section 4.4). It reports what was found; chapter 5 interprets it. The simulation results
-were made at commit 88c4af7 of the Zeno repository with the commands in Appendix B.
+were made at commit 88c4af7 of the Zeno repository, and the check above BKT's highest threshold (Table 4.7) at
+commit 66c2eda, with the commands in Appendix B.
 
 [TODO: the ASSISTments results in sections 4.1, 4.2 and 4.4 need the data file. Download `skill_builder_data.csv`
 (the corrected 2009–2010 version), then run `npm run import-assistments -- skill_builder_data.csv`,
@@ -105,18 +106,19 @@ fewer than the streak rule at the lower rate, and 1.99 and 0.68 fewer at the hig
 intervals comes near zero.
 
 In the two gradual worlds, H2 does not hold. At neither learning rate did any BKT threshold, up to 0.9999, make
-declarations that were right 90 % of the time on the training students, so by the rule fixed in advance BKT never
-meets the standard there, and this counts against it. EMA and the streak rule do meet it, but only by waiting for
-almost the whole practice. At the lower learning rate, where about one student in ten masters a skill at all, they
-declare mastery in 2 to 3 % of practices, near the 30th answer. At the higher rate they declare it in between a quarter and
-a half of practices, after 25 to 28 answers on average, with EMA a little cheaper than the streak rule (1.41 answers in
-the elo world and 0.52 in the irt2pl world, from the costs in the table).
+declarations that were right 90 % of the time on the training students, so by the rule fixed in advance BKT never meets
+the standard there, and this counts against it. The check at the end of this section, made after these results, shows
+that this is largely a matter of where the search for a threshold stopped. EMA and the streak rule do meet the standard,
+but only by waiting for almost the whole practice. At the lower learning rate, where about one student in ten masters a
+skill at all, they declare mastery in 2 to 3 % of practices, near the 30th answer. At the higher rate they declare it in
+between a quarter and a half of practices, after 25 to 28 answers on average, with EMA a little cheaper than the streak
+rule (1.41 answers in the elo world and 0.52 in the irt2pl world, from the costs in the table).
 
 The thresholds were chosen on training students, and on the held-out students their precision scatters around the
 target: from 85.7 % to 96.0 % across the table. Five of the 14 chosen rules fall below 90 % on the held-out students,
 one of them BKT's.
 
-### Why BKT falls short in the gradual worlds
+### Why BKT falls short at the thresholds fixed in advance
 
 The trade-off curves show where BKT's precision stops. In the elo world at the higher learning rate, BKT at
 $\theta = 0.80$ declares mastery in 94 % of practices after 10.4 answers on average, and only 7 % of its declarations
@@ -125,7 +127,8 @@ declarations are right. EMA at $\theta = 0.99$, by contrast, waits 29.7 answers,
 right every time. The streak rule with $N = 6$ needs 18.9 answers and is right 33 % of the time. Raising BKT's threshold
 from 0.80 to 0.99 makes it wait only six answers longer, and even the highest threshold tried, 0.9999, did not bring
 its precision on the training students to 90 %. The irt2pl world shows the same pattern (16 % right at
-$\theta = 0.99$, after 16.5 answers).
+$\theta = 0.99$, after 16.5 answers). BKT's probability crowds so close to 1 that only thresholds much closer to 1 than
+0.9999 could make it wait as long as the standard requires, which the last part of this section examines.
 
 ### The BKT world, where Proposition 2 applies
 
@@ -194,11 +197,53 @@ elo,irt2pl --mastered-at 0.8`, commit 88c4af7).
 With the lower bar, BKT meets the standard in one of the four settings, the elo world at the higher learning rate,
 and only at its highest threshold, 0.9999. There it needs as many answers as EMA (the difference of 0.02 answers has
 an interval that includes zero) and about one fewer than the streak rule. In the other three settings BKT again never
-meets the standard, while EMA and the streak rule do, with EMA the cheaper of the two.
+meets the standard within the thresholds fixed in advance, while EMA and the streak rule do, with EMA the cheaper of
+the two.
+
+### Thresholds above 0.9999
+
+The thresholds tried for BKT stopped at 0.9999, a range fixed in advance, and in the one setting of Table 4.6 where BKT
+met the standard it did so exactly there. As a check made after the results, the search for BKT and EMA was continued
+above 0.9999 to $1 - 10^{-15}$, in steps of a tenth of a power of ten, past which the difference from 1 is lost in the
+arithmetic. Nothing else changed: the same students, the same fitted parameters and the same rule for choosing a
+threshold. A higher threshold never costs fewer answers, so every rule chosen below 0.9999 stays as it was, and only
+the settings in which BKT never met the standard can change. Table 4.7 gives them.
+
+| At | World | Rate | BKT $\theta$ | Answers [95 % interval] | Right | Declared | BKT saves against EMA |
+|---|------|----|--------------|----------------------:|------:|--------:|----------------------:|
+| 0.9 | elo | 0.02 | $1 - 10^{-12.6}$ | 29.95 [29.93, 29.97] | 89.4 % | 2.3 % | 0.01 [0.01, 0.02] |
+| 0.9 | irt2pl | 0.02 | never |  |  |  |  |
+| 0.9 | elo | 0.1 | $1 - 10^{-6.9}$ | 25.41 [24.67, 26.13] | 90.7 % | 53.7 % | 0.29 [0.20, 0.38] |
+| 0.9 | irt2pl | 0.1 | $1 - 10^{-7.9}$ | 26.91 [26.36, 27.44] | 90.4 % | 43.5 % | 0.42 [0.33, 0.50] |
+| 0.8 | elo | 0.02 | $1 - 10^{-8.3}$ | 28.99 [28.72, 29.24] | 90.9 % | 17.9 % | −0.37 [−0.48, −0.26] |
+| 0.8 | irt2pl | 0.02 | $1 - 10^{-8.9}$ | 29.24 [29.02, 29.43] | 90.6 % | 13.6 % | −0.24 [−0.33, −0.16] |
+| 0.8 | elo | 0.1 | 0.9999 | 21.04 [19.94, 22.14] | 91.6 % | 73.2 % | 0.02 [−0.07, 0.11] |
+| 0.8 | irt2pl | 0.1 | $1 - 10^{-4.5}$ | 22.45 [21.46, 23.44] | 89.3 % | 66.6 % | 0.30 [0.20, 0.40] |
+
+Table: BKT in the gradual worlds with its threshold searched up to $1 - 10^{-15}$, with mastery ("At") defined as a
+true chance of at least 0.9 and, as in Table 4.6, 0.8. EMA and the streak rule keep the rules of Tables 4.3 and 4.6;
+the answers BKT saves against the streak rule are given in the text. "BKT saves" is as in Table 4.3 (`npm run mastery -- --worlds elo,irt2pl --beyond`, with `--mastered-at 0.8` for the
+lower bar, commit 66c2eda; a check made after the results).
+
+With mastery at 0.9, BKT now meets the standard in three of the four gradual settings. At the higher learning rate it
+needs 0.29 answers fewer than EMA in the elo world and 0.42 fewer in the irt2pl world, and 1.70 and 0.93 fewer than
+the streak rule, all with intervals that exclude zero. At the lower rate in the elo world all three methods wait
+almost to the 30th answer and declare mastery in about 2 % of practices, and they differ by a few hundredths of an
+answer. Only in the irt2pl world at the lower rate does BKT still never meet the standard: its precision on the
+training students rises to about 82 % near $1 - 10^{-12}$ and falls again as ever fewer practices are declared. With
+mastery at 0.8, BKT meets the standard in all four settings. It needs about a third and a quarter of an answer more
+than EMA at the lower rate, ties with it in the elo world at the higher rate, and needs 0.30 fewer in the irt2pl world.
+Against the streak rule it needs 0.13 and 0.08 answers more at the lower rate, the second with an interval reaching
+zero, and 1.04 and 1.59 fewer at the higher rate.
+
+The thresholds at which BKT meets the standard lie between $1 - 10^{-4.5}$ and $1 - 10^{-12.6}$. At such values its
+probability no longer reads as a probability: in the elo world at the higher rate, BKT's declarations are right nine
+times in ten only when it declares mastery at more than 99.9999 % certainty. The thresholds EMA needs in the same
+settings lie between 0.84 and 0.97.
 
 ## 4.4 Mastery decisions on real answers (H3)
 
-[TODO: Table 4.7 from `npm run mastery -- --observations assistments.json`: for BKT at 0.95, EMA at the streak rule's
+[TODO: Table 4.8 from `npm run mastery -- --observations assistments.json`: for BKT at 0.95, EMA at the streak rule's
 cost and the streak rule with N = 3, how often each pair both declare, only one declares or neither does, and the mean
 gap in answers where both declare; then the share right on the next three answers after each method declares, with
 the number of practices that have such answers.]
@@ -214,7 +259,10 @@ Table: Agreement between the mastery methods on held-out ASSISTments practices.
 ## 4.5 Summary
 
 [TODO: H1's verdict.] In the simulations, H2 holds in the BKT world with forgetting, where BKT needs one to two answers
-fewer than the simpler methods for the same accuracy, and fails in both gradual worlds, where BKT's declarations are
-never right nine times in ten at any threshold while EMA and the streak rule reach that standard by waiting. The check
-with a lower bar for mastery leaves this pattern in place except in one setting, where BKT and EMA tie. In BKT's own
+fewer than the simpler methods for the same accuracy, and fails in both gradual worlds by the rule fixed in advance,
+where no BKT threshold up to 0.9999 makes its declarations right nine times in ten while EMA and the streak rule reach
+that standard by waiting. The check above 0.9999 changes the reading: with thresholds between $1 - 10^{-6.9}$ and
+$1 - 10^{-12.6}$ BKT meets the standard in three of the four gradual settings, and at the higher learning rate it then
+needs 0.3 to 0.4 answers fewer than EMA. With a lower bar for mastery it meets the standard in all four settings, close
+to EMA in each. In BKT's own
 world, fitted BKT is as precise as Proposition 2 promises. [TODO: H3.]

@@ -1,7 +1,7 @@
 # Title defense, 13 October 2026
 
 Tuesday, 18:00 Tbilisi time, room 303, University of Georgia. The supervisor and an expert attend. The task is to
-present what the thesis will work on. No length or slides are prescribed, so the talk below runs about four minutes
+present what the thesis will work on. No length or slides are prescribed, so the talk below runs about five minutes
 and works without slides.
 
 ## Title
@@ -40,16 +40,19 @@ The software is built. Over the last year I built Zeno, a self-hosted maths whit
 learner model for Georgian classrooms, and the experiment runs inside its code: BKT, the moving average, the streak
 rule, the evaluation on held-out students, the statistical test and the simulation.
 
-The simulation has already been run, and its first result splits the second hypothesis in two. Where students learn
-in a jump, as BKT assumes, but sometimes forget, the hypothesis holds: BKT needs one to two answers fewer than the
-simpler rules for the same accuracy. Where students learn gradually, it fails: no threshold makes BKT's decisions right
-nine times in ten, because after a short run of right answers it is almost certain the student knows the skill, even
-when they do not. The moving average gets there by waiting longer. In BKT's own world it is as accurate as the
-theorem promises. What remains is the test on the real data, which decides the first hypothesis.
+The simulation has already been run, and its result splits the second hypothesis in two. Where students learn in a
+jump, as BKT assumes, but sometimes forget, the hypothesis holds: BKT needs one to two answers fewer than the simpler
+rules for the same accuracy. Where students learn gradually, it fails by the rule I fixed in advance: no threshold up
+to 0.9999 makes BKT's decisions right nine times in ten, because after a short run of right answers it is almost
+certain the student knows the skill, even when they do not. I then checked whether that was only where I had stopped
+searching, and largely it was. With a threshold of seven nines or more, BKT does get there, at about the moving
+average's cost. So BKT still ranks students sensibly, but its probability stops meaning what it says, and the
+threshold it needs changes by orders of magnitude from one world to another. In BKT's own world it is as accurate as
+the theorem promises. What remains is the test on the real data, which decides the first hypothesis.
 
 The result is useful whichever way it goes. If BKT wins, systems using simple rules are leaving accuracy unused. If
 it does not, a one-parameter rule is the better engineering choice. So far, for Zeno, whose own model assumes gradual
-learning, the evidence points to the moving average. The main limitation, which I state in advance, is that the
+learning, the evidence points to the moving average: it reaches the same accuracy with an ordinary threshold. The main limitation, which I state in advance, is that the
 ASSISTments data were collected under the three-in-a-row rule, so the real data cannot show that rule stopping too
 early; that is why the decisions themselves are compared in the simulation.
 
@@ -61,7 +64,8 @@ personal data. A classroom study is future work, and Zeno is built to run it.
 
 **What is new here, if BKT and mastery rules have been compared before?** They have, most closely by Pelánek and
 Řihák (2017), who found the threshold and the data to matter more than the model and recommended the moving average;
-my simulation agrees with them. This thesis adds the exact conditions under which "N right in a row" is a
+my simulation agrees with them, since once each method gets the threshold it needs, BKT and the moving average are
+close. This thesis adds the exact conditions under which "N right in a row" is a
 moving average, proved for answer sequences of any length; a known-truth simulation in worlds that break BKT's
 assumptions; a pre-specified test on held-out students; and an answer to a practical question for a real system.
 A careful replication with a stated hypothesis is a sound bachelor's contribution.
@@ -80,25 +84,37 @@ is in the worlds with gradual learning and forgetting, and results are reported 
 
 **Your second hypothesis failed in two of the three worlds. Is that a problem?** No. It was stated before the
 results, with the rule for what counts as failing, and a hypothesis that can fail is the point of stating it. The
-result is informative: BKT's advantage depends on students learning in a jump, which is exactly its assumption.
+result is informative: BKT's advantage depends on students learning in a jump, which is exactly its assumption, and
+where they do not, BKT keeps up only with a threshold no one would choose without data.
 
-**Why does BKT fail where learning is gradual?** It has two states, known and not known. A few right answers in a row
-push its probability close to 1, and a student who is only partway there often gives such a run. Raising the
+**Why does BKT fall short where learning is gradual?** It has two states, known and not known. A few right answers in a
+row push its probability close to 1, and a student who is only partway there often gives such a run. Raising the
 threshold from 0.80 to 0.99 made it wait only about six answers longer, and most of its declarations stayed wrong. The
-moving average reaches a high threshold only through a long run, so it can be made to wait.
+moving average reaches a high threshold only through a long run, so an ordinary threshold makes it wait.
 
-**Is "never" just where you stopped the threshold search?** Partly, possibly. Thresholds went up to 0.9999, fixed in
-advance. With mastery defined at 0.8 instead of 0.9, BKT met the standard once, exactly at 0.9999, and tied with the
-moving average. Searching above 0.9999 is the first thing in future work.
+**Is "never" just where you stopped the threshold search?** Largely, yes, and I checked. Thresholds went up to
+0.9999, fixed in advance. Continuing the search up to 1 − 10⁻¹⁵, BKT meets the standard in three of the four gradual
+settings, at thresholds between 1 − 10⁻⁷ and 1 − 10⁻¹³, and at the higher learning rate it then needs 0.3 to 0.4
+answers fewer than the moving average. The one setting where it still never gets there is the one where hardly anyone
+masters a skill at all. The thesis reports this as a check made after the results, beside the verdict, and it changes
+the reading: BKT's problem in those worlds is that its probability is badly calibrated, not that it cannot wait. At
+its usual 0.95, about one declaration in ten is right.
+
+**So why recommend the moving average, if BKT can match it?** Because BKT matches it only at a threshold like seven
+nines, which has to be found from data and moves by orders of magnitude from one world to another. The moving average
+reaches the same accuracy at thresholds between 0.84 and 0.97, with one fitted parameter. For a system that does not
+know how its students learn, that is the safer rule.
 
 **Did you change the comparison after seeing results?** Yes, once, and the thesis says so. It was first set at equal
 practice, but at that much practice almost no simulated student had mastered anything, so every rule was mostly
 wrong and they could not be told apart. Equal accuracy has a meaning in every world. The equal-practice comparison is
-still reported.
+still reported. The search above 0.9999 also came after the results, and it is reported as a check beside the
+verdict, not in place of it.
 
 **How do you define "mastered" in the simulation?** In the BKT world, the simulated student knows the skill. In
 the gradual worlds, the true chance of a right answer is at least 0.9; the threshold is fixed in advance, and 0.8
-is reported as a check. With 0.8 the pattern is the same in three of the four gradual settings.
+is reported as a check. With 0.8, BKT meets the standard in all four gradual settings once its thresholds go above
+0.9999, close to the moving average in each.
 
 **What if the ASSISTments data are unsuitable?** The prediction comparison works on any logged first attempts; Zeno's
 own export produces the same format, and the simulation part does not depend on the data set.
@@ -114,9 +130,9 @@ describes it briefly; the experiment is the contribution.
 | Preliminary draft | 15 pages | the method in full, the simulation results |
 | Final thesis | 30 pages | the ASSISTments results, discussion, threats to validity, conclusion, abstracts in Georgian and English |
 
-Where it stands on 13 October: the chapters follow this scope (33 pages as a PDF), with the method in full, the
-simulation results, the discussion and the threats to validity. The ASSISTments results, the abstracts and the title
-page are still to come.
+Where it stands on 13 October: the chapters follow this scope (36 pages as a PDF), with the method in full, the
+simulation results including the check above 0.9999, the discussion and the threats to validity. The ASSISTments
+results, the abstracts and the title page are still to come.
 
 ## Format rules to remember while writing
 

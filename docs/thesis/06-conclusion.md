@@ -10,10 +10,12 @@ H2 asked whether, in simulated worlds that break BKT's assumptions, BKT needs fe
 the streak rule before its declarations of mastery are right at least 90 % of the time. The answer depends on which
 assumption is broken. Where students forget, BKT needs one to two answers fewer than either simpler rule, at both
 learning rates, so H2 holds in that world. Where students learn gradually, BKT's declarations were never right 90 % of
-the time at any threshold tried, while the moving average and the streak rule reached that standard by waiting
-longer, so H2 does not hold in either gradual world. With a lower bar for mastery the pattern was the same in three of
-the four gradual settings, and in the fourth BKT and the moving average tied. In BKT's own world, the fitted model was
-as precise as Proposition 2 promises for the true parameters.
+the time at any threshold fixed in advance, up to 0.9999, while the moving average and the streak rule reached that
+standard by waiting longer, so by the rule fixed in advance H2 does not hold in either gradual world. A check made
+after the results, with thresholds up to $1 - 10^{-15}$, qualifies this: BKT then met the standard in three of the four
+gradual settings, and at the higher learning rate needed 0.3 to 0.4 answers fewer than the moving average. Its failure
+was a matter of where its threshold has to be, not of whether one exists. In BKT's own world, the fitted model was as
+precise as Proposition 2 promises for the true parameters.
 
 H3 asked, as an exploratory question, how often the methods agree on real answers. [TODO: the agreement and the
 answers after declaration.]
@@ -28,10 +30,12 @@ world that follows BKT's assumptions, BKT's declarations are right at least as o
 
 The research question asked whether BKT estimates a student's mastery of a skill more accurately than the exponential
 moving average. The answer from this thesis is that it depends on how students learn, and that the cost of being
-wrong is not symmetric. If learning happens in a jump, BKT is somewhat more efficient. If learning is gradual, BKT
-declares mastery too early and cannot be made to wait, while the moving average can. [TODO: what H1 adds about real
-students.] A simple rule therefore does not leave much accuracy unused, and in some plausible worlds it is the more
-accurate choice.
+wrong is not symmetric. If learning happens in a jump, BKT is somewhat more efficient. If learning is gradual, BKT at
+any usual threshold declares mastery too early, and it can be made to wait only with a threshold like $1 - 10^{-7}$,
+set from data, at which it is about as efficient as the moving average. [TODO: what H1 adds about real students.] A
+simple rule therefore does not leave much accuracy unused: where BKT is ahead, it is ahead by one or two answers, and
+where learning is gradual it keeps up with the moving average only at thresholds that have lost their meaning as
+probabilities.
 
 For Zeno, whose own learner model assumes gradual learning, the recommendation is to decide mastery with an
 exponential moving average of each student's first answers on a skill, with a threshold set from the system's own data
@@ -41,10 +45,10 @@ of the comparison and should be measured in the same way before it is kept.
 
 ## 6.3 Future work
 
-The most direct extension is to settle whether BKT's failure in the gradual worlds is a matter of the threshold, by
-searching thresholds above 0.9999, and to repeat the simulations with other seeds and other amounts of practice. A
-second is to compare the versions of BKT that relax its assumptions, with forgetting or with parameters for each
-student [@yudelson2013; @khajah2016], which may close the gap in the gradual worlds at the cost of more parameters. A
+The most direct extension is to repeat the simulations with other seeds and other amounts of practice. A second is to
+compare the versions of BKT that relax its assumptions, with forgetting or with parameters for each student
+[@yudelson2013; @khajah2016], which may restore the meaning of its probability in the gradual worlds, so that an
+ordinary threshold works, at the cost of more parameters. A
 third is a check of the ASSISTments results with each answer kept for one skill only.
 
 Zeno's own class data would give a replication on the students the result is meant for. The system already exports
