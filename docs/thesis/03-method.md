@@ -229,9 +229,10 @@ known in which it never declared.
 For the H2 comparison, each method's threshold is the cheapest one, on the training students, whose precision there is
 at least 90 % (`compareAtPrecision` in `src/model/mastery.ts`). The thresholds tried for BKT and EMA run from 0.50 to
 0.99 in steps of 0.01, then more finely up to 0.9999, since BKT's probability crowds just below 1 and only the finest
-steps make it wait longer. For the streak rule $N$ runs from 1 to 30. The chosen rules are then applied to the
-held-out students. For each, the cost has a 95 % interval from 2,000 bootstrap resamples of held-out students, and so
-does the difference between its cost and BKT's, which is the number of answers BKT saves.
+steps make it wait longer. For the streak rule $N$ runs from 1 to 30. After the results, the search for BKT and EMA was
+continued above 0.9999, to $1 - 10^{-15}$, as a check that is reported apart from H2's verdict (section 4.3). The chosen
+rules are then applied to the held-out students. For each, the cost has a 95 % interval from 2,000 bootstrap resamples
+of held-out students, and so does the difference between its cost and BKT's, which is the number of answers BKT saves.
 
 Around this comparison, as description, the three methods are also compared at the streak rule's cost: BKT and EMA
 each get the threshold at which they need, on the training students, as many answers as the streak rule with $N = 3$,
