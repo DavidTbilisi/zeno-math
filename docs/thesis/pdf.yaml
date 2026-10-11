@@ -1,0 +1,28 @@
+---
+# Settings for npm run thesis-pdf (scripts/thesis-pdf.ts). The fonts are the host's, from /usr/share/fonts; the
+# fallbacks cover the arrows, ticks, maths signs and Georgian that STIX Two Text lacks.
+title: "When is a skill mastered?"
+subtitle: "Bayesian Knowledge Tracing against a simple mastery rule on real and simulated students' answers"
+author: "David Chincharashvili"
+documentclass: report
+papersize: a4
+fontsize: 11pt
+geometry: margin=2.5cm
+mainfont: "STIX Two Text"
+mathfont: "STIX Two Math"
+sansfont: "Noto Sans"
+monofont: "Liberation Mono"
+mainfontfallback: ["Noto Sans Math:", "Noto Serif Georgian:", "Noto Sans Symbols 2:", "Noto Sans Symbols:"]
+toc: true
+toc-depth: 2
+linkcolor: blue
+urlcolor: blue
+link-citations: true
+reference-section-title: References
+# Smaller tables, and figures no taller than 0.68 of the text block so a figure and its caption fit on one page.
+header-includes: |
+  \usepackage{etoolbox}
+  \AtBeginEnvironment{longtable}{\small}
+  \newsavebox\pbox
+  \AtBeginDocument{\renewcommand*\pandocbounded[1]{\sbox\pbox{#1}\ifdim\wd\pbox>\linewidth\sbox\pbox{\resizebox{\linewidth}{!}{#1}}\fi\ifdim\ht\pbox>0.68\textheight\resizebox{!}{0.68\textheight}{\usebox\pbox}\else\usebox\pbox\fi}}
+---
