@@ -1,0 +1,20 @@
+# References that need a field pandoc's BibTeX reader drops, given here in pandoc's own CSL form. APA cites a journal
+# article that has an article number as "55(11), Article 224", which takes CSL's `number`; BibTeX's eid, articleno and
+# similar fields are not read. Every other reference is in references.bib.
+references:
+  - id: abdelrahman2023survey
+    type: article-journal
+    author:
+      - family: Abdelrahman
+        given: Ghodai
+      - family: Wang
+        given: Qing
+      - family: Nunes
+        given: Bernardo Pereira
+    title: "Knowledge tracing: A survey"
+    container-title: ACM Computing Surveys
+    volume: 55
+    issue: 11
+    number: 224
+    issued: 2023
+    DOI: 10.1145/3569576
