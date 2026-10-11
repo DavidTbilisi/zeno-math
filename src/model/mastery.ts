@@ -4,9 +4,11 @@
 // row. On simulated learners the truth is recorded after every answer, so each declaration is right or wrong (H2); on
 // real answers it is not, and the rules can only be compared with each other and with the answers that follow (H3).
 //
-// Rules are compared at equal practice: BKT's and EMA's thresholds are set on training learners so that they cost as
-// many answers as N right in a row there, and are judged on the other learners. A practice never declared costs its
-// full length, as a learner who is never let go practises to the end.
+// H2 compares the rules at equal accuracy: each method's threshold is the cheapest one whose declarations are right at
+// least 90 % of the time on training learners, and the comparison is how many answers each then needs on the other
+// learners. Comparing at equal practice instead (the streak rule's cost) is kept as description: in the gradual worlds
+// almost nobody has truly mastered a skill by then, so every rule is mostly wrong there and the comparison says
+// nothing. A practice never declared costs its full length, as a learner who is never let go practises to the end.
 import { AREAS, type SkillId } from "../math/practiceSkills.ts";
 import type { Level, Observation } from "./elo.ts";
 import { bktStep, bootstrapGroups, emaStep, fitBkt, fitEma, type BktParams, type EmaParams } from "./evaluate.ts";
@@ -191,8 +193,8 @@ export type AtCost = Judgement & {
   bktAhead?: { estimate: number; interval: [number, number] };
 };
 /**
- * H2's comparison: BKT and EMA with their thresholds set on the training practices to cost what N right in a row costs
- * there, and all three judged on the test practices, with intervals over test students.
+ * Equal practice, as description: BKT and EMA with their thresholds set on the training practices to cost what N right
+ * in a row costs there, and all three judged on the test practices, with intervals over test students.
  */
 export function compareAtCost(train: readonly Practice[], test: readonly Practice[], fitted: Fitted, n = 3, resamples = 2000, seed = 1): AtCost[] {
   const streak = streakRule(n);
@@ -210,6 +212,78 @@ export function compareAtCost(train: readonly Practice[], test: readonly Practic
       const all = test.map((_, j) => j);
       row.bktAhead = { estimate: bkt(all) - own(all), interval: bootstrapByStudent(test, (idx) => bkt(idx) - own(idx), resamples, seed) };
     }
+    return row;
+  });
+}
+
+/** H2's standard: declarations right at least this often on the training learners. */
+export const PRECISION_TARGET = 0.9;
+/**
+ * The thresholds tried for BKT and EMA when a precision is sought: every 0.01 from 0.5 to 0.99, then finer up to 0.9999,
+ * since BKT's P(known) crowds just below 1 and only the finest steps make it wait.
+ */
+export const FINE_THRESHOLDS = [
+  ...Array.from({ length: 50 }, (_, i) => 0.5 + i / 100),
+  ...Array.from({ length: 9 }, (_, i) => 0.991 + i / 1000),
+  ...Array.from({ length: 9 }, (_, i) => 0.9991 + i / 10000),
+].map((t) => Number(t.toFixed(4)));
+
+/** Of a family of rules, the one with the lowest cost on these practices among those right at least target of the time. */
+export function cheapestAtPrecision(rules: readonly MasteryRule[], practices: readonly Practice[], target: number): MasteryRule | null {
+  let best: { rule: MasteryRule; cost: number } | null = null;
+  for (const rule of rules) {
+    const j = judge(rule, practices);
+    if (j.precision >= target && (!best || j.cost < best.cost)) best = { rule, cost: j.cost };
+  }
+  return best?.rule ?? null;
+}
+
+/** The mean cost of decisions over the practices with the given indices (a statistic for bootstrapByStudent). */
+export const costOf = (decisions: readonly Decision[], practices: readonly Practice[]) => (indices: readonly number[]) => {
+  let sum = 0;
+  for (const i of indices) sum += decisions[i].at ?? practices[i].answers.length;
+  return indices.length ? sum / indices.length : NaN;
+};
+
+export type AtPrecision = {
+  method: "BKT" | "EMA" | "streak";
+  /** The rule chosen on the training practices, or null if no threshold reaches the target there. */
+  rule: string | null;
+  /** How it does on the test practices (absent when no rule reached the target). */
+  judgement?: Judgement & { costInterval: [number, number]; precisionInterval: [number, number] };
+  /** This rule's cost minus BKT's, with its interval: above zero, BKT needs fewer answers (absent on BKT's own row). */
+  bktSaves?: { estimate: number; interval: [number, number] };
+};
+/**
+ * H2's comparison: for BKT, EMA and the streak rule (N from 1 to the practice length), the cheapest threshold on the
+ * training practices whose declarations are right at least target of the time, judged on the test practices, with
+ * intervals over test students for each cost and for each method's cost minus BKT's.
+ */
+export function compareAtPrecision(train: readonly Practice[], test: readonly Practice[], fitted: Fitted, target = PRECISION_TARGET, resamples = 2000, seed = 1): AtPrecision[] {
+  const longest = Math.max(...train.map((p) => p.answers.length));
+  const families = {
+    BKT: FINE_THRESHOLDS.map((t) => bktRule(fitted.bkt, t)),
+    EMA: FINE_THRESHOLDS.map((t) => emaRule(fitted.ema, t)),
+    streak: Array.from({ length: longest }, (_, i) => streakRule(i + 1)),
+  };
+  const chosen = (Object.keys(families) as AtPrecision["method"][]).map((method) => ({ method, rule: cheapestAtPrecision(families[method], train, target) }));
+  const decisions = chosen.map(({ rule }) => (rule ? decide(rule, test) : null));
+  const all = test.map((_, i) => i);
+  const bktCost = decisions[0] && costOf(decisions[0], test);
+  return chosen.map(({ method, rule }, i): AtPrecision => {
+    const d = decisions[i];
+    if (!rule || !d) return { method, rule: null };
+    const cost = costOf(d, test);
+    const row: AtPrecision = {
+      method,
+      rule: rule.name,
+      judgement: {
+        ...judge(rule, test, d),
+        costInterval: bootstrapByStudent(test, cost, resamples, seed),
+        precisionInterval: bootstrapByStudent(test, precisionOf(d), resamples, seed),
+      },
+    };
+    if (i && bktCost) row.bktSaves = { estimate: cost(all) - bktCost(all), interval: bootstrapByStudent(test, (idx) => cost(idx) - bktCost(idx), resamples, seed) };
     return row;
   });
 }

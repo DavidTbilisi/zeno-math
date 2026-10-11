@@ -99,12 +99,18 @@ Stated before the results are computed, with the test for each:
   AUC, calibration. H1 is about prediction, not mastery decisions: it is the part of the question real data can
   settle, and the thesis says so rather than letting it stand for the whole question.
 - **H2, mastery decisions where the truth is known.** In the worlds that are not BKT (elo, irt2pl, and bkt with
-  forgetting), at the practice cost of the streak rule with N = 3 (its mean opportunities until mastery is declared
-  in that world), BKT's declarations are right (the skill is truly known when declared) more often than EMA's and
-  the streak rule's. BKT's and EMA's thresholds are set on training learners to give that cost. Reported per world
-  as an estimate with its interval over simulated learners, never pooled across worlds. The full trade-off curves
-  over thresholds are description; where they cross, the thesis says so. The plain bkt world is not part of H2:
-  Proposition 2 settles it, and there it checks fitting.
+  forgetting), BKT needs fewer answers than EMA and the streak rule before its declarations are right (the skill is
+  truly known when declared) at least 90 % of the time. Each method's threshold is the cheapest one that meets
+  that standard on training learners (BKT and EMA θ from 0.5 to 0.9999, streak N from 1 to the practice length);
+  the comparison is the mean answers each then needs on the held-out learners, a learner never declared counting
+  the whole practice. A method that meets the standard at no threshold is reported as never meeting it, which
+  counts against it. Reported per world and per learning rate (0.02 and 0.1, the two of the earlier simulation
+  study), as the difference in answers with its interval over simulated learners, never pooled. The plain bkt world
+  is not part of H2: Proposition 2 settles it, and there it checks fitting.
+  The comparison was first set at the streak rule's cost. A first simulated run showed that in the gradual worlds
+  almost no learner has truly mastered a skill after that many answers, so every rule was mostly wrong there and the
+  comparison could not tell them apart; it was moved to equal accuracy, which has a meaning in every world. The
+  equal-cost comparison and the full trade-off curves are kept as description.
 - **H3, mastery decisions on real data (exploratory).** How often BKT and the streak rule agree on ASSISTments, and
   the share right on the next answers after each method declares mastery. Exploratory because the data were
   collected under a streak policy (see threats).
@@ -185,9 +191,10 @@ Stated before the results are computed, with the test for each:
 - **Mastery decisions (H2):** for each learner and skill, the opportunity at which each method first declares
   mastery. Measures: the share of declarations that are true (the learner knows the skill right after the
   declaring answer, which is the moment BKT's P(known) refers to), the share of truly learnt skills never declared,
-  and the mean opportunities to declaration. The comparison H2 decides on is at the streak-3 cost, as stated
-  there. Around it, sweep each method's threshold (BKT θ from 0.80 to 0.99, EMA θ likewise, streak N from 2 to 6)
-  and draw cost against accuracy as description (`src/model/mastery.ts`, `npm run mastery`).
+  and the mean opportunities to declaration. The comparison H2 decides on is at equal accuracy, as stated there
+  (`compareAtPrecision`). Around it, as description, the three methods at the streak-3 cost, and each method's
+  threshold swept (BKT θ from 0.80 to 0.99, EMA θ likewise, streak N from 2 to 6) with cost drawn against accuracy
+  (`src/model/mastery.ts`, `npm run mastery`).
 - **Mastery on real data (H3):** agreement between methods; the share right on the next one to three answers on the
   skill after each declaration, where such answers exist.
 
@@ -202,9 +209,10 @@ One short section: the learner model, the policy's mastery threshold and why the
 - **4.2 Prediction** (H1): the table for BKT, EMA and the reference rows (Elo, PFA, counting baselines); the
   bootstrap interval for BKT − EMA; the calibration plot; the result across split seeds; the fitted BKT parameters
   (how many skills hit the grid's edges or the 0.3 bound).
-- **4.3 Mastery decisions with known truth** (H2): per world, the precision of each method at the streak-3 cost
-  (the H2 comparison); one trade-off plot per world; the table at the usual settings (BKT 0.95, streak 3); in the
-  plain bkt world, fitted BKT's precision against the bound of Proposition 2.
+- **4.3 Mastery decisions with known truth** (H2): per world and learning rate, the answers each method needs to be
+  right 90 % of the time, or that it never is (the H2 comparison); the precision of each at the streak-3 cost; one
+  trade-off plot per world; the table at the usual settings (BKT 0.95, streak 3); in the plain bkt world, fitted
+  BKT's precision against the bound of Proposition 2.
 - **4.4 Mastery decisions on ASSISTments** (H3): agreement; accuracy after declaration; how many sequences end
   before any method can declare.
 
@@ -219,6 +227,11 @@ One short section: the learner model, the policy's mastery threshold and why the
   in a row, so sequences stop at the streak rule's own decision: the real data cannot show the streak rule declaring
   too early, and post-mastery answers are scarce. This is why H3 is exploratory and the known-truth comparison is
   simulated.
+- **Slow learning leaves little to decide.** At the slower learning rate few simulated learners in the gradual
+  worlds master a skill within the 30 questions, so a method can meet the 90 % standard only by declaring almost
+  nobody; the table shows the share declared, and such a result says little about which method is better.
+- **The H2 comparison was revised after a first simulated run** (see H2). The revision chose a standard that has a
+  meaning in every world, not the method it favours, and the equal-cost comparison is still reported.
 - **Home advantage.** The bkt world is built on BKT's assumptions, and Proposition 2 shows BKT cannot lose there
   except through fitting; only the other worlds test it. They are still worlds of our making: a result in them
   holds as far as their way of learning is believed, which is why each is reported on its own.

@@ -5,8 +5,8 @@ import assert from "node:assert/strict";
 import type { Observation } from "../src/model/elo.ts";
 import { bktStep, EmaModel, emaStep, fitEma, type BktParams } from "../src/model/evaluate.ts";
 import {
-  agreement, bktRule, bootstrapByStudent, compareAtCost, decide, emaRule, fitRules, judge, practicesFrom, precisionOf, rightAfter, simulatePractice,
-  streakRule, thresholdForCost, tradeOff, type Practice,
+  agreement, bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules, judge,
+  PRECISION_TARGET, practicesFrom, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff, type Practice,
 } from "../src/model/mastery.ts";
 import { rng } from "../src/model/simulate.ts";
 
@@ -173,4 +173,40 @@ test("H2 at equal cost: thresholds set on training learners, all three judged on
   assert.equal(curve.length, 20 + 20 + 5);
   const bkt = curve.filter((c) => c.method === "BKT");
   for (let i = 1; i < bkt.length; i++) assert.ok(bkt[i].cost >= bkt[i - 1].cost, "a higher θ never costs less");
+});
+
+test("the cheapest rule right often enough is chosen, and none when no rule is", () => {
+  const practices: Practice[] = [
+    { student: "a", skill: "k", answers: seq("1111"), known: seq("0111") }, // streak 1 declares too early here
+    { student: "b", skill: "k", answers: seq("1100"), known: seq("0000") }, // streak 2 wrongly, streak 3 never
+    { student: "c", skill: "k", answers: seq("0111"), known: seq("0011") },
+  ];
+  const streaks = [1, 2, 3, 4].map(streakRule);
+  // Precision: streak 1 none of 3, streak 2 2/3 (a at 2 right, b at 2 wrong, c at 3 right), streak 3 all (a at 3, c at 4).
+  assert.equal(cheapestAtPrecision(streaks, practices, 0.6)?.name, "streak 2");
+  assert.equal(cheapestAtPrecision(streaks, practices, 0.9)?.name, "streak 3");
+  assert.equal(cheapestAtPrecision([streakRule(1)], practices, 0.9), null);
+  assert.ok(FINE_THRESHOLDS.includes(0.5) && FINE_THRESHOLDS.includes(0.99) && FINE_THRESHOLDS.at(-1) === 0.9999);
+  for (let i = 1; i < FINE_THRESHOLDS.length; i++) assert.ok(FINE_THRESHOLDS[i] > FINE_THRESHOLDS[i - 1]);
+});
+
+test("H2 at equal precision: each method's cheapest threshold right often enough on training learners, judged on the rest", () => {
+  const practices = simulatePractice({ world: "bkt", students: 120, skills: ["linear", "expand"], length: 20, seed: 4 });
+  const train = practices.filter((p) => Number(p.student.slice(3)) % 5);
+  const held = practices.filter((p) => !(Number(p.student.slice(3)) % 5));
+  const fitted = fitRules(train);
+  const rows = compareAtPrecision(train, held, fitted, PRECISION_TARGET, 200, 1);
+  assert.deepEqual(rows.map((r) => r.method), ["BKT", "EMA", "streak"]);
+  assert.equal(rows[0].bktSaves, undefined);
+  for (const r of rows) {
+    const j = r.judgement!;
+    assert.ok(j.costInterval[0] <= j.cost && j.cost <= j.costInterval[1], `${r.rule}: ${j.cost} in ${j.costInterval}`);
+    assert.ok(j.precisionInterval[0] <= j.precision && j.precision <= j.precisionInterval[1]);
+  }
+  for (const r of rows.slice(1)) close(r.bktSaves!.estimate, r.judgement!.cost - rows[0].judgement!.cost);
+  const streak = Number(rows[2].rule!.split(" ")[1]);
+  assert.ok(judge(streakRule(streak), train).precision >= PRECISION_TARGET, "right often enough where it was chosen");
+  if (streak > 1) assert.ok(judge(streakRule(streak - 1), train).precision < PRECISION_TARGET, "and the one below it was not");
+  // A standard no rule can meet: every method is reported as never reaching it.
+  assert.deepEqual(compareAtPrecision(train, held, fitted, 1.01, 50, 1), [{ method: "BKT", rule: null }, { method: "EMA", rule: null }, { method: "streak", rule: null }]);
 });

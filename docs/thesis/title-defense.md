@@ -26,8 +26,8 @@ a special case of it, and I can prove that BKT, in a world that works the way BK
 often as its threshold says. Those two parts are mathematics. The rest is evidence, and I have three hypotheses. First, on real students' answers, BKT predicts the next answer better than the moving average,
 measured by log-loss on students the models were not fitted on; this is the one formal test, and I have fixed in
 advance how small a difference counts as none. Second, in simulation, where I know whether each simulated student
-has really learnt the skill, BKT's mastery decisions are right more often at the same amount of practice as three
-in a row, in worlds where students do not learn the way BKT assumes. Third, exploratory: how often the two methods
+has really learnt the skill, BKT needs less practice than the simpler rules before its mastery decisions are right
+nine times in ten, in worlds where students do not learn the way BKT assumes. Third, exploratory: how often the two methods
 agree on real data.
 
 The real data are the ASSISTments 2009–2010 data set, a public, anonymised record of several thousand US
