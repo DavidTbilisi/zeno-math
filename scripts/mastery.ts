@@ -1,7 +1,8 @@
 // Mastery decisions (docs/thesis/outline.md, H2 and H3). On simulated learners, whose true state is recorded after
 // every answer, H2: the answers BKT, EMA and the streak rule each need for their declarations to be right at least 90 %
 // of the time, with thresholds set on training learners and judged on the rest, in each world and at each learning
-// rate separately; then, as description, the three at the streak rule's cost, and the trade-off curves. On logged
+// rate separately; then, as description, the three at the streak rule's cost, the trade-off curves, and how well each
+// method's score after every answer matches the truth (its calibration). On logged
 // answers, where the truth is unknown, H3: how often the rules agree, and how the students did after each declared
 // mastery.
 //
@@ -11,6 +12,7 @@
 //   --skills algebra,average   --learn-rates 0.02,0.1   --target 0.9   --forget 0.02   --mastered-at 0.9
 //   --beyond              search BKT and EMA thresholds above 0.9999 too, up to 1 − 10^−15 (a check after the results)
 //   --curves curves.csv   every method's cost and precision at every threshold, per world, for a plot
+//   --calibration bins.csv   each score's calibration bins against the truth, per world, for a plot
 //   --json                machine-readable output
 import { readFileSync, writeFileSync } from "node:fs";
 import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
@@ -18,9 +20,9 @@ import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import {
   agreement, ALL_SIM_SKILLS, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules,
-  judge, MASTERED_AT, practicesFrom,
+  judge, MASTERED_AT, masteryCalibration, practicesFrom,
   PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff,
-  type AtCost, type AtPrecision, type CurvePoint, type PracticeParams,
+  type AtCost, type AtPrecision, type Calibration, type CurvePoint, type PracticeParams,
 } from "../src/model/mastery.ts";
 import { isSimSkill, SIM_SKILLS } from "../src/model/simulate.ts";
 
@@ -101,7 +103,7 @@ function simulated() {
   const chosen = args.includes("--worlds") ? opt("--worlds", "").split(",").map((w) => (w === "bkt-forget" ? "bkt, forgetting" : w)) : Object.keys(WORLDS);
   if (chosen.some((w) => !WORLDS[w])) fail("worlds are bkt, bkt-forget, elo, irt2pl");
 
-  type Result = { world: string; learnRate: number; knownAtStart: number; knownAtEnd: number; ema: { alpha: number; start: number }; atPrecision: AtPrecision[]; atCost: AtCost[]; usual: AtCost; curve: CurvePoint[] };
+  type Result = { world: string; learnRate: number; knownAtStart: number; knownAtEnd: number; ema: { alpha: number; start: number }; atPrecision: AtPrecision[]; atCost: AtCost[]; usual: AtCost; curve: CurvePoint[]; calibration: Calibration[] };
   const results: Result[] = [];
   for (const learnRate of rates)
     for (const world of chosen) {
@@ -123,6 +125,7 @@ function simulated() {
         atCost: compareAtCost(train, test, fitted, streak, resamples, seed),
         usual: { ...judge(rule, test, decisions), threshold: 0.95, interval: bootstrapByStudent(test, precisionOf(decisions), resamples, seed) },
         curve: tradeOff(fitted, test),
+        calibration: masteryCalibration(fitted, test),
       });
     }
 
@@ -132,6 +135,14 @@ function simulated() {
     for (const r of results)
       for (const c of r.curve) lines.push([JSON.stringify(r.world), r.learnRate, c.method, c.threshold, c.cost.toFixed(4), c.declared.toFixed(4), c.precision.toFixed(4), c.missed.toFixed(4)].join(","));
     writeFileSync(curves, lines.join("\n") + "\n");
+  }
+  const bins = opt("--calibration", "");
+  if (bins) {
+    const lines = ["world,learn_rate,score,from,to,n,mean_score,share_mastered"];
+    for (const r of results)
+      for (const c of r.calibration)
+        for (const b of c.bins) lines.push([JSON.stringify(r.world), r.learnRate, JSON.stringify(c.score), b.from.toFixed(1), b.to.toFixed(1), b.n, b.predicted.toFixed(4), b.observed.toFixed(4)].join(","));
+    writeFileSync(bins, lines.join("\n") + "\n");
   }
   if (json) return console.log(JSON.stringify({ ...base, learnRates: rates, target, forget, testShare, streak, resamples, highestThreshold: thresholds.at(-1), results }, null, 2));
 
@@ -154,6 +165,13 @@ function simulated() {
     console.log(`  at the cost of ${streakRule(streak).name} (description):`);
     for (const a of [...r.atCost, r.usual])
       console.log(`    ${a.rule.padEnd(16)}${a.cost.toFixed(2).padStart(7)} answers, ${pct(a.precision)} right ${interval(a.interval)}, ${pct(a.declared)} declared`);
+    console.log("  calibration against the truth after every answer (description):");
+    for (const c of r.calibration) {
+      const top = c.bins.at(-1)!;
+      const high = top.n ? `mean ${top.predicted.toFixed(3)}, ${pct(top.observed)} mastered, ${top.n} answers` : "none";
+      console.log(`    ${c.score.padEnd(14)} Brier ${c.brier.toFixed(3)}; scores of 0.9 and above: ${high}`);
+    }
   }
   if (curves) console.log(`\ntrade-off curves written to ${curves}`);
+  if (bins) console.log(`calibration bins written to ${bins}`);
 }

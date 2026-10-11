@@ -11,7 +11,7 @@
 // nothing. A practice never declared costs its full length, as a learner who is never let go practises to the end.
 import { AREAS, type SkillId } from "../math/practiceSkills.ts";
 import type { Level, Observation } from "./elo.ts";
-import { bktStep, bootstrapGroups, emaStep, fitBkt, fitEma, type BktParams, type EmaParams } from "./evaluate.ts";
+import { bktStep, bootstrapGroups, calibration, emaStep, fitBkt, fitEma, rmse, type Bin, type BktParams, type EmaParams, type Prediction } from "./evaluate.ts";
 import { DEFAULT_SIM, makeWorld, SIM_SKILLS, type SimParams, type SimLearner } from "./simulate.ts";
 
 /** One student's answers on one skill in order (1 right, 0 wrong), and in simulations whether they knew it after each. */
@@ -312,6 +312,37 @@ export function tradeOff(fitted: Fitted, practices: readonly Practice[]): CurveP
     ...CURVE_THRESHOLDS.map((t): CurvePoint => ({ method: "EMA", threshold: t, ...judge(emaRule(fitted.ema, t), practices) })),
     ...CURVE_STREAKS.map((n): CurvePoint => ({ method: "streak", threshold: n, ...judge(streakRule(n), practices) })),
   ];
+}
+
+// ---------- calibration against the truth ----------
+
+export type Calibration = { score: "BKT P(known)" | "BKT P(right)" | "EMA"; n: number; brier: number; bins: Bin[] };
+/**
+ * How well each method's score after every answer matches the truth recorded at that moment, mastered or not: BKT's
+ * P(known), BKT's chance of a right answer on the next question, P(known)(1 − slip) + (1 − P(known))guess, and the
+ * EMA's score, each as its rule reads it. In the bkt worlds the truth is the known state BKT's P(known) is about; in the
+ * gradual worlds it is the true chance of a right answer reaching masteredAt, the scale of the other two scores. A score
+ * that is calibrated has, in each bin, a share mastered close to its mean; the Brier score is the mean squared gap
+ * between score and truth over every answer.
+ */
+export function masteryCalibration(fitted: Fitted, practices: readonly Practice[]): Calibration[] {
+  const known: Prediction[] = [], right: Prediction[] = [], ema: Prediction[] = [];
+  for (const p of practices) {
+    if (!p.known) continue;
+    const b = fitted.bkt(p.skill);
+    let l = b.init, e = fitted.ema.start;
+    for (let i = 0; i < p.answers.length; i++) {
+      const correct = p.answers[i] === 1, mastered = p.known[i] === 1;
+      l = bktStep(l, b, correct).known;
+      e = emaStep(e, fitted.ema.alpha, correct);
+      known.push({ p: l, correct: mastered });
+      right.push({ p: l * (1 - b.slip) + (1 - l) * b.guess, correct: mastered });
+      ema.push({ p: e, correct: mastered });
+    }
+  }
+  return ([["BKT P(known)", known], ["BKT P(right)", right], ["EMA", ema]] as const).map(([score, ps]) => ({
+    score, n: ps.length, brier: ps.length ? rmse(ps) ** 2 : NaN, bins: calibration(ps),
+  }));
 }
 
 // ---------- real answers, where the truth is unknown (H3) ----------

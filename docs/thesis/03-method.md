@@ -243,8 +243,11 @@ Around this comparison, as description, the three methods are also compared at t
 each get the threshold at which they need, on the training students, as many answers as the streak rule with $N = 3$,
 and their precision is compared. BKT at its usual threshold of 0.95 is reported too; in the plain BKT world its
 precision should be at least 0.95 by Proposition 2, and any shortfall is the cost of fitting. Finally, each method's
-threshold is swept (BKT and EMA from 0.80 to 0.99, the streak rule from 2 to 6) to draw the trade-off between cost
-and precision in each world.
+threshold is swept (BKT and EMA from 0.80 to 0.99, the streak rule from 2 to 6) to draw the trade-off between cost and
+precision in each world. After the results, the calibration of the scores the methods decide on was added as
+description: after every answer of every held-out practice, BKT's $P(L)$, BKT's chance of a right answer and EMA's
+score are set against whether the student had mastered the skill at that moment, with the Brier score and ten
+calibration bins for each (`masteryCalibration` in `src/model/mastery.ts`).
 
 ### Mastery decisions on real data (H3)
 

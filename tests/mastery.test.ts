@@ -6,7 +6,7 @@ import type { Observation } from "../src/model/elo.ts";
 import { bktStep, EmaModel, emaStep, fitEma, type BktParams } from "../src/model/evaluate.ts";
 import {
   agreement, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules, judge,
-  PRECISION_TARGET, practicesFrom, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff, type Practice,
+  masteryCalibration, PRECISION_TARGET, practicesFrom, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff, type Practice,
 } from "../src/model/mastery.ts";
 import { rng } from "../src/model/simulate.ts";
 
@@ -220,4 +220,33 @@ test("H2 at equal precision: each method's cheapest threshold right often enough
   assert.deepEqual(compareAtPrecision(train, held, fitted, PRECISION_TARGET, 200, 1, BEYOND_THRESHOLDS).map((r) => r.rule), rows.map((r) => r.rule));
   // A standard no rule can meet: every method is reported as never reaching it.
   assert.deepEqual(compareAtPrecision(train, held, fitted, 1.01, 50, 1), [{ method: "BKT", rule: null }, { method: "EMA", rule: null }, { method: "streak", rule: null }]);
+});
+
+test("calibration scores every answer against the truth at that moment, each score as its rule reads it", () => {
+  const b: BktParams = { init: 0.3, learn: 0.1, guess: 0.2, slip: 0.1 };
+  const fitted = { bkt: () => b, ema: { alpha: 0.5, start: 0.5 } };
+  const practice: Practice = { student: "s", skill: "k", answers: seq("101"), known: seq("001") };
+  const [known, right, ema] = masteryCalibration(fitted, [practice, { student: "r", skill: "k", answers: seq("11") }]);
+  assert.deepEqual([known.score, right.score, ema.score], ["BKT P(known)", "BKT P(right)", "EMA"]);
+  // Only the practice with a truth counts, one score per answer.
+  for (const c of [known, right, ema]) assert.equal(c.n, 3);
+  let l = b.init, e = 0.5;
+  const ls: number[] = [], es: number[] = [];
+  for (const a of [1, 0, 1]) (ls.push((l = bktStep(l, b, a === 1).known)), es.push((e = emaStep(e, 0.5, a === 1))));
+  const truth = [0, 0, 1];
+  const brier = (xs: number[]) => xs.reduce((s, x, i) => s + (x - truth[i]) ** 2, 0) / 3;
+  close(known.brier, brier(ls));
+  close(right.brier, brier(ls.map((x) => x * 0.9 + (1 - x) * 0.2)));
+  close(ema.brier, brier(es));
+  // The bins hold every answer, and the last answer's EMA of 0.6875 is in the bin from 0.6, all of it mastered.
+  assert.equal(ema.bins.reduce((s, x) => s + x.n, 0), 3);
+  assert.deepEqual([ema.bins[6].n, ema.bins[6].observed], [1, 1]);
+});
+
+test("BKT's chance of a right answer never passes 1 − slip, whatever the answers", () => {
+  const b: BktParams = { init: 0.5, learn: 0.3, guess: 0.25, slip: 0.2 };
+  const practice: Practice = { student: "s", skill: "k", answers: new Uint8Array(30).fill(1), known: new Uint8Array(30).fill(1) };
+  const [, right] = masteryCalibration({ bkt: () => b, ema: { alpha: 0.1, start: 0.5 } }, [practice]);
+  assert.ok(right.bins.every((x) => !x.n || x.predicted <= 0.8 + 1e-12));
+  assert.equal(right.bins[9].n, 0);
 });
