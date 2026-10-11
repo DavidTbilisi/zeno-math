@@ -5,6 +5,7 @@
 // "70 %" comes true about 70 % of the time. Two baselines show what the model adds over simply counting.
 import { ALL_SKILLS, type SkillId } from "../math/practiceSkills.ts";
 import type { Level, Observation } from "./elo.ts";
+import { rng } from "./random.ts";
 
 /**
  * A model that predicts each answer before learning from it. One with fit() learns its parameters from training
@@ -98,9 +99,117 @@ export const evaluate = (model: Predictor, observations: readonly Observation[])
  * students' answers one by one, still learning from each after predicting it, as it would in a class.
  */
 export function evaluateHeldOut(model: Predictor, train: readonly Observation[], test: readonly Observation[]): Metrics {
+  return metrics(model.name, heldOutPredictions(model, train, test));
+}
+export type StudentPrediction = Prediction & { student: string };
+/** The held-out replay's predictions, each with the student it was for: what a paired comparison needs. */
+export function heldOutPredictions(model: Predictor, train: readonly Observation[], test: readonly Observation[]): StudentPrediction[] {
   if (model.fit) model.fit(train);
   else replay(model, train);
-  return evaluate(model, test);
+  return replay(model, test).map((p, i) => ({ ...p, student: test[i].student }));
+}
+
+// ---------- H1: is one model's log-loss lower than another's on the same held-out answers? ----------
+
+/**
+ * A 95 % percentile interval for a statistic, by the bootstrap over whole groups (students, or classes): each resample
+ * draws as many groups as there are, with replacement, and the statistic gets the indices drawn, once per draw.
+ * Resamples whose statistic is NaN are left out.
+ */
+export function bootstrapGroups(groups: number, statistic: (drawn: readonly number[]) => number, resamples: number, seed: number): [number, number] {
+  const r = rng(seed);
+  const stats: number[] = [];
+  const drawn = new Array<number>(groups);
+  for (let b = 0; b < resamples; b++) {
+    for (let g = 0; g < groups; g++) drawn[g] = Math.floor(r.next() * groups);
+    const s = statistic(drawn);
+    if (!Number.isNaN(s)) stats.push(s);
+  }
+  stats.sort((a, b) => a - b);
+  const at = (q: number) => stats[Math.min(stats.length - 1, Math.floor(q * stats.length))] ?? NaN;
+  return [at(0.025), at(0.975)];
+}
+
+/** What H1's paired test says, by the rule fixed before any results (docs/thesis/outline.md, H1). */
+export type Verdict = "first better" | "second better" | "real but negligible" | "no practical difference" | "inconclusive";
+/**
+ * An interval that excludes zero is a real difference: one model is better if the estimate is at least the smallest
+ * difference that counts, and the difference is negligible if not. An interval that holds zero but lies wholly within
+ * ± that smallest difference shows no practical difference; anything wider is inconclusive.
+ */
+export function verdict(difference: number, [lo, hi]: [number, number], smallest: number): Verdict {
+  if (lo > 0 || hi < 0) return Math.abs(difference) < smallest ? "real but negligible" : difference < 0 ? "first better" : "second better";
+  return lo > -smallest && hi < smallest ? "no practical difference" : "inconclusive";
+}
+
+export type PairedTest = {
+  first: string;
+  second: string;
+  answers: number;
+  students: number;
+  /** The units resampled: students, unless a grouping (such as classes) is given. */
+  groups: number;
+  firstLogLoss: number;
+  secondLogLoss: number;
+  /** First minus second, in mean log-loss per answer: below zero, the first model predicts better. */
+  difference: number;
+  interval: [number, number];
+  smallest: number;
+  verdict: Verdict;
+};
+/** The smallest difference in mean log-loss per answer that H1 counts, fixed before any results. */
+export const SMALLEST_DIFFERENCE = 0.005;
+const answerLoss = ({ p, correct }: Prediction) => {
+  const q = Math.min(1 - EPS, Math.max(EPS, p));
+  return -Math.log(correct ? q : 1 - q);
+};
+/**
+ * The paired bootstrap of H1: two models' predictions of the same held-out answers, the difference in their mean
+ * log-loss per answer, and its 95 % interval from resampling whole students (or whatever groupOf puts students in,
+ * such as classes, for the robustness check), since one student's answers are not independent of each other.
+ */
+export function pairedLogLoss(
+  first: { name: string; predictions: readonly StudentPrediction[] },
+  second: { name: string; predictions: readonly StudentPrediction[] },
+  { resamples = 10000, seed = 1, smallest = SMALLEST_DIFFERENCE, groupOf = (student: string) => student }: { resamples?: number; seed?: number; smallest?: number; groupOf?: (student: string) => string } = {},
+): PairedTest {
+  const a = first.predictions;
+  const b = second.predictions;
+  if (a.length !== b.length || a.some((p, i) => p.student !== b[i].student || p.correct !== b[i].correct)) throw new Error("the two models must predict the same answers in the same order");
+  const index = new Map<string, number>();
+  const sums: number[] = [];
+  const counts: number[] = [];
+  let lossA = 0, lossB = 0;
+  a.forEach((p, i) => {
+    const g = groupOf(p.student);
+    let k = index.get(g);
+    if (k === undefined) index.set(g, (k = sums.length)), sums.push(0), counts.push(0);
+    const la = answerLoss(p);
+    const lb = answerLoss(b[i]);
+    (lossA += la), (lossB += lb);
+    sums[k] += la - lb;
+    counts[k]++;
+  });
+  const meanOver = (drawn: readonly number[]) => {
+    let s = 0, n = 0;
+    for (const g of drawn) (s += sums[g]), (n += counts[g]);
+    return n ? s / n : NaN;
+  };
+  const difference = (lossA - lossB) / a.length;
+  const interval = bootstrapGroups(sums.length, meanOver, resamples, seed);
+  return {
+    first: first.name,
+    second: second.name,
+    answers: a.length,
+    students: new Set(a.map((p) => p.student)).size,
+    groups: sums.length,
+    firstLogLoss: lossA / a.length,
+    secondLogLoss: lossB / a.length,
+    difference,
+    interval,
+    smallest,
+    verdict: verdict(difference, interval, smallest),
+  };
 }
 
 /** FNV-1a of a string, mixed with a seed: which side of the split a student falls on, the same on every run. */

@@ -1,10 +1,14 @@
 // Trying the learner model on real data: the streaming CSV reader, the ASSISTments importer, the student-wise split,
-// the two standard baselines (PFA and BKT) and the Elo model with a data set's own grouping of skills.
+// the two standard baselines (PFA and BKT) and the Elo model with a data set's own grouping of skills, and H1's paired
+// bootstrap of BKT against the moving average.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { assistmentsTopic, csvRecords, fromAssistments, fromFile, toFile } from "../src/model/datasets.ts";
 import { EloModel, type Observation } from "../src/model/elo.ts";
-import { BktModel, bktStep, evaluateHeldOut, fitBkt, fitLogistic, globalRate, PfaModel, solve, splitByStudent } from "../src/model/evaluate.ts";
+import {
+  BktModel, bktStep, bootstrapGroups, EmaModel, evaluateHeldOut, fitBkt, fitLogistic, globalRate, heldOutPredictions, pairedLogLoss, PfaModel, solve, splitByStudent,
+  verdict, type StudentPrediction,
+} from "../src/model/evaluate.ts";
 import { rng } from "../src/model/simulate.ts";
 
 const close = (a: number, b: number, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol, `${a} ≉ ${b}`);
@@ -162,4 +166,63 @@ test("held-out scoring warms up a learning model and fits a fitted one, then sco
     assert.equal(r.n, held.length);
     assert.ok(r.logLoss < Math.log(2), `${r.name} does better than a coin (${r.logLoss})`);
   }
+});
+
+test("H1's verdict follows the rule fixed in advance", () => {
+  assert.equal(verdict(-0.02, [-0.03, -0.01], 0.005), "first better");
+  assert.equal(verdict(0.02, [0.01, 0.03], 0.005), "second better");
+  assert.equal(verdict(-0.003, [-0.004, -0.002], 0.005), "real but negligible");
+  assert.equal(verdict(0.001, [-0.002, 0.004], 0.005), "no practical difference");
+  assert.equal(verdict(-0.004, [-0.01, 0.002], 0.005), "inconclusive");
+});
+
+test("the group bootstrap draws as many groups as there are, the same on every run", () => {
+  let sizes = true;
+  const mean = (drawn: readonly number[]) => ((sizes &&= drawn.length === 50), drawn.reduce((s, g) => s + g, 0) / drawn.length);
+  const [lo, hi] = bootstrapGroups(50, mean, 2000, 3);
+  assert.ok(sizes);
+  assert.ok(lo < 24.5 && 24.5 < hi && hi - lo < 20, `[${lo}, ${hi}]`);
+  assert.deepEqual(bootstrapGroups(50, mean, 2000, 3), [lo, hi]);
+  assert.deepEqual(bootstrapGroups(5, () => NaN, 10, 1).map(Number.isNaN), [true, true], "no usable resample, no interval");
+});
+
+test("the paired test takes the difference per answer, resamples students or their classes, and needs the same answers", () => {
+  const ps = (student: string, p: number, correct: boolean): StudentPrediction => ({ student, p, correct });
+  const a = [ps("s1", 0.8, true), ps("s1", 0.6, false), ps("s2", 0.9, true)];
+  const b = [ps("s1", 0.5, true), ps("s1", 0.5, false), ps("s2", 0.5, true)];
+  const r = pairedLogLoss({ name: "A", predictions: a }, { name: "B", predictions: b }, { resamples: 500 });
+  const lossA = -(Math.log(0.8) + Math.log(0.4) + Math.log(0.9)) / 3;
+  close(r.firstLogLoss, lossA);
+  close(r.secondLogLoss, Math.log(2));
+  close(r.difference, lossA - Math.log(2));
+  assert.deepEqual([r.answers, r.students, r.groups], [3, 2, 2]);
+  assert.ok(r.interval[0] <= r.difference && r.difference <= r.interval[1]);
+  // One class holding both students: every resample is the whole class, so the interval is the estimate.
+  const oneClass = pairedLogLoss({ name: "A", predictions: a }, { name: "B", predictions: b }, { resamples: 200, groupOf: () => "class" });
+  assert.equal(oneClass.groups, 1);
+  for (const x of oneClass.interval) close(x, r.difference);
+  assert.throws(() => pairedLogLoss({ name: "A", predictions: a }, { name: "B", predictions: b.slice(1) }), /same answers/);
+  assert.throws(() => pairedLogLoss({ name: "A", predictions: a }, { name: "B", predictions: [b[0], b[1], ps("s3", 0.5, true)] }), /same answers/);
+});
+
+test("H1 on answers BKT's way of learning made: BKT better than the moving average, and a model level with itself", () => {
+  const truth = { init: 0.2, learn: 0.25, guess: 0.15, slip: 0.05 };
+  const r = rng(13);
+  const observations: Observation[] = [];
+  for (let s = 0; s < 1500; s++) {
+    let known = r.next() < truth.init;
+    for (let i = 0; i < 10; i++) {
+      observations.push({ student: `s${s}`, skill: "k", level: 2, correct: known ? r.next() > truth.slip : r.next() < truth.guess });
+      if (!known && r.next() < truth.learn) known = true;
+    }
+  }
+  const { train, test: held } = splitByStudent(observations, 0.2, 1);
+  const bkt = heldOutPredictions(new BktModel(), train, held);
+  assert.deepEqual(bkt.map((p) => p.student), held.map((o) => o.student));
+  close(evaluateHeldOut(new BktModel(), train, held).logLoss, pairedLogLoss({ name: "BKT", predictions: bkt }, { name: "BKT", predictions: bkt }, { resamples: 100 }).firstLogLoss);
+  const ema = heldOutPredictions(new EmaModel(), train, held);
+  const h1 = pairedLogLoss({ name: "BKT", predictions: bkt }, { name: "EMA", predictions: ema }, { resamples: 2000 });
+  assert.equal(h1.verdict, "first better", `${h1.difference} in ${h1.interval}`);
+  const same = pairedLogLoss({ name: "BKT", predictions: bkt }, { name: "BKT", predictions: bkt }, { resamples: 200 });
+  assert.deepEqual([same.difference, same.interval, same.verdict], [0, [0, 0], "no practical difference"]);
 });

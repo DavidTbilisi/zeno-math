@@ -21,6 +21,9 @@ import { EloModel, sigmoid, type Level, type Observation } from "./elo.ts";
 import { inCurriculumOrder, PREREQUISITES } from "./curriculum.ts";
 import { choose, TARGET, type Policy } from "./policy.ts";
 import { testItems } from "./testForms.ts";
+import { rng } from "./random.ts";
+
+export { rng };
 
 /**
  * The skills simulated learners have: Zeno's skills as they were when the results in docs/results were made. The world
@@ -71,21 +74,6 @@ const GUESS: Record<Level, number> = { 1: 0.3, 2: 0.2, 3: 0.1 };
 const SLIP: Record<Level, number> = { 1: 0.05, 2: 0.1, 3: 0.2 };
 /** BKT world: the chance that one question teaches an unknown skill, for a learning rate in ability units (0.02 → 5 %). */
 const LEARN_PER_RATE = 2.5;
-
-/** mulberry32, with normal draws by Box–Muller. */
-export function rng(seed: number) {
-  let a = seed >>> 0;
-  const next = () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  const normal = (sd = 1) => sd * Math.sqrt(-2 * Math.log(1 - next())) * Math.cos(2 * Math.PI * next());
-  const pick = <T>(items: readonly T[]) => items[Math.floor(next() * items.length)];
-  return { next, normal, pick };
-}
 
 /** ability: the learner's true ability on each skill; known: in the BKT world, whether they know it. */
 export type SimLearner = { id: string; ability: Map<SkillId, number>; known: Map<SkillId, boolean> };

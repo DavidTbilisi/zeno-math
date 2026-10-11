@@ -9,8 +9,8 @@
 // full length, as a learner who is never let go practises to the end.
 import { AREAS, type SkillId } from "../math/practiceSkills.ts";
 import type { Level, Observation } from "./elo.ts";
-import { bktStep, emaStep, fitBkt, fitEma, type BktParams, type EmaParams } from "./evaluate.ts";
-import { DEFAULT_SIM, makeWorld, rng, SIM_SKILLS, type SimParams, type SimLearner } from "./simulate.ts";
+import { bktStep, bootstrapGroups, emaStep, fitBkt, fitEma, type BktParams, type EmaParams } from "./evaluate.ts";
+import { DEFAULT_SIM, makeWorld, SIM_SKILLS, type SimParams, type SimLearner } from "./simulate.ts";
 
 /** One student's answers on one skill in order (1 right, 0 wrong), and in simulations whether they knew it after each. */
 export type Practice = { student: string; skill: string; answers: Uint8Array; known?: Uint8Array };
@@ -173,17 +173,7 @@ export function bootstrapByStudent(practices: readonly { student: string }[], st
   const byStudent = new Map<string, number[]>();
   practices.forEach((p, i) => (byStudent.get(p.student) ?? byStudent.set(p.student, []).get(p.student)!).push(i));
   const groups = [...byStudent.values()];
-  const r = rng(seed);
-  const stats: number[] = [];
-  for (let b = 0; b < resamples; b++) {
-    const indices: number[] = [];
-    for (let g = 0; g < groups.length; g++) for (const i of groups[Math.floor(r.next() * groups.length)]) indices.push(i);
-    const s = statistic(indices);
-    if (!Number.isNaN(s)) stats.push(s);
-  }
-  stats.sort((a, b) => a - b);
-  const at = (q: number) => stats[Math.min(stats.length - 1, Math.floor(q * stats.length))] ?? NaN;
-  return [at(0.025), at(0.975)];
+  return bootstrapGroups(groups.length, (drawn) => statistic(drawn.flatMap((g) => groups[g])), resamples, seed);
 }
 /** The precision of decisions over the practices with the given indices (a statistic for bootstrapByStudent). */
 export const precisionOf = (decisions: readonly Decision[]) => (indices: readonly number[]) => {

@@ -174,11 +174,13 @@ Stated before the results are computed, with the test for each:
 
 - **Prediction (H1):** the held-out replay of `evaluateHeldOut`: 20 % of students held out by `splitByStudent`, each
   answer predicted before it is learnt from. Log-loss, RMSE, AUC, accuracy, calibration bins (`src/model/evaluate.ts`).
-  Add a paired bootstrap over students for the BKT − EMA difference [TODO: to add]. Repeat over five split seeds to
-  show the result does not hang on one split. As a robustness check, not a second test, resample whole classes
-  instead of students. The 2009–2010 skill builder file is documented with `student_class_id`, `teacher_id` and
-  `school_id` columns [check against the downloaded file]; the importer (`src/model/datasets.ts`) does not keep
-  them yet [TODO: keep `student_class_id`].
+  The BKT − EMA difference in mean log-loss per answer gets its interval from a paired bootstrap over students
+  (`pairedLogLoss`, 10,000 resamples) and its verdict from the rule in H1 (`verdict`); `npm run h1` runs it. Split
+  seed 1 decides H1; seeds 2 to 5 show whether the result hangs on one split. As a robustness check, not a second
+  test, resample whole classes instead of students (`pairedLogLoss` takes a `groupOf`). The 2009–2010 skill builder
+  file is documented with `student_class_id`, `teacher_id` and `school_id` columns [check against the downloaded
+  file]; the importer (`src/model/datasets.ts`) does not keep them yet [TODO: keep `student_class_id` and pass it
+  to `npm run h1`].
 - **Mastery decisions (H2):** for each learner and skill, the opportunity at which each method first declares
   mastery. Measures: the share of declarations that are true (the learner knows the skill right after the
   declaring answer, which is the moment BKT's P(known) refers to), the share of truly learnt skills never declared,
@@ -253,7 +255,8 @@ Each command is deterministic for a given commit (seeds are fixed). Record the c
 | Result | Command | Status |
 |---|---|---|
 | ASSISTments import | `npm run import-assistments -- skill_builder_data.csv` | exists; needs the data file |
-| Prediction on ASSISTments | `npm run model -- --observations assistments.json --fit --calibration bins.csv` | exists, with the EMA row; bootstrap to add |
+| Prediction on ASSISTments | `npm run model -- --observations assistments.json --fit --calibration bins.csv` | exists, with the EMA row |
+| H1, the paired bootstrap | `npm run h1 -- --observations assistments.json` | exists; class-level check to add |
 | Prediction on simulated learners | `npm run model -- --simulate --fit` | exists |
 | Mastery decisions, simulated (H2) | `npm run mastery -- --curves mastery-curves.csv` | exists |
 | Mastery agreement on ASSISTments (H3) | `npm run mastery -- --observations assistments.json` | exists; needs the data file |
