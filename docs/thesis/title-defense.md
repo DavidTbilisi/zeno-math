@@ -42,19 +42,21 @@ rule, the evaluation on held-out students, the statistical test and the simulati
 
 The simulation has already been run, and its result splits the second hypothesis in two. Where students learn in a
 jump, as BKT assumes, but sometimes forget, the hypothesis holds: BKT needs one to two answers fewer than the simpler
-rules for the same accuracy. Where students learn gradually, it fails by the rule I fixed in advance: no threshold up
-to 0.9999 makes BKT's decisions right nine times in ten, because after a short run of right answers it is almost
-certain the student knows the skill, even when they do not. I then checked whether that was only where I had stopped
-searching, and largely it was. With a threshold of seven nines or more, BKT does get there, at about the moving
-average's cost. So BKT still ranks students sensibly, but its probability stops meaning what it says, and the
-threshold it needs changes by orders of magnitude from one world to another. In BKT's own world it is as accurate as
-the theorem promises. What remains is the test on the real data, which decides the first hypothesis.
+rules for decisions that are right as often. Where students learn gradually, it fails by the rule I fixed in advance:
+no threshold up to 0.9999 makes BKT's decisions right nine times in ten, because after a short run of right answers it
+is almost certain the student knows the skill, even when they do not. I then checked whether that was only where I had
+stopped searching, and largely it was. With a threshold of seven nines or more, BKT does get there, at about the
+moving average's cost. So BKT still ranks students sensibly, but its probability no longer matches how often a student
+has really mastered the skill, and the threshold it needs changes by orders of magnitude from one world to another. In
+BKT's own world it is as accurate as the theorem promises. What remains is the test on the real data, which decides
+the first hypothesis.
 
-The result is useful whichever way it goes. If BKT wins, systems using simple rules are leaving accuracy unused. If
-it does not, a one-parameter rule is the better engineering choice. So far, for Zeno, whose own model assumes gradual
-learning, the evidence points to the moving average: it reaches the same accuracy with an ordinary threshold. The main limitation, which I state in advance, is that the
-ASSISTments data were collected under the three-in-a-row rule, so the real data cannot show that rule stopping too
-early; that is why the decisions themselves are compared in the simulation.
+The result is useful whichever way it goes. If BKT wins, systems using simple rules are leaving accuracy unused. If it
+does not, a one-parameter rule is the better engineering choice. So far, for Zeno, whose own model assumes gradual
+learning, the evidence points to the moving average as the best of the rules I compare: it is right as often with an
+ordinary threshold. The main limitation, which I state in advance, is that the ASSISTments data were collected under
+the three-in-a-row rule, so the real data cannot show that rule stopping too early; that is why the decisions
+themselves are compared in the simulation.
 
 ## Questions to expect
 
@@ -92,24 +94,33 @@ row push its probability close to 1, and a student who is only partway there oft
 threshold from 0.80 to 0.99 made it wait only about six answers longer, and most of its declarations stayed wrong. The
 moving average reaches a high threshold only through a long run, so an ordinary threshold makes it wait.
 
-**Is "never" just where you stopped the threshold search?** Largely, yes, and I checked. Thresholds went up to
-0.9999, fixed in advance. Continuing the search up to 1 − 10⁻¹⁵, BKT meets the standard in three of the four gradual
-settings, at thresholds between 1 − 10⁻⁷ and 1 − 10⁻¹³, and at the higher learning rate it then needs 0.3 to 0.4
-answers fewer than the moving average. The one setting where it still never gets there is the one where hardly anyone
-masters a skill at all. The thesis reports this as a check made after the results, beside the verdict, and it changes
-the reading: BKT's problem in those worlds is that its probability is badly calibrated, not that it cannot wait. At
-its usual 0.95, about one declaration in ten is right.
+**Is "never" just where you stopped the threshold search?** Largely, yes, and I checked. Thresholds went up to 0.9999,
+fixed in advance. Continuing the search up to 1 − 10⁻¹⁵, BKT meets the standard in three of the four gradual settings,
+at thresholds between 1 − 10⁻⁷ and 1 − 10⁻¹³, and at the higher learning rate it then needs 0.3 to 0.4 answers fewer
+than the moving average. The one setting where it still never gets there is the one where hardly anyone masters a
+skill at all. The thesis reports this as a check made after the results, beside the verdict, and it changes the
+reading: BKT's problem in those worlds is that its probability is badly calibrated against what mastery means there,
+not that it cannot wait. At its usual 0.95, about one declaration in ten is right.
 
 **So why recommend the moving average, if BKT can match it?** Because BKT matches it only at a threshold like seven
 nines, which has to be found from data and moves by orders of magnitude from one world to another. The moving average
-reaches the same accuracy at thresholds between 0.84 and 0.97, with one fitted parameter. For a system that does not
+reaches the same precision at thresholds between 0.84 and 0.97, with one fitted parameter. For a system that does not
 know how its students learn, that is the safer rule.
 
+**BKT's probability is about knowing the skill, but your mastery is about the chance of a right answer. Are you not
+comparing two different scales?** It is a fair point, and I checked it. BKT also gives the chance of a right answer:
+its probability of knowing times one minus the slip, plus the rest times the guess. Declaring mastery when that chance
+reaches a threshold did no better, and in the gradual worlds it never met the 90 % standard at all. Within a skill it
+is only a rescaling of the same probability, so it cannot order the students differently, and it can never rise above
+one minus the slip. The fitted slip is up to 0.3 in those worlds, so on some skills the chance never rises above 0.7,
+and no single threshold suits every skill. The scale is therefore not what makes BKT need seven nines. The check used
+the thesis's own fitted models and students, and it came after the results, so it is a check, not a finding.
+
 **Did you change the comparison after seeing results?** Yes, once, and the thesis says so. It was first set at equal
-practice, but at that much practice almost no simulated student had mastered anything, so every rule was mostly
-wrong and they could not be told apart. Equal accuracy has a meaning in every world. The equal-practice comparison is
-still reported. The search above 0.9999 also came after the results, and it is reported as a check beside the
-verdict, not in place of it.
+practice, but at that much practice almost no simulated student had mastered anything, so every rule was mostly wrong
+and they could not be told apart. Equal precision, the share of declarations that are right, has a meaning in every
+world. The equal-practice comparison is still reported. The search above 0.9999 also came after the results, and it is
+reported as a check beside the verdict, not in place of it.
 
 **How do you define "mastered" in the simulation?** In the BKT world, the simulated student knows the skill. In
 the gradual worlds, the true chance of a right answer is at least 0.9; the threshold is fixed in advance, and 0.8

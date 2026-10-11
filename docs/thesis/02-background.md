@@ -152,9 +152,9 @@ answers on each skill, with weights fitted on training students. It often predic
 
 Deep knowledge tracing [@piech2015dkt] replaces the hand-built model with a recurrent neural network over the whole
 history of answers. It predicted much better than BKT in its original evaluation, though much of the gap closes when
-BKT is given forgetting and differences between students [@khajah2016]. It needs a large training set and its
-estimates cannot be explained to a teacher, and it is not what deployed systems use to decide mastery, so it is not
-compared here.
+BKT is given forgetting and differences between students [@khajah2016]. It needs a large training set and its internal
+state is much harder to interpret than BKT's or a moving average, and it is not what deployed systems use to decide
+mastery, so it is not compared here.
 
 The Elo model and PFA are already implemented in the evaluation code this thesis uses, and they are reported in the
 prediction table as points of reference. They are not part of any hypothesis.

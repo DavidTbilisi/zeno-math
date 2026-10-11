@@ -68,7 +68,7 @@ parameters sit on an edge of the grid or on the bound of 0.3 for guess or slip.]
 
 ## 4.3 Mastery decisions where the truth is known (H2)
 
-### The comparison at equal accuracy
+### The comparison at equal precision
 
 Table 4.3 gives the H2 comparison. For each world and learning rate it shows, for each method, the threshold chosen on
 the training students as the cheapest whose declarations were right at least 90 % of the time, and how that rule did
@@ -135,7 +135,7 @@ $\theta = 0.99$, after 16.5 answers). BKT's probability crowds so close to 1 tha
 The plain BKT world is not part of H2, because Proposition 2 settles it, and Table 4.4 shows how fitted BKT does
 there. At the usual threshold of 0.95, the proposition promises at least 95 % right declarations if the parameters
 were the true ones. With the fitted parameters, 97.7 % were right at the lower learning rate and 96.7 % at the higher,
-so fitting cost nothing measurable against the bound. At equal accuracy BKT also needs the fewest answers, as the
+so fitting cost nothing measurable against the bound. At equal precision BKT also needs the fewest answers, as the
 proposition leads one to expect.
 
 | Rate | Method | Rule | Answers [95 % interval] | Right | Declared | BKT saves [95 % interval] |
@@ -175,7 +175,7 @@ point in the BKT worlds and ±2 to 3 in the gradual worlds (`npm run mastery`, c
 
 At equal cost the three methods are hard to tell apart. In the BKT worlds all three are right 92 to 99 % of the time.
 In the gradual worlds all three are right less than 10 % of the time, because at 11 to 15 answers very few students
-have reached a true chance of 0.9. This is the result that led to the change from equal cost to equal accuracy
+have reached a true chance of 0.9. This is the result that led to the change from equal cost to equal precision
 (section 3.3).
 
 ### A second definition of mastery
@@ -259,7 +259,7 @@ Table: Agreement between the mastery methods on held-out ASSISTments practices.
 ## 4.5 Summary
 
 [TODO: H1's verdict.] In the simulations, H2 holds in the BKT world with forgetting, where BKT needs one to two answers
-fewer than the simpler methods for the same accuracy, and fails in both gradual worlds by the rule fixed in advance,
+fewer than the simpler methods for the same precision, and fails in both gradual worlds by the rule fixed in advance,
 where no BKT threshold up to 0.9999 makes its declarations right nine times in ten while EMA and the streak rule reach
 that standard by waiting. The check above 0.9999 changes the reading: with thresholds between $1 - 10^{-6.9}$ and
 $1 - 10^{-12.6}$ BKT meets the standard in three of the four gradual settings, and at the higher learning rate it then
