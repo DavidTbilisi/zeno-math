@@ -5,6 +5,7 @@
 // "70 %" comes true about 70 % of the time. Two baselines show what the model adds over simply counting.
 import { ALL_SKILLS, type SkillId } from "../math/practiceSkills.ts";
 import type { Level, Observation } from "./elo.ts";
+import { rng } from "./random.ts";
 
 /**
  * A model that predicts each answer before learning from it. One with fit() learns its parameters from training
@@ -98,9 +99,117 @@ export const evaluate = (model: Predictor, observations: readonly Observation[])
  * students' answers one by one, still learning from each after predicting it, as it would in a class.
  */
 export function evaluateHeldOut(model: Predictor, train: readonly Observation[], test: readonly Observation[]): Metrics {
+  return metrics(model.name, heldOutPredictions(model, train, test));
+}
+export type StudentPrediction = Prediction & { student: string };
+/** The held-out replay's predictions, each with the student it was for: what a paired comparison needs. */
+export function heldOutPredictions(model: Predictor, train: readonly Observation[], test: readonly Observation[]): StudentPrediction[] {
   if (model.fit) model.fit(train);
   else replay(model, train);
-  return evaluate(model, test);
+  return replay(model, test).map((p, i) => ({ ...p, student: test[i].student }));
+}
+
+// ---------- H1: is one model's log-loss lower than another's on the same held-out answers? ----------
+
+/**
+ * A 95 % percentile interval for a statistic, by the bootstrap over whole groups (students, or classes): each resample
+ * draws as many groups as there are, with replacement, and the statistic gets the indices drawn, once per draw.
+ * Resamples whose statistic is NaN are left out.
+ */
+export function bootstrapGroups(groups: number, statistic: (drawn: readonly number[]) => number, resamples: number, seed: number): [number, number] {
+  const r = rng(seed);
+  const stats: number[] = [];
+  const drawn = new Array<number>(groups);
+  for (let b = 0; b < resamples; b++) {
+    for (let g = 0; g < groups; g++) drawn[g] = Math.floor(r.next() * groups);
+    const s = statistic(drawn);
+    if (!Number.isNaN(s)) stats.push(s);
+  }
+  stats.sort((a, b) => a - b);
+  const at = (q: number) => stats[Math.min(stats.length - 1, Math.floor(q * stats.length))] ?? NaN;
+  return [at(0.025), at(0.975)];
+}
+
+/** What H1's paired test says, by the rule fixed before any results (docs/thesis/outline.md, H1). */
+export type Verdict = "first better" | "second better" | "real but negligible" | "no practical difference" | "inconclusive";
+/**
+ * An interval that excludes zero is a real difference: one model is better if the estimate is at least the smallest
+ * difference that counts, and the difference is negligible if not. An interval that holds zero but lies wholly within
+ * ± that smallest difference shows no practical difference; anything wider is inconclusive.
+ */
+export function verdict(difference: number, [lo, hi]: [number, number], smallest: number): Verdict {
+  if (lo > 0 || hi < 0) return Math.abs(difference) < smallest ? "real but negligible" : difference < 0 ? "first better" : "second better";
+  return lo > -smallest && hi < smallest ? "no practical difference" : "inconclusive";
+}
+
+export type PairedTest = {
+  first: string;
+  second: string;
+  answers: number;
+  students: number;
+  /** The units resampled: students, unless a grouping (such as classes) is given. */
+  groups: number;
+  firstLogLoss: number;
+  secondLogLoss: number;
+  /** First minus second, in mean log-loss per answer: below zero, the first model predicts better. */
+  difference: number;
+  interval: [number, number];
+  smallest: number;
+  verdict: Verdict;
+};
+/** The smallest difference in mean log-loss per answer that H1 counts, fixed before any results. */
+export const SMALLEST_DIFFERENCE = 0.005;
+const answerLoss = ({ p, correct }: Prediction) => {
+  const q = Math.min(1 - EPS, Math.max(EPS, p));
+  return -Math.log(correct ? q : 1 - q);
+};
+/**
+ * The paired bootstrap of H1: two models' predictions of the same held-out answers, the difference in their mean
+ * log-loss per answer, and its 95 % interval from resampling whole students (or whatever groupOf puts students in,
+ * such as classes, for the robustness check), since one student's answers are not independent of each other.
+ */
+export function pairedLogLoss(
+  first: { name: string; predictions: readonly StudentPrediction[] },
+  second: { name: string; predictions: readonly StudentPrediction[] },
+  { resamples = 10000, seed = 1, smallest = SMALLEST_DIFFERENCE, groupOf = (student: string) => student }: { resamples?: number; seed?: number; smallest?: number; groupOf?: (student: string) => string } = {},
+): PairedTest {
+  const a = first.predictions;
+  const b = second.predictions;
+  if (a.length !== b.length || a.some((p, i) => p.student !== b[i].student || p.correct !== b[i].correct)) throw new Error("the two models must predict the same answers in the same order");
+  const index = new Map<string, number>();
+  const sums: number[] = [];
+  const counts: number[] = [];
+  let lossA = 0, lossB = 0;
+  a.forEach((p, i) => {
+    const g = groupOf(p.student);
+    let k = index.get(g);
+    if (k === undefined) index.set(g, (k = sums.length)), sums.push(0), counts.push(0);
+    const la = answerLoss(p);
+    const lb = answerLoss(b[i]);
+    (lossA += la), (lossB += lb);
+    sums[k] += la - lb;
+    counts[k]++;
+  });
+  const meanOver = (drawn: readonly number[]) => {
+    let s = 0, n = 0;
+    for (const g of drawn) (s += sums[g]), (n += counts[g]);
+    return n ? s / n : NaN;
+  };
+  const difference = (lossA - lossB) / a.length;
+  const interval = bootstrapGroups(sums.length, meanOver, resamples, seed);
+  return {
+    first: first.name,
+    second: second.name,
+    answers: a.length,
+    students: new Set(a.map((p) => p.student)).size,
+    groups: sums.length,
+    firstLogLoss: lossA / a.length,
+    secondLogLoss: lossB / a.length,
+    difference,
+    interval,
+    smallest,
+    verdict: verdict(difference, interval, smallest),
+  };
 }
 
 /** FNV-1a of a string, mixed with a seed: which side of the split a student falls on, the same on every run. */
@@ -112,11 +221,11 @@ function hashOf(text: string, seed: number) {
   return (h ^ (h >>> 12)) >>> 0;
 }
 /** Splits by student, not by answer, so no test student's answers have been seen; the order of answers is kept. */
-export function splitByStudent(observations: readonly Observation[], testShare = 0.2, seed = 1) {
+export function splitByStudent<T extends { student: string }>(observations: readonly T[], testShare = 0.2, seed = 1) {
   const inTest = new Map<string, boolean>();
   const side = (s: string) => inTest.get(s) ?? inTest.set(s, hashOf(s, seed) / 2 ** 32 < testShare).get(s)!;
-  const train: Observation[] = [];
-  const test: Observation[] = [];
+  const train: T[] = [];
+  const test: T[] = [];
   for (const o of observations) (side(o.student) ? test : train).push(o);
   return { train, test };
 }
@@ -267,16 +376,11 @@ export class BktModel implements Predictor {
   private pooled: BktParams = { init: 0.5, learn: 0.1, guess: 0.2, slip: 0.1 };
   private known = new Map<string, number>();
   fit(train: readonly Observation[]) {
-    const bySkill = new Map<string, Map<string, number[]>>();
-    for (const o of train) {
-      const students = bySkill.get(o.skill) ?? bySkill.set(o.skill, new Map()).get(o.skill)!;
-      (students.get(o.student) ?? students.set(o.student, []).get(o.student)!).push(o.correct ? 1 : 0);
-    }
-    const sequences = new Map([...bySkill].map(([skill, students]) => [skill, [...students.values()].map((s) => Uint8Array.from(s))]));
+    const sequences = sequencesBySkill(train);
     this.pooled = fitBkt([...sequences.values()].flat());
     for (const [skill, seqs] of sequences) this.params.set(skill, fitBkt(seqs));
   }
-  private paramsOf(skill: string) {
+  paramsOf(skill: string) {
     return this.params.get(skill) ?? this.pooled;
   }
   predict(o: Observation) {
@@ -288,6 +392,79 @@ export class BktModel implements Predictor {
     const p = this.paramsOf(o.skill);
     const key = `${o.student}\u0000${o.skill}`;
     this.known.set(key, bktStep(this.known.get(key) ?? p.init, p, o.correct).known);
+  }
+}
+
+/** Each student's answers on each skill, in order, as 0s and 1s: what BKT and EMA are fitted on. */
+export function sequencesBySkill(observations: readonly Observation[]): Map<string, Uint8Array[]> {
+  const bySkill = new Map<string, Map<string, number[]>>();
+  for (const o of observations) {
+    const students = bySkill.get(o.skill) ?? bySkill.set(o.skill, new Map()).get(o.skill)!;
+    (students.get(o.student) ?? students.set(o.student, []).get(o.student)!).push(o.correct ? 1 : 0);
+  }
+  return new Map([...bySkill].map(([skill, students]) => [skill, [...students.values()].map((s) => Uint8Array.from(s))]));
+}
+
+/** The exponential moving average's two settings: how much each answer counts, and the score before any answer. */
+export type EmaParams = { alpha: number; start: number };
+const EMA_ALPHAS = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+/** One EMA step: the score after an answer. */
+export const emaStep = (score: number, alpha: number, correct: boolean) => (1 - alpha) * score + (correct ? alpha : 0);
+/** The mean log-loss of sequences of answers when each is predicted by the score before it. */
+function emaLogLoss(sequences: readonly Uint8Array[], p: EmaParams) {
+  let sum = 0;
+  let n = 0;
+  for (const seq of sequences) {
+    let score = p.start;
+    for (let i = 0; i < seq.length; i++) {
+      const q = Math.min(1 - EPS, Math.max(EPS, score));
+      sum -= seq[i] ? Math.log(q) : Math.log(1 - q);
+      score = emaStep(score, p.alpha, seq[i] === 1);
+      n++;
+    }
+  }
+  return sum / n;
+}
+/**
+ * The start is the share of right first answers (each student's first on each skill), fixed before α is chosen, so
+ * the first prediction comes from data like the rest; α is then the grid point with the lowest log-loss.
+ */
+export function fitEma(sequences: readonly Uint8Array[]): EmaParams {
+  const firsts = sequences.filter((s) => s.length);
+  const start = firsts.length ? firsts.filter((s) => s[0] === 1).length / firsts.length : 0.5;
+  let best: EmaParams = { alpha: EMA_ALPHAS[0], start };
+  let bestLoss = Infinity;
+  for (const alpha of EMA_ALPHAS) {
+    const loss = emaLogLoss(sequences, { alpha, start });
+    if (loss < bestLoss) (bestLoss = loss), (best = { alpha, start });
+  }
+  return best;
+}
+
+/**
+ * The exponential moving average of a student's answers on a skill (right 1, wrong 0), read as the chance of a right
+ * answer next: the simple rival to BKT. One α and one start for all skills, fitted on the training students; given
+ * settings are used as they are. "N right in a row" is an EMA for some settings (docs/thesis/outline.md,
+ * Proposition 1), but not in general for the fitted ones.
+ */
+export class EmaModel implements Predictor {
+  readonly name = "EMA";
+  params: EmaParams;
+  private scores = new Map<string, number>();
+  private fixed: boolean;
+  constructor(params?: EmaParams) {
+    this.params = params ?? { alpha: 0.3, start: 0.5 };
+    this.fixed = params !== undefined;
+  }
+  fit(train: readonly Observation[]) {
+    if (!this.fixed) this.params = fitEma([...sequencesBySkill(train).values()].flat());
+  }
+  predict(o: Observation) {
+    return this.scores.get(`${o.student}\u0000${o.skill}`) ?? this.params.start;
+  }
+  update(o: Observation) {
+    const key = `${o.student}\u0000${o.skill}`;
+    this.scores.set(key, emaStep(this.scores.get(key) ?? this.params.start, this.params.alpha, o.correct));
   }
 }
 

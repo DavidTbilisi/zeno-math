@@ -17,6 +17,8 @@
     "model": "node --disable-warning=ExperimentalWarning scripts/evaluate-model.ts",
     "import-assistments": "node --disable-warning=ExperimentalWarning scripts/import-assistments.ts",
     "simulate": "node --disable-warning=ExperimentalWarning scripts/simulate-study.ts",
+    "mastery": "node --disable-warning=ExperimentalWarning scripts/mastery.ts",
+    "h1": "node --disable-warning=ExperimentalWarning scripts/h1.ts",
     "analyse": "node --disable-warning=ExperimentalWarning scripts/analyse-study.ts",
     "dry-run": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dry-run-study.ts",
     "checker-agreement": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/checker-agreement.ts",

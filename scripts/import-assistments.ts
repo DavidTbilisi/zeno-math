@@ -28,5 +28,8 @@ const right = data.observations.filter((o) => o.correct).length / Math.max(1, ke
 console.log(`${file}: ${rows.toLocaleString("en")} rows read, ${kept.toLocaleString("en")} answers kept from ${students.toLocaleString("en")} students on ${skills} skills, ${(right * 100).toFixed(1)} % right first time`);
 const topics = new Map<string, number>();
 for (const t of Object.values(data.areas)) topics.set(t, (topics.get(t) ?? 0) + 1);
+const { classes, inSeveralClasses } = data.counts;
+if (classes === undefined) console.log("no student_class_id column: classes not kept, so H1's class-level check cannot run");
+else console.log(`${classes.toLocaleString("en")} classes; ${inSeveralClasses!.toLocaleString("en")} students answered in more than one and are counted in the one they answered most in`);
 console.log(`skills by topic: ${[...topics].map(([t, n]) => `${t} ${n}`).join(", ")}`);
 console.log(`wrote ${out}`);

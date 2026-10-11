@@ -13,7 +13,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
 import { EloModel, type EloParams, type Observation } from "../src/model/elo.ts";
 import {
-  BktModel, evaluate, evaluateHeldOut, globalRate, itemRate, observationsFromCsv, PfaModel, splitByStudent, studentSkillRate, type Metrics, type Predictor,
+  BktModel, EmaModel, evaluate, evaluateHeldOut, globalRate, itemRate, observationsFromCsv, PfaModel, splitByStudent, studentSkillRate, type Metrics, type Predictor,
 } from "../src/model/evaluate.ts";
 import { simulateRandom } from "../src/model/simulate.ts";
 
@@ -68,6 +68,7 @@ const models: Predictor[] = [
   ...(areas ? [elo("elo, one area", { areaOf: () => "all" })] : []),
   new PfaModel(),
   new BktModel(),
+  new EmaModel(),
   studentSkillRate(),
   itemRate(),
   globalRate(),
@@ -106,6 +107,8 @@ if (flag("--json")) {
   console.log("\ncalibration of elo (predicted → observed, answers):");
   for (const b of results[0].calibration.filter((b) => b.n))
     console.log(`  ${b.from.toFixed(1)}–${b.to.toFixed(1)}  ${b.predicted.toFixed(3)} → ${b.observed.toFixed(3)}  (${b.n})`);
+  const ema = models.find((m) => m instanceof EmaModel);
+  if (ema) console.log(`\nEMA fitted on the training students: α ${ema.params.alpha}, start ${ema.params.start.toFixed(3)} (the share of right first answers)`);
   if (fit.length) {
     console.log("\nbest α, β by log-loss on the training students:");
     for (const f of fit) console.log(`  α = ${f.params.alpha}, β = ${f.params.beta}: ${f.logLoss.toFixed(4)}`);

@@ -8,7 +8,8 @@
 //           from those who don't more sharply than the model assumes.
 //   bkt:    each skill is known or not, as in Bayesian Knowledge Tracing; a learner who knows it slips sometimes and
 //           one who doesn't guesses sometimes (more often on easier levels). Ability sets the chance of knowing it at
-//           the start, and practice may teach it, all at once.
+//           the start, and practice may teach it, all at once. With forget above 0, a learner who knows it may
+//           also lose it at each question on it, which BKT assumes never happens.
 //
 // How much a question teaches is an assumption, not something the simulation can find out: "flat" says every
 // question teaches the same; "zpd" says a question teaches most when the learner has about an even chance, and little
@@ -20,6 +21,9 @@ import { EloModel, sigmoid, type Level, type Observation } from "./elo.ts";
 import { inCurriculumOrder, PREREQUISITES } from "./curriculum.ts";
 import { choose, TARGET, type Policy } from "./policy.ts";
 import { testItems } from "./testForms.ts";
+import { rng } from "./random.ts";
+
+export { rng };
 
 /**
  * The skills simulated learners have: Zeno's skills as they were when the results in docs/results were made. The world
@@ -46,6 +50,8 @@ export type SimParams = {
   learning: "flat" | "zpd";
   /** The share of a question's learning that also goes to each skill built directly on its skill. */
   transfer: number;
+  /** BKT world: the chance that a question on a known skill leaves it unknown (0: never, as BKT assumes). */
+  forget: number;
   /** How answers come from what the learner knows (see the top of this file). */
   world: "elo" | "irt2pl" | "bkt";
 };
@@ -58,6 +64,7 @@ export const DEFAULT_SIM: SimParams = {
   learnRate: 0.02,
   learning: "flat",
   transfer: 0,
+  forget: 0,
   world: "elo",
 };
 export const WORLDS: readonly SimParams["world"][] = ["elo", "irt2pl", "bkt"];
@@ -67,21 +74,6 @@ const GUESS: Record<Level, number> = { 1: 0.3, 2: 0.2, 3: 0.1 };
 const SLIP: Record<Level, number> = { 1: 0.05, 2: 0.1, 3: 0.2 };
 /** BKT world: the chance that one question teaches an unknown skill, for a learning rate in ability units (0.02 → 5 %). */
 const LEARN_PER_RATE = 2.5;
-
-/** mulberry32, with normal draws by Box–Muller. */
-export function rng(seed: number) {
-  let a = seed >>> 0;
-  const next = () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  const normal = (sd = 1) => sd * Math.sqrt(-2 * Math.log(1 - next())) * Math.cos(2 * Math.PI * next());
-  const pick = <T>(items: readonly T[]) => items[Math.floor(next() * items.length)];
-  return { next, normal, pick };
-}
 
 /** ability: the learner's true ability on each skill; known: in the BKT world, whether they know it. */
 export type SimLearner = { id: string; ability: Map<SkillId, number>; known: Map<SkillId, boolean> };
@@ -122,7 +114,10 @@ export function makeWorld(params: Partial<SimParams> = {}): World {
         const pr = chance(l, skill, level);
         const right = r.next() < pr;
         const learn = Math.min(1, LEARN_PER_RATE * p.learnRate) * (p.learning === "zpd" ? 4 * pr * (1 - pr) : 1);
-        teach(l, skill, learn);
+        // Forgetting draws only when it is on, so every result made without it keeps its numbers.
+        if (l.known.get(skill)) {
+          if (p.forget && r.next() < p.forget) l.known.set(skill, false);
+        } else teach(l, skill, learn);
         if (p.transfer) for (const k of dependants.get(skill) ?? []) teach(l, k, p.transfer * learn);
         return right;
       },
