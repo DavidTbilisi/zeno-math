@@ -1,5 +1,6 @@
 // The thesis as one PDF: chapters 1 to 7 and the appendices in docs/thesis, with a title page, contents, and APA
-// citations from references.bib. Pandoc and LuaLaTeX run in a pinned container, so neither needs installing.
+// citations from references.bib. Tables and figures are numbered by chapter, as the text refers to them
+// (docs/thesis/chapter-numbers.lua). Pandoc and LuaLaTeX run in a pinned container, so neither needs installing.
 //
 //   npm run thesis-pdf              writes docs/thesis/thesis.pdf
 //
@@ -24,6 +25,7 @@ const run = spawnSync(CONTAINER, [
   `${DIR}/pdf.yaml`, ...chapters,
   "--metadata", `date=Draft, ${date}`,
   `--resource-path=${DIR}`,
+  `--lua-filter=${DIR}/chapter-numbers.lua`,
   "--citeproc", `--bibliography=${DIR}/references.bib`, `--csl=${DIR}/apa.csl`,
   "--pdf-engine=lualatex",
   "-o", OUT,
