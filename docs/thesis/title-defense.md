@@ -47,9 +47,9 @@ no threshold up to 0.9999 makes BKT's decisions right nine times in ten, because
 is almost certain the student knows the skill, even when they do not. I then checked whether that was only where I had
 stopped searching, and largely it was. With a threshold of seven nines or more, BKT does get there, at about the
 moving average's cost. So BKT still ranks students sensibly, but its probability no longer matches how often a student
-has really mastered the skill, and the threshold it needs changes by orders of magnitude from one world to another. In
-BKT's own world it is as accurate as the theorem promises. What remains is the test on the real data, which decides
-the first hypothesis.
+has really mastered the skill: when it says 99 %, the student has mastered it at most about half the time. And the
+threshold it needs changes by orders of magnitude from one world to another. In BKT's own world it is as accurate as
+the theorem promises. What remains is the test on the real data, which decides the first hypothesis.
 
 The result is useful whichever way it goes. If BKT wins, systems using simple rules are leaving accuracy unused. If it
 does not, a one-parameter rule is the better engineering choice. So far, for Zeno, whose own model assumes gradual
@@ -100,7 +100,9 @@ at thresholds between 1 − 10⁻⁷ and 1 − 10⁻¹³, and at the higher lear
 than the moving average. The one setting where it still never gets there is the one where hardly anyone masters a
 skill at all. The thesis reports this as a check made after the results, beside the verdict, and it changes the
 reading: BKT's problem in those worlds is that its probability is badly calibrated against what mastery means there,
-not that it cannot wait. At its usual 0.95, about one declaration in ten is right.
+not that it cannot wait. Measured after every answer, when its probability is 0.99 the student has mastered the skill
+in 15 to 55 % of cases, against 70 to 94 % for the moving average's top scores. At its usual 0.95, about one
+declaration in ten is right.
 
 **So why recommend the moving average, if BKT can match it?** Because BKT matches it only at a threshold like seven
 nines, which has to be found from data and moves by orders of magnitude from one world to another. The moving average
@@ -113,8 +115,11 @@ its probability of knowing times one minus the slip, plus the rest times the gue
 reaches a threshold did no better, and in the gradual worlds it never met the 90 % standard at all. Within a skill it
 is only a rescaling of the same probability, so it cannot order the students differently, and it can never rise above
 one minus the slip. The fitted slip is up to 0.3 in those worlds, so on some skills the chance never rises above 0.7,
-and no single threshold suits every skill. The scale is therefore not what makes BKT need seven nines. The check used
-the thesis's own fitted models and students, and it came after the results, so it is a check, not a finding.
+and no single threshold suits every skill. The scale is therefore not what makes BKT need seven nines. The thesis
+measures both of BKT's scores against the truth after every answer: the chance of a right answer is less overconfident
+than the probability of knowing, but it seldom reaches 0.9 at all. That measurement and the decision check both came
+after the results, so they are reported as checks, not findings, and only the measurement is in the thesis's tables so
+far.
 
 **Did you change the comparison after seeing results?** Yes, once, and the thesis says so. It was first set at equal
 practice, but at that much practice almost no simulated student had mastered anything, so every rule was mostly wrong
@@ -141,9 +146,9 @@ describes it briefly; the experiment is the contribution.
 | Preliminary draft | 15 pages | the method in full, the simulation results |
 | Final thesis | 30 pages | the ASSISTments results, discussion, threats to validity, conclusion, abstracts in Georgian and English |
 
-Where it stands on 13 October: the chapters follow this scope (36 pages as a PDF), with the method in full, the
-simulation results including the check above 0.9999, the discussion and the threats to validity. The ASSISTments
-results, the abstracts and the title page are still to come.
+Where it stands on 13 October: the chapters follow this scope (37 pages as a PDF), with the method in full, the
+simulation results including the check above 0.9999 and the calibration of each method's score, the discussion and the
+threats to validity. The ASSISTments results, the abstracts and the title page are still to come.
 
 ## Format rules to remember while writing
 
