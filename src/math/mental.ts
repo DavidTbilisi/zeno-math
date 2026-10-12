@@ -689,7 +689,29 @@ function renderFlagDiv(s: MentalSpec, w: MentalWords): RenderedSvg {
   const n = digitsOf(N);
   const qn = n.length - L;
   if (qn <= 0) throw new Error(t.short);
-  const qd = String(Q).padStart(qn, "0").split("").map(Number);
+  /** What the flag costs at step i, from the quotient digits already found. */
+  const flagCost = (i: number, qd: number[]) => {
+    let sum = 0;
+    for (let j = 1; j <= L; j++) if (i - j >= 0 && i - j < qn) sum += fl[j - 1] * qd[i - j];
+    return sum;
+  };
+  // The quotient digits by the method itself: each is the most the main digit allows (at most 9), taken smaller when
+  // paying for the flag later would leave a step below zero. Larger digits are tried first, so the first digits that
+  // never go below zero and leave less than the divisor are the quotient's.
+  const qd: number[] = [];
+  let tries = 0;
+  const digitsFrom = (i: number, r: number): boolean => {
+    if (++tries > 100_000) throw new Error("internal: flag division search");
+    const net = 10 * r + n[i] - flagCost(i, qd);
+    if (net < 0) return false;
+    if (i >= qn) return i === n.length - 1 ? net < d : digitsFrom(i + 1, net);
+    for (let q = Math.min(9, Math.floor(net / main)); q >= 0; q--) {
+      qd[i] = q;
+      if (digitsFrom(i + 1, net - main * q)) return true;
+    }
+    return false;
+  };
+  if (!digitsFrom(0, 0) || Number(qd.join("")) !== Q) throw new Error("internal: flag division disagrees");
   type Row = { digit: number; gross: number; minus: string; net: number; q?: number; r: number; smaller: boolean };
   const rows: Row[] = [];
   let r = 0;
