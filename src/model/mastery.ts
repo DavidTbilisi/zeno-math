@@ -17,8 +17,11 @@ import { DEFAULT_SIM, makeWorld, SIM_SKILLS, type SimParams, type SimLearner } f
 /** One student's answers on one skill in order (1 right, 0 wrong), and in simulations whether they knew it after each. */
 export type Practice = { student: string; skill: string; answers: Uint8Array; known?: Uint8Array };
 
-/** Reads one practice's answers and says after how many it declares mastery, or null if it never does. */
-export type MasteryRule = { readonly name: string; declare(skill: string, answers: ArrayLike<number>): number | null };
+/**
+ * Reads one practice's answers and says after how many it declares mastery, or null if it never does. The practice
+ * itself is passed too, for a rule that needs more than the answers (BKT on each atom, src/model/atoms.ts).
+ */
+export type MasteryRule = { readonly name: string; declare(skill: string, answers: ArrayLike<number>, practice?: Practice): number | null };
 
 // Above 0.9999 a threshold is named by how close it is to 1: 1 − 1e-7.5 is 1 − 10^−7.5.
 const shown = (threshold: number) =>
@@ -120,7 +123,7 @@ export function fitRules(train: readonly Practice[]): Fitted {
 export type Decision = { at: number | null; right: boolean | null };
 export const decide = (rule: MasteryRule, practices: readonly Practice[]): Decision[] =>
   practices.map((p) => {
-    const at = rule.declare(p.skill, p.answers);
+    const at = rule.declare(p.skill, p.answers, p);
     return { at, right: at === null || !p.known ? null : p.known[at - 1] === 1 };
   });
 

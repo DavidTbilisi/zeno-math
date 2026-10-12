@@ -38,6 +38,7 @@ The existing documents describe Zeno from above: `README.md` (features), `docs/a
   - [src/model/simulate.ts — synthetic learners and the simulation study](#srcmodelsimulatets--synthetic-learners-and-the-simulation-study)
   - [src/model/mastery.ts — mastery rules and how they are judged](#srcmodelmasteryts--mastery-rules-and-how-they-are-judged)
   - [src/model/conceptGraph.ts — a concept's inside, and whether an idea is an atom](#srcmodelconceptgraphts--a-concepts-inside-and-whether-an-idea-is-an-atom)
+  - [src/model/atoms.ts — skills made of atoms, and BKT on each](#srcmodelatomsts--skills-made-of-atoms-and-bkt-on-each)
   - [src/learner.ts — the browser-side learner client](#srclearnerts--the-browser-side-learner-client)
   - [src/api.ts — the fetch wrapper](#srcapits--the-fetch-wrapper)
 - [4. The browser app shell, pages and study UI](#4-the-browser-app-shell-pages-and-study-ui)
@@ -182,7 +183,7 @@ Everything is TypeScript. The browser side is React 19 built by Vite 8. The serv
 | Path | Lines | What lives there |
 |---|---|---|
 | `src/math/` | ~44,000 | Pure TypeScript maths: generators, the checker, exact arithmetic, SVG renderers, worked steps. No React, no Node. Imports only `../locales/en` as a *type*. |
-| `src/model/` | ~1,900 | The learner model (`elo.ts`), the two policies (`policy.ts`), the curriculum and prerequisites, test forms, the evaluation harness with PFA, BKT and moving-average baselines and the H1 bootstrap, the mastery rules and how they are judged (`mastery.ts`), a prototype graph of the ideas inside fractions with tests of whether an idea is an atom (`conceptGraph.ts`), the pre-registered analysis, the simulation worlds, and their seeded generator (`random.ts`). No React, no Node. |
+| `src/model/` | ~1,900 | The learner model (`elo.ts`), the two policies (`policy.ts`), the curriculum and prerequisites, test forms, the evaluation harness with PFA, BKT and moving-average baselines and the H1 bootstrap, the mastery rules and how they are judged (`mastery.ts`), a prototype graph of the ideas inside fractions with tests of whether an idea is an atom (`conceptGraph.ts`), H2's comparison in a world whose skills are made of atoms (`atoms.ts`), the pre-registered analysis, the simulation worlds, and their seeded generator (`random.ts`). No React, no Node. |
 | `src/components/` | ~7,000 | The 33 tool dialogs, the practice dialog (also the docked panel and the practice page's body), the test runner, the teacher widgets, shared UI. |
 | `src/pages/` | ~1,300 | Home, Board, SharedBoard, Teacher, Practice. |
 | `src/live/` | ~1,050 | Live pieces drawn inside Excalidraw embeddables. |
@@ -884,55 +885,55 @@ The script's two modes (`simulate-study.ts:94-162`). Options: `--skills algebra,
 
 The header (`:1-11`) states the thesis's H2 and H3: "A mastery rule reads one student's answers on one skill and says after how many it declares the skill mastered, if it ever does: BKT when P(known) reaches a threshold, the exponential moving average (EMA) when its score does, or N right in a row." On simulated learners the truth is recorded after every answer, so each declaration is right or wrong (H2); on real answers it is not (H3). H2 compares the rules "at equal precision: each method's threshold is the cheapest one whose declarations are right at least 90 % of the time on training learners"; comparing at equal practice is "kept as description". "A practice never declared costs its full length, as a learner who is never let go practises to the end." The module imports the skill list, `elo.ts` types, BKT's and the EMA's pieces from `evaluate.ts` (`bktStep`, `fitBkt`, `emaStep`, `fitEma`, `bootstrapGroups`, `calibration`, `rmse`) and the simulator (`:12-15`); it is driven by `scripts/mastery.ts` and tested by `tests/mastery.test.ts`.
 
-#### `Practice`, `MasteryRule` and the three rules (`:17-53`)
+#### `Practice`, `MasteryRule` and the three rules (`:17-56`)
 
-`Practice = { student; skill; answers: Uint8Array; known?: Uint8Array }`: one student's answers on one skill in order, and in simulations whether they knew it after each. `MasteryRule = { name; declare(skill, answers): number | null }`: the 1-based number of the answer after which mastery is declared, or `null`.
+`Practice = { student; skill; answers: Uint8Array; known?: Uint8Array }`: one student's answers on one skill in order, and in simulations whether they knew it after each. `MasteryRule = { name; declare(skill, answers, practice?): number | null }`: the 1-based number of the answer after which mastery is declared, or `null`. The practice itself is the optional third argument, "for a rule that needs more than the answers": BKT on each atom (`atoms.ts`) reads which atom each question asked for from it, and `decide` passes it.
 
-- `streakRule(n)` (`:27-34`), named `streak n`: the first answer that completes a run of `n` right. "N right in a row: the rule deployed systems use (three in the ASSISTments skill builders)."
-- `emaRule(p, θ)` (`:36-43`), named `EMA θ …`: starts at `p.start`, applies `emaStep` per answer and declares at the first score $\ge \theta$.
-- `bktRule(paramsOf, θ)` (`:45-53`), named `BKT θ …`: starts at the skill's `init`, applies `bktStep(...).known` per answer ("after the answer and the chance to learn from it") and declares at the first $P(\text{known}) \ge \theta$.
+- `streakRule(n)` (`:30-37`), named `streak n`: the first answer that completes a run of `n` right. "N right in a row: the rule deployed systems use (three in the ASSISTments skill builders)."
+- `emaRule(p, θ)` (`:39-46`), named `EMA θ …`: starts at `p.start`, applies `emaStep` per answer and declares at the first score $\ge \theta$.
+- `bktRule(paramsOf, θ)` (`:48-56`), named `BKT θ …`: starts at the skill's `init`, applies `bktStep(...).known` per answer ("after the answer and the chance to learn from it") and declares at the first $P(\text{known}) \ge \theta$.
 
-`shown` (`:23-25`) names thresholds: up to 0.9999 as the number to four places, above it by the distance from 1 ("1 − 1e-7.5 is 1 − 10^−7.5"), so every threshold of the extended search has its own name.
+`shown` (`:26-28`) names thresholds: up to 0.9999 as the number to four places, above it by the distance from 1 ("1 − 1e-7.5 is 1 − 10^−7.5"), so every threshold of the extended search has its own name.
 
-#### `simulatePractice(params)` and `practicesFrom(observations)` (`:55-103`)
+#### `simulatePractice(params)` and `practicesFrom(observations)` (`:58-106`)
 
-`PracticeParams` (`:59-66`) is `Partial<SimParams>` plus `skills` (default `ALL_SIM_SKILLS`, the 38 `SIM_SKILLS` flattened in `AREAS` order, `:67`), `length` (questions per learner per skill, default 30), `level` (default 2) and `masteredAt` (default `MASTERED_AT = 0.9`, `:58`). `simulatePractice` (`:75-93`) builds one `makeWorld` and has every learner practise every skill one after another, `length` questions each, all at `level`; after each `world.answer` it records whether the learner now knows the skill: in the bkt world the learner's `known` state, elsewhere whether `world.chance(l, skill, level) >= masteredAt`. The comment: "With one level, flat learning, no transfer and no forgetting the bkt world is exactly BKT (Proposition 2 in the outline)." `practicesFrom` (`:96-103`) turns logged observations into one `Practice` per student and skill, in order of first appearance, with no `known`.
+`PracticeParams` (`:62-69`) is `Partial<SimParams>` plus `skills` (default `ALL_SIM_SKILLS`, the 38 `SIM_SKILLS` flattened in `AREAS` order, `:70`), `length` (questions per learner per skill, default 30), `level` (default 2) and `masteredAt` (default `MASTERED_AT = 0.9`, `:61`). `simulatePractice` (`:78-96`) builds one `makeWorld` and has every learner practise every skill one after another, `length` questions each, all at `level`; after each `world.answer` it records whether the learner now knows the skill: in the bkt world the learner's `known` state, elsewhere whether `world.chance(l, skill, level) >= masteredAt`. The comment: "With one level, flat learning, no transfer and no forgetting the bkt world is exactly BKT (Proposition 2 in the outline)." `practicesFrom` (`:99-106`) turns logged observations into one `Practice` per student and skill, in order of first appearance, with no `known`.
 
-#### `fitRules(train)` (`:105-115`)
+#### `fitRules(train)` (`:108-118`)
 
 Groups the training practices' answer sequences by skill, fits BKT per skill with `fitBkt` and one EMA with `fitEma` over all sequences, "as the held-out replay fits them". A skill absent from training uses parameters fitted on all skills, "fitted only if needed" (`pooled ??= fitBkt(all)`). Returns `Fitted = { bkt: (skill) => BktParams; ema: EmaParams }`.
 
-#### `decide`, `judge` (`:117-156`)
+#### `decide`, `judge` (`:120-159`)
 
 `decide(rule, practices)` gives a `Decision = { at, right }` per practice; `right` is `known[at - 1] === 1`, or `null` when the rule never declares or the practice has no truth. `judge` returns a `Judgement`: `declared` (share of practices declared), `cost` (mean answers until declared, a never-declared practice counting its full length), `precision` ("The share of declarations made while the learner knew the skill (NaN without a truth or a declaration)") and `missed` ("The share of practices ending with the skill known in which mastery was never declared (NaN if none)"). It accepts precomputed decisions so a rule is not replayed twice.
 
-#### `thresholdForCost(make, practices, cost, lo = 0.5, hi = 0.9999)` (`:158-170`)
+#### `thresholdForCost(make, practices, cost, lo = 0.5, hi = 0.9999)` (`:161-173`)
 
 "A higher threshold is never reached sooner, so cost never falls as it rises, and bisection finds it": 30 halvings of `[lo, hi]`, then whichever end's cost is nearer the target.
 
-#### `bootstrapByStudent`, `precisionOf`, `costOf` (`:172-187`, `:253-258`)
+#### `bootstrapByStudent`, `precisionOf`, `costOf` (`:175-190`, `:256-261`)
 
 `bootstrapByStudent(practices, statistic, resamples = 2000, seed = 1)` groups practice indices by student and calls `bootstrapGroups` from `evaluate.ts`, handing the statistic the indices of every practice of every student drawn, "since one student's practices on different skills are not independent". `precisionOf(decisions)` and `costOf(decisions, practices)` are statistics of that shape: precision and mean cost over the given indices.
 
-#### `compareAtCost(train, test, fitted, n = 3, resamples = 2000, seed = 1)` (`:189-219`)
+#### `compareAtCost(train, test, fitted, n = 3, resamples = 2000, seed = 1)` (`:192-222`)
 
 Equal practice, "as description": the streak rule's mean cost on the training practices is the target; `thresholdForCost` finds BKT's and the EMA's thresholds that cost the same on the training practices; all three rules are judged on the test practices. Each `AtCost` row adds `threshold` (`null` for the streak), a precision `interval` over test students and, on the EMA and streak rows, `bktAhead`: BKT's precision minus this rule's, with its interval.
 
-#### H2: `PRECISION_TARGET`, the threshold grids, `cheapestAtPrecision`, `compareAtPrecision` (`:221-302`)
+#### H2: `PRECISION_TARGET`, the threshold grids, `cheapestAtPrecision`, `compareAtPrecision` (`:224-305`)
 
-`PRECISION_TARGET = 0.9` (`:222`). `FINE_THRESHOLDS` (`:227-231`) are "every 0.01 from 0.5 to 0.99, then finer up to 0.9999, since BKT's P(known) crowds just below 1 and only the finest steps make it wait": 50 + 9 + 9 = 68 values (0.50 … 0.99, 0.991 … 0.999, 0.9991 … 0.9999). `BEYOND_THRESHOLDS` (`:238-241`) append $1 - 10^{-k}$ for $k = 4.1, 4.2, \ldots, 15$ (110 values), "as a check that came after the results"; "past 1 − 10^−15 the difference from 1 is lost in double precision". `cheapestAtPrecision(rules, practices, target)` (`:244-251`) returns the rule with the lowest cost among those whose precision on the given practices is at least `target`, or `null`.
+`PRECISION_TARGET = 0.9` (`:225`). `FINE_THRESHOLDS` (`:230-234`) are "every 0.01 from 0.5 to 0.99, then finer up to 0.9999, since BKT's P(known) crowds just below 1 and only the finest steps make it wait": 50 + 9 + 9 = 68 values (0.50 … 0.99, 0.991 … 0.999, 0.9991 … 0.9999). `BEYOND_THRESHOLDS` (`:241-244`) append $1 - 10^{-k}$ for $k = 4.1, 4.2, \ldots, 15$ (110 values), "as a check that came after the results"; "past 1 − 10^−15 the difference from 1 is lost in double precision". `cheapestAtPrecision(rules, practices, target)` (`:247-254`) returns the rule with the lowest cost among those whose precision on the given practices is at least `target`, or `null`.
 
-`compareAtPrecision(train, test, fitted, target, resamples, seed, thresholds = FINE_THRESHOLDS)` (`:275-302`) is H2's comparison. The families are BKT and EMA at every threshold in `thresholds`, and the streak rule for every N from 1 to the longest training practice. Each family's rule is chosen by `cheapestAtPrecision` on the training practices and judged on the test practices; each `AtPrecision` row carries the judgement with bootstrap intervals for cost and precision, and on the EMA and streak rows `bktSaves`, "This rule's cost minus BKT's, with its interval: above zero, BKT needs fewer answers". A method no threshold qualifies for comes back as `{ method, rule: null }`; if that method is BKT, the other rows get no `bktSaves`.
+`compareAtPrecision(train, test, fitted, target, resamples, seed, thresholds = FINE_THRESHOLDS)` (`:278-305`) is H2's comparison. The families are BKT and EMA at every threshold in `thresholds`, and the streak rule for every N from 1 to the longest training practice. Each family's rule is chosen by `cheapestAtPrecision` on the training practices and judged on the test practices; each `AtPrecision` row carries the judgement with bootstrap intervals for cost and precision, and on the EMA and streak rows `bktSaves`, "This rule's cost minus BKT's, with its interval: above zero, BKT needs fewer answers". A method no threshold qualifies for comes back as `{ method, rule: null }`; if that method is BKT, the other rows get no `bktSaves`.
 
-#### `tradeOff(fitted, practices)` (`:304-315`)
+#### `tradeOff(fitted, practices)` (`:307-318`)
 
 Cost and precision for BKT and the EMA at `CURVE_THRESHOLDS` (θ from 0.80 to 0.99 in steps of 0.01, 20 values) and the streak rule at `CURVE_STREAKS` (N = 2 … 6): 45 `CurvePoint`s, "the description around H2's single comparison".
 
-#### `masteryCalibration(fitted, practices)` (`:317-346`)
+#### `masteryCalibration(fitted, practices)` (`:320-349`)
 
 For every answer of every practice that has a truth, three scores as their rules read them, each paired with whether the learner had mastered the skill at that moment: BKT's $P(\text{known})$ after the step, BKT's chance of a right answer next, $P(\text{known})(1-\text{slip}) + (1-P(\text{known}))\,\text{guess}$, and the EMA's score. Each score gets `n`, a Brier score (`rmse(ps) ** 2`, the mean squared gap between score and truth) and ten `calibration` bins whose `observed` is the share mastered. The comment notes the truth is the known state in the bkt worlds and the true chance reaching `masteredAt` in the gradual ones, "the scale of the other two scores".
 
-#### H3: `agreement`, `rightAfter` (`:348-385`)
+#### H3: `agreement`, `rightAfter` (`:351-388`)
 
 On real answers, where the truth is unknown. `agreement(first, second, practices)` gives the shares of practices in which both rules, only the first, only the second, or neither declare, and `meanGap`, the mean of the first rule's answer count minus the second's where both declare. `rightAfter(rule, practices, k = 3)` counts, over practices that have answers after the declaration, the share right among the next `k`; "Few practices have them when the data were collected under the streak rule itself."
 
@@ -969,6 +970,26 @@ Reads the operation and the two numbers from the question's worked-solution spec
 #### What the tests pin (`tests/conceptGraph.test.ts`)
 
 The graph's counts, that no idea needs itself and every idea but `part` needs `part`; the ideas read from hand-made questions; that the generator shows every idea and edge but `toMixed` and `part→toMixed`, with more ideas per question at each level (about 3.9, 4.3 and 5.3); that each gap is used by every question its mistake can happen on; `progressOf` at the default and a stricter share; test 1 on the generator. Tests 2 and 3 run on simulated learners whose atoms are known (300 learners, 12 questions, seeds 1–3): one atom passes both; two atoms asked in turn give a smooth curve that only the transfer test tells apart; a harder atom first asked at the seventh question breaks the curve.
+
+### src/model/atoms.ts — skills made of atoms, and BKT on each
+
+A check that came after the thesis's results, on the reading that BKT is right about atoms and that a skill made of several of them is what looks like gradual learning. The header (`:1-12`): "every skill is k atoms, and each atom is exactly what BKT assumes a skill is: known or not, learnt all at once, with a guess and a slip. A question on the skill asks for one atom, chosen at random". The skill is mastered when every atom is known, "which here is the same as the gradual worlds' definition: the chance of a right answer on the next question is at least 0.9 (one minus the slip) only then". It reuses `mastery.ts` for everything but the atoms, is driven by `scripts/atoms.ts` and tested by `tests/atoms.test.ts`; nothing in the thesis's results reads it, and `simulate.ts` is untouched, so no published number moves.
+
+#### The world: `simulateAtoms(params)` (`:23-76`)
+
+`AtomPractice` (`:24`) is a `Practice` with its truth (`known`, every atom known after each answer), `atom` (which atom each question asked for) and `atomKnown` (each atom's state after each answer). `AtomParams` (`:26-37`) are `students`, `skills`, `atoms`, `length`, `learnRate` and `seed`; `DEFAULT_ATOMS` (`:38`) is 400 students, 12 skills, 2 atoms, 30 questions, rate 0.02, seed 1. Each atom guesses 0.2 and slips 0.1, the BKT world's chances at level 2 (`:41`), and an unknown atom is learnt after a question asking for it with chance `min(1, 2.5 × learnRate)`, as in the BKT world (`:42`). Ability is an overall part and one per skill with `DEFAULT_SIM`'s spreads; each atom has its own difficulty, and ability against it is the chance of knowing the atom at the start (`:50-76`). It draws from its own `rng(seed)`.
+
+#### Splitting and BKT on each atom: `byAtom`, `atomsRule`, `fitAtoms`, `atomsCalibration` (`:78-129`)
+
+`byAtom` (`:80-88`) turns each practice into one practice per atom, named `skill#a`, with the answers its questions got, in order, and that atom's truth. `atomsRule(paramsOf, θ)` (`:90-107`), named `BKT per atom θ …`, reads the atoms from the practice (`MasteryRule`'s third argument), updates only the asked atom's $P(\text{known})$ with `bktStep` and declares at the first answer after which every atom's is at least θ. `fitAtoms` (`:109-115`) fits BKT per atom with `fitBkt` on the training practices split by atom. `atomsCalibration` (`:117-129`) scores every answer with the product of the atoms' $P(\text{known})$ against every atom known: a Brier score and ten bins, as `masteryCalibration` gives them.
+
+#### `compareAtoms(train, test, target, resamples, seed, thresholds)` (`:131-161`)
+
+`compareAtPrecision` on the skill as H2 runs it (BKT, EMA and the streak rule, with `fitRules`), then BKT on each atom chosen the same way: the cheapest of `atomsRule` at every threshold whose declarations on the training practices are right at least `target` of the time, judged on the test practices with bootstrap intervals over students. When BKT on the skill also meets the standard, `perAtom.bktSaves` is BKT per atom's cost minus BKT on the skill's, with its interval (below zero, per atom is cheaper). `calibration` is the skill's three scores from `masteryCalibration` and then BKT on each atom's.
+
+#### What the tests pin (`tests/atoms.test.ts`)
+
+The world keeps its truth straight: one atom asked per question, an atom once known stays known, only the asked atom can be learnt, the skill is known exactly when every atom is, the same seed gives the same practices, and `byAtom` puts every answer with its atom in order (`:10-29`). With one atom, BKT on each atom is BKT on the skill: the same fitted parameters, the same declaration at two thresholds on every practice, the same Brier score (`:31-38`). With three atoms (200 students, 4 skills, rate 0.1) BKT on the skill meets H2's standard at no threshold up to 0.9999, BKT per atom is cheaper than the EMA, and the Brier scores order as in the gradual worlds, BKT's $P(\text{known})$ worse than the EMA's, with BKT per atom better than both (`:40-49`). With two atoms both forms of BKT meet the standard and per atom needs fewer answers (`:51-56`). The last two hold on seeds 1 to 5.
 
 ### src/learner.ts — the browser-side learner client
 
@@ -3652,6 +3673,10 @@ Mastery decisions, H2 and H3 of the thesis (`:1-16`), on top of `src/model/maste
 H2 (`:83-177`): four worlds (`:96-102`), "The bkt world as BKT assumes it (one level, flat learning, no transfer, no forgetting), then the worlds that are not": `bkt`, `bkt, forgetting` (the bkt world with `forget`; `--worlds` spells it `bkt-forget`, `:103-104`), `elo` and `irt2pl`. For every learning rate × world (`:108-130`): `simulatePractice` at level 2, `splitByStudent` on the practices with `--test-share` and `--seed`, `fitRules` on the training learners, and on the test learners the shares that know the skill after the first and the last answer, `compareAtPrecision` (H2, with the chosen thresholds), `compareAtCost` (equal practice, description), BKT at the usual 0.95 with its precision interval ("in the plain bkt world its precision has a floor of 0.95 with the true parameters, so how far below it falls is what fitting costs", `:113-115`), `tradeOff` and `masteryCalibration`. `--curves` writes `world,learn_rate,method,threshold,cost,declared,precision,missed` (`:132-138`); `--calibration` writes `world,learn_rate,score,from,to,n,mean_score,share_mastered` (`:139-146`); `--json` prints the settings, `highestThreshold` and every result (`:147`). The text output (`:149-176`) gives, per world and rate, each method's chosen rule with its answers and interval, precision, share declared, share missed and what BKT saves, or "never right … of the time on the training learners"; then the three rules and BKT at 0.95 at the streak rule's cost; then each score's Brier score and its top bin (scores of 0.9 and above).
 
 H3 (`:62-80`): `fromFile`, `practicesFrom`, a student split and `fitRules`; BKT at 0.95 and the EMA at the threshold costing what the streak rule costs on the training students ("cost needs no truth", `:66-69`); on the test practices `agreement` for BKT/streak, EMA/streak and BKT/EMA, and `rightAfter` for all three rules (the next three answers). `--json` prints `{ source, testShare, seed, ema, practices, agreement, after }`.
+
+#### `scripts/atoms.ts`
+
+H2's comparison in the atoms world (`:1-10`), on top of `src/model/atoms.ts`. Flags as in `scripts/mastery.ts` (`whole`, `share`, `fail`, `:15-34`): `--atoms` 1,2,3,4 (whole numbers from 1 to 255, since an atom's index is kept in a byte), `--learn-rates` 0.02,0.1 (H2's two), `--students`, `--skills`, `--length` and `--seed` defaulting to `DEFAULT_ATOMS`, `--test-share` 0.2, `--target` 0.9, `--resamples` 2000, and `--beyond` for `BEYOND_THRESHOLDS` (`:36-49`). For every learning rate × number of atoms (`:53-58`): `simulateAtoms`, `splitByStudent`, the share of test practices with every atom known at the end, and `compareAtoms`. `--json` prints the settings and every result (`:59-62`); otherwise one block per setting with BKT on the skill, the EMA, the streak rule and BKT per atom (rule, cost with its interval, precision, share declared, and per atom minus on the skill), then the four Brier scores (`:64-84`).
 
 #### `scripts/analyse-study.ts`
 
