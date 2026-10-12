@@ -412,6 +412,30 @@ const fmtM = (m: number, p: number, k = p) => (m / 10 ** p).toFixed(Math.max(0, 
 /** A decimal without trailing zeros, safe from floating dust: 7.350000001 → "7.35". */
 const tidy = (v: number) => String(Number(v.toFixed(10)));
 
+/** The steepest angle a right-triangle picture draws to scale. */
+export const STEEPEST = 66;
+/**
+ * The centre of the angle label in a right-triangle picture: θ at (bx, by), base bw long, right angle at the far end.
+ * It is the spot nearest the angle's bisector, 60 px out, where a box tw wide and 12 high lies inside the triangle with
+ * 3 px to spare, clear of the right-angle mark and at least 20 px from the vertex, so that an arc fits inside it.
+ */
+export function angleLabelAt(bx: number, by: number, bw: number, th: number, tw: number): [number, number] {
+  const [ix, iy] = [bx + 60 * Math.cos(th / 2), by - 60 * Math.sin(th / 2)];
+  const cx = bx + bw;
+  let best: [number, number] = [ix, iy];
+  let bestD = Infinity;
+  for (let x = bx; x <= cx; x += 2) {
+    for (let y = by - bw * Math.tan(th); y <= by; y += 2) {
+      const [l, r, t, b] = [x - tw / 2, x + tw / 2, y - 6, y + 6];
+      const inside = b <= by - 3 && r <= cx - 3 && (l - bx) * Math.sin(th) - (by - t) * Math.cos(th) >= 3;
+      const clear = (r < cx - 17 || b < by - 17) && Math.hypot(l - bx, by - b) >= 20;
+      const d = Math.hypot(x - ix, y - iy);
+      if (inside && clear && d < bestD) [best, bestD] = [[x, y], d];
+    }
+  }
+  return best;
+}
+
 // ---------- the generators ----------
 
 type Gen = (r: Rng, L: Level, w: PracticeWords) => Omit<Exercise, "skill" | "level" | "seed">;
@@ -1164,19 +1188,24 @@ const GENS: Record<SkillId, Gen> = {
     // The values the trig tool needs; unknown sides get a placeholder it ignores for this case.
     const spec = { topic: "right", given, opp: known.opp ?? "3", adj: known.adj ?? "4", hyp: known.hyp ?? S(hyp), ang: known.ang ?? "30" };
     const pic = (x0: number, y0: number) => {
-      // θ at bottom left, right angle at bottom right; roughly to scale.
-      const th = ((ask === "ang" ? v : ang) * Math.PI) / 180;
+      // θ at bottom left, right angle at bottom right; roughly to scale, except that a steeper angle is drawn
+      // as STEEPEST so that its label still fits inside.
+      const th = (Math.min(ask === "ang" ? v : ang, STEEPEST) * Math.PI) / 180;
       const [bw, bh] = Math.tan(th) * 210 <= 120 ? [210, 210 * Math.tan(th)] : [120 / Math.tan(th), 120];
       const [bx, by] = [x0 + 20, y0 + 135];
       const [cx, ay] = [r2(bx + bw), r2(by - bh)];
       const lab = (x: number, y: number, s: string, color: string, anchor = "middle") =>
         `<text x="${r2(x)}" y="${r2(y)}" ${FONT} font-size="15" font-weight="700" fill="${color}" text-anchor="${anchor}">${esc(s)}</text>`;
       const side = (k: "opp" | "adj" | "hyp") => (ask === k ? "x" : known[k] ?? "");
+      const angLabel = ask === "ang" ? "θ" : `${known.ang}°`;
+      const [lx, ly] = angleLabelAt(bx, by, bw, th, angLabel.length * 9);
+      // The arc stops short of the label and of the right-angle mark.
+      const rad = r2(Math.max(10, Math.min(Math.hypot(lx - angLabel.length * 4.5 - bx, ly + 6 - by) - 6, bw - 20)));
       const parts = [
         `<polygon points="${bx},${by} ${cx},${by} ${cx},${ay}" fill="#e7f5ff" stroke="${C.blue}" stroke-width="2.4" stroke-linejoin="round"/>`,
         `<path d="M${cx - 14},${by} L${cx - 14},${by - 14} L${cx},${by - 14}" fill="none" stroke="${C.blue}" stroke-width="1.6"/>`,
-        `<path d="M${bx + 42},${by} A42,42 0 0 0 ${r2(bx + 42 * Math.cos(Math.atan2(by - ay, cx - bx)))},${r2(by - 42 * Math.sin(Math.atan2(by - ay, cx - bx)))}" fill="none" stroke="${C.orange}" stroke-width="2"/>`,
-        lab(bx + 58, by - 8, ask === "ang" ? "θ" : `${known.ang}°`, C.orange, "start"),
+        `<path d="M${bx + rad},${by} A${rad},${rad} 0 0 0 ${r2(bx + rad * Math.cos(th))},${r2(by - rad * Math.sin(th))}" fill="none" stroke="${C.orange}" stroke-width="2"/>`,
+        lab(lx, ly + 5.5, angLabel, C.orange),
       ];
       const hs = side("hyp");
       const os = side("opp");
