@@ -26,7 +26,7 @@ import { LiveView, type LiveHost } from "../live/LiveView";
 import type { LiveKind } from "../math/live";
 import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
-import { isToolKind, MENUS, TOOLS, type ToolKind } from "../tools";
+import { isToolKind, MENUS, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
 type MathData = { kind: ToolKind; data: unknown; w: number; h: number };
@@ -97,6 +97,9 @@ export function BoardPage({ id }: { id: string }) {
   const [title, setTitle] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  // A docked tool (practice) has its own place beside the board, so a dialog can open while it stays.
+  const [dock, setDock] = useState<Dialog | null>(null);
+  const open = (d: Dialog) => (TOOLS[d.kind].docked ? setDock(d) : setDialog(d));
   const [palette, setPalette] = useState(false);
   // The board's theme as last seen; "" until Excalidraw reports it.
   const theme = useRef("");
@@ -418,7 +421,7 @@ export function BoardPage({ id }: { id: string }) {
 
   const openEditor = (el: ExcalidrawImageElement) => {
     const math = mathOf(el)!;
-    setDialog({ kind: math.kind, editing: el });
+    open({ kind: math.kind, editing: el });
   };
 
   const openPalette = () => {
@@ -476,6 +479,14 @@ export function BoardPage({ id }: { id: string }) {
   if (!board || !initialData) return <div className="center-msg">{t.loading}</div>;
 
   const openTool = dialog && TOOLS[dialog.kind];
+  const dockTool = dock && TOOLS[dock.kind];
+  /** Puts what a tool made on the board, or in place of the picture it was editing. */
+  const insert = (d: Dialog, tool: Tool, data: unknown, image: Parameters<ToolDialogProps["onSubmit"]>[1]) => {
+    const placed: PlacedImage = tool.png
+      ? { dataURL: image.dataURL!, mimeType: "image/png", width: image.width, height: image.height }
+      : svgImage({ svg: themedSvg(image.svg!, theme.current), width: image.width, height: image.height });
+    placeImage(placed, { kind: d.kind, data, w: image.width, h: image.height }, d.editing);
+  };
   return (
     <div className="board-page">
       <header className="board-bar">
@@ -506,7 +517,7 @@ export function BoardPage({ id }: { id: string }) {
             ...m.items.map((it) => ({
               icon: it.icon,
               label: t[it.label],
-              onPick: () => setDialog({ kind: it.kind, start: it.start }),
+              onPick: () => open({ kind: it.kind, start: it.start }),
             })),
             ...(LIVE_IN_MENUS[m.label] ?? []).map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], onPick: () => addLive(it.kind) })),
           ]} />
@@ -522,6 +533,7 @@ export function BoardPage({ id }: { id: string }) {
         </div>
       )}
 
+      <div className="board-body">
       <div
         className="canvas-wrap"
         // Double-clicking a formula/graph opens its editor (instead of Excalidraw's image crop mode).
@@ -563,6 +575,23 @@ export function BoardPage({ id }: { id: string }) {
           </DefaultSidebar>
         </Excalidraw>
       </div>
+      {dockTool && dock && (
+        <Suspense fallback={null}>
+          <dockTool.Dialog
+            key={dock.editing?.id ?? `${dock.kind}:${dock.start ?? ""}`}
+            docked
+            initial={dock.editing && mathOf(dock.editing)!.data}
+            start={dock.start}
+            onClose={() => setDock(null)}
+            onSubmit={(data, image) => {
+              insert(dock, dockTool, data, image);
+              // Practice goes on beside the board; an edit is finished.
+              if (dock.editing) setDock(null);
+            }}
+          />
+        </Suspense>
+      )}
+      </div>
 
       <Suspense fallback={null}>
         {openTool && dialog && (
@@ -572,10 +601,7 @@ export function BoardPage({ id }: { id: string }) {
             start={dialog.start}
             onClose={() => setDialog(null)}
             onSubmit={(data, image) => {
-              const placed: PlacedImage = openTool.png
-                ? { dataURL: image.dataURL!, mimeType: "image/png", width: image.width, height: image.height }
-                : svgImage({ svg: themedSvg(image.svg!, theme.current), width: image.width, height: image.height });
-              placeImage(placed, { kind: dialog.kind, data, w: image.width, h: image.height }, dialog.editing);
+              insert(dialog, openTool, data, image);
               setDialog(null);
             }}
           />
@@ -591,7 +617,7 @@ export function BoardPage({ id }: { id: string }) {
             setPalette(false);
             // The tool dialog hands focus back to whatever had it before the search.
             paletteOpener.current?.focus();
-            setDialog({ kind, start });
+            open({ kind, start });
           }}
         />
       )}

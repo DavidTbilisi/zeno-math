@@ -13,6 +13,8 @@ export type ToolDialogProps = {
   start?: string;
   onSubmit: (data: unknown, image: { svg?: string; dataURL?: string; width: number; height: number }) => void;
   onClose: () => void;
+  /** Beside the board rather than over it (a tool whose `docked` is set). */
+  docked?: boolean;
 };
 
 export type ToolKind =
@@ -23,6 +25,8 @@ export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
   /** Label of the edit button when a picture of this kind is selected. */
   edit: Word;
+  /** Opens beside the board instead of over it, and stays open while other tools are used. */
+  docked?: boolean;
   /** The dialog returns a PNG snapshot instead of an SVG. */
   png?: boolean;
   /** For the tool search: the dialog's tabs (key → label; the key opens that tab), their hints, and more names per tab. */
@@ -69,6 +73,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   practice: {
     Dialog: load(() => import("./components/PracticeDialog"), "PracticeDialog"),
     edit: "editPractice",
+    docked: true,
     topics: (t) => ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData }),
     hints: (t) => t.practiceHints,
     names: (t) => Object.fromEntries(AREAS.map((a) => [a, Object.fromEntries(SKILLS[a].map((s) => [s, t.pracWords.skills[s]]))])),
