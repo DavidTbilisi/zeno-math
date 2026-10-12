@@ -37,6 +37,7 @@ The existing documents describe Zeno from above: `README.md` (features), `docs/a
   - [src/model/analysis.ts — the pre-registered analysis](#srcmodelanalysists--the-pre-registered-analysis)
   - [src/model/simulate.ts — synthetic learners and the simulation study](#srcmodelsimulatets--synthetic-learners-and-the-simulation-study)
   - [src/model/mastery.ts — mastery rules and how they are judged](#srcmodelmasteryts--mastery-rules-and-how-they-are-judged)
+  - [src/model/conceptGraph.ts — a concept's inside, and whether an idea is an atom](#srcmodelconceptgraphts--a-concepts-inside-and-whether-an-idea-is-an-atom)
   - [src/learner.ts — the browser-side learner client](#srclearnerts--the-browser-side-learner-client)
   - [src/api.ts — the fetch wrapper](#srcapits--the-fetch-wrapper)
 - [4. The browser app shell, pages and study UI](#4-the-browser-app-shell-pages-and-study-ui)
@@ -181,7 +182,7 @@ Everything is TypeScript. The browser side is React 19 built by Vite 8. The serv
 | Path | Lines | What lives there |
 |---|---|---|
 | `src/math/` | ~44,000 | Pure TypeScript maths: generators, the checker, exact arithmetic, SVG renderers, worked steps. No React, no Node. Imports only `../locales/en` as a *type*. |
-| `src/model/` | ~1,900 | The learner model (`elo.ts`), the two policies (`policy.ts`), the curriculum and prerequisites, test forms, the evaluation harness with PFA, BKT and moving-average baselines and the H1 bootstrap, the mastery rules and how they are judged (`mastery.ts`), the pre-registered analysis, the simulation worlds, and their seeded generator (`random.ts`). No React, no Node. |
+| `src/model/` | ~1,900 | The learner model (`elo.ts`), the two policies (`policy.ts`), the curriculum and prerequisites, test forms, the evaluation harness with PFA, BKT and moving-average baselines and the H1 bootstrap, the mastery rules and how they are judged (`mastery.ts`), a prototype graph of the ideas inside fractions with tests of whether an idea is an atom (`conceptGraph.ts`), the pre-registered analysis, the simulation worlds, and their seeded generator (`random.ts`). No React, no Node. |
 | `src/components/` | ~7,000 | The 33 tool dialogs, the practice dialog (also the docked panel and the practice page's body), the test runner, the teacher widgets, shared UI. |
 | `src/pages/` | ~1,300 | Home, Board, SharedBoard, Teacher, Practice. |
 | `src/live/` | ~1,050 | Live pieces drawn inside Excalidraw embeddables. |
@@ -938,6 +939,36 @@ On real answers, where the truth is unknown. `agreement(first, second, practices
 #### What the tests pin (`tests/mastery.test.ts`)
 
 The streak rule's declarations on hand-made sequences (`:18-24`); Proposition 1, that three in a row equals the EMA with α 0.6, θ 0.92 and any start below 0.5 on every 0/1 sequence of length up to 12, and not at start 0.65 (`:26-37`); `emaStep`, an `EmaModel` with given settings that `fit` leaves alone (`:39-50`); `fitEma`'s start as the share of right first answers and α at the top of the grid when answers never change, at most 0.05 for independent coin flips (`:52-63`); `bktRule` against a hand replay (`:65-74`); Proposition 2, that with the true parameters BKT's declarations are right at least θ of the time, within 0.01, on 20 000 simulated practices (`:76-94`); `judge`'s counts by hand (`:96-106`); `thresholdForCost` (`:108-117`); `bootstrapByStudent` resampling whole students (`:119-129`); `agreement` and `rightAfter` by hand (`:131-141`); `practicesFrom` (`:143-147`); `simulatePractice` being deterministic, drawing nothing extra with `forget: 0`, losing a known skill only with forgetting, and letting learners cross the line in a gradual world (`:149-159`); `compareAtCost` and `tradeOff` (`:161-176`); `cheapestAtPrecision` and the two threshold grids (`:178-200`); `compareAtPrecision`, including that searching `BEYOND_THRESHOLDS` changes no rule found below 0.9999 and that an unreachable target gives `rule: null` for all three (`:202-223`); `masteryCalibration` by hand (`:225-244`) and BKT's chance of a right answer never passing $1 - \text{slip}$ (`:246-252`).
+
+### src/model/conceptGraph.ts — a concept's inside, and whether an idea is an atom
+
+A prototype, fractions only, that nothing in the app reads yet. The header (`:1-11`) states the idea: a skill is "made of smaller ideas (nodes) joined by connections (edges), and how big that graph is says how complex the concept is", and "mastery is only well defined on ideas that are atoms: learnt as one thing, so that a student has it or has not".
+
+#### The graph (`:16-61`)
+
+`ConceptGraph = { nodes: Record<N, string>; edges: [from, to, kind][] }`, where `kind` is `"needs"` (the second idea cannot be done without the first) or `"joins"` (the two are used together, one inside the other). `FRACTIONS` (`:26-54`) has 10 ideas (`part`, `equivalent`, `lowest`, `commonDenom`, `addSub`, `multiply`, `reciprocal`, `divide`, `toImproper`, `toMixed`) and 13 edges, three of them joins (`commonDenom→addSub`, `toImproper→addSub`, `toImproper→multiply`). `complexity(g)` (`:58-61`) is the count of ideas, of edges and their sum: 10, 13, 23. `edgeId` names an edge `from→to`.
+
+#### Reading a question: `fractionsUses(ex)` (`:63-100`)
+
+Reads the operation and the two numbers from the question's worked-solution spec (`fracop`, `practice.ts`) and returns the ideas it needs and every edge between two of them (`usesOf`, `:65-68`). Adding or subtracting needs `addSub`, and `commonDenom` with `equivalent` when the denominators differ; multiplying needs `multiply`, dividing also `reciprocal` and `divide`; a mixed number in the question needs `toImproper`; and `lowest` with `equivalent` is added when the usual method (over the lowest common denominator, or tops times tops) leaves a result whose top and bottom share a factor. Never `toMixed`: "an improper answer is accepted, so no question asks for a mixed number back".
+
+#### `FRACTIONS_GAPS` and `progressOf` (`:102-118`)
+
+`FRACTIONS_GAPS` names the idea or edge each fractions mistake shows is missing: `addAcross` → `addSub`, `flipFirst` → `reciprocal→divide`. `progressOf(g, known, edgeShare = 0.8)` gives the share of ideas and of edges a student knows, and `mastered` when they know every idea and at least `edgeShare` of the edges.
+
+#### The three atom tests (`:120-209`)
+
+`needsOf(g, node)` (`:122-130`) is everything an idea needs, following needs edges only.
+
+- Test 1, `testedAlone(g, questions)` (`:132-143`): an idea is tested alone by a question that needs it and otherwise only what it needs, so "a wrong answer there points at the idea". Over the generator's questions only `addSub`, `multiply` and `divide` are; every step inside them comes with another idea, and `toMixed` is never asked.
+- Test 2, `learningCurve(attempts, node)` (`:160-187`): the error rate at each opportunity to use the idea, read as far as `CURVE_STUDENTS = 20` students got, with half an error added to each point so it has a logarithm; a power law $\text{error} = a k^{-b}$ fitted in logs. `smooth` when there are at least three points, the curve falls and $R^2 \ge$ `SMOOTH_R2 = 0.8`. A curve that jumps back up is "typically a harder part that only later questions ask".
+- Test 3, `transfers(attempts, node)` (`:189-209`): two logistic models (`fitLogistic` from `evaluate.ts`) predict each answer from its form and from $\log(1 + \text{earlier practice})$, practice counted over every form or over the answer's own form only. They have as many weights each, so the higher log-likelihood wins; `transfers` when counting every form fits at least as well (Learning Factors Analysis).
+
+`Attempt = { student; nodes; right; form? }` (`:146`) is one answer with the ideas its question needed; `opportunities` (`:148-158`) counts each student's earlier attempts on the idea, of any form and of the same form.
+
+#### What the tests pin (`tests/conceptGraph.test.ts`)
+
+The graph's counts, that no idea needs itself and every idea but `part` needs `part`; the ideas read from hand-made questions; that the generator shows every idea and edge but `toMixed` and `part→toMixed`, with more ideas per question at each level (about 3.9, 4.3 and 5.3); that each gap is used by every question its mistake can happen on; `progressOf` at the default and a stricter share; test 1 on the generator. Tests 2 and 3 run on simulated learners whose atoms are known (300 learners, 12 questions, seeds 1–3): one atom passes both; two atoms asked in turn give a smooth curve that only the transfer test tells apart; a harder atom first asked at the seventh question breaks the curve.
 
 ### src/learner.ts — the browser-side learner client
 
