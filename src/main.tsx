@@ -8,6 +8,7 @@ import "./styles.css";
 const BoardPage = lazy(() => import("./pages/BoardPage").then((m) => ({ default: m.BoardPage })));
 const TeacherPage = lazy(() => import("./pages/TeacherPage").then((m) => ({ default: m.TeacherPage })));
 const SharedBoardPage = lazy(() => import("./pages/SharedBoardPage").then((m) => ({ default: m.SharedBoardPage })));
+const PracticePage = lazy(() => import("./pages/PracticePage").then((m) => ({ default: m.PracticePage })));
 
 function useHashRoute(): string {
   const [hash, setHash] = useState(location.hash);
@@ -29,6 +30,13 @@ function App() {
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>
         <SharedBoardPage key={shareToken} token={shareToken} />
+      </Suspense>
+    );
+  const practice = hash.match(/^#\/practice(?:\/(\w+))?$/);
+  if (practice)
+    return (
+      <Suspense fallback={<div className="center-msg">…</div>}>
+        <PracticePage key={practice[1]} start={practice[1]} />
       </Suspense>
     );
   if (hash.startsWith("#/teacher"))

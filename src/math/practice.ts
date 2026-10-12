@@ -46,8 +46,8 @@ export type Exercise = {
   prompt: string;
   /** The question in LaTeX ("" when the prompt says it all). */
   q: string;
-  /** A drawing that goes with the question (the right triangle), with its height. */
-  pic?: { svg: (x: number, y: number) => string; h: number };
+  /** A drawing that goes with the question (the right triangle), with its height and the width it can take up. */
+  pic?: { svg: (x: number, y: number) => string; h: number; w: number };
   answer: Answer;
   /** The answer in LaTeX. */
   show: string;
@@ -1189,7 +1189,7 @@ const GENS: Record<SkillId, Gen> = {
     return {
       prompt: ask === "ang" ? w.prompts.rightAngle : w.prompts.rightSide,
       q: "",
-      pic: { svg: pic, h: 160 },
+      pic: { svg: pic, h: 160, w: 300 },
       answer: num(v, 0.0051),
       show: `${ask === "ang" ? "\\theta" : "x"} \\approx ${dp(v, 2)}${ask === "ang" ? "^\\circ" : ""}`,
       plain: dp(v, 2),
@@ -1206,7 +1206,7 @@ const GENS: Record<SkillId, Gen> = {
       return {
         prompt: fill(w.prompts.circleFind, { a: angle ? `∠${ask}` : ask }),
         q: given,
-        pic: fig ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${fig.svg}</g>`, h: fig.h } : undefined,
+        pic: fig ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${fig.svg}</g>`, h: fig.h, w: fig.w } : undefined,
         answer: num(v, 1e-6),
         show: angle ? `${v}^\\circ` : String(v),
         plain: String(v),
@@ -1280,7 +1280,7 @@ const GENS: Record<SkillId, Gen> = {
     const sol = (src: string) => ({ kind: "euclid" as const, spec: { topic: "solids", src } });
     const pic = (src: string, ask?: string) => {
       const f = solidFigure(src, ask);
-      return f ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${f.svg}</g>`, h: f.h } : undefined;
+      return f ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${f.svg}</g>`, h: f.h, w: f.w } : undefined;
     };
     const out = (prompt: string, q: string, v: number, src: string, figSrc: string, ask?: string) => {
       const whole = Math.abs(v - Math.round(v)) < 1e-9;

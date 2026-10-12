@@ -54,3 +54,20 @@ test("an inequality is accepted however its sign is typed", async ({ page, reque
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("practice has a page of its own, reached from the home page", async ({ page }) => {
+  const { r, ex } = questionWith("fractions", () => true);
+  await page.goto("/");
+  await page.getByRole("link", { name: /Start practising/ }).click();
+  await expect(page).toHaveURL(/#\/practice$/);
+  await expect(page.getByRole("heading", { name: "Practice" })).toBeVisible();
+  // No board to insert into: no worksheet and no Insert button.
+  await expect(page.getByRole("radio", { name: w.ui.sheet })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Insert" })).toHaveCount(0);
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});

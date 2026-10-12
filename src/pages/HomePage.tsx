@@ -60,6 +60,15 @@ export function HomePage() {
       </header>
 
       <main className="home-main">
+        <a className="practice-card" href="#/practice">
+          <span className="practice-card-icon" aria-hidden="true">🎯</span>
+          <span className="practice-card-text">
+            <strong>{t.practice}</strong>
+            <span className="muted">{t.practiceIntro}</span>
+          </span>
+          <span className="btn primary">{t.practiceStart} →</span>
+        </a>
+
         <div className="section-head">
           <h2>{t.myBoards}</h2>
           <button className="btn primary" onClick={create}>+ {t.newBoard}</button>

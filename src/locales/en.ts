@@ -3601,6 +3601,8 @@ export const en = {
   },
   practice: "Practice",
   editPractice: "Edit practice sheet",
+  practiceIntro: "Questions on number, algebra, geometry, calculus and data, checked as soon as you answer.",
+  practiceStart: "Start practising",
   practiceNumber: "Number",
   practiceAlgebra: "Algebra",
   practiceGeometry: "Geometry & trigonometry",
