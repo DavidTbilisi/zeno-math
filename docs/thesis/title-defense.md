@@ -60,6 +60,26 @@ themselves are compared in the simulation.
 
 ## Questions to expect
 
+**Why is this question important?** Because every practice system makes this decision after every answer, and both
+ways of getting it wrong cost something. Declared too early, the student moves on to work that needs a skill they do
+not have; declared too late, they spend time on questions they could already answer, and experiments with the
+difficulty of practice suggest that can cost motivation too (Jansen et al., 2013). Mastery learning itself works:
+Bloom (1984) made it a benchmark, and reviews find that tutoring systems built on it raise test scores (Kulik &
+Fletcher, 2016) and come close to human tutors (VanLehn, 2011). Yet the systems used at scale do not agree on how to
+decide it: the Cognitive Tutors use BKT at 0.95, the ASSISTments skill builders used three right in a row, Khan
+Academy uses mastery levels. And my own results show the choice matters: in the gradual worlds, when BKT says 99 % the
+student has mastered the skill at most about half the time, and at its usual 0.95 about one declaration in ten is
+right. What the thesis measures is the accuracy of the decision, not how much students learn from it; that would need
+the classroom study.
+
+**Why this topic, of all the ones you could have chosen?** Because it is a decision I had to make anyway, and the
+part of my original question that I can answer properly. I built Zeno, and Zeno has to decide for every student and
+skill when to move on. I first wanted to test whether choosing questions with a learner model helps a class learn
+more than a fixed sequence, but that needs ethics approval for children's data, a school's timetable and, by my
+power analysis, several classes. The mastery decision is the piece of that question that public, anonymised data and
+simulation can answer, with a test fixed in advance that can fail, and with an answer that is useful whichever way it
+goes. I considered deep knowledge tracing instead and set it aside, for the reasons below.
+
 **Why not run the study in a classroom?** It needs ethics approval for minors' data and a school's timetable, which
 do not fit a bachelor's schedule. Public, anonymised data and simulation answer this question without collecting any
 personal data. A classroom study is future work, and Zeno is built to run it.
