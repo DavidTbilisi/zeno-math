@@ -103,6 +103,12 @@ test("mental division: all three methods give the true quotient and remainder", 
   assert.ok(div("table", 27483624, 62).includes("443 284, remainder 16"));
   assert.ok(div("table", 27483624, 62).includes("56 → 2 ✓"));
   assert.ok(div("flag", 8384, 32).includes("= 262, remainder 0"));
+  // 1 000 ÷ 12 by the flag: 1 ÷ 1 would give 1, but paying 2 × 1 for the flag next leaves 0 − 2, so the method takes 0
+  // (starred), and so on down the steps.
+  const flag = div("flag", 1000, 12);
+  assert.ok(flag.includes("= 83, remainder 4"), flag);
+  assert.ok(flag.includes("0 *"), flag);
+  assert.ok(flag.includes(mw.div.smaller), flag);
   assert.throws(() => renderMental(M({ topic: "divide", a: "5", b: "89", method: "base" }), mw), /more digits/);
   assert.throws(() => renderMental(M({ topic: "divide", a: "500", b: "7", method: "flag" }), mw), /two digits/);
 });
