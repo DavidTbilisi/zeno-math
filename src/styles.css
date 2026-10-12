@@ -138,6 +138,8 @@ input.invalid { border-color: var(--danger); }
 .dock .preview { min-height: 120px; }
 .dock .practice-input { font-size: 18px; padding: 8px 10px; }
 .dock .field-row { flex-wrap: wrap; }
+/* All the areas in view at once, on as many rows as the panel needs, rather than a strip to scroll. */
+.dock .tabs { flex-wrap: wrap; overflow-x: visible; row-gap: 0; }
 @media (max-width: 640px) {
   .dock { position: fixed; inset: 0; z-index: 100; width: auto; border-left: none; }
 }
