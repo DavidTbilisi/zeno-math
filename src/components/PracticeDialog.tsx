@@ -48,6 +48,8 @@ function save(p: Progress) {
     // private mode or full storage: progress just isn't kept
   }
 }
+/** How much larger the page draws the question's maths and picture than their own size, to sit with its larger text. */
+const MATH_SCALE = 1.4;
 /** Questions answered before a missed one comes back. */
 const REVIEW_AFTER = 3;
 
@@ -71,12 +73,13 @@ function markQueuedTests(plan: ClassPlan, studentCode: string) {
     if (a.student === studentCode && !plan.tests[a.phase].answered.includes(a.item)) plan.tests[a.phase].answered.push(a.item);
 }
 
-export function PracticeDialog({ initial, start, onSubmit, onClose }: {
-  initial?: PracticeSpec;
-  start?: string;
-  onSubmit: (spec: PracticeSpec, rendered: RenderedSvg) => void;
-  onClose: () => void;
-}) {
+/** On a board it is a dialog that inserts onto the board; without `onSubmit` it is the practice page's body. */
+type Props = { initial?: PracticeSpec; start?: string } & (
+  | { onSubmit: (spec: PracticeSpec, rendered: RenderedSvg) => void; onClose: () => void }
+  | { onSubmit?: undefined; onClose?: undefined }
+);
+
+export function PracticeDialog({ initial, start, onSubmit, onClose }: Props) {
   const { t } = useI18n();
   const w = t.pracWords;
   const [area, setArea] = useState<Area>(initial?.area ?? startOr(start, AREAS, "number"));
@@ -314,6 +317,26 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
       return { error: (e as Error).message };
     }
   }, [cur, w]);
+  // The page shows the question as text that wraps and scales with the screen, with the maths and any picture beside
+  // it; the board's dialog shows the card that gets inserted.
+  const question = useMemo(() => {
+    if (onSubmit) return null;
+    const ex = cur.ex;
+    try {
+      const q = ex.q ? latexToSvg(ex.q) : null;
+      const p = ex.pic;
+      // Figures can draw a little below their height, into the room the card leaves under them.
+      const h = p && p.h + 16;
+      const pic = p &&
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${p.w}" height="${h}" viewBox="0 0 ${p.w} ${h}"><rect width="${p.w}" height="${h}" fill="#ffffff"/>${p.svg(0, 0)}</svg>`;
+      return {
+        math: q && { src: svgToDataUrl(q.svg), width: q.width },
+        pic: p && pic && { src: svgToDataUrl(pic), width: p.w },
+      };
+    } catch (e) {
+      return { error: (e as Error).message };
+    }
+  }, [cur, onSubmit]);
   // The typed answer as maths, rendered by MathJax: that takes a moment, so it follows the typing rather than hold it up.
   const shown = useDeferredValue(input);
   const typed = useMemo(() => {
@@ -343,6 +366,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   }, [mode, area, pick, level, sheetSeed, count, withAnswers, w]);
 
   const insert = () => {
+    if (!onSubmit) return;
     if (mode === "sheet") {
       if (sheet?.rendered) onSubmit(sheetSpec, sheet.rendered);
       return;
@@ -371,19 +395,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
   const stat = (s: SkillId) => progress.stats[s];
   const skills = SKILLS[area] as readonly SkillId[];
 
-  return (
-    <Modal
-      title={initial ? t.editPractice : t.practice}
-      onClose={onClose}
-      footer={
-        <>
-          <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={classOn && (planStatus !== "ready" || !!testPhase || !!blocked) ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
-            {initial ? t.update : t.insert}
-          </button>
-        </>
-      }
-    >
+  const body = (
+    <>
       {student && (
         <Segmented items={[true, false]} value={inClass} onChange={switchPractice} label={(c) => (c ? w.ui.classPractice : w.ui.freePractice)} />
       )}
@@ -405,7 +418,9 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
           </div>
           <div className="field-row">
             <Segmented items={LEVELS} value={level} onChange={(L) => choose(area, pick, L)} label={(L) => w.levels[String(L) as "1" | "2" | "3"]} />
-            <Segmented items={["practise", "sheet"] as const} value={mode} onChange={setMode} label={(m) => (m === "practise" ? w.ui.practise : w.ui.sheet)} />
+            {onSubmit && (
+              <Segmented items={["practise", "sheet"] as const} value={mode} onChange={setMode} label={(m) => (m === "practise" ? w.ui.practise : w.ui.sheet)} />
+            )}
           </div>
         </>
       )}
@@ -458,10 +473,28 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
           ) : (
             classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
           )}
-          <div className="preview">
-            {"error" in card ? <span className="error">{card.error}</span> : <img src={card.src} alt="" style={{ maxWidth: "100%" }} />}
-            <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
-          </div>
+          {question ? (
+            <div className="preview practice-question">
+              {!classOn && !cur.review && (
+                <small className="hint">{w.skills[cur.ex.skill]} · {w.levels[String(cur.ex.level) as "1" | "2" | "3"]}</small>
+              )}
+              <p className="practice-prompt" aria-hidden="true">{cur.ex.prompt}</p>
+              {"error" in question ? (
+                <span className="error">{question.error}</span>
+              ) : (
+                <>
+                  {question.math && <img src={question.math.src} alt="" style={{ width: question.math.width * MATH_SCALE }} />}
+                  {question.pic && <img src={question.pic.src} alt="" style={{ width: question.pic.width * MATH_SCALE }} />}
+                </>
+              )}
+              <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
+            </div>
+          ) : (
+            <div className="preview">
+              {"error" in card ? <span className="error">{card.error}</span> : <img src={card.src} alt="" style={{ maxWidth: "100%" }} />}
+              <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
+            </div>
+          )}
           <label className="field">
             <span>{w.ui.answerHere} <span className="hint">({w.formats[cur.ex.format]})</span></span>
             <div className="field-row">
@@ -544,6 +577,25 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: {
           </div>
         </>
       )}
+    </>
+  );
+
+  // The page has no board to insert into, so no worksheet either.
+  if (!onSubmit) return <div className="practice-body">{body}</div>;
+  return (
+    <Modal
+      title={initial ? t.editPractice : t.practice}
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn" onClick={onClose}>{t.cancel}</button>
+          <button className="btn primary" disabled={classOn && (planStatus !== "ready" || !!testPhase || !!blocked) ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
+            {initial ? t.update : t.insert}
+          </button>
+        </>
+      }
+    >
+      {body}
     </Modal>
   );
 }

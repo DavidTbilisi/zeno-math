@@ -3602,6 +3602,8 @@ export const ka: Dict = {
   },
   practice: "ვარჯიში",
   editPractice: "დავალებების ფურცლის შეცვლა",
+  practiceIntro: "კითხვები რიცხვებზე, ალგებრაზე, გეომეტრიაზე, ანალიზსა და მონაცემებზე — პასუხი მაშინვე მოწმდება.",
+  practiceStart: "ვარჯიშის დაწყება",
   practiceNumber: "რიცხვები",
   practiceAlgebra: "ალგებრა",
   practiceGeometry: "გეომეტრია და ტრიგონომეტრია",

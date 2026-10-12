@@ -3602,6 +3602,8 @@ export const ru: Dict = {
   },
   practice: "Тренировка",
   editPractice: "Изменить лист заданий",
+  practiceIntro: "Задания по числам, алгебре, геометрии, анализу и данным — ответ проверяется сразу.",
+  practiceStart: "Начать тренировку",
   practiceNumber: "Числа",
   practiceAlgebra: "Алгебра",
   practiceGeometry: "Геометрия и тригонометрия",
