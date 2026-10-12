@@ -1,10 +1,12 @@
 // Skills made of atoms (src/model/atoms.ts): H2's comparison in a world where every skill is k atoms, each learnt as
 // BKT assumes, asked for in turn. For each number of atoms and learning rate, BKT on the skill, EMA and the streak rule
-// as H2 ran them, then BKT on each atom, which knows which atom each question asked for; and how well each score after
-// every answer matches the truth (every atom known).
+// as H2 ran them, then BKT on each atom, which knows which atom each question asked for, started afresh in every skill
+// and carried from skill to skill; and how well each score after every answer matches the truth (every atom known).
+// With --uses above 1 skills share atoms, each atom in that many skills.
 //
 //   npm run atoms
-//   --atoms 1,2,3,4  --learn-rates 0.02,0.1  --students 400  --skills 12  --length 30  --seed 1
+//   npm run atoms -- --atoms 3 --uses 1,2,3,4      what carrying shared atoms from skill to skill is worth
+//   --atoms 1,2,3,4  --uses 1  --learn-rates 0.02,0.1  --students 400  --skills 12  --length 30  --seed 1
 //   --test-share 0.2  --target 0.9  --resamples 2000
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
 //   --json     machine-readable output
@@ -35,6 +37,8 @@ const list = (name: string, fallback: string) => opt(name, fallback).split(",").
 
 const atoms = list("--atoms", "1,2,3,4");
 if (atoms.some((k) => !Number.isInteger(k) || k < 1 || k > 255)) fail("--atoms must be whole numbers from 1 to 255, separated by commas");
+const uses = list("--uses", "1");
+if (uses.some((u) => !Number.isInteger(u) || u < 1)) fail("--uses must be whole numbers above 0, separated by commas");
 const rates = list("--learn-rates", "0.02,0.1");
 if (rates.some((r) => !(r > 0))) fail("--learn-rates must be numbers above 0, separated by commas");
 const base = {
@@ -47,15 +51,18 @@ const testShare = share("--test-share", 0.2);
 const target = share("--target", PRECISION_TARGET);
 const resamples = whole("--resamples", 2000);
 const thresholds = args.includes("--beyond") ? BEYOND_THRESHOLDS : FINE_THRESHOLDS;
+for (const k of atoms)
+  for (const u of uses) if ((base.skills * k) % u) fail(`${base.skills} skills of ${k} atoms cannot put every atom in ${u} skills`);
 
-type Result = { atoms: number; learnRate: number; knownAtEnd: number } & AtomsComparison;
+type Result = { atoms: number; uses: number; learnRate: number; knownAtEnd: number } & AtomsComparison;
 const results: Result[] = [];
 for (const learnRate of rates)
-  for (const k of atoms) {
-    const { train, test } = splitByStudent(simulateAtoms({ ...base, atoms: k, learnRate }), testShare, base.seed);
-    const knownAtEnd = test.filter((p) => p.known[p.known.length - 1]).length / test.length;
-    results.push({ atoms: k, learnRate, knownAtEnd, ...compareAtoms(train, test, target, resamples, base.seed, thresholds) });
-  }
+  for (const k of atoms)
+    for (const u of uses) {
+      const { train, test } = splitByStudent(simulateAtoms({ ...base, atoms: k, uses: u, learnRate }), testShare, base.seed);
+      const knownAtEnd = test.filter((p) => p.known[p.known.length - 1]).length / test.length;
+      results.push({ atoms: k, uses: u, learnRate, knownAtEnd, ...compareAtoms(train, test, target, resamples, base.seed, thresholds) });
+    }
 if (args.includes("--json")) {
   console.log(JSON.stringify({ ...base, learnRates: rates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2));
   process.exit(0);
@@ -72,13 +79,15 @@ const row = (label: string, a: AtPrecision, saves: string) => {
 console.log(`${base.students} simulated learners × ${base.skills} skills × ${base.length} questions; each skill is k atoms asked for in turn; ${pct(testShare)} of learners held out, seed ${base.seed}`);
 console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
 for (const r of results) {
-  console.log(`\n${r.atoms} atom${r.atoms > 1 ? "s" : ""}, learning rate ${r.learnRate}: every atom known after the last answer ${pct(r.knownAtEnd)}`);
+  const shared = r.uses > 1 ? `, each in ${r.uses} skills` : "";
+  console.log(`\n${r.atoms} atom${r.atoms > 1 ? "s" : ""}${shared}, learning rate ${r.learnRate}: every atom known after the last answer ${pct(r.knownAtEnd)}`);
   console.log(`  ${"method".padEnd(18)}${"rule".padEnd(16)}${"answers".padStart(8)}  ${"95 % interval".padEnd(16)}${"precision".padStart(10)}${"declared".padStart(10)}   per atom minus on the skill`);
   const [bkt, ema, streak] = r.skill;
   row("BKT on the skill", bkt, "");
   row("EMA", ema, "");
   row("streak", streak, "");
-  row("BKT per atom", r.perAtom, r.perAtom.bktSaves ? `${answers(r.perAtom.bktSaves.estimate)} ${span(r.perAtom.bktSaves.interval)}` : "");
-  const names = ["BKT P(known)", "BKT P(right)", "EMA", "BKT per atom"];
+  for (const [label, a] of [["BKT per atom", r.perAtom], ["  carried", r.carried]] as const) row(label, a, a.bktSaves ? `${answers(a.bktSaves.estimate)} ${span(a.bktSaves.interval)}` : "");
+  if (r.carryingSaves) console.log(`  carried minus afresh: ${answers(r.carryingSaves.estimate)} answers ${span(r.carryingSaves.interval)}`);
+  const names = ["BKT P(known)", "BKT P(right)", "EMA", "BKT per atom", "carried"];
   console.log(`  Brier score against the truth after every answer: ${r.calibration.map((c, i) => `${names[i]} ${c.brier.toFixed(3)}`).join(", ")}`);
 }
