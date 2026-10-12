@@ -6,6 +6,12 @@
 // needs both of its ends, so a question is read for the nodes it uses and exercises every edge between them. The more
 // nodes one question uses, the more a student must hold together at once (Sweller's element interactivity).
 //
+// Concepts share ideas. Fractions is built on whole-number arithmetic: every arithmetic idea is one of its ideas too,
+// with the edges between them, and bridges say where each comes in (the highest common factor into lowest terms, the
+// lowest common multiple into a common denominator). An idea is one thing wherever it is used, so knowing it counts in
+// every concept that has it: a student who masters arithmetic is already part of the way into fractions, and a right
+// answer on a fractions question is evidence about the arithmetic inside it.
+//
 // Mastery is only well defined on ideas that are atoms: learnt as one thing, so that a student has it or has not. The
 // three tests at the end ask that of an idea: whether a question tests it alone, whether its learning curve is one
 // smooth fall, and whether practice on one form of it carries over to the others. Nothing in the app reads this yet.
@@ -23,6 +29,29 @@ export type ConceptGraph<N extends string = string> = {
 export type EdgeId = `${string}→${string}`;
 export const edgeId = ([from, to]: readonly [string, string, ...unknown[]]): EdgeId => `${from}→${to}`;
 
+/** Whole-number arithmetic as far as fractions rests on it: Zeno's times and hcf skills. */
+export const ARITHMETIC = {
+  nodes: {
+    addWhole: "adding and subtracting whole numbers",
+    multiplyFacts: "the times tables: any two numbers up to 12 multiplied",
+    multiplyLong: "multiplying a number above 12 by place value, adding the partial products",
+    divideExact: "dividing a whole number by one of its factors",
+    hcf: "the highest common factor of two numbers",
+    lcm: "the lowest common multiple of two numbers: one divided by their highest common factor, times the other",
+  },
+  edges: [
+    ["multiplyFacts", "multiplyLong", "needs"],
+    ["addWhole", "multiplyLong", "needs"],
+    ["multiplyFacts", "divideExact", "needs"],
+    ["divideExact", "hcf", "needs"],
+    ["hcf", "lcm", "needs"],
+    ["multiplyFacts", "lcm", "needs"],
+    ["multiplyLong", "lcm", "joins"],
+  ],
+} as const satisfies ConceptGraph;
+export type ArithmeticNode = keyof typeof ARITHMETIC.nodes;
+
+/** Fractions: ten ideas of its own, every arithmetic idea and edge, and nine bridges from arithmetic into its own. */
 export const FRACTIONS = {
   nodes: {
     part: "a fraction is equal parts of a whole: n/d is n of d parts",
@@ -35,6 +64,7 @@ export const FRACTIONS = {
     divide: "dividing by a fraction is multiplying by its reciprocal",
     toImproper: "a mixed number as an improper fraction: 2 3/4 is 11/4",
     toMixed: "an improper fraction as a mixed number: 11/4 is 2 3/4",
+    ...ARITHMETIC.nodes,
   },
   edges: [
     ["part", "equivalent", "needs"],
@@ -50,6 +80,17 @@ export const FRACTIONS = {
     ["commonDenom", "addSub", "joins"],
     ["toImproper", "addSub", "joins"],
     ["toImproper", "multiply", "joins"],
+    ...ARITHMETIC.edges,
+    // The bridges: where each arithmetic idea comes into fractions.
+    ["addWhole", "addSub", "needs"],
+    ["multiplyFacts", "equivalent", "needs"],
+    ["multiplyFacts", "multiply", "needs"],
+    ["multiplyLong", "multiply", "joins"],
+    ["hcf", "lowest", "needs"],
+    ["divideExact", "lowest", "needs"],
+    ["lcm", "commonDenom", "needs"],
+    ["multiplyFacts", "toImproper", "needs"],
+    ["addWhole", "toImproper", "needs"],
   ],
 } as const satisfies ConceptGraph;
 export type FractionsNode = keyof typeof FRACTIONS.nodes;
@@ -60,6 +101,9 @@ export const complexity = (g: ConceptGraph) => {
   return { nodes, edges: g.edges.length, total: nodes + g.edges.length };
 };
 
+/** The ideas two concepts share: knowing one counts in both. */
+export const sharedIdeas = (a: ConceptGraph, b: ConceptGraph) => Object.keys(a.nodes).filter((n) => n in b.nodes);
+
 /** The ideas and connections one question needs. */
 export type Uses<N extends string = string> = { nodes: N[]; edges: EdgeId[] };
 const usesOf = <N extends string>(g: ConceptGraph<N>, nodes: N[]): Uses<N> => ({
@@ -68,34 +112,66 @@ const usesOf = <N extends string>(g: ConceptGraph<N>, nodes: N[]): Uses<N> => ({
 });
 
 const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : Math.abs(a));
-/** "2 3/4" or "3/4" as an improper fraction, and whether it was mixed. */
+/** "2 3/4" or "3/4" as an improper fraction, with its whole part and whether it was mixed. */
 const improper = (s: string) => {
   const [, whole, n, d] = /^(?:(\d+) )?(\d+)\/(\d+)$/.exec(s)!;
-  return { n: Number(whole ?? 0) * Number(d) + Number(n), d: Number(d), mixed: whole !== undefined };
+  return { n: Number(whole ?? 0) * Number(d) + Number(n), d: Number(d), whole: Number(whole ?? 0), mixed: whole !== undefined };
 };
+
+/** The ideas multiplying two whole numbers needs: the times tables, and long multiplication when one is above 12. */
+const product = (x: number, y: number): ArithmeticNode[] => (Math.max(Math.abs(x), Math.abs(y)) > 12 ? ["multiplyFacts", "multiplyLong", "addWhole"] : ["multiplyFacts"]);
+
+/**
+ * The ideas an arithmetic question needs (times and hcf), read from it: a product needs what multiplying its two
+ * numbers needs; a highest common factor needs dividing exactly; a lowest common multiple needs the highest common
+ * factor first and then one number divided by it times the other.
+ */
+export function arithmeticUses(ex: Exercise): Uses<ArithmeticNode> {
+  const nodes = new Set<ArithmeticNode>();
+  const spec = ex.solution?.spec as { type?: string; topic?: string; a: number | string; b: number | string };
+  const a = Number(spec.a), b = Number(spec.b);
+  if (spec.type === "multiply") for (const n of product(a, b)) nodes.add(n);
+  else if (spec.topic === "gcd") {
+    const g = gcd(a, b);
+    nodes.add("hcf").add("divideExact").add("multiplyFacts");
+    if (ex.answer.k === "num" && ex.answer.v !== g) {
+      nodes.add("lcm");
+      for (const n of product(a / g, b)) nodes.add(n);
+    }
+  } else throw new Error(`not an arithmetic question: ${ex.skill}`);
+  return usesOf(ARITHMETIC, Object.keys(ARITHMETIC.nodes).filter((k) => nodes.has(k as ArithmeticNode)) as ArithmeticNode[]);
+}
 
 /**
  * The ideas a fractions question needs, read from its worked solution: the operation, whether a number is mixed, and
- * whether the usual method (over the lowest common denominator; tops times tops) leaves a result to be simplified.
- * Never toMixed: an improper answer is accepted, so no question asks for a mixed number back.
+ * whether the usual method (over the lowest common denominator; tops times tops) leaves a result to be simplified;
+ * and the whole-number arithmetic each step of that method does (every product, sum, common multiple and common
+ * factor). Never toMixed: an improper answer is accepted, so no question asks for a mixed number back.
  */
 export function fractionsUses(ex: Exercise): Uses<FractionsNode> {
   const spec = ex.solution?.spec as { op: "+" | "-" | "×" | "÷"; a: string; b: string };
   const a = improper(spec.a), b = improper(spec.b);
   const nodes = new Set<FractionsNode>(["part"]);
-  if (a.mixed || b.mixed) nodes.add("toImproper");
+  const times = (x: number, y: number) => product(x, y).forEach((n) => nodes.add(n));
+  // A mixed number's top: its whole times the bottom, plus the top.
+  for (const x of [a, b]) if (x.mixed) (nodes.add("toImproper").add("addWhole"), times(x.whole, x.d));
   let raw: [number, number];
   if (spec.op === "+" || spec.op === "-") {
-    nodes.add("addSub");
+    nodes.add("addSub").add("addWhole");
     const lcm = (a.d / gcd(a.d, b.d)) * b.d;
-    if (a.d !== b.d) nodes.add("commonDenom").add("equivalent");
+    if (a.d !== b.d) {
+      nodes.add("commonDenom").add("equivalent").add("lcm");
+      for (const x of [a, b]) if (x.d !== lcm) times(x.n, lcm / x.d);
+    }
     raw = [a.n * (lcm / a.d) + (spec.op === "+" ? 1 : -1) * b.n * (lcm / b.d), lcm];
   } else {
     nodes.add("multiply");
     if (spec.op === "÷") nodes.add("reciprocal").add("divide");
     raw = spec.op === "×" ? [a.n * b.n, a.d * b.d] : [a.n * b.d, a.d * b.n];
+    if (spec.op === "×") (times(a.n, b.n), times(a.d, b.d));
+    else (times(a.n, b.d), times(a.d, b.n));
   }
-  if (raw[0] !== 0 && gcd(raw[0], raw[1]) > 1) nodes.add("lowest").add("equivalent");
+  if (raw[0] !== 0 && gcd(raw[0], raw[1]) > 1) nodes.add("lowest").add("equivalent").add("hcf").add("divideExact");
   return usesOf(FRACTIONS, Object.keys(FRACTIONS.nodes).filter((k) => nodes.has(k as FractionsNode)) as FractionsNode[]);
 }
 
