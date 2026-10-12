@@ -603,6 +603,7 @@ function divCaps(N: number, d: number, w: MentalWords): Caption[] {
   return [
     { text: fill(w.div.result, v), color: C.green },
     { text: fill(w.div.check, v), color: "#495057" },
+    { text: w.info.divide, color: "#495057" },
   ];
 }
 
@@ -899,6 +900,7 @@ function renderRules(s: MentalSpec, w: MentalWords): RenderedSvg {
   const caps: Caption[] = [
     { text: yes.length ? fill(w.rules.yes, { n: pretty(n), list: yes.join(", ") }) : fill(w.rules.none, { n: pretty(n) }), color: yes.length ? C.green : "#495057" },
     { text: w.rules.also, color: "#495057" },
+    { text: w.info.rules, color: "#495057" },
   ];
   return compose(`${texNum(n)}`, tb.svg, tb.h + 8, caps);
 }
@@ -925,8 +927,9 @@ export function reciprocal(n: number): { digits: number[]; pre: number; period: 
 
 function renderRecip(s: MentalSpec, w: MentalWords): RenderedSvg {
   const t = w.recip;
-  const n = int(s.a, w, 9999);
+  const n = int(s.a, w);
   if (n < 2) throw new Error(fill(w.bad, { s: s.a }));
+  if (n > 9999) throw new Error(t.tooBig);
   const { digits, pre, period, rems } = reciprocal(n);
   const preD = digits.slice(0, pre).join("");
   const cyc = digits.slice(pre).join("");
@@ -984,7 +987,7 @@ function renderRecip(s: MentalSpec, w: MentalWords): RenderedSvg {
     caps.push({ text: fill(t.cyclic, { n, p: period }), color: C.blue }, { text: fill(t.sorted, { n }), color: C.red });
   }
   const dec = `0.${digits.slice(0, Math.min(digits.length, 6)).join("")}${period || digits.length > 6 ? "…" : ""}`;
-  caps.push({ text: fill(t.use, { n, dec }), color: "#495057" });
+  caps.push({ text: fill(t.use, { n, dec }), color: "#495057" }, { text: w.info.recip, color: "#495057" });
   return compose(head, parts.join(""), y + 4, caps);
 }
 

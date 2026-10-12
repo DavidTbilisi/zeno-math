@@ -138,4 +138,13 @@ test("reciprocals: the digits, the start of the cycle and its length", () => {
   }
   const seven = textOf(renderMental(M({ topic: "recip", a: "7" }), mw).svg);
   for (const r of ["142857", "285714", "428571", "571428", "714285", "857142"]) assert.ok(seven.includes(r), r);
+  assert.throws(() => renderMental(M({ topic: "recip", a: "10000" }), mw), { message: mw.recip.tooBig });
+});
+
+test("division, divisibility and reciprocals end with their sentence of use, like the other topics", () => {
+  const start = (s: string) => s.split(" ").slice(0, 5).join(" ");
+  for (const [topic, spec] of [["divide", { a: "1234", b: "89", method: "base" }], ["rules", { a: "1001" }], ["recip", { a: "7" }]] as const) {
+    const shown = textOf(renderMental(M({ topic, ...spec }), mw).svg);
+    assert.ok(shown.includes(start(mw.info[topic])), topic);
+  }
 });
