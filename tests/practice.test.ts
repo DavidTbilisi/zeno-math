@@ -131,6 +131,20 @@ test("answers in other forms", () => {
   assert.match(check(half, "1/2 +", w).why ?? "", /1\/2 \+/);
 });
 
+test("the right-triangle angle label lies inside the triangle, clear of the right-angle mark", () => {
+  for (const level of LEVELS)
+    for (let seed = 1; seed <= 300; seed++) {
+      const svg = exercise("righttri", level, seed, w).pic!.svg(0, 0);
+      const [bx, by, cx, , , ay] = svg.match(/points="([^"]+)"/)![1].split(/[ ,]/).map(Number);
+      const m = svg.match(/<text x="([\d.]+)" y="([\d.]+)"[^>]*fill="#e8590c"[^>]*>([^<]+)</)!;
+      const [x, y, half] = [Number(m[1]), Number(m[2]) - 5.5, (m[3].length * 9) / 2];
+      const where = `level ${level} seed ${seed}: ${m[3]} at ${x},${y}`;
+      assert.ok(x - half > bx && x + half < cx && y + 6 < by, `${where} is outside the triangle`);
+      assert.ok((by - (y - 6)) * (cx - bx) < (x - half - bx) * (by - ay), `${where} crosses the hypotenuse`);
+      assert.ok(x + half < cx - 14 || y + 6 < by - 14, `${where} overlaps the right-angle mark`);
+    }
+});
+
 test("every worked solution renders", async () => {
   for (const skill of ALL_SKILLS)
     for (const level of LEVELS) {
