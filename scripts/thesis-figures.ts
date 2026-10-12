@@ -110,6 +110,9 @@ function addAcrossQuestion(): { r: number; ex: Exercise } {
 }
 
 async function practiceHint(page: Page, base: string) {
+  // Tall enough that the panel beside the board holds the question and the verdict without scrolling.
+  const size = page.viewportSize()!;
+  await page.setViewportSize({ width: size.width, height: 1200 });
   const board = await (await fetch(`${base}/api/boards`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: "Practice" }) })).json();
   await page.goto(`${base}/#/b/${board.id}`);
   await page.locator(".excalidraw").waitFor();
@@ -124,7 +127,12 @@ async function practiceHint(page: Page, base: string) {
   await page.getByLabel("Your answer").fill(trapInputs(ex).find((t) => t.id === "addAcross")!.input);
   await page.getByRole("button", { name: "Check" }).click();
   await page.locator(".practice-hint").waitFor();
-  await page.getByRole("dialog").screenshot({ path: join(OUT, "practice-mistake-hint.png") });
+  // Practice sits in a panel beside the board, as tall as the window: the figure is its top, down to the verdict.
+  const panel = (await page.getByRole("complementary", { name: "Practice" }).boundingBox())!;
+  const verdict = (await page.locator(".practice-verdict").boundingBox())!;
+  const clip = { x: panel.x, y: panel.y, width: panel.width, height: verdict.y + verdict.height + 16 - panel.y };
+  await page.screenshot({ path: join(OUT, "practice-mistake-hint.png"), clip });
+  await page.setViewportSize(size);
 }
 
 async function dashboard(page: Page, base: string) {
