@@ -73,13 +73,16 @@ function markQueuedTests(plan: ClassPlan, studentCode: string) {
     if (a.student === studentCode && !plan.tests[a.phase].answered.includes(a.item)) plan.tests[a.phase].answered.push(a.item);
 }
 
-/** On a board it is a dialog that inserts onto the board; without `onSubmit` it is the practice page's body. */
+/**
+ * On a board it inserts onto the board, from a panel beside it (`docked`) or a dialog over it; without `onSubmit` it is
+ * the practice page's body.
+ */
 type Props = { initial?: PracticeSpec; start?: string } & (
-  | { onSubmit: (spec: PracticeSpec, rendered: RenderedSvg) => void; onClose: () => void }
-  | { onSubmit?: undefined; onClose?: undefined }
+  | { onSubmit: (spec: PracticeSpec, rendered: RenderedSvg) => void; onClose: () => void; docked?: boolean }
+  | { onSubmit?: undefined; onClose?: undefined; docked?: undefined }
 );
 
-export function PracticeDialog({ initial, start, onSubmit, onClose }: Props) {
+export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Props) {
   const { t } = useI18n();
   const w = t.pracWords;
   const [area, setArea] = useState<Area>(initial?.area ?? startOr(start, AREAS, "number"));
@@ -317,10 +320,10 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: Props) {
       return { error: (e as Error).message };
     }
   }, [cur, w]);
-  // The page shows the question as text that wraps and scales with the screen, with the maths and any picture beside
-  // it; the board's dialog shows the card that gets inserted.
+  // The page and the panel show the question as text that wraps and scales with the screen, with the maths and any
+  // picture beside it; the dialog shows the card that gets inserted.
   const question = useMemo(() => {
-    if (onSubmit) return null;
+    if (onSubmit && !docked) return null;
     const ex = cur.ex;
     try {
       const q = ex.q ? latexToSvg(ex.q) : null;
@@ -336,7 +339,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: Props) {
     } catch (e) {
       return { error: (e as Error).message };
     }
-  }, [cur, onSubmit]);
+  }, [cur, onSubmit, docked]);
   // The typed answer as maths, rendered by MathJax: that takes a moment, so it follows the typing rather than hold it up.
   const shown = useDeferredValue(input);
   const typed = useMemo(() => {
@@ -582,16 +585,31 @@ export function PracticeDialog({ initial, start, onSubmit, onClose }: Props) {
 
   // The page has no board to insert into, so no worksheet either.
   if (!onSubmit) return <div className="practice-body">{body}</div>;
+  const title = initial ? t.editPractice : t.practice;
+  const insertButton = (
+    <button className="btn primary" disabled={classOn && (planStatus !== "ready" || !!testPhase || !!blocked) ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
+      {initial ? t.update : t.insert}
+    </button>
+  );
+  if (docked)
+    return (
+      <aside className="dock" aria-label={title}>
+        <header className="modal-header">
+          <h2>{title}</h2>
+          <button className="icon-btn" onClick={onClose} aria-label={t.close}>×</button>
+        </header>
+        <div className="modal-body">{body}</div>
+        <footer className="modal-footer">{insertButton}</footer>
+      </aside>
+    );
   return (
     <Modal
-      title={initial ? t.editPractice : t.practice}
+      title={title}
       onClose={onClose}
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={classOn && (planStatus !== "ready" || !!testPhase || !!blocked) ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>
-            {initial ? t.update : t.insert}
-          </button>
+          {insertButton}
         </>
       }
     >

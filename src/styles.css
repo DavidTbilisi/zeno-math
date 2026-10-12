@@ -127,7 +127,20 @@ input.invalid { border-color: var(--danger); }
 }
 .tool-menu-item:hover, .tool-menu-item:focus-visible { background: var(--chip); outline: none; }
 .tool-menu-icon { width: 28px; text-align: center; color: var(--accent); font-weight: 600; }
-.canvas-wrap { flex: 1; position: relative; min-height: 0; }
+.board-body { flex: 1; display: flex; min-height: 0; }
+.canvas-wrap { flex: 1; position: relative; min-height: 0; min-width: 0; }
+/* A tool docked beside the board (practice): the board stays in use next to it. */
+.dock {
+  width: clamp(360px, 34vw, 540px); flex: none; display: flex; flex-direction: column; min-height: 0;
+  background: var(--surface); border-left: 1px solid var(--border);
+}
+.dock .modal-body { flex: 1; padding-top: 4px; }
+.dock .preview { min-height: 120px; }
+.dock .practice-input { font-size: 18px; padding: 8px 10px; }
+.dock .field-row { flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .dock { position: fixed; inset: 0; z-index: 100; width: auto; border-left: none; }
+}
 .center-msg { height: 100%; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; color: var(--muted); }
 
 /* Modal */
@@ -387,6 +400,7 @@ input.invalid { border-color: var(--danger); }
   background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
 }
 .practice-page .preview { min-height: 140px; padding: 20px; }
+.dock .practice-question { padding: 16px; }
 .practice-question { flex-direction: column; align-items: flex-start; justify-content: center; gap: 14px; color: #1e1e1e; }
 .practice-question img { max-width: 100%; height: auto; }
 .practice-prompt { margin: 0; font-size: 20px; line-height: 1.45; }

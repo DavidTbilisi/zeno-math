@@ -71,3 +71,34 @@ test("practice has a page of its own, reached from the home page", async ({ page
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("on a board, practice opens beside it and stays while other tools are used", async ({ page, request }) => {
+  const board = await (await request.post("/api/boards", { data: { title: "Docked" } })).json();
+  await page.goto(`/#/b/${board.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.type("Practice");
+  await page.keyboard.press("Enter");
+  const dock = page.getByRole("complementary", { name: "Practice" });
+  await expect(dock).toBeVisible();
+  // Not a dialog over the board: the board is still there to work on beside it.
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const boardBox = (await page.locator(".canvas-wrap").boundingBox())!;
+  const dockBox = (await dock.boundingBox())!;
+  expect(boardBox.x + boardBox.width).toBeLessThanOrEqual(dockBox.x + 1);
+  // Typing an answer stays in the answer field rather than reaching the board's shortcuts.
+  await dock.getByLabel("Your answer").pressSequentially("2; -3");
+  await expect(dock.getByLabel("Your answer")).toHaveValue("2; -3");
+  // Inserting the question puts it on the board and practice goes on.
+  await dock.getByRole("button", { name: "Insert" }).click();
+  await expect(page.getByRole("button", { name: /Edit practice sheet/ })).toBeVisible();
+  await expect(dock).toBeVisible();
+  // Another tool opens as a dialog while practice stays docked.
+  await page.getByRole("button", { name: /Algebra/ }).click();
+  await page.getByRole("menuitem", { name: /Formula/ }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(dock).toBeVisible();
+  await page.keyboard.press("Escape");
+  await dock.getByRole("button", { name: "Close" }).click();
+  await expect(dock).toHaveCount(0);
+});
