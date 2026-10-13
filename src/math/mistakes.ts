@@ -5,6 +5,8 @@ export const MISTAKES = [
   "sign",
   "addAcross",
   "flipFirst",
+  "addedToBoth",
+  "wholeTimesTop",
   "squareTerms",
   "noMiddle",
   "negPower",

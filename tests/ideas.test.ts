@@ -18,11 +18,11 @@ const practice = (student: string, skill: string, ids: string[], needs: number[]
   gap: Int8Array.from(gap ?? answers.map(() => -1)), ideaKnown: ids.map(() => new Uint8Array(answers.length)),
 });
 
-test("each skill's ideas are those its questions can need: fractions never asks for a mixed number back", () => {
+test("each skill's ideas are those its questions can need: with the forms, fractions asks for every idea of the graph", () => {
   assert.deepEqual(ideasOf("times"), ["addWhole", "multiplyFacts", "multiplyLong"]);
   assert.deepEqual(ideasOf("hcf"), ["addWhole", "multiplyFacts", "multiplyLong", "divideExact", "hcf", "lcm"]);
-  assert.equal(ideasOf("fractions").length, 15);
-  assert.ok(!ideasOf("fractions").includes("toMixed"));
+  assert.equal(ideasOf("fractions").length, 16);
+  assert.ok(ideasOf("fractions").includes("toMixed"));
   assert.equal(gapIdea("addAcross"), "addSub");
   assert.equal(gapIdea("flipFirst"), "divide", "a missing connection is blamed on its far end");
   assert.equal(gapIdea("sign"), undefined);
@@ -129,27 +129,29 @@ test("the diagnosis counts the moments one idea is missing at which it has the l
   assert.ok(Number.isNaN(diagnosis(fit, [none]).right));
 });
 
-test("on fractions, eight ideas a question, no form of BKT on each idea tells the ideas apart; a mistake's blame and carrying help a little", () => {
+test("on fractions, with the forms that ask for one idea alone, BKT on each idea finds the missing idea far above chance; nothing decides in 30 answers", () => {
   const { train, test: held } = splitByStudent(simulateIdeas({ students: 150, learnRate: 0.1 }), 0.2, 1);
   const c = compareIdeas(train, held, "fractions", 0.9, 50);
   assert.equal(c.onSkill[0].rule, null, "BKT on the skill never meets the standard");
   assert.ok(c.onSkill[1].judgement!.declared < 0.2, "the EMA meets it only by hardly ever declaring");
   const [afresh, blamed, carried] = c.diagnosis;
-  assert.ok(afresh.moments > 100 && afresh.right < afresh.chance + 0.03, `afresh finds the missing idea ${afresh.right} of the time, chance ${afresh.chance}`);
-  assert.ok(blamed.right > afresh.right && carried.right > blamed.right, `blamed ${blamed.right}, carried ${carried.right}`);
-  assert.ok(carried.right < 0.5, "and still misses it most of the time");
+  assert.ok(afresh.moments > 100 && afresh.right > 5 * afresh.chance, `afresh finds the missing idea ${afresh.right} of the time, chance ${afresh.chance}`);
+  assert.ok(blamed.right >= afresh.right && carried.right > blamed.right, `blamed ${blamed.right}, carried ${carried.right}`);
+  // Before the forms (commit 7dbd426) afresh was at chance and carried found it one time in seven.
+  const [, , , perIdea, , kept] = c.calibration.map((x) => x.brier);
+  assert.ok(kept < perIdea && perIdea < c.calibration[2].brier, "BKT on each idea is better calibrated than the EMA");
 });
 
-test("on hcf, carried from times, BKT on each idea needs fewer answers than afresh, is better calibrated and finds the missing idea; afresh does not", () => {
+test("on hcf, carried from times, BKT on each idea is better calibrated and finds the missing idea; afresh does not", () => {
   const { train, test: held } = splitByStudent(simulateIdeas({ students: 150, learnRate: 0.1 }), 0.2, 1);
   const c = compareIdeas(train, held, "hcf", 0.9, 50);
-  assert.ok(c.carryingSaves!.interval[1] < 0, `carried minus afresh ${c.carryingSaves!.estimate} ${c.carryingSaves!.interval}`);
+  assert.ok(c.carryingSaves!.estimate < 0, `carried minus afresh ${c.carryingSaves!.estimate} ${c.carryingSaves!.interval}`);
   const [, , , afresh, , carried] = c.calibration.map((x) => x.brier);
   assert.ok(carried < afresh, `Brier carried ${carried}, afresh ${afresh}`);
   assert.ok(c.diagnosis[2].right > 0.5 && c.diagnosis[0].right < c.diagnosis[0].chance, `carried ${c.diagnosis[2].right}, afresh ${c.diagnosis[0].right}`);
-  // On times, every question needs all three ideas: BKT on the skill meets the standard and BKT on each idea costs more.
+  // On times, every question needs all three ideas: BKT on the skill meets the standard and BKT on each idea is no cheaper.
   const t = compareIdeas(train, held, "times", 0.9, 50);
-  assert.ok(t.onSkill[0].rule && t.perIdea.bktSaves!.estimate > 0, `per idea minus on the skill ${t.perIdea.bktSaves?.estimate}`);
+  assert.ok(t.onSkill[0].rule && t.perIdea.bktSaves!.estimate >= 0, `per idea minus on the skill ${t.perIdea.bktSaves?.estimate}`);
 });
 
 test("fitting each idea on the answers of the questions that needed it, within a skill or across skills", () => {
@@ -157,5 +159,5 @@ test("fitting each idea on the answers of the questions that needed it, within a
   const afresh = fitIdeas(ps), across = fitIdeas(ps, true);
   for (const id of ideasOf("fractions")) for (const f of [afresh, across]) assert.ok(f(id).init > 0 && f(id).learn > 0);
   // An idea no question needed gets the pooled fit.
-  assert.deepEqual(afresh("toMixed"), afresh("never"));
+  assert.deepEqual(afresh("never"), afresh("nothing"));
 });

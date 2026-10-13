@@ -205,7 +205,9 @@ skill, so that fractions starts from what times and hcf settled. The skill is de
 ideas has reached the threshold, and since the skills share ideas each form is judged on one skill at a time. The
 world also records, at every moment a learner is exactly one idea short of mastery, whether the idea with the lowest
 probability is that one, which is what a system would need to know to choose the next question
-(`src/model/ideas.ts`).
+(`src/model/ideas.ts`). The world was first run with the generators as they were, in which every fractions question
+is an operation; it was run again after the generator was given forms that ask for one idea alone, two seeds in five,
+which section 4.3 reports in turn.
 
 ## 3.5 Fitting
 

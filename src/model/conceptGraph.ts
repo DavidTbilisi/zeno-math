@@ -16,7 +16,7 @@
 // three tests at the end ask that of an idea: whether a question tests it alone, whether its learning curve is one
 // smooth fall, and whether practice on one form of it carries over to the others. Nothing in the app reads this yet.
 import type { MistakeId } from "../math/mistakes.ts";
-import type { Exercise } from "../math/practice.ts";
+import type { Exercise, FractionForm } from "../math/practice.ts";
 import { fitLogistic } from "./evaluate.ts";
 
 export type EdgeKind = "needs" | "joins";
@@ -142,14 +142,60 @@ export function arithmeticUses(ex: Exercise): Uses<ArithmeticNode> {
   return usesOf(ARITHMETIC, Object.keys(ARITHMETIC.nodes).filter((k) => nodes.has(k as ArithmeticNode)) as ArithmeticNode[]);
 }
 
+const inGraphOrder = (nodes: ReadonlySet<FractionsNode>) => (Object.keys(FRACTIONS.nodes) as FractionsNode[]).filter((k) => nodes.has(k));
+
 /**
- * The ideas a fractions question needs, read from its worked solution: the operation, whether a number is mixed, and
- * whether the usual method (over the lowest common denominator; tops times tops) leaves a result to be simplified;
- * and the whole-number arithmetic each step of that method does (every product, sum, common multiple and common
- * factor). Never toMixed: an improper answer is accepted, so no question asks for a mixed number back.
+ * The ideas a question asking for one idea of fractions alone needs (FractionForm in practice.ts), from the form and
+ * its numbers: a missing top needs equivalent and the product that scales it; lowest terms needs lowest and the common
+ * factor; the lowest common denominator needs commonDenom and the multiple; a reciprocal needs reciprocal, and of a
+ * mixed number toImproper too; the conversions need toImproper or toMixed, the only question that asks for toMixed.
+ */
+function formIdeas(form: FractionForm, a: string, b: string | null): Set<FractionsNode> {
+  const nodes = new Set<FractionsNode>(["part"]);
+  const times = (x: number, y: number) => product(x, y).forEach((n) => nodes.add(n));
+  const mixed = (s: string) => {
+    const x = improper(s);
+    if (x.mixed) (nodes.add("toImproper").add("addWhole"), times(x.whole, x.d));
+  };
+  switch (form) {
+    case "equivalent": {
+      const x = improper(a), y = improper(b!);
+      nodes.add("equivalent");
+      times(x.n, y.d / x.d);
+      break;
+    }
+    case "lowest":
+      nodes.add("lowest").add("equivalent").add("hcf").add("divideExact");
+      break;
+    case "lcd": {
+      const x = improper(a), y = improper(b!);
+      nodes.add("commonDenom").add("lcm");
+      times(x.d / gcd(x.d, y.d), y.d);
+      break;
+    }
+    case "reciprocal":
+      nodes.add("reciprocal");
+      if (a.includes("/")) mixed(a);
+      break;
+    case "toImproper":
+      mixed(a);
+      break;
+    case "toMixed":
+      nodes.add("toMixed");
+      break;
+  }
+  return nodes;
+}
+
+/**
+ * The ideas a fractions question needs. An operation is read from its worked solution: the operation, whether a number
+ * is mixed, and whether the usual method (over the lowest common denominator; tops times tops) leaves a result to be
+ * simplified; and the whole-number arithmetic each step of that method does (every product, sum, common multiple and
+ * common factor). A question asking for one idea alone is read by formIdeas.
  */
 export function fractionsUses(ex: Exercise): Uses<FractionsNode> {
-  const spec = ex.solution?.spec as { op: "+" | "-" | "×" | "÷"; a: string; b: string };
+  const spec = ex.solution?.spec as { form?: FractionForm; op: "+" | "-" | "×" | "÷"; a: string; b: string };
+  if (spec.form) return usesOf(FRACTIONS, inGraphOrder(formIdeas(spec.form, spec.a, spec.b)));
   const a = improper(spec.a), b = improper(spec.b);
   const nodes = new Set<FractionsNode>(["part"]);
   const times = (x: number, y: number) => product(x, y).forEach((n) => nodes.add(n));
@@ -172,7 +218,7 @@ export function fractionsUses(ex: Exercise): Uses<FractionsNode> {
     else (times(a.n, b.d), times(a.d, b.n));
   }
   if (raw[0] !== 0 && gcd(raw[0], raw[1]) > 1) nodes.add("lowest").add("equivalent").add("hcf").add("divideExact");
-  return usesOf(FRACTIONS, Object.keys(FRACTIONS.nodes).filter((k) => nodes.has(k as FractionsNode)) as FractionsNode[]);
+  return usesOf(FRACTIONS, inGraphOrder(nodes));
 }
 
 /** The idea or connection each fractions mistake shows is missing. */
@@ -181,6 +227,10 @@ export const FRACTIONS_GAPS: Partial<Record<MistakeId, FractionsNode | EdgeId>> 
   addAcross: "addSub",
   // 1/2 ÷ 3/4 answered 3/2: knowing to flip, but not which number dividing multiplies by the reciprocal of.
   flipFirst: "reciprocal→divide",
+  // 3/4 = ?/12 answered 11: the same number added to top and bottom, not knowing what keeps a fraction's value.
+  addedToBoth: "equivalent",
+  // 2 3/4 answered 10/4: the whole multiplied by the top, not knowing what the whole is made of.
+  wholeTimesTop: "toImproper",
 };
 
 /**

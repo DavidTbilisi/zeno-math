@@ -189,28 +189,29 @@
    "skill": "fractions",
    "level": 3,
    "seed": 7,
-   "input": "83/14",
+   "input": "10/13",
    "label": "correct"
   },
   {
    "skill": "fractions",
    "level": 3,
    "seed": 7,
-   "input": "5 13/14",
+   "input": "10 / 13",
    "label": "correct"
   },
   {
    "skill": "fractions",
    "level": 3,
    "seed": 7,
-   "input": "166/28",
-   "label": "form"
+   "input": "20/26",
+   "label": "form",
+   "note": "not in lowest terms"
   },
   {
    "skill": "fractions",
    "level": 3,
    "seed": 7,
-   "input": "5.93",
+   "input": "0.769",
    "label": "form",
    "note": "a rounded decimal for an exact fraction"
   },
@@ -218,8 +219,17 @@
    "skill": "fractions",
    "level": 3,
    "seed": 7,
-   "input": "5 4/9",
-   "label": "wrong"
+   "input": "13/10",
+   "label": "wrong",
+   "note": "the number itself as an improper fraction, not its reciprocal"
+  },
+  {
+   "skill": "fractions",
+   "level": 3,
+   "seed": 7,
+   "input": "1 10/3",
+   "label": "wrong",
+   "note": "only the fraction part turned over"
   },
   {
    "skill": "percent",

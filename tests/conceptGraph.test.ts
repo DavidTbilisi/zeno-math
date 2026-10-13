@@ -1,7 +1,8 @@
 // A concept's inside as a graph (fractions, and the arithmetic it is built on): the graphs are whole and their needs
-// acyclic, a question is read for the ideas it needs, the generators show every idea and connection a question can ask
-// for and more of them at once as the level rises, each mistake names a gap the question it happens on uses, progress
-// takes every idea and most of the connections, and an arithmetic idea known counts in fractions too. The atom tests: which ideas the generator tests alone, and, on simulated learners whose atoms are
+// acyclic, a question is read for the ideas it needs, the generators show every idea and connection and more of them
+// at once as the level rises, each mistake names a gap the question it happens on uses, progress takes every idea and
+// most of the connections, and an arithmetic idea known counts in fractions too. The atom tests: which ideas the
+// operations and the forms test alone, and, on simulated learners whose atoms are
 // known, a smooth curve and transfer for one atom, a broken curve for a harder atom arriving later, and no transfer
 // between two atoms asked in turn (whose curve is smooth: only the transfer test sees them).
 import { test } from "node:test";
@@ -16,7 +17,10 @@ import { rng } from "../src/model/random.ts";
 
 const w = en.pracWords;
 const asked = (op: string, a: string, b: string) => fractionsUses({ solution: { kind: "model", spec: { type: "fracop", op, a, b } } } as Exercise);
-const generated = LEVELS.map((L) => Array.from({ length: 400 }, (_, i) => fractionsUses(exercise("fractions", L, i + 1, w))));
+const exercises = LEVELS.map((L) => Array.from({ length: 400 }, (_, i) => exercise("fractions", L, i + 1, w)));
+const generated = exercises.map((qs) => qs.map(fractionsUses));
+/** The operations alone, without the questions that ask for one idea by itself. */
+const operations = exercises.flat().filter((ex) => !(ex.solution?.spec as { form?: string }).form).map(fractionsUses);
 const arithmetic = (["times", "hcf"] as const).flatMap((k) => LEVELS.flatMap((L) => Array.from({ length: 200 }, (_, i) => arithmeticUses(exercise(k, L, i + 1, w)))));
 const OWN = Object.keys(FRACTIONS.nodes).filter((n) => !(n in ARITHMETIC.nodes));
 
@@ -42,8 +46,8 @@ test("fractions is built on arithmetic: every arithmetic idea and edge is in it,
   const known = { nodes: new Set<string>(arithmetic.flatMap((u) => u.nodes)), edges: new Set(arithmetic.flatMap((u) => u.edges)) };
   assert.deepEqual(progressOf(ARITHMETIC, known), { nodes: 1, edges: 1, mastered: true });
   assert.deepEqual(progressOf(FRACTIONS, known), { nodes: 6 / 16, edges: 7 / 29, mastered: false });
-  // The other way: every fractions question needs some arithmetic, so every fractions answer is evidence about it.
-  assert.ok(generated.flat().every((u) => u.nodes.some((n) => n in ARITHMETIC.nodes)));
+  // The other way: every fractions operation needs some arithmetic, so every such answer is evidence about it.
+  assert.ok(operations.length > 500 && operations.every((u) => u.nodes.some((n) => n in ARITHMETIC.nodes)));
 });
 
 test("a question is read for the ideas it needs, the arithmetic inside it, and the connections between them", () => {
@@ -80,11 +84,13 @@ test("an arithmetic question is read for what it needs: a product, a highest com
   assert.throws(() => arithmeticUses(exercise("primes", 1, 1, w)), /not an arithmetic question/);
 });
 
-test("the generators show every idea and connection but toMixed, and fractions asks for more of them at once as the level rises", () => {
+test("the generators show every idea and connection, and fractions asks for more of them at once as the level rises", () => {
   const all = generated.flat();
   const nodes = new Set(all.flatMap((u) => u.nodes)), edges = new Set(all.flatMap((u) => u.edges));
-  assert.deepEqual([...nodes].sort(), Object.keys(FRACTIONS.nodes).filter((n) => n !== "toMixed").sort());
-  assert.deepEqual([...edges].sort(), FRACTIONS.edges.map(edgeId).filter((e) => e !== "part→toMixed").sort());
+  assert.deepEqual([...nodes].sort(), Object.keys(FRACTIONS.nodes).sort());
+  assert.deepEqual([...edges].sort(), FRACTIONS.edges.map(edgeId).sort());
+  // Only the question asking for a mixed number back needs toMixed.
+  assert.ok(!operations.some((u) => u.nodes.includes("toMixed")));
   assert.deepEqual(new Set(arithmetic.flatMap((u) => u.nodes)), new Set(Object.keys(ARITHMETIC.nodes)));
   assert.deepEqual(new Set(arithmetic.flatMap((u) => u.edges)), new Set(ARITHMETIC.edges.map(edgeId)));
   const mean = generated.map((qs) => qs.reduce((s, u) => s + u.nodes.length, 0) / qs.length);
@@ -118,9 +124,11 @@ test("a concept is mastered with every idea and at least the given share of the 
   assert.deepEqual(progressOf(FRACTIONS, noMixed), { nodes: 15 / 16, edges: 1, mastered: false });
 });
 
-test("test 1: the generators test only the three operations and four arithmetic ideas alone; every other step comes with another idea", () => {
+test("test 1: the operations test only the three operations alone; the forms test six more ideas alone; four arithmetic ideas are", () => {
+  const ops = testedAlone(FRACTIONS, operations);
+  assert.deepEqual(Object.keys(ops).filter((n) => ops[n as keyof typeof ops]).sort(), ["addSub", "divide", "multiply"]);
   const alone = testedAlone(FRACTIONS, generated.flat());
-  assert.deepEqual(Object.keys(alone).filter((n) => alone[n as keyof typeof alone]).sort(), ["addSub", "divide", "multiply"]);
+  assert.deepEqual(Object.keys(alone).filter((n) => alone[n as keyof typeof alone]).sort(), ["addSub", "commonDenom", "divide", "equivalent", "lowest", "multiply", "reciprocal", "toImproper", "toMixed"]);
   // In arithmetic, adding whole numbers comes only inside long multiplication, and dividing exactly only inside a common factor.
   const arith = testedAlone(ARITHMETIC, arithmetic);
   assert.deepEqual(Object.keys(arith).filter((n) => arith[n as keyof typeof arith]).sort(), ["hcf", "lcm", "multiplyFacts", "multiplyLong"]);
