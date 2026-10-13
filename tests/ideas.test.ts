@@ -7,6 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
 import { SKILL_IDEAS } from "../src/model/ideaState.ts";
+import { bktRule, fitRules, judge, streakRule } from "../src/model/mastery.ts";
 import {
   carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaPractice,
 } from "../src/model/ideas.ts";
@@ -143,6 +144,20 @@ test("on fractions, with the forms that ask for one idea alone, BKT on each idea
   // Before the forms (commit 7dbd426) afresh was at chance and carried found it one time in seven.
   const [, , , perIdea, , kept] = c.calibration.map((x) => x.brier);
   assert.ok(kept < perIdea && perIdea < c.calibration[2].brier, "BKT on each idea is better calibrated than the EMA");
+  // At the usual thresholds: BKT on the skill at 0.95, the EMA at the streak rule's cost, streak 3, the three forms at 0.95, each judged on the held-out fractions practices.
+  const fitted = fitRules(train), heldF = held.filter((p) => p.skill === "fractions");
+  assert.deepEqual(c.usual.map((u) => u.rule.replace(/θ .*$/, "θ")), ["BKT θ", "EMA θ", "streak 3", "BKT per idea θ", "BKT per idea, blamed θ", "BKT per idea, blamed, carried θ"]);
+  assert.deepEqual(c.usual[0], judge(bktRule(fitted.bkt, 0.95), heldF));
+  assert.deepEqual(c.usual[2], judge(streakRule(3), heldF));
+  assert.ok(c.usual[0].precision < 0.9, `BKT at 0.95 on a skill of sixteen ideas is right ${c.usual[0].precision} of the time`);
+});
+
+test("every question asking for one idea alone: no generated questions, no recognised mistakes, one idea a question", () => {
+  const ps = simulateIdeas({ students: 10, length: 8, isolateRate: 1, trapRate: 1 });
+  for (const p of ps) {
+    assert.ok(p.needs.every((n) => n.length === 1));
+    assert.ok(p.gap.every((g) => g === -1));
+  }
 });
 
 test("on hcf, carried from times, BKT on each idea is better calibrated and finds the missing idea; afresh does not", () => {

@@ -12,7 +12,7 @@
 import { fitShares, type FitShares } from "./atoms.ts";
 import type { Observation } from "./elo.ts";
 import { answerLoss, BktModel, bootstrapGroups, EmaModel, heldOutPredictions, pairedLogLoss, sequencesBySkill, SMALLEST_DIFFERENCE, splitByStudent, type PairedTest, type StudentPrediction } from "./evaluate.ts";
-import { bktRule, emaRule, judge, practicesFrom, rightAfter, streakRule, thresholdForCost, type Fitted, type Judgement } from "./mastery.ts";
+import { judge, practicesFrom, rightAfter, usualRules, type Fitted, type Judgement } from "./mastery.ts";
 
 export type Grain = "skill" | "topic" | "one";
 /** Finest first. */
@@ -99,11 +99,7 @@ export function compareGrains(observations: readonly Observation[], topicOf: (sk
     const skills = [...sequencesBySkill(train).keys()];
     const fitted: Fitted = { bkt: (skill) => bkt.paramsOf(skill), ema: ema.params };
     const trainPractices = practicesFrom(train), testPractices = practicesFrom(test);
-    const rules = [
-      bktRule(fitted.bkt, 0.95),
-      emaRule(fitted.ema, thresholdForCost((t) => emaRule(fitted.ema, t), trainPractices, judge(streakRule(streak), trainPractices).cost)),
-      streakRule(streak),
-    ];
+    const rules = usualRules(fitted, trainPractices, streak);
     return {
       grain,
       skills: skills.length,

@@ -19,9 +19,9 @@ import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import {
-  agreement, ALL_SIM_SKILLS, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules,
+  agreement, ALL_SIM_SKILLS, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, FINE_THRESHOLDS, fitRules,
   judge, MASTERED_AT, masteryCalibration, practicesFrom,
-  PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff,
+  PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, tradeOff, usualRules,
   type AtCost, type AtPrecision, type Calibration, type CurvePoint, type PracticeParams,
 } from "../src/model/mastery.ts";
 import { isSimSkill, SIM_SKILLS } from "../src/model/simulate.ts";
@@ -65,9 +65,8 @@ function realAnswers(file: string) {
   const fitted = fitRules(train);
   // BKT at the usual 0.95; EMA, which has no usual threshold, at the one costing what the streak rule costs on the
   // training students (cost needs no truth).
-  const bkt = bktRule(fitted.bkt, 0.95);
-  const ema = emaRule(fitted.ema, thresholdForCost((t) => emaRule(fitted.ema, t), train, judge(streakRule(streak), train).cost));
-  const rules = [bkt, ema, streakRule(streak)];
+  const rules = usualRules(fitted, train, streak);
+  const [bkt, ema] = rules;
   const agree = [agreement(bkt, rules[2], test), agreement(ema, rules[2], test), agreement(bkt, ema, test)];
   const after = rules.map((r) => rightAfter(r, test));
   if (json) return console.log(JSON.stringify({ source, testShare, seed, ema: fitted.ema, practices: test.length, agreement: agree, after }, null, 2));

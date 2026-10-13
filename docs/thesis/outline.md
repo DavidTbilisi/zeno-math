@@ -302,8 +302,8 @@ decomposed by hand.
 | Prediction on ASSISTments (H1) | `npm run h1 -- --observations assistments.json` | exists |
 | Mastery decisions, simulated (H2) | `npm run mastery -- --curves mastery-curves.csv` | exists |
 | Mastery agreement on ASSISTments (H3) | `npm run mastery -- --observations assistments.json` | exists; needs the data file |
-| Too coarse, k components (G1) | `npm run atoms` | exists for k up to 4; sweep to 16 to add |
-| Right grain, isolating share (G2) | `npm run ideas` | exists for 0 and the forms; sweep to add |
+| Too coarse, k components (G1) | `npm run atoms -- --atoms 1,2,4,8,16 --per-question 1,2,4`; `npm run ideas` | exists; the last table of each is the sweep side by side |
+| Right grain, isolating share (G2) | `npm run ideas -- --skills fractions --isolate 0,0.25,0.5,1 --length 30,60,120` | exists; components a question in `npm run atoms -- --per-question` |
 | Too fine, over-splitting (G3) | `npm run atoms -- --atoms 2 --split 1,2,4` | exists; also reports fits at the grid's edge and threshold stability |
 | Real data at three grains (G4) | `npm run grain -- --observations assistments.json` | exists; needs the data file (re-import it, so that problems are kept) |
 | Figures | `npm run figures` | exists; grain plots to add |
