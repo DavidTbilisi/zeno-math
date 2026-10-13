@@ -4,8 +4,8 @@ This chapter reports the results for each hypothesis in turn: the data kept and 
 prediction on real answers (H1, section 4.2), mastery decisions where the truth is known (H2, section 4.3) and mastery
 decisions on real answers (H3, section 4.4). It reports what was found; chapter 5 interprets it. The simulation
 results were made at commit 88c4af7 of the Zeno repository, the check above BKT's highest threshold (Table 4.7) at
-commit 66c2eda, and the calibration of the methods' scores (Table 4.8) at commit ba04c48, with the commands in
-Appendix B.
+commit 66c2eda, the calibration of the methods' scores (Table 4.8) at commit ba04c48, and the world of ideas (Table
+4.9) at commit 7dbd426, with the commands in Appendix B.
 
 [TODO: the ASSISTments results in sections 4.1, 4.2 and 4.4 need the data file. Download `skill_builder_data.csv`
 (the corrected 2009–2010 version), then run `npm run import-assistments -- skill_builder_data.csv`,
@@ -290,9 +290,80 @@ declares mastery for the students in the same order. Reading BKT on the scale on
 makes its probability less overconfident, but it does not remove the need for an extreme threshold, which comes from
 how quickly $P(L)$ approaches 1 after a run of right answers.
 
+### Skills made of ideas, asked by Zeno's own questions
+
+The gradual worlds make learning continuous by construction. The world of ideas (section 3.4), a check made after the
+results, asks whether a skill that is several ideas, each learnt all at once as BKT assumes, looks the same to BKT on
+the skill, and whether BKT on each idea does better, with the questions Zeno's generators ask. Of the 400 simulated
+learners, the held-out fifth knew every idea of times after the last answer in 54 % of practices at the lower
+learning rate and in all of them at the higher, of hcf in 45 % and 96 %, and of fractions in 10 % and 66 %. Table 4.9
+gives the comparison for hcf and fractions at both rates, by H2's rule: each method's threshold is the cheapest on
+the training learners whose declarations are right at least 90 % of the time there, and the cost is judged on the
+held-out learners. Times, whose every question needs the same three ideas together, behaves as one skill: BKT on the
+skill meets the standard at both rates, at 21.3 and 5.1 answers, and BKT on each idea needs 0.4 to 1.2 answers more.
+
+| Skill | Rate | Method | $\theta$ | Answers [95 % interval] | Right | Declared | Brier | Missing idea found |
+|---|---:|---|---:|---:|---:|---:|---:|---:|
+| hcf | 0.02 | BKT on the skill | never |  |  |  | 0.304 |  |
+| hcf | 0.02 | EMA | 0.86 | 25.58 [23.93, 27.08] | 80.8 % | 35.1 % | 0.180 |  |
+| hcf | 0.02 | BKT per idea | 0.50 | 27.96 [27.15, 28.77] | 95.2 % | 28.4 % | 0.226 | 9.3 % |
+| hcf | 0.02 | BKT per idea, carried | 0.50 | 25.78 [24.03, 27.43] | 100.0 % | 28.4 % | 0.119 | 47.0 % |
+| hcf | 0.1 | BKT on the skill | never |  |  |  | 0.140 |  |
+| hcf | 0.1 | EMA | 0.78 | 15.24 [13.78, 16.78] | 97.1 % | 94.6 % | 0.116 |  |
+| hcf | 0.1 | BKT per idea | 0.59 | 13.68 [12.58, 14.92] | 93.0 % | 95.9 % | 0.237 | 9.1 % |
+| hcf | 0.1 | BKT per idea, carried | 0.76 | 11.41 [9.74, 13.20] | 92.9 % | 94.6 % | 0.092 | 79.3 % |
+| fractions | 0.02 | BKT on the skill | never |  |  |  | 0.059 |  |
+| fractions | 0.02 | EMA | 0.93 | 29.55 [28.91, 30.00] | 100.0 % | 4.1 % | 0.107 |  |
+| fractions | 0.02 | BKT per idea | never |  |  |  | 0.059 | 8.4 % |
+| fractions | 0.02 | BKT per idea, carried | never |  |  |  | 0.059 | 13.8 % |
+| fractions | 0.1 | BKT on the skill | never |  |  |  | 0.261 |  |
+| fractions | 0.1 | EMA | 0.98 | 29.81 [29.53, 30.00] | 100.0 % | 2.7 % | 0.182 |  |
+| fractions | 0.1 | BKT per idea | 0.75 | 28.04 [27.26, 28.77] | 88.6 % | 47.3 % | 0.281 | 6.3 % |
+| fractions | 0.1 | BKT per idea, carried | 0.73 | 27.43 [26.46, 28.32] | 87.9 % | 44.6 % | 0.244 | 15.2 % |
+
+Table: H2's comparison in the world of ideas, on hcf (six ideas, about four a question) and fractions (fifteen ideas,
+about eight a question), with 30 questions per skill. "BKT per idea" starts every skill afresh; "carried" takes each
+idea's probability from the learner's earlier skills and puts a recognised mistake's blame on its one idea. The Brier
+score is of each method's own score against the truth after every answer. "Missing idea found" is, over every moment
+a held-out learner was exactly one idea short of mastering the skill, the share at which that idea had the lowest
+probability of the skill's ideas; by chance 16.7 % on hcf and 6.7 % on fractions (`npm run ideas`, seed 1; a check
+made after the results).
+
+BKT on the skill never met the standard on hcf or fractions at any threshold up to 0.9999, and on fractions at the
+higher rate its probability was the worst calibrated of the scores, with a Brier score of 0.261 against the moving
+average's 0.182: the pattern of the gradual worlds, in a world built from BKT's own assumptions at a finer grain. The
+streak rule, not in the table, needed 25.4 and 14.9 answers on hcf and 29.4 and 29.2 on fractions. On fractions, eight
+ideas a question, nothing decided well within 30 answers. The moving average and the streak rule met the standard only
+by declaring mastery for 3 to 14 % of learners at a cost of 29 to 30 answers; BKT on each idea met it at no threshold at
+the lower rate, and at the higher rate declared for 45 to 47 % of learners at 88 % precision and a cost of 27.4 to
+28.1 answers, 1.7 to 2.4 fewer than the moving average. Asked which one idea a learner was short of, BKT on each idea
+started afresh was at chance (6.3 and 8.4 % against 6.7 %); putting a recognised mistake's blame on its idea raised
+this to 12.0 and 13.8 %, and carrying the ideas in from times and hcf to 15.2 and 13.8 %. On hcf, four of six ideas a
+question and the arithmetic settled in times, carrying is what worked. BKT on each idea carried from times needed 2.2
+answers fewer than started afresh at both rates, with intervals of [−3.35, −1.08] and [−3.68, −0.91], and at the
+higher rate 3.8 fewer than the moving average and 3.5 fewer than the streak rule; it had the best Brier score of the
+scores at both rates, where started afresh it had the worst; and it named the missing idea 47 % of the time at the
+lower rate and 79 % at the higher, where afresh it was below chance, because the three arithmetic ideas that every hcf
+question needs can only tie. Seeds 2 and 3 gave the same picture on every skill.
+
+Thirty questions is the length of a practice in Zeno's class study, not a limit of the methods, so fractions was run
+again with 120 questions per skill, and once more with half of the questions asking for one of the skill's ideas
+alone, chosen at random, which Zeno's generators do not do yet. With 120 generated questions every form of BKT on each
+idea met the standard at both rates. At the higher rate it needed 38.7 answers [34.5, 43.7] against the moving
+average's 48.4 [44.2, 52.9] and the streak rule's 50.5, with 92 % of its declarations right; at the lower rate 101.8
+to 103.5 answers against 112.6 and 111.8, though started afresh only 79 % of its held-out declarations were right,
+against 88 % carried. Its Brier scores were the lowest of the six at the lower rate, 0.096 to 0.119 against the moving
+average's 0.236, and second to the moving average's at the higher. Asked for the missing idea, started afresh it
+stayed near chance, at 7 and 14 %, while a recognised mistake's blame alone raised it to 42 and 52 % and carrying to
+43 and 57 %. With half the questions asking for one idea alone, learners learnt more slowly, since such a question can
+teach only one idea, so every method needed more answers and fewer learners mastered the skill; but BKT on each idea
+started afresh now found the missing idea 63 and 65 % of the time, with blame and carrying adding a little, to 62 to
+76 %, and it kept the lowest Brier scores. What fractions lacked within 30 questions was evidence about each idea,
+not a way of reading it.
+
 ## 4.4 Mastery decisions on real answers (H3)
 
-[TODO: Table 4.9 from `npm run mastery -- --observations assistments.json`: for BKT at 0.95, EMA at the streak rule's
+[TODO: Table 4.10 from `npm run mastery -- --observations assistments.json`: for BKT at 0.95, EMA at the streak rule's
 cost and the streak rule with N = 3, how often each pair both declare, only one declares or neither does, and the mean
 gap in answers where both declare; then the share right on the next three answers after each method declares, with
 the number of practices that have such answers.]
@@ -315,4 +386,8 @@ $1 - 10^{-6.9}$ and $1 - 10^{-12.6}$ BKT meets the standard in three of the four
 learning rate it then needs 0.3 to 0.4 answers fewer than EMA. With a lower bar for mastery it meets the standard in
 all four settings, close to EMA in each. Measured against the truth after every answer, BKT's $P(L)$ is the best
 calibrated score in the BKT worlds and the worst in the gradual ones, where a value of 0.99 means mastery in 15 to 55
-% of cases (Table 4.8). In BKT's own world, fitted BKT is as precise as Proposition 2 promises. [TODO: H3.]
+% of cases (Table 4.8). In BKT's own world, fitted BKT is as precise as Proposition 2 promises. In a world where each
+skill is several ideas learnt as BKT assumes and asked by Zeno's own questions, BKT on the skill fails as in the
+gradual worlds; BKT on each idea meets the standard, decides sooner and names the missing idea where the questions
+tell the ideas apart and earlier skills are carried in (hcf), and not where every question needs the same eight
+ideas (fractions, Table 4.9). [TODO: H3.]

@@ -54,6 +54,30 @@ method: 25 to 30 answers out of 30, with most students never declared. Little se
 nearly the end, and differences of a third of an answer at that cost matter little in practice. The second is that the
 gradual worlds are as much a model as the BKT world is, and section 5.3 returns to this.
 
+The world of ideas, also added after the results, says something about why BKT fails where learning is gradual. A
+skill made of several ideas, each learnt all at once as BKT assumes, looked to BKT on the skill exactly as the gradual
+worlds do: on hcf and fractions it met the standard at no threshold up to 0.9999, and on fractions its probability was
+the worst calibrated score (Table 4.9). The pattern that section 4.3 found in worlds built to be gradual appears as
+well in a world built from BKT's own assumptions, once the grain at which those assumptions hold is finer than the
+grain at which the model is applied, which is the reading @koedinger2012kli give of a knowledge component. The remedy
+that follows, BKT at the finer grain, worked only where the questions let it. On hcf, whose questions need different
+ideas at different levels and whose arithmetic was settled in the skill before, BKT on each idea carried from that
+skill needed 2.2 answers fewer than started afresh, 3.8 fewer than the moving average at the higher rate, was the
+best calibrated score and named the one missing idea 47 to 79 % of the time. On fractions, whose generated questions
+need almost the same eight ideas every time, it could not: no form met the standard at the lower rate, and asked which
+idea a student lacked it was at chance unless a recognised mistake or an earlier skill pointed at the idea, and then
+right about one time in seven. The reason is in the model's own arithmetic. A conjunctive model that is nearly sure
+not every idea is known puts a right answer down to guessing and a wrong one to whichever idea is missing, so a
+question that needs eight ideas moves none of them much, and the estimate drifts with the learning step instead
+[@xu2012subskills]. This is the identifiability problem of student modelling [@beck2007identifiability] at the level
+of the ideas: the finer the grain, the more the questions must differ in what they ask for, which is what a complete
+Q-matrix provides [@tatsuoka1983rulespace] and what learning factors analysis checks a decomposition for
+[@cen2006lfa]. Zeno's fractions questions do not yet provide it, but it is a property of the questions, which a generator can change,
+not of the model. With 120 questions in place of 30 the same questions let BKT on each idea decide: it met the
+standard, needed about ten answers fewer than the moving average at either rate, and with a recognised mistake's blame
+or carrying named the missing idea about half the time; and when half the questions asked for one idea alone it named
+it two times in three without either.
+
 What the comparison at equal cost adds is a warning about how such comparisons are set up. At the streak rule's cost,
 all three methods were right more than 92 % of the time in the BKT worlds and less than 10 % in the gradual ones, and
 within each world they were nearly indistinguishable. A comparison at a fixed amount of practice, which is how the
@@ -75,7 +99,13 @@ jumps, as BKT assumes, BKT saves one or two answers per skill. A system that doe
 the rule whose failure is milder. BKT's failure, with a threshold not set for the world it is in, is to declare
 mastery when most students have not reached it. EMA's failure in the BKT worlds is to need one or two more answers.
 For practice that feeds later skills, an early false declaration is the more costly error, so of the rules compared
-here the evidence so far points to EMA. [TODO: revise in the light of H1 and H3.]
+here the evidence so far points to EMA. [TODO: revise in the light of H1 and H3.] The world of ideas adds a
+condition. BKT becomes the right tool where a skill is decomposed into ideas that are learnt as one thing and where the
+questions tell those ideas apart, by needing different ones, by a mistake the checker can name, or by what earlier
+skills already settled; there it decided sooner than the moving average, was better calibrated and could say which idea
+a student lacked. Zeno's fractions questions do not yet tell its ideas apart, so until its generators ask for single
+ideas the moving average on the skill remains the safer rule there, and the decomposition's first use is in reading a
+student's arithmetic from their fractions answers rather than in deciding mastery.
 
 The threshold matters at least as much as the method, as @pelanek2017mastery also found. The EMA thresholds that met
 the 90 % standard ranged from 0.54 to 0.97 across the simulated settings, and BKT's from 0.74 to $1 - 10^{-12.6}$, so
@@ -118,7 +148,11 @@ not of the model. Its own upper end, $1 - 10^{-15}$, is set by the precision of 
 Every simulated world is of this thesis's own making. The BKT world gives BKT a home advantage that Proposition 2 makes
 exact, and the elo world follows the form of Zeno's own learner model, which gives gradual learning an advantage of the
 same kind. A result in a world holds only as far as its way of learning is believed, which is why each world is
-reported on its own and none is pooled. Real learning is probably neither all at once nor perfectly smooth.
+reported on its own and none is pooled. Real learning is probably neither all at once nor perfectly smooth. The world
+of ideas is of this thesis's making too: its decomposition of fractions was drawn by hand, its ideas are assumed to be
+learnt as one thing, which the three tests in `src/model/conceptGraph.ts` could check on real answers but have only
+been run on simulated ones, and its questions, though Zeno's own, are read for the ideas they need by a rule written
+for the purpose.
 
 The simulated practice has every student answer 30 questions per skill at one level, with every question teaching
 the same amount and no transfer between skills. Real practice varies in all these respects, and the results may
