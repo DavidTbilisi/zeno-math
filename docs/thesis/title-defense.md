@@ -6,7 +6,12 @@ and works without slides.
 
 ## Title
 
-English: *When is a skill mastered? Bayesian Knowledge Tracing against a simple mastery rule on real and simulated
+Approved by the board at the defence: *The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning
+Systems*, with the research question: how does the level of skill granularity affect the accuracy and reliability of
+mastery estimation in adaptive learning systems? The outline (outline.md) is reframed under it; the proposed title
+below is kept for the record.
+
+English, as proposed: *When is a skill mastered? Bayesian Knowledge Tracing against a simple mastery rule on real and simulated
 students' answers.*
 
 Georgian (draft, check the wording): *როდის არის უნარი ათვისებული? ბაიესური ცოდნის მიდევნება მარტივი ათვისების
