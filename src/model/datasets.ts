@@ -113,7 +113,8 @@ export async function fromAssistments(records: AsyncIterable<string[]>, source =
     rows.push({ order, student, skill, correct: correct === "1", group: get("student_class_id") });
   }
   rows.sort((a, b) => a.order - b.order);
-  const observations: Observation[] = rows.map(({ student, skill, correct }) => ({ student, skill, level: 2, correct }));
+  // order_id names the problem log, so a problem tagged with several skills has the same problem on each of its observations.
+  const observations: Observation[] = rows.map(({ student, skill, correct, order }) => ({ student, skill, level: 2, correct, problem: String(order) }));
   const skills = [...new Set(rows.map((r) => r.skill))];
   // Kept problems per student and class, in the order first met, so a tie goes to the class met first.
   const perClass = new Map<string, Map<string, number>>();
@@ -131,14 +132,14 @@ export async function fromAssistments(records: AsyncIterable<string[]>, source =
   return { source, observations, areas: Object.fromEntries(skills.map((k) => [k, assistmentsTopic(k)])), classes, counts };
 }
 
-/** The file the importer writes: observations as compact [student, skill, level, right] rows, and each student's class. */
-export type DatasetFile = { source: string; areas: Record<string, string>; classes?: Record<string, string>; counts: Dataset["counts"]; rows: [string, string, number, 0 | 1][] };
+/** The file the importer writes: observations as compact [student, skill, level, right, problem] rows (problem where known), and each student's class. */
+export type DatasetFile = { source: string; areas: Record<string, string>; classes?: Record<string, string>; counts: Dataset["counts"]; rows: ([string, string, number, 0 | 1] | [string, string, number, 0 | 1, string])[] };
 export const toFile = (d: Dataset): DatasetFile => ({
   source: d.source,
   areas: d.areas,
   classes: d.classes,
   counts: d.counts,
-  rows: d.observations.map((o) => [o.student, o.skill, o.level, o.correct ? 1 : 0]),
+  rows: d.observations.map((o) => (o.problem === undefined ? [o.student, o.skill, o.level, o.correct ? 1 : 0] : [o.student, o.skill, o.level, o.correct ? 1 : 0, o.problem])),
 });
 export function fromFile(f: DatasetFile): Dataset {
   if (!f || !Array.isArray(f.rows)) throw new Error("not a data set file: no rows");
@@ -148,6 +149,7 @@ export function fromFile(f: DatasetFile): Dataset {
     // Files written before classes were kept have none.
     classes: f.classes ?? {},
     counts: f.counts,
-    observations: f.rows.map(([student, skill, level, right]) => ({ student, skill, level: (level === 1 || level === 3 ? level : 2) as 1 | 2 | 3, correct: right === 1 })),
+    // Files written before problems were kept have none.
+    observations: f.rows.map(([student, skill, level, right, problem]) => ({ student, skill, level: (level === 1 || level === 3 ? level : 2) as 1 | 2 | 3, correct: right === 1, ...(problem === undefined ? {} : { problem }) })),
   };
 }

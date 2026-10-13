@@ -41,11 +41,12 @@ const ASSISTMENTS = [
 test("the ASSISTments importer keeps main problems with a skill and a 0/1 result, once per skill, in the order given", async () => {
   const d = await fromAssistments(csvRecords([ASSISTMENTS.join("\n")]));
   assert.deepEqual(d.counts, { rows: 8, kept: 4, students: 2, skills: 4 });
+  // The problem is the order_id: the two skills of problem 10 share it.
   assert.deepEqual(d.observations, [
-    { student: "u1", skill: "Equation Solving Two or Fewer Steps", level: 2, correct: false },
-    { student: "u1", skill: "Area Rectangle", level: 2, correct: false },
-    { student: "u2", skill: "Addition and Subtraction Fractions", level: 2, correct: true },
-    { student: "u1", skill: "Box and Whisker", level: 2, correct: true },
+    { student: "u1", skill: "Equation Solving Two or Fewer Steps", level: 2, correct: false, problem: "10" },
+    { student: "u1", skill: "Area Rectangle", level: 2, correct: false, problem: "10" },
+    { student: "u2", skill: "Addition and Subtraction Fractions", level: 2, correct: true, problem: "22" },
+    { student: "u1", skill: "Box and Whisker", level: 2, correct: true, problem: "30" },
   ]);
   assert.deepEqual(d.areas, {
     "Box and Whisker": "data",
@@ -54,6 +55,9 @@ test("the ASSISTments importer keeps main problems with a skill and a 0/1 result
     "Addition and Subtraction Fractions": "number",
   });
   assert.deepEqual(fromFile(JSON.parse(JSON.stringify(toFile(d)))).observations, d.observations);
+  // A file written before problems were kept reads back without them.
+  const older = { ...toFile(d), rows: toFile(d).rows.map((r) => r.slice(0, 4) as [string, string, number, 0 | 1]) };
+  assert.deepEqual(fromFile(older).observations.map((o) => o.problem), [undefined, undefined, undefined, undefined]);
   await assert.rejects(fromAssistments(csvRecords(["a,b\n1,2"])), /not an ASSISTments file/);
 });
 

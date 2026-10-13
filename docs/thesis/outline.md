@@ -157,7 +157,9 @@ stated for the sweeps that have not yet been run.
 - **G4, real data across grains (confirmatory).** On ASSISTments 2009–2010 the same answers can be modelled at three
   grains without new data: the data set's own skill tags (about a hundred skills), the topic areas the importer
   already assigns to them (`assistmentsTopic` in `src/model/datasets.ts`, a dozen areas), and one skill for all of
-  mathematics. Hypothesis: BKT fitted at the data set's grain predicts held-out students' answers better than BKT
+  mathematics (`src/model/grain.ts`, `npm run grain`). A problem tagged with several skills is one observation per
+  skill at the finest grain and, where those skills fall together, one at a coarser grain; the paired tests run on
+  the first observation of each problem, which every grain keeps. Hypothesis: BKT fitted at the data set's grain predicts held-out students' answers better than BKT
   at the topic grain, which predicts better than one skill (log-loss, paired bootstrap over students, 0.005 as the
   smallest difference that counts, the finest-against-coarsest difference as the one confirmatory test). Exploratory
   beside it: whether the EMA loses less than BKT from coarsening (it conditions on fewer answers, so it should),
@@ -229,8 +231,9 @@ carried form.
   multi-skill problems are handled at each grain.
 - **Simulated learners**, each with the true state recorded after every answer:
   - the one-grain worlds of H2 (`src/model/simulate.ts`): bkt, bkt with forgetting, elo, irt2pl;
-  - the atoms world (`src/model/atoms.ts`): a skill is k components, one asked per question; with the over-splitting
-    variant for G3 [to add];
+  - the atoms world (`src/model/atoms.ts`): a skill is k components, one asked per question; with `split` above 1 the
+    model is finer than the learner (G3), and the fits at the grid's edge and the threshold's transfer from training
+    to held-out learners are counted;
   - the ideas world (`src/model/ideas.ts`): fractions and its arithmetic as sixteen ideas (`conceptGraph.ts`), asked
     by Zeno's own generators, with the share of isolating questions as a setting [to add as a sweep].
 
@@ -301,6 +304,6 @@ decomposed by hand.
 | Mastery agreement on ASSISTments (H3) | `npm run mastery -- --observations assistments.json` | exists; needs the data file |
 | Too coarse, k components (G1) | `npm run atoms` | exists for k up to 4; sweep to 16 to add |
 | Right grain, isolating share (G2) | `npm run ideas` | exists for 0 and the forms; sweep to add |
-| Too fine, over-splitting (G3) | `npm run atoms -- --split 2` | to add |
-| Real data at three grains (G4) | `npm run h1 -- --observations assistments.json --grain topic` | to add |
+| Too fine, over-splitting (G3) | `npm run atoms -- --atoms 2 --split 1,2,4` | exists; also reports fits at the grid's edge and threshold stability |
+| Real data at three grains (G4) | `npm run grain -- --observations assistments.json` | exists; needs the data file (re-import it, so that problems are kept) |
 | Figures | `npm run figures` | exists; grain plots to add |
