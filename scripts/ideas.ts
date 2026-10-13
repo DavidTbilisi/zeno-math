@@ -65,34 +65,35 @@ for (const learnRate of rates)
       results.push({ learnRate, isolateRate, knownAtEnd, ideasPerQuestion, ...compareIdeas(train, test, skill, target, resamples, base.seed, thresholds) });
     }
   }
-if (args.includes("--json")) {
-  console.log(JSON.stringify({ ...base, learnRates: rates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2));
-  process.exit(0);
-}
+// Written with a single write, not console.log and process.exit: a large JSON on a pipe is cut off by an exit before it has drained.
+if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, learnRates: rates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
+else report();
 
-const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
-const answers = (x: number) => (Number.isNaN(x) ? "–" : x.toFixed(2));
-const span = ([lo, hi]: [number, number]) => `[${answers(lo)}, ${answers(hi)}]`;
-const row = (label: string, a: AtPrecision, saves: string) => {
-  const j = a.judgement;
-  if (!j) return console.log(`  ${label.padEnd(18)}never right ${pct(target)} of the time on the training learners`);
-  console.log(`  ${label.padEnd(18)}${a.rule!.replace(/^.* θ /, "θ ").padEnd(16)}${answers(j.cost).padStart(8)}  ${span(j.costInterval).padEnd(16)}${pct(j.precision).padStart(10)}${pct(j.declared).padStart(10)}   ${saves}`);
-};
-console.log(`${base.students} simulated learners × ${IDEA_SKILLS.join(", ")} × ${base.length} questions from the generators; ${pct(testShare)} of learners held out, seed ${base.seed}`);
-console.log(`a wrong answer is a recognised mistake ${pct(base.trapRate)} of the time when the question has one and its idea is missing`);
-console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
-for (const r of results) {
-  const alone = r.isolateRate ? `, ${pct(r.isolateRate)} of questions asking for one idea alone` : "";
-  console.log(`\n${r.skill} (${ideasOf(r.skill).length} ideas, ${r.ideasPerQuestion.toFixed(1)} per question${alone}), learning rate ${r.learnRate}: every idea known after the last answer ${pct(r.knownAtEnd)}`);
-  console.log(`  ${"method".padEnd(18)}${"rule".padEnd(16)}${"answers".padStart(8)}  ${"95 % interval".padEnd(16)}${"precision".padStart(10)}${"declared".padStart(10)}   per idea minus on the skill`);
-  const [bkt, ema, streak] = r.onSkill;
-  row("BKT on the skill", bkt, "");
-  row("EMA", ema, "");
-  row("streak", streak, "");
-  for (const [label, a] of [["BKT per idea", r.perIdea], ["  blamed", r.blamed], ["  carried", r.carried]] as const) row(label, a, a.bktSaves ? `${answers(a.bktSaves.estimate)} ${span(a.bktSaves.interval)}` : "");
-  if (r.carryingSaves) console.log(`  carried minus blamed: ${answers(r.carryingSaves.estimate)} answers ${span(r.carryingSaves.interval)}`);
-  const names = ["BKT P(known)", "BKT P(right)", "EMA", "per idea", "blamed", "carried"];
-  console.log(`  Brier score against the truth after every answer: ${r.calibration.map((c, i) => `${names[i]} ${c.brier.toFixed(3)}`).join(", ")}`);
-  const d = r.diagnosis;
-  console.log(`  the one missing idea found (of ${d[0].moments} moments; chance ${pct(d[0].chance)}): per idea ${pct(d[0].right)}, blamed ${pct(d[1].right)}, carried ${pct(d[2].right)}`);
+function report() {
+  const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
+  const answers = (x: number) => (Number.isNaN(x) ? "–" : x.toFixed(2));
+  const span = ([lo, hi]: [number, number]) => `[${answers(lo)}, ${answers(hi)}]`;
+  const row = (label: string, a: AtPrecision, saves: string) => {
+    const j = a.judgement;
+    if (!j) return console.log(`  ${label.padEnd(18)}never right ${pct(target)} of the time on the training learners`);
+    console.log(`  ${label.padEnd(18)}${a.rule!.replace(/^.* θ /, "θ ").padEnd(16)}${answers(j.cost).padStart(8)}  ${span(j.costInterval).padEnd(16)}${pct(j.precision).padStart(10)}${pct(j.declared).padStart(10)}   ${saves}`);
+  };
+  console.log(`${base.students} simulated learners × ${IDEA_SKILLS.join(", ")} × ${base.length} questions from the generators; ${pct(testShare)} of learners held out, seed ${base.seed}`);
+  console.log(`a wrong answer is a recognised mistake ${pct(base.trapRate)} of the time when the question has one and its idea is missing`);
+  console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
+  for (const r of results) {
+    const alone = r.isolateRate ? `, ${pct(r.isolateRate)} of questions asking for one idea alone` : "";
+    console.log(`\n${r.skill} (${ideasOf(r.skill).length} ideas, ${r.ideasPerQuestion.toFixed(1)} per question${alone}), learning rate ${r.learnRate}: every idea known after the last answer ${pct(r.knownAtEnd)}`);
+    console.log(`  ${"method".padEnd(18)}${"rule".padEnd(16)}${"answers".padStart(8)}  ${"95 % interval".padEnd(16)}${"precision".padStart(10)}${"declared".padStart(10)}   per idea minus on the skill`);
+    const [bkt, ema, streak] = r.onSkill;
+    row("BKT on the skill", bkt, "");
+    row("EMA", ema, "");
+    row("streak", streak, "");
+    for (const [label, a] of [["BKT per idea", r.perIdea], ["  blamed", r.blamed], ["  carried", r.carried]] as const) row(label, a, a.bktSaves ? `${answers(a.bktSaves.estimate)} ${span(a.bktSaves.interval)}` : "");
+    if (r.carryingSaves) console.log(`  carried minus blamed: ${answers(r.carryingSaves.estimate)} answers ${span(r.carryingSaves.interval)}`);
+    const names = ["BKT P(known)", "BKT P(right)", "EMA", "per idea", "blamed", "carried"];
+    console.log(`  Brier score against the truth after every answer: ${r.calibration.map((c, i) => `${names[i]} ${c.brier.toFixed(3)}`).join(", ")}`);
+    const d = r.diagnosis;
+    console.log(`  the one missing idea found (of ${d[0].moments} moments; chance ${pct(d[0].chance)}): per idea ${pct(d[0].right)}, blamed ${pct(d[1].right)}, carried ${pct(d[2].right)}`);
+  }
 }

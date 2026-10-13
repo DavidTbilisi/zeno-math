@@ -63,31 +63,32 @@ for (const learnRate of rates)
       const knownAtEnd = test.filter((p) => p.known[p.known.length - 1]).length / test.length;
       results.push({ atoms: k, uses: u, learnRate, knownAtEnd, ...compareAtoms(train, test, target, resamples, base.seed, thresholds) });
     }
-if (args.includes("--json")) {
-  console.log(JSON.stringify({ ...base, learnRates: rates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2));
-  process.exit(0);
-}
+// Written with a single write, not console.log and process.exit: a large JSON on a pipe is cut off by an exit before it has drained.
+if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, learnRates: rates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
+else report();
 
-const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
-const answers = (x: number) => (Number.isNaN(x) ? "–" : x.toFixed(2));
-const span = ([lo, hi]: [number, number]) => `[${answers(lo)}, ${answers(hi)}]`;
-const row = (label: string, a: AtPrecision, saves: string) => {
-  const j = a.judgement;
-  if (!j) return console.log(`  ${label.padEnd(18)}never right ${pct(target)} of the time on the training learners`);
-  console.log(`  ${label.padEnd(18)}${a.rule!.replace(/^.* θ /, "θ ").padEnd(16)}${answers(j.cost).padStart(8)}  ${span(j.costInterval).padEnd(16)}${pct(j.precision).padStart(10)}${pct(j.declared).padStart(10)}   ${saves}`);
-};
-console.log(`${base.students} simulated learners × ${base.skills} skills × ${base.length} questions; each skill is k atoms asked for in turn; ${pct(testShare)} of learners held out, seed ${base.seed}`);
-console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
-for (const r of results) {
-  const shared = r.uses > 1 ? `, each in ${r.uses} skills` : "";
-  console.log(`\n${r.atoms} atom${r.atoms > 1 ? "s" : ""}${shared}, learning rate ${r.learnRate}: every atom known after the last answer ${pct(r.knownAtEnd)}`);
-  console.log(`  ${"method".padEnd(18)}${"rule".padEnd(16)}${"answers".padStart(8)}  ${"95 % interval".padEnd(16)}${"precision".padStart(10)}${"declared".padStart(10)}   per atom minus on the skill`);
-  const [bkt, ema, streak] = r.skill;
-  row("BKT on the skill", bkt, "");
-  row("EMA", ema, "");
-  row("streak", streak, "");
-  for (const [label, a] of [["BKT per atom", r.perAtom], ["  carried", r.carried]] as const) row(label, a, a.bktSaves ? `${answers(a.bktSaves.estimate)} ${span(a.bktSaves.interval)}` : "");
-  if (r.carryingSaves) console.log(`  carried minus afresh: ${answers(r.carryingSaves.estimate)} answers ${span(r.carryingSaves.interval)}`);
-  const names = ["BKT P(known)", "BKT P(right)", "EMA", "BKT per atom", "carried"];
-  console.log(`  Brier score against the truth after every answer: ${r.calibration.map((c, i) => `${names[i]} ${c.brier.toFixed(3)}`).join(", ")}`);
+function report() {
+  const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
+  const answers = (x: number) => (Number.isNaN(x) ? "–" : x.toFixed(2));
+  const span = ([lo, hi]: [number, number]) => `[${answers(lo)}, ${answers(hi)}]`;
+  const row = (label: string, a: AtPrecision, saves: string) => {
+    const j = a.judgement;
+    if (!j) return console.log(`  ${label.padEnd(18)}never right ${pct(target)} of the time on the training learners`);
+    console.log(`  ${label.padEnd(18)}${a.rule!.replace(/^.* θ /, "θ ").padEnd(16)}${answers(j.cost).padStart(8)}  ${span(j.costInterval).padEnd(16)}${pct(j.precision).padStart(10)}${pct(j.declared).padStart(10)}   ${saves}`);
+  };
+  console.log(`${base.students} simulated learners × ${base.skills} skills × ${base.length} questions; each skill is k atoms asked for in turn; ${pct(testShare)} of learners held out, seed ${base.seed}`);
+  console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
+  for (const r of results) {
+    const shared = r.uses > 1 ? `, each in ${r.uses} skills` : "";
+    console.log(`\n${r.atoms} atom${r.atoms > 1 ? "s" : ""}${shared}, learning rate ${r.learnRate}: every atom known after the last answer ${pct(r.knownAtEnd)}`);
+    console.log(`  ${"method".padEnd(18)}${"rule".padEnd(16)}${"answers".padStart(8)}  ${"95 % interval".padEnd(16)}${"precision".padStart(10)}${"declared".padStart(10)}   per atom minus on the skill`);
+    const [bkt, ema, streak] = r.skill;
+    row("BKT on the skill", bkt, "");
+    row("EMA", ema, "");
+    row("streak", streak, "");
+    for (const [label, a] of [["BKT per atom", r.perAtom], ["  carried", r.carried]] as const) row(label, a, a.bktSaves ? `${answers(a.bktSaves.estimate)} ${span(a.bktSaves.interval)}` : "");
+    if (r.carryingSaves) console.log(`  carried minus afresh: ${answers(r.carryingSaves.estimate)} answers ${span(r.carryingSaves.interval)}`);
+    const names = ["BKT P(known)", "BKT P(right)", "EMA", "BKT per atom", "carried"];
+    console.log(`  Brier score against the truth after every answer: ${r.calibration.map((c, i) => `${names[i]} ${c.brier.toFixed(3)}`).join(", ")}`);
+  }
 }

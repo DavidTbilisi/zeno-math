@@ -15,6 +15,8 @@ const w = en.pracWords;
 const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   addAcross: ["fractions", [1, 2]],
   flipFirst: ["fractions", [2, 3]],
+  addedToBoth: ["fractions", [1, 2, 3]],
+  wholeTimesTop: ["fractions", [1, 2, 3]],
   squareTerms: ["expand", [3]],
   noMiddle: ["expand", [1]],
   negPower: ["indices", [1, 3]],

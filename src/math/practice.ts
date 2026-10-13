@@ -28,8 +28,8 @@ export type Bound = { v: number; closed: boolean };
 /** A predictable mistake and the answer it gives (with the numbers its message names). */
 type Trap = { id: MistakeId; a: Answer; vars?: Record<string, string | number> };
 type Answer = (
-  /** std: the answer is asked for in standard form, a × 10ⁿ. */
-  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean }
+  /** std: the answer is asked for in standard form, a × 10ⁿ; form: as an improper fraction or a mixed number. */
+  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed" }
   | { k: "set"; vs: number[]; tol: number }
   | { k: "tuple"; vs: number[]; tol: number }
   | { k: "expr"; e: E; mode?: "factor" | "expand" | "plusC" | "line" }
@@ -69,6 +69,12 @@ export type PracticeWords = {
   prompts: {
     times: string;
     fractions: string;
+    fracEquivalent: string;
+    fracLowest: string;
+    fracLcd: string;
+    fracReciprocal: string;
+    fracImproper: string;
+    fracMixed: string;
     percentOf: string;
     percentChange: string;
     percentReverse: string;
@@ -173,6 +179,8 @@ export type PracticeWords = {
     empty: string;
     unreadable: string;
     notLowest: string;
+    notImproper: string;
+    notMixed: string;
     notSimplified: string;
     notFactored: string;
     notExpanded: string;
@@ -305,7 +313,7 @@ function surdTex(p: Frac, q: Frac, m: number): string {
   if (p.isZero()) return (q.isNeg() ? "-" : "") + root;
   return `${p.tex()} ${q.isNeg() ? "-" : "+"} ${root}`;
 }
-const num = (v: number, tol = 1e-9, extra: { lowest?: boolean; surd?: boolean } = {}): Answer => ({ k: "num", v, tol, ...extra });
+const num = (v: number, tol = 1e-9, extra: { lowest?: boolean; surd?: boolean; form?: "improper" | "mixed" } = {}): Answer => ({ k: "num", v, tol, ...extra });
 const dp = (v: number, d: number) => String(Math.round(v * 10 ** d) / 10 ** d);
 /** E as text that parseE reads back. */
 export function plainE(e: E): string {
@@ -440,6 +448,82 @@ export function angleLabelAt(bx: number, by: number, bw: number, th: number, tw:
 
 type Gen = (r: Rng, L: Level, w: PracticeWords) => Omit<Exercise, "skill" | "level" | "seed">;
 
+/**
+ * The share of fractions questions that ask for one idea of fractions alone, in place of an operation. An operation
+ * needs seven to ten ideas at once, so a wrong answer could be any of them; these forms each test one step by itself
+ * (src/model/conceptGraph.ts, test 1), so the ideas a student lacks can be told apart.
+ */
+const FRACTION_FORM_SHARE = 0.4;
+export type FractionForm = "equivalent" | "lowest" | "lcd" | "reciprocal" | "toImproper" | "toMixed";
+const FRACTION_FORMS: readonly FractionForm[] = ["equivalent", "lowest", "lcd", "reciprocal", "toImproper", "toMixed"];
+/** The worked picture of a fraction form: bars of the fractions named, with the form and numbers kept so the question can be read for its ideas. */
+const fracBars = (form: FractionForm, a: string, b: string | null, rows: { n: number; d: number }[]) => ({
+  kind: "model" as const,
+  spec: { type: "fraction", form, a, b, rows, shape: "bar", unitLabels: true },
+});
+const fracTex = (n: number, d: number) => `\\frac{${n}}{${d}}`;
+const mixedTex = (whole: number, n: number, d: number) => `${whole}\\frac{${n}}{${d}}`;
+
+/** One idea of fractions alone: a missing top, lowest terms, the lowest common denominator, a reciprocal, or a conversion between mixed and improper. */
+function fractionForm(r: Rng, L: Level, w: PracticeWords): Omit<Exercise, "skill" | "level" | "seed"> {
+  const form = r.pick(FRACTION_FORMS);
+  const maxD = L === 1 ? 6 : L === 2 ? 9 : 12;
+  /** A fraction below 1 in lowest terms. */
+  const proper = () => {
+    let n: number, d: number;
+    do {
+      d = r.int(2, maxD);
+      n = r.int(1, d - 1);
+    } while (gcd(n, d) !== 1);
+    return { n, d };
+  };
+  switch (form) {
+    case "equivalent": {
+      // 3/4 = ?/12: the top scaled as the bottom was. Adding the same number to both is the trap.
+      const { n, d } = proper();
+      const k = r.int(2, L === 1 ? 5 : 12);
+      const traps: Trap[] = [{ id: "addedToBoth", a: num(n + k * d - d), vars: { n, d, k, kd: k * d } }];
+      return { prompt: w.prompts.fracEquivalent, q: `${fracTex(n, d)} = \\frac{?}{${k * d}}`, answer: { ...num(n * k), traps }, show: String(n * k), plain: String(n * k), format: "number", solution: fracBars("equivalent", `${n}/${d}`, `${n * k}/${k * d}`, [{ n, d }, { n: n * k, d: k * d }]) };
+    }
+    case "lowest": {
+      const { n, d } = proper();
+      const k = r.int(2, L === 1 ? 4 : L === 2 ? 9 : 12);
+      return { prompt: w.prompts.fracLowest, q: fracTex(n * k, d * k), answer: num(n / d, 1e-9, { lowest: true }), show: fracTex(n, d), plain: `${n}/${d}`, format: "fraction", solution: fracBars("lowest", `${n * k}/${d * k}`, null, [{ n: n * k, d: d * k }, { n, d }]) };
+    }
+    case "lcd": {
+      const a = proper();
+      let b = proper();
+      while (b.d === a.d) b = proper();
+      const lcd = (a.d / gcd(a.d, b.d)) * b.d;
+      const rows = [a, b, { n: (a.n * lcd) / a.d, d: lcd }, { n: (b.n * lcd) / b.d, d: lcd }];
+      return { prompt: w.prompts.fracLcd, q: `${fracTex(a.n, a.d)},\\ ${fracTex(b.n, b.d)}`, answer: num(lcd), show: String(lcd), plain: String(lcd), format: "number", solution: fracBars("lcd", `${a.n}/${a.d}`, `${b.n}/${b.d}`, rows) };
+    }
+    case "reciprocal": {
+      // A fraction, at level 2 sometimes a whole number, at level 3 a mixed number.
+      const p = proper();
+      const whole = L === 3 ? r.int(1, 3) : 0;
+      const asWhole = L === 2 && r.next() < 0.3;
+      const [n, d] = asWhole ? [r.int(2, 9), 1] : [whole * p.d + p.n, p.d];
+      const given = asWhole ? String(n) : whole ? mixedTex(whole, p.n, p.d) : fracTex(n, d);
+      const text = asWhole ? String(n) : whole ? `${whole} ${p.n}/${p.d}` : `${n}/${d}`;
+      return { prompt: w.prompts.fracReciprocal, q: given, answer: num(d / n, 1e-9, { lowest: true }), show: fr(d, n).tex(), plain: plainFrac(fr(d, n)), format: "fraction", solution: fracBars("reciprocal", text, null, [{ n, d }, { n: d, d: n }]) };
+    }
+    case "toImproper":
+    case "toMixed": {
+      const { n, d } = proper();
+      const whole = r.int(1, L === 1 ? 2 : L === 2 ? 3 : 5);
+      const top = whole * d + n;
+      const bars = fracBars(form, form === "toImproper" ? `${whole} ${n}/${d}` : `${top}/${d}`, null, [{ n: top, d }]);
+      if (form === "toImproper") {
+        // Multiplying the whole by the top instead of the bottom is the trap (the same value when the whole is 1).
+        const traps: Trap[] = whole > 1 ? [{ id: "wholeTimesTop", a: num((whole * n + d) / d), vars: { w: whole, n, d, wd: whole * d, top } }] : [];
+        return { prompt: w.prompts.fracImproper, q: mixedTex(whole, n, d), answer: { ...num(top / d, 1e-9, { lowest: true, form: "improper" }), traps }, show: fracTex(top, d), plain: `${top}/${d}`, format: "fraction", solution: bars };
+      }
+      return { prompt: w.prompts.fracMixed, q: fracTex(top, d), answer: num(top / d, 1e-9, { lowest: true, form: "mixed" }), show: mixedTex(whole, n, d), plain: `${whole} ${n}/${d}`, format: "fraction", solution: bars };
+    }
+  }
+}
+
 const GENS: Record<SkillId, Gen> = {
   times(r, L, w) {
     const [a, b] = L === 1 ? [r.int(12, 99), r.int(3, 9)] : L === 2 ? [r.int(12, 99), r.int(12, 99)] : [r.int(101, 999), r.int(12, 99)];
@@ -476,15 +560,17 @@ const GENS: Record<SkillId, Gen> = {
     const opTex = { "+": "+", "-": "-", "×": "\\times", "÷": "\\div" }[op];
     const whole = Math.trunc(res.n / res.d);
     const show = res.d === 1 || Math.abs(whole) === 0 ? res.tex() : `${res.tex()} = ${whole}\\frac{${Math.abs(res.n) % res.d}}{${res.d}}`;
-    return {
+    const operation = {
       prompt: w.prompts.fractions,
       q: `${ftex(a)} ${opTex} ${ftex(b)}`,
       answer: { ...num(res.toNumber(), 1e-9, { lowest: true }), traps },
       show,
       plain: plainFrac(res),
-      format: "fraction",
-      solution: { kind: "model", spec: { type: "fracop", op, a: ftxt(a), b: ftxt(b), step: 99 } },
+      format: "fraction" as const,
+      solution: { kind: "model" as const, spec: { type: "fracop", op, a: ftxt(a), b: ftxt(b), step: 99 } },
     };
+    // Drawn after the operation, so a seed that keeps its operation keeps the same question as before the forms came.
+    return r.next() < FRACTION_FORM_SHARE ? fractionForm(r, L, w) : operation;
   },
 
   percent(r, L, w) {
@@ -2439,6 +2525,9 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
           const m = t.match(/(\d+)\s*\/\s*(\d+)\s*$/);
           if (m && gcd(Number(m[1]), Number(m[2])) !== 1) return { ok: false, close: true, why: w.reasons.notLowest };
         }
+        // The right value in the wrong shape: a mixed number asked for as an improper fraction, or the other way.
+        if (a.form === "improper" && !/^\d+\s*\/\s*\d+$/.test(src)) return { ok: false, close: true, why: w.reasons.notImproper };
+        if (a.form === "mixed" && !/^\d+\s+\d+\s*\/\s*\d+$/.test(src)) return { ok: false, close: true, why: w.reasons.notMixed };
         if (a.surd && a.tol < 1e-6 && !simplifiedSurd(parseE(t))) return { ok: false, close: true, why: w.reasons.notSimplified };
         return { ok: true };
       }
