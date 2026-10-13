@@ -172,6 +172,22 @@ export function thresholdForCost(make: (threshold: number) => MasteryRule, pract
   return Math.abs(costAt(lo) - cost) <= Math.abs(costAt(hi) - cost) ? lo : hi;
 }
 
+/** BKT's usual threshold: P(known) at least 0.95, the Cognitive Tutors' choice. */
+export const USUAL_THRESHOLD = 0.95;
+/**
+ * The rules as deployed systems run them, with nothing chosen from a truth: BKT at 0.95, the streak rule at N (three
+ * in the ASSISTments skill builders), and the EMA, which has no usual threshold, at the one costing on the training
+ * practices what the streak rule costs there (cost needs no truth). H3 compares these on real answers; the granularity
+ * sweeps judge them where the truth is known.
+ */
+export function usualRules(fitted: Fitted, train: readonly Practice[], streak = 3): MasteryRule[] {
+  return [
+    bktRule(fitted.bkt, USUAL_THRESHOLD),
+    emaRule(fitted.ema, thresholdForCost((t) => emaRule(fitted.ema, t), train, judge(streakRule(streak), train).cost)),
+    streakRule(streak),
+  ];
+}
+
 /**
  * A 95 % percentile interval for a statistic, resampling students with all their practices together, since one
  * student's practices on different skills are not independent. The statistic gets the indices of the practices drawn.

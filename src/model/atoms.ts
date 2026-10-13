@@ -24,21 +24,30 @@
 // answers are the same at every split, so the grains are compared on the same practices. Two things that going too
 // fine costs are counted beside the usual comparison: fits at the grid's edge, and whether the threshold chosen on
 // the training learners is still the right one on the held-out learners.
+//
+// A question may also ask for several atoms at once (G1 and G2): with perQuestion above 1 each question needs that
+// many of the skill's atoms, drawn without repetition, and is right (but for a slip) only when all of them are known,
+// as the generators' questions are in the world of ideas (ideas.ts). BKT on each atom then takes the conjunctive step
+// of that world, with the skill's fitted guess and slip; a question on one atom stays that atom's own BKT step. Beside
+// the cheapest threshold meeting the standard, every method is judged at the threshold a deployed system would use
+// without a truth to set it by (usualRules in mastery.ts), since that is where a wrong grain shows in practice.
 import { sigmoid } from "./elo.ts";
 import { BKT_GRID, bktStep, calibration, fitBkt, rmse, type BktParams, type Prediction } from "./evaluate.ts";
+import { conjunctiveStep } from "./ideaState.ts";
 import { DEFAULT_SIM } from "./simulate.ts";
 import {
   bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtPrecision, costOf, decide, emaRule, FINE_THRESHOLDS, fitRules, judge, masteryCalibration, PRECISION_TARGET,
-  precisionOf, type AtPrecision, type Calibration, type MasteryRule, type Practice,
+  precisionOf, USUAL_THRESHOLD, usualRules, type AtPrecision, type Calibration, type Judgement, type MasteryRule, type Practice,
 } from "./mastery.ts";
 import { rng } from "./random.ts";
 
 /**
- * A skill's answers, with which component each question asked for (an index into ids, the components' names), whether
- * each of the skill's atoms was known after each answer, and how many components each atom is modelled as (split: 1
- * when the components are the atoms; component c belongs to atom floor(c / split)).
+ * A skill's answers, with which components each question asked for (needs: for each question the indices into ids,
+ * the components' names; one index unless questions ask for several atoms at once), whether each of the skill's atoms
+ * was known after each answer, and how many components each atom is modelled as (split: 1 when the components are the
+ * atoms; component c belongs to atom floor(c / split)).
  */
-export type AtomPractice = Practice & { known: Uint8Array; ids: readonly string[]; atom: Uint8Array; atomKnown: Uint8Array[]; split: number };
+export type AtomPractice = Practice & { known: Uint8Array; ids: readonly string[]; needs: readonly (readonly number[])[]; atomKnown: Uint8Array[]; split: number };
 /** The atom a component of a practice belongs to. */
 export const atomOf = (p: AtomPractice, component: number) => Math.floor(component / p.split);
 
@@ -57,8 +66,10 @@ export type AtomParams = {
   seed: number;
   /** Components each atom is modelled as: 1, the model is at the learner's grain; above it, finer (G3). */
   split: number;
+  /** Atoms each question asks for at once, 1 to atoms: above 1 the question is right only when all of them are known. */
+  perQuestion: number;
 };
-export const DEFAULT_ATOMS: AtomParams = { students: 400, skills: 12, atoms: 2, uses: 1, length: 30, learnRate: 0.02, seed: 1, split: 1 };
+export const DEFAULT_ATOMS: AtomParams = { students: 400, skills: 12, atoms: 2, uses: 1, length: 30, learnRate: 0.02, seed: 1, split: 1, perQuestion: 1 };
 
 /** The BKT world's chances at level 2, where H2's questions are. */
 const GUESS = 0.2, SLIP = 0.1;
@@ -93,11 +104,13 @@ export function dealAtoms(skills: number, atoms: number, uses: number, seed: num
  * learner first meets the atom, is the chance of knowing it at the start, as in the BKT world. An atom is learnt or
  * kept whichever skill asks for it. After each answer the truth is recorded: each of the skill's atoms' state, and
  * whether all of them are known. With split above 1 the question is also tagged with one of its atom's components,
- * drawn from a generator of its own so that the answers and the truth are the same at every split.
+ * drawn from a generator of its own so that the answers and the truth are the same at every split. With perQuestion
+ * above 1 each question draws that many distinct atoms, is right only when all are known, and may teach each of them.
  */
 export function simulateAtoms(params: Partial<AtomParams> = {}): AtomPractice[] {
   const p = { ...DEFAULT_ATOMS, ...params };
   if (!Number.isInteger(p.split) || p.split < 1) throw new Error(`split must be a whole number above 0, not ${p.split}`);
+  if (!Number.isInteger(p.perQuestion) || p.perQuestion < 1 || p.perQuestion > p.atoms) throw new Error(`perQuestion must be a whole number from 1 to the ${p.atoms} atoms of a skill, not ${p.perQuestion}`);
   const members = dealAtoms(p.skills, p.atoms, p.uses, p.seed);
   const r = rng(p.seed);
   const parts = rng(p.seed + 2);
@@ -112,27 +125,37 @@ export function simulateAtoms(params: Partial<AtomParams> = {}): AtomPractice[] 
     for (let k = 0; k < p.skills; k++) {
       const ability = global + r.normal(spread.skill);
       for (const id of members[k]) if (!known.has(id)) known.set(id, r.next() < sigmoid(ability - difficulty[id]));
-      const answers = new Uint8Array(p.length), all = new Uint8Array(p.length), atom = new Uint8Array(p.length);
+      const answers = new Uint8Array(p.length), all = new Uint8Array(p.length);
+      const needs: number[][] = [];
       const atomKnown = members[k].map(() => new Uint8Array(p.length));
       for (let i = 0; i < p.length; i++) {
-        const a = Math.floor(r.next() * p.atoms), id = members[k][a];
-        atom[i] = p.split === 1 ? a : a * p.split + Math.floor(parts.next() * p.split);
-        answers[i] = r.next() < (known.get(id) ? 1 - SLIP : GUESS) ? 1 : 0;
-        if (!known.get(id) && r.next() < learn) known.set(id, true);
+        // One atom drawn as before; several drawn without repetition, the first draw the same.
+        const asked = [Math.floor(r.next() * p.atoms)];
+        while (asked.length < p.perQuestion) {
+          const a = Math.floor(r.next() * p.atoms);
+          if (!asked.includes(a)) asked.push(a);
+        }
+        needs.push(asked.map((a) => (p.split === 1 ? a : a * p.split + Math.floor(parts.next() * p.split))));
+        const allAsked = asked.every((a) => known.get(members[k][a]));
+        answers[i] = r.next() < (allAsked ? 1 - SLIP : GUESS) ? 1 : 0;
+        for (const a of asked) {
+          const id = members[k][a];
+          if (!known.get(id) && r.next() < learn) known.set(id, true);
+        }
         members[k].forEach((m, j) => (atomKnown[j][i] = known.get(m) ? 1 : 0));
         all[i] = members[k].every((m) => known.get(m)) ? 1 : 0;
       }
-      out.push({ student: `sim${s + 1}`, skill: `skill${k + 1}`, answers, known: all, ids: ids[k], atom, atomKnown, split: p.split });
+      out.push({ student: `sim${s + 1}`, skill: `skill${k + 1}`, answers, known: all, ids: ids[k], needs, atomKnown, split: p.split });
     }
   }
   return out;
 }
 
-/** A skill's answers split by component, each component a practice of its own with its atom's truth. */
+/** A skill's answers split by component, each component a practice of its own with its atom's truth: the answers of every question that asked for it. */
 export function byAtom(practices: readonly AtomPractice[]): Practice[] {
   return practices.flatMap((p) =>
     p.ids.map((id, c) => {
-      const at = [...p.atom.keys()].filter((i) => p.atom[i] === c);
+      const at = [...p.needs.keys()].filter((i) => p.needs[i].includes(c));
       const known = p.atomKnown[atomOf(p, c)];
       return { student: p.student, skill: id, answers: Uint8Array.from(at, (i) => p.answers[i]), known: Uint8Array.from(at, (i) => known[i]) };
     }),
@@ -141,21 +164,33 @@ export function byAtom(practices: readonly AtomPractice[]): Practice[] {
 
 /** Where each of a practice's atoms starts: its P(known) carried from the student's earlier skills (see carried). */
 export type Starts = ReadonlyMap<Practice, readonly number[]>;
+/** The guess and slip of a question on a skill, for a question asking for several atoms at once (BKT fitted on the skill). */
+export type QuestionOf = (skill: string) => { guess: number; slip: number };
 
 /**
- * BKT on each atom: each answer updates the P(known) of the atom its question asked for, and the skill is declared
+ * One answer into the components' P(known): a question on one component is that component's own BKT step; one on
+ * several is the conjunctive step with the question's guess and slip (the skill's, as in the world of ideas), or,
+ * without them, the first component's own.
+ */
+function stepAtoms(known: number[], params: readonly BktParams[], p: AtomPractice, i: number, question: QuestionOf | undefined) {
+  const needed = p.needs[i], right = p.answers[i] === 1;
+  if (needed.length === 1) known[needed[0]] = bktStep(known[needed[0]], params[needed[0]], right).known;
+  else conjunctiveStep(known, needed, (c) => params[c].learn, question?.(p.skill) ?? params[needed[0]], right);
+}
+
+/**
+ * BKT on each atom: each answer updates the P(known) of the atoms its question asked for, and the skill is declared
  * mastered once every atom's P(known) has reached the threshold. It needs the practice, to know the atoms. Each atom
  * starts at its fitted init, or, given starts, where the student's earlier skills left it.
  */
-export const atomsRule = (paramsOf: (atom: string) => BktParams, threshold: number, starts?: Starts): MasteryRule => ({
+export const atomsRule = (paramsOf: (atom: string) => BktParams, threshold: number, starts?: Starts, question?: QuestionOf): MasteryRule => ({
   name: `BKT per atom${starts ? ", carried" : ""} θ ${threshold}`,
   declare(_skill, answers, practice) {
     const p = practice as AtomPractice;
     const params = p.ids.map(paramsOf);
     const known = [...(starts?.get(p) ?? params.map((b) => b.init))];
     for (let i = 0; i < answers.length; i++) {
-      const a = p.atom[i];
-      known[a] = bktStep(known[a], params[a], answers[i] === 1).known;
+      stepAtoms(known, params, p, i, question);
       if (known.every((k) => k >= threshold)) return i + 1;
     }
     return null;
@@ -166,16 +201,16 @@ export const atomsRule = (paramsOf: (atom: string) => BktParams, threshold: numb
  * Each practice's atoms' P(known) before its first answer, carried over every skill each student practised before it
  * (in the order given): an atom met before starts where its last answer left it, one never met at its fitted init.
  */
-export function carried(paramsOf: (atom: string) => BktParams, practices: readonly AtomPractice[]): Starts {
+export function carried(paramsOf: (atom: string) => BktParams, practices: readonly AtomPractice[], question?: QuestionOf): Starts {
   const state = new Map<string, Map<string, number>>();
   const out = new Map<Practice, number[]>();
   for (const p of practices) {
     const mine = state.get(p.student) ?? state.set(p.student, new Map()).get(p.student)!;
-    out.set(p, p.ids.map((id) => mine.get(id) ?? paramsOf(id).init));
-    for (let i = 0; i < p.answers.length; i++) {
-      const id = p.ids[p.atom[i]];
-      mine.set(id, bktStep(mine.get(id) ?? paramsOf(id).init, paramsOf(id), p.answers[i] === 1).known);
-    }
+    const params = p.ids.map(paramsOf);
+    const known = p.ids.map((id, c) => mine.get(id) ?? params[c].init);
+    out.set(p, [...known]);
+    for (let i = 0; i < p.answers.length; i++) stepAtoms(known, params, p, i, question);
+    p.ids.forEach((id, c) => mine.set(id, known[c]));
   }
   return out;
 }
@@ -192,21 +227,22 @@ export const fitAtoms = (train: readonly AtomPractice[]) => fitEach(byAtom(train
 export function fitCarried(train: readonly AtomPractice[]): (atom: string) => BktParams {
   const seqs = new Map<string, number[]>();
   for (const p of train)
-    for (let i = 0; i < p.answers.length; i++) {
-      const key = `${p.student}\u0000${p.ids[p.atom[i]]}`;
-      (seqs.get(key) ?? seqs.set(key, []).get(key)!).push(p.answers[i]);
-    }
+    for (let i = 0; i < p.answers.length; i++)
+      for (const c of p.needs[i]) {
+        const key = `${p.student}\u0000${p.ids[c]}`;
+        (seqs.get(key) ?? seqs.set(key, []).get(key)!).push(p.answers[i]);
+      }
   return fitEach([...seqs].map(([key, answers]) => [key.split("\u0000")[1], Uint8Array.from(answers)] as const));
 }
 
 /** How well BKT on each atom says the skill is mastered: the product of its atoms' P(known), against every atom known. */
-export function atomsCalibration(paramsOf: (atom: string) => BktParams, practices: readonly AtomPractice[], starts?: Starts): Calibration {
+export function atomsCalibration(paramsOf: (atom: string) => BktParams, practices: readonly AtomPractice[], starts?: Starts, question?: QuestionOf): Calibration {
   const ps: Prediction[] = [];
   for (const p of practices) {
     const params = p.ids.map(paramsOf);
     const known = [...(starts?.get(p) ?? params.map((b) => b.init))];
     for (let i = 0; i < p.answers.length; i++) {
-      known[p.atom[i]] = bktStep(known[p.atom[i]], params[p.atom[i]], p.answers[i] === 1).known;
+      stepAtoms(known, params, p, i, question);
       ps.push({ p: known.reduce((x, y) => x * y, 1), correct: p.known[i] === 1 });
     }
   }
@@ -254,6 +290,12 @@ export type AtomsComparison = {
   fits: { skill: FitShares; perAtom: FitShares; carried: FitShares };
   /** Whether each family's training threshold transfers to the held-out learners: BKT on the skill, EMA, per component afresh, carried. */
   stability: Stability[];
+  /**
+   * Every method judged on the held-out practices at the threshold a deployed system would use, chosen without a truth
+   * (usualRules): BKT on the skill at 0.95, the EMA at the streak rule's cost, the streak rule, then BKT per component
+   * afresh and carried at 0.95. The precision here is what a wrong grain costs a system that does not know it is wrong.
+   */
+  usual: Judgement[];
 };
 /**
  * H2's comparison in a world of atoms, with BKT on each atom, afresh in every skill and carried from skill to skill,
@@ -281,9 +323,9 @@ export function compareAtoms(train: readonly AtomPractice[], test: readonly Atom
   // BKT on the skill chosen again as compareAtPrecision chose it, for the paired differences.
   const onSkill = best(thresholds.map((t) => bktRule(fitted.bkt, t))).cost;
   const afreshParams = fitAtoms(train), carriedParams = fitCarried(train);
-  const starts = carried(carriedParams, [...train, ...test]);
-  const afresh = best(thresholds.map((t) => atomsRule(afreshParams, t)));
-  const kept = best(thresholds.map((t) => atomsRule(carriedParams, t, starts)));
+  const starts = carried(carriedParams, [...train, ...test], fitted.bkt);
+  const afresh = best(thresholds.map((t) => atomsRule(afreshParams, t, undefined, fitted.bkt)));
+  const kept = best(thresholds.map((t) => atomsRule(carriedParams, t, starts, fitted.bkt)));
   for (const r of [afresh, kept]) if (r.cost && onSkill) r.row.bktSaves = minus(r.cost, onSkill);
   const skills = [...new Set(train.map((p) => p.skill))], components = [...new Set(train.flatMap((p) => p.ids))];
   return {
@@ -291,13 +333,14 @@ export function compareAtoms(train: readonly AtomPractice[], test: readonly Atom
     perAtom: afresh.row,
     carried: kept.row,
     ...(afresh.cost && kept.cost ? { carryingSaves: minus(kept.cost, afresh.cost) } : {}),
-    calibration: [...masteryCalibration(fitted, test), atomsCalibration(afreshParams, test), atomsCalibration(carriedParams, test, starts)],
+    calibration: [...masteryCalibration(fitted, test), atomsCalibration(afreshParams, test, undefined, fitted.bkt), atomsCalibration(carriedParams, test, starts, fitted.bkt)],
     fits: { skill: fitShares(skills.map(fitted.bkt)), perAtom: fitShares(components.map(afreshParams)), carried: fitShares(components.map(carriedParams)) },
     stability: [
       stability("BKT on the skill", (t) => bktRule(fitted.bkt, t), thresholds, train, test, target),
       stability("EMA", (t) => emaRule(fitted.ema, t), thresholds, train, test, target),
-      stability("BKT per atom", (t) => atomsRule(afreshParams, t), thresholds, train, test, target),
-      stability("BKT per atom, carried", (t) => atomsRule(carriedParams, t, starts), thresholds, train, test, target),
+      stability("BKT per atom", (t) => atomsRule(afreshParams, t, undefined, fitted.bkt), thresholds, train, test, target),
+      stability("BKT per atom, carried", (t) => atomsRule(carriedParams, t, starts, fitted.bkt), thresholds, train, test, target),
     ],
+    usual: [...usualRules(fitted, train), atomsRule(afreshParams, USUAL_THRESHOLD, undefined, fitted.bkt), atomsRule(carriedParams, USUAL_THRESHOLD, starts, fitted.bkt)].map((rule) => judge(rule, test)),
   };
 }

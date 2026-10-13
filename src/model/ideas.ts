@@ -23,7 +23,7 @@ import { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill } from ".
 import { bktStep, calibration, fitBkt, rmse, type BktParams, type Prediction } from "./evaluate.ts";
 import {
   bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtPrecision, costOf, decide, FINE_THRESHOLDS, fitRules, judge, masteryCalibration, PRECISION_TARGET,
-  precisionOf, type AtPrecision, type Calibration, type MasteryRule, type Practice,
+  precisionOf, USUAL_THRESHOLD, usualRules, type AtPrecision, type Calibration, type Judgement, type MasteryRule, type Practice,
 } from "./mastery.ts";
 import { fixedChoice } from "./policy.ts";
 import { rng } from "./random.ts";
@@ -63,7 +63,8 @@ export type IdeaParams = {
   trapRate: number;
   /**
    * The share of questions that ask for one of the skill's ideas alone, chosen at random, in place of a generated
-   * question: what the generators do not do yet, to see what it would be worth. 0 is the generators as they are.
+   * question: what the generators do not do yet, to see what it would be worth. 0 is the generators as they are, 1
+   * every question.
    */
   isolateRate: number;
   seed: number;
@@ -262,6 +263,12 @@ export type IdeasComparison = {
   calibration: Calibration[];
   /** Whether each form of BKT on each idea finds the one missing idea. */
   diagnosis: Diagnosis[];
+  /**
+   * Every method judged on the test practices at the threshold a deployed system would use, chosen without a truth
+   * (usualRules): BKT on the skill at 0.95, the EMA at the streak rule's cost, the streak rule, then the three forms
+   * of BKT on each idea at 0.95.
+   */
+  usual: Judgement[];
 };
 /**
  * H2's comparison on one skill in the world of ideas, with the three forms of BKT on each idea added beside BKT on the
@@ -309,5 +316,6 @@ export function compareIdeas(train: readonly IdeaPractice[], test: readonly Idea
     ...(rows[1].cost && rows[2].cost ? { carryingSaves: minus(rows[2].cost, rows[1].cost) } : {}),
     calibration: [...masteryCalibration(fitted, testS), ...forms.map(({ fit, options }) => ideasCalibration(fit, testS, options))],
     diagnosis: forms.map(({ fit, options }) => diagnosis(fit, testS, options)),
+    usual: [...usualRules(fitted, trainS), ...forms.map(({ fit, options }) => ideasRule(fit, USUAL_THRESHOLD, options))].map((rule) => judge(rule, testS)),
   };
 }
