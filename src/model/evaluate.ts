@@ -159,7 +159,8 @@ export type PairedTest = {
 };
 /** The smallest difference in mean log-loss per answer that H1 counts, fixed before any results. */
 export const SMALLEST_DIFFERENCE = 0.005;
-const answerLoss = ({ p, correct }: Prediction) => {
+/** One answer's log-loss, the probability clamped away from 0 and 1. */
+export const answerLoss = ({ p, correct }: Prediction) => {
   const q = Math.min(1 - EPS, Math.max(EPS, p));
   return -Math.log(correct ? q : 1 - q);
 };
@@ -321,7 +322,8 @@ export class PfaModel implements Predictor {
 
 /** Bayesian Knowledge Tracing's four parameters: known at the start, learnt at each step, guessed, slipped. */
 export type BktParams = { init: number; learn: number; guess: number; slip: number };
-const BKT_GRID = {
+/** The grid fitBkt searches; a fit at an end of it is reported (docs/thesis/outline.md, G3). */
+export const BKT_GRID = {
   init: [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95],
   learn: [0.01, 0.03, 0.05, 0.1, 0.15, 0.2, 0.3],
   // Guess and slip stay under 0.3, the usual bound against "degenerate" fits where knowing makes a right answer less likely.

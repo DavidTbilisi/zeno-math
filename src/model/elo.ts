@@ -17,7 +17,8 @@ export type Level = 1 | 2 | 3;
  * One answer the model learns from: was the student's first counted answer to a question correct? The skill is one of
  * Zeno's (SkillId) in the app, and any name in a public data set the model is tried on (scripts/import-assistments.ts).
  */
-export type Observation = { student: string; skill: string; level: Level; correct: boolean };
+/** One answer: who, on what skill, at what level, right or not; problem names the question it was given on, where a data set has that (a problem tagged with several skills is one observation per skill, with the same problem). */
+export type Observation = { student: string; skill: string; level: Level; correct: boolean; problem?: string };
 
 export type EloParams = {
   /** Uncertainty U(n) = alpha / (1 + beta·n). */

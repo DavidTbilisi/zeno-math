@@ -1,12 +1,15 @@
 // Skills made of atoms: the world keeps its truth straight, BKT on each atom is BKT on the skill when there is one
 // atom, and with several atoms BKT on the skill fails H2's standard and loses its calibration while BKT on each atom
 // keeps both. When skills share atoms, what a learner knows of an atom goes with them from skill to skill, and BKT on
-// each atom carried along needs fewer answers than started afresh in every skill (src/model/atoms.ts).
+// each atom carried along needs fewer answers than started afresh in every skill. Modelled finer than the learner
+// (split), the answers and the truth stay the same, each component takes its atom's truth, and BKT on each component
+// needs more answers for no better precision; fits at the grid's edge and threshold stability are counted
+// (src/model/atoms.ts).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { atomsCalibration, atomsRule, byAtom, carried, compareAtoms, dealAtoms, fitAtoms, fitCarried, simulateAtoms, type AtomPractice } from "../src/model/atoms.ts";
+import { atBound, atEdge, atomOf, atomsCalibration, atomsRule, byAtom, carried, compareAtoms, dealAtoms, fitAtoms, fitCarried, fitShares, simulateAtoms, stability, type AtomPractice } from "../src/model/atoms.ts";
 import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
-import { bktRule, fitRules, masteryCalibration } from "../src/model/mastery.ts";
+import { bktRule, emaRule, fitRules, masteryCalibration, streakRule } from "../src/model/mastery.ts";
 
 test("the atoms world: one atom asked per question, atoms learnt once and kept, the skill known when all its atoms are", () => {
   const ps = simulateAtoms({ students: 30, skills: 3, atoms: 3, length: 20 });
@@ -90,7 +93,7 @@ test("a shared atom goes with the learner from skill to skill: known at the end 
 test("carried starts each atom where the student's earlier skills left it, and at its init when never met", () => {
   const params = { init: 0.3, learn: 0.1, guess: 0.2, slip: 0.1 };
   const practice = (student: string, skill: string, ids: string[], atom: number[], answers: number[]): AtomPractice => ({
-    student, skill, ids, atom: Uint8Array.from(atom), answers: Uint8Array.from(answers), known: new Uint8Array(answers.length), atomKnown: ids.map(() => new Uint8Array(answers.length)),
+    student, skill, ids, atom: Uint8Array.from(atom), answers: Uint8Array.from(answers), known: new Uint8Array(answers.length), atomKnown: ids.map(() => new Uint8Array(answers.length)), split: 1,
   });
   const one = practice("s", "skill1", ["a", "b"], [0, 0, 1], [1, 0, 1]);
   const two = practice("s", "skill2", ["b", "c"], [0], [1]);
@@ -118,4 +121,62 @@ test("when skills share atoms, carrying them from skill to skill needs fewer ans
   // With no atom shared the carried fit is the afresh fit.
   const alone = simulateAtoms({ students: 30, skills: 2, atoms: 2 });
   assert.deepEqual(fitCarried(alone)("atom3"), fitAtoms(alone)("atom3"));
+});
+
+test("modelled finer than the learner: the same answers and truth, each component its atom's truth, more answers for no better precision", () => {
+  const whole = simulateAtoms({ students: 40, skills: 3, atoms: 2, learnRate: 0.1 });
+  const halves = simulateAtoms({ students: 40, skills: 3, atoms: 2, learnRate: 0.1, split: 2 });
+  assert.equal(halves.length, whole.length);
+  halves.forEach((h, i) => {
+    const w = whole[i];
+    assert.deepEqual([h.answers, h.known, h.atomKnown], [w.answers, w.known, w.atomKnown], "the world is the same at every split");
+    assert.deepEqual(h.ids, ["atom1.1", "atom1.2", "atom2.1", "atom2.2"].map((id) => id.replace(/atom(\d)/, (_, n) => `atom${Number(n) + 2 * (Number(h.skill.slice(5)) - 1)}`)));
+    assert.equal(h.split, 2);
+    for (let q = 0; q < h.answers.length; q++) assert.equal(atomOf(h, h.atom[q]), w.atom[q], "a component's question is its atom's question");
+  });
+  // Split by component: each component's practice carries its atom's truth, and the two halves together are the atom.
+  const [a1, a2] = byAtom(halves.slice(0, 1));
+  const [whole1] = byAtom(whole.slice(0, 1));
+  assert.deepEqual([a1.skill, a2.skill], ["atom1.1", "atom1.2"]);
+  assert.equal(a1.answers.length + a2.answers.length, whole1.answers.length);
+  const knownCount = (p: { known?: Uint8Array }) => p.known!.filter((k) => k === 1).length;
+  assert.equal(knownCount(a1) + knownCount(a2), knownCount(whole1), "the halves' truth is the atom's truth");
+  assert.throws(() => simulateAtoms({ split: 0 }), /split must be a whole number above 0/);
+  assert.throws(() => simulateAtoms({ split: 1.5 }), /split must be a whole number above 0/);
+  // Over-split, BKT per component is dearer than at the learner's grain and no more precise, on the same held-out practices.
+  const at = (split: number) => {
+    const { train, test: held } = splitByStudent(simulateAtoms({ students: 200, skills: 4, atoms: 2, learnRate: 0.1, split }), 0.3, 1);
+    return compareAtoms(train, held, 0.9, 50);
+  };
+  const one = at(1), two = at(2);
+  assert.deepEqual(two.skill, one.skill, "BKT on the skill, EMA and streak see the same answers whatever the split");
+  assert.ok(two.perAtom.judgement!.cost > one.perAtom.judgement!.cost, `per component ${two.perAtom.judgement!.cost} > per atom ${one.perAtom.judgement!.cost}`);
+  assert.ok(two.perAtom.judgement!.precision <= one.perAtom.judgement!.precision + 0.05);
+  assert.equal(two.fits.perAtom.fits, 2 * one.fits.perAtom.fits);
+  assert.equal(one.fits.skill.fits, 4);
+  assert.equal(one.stability.length, 4);
+  assert.deepEqual(one.stability.map((s) => s.method), ["BKT on the skill", "EMA", "BKT per atom", "BKT per atom, carried"]);
+  for (const s of one.stability) if (s.onTrain !== null) assert.ok(s.precisionOnTest! >= 0 && s.precisionOnTest! <= 1);
+});
+
+test("fits at the grid's edge, and whether a training threshold transfers", () => {
+  assert.ok(atBound({ init: 0.5, learn: 0.1, guess: 0.3, slip: 0.1 }) && atBound({ init: 0.5, learn: 0.1, guess: 0.1, slip: 0.3 }));
+  assert.ok(!atBound({ init: 0.05, learn: 0.01, guess: 0.25, slip: 0.25 }));
+  assert.ok(atEdge({ init: 0.05, learn: 0.1, guess: 0.1, slip: 0.1 }) && atEdge({ init: 0.95, learn: 0.1, guess: 0.1, slip: 0.1 }));
+  assert.ok(atEdge({ init: 0.5, learn: 0.01, guess: 0.1, slip: 0.1 }) && atEdge({ init: 0.5, learn: 0.3, guess: 0.1, slip: 0.1 }));
+  assert.ok(!atEdge({ init: 0.5, learn: 0.1, guess: 0.1, slip: 0.1 }));
+  assert.deepEqual(fitShares([{ init: 0.5, learn: 0.1, guess: 0.3, slip: 0.1 }, { init: 0.05, learn: 0.1, guess: 0.1, slip: 0.1 }, { init: 0.5, learn: 0.1, guess: 0.1, slip: 0.1 }]), { fits: 3, atBound: 1 / 3, atEdge: 2 / 3 });
+  assert.ok(Number.isNaN(fitShares([]).atBound));
+  const ps = simulateAtoms({ students: 120, skills: 3, atoms: 1, learnRate: 0.1 });
+  const { train, test: held } = splitByStudent(ps, 0.3, 1);
+  const fitted = fitRules(train);
+  const thresholds = [0.6, 0.8, 0.95, 0.99];
+  const s = stability("BKT", (t) => bktRule(fitted.bkt, t), thresholds, train, held, 0.9);
+  assert.ok(s.onTrain !== null && thresholds.includes(s.onTrain) && s.onTest !== null && thresholds.includes(s.onTest));
+  assert.ok(s.precisionOnTest! > 0.5);
+  // A target nobody meets: no threshold on either side, no precision.
+  assert.deepEqual(stability("EMA", (t) => emaRule(fitted.ema, t), thresholds, train, held, 1.01), { method: "EMA", onTrain: null, onTest: null, precisionOnTest: null });
+  // The same practices on both sides choose the same threshold.
+  const same = stability("streak", (n) => streakRule(n), [1, 2, 3, 4, 5], train, train, 0.9);
+  assert.equal(same.onTrain, same.onTest);
 });
