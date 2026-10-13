@@ -1,7 +1,7 @@
 # Title defense, 13 October 2026
 
 Tuesday, 18:00 Tbilisi time, room 303, University of Georgia. The supervisor and an expert attend. The task is to
-present what the thesis will work on. No length or slides are prescribed, so the talk below runs about five minutes
+present what the thesis will work on. No length or slides are prescribed, so the talk below runs about seven minutes
 and works without slides.
 
 ## Title
@@ -15,56 +15,67 @@ Georgian (draft, check the wording): *როდის არის უნარ�
 ## The talk
 
 Every adaptive practice system has to answer one question again and again: has this student mastered this skill, so
-that they can move on? The systems that schools actually use mostly answer it with a simple rule, such as three right
-answers in a row. Research systems mostly use a statistical model, Bayesian Knowledge Tracing, which estimates the
-probability that the student knows the skill, allowing for lucky guesses and careless slips. BKT needs four
-parameters per skill, fitted on data. My thesis asks whether that extra machinery pays off: does BKT judge mastery
-more accurately than a simple rule?
+that they can move on? Both ways of getting it wrong cost something. Declared too early, the student goes on to work
+that needs a skill they do not have; declared too late, they spend time on questions they can already answer. The
+systems that schools actually use mostly answer it with a simple rule, such as three right answers in a row. Research
+systems mostly use a statistical model, Bayesian Knowledge Tracing, which estimates the probability that the student
+knows the skill, allowing for lucky guesses and careless slips, with four parameters per skill fitted on data. My thesis
+asks whether that extra machinery pays off: does BKT judge mastery more accurately than a simple rule?
 
-The simple side is a moving average of the student's recent answers. I can prove exactly when "three in a row" is
-a special case of it, and I can prove that BKT, in a world that works the way BKT assumes, is right at least as
-often as its threshold says. Those two parts are mathematics. The rest is evidence, and I have three hypotheses.
-First, on real students' answers, BKT predicts the next answer better than the moving average, measured by log-loss
-on students the models were not fitted on; this is the one formal test, and I have fixed in advance how small a
-difference counts as none. Second, in simulation, where I know whether each simulated student has really learnt the
-skill, BKT needs less practice than the simpler rules before its mastery decisions are right nine times in ten, in
-worlds where students do not learn the way BKT assumes. Third, exploratory: how often the methods agree on real
-data.
+The simple side is a moving average of the student's recent answers. Two parts of the thesis are mathematics. I prove
+exactly when "three in a row" is a special case of that average, and I prove that BKT, in a world that works the way
+BKT assumes, is right at least as often as its threshold says. The rest is evidence, in three hypotheses. First, on
+real students' answers, BKT predicts the next answer better than the moving average, measured by log-loss on students
+the models were not fitted on; this is the one confirmatory test, and I fixed in advance how small a difference counts
+as none. Second, in simulation, where I know whether each simulated student has really learnt the skill, BKT needs
+less practice than the simpler rules before its mastery decisions are right nine times in ten, in worlds where
+students do not learn the way BKT assumes. Third, exploratory: how often the methods agree on real data.
 
 The real data are the ASSISTments 2009–2010 data set, a public, anonymised record of several thousand US
 middle-school students answering maths problems. The simulation matters because real data cannot say when a student
-truly knows a skill. I will also simulate students who learn in ways BKT does not assume, gradually or with
-forgetting, because a comparison run only in BKT's own world would favour BKT by construction.
+truly knows a skill. I simulate students who learn gradually or who forget, because a comparison run only in BKT's own
+world would favour BKT by construction.
 
 The software is built. Over the last year I built Zeno, a self-hosted maths whiteboard with a practice engine and a
 learner model for Georgian classrooms, and the experiment runs inside its code: BKT, the moving average, the streak
 rule, the evaluation on held-out students, the statistical test and the simulation.
 
-The simulation has already been run, and its result splits the second hypothesis in two. Where students learn in a
-jump, as BKT assumes, but sometimes forget, the hypothesis holds: BKT needs one to two answers fewer than the simpler
-rules for decisions that are right as often. Where students learn gradually, it fails by the rule I fixed in advance:
-no threshold up to 0.9999 makes BKT's decisions right nine times in ten, because after a short run of right answers it
-is almost certain the student knows the skill, even when they do not. I then checked whether that was only where I had
-stopped searching, and largely it was. With a threshold of seven nines or more, BKT does get there, at about the
-moving average's cost. So BKT still ranks students sensibly, but its probability no longer matches how often a student
-has really mastered the skill: when it says 99 %, the student has mastered it at most about half the time. And the
-threshold it needs changes by orders of magnitude from one world to another. In BKT's own world it is as accurate as
-the theorem promises. What remains is the test on the real data, which decides the first hypothesis.
+The simulation has been run, and its result splits the second hypothesis in two. Where students learn in a jump, as
+BKT assumes, but sometimes forget, the hypothesis holds: BKT needs one to two answers fewer than the simpler rules for
+decisions that are right as often. Where students learn gradually, it fails by the rule I fixed in advance: no
+threshold up to 0.9999 makes BKT's decisions right nine times in ten, because after a short run of right answers it is
+almost certain the student knows the skill, even when they do not. I then checked whether that was only where I had
+stopped searching, and largely it was: with a threshold of seven nines or more, BKT does get there, at about the moving
+average's cost. So BKT still ranks students sensibly, but its probability no longer means what it says: when it says
+99 %, the student has mastered the skill at most about half the time, and the threshold it needs moves by orders of
+magnitude from one world to another.
 
-I have since checked why BKT fails where learning is gradual. I simulated a skill made of several ideas, each learnt
-in a jump exactly as BKT assumes, and asked Zeno's own generated questions. BKT on the whole skill then shows the same
-pattern as the gradual worlds: no threshold up to 0.9999 makes it right nine times in ten. BKT on each idea does
-better, but only where the questions tell the ideas apart. On fractions, where every question needs the same eight
-ideas, it cannot say which idea the student lacks. So the question the thesis opens, and I state it as exploratory, is
-how finely a skill should be divided for mastery estimation to be reliable, and what the questions must look like for
-the finer grain to be usable.
+Then I asked why. I simulated a skill that is really several ideas, each learnt in a jump exactly as BKT assumes, and
+asked Zeno's own generated questions, which need several of those ideas at once. BKT on the whole skill then shows the
+same pattern as the gradual worlds: no threshold up to 0.9999 makes it right nine times in ten. So what looked like a
+failure of the model may be a failure of grain. A skill that is really several ideas looks gradual from outside, and
+BKT applied at the wrong grain is miscalibrated even in a world built from its own assumptions. BKT on each idea does
+better, but only where the questions tell the ideas apart. On highest common factor, where questions need different
+ideas and the arithmetic was settled in an earlier skill, it decided sooner than the moving average, was the best
+calibrated and named the one idea the student lacked most of the time. On fractions, where every question needs the
+same eight ideas, it could not say which idea was missing however many answers it saw. The grain at which a skill is
+modelled has to be chosen together with the questions that are asked of it. This check came after the results, so the
+thesis reports it as a check beside the second hypothesis, not as a hypothesis of its own.
 
-The result is useful whichever way it goes. If BKT wins, systems using simple rules are leaving accuracy unused. If it
-does not, a one-parameter rule is the better engineering choice. So far, for Zeno, whose own model assumes gradual
-learning, the evidence points to the moving average as the best of the rules I compare: it is right as often with an
-ordinary threshold. The main limitation, which I state in advance, is that the ASSISTments data were collected under
-the three-in-a-row rule, so the real data cannot show that rule stopping too early; that is why the decisions
-themselves are compared in the simulation.
+So the thesis contributes five things. The exact conditions under which a streak rule is a moving average, proved for
+sequences of any length. A known-truth simulation in worlds that break BKT's assumptions, with the test and the
+verdict rule fixed before the results. The finding that where learning is gradual BKT's probability is badly calibrated
+and needs a threshold that no one would choose without data. The diagnosis that this is a question of grain, with a
+condition on the questions, that they must tell the ideas apart, for the finer grain to be usable; that is the one
+part I would carry into further research, because Zeno generates its questions and so can change them, which a fixed
+item bank cannot. And a practical answer for Zeno: a moving average with its threshold set from Zeno's own data where
+a skill is treated as one thing, and BKT at the finer grain where the skill is decomposed and the questions isolate
+its ideas. What remains is the test on the real data, which decides the first hypothesis.
+
+The result is useful whichever way that test goes. If BKT wins, systems using simple rules are leaving accuracy
+unused. If it does not, a one-parameter rule is the better engineering choice. The main limitation, which I state in
+advance, is that the ASSISTments data were collected under the three-in-a-row rule, so the real data cannot show that
+rule stopping too early; that is why the decisions themselves are compared in the simulation.
 
 ## Questions to expect
 
