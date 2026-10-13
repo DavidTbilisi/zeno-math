@@ -130,20 +130,47 @@ stated for the sweeps that have not yet been run.
   the ideas world). Measures: precision at the usual thresholds (BKT 0.95, EMA and streak at their fitted values),
   the cheapest threshold meeting 90 %, Brier score of each score against the truth. First runs: BKT on the skill fails
   at k ≥ 2 in `atoms.ts`, and on hcf and fractions in the ideas world at no threshold up to 0.9999, with the worst
-  Brier score on fractions (Table 4.9). This is also the diagnosis of H2's result: a coarse grain makes all-at-once
-  learning look gradual.
+  Brier score on fractions (Table 4.9). The sweep (seed 1, 400 learners, 12 skills, 30 questions): asked one
+  component at a time, BKT on the skill at 0.95 is right 98 % of the time with one component, 59 to 71 % with two,
+  23 to 28 % with four, 5 to 8 % with eight and under 4 % with sixteen; the cheapest threshold meeting 90 % is 0.80
+  to 0.86 with one, 0.999 to 0.9999 with two and none from four on; its Brier score rises from 0.02 to 0.04 with one
+  to 0.55 to 0.68 with sixteen. The EMA and the streak rule at their usual thresholds fall as far in precision (the
+  EMA from 97 to 99 % with one to 1 to 4 % with sixteen), so the part of the hypothesis that says they lose less
+  holds for the Brier score (the EMA's stays at 0.17 to 0.33) and for whether any threshold meets the standard (the
+  EMA finds one up to eight components at the low rate, by declaring late), not for precision at the usual threshold.
+  BKT per component at 0.95 is right 97 to 100 % of the time wherever it declares, but declares for fewer learners as
+  k grows and for none at eight or sixteen within 30 answers, which is G3's shortage of evidence per component. Asked
+  several at a time, what matters is the share of the skill's components a question leaves untested: with every
+  component in every question the skill is one unit again (two of two, 97 to 98 % at 0.95; four of four, 94 to
+  98 %, cheapest threshold 0.78 to 0.83), with half of them it is halfway (two of four, 58 to 70 %; four of eight,
+  50 to 72 %). In the ideas world, with the generators as they are, BKT on the skill at 0.95 is right 94 % of the
+  time on times (three ideas, all in every question), 55 to 77 % on hcf (six, four a question) and 16 to 30 % on
+  fractions (sixteen, six a question). This is also the diagnosis of H2's result: a coarse grain makes all-at-once
+  learning look gradual, and it does so in proportion to what each question leaves untested.
 - **G2, the right grain, and the condition on the questions.** Modelling at the true grain (BKT per component,
   conjunctive) restores the standard at an ordinary threshold and lets the model say which component a learner lacks,
   if and only if the questions tell the components apart. Sweep, in the ideas world: the share of questions that ask
-  for one component alone (0, 25, 50, 100 %), the number of components a question needs, and practice length (30,
-  60, 120). Measures: as G1, plus "missing idea found" (at every moment a learner is one component short, how often
-  the lowest P(known) is that one; chance is 1/k), and the answers saved by carrying components across skills. First
-  runs: on hcf (four of six components a question, arithmetic settled earlier) BKT per component carried from the
-  earlier skill needed 2.2 answers fewer than started afresh and 3.8 fewer than the EMA at the higher rate, was best
-  calibrated and found the missing idea 47 to 79 % of the time; on fractions (eight components a question) it was at
-  chance (6 to 8 % against 6.7 %) until questions asking for one idea alone were added, when it found the idea two
-  times in three. This is the identifiability problem [@beck2007identifiability] at the level of the components
-  [@xu2012subskills].
+  for one component alone (0, 25, 50, 100 %) against practice length (30, 60, 120), on fractions (sixteen
+  components, six a question as generated); and, in the atoms world where it can be set, the number of components a
+  question needs (`--per-question`). Measures: as G1, plus "missing idea found" (at every moment a learner is one
+  component short, how often the lowest P(known) is that one; chance is 1/k), and the answers saved by carrying
+  components across skills. First runs: on hcf (four of six components a question, arithmetic settled earlier) BKT
+  per component carried from the earlier skill needed 2.2 answers fewer than started afresh and 3.8 fewer than the
+  EMA at the higher rate, was best calibrated and found the missing idea 47 to 79 % of the time; on fractions (eight
+  components a question) it was at chance (6 to 8 % against 6.7 %) until questions asking for one idea alone were
+  added, when it found the idea two times in three. The sweep (seed 1, 400 learners): on fractions BKT on the skill
+  meets the standard at no setting and at 0.95 is right 0 to 30 % of the time, and the EMA and the streak rule meet
+  it only by declaring for almost nobody. Length does more than the isolating share: with the generators as they
+  are the missing idea is found 8 % of the time after 30 answers at the low rate and 66 % after 120, and 51 to 69 %
+  at the high rate; a quarter of the questions asking for one idea alone lifts that to 70 to 71 % at 120 answers
+  while leaving learning as it was (93 % of learners knowing every idea at the high rate, against 89 %), half lifts
+  it to 65 to 76 % but teaches less, and every question alone teaches one idea at a time, so after 120 answers at
+  the high rate only 47 % know every idea and the share found falls back (20 to 68 %, unstable). Carried BKT per
+  component is the only rule that declares fractions mastered in time: at the high rate after 120 answers it needs
+  73 answers (92 % right, 87 % declared) where the EMA and the streak rule never declare, and with a quarter alone
+  75 against their 105; carrying saves 0.8 to 3.9 answers at that length. This is the identifiability problem
+  [@beck2007identifiability] at the level of the components [@xu2012subskills]: the questions, and enough of them,
+  decide whether the fine grain is usable.
 - **G3, too fine: finer than the students learn, or than the data supports.** Two ways of being too fine. (a) A
   component that is learnt as one thing is modelled as two (each question tagged with one of the two at random):
   each modelled half sees half the evidence, so declarations come later and the two halves disagree; precision does
