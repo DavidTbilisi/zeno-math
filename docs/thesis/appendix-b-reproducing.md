@@ -13,7 +13,9 @@ commit, because every random choice is seeded. The run times below were measured
 | BKT above 0.9999, mastery at 0.9 (Table 4.7) | `npm run mastery -- --worlds elo,irt2pl --beyond` | ~1.5 min |
 | BKT above 0.9999, mastery at 0.8 (Table 4.7) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.8` | ~1.5 min |
 | Calibration of the scores (Table 4.8) | `npm run mastery -- --calibration bins.csv` | ~3 min |
-| H3 on ASSISTments (Table 4.9) | `npm run mastery -- --observations assistments.json` | minutes |
+| Skills made of ideas (Table 4.9) | `npm run ideas` | ~5 min |
+| Skills made of ideas, 120 questions and isolating questions (section 4.3) | `npm run ideas -- --skills fractions --length 120 --isolate 0,0.5` | ~10 min |
+| H3 on ASSISTments (Table 4.10) | `npm run mastery -- --observations assistments.json` | minutes |
 | Proposition 1 and 2 checks | `npm test` (`tests/mastery.test.ts`) | ~3 min for the whole suite |
 | The thesis as a PDF | `npm run thesis-pdf` | ~1 min |
 

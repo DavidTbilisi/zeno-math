@@ -179,6 +179,34 @@ question, on the logistic scale. In the BKT worlds it sets the chance of learnin
 lower rate and 25 % at the higher. Every question teaches the same amount, and practice on one skill does not help
 another. Every random choice is seeded, so each run gives the same numbers.
 
+A fifth world was added after the H2 results had been seen, and is reported apart from H2's verdict (section 4.3). It
+asks whether a skill that is really several smaller ideas, each learnt all at once as BKT assumes, is what makes
+learning look gradual, and it uses Zeno's own questions. Fractions and the whole-number arithmetic it rests on were
+decomposed by hand into sixteen ideas: the times tables, long multiplication, exact division, the highest common factor,
+the lowest common multiple, equivalent fractions, lowest terms, a common denominator, adding over a common denominator,
+multiplying, the reciprocal, dividing, and the two conversions between mixed numbers and improper fractions, with the
+connections between them (`src/model/conceptGraph.ts`). A simulated learner knows or does not know each idea. Every
+learner practises the skills times, hcf and fractions in that order, 30 questions on each, the questions made by Zeno's
+generators at the three levels in turn, and each question is read for the ideas it needs: a times question needs the
+times tables and, above 12, long multiplication; an hcf question needs exact division and the highest common factor,
+and at its middle level the lowest common multiple as well; a fractions question needs between seven and ten ideas at
+once and almost never one alone. An answer is right, but for a slip of 0.1, only when every idea the question needs is
+known, and is otherwise a guess with chance 0.2, which is the conjunctive reading of a question on several skills
+[@pardos2008composition]; each unknown idea the question needed may then be learnt, with the BKT world's chance. Half
+the time a wrong answer could take the form of one of the two mistakes Zeno's checker recognises on fractions, adding
+tops and bottoms across, or flipping the wrong fraction when dividing, and the idea that mistake shows missing is
+indeed missing, it does. An idea once known stays known from one skill to the next, so the times tables learnt in times
+are known in hcf and fractions. A skill is mastered when every idea its questions can need is known, which is the only
+state in which the chance of a right answer is 0.9, the gradual worlds' definition. Beside BKT on the skill, the
+moving average and the streak rule, this world compares BKT on each idea. A question that needs several ideas updates
+them together, as a conjunctive question, for which each idea's posterior has a closed form; in a second form a
+recognised mistake puts the blame on its one idea; in a third the ideas' probabilities are also carried from skill to
+skill, so that fractions starts from what times and hcf settled. The skill is declared mastered when every one of its
+ideas has reached the threshold, and since the skills share ideas each form is judged on one skill at a time. The
+world also records, at every moment a learner is exactly one idea short of mastery, whether the idea with the lowest
+probability is that one, which is what a system would need to know to choose the next question
+(`src/model/ideas.ts`).
+
 ## 3.5 Fitting
 
 Every parameter and threshold is chosen on training students only. A fifth of the students are held out, chosen by a

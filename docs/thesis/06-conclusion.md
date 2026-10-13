@@ -15,7 +15,10 @@ standard by waiting longer, so by the rule fixed in advance H2 does not hold in 
 after the results, with thresholds up to $1 - 10^{-15}$, qualifies this: BKT then met the standard in three of the four
 gradual settings, and at the higher learning rate needed 0.3 to 0.4 answers fewer than the moving average. Its failure
 was a matter of where its threshold has to be, not of whether one exists. In BKT's own world, the fitted model was as
-precise as Proposition 2 promises for the true parameters.
+precise as Proposition 2 promises for the true parameters. A second check, in a world where each skill is several
+ideas learnt as BKT assumes and asked by Zeno's own questions, showed BKT on the skill failing as it does in the
+gradual worlds, and BKT on each idea meeting the standard, deciding sooner and naming the missing idea only where the
+questions tell the ideas apart, as hcf's do and fractions' do not.
 
 H3 asked, as an exploratory question, how often the methods agree on real answers. [TODO: the agreement and the
 answers after declaration.]
@@ -49,7 +52,14 @@ The most direct extension is to repeat the simulations with other seeds and othe
 compare the versions of BKT that relax its assumptions, with forgetting or with parameters for each student
 [@yudelson2013; @khajah2016], which may bring its probability closer to the true chance of mastery in the gradual
 worlds, so that an ordinary threshold works, at the cost of more parameters. A third is a check of the ASSISTments
-results with each answer kept for one skill only.
+results with each answer kept for one skill only. A fourth follows from the world of ideas: to give Zeno's generators
+questions that ask for one idea alone, a lowest-terms question, a common-denominator question, a reciprocal question,
+and the conversion to a mixed number that nothing asks for yet, and then to run on real class answers the three tests
+of whether an idea is learnt as one thing, whether a question tests it alone, whether its error rate falls as one
+smooth curve, and whether practice on one form of it carries over to the others [@cen2006lfa]. With such questions,
+BKT on each idea carried from skill to skill could decide mastery and name the idea a student lacks, as it did on hcf;
+without them, the decomposition's use is to let what a student shows of their arithmetic in fractions count towards
+both.
 
 Zeno's own class data would give a replication on the students the result is meant for. The system already exports
 every first answer in the format the evaluation reads, so the prediction test and the agreement of the mastery
