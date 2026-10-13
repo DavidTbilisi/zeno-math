@@ -103,9 +103,13 @@ here the evidence so far points to EMA. [TODO: revise in the light of H1 and H3.
 condition. BKT becomes the right tool where a skill is decomposed into ideas that are learnt as one thing and where the
 questions tell those ideas apart, by needing different ones, by a mistake the checker can name, or by what earlier
 skills already settled; there it decided sooner than the moving average, was better calibrated and could say which idea
-a student lacked. Zeno's fractions questions do not yet tell its ideas apart, so until its generators ask for single
-ideas the moving average on the skill remains the safer rule there, and the decomposition's first use is in reading a
-student's arithmetic from their fractions answers rather than in deciding mastery.
+a student lacked. Zeno's fractions operations do not tell its ideas apart; the forms added to the generator, which ask
+for one idea alone, do, and with them BKT on each idea named the idea a student lacked about seven times as often as
+chance at the higher learning rate, though at the lower rate too few students came within one idea of mastery in 30
+questions for the forms to show anything (section 4.3). What such forms cost is practice: a question on one idea teaches one idea, so fewer students
+master the whole skill in a session of 30, and no rule declares mastery there. For deciding mastery within such a
+session the moving average on the skill therefore remains the safer rule; the decomposition's use is in saying what to
+practise next, and in letting what a student shows of their arithmetic in fractions count towards both.
 
 The threshold matters at least as much as the method, as @pelanek2017mastery also found. The EMA thresholds that met
 the 90 % standard ranged from 0.54 to 0.97 across the simulated settings, and BKT's from 0.74 to $1 - 10^{-12.6}$, so

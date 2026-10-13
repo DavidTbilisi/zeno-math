@@ -5,7 +5,8 @@ prediction on real answers (H1, section 4.2), mastery decisions where the truth 
 decisions on real answers (H3, section 4.4). It reports what was found; chapter 5 interprets it. The simulation
 results were made at commit 88c4af7 of the Zeno repository, the check above BKT's highest threshold (Table 4.7) at
 commit 66c2eda, the calibration of the methods' scores (Table 4.8) at commit ba04c48, and the world of ideas (Table
-4.9) at commit 7dbd426, with the commands in Appendix B.
+4.9) at commit 7dbd426 and, with the fraction forms, at commit 2b32a8e, with the
+commands in Appendix B.
 
 [TODO: the ASSISTments results in sections 4.1, 4.2 and 4.4 need the data file. Download `skill_builder_data.csv`
 (the corrected 2009–2010 version), then run `npm run import-assistments -- skill_builder_data.csv`,
@@ -360,6 +361,22 @@ teach only one idea, so every method needed more answers and fewer learners mast
 started afresh now found the missing idea 63 and 65 % of the time, with blame and carrying adding a little, to 62 to
 76 %, and it kept the lowest Brier scores. What fractions lacked within 30 questions was evidence about each idea,
 not a way of reading it.
+
+The generator was then given such forms, and the world run again with 30 questions per skill (commit [TODO: the
+commit of the fraction forms]). Two fractions questions in five now ask for one idea alone: the missing top of an
+equivalent fraction, lowest terms, the lowest common denominator of two fractions, a reciprocal, or one of the two
+conversions between a mixed number and an improper fraction, with two more recognised mistakes, adding the same number
+to top and bottom, and multiplying the whole number by the top. A fractions question now needs 6.1 ideas on average
+rather than 7.9, and the form asking for a mixed number back makes toMixed an idea of the skill, so it has sixteen. At
+the higher learning rate BKT on each idea started afresh now found the missing idea 44 % of the time, with blame 49 %
+and carried 51 %, against 6 % by chance and 6 to 15 % with the operations alone, and its Brier scores fell to 0.15 and
+0.16 against the moving average's 0.27. At the lower rate it did not: only 128 moments in the held-out practices had a
+learner one idea short, and the share found, 5 to 8 %, was at chance. What the forms cost is practice. A question on
+one idea teaches one idea, so the share of held-out learners who knew every idea after 30 questions fell from 10 to 12
+% at the lower rate and from 66 to 36 % at the higher, and no rule now declares mastery on fractions within 30
+questions: the moving average declared for 0 to 3 % of learners and BKT on each idea for 5 to 8 %. The arithmetic
+skills, whose questions did not change, kept their pattern, with carried BKT on each idea on hcf 5.5 answers cheaper
+than afresh at the lower rate [−7.39, −3.88] and finding the missing idea 62 and 80 % of the time.
 
 ## 4.4 Mastery decisions on real answers (H3)
 
