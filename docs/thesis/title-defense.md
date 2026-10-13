@@ -51,6 +51,14 @@ has really mastered the skill: when it says 99 %, the student has mastered it at
 threshold it needs changes by orders of magnitude from one world to another. In BKT's own world it is as accurate as
 the theorem promises. What remains is the test on the real data, which decides the first hypothesis.
 
+I have since checked why BKT fails where learning is gradual. I simulated a skill made of several ideas, each learnt
+in a jump exactly as BKT assumes, and asked Zeno's own generated questions. BKT on the whole skill then shows the same
+pattern as the gradual worlds: no threshold up to 0.9999 makes it right nine times in ten. BKT on each idea does
+better, but only where the questions tell the ideas apart. On fractions, where every question needs the same eight
+ideas, it cannot say which idea the student lacks. So the question the thesis opens, and I state it as exploratory, is
+how finely a skill should be divided for mastery estimation to be reliable, and what the questions must look like for
+the finer grain to be usable.
+
 The result is useful whichever way it goes. If BKT wins, systems using simple rules are leaving accuracy unused. If it
 does not, a one-parameter rule is the better engineering choice. So far, for Zeno, whose own model assumes gradual
 learning, the evidence points to the moving average as the best of the rules I compare: it is right as often with an
@@ -152,6 +160,29 @@ the gradual worlds, the true chance of a right answer is at least 0.9; the thres
 is reported as a check. With 0.8, BKT meets the standard in all four gradual settings once its thresholds go above
 0.9999, close to the moving average in each.
 
+**How finely should a skill be divided? How would you find the right granularity?** I would define several grains of
+the same topic, one skill against its ideas, and compare them in simulation, where the true state of each idea is
+known, by the same rule as H2: the practice each method needs before its declarations are right nine times in ten. I
+have done this once, for Zeno's times, hcf and fractions. Too broad, and BKT on the skill never meets the standard, as
+in the gradual worlds. At the right grain, on hcf with the arithmetic ideas carried in from the earlier skill, BKT on
+each idea needed about four answers fewer than the moving average at the higher learning rate, was the best calibrated
+score and named the one missing idea 47 to 79 % of the time. Too fine for the questions, on fractions where every
+question needs the same eight ideas, it was at chance on which idea the student lacks: not for want of data but
+because questions that all ask for the same ideas cannot tell them apart, which is the identifiability problem of
+student modelling at the level of the ideas. The condition is therefore a property of the questions, which a generator
+can change. The general study, several grains of several topics and validation on real answers with questions that
+isolate ideas, is future work; the one case is reported as a check made after the results. This is an old question in
+the field, from Tatsuoka's Q-matrices to learning factors analysis and the knowledge-learning-instruction framework;
+what is mine is tying H2's miscalibration to grain in a controlled comparison, on a real curriculum's generated
+questions. The ideas have prerequisite edges in Zeno's code, but the result uses only which ideas a question needs and
+the order of the skills; a prerequisite graph is future work and not part of the thesis.
+
+**Isn't that a second thesis?** No. It is the mechanism behind a result the thesis already has, and it is reported as
+a check beside H2, not as a hypothesis. The thesis stays a comparison of mastery rules on real and simulated answers;
+granularity is the condition under which the answer changes, and the recommendation in the discussion is already
+conditional on it: the moving average for a skill that is treated as one thing, BKT at the finer grain where the
+skill is decomposed and the questions tell the ideas apart.
+
 **What if the ASSISTments data are unsuitable?** The prediction comparison works on any logged first attempts; Zeno's
 own export produces the same format, and the simulation part does not depend on the data set.
 
@@ -167,8 +198,8 @@ describes it briefly; the experiment is the contribution.
 | Final thesis | 30 pages | the ASSISTments results, discussion, threats to validity, conclusion, abstracts in Georgian and English |
 
 Where it stands on 13 October: the chapters follow this scope (37 pages as a PDF), with the method in full, the
-simulation results including the check above 0.9999 and the calibration of each method's score, the discussion and the
-threats to validity. The ASSISTments results, the abstracts and the title page are still to come.
+simulation results including the check above 0.9999, the calibration of each method's score and the world of ideas,
+the discussion and the threats to validity. The ASSISTments results, the abstracts and the title page are still to come.
 
 ## Format rules to remember while writing
 
