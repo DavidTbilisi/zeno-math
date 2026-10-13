@@ -12,5 +12,6 @@ const bundled = process.env.ZENO_CHECKER;
 if (!bundled) register("../scripts/ts-resolve.mjs", import.meta.url);
 const checker = (await import(bundled ?? "./checker.ts")) as typeof Checker;
 
-export type { Question } from "./checker.ts";
+export type { Answered, Question } from "./checker.ts";
 export const mark = checker.mark;
+export const trackIdeas = checker.trackIdeas;

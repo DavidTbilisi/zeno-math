@@ -41,7 +41,9 @@ The adaptive policy (`src/model/policy.ts`) chooses the skill and level at which
 of a right first answer closest to a target, three in four by default. It holds a skill back while the skills it builds
 on are weak, and it leaves a skill behind once the student has mastered it. Mastery is decided by a fixed rule: the
 model must give a hard question on the skill at least an 80 % chance of a right answer. That rule is the decision this
-thesis's question is about, and chapter 6 recommends how to replace it.
+thesis's question is about, and chapter 6 recommends how to replace it. On the three skills with a concept graph
+(section 3.4), the policy also keeps one probability per idea from the student's answers and, on fractions, asks the
+form for the idea they are least likely to know, as section 6.3 describes.
 
 ![Zeno's building blocks: the board and the practice dialog in the browser, the shared code for questions, marking
 and the learner model, and the server with its single SQLite file (`docs/architecture.md`, "Building

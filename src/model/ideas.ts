@@ -16,11 +16,10 @@
 // carried from skill to skill. Beyond cost and precision, the diagnosis: when exactly one of the skill's ideas is
 // unknown, how often it is the one with the lowest P(known).
 import { en } from "../locales/en.ts";
-import { exercise, type Exercise } from "../math/practice.ts";
-import type { SkillId } from "../math/practiceSkills.ts";
-import type { MistakeId } from "../math/mistakes.ts";
-import { arithmeticUses, FRACTIONS, FRACTIONS_GAPS, fractionsUses, type FractionsNode } from "./conceptGraph.ts";
+import { exercise } from "../math/practice.ts";
+import { FRACTIONS, type FractionsNode } from "./conceptGraph.ts";
 import { sigmoid } from "./elo.ts";
+import { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill } from "./ideaState.ts";
 import { bktStep, calibration, fitBkt, rmse, type BktParams, type Prediction } from "./evaluate.ts";
 import {
   bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtPrecision, costOf, decide, FINE_THRESHOLDS, fitRules, judge, masteryCalibration, PRECISION_TARGET,
@@ -30,23 +29,14 @@ import { fixedChoice } from "./policy.ts";
 import { rng } from "./random.ts";
 import { DEFAULT_SIM } from "./simulate.ts";
 
-/** The skills with a concept graph, in curriculum order: what a learner knows of an idea goes from each to the next. */
-export const IDEA_SKILLS = ["times", "hcf", "fractions"] as const satisfies readonly SkillId[];
-export type IdeaSkill = (typeof IDEA_SKILLS)[number];
-
-/** The ideas a question needs, read from it. */
-export const usesOf = (ex: Exercise) => (ex.skill === "fractions" ? fractionsUses(ex) : arithmeticUses(ex)).nodes as FractionsNode[];
-
-/** The idea a recognised mistake shows is missing: the idea itself, or the far end of the connection. */
-export function gapIdea(mistake: MistakeId): FractionsNode | undefined {
-  const gap = FRACTIONS_GAPS[mistake];
-  return gap === undefined ? undefined : ((gap.includes("→") ? gap.split("→")[1] : gap) as FractionsNode);
-}
+// The skills with a graph, the ideas a question needs, the idea a mistake blames and the step on several ideas at once
+// live in ideaState.ts, which the app reads too; here they are the world's.
+export { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill };
 
 /** Questions generated per level to find which ideas a skill's questions can need. */
 const SAMPLE = 300;
 const ideas = new Map<IdeaSkill, FractionsNode[]>();
-/** The ideas a skill's questions can need, in the graph's order: the ideas a learner must know to have mastered it. */
+/** The ideas a skill's questions can need, in the graph's order, read off the generators: SKILL_IDEAS in ideaState.ts, checked. */
 export function ideasOf(skill: IdeaSkill): FractionsNode[] {
   let found = ideas.get(skill);
   if (!found) {
@@ -138,26 +128,6 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
 }
 
 // ---------- BKT on each idea ----------
-
-/**
- * One BKT step on several ideas at once, for a question that is right only when every idea it needs is known (a
- * conjunctive question, Pardos, Beck, Ruiz & Heffernan 2008). With the ideas independent given what is known of each,
- * P(all known) is the product of their P(known), and the chance that idea j is known and the answer right is
- * P(all known)(1 − slip) + (P(j known) − P(all known))·guess, so each idea's posterior has a closed form and no sum over
- * the 2^m states is needed. Then each needed idea may have been learnt. With one idea this is bktStep. The question's
- * guess and slip are given; learn is each idea's own.
- */
-export function conjunctiveStep(known: number[], needed: readonly number[], learnOf: (j: number) => number, question: { guess: number; slip: number }, correct: boolean): void {
-  let all = 1;
-  for (const j of needed) all *= known[j];
-  const { guess, slip } = question;
-  const seen = correct ? all * (1 - slip) + (1 - all) * guess : all * slip + (1 - all) * (1 - guess);
-  for (const j of needed) {
-    const joint = correct ? all * (1 - slip) + (known[j] - all) * guess : all * slip + (known[j] - all) * (1 - guess);
-    const posterior = seen > 0 ? joint / seen : known[j];
-    known[j] = posterior + (1 - posterior) * learnOf(j);
-  }
-}
 
 /** BKT's parameters for each idea, and the guess and slip of a question on each skill. */
 export type IdeaFit = { idea: (id: string) => BktParams; question: (skill: string) => { guess: number; slip: number } };

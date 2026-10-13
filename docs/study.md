@@ -25,7 +25,11 @@ A signed-in student practises in one of two ways:
   - *adaptive*: the skill and level where the learner model gives the student about a 75 % chance of a right first
     answer, as in Math Garden. It skips skills the student has mastered (80 % at level 3) and skills whose
     prerequisites they've shown weakness in (under 50 % at level 2). A skill from the last three questions counts as
-    further from the target, so practice interleaves.
+    further from the target, so practice interleaves. On a skill made of ideas (times, hcf and fractions have a concept
+    graph, `src/model/conceptGraph.ts`), the question is then the one bearing most on the idea the student is least
+    likely to know: the server replays every stored answer into one probability per idea (`src/model/ideaState.ts`,
+    sent with the plan under `ideas`), and of a hundred fresh questions the browser asks the one that needs that idea
+    with the fewest others, on fractions the form asking for it alone (`exerciseFor` in `src/learner.ts`).
 
   Everything else is the same for both groups: the feedback, the worked solutions, and missed questions coming back
   three questions later.

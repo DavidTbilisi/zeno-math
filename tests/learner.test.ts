@@ -5,12 +5,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
-import { check, exercise } from "../src/math/practice.ts";
+import { check, exercise, trapInputs } from "../src/math/practice.ts";
 import {
-  applyAttempt, attemptEvidence, finish, logAnswer, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, withProtocol, type Attempt, type Origin,
-  type Protocol, type SendResult, type Slot,
+  applyAttempt, attemptEvidence, finish, learnFromAttempt, logAnswer, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, withProtocol, type Attempt,
+  type Origin, type Protocol, type SendResult, type Slot,
 } from "../src/learner.ts";
 import { EloModel } from "../src/model/elo.ts";
+import { IDEA_PRIOR, usesOf, type IdeaState } from "../src/model/ideaState.ts";
 
 const w = en.pracWords;
 const student = { code: "ABCD-EFGH", class: "7BXYZ2", condition: "fixed" as const };
@@ -100,7 +101,7 @@ test("the outbox survives a failing network and keeps attempts added mid-send", 
 });
 
 test("leaving a question moves the class plan on the way the server will", () => {
-  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: new EloModel().state() });
+  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: new EloModel().state(), ideas: {} });
   const base = { clientId: "x", student: student.code, level: 2 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, shownAt: 0, predicted: 0.5 };
   const right: Attempt = { ...base, skill: "linear", outcome: "solved", policy: "fixed", answers: [{ input: "3", verdict: "correct", ms: 1 }] };
   const before = plan.model.predict({ student: ME, skill: "linear", level: 2 });
@@ -118,8 +119,45 @@ test("leaving a question moves the class plan on the way the server will", () =>
   assert.equal(attemptEvidence({ ...formOnly, outcome: "revealed", answers: [] }), false);
   assert.equal(attemptEvidence({ ...right, answers: [{ input: "6/2", verdict: "form", ms: 1 }, ...right.answers] }), true);
 
-  // The teacher moves the class on: the new phase and tests arrive, the model and sequence carried forward stay.
+  // A question on a skill made of ideas moves the student's ideas too; one on any other skill leaves them.
+  assert.deepEqual(plan.ideas, {});
+  const sum = exercise("fractions", 1, 1, w);
+  const fractions: Attempt = { ...base, skill: "fractions", level: 1, outcome: "solved", policy: "free", answers: [{ input: sum.plain, verdict: "correct", ms: 1 }] };
+  applyAttempt(plan, fractions);
+  assert.deepEqual(Object.keys(plan.ideas).sort(), [...usesOf(sum)].sort());
+  for (const p of Object.values(plan.ideas)) assert.ok(p! > IDEA_PRIOR.init);
+
+  // The teacher moves the class on: the new phase and tests arrive, the model, sequence and ideas carried forward stay.
   const moved = withProtocol(plan, { ...protocol, phase: "session", sessionEnds: 123, tests: { ...protocol.tests, pre: { form: "A", answered: [0, 1] } } });
   assert.deepEqual([moved.phase, moved.sessionEnds, moved.tests.pre.answered, moved.position], ["session", 123, [0, 1], 5]);
   assert.equal(moved.model, plan.model);
+  assert.equal(moved.ideas, plan.ideas);
+});
+
+test("an attempt teaches the ideas as the server will: the question rebuilt from its seed, the mistake read off the first counted answer", () => {
+  // The first fractions question at level 1 that has the adding-across trap.
+  const { ex, trap } = (() => {
+    for (let seed = 1; ; seed++) {
+      const ex = exercise("fractions", 1, seed, w);
+      const trap = trapInputs(ex).find((t) => t.id === "addAcross");
+      if (trap) return { ex, trap };
+    }
+  })();
+  const base = { skill: "fractions" as const, level: 1 as const, seed: ex.seed };
+  const right: IdeaState = {}, trapped: IdeaState = {}, miss: IdeaState = {}, revealed: IdeaState = {}, formOnly: IdeaState = {};
+  learnFromAttempt(right, { ...base, outcome: "solved", answers: [{ input: ex.plain, verdict: "correct", ms: 1 }] });
+  assert.deepEqual(Object.keys(right).sort(), [...usesOf(ex)].sort());
+  // The trap typed first: addSub alone is blamed, even though the right answer followed a message.
+  learnFromAttempt(trapped, { ...base, outcome: "solved", answers: [{ input: "((", verdict: "form", ms: 1 }, { input: trap.input, verdict: "wrong", ms: 2 }, { input: ex.plain, verdict: "correct", ms: 3 }] });
+  assert.deepEqual(Object.keys(trapped), ["addSub"]);
+  assert.ok(trapped.addSub! < IDEA_PRIOR.init);
+  // Any other miss, and a question given up without a try, are a plain wrong answer on every idea needed.
+  learnFromAttempt(miss, { ...base, outcome: "revealed", answers: [{ input: "12345", verdict: "wrong", ms: 1 }] });
+  learnFromAttempt(revealed, { ...base, outcome: "revealed", answers: [] });
+  assert.deepEqual(miss, revealed);
+  assert.deepEqual(Object.keys(miss).sort(), Object.keys(right).sort());
+  // Form messages alone, a skipped question nobody tried, and other skills say nothing.
+  learnFromAttempt(formOnly, { ...base, outcome: "skipped", answers: [{ input: "((", verdict: "form", ms: 1 }] });
+  learnFromAttempt(formOnly, { skill: "linear", level: 1, seed: 1, outcome: "solved", answers: [{ input: "1", verdict: "correct", ms: 1 }] });
+  assert.deepEqual(formOnly, {});
 });
