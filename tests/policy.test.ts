@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { ALL_SKILLS, type SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM, inCurriculumOrder, PREREQUISITES } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
-import { adaptiveChoice, fixedChoice, MASTERED_AT, openSkills, PER_LEVEL, TARGET } from "../src/model/policy.ts";
+import { adaptiveChoice, choose, fixedChoice, MASTERED_AT, openSkills, PER_LEVEL, TARGET } from "../src/model/policy.ts";
 
 test("the curriculum has every skill once, each after what it builds on", () => {
   assert.deepEqual([...CURRICULUM].sort(), [...ALL_SKILLS].sort());
@@ -72,4 +72,17 @@ test("recent skills count against a choice, so practice interleaves", () => {
   // Once everything is mastered the choice still comes from the class's skills.
   for (let i = 0; i < 40; i++) answer(m, "linear", 3, true), answer(m, "average", 3, true);
   assert.ok(["linear", "average"].includes(pick([])));
+});
+
+test("given the student's ideas, a skill made of ideas is aimed at the one they are least likely to know", () => {
+  const m = new EloModel();
+  const ideas = { equivalent: 0.1, part: 0.9 };
+  assert.deepEqual(adaptiveChoice(m, "s", ["fractions"], { random: () => 0, ideas }), { skill: "fractions", level: 1, idea: "equivalent" });
+  assert.deepEqual(choose("adaptive", m, "s", ["fractions"], 0, { random: () => 0, ideas }), { skill: "fractions", level: 1, idea: "equivalent" });
+  // Without the ideas, or on a skill without a graph, or in the fixed sequence, no idea is named.
+  assert.deepEqual(adaptiveChoice(m, "s", ["fractions"], { random: () => 0 }), { skill: "fractions", level: 1 });
+  assert.deepEqual(adaptiveChoice(m, "s", ["linear"], { random: () => 0, ideas }), { skill: "linear", level: 1 });
+  assert.deepEqual(choose("fixed", m, "s", ["fractions"], 0, { ideas }), { skill: "fractions", level: 1 });
+  // A new student's ideas are all level: the idea is one of the skill's, at random.
+  assert.equal(adaptiveChoice(m, "s", ["times"], { random: () => 0.99, ideas: {} }).idea, "multiplyLong");
 });

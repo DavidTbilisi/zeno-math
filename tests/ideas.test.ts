@@ -6,6 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
+import { SKILL_IDEAS } from "../src/model/ideaState.ts";
 import {
   carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaPractice,
 } from "../src/model/ideas.ts";
@@ -23,6 +24,8 @@ test("each skill's ideas are those its questions can need: with the forms, fract
   assert.deepEqual(ideasOf("hcf"), ["addWhole", "multiplyFacts", "multiplyLong", "divideExact", "hcf", "lcm"]);
   assert.equal(ideasOf("fractions").length, 16);
   assert.ok(ideasOf("fractions").includes("toMixed"));
+  // The lists the app keeps (ideaState.ts) are what the generators' questions need.
+  for (const skill of IDEA_SKILLS) assert.deepEqual(ideasOf(skill), SKILL_IDEAS[skill], skill);
   assert.equal(gapIdea("addAcross"), "addSub");
   assert.equal(gapIdea("flipFirst"), "divide", "a missing connection is blamed on its far end");
   assert.equal(gapIdea("sign"), undefined);

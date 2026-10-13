@@ -7,13 +7,18 @@
 // adaptive: of the skills whose prerequisites the student has met and that they haven't mastered yet, the skill and
 // level where the learner model's chance of a right first answer is closest to TARGET (about three in four right, as
 // in Math Garden, Klinkenberg et al. 2011: hard enough to learn from, easy enough to keep going). A skill
-// practised in the last few questions counts as further from the target, so practice interleaves.
+// practised in the last few questions counts as further from the target, so practice interleaves. On a skill made of
+// ideas (times, hcf, fractions), given what the student knows of each, it also names the idea they are least likely
+// to know, and the question asked is the one bearing most on it (exerciseFor in src/learner.ts): on fractions, the
+// form asking for that idea alone.
 import type { SkillId } from "../math/practiceSkills.ts";
 import { PREREQUISITES } from "./curriculum.ts";
 import type { EloModel, Level } from "./elo.ts";
+import { hasIdeas, weakestIdea, type IdeaState } from "./ideaState.ts";
 
 export type Policy = "adaptive" | "fixed";
-export type Choice = { skill: SkillId; level: Level };
+/** A skill and level, and on a skill made of ideas, with the student's ideas given, the idea to aim the question at. */
+export type Choice = { skill: SkillId; level: Level; idea?: string };
 
 export const PER_LEVEL = 2;
 export const TARGET = 0.75;
@@ -45,6 +50,8 @@ export type AdaptiveOptions = {
   random?: () => number;
   /** The chance of a right first answer to aim at: TARGET in the app; simulations try others. */
   target?: number;
+  /** What the student knows of each idea (ideaState.ts): with it, a question on a skill made of ideas aims at the weakest. */
+  ideas?: IdeaState;
 };
 
 /** The open skills, and the hard-question predictions they were judged by (adaptiveChoice needs those again). */
@@ -74,7 +81,9 @@ export function adaptiveChoice(model: EloModel, student: string, skills: readonl
       if (!best || score < best.score - 1e-12 || (Math.abs(score - best.score) <= 1e-12 && tie < best.tie)) best = { skill, level, score, tie };
     }
   }
-  return { skill: best!.skill, level: best!.level };
+  const choice: Choice = { skill: best!.skill, level: best!.level };
+  if (options.ideas && hasIdeas(choice.skill)) choice.idea = weakestIdea(options.ideas, choice.skill, random);
+  return choice;
 }
 
 export function choose(policy: Policy, model: EloModel, student: string, skills: readonly SkillId[], position: number, options: AdaptiveOptions = {}): Choice {

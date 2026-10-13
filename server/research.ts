@@ -8,12 +8,13 @@ import { ALL_SKILLS, AREAS, FIRST_SKILLS, SKILLS, areaOf, type Area, type SkillI
 import { CURRICULUM, inCurriculumOrder } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
+import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
 import { RECENT } from "../src/model/policy.ts";
 import { dashboard } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
-import { mark } from "./marking.ts";
+import { mark, trackIdeas, type Answered } from "./marking.ts";
 import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
@@ -123,26 +124,35 @@ export function parseSkills(value: unknown): SkillId[] | null {
 }
 const classSkills = (json: string | null): SkillId[] => (json ? JSON.parse(json) : [...CURRICULUM]);
 
-// ---------- the learner model, kept up to date with every stored attempt ----------
+// ---------- the learner model and each student's ideas, kept up to date with every stored attempt ----------
 
-const models = new WeakMap<DatabaseSync, { model: EloModel; lastId: number }>();
-/** Replays attempts stored since the last call (all of them the first time) and returns the model. */
-export function currentModel(db: DatabaseSync): EloModel {
-  let cache = models.get(db);
-  if (!cache) models.set(db, (cache = { model: new EloModel(), lastId: 0 }));
+type Replay = { model: EloModel; ideas: Map<number, IdeaState>; lastId: number };
+const replays = new WeakMap<DatabaseSync, Replay>();
+/** Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas. */
+function replay(db: DatabaseSync): Replay {
+  let cache = replays.get(db);
+  if (!cache) replays.set(db, (cache = { model: new EloModel(), ideas: new Map(), lastId: 0 }));
   const rows = stmt(db, `
-    SELECT id, student_id, skill, level, outcome, first_correct, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
-  `).all(cache.lastId) as { id: number; student_id: number; skill: SkillId; level: Level; outcome: string; first_correct: number; counted: number }[];
+    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
+  `).all(cache.lastId) as { id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; counted: number }[];
   for (const r of rows) {
     // Counted answers are those not sent back for their form, as the export reads them (evaluate.ts, observation).
     const correct = evidence(r.counted, r.outcome, r.first_correct === 1);
     if (correct !== null) cache.model.update({ student: `s${r.student_id}`, skill: r.skill, level: r.level, correct });
+    // On a skill made of ideas, the question is rebuilt and the student's ideas move as the browser's did (learner.ts).
+    if (hasIdeas(r.skill)) {
+      const ideas = cache.ideas.get(r.student_id) ?? cache.ideas.set(r.student_id, {}).get(r.student_id)!;
+      trackIdeas(ideas, { skill: r.skill, level: r.level, seed: r.seed }, r.outcome, JSON.parse(r.answers) as Answered[]);
+    }
     cache.lastId = r.id;
   }
-  return cache.model;
+  return cache;
 }
+export const currentModel = (db: DatabaseSync): EloModel => replay(db).model;
+/** What a student knows of each idea they have met (ideaState.ts), for the adaptive policy to aim at the weakest. */
+export const currentIdeas = (db: DatabaseSync, studentId: number): IdeaState => replay(db).ideas.get(studentId) ?? {};
 /** Deleted answers can't be taken out of the ratings one by one: the next request replays what is left. */
-const forgetModel = (db: DatabaseSync) => models.delete(db);
+const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
 function teacher(req: IncomingMessage) {
   if (!TEACHER_PASSWORD) return;
@@ -334,7 +344,7 @@ export async function handleResearch(
     const student = findStudent(decodeURIComponent(id));
     if (!student) return send(res, 404, { error: "no such student" });
     // What the student's browser needs to choose questions: their condition and skills, where they are in the fixed
-    // sequence, their last skills, and the model (the class-wide difficulties and their own ratings, under "me").
+    // sequence, their last skills, the model (the class-wide difficulties and their own ratings, under "me") and their ideas.
     if (sub === "plan" && req.method === "GET") {
       const { skills } = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
       const { position } = stmt(db, "SELECT COUNT(*) AS position FROM attempts WHERE student_id = ? AND policy = 'fixed'").get(student.id) as { position: number };
@@ -349,6 +359,7 @@ export async function handleResearch(
         position,
         recent,
         state: { ...state, students: me ? { me } : {} },
+        ideas: currentIdeas(db, student.id),
         ...classProtocol(db, student.class),
         tests: studentTests(db, student),
       });

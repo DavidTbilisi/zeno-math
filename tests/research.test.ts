@@ -17,6 +17,7 @@ import { initResearch, normalizeCode, parseAttempt } from "../server/research.ts
 import { GRACE, initProtocol, logPhase, onTime, phaseWindows, PRACTICE_PHASES } from "../server/protocol.ts";
 import { EloModel } from "../src/model/elo.ts";
 import { observationsFromCsv, parseCsv, replay } from "../src/model/evaluate.ts";
+import { usesOf } from "../src/model/ideaState.ts";
 import { testItems } from "../src/model/testForms.ts";
 import { verdictOf } from "../src/learner.ts";
 import { en } from "../src/locales/en.ts";
@@ -250,6 +251,7 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   const { condition, skills, position, recent } = fresh;
   assert.deepEqual({ condition, skills, position, recent }, { condition: joined.condition, skills: ["volume", "circles"], position: 0, recent: [] });
   assert.deepEqual(fresh.state.students, {});
+  assert.deepEqual(fresh.ideas, {});
 
   const mine = { policy: joined.condition, predicted: 0.71, skill: "volume" };
   assert.equal((await call("POST", "/api/attempts", attempt(joined.code, mine))).status, 201);
@@ -267,6 +269,13 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   // Only this student's ratings come back, under "me"; difficulties are everyone's.
   assert.deepEqual(Object.keys(after.state.students), ["me"]);
   assert.ok(after.state.skills.volume && after.state.levels["volume:2"]);
+  assert.deepEqual(after.ideas, {}, "no question on a skill made of ideas yet");
+  // A fractions question, right first time, raises the ideas it needed; the plan carries them for the policy to aim at.
+  const sum = exercise("fractions", 1, 5, en.pracWords);
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: "free", skill: "fractions", level: 1, seed: 5, answers: [{ verdict: "correct", ms: 9000 }] }))).status, 201);
+  const ideas = (await plan()).ideas as Record<string, number>;
+  assert.deepEqual(Object.keys(ideas).sort(), [...usesOf(sum)].sort());
+  for (const p of Object.values(ideas)) assert.ok(p > 0.5 && p < 1);
   assert.equal((await call("GET", `/api/students/${joined.code}/nope`)).status, 404);
 
   const csv = (await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string;

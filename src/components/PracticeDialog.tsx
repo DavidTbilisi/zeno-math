@@ -3,8 +3,8 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, withProtocol, type ClassPlan,
-  type Origin, type QuestionLog, type Student, type TestAnswer,
+  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, withProtocol,
+  type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { choose as choosePolicy } from "../model/policy";
 import type { Dict } from "../locales/en";
@@ -102,15 +102,16 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
   const predicted = (skill: SkillId, L: Level) => planRef.current?.model.predict({ student: ME, skill, level: L }) ?? null;
   /**
    * The next question. Missed ones come back first; then, in class practice, the student's condition chooses
-   * (fixed sequence or adaptive), otherwise the topic and level picked above.
+   * (fixed sequence, or adaptive, which on a skill made of ideas aims at the weakest), otherwise the topic and level
+   * picked above.
    */
   const nextExercise = (a: Area, p: Pick, L: Level, prog: Progress, plan: ClassPlan | null): Current => {
     const fits = (m: Mistake) => (plan ? plan.skills.includes(m.skill) : p === "mixed" ? areaOf(m.skill) === a : m.skill === p);
     const due = prog.mistakes.find((m) => fits(m) && m.due <= prog.answered);
     if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
     if (plan) {
-      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent });
-      return { ex: exercise(c.skill, c.level, newSeed(), w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
+      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent, ideas: plan.ideas });
+      return { ex: exerciseFor(c, w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
     }
     const skills = SKILLS[a] as readonly SkillId[];
     const skill = p === "mixed" ? skills[Math.floor(Math.random() * skills.length)] : p;

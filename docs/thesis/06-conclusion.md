@@ -56,10 +56,11 @@ results with each answer kept for one skill only. A fourth follows from the worl
 now asks for one idea alone in two questions of five, a missing top of an equivalent fraction, lowest terms, the lowest
 common denominator, a reciprocal and the two conversions between mixed numbers and improper fractions, and in the
 simulation these let BKT on each idea name the idea a student lacks, where students learn fast enough to come within one
-idea of mastery (section 4.3). What remains is to let the choice
-of the next question use that: to ask for the idea with the lowest probability, rather than a form at random, and to
-see whether students who practise this way master fractions sooner than those who practise operations alone; and to
-run on real class answers the three tests of whether an idea is learnt as one thing, whether a question tests it
+idea of mastery (section 4.3). Zeno's adaptive condition now uses that: the server keeps one probability per idea
+for each student from their stored answers, with the simulation's parameters until a class has answered, and on
+fractions the next question is the form asking for the idea with the lowest probability rather than a form at random.
+Whether students who practise this way master fractions sooner than those who practise operations alone is untested,
+and belongs to the class study. What remains is to run on real class answers the three tests of whether an idea is learnt as one thing, whether a question tests it
 alone, whether its error rate falls as one smooth curve, and whether practice on one form of it carries over to the
 others [@cen2006lfa].
 

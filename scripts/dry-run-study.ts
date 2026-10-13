@@ -16,7 +16,7 @@ import { join } from "node:path";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, trapInputs, type Exercise } from "../src/math/practice.ts";
 import type { SkillId } from "../src/math/practiceSkills.ts";
-import { applyAttempt, finish, logAnswer, ME, startLog, toAttempt, toClassPlan, verdictOf, type ClassPlan, type Plan } from "../src/learner.ts";
+import { applyAttempt, exerciseFor, finish, logAnswer, ME, startLog, toAttempt, toClassPlan, verdictOf, type ClassPlan, type Plan } from "../src/learner.ts";
 import { analyseStudy, scoresFromTests, type StudyAnalysis } from "../src/model/analysis.ts";
 import { inCurriculumOrder } from "../src/model/curriculum.ts";
 import { logLoss, parseCsv } from "../src/model/evaluate.ts";
@@ -122,8 +122,8 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
     for (const [i, s] of students.entries()) {
       if (q % refreshEvery === 0) plans.set(s.code, toClassPlan(await plan(s.code)));
       const cp = plans.get(s.code)!;
-      const choice = choose(cp.condition, cp.model, ME, cp.skills, cp.position, { recent: cp.recent });
-      const ex = exercise(choice.skill, choice.level, Math.floor(r.next() * 2 ** 31), w);
+      const choice = choose(cp.condition, cp.model, ME, cp.skills, cp.position, { recent: cp.recent, ideas: cp.ideas });
+      const ex = exerciseFor(choice, w, r.next);
       const predicted = cp.model.predict({ student: ME, skill: choice.skill, level: choice.level });
       const right = world.answer(world.learners[i], choice.skill, choice.level);
       const log = startLog(Date.now(), 0);

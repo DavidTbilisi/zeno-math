@@ -1,10 +1,12 @@
 // The student's side of the practice study: the code they joined a class with, the record of the question they are
 // on, and an outbox that keeps finished questions in this browser until the server has them (classroom Wi-Fi drops).
-import type { Exercise, Verdict } from "./math/practice";
+import { en } from "./locales/en";
+import { check, exercise, type Exercise, type PracticeWords, type Verdict } from "./math/practice";
 import type { SkillId } from "./math/practiceSkills";
 import { EloModel, type ModelState } from "./model/elo";
 import { evidence } from "./model/evaluate";
-import { RECENT } from "./model/policy";
+import { bearing, hasIdeas, learnIdeas, type IdeaState } from "./model/ideaState";
+import { RECENT, type Choice } from "./model/policy";
 import type { Form, TestPhase } from "./model/testForms";
 
 export type Condition = "adaptive" | "fixed";
@@ -26,8 +28,8 @@ export type Protocol = {
   testLength: number;
   tests: Record<TestPhase, { form: Form; answered: number[] }>;
 };
-/** What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me". */
-export type Plan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: ModelState };
+/** What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me", their ideas under "ideas". */
+export type Plan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: ModelState; ideas: IdeaState };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 
 /** What the server stores for one question (see server/research.ts, which works out the summary columns). */
@@ -98,7 +100,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
 /** The student's own name in the model the browser keeps (the server sends their ratings under it). */
 export const ME = "me";
 /** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
-export type ClassPlan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: EloModel };
+export type ClassPlan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: EloModel; ideas: IdeaState };
 export const toClassPlan = ({ state, ...rest }: Plan): ClassPlan => ({ ...rest, model: EloModel.fromState(state) });
 /** A newer plan's protocol (the teacher may have moved the class on) over the plan the browser has been carrying forward. */
 export const withProtocol = (plan: ClassPlan, p: Protocol): ClassPlan =>
@@ -116,18 +118,52 @@ export type TestAnswer = {
   retries: number;
   ms: number;
 };
-/** What the server will do once it has the attempt: the model learns from it, the fixed sequence moves on. */
+/** What the server will do once it has the attempt: the model and the ideas learn from it, the fixed sequence moves on. */
 export function applyAttempt(plan: ClassPlan, a: Attempt) {
   const correct = attemptEvidence(a);
   if (correct !== null) plan.model.update({ student: ME, skill: a.skill, level: a.level, correct });
+  learnFromAttempt(plan.ideas, a);
   if (a.policy === "fixed") plan.position++;
   plan.recent = [...plan.recent, a.skill].slice(-RECENT);
 }
 
 /** What the attempt tells the learner model, by the same rule the server uses (null: nothing). */
-export function attemptEvidence(a: Attempt): boolean | null {
+export function attemptEvidence(a: Pick<Attempt, "outcome" | "answers">): boolean | null {
   const counted = a.answers.filter((x) => x.verdict !== "form");
   return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct");
+}
+
+/**
+ * What the attempt tells the student's ideas (src/model/ideaState.ts), the same on the server and in the browser: the
+ * question is rebuilt from its skill, level and seed, and the mistake, if the first counted answer made one the checker
+ * recognises, is read off that answer. The words don't matter to either; English rebuilds it everywhere.
+ */
+export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers">) {
+  if (!hasIdeas(a.skill)) return;
+  const correct = attemptEvidence(a);
+  if (correct === null) return;
+  const ex = exercise(a.skill, a.level, a.seed, en.pracWords);
+  const first = a.answers.find((x) => x.verdict !== "form");
+  learnIdeas(state, ex, correct, correct || !first ? undefined : check(ex, first.input, en.pracWords).mistake);
+}
+
+/** Questions tried when aiming at an idea: a form asked in one question of fifteen is missing from all of them once in a thousand. */
+export const AIM_TRIES = 100;
+/** A question bearing this much on an idea needs it and one other at most (on fractions, the idea and "part"): no question does better. */
+const ALONE = 0.5;
+/**
+ * The question for a choice: a fresh one on its skill and level, or, when the choice names an idea, of up to AIM_TRIES
+ * fresh ones the one bearing most on that idea (ideaState.ts): on fractions the form asking for it alone when one exists.
+ */
+export function exerciseFor(c: Choice, w: PracticeWords, random: () => number = Math.random): Exercise {
+  const fresh = () => exercise(c.skill, c.level, Math.floor(random() * 2 ** 31), w);
+  if (!c.idea) return fresh();
+  let best = fresh(), share = bearing(best, c.idea);
+  for (let i = 1; i < AIM_TRIES && share < ALONE; i++) {
+    const ex = fresh(), b = bearing(ex, c.idea);
+    if (b > share) (best = ex), (share = b);
+  }
+  return best;
 }
 
 // ---------- storage ----------
