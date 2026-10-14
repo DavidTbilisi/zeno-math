@@ -271,7 +271,7 @@ describes it briefly; the experiment is the contribution.
 | Preliminary draft | 15 pages | the method in full, the simulation results |
 | Final thesis | 30 pages | the ASSISTments results, discussion, threats to validity, conclusion, abstracts in Georgian and English |
 
-Where it stands on 14 October: the chapters are reworked under the approved title (57 pages as a PDF), with the
+Where it stands on 14 October: the chapters are reworked under the approved title (55 pages as a PDF), with the
 abstracts in Georgian and English, the method in full, the one-grain results including the check above 0.9999 and the
 calibration of each method's score, the four granularity studies with their sweeps, the discussion and the threats to
 validity, and the ASSISTments results for H1, H3 and G4 on the corrected 2009–2010 file.
