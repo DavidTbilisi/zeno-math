@@ -1,8 +1,8 @@
 ---
 # Settings for npm run thesis-pdf (scripts/thesis-pdf.ts). The fonts are the host's, from /usr/share/fonts; the
 # fallbacks cover the arrows, ticks, maths signs and Georgian that STIX Two Text lacks.
-title: "When is a skill mastered?"
-subtitle: "Bayesian Knowledge Tracing against a simple mastery rule on real and simulated students' answers"
+title: "The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems"
+subtitle: "Bayesian Knowledge Tracing and simple mastery rules on real and simulated students' answers, at the grain of the skill and of its parts"
 author: "David Chincharashvili"
 documentclass: report
 papersize: a4
