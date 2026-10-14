@@ -2,7 +2,9 @@
 
 Tuesday, 18:00 Tbilisi time, room 303, University of Georgia. The supervisor and an expert attend. The task is to
 present what the thesis will work on. No length or slides are prescribed, so the talk below runs about seven minutes
-and works without slides.
+and works without slides. The title was approved at that defence; the talk and the answers below are kept current
+with the results, and on 14 October they were updated with the granularity sweeps (G1 to G4), so that the same talk
+serves for the thesis defence.
 
 ## Title
 
@@ -24,63 +26,67 @@ that they can move on? Both ways of getting it wrong cost something. Declared to
 that needs a skill they do not have; declared too late, they spend time on questions they can already answer. The
 systems that schools actually use mostly answer it with a simple rule, such as three right answers in a row. Research
 systems mostly use a statistical model, Bayesian Knowledge Tracing, which estimates the probability that the student
-knows the skill, allowing for lucky guesses and careless slips, with four parameters per skill fitted on data. My thesis
-asks whether that extra machinery pays off: does BKT judge mastery more accurately than a simple rule?
+knows the skill, allowing for lucky guesses and careless slips, with four parameters per skill fitted on data. And
+every one of these rules takes the skill as given. But what counts as one skill is a choice: fractions can be one skill
+in a curriculum or sixteen ideas, from the times tables to converting a mixed number, and whoever writes the
+curriculum decides. My thesis asks how that choice, the grain at which skills are defined, affects the accuracy and
+reliability of mastery estimation.
 
-The simple side is a moving average of the student's recent answers. Two parts of the thesis are mathematics. I prove
-exactly when "three in a row" is a special case of that average, and I prove that BKT, in a world that works the way
-BKT assumes, is right at least as often as its threshold says. The rest is evidence, in three hypotheses. First, on
-real students' answers, BKT predicts the next answer better than the moving average, measured by log-loss on students
-the models were not fitted on; this is the one confirmatory test, and I fixed in advance how small a difference counts
-as none. Second, in simulation, where I know whether each simulated student has really learnt the skill, BKT needs
-less practice than the simpler rules before its mastery decisions are right nine times in ten, in worlds where
-students do not learn the way BKT assumes. Third, exploratory: how often the methods agree on real data.
+The foundation is a comparison of the three rules at one grain: BKT, a moving average of the student's recent answers,
+and three in a row. Two parts of it are mathematics. I prove exactly when "three in a row" is a special case of the
+moving average, and I prove that BKT, in a world that works the way BKT assumes, is right at least as often as its
+threshold says, which is why a comparison run only in BKT's own world would favour BKT by construction. The rest is
+evidence. On real students' answers, the ASSISTments data set, a public, anonymised record of several thousand US
+middle-school students, BKT and the moving average predict the next answer of students they were not fitted on; that
+is one of two confirmatory tests, with the size of difference that counts fixed in advance. In simulation, where I know
+whether each simulated student has really learnt the skill, I measure the decisions themselves: how much practice each
+rule needs before its declarations are right nine times in ten.
 
-The real data are the ASSISTments 2009–2010 data set, a public, anonymised record of several thousand US
-middle-school students answering maths problems. The simulation matters because real data cannot say when a student
-truly knows a skill. I simulate students who learn gradually or who forget, because a comparison run only in BKT's own
-world would favour BKT by construction.
+That simulation gave the result the granularity question grew from. Where students learn in a jump, as BKT assumes,
+BKT needs one to two answers fewer than the simpler rules. Where students learn gradually, no threshold up to 0.9999
+makes its decisions right nine times in ten: after a short run of right answers it is almost certain the student knows
+the skill, even when they do not. It gets there only with a threshold of seven nines or more. Its probability no
+longer means what it says: when it says 99 %, the student has mastered the skill at most about half the time.
+
+Then I asked why, and the answer is grain. I built a world where a skill is several components, each learnt in a jump
+exactly as BKT assumes, and modelled the skill as one. That reproduces the gradual pattern exactly. With one component
+BKT at its usual threshold of 0.95 is right 98 % of the time; with two, about 65 %; with four, a quarter; with eight,
+under a tenth; with sixteen, almost never. From four components on, no threshold up to 0.9999 meets the standard, and
+BKT's probability becomes the worst calibrated score of all. A skill that is really several things looks gradual from
+outside, and a model with one known state has nothing in the world to refer to. What decides it is not the number of
+components but how much of the skill each question leaves untested: when every question asks for every component, the
+skill is one unit again to every rule, and when a question asks for half of them, BKT is right about half the time.
+Zeno's own skills line up with this: times, whose every question needs all three ideas, is one unit; fractions, where a
+question needs six of sixteen, is not. One part of my hypothesis did not hold, and I say so: I expected the simple
+rules to lose less, because they assume nothing about the skill, and in precision they lost exactly as much, since
+three right answers on a skill of eight components is no evidence that all eight are known. What they kept was a
+threshold that could still be found and a probability that was less wrong.
+
+The second study puts the model at the right grain, BKT on each component, reading from every question the
+components it needs. That restores precision at an ordinary threshold, and it adds something no coarser model has: it
+can say which component the student lacks. But only on a condition, that the questions tell the components apart. I
+swept that condition on fractions, with Zeno's own generated questions. Within the thirty questions of a session the
+model is at chance about which idea is missing, because an operation on fractions needs seven to ten ideas at once and
+the evidence is spread too thin. What meets the condition is either four times the practice, after which the model
+names the missing idea two times in three and is the only rule that declares fractions mastered in time, or one
+question in four asking for one idea alone, which does the same without slowing learning. Every question alone, I also
+found, teaches too little to be worth it. So the right grain is usable if and only if the questions identify the
+components and the practice is long enough to ask about each.
+
+The third study goes too fine. Modelling a component that is learnt as one thing as two or four parts costs answers
+for no gain in precision, doubles the Brier score with each split, and degenerates the fits: four in five of them at
+the bound when split in four. That is a sign a system could read from its own parameters. Too many components for the
+practice is different: the fits stay sound, and the model simply never declares. The fourth study takes the same real
+answers from ASSISTments and models them at three grains, the data set's own tags, the topic areas and one skill for
+everything, with one pre-specified test of whether the finer grain predicts better; it is ready to run.
 
 The software is built. Over the last year I built Zeno, a self-hosted maths whiteboard with a practice engine and a
-learner model for Georgian classrooms, and the experiment runs inside its code: BKT, the moving average, the streak
-rule, the evaluation on held-out students, the statistical test and the simulation.
-
-The simulation has been run, and its result splits the second hypothesis in two. Where students learn in a jump, as
-BKT assumes, but sometimes forget, the hypothesis holds: BKT needs one to two answers fewer than the simpler rules for
-decisions that are right as often. Where students learn gradually, it fails by the rule I fixed in advance: no
-threshold up to 0.9999 makes BKT's decisions right nine times in ten, because after a short run of right answers it is
-almost certain the student knows the skill, even when they do not. I then checked whether that was only where I had
-stopped searching, and largely it was: with a threshold of seven nines or more, BKT does get there, at about the moving
-average's cost. So BKT still ranks students sensibly, but its probability no longer means what it says: when it says
-99 %, the student has mastered the skill at most about half the time, and the threshold it needs moves by orders of
-magnitude from one world to another.
-
-Then I asked why. I simulated a skill that is really several ideas, each learnt in a jump exactly as BKT assumes, and
-asked Zeno's own generated questions, which need several of those ideas at once. BKT on the whole skill then shows the
-same pattern as the gradual worlds: no threshold up to 0.9999 makes it right nine times in ten. So what looked like a
-failure of the model may be a failure of grain. A skill that is really several ideas looks gradual from outside, and
-BKT applied at the wrong grain is miscalibrated even in a world built from its own assumptions. BKT on each idea does
-better, but only where the questions tell the ideas apart. On highest common factor, where questions need different
-ideas and the arithmetic was settled in an earlier skill, it decided sooner than the moving average, was the best
-calibrated and named the one idea the student lacked most of the time. On fractions, where every question needs the
-same eight ideas, it could not say which idea was missing however many answers it saw. The grain at which a skill is
-modelled has to be chosen together with the questions that are asked of it. This check came after the results, so the
-thesis reports it as a check beside the second hypothesis, not as a hypothesis of its own.
-
-So the thesis contributes five things. The exact conditions under which a streak rule is a moving average, proved for
-sequences of any length. A known-truth simulation in worlds that break BKT's assumptions, with the test and the
-verdict rule fixed before the results. The finding that where learning is gradual BKT's probability is badly calibrated
-and needs a threshold that no one would choose without data. The diagnosis that this is a question of grain, with a
-condition on the questions, that they must tell the ideas apart, for the finer grain to be usable; that is the one
-part I would carry into further research, because Zeno generates its questions and so can change them, which a fixed
-item bank cannot. And a practical answer for Zeno: a moving average with its threshold set from Zeno's own data where
-a skill is treated as one thing, and BKT at the finer grain where the skill is decomposed and the questions isolate
-its ideas. What remains is the test on the real data, which decides the first hypothesis.
-
-The result is useful whichever way that test goes. If BKT wins, systems using simple rules are leaving accuracy
-unused. If it does not, a one-parameter rule is the better engineering choice. The main limitation, which I state in
-advance, is that the ASSISTments data were collected under the three-in-a-row rule, so the real data cannot show that
-rule stopping too early; that is why the decisions themselves are compared in the simulation.
+learner model for Georgian classrooms, and every experiment runs inside its code and is reproducible by one command.
+For Zeno the answer splits by grain and by purpose: a moving average with its threshold set from data to decide
+mastery of a skill within a session, the state at the grain of the ideas, which Zeno already keeps, to choose what to
+practise next, and BKT on each idea as the mastery rule where the questions and the practice allow it. The thesis
+does not claim that an optimal grain exists. It says under which conditions each grain is usable, and that the
+questions, more than the model, decide it.
 
 ## Questions to expect
 
@@ -176,28 +182,39 @@ the gradual worlds, the true chance of a right answer is at least 0.9; the thres
 is reported as a check. With 0.8, BKT meets the standard in all four gradual settings once its thresholds go above
 0.9999, close to the moving average in each.
 
-**How finely should a skill be divided? How would you find the right granularity?** I would define several grains of
-the same topic, one skill against its ideas, and compare them in simulation, where the true state of each idea is
-known, by the same rule as H2: the practice each method needs before its declarations are right nine times in ten. I
-have done this once, for Zeno's times, hcf and fractions. Too broad, and BKT on the skill never meets the standard, as
-in the gradual worlds. At the right grain, on hcf with the arithmetic ideas carried in from the earlier skill, BKT on
-each idea needed about four answers fewer than the moving average at the higher learning rate, was the best calibrated
-score and named the one missing idea 47 to 79 % of the time. Too fine for the questions, on fractions where every
-question needs the same eight ideas, it was at chance on which idea the student lacks: not for want of data but
-because questions that all ask for the same ideas cannot tell them apart, which is the identifiability problem of
-student modelling at the level of the ideas. The condition is therefore a property of the questions, which a generator
-can change. The general study, several grains of several topics and validation on real answers with questions that
-isolate ideas, is future work; the one case is reported as a check made after the results. This is an old question in
-the field, from Tatsuoka's Q-matrices to learning factors analysis and the knowledge-learning-instruction framework;
-what is mine is tying H2's miscalibration to grain in a controlled comparison, on a real curriculum's generated
-questions. The ideas have prerequisite edges in Zeno's code, but the result uses only which ideas a question needs and
-the order of the skills; a prerequisite graph is future work and not part of the thesis.
+**How finely should a skill be divided? How would you find the right granularity?** The thesis answers it in
+simulation, where the true state of each component is known and the grain is under control, by the same rule as H2:
+the practice each method needs before its declarations are right nine times in ten, and its precision at the threshold
+a system would use without a truth. Too coarse, a skill of k components modelled as one, BKT at 0.95 goes from 98 %
+right with one component to about 65 % with two, a quarter with four, under a tenth with eight and almost never with
+sixteen, in proportion to how much of the skill each question leaves untested; from four components on no threshold up
+to 0.9999 meets the standard. At the right grain, BKT on each component keeps its precision at an ordinary threshold at
+every k and names the missing component, on the condition that the questions tell the components apart and the
+practice is long enough to ask about each: on fractions, sixteen ideas of which a question needs six, that takes about
+120 questions or one question in four asking for one idea alone, and within Zeno's thirty it is not met. Too fine,
+splitting a component in two or four costs answers for nothing, doubles the Brier score and degenerates the fits. So
+the right grain is a property of the model, the questions and the practice together, and a system finds it by the
+share of its components a question tests and by the evidence per component. This is an old question in the field, from
+Tatsuoka's Q-matrices to learning factors analysis and the knowledge-learning-instruction framework, and the
+ASSISTments group compared skill models of 1 to 106 skills for predicting a test score; what is mine is measuring what
+grain does to the mastery decision against a known truth, with the condition on the questions, on a real curriculum's
+generated questions. The ideas have prerequisite edges in Zeno's code, but the result uses only which ideas a question
+needs and the order of the skills; a prerequisite graph is future work and not part of the thesis.
 
-**Isn't that a second thesis?** No. It is the mechanism behind a result the thesis already has, and it is reported as
-a check beside H2, not as a hypothesis. The thesis stays a comparison of mastery rules on real and simulated answers;
-granularity is the condition under which the answer changes, and the recommendation in the discussion is already
-conditional on it: the moving average for a skill that is treated as one thing, BKT at the finer grain where the
-skill is decomposed and the questions tell the ideas apart.
+**Which of your hypotheses failed?** Two parts, and the thesis says so. In G1 I expected the simple rules to lose
+less from a coarse grain than BKT, because they assume nothing about the skill; in precision at their usual thresholds
+they lost exactly as much, since nothing that reads a sequence of answers can know whether the sequence is on one
+thing. What they kept was a threshold that could be found, up to eight components where BKT on the skill had none from
+four, and a Brier score a third of BKT's at sixteen. In G3 I expected the fits to degenerate when there are more
+components than the practice supports; they did not, and the shortage showed only in declarations that never came. The
+fits degenerated where a component was over-split, which is the sign a system could read from its own parameters.
+
+**Where does the one-grain comparison stand now?** It is the foundation. It shows that the choice of rule matters, it
+supplies the yardstick the granularity studies use, and its gradual-world result is what the coarse-grain study
+explains: a skill of several components looks gradual from outside. The recommendation for Zeno rests on both: the
+moving average, with a threshold set from data, to decide mastery of a skill within a session; the state at the grain
+of the ideas to choose what to practise next; and BKT on each idea as the mastery rule where the questions and the
+practice allow it, as on hcf now and on fractions with one isolating question in four.
 
 **What if the ASSISTments data are unsuitable?** The prediction comparison works on any logged first attempts; Zeno's
 own export produces the same format, and the simulation part does not depend on the data set.
@@ -213,9 +230,10 @@ describes it briefly; the experiment is the contribution.
 | Preliminary draft | 15 pages | the method in full, the simulation results |
 | Final thesis | 30 pages | the ASSISTments results, discussion, threats to validity, conclusion, abstracts in Georgian and English |
 
-Where it stands on 13 October: the chapters follow this scope (37 pages as a PDF), with the method in full, the
-simulation results including the check above 0.9999, the calibration of each method's score and the world of ideas,
-the discussion and the threats to validity. The ASSISTments results, the abstracts and the title page are still to come.
+Where it stands on 14 October: the chapters are reworked under the approved title (59 pages as a PDF), with the
+abstracts in Georgian and English, the method in full, the one-grain results including the check above 0.9999 and the
+calibration of each method's score, the four granularity studies with their sweeps, the discussion and the threats to
+validity. The ASSISTments results, for H1, H3 and G4 on real data, are still to come.
 
 ## Format rules to remember while writing
 
