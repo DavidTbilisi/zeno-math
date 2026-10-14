@@ -1,14 +1,13 @@
-# 2 Background and related work
+# 1 Background and related work
 
-This chapter covers the ideas the comparison rests on. Section 2.1 describes mastery learning and how deployed systems
-decide that a skill is mastered. Section 2.2 describes Bayesian Knowledge Tracing, including its form for questions
-that need several skills, and section 2.3 the simple estimators it is compared with, together with earlier comparisons
-of mastery criteria. Section 2.4 covers knowledge components and the grain of a skill model, and what earlier work has
-found about it. Section 2.5 covers how student models are judged, and section 2.6 places the other common student
-models briefly. Throughout, $c \in \{0, 1\}$ is whether an answer was right and $\sigma(x) = 1 / (1 + e^{-x})$ is the
-logistic function.
+This chapter covers the ideas the comparison rests on. Section 1.1 describes mastery learning and how deployed systems
+decide that a skill is mastered. Section 1.2 describes Bayesian Knowledge Tracing, including its form for questions
+that need several skills, the simple estimators it is compared with, together with earlier comparisons of mastery
+criteria, and, briefly, the other common student models. Section 1.3 covers knowledge components and the grain of a
+skill model, what earlier work has found about it, and how student models are judged. Throughout, $c \in \{0, 1\}$ is
+whether an answer was right and $\sigma(x) = 1 / (1 + e^{-x})$ is the logistic function.
 
-## 2.1 Mastery learning and the mastery decision
+## 1.1 Mastery learning and the mastery decision
 
 Mastery learning holds that most students can reach a high level in a subject if each unit is learnt to a set
 standard before the next one starts, and if the time each student spends varies to make that possible. Bloom's
@@ -30,9 +29,11 @@ work that builds on a skill they do not have. A rule that declares it too late s
 student could already answer, which costs time and, judging by experiments with the difficulty of practice, can cost
 motivation [@jansen2013success]. Every mastery rule trades these two errors against each other, usually through a
 threshold: a higher probability for BKT, a longer run for the streak rule. Comparing rules therefore means comparing
-them along the whole trade-off, or at a point on it that is fixed in advance, and this thesis does both (section 3.7).
+them along the whole trade-off, or at a point on it that is fixed in advance, and this thesis does both (section 2.3).
 
-## 2.2 Bayesian Knowledge Tracing
+## 1.2 Bayesian Knowledge Tracing, simple estimators and other student models
+
+### Bayesian Knowledge Tracing
 
 Bayesian Knowledge Tracing [@corbett1994] models each skill separately, as either known or not known. It is a hidden
 Markov model with two states and four parameters per skill. The first, $P(L_0)$, is the chance that the skill is
@@ -75,13 +76,13 @@ only when every skill it needs is known, and otherwise a guess. @pardos2008compo
 compensatory one on multi-skill mathematics questions and found that the conjunctive model predicted them better. In
 that model, with the skills independent given what is known of each, the chance that every needed skill is known is
 the product of their probabilities, and each skill's posterior after the answer has a closed form, so a question that
-needs $m$ skills updates all $m$ without summing over their $2^m$ joint states (section 3.2). The consequence that
+needs $m$ skills updates all $m$ without summing over their $2^m$ joint states (section 2.1). The consequence that
 matters here is that a question which needs many skills says little about any one of them: when the model is nearly
 sure that not every skill is known, it puts a right answer down to guessing and a wrong one to whichever skill is
 missing, so no single probability moves far. @xu2012subskills compared methods for tracing several subskills from such
 questions and found that how the evidence is shared among them decides how well each is traced.
 
-## 2.3 Simple estimators and earlier comparisons
+### Simple estimators and earlier comparisons
 
 The simplest estimate of whether a student has learnt a skill is the share of their answers on it that were right.
 It weighs a mistake made at the start, before any practice, as heavily as one made just now, which is wrong for a
@@ -101,7 +102,7 @@ with $0 < \alpha < 1$. A right answer moves the score a share $\alpha$ of the wa
 share towards 0, so an answer $k$ steps back carries weight proportional to $(1 - \alpha)^k$. The score can be read as
 the predicted chance of a right answer, so EMA can be judged with the same metrics as BKT. A mastery rule follows by
 declaring mastery when $s$ reaches a threshold $\theta$. The decay $\alpha$ is the only parameter apart from the
-starting value, and it is the same for every skill. Proposition 1 in section 3.3 shows that the streak rule is exactly
+starting value, and it is the same for every skill. Proposition 1 in section 2.1 shows that the streak rule is exactly
 an EMA rule for some settings of $\alpha$, $\theta$ and $s_0$. Neither the EMA nor the streak rule assumes anything
 about what a skill is: they read a sequence of answers, whatever the sequence is on. This is why the granularity
 studies compare them with BKT at every grain.
@@ -116,7 +117,35 @@ fixing a single comparison and its verdict rule in advance, in testing predictio
 set, and in measuring decisions in simulated worlds built to break BKT's assumptions in stated ways. Neither earlier
 study varied the grain of the skill.
 
-## 2.4 Knowledge components and the grain of a skill model
+### Other student models
+
+Three other families of student model are common, and two of them appear in this thesis only as reference rows.
+@abdelrahman2023survey survey knowledge tracing as a whole, from BKT to the deep models that now predict best on most
+benchmark data sets.
+
+The Elo rating, developed to rate chess players [@elo1978], treats a student and a question as two players and a right
+answer as a win for the student [@pelanek2016elo]. After each answer, the student's ability and the question's
+difficulty move by the difference between the outcome and the predicted chance $\sigma(\theta - b)$. It is an online
+approximation of the Rasch model [@rasch1960] that also follows learning, it needs no training phase, and Math Garden
+uses it to choose questions near a target chance of success [@klinkenberg2011]. Zeno's learner model is of this kind
+(Appendix A).
+
+Performance Factors Analysis (PFA) [@pavlik2009pfa] is a logistic regression on a student's earlier right and wrong
+answers on each skill, with weights fitted on training students. It often predicts as well as BKT or better
+[@pavlik2009pfa].
+
+Deep knowledge tracing [@piech2015dkt] replaces the hand-built model with a recurrent neural network over the whole
+history of answers. It predicted much better than BKT in its original evaluation, though much of the gap closes when
+BKT is given forgetting and differences between students [@khajah2016]. It needs a large training set and its internal
+state is much harder to interpret than BKT's or a moving average, and it is not what deployed systems use to decide
+mastery, so it is not compared here.
+
+The Elo model and PFA are already implemented in the evaluation code this thesis uses, and they are reported in the
+prediction table as points of reference. They are not part of any hypothesis.
+
+## 1.3 The grain of a skill model and how models are judged
+
+### Knowledge components and the grain of a skill model
 
 A knowledge component, in the framework of @koedinger2012kli, is "an acquired unit of cognitive function or structure
 that can be inferred from performance on a set of related tasks": the unit a student learns, which may or may not be
@@ -149,10 +178,10 @@ questions each component is asked about $n / k$ times, and where the questions c
 data say nothing about either on its own, which is the identifiability problem [@beck2007identifiability] at the level
 of the components. @xu2012subskills found exactly this in tracing subskills from questions that need several at once.
 What this thesis adds is a measurement of both failures in the same terms, the precision of declarations and the
-threshold each method needs, with the methods of section 2.3 beside BKT, and the condition on the questions under which
+threshold each method needs, with the methods of section 1.2 beside BKT, and the condition on the questions under which
 the finer grain works.
 
-## 2.5 How student models are judged
+### How student models are judged
 
 A student model that gives probabilities is judged by how good those probabilities are, and @pelanek2015metrics
 reviews the metrics in use and the ways each can mislead. With $p_i$ the prediction and $c_i$ the outcome of answer
@@ -186,35 +215,7 @@ cannot settle which declaration was right, because a real student's true state i
 prediction comparisons (H1, G4) are made on real data and the comparisons of decisions (H2, G1 to G3) on simulated
 students whose true state is known.
 
-## 2.6 Other student models
-
-Three other families of student model are common, and two of them appear in this thesis only as reference rows.
-@abdelrahman2023survey survey knowledge tracing as a whole, from BKT to the deep models that now predict best on most
-benchmark data sets.
-
-The Elo rating, developed to rate chess players [@elo1978], treats a student and a question as two players and a right
-answer as a win for the student [@pelanek2016elo]. After each answer, the student's ability and the question's
-difficulty move by the difference between the outcome and the predicted chance $\sigma(\theta - b)$. It is an online
-approximation of the Rasch model [@rasch1960] that also follows learning, it needs no training phase, and Math Garden
-uses it to choose questions near a target chance of success [@klinkenberg2011]. Zeno's learner model is of this kind
-(Appendix A).
-
-Performance Factors Analysis (PFA) [@pavlik2009pfa] is a logistic regression on a student's earlier right and wrong
-answers on each skill, with weights fitted on training students. It often predicts as well as BKT or better
-[@pavlik2009pfa].
-
-Deep knowledge tracing [@piech2015dkt] replaces the hand-built model with a recurrent neural network over the whole
-history of answers. It predicted much better than BKT in its original evaluation, though much of the gap closes when
-BKT is given forgetting and differences between students [@khajah2016]. It needs a large training set and its internal
-state is much harder to interpret than BKT's or a moving average, and it is not what deployed systems use to decide
-mastery, so it is not compared here.
-
-The Elo model and PFA are already implemented in the evaluation code this thesis uses, and they are reported in the
-prediction table as points of reference. They are not part of any hypothesis.
-
-## 2.7 Summary
-
-Systems decide mastery either with a fitted model, of which BKT is the standard, or with a simple rule on recent
+In sum, systems decide mastery either with a fitted model, of which BKT is the standard, or with a simple rule on recent
 answers, of which the streak rule is the most common. BKT gives a probability that the student knows the skill, but
 it rests on assumptions that real learning breaks, and its fitted parameters are not always identifiable. The EMA is a
 simple estimator that also gives a probability, so it can be compared with BKT on prediction, and the streak rule is

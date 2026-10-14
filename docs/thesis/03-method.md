@@ -1,17 +1,19 @@
-# 3 Method
+# 2 Method
 
-This chapter sets out how the research question is answered. Section 3.1 defines grain, components and the relation
-between the model's grain and the learners'. Section 3.2 defines the methods compared, and section 3.3 proves two
-results that follow from the definitions alone. Section 3.4 states the hypotheses: those of the comparison at one grain,
-which is the foundation, and those of the four granularity studies. Section 3.5 describes the data, real and simulated,
-section 3.6 how each method is fitted, and section 3.7 how each hypothesis is evaluated. Section 3.8 explains where the
-result fits in Zeno.
+This chapter sets out how the research question is answered. Section 2.1 defines grain, components and the relation
+between the model's grain and the learners', defines the methods compared, proves two results that follow from the
+definitions alone, and explains where the question sits in Zeno. Section 2.2 states the hypotheses, those of the
+comparison at one grain, which is the foundation, and those of the four granularity studies, and describes the data,
+real and simulated, on which they are tested. Section 2.3 describes how each method is fitted and how each hypothesis
+is evaluated.
 
-## 3.1 Grain, components and questions
+## 2.1 Grain, the methods compared and what can be proved
+
+### Grain, components and questions
 
 A topic such as fractions is divided, for modelling, into some number of components, and every question on the topic
 needs some of them. The number of components and the mapping from questions to components together make up the grain of
-the model (section 2.4). At the coarsest grain the topic is one component and every question needs it. At a finer grain
+the model (section 1.3). At the coarsest grain the topic is one component and every question needs it. At a finer grain
 a question may need one component or several, and two questions may need different ones. The mapping is fixed by
 whoever writes the questions or tags the data: in Zeno a generator decides what a question asks for, and in a data set
 the skill tags record it.
@@ -30,19 +32,19 @@ not with a slip of 0.1, since only a student who knows every component answers r
 is fixed in advance and does not move with the model's grain, so methods at different grains are judged against the
 same truth.
 
-## 3.2 The methods compared
+### The methods compared
 
 All the methods read one student's answers on one skill, in the order given, and after each answer say whether the
 skill is now mastered. Each declares mastery the first time its condition holds and does not take the declaration
 back.
 
-BKT on the skill (section 2.2) has four parameters per skill: the chance the skill is known at the start, the chance of
+BKT on the skill (section 1.2) has four parameters per skill: the chance the skill is known at the start, the chance of
 learning it at each question, the chance of a right guess and the chance of a slip. They are fitted on training students
-(section 3.6). After each answer the model updates its probability that the student knows the skill, then allows for
+(section 2.3). After each answer the model updates its probability that the student knows the skill, then allows for
 learning from the question. Mastery is declared when that probability reaches a threshold $\theta$; the usual choice is
 0.95 [@corbett1994].
 
-EMA (section 2.3) has one decay rate $\alpha$, the same for all skills, and a starting score $s_0$, both set from
+EMA (section 1.2) has one decay rate $\alpha$, the same for all skills, and a starting score $s_0$, both set from
 training students. After each answer the score moves a share $\alpha$ of the way towards 1 if the answer was right and
 towards 0 if it was wrong. Mastery is declared when the score reaches a threshold $\theta$.
 
@@ -69,9 +71,7 @@ skill starts from what that skill showed, rather than from the fitted starting p
 BKT and EMA both give a probability of a right answer before every answer, so both can be judged as predictors (H1,
 G4). All the methods make mastery decisions, so all can be judged as decision rules (H2, H3, G1 to G3). Two other
 student models already implemented in Zeno's evaluation code, the Elo model and Performance Factors Analysis (section
-2.6), are reported as reference rows in the prediction table and are not part of any hypothesis.
-
-## 3.3 What can be proved
+1.2), are reported as reference rows in the prediction table and are not part of any hypothesis.
 
 Two results follow from the definitions and need no data. The first explains in what sense the streak rule is a
 special case of EMA; the second explains why a simulation in which students learn exactly as BKT assumes cannot be
@@ -134,12 +134,25 @@ grain does: a skill made of several components, each a BKT process, is not itsel
 for BKT on each component and not for BKT on the skill. Whether, and by how much, BKT on the skill then falls short is
 what G1 measures.
 
-The simulated BKT world (section 3.5) satisfies the proposition's conditions in its plain form: one question level, a
+The simulated BKT world (section 2.2) satisfies the proposition's conditions in its plain form: one question level, a
 constant chance of learning, no transfer between skills and no forgetting. Students' starting chance of knowing a
 skill varies with their ability, but nothing else depends on ability, so each skill's answers still follow a single
 BKT process whose starting probability is the average over students.
 
-## 3.4 Hypotheses
+### Where this sits in Zeno
+
+Zeno's practice engine (Appendix A) chooses each student's next question from a learner model of the Elo kind, which
+keeps an ability for every student on every skill and a difficulty for every question. Its adaptive policy skips a
+skill once it counts as mastered, which it does when the model gives a hard question on that skill at least an 80 %
+chance of a right answer (`MASTERED_AT` in `src/model/policy.ts`). That rule was set by judgement, not measured. On the
+three skills with a concept graph the policy also keeps one probability per idea for each student, moved by every
+stored answer with the conjunctive step of section 2.1, and on fractions it asks the form for the idea the student is
+least likely to know (`src/model/ideaState.ts`). Zeno therefore already holds a state at two grains, the skill and the
+idea. The question this thesis asks is the one that design raised: which rule should decide mastery, and at which of
+the two grains. Zeno's own Elo-based rule is not one of the methods compared, because it depends on question levels
+that the ASSISTments data do not have. The conclusion draws the consequences for it.
+
+## 2.2 Hypotheses and data
 
 The hypotheses and the test for each were written down, in the thesis outline in the project repository, before the
 results were computed. H1 to H3 are the foundation: the methods compared at the grain the data or the simulation gives.
@@ -175,13 +188,13 @@ The comparison in H2 was first set at equal cost: each method's threshold chosen
 the streak rule with $N = 3$, and the precision of each compared. A first simulated run showed that in the gradual
 worlds almost no student has truly mastered a skill after that many answers, so every method was mostly wrong there
 and the comparison could not tell them apart. The comparison was moved to equal precision, the share of declarations
-that are right, which has a meaning in every world. This change was made after seeing results, and section 5.3
+that are right, which has a meaning in every world. This change was made after seeing results, and section 3.3
 discusses it as a threat to validity. The equal-cost comparison and the full trade-off between cost and precision are
 still reported, as description.
 
 H3, mastery decisions on real data, is exploratory. It describes how often BKT, EMA and the streak rule agree on the
 ASSISTments data, and the share of right answers among the next answers after each method declares mastery. It is
-exploratory because the data were collected under the streak rule itself (section 5.3).
+exploratory because the data were collected under the streak rule itself (section 3.3).
 
 ### The granularity studies
 
@@ -225,7 +238,8 @@ loses less than BKT from coarsening, since it conditions on fewer answers; how t
 move with the grain; and how many fits are degenerate at each grain. The thesis does not claim that an optimal grain
 exists; it reports where each measure improves or worsens and under what condition.
 
-## 3.5 Data
+The hypotheses are tested on one public data set of real answers and on three kinds of simulated students, whose true
+state is recorded after every answer.
 
 ### ASSISTments 2009–2010
 
@@ -241,9 +255,9 @@ problems only, not the scaffolding questions that a wrong answer opens, and only
 result of 0 or 1; the corrected file writes a missing value as NA, which the importer reads as missing. It puts the
 answers in the order they were given, by the log's order identifier, and keeps each problem's identifier. Where a file
 has a row per skill, a problem tagged with several skills counts once for each skill, as in most work on knowledge
-tracing; this gives the same answer weight on each of its skills, and section 5.3 returns to it. The corrected file
+tracing; this gives the same answer weight on each of its skills, and section 3.3 returns to it. The corrected file
 has one row per problem, which carries the first of the problem's skills, so on it every problem is one observation. The importer also
-keeps each student's class, so the bootstrap can resample whole classes as a robustness check (section 3.7). A student
+keeps each student's class, so the bootstrap can resample whole classes as a robustness check (section 2.3). A student
 who answered in several classes is counted in the one in which they answered most of the kept problems. For the
 mastery methods the answers are grouped into sequences, one per student and skill, which this thesis calls practices.
 
@@ -329,15 +343,17 @@ and the length of each practice can be set to 30, 60 or 120 questions. The world
 learner is exactly one idea short of mastery, whether the idea with the lowest probability under BKT on each idea is
 that one, which is what a system would need to know to choose the next question.
 
-## 3.6 Fitting
+## 2.3 Fitting and evaluation
+
+### Fitting
 
 Every parameter and threshold is chosen on training students only. A fifth of the students are held out, chosen by a
 hash of their identifier and a seed, so the split is the same on every run and no student's answers are split between
-the two sides. Seed 1 is used throughout, and for H1 seeds 2 to 5 as well (section 3.7).
+the two sides. Seed 1 is used throughout, and for H1 seeds 2 to 5 as well (section 2.3).
 
 BKT is fitted for each skill separately by a search over a grid: the starting probability from 0.05 to 0.95 in steps
 of 0.1, the learning probability at 0.01, 0.03, 0.05, 0.1, 0.15, 0.2 and 0.3, and the guess and slip probabilities
-each from 0.05 to 0.3 in steps of 0.05. The bound of 0.3 on guess and slip rules out degenerate fits (section 2.2).
+each from 0.05 to 0.3 in steps of 0.05. The bound of 0.3 on guess and slip rules out degenerate fits (section 1.2).
 For each skill the combination that makes the training students' answers most likely is kept. A skill that no
 training student practised uses one set of parameters fitted on all skills together. At every grain the same search
 runs on whatever the skills are at that grain, so at the coarsest grain of G4 one set of parameters is fitted for all
@@ -363,8 +379,6 @@ BKT has four parameters per skill and EMA two in all, so BKT has more room to fi
 and the room grows with the number of components. Judging every method on held-out students is what makes the
 comparison fair.
 
-## 3.7 Evaluation
-
 ### Prediction (H1, G4)
 
 Both models are fitted on the training students and then predict every held-out answer in order, each answer before
@@ -375,7 +389,7 @@ are reported as reference rows.
 
 The difference between two models in mean log-loss per answer is computed on the same held-out answers, so the
 comparison is paired. Its 95 % interval comes from 10,000 bootstrap resamples of whole students, because one
-student's answers are not independent of each other, and the verdict follows the rule in section 3.4 (`npm run h1`,
+student's answers are not independent of each other, and the verdict follows the rule in section 2.2 (`npm run h1`,
 `npm run grain`). Split seed 1 decides H1 and G4. For H1, seeds 2 to 5 show whether the result depends on which
 students happened to be held out. Students in one class share a teacher and lessons, so their answers are related too,
 and resampling students as if they were independent makes the interval too narrow. As a robustness check, not a second
@@ -400,7 +414,7 @@ precision there is at least 90 % (`compareAtPrecision` in `src/model/mastery.ts`
 EMA run from 0.50 to 0.99 in steps of 0.01, then more finely up to 0.9999, since BKT's probability crowds just below 1
 and only the finest steps make it wait longer. For the streak rule $N$ runs from 1 to the length of the practice. After
 the results of H2, the search for BKT and EMA was continued above 0.9999, to $1 - 10^{-15}$, as a check that is reported
-apart from H2's verdict (section 4.2). The chosen rules are then applied to the held-out students. For each, the cost
+apart from H2's verdict (section 3.1). The chosen rules are then applied to the held-out students. For each, the cost
 has a 95 % interval from 2,000 bootstrap resamples of held-out students, and so does the difference between its cost
 and BKT's, which is the number of answers BKT saves, and, in the granularity worlds, the difference between BKT on each
 component afresh and carried, which is what carrying saves.
@@ -415,7 +429,7 @@ EMA's score and, at the finer grain, the product of the components' probabilitie
 had mastered the skill at that moment, with the Brier score and ten calibration bins for each (`masteryCalibration` in
 `src/model/mastery.ts`).
 
-For G2, the world of ideas also records whether the missing idea is found, as section 3.5 describes, and for G3 the
+For G2, the world of ideas also records whether the missing idea is found, as section 2.2 describes, and for G3 the
 world of components counts the share of fitted parameter sets that are degenerate or at the grid's edge, and, for each
 family of rules, the cheapest threshold meeting the standard on the training learners beside the one the held-out
 learners would have chosen, with the precision the training threshold reaches held out.
@@ -428,16 +442,3 @@ or neither does, and where both do, how far apart their declarations are. For ea
 among the next three answers after it declares mastery is reported, where the practice has such answers. For G4 the
 same three rules are run at each grain, and the share declared, the mean answers to a declaration and the share right
 afterwards are compared across grains.
-
-## 3.8 Where this sits in Zeno
-
-Zeno's practice engine (Appendix A) chooses each student's next question from a learner model of the Elo kind, which
-keeps an ability for every student on every skill and a difficulty for every question. Its adaptive policy skips a
-skill once it counts as mastered, which it does when the model gives a hard question on that skill at least an 80 %
-chance of a right answer (`MASTERED_AT` in `src/model/policy.ts`). That rule was set by judgement, not measured. On the
-three skills with a concept graph the policy also keeps one probability per idea for each student, moved by every
-stored answer with the conjunctive step of section 3.2, and on fractions it asks the form for the idea the student is
-least likely to know (`src/model/ideaState.ts`). Zeno therefore already holds a state at two grains, the skill and the
-idea. The question this thesis asks is the one that design raised: which rule should decide mastery, and at which of
-the two grains. Zeno's own Elo-based rule is not one of the methods compared, because it depends on question levels
-that the ASSISTments data do not have. Chapter 6 draws the consequences for it.
