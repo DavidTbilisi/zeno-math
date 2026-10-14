@@ -179,6 +179,8 @@ export type Frac = { n: number; d: number };
 export const FRACTION_PARTS = 12;
 /** The most parts the bars are cut into for "same-size pieces" before the lines get too close to see. */
 export const SAME_PIECES_MAX = 48;
+/** The shaded parts of the first and the second fraction. */
+export const FRACTION_FILLS = ["#a5d8ff", "#ffc9c9"] as const;
 
 const gcdOf = (a: number, b: number): number => (b ? gcdOf(b, a % b) : a);
 

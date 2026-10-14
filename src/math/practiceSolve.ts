@@ -9,6 +9,12 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
   switch (sol.kind) {
     case "compare":
       return (await import("./compare")).renderCompare(s);
+    case "fractionBars": {
+      // The bars, with the written steps beneath.
+      const spec = s as import("./compare").FractionBarsSpec;
+      const steps = spec.steps?.length ? (await import("./practice")).renderSteps(spec.steps) : null;
+      return (await import("./compare")).renderFractionBars(spec, steps);
+    }
     case "model":
       return (await import("./models")).renderModel(s);
     case "algebra":
