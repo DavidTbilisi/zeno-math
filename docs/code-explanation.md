@@ -1924,7 +1924,7 @@ Builds a fresh piece (`:21-28`). It asks `convertToExcalidrawElements` for a `re
 
 #### Kinds, states, sizes (`:149-217`)
 - `LiveParam = { v, min, max }`; `LiveGraphState = { fns: {expr, color}[], params: Record<string, LiveParam>, view: {xMin,xMax,yMin,yMax}, trace, tangent, traceX }`. `DEFAULT_LIVE_GRAPH` is `a*x^2 + b*x + c` with `a=1, b=0, c=0` on −5..5 and view −10..10 × −5.5..5.5 (`:161-168`).
-- `LiveStates` is the master record of the ten kinds (`:172-183`):
+- `LiveStates` is the master record of the eleven kinds (`:172-183`):
   - `clock: { minutes, showTime, snap }`
   - `dice: { count, faces: number[], history: number[] }`
   - `spinner: { sections, angle, result, counts }`
@@ -1935,7 +1935,8 @@ Builds a fresh piece (`:21-28`). It asks `convertToExcalidrawElements` for a `re
   - `dots: { k, top, bottom }`
   - `graph: LiveGraphState`
   - `chance: { device, tally, view: "bars" | "time", relative, theory, focus, last }`
-- `LIVE_SIZES`: design size in board pixels of each piece (`:187-198`): clock 300×432, dice 360×236, spinner 300×372, coin 260×300, fractions 320×372, tenFrame 340×300, hundred 400×486, dots 520×600, graph 640×560, chance 680×500. "a piece that is resized is scaled to fit."
+  - `compare: { a, b, joined, guess: "<" | "=" | ">" | null }` (towers of 0 to `COMPARE_MAX` = 10 blocks)
+- `LIVE_SIZES`: design size in board pixels of each piece (`:187-198`): clock 300×432, dice 360×236, spinner 300×372, coin 260×300, fractions 320×372, tenFrame 340×300, hundred 400×486, dots 520×600, graph 640×560, chance 680×500, compare 380×530. "a piece that is resized is scaled to fit."
 - `LIVE_KINDS`, `isLiveKind` (own-property check on `LIVE_SIZES`).
 - `initialLive(kind)`: a table of starting states, `structuredClone`d so each piece gets its own arrays (`:203-217`). Clock starts at 10:10 (hands apart), dice at `[3, 5]`, spinner 4 sections at 30°, chance a d6 with focus 5 (the six). The test pins that every start state survives `JSON.parse(JSON.stringify(...))`, that two calls give different objects, and that array lengths agree with their counts (`tests/live.test.ts:131-145`).
 
@@ -1975,6 +1976,9 @@ A 10×10 grid of 38-px cells numbered 1–100; clicking a cell toggles it in or 
 
 #### `Dots` (`:379-437`)
 `DOT_ROWS = [3, 4, 5, 6, 10]`. The square size is `min(92, (500 − 20 − (k − 1)·gap) / k)` so ten squares still fit (`:388`). Column headers show `k + i + 1` (the number each filled square represents). Two rows of squares; clicking square `i` of a row sets that row's dots with `tapSquare` (`:390-399`). Under them four numbered step lines (①–④) fill locale templates with the parts of `dotProduct` and bold the result, then the final `a × b = product` (`:403-408, :429-433`). The toolbar's select changes `k` and clears both rows.
+
+#### `Compare`
+Two towers of 0 to 10 blocks (60×24, rainbow colours, studs on the top block) over three cards: the left number, the sign and the right number. Clicking a block or an empty dashed slot sets that tower's height (`tapSquare`, so the top block again takes it away); steppers under the cards do the same, and any change clears the guess. The `<`, `=`, `>` buttons set `guess`: the middle card shows it green when right and red when wrong. "Join with pencils" sets `joined`, and a local animation (1.1 s) first slides both towers from the floor to the middle line (`towerSpan`, the `centred` argument going 0 → 1), then draws one pencil from top to top and one from bottom to bottom; centred towers make the pencils the sign, parallel when the numbers are equal. With the pencils down and no guess, the middle card shows the sign in blue. The hint line says the sentence ("5 is greater than 2") once the guess is right or the pencils are down. 🎲 picks two new numbers, equal one time in five.
 
 ### src/live/Chance.tsx — the chance experiment
 
@@ -2138,7 +2142,7 @@ Palette from Excalidraw's own ("its dark mode turns them round"): `GRID`, `MUTED
 #### The 82 entries of `SHAPES` (`:858-941`)
 Ten live previews in group `live`, then 72 drawn shapes in seven groups. Every entry builds a `Piece[]` (never SVG; `ShapesPanel.toElements` converts to Excalidraw skeletons).
 
-**live** (previews; the inserted element is `liveElement(kind)`): `liveClock` (reuses `clock`), `liveDice` (`diePreview`: a 3 and a 5), `liveSpinner` (reuses `spinner`), `liveCoin` (`coinPreview`: gold disc with "1"), `liveFractions` (`fractionCircle(4)` with the first quarter filled), `liveTenFrame` (frame with 3 red + 2 yellow counters), `liveHundred` (every third cell shaded under a 10×10 grid), `liveDots` (two rows of five, 3 and 1 filled), `liveGraph` (axes, a parabola `y = x² − 1` clipped at the top, a slider bar with a knob labelled `a`), `liveChance` (six bars, a dashed red theory line, labels 1–6) (`:803-868`).
+**live** (previews; the inserted element is `liveElement(kind)`): `liveClock` (reuses `clock`), `liveDice` (`diePreview`: a 3 and a 5), `liveSpinner` (reuses `spinner`), `liveCoin` (`coinPreview`: gold disc with "1"), `liveFractions` (`fractionCircle(4)` with the first quarter filled), `liveTenFrame` (frame with 3 red + 2 yellow counters), `liveHundred` (every third cell shaded under a 10×10 grid), `liveDots` (two rows of five, 3 and 1 filled), `liveGraph` (axes, a parabola `y = x² − 1` clipped at the top, a slider bar with a knob labelled `a`), `liveChance` (six bars, a dashed red theory line, labels 1–6), `liveCompare` (`comparePreview`: towers of 5 and 2 centred on one line, two pencils joining their tops and bottoms, `5 > 2` beneath) (`:803-868`).
 
 **measure** (6): `ruler` — 10 cm at 40 px/cm, 101 mm ticks of three heights in one comb, numerals at `10 + 40c`, "cm" (`:129-142`; test pins the numerals and their x). `protractor` — half disc r 180, 5° ticks, inner arc, outer scale 0→180 anticlockwise from the right and inner scale 180→0 in muted grey, labels clamped above the base, centre mark (`:144-164`). `setSquare45` — right isosceles 220, right-angle mark, two 45° labels. `setSquare30` — 300 × 300·tan 30°, labels 60° and 30° (angles pinned by test). `protractor360` — full circle, 72 ticks, cross-hairs, anticlockwise outer and clockwise inner scales. `clock` — r 120, sixty ticks via comb at `90 − 6m`, numerals, hands at ten past ten "apart and both easy to take hold of" (`:200-213`; test pins 12 above 6 and 3 right of 9).
 

@@ -855,6 +855,22 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function comparePreview(): Piece[] {
+  const [w, h, mid, gap] = [40, 16, 40, 60];
+  const colors = [FILL.red, FILL.yellow, FILL.green, FILL.violet, FILL.blue];
+  const tower = (x: number, n: number) => Array.from({ length: n }, (_, i) => rect(x, mid + (n / 2 - 1 - i) * h, w, h, { fill: colors[i], width: 1 }));
+  const right = w + gap;
+  return [
+    ...tower(0, 5),
+    ...tower(right, 2),
+    seg([w, mid - 2.5 * h], [right, mid - h], { color: "#8d5a3b", width: 4 }),
+    seg([w, mid + 2.5 * h], [right, mid + h], { color: "#5f3dc4", width: 4 }),
+    text(w / 2, 104, "5", 24),
+    text(w + gap / 2, 104, ">", 24),
+    text(right + w / 2, 104, "2", 24),
+  ];
+}
+
 export const SHAPES: readonly ShapeDef[] = [
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
@@ -866,6 +882,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDots", group: "live", build: dotsPreview, live: "dots" },
   { id: "liveGraph", group: "live", build: graphPreview, live: "graph" },
   { id: "liveChance", group: "live", build: chancePreview, live: "chance" },
+  { id: "liveCompare", group: "live", build: comparePreview, live: "compare" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
