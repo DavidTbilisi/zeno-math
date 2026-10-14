@@ -5,22 +5,22 @@ commit, because every random choice is seeded. The run times below were measured
 
 | Result | Command | Time |
 |---|---|---|
-| ASSISTments import (section 4.1) | `npm run import-assistments -- data/skill_builder_data.csv --out data/assistments.json` | ~10 s |
-| Prediction on ASSISTments (Table 4.2) | `npm run model -- --observations data/assistments.json --fit --calibration bins.csv` | ~1.5 min |
-| H1, the paired bootstrap (section 4.2) | `npm run h1 -- --observations data/assistments.json` | ~4.5 min |
-| H2, settings and comparison (Tables 4.1, 4.3 to 4.5) | `npm run mastery -- --curves mastery-curves.csv` | ~2.5 min |
-| H2 with mastery at 0.8 (Table 4.6) | `npm run mastery -- --worlds elo,irt2pl --mastered-at 0.8` | ~1 min |
-| BKT above 0.9999, mastery at 0.9 (Table 4.7) | `npm run mastery -- --worlds elo,irt2pl --beyond` | ~1.5 min |
-| BKT above 0.9999, mastery at 0.8 (Table 4.7) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.8` | ~1.5 min |
-| Calibration of the scores (Table 4.8) | `npm run mastery -- --calibration bins.csv` | ~3 min |
-| H3 on ASSISTments (Table 4.9) | `npm run mastery -- --observations data/assistments.json` | ~0.5 min |
-| G1, the world of components (Table 4.10) | `npm run atoms -- --atoms 1,2,4,8,16 --per-question 1,2,4` | ~25 min |
-| G1, the world of ideas (Table 4.11) | `npm run ideas` | ~6 min |
-| G2, the isolating share against length (Table 4.12) | `npm run ideas -- --skills fractions --isolate 0,0.25,0.5,1 --length 30,60,120` | ~45 min |
-| G3, over-splitting (Table 4.13) | `npm run atoms -- --atoms 2 --split 1,2,4` | ~5 min |
-| G3, components against practice length (Table 4.14) | `npm run atoms -- --atoms 1,2,4,8,16 --length 120` | ~40 min |
-| G4 on ASSISTments (Table 4.15) | `npm run grain -- --observations data/assistments.json` | ~2.5 min |
-| G4 on the simulated class (Table 4.16) | `npm run grain -- --simulate` | ~1 min |
+| ASSISTments import (section 3.1) | `npm run import-assistments -- data/skill_builder_data.csv --out data/assistments.json` | ~10 s |
+| Prediction on ASSISTments (Table 3.2) | `npm run model -- --observations data/assistments.json --fit --calibration bins.csv` | ~1.5 min |
+| H1, the paired bootstrap (section 3.1) | `npm run h1 -- --observations data/assistments.json` | ~4.5 min |
+| H2, settings and comparison (Tables 3.1, 4.3 to 4.5) | `npm run mastery -- --curves mastery-curves.csv` | ~2.5 min |
+| H2 with mastery at 0.8 (Table 3.6) | `npm run mastery -- --worlds elo,irt2pl --mastered-at 0.8` | ~1 min |
+| BKT above 0.9999, mastery at 0.9 (Table 3.7) | `npm run mastery -- --worlds elo,irt2pl --beyond` | ~1.5 min |
+| BKT above 0.9999, mastery at 0.8 (Table 3.7) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.8` | ~1.5 min |
+| Calibration of the scores (Table 3.8) | `npm run mastery -- --calibration bins.csv` | ~3 min |
+| H3 on ASSISTments (Table 3.9) | `npm run mastery -- --observations data/assistments.json` | ~0.5 min |
+| G1, the world of components (Table 3.10) | `npm run atoms -- --atoms 1,2,4,8,16 --per-question 1,2,4` | ~25 min |
+| G1, the world of ideas (Table 3.11) | `npm run ideas` | ~6 min |
+| G2, the isolating share against length (Table 3.12) | `npm run ideas -- --skills fractions --isolate 0,0.25,0.5,1 --length 30,60,120` | ~45 min |
+| G3, over-splitting (Table 3.13) | `npm run atoms -- --atoms 2 --split 1,2,4` | ~5 min |
+| G3, components against practice length (Table 3.14) | `npm run atoms -- --atoms 1,2,4,8,16 --length 120` | ~40 min |
+| G4 on ASSISTments (Table 3.15) | `npm run grain -- --observations data/assistments.json` | ~2.5 min |
+| G4 on the simulated class (Table 3.16) | `npm run grain -- --simulate` | ~1 min |
 | Proposition 1 and 2 checks | `npm test` (`tests/mastery.test.ts`) | ~4 min for the whole suite |
 | The thesis as a PDF | `npm run thesis-pdf` | ~1 min |
 

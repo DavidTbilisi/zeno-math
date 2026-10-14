@@ -14,7 +14,7 @@ sansfont: "Noto Sans"
 monofont: "Liberation Mono"
 mainfontfallback: ["Noto Sans Math:", "Noto Serif Georgian:", "Noto Sans Symbols 2:", "Noto Sans Symbols:"]
 toc: true
-toc-depth: 2
+toc-depth: 1
 linkcolor: blue
 urlcolor: blue
 link-citations: true

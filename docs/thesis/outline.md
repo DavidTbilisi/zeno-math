@@ -26,7 +26,10 @@ and prediction quality where it is not (real data). *Reliability* is whether a m
 says (calibration), whether the threshold it needs stays put from one setting to another, and whether its decisions
 survive a change of grain.
 
-**Status of the chapter drafts.** The chapters `00-abstract.md` to `06-conclusion.md` were reworked under the approved
+**Status of the chapter drafts.** The thesis has three numbered chapters, Background (1), Method (2) and Results and
+discussion (3), each with three subchapters, with the introduction and the conclusion outside the numbering, as the
+department allows at most three chapters of two or three subchapters each; the draft was folded into this shape on
+2026-10-14. The chapters `00-abstract.md` to `05-conclusion.md` were reworked under the approved
 title on 2026-10-14: the introduction and background open on grain, the method and results carry the granularity
 studies G1 to G4 with the sweeps' numbers, and the discussion and conclusion answer the research question. The
 ASSISTments results (H1, H3, G4 on real data) were added on 2026-10-14 from the corrected file, at commit 3633cc1: H1
@@ -219,7 +222,7 @@ stated for the sweeps that have not yet been run.
   48.5 %, 67.7 %, 80.0 %, right after 77.2 %, 71.5 %, 72.2 %. Same pattern as the simulated class (Table 4.16), there
   with inconclusive intervals.
 
-## 1. Introduction
+## Introduction (not numbered)
 
 - **The problem.** Mastery learning [@bloom1984] needs a decision: has this student learnt this skill? Every
   adaptive practice system makes it (Zeno's in `src/model/policy.ts`). Deployed systems use simple rules, research
@@ -237,10 +240,10 @@ stated for the sweeps that have not yet been run.
     on the questions under which a finer grain is usable (G1 to G3);
   - the same answers modelled at three grains on a public data set, with one pre-specified test (G4);
   - a practical answer for a real system, and open deterministic code for all of it (Appendix B).
-- **What is not claimed:** that nobody has studied grain (they have, section 2.4), or that an optimal grain exists in
+- **What is not claimed:** that nobody has studied grain (they have, section 1.3), or that an optimal grain exists in
   general; the thesis reports under which conditions a grain is usable.
 
-## 2. Background
+## Chapter 1. Background
 
 - **Mastery learning** [@bloom1984] and how mastery is decided in practice: Cognitive Tutors at P(known) ≥ 0.95
   [@corbett1994], ASSISTments skill builders at three in a row [@feng2009assistments], Khan Academy [@khanmastery].
@@ -259,21 +262,21 @@ stated for the sweeps that have not yet been run.
 - **Judging student models:** log-loss, RMSE, AUC, calibration [@pelanek2015metrics; @fawcett2006; @brier1950];
   splits by student. **Other models** (Elo, PFA, DKT) in one paragraph each, as context.
 
-## 3. Method
+## Chapter 2. Method
 
-### 3.1 Definitions: grain, components, questions
+### Definitions: grain, components, questions (draft section 2.1)
 
 A topic, the components it is divided into, the mapping from questions to components (which a generator fixes and
 a data set's tags record), and the three relations between the modelled grain and the grain at which learners learn:
 coarser, equal, finer. Mastery of a skill at any grain: every component the skill's questions can need is known.
 
-### 3.2 The methods and the propositions
+### The methods and the propositions (draft section 2.1)
 
-As in the table above; Propositions 1 and 2 with proofs (section 3.2 of the draft). BKT per component, conjunctive,
+As in the table above; Propositions 1 and 2 with proofs (section 2.1 of the draft). BKT per component, conjunctive,
 with the closed-form posterior (`conjunctiveStep` in `src/model/ideaState.ts`), the mistake-blame form and the
 carried form.
 
-### 3.3 Data
+### Data (draft section 2.2)
 
 - **ASSISTments 2009–2010** [@assistments2010data], as imported (`npm run import-assistments`); the three grains of
   G4 from the same rows: skill tags, topic areas, one skill. Kept, from the corrected file (346,860 rows): 259,399
@@ -290,12 +293,12 @@ carried form.
   - the ideas world (`src/model/ideas.ts`): fractions and its arithmetic as sixteen ideas (`conceptGraph.ts`), asked
     by Zeno's own generators, with the share of isolating questions as a setting [to add as a sweep].
 
-### 3.4 Fitting and thresholds
+### Fitting and thresholds (draft section 2.3)
 
 As in the draft (grid-search BKT with guess and slip under 0.3, EMA's α by log-loss, every threshold chosen on training
 learners), applied per component where the grain is finer. Record degenerate fits.
 
-### 3.5 Evaluation
+### Evaluation (draft section 2.3)
 
 - **Prediction** (H1, G4): held-out replay, log-loss primary, paired bootstrap, the class-level check (`npm run h1`).
 - **Mastery decisions with known truth** (H2, G1 to G3): precision of declarations, cheapest threshold meeting 90 %,
@@ -303,23 +306,26 @@ learners), applied per component where the grain is finer. Record degenerate fit
   `npm run atoms`, `npm run ideas`).
 - **Mastery on real data** (H3, G4 exploratory part): agreement, share right after declaration, across grains.
 
-### 3.6 Where this sits in Zeno
+### Where this sits in Zeno (draft section 2.1)
 
 The adaptive policy already keeps a per-idea state and aims at the weakest idea (`src/model/ideaState.ts`); the
 thesis's answer decides what grain that state should have and which rule declares mastery.
 
-## 4. Results
+## Chapter 3. Results and discussion
 
-- **4.1 Data kept** and the simulated settings.
-- **4.2 The methods at one grain**: H1 (table, interval, seeds, fitted parameters), H2 (per world and rate, the check
-  above 0.9999, calibration), H3. This is the draft's chapter 4 as it stands.
-- **4.3 Too coarse (G1)**: precision, threshold and Brier against k, in both worlds; BKT on the skill beside the EMA.
-- **4.4 The right grain and the questions (G2)**: the isolating-share sweep, missing idea found, carrying.
-- **4.5 Too fine (G3)**: over-splitting and k against practice length; degenerate fits; threshold stability.
-- **4.6 Real data across grains (G4)**: log-loss at three grains with the confirmatory interval; the EMA beside BKT;
+The results come first in each section and the discussion of them follows: section 3.1 the methods at one grain,
+section 3.2 the four granularity studies, section 3.3 what follows for Zeno and the threats to validity.
+
+- **Data kept** (section 3.1) and the simulated settings.
+- **The methods at one grain** (section 3.1): H1 (table, interval, seeds, fitted parameters), H2 (per world and rate, the check
+  above 0.9999, calibration), H3. This is the draft's section 3.1 as it stands.
+- **Too coarse (G1)** (section 3.2): precision, threshold and Brier against k, in both worlds; BKT on the skill beside the EMA.
+- **The right grain and the questions (G2)** (section 3.2): the isolating-share sweep, missing idea found, carrying.
+- **Too fine (G3)** (section 3.2): over-splitting and k against practice length; degenerate fits; threshold stability.
+- **Real data across grains (G4)** (section 3.2): log-loss at three grains with the confirmatory interval; the EMA beside BKT;
   declarations across grains.
 
-## 5. Discussion
+### Discussion (sections 3.1 to 3.3)
 
 - The answer in one sentence: a coarse grain makes BKT's probability stop meaning what it says, a fine grain is usable
   only where the questions identify the components and the data support them, and the simple rules are less affected
@@ -327,7 +333,7 @@ thesis's answer decides what grain that state should have and which rule declare
 - What follows for a system: choose the grain together with the questions; BKT at the finer grain where both are
   there, the EMA with a threshold set from the system's own data otherwise.
 
-### Threats to validity
+### Threats to validity (section 3.3)
 
 Those of the draft (the ASSISTments streak policy, worlds of our making, the revisions after first runs, the 0.9
 definition, coarse fitting, non-independent students, one confirmatory test), plus: the atoms and ideas worlds were
@@ -336,7 +342,7 @@ checked by eye, so G4's middle grain is one of many possible; a single data set 
 different fine tagging would do; the simulated decompositions are of our making, and the real curriculum's ideas were
 decomposed by hand.
 
-## 6. Conclusion and future work
+## Conclusion and future work (not numbered)
 
 - Answers to the research question by study; the recommendation for Zeno.
 - **Future work:** the KDD Cup 2010 data with several knowledge-component models; learning the grain from data

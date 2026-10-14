@@ -1,6 +1,6 @@
-# 1 Introduction
+# Introduction
 
-## 1.1 The problem
+## The problem
 
 Practice is where most mathematics is learnt, and a practice system has to decide, again and again, when a student
 has practised a skill enough to move on. Mastery learning, the idea that a student should master one unit before the
@@ -33,7 +33,7 @@ from a learner model, keeps a state for every skill and, on three skills, for ea
 decides which skills a student has mastered and can leave behind. Before choosing how Zeno should make that decision,
 it is worth knowing both which rule decides best and at what grain the rule should be applied.
 
-## 1.2 Aim and research question
+## Aim, research question and approach
 
 The aim of this thesis is to find out how the grain at which skills are defined affects the accuracy and the
 reliability of mastery estimation, using evidence that does not require a classroom. The research question is:
@@ -60,11 +60,9 @@ components it needs, which is the conjunctive form of BKT for questions that nee
 
 An earlier plan for this thesis asked whether choosing practice questions with a learner model helps a class learn
 more than a fixed sequence of questions. That question can only be answered in classrooms, with ethics approval for
-children's data, a school's timetable and, as a power analysis showed, several classes (section 6.3). The question
+children's data, a school's timetable and, as a power analysis showed, several classes (see the future work in the conclusion). The question
 asked here needs none of these. Every number in the thesis comes from a public data set of real students' answers or
 from simulation, and all of it can be reproduced from the code (Appendix B).
-
-## 1.3 Approach
 
 The question is answered in two parts, and the thesis keeps apart the kinds of claim each part makes.
 
@@ -100,30 +98,29 @@ granularity question were specified before they were run.
 ![The thesis in one picture: the question, the methods, and the three kinds of claim, with the granularity studies
 beside the comparison at one grain they rest on.](figures/thesis-map.png)
 
-## 1.4 Contributions
+## Contributions and structure of the thesis
 
 The thesis makes four contributions. The first is the comparison of BKT, the EMA and the streak rule at one grain,
 specified in advance, with the two propositions, on real data (H1, H3) and in known-truth simulation (H2), as the
-foundation (sections 3.3, 3.8 and 4.2). The second is a known-truth simulation of the same methods across grains, too
+foundation (sections 2.1 and 3.1). The second is a known-truth simulation of the same methods across grains, too
 coarse, right and too fine, with the condition on the questions under which a finer grain is usable (G1 to G3,
-sections 4.3 to 4.5). The third is the same answers modelled at three grains on a public data set, with one
-pre-specified test (G4, section 4.6). The fourth is a practical answer for a real system, and the code for all of it,
+section 2.1). The third is the same answers modelled at three grains on a public data set, with one
+pre-specified test (G4, section 3.2). The fourth is a practical answer for a real system, and the code for all of it,
 open and deterministic, inside the Zeno repository, with every number reproducible by a command listed in Appendix B.
 
 None of these is a new model. BKT, moving averages and the conjunctive form of BKT are well known, mastery criteria
 have been compared before, most closely by @pelanek2017mastery, and the grain of a skill model has been studied for
-prediction, most closely by @feng2009grainsize and @pardos2007granularity on the same ASSISTments system (section 2.4).
+prediction, most closely by @feng2009grainsize and @pardos2007granularity on the same ASSISTments system (section 1.3).
 What has not been measured is what grain does to mastery decisions against a known truth, which is what the simulated
 worlds make possible. The thesis does not claim that an optimal grain exists in general; it reports under which
 conditions each grain is usable, and what each method loses when the grain is wrong.
 
-## 1.5 Structure of the thesis
-
-Chapter 2 reviews mastery learning and how mastery is decided in practice, BKT, simple estimators and earlier
-comparisons of mastery criteria, knowledge components and the grain of a skill model, and how student models are
-judged. Chapter 3 sets out the method: the definitions of grain and component, the methods compared, the two
-propositions, the hypotheses of both parts, the data, how the methods are fitted and how each hypothesis is evaluated,
-and where the result fits in Zeno. Chapter 4 reports the results, first for the methods at one grain and then for each
-granularity study. Chapter 5 discusses what they show and the threats to their validity. Chapter 6 answers the
-research question, recommends how Zeno should decide mastery and at what grain, and sets out future work. Appendix A
-describes Zeno briefly, and Appendix B lists the command behind every number.
+The thesis has three chapters between this introduction and the conclusion. Chapter 1 reviews mastery learning and
+how mastery is decided in practice, BKT, simple estimators and earlier comparisons of mastery criteria, and knowledge
+components, the grain of a skill model and how student models are judged. Chapter 2 sets out the method: the
+definitions of grain and component, the methods compared, the two propositions and where the question sits in Zeno;
+the hypotheses of both parts and the data they are tested on; and how the methods are fitted and each hypothesis is
+evaluated. Chapter 3 reports and discusses the results, first for the methods at one grain and then for the four
+granularity studies, and ends with what follows for Zeno and the threats to validity. The conclusion answers the
+hypotheses and the research question, recommends how Zeno should decide mastery and at what grain, and sets out future
+work. Appendix A describes Zeno briefly, and Appendix B lists the command behind every number.

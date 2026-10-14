@@ -1,6 +1,23 @@
-# 6 Conclusion and future work
+# Conclusion and future work
 
-## 6.1 Answers to the hypotheses
+At one grain, BKT decides mastery more cheaply than simpler rules where learning happens all at once, even with some
+forgetting, and where learning is gradual it reaches a high standard of precision only at thresholds far closer to 1
+than any probability can be read, while the moving average reaches it by waiting longer. Across grains, the gradual
+pattern is what a coarse grain does: a skill of several components looks gradual from outside, in proportion to what
+each question leaves untested, and every method's precision at its usual threshold falls with it, BKT's probability
+furthest. The right grain restores precision and an ordinary threshold, and lets the model say what a student lacks,
+on the condition that the questions identify the components and the practice is long enough to ask about each; on
+Zeno's fractions that takes about 120 questions or one isolating question in four. Finer than the learners costs
+answers for nothing and shows itself in degenerate fits; more components than the practice supports shows itself only
+in declarations that never come. For Zeno the evidence points to the moving average for deciding
+mastery at the grain of the skill, with a threshold set from data, and to the state at the grain of the ideas for
+choosing what to practise next, becoming the mastery rule where the questions and the practice allow it. The real data
+across grains, where BKT predicts better at the data set's grain than at any coarser one and the EMA does not, and the
+prediction test at one grain, where BKT beats the EMA, both place real students nearer the worlds in which the skill
+tags carry learning that a known state can use than the gradual ones; the fits at the bound and the share wrong after
+a declaration at 0.95 say that the tags are not yet the components.
+
+## Answers to the hypotheses
 
 H1 asked whether BKT predicts held-out students' answers on the ASSISTments data better than the exponential moving
 average. On split seed 1 BKT's mean log-loss per answer is lower than the EMA's by 0.0225, with a 95 % interval of
@@ -68,7 +85,7 @@ world that follows BKT's assumptions, BKT's declarations are right at least as o
 (Proposition 2), which means that such a world can check how well BKT is fitted but cannot be evidence for it, and
 which also says that a skill made of several such components is no longer such a world.
 
-## 6.2 The research question
+## The research question
 
 The research question asked how the level of skill granularity affects the accuracy and reliability of mastery
 estimation in adaptive learning systems. The answer from this thesis has three parts. Too coarse a grain, one modelled
@@ -98,11 +115,10 @@ four or four times the practice, let BKT on each idea decide mastery too. Zeno's
 a hard question under the Elo model, was not part of the comparison, and it should be measured in the same way before
 the moving average replaces it.
 
-## 6.3 Future work
+## Future work
 
-The most direct extension is the real data. G4 is ready to run on ASSISTments once the data file is imported at a
-commit that keeps the problems, and H1 and H3 with it; the three grains the data set allows are only three, and the KDD
-Cup 2010 Cognitive Tutor data sets, which tag the same transactions with several knowledge-component models, would
+The most direct extension is more real data. The three grains the ASSISTments data set allows are only three, and the
+KDD Cup 2010 Cognitive Tutor data sets, which tag the same transactions with several knowledge-component models, would
 give a finer real grain. A second is to repeat the simulations with other seeds and other amounts of practice, and to
 fit the conjunctive model properly, by expectation–maximisation over the hidden states, which could only help the finer
 grain. A third is to compare the versions of BKT that relax its assumptions, with forgetting or with parameters for each
