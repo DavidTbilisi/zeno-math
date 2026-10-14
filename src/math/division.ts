@@ -5,12 +5,14 @@
 //  • short   — short division ("bus stop"): the remainders are carried as small digits.
 // Each step is one quotient digit: divide, multiply, subtract, bring down the next digit.
 // With decimals > 0 the division continues past the point, and a repeating decimal is detected
-// when a remainder comes back.
+// when a remainder comes back. For small whole numbers, blocks: true draws base-ten blocks being
+// shared out next to the working (divisionBlocks.ts).
 import type { RenderedSvg } from "./latex";
+import { blocksFit, renderBlocksPanel } from "./divisionBlocks";
 
 export type DivisionStyle = "bracket" | "corner" | "short";
 export const DIVISION_STYLES: DivisionStyle[] = ["bracket", "corner", "short"];
-export type DivisionSpec = { type: "division"; style: DivisionStyle; a: number; b: number; decimals: number; step: number };
+export type DivisionSpec = { type: "division"; style: DivisionStyle; a: number; b: number; decimals: number; step: number; blocks?: boolean };
 export const DIVISION_LIMITS = { a: 99_999_999, b: 9_999, decimals: 10 };
 
 type Step = { pos: number; cur: number; q: number; r: number };
@@ -84,6 +86,31 @@ function quotientText(plan: DivisionPlan, sep: string, upTo = Infinity): string 
   return s;
 }
 
+type TextLine = { s: string; color: string; size: number };
+const textWidth = (lines: TextLine[]) => Math.max(0, ...lines.map((l) => l.s.length * l.size * 0.55 + 32));
+
+/** The text under the working after k steps: the step just done, or at the end the result with a check. */
+function resultLines(plan: DivisionPlan, a: number, b: number, decimals: number, divSign: string, sep: string, k: number): TextLine[] {
+  const lines: TextLine[] = [];
+  if (k >= plan.steps.length) {
+    const last = plan.steps[plan.steps.length - 1];
+    const q = quotientText(plan, sep);
+    if (decimals === 0 && last.r) {
+      const whole = Math.floor(a / b);
+      lines.push({ s: `${a} ${divSign} ${b} = ${whole} ${sup(last.r)}⁄${sub(b)}`, color: INK, size: 22 });
+      lines.push({ s: `${a} = ${b} × ${whole} + ${last.r}`, color: "#495057", size: 17 });
+    } else {
+      const approx = !plan.exact && plan.repeatFrom === null;
+      lines.push({ s: `${a} ${divSign} ${b} ${approx ? "≈" : "="} ${q}${approx ? "…" : ""}`, color: INK, size: 22 });
+      if (plan.exact && q.includes(sep) === false) lines.push({ s: `${b} × ${q} = ${a}`, color: "#495057", size: 17 });
+    }
+  } else {
+    const s = plan.steps[k - 1];
+    if (s) lines.push({ s: `${s.cur} ${divSign} ${b} → ${s.q}  ·  ${s.q} × ${b} = ${s.q * b}  ·  ${s.cur} − ${s.q * b} = ${s.r}`, color: "#495057", size: 17 });
+  }
+  return lines;
+}
+
 export function renderDivision(spec: DivisionSpec): RenderedSvg {
   const { a, b, style } = spec;
   if (!(Number.isInteger(a) && Number.isInteger(b) && a >= 0 && b >= 1 && a <= DIVISION_LIMITS.a && b <= DIVISION_LIMITS.b)) throw new Error("range");
@@ -105,6 +132,7 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
   let x0: number;
   let y0: number;
   let width: number;
+  let fullWidth = 0; // the width once every step is shown (the corner's quotient box grows)
   const shown = plan.steps.slice(0, k);
   const done = k >= plan.steps.length;
 
@@ -237,37 +265,31 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
         }
       }
       width = vx + boxW + 20;
+      fullWidth = vx + Math.max(bStr.length, quotientText(plan, sep).replace(/[()]/g, "").length) * 14 + 40;
       y0 = Math.max(bottom, y0 + 50);
     }
   }
 
   // The result, with a check.
-  const lines: { s: string; color: string; size: number }[] = [];
   const divSign = corner ? ":" : "÷";
-  if (done) {
-    const last = plan.steps[plan.steps.length - 1];
-    const q = quotientText(plan, sep);
-    if (decimals === 0 && last.r) {
-      const whole = Math.floor(a / b);
-      lines.push({ s: `${a} ${divSign} ${b} = ${whole} ${sup(last.r)}⁄${sub(b)}`, color: INK, size: 22 });
-      lines.push({ s: `${a} = ${b} × ${whole} + ${last.r}`, color: "#495057", size: 17 });
-    } else {
-      const approx = !plan.exact && plan.repeatFrom === null;
-      lines.push({ s: `${a} ${divSign} ${b} ${approx ? "≈" : "="} ${q}${approx ? "…" : ""}`, color: INK, size: 22 });
-      if (plan.exact && q.includes(sep) === false) lines.push({ s: `${b} × ${q} = ${a}`, color: "#495057", size: 17 });
-    }
-  } else {
-    const s = shown[shown.length - 1];
-    if (s) lines.push({ s: `${s.cur} ${divSign} ${b} → ${s.q}  ·  ${s.q} × ${b} = ${s.q * b}  ·  ${s.cur} − ${s.q * b} = ${s.r}`, color: "#495057", size: 17 });
-  }
+  const lines = resultLines(plan, a, b, decimals, divSign, sep, k);
   let y = y0 + 34;
   for (const l of lines) {
     out.push(`<text x="16" y="${y}" ${SANS} font-size="${l.size}" fill="${l.color}" font-weight="${l.size > 20 ? 700 : 400}">${l.s}</text>`);
     y += l.size + 12;
   }
-  const textW = Math.max(0, ...lines.map((l) => l.s.length * l.size * 0.55 + 32));
-  const W = Math.ceil(Math.max(width, textW, 200));
-  const H = Math.ceil(y);
+  let W = Math.ceil(Math.max(width, textWidth(lines), 200));
+  let H = Math.ceil(y);
+  if (spec.blocks && blocksFit(a, b, decimals)) {
+    // The panel keeps one place at every step: right of the widest the working and its text get.
+    let steady = Math.max(width, fullWidth, 200);
+    for (let i = 0; i <= plan.steps.length; i++) steady = Math.max(steady, textWidth(resultLines(plan, a, b, decimals, divSign, sep, i)));
+    const panel = renderBlocksPanel(plan, b, k);
+    const x = Math.ceil(steady) + 10;
+    out.push(`<g transform="translate(${x},16)">${panel.svg}</g>`);
+    W = x + Math.ceil(panel.width) + 16;
+    H = Math.max(H, Math.ceil(panel.height) + 32);
+  }
   return {
     svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xml:space="preserve"><rect width="${W}" height="${H}" fill="#ffffff"/>${out.join("")}</svg>`,
     width: W,

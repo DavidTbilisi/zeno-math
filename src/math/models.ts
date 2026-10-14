@@ -502,6 +502,7 @@ export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec
     { key: "divRepeat", spec: { type: "division", style: "bracket", a: 1, b: 7, decimals: 10, step: 999 } },
     { key: "divCorner", spec: { type: "division", style: "corner", a: 9372, b: 12, decimals: 0, step: 999 } },
     { key: "divShort", spec: { type: "division", style: "short", a: 7236, b: 6, decimals: 0, step: 999 } },
+    { key: "divBlocks", spec: { type: "division", style: "bracket", a: 405, b: 3, decimals: 0, step: 999, blocks: true } },
   ],
   placeValue: [
     { key: "pvEmpty", spec: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true } },

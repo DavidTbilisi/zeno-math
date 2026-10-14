@@ -19,6 +19,7 @@ import { Segmented, Tabs, startOr } from "./ui";
 import { PlaceValueMat } from "./PlaceValueMat";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, stepCount, type MultiplySpec } from "../math/multiply";
 import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, type DivisionSpec } from "../math/division";
+import { blocksFit } from "../math/divisionBlocks";
 import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
 import { PERCENT_KINDS, percRatioStepCount, RATIO_KINDS, type PercRatioSpec } from "../math/percratio";
 
@@ -359,6 +360,11 @@ function DivisionEditor({ spec, onChange }: { spec: DivisionSpec; onChange: (s: 
         </label>
       </div>
       <small className="hint">{t.divHint[spec.style]}</small>
+      <label className="check">
+        <input type="checkbox" checked={!!spec.blocks} onChange={(e) => onChange({ ...spec, blocks: e.target.checked })} />
+        <span>{t.divBlocks}</span>
+      </label>
+      {spec.blocks && <small className="hint">{blocksFit(spec.a, spec.b, spec.decimals) ? t.divBlocksHint : t.divBlocksOff}</small>}
       <div className="field">
         <span>
           {t.stepByStep}: {shown} / {n}
