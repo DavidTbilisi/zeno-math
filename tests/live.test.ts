@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 import { rng } from "../src/math/random.ts";
 import {
   clockTime,
+  COMPARE_MAX,
+  compareSign,
   counters,
   DIE_SIDES,
   dotProduct,
@@ -17,6 +19,7 @@ import {
   runTrials,
   snapTo,
   tapSquare,
+  towerSpan,
   turn,
   wrapDay,
   type Device,
@@ -142,4 +145,30 @@ test("every live piece has a size and a starting state that survives saving", ()
   const fractions = initialLive("fractions");
   assert.equal(fractions.shaded.length, fractions.parts);
   assert.deepEqual(initialLive("graph"), DEFAULT_LIVE_GRAPH);
+});
+
+test("two centred towers joined top to top and bottom to bottom draw the sign", () => {
+  assert.equal(compareSign(5, 2), ">");
+  assert.equal(compareSign(2, 5), "<");
+  assert.equal(compareSign(4, 4), "=");
+  const [block, floor, mid] = [24, 286, 166];
+  for (let a = 0; a <= COMPARE_MAX; a++) {
+    // Standing on the floor, centred on the middle line, and half-way: always n blocks high.
+    for (const c of [0, 0.5, 1]) {
+      const [top, bottom] = towerSpan(a, block, floor, mid, c);
+      assert.ok(close(bottom - top, a * block));
+    }
+    assert.equal(towerSpan(a, block, floor, mid, 0)[1], floor);
+    const [top, bottom] = towerSpan(a, block, floor, mid, 1);
+    assert.ok(close((top + bottom) / 2, mid));
+    for (let b = 0; b <= COMPARE_MAX; b++) {
+      // The gap between the pencils on each side is that tower's height, so the sign opens towards the bigger number.
+      const [ta, ba] = towerSpan(a, block, floor, mid, 1);
+      const [tb, bb] = towerSpan(b, block, floor, mid, 1);
+      const opening = compareSign(ba - ta, bb - tb);
+      assert.equal(opening, compareSign(a, b));
+      // The pencils are parallel exactly when the numbers are equal.
+      assert.equal(close(tb - ta, bb - ba), a === b);
+    }
+  }
 });

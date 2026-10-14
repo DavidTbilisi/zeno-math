@@ -1,10 +1,13 @@
 // The live pieces that need no heavy maths: a geared clock, dice, a spinner, a coin, fractions to shade, a ten frame
-// with counters, a hundred square for patterns, and dot multiplication. Each draws one SVG picture (what "Copy as a
+// with counters, a hundred square for patterns, dot multiplication, and two towers of blocks to compare. Each draws one SVG picture (what "Copy as a
 // picture" copies) with its buttons around it, keeps what's mid-way (a drag, a roll) to itself, and hands the
 // result to the board with `set`.
 import { useEffect, useRef, useState } from "react";
 import {
   clockTime,
+  COMPARE_MAX,
+  COMPARE_SIGNS,
+  compareSign,
   counters,
   dotProduct,
   dragHand,
@@ -12,6 +15,7 @@ import {
   multiplesOf,
   snapTo,
   tapSquare,
+  towerSpan,
   wrapDay,
 } from "../math/live";
 import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
@@ -436,3 +440,141 @@ export function Dots({ state, set, w, svgRef }: PieceProps<"dots">) {
   );
 }
 
+
+// ——— Comparing two numbers ———
+
+const BLOCK_COLORS = ["#ff6b6b", "#ffd43b", "#69db7c", "#e03131", "#4dabf7", "#ff922b", "#da77f2", "#38d9a9", "#748ffc", "#f783ac"];
+const easeInOut = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (2 - 2 * x) ** 2 / 2);
+
+/**
+ * Two towers of blocks over two number cards, as with building blocks and pencils on a table. Click the blocks to
+ * build each tower, pick the sign between the cards, then lay the pencils: the towers slide to a middle line and two
+ * pencils join their tops and their bottoms, which draws the sign itself.
+ */
+export function Compare({ state, set, w, svgRef }: PieceProps<"compare">) {
+  const { a, b } = state;
+  const sign = compareSign(a, b);
+  const target = state.joined ? 1 : 0;
+  const [t, setT] = useState(target);
+  const tRef = useRef(target);
+  useEffect(() => {
+    const from = tRef.current;
+    if (from === target) return;
+    const start = performance.now();
+    const ms = 1100 * Math.abs(target - from);
+    let frame = 0;
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - start) / ms);
+      tRef.current = from + (target - from) * k;
+      setT(tRef.current);
+      if (k < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [target]);
+  // The first half of the way the towers slide to the middle line, the second half the pencils are laid.
+  const slide = easeInOut(Math.min(1, t * 2));
+  const pencils = easeInOut(Math.max(0, t * 2 - 1));
+
+  const [bw, bh, floor, mid] = [60, 24, 286, 166];
+  const towers = [
+    { n: a, x: 40, key: "a" as const },
+    { n: b, x: 260, key: "b" as const },
+  ];
+  const spans = towers.map(({ n }) => towerSpan(n, bh, floor, mid, slide));
+  const setCount = (key: "a" | "b", n: number) => set({ ...state, [key]: n, guess: null });
+  const tower = ({ n, x, key }: (typeof towers)[number], [top]: [number, number]) => (
+    <g key={key}>
+      {slide === 0 &&
+        Array.from({ length: COMPARE_MAX - n }, (_, i) => (
+          <rect
+            key={`slot${i}`}
+            x={x + 1}
+            y={floor - (n + i + 1) * bh + 1}
+            width={bw - 2}
+            height={bh - 2}
+            rx={3}
+            fill="transparent"
+            stroke="#dee2e6"
+            strokeDasharray="4 4"
+            style={{ cursor: "pointer" }}
+            onClick={() => setCount(key, n + i + 1)}
+          />
+        ))}
+      {Array.from({ length: n }, (_, i) => {
+        const y = top + (n - 1 - i) * bh;
+        return (
+          <g key={i} style={{ cursor: "pointer" }} onClick={() => setCount(key, tapSquare(n, i))}>
+            {i === n - 1 &&
+              [0.2, 0.6].map((f) => <rect key={f} x={x + f * bw} y={y - 6} width={0.2 * bw} height={7} rx={2} fill={BLOCK_COLORS[i]} stroke={INK} strokeWidth={1.5} />)}
+            <rect x={x} y={y} width={bw} height={bh} rx={3} fill={BLOCK_COLORS[i]} stroke={INK} strokeWidth={1.5} />
+          </g>
+        );
+      })}
+    </g>
+  );
+  const pencil = (from: [number, number], to: [number, number], color: string) => (
+    <line
+      x1={from[0]}
+      y1={from[1]}
+      x2={from[0] + (to[0] - from[0]) * pencils}
+      y2={from[1] + (to[1] - from[1]) * pencils}
+      stroke={color}
+      strokeWidth={7}
+      strokeLinecap="round"
+    />
+  );
+  // The middle card: the guess, coloured right or wrong; once the pencils are down and there is no guess, the sign.
+  const shown = state.guess ?? (pencils === 1 ? sign : "?");
+  const cardFill = state.guess ? (state.guess === sign ? "#b2f2bb" : "#ffc9c9") : pencils === 1 ? "#a5d8ff" : "#f1f3f5";
+  const sentence = fill(w.compare[sign === "<" ? "lt" : sign === ">" ? "gt" : "eq"], { a, b });
+  const card = (cx: number, label: string | number, color: string, width = 72) => (
+    <g>
+      <rect x={cx - width / 2} y={300} width={width} height={74} rx={4} fill={color} stroke="#adb5bd" />
+      <text x={cx} y={352} fontSize={42} textAnchor="middle" fill={INK}>{label}</text>
+    </g>
+  );
+  return (
+    <>
+      <svg ref={svgRef} width={360} height={380} viewBox="0 0 360 380" fontFamily={FONT}>
+        {towers.map((tw, i) => tower(tw, spans[i]))}
+        {pencils > 0 && pencil([100, spans[0][0]], [260, spans[1][0]], "#8d5a3b")}
+        {pencils > 0 && pencil([100, spans[0][1]], [260, spans[1][1]], "#5f3dc4")}
+        {card(70, a, "#d8f5a2")}
+        {card(180, shown, cardFill, 64)}
+        {card(290, b, "#d8f5a2")}
+      </svg>
+      <div className="live-bar">
+        <Stepper value={a} min={0} max={COMPARE_MAX} onChange={(n) => setCount("a", n)} less={w.compare.fewer} more={w.compare.more} />
+        {COMPARE_SIGNS.map((s) => (
+          <Toggle key={s} on={state.guess === s} title={fill(w.compare[s === "<" ? "lt" : s === ">" ? "gt" : "eq"], { a, b })} onClick={() => set({ ...state, guess: s })}>
+            <b className="live-sign">{s}</b>
+          </Toggle>
+        ))}
+        <Stepper value={b} min={0} max={COMPARE_MAX} onChange={(n) => setCount("b", n)} less={w.compare.fewer} more={w.compare.more} />
+      </div>
+      <div className="live-bar">
+        <Toggle on={state.joined} onClick={() => set({ ...state, joined: !state.joined })}>✏️ {w.compare.join}</Toggle>
+        <button
+          className="live-btn"
+          title={w.compare.random}
+          aria-label={w.compare.random}
+          onClick={() => {
+            const na = Math.floor(Math.random() * (COMPARE_MAX + 1));
+            const nb = Math.random() < 0.2 ? na : Math.floor(Math.random() * (COMPARE_MAX + 1));
+            set({ a: na, b: nb, joined: false, guess: null });
+          }}
+        >
+          🎲
+        </button>
+      </div>
+      <p className="live-hint">
+        {state.guess && state.guess !== sign
+          ? `${w.compare.wrong}${state.joined ? "" : ` ${w.compare.tryPencils}`}`
+          : state.guess || pencils === 1
+            ? `${state.guess ? `${w.compare.right} ` : ""}${sentence}.${pencils === 1 ? ` ${sign === "=" ? w.compare.parallel : w.compare.opens}` : ""}`
+            : w.compare.hint}
+      </p>
+    </>
+  );
+}

@@ -146,6 +146,25 @@ export function counters(cells: number[]): { a: number; b: number; n: number } {
 
 export const multiplesOf = (n: number, upTo = 100) => Array.from({ length: Math.floor(upTo / n) }, (_, i) => n * (i + 1));
 
+// ——— Comparing two numbers with towers of blocks ———
+
+export type CompareSign = "<" | "=" | ">";
+export const COMPARE_SIGNS: CompareSign[] = ["<", "=", ">"];
+export const COMPARE_MAX = 10;
+
+export const compareSign = (a: number, b: number): CompareSign => (a < b ? "<" : a > b ? ">" : "=");
+
+/**
+ * Top and bottom of a tower of n blocks, each `block` high: standing on `floor` when `centred` is 0, its middle on
+ * `mid` when it is 1, and part of the way between for the slide from one to the other. Once both towers are centred,
+ * a line joining their tops and one joining their bottoms make the sign: the gap between the lines is each tower's
+ * height, so it opens towards the bigger number, and two towers of the same height give two parallel lines, =.
+ */
+export function towerSpan(n: number, block: number, floor: number, mid: number, centred: number): [number, number] {
+  const bottom = floor + (mid + (n * block) / 2 - floor) * centred;
+  return [bottom - n * block, bottom];
+}
+
 // ——— The kinds of live piece, their sizes and where each starts ———
 
 export type LiveParam = { v: number; min: number; max: number };
@@ -180,6 +199,7 @@ export type LiveStates = {
   dots: { k: number; top: number; bottom: number };
   graph: LiveGraphState;
   chance: { device: Device; tally: Tally; view: ChanceView; relative: boolean; theory: boolean; focus: number; last: number };
+  compare: { a: number; b: number; joined: boolean; guess: CompareSign | null };
 };
 export type LiveKind = keyof LiveStates;
 
@@ -195,6 +215,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   dots: [520, 600],
   graph: [640, 560],
   chance: [680, 500],
+  compare: [380, 530],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -212,6 +233,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     dots: { k: 5, top: 3, bottom: 1 },
     graph: DEFAULT_LIVE_GRAPH,
     chance: { device: { kind: "die", sides: 6 }, tally: emptyTally(6), view: "bars", relative: true, theory: true, focus: 5, last: -1 },
+    compare: { a: 5, b: 2, joined: false, guess: null },
   };
   return structuredClone(start[kind]);
 }

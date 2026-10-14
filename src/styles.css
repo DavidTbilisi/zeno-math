@@ -568,6 +568,7 @@ input.invalid { border-color: var(--danger); }
 .live-chip { padding: 1px 8px; border: 1px solid #dee2e6; border-radius: 10px; background: #f1f3f5; font-size: 13px; }
 .live-hint { margin: 0; font-size: 12px; color: #868e96; text-align: center; }
 .live-note { font-size: 12px; color: #868e96; }
+.live-sign { display: inline-block; min-width: 1em; font-size: 20px; line-height: 1; }
 .live-snap {
   position: absolute; right: 4px; bottom: 4px; padding: 2px 4px; border: none; background: transparent;
   font-size: 15px; cursor: pointer; opacity: 0;
