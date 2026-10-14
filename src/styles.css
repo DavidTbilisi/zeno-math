@@ -474,6 +474,7 @@ input.invalid { border-color: var(--danger); }
 .card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .card .hint { margin: 0; }
 .field-row.wrap { flex-wrap: wrap; }
+.sign-picks .btn { min-width: 3em; justify-content: center; text-align: center; font-size: 20px; font-weight: 700; line-height: 1.1; }
 .data-table { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
 .data-table th, .data-table td { padding: 6px 12px; border-bottom: 1px solid var(--border); text-align: right; }
 .data-table th[scope="row"], .data-table thead th:first-child { text-align: left; font-weight: 500; color: var(--muted); }

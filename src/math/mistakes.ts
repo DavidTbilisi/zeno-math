@@ -21,5 +21,10 @@ export const MISTAKES = [
   "fullUnit",
   "noFlip",
   "boundary",
+  "compareFlip",
+  "firstDigit",
+  "longerDecimal",
+  "negativeSize",
+  "biggerBottom",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

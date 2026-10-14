@@ -2446,6 +2446,78 @@
    "input": "-4",
    "label": "wrong",
    "mistake": "sign"
+  },
+  {
+   "skill": "compare",
+   "level": 1,
+   "seed": 7,
+   "input": "<",
+   "label": "correct"
+  },
+  {
+   "skill": "compare",
+   "level": 1,
+   "seed": 7,
+   "input": "0 < 7",
+   "label": "correct"
+  },
+  {
+   "skill": "compare",
+   "level": 1,
+   "seed": 7,
+   "input": ">",
+   "label": "wrong",
+   "mistake": "compareFlip"
+  },
+  {
+   "skill": "compare",
+   "level": 1,
+   "seed": 7,
+   "input": "7",
+   "label": "form"
+  },
+  {
+   "skill": "compare",
+   "level": 2,
+   "seed": 7,
+   "input": "=",
+   "label": "correct"
+  },
+  {
+   "skill": "compare",
+   "level": 2,
+   "seed": 7,
+   "input": ">",
+   "label": "wrong"
+  },
+  {
+   "skill": "compare",
+   "level": 2,
+   "seed": 7,
+   "input": "<=",
+   "label": "form"
+  },
+  {
+   "skill": "compare",
+   "level": 3,
+   "seed": 7,
+   "input": "=",
+   "label": "correct"
+  },
+  {
+   "skill": "compare",
+   "level": 3,
+   "seed": 7,
+   "input": ">",
+   "label": "wrong",
+   "mistake": "longerDecimal"
+  },
+  {
+   "skill": "compare",
+   "level": 3,
+   "seed": 7,
+   "input": "<",
+   "label": "wrong"
   }
  ]
 }

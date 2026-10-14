@@ -77,3 +77,14 @@ export function Segmented<K extends string | number | boolean>({ items, value, o
 /** The topic a dialog opens on: `start` when it names one of the topics, otherwise the default. */
 export const startOr = <K extends string>(start: string | undefined, items: readonly K[], fallback: K): K =>
   (items as readonly string[]).includes(start ?? "") ? (start as K) : fallback;
+
+/** The three signs as buttons, for an answer that is a sign between two numbers (no hunting for < on a keyboard). */
+export function SignPicks({ onPick, disabled }: { onPick: (sign: string) => void; disabled?: boolean }) {
+  return (
+    <div className="field-row sign-picks">
+      {["<", "=", ">"].map((s) => (
+        <button key={s} className="btn" disabled={disabled} onClick={() => onPick(s)}>{s}</button>
+      ))}
+    </div>
+  );
+}

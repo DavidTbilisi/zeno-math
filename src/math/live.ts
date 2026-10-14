@@ -151,6 +151,10 @@ export const multiplesOf = (n: number, upTo = 100) => Array.from({ length: Math.
 export type CompareSign = "<" | "=" | ">";
 export const COMPARE_SIGNS: CompareSign[] = ["<", "=", ">"];
 export const COMPARE_MAX = 10;
+/** One colour a storey, from the bottom up, like a stack of building blocks. */
+export const COMPARE_COLORS = ["#ff6b6b", "#ffd43b", "#69db7c", "#e03131", "#4dabf7", "#ff922b", "#da77f2", "#38d9a9", "#748ffc", "#f783ac"];
+/** The two pencils: the one that joins the tops, and the one that joins the bottoms. */
+export const PENCIL_COLORS = ["#8d5a3b", "#5f3dc4"] as const;
 
 export const compareSign = (a: number, b: number): CompareSign => (a < b ? "<" : a > b ? ">" : "=");
 

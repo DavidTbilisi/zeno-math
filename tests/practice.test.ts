@@ -5,7 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { ru } from "../src/locales/ru.ts";
-import { ALL_SKILLS, check, exercise, LEVELS, renderPractice, renderSteps, type Exercise } from "../src/math/practice.ts";
+import { ALL_SKILLS, check, exercise, LEVELS, readSign, renderPractice, renderSteps, type Exercise } from "../src/math/practice.ts";
 import { renderSolution } from "../src/math/practiceSolve.ts";
 import { parseE, tex } from "../src/math/expr.ts";
 import { latexToMathML } from "../src/math/latex.ts";
@@ -28,6 +28,8 @@ function wrong(ex: Exercise): string {
       return `${ex.plain} * 2`;
     case "ineq":
       return ex.plain.replace(/-?\d+$/, (v) => String(Number(v) + 1));
+    case "sign":
+      return a.v === "=" ? "<" : "=";
   }
 }
 
@@ -205,5 +207,25 @@ test("every practice question's maths can be read aloud: its LaTeX becomes MathM
       const ex = exercise(skill, level, 3, w);
       if (ex.q) assert.match(latexToMathML(ex.q), /^<math/, `${skill} ${level}: ${ex.q}`);
       assert.match(latexToMathML(ex.show), /^<math/, `${skill} ${level} answer: ${ex.show}`);
+    }
+});
+
+test("comparing: the sign is read however it is typed, and every question's sign is true", () => {
+  for (const [typed, sign] of [["<", "<"], [" > ", ">"], ["=", "="], ["5 > 2", ">"], ["＜", "<"]] as const) assert.equal(readSign(typed), sign, typed);
+  for (const bad of ["", "7", "<=", "<>", "5 < 7 < 9"]) assert.equal(readSign(bad), null, bad);
+  const ex = exercise("compare", 1, 1, w);
+  assert.equal(check(ex, "7", w).why, w.reasons.notSign);
+  // Each side read back from the question on its own: a whole number, a decimal, a negative number or a fraction.
+  const side = (t: string) => {
+    const f = t.match(/^\\frac\{(\d+)\}\{(\d+)\}$/);
+    return f ? Number(f[1]) / Number(f[2]) : Number(t);
+  };
+  for (const level of LEVELS)
+    for (let seed = 1; seed <= 300; seed++) {
+      const q = exercise("compare", level, seed, w);
+      const [a, b] = q.q.split("\\;\\square\\;").map((t) => side(t.trim()));
+      const sign = a < b ? "<" : a > b ? ">" : "=";
+      assert.equal(q.plain, sign, `${level} #${seed}: ${q.q}`);
+      assert.ok(Number.isFinite(a) && Number.isFinite(b), q.q);
     }
 });

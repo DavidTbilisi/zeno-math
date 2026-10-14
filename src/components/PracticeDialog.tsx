@@ -20,7 +20,7 @@ import { Countdown } from "./Countdown";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
-import { Segmented, startOr, Tabs } from "./ui";
+import { Segmented, SignPicks, startOr, Tabs } from "./ui";
 
 type Mode = "practise" | "sheet";
 type Pick = SkillId | "mixed";
@@ -523,6 +523,15 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               {typed && !done && <img className="practice-typed" src={typed} alt="" />}
             </div>
           </label>
+          {cur.ex.format === "sign" && !done && (
+            <SignPicks
+              onPick={(s) => {
+                setInput(s);
+                setVerdict(null);
+                inputRef.current?.focus();
+              }}
+            />
+          )}
           <div className="field-row">
             {!done && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
             {!done && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}

@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   clockTime,
+  COMPARE_COLORS,
   COMPARE_MAX,
   COMPARE_SIGNS,
   compareSign,
@@ -13,6 +14,7 @@ import {
   dragHand,
   handAngles,
   multiplesOf,
+  PENCIL_COLORS,
   snapTo,
   tapSquare,
   towerSpan,
@@ -443,7 +445,6 @@ export function Dots({ state, set, w, svgRef }: PieceProps<"dots">) {
 
 // ——— Comparing two numbers ———
 
-const BLOCK_COLORS = ["#ff6b6b", "#ffd43b", "#69db7c", "#e03131", "#4dabf7", "#ff922b", "#da77f2", "#38d9a9", "#748ffc", "#f783ac"];
 const easeInOut = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (2 - 2 * x) ** 2 / 2);
 
 /**
@@ -506,8 +507,8 @@ export function Compare({ state, set, w, svgRef }: PieceProps<"compare">) {
         return (
           <g key={i} style={{ cursor: "pointer" }} onClick={() => setCount(key, tapSquare(n, i))}>
             {i === n - 1 &&
-              [0.2, 0.6].map((f) => <rect key={f} x={x + f * bw} y={y - 6} width={0.2 * bw} height={7} rx={2} fill={BLOCK_COLORS[i]} stroke={INK} strokeWidth={1.5} />)}
-            <rect x={x} y={y} width={bw} height={bh} rx={3} fill={BLOCK_COLORS[i]} stroke={INK} strokeWidth={1.5} />
+              [0.2, 0.6].map((f) => <rect key={f} x={x + f * bw} y={y - 6} width={0.2 * bw} height={7} rx={2} fill={COMPARE_COLORS[i]} stroke={INK} strokeWidth={1.5} />)}
+            <rect x={x} y={y} width={bw} height={bh} rx={3} fill={COMPARE_COLORS[i]} stroke={INK} strokeWidth={1.5} />
           </g>
         );
       })}
@@ -538,8 +539,8 @@ export function Compare({ state, set, w, svgRef }: PieceProps<"compare">) {
     <>
       <svg ref={svgRef} width={360} height={380} viewBox="0 0 360 380" fontFamily={FONT}>
         {towers.map((tw, i) => tower(tw, spans[i]))}
-        {pencils > 0 && pencil([100, spans[0][0]], [260, spans[1][0]], "#8d5a3b")}
-        {pencils > 0 && pencil([100, spans[0][1]], [260, spans[1][1]], "#5f3dc4")}
+        {pencils > 0 && pencil([100, spans[0][0]], [260, spans[1][0]], PENCIL_COLORS[0])}
+        {pencils > 0 && pencil([100, spans[0][1]], [260, spans[1][1]], PENCIL_COLORS[1])}
         {card(70, a, "#d8f5a2")}
         {card(180, shown, cardFill, 64)}
         {card(290, b, "#d8f5a2")}
