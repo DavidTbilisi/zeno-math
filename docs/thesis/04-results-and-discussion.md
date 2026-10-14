@@ -12,8 +12,6 @@ commands in Appendix B.
 
 ## 3.1 The methods at one grain
 
-### Data and settings
-
 The corrected ASSISTments 2009–2010 skill builder file has 346,860 rows. The importer kept 259,399 of them as
 answers: main problems with a skill and a first-attempt result, every one naming its problem. They come from 4,163
 students in 213 classes, on 110 skills, of which 102 carry a name and eight only a tag number; 432 students answered
@@ -62,13 +60,12 @@ with two, 24 % with four, 7 % with eight and under 1 % with sixteen, and at the 
 and of the held-out fifth 73 % and 100 % knew every idea of times after the last answer at the two rates, 53 % and 92 %
 of hcf, and 12 % and 37 % of fractions.
 
-### Prediction on real answers (H1)
-
-Table 3.2 gives the prediction of the held-out students' first-attempt answers under split seed 1. BKT predicts
-better than the EMA on every measure, with a log-loss of 0.5690 against 0.5915 and an AUC of 0.711 against 0.692. The
-Elo model Zeno runs predicts better than both, at 0.5607, and searching its two rates on the training students returns
-the values it already uses ($\alpha$ = 0.2, $\beta$ = 0.01); PFA sits between BKT and the EMA. Every model beats the
-three counting baselines, and the EMA beats the best of them, each student's rate on each skill, by 0.019 in log-loss.
+Table 3.2 gives the H1 result, the prediction of the held-out students' first-attempt answers under split seed 1. BKT
+predicts better than the EMA on every measure, with a log-loss of 0.5690 against 0.5915 and an AUC of 0.711 against
+0.692. The Elo model Zeno runs predicts better than both, at 0.5607, and searching its two rates on the training
+students returns the values it already uses ($\alpha$ = 0.2, $\beta$ = 0.01); PFA sits between BKT and the EMA. Every
+model beats the three counting baselines, and the EMA beats the best of them, each student's rate on each skill, by
+0.019 in log-loss.
 
 | Model | Log-loss | RMSE | AUC | Accuracy |
 |---|---:|---:|---:|---:|
@@ -100,13 +97,12 @@ lie between 0.5 and 0.6, because every practice starts at 0.594 and with $\alpha
 110 skills' fitted BKT parameter sets, 63.6 % have guess or slip at the bound of 0.3 and 80.0 % have some parameter at
 an edge of the grid.
 
-### Mastery decisions where the truth is known (H2)
-
-Table 3.3 gives the H2 comparison. For each world and learning rate it shows, for each method, the threshold chosen on
-the training students as the cheapest whose declarations were right at least 90 % of the time, and how that rule did
-on the held-out students: the mean number of answers it needed, with its 95 % interval, the share of its declarations
-that were right and the share of practices in which it declared mastery at all. The last column is the number of
-answers BKT saves against that method, with its interval; a positive value means BKT needs fewer.
+Table 3.3 gives the H2 comparison, the mastery decisions where the truth is known. For each world and learning rate it
+shows, for each method, the threshold chosen on the training students as the cheapest whose declarations were right at
+least 90 % of the time, and how that rule did on the held-out students: the mean number of answers it needed, with its
+95 % interval, the share of its declarations that were right and the share of practices in which it declared mastery at
+all. The last column is the number of answers BKT saves against that method, with its interval; a positive value means
+BKT needs fewer.
 
 | World | Rate | Method | Rule | Answers [95 % interval] | Right | Declared | BKT saves [95 % interval] |
 |----------------|-----|-------|-----------|-------------------:|------:|---------:|------------------|
@@ -309,17 +305,15 @@ declares mastery for the students in the same order. Reading BKT on the scale on
 makes its probability less overconfident, but it does not remove the need for an extreme threshold, which comes from
 how quickly $P(L)$ approaches 1 after a run of right answers.
 
-### Mastery decisions on real answers (H3)
-
-Table 3.9 gives the agreement between the three rules on the 7,561 held-out practices. The EMA threshold that costs
-on the training students what the streak rule costs there is 0.6962. BKT at 0.95 declares mastery in 68.6 % of the
-practices, the EMA in 48.0 % and the streak rule in 48.5 %. The two simple rules declare in nearly the same practices,
-each alone in about 10 % of them; BKT declares in almost every practice they declare in and in a further 22 % where
-neither does, and in 29 % of practices no rule declares. Where both members of a pair declare, BKT declares 1.5
-answers before the streak rule and 1.0 before the EMA, and the EMA 0.5 before the streak rule. After a declaration, the
-next three answers where the practice has them were right 78.6 % of the time for BKT (9,532 answers in 3,905
-practices), 80.4 % for the EMA (6,874 in 2,691) and 77.2 % for the streak rule (6,820 in 2,662), against 66.6 % of all
-held-out answers; the EMA, which declares latest, is followed by the highest share right, and the three are within
+Table 3.9 gives the H3 result, the agreement between the three rules' mastery decisions on the 7,561 held-out practices.
+The EMA threshold that costs on the training students what the streak rule costs there is 0.6962. BKT at 0.95 declares
+mastery in 68.6 % of the practices, the EMA in 48.0 % and the streak rule in 48.5 %. The two simple rules declare in
+nearly the same practices, each alone in about 10 % of them; BKT declares in almost every practice they declare in and
+in a further 22 % where neither does, and in 29 % of practices no rule declares. Where both members of a pair declare,
+BKT declares 1.5 answers before the streak rule and 1.0 before the EMA, and the EMA 0.5 before the streak rule. After a
+declaration, the next three answers where the practice has them were right 78.6 % of the time for BKT (9,532 answers in
+3,905 practices), 80.4 % for the EMA (6,874 in 2,691) and 77.2 % for the streak rule (6,820 in 2,662), against 66.6 % of
+all held-out answers; the EMA, which declares latest, is followed by the highest share right, and the three are within
 three points of each other.
 
 | Pair | Both | Only the first | Only the second | Neither | Gap (answers) |
@@ -333,19 +327,18 @@ streak rule's cost on the training students. The gap is the first rule's declari
 both declare; below zero, the first declares earlier (`npm run mastery -- --observations data/assistments.json`,
 commit 3633cc1).
 
-### What the evidence shows at one grain
-
-On the real answers BKT predicts held-out students' first attempts better than the EMA, by 0.0225 in mean log-loss
-per answer on the split that decides, with an interval of [−0.0264, −0.0183] that excludes zero and lies beyond the
-0.005 fixed as the smallest difference that counts, so H1 holds by the pre-specified rule. The four other splits give
-the same verdict with estimates between 0.021 and 0.025, and resampling whole classes, which widens the intervals by
-about half, changes none of them. The difference is real and not negligible, but it is modest beside the spread
-between models: the Elo model Zeno runs predicts better than BKT by 0.008, and PFA sits between BKT and the EMA. What
-H1 shows is that BKT's extra machinery, a learnt state per skill with four fitted parameters, earns its keep in
-prediction on these data, where the EMA's one parameter and its slow start, from 0.594 for every student and skill,
-cannot tell students apart until several answers are in. A better prediction of the next answer does not by itself
-make a method's mastery decisions better (section 1.3): on the real data there is no truth to judge the declarations
-against, and the simulations below show where BKT's probability and its decisions part company.
+The evidence at one grain comes to the following. On the real answers BKT predicts held-out students' first attempts
+better than the EMA, by 0.0225 in mean log-loss per answer on the split that decides, with an interval of [−0.0264,
+−0.0183] that excludes zero and lies beyond the 0.005 fixed as the smallest difference that counts, so H1 holds by the
+pre-specified rule. The four other splits give the same verdict with estimates between 0.021 and 0.025, and resampling
+whole classes, which widens the intervals by about half, changes none of them. The difference is real and not
+negligible, but it is modest beside the spread between models: the Elo model Zeno runs predicts better than BKT by
+0.008, and PFA sits between BKT and the EMA. What H1 shows is that BKT's extra machinery, a learnt state per skill with
+four fitted parameters, earns its keep in prediction on these data, where the EMA's one parameter and its slow start,
+from 0.594 for every student and skill, cannot tell students apart until several answers are in. A better prediction of
+the next answer does not by itself make a method's mastery decisions better (section 1.3): on the real data there is no
+truth to judge the declarations against, and the simulations below show where BKT's probability and its decisions part
+company.
 
 The one-grain simulations give a clear pattern. Where learning happens as BKT assumes, all at once, BKT makes mastery
 decisions more cheaply than the simpler rules. In the plain BKT world this is what Proposition 2 leads one to expect,
@@ -398,15 +391,14 @@ told from these data; what can be told is that BKT at its usual threshold is the
 
 ## 3.2 Across grains
 
-### Too coarse: a skill that is really several components (G1)
-
-The world of components keeps everything of the BKT world except that each skill is $k$ components, each learnt all at
-once, and the model treats the skill as one. Table 3.10 gives the sweep over $k$ at both learning rates, with the
-components asked for one at a time and, below, several at a time. For BKT on the skill, the EMA and BKT on each
-component it shows the precision at the threshold a deployed system would use without a truth to set it by (BKT at
-0.95, the EMA at the streak rule's cost, BKT on each component at 0.95), the cheapest threshold whose declarations were
-right at least 90 % of the time on the training learners, and the Brier score of the method's own score against the
-truth after every answer; for the streak rule, its precision at $N = 3$.
+G1, a skill that is really several components, is tested in the world of components, which keeps everything of the BKT
+world except that each skill is $k$ components, each learnt all at once, while the model treats the skill as one. Table
+3.10 gives the sweep over $k$ at both learning rates, with the components asked for one at a time and, below, several at
+a time. For BKT on the skill, the EMA and BKT on each component it shows the precision at the threshold a deployed
+system would use without a truth to set it by (BKT at 0.95, the EMA at the streak rule's cost, BKT on each component at
+0.95), the cheapest threshold whose declarations were right at least 90 % of the time on the training learners, and the
+Brier score of the method's own score against the truth after every answer; for the streak rule, its precision at $N =
+3$.
 
 | Components | Asked at once | Rate | BKT 0.95 right | BKT $\theta$ at 90 % | BKT Brier | EMA right | EMA $\theta$ at 90 % | EMA Brier | Streak 3 right | Per component 0.95 right | $\theta$ at 90 % | Brier |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -505,8 +497,6 @@ the three arithmetic ideas that every hcf question needs can only tie; on fracti
 of the time against 6 % by chance, and at the lower rate, where only 128 held-out moments had a learner one idea short,
 it is at chance.
 
-### The right grain, and the condition on the questions (G2)
-
 G2 holds that BKT on each component restores the standard and names the missing component if and only if the questions
 tell the components apart, and it was swept on fractions, the skill where the generated questions tell them apart
 least. Table 3.12 varies the share of questions that ask for one idea alone, from the generator's own two in five with
@@ -579,12 +569,11 @@ nothing is declared; the blame of a recognised mistake adds between nothing and 
 condition G2 states is met on fractions by a quarter of the questions asking for one idea alone and a practice long
 enough for the ideas to be asked about; it is not met by the generator as it is within 30 questions.
 
-### Too fine: finer than the learners, or than the practice supports (G3)
-
-The first way of being too fine models a component that is learnt as one thing as several. Table 3.13 keeps the
-learners of the two-component world as they are, with their answers and truth unchanged, and models each component as
-one, two or four parts, each question tagged with one of its component's parts at random. BKT on the skill, the EMA and
-the streak rule see the same answers at every split and are unchanged; only BKT on each part moves.
+G3 concerns a model too fine for its learners or for the practice. The first way of being too fine models a component
+that is learnt as one thing as several. Table 3.13 keeps the learners of the two-component world as they are, with their
+answers and truth unchanged, and models each component as one, two or four parts, each question tagged with one of its
+component's parts at random. BKT on the skill, the EMA and the streak rule see the same answers at every split and are
+unchanged; only BKT on each part moves.
 
 | Split | Rate | $\theta$ at 90 % | Answers [95 % interval] | Right | Declared | At 0.95: answers | declared | Brier | Fits at the bound | at the edge | Minus BKT on the skill |
 |---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -661,21 +650,19 @@ answers that belonged to the whole: four in five of them at the bound when split
 read over-splitting from its own fits, but not a shortage of practice, which shows itself instead in declarations that
 never come.
 
-### Real data across grains (G4)
-
-Table 3.15 gives G4 on the real answers. At the data set's own grain BKT predicts the held-out answers with a
-log-loss of 0.5690, at the topic grain 0.5962 and with one skill for everything 0.6037; the EMA goes the other way,
-0.5915, 0.5854 and 0.5847. The test compares BKT at the skill grain with BKT at one skill: the difference is −0.0346 per
-answer with an interval of [−0.0392, −0.0302] from 10,000 resamples of students, which excludes zero and lies beyond
-the smallest difference that counts, so by the rule fixed in advance the finer grain predicts better and G4 holds. The
-other two BKT pairs point the same way, skill against topic by −0.0272 [−0.0316, −0.0230] and topic against one by
-−0.0075 [−0.0097, −0.0053]. For the EMA the coarser grain predicts better, skill against one by +0.0068 [+0.0024,
-+0.0110] and skill against topic by +0.0061 [+0.0025, +0.0097], while topic against one, +0.0007 [−0.0013, +0.0026],
-is no practical difference. What coarsening from 110 skills to one costs BKT, minus what it costs the EMA, is 0.0414
-per answer with an interval of [0.0366, 0.0463], so on the real data as on the simulated class the EMA loses less from
-coarsening; here it gains a little. At the skill grain 63.6 % of BKT's 110 fits have guess or slip at the bound and
-80.0 % have a parameter at an edge of the grid; at the two coarser grains every fit does. The EMA's fitted $\alpha$
-falls from 0.15 to 0.1 to 0.05 as the grain coarsens and the practices lengthen.
+Table 3.15 gives G4, the same real answers modelled at three grains. At the data set's own grain BKT predicts the
+held-out answers with a log-loss of 0.5690, at the topic grain 0.5962 and with one skill for everything 0.6037; the EMA
+goes the other way, 0.5915, 0.5854 and 0.5847. The test compares BKT at the skill grain with BKT at one skill: the
+difference is −0.0346 per answer with an interval of [−0.0392, −0.0302] from 10,000 resamples of students, which
+excludes zero and lies beyond the smallest difference that counts, so by the rule fixed in advance the finer grain
+predicts better and G4 holds. The other two BKT pairs point the same way, skill against topic by −0.0272 [−0.0316,
+−0.0230] and topic against one by −0.0075 [−0.0097, −0.0053]. For the EMA the coarser grain predicts better, skill
+against one by +0.0068 [+0.0024, +0.0110] and skill against topic by +0.0061 [+0.0025, +0.0097], while topic against
+one, +0.0007 [−0.0013, +0.0026], is no practical difference. What coarsening from 110 skills to one costs BKT, minus
+what it costs the EMA, is 0.0414 per answer with an interval of [0.0366, 0.0463], so on the real data as on the
+simulated class the EMA loses less from coarsening; here it gains a little. At the skill grain 63.6 % of BKT's 110 fits
+have guess or slip at the bound and 80.0 % have a parameter at an edge of the grid; at the two coarser grains every fit
+does. The EMA's fitted $\alpha$ falls from 0.15 to 0.1 to 0.05 as the grain coarsens and the practices lengthen.
 
 The declarations move with the grain much as they did on the simulated class. BKT at 0.95 declares for 68.6 % of
 practices at the skill grain after 3.3 answers on average, for 64.2 % at the topic grain after 6.1 and for 72.0 % at
@@ -722,23 +709,21 @@ practices at the skill grain after 3.7 answers, for 48 % at the topic grain afte
 grain after 76.3 answers, the practice then being a student's whole history; the share right on the next three
 answers after a declaration falls from 72 % to 61 % to 52 %, while the EMA's stays at about 60 % at every grain.
 
-### What the evidence shows across grains
-
-The granularity studies begin by explaining the one-grain result. The gradual worlds made learning continuous by
-construction, and one may ask whether they were rigged against a model that assumes a jump. The world of components
-answers that they were not: a skill made of several components, each learnt in exactly the jump BKT assumes, looks to
-BKT on the skill exactly as the gradual worlds did. With two components BKT at 0.95 was right 59 to 71 % of the time and
-needed a threshold of 0.999 or 0.9999 to meet the standard; with four or more it met it at no threshold up to 0.9999,
-and its Brier score climbed towards that of the gradual worlds (Table 3.10). The mechanism is the one Proposition 2
-points at. A skill of $k$ components is a mixture of $2^k$ states, not two, and the chance of a right answer on it
-rises in steps as the components are learnt, so from outside it looks like gradual learning; a model with one known
-state has nothing in the world to refer to, and its probability stops meaning what it says. This is the reading
-@koedinger2012kli give of a knowledge component applied to the model's failure: the grain at which the assumption
-holds is finer than the grain at which the model is applied. The three skills of the world of ideas line up with the
-sweep by the share of their ideas a question needs, times whole, hcf two thirds and fractions a third (Table 3.11), and
-the sweep over questions that ask for several components at once confirms that this share, not $k$, is what matters:
-when every question needs every component the skill is one unit again to every method, and when a question needs half
-the components BKT on the skill is right about half the time.
+The evidence across grains comes to the following. The granularity studies begin by explaining the one-grain result. The
+gradual worlds made learning continuous by construction, and one may ask whether they were rigged against a model that
+assumes a jump. The world of components answers that they were not: a skill made of several components, each learnt in
+exactly the jump BKT assumes, looks to BKT on the skill exactly as the gradual worlds did. With two components BKT at
+0.95 was right 59 to 71 % of the time and needed a threshold of 0.999 or 0.9999 to meet the standard; with four or more
+it met it at no threshold up to 0.9999, and its Brier score climbed towards that of the gradual worlds (Table 3.10). The
+mechanism is the one Proposition 2 points at. A skill of $k$ components is a mixture of $2^k$ states, not two, and the
+chance of a right answer on it rises in steps as the components are learnt, so from outside it looks like gradual
+learning; a model with one known state has nothing in the world to refer to, and its probability stops meaning what it
+says. This is the reading @koedinger2012kli give of a knowledge component applied to the model's failure: the grain at
+which the assumption holds is finer than the grain at which the model is applied. The three skills of the world of ideas
+line up with the sweep by the share of their ideas a question needs, times whole, hcf two thirds and fractions a third
+(Table 3.11), and the sweep over questions that ask for several components at once confirms that this share, not $k$, is
+what matters: when every question needs every component the skill is one unit again to every method, and when a question
+needs half the components BKT on the skill is right about half the time.
 
 The part of G1 that did not hold is instructive. The EMA and the streak rule were hypothesised to lose less from a
 coarse grain because they assume nothing about what a skill is, and in precision at their usual thresholds they lost
@@ -831,13 +816,12 @@ prediction test at one grain, where BKT beats the EMA, both place real students 
 tags carry learning that a known state can use than the gradual ones; the fits at the bound and the share wrong after
 a declaration at 0.95 say that the tags are not yet the components.
 
-### Answers to the hypotheses
-
-H1 asked whether BKT predicts held-out students' answers on the ASSISTments data better than the exponential moving
-average. On split seed 1 BKT's mean log-loss per answer is lower than the EMA's by 0.0225, with a 95 % interval of
-[−0.0264, −0.0183] from 10,000 resamples of the held-out students; the interval excludes zero and the estimate exceeds
-the 0.005 fixed as the smallest difference that counts, so by the rule fixed in advance BKT is better and H1 holds. The
-four other splits give the same verdict, with estimates from 0.021 to 0.025, and so does resampling whole classes.
+Each hypothesis can now be answered. H1 asked whether BKT predicts held-out students' answers on the ASSISTments data
+better than the exponential moving average. On split seed 1 BKT's mean log-loss per answer is lower than the EMA's by
+0.0225, with a 95 % interval of [−0.0264, −0.0183] from 10,000 resamples of the held-out students; the interval excludes
+zero and the estimate exceeds the 0.005 fixed as the smallest difference that counts, so by the rule fixed in advance
+BKT is better and H1 holds. The four other splits give the same verdict, with estimates from 0.021 to 0.025, and so does
+resampling whole classes.
 
 H2 asked whether, in simulated worlds that break BKT's assumptions, BKT needs fewer answers than the moving average and
 the streak rule before its declarations of mastery are right at least 90 % of the time. The answer depends on which
@@ -899,8 +883,6 @@ world that follows BKT's assumptions, BKT's declarations are right at least as o
 (Proposition 2), which means that such a world can check how well BKT is fitted but cannot be evidence for it, and
 which also says that a skill made of several such components is no longer such a world.
 
-### The research question
-
 The research question asked how the level of skill granularity affects the accuracy and reliability of mastery
 estimation in adaptive learning systems. The answer from this thesis has three parts. Too coarse a grain, one modelled
 skill for several things a student learns separately, lowers the accuracy of every method's declarations, in proportion
@@ -929,10 +911,8 @@ four or four times the practice, let BKT on each idea decide mastery too. Zeno's
 a hard question under the Elo model, was not part of the comparison, and it should be measured in the same way before
 the moving average replaces it.
 
-### What a system like Zeno should use
-
-What follows for a system from that answer is that the grain has to be chosen together with the questions, and the
-rule together with the grain.
+What follows from that answer for a system like Zeno is that the grain has to be chosen together with the questions, and
+the rule together with the grain.
 
 Zeno's learner model assumes that learning is gradual, and the world of components shows that a skill made of several
 ideas looks gradual from outside, so the gradual worlds and the coarse-grain worlds point the same way. At the grain of
@@ -974,14 +954,13 @@ required students to practise for most of the session, and many were never decla
 accept a lower standard and catch the errors through later review, but that is a choice about the cost of errors, which
 should be made openly and not left to a default threshold.
 
-### Internal validity
-
-The ASSISTments data were collected under a streak policy. The skill builders ended once a student had three right in
-a row, so a practice usually stops at the streak rule's own decision. The real data therefore cannot show the streak
-rule declaring mastery too early, and there are few answers after any declaration to judge it by. The same policy
-shapes H1 and G4: practices mostly end soon after a run of three right, so the prediction comparisons are made on
-sequences of that kind, and their results need not hold for students who keep practising for 20 or 30 questions. This is
-why H3 is exploratory and the comparisons of decisions are simulated.
+The threats to the validity of these conclusions are of four kinds, and the first is to internal validity. The
+ASSISTments data were collected under a streak policy. The skill builders ended once a student had three right in a row,
+so a practice usually stops at the streak rule's own decision. The real data therefore cannot show the streak rule
+declaring mastery too early, and there are few answers after any declaration to judge it by. The same policy shapes H1
+and G4: practices mostly end soon after a run of three right, so the prediction comparisons are made on sequences of
+that kind, and their results need not hold for students who keep practising for 20 or 30 questions. This is why H3 is
+exploratory and the comparisons of decisions are simulated.
 
 The H2 comparison was revised after a first simulated run, from equal cost to equal precision (section 2.2). A change
 made after seeing results can favour a conclusion. The revision chose a standard that has a meaning in every world,
@@ -1013,18 +992,17 @@ BKT's thresholds were first tried up to 0.9999, a range set before the results. 
 made after the results had been seen, so it is reported as a check beside H2's verdict, not in place of it. Its own
 upper end, $1 - 10^{-15}$, is set by the precision of the arithmetic.
 
-### External validity
-
-Every simulated world is of this thesis's own making. The BKT world gives BKT a home advantage that Proposition 2 makes
-exact, and the elo world follows the form of Zeno's own learner model, which gives gradual learning an advantage of the
-same kind. The world of components is the BKT world at a finer grain, so by the same proposition it favours BKT on each
-component: its precision at the right grain is a theorem there, up to fitting, and what the world can show is only how
-far the other grains fall short of it and what the finer grain costs in evidence. Real components are unlikely to be
-learnt in one step each. A result in a world holds only as far as its way of learning is believed, which is why each
-world is reported on its own and none is pooled. The world of ideas is of this thesis's making too: its decomposition
-of fractions was drawn by hand, its ideas are assumed to be learnt as one thing, which the three tests in
-`src/model/conceptGraph.ts` could check on real answers but have only been run on simulated ones, and its questions,
-though Zeno's own, are read for the ideas they need by a rule written for the purpose.
+The threat to external validity is that every simulated world is of this thesis's own making. The BKT world gives BKT a
+home advantage that Proposition 2 makes exact, and the elo world follows the form of Zeno's own learner model, which
+gives gradual learning an advantage of the same kind. The world of components is the BKT world at a finer grain, so by
+the same proposition it favours BKT on each component: its precision at the right grain is a theorem there, up to
+fitting, and what the world can show is only how far the other grains fall short of it and what the finer grain costs in
+evidence. Real components are unlikely to be learnt in one step each. A result in a world holds only as far as its way
+of learning is believed, which is why each world is reported on its own and none is pooled. The world of ideas is of
+this thesis's making too: its decomposition of fractions was drawn by hand, its ideas are assumed to be learnt as one
+thing, which the three tests in `src/model/conceptGraph.ts` could check on real answers but have only been run on
+simulated ones, and its questions, though Zeno's own, are read for the ideas they need by a rule written for the
+purpose.
 
 The simulated practice has every student answer a fixed number of questions per skill at one level or in a fixed
 cycle of levels, with every question teaching the same amount and no transfer between skills except the shared ideas.
@@ -1040,43 +1018,38 @@ from a few countries, and most carry no demographic information [@abdelrahman202
 Georgian, and the result transfers to them only as an expectation. The three grains of G4 are also only three: the
 data set's tags are one grain among many the same problems could be given, and the topic areas are the importer's.
 
-### Construct validity
+The threat to construct validity lies in what "mastered" means. In the gradual worlds it is a threshold on the true
+chance of a right answer, fixed in advance at 0.9. With 0.8 instead, BKT met the standard in one more setting and tied
+with EMA there (Table 3.6); with the search continued above 0.9999 it met the standard in all four settings (Table 3.7).
+The conclusion depends on this definition to some degree. In the component worlds the definition is sharper, every
+component known, and does not move with the model's grain, which is what makes the grains comparable; but it is also
+strict, since a learner one component short of sixteen is counted as not having mastered the skill, and a system might
+reasonably count them otherwise. In the corrected ASSISTments file a problem tagged with several skills is one row
+carrying the first of them, about one row in seven, so no answer weighs on several skills' sequences, but a problem that
+needed two skills is credited to one and the finest grain cannot tell which it tested. The importer counts a problem
+once for each skill where a file has a row per skill; on this file that is every problem once, so G4's rule of comparing
+grains on the first observation of each problem keeps every answer. BKT and EMA see the same sequences, so the
+comparison stays fair, and the bootstrap resamples whole students, which accounts for the dependence within a student. A
+run on the original file, with its row per skill, would show whether crediting a problem to one skill or to all of them
+matters at the finest grain.
 
-What "mastered" means in the gradual worlds is a threshold on the true chance of a right answer, fixed in advance at
-0.9. With 0.8 instead, BKT met the standard in one more setting and tied with EMA there (Table 3.6); with the search
-continued above 0.9999 it met the standard in all four settings (Table 3.7). The conclusion depends on this definition
-to some degree. In the component worlds the definition is sharper, every component known, and does not move with the
-model's grain, which is what makes the grains comparable; but it is also strict, since a learner one component short
-of sixteen is counted as not having mastered the skill, and a system might reasonably count them otherwise. In the
-corrected ASSISTments file a problem tagged with several skills is one row carrying the first of them, about one row
-in seven, so no answer weighs on several skills' sequences, but a problem that needed two skills is credited to one
-and the finest grain cannot tell which it tested. The importer counts a problem once for each skill where a file has a
-row per skill; on this file that is every problem once, so G4's rule of comparing grains on the first observation of
-each problem keeps every answer. BKT and EMA see the same sequences, so the comparison stays fair, and the bootstrap
-resamples whole students, which accounts for the dependence within a student. A run on the original file, with its
-row per skill, would show whether crediting a problem to one skill or to all of them matters at the finest grain.
+The threats to conclusion validity are statistical. H1 and G4 are the two confirmatory tests, each decided by one
+pre-specified interval. Everything else is reported as estimates with intervals, without tests, so there is no problem
+of multiple testing to correct for, but neither should any single interval among the many in this chapter be read as a
+confirmed finding. The bootstrap resamples students as if each were an independent draw, while students in one class
+share a teacher and lessons. The class-level resampling shows how much this matters for H1. On ASSISTments the
+class-level intervals are about half again as wide as the student-level ones and change no verdict. H1 and G4 are
+decided on one split of students, with four other splits reported for H1 to show whether the result depends on it, which
+is weaker than cross-validation over several folds.
 
-### Conclusion validity
-
-H1 and G4 are the two confirmatory tests, each decided by one pre-specified interval. Everything else is reported as
-estimates with intervals, without tests, so there is no problem of multiple testing to correct for, but neither should
-any single interval among the many in this chapter be read as a confirmed finding. The bootstrap resamples students as if
-each were an independent draw, while students in one class share a teacher and lessons. The class-level resampling
-shows how much this matters for H1. On ASSISTments the class-level intervals are about half again as wide as the student-level ones and change no
-verdict. H1 and G4
-are decided on one split of students, with four other splits reported for H1 to show whether the result depends on it,
-which is weaker than cross-validation over several folds.
-
-### Future work
-
-The most direct extension is more real data. The three grains the ASSISTments data set allows are only three, and the
-KDD Cup 2010 Cognitive Tutor data sets, which tag the same transactions with several knowledge-component models, would
-give a finer real grain. A second is to repeat the simulations with other seeds and other amounts of practice, and to
-fit the conjunctive model properly, by expectation–maximisation over the hidden states, which could only help the finer
-grain. A third is to compare the versions of BKT that relax its assumptions, with forgetting or with parameters for each
-student [@yudelson2013; @khajah2016], which may bring its probability closer to the true chance of mastery at a coarse
-grain, so that an ordinary threshold works, at the cost of more parameters. A fourth is a check of the ASSISTments
-results with each answer kept for one skill only.
+Several extensions follow, and the most direct is more real data. The three grains the ASSISTments data set allows are
+only three, and the KDD Cup 2010 Cognitive Tutor data sets, which tag the same transactions with several
+knowledge-component models, would give a finer real grain. A second is to repeat the simulations with other seeds and
+other amounts of practice, and to fit the conjunctive model properly, by expectation–maximisation over the hidden
+states, which could only help the finer grain. A third is to compare the versions of BKT that relax its assumptions,
+with forgetting or with parameters for each student [@yudelson2013; @khajah2016], which may bring its probability closer
+to the true chance of mastery at a coarse grain, so that an ordinary threshold works, at the cost of more parameters. A
+fourth is a check of the ASSISTments results with each answer kept for one skill only.
 
 A fifth follows from the world of ideas. Zeno's fractions generator now asks for one idea alone in two questions of
 five, and its adaptive condition keeps one probability per idea for each student and asks the form for the idea they

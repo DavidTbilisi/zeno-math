@@ -33,8 +33,6 @@ them along the whole trade-off, or at a point on it that is fixed in advance, an
 
 ## 1.2 Bayesian Knowledge Tracing, simple estimators and other student models
 
-### Bayesian Knowledge Tracing
-
 Bayesian Knowledge Tracing [@corbett1994] models each skill separately, as either known or not known. It is a hidden
 Markov model with two states and four parameters per skill. The first, $P(L_0)$, is the chance that the skill is
 known before any practice. The second, $P(T)$, is the chance of learning it at each practice opportunity. The third,
@@ -82,8 +80,6 @@ sure that not every skill is known, it puts a right answer down to guessing and 
 missing, so no single probability moves far. @xu2012subskills compared methods for tracing several subskills from such
 questions and found that how the evidence is shared among them decides how well each is traced.
 
-### Simple estimators and earlier comparisons
-
 The simplest estimate of whether a student has learnt a skill is the share of their answers on it that were right.
 It weighs a mistake made at the start, before any practice, as heavily as one made just now, which is wrong for a
 student who is learning. Two common alternatives weigh recent answers more.
@@ -117,8 +113,6 @@ fixing a single comparison and its verdict rule in advance, in testing predictio
 set, and in measuring decisions in simulated worlds built to break BKT's assumptions in stated ways. Neither earlier
 study varied the grain of the skill.
 
-### Other student models
-
 Three other families of student model are common, and two of them appear in this thesis only as reference rows.
 @abdelrahman2023survey survey knowledge tracing as a whole, from BKT to the deep models that now predict best on most
 benchmark data sets.
@@ -144,8 +138,6 @@ The Elo model and PFA are already implemented in the evaluation code this thesis
 prediction table as points of reference. They are not part of any hypothesis.
 
 ## 1.3 The grain of a skill model and how models are judged
-
-### Knowledge components and the grain of a skill model
 
 A knowledge component, in the framework of @koedinger2012kli, is "an acquired unit of cognitive function or structure
 that can be inferred from performance on a set of related tasks": the unit a student learns, which may or may not be
@@ -180,8 +172,6 @@ of the components. @xu2012subskills found exactly this in tracing subskills from
 What this thesis adds is a measurement of both failures in the same terms, the precision of declarations and the
 threshold each method needs, with the methods of section 1.2 beside BKT, and the condition on the questions under which
 the finer grain works.
-
-### How student models are judged
 
 A student model that gives probabilities is judged by how good those probabilities are, and @pelanek2015metrics
 reviews the metrics in use and the ways each can mislead. With $p_i$ the prediction and $c_i$ the outcome of answer
