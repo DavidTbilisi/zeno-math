@@ -26,11 +26,10 @@ and prediction quality where it is not (real data). *Reliability* is whether a m
 says (calibration), whether the threshold it needs stays put from one setting to another, and whether its decisions
 survive a change of grain.
 
-**Status of the chapter drafts.** The chapters `01-introduction.md` to `06-conclusion.md` were written under the
-working title (rewritten on 2026-10-11); the results of the one-grain comparison (H2, and the ideas world as a check)
-are in; the ASSISTments results are [TODO]. The chapters now need the reframing below: the introduction and
-background to open on grain, the method and results to add the granularity studies (G1 to G4), the discussion to
-answer the new question. Until each chapter is reworked, its text stands as the foundation part.
+**Status of the chapter drafts.** The chapters `00-abstract.md` to `06-conclusion.md` were reworked under the approved
+title on 2026-10-14: the introduction and background open on grain, the method and results carry the granularity
+studies G1 to G4 with the sweeps' numbers, and the discussion and conclusion answer the research question. The
+ASSISTments results (H1, H3, G4 on real data) are [TODO] until the data file is imported.
 
 **Methods compared**, at every grain.
 
