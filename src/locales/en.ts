@@ -230,6 +230,9 @@ export const en = {
     short: "Short division (bus stop) for small divisors: work out each quotient digit in your head and carry the remainder as a small digit to the next place.",
   },
   divDecimals: "Decimal places",
+  divBlocks: "Show with base-ten blocks",
+  divBlocksHint: "Each step shares one place among the groups. What is left is traded for ten of the next place (the blue bundle): that is the digit brought down.",
+  divBlocksOff: "Blocks are drawn for whole numbers up to 999 divided by 1 to 9, without decimal places.",
   multiplication: "Multiplication",
   stepByStep: "Step by step",
   multStyles: {
@@ -1701,6 +1704,7 @@ export const en = {
     divRepeat: "1 ÷ 7 (repeating)",
     divCorner: "9372 : 12 (corner)",
     divShort: "7236 ÷ 6 (short)",
+    divBlocks: "405 ÷ 3 (blocks)",
     mulBig: "123 × 45",
     mulLattice: "Lattice 234 × 56",
     mulLatticeBig: "Lattice 4567 × 382",
