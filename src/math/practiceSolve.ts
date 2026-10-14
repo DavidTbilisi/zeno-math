@@ -7,6 +7,8 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
   // Each tool checks its own spec; the generator builds them in the tool's format.
   const s = sol.spec as never;
   switch (sol.kind) {
+    case "compare":
+      return (await import("./compare")).renderCompare(s);
     case "model":
       return (await import("./models")).renderModel(s);
     case "algebra":

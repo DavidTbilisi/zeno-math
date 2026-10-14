@@ -434,7 +434,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 42 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 43 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -442,8 +442,12 @@ UI in English, Russian and Georgian.
     "multiply out the brackets", "standard form" and "check your rounding" are said, not marked wrong
   - A wrong answer that a known mistake gives is named, with a way to see it: tops and bottoms of fractions added,
     (a + b)² as a² + b², a negative power taken as a negative number, × and ÷ worked from left to right after + and −,
-    digits cut off instead of rounded, an inequality's sign not turned round, the right size with the wrong sign, and
-    more (17 in all, in [src/math/mistakes.ts](src/math/mistakes.ts)); it still counts as a miss
+    digits cut off instead of rounded, an inequality's sign not turned round, the right size with the wrong sign, more
+    digits after the point taken for a bigger decimal, and more (24 in all, in [src/math/mistakes.ts](src/math/mistakes.ts));
+    it still counts as a miss
+  - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
+    and fractions; the sign is typed or picked from three buttons, and the worked solution lays two pencils across the
+    towers to draw it
   - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
     and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
@@ -774,7 +778,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (42 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (43 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -800,7 +804,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 333 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 344 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.
