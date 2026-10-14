@@ -6,7 +6,7 @@ import type { ExcalidrawEmbeddableElement, NonDeleted } from "@excalidraw/excali
 import { useI18n } from "../i18n";
 import { LIVE_SIZES, type LiveGraphState, type LiveKind } from "../math/live";
 import { liveDataOf, type LiveData } from "./element";
-import { Clock, Coin, Compare, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
+import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
 import { Chance } from "./Chance";
 import { LongDivision } from "./LongDivision";
 import type { PieceProps } from "./ui";
@@ -34,6 +34,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   graph: LiveGraph,
   chance: Chance,
   compare: Compare,
+  compareFractions: CompareFractions,
   division: LongDivision,
 };
 

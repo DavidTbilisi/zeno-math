@@ -8,6 +8,7 @@ import {
   renderModel,
   type BarModelSpec,
   type BondSpec,
+  type DialogModelType,
   type FractionSpec,
   type ModelSpec,
   type ModelType,
@@ -18,14 +19,12 @@ import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
 import { PlaceValueMat } from "./PlaceValueMat";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, stepCount, type MultiplySpec } from "../math/multiply";
-import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, type DivisionSpec } from "../math/division";
-import { blocksFit } from "../math/divisionBlocks";
 import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
 import { PERCENT_KINDS, percRatioStepCount, RATIO_KINDS, type PercRatioSpec } from "../math/percratio";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: ModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "division", "fracop", "percratio"];
+const TYPES: DialogModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "fracop", "percratio"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
@@ -48,7 +47,9 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<ModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, division: t.division, fracop: t.fracOps, percratio: t.percRatio };
+  const tabLabel: Record<DialogModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, fracop: t.fracOps, percratio: t.percRatio };
+  // A division picture from before long division moved onto the board: shown, but no longer edited here.
+  const oldDivision = spec.type === "division";
 
   return (
     <Modal
@@ -57,29 +58,32 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered || oldDivision} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
             {initial ? t.update : t.insert}
           </button>
         </>
       }
     >
       {!initial && (
-        <Tabs items={TYPES} value={type} onChange={setType} label={(k) => tabLabel[k]} />
+        <Tabs items={TYPES} value={type as DialogModelType} onChange={setType} label={(k) => tabLabel[k]} />
       )}
 
+      {oldDivision ? (
+        <small className="hint">{t.divisionMoved}</small>
+      ) : (
       <div className="field">
         <span>{t.examples}</span>
         <div className="snippets">
-          {PRESETS[type].map((p) => (
+          {PRESETS[type as DialogModelType].map((p) => (
             <button key={p.key} className="chip text" onClick={() => update(type, structuredClone(p.spec) as never)}>
               {t.presets[p.key as keyof typeof t.presets]}
             </button>
           ))}
         </div>
       </div>
+      )}
 
       {spec.type === "multiply" && <MultiplyEditor spec={spec} onChange={(s) => update("multiply", s)} />}
-      {spec.type === "division" && <DivisionEditor spec={spec} onChange={(s) => update("division", s)} />}
       {spec.type === "fracop" && <FracOpEditor spec={spec} onChange={(s) => update("fracop", s)} />}
       {spec.type === "percratio" && <PercRatioEditor spec={spec} onChange={(s) => update("percratio", s)} />}
       {spec.type === "placeValue" && <PlaceValueMat spec={spec} onChange={(s) => update("placeValue", s)} />}
@@ -322,49 +326,6 @@ function FracOpEditor({ spec, onChange }: { spec: FracOpSpec; onChange: (s: Frac
         <input type="text" className="mono" spellCheck={false} value={spec.b} aria-label="b" onChange={(e) => set({ b: e.target.value })} />
       </div>
       <small className="hint">{t.fracOpHint[spec.op]}</small>
-      <div className="field">
-        <span>
-          {t.stepByStep}: {shown} / {n}
-        </span>
-        <input
-          type="range"
-          min={0}
-          max={n}
-          step={1}
-          value={shown}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            onChange({ ...spec, step: v >= n ? 999 : v });
-          }}
-        />
-      </div>
-    </>
-  );
-}
-
-function DivisionEditor({ spec, onChange }: { spec: DivisionSpec; onChange: (s: DivisionSpec) => void }) {
-  const { t } = useI18n();
-  const n = divisionStepCount(spec);
-  const shown = Math.min(spec.step, n);
-  const set = (patch: Partial<DivisionSpec>) => onChange({ ...spec, ...patch, step: 999 });
-  return (
-    <>
-      <Segmented className="wrap" items={DIVISION_STYLES} value={spec.style} onChange={(s) => set({ style: s })} label={(s) => t.divStyles[s]} />
-      <div className="range-grid mult-inputs">
-        <input type="number" min={0} max={DIVISION_LIMITS.a} value={spec.a} aria-label="a" onChange={(e) => set({ a: clampInt(e.target.value, 0, DIVISION_LIMITS.a) })} />
-        <span className="mult-sign">{spec.style === "corner" ? ":" : "÷"}</span>
-        <input type="number" min={1} max={DIVISION_LIMITS.b} value={spec.b} aria-label="b" onChange={(e) => set({ b: clampInt(e.target.value, 1, DIVISION_LIMITS.b) })} />
-        <label>
-          <span>{t.divDecimals}</span>
-          <input type="number" min={0} max={DIVISION_LIMITS.decimals} value={spec.decimals} onChange={(e) => set({ decimals: clampInt(e.target.value, 0, DIVISION_LIMITS.decimals) })} />
-        </label>
-      </div>
-      <small className="hint">{t.divHint[spec.style]}</small>
-      <label className="check">
-        <input type="checkbox" checked={!!spec.blocks} onChange={(e) => onChange({ ...spec, blocks: e.target.checked })} />
-        <span>{t.divBlocks}</span>
-      </label>
-      {spec.blocks && <small className="hint">{blocksFit(spec.a, spec.b, spec.decimals) ? t.divBlocksHint : t.divBlocksOff}</small>}
       <div className="field">
         <span>
           {t.stepByStep}: {shown} / {n}

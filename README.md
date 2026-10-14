@@ -60,9 +60,6 @@ UI in English, Russian and Georgian.
     what percent, the whole from a part, increase/decrease with a multiplier, percentage change, reverse
     percentages (with the classic mistake shown in red), simple vs compound interest; simplifying ratios (also
     decimals and fractions), sharing a total in a ratio, one part known, and proportions with a ratio table
-  - *Division*: long division step by step (divide, multiply, subtract, bring down) in three school layouts —
-    the English bracket, the European corner layout (уголком / კუთხით) and short division with carried
-    remainders; remainders as mixed numbers, decimal places, and repeating decimals (1 ÷ 7 = 0.(142857))
 - **🧊 3D (three.js)** — rotate with the mouse, then insert a snapshot (stays editable, camera angle is saved)
   - *Solids*: cuboid, prism (regular 3–8-gon base), square pyramid, cylinder, cone, sphere —
     dimension labels, see-through mode, volume & surface-area formulas
@@ -527,8 +524,12 @@ UI in English, Russian and Georgian.
     "over time" one outcome's relative frequency settling on p on a log scale
   - *Comparing with blocks*: two towers of 0 to 10 blocks over number cards; pick <, = or > (green when right), and
     "Join with pencils" slides the towers to a middle line and joins their tops and bottoms, which draws the sign
+  - *Comparing fractions*: the same for two fractions, as bars of equal height cut into 1 to 12 parts with the shaded
+    parts as the towers; "Same-size pieces" cuts both bars into the lowest common parts (2/3 and 3/4 as 8 and 9
+    twelfths)
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
-    corner or short layout, stepped forward and back; "Your turn" asks for each quotient digit first and answers a
+    corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
+    forward and back; "Your turn" asks for each quotient digit first and answers a
     wrong one with the multiplication or subtraction that shows why. With 🧱 blocks (up to 999 ÷ 9) the pupil shares
     hundreds, tens and ones into the groups by hand: drag a block into a group (or tap it to deal it), drop one that
     can't go round on "1 → 10" to change it for ten of the next place, and the written working fills in as each place
@@ -565,11 +566,8 @@ The dialogs show a live preview; a step slider reveals the working one step at a
 
 <table>
 <tr>
-<td align="center" valign="top"><img src="docs/screenshots/dialog-division.png" width="430" alt="Models dialog: long division"><br><sub>Models → Division, with the step slider</sub></td>
 <td align="center" valign="top"><img src="docs/screenshots/dialog-graph-theory.png" width="430" alt="Graph theory dialog"><br><sub>Graph theory: type edges, pick a layout</sub></td>
-</tr>
-<tr>
-<td align="center" valign="top" colspan="2"><img src="docs/screenshots/dialog-georgian.png" width="560" alt="The interface in Georgian"><br><sub>The whole interface is available in English, Russian and Georgian</sub></td>
+<td align="center" valign="top"><img src="docs/screenshots/dialog-georgian.png" width="430" alt="The interface in Georgian"><br><sub>The whole interface is available in English, Russian and Georgian</sub></td>
 </tr>
 </table>
 

@@ -871,6 +871,23 @@ function comparePreview(): Piece[] {
   ];
 }
 
+function compareFractionsPreview(): Piece[] {
+  const [w, whole, mid, gap] = [40, 72, 40, 60];
+  // The shaded parts of 2/3 and 3/4, centred on the middle line, with the pencils joining them.
+  const bar = (x: number, n: number, d: number, fill: string) => Array.from({ length: n }, (_, i) => rect(x, mid + (n / 2 - 1 - i) * (whole / d), w, whole / d, { fill, width: 1 }));
+  const right = w + gap;
+  const [ha, hb] = [(2 / 3) * whole, (3 / 4) * whole];
+  return [
+    ...bar(0, 2, 3, FILL.blue),
+    ...bar(right, 3, 4, FILL.red),
+    seg([w, mid - ha / 2], [right, mid - hb / 2], { color: "#8d5a3b", width: 4 }),
+    seg([w, mid + ha / 2], [right, mid + hb / 2], { color: "#5f3dc4", width: 4 }),
+    text(w / 2, 104, "2/3", 20),
+    text(w + gap / 2, 104, "<", 24),
+    text(right + w / 2, 104, "3/4", 20),
+  ];
+}
+
 function divisionPreview(): Piece[] {
   // 624 ÷ 12 under the long-division bracket, 52 on top and the first step's working.
   const col = (c: number) => 60 + c * 22;
@@ -901,6 +918,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveGraph", group: "live", build: graphPreview, live: "graph" },
   { id: "liveChance", group: "live", build: chancePreview, live: "chance" },
   { id: "liveCompare", group: "live", build: comparePreview, live: "compare" },
+  { id: "liveCompareFractions", group: "live", build: compareFractionsPreview, live: "compareFractions" },
   { id: "liveDivision", group: "live", build: divisionPreview, live: "division" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
