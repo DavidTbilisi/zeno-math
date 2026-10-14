@@ -7,6 +7,10 @@ import {
   clockTime,
   COMPARE_MAX,
   compareSign,
+  FRACTION_PARTS,
+  fracNumbers,
+  fracSign,
+  samePieces,
   counters,
   DIE_SIDES,
   divisionAsk,
@@ -199,4 +203,34 @@ test("long division on the board: answering each digit walks the whole division,
   }
   assert.deepEqual(divisionNumbers({ a: -5, b: 0, decimals: 99 }), { a: 0, b: 1, decimals: 10 });
   assert.deepEqual(divisionNumbers({ a: 12.6, b: Number.NaN, decimals: 2 }), { a: 13, b: 1, decimals: 2 });
+});
+
+test("fraction bars compare like towers, and same-size pieces keep each amount", () => {
+  assert.equal(fracSign({ n: 2, d: 3 }, { n: 3, d: 4 }), "<");
+  assert.equal(fracSign({ n: 1, d: 2 }, { n: 2, d: 4 }), "=");
+  assert.equal(fracSign({ n: 1, d: 3 }, { n: 1, d: 4 }), ">");
+  assert.deepEqual(samePieces({ n: 2, d: 3 }, { n: 3, d: 4 }), { d: 12, a: 8, b: 9 });
+  assert.deepEqual(samePieces({ n: 1, d: 4 }, { n: 5, d: 6 }), { d: 12, a: 3, b: 10 });
+  assert.deepEqual(fracNumbers({ n: 9, d: 40 }), { n: 9, d: FRACTION_PARTS });
+  assert.deepEqual(fracNumbers({ n: 5, d: 3 }), { n: 3, d: 3 });
+  assert.deepEqual(fracNumbers({ n: -1, d: 0 }), { n: 0, d: 1 });
+  const [whole, floor, mid] = [240, 286, 166];
+  for (let d = 1; d <= FRACTION_PARTS; d++)
+    for (let n = 0; n <= d; n++)
+      for (let e = 1; e <= FRACTION_PARTS; e++)
+        for (let m = 0; m <= e; m++) {
+          const [a, b] = [{ n, d }, { n: m, d: e }];
+          // The shaded parts are the towers: the pencils open towards the bigger fraction, parallel only for equal ones.
+          const [ta, ba] = towerSpan(n, whole / d, floor, mid, 1);
+          const [tb, bb] = towerSpan(m, whole / e, floor, mid, 1);
+          const sign = fracSign(a, b);
+          if (sign === "=") assert.ok(close(ba - ta, bb - tb));
+          else assert.equal(compareSign(ba - ta, bb - tb), sign);
+          assert.equal(close(tb - ta, bb - ba), sign === "=");
+          // Cut into the same pieces, the amounts and the comparison stay the same.
+          const s = samePieces(a, b);
+          assert.ok(Number.isInteger(s.a) && Number.isInteger(s.b) && s.d % d === 0 && s.d % e === 0);
+          assert.ok(close(s.a / s.d, n / d) && close(s.b / s.d, m / e));
+          assert.equal(compareSign(s.a, s.b), sign);
+        }
 });

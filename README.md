@@ -524,6 +524,9 @@ UI in English, Russian and Georgian.
     "over time" one outcome's relative frequency settling on p on a log scale
   - *Comparing with blocks*: two towers of 0 to 10 blocks over number cards; pick <, = or > (green when right), and
     "Join with pencils" slides the towers to a middle line and joins their tops and bottoms, which draws the sign
+  - *Comparing fractions*: the same for two fractions, as bars of equal height cut into 1 to 12 parts with the shaded
+    parts as the towers; "Same-size pieces" cuts both bars into the lowest common parts (2/3 and 3/4 as 8 and 9
+    twelfths)
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

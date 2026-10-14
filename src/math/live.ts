@@ -1,7 +1,7 @@
 // The arithmetic behind the live pieces on the board (the ones that respond to clicks and drags): a geared clock,
 // chance devices and the tallies of an experiment, dot multiplication, the counts shown under a ten frame or a
-// hundred square, towers of blocks to compare, and long division a step at a time. Kept free of React and Excalidraw
-// so it can be tested on its own.
+// hundred square, towers of blocks and bars of fractions to compare, and long division a step at a time. Kept free of
+// React and Excalidraw so it can be tested on its own.
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import type { Sharing } from "./sharing";
 
@@ -172,6 +172,31 @@ export function towerSpan(n: number, block: number, floor: number, mid: number, 
   return [bottom - n * block, bottom];
 }
 
+// ——— Comparing two fractions with bars ———
+
+/** n of d equal parts: a fraction from 0 to 1, as a bar cut into d parts with n shaded. */
+export type Frac = { n: number; d: number };
+export const FRACTION_PARTS = 12;
+/** The most parts the bars are cut into for "same-size pieces" before the lines get too close to see. */
+export const SAME_PIECES_MAX = 48;
+
+const gcdOf = (a: number, b: number): number => (b ? gcdOf(b, a % b) : a);
+
+/** The parts kept from 1 to 12 and the shaded ones from none to all of them. */
+export function fracNumbers({ n, d }: Frac): Frac {
+  const parts = Math.max(1, Math.min(FRACTION_PARTS, Math.round(d) || 1));
+  return { n: Math.max(0, Math.min(parts, Math.round(n) || 0)), d: parts };
+}
+
+/** n/d against m/e by cross-multiplying: n·e against m·d. */
+export const fracSign = (a: Frac, b: Frac): CompareSign => compareSign(a.n * b.d, b.n * a.d);
+
+/** Both fractions cut into the same parts, the fewest that will do: 2/3 and 3/4 are 8/12 and 9/12. */
+export function samePieces(a: Frac, b: Frac): { d: number; a: number; b: number } {
+  const d = (a.d / gcdOf(a.d, b.d)) * b.d;
+  return { d, a: (a.n * d) / a.d, b: (b.n * d) / b.d };
+}
+
 // ——— Long division ———
 
 /**
@@ -234,6 +259,7 @@ export type LiveStates = {
   graph: LiveGraphState;
   chance: { device: Device; tally: Tally; view: ChanceView; relative: boolean; theory: boolean; focus: number; last: number };
   compare: { a: number; b: number; joined: boolean; guess: CompareSign | null };
+  compareFractions: { a: Frac; b: Frac; joined: boolean; guess: CompareSign | null; same: boolean };
   division: LiveDivision;
 };
 export type LiveKind = keyof LiveStates;
@@ -251,6 +277,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   graph: [640, 560],
   chance: [680, 500],
   compare: [380, 530],
+  compareFractions: [400, 580],
   division: [760, 820],
 };
 
@@ -270,6 +297,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     graph: DEFAULT_LIVE_GRAPH,
     chance: { device: { kind: "die", sides: 6 }, tally: emptyTally(6), view: "bars", relative: true, theory: true, focus: 5, last: -1 },
     compare: { a: 5, b: 2, joined: false, guess: null },
+    compareFractions: { a: { n: 2, d: 3 }, b: { n: 3, d: 4 }, joined: false, guess: null, same: false },
     division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null },
   };
   return structuredClone(start[kind]);
