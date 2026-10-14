@@ -1,10 +1,10 @@
 # Title defense, 13 October 2026
 
 Tuesday, 18:00 Tbilisi time, room 303, University of Georgia. The supervisor and an expert attend. The task is to
-present what the thesis will work on. No length or slides are prescribed, so the talk below runs about seven minutes
+present what the thesis will work on. No length or slides are prescribed, so the talk below runs about ten minutes
 and works without slides. The title was approved at that defence; the talk and the answers below are kept current
-with the results, and on 14 October they were updated with the granularity sweeps (G1 to G4), so that the same talk
-serves for the thesis defence.
+with the results, and on 14 October they were updated with the granularity sweeps (G1 to G4) and with the ASSISTments
+results (H1, H3 and G4 on real data), so that the same talk serves for the thesis defence.
 
 ## Title
 
@@ -36,11 +36,18 @@ The foundation is a comparison of the three rules at one grain: BKT, a moving av
 and three in a row. Two parts of it are mathematics. I prove exactly when "three in a row" is a special case of the
 moving average, and I prove that BKT, in a world that works the way BKT assumes, is right at least as often as its
 threshold says, which is why a comparison run only in BKT's own world would favour BKT by construction. The rest is
-evidence. On real students' answers, the ASSISTments data set, a public, anonymised record of several thousand US
-middle-school students, BKT and the moving average predict the next answer of students they were not fitted on; that
-is one of two confirmatory tests, with the size of difference that counts fixed in advance. In simulation, where I know
-whether each simulated student has really learnt the skill, I measure the decisions themselves: how much practice each
-rule needs before its declarations are right nine times in ten.
+evidence. On real students' answers, the ASSISTments data set, a public, anonymised record of four thousand US
+middle-school students and a quarter of a million answers, BKT and the moving average predict the next answer of
+students they were not fitted on; that is one of two confirmatory tests, with the size of difference that counts fixed
+in advance. BKT wins it: its log-loss per answer is lower by 0.0225, with an interval that excludes zero on the split
+that decides, on four other splits, and when whole classes are resampled instead of students. The margin is real and
+more than four times the smallest difference that counts, but it is modest, and the Elo model Zeno already runs
+predicts better than both. On the same held-out practices the three rules mostly agree: BKT at 0.95 is the most
+generous, declaring mastery in 69 % of practices against 48 % for the simpler rules and one to one and a half answers
+sooner, and the next three answers after any rule's declaration are right 77 to 80 % of the time, so the real data
+cannot say which rule is right. In simulation, where I know whether each simulated student has really learnt the skill,
+I measure the decisions themselves: how much practice each rule needs before its declarations are right nine times in
+ten.
 
 That simulation gave the result the granularity question grew from. Where students learn in a jump, as BKT assumes,
 BKT needs one to two answers fewer than the simpler rules. Where students learn gradually, no threshold up to 0.9999
@@ -77,8 +84,14 @@ The third study goes too fine. Modelling a component that is learnt as one thing
 for no gain in precision, doubles the Brier score with each split, and degenerates the fits: four in five of them at
 the bound when split in four. That is a sign a system could read from its own parameters. Too many components for the
 practice is different: the fits stay sound, and the model simply never declares. The fourth study takes the same real
-answers from ASSISTments and models them at three grains, the data set's own tags, the topic areas and one skill for
-everything, with one pre-specified test of whether the finer grain predicts better; it is ready to run.
+answers from ASSISTments and models them at three grains, the data set's own tags, 110 skills, the five topic areas
+they fall into, and one skill for everything, with one pre-specified test of whether the finer grain predicts better.
+It does: BKT at the data set's grain beats BKT at one skill by 0.035 in log-loss per answer, with an interval that
+excludes zero, and each step of coarsening costs. The moving average goes the other way, predicting slightly better the
+coarser the grain, because it has no skill parameters to lose, so coarsening costs BKT 0.041 per answer more than it
+costs the moving average. The declarations move with the grain as in the simulations, BKT needing three answers at the
+finest grain and nine at the coarsest, and even at the finest grain two thirds of its fitted skills have a guess or
+slip at the bound, which says that the data set's tags are not yet the components the students learn.
 
 The software is built. Over the last year I built Zeno, a self-hosted maths whiteboard with a practice engine and a
 learner model for Georgian classrooms, and every experiment runs inside its code and is reproducible by one command.
@@ -123,9 +136,10 @@ assumptions; a pre-specified test on held-out students; and an answer to a pract
 A careful replication with a stated hypothesis is a sound bachelor's contribution.
 
 **What exactly is proved, and what is only shown?** Two statements are proved: when the streak rule equals a
-moving average, and that BKT's declarations are right at least θ of the time when the world matches BKT. H1 is
-tested on real students. H2 is shown on simulated students, so it holds only as far as each simulated world is
-believed, which is why every world is reported separately. Which rule Zeno should use is a judgement drawn from these.
+moving average, and that BKT's declarations are right at least θ of the time when the world matches BKT. H1 and G4
+are tested on real students by a rule fixed in advance, and both hold. H2 and the other granularity studies are shown
+on simulated students, so they hold only as far as each simulated world is believed, which is why every world is
+reported separately. Which rule Zeno should use is a judgement drawn from these.
 
 **Why not deep knowledge tracing?** It needs large training data, is hard to explain to a teacher, and is not what
 deployed systems use to decide mastery. The question is about the decision rule, not the most accurate predictor.
@@ -229,6 +243,23 @@ probability at 0.95 was mostly wrong wherever the skill was really several thing
 threshold that worked. On the real data the three rules are followed by nearly the same share right, so the data
 cannot pick the rule; the simulations can, and they favour the rule whose failure is milder.
 
+**Do the real data agree with the simulations?** Where they can be compared, yes. The simulations say that a model
+with a known state gains from a grain at which there is one and loses more when there is not, and that a rule which
+assumes nothing about the skill gains and loses less; on ASSISTments BKT loses 0.035 per answer from the finest grain
+to the coarsest and the moving average loses nothing. The simulations say that a skill which is really several things
+shows itself in BKT's fits and in generous declarations; on ASSISTments two thirds of BKT's fits at the finest grain
+have a guess or slip at the bound, and BKT at 0.95 declares in a fifth more practices than the simpler rules with no
+higher share right afterwards. What the real data cannot give is the truth, so they cannot say which rule's
+declarations are right; that is the part only the simulations answer. One difference is worth stating: on the real
+data the moving average is slightly better at the coarser grain, not merely indifferent, because a longer sequence
+gives it more to average over.
+
+**Why is the moving average better at the coarser grain on real data?** It carries no parameters per skill, only a
+rate and a start, so coarsening takes nothing from it, and a student's whole history is a longer sequence than their
+practice on one skill, which gives the average more to work with. The gain is small, 0.007 per answer from 110 skills
+to one, and it is a gain in prediction, not in deciding mastery: at the coarsest grain every rule is followed by a
+share right within six points of the data set's overall rate, so a declaration there means little.
+
 **What is the role of Zeno, the platform?** It is the context and the code base, not what is evaluated. The thesis
 describes it briefly; the experiment is the contribution.
 
@@ -240,7 +271,7 @@ describes it briefly; the experiment is the contribution.
 | Preliminary draft | 15 pages | the method in full, the simulation results |
 | Final thesis | 30 pages | the ASSISTments results, discussion, threats to validity, conclusion, abstracts in Georgian and English |
 
-Where it stands on 14 October: the chapters are reworked under the approved title (59 pages as a PDF), with the
+Where it stands on 14 October: the chapters are reworked under the approved title (61 pages as a PDF), with the
 abstracts in Georgian and English, the method in full, the one-grain results including the check above 0.9999 and the
 calibration of each method's score, the four granularity studies with their sweeps, the discussion and the threats to
 validity, and the ASSISTments results for H1, H3 and G4 on the corrected 2009–2010 file.
