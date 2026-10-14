@@ -1,6 +1,9 @@
 // The arithmetic behind the live pieces on the board (the ones that respond to clicks and drags): a geared clock,
-// chance devices and the tallies of an experiment, dot multiplication, and the counts shown under a ten frame or a
-// hundred square. Kept free of React and Excalidraw so it can be tested on its own.
+// chance devices and the tallies of an experiment, dot multiplication, the counts shown under a ten frame or a
+// hundred square, towers of blocks to compare, and long division a step at a time. Kept free of React and Excalidraw
+// so it can be tested on its own.
+import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
+import type { Sharing } from "./sharing";
 
 // ——— Clock ———
 
@@ -169,6 +172,33 @@ export function towerSpan(n: number, block: number, floor: number, mid: number, 
   return [bottom - n * block, bottom];
 }
 
+// ——— Long division ———
+
+/**
+ * A long division the class steps through; `turn` asks for each quotient digit before it is drawn. With `blocks`, the
+ * pupil shares base-ten blocks into the groups by hand: `share` is that arrangement (null: as at the start), and the
+ * written working follows it.
+ */
+export type LiveDivision = { a: number; b: number; decimals: number; style: DivisionStyle; blocks: boolean; step: number; turn: boolean; share: Sharing | null };
+
+/** The numbers within the division tool's limits: a whole a ≥ 0, a whole b ≥ 1, 0 to 10 decimal places. */
+export function divisionNumbers(d: Pick<LiveDivision, "a" | "b" | "decimals">): Pick<LiveDivision, "a" | "b" | "decimals"> {
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(Number.isFinite(v) ? v : lo)));
+  return { a: clamp(d.a, 0, DIVISION_LIMITS.a), b: clamp(d.b, 1, DIVISION_LIMITS.b), decimals: clamp(d.decimals, 0, DIVISION_LIMITS.decimals) };
+}
+
+export type DivisionAsk = { cur: number; b: number; q: number };
+
+/** The question for the next step (how many times b goes into the number at that point), or null when all are done. */
+export function divisionAsk(d: LiveDivision): DivisionAsk | null {
+  const { steps } = planDivision(d.a, d.b, d.decimals);
+  const s = steps[d.step];
+  return s ? { cur: s.cur, b: d.b, q: s.q } : null;
+}
+
+/** A guessed quotient digit: right, too big (g × b is more than the number), or too small (b still fits in what is left). */
+export const judgeDigit = (ask: DivisionAsk, g: number): "right" | "tooBig" | "tooSmall" => (g === ask.q ? "right" : g > ask.q ? "tooBig" : "tooSmall");
+
 // ——— The kinds of live piece, their sizes and where each starts ———
 
 export type LiveParam = { v: number; min: number; max: number };
@@ -204,6 +234,7 @@ export type LiveStates = {
   graph: LiveGraphState;
   chance: { device: Device; tally: Tally; view: ChanceView; relative: boolean; theory: boolean; focus: number; last: number };
   compare: { a: number; b: number; joined: boolean; guess: CompareSign | null };
+  division: LiveDivision;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -220,6 +251,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   graph: [640, 560],
   chance: [680, 500],
   compare: [380, 530],
+  division: [760, 820],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -238,6 +270,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     graph: DEFAULT_LIVE_GRAPH,
     chance: { device: { kind: "die", sides: 6 }, tally: emptyTally(6), view: "bars", relative: true, theory: true, focus: 5, last: -1 },
     compare: { a: 5, b: 2, joined: false, guess: null },
+    division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null },
   };
   return structuredClone(start[kind]);
 }

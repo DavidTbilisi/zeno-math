@@ -569,6 +569,13 @@ input.invalid { border-color: var(--danger); }
 .live-chip { padding: 1px 8px; border: 1px solid #dee2e6; border-radius: 10px; background: #f1f3f5; font-size: 13px; }
 .live-hint { margin: 0; font-size: 12px; color: #868e96; text-align: center; }
 .live-note { font-size: 12px; color: #868e96; }
+.live-stage { display: flex; align-items: center; justify-content: center; flex: none; }
+.live .live-num { width: 7em; font-family: ui-monospace, Menlo, Consolas, monospace; text-align: right; }
+.live-digits { display: inline-flex; gap: 3px; }
+.live-digits .live-btn { min-width: 2em; font-weight: 700; }
+.live-said { margin: 0; font-size: 13px; color: #c92a2a; text-align: center; }
+.live-said.ok { color: #2f9e44; }
+.live-said.info { color: #495057; }
 .live-sign { display: inline-block; min-width: 1em; font-size: 20px; line-height: 1; }
 .live-snap {
   position: absolute; right: 4px; bottom: 4px; padding: 2px 4px; border: none; background: transparent;

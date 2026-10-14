@@ -525,8 +525,17 @@ UI in English, Russian and Georgian.
   - *Chance experiment*: a coin, a die (4 to 20 sides), two dice, a spinner or a bag of coloured counters, run ×1, ×10,
     ×100 or ×1000 at a click (up to a million); the results as counts or relative frequencies against theory, and
     "over time" one outcome's relative frequency settling on p on a log scale
+  - *Comparing with blocks*: two towers of 0 to 10 blocks over number cards; pick <, = or > (green when right), and
+    "Join with pencils" slides the towers to a middle line and joins their tops and bottoms, which draws the sign
+  - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
+    corner or short layout, stepped forward and back; "Your turn" asks for each quotient digit first and answers a
+    wrong one with the multiplication or subtraction that shows why. With 🧱 blocks (up to 999 ÷ 9) the pupil shares
+    hundreds, tens and ones into the groups by hand: drag a block into a group (or tap it to deal it), drop one that
+    can't go round on "1 → 10" to change it for ten of the next place, and the written working fills in as each place
+    is shared out
   - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
-    the sliders' values put in); the graph and the experiment are in the Algebra and Discrete menus too
+    the sliders' values put in); the graph, the experiment and long division are in the Algebra, Discrete and
+    Arithmetic menus too
 - **📐 Shapes**: a tab in the board's side panel (next to Excalidraw's Library) with 72 ready-made maths pieces in
   seven groups — a ruler, half and full protractors with both scales, set squares and a clock face; axes with a grid,
   the first quadrant, axes for sketching, 3D axes, number lines, the unit circle, square grid paper and isometric dot

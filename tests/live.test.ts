@@ -9,10 +9,13 @@ import {
   compareSign,
   counters,
   DIE_SIDES,
+  divisionAsk,
+  divisionNumbers,
   dotProduct,
   dragHand,
   emptyTally,
   handAngles,
+  judgeDigit,
   MAX_TRIALS,
   multiplesOf,
   outcomes,
@@ -24,6 +27,7 @@ import {
   wrapDay,
   type Device,
 } from "../src/math/live.ts";
+import { planDivision } from "../src/math/division.ts";
 import { allParams, compileWith, paramsOf, sample, slope, stepFor, substitute, syncParams, zoomView } from "../src/math/liveGraph.ts";
 import { DEFAULT_LIVE_GRAPH, initialLive, LIVE_KINDS } from "../src/math/live.ts";
 
@@ -171,4 +175,28 @@ test("two centred towers joined top to top and bottom to bottom draw the sign", 
       assert.equal(close(tb - ta, bb - ba), a === b);
     }
   }
+});
+
+test("long division on the board: answering each digit walks the whole division, and a wrong digit says which way", () => {
+  for (const [a, b, decimals] of [[624, 12, 0], [8136, 4, 0], [98765, 43, 0], [7, 8, 4], [1, 3, 5], [0, 7, 0], [405, 3, 0]]) {
+    const d = { ...initialLive("division"), a, b, decimals };
+    let digits = "";
+    while (true) {
+      const ask = divisionAsk(d);
+      if (!ask) break;
+      // The right digit is the only one: one more is too big, one less leaves b still fitting.
+      for (let g = 0; g <= 9; g++) {
+        const v = judgeDigit(ask, g);
+        assert.equal(v, g * b > ask.cur ? "tooBig" : ask.cur - g * b >= b ? "tooSmall" : "right", `${a} ÷ ${b}: ${g} into ${ask.cur}`);
+      }
+      digits += ask.q;
+      d.step++;
+    }
+    // The digits asked for are the quotient: whole part, then as many decimal places as were worked.
+    const plan = planDivision(a, b, decimals);
+    const places = digits.length - (plan.intLen - plan.first);
+    assert.equal(Number(digits), Math.floor((a * 10 ** places) / b), `${a} ÷ ${b}`);
+  }
+  assert.deepEqual(divisionNumbers({ a: -5, b: 0, decimals: 99 }), { a: 0, b: 1, decimals: 10 });
+  assert.deepEqual(divisionNumbers({ a: 12.6, b: Number.NaN, decimals: 2 }), { a: 13, b: 1, decimals: 2 });
 });

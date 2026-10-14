@@ -871,6 +871,24 @@ function comparePreview(): Piece[] {
   ];
 }
 
+function divisionPreview(): Piece[] {
+  // 624 ÷ 12 under the long-division bracket, 52 on top and the first step's working.
+  const col = (c: number) => 60 + c * 22;
+  const two = (c: number) => (col(c - 1) + col(c)) / 2;
+  const GREEN = "#2f9e44";
+  return [
+    text(22, 40, "12", 22),
+    path([[38, 18], [44, 32], [38, 50]], { width: 2 }),
+    seg([38, 18], [col(2) + 14, 18], { width: 2 }),
+    ...["6", "2", "4"].map((d, c) => text(col(c), 40, d, 22)),
+    text(col(1), 2, "5", 22, "center", GREEN),
+    text(col(2), 2, "2", 22, "center", GREEN),
+    text(two(1), 70, "60", 22),
+    seg([col(0) - 12, 84], [col(1) + 12, 84], { width: 1.5 }),
+    text(two(2), 104, "24", 22),
+  ];
+}
+
 export const SHAPES: readonly ShapeDef[] = [
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
@@ -883,6 +901,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveGraph", group: "live", build: graphPreview, live: "graph" },
   { id: "liveChance", group: "live", build: chancePreview, live: "chance" },
   { id: "liveCompare", group: "live", build: comparePreview, live: "compare" },
+  { id: "liveDivision", group: "live", build: divisionPreview, live: "division" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
