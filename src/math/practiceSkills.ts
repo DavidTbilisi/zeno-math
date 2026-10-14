@@ -3,7 +3,7 @@
 export type Area = "number" | "algebra" | "geometry" | "calculus" | "data";
 export const AREAS: Area[] = ["number", "algebra", "geometry", "calculus", "data"];
 export const SKILLS = {
-  number: ["compare", "times", "integers", "order", "fractions", "percent", "rounding", "hcf", "primes"],
+  number: ["compare", "times", "integers", "order", "compareFractions", "fractions", "percent", "rounding", "hcf", "primes"],
   algebra: ["linear", "inequalities", "expand", "factor", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions"],
   geometry: ["line", "distance", "trigexact", "righttri", "circles", "similarity", "volume", "identities", "vectors", "dotangle"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite", "numroots", "numint"],

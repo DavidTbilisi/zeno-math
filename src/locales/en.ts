@@ -3594,7 +3594,7 @@ export const en = {
   practiceCalculus: "Calculus",
   practiceData: "Probability & statistics",
   practiceHints: {
-    number: "Comparing numbers, multiplication, negative numbers, order of operations, fractions, percentages, rounding and estimation, HCF and LCM, prime factors.",
+    number: "Comparing numbers and fractions, multiplication, negative numbers, order of operations, fractions, percentages, rounding and estimation, HCF and LCM, prime factors.",
     algebra: "Linear equations, inequalities, expanding, factorising, quadratics, simultaneous equations, polynomials, indices, logarithms, surds.",
     geometry: "Equations of lines, distances and midpoints, exact trigonometric values, right triangles, circle theorems, similar shapes, surface area and volume, trig identities.",
     calculus: "Derivatives, gradients and tangents, stationary points, integrals, numerical methods.",
@@ -3998,6 +3998,7 @@ export const en = {
       rounding: "Rounding and estimation",
       inequalities: "Inequalities",
       compare: "Comparing numbers",
+      compareFractions: "Comparing fractions",
     },
     levels: { "1": "easy", "2": "medium", "3": "hard" },
     mixed: "Mixed",
@@ -4152,6 +4153,8 @@ export const en = {
       longerDecimal: "More digits after the point don't make a decimal bigger. Write both with the same number of places, {a} and {b}, and compare them.",
       negativeSize: "Below zero, the further a number is from zero, the smaller it is: {small} is further left on the number line than {big}.",
       biggerBottom: "A bigger bottom means smaller pieces: {n}/{d} is {n} pieces of a whole cut into {d}, so it is smaller than {n}/{e}.",
+      biggerTop: "More pieces don't make a bigger fraction when the pieces are smaller. Cut both into the same pieces, {a} = {x}/{d} and {b} = {y}/{d}, then compare the tops.",
+      sameGap: "Both are short of a whole, but by different amounts: {big} is {g}/{d} short and {small} is {g}/{e} short, which is more. So {big} is bigger.",
     },
     reasons: {
       empty: "Type an answer first.",

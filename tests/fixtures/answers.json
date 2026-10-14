@@ -2518,6 +2518,79 @@
    "seed": 7,
    "input": "<",
    "label": "wrong"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 1,
+   "seed": 7,
+   "input": "<",
+   "label": "correct"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 1,
+   "seed": 7,
+   "input": "5/10 < 7/10",
+   "label": "correct"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 1,
+   "seed": 7,
+   "input": ">",
+   "label": "wrong",
+   "mistake": "compareFlip"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 1,
+   "seed": 7,
+   "input": "7/10",
+   "label": "form"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 2,
+   "seed": 7,
+   "input": ">",
+   "label": "correct"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 2,
+   "seed": 7,
+   "input": "<",
+   "label": "wrong",
+   "mistake": "biggerBottom"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 2,
+   "seed": 7,
+   "input": "=",
+   "label": "wrong"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 3,
+   "seed": 7,
+   "input": "=",
+   "label": "correct"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 3,
+   "seed": 7,
+   "input": "<",
+   "label": "wrong",
+   "mistake": "biggerTop"
+  },
+  {
+   "skill": "compareFractions",
+   "level": 3,
+   "seed": 7,
+   "input": ">",
+   "label": "wrong"
   }
  ]
 }

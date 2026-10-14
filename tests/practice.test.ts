@@ -229,3 +229,25 @@ test("comparing: the sign is read however it is typed, and every question's sign
       assert.ok(Number.isFinite(a) && Number.isFinite(b), q.q);
     }
 });
+
+test("comparing fractions: every question's sign is true, and its bars and steps agree with it", () => {
+  const frac = (t: string) => {
+    const f = t.trim().match(/^\\frac\{(\d+)\}\{(\d+)\}$/);
+    assert.ok(f, t);
+    return { n: Number(f[1]), d: Number(f[2]) };
+  };
+  for (const level of LEVELS)
+    for (let seed = 1; seed <= 300; seed++) {
+      const q = exercise("compareFractions", level, seed, w);
+      const [a, b] = q.q.split("\\;\\square\\;").map(frac);
+      const sign = a.n * b.d < b.n * a.d ? "<" : a.n * b.d > b.n * a.d ? ">" : "=";
+      assert.equal(q.plain, sign, `${level} #${seed}: ${q.q}`);
+      assert.ok(a.n > 0 && a.n < a.d && b.n > 0 && b.n < b.d && a.d <= 12 && b.d <= 12, q.q);
+      assert.equal(Boolean(q.pic), level === 1, "the bars are drawn under the easy questions only");
+      const spec = q.solution?.spec as { a: typeof a; b: typeof b; cut?: number; steps: string[] };
+      assert.deepEqual([spec.a, spec.b], [a, b]);
+      // Cut into the same pieces, both bars split evenly; the last step ends with the question's own sign.
+      if (spec.cut) assert.ok(spec.cut % a.d === 0 && spec.cut % b.d === 0, q.q);
+      assert.ok(spec.steps.at(-1)!.includes(sign), spec.steps.at(-1));
+    }
+});

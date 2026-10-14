@@ -13,6 +13,7 @@ import {
   dotProduct,
   dragHand,
   type Frac,
+  FRACTION_FILLS,
   FRACTION_PARTS,
   fracNumbers,
   fracSign,
@@ -589,7 +590,6 @@ export function Compare({ state, set, w, svgRef }: PieceProps<"compare">) {
 
 // ——— Comparing two fractions ———
 
-const FRACTION_FILLS = ["#a5d8ff", "#ffc9c9"] as const;
 const fracText = (f: Frac) => `${f.n}/${f.d}`;
 
 /**

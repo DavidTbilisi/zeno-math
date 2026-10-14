@@ -26,5 +26,7 @@ export const MISTAKES = [
   "longerDecimal",
   "negativeSize",
   "biggerBottom",
+  "biggerTop",
+  "sameGap",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

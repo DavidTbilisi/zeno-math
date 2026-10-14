@@ -350,8 +350,8 @@ A smaller dry run is part of `npm test`, so CI checks the whole pipeline on ever
 
 ## Answer checker
 
-A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 344 typed answers to questions from
-all 43 skills, each marked the way a teacher would:
+A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 354 typed answers to questions from
+all 44 skills, each marked the way a teacher would:
 
 - correct;
 - close (a rounding slip);
@@ -362,12 +362,12 @@ all 43 skills, each marked the way a teacher would:
 
 | teacher \ checker | correct | close | wrong | form |
 |---|---|---|---|---|
-| correct (162) | 159 | 0 | 1 | 2 |
+| correct (166) | 163 | 0 | 1 | 2 |
 | close (16) | 0 | 0 | 3 | 13 |
-| wrong (128) | 0 | 0 | 128 | 0 |
-| form (38) | 2 | 0 | 8 | 28 |
+| wrong (133) | 0 | 0 | 133 | 0 |
+| form (39) | 2 | 0 | 8 | 29 |
 
-The checker agrees 91.6 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+The checker agrees 91.8 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
 
 - `13*17` for "work out 13 × 17";
 - an integral without `+ C`.
@@ -388,8 +388,8 @@ answers the known mistakes would give from its own numbers ([`src/math/mistakes.
 wrong and counts as a miss; in practice the student also reads what the slip was and a number to test it with. Tests
 give no feedback, so the names appear only in the exports' analysis.
 
-33 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 33,
-and names none in the 95 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
+36 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 36,
+and names none in the 97 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
 found in students' answers, so this says what the checker can recognise, not how often students make each mistake.
 
 Building the corpus found two real faults, now fixed:
