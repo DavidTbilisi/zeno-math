@@ -27,9 +27,9 @@ says (calibration), whether the threshold it needs stays put from one setting to
 survive a change of grain.
 
 **Status of the chapter drafts.** The thesis has three numbered chapters, Background (1), Method (2) and Results and
-discussion (3), each with three subchapters, with the introduction and the conclusion outside the numbering, as the
-department allows at most three chapters of two or three subchapters each; the draft was folded into this shape on
-2026-10-14. The chapters `00-abstract.md` to `05-conclusion.md` were reworked under the approved
+discussion (3), each with three subchapters, with the introduction outside the numbering and the conclusion as section
+3.3, as the department allows at most three chapters of two or three subchapters each; the draft was folded into this
+shape on 2026-10-14. The chapters `00-abstract.md` to `04-results-and-discussion.md` were reworked under the approved
 title on 2026-10-14: the introduction and background open on grain, the method and results carry the granularity
 studies G1 to G4 with the sweeps' numbers, and the discussion and conclusion answer the research question. The
 ASSISTments results (H1, H3, G4 on real data) were added on 2026-10-14 from the corrected file, at commit 3633cc1: H1
@@ -308,7 +308,7 @@ learners), applied per component where the grain is finer. Record degenerate fit
 The adaptive policy already keeps a per-idea state and aims at the weakest idea (`src/model/ideaState.ts`); the
 thesis's answer decides what grain that state should have and which rule declares mastery.
 
-## Chapter 3. Results and discussion
+## Chapter 3. Results, discussion and conclusion
 
 The results come first in each section and the discussion of them follows: section 3.1 the methods at one grain,
 section 3.2 the four granularity studies, section 3.3 what follows for Zeno and the threats to validity.
@@ -339,7 +339,7 @@ checked by eye, so G4's middle grain is one of many possible; a single data set 
 different fine tagging would do; the simulated decompositions are of our making, and the real curriculum's ideas were
 decomposed by hand.
 
-## Conclusion and future work (not numbered)
+### Conclusion and future work (section 3.3)
 
 - Answers to the research question by study; the recommendation for Zeno.
 - **Future work:** the KDD Cup 2010 data with several knowledge-component models; learning the grain from data
