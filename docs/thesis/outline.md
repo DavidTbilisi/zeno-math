@@ -74,7 +74,7 @@ on s₀. ∎
 
 Consequences. The band for θ is empty unless α ≥ 1/2. For N = 3 and α = 0.6 it is 0.904 ≤ θ ≤ 0.936, and at
 θ = 0.92 the start must be below 0.5. The fitted EMA starts at the training students' share of right first answers,
-which on ASSISTments is likely above 0.5 [check on the data]; it is then not the streak rule. Checked by enumeration
+which on ASSISTments is 0.594 (fitted α 0.15); it is then not the streak rule. Checked by enumeration
 of every sequence of up to 12 answers for 8,400 settings of N (2 to 4), α, θ and s₀: the two agree except at exact
 equality on a boundary, where rounding decides.
 
@@ -110,7 +110,12 @@ stated for the sweeps that have not yet been run.
 - **H1, prediction.** On held-out ASSISTments students, BKT predicts the next first-attempt answer better than EMA:
   lower log-loss. Test: the per-student difference in log-loss, a paired bootstrap over students (10,000 resamples).
   BKT is better if the 95 % interval excludes zero on its side; 0.005 in mean log-loss per answer is the smallest
-  difference that counts, fixed in advance. Secondary: RMSE, AUC, calibration.
+  difference that counts, fixed in advance. Secondary: RMSE, AUC, calibration. Result: holds. On split seed 1 BKT −
+  EMA is −0.0225 [−0.0264, −0.0183] in log-loss per answer (BKT 0.5690, EMA 0.5915 on 51,452 held-out answers of 853
+  students); seeds 2 to 5 give −0.0214 to −0.0251, every interval excluding zero, and resampling whole classes (145 to
+  157 a split) widens the intervals by about half and changes no verdict. The Elo model Zeno runs predicts better than
+  both (0.5607), PFA sits between (0.5814). BKT's calibration is within 0.01 in the bins holding most answers; the EMA
+  is under-confident through the middle of its range. 63.6 % of BKT's 110 fits have guess or slip at the bound.
 - **H2, mastery decisions where the truth is known.** In the worlds that are not BKT (elo, irt2pl, bkt with
   forgetting), BKT needs fewer answers than EMA and the streak rule before its declarations are right at least 90 %
   of the time, each method at the cheapest threshold meeting that standard on training learners, cost judged on
@@ -120,7 +125,12 @@ stated for the sweeps that have not yet been run.
   (when it says 0.99 the learner has mastered the skill 15 to 55 % of the time). The comparison moved from equal
   cost to equal precision after a first run; both are reported.
 - **H3, mastery decisions on real data (exploratory).** Agreement between the methods on ASSISTments and the share
-  right after each declares; exploratory because the data were collected under the streak rule.
+  right after each declares; exploratory because the data were collected under the streak rule. Result, on 7,561
+  held-out practices of 6.8 answers (EMA θ 0.6962 at the streak rule's training cost): BKT at 0.95 declares in 68.6 %
+  of practices, the EMA in 48.0 %, streak 3 in 48.5 %; the simple rules declare in nearly the same practices (both
+  37.8 %, each alone about 10 %), BKT in almost all of theirs plus 22 % more, and no rule in 29 %. Where both declare,
+  BKT is 1.5 answers before streak 3 and 1.0 before the EMA. The next three answers are right 78.6 % after BKT, 80.4 %
+  after the EMA, 77.2 % after streak 3, against 66.6 % overall.
 
 ### The granularity studies
 
@@ -184,11 +194,12 @@ stated for the sweeps that have not yet been run.
   difference between the threshold chosen on training learners and the one that would have been best on held-out
   ones (threshold stability). This study has no first run; it needs an over-splitting variant in `atoms.ts`.
 - **G4, real data across grains (confirmatory).** On ASSISTments 2009–2010 the same answers can be modelled at three
-  grains without new data: the data set's own skill tags (about a hundred skills), the topic areas the importer
+  grains without new data: the data set's own skill tags (110 skills), the topic areas the importer
   already assigns to them (`assistmentsTopic` in `src/model/datasets.ts`, five areas), and one skill for all of
-  mathematics (`src/model/grain.ts`, `npm run grain`). A problem tagged with several skills is one observation per
-  skill at the finest grain and, where those skills fall together, one at a coarser grain; the paired tests run on
-  the first observation of each problem, which every grain keeps. Hypothesis: BKT fitted at the data set's grain predicts held-out students' answers better than BKT
+  mathematics (`src/model/grain.ts`, `npm run grain`). In a file with a row per skill a problem tagged with several
+  skills is one observation per skill at the finest grain and, where those skills fall together, one at a coarser
+  grain; the paired tests run on the first observation of each problem, which every grain keeps. The corrected file
+  has one row per problem under its first skill, so there every grain has every answer. Hypothesis: BKT fitted at the data set's grain predicts held-out students' answers better than BKT
   at the topic grain, which predicts better than one skill (log-loss, paired bootstrap over students, 0.005 as the
   smallest difference that counts, the finest-against-coarsest difference as the one confirmatory test). Exploratory
   beside it: whether the EMA loses less than BKT from coarsening (it conditions on fewer answers, so it should),
@@ -197,7 +208,16 @@ stated for the sweeps that have not yet been run.
   wanted, the KDD Cup 2010 Cognitive Tutor data sets tag the same transactions with several knowledge-component
   models [check the data dictionary for the column names before relying on this]; that is an extension, not a
   requirement. The thesis does not claim an optimal grain exists; it reports where each measure improves or worsens
-  and under what condition.
+  and under what condition. Result: holds. BKT at the skill grain against one skill is −0.0346 [−0.0392, −0.0302]
+  (log-loss 0.5690 at 110 skills, 0.5962 at 5 topics, 0.6037 at one), skill against topic −0.0272 [−0.0316, −0.0230],
+  topic against one −0.0075 [−0.0097, −0.0053], all finer better. The EMA goes the other way: 0.5915, 0.5854, 0.5847,
+  with skill against one +0.0068 [+0.0024, +0.0110], coarser better, and topic against one no practical difference.
+  Coarsening from skills to one costs BKT +0.0414 [+0.0366, +0.0463] per answer more than it costs the EMA. Fits at the
+  bound / edge: 63.6 % / 80.0 % of 110 at the skill grain, every fit at the coarser two; EMA α 0.15, 0.1, 0.05. BKT at
+  0.95 declares for 68.6 %, 64.2 %, 72.0 % of practices after 3.3, 6.1, 8.9 answers, right after 78.6 %, 73.4 %,
+  73.2 %; the EMA for 48.0 %, 66.4 %, 83.8 % after 4.0, 5.8, 5.9, right after 80.4 %, 74.2 %, 72.4 %; streak 3 for
+  48.5 %, 67.7 %, 80.0 %, right after 77.2 %, 71.5 %, 72.2 %. Same pattern as the simulated class (Table 4.16), there
+  with inconclusive intervals.
 
 ## 1. Introduction
 
@@ -256,8 +276,12 @@ carried form.
 ### 3.3 Data
 
 - **ASSISTments 2009–2010** [@assistments2010data], as imported (`npm run import-assistments`); the three grains of
-  G4 from the same rows: skill tags, topic areas, one skill. Report students, answers, skills and areas kept, and how
-  multi-skill problems are handled at each grain.
+  G4 from the same rows: skill tags, topic areas, one skill. Kept, from the corrected file (346,860 rows): 259,399
+  answers of 4,163 students in 213 classes on 110 skills (102 named, 8 by tag number; algebra 29, geometry 26, number
+  26, data 16, other 13), 65.8 % right first time; 432 students in more than one class, counted in the one they
+  answered most in; rows with no skill (written NA) and scaffolding left out. Split seed 1: 853 students, 51,452
+  answers held out, 3,310 students, 207,947 answers for fitting. Every problem is one row, so every grain has every
+  answer.
 - **Simulated learners**, each with the true state recorded after every answer:
   - the one-grain worlds of H2 (`src/model/simulate.ts`): bkt, bkt with forgetting, elo, irt2pl;
   - the atoms world (`src/model/atoms.ts`): a skill is k components, one asked per question; with `split` above 1 the
@@ -327,12 +351,12 @@ decomposed by hand.
 
 | Result | Command | Status |
 |---|---|---|
-| ASSISTments import | `npm run import-assistments -- skill_builder_data.csv` | exists; needs the data file |
-| Prediction on ASSISTments (H1) | `npm run h1 -- --observations assistments.json` | exists |
+| ASSISTments import | `npm run import-assistments -- data/skill_builder_data.csv --out data/assistments.json` | run at 3633cc1 (the corrected file, from the ASSISTments data site's Google Drive link; the Kaggle slug of that name is the 2012–2013 file) |
+| Prediction on ASSISTments (H1) | `npm run model -- --observations data/assistments.json --fit --calibration bins.csv`; `npm run h1 -- --observations data/assistments.json` | run at 3633cc1 |
 | Mastery decisions, simulated (H2) | `npm run mastery -- --curves mastery-curves.csv` | exists |
-| Mastery agreement on ASSISTments (H3) | `npm run mastery -- --observations assistments.json` | exists; needs the data file |
+| Mastery agreement on ASSISTments (H3) | `npm run mastery -- --observations data/assistments.json` | run at 3633cc1 |
 | Too coarse, k components (G1) | `npm run atoms -- --atoms 1,2,4,8,16 --per-question 1,2,4`; `npm run ideas` | exists; the last table of each is the sweep side by side |
 | Right grain, isolating share (G2) | `npm run ideas -- --skills fractions --isolate 0,0.25,0.5,1 --length 30,60,120` | exists; components a question in `npm run atoms -- --per-question` |
 | Too fine, over-splitting (G3) | `npm run atoms -- --atoms 2 --split 1,2,4` | exists; also reports fits at the grid's edge and threshold stability |
-| Real data at three grains (G4) | `npm run grain -- --observations assistments.json` | exists; needs the data file (re-import it, so that problems are kept) |
+| Real data at three grains (G4) | `npm run grain -- --observations data/assistments.json` | run at 3633cc1 |
 | Figures | `npm run figures` | exists; grain plots to add |
