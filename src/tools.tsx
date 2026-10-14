@@ -42,7 +42,7 @@ const load = <M,>(importer: () => Promise<M>, name: keyof M) =>
 export const TOOLS: Record<ToolKind, Tool> = {
   formula: { Dialog: load(() => import("./components/FormulaDialog"), "FormulaDialog"), edit: "editFormula" },
   graph: { Dialog: load(() => import("./components/GraphDialog"), "GraphDialog"), edit: "editGraph" },
-  model: { Dialog: load(() => import("./components/ModelDialog"), "ModelDialog"), edit: "editModel", topics: (t) => ({ bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, division: t.division, fracop: t.fracOps, percratio: t.percRatio }) },
+  model: { Dialog: load(() => import("./components/ModelDialog"), "ModelDialog"), edit: "editModel", topics: (t) => ({ bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, fracop: t.fracOps, percratio: t.percRatio }) },
   "3d": { Dialog: load(() => import("./components/ThreeDialog"), "default"), edit: "edit3d", png: true, topics: (t) => ({ solid: t.solids, cubes: t.unitCubes, transform3d: t.matrix3d }) },
   matrix: { Dialog: load(() => import("./components/MatrixDialog"), "MatrixDialog"), edit: "editMatrix", topics: (t) => ({ calc: t.matrixCalc, transform: t.matrixTransform, space: t.matrixSpaces }), hints: (t) => ({ space: Object.values(t.spaceHints).join(" ") }) },
   geometry: { Dialog: load(() => import("./components/GeometryDialog"), "GeometryDialog"), edit: "editGeometry" },

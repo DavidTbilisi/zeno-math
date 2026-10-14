@@ -410,7 +410,13 @@ export const DEFAULT_MODELS: { [K in ModelType]: Extract<ModelSpec, { type: K }>
   percratio: { type: "percratio", kind: "of", p: "15", a: "240", b: "1", ratio: "2:3", up: true, step: 999 },
 };
 
-export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec, { type: K }> }[] } = {
+/**
+ * The models the dialog offers. Long division is a live piece on the board now; its type stays so that division
+ * pictures already on boards still render.
+ */
+export type DialogModelType = Exclude<ModelType, "division">;
+
+export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<ModelSpec, { type: K }> }[] } = {
   bar: [
     { key: "partWhole", spec: DEFAULT_MODELS.bar },
     {
@@ -492,17 +498,6 @@ export const PRESETS: { [K in ModelType]: { key: string; spec: Extract<ModelSpec
     { key: "foCancel", spec: { type: "fracop", op: "×", a: "8/15", b: "5/12", step: 999 } },
     { key: "foDiv", spec: { type: "fracop", op: "÷", a: "3/4", b: "1/8", step: 999 } },
     { key: "foDivMixed", spec: { type: "fracop", op: "÷", a: "2 1/2", b: "3/4", step: 999 } },
-  ],
-  division: [
-    { key: "div624", spec: { type: "division", style: "bracket", a: 624, b: 12, decimals: 0, step: 999 } },
-    { key: "div625", spec: { type: "division", style: "bracket", a: 625, b: 12, decimals: 0, step: 999 } },
-    { key: "divZero", spec: { type: "division", style: "bracket", a: 8136, b: 4, decimals: 0, step: 999 } },
-    { key: "divBig", spec: { type: "division", style: "bracket", a: 98765, b: 43, decimals: 0, step: 999 } },
-    { key: "divDecimal", spec: { type: "division", style: "bracket", a: 7, b: 8, decimals: 4, step: 999 } },
-    { key: "divRepeat", spec: { type: "division", style: "bracket", a: 1, b: 7, decimals: 10, step: 999 } },
-    { key: "divCorner", spec: { type: "division", style: "corner", a: 9372, b: 12, decimals: 0, step: 999 } },
-    { key: "divShort", spec: { type: "division", style: "short", a: 7236, b: 6, decimals: 0, step: 999 } },
-    { key: "divBlocks", spec: { type: "division", style: "bracket", a: 405, b: 3, decimals: 0, step: 999, blocks: true } },
   ],
   placeValue: [
     { key: "pvEmpty", spec: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true } },
