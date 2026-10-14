@@ -29,7 +29,10 @@ survive a change of grain.
 **Status of the chapter drafts.** The chapters `00-abstract.md` to `06-conclusion.md` were reworked under the approved
 title on 2026-10-14: the introduction and background open on grain, the method and results carry the granularity
 studies G1 to G4 with the sweeps' numbers, and the discussion and conclusion answer the research question. The
-ASSISTments results (H1, H3, G4 on real data) are [TODO] until the data file is imported.
+ASSISTments results (H1, H3, G4 on real data) were added on 2026-10-14 from the corrected file, at commit 3633cc1: H1
+holds (BKT better than the EMA by 0.0225 in log-loss per answer on every split), G4 holds (BKT at the data set's 110
+skills better than at one skill by 0.0346), and H3 reports that BKT at 0.95 declares in 69 % of the held-out practices
+against 48 % for the simple rules, with 77 to 80 % right on the next three answers after every rule.
 
 **Methods compared**, at every grain.
 
@@ -182,7 +185,7 @@ stated for the sweeps that have not yet been run.
   ones (threshold stability). This study has no first run; it needs an over-splitting variant in `atoms.ts`.
 - **G4, real data across grains (confirmatory).** On ASSISTments 2009–2010 the same answers can be modelled at three
   grains without new data: the data set's own skill tags (about a hundred skills), the topic areas the importer
-  already assigns to them (`assistmentsTopic` in `src/model/datasets.ts`, a dozen areas), and one skill for all of
+  already assigns to them (`assistmentsTopic` in `src/model/datasets.ts`, five areas), and one skill for all of
   mathematics (`src/model/grain.ts`, `npm run grain`). A problem tagged with several skills is one observation per
   skill at the finest grain and, where those skills fall together, one at a coarser grain; the paired tests run on
   the first observation of each problem, which every grain keeps. Hypothesis: BKT fitted at the data set's grain predicts held-out students' answers better than BKT

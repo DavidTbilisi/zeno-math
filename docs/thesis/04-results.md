@@ -6,20 +6,24 @@ This chapter reports the results in the order of the hypotheses: the data kept a
 section 4.6). It reports what was found; chapter 5 interprets it. The one-grain simulation results were made at commit
 88c4af7 of the Zeno repository, the check above BKT's highest threshold (Table 4.7) at commit 66c2eda and the
 calibration of the methods' scores (Table 4.8) at commit ba04c48; the granularity sweeps were made at commit 9180a75
-(G1, G2) and 66ee9af (G3, G4 on simulated learners), with the commands in Appendix B.
-
-[TODO: the ASSISTments results in sections 4.1, 4.2 and 4.6 need the data file. Download `skill_builder_data.csv`
-(the corrected 2009–2010 version), then run `npm run import-assistments -- skill_builder_data.csv`,
-`npm run model -- --observations assistments.json --fit --calibration assistments-bins.csv`,
-`npm run h1 -- --observations assistments.json`, `npm run mastery -- --observations assistments.json` and
-`npm run grain -- --observations assistments.json`, and record the commit hash.]
+(G1, G2) and 66ee9af (G3, G4 on simulated learners), and the ASSISTments results (sections 4.1, 4.2 and 4.6) at
+commit 3633cc1, with the commands in Appendix B.
 
 ## 4.1 Data and settings
 
-[TODO: the number of rows read, and the answers, students, skills, problems and classes the importer keeps; how many
-students answered in more than one class; the share of right first answers; the fitted EMA's starting score, which
-Proposition 1 predicts to be above 0.5; and, for G4, the number of skills, topics and observations at each grain and
-how many answers every grain has.]
+The corrected ASSISTments 2009–2010 skill builder file has 346,860 rows. The importer kept 259,399 of them as
+answers: main problems with a skill and a first-attempt result, every one naming its problem. They come from 4,163
+students in 213 classes, on 110 skills, of which 102 carry a name and eight only a tag number; 432 students answered
+in more than one class and are counted in the class they answered most in. The rows left out are the scaffolding
+questions that a wrong answer opens and the problems with no skill tag, which the corrected file writes as NA. Of the
+kept answers 65.8 % were right at the first attempt. Split seed 1 holds out 853 students with 51,452 answers, 66.6 % of
+them right, and leaves 3,310 students with 207,947 answers for fitting; the same split serves H1, H3 and G4, and the
+held-out students' answers form 7,561 practices, one per student and skill, of 6.8 answers on average, since a skill
+builder ends after three right in a row. The EMA fitted on the training students has $\alpha$ = 0.15 and a starting
+score of 0.594, the share of right first answers, above one half as Proposition 1 predicts. For G4 the 110 skills fall
+into five topic areas, algebra (29 skills), geometry (26), number (26), data (16) and the rest (13), and at the
+coarsest grain into one. Every problem is one observation in the corrected file, so every grain has every answer and
+the three grains are compared on the same 51,452 held-out answers.
 
 In the one-grain simulation, 400 students each practised 38 skills with 30 questions per skill, which gives 15,200
 practices of 30 answers in each world and at each learning rate. A fifth of the students, held out by split seed 1,
@@ -59,25 +63,41 @@ of hcf, and 12 % and 37 % of fractions.
 
 ### Prediction on real answers (H1)
 
-[TODO: Table 4.2 from `npm run model -- --observations assistments.json --fit`: log-loss, RMSE, AUC and accuracy for
-BKT, EMA and the reference rows (the Elo model, PFA and the three counting baselines).]
+Table 4.2 gives the prediction of the held-out students' first-attempt answers under split seed 1. BKT predicts
+better than the EMA on every measure, with a log-loss of 0.5690 against 0.5915 and an AUC of 0.711 against 0.692. The
+Elo model Zeno runs predicts better than both, at 0.5607, and searching its two rates on the training students returns
+the values it already uses ($\alpha$ = 0.2, $\beta$ = 0.01); PFA sits between BKT and the EMA. Every model beats the
+three counting baselines, and the EMA beats the best of them, each student's rate on each skill, by 0.019 in log-loss.
 
 | Model | Log-loss | RMSE | AUC | Accuracy |
 |---|---:|---:|---:|---:|
-| BKT | | | | |
-| EMA | | | | |
-| Elo | | | | |
-| PFA | | | | |
-| Per student and skill rate | | | | |
-| Per skill rate | | | | |
-| Overall rate | | | | |
+| BKT | 0.5690 | 0.4385 | 0.711 | 0.715 |
+| EMA | 0.5915 | 0.4493 | 0.692 | 0.701 |
+| Elo | 0.5607 | 0.4351 | 0.724 | 0.719 |
+| PFA | 0.5814 | 0.4437 | 0.701 | 0.703 |
+| Per student and skill rate | 0.6106 | 0.4599 | 0.690 | 0.687 |
+| Per skill rate | 0.6173 | 0.4625 | 0.614 | 0.670 |
+| Overall rate | 0.6371 | 0.4717 | 0.503 | 0.666 |
 
-Table: Prediction of held-out ASSISTments students' first-attempt answers, split seed 1.
+Table: Prediction of the 51,452 first-attempt answers of 853 held-out ASSISTments students, split seed 1, by models
+fitted on the other 3,310 students (`npm run model -- --observations data/assistments.json --fit`, commit 3633cc1).
 
-[TODO: from `npm run h1 -- --observations assistments.json`: the BKT − EMA difference in mean log-loss per answer for
-split seed 1, its 95 % interval over students and the verdict, which decides H1; the same for seeds 2 to 5; and each
-seed's interval from resampling classes. Then the calibration plot of BKT and EMA, and how many skills' fitted BKT
-parameters sit on an edge of the grid or on the bound of 0.3 for guess or slip.]
+The paired bootstrap decides H1. On split seed 1 the difference in mean log-loss per answer, BKT minus EMA, is
+−0.0225 with a 95 % interval of [−0.0264, −0.0183] from 10,000 resamples of the 853 held-out students. The interval
+excludes zero and the estimate is more than four times the smallest difference that counts, 0.005, so by the rule fixed
+in advance BKT is better, and H1 holds. The four other splits agree: the differences are −0.0251 [−0.0287, −0.0212],
+−0.0224 [−0.0262, −0.0182], −0.0225 [−0.0263, −0.0184] and −0.0214 [−0.0251, −0.0174] for seeds 2 to 5, with 767 to
+837 students held out, and BKT's log-loss stays between 0.569 and 0.581 while the EMA's stays between 0.592 and 0.602.
+Resampling whole classes instead of students, 145 to 157 classes a split, widens every interval by about half, to
+[−0.0289, −0.0142] on seed 1, and changes no verdict.
+
+In ten calibration bins, BKT's predicted chance of a right answer is within 0.04 of the observed share in every bin
+that holds more than a thousand answers, and within 0.01 in the three bins from 0.6 to 0.9 that hold 36,586 of the
+51,452 answers. The EMA is under-confident through the middle of its range, predicting 0.57 where 0.63 were right and
+0.65 where 0.76 were, and over-confident at the top, 0.93 where 0.87 were; a third of its predictions, 16,794 answers,
+lie between 0.5 and 0.6, because every practice starts at 0.594 and with $\alpha$ = 0.15 the score moves slowly. Of the
+110 skills' fitted BKT parameter sets, 63.6 % have guess or slip at the bound of 0.3 and 80.0 % have some parameter at
+an edge of the grid.
 
 ### Mastery decisions where the truth is known (H2)
 
@@ -290,18 +310,27 @@ how quickly $P(L)$ approaches 1 after a run of right answers.
 
 ### Mastery decisions on real answers (H3)
 
-[TODO: Table 4.9 from `npm run mastery -- --observations assistments.json`: for BKT at 0.95, EMA at the streak rule's
-cost and the streak rule with N = 3, how often each pair both declare, only one declares or neither does, and the mean
-gap in answers where both declare; then the share right on the next three answers after each method declares, with
-the number of practices that have such answers.]
+Table 4.9 gives the agreement between the three rules on the 7,561 held-out practices. The EMA threshold that costs
+on the training students what the streak rule costs there is 0.6962. BKT at 0.95 declares mastery in 68.6 % of the
+practices, the EMA in 48.0 % and the streak rule in 48.5 %. The two simple rules declare in nearly the same practices,
+each alone in about 10 % of them; BKT declares in almost every practice they declare in and in a further 22 % where
+neither does, and in 29 % of practices no rule declares. Where both members of a pair declare, BKT declares 1.5
+answers before the streak rule and 1.0 before the EMA, and the EMA 0.5 before the streak rule. After a declaration, the
+next three answers where the practice has them were right 78.6 % of the time for BKT (9,532 answers in 3,905
+practices), 80.4 % for the EMA (6,874 in 2,691) and 77.2 % for the streak rule (6,820 in 2,662), against 66.6 % of all
+held-out answers; the EMA, which declares latest, is followed by the highest share right, and the three are within
+three points of each other.
 
 | Pair | Both | Only the first | Only the second | Neither | Gap (answers) |
 |--------------------|-----:|-----:|-----:|-----:|-----:|
-| BKT 0.95 and streak 3 | | | | | |
-| EMA and streak 3 | | | | | |
-| BKT 0.95 and EMA | | | | | |
+| BKT 0.95 and streak 3 | 46.1 % | 22.5 % | 2.3 % | 29.1 % | −1.52 |
+| EMA and streak 3 | 37.8 % | 10.2 % | 10.7 % | 41.3 % | −0.49 |
+| BKT 0.95 and EMA | 46.4 % | 22.2 % | 1.6 % | 29.8 % | −0.98 |
 
-Table: Agreement between the mastery methods on held-out ASSISTments practices.
+Table: Agreement between the mastery methods on the 7,561 held-out ASSISTments practices, the EMA at θ = 0.6962, the
+streak rule's cost on the training students. The gap is the first rule's declaring answer minus the second's, where
+both declare; below zero, the first declares earlier (`npm run mastery -- --observations data/assistments.json`,
+commit 3633cc1).
 
 ## 4.3 Too coarse: a skill that is really several components (G1)
 
@@ -568,27 +597,46 @@ never come.
 
 ## 4.6 Real data across grains (G4)
 
-[TODO: Table 4.15 from `npm run grain -- --observations assistments.json`: at each grain the number of skills, the
-training and held-out answers, BKT's and the EMA's log-loss, BKT's fits at the bound and at the edge and the EMA's
-$\alpha$; the six paired differences with their intervals and verdicts, of which BKT at the skill grain against one
-skill decides G4; what coarsening costs BKT minus what it costs the EMA; and the declarations of the three rules at each
-grain. The data set must be imported at a commit from 448f4f1 on, so that problems are kept and a problem's skills fall
-together at a coarser grain.]
+Table 4.15 gives G4 on the real answers. At the data set's own grain BKT predicts the held-out answers with a
+log-loss of 0.5690, at the topic grain 0.5962 and with one skill for everything 0.6037; the EMA goes the other way,
+0.5915, 0.5854 and 0.5847. The test compares BKT at the skill grain with BKT at one skill: the difference is −0.0346 per
+answer with an interval of [−0.0392, −0.0302] from 10,000 resamples of students, which excludes zero and lies beyond
+the smallest difference that counts, so by the rule fixed in advance the finer grain predicts better and G4 holds. The
+other two BKT pairs point the same way, skill against topic by −0.0272 [−0.0316, −0.0230] and topic against one by
+−0.0075 [−0.0097, −0.0053]. For the EMA the coarser grain predicts better, skill against one by +0.0068 [+0.0024,
++0.0110] and skill against topic by +0.0061 [+0.0025, +0.0097], while topic against one, +0.0007 [−0.0013, +0.0026],
+is no practical difference. What coarsening from 110 skills to one costs BKT, minus what it costs the EMA, is 0.0414
+per answer with an interval of [0.0366, 0.0463], so on the real data as on the simulated class the EMA loses less from
+coarsening; here it gains a little. At the skill grain 63.6 % of BKT's 110 fits have guess or slip at the bound and
+80.0 % have a parameter at an edge of the grid; at the two coarser grains every fit does. The EMA's fitted $\alpha$
+falls from 0.15 to 0.1 to 0.05 as the grain coarsens and the practices lengthen.
 
-| Grain | Skills | Answers held out | BKT log-loss | EMA log-loss | BKT fits at bound / edge | EMA $\alpha$ |
-|---|---:|---:|---:|---:|---|---:|
-| skill | | | | | | |
-| topic | | | | | | |
-| one | | | | | | |
+The declarations move with the grain much as they did on the simulated class. BKT at 0.95 declares for 68.6 % of
+practices at the skill grain after 3.3 answers on average, for 64.2 % at the topic grain after 6.1 and for 72.0 % at
+the coarsest grain after 8.9, where a practice is a student's whole history in the data set; the share right on the
+next three answers after its declaration falls from 78.6 % to 73.4 % to 73.2 %. The EMA at the threshold set at each
+grain (0.6962, 0.6103 and 0.5747) declares for 48.0 %, 66.4 % and 83.8 % of practices after 4.0, 5.8 and 5.9 answers,
+and the streak rule for 48.5 %, 67.7 % and 80.0 % after 4.1, 5.8 and 6.7, with the share right after a declaration
+falling from 80.4 % and 77.2 % to 72.4 % and 72.2 %. At the coarsest grain every rule is followed by a share right
+within six points of the data set's overall 66.6 %, so a declaration there says little about the next answers.
 
-Table: G4 on ASSISTments: BKT and the EMA fitted and judged at three grains on the same held-out students.
+| Grain | Skills | BKT log-loss | EMA log-loss | BKT fits at bound / edge | EMA $\alpha$ | BKT, finer against this grain's coarser neighbour | EMA, the same |
+|-----|-----|-------|-------|------------|-----|----------------------|--------------------|
+| skill | 110 | 0.5690 | 0.5915 | 63.6 % / 80.0 % of 110 | 0.15 | skill against one: −0.0346 [−0.0392, −0.0302], finer better | +0.0068 [+0.0024, +0.0110], coarser better |
+| topic | 5 | 0.5962 | 0.5854 | 100 % / 100 % of 5 | 0.1 | skill against topic: −0.0272 [−0.0316, −0.0230], finer better | +0.0061 [+0.0025, +0.0097], coarser better |
+| one | 1 | 0.6037 | 0.5847 | 100 % / 100 % of 1 | 0.05 | topic against one: −0.0075 [−0.0097, −0.0053], finer better | +0.0007 [−0.0013, +0.0026], no practical difference |
 
-As a check of the method before the data file, Table 4.16 runs the same analysis on the one-grain simulation's
+Table: G4 on ASSISTments: BKT and the EMA fitted on 3,310 training students (207,947 answers) and judged on the same 853
+held-out students (51,452 answers at every grain) at three grains; the paired differences between grains with intervals
+from 10,000 resamples of students (below zero, the finer grain predicts better) and the verdict by H1's rule. The test
+is BKT at the skill grain against one skill (`npm run grain -- --observations data/assistments.json`, commit 3633cc1).
+
+As a check of the method, Table 4.16 runs the same analysis on the one-grain simulation's
 students, whose 38 skills fall into five areas, so that the three grains are 38, 5 and 1 skills. Simulated answers name
 no problem, so nothing falls together at a coarser grain and every grain has every answer.
 
 | Grain | Skills | BKT log-loss | EMA log-loss | BKT fits at bound / edge | EMA $\alpha$ | BKT, finer against this grain's coarser neighbour | EMA, the same |
-|---|---:|---:|---:|---|---:|---|---|
+|-----|-----|-------|-------|------------|-----|----------------------|--------------------|
 | skill | 38 | 0.6412 | 0.6497 | 86.8 % / 94.7 % of 38 | 0.20 | skill against one: −0.0221 [−0.0470, +0.0044], inconclusive | +0.0081 [−0.0074, +0.0269], inconclusive |
 | topic | 5 | 0.6580 | 0.6469 | 100 % / 100 % of 5 | 0.05 | skill against topic: −0.0168 [−0.0357, +0.0038], inconclusive | +0.0027 [−0.0079, +0.0137], inconclusive |
 | one | 1 | 0.6634 | 0.6415 | 100 % / 100 % of 1 | 0.02 | topic against one: −0.0053 [−0.0139, +0.0028], inconclusive | +0.0054 [−0.0032, +0.0163], inconclusive |
@@ -610,14 +658,18 @@ answers after a declaration falls from 72 % to 61 % to 52 %, while the EMA's sta
 
 ## 4.7 Summary
 
-[TODO: H1's verdict.] At one grain, H2 holds in the BKT world with forgetting, where BKT needs one to two answers fewer
+On the real answers BKT predicts held-out students' first attempts better than the EMA, by 0.0225 in log-loss per
+answer with an interval that excludes zero on every split and under class-level resampling, so H1 holds. At one grain,
+H2 holds in the BKT world with forgetting, where BKT needs one to two answers fewer
 than the simpler methods for the same precision, and fails in both gradual worlds by the rule fixed in advance, where
 no BKT threshold up to 0.9999 makes its declarations right nine times in ten while EMA and the streak rule reach that
 standard by waiting. The check above 0.9999 changes the reading: with thresholds between $1 - 10^{-6.9}$ and
 $1 - 10^{-12.6}$ BKT meets the standard in three of the four gradual settings, and at the higher learning rate it then
 needs 0.3 to 0.4 answers fewer than EMA. Measured against the truth after every answer, BKT's $P(L)$ is the best
 calibrated score in the BKT worlds and the worst in the gradual ones, where a value of 0.99 means mastery in 15 to 55 %
-of cases (Table 4.8). [TODO: H3.]
+of cases (Table 4.8). On the real answers BKT at 0.95 is the most generous of the three rules, declaring in 69 % of
+the held-out practices against 48 % for the EMA and the streak rule, one to one and a half answers sooner where they
+also declare, and the next three answers after a declaration are right 77 to 80 % of the time for all three (H3).
 
 Across grains, a skill of $k$ components modelled as one makes BKT on the skill look exactly as the gradual worlds did,
 in proportion to what each question leaves untested: right 98 % of the time at 0.95 with one component and under 4 %
@@ -629,6 +681,8 @@ enough for each to be asked about: on fractions this takes about 120 questions, 
 for one idea alone, and within Zeno's 30 it is not met (G2). Finer than the learners, each split doubles the Brier
 score and costs answers for no gain in precision, and the fits degenerate; more components than the practice supports
 leaves the right grain unable to declare, which four times the practice remedies for eight components and not yet for
-sixteen (G3). On real
-data the method is ready and the result waits for the data file; on a simulated class the finer grain predicts better
-for BKT without a conclusive interval, and the EMA loses less than BKT from coarsening (G4).
+sixteen (G3). On the real
+answers BKT predicts better at the data set's 110 skills than at five topics or one skill, by 0.035 per answer from the
+finest grain to the coarsest with an interval that excludes zero, so G4 holds, while the EMA predicts slightly better
+at the coarser grains and so loses less than BKT from coarsening; the declarations and the fits move with the grain as
+on the simulated class (G4).

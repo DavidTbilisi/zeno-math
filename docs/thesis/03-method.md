@@ -238,20 +238,23 @@ two versions should not be compared directly [@abdelrahman2023survey]. The corre
 
 Zeno's importer (`npm run import-assistments`, `src/model/datasets.ts`) applies the usual cleaning. It keeps main
 problems only, not the scaffolding questions that a wrong answer opens, and only rows with a skill and a first-attempt
-result of 0 or 1. It puts the answers in the order they were given, by the log's order identifier, and keeps each
-problem's identifier. A problem tagged with several skills counts once for each skill, as in most work on knowledge
-tracing; this gives the same answer weight on each of its skills, and section 5.3 returns to it. The importer also
+result of 0 or 1; the corrected file writes a missing value as NA, which the importer reads as missing. It puts the
+answers in the order they were given, by the log's order identifier, and keeps each problem's identifier. Where a file
+has a row per skill, a problem tagged with several skills counts once for each skill, as in most work on knowledge
+tracing; this gives the same answer weight on each of its skills, and section 5.3 returns to it. The corrected file
+has one row per problem, which carries the first of the problem's skills, so on it every problem is one observation. The importer also
 keeps each student's class, so the bootstrap can resample whole classes as a robustness check (section 3.7). A student
 who answered in several classes is counted in the one in which they answered most of the kept problems. For the
 mastery methods the answers are grouped into sequences, one per student and skill, which this thesis calls practices.
 
 For G4 the same rows are modelled at three grains (`src/model/grain.ts`). At the finest, each answer keeps the skill
-tag the data set gives it. At the middle grain each skill is replaced by the topic area the importer assigns it, about
-a dozen areas such as fractions, geometry and probability; at the coarsest every answer belongs to one skill. A problem
-tagged with several skills is one observation per skill at the finest grain; where those skills fall together at a
-coarser grain it becomes one observation there, the first kept. The models at the three grains are therefore compared
-on the answers every grain has, the first observation of each problem, so that no grain is judged on answers another
-grain never saw. The split into training and held-out students is the same at every grain.
+tag the data set gives it. At the middle grain each skill is replaced by the topic area the importer assigns it, five
+areas, algebra, geometry, number, data and the rest; at the coarsest every answer belongs to one skill. A problem
+tagged with several skills, in a file that has a row per skill, is one observation per skill at the finest grain;
+where those skills fall together at a coarser grain it becomes one observation there, the first kept. The models at the
+three grains are therefore compared on the answers every grain has, the first observation of each problem, so that no
+grain is judged on answers another grain never saw; on the corrected file, where every problem is one observation,
+that is every answer. The split into training and held-out students is the same at every grain.
 
 ### Simulated students at one grain
 
