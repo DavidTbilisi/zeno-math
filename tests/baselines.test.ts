@@ -36,11 +36,13 @@ const ASSISTMENTS = [
   "21,1,u2,3,3,1,0.5,1,11,Equation Solving Two or Fewer Steps", // not a 0/1 result: left out
   '22,1,u2,4,4,1,1,1,13,"Addition and Subtraction Fractions"',
   "23,1,u2,5,5,1,1,1,,", // no skill: left out
+  "24,1,u2,6,6,1,1,1,NA,NA", // no skill written as NA, as the corrected file does: left out
+  "25,1,u2,7,7,1,NA,1,13,Addition and Subtraction Fractions", // no result, written as NA: left out
 ];
 
 test("the ASSISTments importer keeps main problems with a skill and a 0/1 result, once per skill, in the order given", async () => {
   const d = await fromAssistments(csvRecords([ASSISTMENTS.join("\n")]));
-  assert.deepEqual(d.counts, { rows: 8, kept: 4, students: 2, skills: 4 });
+  assert.deepEqual(d.counts, { rows: 10, kept: 4, students: 2, skills: 4 });
   // The problem is the order_id: the two skills of problem 10 share it.
   assert.deepEqual(d.observations, [
     { student: "u1", skill: "Equation Solving Two or Fewer Steps", level: 2, correct: false, problem: "10" },
