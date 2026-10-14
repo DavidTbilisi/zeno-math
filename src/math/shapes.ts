@@ -888,6 +888,23 @@ function compareFractionsPreview(): Piece[] {
   ];
 }
 
+function rubikPreview(): Piece[] {
+  // The cube seen from above, the front and the right: three faces of nine stickers on a dark body.
+  const k = 20;
+  const at = (x: number, y: number, z: number): Pt => [54 + (x - z) * k * 0.87, 62 + (x + z) * k * 0.5 - y * k];
+  const faces: { fill: string; corner: (a: number, b: number) => Pt }[] = [
+    { fill: "#ffffff", corner: (a, b) => at(a, 3, b) },
+    { fill: "#2f9e44", corner: (a, b) => at(a, 3 - b, 3) },
+    { fill: "#e03131", corner: (a, b) => at(3, 3 - b, 3 - a) },
+  ];
+  const square = (corner: (a: number, b: number) => Pt, a: number, b: number, d: number, inset: number): Pt[] =>
+    [[inset, inset], [d - inset, inset], [d - inset, d - inset], [inset, d - inset]].map(([u, v]) => corner(a + u, b + v));
+  return faces.flatMap(({ fill, corner }) => [
+    poly(square(corner, 0, 0, 3, 0), { fill: "#212529", color: "#212529", width: 1 }),
+    ...Array.from({ length: 9 }, (_, i) => poly(square(corner, i % 3, Math.floor(i / 3), 1, 0.1), { fill, color: "#212529", width: 1 })),
+  ]);
+}
+
 function divisionPreview(): Piece[] {
   // 624 ÷ 12 under the long-division bracket, 52 on top and the first step's working.
   const col = (c: number) => 60 + c * 22;
@@ -920,6 +937,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCompare", group: "live", build: comparePreview, live: "compare" },
   { id: "liveCompareFractions", group: "live", build: compareFractionsPreview, live: "compareFractions" },
   { id: "liveDivision", group: "live", build: divisionPreview, live: "division" },
+  { id: "liveRubik", group: "live", build: rubikPreview, live: "rubik" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

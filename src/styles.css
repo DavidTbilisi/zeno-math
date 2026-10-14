@@ -577,6 +577,10 @@ input.invalid { border-color: var(--danger); }
 .live-said.ok { color: #2f9e44; }
 .live-said.info { color: #495057; }
 .live-sign { display: inline-block; min-width: 1em; font-size: 20px; line-height: 1; }
+.live-face { min-width: 2.6em; font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 15px; }
+.live-rubik-alg { display: inline-flex; align-items: center; gap: 6px; }
+.live .live-rubik-alg input { width: 15em; font-family: Georgia, "Times New Roman", serif; font-size: 15px; }
+.live-rubik-fact { font-style: italic; }
 .live-snap {
   position: absolute; right: 4px; bottom: 4px; padding: 2px 4px; border: none; background: transparent;
   font-size: 15px; cursor: pointer; opacity: 0;

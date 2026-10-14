@@ -1,7 +1,7 @@
 // The arithmetic behind the live pieces on the board (the ones that respond to clicks and drags): a geared clock,
 // chance devices and the tallies of an experiment, dot multiplication, the counts shown under a ten frame or a
-// hundred square, towers of blocks and bars of fractions to compare, and long division a step at a time. Kept free of
-// React and Excalidraw so it can be tested on its own.
+// hundred square, towers of blocks and bars of fractions to compare, long division a step at a time, and the state
+// of a Rubik's cube. Kept free of React and Excalidraw so it can be tested on its own.
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import type { Sharing } from "./sharing";
 
@@ -226,6 +226,15 @@ export function divisionAsk(d: LiveDivision): DivisionAsk | null {
 /** A guessed quotient digit: right, too big (g × b is more than the number), or too small (b still fits in what is left). */
 export const judgeDigit = (ask: DivisionAsk, g: number): "right" | "tooBig" | "tooSmall" => (g === ask.q ? "right" : g > ask.q ? "tooBig" : "tooSmall");
 
+// ——— Rubik's cube ———
+
+/**
+ * A Rubik's cube (the maths is in rubik.ts): the scramble and the turns made since, written as R U R′ U′; the moves to
+ * repeat and how many times running they have been done; whether the buttons turn anticlockwise; and the angle the
+ * cube is seen from, in degrees.
+ */
+export type LiveRubik = { scramble: string; moves: string; alg: string; reps: number; prime: boolean; yaw: number; pitch: number };
+
 // ——— The kinds of live piece, their sizes and where each starts ———
 
 export type LiveParam = { v: number; min: number; max: number };
@@ -263,6 +272,7 @@ export type LiveStates = {
   compare: { a: number; b: number; joined: boolean; guess: CompareSign | null };
   compareFractions: { a: Frac; b: Frac; joined: boolean; guess: CompareSign | null; same: boolean };
   division: LiveDivision;
+  rubik: LiveRubik;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -281,6 +291,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   compare: [380, 530],
   compareFractions: [400, 580],
   division: [760, 820],
+  rubik: [780, 610],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -301,6 +312,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     compare: { a: 5, b: 2, joined: false, guess: null },
     compareFractions: { a: { n: 2, d: 3 }, b: { n: 3, d: 4 }, joined: false, guess: null, same: false },
     division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null },
+    rubik: { scramble: "", moves: "", alg: "R U R′ U′", reps: 0, prime: false, yaw: -35, pitch: 28 },
   };
   return structuredClone(start[kind]);
 }

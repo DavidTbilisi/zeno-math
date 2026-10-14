@@ -75,10 +75,13 @@ const libraryStore = {
 };
 
 // Live pieces offered in the tool menus too (all of them are in the Shapes panel), by menu.
-const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" | "liveDivision" }[]> = {
+const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" | "liveDivision" | "liveRubik" }[]> = {
   groupArithmetic: [{ kind: "division", icon: "÷", name: "liveDivision" }],
   groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],
-  groupDiscreteShort: [{ kind: "chance", icon: "🎲", name: "liveChance" }],
+  groupDiscreteShort: [
+    { kind: "chance", icon: "🎲", name: "liveChance" },
+    { kind: "rubik", icon: "🧩", name: "liveRubik" },
+  ],
 };
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
