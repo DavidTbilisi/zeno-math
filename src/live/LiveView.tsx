@@ -9,6 +9,7 @@ import { liveDataOf, type LiveData } from "./element";
 import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
 import { Chance } from "./Chance";
 import { LongDivision } from "./LongDivision";
+import { Rubik } from "./Rubik";
 import type { PieceProps } from "./ui";
 
 export type LiveHost = {
@@ -36,6 +37,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   compare: Compare,
   compareFractions: CompareFractions,
   division: LongDivision,
+  rubik: Rubik,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

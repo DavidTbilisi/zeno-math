@@ -538,6 +538,12 @@ UI in English, Russian and Georgian.
     hundreds, tens and ones into the groups by hand: drag a block into a group (or tap it to deal it), drop one that
     can't go round on "1 → 10" to change it for ten of the next place, and the written working fills in as each place
     is shared out
+  - *Rubik's cube*: a cube to turn, drawn twice — in 3D (click a sticker to turn its face, drag to look round it) and
+    on Borromean rings: three bands of three circles, one per axis, each face's nine dots where two bands cross, so a
+    turn slides the twelve stickers beside the face along one circle (hover a face to see it). Turn with U D L R F B (↺ for R′), undo, scramble or go back to
+    solved; type moves such as R U R′ U′ to do them, see their order (the lcm of the cycles the stickers go round:
+    6 for R U R′ U′, 105 for R U) and repeat them until the cube comes back. Under it, the 43 252 003 274 489 856 000
+    positions and God's number, 20
   - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
     the sliders' values put in); the graph, the experiment and long division are in the Algebra, Discrete and
     Arithmetic menus too
@@ -866,6 +872,8 @@ src/math/shapes.ts        the ready-made maths shapes (instruments, axes, figure
 src/components/ShapesPanel.tsx  their side-panel tab: thumbnails, click or drag onto the board
 src/math/live.ts          the live pieces' arithmetic: geared clock, chance devices and tallies, dot multiplication
 src/math/liveGraph.ts     the live graph's letters, curves, zoom and frozen copies (mathjs)
+src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, moves read and written, orders,
+                          scrambles, and the dots of the Borromean-rings picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
