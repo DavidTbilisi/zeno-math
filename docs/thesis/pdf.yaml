@@ -13,8 +13,9 @@ mathfont: "STIX Two Math"
 sansfont: "Noto Sans"
 monofont: "Liberation Mono"
 mainfontfallback: ["Noto Sans Math:", "Noto Serif Georgian:", "Noto Sans Symbols 2:", "Noto Sans Symbols:"]
-toc: true
-toc-depth: 1
+# The contents come after the abstracts, as the department requires, so 00-abstract.md places them itself; the
+# depth stops at the subchapters.
+toc: false
 linkcolor: blue
 urlcolor: blue
 link-citations: true
@@ -22,6 +23,7 @@ reference-section-title: References
 # Smaller tables with captions as wide as the text, and figures no taller than 0.68 of the text block so a figure and its caption fit on one page.
 header-includes: |
   \usepackage{etoolbox}
+  \setcounter{tocdepth}{1}
   \AtBeginEnvironment{longtable}{\small}
   \setlength\LTcapwidth{\linewidth}
   \newsavebox\pbox

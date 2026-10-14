@@ -253,12 +253,9 @@ stated for the sweeps that have not yet been run.
 - **Simple estimators** and earlier comparisons of mastery criteria [@pelanek2017mastery; @fancsali2013mastery].
 - **Knowledge components and grain.** What a knowledge component is [@koedinger2012kli]; Q-matrices
   [@tatsuoka1983rulespace]; learning factors analysis as a search over grains [@cen2006lfa]; the ASSISTments studies
-  that compared skill models of 1, 5, 39 and 106 skills for prediction [CITATION NEEDED: Feng, Heffernan, Heffernan &
-  Mani, "Using mixed-effects modeling to analyze different grain-sized skill models in an intelligent tutoring
-  system", IEEE Trans. Learning Technologies; Pardos, Heffernan, Anderson & Heffernan, "The effect of model
-  granularity on student performance prediction using Bayesian networks", UM 2007; Pardos, Feng, Heffernan &
-  Heffernan, AIED 2007: verify years and pages]. These compared grains for predicting a test score; none measured
-  mastery decisions against a known truth, which is the gap this thesis fills.
+  that compared skill models of 1, 5, 39 and 106 skills for prediction [@feng2009grainsize; @pardos2007granularity].
+  These compared grains for predicting a test score; none measured mastery decisions against a known truth, which is
+  the gap this thesis fills.
 - **Judging student models:** log-loss, RMSE, AUC, calibration [@pelanek2015metrics; @fawcett2006; @brier1950];
   splits by student. **Other models** (Elo, PFA, DKT) in one paragraph each, as context.
 
