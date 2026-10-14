@@ -1,4 +1,4 @@
-# Abstract
+# Abstract {.unnumbered .unlisted}
 
 Every adaptive practice system decides, after each answer, whether a student has mastered a skill, and every method
 that makes that decision takes the skill as given. This thesis asks how the grain at which skills are defined, the
@@ -22,7 +22,7 @@ at five topics or one skill, by the pre-specified test, while the moving average
 average with a threshold set from data to decide mastery at the grain of the skill, and the state at the grain of the
 ideas to choose what to practise next, becoming the mastery rule where the questions and the practice allow it.
 
-# რეზიუმე
+# რეზიუმე {.unnumbered .unlisted}
 
 ყოველი ადაპტური სავარჯიშო სისტემა თითოეული პასუხის შემდეგ წყვეტს, აითვისა თუ არა მოსწავლემ უნარი, და ყოველი
 მეთოდი, რომელიც ამ გადაწყვეტილებას იღებს, უნარს მოცემულად თვლის. ეს ნაშრომი იკვლევს, როგორ მოქმედებს უნარების
@@ -48,3 +48,5 @@ ideas to choose what to practise next, becoming the mastery rule where the quest
 რომლისგანაც ეს ნაშრომი წარმოიშვა, რეკომენდაციაა უნარის მარცვალზე ათვისების გადასაწყვეტად მონაცემებიდან დადგენილი
 ზღურბლით მოძრავი საშუალო, ხოლო შემდეგი სავარჯიშოს შესარჩევად იდეების მარცვალზე მდგომარეობა, რომელიც ათვისების
 წესად იქცევა იქ, სადაც კითხვები და პრაქტიკა ამის საშუალებას იძლევა.
+
+\tableofcontents
