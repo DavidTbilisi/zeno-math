@@ -150,7 +150,7 @@ stored answer with the conjunctive step of section 2.1, and on fractions it asks
 least likely to know (`src/model/ideaState.ts`). Zeno therefore already holds a state at two grains, the skill and the
 idea. The question this thesis asks is the one that design raised: which rule should decide mastery, and at which of
 the two grains. Zeno's own Elo-based rule is not one of the methods compared, because it depends on question levels
-that the ASSISTments data do not have. The conclusion draws the consequences for it.
+that the ASSISTments data do not have. Section 3.3 draws the consequences for it.
 
 ## 2.2 Hypotheses and data
 

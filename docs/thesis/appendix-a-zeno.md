@@ -41,9 +41,9 @@ The adaptive policy (`src/model/policy.ts`) chooses the skill and level at which
 of a right first answer closest to a target, three in four by default. It holds a skill back while the skills it builds
 on are weak, and it leaves a skill behind once the student has mastered it. Mastery is decided by a fixed rule: the
 model must give a hard question on the skill at least an 80 % chance of a right answer. That rule is the decision this
-thesis's question is about, and the conclusion recommends how to replace it. On the three skills with a concept graph
+thesis's question is about, and section 3.3 recommends how to replace it. On the three skills with a concept graph
 (section 2.2), the policy also keeps one probability per idea from the student's answers and, on fractions, asks the
-form for the idea they are least likely to know, as the future work in the conclusion describes.
+form for the idea they are least likely to know, as the future work in section 3.3 describes.
 
 ![Zeno's building blocks: the board and the practice dialog in the browser, the shared code for questions, marking
 and the learner model, and the server with its single SQLite file (`docs/architecture.md`, "Building
@@ -58,4 +58,4 @@ adaptive or the fixed condition. Both conditions get the same feedback, worked s
 and a post-test in parallel forms, counterbalanced within each condition, measure what was learnt, and the analysis
 was written before any data. A dry run with simulated students rehearses the whole protocol through the real server on
 every change to the code. The design, the simulations behind it and its power analysis are in `docs/study.md` in the
-repository, and the future work in the conclusion summarises why the study needs several classes.
+repository, and the future work in section 3.3 summarises why the study needs several classes.

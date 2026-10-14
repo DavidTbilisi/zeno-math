@@ -60,7 +60,7 @@ components it needs, which is the conjunctive form of BKT for questions that nee
 
 An earlier plan for this thesis asked whether choosing practice questions with a learner model helps a class learn
 more than a fixed sequence of questions. That question can only be answered in classrooms, with ethics approval for
-children's data, a school's timetable and, as a power analysis showed, several classes (see the future work in the conclusion). The question
+children's data, a school's timetable and, as a power analysis showed, several classes (see the future work in section 3.3). The question
 asked here needs none of these. Every number in the thesis comes from a public data set of real students' answers or
 from simulation, and all of it can be reproduced from the code (Appendix B).
 
@@ -115,12 +115,12 @@ What has not been measured is what grain does to mastery decisions against a kno
 worlds make possible. The thesis does not claim that an optimal grain exists in general; it reports under which
 conditions each grain is usable, and what each method loses when the grain is wrong.
 
-The thesis has three chapters between this introduction and the conclusion. Chapter 1 reviews mastery learning and
-how mastery is decided in practice, BKT, simple estimators and earlier comparisons of mastery criteria, and knowledge
-components, the grain of a skill model and how student models are judged. Chapter 2 sets out the method: the
-definitions of grain and component, the methods compared, the two propositions and where the question sits in Zeno;
-the hypotheses of both parts and the data they are tested on; and how the methods are fitted and each hypothesis is
-evaluated. Chapter 3 reports and discusses the results, first for the methods at one grain and then for the four
-granularity studies, and ends with what follows for Zeno and the threats to validity. The conclusion answers the
-hypotheses and the research question, recommends how Zeno should decide mastery and at what grain, and sets out future
-work. Appendix A describes Zeno briefly, and Appendix B lists the command behind every number.
+The thesis has three chapters after this introduction. Chapter 1 reviews mastery learning and how mastery is decided
+in practice, BKT, simple estimators and earlier comparisons of mastery criteria, and knowledge components, the grain of
+a skill model and how student models are judged. Chapter 2 sets out the method: the definitions of grain and
+component, the methods compared, the two propositions and where the question sits in Zeno; the hypotheses of both
+parts and the data they are tested on; and how the methods are fitted and each hypothesis is evaluated. Chapter 3
+reports and discusses the results, first for the methods at one grain and then for the four granularity studies, and
+closes with the conclusion: the answers to the hypotheses and the research question, the recommendation of how Zeno
+should decide mastery and at what grain, the threats to validity and the work that should follow. Appendix A
+describes Zeno briefly, and Appendix B lists the command behind every number.
