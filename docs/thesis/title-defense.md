@@ -211,13 +211,23 @@ fits degenerated where a component was over-split, which is the sign a system co
 
 **Where does the one-grain comparison stand now?** It is the foundation. It shows that the choice of rule matters, it
 supplies the yardstick the granularity studies use, and its gradual-world result is what the coarse-grain study
-explains: a skill of several components looks gradual from outside. The recommendation for Zeno rests on both: the
+explains: a skill of several components looks gradual from outside. On the real answers it is now decided: BKT
+predicts held-out ASSISTments answers better than the moving average, by 0.0225 in log-loss per answer with an interval
+that excludes zero on every split, so H1 holds; and on the same answers BKT predicts better at the data set's 110 skills
+than at five topics or one skill, by 0.035, while the moving average is indifferent to the grain, so G4 holds too. At
+0.95 BKT is also the most generous rule on those practices, declaring in 69 % of them against 48 % for the simple rules,
+with no higher share right afterwards. The recommendation for Zeno rests on both: the
 moving average, with a threshold set from data, to decide mastery of a skill within a session; the state at the grain
 of the ideas to choose what to practise next; and BKT on each idea as the mastery rule where the questions and the
 practice allow it, as on hcf now and on fractions with one isolating question in four.
 
-**What if the ASSISTments data are unsuitable?** The prediction comparison works on any logged first attempts; Zeno's
-own export produces the same format, and the simulation part does not depend on the data set.
+**Why does BKT predict better and still not get the recommendation for deciding mastery?** Prediction and the
+decision are different things. BKT's learnt state per skill tells students apart sooner than a moving average that
+starts every practice at the same score, so it predicts the next answer better, by a modest margin that the Elo model
+Zeno already runs beats. The decision is judged against a truth, which only the simulations have, and there BKT's
+probability at 0.95 was mostly wrong wherever the skill was really several things, while the moving average kept a
+threshold that worked. On the real data the three rules are followed by nearly the same share right, so the data
+cannot pick the rule; the simulations can, and they favour the rule whose failure is milder.
 
 **What is the role of Zeno, the platform?** It is the context and the code base, not what is evaluated. The thesis
 describes it briefly; the experiment is the contribution.
@@ -233,7 +243,7 @@ describes it briefly; the experiment is the contribution.
 Where it stands on 14 October: the chapters are reworked under the approved title (59 pages as a PDF), with the
 abstracts in Georgian and English, the method in full, the one-grain results including the check above 0.9999 and the
 calibration of each method's score, the four granularity studies with their sweeps, the discussion and the threats to
-validity. The ASSISTments results, for H1, H3 and G4 on real data, are still to come.
+validity, and the ASSISTments results for H1, H3 and G4 on the corrected 2009–2010 file.
 
 ## Format rules to remember while writing
 

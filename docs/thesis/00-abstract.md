@@ -16,8 +16,9 @@ which a probability can be read. Modelling at the learners' grain restores preci
 the component a student lacks, if and only if the questions tell the components apart and the practice is long enough
 to ask about each: on fractions as Zeno's generators ask it, sixteen ideas of which a question needs six, this takes
 about 120 questions or one question in four asking for one idea alone. Modelling finer than the learners costs answers
-for no gain in precision and shows itself in degenerate fits. The same real answers are modelled at three grains on
-ASSISTments with one pre-specified test. For Zeno, the system this work grew out of, the recommendation is a moving
+for no gain in precision and shows itself in degenerate fits. On ASSISTments the same real answers are modelled at three
+grains: BKT predicts held-out answers better than the moving average, and better at the data set's 110 skills than
+at five topics or one skill, by the pre-specified test, while the moving average is indifferent to the grain. For Zeno, the system this work grew out of, the recommendation is a moving
 average with a threshold set from data to decide mastery at the grain of the skill, and the state at the grain of the
 ideas to choose what to practise next, becoming the mastery rule where the questions and the practice allow it.
 
@@ -40,8 +41,10 @@ ideas to choose what to practise next, becoming the mastery rule where the quest
 მოსწავლეს აკლია, მაშინ და მხოლოდ მაშინ, თუ კითხვები კომპონენტებს ერთმანეთისგან არჩევს და პრაქტიკა საკმარისად
 გრძელია, რომ თითოეული შემოწმდეს: წილადებზე, როგორც მათ ზენოს გენერატორები სვამენ, თექვსმეტი იდეით, რომელთაგან
 კითხვას ექვსი სჭირდება, ამას დაახლოებით 120 კითხვა ან ყოველი მეოთხე კითხვის ერთ იდეაზე დასმა სჭირდება. მოსწავლეებზე
-უფრო წვრილი მოდელირება პასუხებს უსარგებლოდ ხარჯავს და გადაგვარებულ მორგებებში ვლინდება. ერთი და იგივე რეალური
-პასუხები ASSISTments-ზე სამ მარცვალზეა მოდელირებული წინასწარ განსაზღვრული ერთი ტესტით. ზენოსთვის, სისტემისთვის,
+უფრო წვრილი მოდელირება პასუხებს უსარგებლოდ ხარჯავს და გადაგვარებულ მორგებებში ვლინდება. ASSISTments-ზე ერთი და იგივე
+რეალური პასუხები სამ მარცვალზეა მოდელირებული: BKT გამოყოფილ პასუხებს მოძრავ საშუალოზე უკეთ წინასწარმეტყველებს,
+ხოლო მონაცემთა ბაზის 110 უნარზე უკეთ, ვიდრე ხუთ თემაზე ან ერთ უნარზე, წინასწარ განსაზღვრული ტესტით; მოძრავი საშუალო
+მარცვლის მიმართ გულგრილია. ზენოსთვის, სისტემისთვის,
 რომლისგანაც ეს ნაშრომი წარმოიშვა, რეკომენდაციაა უნარის მარცვალზე ათვისების გადასაწყვეტად მონაცემებიდან დადგენილი
 ზღურბლით მოძრავი საშუალო, ხოლო შემდეგი სავარჯიშოს შესარჩევად იდეების მარცვალზე მდგომარეობა, რომელიც ათვისების
 წესად იქცევა იქ, სადაც კითხვები და პრაქტიკა ამის საშუალებას იძლევა.

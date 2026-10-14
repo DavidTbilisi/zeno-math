@@ -77,9 +77,10 @@ export type Dataset = {
 
 /**
  * ASSISTments rows as observations, by the usual cleaning: main problems only (original = 1, not the scaffolding
- * questions a wrong answer opens), a skill and a 0/1 first-attempt result present, and the same problem counted once
- * per skill. A problem tagged with several skills becomes one observation for each, as in most knowledge-tracing
- * work. Answers are put in the order they were given (order_id). Every question counts as level 2: the data has no
+ * questions a wrong answer opens), a skill and a 0/1 first-attempt result present (a missing value may be written as
+ * NA), and the same problem counted once per skill. A problem tagged with several skills becomes one observation for
+ * each where the file has a row per skill, as in most knowledge-tracing work; the corrected 2009–2010 file has one
+ * row per problem, under the first of its skills. Answers are put in the order they were given (order_id). Every question counts as level 2: the data has no
  * levels, and the model's level step then plays no part. Students in one class share a teacher and lessons, so the
  * class (student_class_id) is kept for analyses that resample classes rather than students.
  */
@@ -99,7 +100,11 @@ export async function fromAssistments(records: AsyncIterable<string[]>, source =
       continue;
     }
     read++;
-    const get = (name: string) => (name in col ? (r[col[name]] ?? "").trim() : "");
+    // The corrected 2009–2010 file writes a missing value as NA (it was made with R), so NA is empty too.
+    const get = (name: string) => {
+      const v = name in col ? (r[col[name]] ?? "").trim() : "";
+      return v === "NA" ? "" : v;
+    };
     if (get("original") !== "1") continue;
     const correct = get("correct");
     if (correct !== "0" && correct !== "1") continue;

@@ -3,8 +3,10 @@
 ## 6.1 Answers to the hypotheses
 
 H1 asked whether BKT predicts held-out students' answers on the ASSISTments data better than the exponential moving
-average. [TODO: the verdict for split seed 1 by the rule fixed in advance, the estimate and its interval, and whether
-the other seeds and the class-level intervals agree.]
+average. On split seed 1 BKT's mean log-loss per answer is lower than the EMA's by 0.0225, with a 95 % interval of
+[−0.0264, −0.0183] from 10,000 resamples of the held-out students; the interval excludes zero and the estimate exceeds
+the 0.005 fixed as the smallest difference that counts, so by the rule fixed in advance BKT is better and H1 holds. The
+four other splits give the same verdict, with estimates from 0.021 to 0.025, and so does resampling whole classes.
 
 H2 asked whether, in simulated worlds that break BKT's assumptions, BKT needs fewer answers than the moving average and
 the streak rule before its declarations of mastery are right at least 90 % of the time. The answer depends on which
@@ -17,8 +19,12 @@ gradual settings, and at the higher learning rate needed 0.3 to 0.4 answers fewe
 was a matter of where its threshold has to be, not of whether one exists. In BKT's own world, the fitted model was as
 precise as Proposition 2 promises for the true parameters.
 
-H3 asked, as an exploratory question, how often the methods agree on real answers. [TODO: the agreement and the
-answers after declaration.]
+H3 asked, as an exploratory question, how often the methods agree on real answers. On the held-out ASSISTments practices BKT at 0.95, the EMA at the
+streak rule's cost and the streak rule with N = 3 agree in most practices: both members of each pair declare in 38 to
+46 % of practices and neither in 29 to 41 %. BKT is the most generous, declaring in 69 % of practices against 48 % for
+the simple rules, and the earliest, by 1.0 answer against the EMA and 1.5 against the streak rule where both declare.
+The next three answers after a declaration are right 78.6 % of the time after BKT, 80.4 % after the EMA and 77.2 %
+after the streak rule, against 66.6 % of all held-out answers.
 
 G1 asked what a model too coarse for its learners does. In a world where a skill is several components, each learnt in
 the one step BKT assumes, BKT on the skill fails as it did in the gradual worlds: at its usual threshold of 0.95 its
@@ -46,8 +52,12 @@ support, eight or sixteen in 30 questions, left the right grain unable to declar
 for eight components and not yet for sixteen; that shortage did not show in the fits, only in the declarations. The
 right grain is a property of the model and the practice together.
 
-G4 asked whether the same real answers are predicted better at a finer grain. [TODO: the verdict on ASSISTments by
-the pre-specified rule, and the exploratory findings.] On a simulated class the finer grain predicted better for BKT
+G4 asked whether the same real answers are predicted better at a finer grain. On ASSISTments BKT at the data set's own grain, 110 skills,
+predicts held-out answers better than at one skill, by 0.0346 per answer with an interval of [−0.0392, −0.0302], so G4
+holds by the rule fixed in advance; each step of coarsening costs BKT, and the EMA predicts slightly better at the
+coarser grains, so that coarsening costs BKT 0.041 per answer more than it costs the EMA, with an interval that
+excludes zero. The declarations move with the grain, BKT needing 3.3 answers at the finest grain and 8.9 at the
+coarsest, with the share right after a declaration falling from 79 % to 73 %. On a simulated class the finer grain predicted better for BKT
 without a conclusive interval, and the moving average lost less than BKT from coarsening, with an interval that
 excluded zero.
 
@@ -73,8 +83,10 @@ more components than the practice supports, costs answers for no gain in accurac
 component is split, and shows itself in degenerate fits in the first case and in declarations that never come in the
 second. The simple rules are less affected by grain in calibration and in having a threshold that
 can be found, because they assume less, and no less affected in precision, because they therefore know less. Which of
-these conditions real students are in is what the real data bear on [TODO: H1 and G4], and in the simulations it is the
-questions, more than the model, that decide it.
+these conditions real students are in is what the real data bear on: BKT predicts their answers better than the EMA
+(H1) and better at the data set's grain than at any coarser one (G4), which is what a world with learning at the grain
+of the tags would give, while its fits at the bound and the share wrong after its declarations say the tags are not
+yet the components; and in the simulations it is the questions, more than the model, that decide it.
 
 For Zeno, the recommendation is split by grain and by purpose. To decide mastery of a skill within a session, use an
 exponential moving average of each student's first answers on the skill, with a threshold set from the system's own

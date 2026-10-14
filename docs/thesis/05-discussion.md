@@ -8,11 +8,17 @@ threats to the validity of the conclusions.
 
 ### Prediction at one grain
 
-[TODO, once H1 has been run: whether BKT predicts held-out ASSISTments answers better than EMA by the pre-specified
-rule, by how much in log-loss per answer, whether the verdict is the same for split seeds 2 to 5 and with classes
-resampled, and how the two compare with the Elo model and PFA. If the verdict is "no practical difference", say that
-the extra machinery buys nothing in prediction on these data; if BKT is better, say by how much and that this does
-not by itself make its mastery decisions better (section 2.5).]
+On the real answers BKT predicts held-out students' first attempts better than the EMA, by 0.0225 in mean log-loss
+per answer on the split that decides, with an interval of [−0.0264, −0.0183] that excludes zero and lies beyond the
+0.005 fixed as the smallest difference that counts, so H1 holds by the pre-specified rule. The four other splits give
+the same verdict with estimates between 0.021 and 0.025, and resampling whole classes, which widens the intervals by
+about half, changes none of them. The difference is real and not negligible, but it is modest beside the spread
+between models: the Elo model Zeno runs predicts better than BKT by 0.008, and PFA sits between BKT and the EMA. What
+H1 shows is that BKT's extra machinery, a learnt state per skill with four fitted parameters, earns its keep in
+prediction on these data, where the EMA's one parameter and its slow start, from 0.594 for every student and skill,
+cannot tell students apart until several answers are in. A better prediction of the next answer does not by itself
+make a method's mastery decisions better (section 2.5): on the real data there is no truth to judge the declarations
+against, and the simulations below show where BKT's probability and its decisions part company.
 
 ### Mastery decisions at one grain
 
@@ -54,8 +60,16 @@ within each world they were nearly indistinguishable. A comparison at a fixed am
 question is often posed, can hide differences that appear only when each method is allowed to choose how long to
 wait.
 
-[TODO, once H3 has been run: how often BKT, EMA and the streak rule agree on ASSISTments, and what the answers after
-each method's declaration show, read with the caution of section 5.3.]
+On ASSISTments the three rules agree more than they differ. BKT at 0.95 declares in 69 % of the held-out practices
+and the two simple rules in 48 %; where a simple rule declares, BKT nearly always does too, one to one and a half
+answers earlier, and it declares alone in a further 22 % of practices. The share right on the next three answers after
+a declaration is 77 to 80 % for all three, against 67 % of all answers, and highest after the EMA, which declares
+latest. Read with the caution of section 5.3, this says two things. On skill-builder practices, which end after three
+right in a row and average under seven answers, BKT's extra declarations fall where the students then did about as
+well as after the other rules' declarations, so nothing in these data marks them as wrong. And none of the three rules
+is followed by the near-certain success that a declaration of mastery promises, which is what the gradual worlds and
+the component worlds would predict for skill tags that are each really several things. Which rule is right cannot be
+told from these data; what can be told is that BKT at its usual threshold is the most generous of the three.
 
 ### Too coarse
 
@@ -134,16 +148,24 @@ its practice, or ask for several components at once, to pay for it.
 
 ### Real data across grains
 
-[TODO, once G4 has been run on ASSISTments: whether BKT at the data set's grain predicts better than at the topic
-grain and than one skill by the pre-specified rule, by how much; whether the EMA loses less from coarsening; how the
-declarations move with the grain and how many fits are degenerate at each.] On the simulated class the finer grain
-predicted better for BKT, by 0.022 in log-loss per answer from one skill to 38, but with 80 held-out students the
+On ASSISTments BKT at the data set's grain predicts better than at the topic grain and than one skill, by 0.0346 per
+answer from 110 skills to one with an interval of [−0.0392, −0.0302], so G4 holds by the pre-specified rule, and each
+step of coarsening costs. The EMA moves the other way: it predicts slightly better at the coarser grains, by 0.0068
+from skills to one, because it carries no skill parameters to lose and gains a longer sequence to average over, so
+what coarsening costs BKT minus what it costs the EMA is 0.041 per answer, with an interval that excludes zero. The
+declarations move with the grain as well, BKT needing 3.3 answers at the skill grain, 6.1 at the topic grain and 8.9
+at the coarsest, while the share right after its declaration falls from 79 % to 73 %; at the skill grain 64 % of BKT's
+fits have guess or slip at the bound and 80 % a parameter at an edge of the grid, and at the coarser grains every fit
+does. The simulated class, run as a check of the method before the data were in, showed the same shape with less data
+to show it on: there the finer grain predicted better for BKT, by 0.022 in log-loss per answer from one skill to 38, but with 80 held-out students the
 interval reached past zero and the verdict was inconclusive, while the EMA was indifferent to the grain and lost less
-from coarsening than BKT did, with an interval that excluded zero (Table 4.16). That is the pattern the simulations lead
-one to expect on real data too: a model with a known state gains from a grain at which there is one, and loses more
-when there is not; a rule that assumes nothing about the skill gains and loses less. @pardos2007granularity and
-@feng2009grainsize found the finer ASSISTments skill models better at predicting a test score; whether they are also
-better at predicting the next answer, at the grain of the data set's own tags, is what the data file will decide.
+from coarsening than BKT did, with an interval that excluded zero (Table 4.16). That is the pattern the simulations lead one to expect, and the real data confirm it: a model with a known state
+gains from a grain at which there is one, and loses more when there is not; a rule that assumes nothing about the
+skill gains and loses less. @pardos2007granularity and @feng2009grainsize found the finer ASSISTments skill models
+better at predicting a test score; G4 finds them better at predicting the next answer too, at the grain of the data
+set's own tags. Whether a grain finer than the tags would be better still, the data cannot say, since they carry no
+finer tags; the fits at the bound and the share wrong after a declaration at 0.95 suggest that the tags are not yet
+the components.
 
 ## 5.2 What a system like Zeno should use
 
@@ -163,8 +185,12 @@ that works where BKT on the skill has none. A system that does not know how its 
 whose failure is milder. BKT's failure, with a threshold not set for the world it is in, is to declare mastery when most
 students have not reached it. EMA's failure in the BKT worlds is to need one or two more answers. For practice that
 feeds later skills, an early false declaration is the more costly error, so for deciding mastery at the grain of the
-skill the evidence points to the EMA, with a threshold set from the system's own data. [TODO: revise in the light of
-H1 and H3.]
+skill the evidence points to the EMA, with a threshold set from the system's own data. H1 and H3 do not change this. On the
+real answers BKT predicts the next answer better than the EMA, but the gap is modest and the Elo model Zeno already
+runs predicts better than both; and on the skill-builder practices BKT at 0.95 is the most generous of the three
+rules, declaring in a fifth more of them, one to one and a half answers sooner, with no higher share right afterwards.
+Prediction is not the decision, and on the decision the real data cannot say which rule is right; the simulations,
+which can, favour the rule whose failure is milder.
 
 At the grain of the ideas, BKT becomes the right tool where the questions tell the ideas apart. On hcf it already does:
 BKT on each idea carried from times decided sooner than the moving average, was better calibrated and named the idea a
@@ -265,11 +291,13 @@ continued above 0.9999 it met the standard in all four settings (Table 4.7). The
 to some degree. In the component worlds the definition is sharper, every component known, and does not move with the
 model's grain, which is what makes the grains comparable; but it is also strict, since a learner one component short
 of sixteen is counted as not having mastered the skill, and a system might reasonably count them otherwise. In the
-ASSISTments data, problems tagged with several skills are counted once for each at the finest grain, so one answer can
-weigh on several skills' sequences. BKT and EMA see the same sequences, so the comparison stays fair, and the bootstrap
-resamples whole students, which accounts for the dependence this creates within a student; G4 compares grains on the
-first observation of each problem only, so that no grain is judged on answers another never saw. A check with each
-answer kept for one skill only would show whether the choice matters at the finest grain.
+corrected ASSISTments file a problem tagged with several skills is one row carrying the first of them, about one row
+in seven, so no answer weighs on several skills' sequences, but a problem that needed two skills is credited to one
+and the finest grain cannot tell which it tested. The importer counts a problem once for each skill where a file has a
+row per skill; on this file that is every problem once, so G4's rule of comparing grains on the first observation of
+each problem keeps every answer. BKT and EMA see the same sequences, so the comparison stays fair, and the bootstrap
+resamples whole students, which accounts for the dependence within a student. A run on the original file, with its
+row per skill, would show whether crediting a problem to one skill or to all of them matters at the finest grain.
 
 ### Conclusion validity
 
@@ -277,7 +305,8 @@ H1 and G4 are the two confirmatory tests, each decided by one pre-specified inte
 estimates with intervals, without tests, so there is no problem of multiple testing to correct for, but neither should
 any single interval among the many in chapter 4 be read as a confirmed finding. The bootstrap resamples students as if
 each were an independent draw, while students in one class share a teacher and lessons. The class-level resampling
-shows how much this matters for H1. [TODO: report whether the class-level intervals change the H1 verdict.] H1 and G4
+shows how much this matters for H1. On ASSISTments the class-level intervals are about half again as wide as the student-level ones and change no
+verdict. H1 and G4
 are decided on one split of students, with four other splits reported for H1 to show whether the result depends on it,
 which is weaker than cross-validation over several folds.
 
@@ -295,5 +324,7 @@ answers for nothing and shows itself in degenerate fits; more components than th
 in declarations that never come. For Zeno the evidence points to the moving average for deciding
 mastery at the grain of the skill, with a threshold set from data, and to the state at the grain of the ideas for
 choosing what to practise next, becoming the mastery rule where the questions and the practice allow it. The real data
-across grains [TODO: G4's verdict] and the prediction test at one grain [TODO: H1's verdict] bear on which world real
-students are closer to.
+across grains, where BKT predicts better at the data set's grain than at any coarser one and the EMA does not, and the
+prediction test at one grain, where BKT beats the EMA, both place real students nearer the worlds in which the skill
+tags carry learning that a known state can use than the gradual ones; the fits at the bound and the share wrong after
+a declaration at 0.95 say that the tags are not yet the components.
