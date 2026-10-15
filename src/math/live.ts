@@ -233,7 +233,7 @@ export const judgeDigit = (ask: DivisionAsk, g: number): "right" | "tooBig" | "t
 /**
  * A Rubik's cube (the maths is in rubik.ts): the scramble and the turns made since, written as R U R′ U′; the moves to
  * repeat and how many times running they have been done; whether the buttons turn anticlockwise; and the angle the
- * cube is seen from, in degrees.
+ * cube and its ball of circles are seen from, in degrees.
  */
 export type LiveRubik = { scramble: string; moves: string; alg: string; reps: number; prime: boolean; yaw: number; pitch: number };
 
@@ -320,7 +320,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   compare: [380, 530],
   compareFractions: [400, 580],
   division: [760, 820],
-  rubik: [780, 610],
+  rubik: [780, 1000],
   soroban: [820, 540],
   patterns: [800, 600],
 };

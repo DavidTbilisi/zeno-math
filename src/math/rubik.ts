@@ -1,8 +1,8 @@
 // The Rubik's cube behind the live cube on the board: its 54 stickers, the six face turns as permutations of them
 // (worked out from the geometry, by turning each sticker's position and direction a quarter turn), move sequences
 // read and written in the usual letters (R U R′ U′), the order of a sequence (the lcm of its sticker cycles), random
-// scrambles, and where each sticker sits in the circle picture, the cube drawn on three bands of circles (Borromean
-// rings), one per axis.
+// scrambles, and where each sticker is drawn: on the ball (three bands of circles round a sphere, one band per axis),
+// in the circle picture (the same bands flat, as Borromean rings), and in the net.
 // Kept free of React so it can be tested on its own.
 
 export type Face = "U" | "R" | "F" | "D" | "L" | "B";
@@ -159,6 +159,60 @@ export function path(from: Move[], to: Move[]): { move: Move; after: Move[] }[] 
   return [...back, ...on];
 }
 
+// ——— The ball: the cube on circles of a sphere ———
+
+/**
+ * The cube drawn on a ball, the three bands of circles of the paper's picture ("A permutation representation of
+ * Rubik's cube on Borromean rings") made round: for each axis, three parallel circles where the planes of its three
+ * layers cut the unit sphere. A sticker of F in layer x of the R–L axis and y of the U–D axis is where circle x of one
+ * band meets circle y of another, on the F side. So the twelve stickers a turn of R carries round all lie on one
+ * circle, and the turn is a turn of the ball's slice about the axis: the face's own dots go round its pole.
+ */
+export type Axis = 0 | 1 | 2;
+/** x for R and L, y for U and D, z for F and B (the index of the coordinate a face's normal points along). */
+export const axisOf = (f: Face): Axis => NORMAL[f].findIndex((c) => c !== 0) as Axis;
+/** How far from the middle the outer layers' planes cut the ball: the dots of a face and of neighbouring faces about evenly spaced. */
+export const LAYER = 0.45;
+
+/** v turned by `angle` about the unit vector a (right-handed). */
+export function rotate(v: V3, a: V3, angle: number): V3 {
+  const [c, s] = [Math.cos(angle), Math.sin(angle)];
+  const d = dot3(a, v);
+  const x = cross(a, v);
+  return [0, 1, 2].map((k) => v[k] * c + x[k] * s + a[k] * d * (1 - c)) as V3;
+}
+
+/** The angle a move has got to, a fraction t of the way: clockwise seen from the face is negative about its normal. */
+export const moveAngle = (m: Move, t: number) => -(m.turns === 3 ? -1 : m.turns) * (Math.PI / 2) * t;
+
+/** The radius of the circle for layer v (−1, 0, 1) of an axis. */
+export const circleRadius = (v: number) => Math.sqrt(1 - (v * LAYER) ** 2);
+
+/** Points round the circle for layer v of an axis (n + 1 of them, the last back at the first). */
+export function circleOnBall(axis: Axis, v: number, n = 96): V3[] {
+  const r = circleRadius(v);
+  const [b, c] = ([0, 1, 2] as Axis[]).filter((k) => k !== axis);
+  return Array.from({ length: n + 1 }, (_, k) => {
+    const p: V3 = [0, 0, 0];
+    p[axis] = v * LAYER;
+    p[b] = r * Math.cos((2 * Math.PI * k) / n);
+    p[c] = r * Math.sin((2 * Math.PI * k) / n);
+    return p;
+  });
+}
+
+/** A sticker's dot: on the planes of its two layers, on its face's side of the ball. */
+export function dotOnBall(i: number): V3 {
+  const { pos, normal } = STICKERS[i];
+  const p = pos.map((c, k) => (normal[k] ? 0 : c * LAYER)) as V3;
+  const rest = Math.sqrt(1 - dot3(p, p));
+  return p.map((c, k) => c + normal[k] * rest) as V3;
+}
+
+/** Where sticker i is a fraction t of the way through a move: the slice it is on turns about the face's axis. */
+export const dotOnBallDuring = (i: number, m: Move, t: number): V3 =>
+  onLayer(m.face, i) ? rotate(dotOnBall(i), NORMAL[m.face], moveAngle(m, t)) : dotOnBall(i);
+
 // ——— The circle picture: the cube on three rings ———
 
 /**
@@ -167,55 +221,19 @@ export function path(from: Move[], to: Move[]): { move: Move; after: Move[] }[] 
  * are the two faces of the third axis: a sticker of F, in the layer x of the R–L axis and y of the U–D axis, is where
  * circle x of the R–L band meets circle y of the U–D band near F's crossing. So the twelve stickers a turn of R carries
  * round all lie on one circle, the R circle of the R–L band, and the turn slides them along it.
- *
- * With `lean` below 1 each band leans its own way, as rings in space do: its circles are squashed to `lean` along the
- * line from the middle of the picture to the band's middle, and turned by `skew`. Everything is found first on the
- * round picture and then followed as the bands lean, so the crossings stay the same ones.
  */
-export type Layout = { cx: number; cy: number; d: number; rho: number; step: number; lean?: number; skew?: number };
-export type Axis = 0 | 1 | 2;
-type P = [number, number];
-/** x for R and L, y for U and D, z for F and B (the index of the coordinate a face's normal points along). */
-export const axisOf = (f: Face): Axis => NORMAL[f].findIndex((c) => c !== 0) as Axis;
+export type Layout = { cx: number; cy: number; d: number; rho: number; step: number };
 /** R, U and B sit at the inner crossings, L, D and F at the outer ones, as in the paper's picture. */
 const INNER: Record<Face, boolean> = { R: true, U: true, B: true, L: false, D: false, F: false };
 
-/** The direction a band's middle is in, from the middle of the picture. */
-const bandAngle = (axis: Axis) => (axis * 2 * Math.PI) / 3;
-
 /** The middle of an axis's band: the R–L band's at the top, U–D's lower right, F–B's lower left. */
-export function bandCentre(axis: Axis, { cx, cy, d }: Layout): P {
-  const a = bandAngle(axis);
+export function bandCentre(axis: Axis, { cx, cy, d }: Layout): [number, number] {
+  const a = (axis * 2 * Math.PI) / 3;
   return [cx + d * Math.sin(a), cy - d * Math.cos(a)];
 }
 
-/** The way a band's circles are squashed: the long axis of its ellipses (as an angle on the screen) and how much. */
-export function bandTilt(axis: Axis, l: Layout): { angle: number; lean: number } {
-  return { angle: bandAngle(axis) + (l.skew ?? 0), lean: l.lean ?? 1 };
-}
-
-/** A point of the round picture of a band, where it is once the band leans, and back. */
-function leanBy(axis: Axis, p: P, l: Layout, back = false): P {
-  const { angle, lean } = bandTilt(axis, l);
-  if (lean === 1) return p;
-  const [cx, cy] = bandCentre(axis, l);
-  // Squash along the short axis (perpendicular to the long one).
-  const [ux, uy] = [-Math.sin(angle), Math.cos(angle)];
-  const [dx, dy] = [p[0] - cx, p[1] - cy];
-  const along = (dx * ux + dy * uy) * ((back ? 1 / lean : lean) - 1);
-  return [p[0] + along * ux, p[1] + along * uy];
-}
-/** A point on a leaning band, taken back to where it is on the band's round circles. */
-export const unlean = (axis: Axis, p: P, l: Layout): P => leanBy(axis, p, l, true);
-
-/** The point at angle t of circle r of a band, once the band leans. */
-const onBand = (axis: Axis, r: number, t: number, l: Layout): P => {
-  const [cx, cy] = bandCentre(axis, l);
-  return leanBy(axis, [cx + r * Math.cos(t), cy + r * Math.sin(t)], l);
-};
-
 /** Where two circles meet (none: an empty list). */
-function meet([x1, y1]: P, r1: number, [x2, y2]: P, r2: number): P[] {
+function meet([x1, y1]: [number, number], r1: number, [x2, y2]: [number, number], r2: number): [number, number][] {
   const D = Math.hypot(x2 - x1, y2 - y1);
   const a = (r1 * r1 - r2 * r2 + D * D) / (2 * D);
   const h2 = r1 * r1 - a * a;
@@ -225,101 +243,68 @@ function meet([x1, y1]: P, r1: number, [x2, y2]: P, r2: number): P[] {
   return [[mx - h * uy, my + h * ux], [mx + h * uy, my - h * ux]];
 }
 
-const nearest = (points: P[], [x, y]: P) =>
+const nearest = (points: [number, number][], [x, y]: [number, number]) =>
   points.reduce((best, p) => (Math.hypot(p[0] - x, p[1] - y) < Math.hypot(best[0] - x, best[1] - y) ? p : best));
-
-const LEAN_STEPS = 12;
-const crossings = new WeakMap<Layout, Map<string, P>>();
-
-/**
- * Where circle rb of band b meets circle rc of band c, the crossing picked on the round picture by `pick`: found
- * there, then followed a little at a time (Newton's method on the two angles) as the bands lean.
- */
-function crossing(b: Axis, rb: number, c: Axis, rc: number, pick: (ps: P[]) => P, l: Layout): P {
-  const round = { ...l, lean: 1 };
-  const start = pick(meet(bandCentre(b, l), rb, bandCentre(c, l), rc));
-  if ((l.lean ?? 1) === 1) return start;
-  const key = `${b} ${rb} ${c} ${rc} ${start.join()}`;
-  let cache = crossings.get(l);
-  if (!cache) crossings.set(l, (cache = new Map()));
-  const known = cache.get(key);
-  if (known) return known;
-  const angleOn = (a: Axis, p: P) => Math.atan2(p[1] - bandCentre(a, round)[1], p[0] - bandCentre(a, round)[0]);
-  let [s, t] = [angleOn(b, start), angleOn(c, start)];
-  for (let k = 1; k <= LEAN_STEPS; k++) {
-    const lk = { ...l, lean: 1 + ((l.lean! - 1) * k) / LEAN_STEPS };
-    for (let it = 0; it < 30; it++) {
-      const [p, q] = [onBand(b, rb, s, lk), onBand(c, rc, t, lk)];
-      const [fx, fy] = [p[0] - q[0], p[1] - q[1]];
-      if (Math.hypot(fx, fy) < 1e-12) break;
-      // The derivatives along each circle: the leaning is linear, so it is the lean of the tangent.
-      const [p1, q1] = [onBand(b, rb, s + 1e-6, lk), onBand(c, rc, t + 1e-6, lk)];
-      const [ax, ay] = [(p1[0] - p[0]) / 1e-6, (p1[1] - p[1]) / 1e-6];
-      const [bx, by] = [-(q1[0] - q[0]) / 1e-6, -(q1[1] - q[1]) / 1e-6];
-      const det = ax * by - bx * ay;
-      s -= (fx * by - bx * fy) / det;
-      t -= (ax * fy - fx * ay) / det;
-    }
-  }
-  const out = onBand(b, rb, s, l);
-  cache.set(key, out);
-  return out;
-}
 
 /** The two axes other than a face's own, whose bands cross at the face. */
 const across = (f: Face): [Axis, Axis] => ([0, 1, 2] as Axis[]).filter((a) => a !== axisOf(f)) as [Axis, Axis];
 
 /** A face's crossing: where the middle circles of the other two bands meet, nearer the centre or further out. */
-export function ringCentre(face: Face, l: Layout): P {
+export function ringCentre(face: Face, l: Layout): [number, number] {
   const [b, c] = across(face);
-  const pick = ([p, q]: P[]) => (INNER[face] === Math.hypot(p[0] - l.cx, p[1] - l.cy) < Math.hypot(q[0] - l.cx, q[1] - l.cy) ? p : q);
-  return crossing(b, l.rho, c, l.rho, pick, l);
+  const [p, q] = meet(bandCentre(b, l), l.rho, bandCentre(c, l), l.rho);
+  const inner = Math.hypot(p[0] - l.cx, p[1] - l.cy) < Math.hypot(q[0] - l.cx, q[1] - l.cy);
+  return INNER[face] === inner ? p : q;
 }
 
 /** The radius of the circle for layer v (−1, 0, 1) of an axis: the layer of the face whose crossing is inside the band is the inner circle. */
 export function bandRadius(axis: Axis, v: number, l: Layout): number {
-  const round = { ...l, lean: 1 };
   const plus = FACES.find((f) => NORMAL[f][axis] === 1)!;
-  const [x, y] = ringCentre(plus, round);
+  const [x, y] = ringCentre(plus, l);
   const [bx, by] = bandCentre(axis, l);
   return l.rho + (Math.hypot(x - bx, y - by) < l.rho ? -1 : 1) * v * l.step;
 }
 
 /** A sticker's dot: where the circles of its two layers meet, at its face's crossing. */
-export function dotAt(i: number, l: Layout): P {
+export function dotAt(i: number, l: Layout): [number, number] {
   const s = STICKERS[i];
   const [b, c] = across(s.face);
-  const centre = ringCentre(s.face, { ...l, lean: 1 });
-  return crossing(b, bandRadius(b, s.pos[b], l), c, bandRadius(c, s.pos[c], l), (ps) => nearest(ps, centre), l);
+  return nearest(meet(bandCentre(b, l), bandRadius(b, s.pos[b], l), bandCentre(c, l), bandRadius(c, s.pos[c], l)), ringCentre(s.face, l));
 }
 
 const wrapAngle = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
 
 /**
  * Where sticker i is a fraction t of the way through a move. The twelve stickers beside the face slide along their
- * circle of the face's band (worked out on the band's round circle, then leant); the face's own turn round its
- * crossing. The angle is added up a quarter turn at a time (each step is less than half way round, so its direction is
- * never in doubt).
+ * circle of the face's band; the face's own turn round its crossing. The angle is added up a quarter turn at a time
+ * (each step is less than half way round, so its direction is never in doubt).
  */
-export function dotDuring(i: number, m: Move, t: number, l: Layout): P {
-  if (!onLayer(m.face, i)) return dotAt(i, l);
-  const own = STICKERS[i].face === m.face;
-  const axis = axisOf(m.face);
-  // The stickers beside the face move in the band's own round picture; the face's own about its crossing.
-  const flat = (p: P): P => (own ? p : unlean(axis, p, l));
-  const p = flat(dotAt(i, l));
-  const [cx, cy] = own ? ringCentre(m.face, l) : bandCentre(axis, l);
+export function dotDuring(i: number, m: Move, t: number, l: Layout): [number, number] {
+  const p = dotAt(i, l);
+  if (!onLayer(m.face, i)) return p;
+  const [cx, cy] = STICKERS[i].face === m.face ? ringCentre(m.face, l) : bandCentre(axisOf(m.face), l);
   const q = movePerm(m.turns === 3 ? inverse({ face: m.face, turns: 1 }) : { face: m.face, turns: 1 });
   let [j, sweep] = [i, 0];
   for (let k = 0; k < (m.turns === 2 ? 2 : 1); k++) {
-    const [a, b] = [flat(dotAt(j, l)), flat(dotAt(q[j], l))];
+    const [a, b] = [dotAt(j, l), dotAt(q[j], l)];
     sweep += wrapAngle(Math.atan2(b[1] - cy, b[0] - cx) - Math.atan2(a[1] - cy, a[0] - cx));
     j = q[j];
   }
-  const end = flat(dotAt(j, l));
+  const end = dotAt(j, l);
   const [r0, r1] = [Math.hypot(p[0] - cx, p[1] - cy), Math.hypot(end[0] - cx, end[1] - cy)];
   const a = Math.atan2(p[1] - cy, p[0] - cx) + sweep * t;
   const r = r0 + (r1 - r0) * t;
-  const at: P = [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-  return own ? at : leanBy(axis, at, l);
+  return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+}
+
+// ——— The net: the cube unfolded ———
+
+/** Where each face goes in the net, in faces across and down: U above F, then L F R B in a row, D below F. */
+const NET: Record<Face, [number, number]> = { U: [1, 0], L: [0, 1], F: [1, 1], R: [2, 1], B: [3, 1], D: [1, 2] };
+
+/** Sticker i's square in the net, in stickers across and down (12 across, 9 down). Each face is seen from outside, as its rows and columns are. */
+export function netCell(i: number): [number, number] {
+  const s = STICKERS[i];
+  const [x, y] = NET[s.face];
+  return [3 * x + s.col, 3 * y + s.row];
 }
