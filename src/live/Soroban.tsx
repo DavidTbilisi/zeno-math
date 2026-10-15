@@ -1,7 +1,8 @@
 // A soroban on the board: click a bead to push it against the beam or away from it, and the number underneath follows.
 // "Add" and "Take away" step through a sum the way it is done on a soroban, a rod at a time from the highest place,
 // saying at each rod whether the beads go straight on or off or need a friend of 5 or of 10; and "Show a number" asks
-// the pupil to set one.
+// the pupil to set one. Adding 0 is allowed, to see that no bead moves; after adding 1, the answer is named as the next
+// number.
 import type { Dict } from "../locales/en";
 import type { LiveSoroban } from "../math/live";
 import { beadsOf, clickBead, rodDigits, SOROBAN_RODS, sorobanFits, sorobanMax, sorobanSteps, sorobanTarget, type SorobanStep } from "../math/soroban";
@@ -61,6 +62,7 @@ export function Soroban({ state, set, w: words, svgRef }: PieceProps<"soroban">)
   };
   const start = (sign: 1 | -1) => patch({ work: { start: value, sign, n: state.n, step: 0 }, target: null });
   const sum = work && `${grouped(work.start)} ${work.sign === 1 ? "+" : "−"} ${grouped(work.n)}`;
+  const plus = work && work.sign === 1 ? work.n : null; // + 0 and + 1 are named
 
   const bead = (key: string, x: number, y: number, onClick: () => void, label: string) => (
     <g key={key} style={{ transform: `translateY(${y}px)`, transition: "transform 160ms ease-out", cursor: "pointer" }} onClick={onClick} aria-label={label}>
@@ -128,7 +130,7 @@ export function Soroban({ state, set, w: words, svgRef }: PieceProps<"soroban">)
           }}
           onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
         />
-        <button className="live-btn primary" disabled={!fits || !state.n} title={fits ? undefined : fill(w.tooBig, { rods })} onClick={() => start(1)}>+ {w.add}</button>
+        <button className="live-btn primary" disabled={!fits} title={fits ? undefined : fill(w.tooBig, { rods })} onClick={() => start(1)}>+ {w.add}</button>
         <button className="live-btn primary" disabled={!fitsBack || !state.n} title={fitsBack ? undefined : w.tooSmall} onClick={() => start(-1)}>− {w.sub}</button>
         {work && (
           <>
@@ -142,7 +144,9 @@ export function Soroban({ state, set, w: words, svgRef }: PieceProps<"soroban">)
       </div>
       {work ? (
         <p className="live-said info">
-          {k === 0
+          {plus === 0
+            ? fill(w.plusZero, { sum: sum ?? "", n: grouped(work.start) })
+            : k === 0
             ? fill(w.begin, { sum: sum ?? "" })
             : k >= steps.length
               ? `${sum} = ${grouped(value)}`
@@ -156,6 +160,7 @@ export function Soroban({ state, set, w: words, svgRef }: PieceProps<"soroban">)
         <p className="live-hint">{w.hint}</p>
       )}
       {work && k >= steps.length && k > 0 && <p className="live-hint">{stepText(w, steps[k - 1])}</p>}
+      {work && plus === 1 && k >= steps.length && <p className="live-said ok">{fill(w.plusOne, { n: grouped(work.start), next: grouped(value) })}</p>}
     </>
   );
 }
