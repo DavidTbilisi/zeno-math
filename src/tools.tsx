@@ -55,7 +55,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
     hints: (t) => t.algoHints,
     names: (t) => {
       const w = t.algoWords;
-      return { sort: w.sortNames, search: w.searchNames, graph: w.graphNames, tree: w.treeNames, ds: w.dsNames, dp: w.dpNames };
+      return { sort: w.sortNames, search: { binary: w.searchNames.binary, linear: w.searchNames.linear }, pattern: w.pattern.names, graph: w.graphNames, tree: w.treeNames, ds: w.dsNames, dp: w.dpNames };
     } },
   nt: { Dialog: load(() => import("./components/NtDialog"), "NtDialog"), edit: "editNt", topics: (t) => t.ntTopics, hints: (t) => t.ntHints },
   comb: { Dialog: load(() => import("./components/CombDialog"), "CombDialog"), edit: "editComb", topics: (t) => t.combTopics, hints: (t) => t.combHints, names: (t) => ({ count: t.combWords.countNames }) },

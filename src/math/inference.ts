@@ -3,7 +3,7 @@
 // t, paired t, two proportions) with the interval for the difference, χ² tests (goodness of fit, independence in a
 // two-way table) and the two kinds of error with the power of a z-test.
 // The distribution functions are computed here (incomplete gamma and beta functions), not looked up in tables.
-import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nt, r2, texLines, tn, W, type Caption, type Frame, type TexLine } from "./chart";
+import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nt, r2, texLines, textLen, tn, W, type Caption, type Frame, type TexLine } from "./chart";
 import type { RenderedSvg } from "./latex";
 import { niceStep } from "./scale";
 import { chiSf, chiUpper, invertSf, lnGamma, normCdf, normSf, tSf, tUpper, zUpper } from "./distributions";
@@ -246,7 +246,7 @@ function keys(y: number, items: { fill: string; text: string; line?: string }[])
   let x = 56;
   let row = 0;
   for (const it of items) {
-    const w = 30 + it.text.length * 7.2 + 22;
+    const w = 30 + textLen(it.text) * 7.2 + 22;
     if (x + w > W - 16 && x > 56) {
       x = 56;
       row++;

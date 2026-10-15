@@ -3,7 +3,7 @@
 // theorem recursion tree, growth-rate chart and running-time table). Also the shared cell,
 // table and legend helpers that the graph and tree pictures use.
 import type { AlgoWords, DpSpec, DsSpec, GrowthSpec, SearchSpec, SortSpec, Steps } from "./algo";
-import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nf, nt, r2, texAt, tn, W, wrap, type Caption } from "./chart";
+import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nf, nt, r2, texAt, textLen, tn, W, wrap, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 
 // ---------- parsing ----------
@@ -59,7 +59,7 @@ export function legendRow(items: { role: Role; text: string }[], y: number, x0 =
   let yy = y;
   const parts: string[] = [];
   for (const it of items) {
-    const width = 22 + it.text.length * 7.6 + 18;
+    const width = 22 + textLen(it.text) * 7.6 + 18;
     if (x + width > W - 8 && x > x0) (x = x0), (yy += 22);
     const r = ROLES[it.role];
     parts.push(`<rect x="${x}" y="${yy}" width="14" height="14" rx="3" fill="${r.fill}" stroke="${r.stroke}" stroke-width="1.3"/>`, txt(x + 20, yy + 11.5, it.text, { size: 12.5, color: "#495057" }));
@@ -183,7 +183,8 @@ export function drawRows(rows: Row[], n: number, y0 = 0, maxW = 380, bars = fals
       row.marks.forEach((m, i) => m && parts.push(txt(xOf(row, i) + cw / 2 - 1, y + cellH + 14, m, { size: 10.5, color: C.blue, anchor: "middle", bold: true })));
       h += 14;
     }
-    prev = { row, bottom: y + cellH + (row.range ? 4 : 0) };
+    // Arrows to the next row start below the pointer names, not through them.
+    prev = { row, bottom: y + cellH + (row.range ? 4 : 0) + (row.marks ? 17 : 0) };
     y += h + lane;
   }
   return { svg: parts.join(""), h: y - lane - y0 };
@@ -421,7 +422,7 @@ function renderCounting(spec: SortSpec, a0: number[], w: AlgoWords, st: Steps): 
 // ---------- searching ----------
 
 /** Two pointers on a sorted array (a pair with sum t), or a sliding window (the best sum of k neighbours). */
-function renderScan(spec: SearchSpec, w: AlgoWords, st: Steps): RenderedSvg {
+export function renderScan(spec: SearchSpec, w: AlgoWords, st: Steps): RenderedSvg {
   const m = w.searchMore;
   const input = parseNums(spec.data, w, 16);
   const n = input.length;
@@ -431,7 +432,7 @@ function renderScan(spec: SearchSpec, w: AlgoWords, st: Steps): RenderedSvg {
   if (spec.algo === "twoptr") {
     const t = parseNum(spec.target, w);
     const a = input.slice().sort((x, y) => x - y);
-    if (!a.every((v, i) => v === input[i])) caps.push({ text: w.sortedFirst, color: C.orange });
+    if (!a.every((v, i) => v === input[i])) caps.push({ text: w.pattern.sortedFirst, color: C.orange });
     let [l, r] = [0, n - 1];
     let k = 0;
     let hit = false;

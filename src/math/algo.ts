@@ -1,17 +1,21 @@
 // Algorithms and data structures: step-by-step traces of sorting and searching, graph algorithms
 // (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), binary search trees, AVL trees and heaps,
 // stacks, queues and hash tables, dynamic programming tables with traceback, and complexity
-// (the master theorem and growth rates), recursion and backtracking, and string matching.
+// (the master theorem and growth rates), recursion and backtracking, string matching, and patterns
+// (two pointers, fast and slow pointers, sliding windows, prefix sums, a monotonic stack, Kadane).
 // Every picture is one standalone SVG.
 import type { RenderedSvg } from "./latex";
 import { renderDp, renderDs, renderGrowth, renderSearch, renderSort } from "./algoArrays";
 import { renderGraph, renderTree } from "./algoGraphs";
+import { renderPattern } from "./algoPatterns";
 import { renderRecur } from "./algoRecur";
 import { renderString } from "./algoStrings";
 
 export type SortAlgo = "bubble" | "insertion" | "selection" | "merge" | "quick" | "heap" | "shell" | "counting";
 export type SortView = "cells" | "bars";
+/** twoptr and window have moved to Patterns; boards saved before still carry them here (see upgradeAlgo). */
 export type SearchAlgo = "binary" | "linear" | "twoptr" | "window";
+export type PatternAlgo = "twoptr" | "water" | "dedupe" | "partition" | "cycle" | "window" | "distinct" | "minsum" | "prefix" | "mono" | "kadane";
 export type GraphAlgo = "bfs" | "dfs" | "dijkstra" | "bellman" | "floyd" | "prim" | "kruskal" | "unionfind" | "topo";
 export type RecurProblem = "fib" | "fact" | "hanoi" | "queens" | "subsets";
 export type StringAlgo = "naive" | "kmp" | "rk";
@@ -22,7 +26,8 @@ export type GrowthMode = "master" | "compare";
 
 export const SORT_ALGOS: SortAlgo[] = ["bubble", "insertion", "selection", "shell", "merge", "quick", "heap", "counting"];
 export const SORT_VIEWS: SortView[] = ["cells", "bars"];
-export const SEARCH_ALGOS: SearchAlgo[] = ["binary", "linear", "twoptr", "window"];
+export const SEARCH_ALGOS: SearchAlgo[] = ["binary", "linear"];
+export const PATTERN_ALGOS: PatternAlgo[] = ["twoptr", "water", "dedupe", "partition", "cycle", "window", "distinct", "minsum", "prefix", "mono", "kadane"];
 export const GRAPH_ALGOS: GraphAlgo[] = ["bfs", "dfs", "dijkstra", "bellman", "floyd", "prim", "kruskal", "unionfind", "topo"];
 export const RECUR_PROBLEMS: RecurProblem[] = ["fib", "fact", "hanoi", "queens", "subsets"];
 export const STRING_ALGOS: StringAlgo[] = ["naive", "kmp", "rk"];
@@ -47,12 +52,18 @@ export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: stri
 /** n for fib / fact / hanoi / queens; data (the numbers) and target for subsets; memo for fib. */
 export type RecurSpec = { topic: "recur"; problem: RecurProblem; n: string; memo: boolean; data: string; target: string; step?: number };
 export type StringSpec = { topic: "string"; algo: StringAlgo; text: string; pattern: string; step?: number };
+/**
+ * data: numbers (the next index of each cell for cycle, a text for distinct) · target: the pair's sum
+ * (twoptr), the window size k (window), the pivot (partition), the least sum (minsum) or the sum k
+ * (prefix); unused by the others.
+ */
+export type PatternSpec = { topic: "pattern"; algo: PatternAlgo; data: string; target: string; step?: number };
 
 /** step: how many steps of the trace to show (the slider); missing means all of them. */
-export type AlgoSpec = SortSpec | SearchSpec | GraphSpec | TreeSpec | DsSpec | DpSpec | GrowthSpec | RecurSpec | StringSpec;
+export type AlgoSpec = SortSpec | SearchSpec | PatternSpec | GraphSpec | TreeSpec | DsSpec | DpSpec | GrowthSpec | RecurSpec | StringSpec;
 export type AlgoTopic = AlgoSpec["topic"];
 export type AlgoSpecOf<K extends AlgoTopic> = Extract<AlgoSpec, { topic: K }>;
-export const ALGO_TOPICS: AlgoTopic[] = ["sort", "search", "graph", "tree", "ds", "dp", "recur", "string", "growth"];
+export const ALGO_TOPICS: AlgoTopic[] = ["sort", "search", "pattern", "graph", "tree", "ds", "dp", "recur", "string", "growth"];
 
 export type AlgoWords = {
   badList: string;
@@ -185,6 +196,62 @@ export type AlgoWords = {
     found: string;
     notFound: string;
   };
+  pattern: {
+    names: Record<PatternAlgo, string>;
+    /** twoptr and window keep their explanations in searchMore. */
+    info: Record<Exclude<PatternAlgo, "twoptr" | "window">, string>;
+    legend: {
+      lines: string; ruledOut: string; best: string; kept: string; read: string; free: string; less: string; equal: string; greater: string; unknown: string;
+      slow: string; fast: string; meet: string; loop: string; offPath: string; window: string; entering: string; repeat: string; left: string; enough: string;
+      hit: string; stack: string; answered: string; none: string; run: string;
+    };
+    sortedFirst: string;
+    nonNegative: string;
+    waterBest: string;
+    dedupeStart: string;
+    dedupeKeep: string;
+    dedupeSkip: string;
+    distinctCount: string;
+    dedupeDone: string;
+    partStart: string;
+    partLess: string;
+    partLessHere: string;
+    partEqual: string;
+    partMore: string;
+    partDone: string;
+    badNext: string;
+    cycleStart: string;
+    cycleStep: string;
+    meet: string;
+    phase2: string;
+    phase2Step: string;
+    entrance: string;
+    loop: string;
+    cycleFound: string;
+    cycleDup: string;
+    emptyText: string;
+    repeat: string;
+    add: string;
+    distinctBest: string;
+    positive: string;
+    minAdd: string;
+    minHit: string;
+    minBest: string;
+    minNone: string;
+    prefixStart: string;
+    prefixHit: string;
+    prefixMiss: string;
+    prefixFound: string;
+    prefixNone: string;
+    monoPop: string;
+    monoPush: string;
+    monoLeft: string;
+    monoResult: string;
+    kadaneStart: string;
+    kadaneExtend: string;
+    kadaneRestart: string;
+    kadaneBest: string;
+  };
 };
 
 export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf<K> }[] } = {
@@ -204,8 +271,20 @@ export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf
     { label: "Binary · find 23", spec: { topic: "search", algo: "binary", data: "2, 5, 8, 12, 16, 23, 38, 56, 72, 91", target: "23" } },
     { label: "Binary · find 7 (missing)", spec: { topic: "search", algo: "binary", data: "1, 3, 4, 6, 8, 9, 11, 14", target: "7" } },
     { label: "Linear · find 9", spec: { topic: "search", algo: "linear", data: "4, 2, 7, 1, 9, 3", target: "9" } },
-    { label: "Two pointers · sum 17", spec: { topic: "search", algo: "twoptr", data: "1, 3, 4, 6, 8, 11, 13, 15", target: "17" } },
-    { label: "Sliding window · k = 3", spec: { topic: "search", algo: "window", data: "2, 1, 5, 1, 3, 2, 7, 1, 4", target: "3" } },
+  ],
+  pattern: [
+    { label: "Two pointers · sum 17", spec: { topic: "pattern", algo: "twoptr", data: "1, 3, 4, 6, 8, 11, 13, 15", target: "17" } },
+    { label: "Most water · 1 8 6 2 5 4 8 3 7", spec: { topic: "pattern", algo: "water", data: "1, 8, 6, 2, 5, 4, 8, 3, 7", target: "" } },
+    { label: "Remove duplicates · 0 0 1 1 1 2 2 3 3 4", spec: { topic: "pattern", algo: "dedupe", data: "0, 0, 1, 1, 1, 2, 2, 3, 3, 4", target: "" } },
+    { label: "Dutch flag · 2 0 2 1 1 0, pivot 1", spec: { topic: "pattern", algo: "partition", data: "2, 0, 2, 1, 1, 0", target: "1" } },
+    { label: "Fast & slow · 1 3 4 2 2", spec: { topic: "pattern", algo: "cycle", data: "1, 3, 4, 2, 2", target: "" } },
+    { label: "Fast & slow · 3 1 3 4 2", spec: { topic: "pattern", algo: "cycle", data: "3, 1, 3, 4, 2", target: "" } },
+    { label: "Sliding window · k = 3", spec: { topic: "pattern", algo: "window", data: "2, 1, 5, 1, 3, 2, 7, 1, 4", target: "3" } },
+    { label: "No repeats · abcabcbb", spec: { topic: "pattern", algo: "distinct", data: "abcabcbb", target: "" } },
+    { label: "Shortest sum ≥ 7 · 2 3 1 2 4 3", spec: { topic: "pattern", algo: "minsum", data: "2, 3, 1, 2, 4, 3", target: "7" } },
+    { label: "Prefix sums · sum 7", spec: { topic: "pattern", algo: "prefix", data: "3, 4, 7, 2, -3, 1, 4, 2", target: "7" } },
+    { label: "Next greater · 73 74 75 71 69 72 76 73", spec: { topic: "pattern", algo: "mono", data: "73, 74, 75, 71, 69, 72, 76, 73", target: "" } },
+    { label: "Kadane · −2 1 −3 4 −1 2 1 −5 4", spec: { topic: "pattern", algo: "kadane", data: "-2, 1, -3, 4, -1, 2, 1, -5, 4", target: "" } },
   ],
   graph: [
     { label: "BFS", spec: { topic: "graph", algo: "bfs", edges: "A-B, A-C, B-D, B-E, C-F, E-F, D-G", directed: false, start: "A" } },
@@ -307,6 +386,8 @@ function draw(spec: AlgoSpec, words: AlgoWords, st: Steps): RenderedSvg {
       return renderSort(spec, words, st);
     case "search":
       return renderSearch(spec, words, st);
+    case "pattern":
+      return renderPattern(spec, words, st);
     case "graph":
       return renderGraph(spec, words, st);
     case "tree":
@@ -322,6 +403,13 @@ function draw(spec: AlgoSpec, words: AlgoWords, st: Steps): RenderedSvg {
     case "string":
       return renderString(spec, words, st);
   }
+}
+
+/** Two pointers and the sliding window were searches before Patterns had a tab; a board saved then opens there. */
+export function upgradeAlgo(spec: AlgoSpec): AlgoSpec {
+  if (spec.topic !== "search" || (spec.algo !== "twoptr" && spec.algo !== "window")) return spec;
+  const { algo, data, target, step } = spec;
+  return { topic: "pattern", algo, data, target, ...(step === undefined ? {} : { step }) };
 }
 
 /** The picture at spec.step, and how many steps there are in all (0: nothing to step through). */
