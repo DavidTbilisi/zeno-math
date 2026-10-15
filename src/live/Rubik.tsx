@@ -1,12 +1,14 @@
 // A Rubik's cube on the board, drawn twice: as a cube that turns (click a sticker to turn its face, drag to look
-// round it) and on three bands of circles, one per axis, with each face's nine dots where two bands cross: a turn
-// slides the twelve dots beside the face along one circle and turns the face's own dots about its crossing. Below them the moves made, and moves to repeat with their order: how
+// round it) and on three bands of circles, one per axis, each band leaning its own way like a ring in space, with
+// each face's nine dots where two bands cross: a turn slides the twelve dots beside the face along one circle and
+// turns the face's own dots about its crossing. Below them the moves made, and moves to repeat with their order: how
 // many times they must be done before the cube comes back.
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import {
   axisOf,
   bandCentre,
   bandRadius,
+  bandTilt,
   colorsAfter,
   common,
   cycleLengths,
@@ -42,11 +44,16 @@ const MAX_MOVES = 1200;
 const BODY = "#212529";
 
 const [CUBE_X, CUBE_Y, CUBE_K] = [185, 205, 60];
-const RINGS: Layout = { cx: 570, cy: 215, d: 60, rho: 110, step: 15 };
+// Each band leans its own way, like three rings in space.
+const RINGS: Layout = { cx: 570, cy: 215, d: 60, rho: 110, step: 17, lean: 0.8, skew: 0.25 };
+const DOT = 6.5;
+const rad = (deg: number) => (deg * Math.PI) / 180;
+
+/** A dot's shadow, as if lit from the top left. */
+const shadowOf = (cx: number, cy: number) => ({ cx: cx + 1.5, cy: cy + 2.5, rx: DOT, ry: DOT * 0.8 });
 
 // ——— Turning and looking ———
 
-const rad = (deg: number) => (deg * Math.PI) / 180;
 /** v turned by `angle` about the unit vector a (right-handed). */
 function rotate(v: V3, a: V3, angle: number): V3 {
   const [c, s] = [Math.cos(angle), Math.sin(angle)];
@@ -216,24 +223,22 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
   };
 
   // ——— The rings ———
-  const ringDots = STICKERS.map((_, i) => {
+  // The dots are beads on the rings.
+  const beads = STICKERS.map((_, i) => {
     const [x, y] = turning ? dotDuring(i, turning, anim!.t, RINGS) : dotAt(i, RINGS);
+    return { i, x, y };
+  });
+  const ringDots = beads.map(({ i, x, y }) => {
     const lit = !turning && hover && onLayer(hover, i) && i % 9 !== 4;
-    return <circle key={i} data-dot={i} cx={x} cy={y} r={6.5} fill={FACE_COLORS[colors[i]]} stroke={lit ? "#1971c2" : "#343a40"} strokeWidth={lit ? 3 : 1.2} />;
+    return (
+      <circle key={i} data-dot={i} cx={x} cy={y} r={DOT} fill={`url(#rubik-bead-${colors[i]})`} stroke={lit ? "#1971c2" : "#343a40"} strokeWidth={lit ? 3 : 1.2} />
+    );
   });
   const trails =
     hover && !turning
       ? STICKERS.flatMap((_, i) =>
           onLayer(hover, i) && i % 9 !== 4
-            ? [
-                <polyline
-                  key={i}
-                  points={Array.from({ length: 17 }, (_, k) => dotDuring(i, turnMove(hover), k / 16, RINGS).map((v) => v.toFixed(1)).join(",")).join(" ")}
-                  fill="none"
-                  stroke="#74c0fc"
-                  strokeWidth={1.6}
-                />,
-              ]
+            ? [<polyline key={i} points={Array.from({ length: 17 }, (_, k) => dotDuring(i, turnMove(hover), k / 16, RINGS).map((v) => v.toFixed(1)).join(",")).join(" ")} fill="none" stroke="#74c0fc" strokeWidth={1.6} />]
             : [],
         )
       : [];
@@ -251,22 +256,45 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
           <rect width={370} height={410} fill="transparent" />
           {groups.map((g) => g.map((c) => <g key={c.join()}>{cubie(c)}</g>))}
         </g>
-        <g fill="none">
+        <defs>
+          {FACES.map((f) => (
+            <radialGradient key={f} id={`rubik-bead-${f}`} cx="0.35" cy="0.3" r="0.75">
+              <stop offset="0" stopColor={shade(FACE_COLORS[f], 1.25)} />
+              <stop offset="0.55" stopColor={FACE_COLORS[f]} />
+              <stop offset="1" stopColor={shade(FACE_COLORS[f], 0.7)} />
+            </radialGradient>
+          ))}
+        </defs>
+        <g fill="none" strokeLinejoin="round">
           {([0, 1, 2] as const).map((a) => {
             const [x, y] = bandCentre(a, RINGS);
+            const { angle, lean } = bandTilt(a, RINGS);
             // The circle a hovered face's turn slides its ring along.
             const lit = hover && axisOf(hover) === a ? NORMAL[hover][a] : null;
-            return [-1, 0, 1].map((v) => (
-              <circle key={`${a}${v}`} cx={x} cy={y} r={bandRadius(a, v, RINGS)} stroke={lit === v ? "#74c0fc" : "#ced4da"} strokeWidth={lit === v ? 2.5 : 1} />
-            ));
+            return (
+              <g key={a} transform={`translate(${x} ${y}) rotate(${((angle * 180) / Math.PI).toFixed(2)})`}>
+                {[-1, 0, 1].map((v) => {
+                  const [rx, ry] = [bandRadius(a, v, RINGS), bandRadius(a, v, RINGS) * lean];
+                  return (
+                    <g key={v}>
+                      <ellipse rx={rx} ry={ry} stroke={lit === v ? "#4dabf7" : "#ced4da"} strokeWidth={lit === v ? 4 : 3} />
+                      <ellipse rx={rx} ry={ry} stroke={lit === v ? "#d0ebff" : "#fff"} strokeWidth={1} transform="translate(-0.6 -0.8)" />
+                    </g>
+                  );
+                })}
+              </g>
+            );
           })}
         </g>
         {trails}
+        <g fill="#000" opacity={0.18}>
+          {beads.map(({ i, x, y }) => <ellipse key={i} {...shadowOf(x, y)} />)}
+        </g>
         {ringDots}
         {FACES.map((f) => {
           const [cx, cy] = ringCentre(f, RINGS);
           // The letter beyond the face's dots, away from the middle of the picture.
-          const k = 42 / Math.hypot(cx - RINGS.cx, cy - RINGS.cy);
+          const k = 50 / Math.hypot(cx - RINGS.cx, cy - RINGS.cy);
           const [x, y] = [cx + (cx - RINGS.cx) * k, cy + (cy - RINGS.cy) * k];
           return (
             <g key={f} style={{ cursor: "pointer" }} onClick={() => turn(f)} onPointerEnter={() => setHover(f)} onPointerLeave={() => setHover(null)}>
