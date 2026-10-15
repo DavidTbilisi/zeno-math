@@ -479,8 +479,13 @@ UI in English, Russian and Georgian.
   - *Sorting*: bubble, insertion, selection, Shell, merge, quicksort (Lomuto), heap and counting sort — one row
     per pass, split, merge or partition, with arrows showing where every value moved, the partition being worked
     on bracketed, comparisons and swaps counted, and the complexity explained; as cells or as bars
-  - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed), linear search,
-    two pointers (a pair with a given sum) and a sliding window (the best sum of k neighbours)
+  - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed) and linear search
+  - *Patterns*: two pointers (a pair with a given sum, the two lines that hold the most water, removing duplicates
+    in place with a slow and a fast pointer, the Dutch national flag's three-way partition), Floyd's fast and slow
+    pointers (meeting in the loop, then at its entrance — the repeated number), sliding windows (k neighbours, the
+    longest run without a repeated character, the shortest run whose sum reaches S), prefix sums with a map
+    (subarrays that add up to k, negatives allowed), a monotonic stack (the next greater value) and Kadane's
+    maximum subarray — pointer names under the cells, one row per move
   - *Graphs*: type edges like `A-B 4, B-C 2`; BFS (levels, queue), DFS (recursion stack), Dijkstra (distance
     table, shortest-path tree), Bellman–Ford (negative edges, early stop, the negative cycle named), Floyd–Warshall
     (all-pairs table, each improvement marked with the vertex it went through), Prim and Kruskal (minimum spanning
@@ -906,6 +911,7 @@ src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Bellman–Ford, 
                           topological sort), BST/AVL, heaps
 src/math/algoRecur.ts     recursion trees (Fibonacci, factorial, Hanoi), N-queens, subset sum
 src/math/algoStrings.ts   string matching: naive, KMP, Rabin–Karp
+src/math/algoPatterns.ts  patterns: two pointers, fast & slow pointers, sliding windows, prefix sums, monotonic stack, Kadane
 src/math/graphtheory.ts   graph theory: properties, Euler, Hamilton, colouring, walks, spanning trees
 src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh maps / minimal forms, circuits, arguments, Venn
 src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern cards, options judged by support

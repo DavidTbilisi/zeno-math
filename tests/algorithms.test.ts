@@ -1,10 +1,10 @@
-// The Algorithms tool states the right answers: shortest paths, best windows, queens, call counts,
-// string-matching comparisons — every sort survives random input in both views, and every example
+// The Algorithms tool states the right answers: shortest paths, best windows, pointer patterns, queens,
+// call counts, string-matching comparisons — every sort survives random input in both views, and every example
 // can be stepped through with the slider.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
-import { ALGO_PRESETS, ALGO_TOPICS, renderAlgo, SORT_ALGOS, type AlgoSpec } from "../src/math/algo.ts";
+import { ALGO_PRESETS, ALGO_TOPICS, renderAlgo, SORT_ALGOS, upgradeAlgo, type AlgoSpec, type PatternAlgo } from "../src/math/algo.ts";
 
 const w = en.algoWords;
 const text = (spec: AlgoSpec) => [...renderAlgo(spec, w).svg.matchAll(/<text[^>]*>(.*?)<\/text>/g)].map((m) => m[1].replace(/<[^>]+>/g, "").replace(/&amp;/g, "&")).join(" ").replace(/\s+/g, " ");
@@ -27,10 +27,41 @@ test("sorting: random input, every algorithm, cells and bars", () => {
   assert.throws(() => renderAlgo({ topic: "sort", algo: "counting", data: "1, 100", view: "cells" }, w));
 });
 
-test("searching: two pointers and sliding window", () => {
-  has({ topic: "search", algo: "twoptr", data: "1, 3, 4, 6, 8, 11, 13, 15", target: "17" }, "4 + 13 = 17: found at indices 2 and 6 after 4 steps");
-  has({ topic: "search", algo: "twoptr", data: "1, 2, 4", target: "10" }, "No pair adds up to 10");
-  has({ topic: "search", algo: "window", data: "2, 1, 5, 1, 3, 2, 7, 1, 4", target: "3" }, "Best window: indices 4 to 6, sum 12");
+test("patterns: pointers, windows, prefix sums, a monotonic stack", () => {
+  const pt = (algo: PatternAlgo, data: string, target = "") => ({ topic: "pattern", algo, data, target }) as AlgoSpec;
+  has(pt("twoptr", "1, 3, 4, 6, 8, 11, 13, 15", "17"), "4 + 13 = 17: found at indices 2 and 6 after 4 steps");
+  has(pt("twoptr", "1, 2, 4", "10"), "No pair adds up to 10");
+  has(pt("twoptr", "4, 1, 3", "5"), "sorted first");
+  has(pt("window", "2, 1, 5, 1, 3, 2, 7, 1, 4", "3"), "Best window: indices 4 to 6, sum 12");
+  has(pt("water", "1, 8, 6, 2, 5, 4, 8, 3, 7"), "Lines 1 and 8 hold the most water: 7 × 7 = 49");
+  has(pt("dedupe", "0, 0, 1, 1, 1, 2, 2, 3, 3, 4"), "5 distinct value(s), now at indices 0 to 4: 0, 1, 2, 3, 4");
+  has(pt("dedupe", "3, 1, 3"), "sorted first", "2 distinct value(s)");
+  has(pt("partition", "2, 0, 2, 1, 1, 0", "1"), "2 value(s) below the pivot 1, 2 equal to it and 2 above it, after 6 steps");
+  // 1 3 4 2 2: 0 → 1 → 3 → 2 → 4 → 2, so the loop is 2 → 4 and the 2 repeats.
+  has(pt("cycle", "1, 3, 4, 2, 2"), "The loop starts at index 2 and has 2 cell(s)", "a[3] = a[4] = 2");
+  has(pt("cycle", "3, 1, 3, 4, 2"), "The loop starts at index 3 and has 3 cell(s)", "a[0] = a[2] = 3");
+  const fromStart = text(pt("cycle", "1, 2, 0"));
+  assert.ok(fromStart.includes("The loop starts at index 0 and has 3 cell(s)") && !fromStart.includes("repeats"), fromStart);
+  has(pt("distinct", "abcabcbb"), "“abc”, indices 0 to 2, length 3");
+  has(pt("distinct", "pwwkew"), "“wke”, indices 2 to 4, length 3");
+  has(pt("minsum", "2, 3, 1, 2, 4, 3", "7"), "indices 4 to 5, length 2 (sum 7)");
+  has(pt("minsum", "1, 2", "10"), "Even the whole array adds up to less than 10");
+  has(pt("prefix", "3, 4, 7, 2, -3, 1, 4, 2", "7"), "4 subarray(s) add up to 7: [0–1], [2], [2–5], [5–7]");
+  has(pt("prefix", "1, -1, 1", "0"), "2 subarray(s) add up to 0: [0–1], [1–2]");
+  has(pt("mono", "73, 74, 75, 71, 69, 72, 76, 73"), "Next greater: [74, 75, 76, 72, 72, 76, —, —]");
+  has(pt("kadane", "-2, 1, -3, 4, -1, 2, 1, -5, 4"), "Largest sum: 6, indices 3 to 6", "4 − 1 = 3");
+  has(pt("kadane", "-3, -1, -2"), "Largest sum: −1, indices 1 to 1");
+  for (const [algo, data, target] of [["water", "3, -1"], ["cycle", "1, 5"], ["distinct", " "], ["minsum", "1, -2, 3", "2"], ["minsum", "1, 2", "0"], ["partition", "1, 2", ""]] as const)
+    assert.throws(() => renderAlgo(pt(algo, data, target), w), `${algo}: ${data}`);
+});
+
+test("boards saved before Patterns open two pointers and windows there, unchanged", () => {
+  const old = { topic: "search", algo: "window", data: "2, 1, 5, 1, 3, 2, 7, 1, 4", target: "3", step: 2 } as AlgoSpec;
+  const now = upgradeAlgo(old);
+  assert.deepEqual(now, { topic: "pattern", algo: "window", data: "2, 1, 5, 1, 3, 2, 7, 1, 4", target: "3", step: 2 });
+  assert.equal(renderAlgo(now, w).svg, renderAlgo(old, w).svg);
+  const binary = ALGO_PRESETS.search[0].spec;
+  assert.equal(upgradeAlgo(binary), binary);
 });
 
 test("graphs: Bellman–Ford, Floyd–Warshall, union–find", () => {

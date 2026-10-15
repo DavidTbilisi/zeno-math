@@ -7,6 +7,7 @@ import {
   DS_KINDS,
   GRAPH_ALGOS,
   GROWTH_MODES,
+  PATTERN_ALGOS,
   RECUR_PROBLEMS,
   renderAlgo,
   SEARCH_ALGOS,
@@ -14,6 +15,7 @@ import {
   SORT_VIEWS,
   STRING_ALGOS,
   TREE_KINDS,
+  upgradeAlgo,
   type AlgoSpec,
   type AlgoSpecOf,
   type AlgoTopic,
@@ -25,7 +27,7 @@ import { Segmented, Tabs, startOr } from "./ui";
 
 type Specs = { [K in AlgoTopic]: AlgoSpecOf<K> };
 
-export function AlgoDialog({ initial, start, onSubmit, onClose }: {
+export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
   initial?: AlgoSpec;
   start?: string;
   onSubmit: (spec: AlgoSpec, rendered: RenderedSvg) => void;
@@ -33,6 +35,7 @@ export function AlgoDialog({ initial, start, onSubmit, onClose }: {
 }) {
   const { t } = useI18n();
   const w = t.algoWords;
+  const initial = useMemo(() => saved && upgradeAlgo(saved), [saved]);
   const [topic, setTopic] = useState<AlgoTopic>(initial?.topic ?? startOr(start, ALGO_TOPICS, "sort"));
   const [specs, setSpecs] = useState<Specs>(() => {
     const s = Object.fromEntries(ALGO_TOPICS.map((k) => [k, ALGO_PRESETS[k][0].spec])) as Specs;
@@ -50,6 +53,7 @@ export function AlgoDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, w]);
   const steps = result.rendered?.steps ?? 0;
+  const patternTarget: Partial<Record<(typeof PATTERN_ALGOS)[number], string>> = { twoptr: t.algoSum, window: t.algoWindow, partition: t.algoPivot, minsum: t.algoAtLeast, prefix: t.algoSum };
   const shown = Math.min(spec.step ?? steps, steps);
 
   const value = (key: string) => (spec as Record<string, unknown>)[key] as string;
@@ -113,7 +117,16 @@ export function AlgoDialog({ initial, start, onSubmit, onClose }: {
         <>
           {segmented(SEARCH_ALGOS, (a) => w.searchNames[a], spec.algo, (algo) => set({ algo }))}
           {row(t.algoData, "data")}
-          <div className="range-grid">{text(spec.algo === "twoptr" ? t.algoSum : spec.algo === "window" ? t.algoWindow : t.algoTarget, "target", 90)}</div>
+          <div className="range-grid">{text(t.algoTarget, "target", 90)}</div>
+        </>
+      )}
+
+      {spec.topic === "pattern" && (
+        <>
+          {/* The patterns read their input so differently (pointers, a text, a pivot) that each starts from its own example. */}
+          {segmented(PATTERN_ALGOS, (a) => w.pattern.names[a], spec.algo, (algo) => set(ALGO_PRESETS.pattern.find((p) => p.spec.algo === algo)!.spec))}
+          {row(spec.algo === "distinct" ? t.algoText : spec.algo === "cycle" ? t.algoNext : t.algoData, "data")}
+          {patternTarget[spec.algo] && <div className="range-grid">{text(patternTarget[spec.algo]!, "target", 90)}</div>}
         </>
       )}
 
