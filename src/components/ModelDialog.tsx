@@ -18,14 +18,14 @@ import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
 import { PlaceValueMat } from "./PlaceValueMat";
-import { ADD_LIMITS, ADD_STYLES, addCase, addStepCount, type AddSpec } from "../math/addition";
+import { ADD_LIMITS, ADD_STYLES, addCase, addStepCount, SUB_LIMITS, SUB_STYLES, subCase, type AddSpec, type SubSpec } from "../math/addition";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, multiplyCase, stepCount, type MultiplySpec } from "../math/multiply";
 import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
 import { PERCENT_KINDS, percRatioStepCount, RATIO_KINDS, type PercRatioSpec } from "../math/percratio";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: DialogModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "addition", "multiply", "fracop", "percratio"];
+const TYPES: DialogModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "addition", "subtraction", "multiply", "fracop", "percratio"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
@@ -48,7 +48,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<DialogModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, addition: t.addition, multiply: t.multiplication, fracop: t.fracOps, percratio: t.percRatio };
+  const tabLabel: Record<DialogModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, addition: t.addition, subtraction: t.subtraction, multiply: t.multiplication, fracop: t.fracOps, percratio: t.percRatio };
   // A division picture from before long division moved onto the board: shown, but no longer edited here.
   const oldDivision = spec.type === "division";
 
@@ -85,6 +85,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
       )}
 
       {spec.type === "addition" && <AdditionEditor spec={spec} onChange={(s) => update("addition", s)} />}
+      {spec.type === "subtraction" && <SubtractionEditor spec={spec} onChange={(s) => update("subtraction", s)} />}
       {spec.type === "multiply" && <MultiplyEditor spec={spec} onChange={(s) => update("multiply", s)} />}
       {spec.type === "fracop" && <FracOpEditor spec={spec} onChange={(s) => update("fracop", s)} />}
       {spec.type === "percratio" && <PercRatioEditor spec={spec} onChange={(s) => update("percratio", s)} />}
@@ -245,6 +246,50 @@ function AdditionEditor({ spec, onChange }: { spec: AddSpec; onChange: (s: AddSp
       {special && (
         <small className="hint">
           <b>{spec.a} + {spec.b} = {spec.a + spec.b}.</b> {t.addCases[special]}
+        </small>
+      )}
+      <div className="field">
+        <span>
+          {t.stepByStep}: {shown} / {n}
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={n}
+          step={1}
+          value={shown}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({ ...spec, step: v >= n ? 999 : v });
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
+function SubtractionEditor({ spec, onChange }: { spec: SubSpec; onChange: (s: SubSpec) => void }) {
+  const { t } = useI18n();
+  const max = SUB_LIMITS[spec.style];
+  const n = addStepCount(spec);
+  const shown = Math.min(spec.step, n);
+  // b stays at most a: whole numbers only, so there is always something to take away from.
+  const set = (a: number, b: number, style = spec.style) => onChange({ ...spec, style, a, b: Math.min(b, a), step: 999 });
+  const special = subCase(spec.a, spec.b);
+
+  return (
+    <>
+      <Segmented className="wrap" items={SUB_STYLES} value={spec.style} onChange={(s) => set(Math.min(spec.a, SUB_LIMITS[s]), spec.b, s)} label={(s) => t.subStyles[s]} />
+      <div className="range-grid mult-inputs">
+        <input type="number" min={0} max={max} value={spec.a} aria-label="a" onChange={(e) => set(clampInt(e.target.value, 0, max), spec.b)} />
+        <span className="mult-sign">−</span>
+        <input type="number" min={0} max={spec.a} value={spec.b} aria-label="b" onChange={(e) => set(spec.a, clampInt(e.target.value, 0, spec.a))} />
+        <span className="mult-sign">= {spec.a - spec.b}</span>
+      </div>
+      <small className="hint">{t.subHint[spec.style]}</small>
+      {special && (
+        <small className="hint">
+          <b>{spec.a} − {spec.b} = {spec.a - spec.b}.</b> {t.subCases[special]}
         </small>
       )}
       <div className="field">

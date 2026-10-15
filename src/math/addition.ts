@@ -1,7 +1,9 @@
-// Addition models for the first sums: counters in two boxes put together, and jumps along a number line (to a, then
-// counting on b, one hop at a time while b is small and the hops are big enough to see). `step` reveals a, then b (a large value shows everything).
-// Once every step is shown, the sum the other way round is written under it (a + b = b + a), and adding 0 writes
-// its rule in symbols: n + 0 = n or 0 + n = n.
+// Addition and subtraction models for the first sums. Addition: counters in two boxes put together, or jumps along a
+// number line (to a, then counting on b). Subtraction: counters taken away from one box (crossed out), or starting at
+// a on the number line and counting back b. Counting goes a hop at a time while b is small and the hops are big
+// enough to see. `step` reveals a, then b (a large value shows everything). Once every step is shown, a sum is written
+// the other way round under it (a + b = b + a) and a difference is checked by adding back (a − b = c, so c + b = a);
+// the special cases write their rule in symbols: n + 0 = n, 0 + n = n, n − 0 = n, n − n = 0.
 import type { RenderedSvg } from "./latex";
 
 export type AddStyle = "counters" | "numberline";
@@ -22,7 +24,25 @@ export const addCase = (a: number, b: number): AddCase | null => (a === 0 || b =
 export const addRule = (a: number, b: number): string | null => (b === 0 ? "n + 0 = n" : a === 0 ? "0 + n = n" : null);
 
 /** Two steps: a, then b. */
-export const addStepCount = (_spec: AddSpec) => 2;
+export const addStepCount = (_spec: AddSpec | SubSpec) => 2;
+
+export type SubStyle = "takeaway" | "numberline";
+export const SUB_STYLES: SubStyle[] = ["takeaway", "numberline"];
+
+/** a − b with whole numbers, b at most a. */
+export type SubSpec = { type: "subtraction"; style: SubStyle; a: number; b: number; step: number };
+
+export const SUB_LIMITS: Record<SubStyle, number> = { takeaway: 20, numberline: 50 };
+
+/**
+ * The special cases of subtraction: taking away 0 changes nothing, taking a number from itself leaves 0, and taking
+ * away 1 gives the number before. 0 decides over the others (0 − 0), then n − n (1 − 1).
+ */
+export type SubCase = "zero" | "self" | "one";
+export const subCase = (a: number, b: number): SubCase | null => (b === 0 ? "zero" : a === b ? "self" : b === 1 ? "one" : null);
+
+/** The rule a special case of subtraction follows, in symbols: n − 0 = n or n − n = 0 (taking away 1 has none). */
+export const subRule = (a: number, b: number): string | null => (b === 0 ? "n − 0 = n" : a === b ? "n − n = 0" : null);
 
 const INK = "#1e1e1e";
 const FONT = `font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
@@ -42,15 +62,49 @@ function wrap(w: number, h: number, body: string): RenderedSvg {
   return { svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><g ${FONT}>${body}</g></svg>`, width: W, height: H };
 }
 
-/** The sum (or what is known of it so far), the sum the other way round, and the rule for 0; returns the bottom. */
-function equations(out: string[], { a, b }: AddSpec, k: number, y: number): number {
+/**
+ * The sum or difference (or what is known of it so far); once done, the same fact another way (grey) and the special
+ * case's rule (green). Returns the bottom.
+ */
+function equations(out: string[], { type, a, b }: AddSpec | SubSpec, k: number, y: number): number {
   const done = k >= 2;
-  out.push(text(PAD, y, done ? `${a} + ${b} = ${a + b}` : k === 1 ? `${a} + ? = ?` : "? + ? = ?", { anchor: "start", size: 22, bold: true }));
+  const op = type === "addition" ? "+" : "−";
+  const c = type === "addition" ? a + b : a - b;
+  out.push(text(PAD, y, done ? `${a} ${op} ${b} = ${c}` : k === 1 ? `${a} ${op} ? = ?` : `? ${op} ? = ?`, { anchor: "start", size: 22, bold: true }));
   if (!done) return y;
-  if (a !== b) out.push(text(PAD, (y += 28), `${b} + ${a} = ${a + b}`, { anchor: "start", size: 18, color: GREY }));
-  const rule = addRule(a, b);
+  const other = type === "addition" ? (a !== b ? `${b} + ${a} = ${c}` : null) : `${c} + ${b} = ${a}`;
+  if (other) out.push(text(PAD, (y += 28), other, { anchor: "start", size: 18, color: GREY }));
+  const rule = type === "addition" ? addRule(a, b) : subRule(a, b);
   if (rule) out.push(text(PAD, (y += 30), rule, { anchor: "start", size: 18, color: GREEN, bold: true }));
   return y;
+}
+
+/** a counters in a box, five to a row; once b is shown, the last b are crossed out (taken away). */
+function takeaway(spec: SubSpec, k: number) {
+  const { a, b } = spec;
+  const P = 26;
+  const bw = 5 * P + 16;
+  const bh = Math.max(1, Math.ceil(a / 5)) * P + 16;
+  const x0 = PAD;
+  const y0 = PAD + 8;
+  const out: string[] = [];
+  const shown = k >= 1;
+  const taken = k >= 2;
+  const filled = shown && a > 0;
+  out.push(`<rect x="${x0}" y="${y0}" width="${bw}" height="${bh}" rx="10" fill="${filled ? "#fff" : "none"}" stroke="${shown ? A.stroke : "#ced4da"}" stroke-width="2"${filled ? "" : ' stroke-dasharray="6 5"'}/>`);
+  if (shown) {
+    for (let i = 0; i < a; i++) {
+      const [cx, cy] = [x0 + 8 + (i % 5) * P + P / 2, y0 + 8 + Math.floor(i / 5) * P + P / 2];
+      const gone = taken && i >= a - b;
+      out.push(`<circle cx="${cx}" cy="${cy}" r="10" fill="${gone ? "#f1f3f5" : A.fill}" stroke="${gone ? "#adb5bd" : A.stroke}" stroke-width="1.5"/>`);
+      if (gone) out.push(`<path d="M${cx - 8},${cy - 8}L${cx + 8},${cy + 8}M${cx + 8},${cy - 8}L${cx - 8},${cy + 8}" stroke="${B.stroke}" stroke-width="2.5" stroke-linecap="round"/>`);
+    }
+    out.push(text(x0 + bw / 2, y0 + bh + 26, String(a), { bold: true, size: 18, color: A.stroke }));
+    if (taken) out.push(text(x0 + bw + 14, y0 + bh / 2 + 7, `− ${b}`, { anchor: "start", bold: true, size: 20, color: B.stroke }));
+  }
+  const bottom = equations(out, spec, k, y0 + bh + 66);
+  const W = Math.max(x0 + bw + 70 + PAD, PAD * 2 + width(`${a} − ${b} = ${a - b}`, 22));
+  return wrap(W, bottom + PAD, out.join(""));
 }
 
 /** a counters in one box and b in another, five to a row; an empty box is drawn dashed. */
@@ -80,10 +134,16 @@ function counters(spec: AddSpec, k: number) {
   return wrap(W, bottom + PAD, out.join(""));
 }
 
-/** A jump from 0 to a, then b hops of 1 counting on (one jump of b when b is over 10 or the hops are tiny); +0 is a loop at a. */
-function numberline(spec: AddSpec, k: number) {
+/**
+ * Adding: a jump from 0 to a, then b hops of 1 counting on. Taking away: a dot at a, then b hops of 1 counting back.
+ * One jump of b instead when b is over 10 or the hops would be tiny; ±0 is a loop at a.
+ */
+function numberline(spec: AddSpec | SubSpec, k: number) {
   const { a, b } = spec;
-  const end = Math.max(a + b, 10);
+  const add = spec.type === "addition";
+  const sign = add ? "+" : "−";
+  const c = add ? a + b : a - b;
+  const end = Math.max(add ? c : a, 10); // the line runs to the furthest number reached, and at least to 10
   const unit = Math.max(8, Math.min(40, 600 / (end + 1)));
   const every = unit >= 22 ? 1 : unit >= 11 ? 2 : 5; // label every unit, or every 2nd or 5th
   const x0 = PAD + 14;
@@ -95,32 +155,35 @@ function numberline(spec: AddSpec, k: number) {
   ];
   const landA = k >= 1;
   const landB = k >= 2;
-  const landed = [landA && a, landB && a + b].filter((v): v is number => v !== false);
+  const landed = [landA && a, landB && c].filter((v): v is number => v !== false);
   for (let v = 0; v <= end; v++) {
     // Every few units are numbered, and where a jump lands; a number too close to a landing gives way to it.
     const labelled = landed.includes(v) || (v % every === 0 && landed.every((l) => Math.abs(v - l) >= every));
     out.push(`<line x1="${X(v)}" y1="${lineY - (labelled ? 8 : 5)}" x2="${X(v)}" y2="${lineY + (labelled ? 8 : 5)}" stroke="${INK}" stroke-width="${labelled ? 2 : 1}"/>`);
-    const color = landB && v === a + b ? B.stroke : landA && v === a ? A.stroke : null;
+    const color = landB && v === c ? B.stroke : landA && v === a ? A.stroke : null;
     if (labelled) out.push(text(X(v), lineY + 28, String(v), { bold: !!color, color: color ?? INK, size: color ? 17 : 14 }));
   }
   const arc = (from: number, to: number, c: typeof A, id: number, label: string) => {
     const [s, e] = [X(from), X(to)];
-    const h = Math.min(70, 16 + (e - s) * 0.3);
+    const h = Math.min(70, 16 + Math.abs(e - s) * 0.3);
     out.push(`<path d="M${s},${lineY - 4} Q${(s + e) / 2},${lineY - 4 - h * 2} ${e},${lineY - 4}" fill="none" stroke="${c.stroke}" stroke-width="2.5" marker-end="url(#j${id})"/>`);
     if (label) out.push(text((s + e) / 2, lineY - 10 - h, label, { bold: true, color: c.stroke, size: 14 }));
   };
-  if (landA && a > 0) arc(0, a, A, 0, `+${a}`);
+  // Adding starts with a jump to a; taking away starts at a, marked with a dot.
+  if (landA && add && a > 0) arc(0, a, A, 0, `+${a}`);
+  if (landA && !add) out.push(`<circle cx="${X(a)}" cy="${lineY}" r="6" fill="${A.stroke}"/>`);
   if (landB) {
+    const dir = add ? 1 : -1;
     if (b === 0) {
-      // Adding 0 goes nowhere: a loop back to a.
+      // Adding or taking away 0 goes nowhere: a loop back to a.
       const x = X(a);
       out.push(`<path d="M${x - 3},${lineY - 6} C${x - 26},${lineY - 56} ${x + 26},${lineY - 56} ${x + 3},${lineY - 6}" fill="none" stroke="${B.stroke}" stroke-width="2.5" marker-end="url(#j1)"/>`);
-      out.push(text(x, lineY - 50, "+0", { bold: true, color: B.stroke, size: 14 }));
-    } else if (b <= 10 && unit >= 20) for (let i = 0; i < b; i++) arc(a + i, a + i + 1, B, 1, unit >= 22 ? "+1" : "");
-    else arc(a, a + b, B, 1, `+${b}`);
+      out.push(text(x, lineY - 50, `${sign}0`, { bold: true, color: B.stroke, size: 14 }));
+    } else if (b <= 10 && unit >= 20) for (let i = 0; i < b; i++) arc(a + dir * i, a + dir * (i + 1), B, 1, unit >= 22 ? `${sign}1` : "");
+    else arc(a, c, B, 1, `${sign}${b}`);
   }
   const bottom = equations(out, spec, k, lineY + 70);
-  return wrap(Math.max(X(end) + 40, PAD * 2 + width(`${a} + ${b} = ${a + b}`, 22)), bottom + PAD, out.join(""));
+  return wrap(Math.max(X(end) + 40, PAD * 2 + width(`${a} ${sign} ${b} = ${c}`, 22)), bottom + PAD, out.join(""));
 }
 
 export function renderAddition(spec: AddSpec): RenderedSvg {
@@ -128,4 +191,11 @@ export function renderAddition(spec: AddSpec): RenderedSvg {
   if (!(Number.isInteger(spec.a) && Number.isInteger(spec.b) && spec.a >= 0 && spec.b >= 0 && spec.a <= lim.a && spec.b <= lim.b)) throw new Error("range");
   const k = Math.max(0, Math.min(spec.step, addStepCount(spec)));
   return spec.style === "counters" ? counters(spec, k) : numberline(spec, k);
+}
+
+export function renderSubtraction(spec: SubSpec): RenderedSvg {
+  const { a, b } = spec;
+  if (!(Number.isInteger(a) && Number.isInteger(b) && b >= 0 && b <= a && a <= SUB_LIMITS[spec.style])) throw new Error("range");
+  const k = Math.max(0, Math.min(spec.step, addStepCount(spec)));
+  return spec.style === "takeaway" ? takeaway(spec, k) : numberline(spec, k);
 }
