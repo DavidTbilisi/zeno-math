@@ -4315,6 +4315,13 @@ export const en = {
       trade: "{n} of the {place} can't go round {b} groups: drag one onto “1 → 10” to change it for ten of the next place.",
       shared: "Each group got {each}, and {left} is left over.",
       sharedExact: "Each group got {each}, with nothing left over.",
+      undefined: "is undefined",
+      cases: {
+        byZero: { rule: "{a} ÷ 0 is undefined.", why: "Dividing by zero makes no sense: share 10 donuts equally among 0 people, and how many does each person get? There is no one to get any. For every number n, n ÷ 0 is undefined." },
+        zeroBy: { rule: "0 ÷ {b} = 0.", why: "Zero divided by any number except 0 is zero: share 0 donuts among 10 people, and each gets none, as there are none to share. For every n except 0, 0 ÷ n = 0." },
+        byOne: { rule: "{a} ÷ 1 = {a}.", why: "Any number divided by 1 is itself: put 10 donuts into 1 box, and the box has all 10. For every n, n ÷ 1 = n." },
+        self: { rule: "{a} ÷ {b} = 1.", why: "Any number except 0 divided by itself is 1: put 10 donuts into 10 boxes, and each box has 1. For every n except 0, n ÷ n = 1." },
+      },
     },
   },
   teacher: {

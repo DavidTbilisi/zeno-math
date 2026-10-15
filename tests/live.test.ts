@@ -14,6 +14,7 @@ import {
   counters,
   DIE_SIDES,
   divisionAsk,
+  divisionCase,
   divisionNumbers,
   dotProduct,
   dragHand,
@@ -201,8 +202,24 @@ test("long division on the board: answering each digit walks the whole division,
     const places = digits.length - (plan.intLen - plan.first);
     assert.equal(Number(digits), Math.floor((a * 10 ** places) / b), `${a} ÷ ${b}`);
   }
-  assert.deepEqual(divisionNumbers({ a: -5, b: 0, decimals: 99 }), { a: 0, b: 1, decimals: 10 });
+  assert.deepEqual(divisionNumbers({ a: -5, b: -3, decimals: 99 }), { a: 0, b: 0, decimals: 10 });
   assert.deepEqual(divisionNumbers({ a: 12.6, b: Number.NaN, decimals: 2 }), { a: 13, b: 1, decimals: 2 });
+});
+
+test("the special cases of division are named: by 0, 0 by n, by 1 and n by itself", () => {
+  assert.equal(divisionCase(10, 0), "byZero");
+  assert.equal(divisionCase(0, 0), "byZero");
+  assert.equal(divisionCase(0, 10), "zeroBy");
+  assert.equal(divisionCase(10, 1), "byOne");
+  assert.equal(divisionCase(1, 1), "byOne");
+  assert.equal(divisionCase(10, 10), "self");
+  assert.equal(divisionCase(624, 12), null);
+  // The working agrees with each rule it names.
+  for (const [a, b, q] of [[0, 7, 0], [345, 1, 345], [48, 48, 1]]) {
+    const plan = planDivision(a, b, 0);
+    assert.ok(plan.exact);
+    assert.equal(Number(plan.steps.map((s) => s.q).join("")), q);
+  }
 });
 
 test("fraction bars compare like towers, and same-size pieces keep each amount", () => {

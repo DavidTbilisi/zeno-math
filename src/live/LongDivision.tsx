@@ -2,23 +2,80 @@
 // With "Your turn" on, each quotient digit is asked for before it is drawn: a digit that is too big or too small is
 // answered with the multiplication or the subtraction that shows why. With blocks (small whole numbers), the pupil
 // shares hundreds, tens and ones into the groups by hand, and the working fills in as each place is shared out.
+// The special cases are named under the working (0 ÷ n, n ÷ 1, n ÷ n), and n ÷ 0 shows why it has no working at all.
 import { useMemo, useState } from "react";
 import { DIVISION_STYLES, divisionStepCount, planDivision, renderDivision, type DivisionSpec } from "../math/division";
 import { blocksFit } from "../math/divisionBlocks";
-import { divisionAsk, divisionNumbers, judgeDigit, type LiveDivision } from "../math/live";
+import { divisionAsk, divisionCase, divisionNumbers, judgeDigit, type LiveDivision } from "../math/live";
 import { shareStatus, sharingAt, stepsShared } from "../math/sharing";
 import { SharingBoard } from "./SharingBoard";
-import { fill, Stepper, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
 
 // The room the working has in the piece (less beside the blocks); it is scaled to fit, the same scale at every step.
 const PW = 740;
 const PH = { alone: 620, blocks: 330 };
+const NOTE_H = 50; // the stage gives up this much when a special case is named under it
 
 const specOf = (d: LiveDivision, step: number): DivisionSpec => ({ type: "division", style: d.style, a: d.a, b: d.b, decimals: d.decimals, step });
 const inner = (svg: string) => svg.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 
-export function LongDivision({ state, set, w, svgRef }: PieceProps<"division">) {
-  const d = state;
+export function LongDivision(props: PieceProps<"division">) {
+  return props.state.b === 0 ? <ByZero {...props} /> : <Working {...props} />;
+}
+
+/** The numbers to divide, the decimal places and the layout: the same bar whatever the numbers are. */
+function NumberBar({ state: d, set, w }: PieceProps<"division">) {
+  const wd = w.division;
+  const numbers = (patch: Partial<LiveDivision>) => set({ ...d, ...divisionNumbers({ ...d, ...patch }), step: 0, share: null });
+  const number = (key: "a" | "b", label: string) => (
+    <input
+      className="live-num"
+      key={`${key}${d[key]}`}
+      type="number"
+      defaultValue={d[key]}
+      aria-label={label}
+      onBlur={(e) => Number(e.target.value) !== d[key] && numbers({ [key]: Number(e.target.value) })}
+      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+    />
+  );
+  return (
+    <div className="live-bar">
+      {number("a", wd.dividend)}
+      <b>{d.style === "corner" ? ":" : "÷"}</b>
+      {number("b", wd.divisor)}
+      <span className="live-note">{wd.decimals}</span>
+      <Stepper value={d.decimals} min={0} max={10} onChange={(v) => numbers({ decimals: v })} less="−" more="+" />
+      {DIVISION_STYLES.map((s) => (
+        <Toggle key={s} on={d.style === s} onClick={() => set({ ...d, style: s })}>{wd.styles[s]}</Toggle>
+      ))}
+    </div>
+  );
+}
+
+/** n ÷ 0: there is no working to step through, only the reason why. */
+function ByZero(props: PieceProps<"division">) {
+  const { state: d, w, svgRef } = props;
+  const wd = w.division;
+  const [sw, sh] = [PW, 300];
+  return (
+    <>
+      <NumberBar {...props} />
+      <div className="live-stage" style={{ width: PW, height: PH.alone - NOTE_H }}>
+        <svg ref={svgRef} width={sw} height={sh} viewBox={`0 0 ${sw} ${sh}`}>
+          <rect width={sw} height={sh} fill="#fff" />
+          <text x={sw / 2} y={130} fontFamily="Consolas, 'Courier New', monospace" fontSize={64} textAnchor="middle" fill={INK}>
+            {d.a} {d.style === "corner" ? ":" : "÷"} 0
+          </text>
+          <text x={sw / 2} y={210} fontFamily={FONT} fontSize={40} fontWeight={700} textAnchor="middle" fill="#c92a2a">{wd.undefined}</text>
+        </svg>
+      </div>
+      <p className="live-said info"><b>{fill(wd.cases.byZero.rule, { a: d.a })}</b> {wd.cases.byZero.why}</p>
+    </>
+  );
+}
+
+function Working(props: PieceProps<"division">) {
+  const { state: d, set, w, svgRef } = props;
   const { a, b, decimals, style } = d;
   const wd = w.division;
   const fits = blocksFit(a, b, decimals);
@@ -28,7 +85,8 @@ export function LongDivision({ state, set, w, svgRef }: PieceProps<"division">) 
   // With blocks the arrangement decides how far the working has got; otherwise the step does.
   const share = hands ? (d.share && d.share.groups.length === b ? d.share : sharingAt(plan, b, 0)) : null;
   const k = share ? stepsShared(plan, b, share) : Math.min(d.step, n);
-  const ph = hands ? PH.blocks : PH.alone;
+  const special = divisionCase(a, b);
+  const ph = (hands ? PH.blocks : PH.alone) - (special ? NOTE_H : 0);
   // The biggest the working gets over all its steps, so it doesn't jump about as it grows.
   const box = useMemo(() => {
     let [bw, bh] = [1, 1];
@@ -46,7 +104,6 @@ export function LongDivision({ state, set, w, svgRef }: PieceProps<"division">) 
     const to = Math.max(0, Math.min(n, step));
     set(hands ? { ...d, share: sharingAt(plan, b, to) } : { ...d, step: to });
   };
-  const numbers = (patch: Partial<LiveDivision>) => set({ ...d, ...divisionNumbers({ ...d, ...patch }), step: 0, share: null });
   const guess = (g: number) => {
     if (!ask) return;
     const verdict = judgeDigit(ask, g);
@@ -56,38 +113,21 @@ export function LongDivision({ state, set, w, svgRef }: PieceProps<"division">) 
       go(k + 1);
     } else setSaid({ step: k, text: fill(wd[verdict], { g, b: ask.b, p, cur: ask.cur, r: ask.cur - p }), ok: false });
   };
-  const number = (key: "a" | "b", label: string) => (
-    <input
-      className="live-num"
-      key={`${key}${d[key]}`}
-      type="number"
-      defaultValue={d[key]}
-      aria-label={label}
-      onBlur={(e) => Number(e.target.value) !== d[key] && numbers({ [key]: Number(e.target.value) })}
-      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-    />
-  );
   const status = share && shareStatus(share);
   const place = (p: "h" | "t" | "o") => wd.places[p];
 
   return (
     <>
-      <div className="live-bar">
-        {number("a", wd.dividend)}
-        <b>{d.style === "corner" ? ":" : "÷"}</b>
-        {number("b", wd.divisor)}
-        <span className="live-note">{wd.decimals}</span>
-        <Stepper value={d.decimals} min={0} max={10} onChange={(v) => numbers({ decimals: v })} less="−" more="+" />
-        {DIVISION_STYLES.map((s) => (
-          <Toggle key={s} on={d.style === s} onClick={() => set({ ...d, style: s })}>{wd.styles[s]}</Toggle>
-        ))}
-      </div>
+      <NumberBar {...props} />
       <div className="live-stage" style={{ width: PW, height: ph }}>
         <svg ref={svgRef} width={box.w * box.s} height={box.h * box.s} viewBox={`0 0 ${box.w} ${box.h}`}>
           <rect width={box.w} height={box.h} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: inner(pic.svg) }} />
         </svg>
       </div>
+      {special && (
+        <p className="live-said info"><b>{fill(wd.cases[special].rule, { a, b })}</b> {wd.cases[special].why}</p>
+      )}
       {share && <SharingBoard share={share} onChange={(s) => set({ ...d, share: s })} change={wd.change} />}
       <div className="live-bar">
         <button className="live-btn" disabled={k === 0} title={wd.first} aria-label={wd.first} onClick={() => go(0)}>⏮</button>
