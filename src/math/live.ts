@@ -1,8 +1,10 @@
 // The arithmetic behind the live pieces on the board (the ones that respond to clicks and drags): a geared clock,
 // chance devices and the tallies of an experiment, dot multiplication, the counts shown under a ten frame or a
 // hundred square, towers of blocks and bars of fractions to compare, long division a step at a time, and the state
-// of a Rubik's cube and of a soroban. Kept free of React and Excalidraw so it can be tested on its own.
+// of a Rubik's cube, of a soroban and of an algorithm pattern being stepped through. Kept free of React and Excalidraw so
+// it can be tested on its own.
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
+import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
 
 // ——— Clock ———
@@ -252,6 +254,14 @@ export type LiveSoroban = {
   target: number | null;
 };
 
+// ——— Algorithm patterns ———
+
+/**
+ * One of the algorithm patterns (the frames are in patternSteps.ts): its inputs, the step it is at, and whether the
+ * pupil is asked what happens next before each move.
+ */
+export type LivePatterns = { pattern: PatternId; data: string; extra: string; step: number; quiz: boolean };
+
 // ——— The kinds of live piece, their sizes and where each starts ———
 
 export type LiveParam = { v: number; min: number; max: number };
@@ -291,6 +301,7 @@ export type LiveStates = {
   division: LiveDivision;
   rubik: LiveRubik;
   soroban: LiveSoroban;
+  patterns: LivePatterns;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -311,6 +322,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   division: [760, 820],
   rubik: [780, 610],
   soroban: [820, 540],
+  patterns: [800, 600],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -333,6 +345,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null },
     rubik: { scramble: "", moves: "", alg: "R U R′ U′", reps: 0, prime: false, yaw: -35, pitch: 28 },
     soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },
+    patterns: { pattern: "twoptr", ...PATTERN_EXAMPLES.twoptr, step: 0, quiz: false },
   };
   return structuredClone(start[kind]);
 }

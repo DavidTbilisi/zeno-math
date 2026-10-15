@@ -75,6 +75,7 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
 
   return (
     <Modal
+      wide
       title={initial ? t.editAlgo : t.algo}
       onClose={onClose}
       footer={

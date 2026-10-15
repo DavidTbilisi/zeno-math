@@ -157,6 +157,9 @@ input.invalid { border-color: var(--danger); }
   display: flex; flex-direction: column;
   background: var(--surface); border-radius: 14px; box-shadow: var(--shadow);
 }
+.modal.wide { width: min(920px, 100%); }
+/* Its tabs wrap onto a second row rather than scroll out of sight. */
+.modal.wide .tabs { flex-wrap: wrap; overflow-x: visible; row-gap: 0; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 6px; }
 .modal-header h2 { font-size: 17px; }
 .modal-body { padding: 8px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
@@ -602,6 +605,16 @@ input.invalid { border-color: var(--danger); }
 .live-slider input[type="range"] { flex: 1; min-width: 0; padding: 0; }
 .live .live-bound { flex: none; width: 34px; padding: 2px; font-size: 12px; text-align: center; }
 .live-slider .live-btn { flex: none; padding: 2px 7px; }
+.live-pattern-idea { max-width: 760px; font-size: 13px; color: #495057; }
+.live-pattern-stage { position: relative; flex: none; }
+.live .live-pattern-edit {
+  position: absolute; box-sizing: border-box; padding: 0; text-align: center; font-size: 17px;
+  border: 2px solid #1971c2; border-radius: 5px; background: #fff;
+}
+.live .live-pattern-data { width: 21em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .live-pattern-extra { width: 6em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live-pattern-said { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 760px; }
+.live-pattern-q { font-weight: 600; }
 
 /* Read by screen readers, not shown: the words and MathML behind a picture of maths. */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

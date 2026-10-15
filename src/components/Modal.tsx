@@ -3,11 +3,13 @@ import { useI18n } from "../i18n";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ title, onClose, children, footer }: {
+export function Modal({ title, onClose, children, footer, wide = false }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
   footer: ReactNode;
+  /** Room for a long row of tabs and a big picture. */
+  wide?: boolean;
 }) {
   const { t } = useI18n();
   const box = useRef<HTMLDivElement>(null);
@@ -44,7 +46,7 @@ export function Modal({ title, onClose, children, footer }: {
 
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal" role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
+      <div className={`modal${wide ? " wide" : ""}`} role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
         <header className="modal-header">
           <h2>{title}</h2>
           <button className="icon-btn" onClick={onClose} aria-label={t.close}>×</button>

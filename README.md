@@ -553,6 +553,14 @@ UI in English, Russian and Georgian.
     if wanted, each rod's digit) is written underneath. "Add" and "Take away" step through a sum a rod at a time from
     the highest place, saying whether the beads go straight on or off or need a friend of 5 (+4 = +5 − 1) or of 10
     (+7 = +10 − 3, carrying 1 to the left), or both; "Show a number" asks for one and says when the beads show it
+  - *Algorithm patterns*: the fifteen patterns behind most interview problems (prefix sums, two pointers, a sliding
+    window, fast and slow pointers, reversing part of a linked list, a monotonic stack, the top k with a min-heap,
+    merging intervals, binary search on a rotated array, tree traversals, depth- and breadth-first search, flood fill,
+    backtracking and dynamic programming), one at a time, each with LeetCode's example. Click a number, a list node or
+    a tree node to change it (an empty box removes it, + adds one, a tree grows by its dashed slots), click grid
+    squares to recolour them and ⌖ to pick the start; then step, play, or turn on "Your turn" to say before each move
+    what happens next (which pointer moves, pop or push, merge or start a new interval, which half to search, the next
+    node or number), with the reason given for a right answer
   - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
     the sliders' values put in); the graph, the experiment and long division are in the Algebra, Discrete and
     Arithmetic menus too
@@ -885,6 +893,7 @@ src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, 
                           scrambles, and the dots of the Borromean-rings picture
 src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums a rod at a time with the friends of 5
                           and 10
+src/math/patternSteps.ts  the algorithm patterns as frames to step through, with the questions for "Your turn"
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
