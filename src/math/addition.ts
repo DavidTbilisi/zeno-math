@@ -4,6 +4,8 @@
 // enough to see. `step` reveals a, then b (a large value shows everything). Once every step is shown, a sum is written
 // the other way round under it (a + b = b + a) and a difference is checked by adding back (a − b = c, so c + b = a);
 // the special cases write their rule in symbols: n + 0 = n, 0 + n = n, n − 0 = n, n − n = 0.
+// Same difference: a − b is the gap between a and b on the number line, and sliding both the same way keeps the gap,
+// so both slide until b is a whole ten (63 − 28 = 65 − 30 = 35). Three steps: the gap, the slide, the answer.
 import type { RenderedSvg } from "./latex";
 
 export type AddStyle = "counters" | "numberline";
@@ -23,16 +25,21 @@ export const addCase = (a: number, b: number): AddCase | null => (a === 0 || b =
 /** The rule for adding 0, written the way round the numbers are: n + 0 = n or 0 + n = n. */
 export const addRule = (a: number, b: number): string | null => (b === 0 ? "n + 0 = n" : a === 0 ? "0 + n = n" : null);
 
-/** Two steps: a, then b. */
-export const addStepCount = (_spec: AddSpec | SubSpec) => 2;
+/** Two steps: a, then b. Same difference has three: the gap, the slide, the answer. */
+export const addStepCount = (spec: AddSpec | SubSpec) => (spec.type === "subtraction" && spec.style === "same" ? 3 : 2);
 
-export type SubStyle = "takeaway" | "numberline";
-export const SUB_STYLES: SubStyle[] = ["takeaway", "numberline"];
+export type SubStyle = "takeaway" | "numberline" | "same";
+export const SUB_STYLES: SubStyle[] = ["takeaway", "numberline", "same"];
 
 /** a − b with whole numbers, b at most a. */
 export type SubSpec = { type: "subtraction"; style: SubStyle; a: number; b: number; step: number };
 
-export const SUB_LIMITS: Record<SubStyle, number> = { takeaway: 20, numberline: 50 };
+export const SUB_LIMITS: Record<SubStyle, number> = { takeaway: 20, numberline: 50, same: 100 };
+
+/** How far same difference slides both numbers: b to the nearest whole ten (up from a 5), so 28 → +2 and 52 → −2. */
+export const sameShift = (b: number) => Math.round(b / 10) * 10 - b;
+
+const signed = (n: number) => (n < 0 ? `−${-n}` : `+${n}`);
 
 /**
  * The special cases of subtraction: taking away 0 changes nothing, taking a number from itself leaves 0, and taking
@@ -66,18 +73,53 @@ function wrap(w: number, h: number, body: string): RenderedSvg {
  * The sum or difference (or what is known of it so far); once done, the same fact another way (grey) and the special
  * case's rule (green). Returns the bottom.
  */
-function equations(out: string[], { type, a, b }: AddSpec | SubSpec, k: number, y: number): number {
-  const done = k >= 2;
+function equations(out: string[], spec: AddSpec | SubSpec, k: number, y: number): number {
+  const { type, a, b } = spec;
+  const done = k >= addStepCount(spec);
   const op = type === "addition" ? "+" : "−";
   const c = type === "addition" ? a + b : a - b;
-  out.push(text(PAD, y, done ? `${a} ${op} ${b} = ${c}` : k === 1 ? `${a} ${op} ? = ?` : `? ${op} ? = ?`, { anchor: "start", size: 22, bold: true }));
-  if (!done) return y;
+  if (spec.style === "same") {
+    // a − b = a′ − b′ = c, the slid difference written in once the slide is shown.
+    const s = sameShift(b);
+    const slid = k >= 2 && s !== 0 ? ` = ${a + s} − ${b + s}` : "";
+    out.push(text(PAD, y, k === 0 ? "? − ? = ?" : `${a} − ${b}${slid} = ${done ? c : "?"}`, { anchor: "start", size: 22, bold: true }));
+    if (k >= 2 && s !== 0) out.push(text(PAD, (y += 28), sameWhy(a, b), { anchor: "start", size: 18, color: GREY }));
+    if (!done) return y;
+  } else {
+    out.push(text(PAD, y, done ? `${a} ${op} ${b} = ${c}` : k === 1 ? `${a} ${op} ? = ?` : `? ${op} ? = ?`, { anchor: "start", size: 22, bold: true }));
+    if (!done) return y;
+  }
   const other = type === "addition" ? (a !== b ? `${b} + ${a} = ${c}` : null) : `${c} + ${b} = ${a}`;
   if (other) out.push(text(PAD, (y += 28), other, { anchor: "start", size: 18, color: GREY }));
   const rule = type === "addition" ? addRule(a, b) : subRule(a, b);
   if (rule) out.push(text(PAD, (y += 30), rule, { anchor: "start", size: 18, color: GREEN, bold: true }));
   return y;
 }
+
+/** The slide written out: (63 + 2) − (28 + 2) = 65 − 30. */
+function sameWhy(a: number, b: number) {
+  const s = sameShift(b);
+  const by = s < 0 ? `− ${-s}` : `+ ${s}`;
+  return `(${a} ${by}) − (${b} ${by}) = ${a + s} − ${b + s}`;
+}
+
+/**
+ * A number line from lo to hi at `unit` px a unit: a tick at every number, numbered every 1, 2 or 5 units (by how much
+ * room there is) and at the marked numbers, in their colour; a number too close to a marked one gives way to it.
+ */
+function axis(out: string[], y: number, lo: number, hi: number, X: (v: number) => number, unit: number, marks: [number, string][]) {
+  const f = hi >= 100 ? 1.4 : 1; // three-digit numbers need more room
+  const every = unit >= 22 * f ? 1 : unit >= 11 * f ? 2 : 5;
+  out.push(`<line x1="${X(lo) - 8}" y1="${y}" x2="${X(hi) + 16}" y2="${y}" stroke="${INK}" stroke-width="2"/>`);
+  for (let v = lo; v <= hi; v++) {
+    const color = marks.find(([m]) => m === v)?.[1];
+    const labelled = !!color || (v % every === 0 && marks.every(([m]) => Math.abs(v - m) >= every));
+    out.push(`<line x1="${X(v)}" y1="${y - (labelled ? 8 : 5)}" x2="${X(v)}" y2="${y + (labelled ? 8 : 5)}" stroke="${INK}" stroke-width="${labelled ? 2 : 1}"/>`);
+    if (labelled) out.push(text(X(v), y + 28, String(v), { bold: !!color, color: color ?? INK, size: color ? 17 : 14 }));
+  }
+}
+
+const ARROWS = `<defs>${[A, B].map((c, i) => `<marker id="j${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${c.stroke}"/></marker>`).join("")}</defs>`;
 
 /** a counters in a box, five to a row; once b is shown, the last b are crossed out (taken away). */
 function takeaway(spec: SubSpec, k: number) {
@@ -145,24 +187,14 @@ function numberline(spec: AddSpec | SubSpec, k: number) {
   const c = add ? a + b : a - b;
   const end = Math.max(add ? c : a, 10); // the line runs to the furthest number reached, and at least to 10
   const unit = Math.max(8, Math.min(40, 600 / (end + 1)));
-  const every = unit >= 22 ? 1 : unit >= 11 ? 2 : 5; // label every unit, or every 2nd or 5th
   const x0 = PAD + 14;
   const lineY = PAD + 110;
   const X = (v: number) => x0 + v * unit;
-  const out: string[] = [
-    `<defs>${[A, B].map((c, i) => `<marker id="j${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${c.stroke}"/></marker>`).join("")}</defs>`,
-    `<line x1="${X(0) - 8}" y1="${lineY}" x2="${X(end) + 16}" y2="${lineY}" stroke="${INK}" stroke-width="2"/>`,
-  ];
+  const out: string[] = [ARROWS];
   const landA = k >= 1;
   const landB = k >= 2;
-  const landed = [landA && a, landB && c].filter((v): v is number => v !== false);
-  for (let v = 0; v <= end; v++) {
-    // Every few units are numbered, and where a jump lands; a number too close to a landing gives way to it.
-    const labelled = landed.includes(v) || (v % every === 0 && landed.every((l) => Math.abs(v - l) >= every));
-    out.push(`<line x1="${X(v)}" y1="${lineY - (labelled ? 8 : 5)}" x2="${X(v)}" y2="${lineY + (labelled ? 8 : 5)}" stroke="${INK}" stroke-width="${labelled ? 2 : 1}"/>`);
-    const color = landB && v === c ? B.stroke : landA && v === a ? A.stroke : null;
-    if (labelled) out.push(text(X(v), lineY + 28, String(v), { bold: !!color, color: color ?? INK, size: color ? 17 : 14 }));
-  }
+  // Where a jump lands is numbered, in its colour.
+  axis(out, lineY, 0, end, X, unit, [...(landB ? [[c, B.stroke] as [number, string]] : []), ...(landA ? [[a, A.stroke] as [number, string]] : [])]);
   const arc = (from: number, to: number, c: typeof A, id: number, label: string) => {
     const [s, e] = [X(from), X(to)];
     const h = Math.min(70, 16 + Math.abs(e - s) * 0.3);
@@ -186,6 +218,53 @@ function numberline(spec: AddSpec | SubSpec, k: number) {
   return wrap(Math.max(X(end) + 40, PAD * 2 + width(`${a} ${sign} ${b} = ${c}`, 22)), bottom + PAD, out.join(""));
 }
 
+/**
+ * Same difference: a and b on a number line with the gap between them bracketed; below, both slid the same way so b is
+ * a whole ten, on a second line at the same scale, the gap bracketed again and just as long. The gap is the answer.
+ * The lines show only the stretch the numbers are in, from the ten below b to the ten above a.
+ */
+function same(spec: SubSpec, k: number) {
+  const { a, b } = spec;
+  const s = sameShift(b);
+  const c = a - b;
+  const lo = Math.floor(Math.min(b, b + s) / 10) * 10;
+  const hi = Math.max(Math.ceil(Math.max(a, a + s) / 10) * 10, lo + 10);
+  const unit = Math.max(8, Math.min(40, 600 / (hi - lo + 1)));
+  const x0 = PAD + 34; // room for b's slide label when b is at the start of the line
+  const X = (v: number) => x0 + (v - lo) * unit;
+  const [y1, y2] = [PAD + 56, PAD + 200];
+  const out: string[] = [ARROWS];
+  /** The gap from b to a, bracketed above or below the line, with its length (or ? until the answer is shown). */
+  const gap = (y: number, from: number, to: number, above: boolean) => {
+    const [l, r, t] = [X(from), X(to), above ? 8 : -8];
+    out.push(`<path d="M${l},${y + t}V${y}H${r}V${y + t}" fill="none" stroke="${GREEN}" stroke-width="2.5"/>`);
+    out.push(text((l + r) / 2, above ? y - 8 : y + 22, k >= 3 ? String(c) : "?", { bold: true, color: GREEN, size: 18 }));
+  };
+  const dots = (y: number, x: number, w: number) =>
+    out.push(`<circle cx="${X(w)}" cy="${y}" r="6" fill="${B.stroke}"/><circle cx="${X(x)}" cy="${y}" r="6" fill="${A.stroke}"/>`);
+  if (k >= 1) {
+    axis(out, y1, lo, hi, X, unit, [[a, A.stroke], [b, B.stroke]]);
+    gap(y1 - 30, b, a, true);
+    dots(y1, a, b);
+  }
+  if (k >= 2) {
+    axis(out, y2, lo, hi, X, unit, [[a + s, A.stroke], [b + s, B.stroke]]);
+    gap(y2 + 44, b + s, a + s, false);
+    dots(y2, a + s, b + s);
+    // Both slide by the same amount: a's arrow labelled on its right, b's on its left, so they never meet.
+    const slide = (from: number, col: typeof A, id: number, right: boolean) => {
+      const [p, q] = [X(from), X(from + s)];
+      out.push(`<line x1="${p}" y1="${y1 + 38}" x2="${q}" y2="${y2 - 10}" stroke="${col.stroke}" stroke-width="2.5" marker-end="url(#j${id})"/>`);
+      out.push(text((p + q) / 2 + (right ? 10 : -10), (y1 + y2) / 2 + 18, signed(s), { anchor: right ? "start" : "end", bold: true, color: col.stroke, size: 15 }));
+    };
+    slide(a, A, 0, true);
+    slide(b, B, 1, false);
+  }
+  const bottom = equations(out, spec, k, y2 + 104);
+  const longest = Math.max(width(`${a} − ${b} = ${a + s} − ${b + s} = ${c}`, 22), width(sameWhy(a, b), 18));
+  return wrap(Math.max(X(hi) + 40, PAD * 2 + longest), bottom + PAD, out.join(""));
+}
+
 export function renderAddition(spec: AddSpec): RenderedSvg {
   const lim = ADD_LIMITS[spec.style];
   if (!(Number.isInteger(spec.a) && Number.isInteger(spec.b) && spec.a >= 0 && spec.b >= 0 && spec.a <= lim.a && spec.b <= lim.b)) throw new Error("range");
@@ -197,5 +276,5 @@ export function renderSubtraction(spec: SubSpec): RenderedSvg {
   const { a, b } = spec;
   if (!(Number.isInteger(a) && Number.isInteger(b) && b >= 0 && b <= a && a <= SUB_LIMITS[spec.style])) throw new Error("range");
   const k = Math.max(0, Math.min(spec.step, addStepCount(spec)));
-  return spec.style === "takeaway" ? takeaway(spec, k) : numberline(spec, k);
+  return spec.style === "takeaway" ? takeaway(spec, k) : spec.style === "same" ? same(spec, k) : numberline(spec, k);
 }

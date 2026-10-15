@@ -234,10 +234,11 @@ export const en = {
     one: "Adding 1 gives the next number: 7 donuts and 1 more make 8, the number after 7 when you count. For every number n, n + 1 is the number that comes right after n.",
   },
   subtraction: "Subtraction",
-  subStyles: { takeaway: "Take away", numberline: "Number line" },
+  subStyles: { takeaway: "Take away", numberline: "Number line", same: "Same difference" },
   subHint: {
     takeaway: "a − b: start with a counters and take b away (crossed out). Count what is left. Adding back what was taken gives a again, so a − b = c means c + b = a. Order matters: 7 − 3 is not 3 − 7.",
     numberline: "Start at a and count back b, a hop at a time. Where you land is the difference. Check it by counting on b from there: you are back at a.",
+    same: "a − b is the distance from b to a on the number line. Slide both numbers the same way and the distance stays the same, so slide until the number taken away is a whole ten: 63 − 28 = 65 − 30 = 35. Adding back checks it: 35 + 28 = 63.",
   },
   subCases: {
     zero: "Taking away zero changes nothing: if 7 donuts are in a box and you eat none, all 7 are still there. For every number n, n − 0 = n.",
@@ -1829,6 +1830,8 @@ export const en = {
     subOne: "7 − 1",
     subCountBack: "Count back: 13 − 5",
     subBig: "42 − 15",
+    subSame: "Same difference: 63 − 28",
+    subSameRound: "Same difference: 52 − 19",
     mulGroups: "3 groups of 4",
     mulArray: "Array 4 × 6",
     mulJumps: "Jumps 5 × 3",
