@@ -3,7 +3,7 @@
 import type { RenderedSvg } from "./latex";
 import { renderPlaceValue, type PlaceValueSpec } from "./placeValue";
 import { renderMultiply, type MultiplySpec } from "./multiply";
-import { renderAddition, type AddSpec } from "./addition";
+import { renderAddition, renderSubtraction, type AddSpec, type SubSpec } from "./addition";
 import { renderDivision, type DivisionSpec } from "./division";
 import { renderFracOp, type FracOpSpec } from "./fracop";
 import { renderPercRatio, type PercRatioSpec } from "./percratio";
@@ -23,7 +23,7 @@ export type FractionRow = { n: number; d: number };
 export type FractionSpec = { type: "fraction"; rows: FractionRow[]; shape: "bar" | "circle"; unitLabels: boolean };
 export type PercentSpec = { type: "percent"; percent: number; of: number | null; style: "grid" | "bar" };
 export type BondSpec = { type: "bond"; whole: string; parts: string[] };
-export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | AddSpec | MultiplySpec | DivisionSpec | FracOpSpec | PercRatioSpec;
+export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | AddSpec | SubSpec | MultiplySpec | DivisionSpec | FracOpSpec | PercRatioSpec;
 export type ModelType = ModelSpec["type"];
 
 const INK = "#1e1e1e";
@@ -388,6 +388,8 @@ export function renderModel(spec: ModelSpec): RenderedSvg {
       return renderPlaceValue(spec);
     case "addition":
       return renderAddition(spec);
+    case "subtraction":
+      return renderSubtraction(spec);
     case "multiply":
       return renderMultiply(spec);
     case "division":
@@ -408,6 +410,7 @@ export const DEFAULT_MODELS: { [K in ModelType]: Extract<ModelSpec, { type: K }>
   bond: { type: "bond", whole: "10", parts: ["7", "?"] },
   placeValue: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true },
   addition: { type: "addition", style: "counters", a: 3, b: 4, step: 999 },
+  subtraction: { type: "subtraction", style: "takeaway", a: 7, b: 3, step: 999 },
   multiply: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 },
   division: { type: "division", style: "bracket", a: 624, b: 12, decimals: 0, step: 999 },
   fracop: { type: "fracop", op: "+", a: "2/3", b: "3/4", step: 999 },
@@ -475,6 +478,14 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "addOne", spec: { type: "addition", style: "numberline", a: 7, b: 1, step: 999 } },
     { key: "addCountOn", spec: { type: "addition", style: "numberline", a: 8, b: 5, step: 999 } },
     { key: "addBig", spec: { type: "addition", style: "numberline", a: 27, b: 15, step: 999 } },
+  ],
+  subtraction: [
+    { key: "subTake", spec: { type: "subtraction", style: "takeaway", a: 7, b: 3, step: 999 } },
+    { key: "subZero", spec: { type: "subtraction", style: "takeaway", a: 7, b: 0, step: 999 } },
+    { key: "subSelf", spec: { type: "subtraction", style: "takeaway", a: 7, b: 7, step: 999 } },
+    { key: "subOne", spec: { type: "subtraction", style: "numberline", a: 7, b: 1, step: 999 } },
+    { key: "subCountBack", spec: { type: "subtraction", style: "numberline", a: 13, b: 5, step: 999 } },
+    { key: "subBig", spec: { type: "subtraction", style: "numberline", a: 42, b: 15, step: 999 } },
   ],
   multiply: [
     { key: "mulGroups", spec: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 } },
