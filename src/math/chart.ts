@@ -195,12 +195,23 @@ export function legend(f: Frame, items: { text: string; color: string; dash?: bo
     .join("");
 }
 
-/** Greedy word wrap for caption lines. */
+// Georgian letters (Mkhedruli, Asomtavruli, Nuskhuri, Mtavruli) are about 1.35 times as wide as the Latin ones that
+// widths here are counted in: 9.1 px against 6.8 px on average in a caption.
+const GEORGIAN = /[\u10A0-\u10FF\u1C90-\u1CBF\u2D00-\u2D2F]/;
+
+/** The length of a text in Latin letters' widths, so that a Georgian line is not counted as shorter than it looks. */
+export function textLen(text: string): number {
+  let n = 0;
+  for (const ch of text) n += GEORGIAN.test(ch) ? 1.35 : 1;
+  return n;
+}
+
+/** Greedy word wrap for caption lines; `max` is counted in Latin letters (see textLen). */
 export function wrap(text: string, max = 74): string[] {
   const lines: string[] = [];
   let cur = "";
   for (const word of text.split(" ")) {
-    if (cur && (cur + " " + word).length > max) {
+    if (cur && textLen(cur + " " + word) > max) {
       lines.push(cur);
       cur = word;
     } else cur = cur ? cur + " " + word : word;

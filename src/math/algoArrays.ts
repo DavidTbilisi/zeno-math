@@ -3,7 +3,7 @@
 // theorem recursion tree, growth-rate chart and running-time table). Also the shared cell,
 // table and legend helpers that the graph and tree pictures use.
 import type { AlgoWords, DpSpec, DsSpec, GrowthSpec, SearchSpec, SortSpec, Steps } from "./algo";
-import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nf, nt, r2, texAt, tn, W, wrap, type Caption } from "./chart";
+import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nf, nt, r2, texAt, textLen, tn, W, wrap, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 
 // ---------- parsing ----------
@@ -59,7 +59,7 @@ export function legendRow(items: { role: Role; text: string }[], y: number, x0 =
   let yy = y;
   const parts: string[] = [];
   for (const it of items) {
-    const width = 22 + it.text.length * 7.6 + 18;
+    const width = 22 + textLen(it.text) * 7.6 + 18;
     if (x + width > W - 8 && x > x0) (x = x0), (yy += 22);
     const r = ROLES[it.role];
     parts.push(`<rect x="${x}" y="${yy}" width="14" height="14" rx="3" fill="${r.fill}" stroke="${r.stroke}" stroke-width="1.3"/>`, txt(x + 20, yy + 11.5, it.text, { size: 12.5, color: "#495057" }));
