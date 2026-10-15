@@ -1,25 +1,30 @@
-// A Rubik's cube on the board, drawn twice: as a cube that turns (click a sticker to turn its face, drag to look
-// round it) and on three bands of circles, one per axis, each band leaning its own way like a ring in space, with
-// each face's nine dots where two bands cross: a turn slides the twelve dots beside the face along one circle and
-// turns the face's own dots about its crossing. Below them the moves made, and moves to repeat with their order: how
-// many times they must be done before the cube comes back.
+// A Rubik's cube on the board, drawn four ways at once: as a cube that turns (click a sticker to turn its face); on a
+// ball of circles, three bands of three, one band per axis, with each face's nine dots where two bands cross, so a
+// turn slides the twelve dots beside the face along one circle and turns the face's own dots about its pole (dragging
+// the cube or the ball turns both, any way up); the same bands flat, as in the paper's circle picture; and the net.
+// Below them the moves made, and moves to repeat with their order: how many times they must be done before the cube
+// comes back.
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import {
   axisOf,
   bandCentre,
   bandRadius,
-  bandTilt,
+  circleOnBall,
   colorsAfter,
   common,
   cycleLengths,
   dotAt,
   dotDuring,
+  dotOnBall,
+  dotOnBallDuring,
   FACES,
   GODS_NUMBER,
   isSolved,
   type Layout,
+  moveAngle,
   type Move,
   movesText,
+  netCell,
   NORMAL,
   onLayer,
   order,
@@ -27,6 +32,7 @@ import {
   path,
   POSITIONS,
   ringCentre,
+  rotate,
   scramble,
   seqPerm,
   stickerAt,
@@ -44,31 +50,24 @@ const MAX_MOVES = 1200;
 const BODY = "#212529";
 
 const [CUBE_X, CUBE_Y, CUBE_K] = [185, 205, 60];
-// Each band leans its own way, like three rings in space.
-const RINGS: Layout = { cx: 570, cy: 215, d: 60, rho: 110, step: 17, lean: 0.8, skew: 0.25 };
-const DOT = 6.5;
+/** The circle picture, below the cube: the three bands flat, as in the paper. */
+const RINGS: Layout = { cx: 190, cy: 605, d: 60, rho: 110, step: 15 };
+/** The net, below the ball: the size of a sticker and the top left corner. */
+const [CELL, NET_X, NET_Y] = [30, 390, 465];
+/** The ball: its middle and radius on the screen, and the size of a dot. */
+const [BALL_X, BALL_Y, BALL_K, DOT] = [565, 200, 150, 9];
 const rad = (deg: number) => (deg * Math.PI) / 180;
-
-/** A dot's shadow, as if lit from the top left. */
-const shadowOf = (cx: number, cy: number) => ({ cx: cx + 1.5, cy: cy + 2.5, rx: DOT, ry: DOT * 0.8 });
+/** How the circles round the back of the ball are dashed. */
+const BACK_DASH = "4 5";
 
 // ——— Turning and looking ———
 
-/** v turned by `angle` about the unit vector a (right-handed). */
-function rotate(v: V3, a: V3, angle: number): V3 {
-  const [c, s] = [Math.cos(angle), Math.sin(angle)];
-  const d = a[0] * v[0] + a[1] * v[1] + a[2] * v[2];
-  const x: V3 = [a[1] * v[2] - a[2] * v[1], a[2] * v[0] - a[0] * v[2], a[0] * v[1] - a[1] * v[0]];
-  return [0, 1, 2].map((k) => v[k] * c + x[k] * s + a[k] * d * (1 - c)) as V3;
-}
 /** Into the viewer's frame: x right, y up, z towards the viewer. */
 function view(v: V3, yaw: number, pitch: number): V3 {
   const [cy, sy, cp, sp] = [Math.cos(rad(yaw)), Math.sin(rad(yaw)), Math.cos(rad(pitch)), Math.sin(rad(pitch))];
   const [x, y, z] = [v[0] * cy + v[2] * sy, v[1], -v[0] * sy + v[2] * cy];
   return [x, y * cp - z * sp, y * sp + z * cp];
 }
-/** The angle a move has got to, a fraction t of the way: clockwise seen from the face is negative about its normal. */
-const moveAngle = (m: Move, t: number) => -(m.turns === 3 ? -1 : m.turns) * (Math.PI / 2) * t;
 
 const CUBIES: V3[] = [-1, 0, 1].flatMap((x) => [-1, 0, 1].flatMap((y) => [-1, 0, 1].map((z) => [x, y, z] as V3))).filter((c) => c.some(Boolean));
 const DIRS: V3[] = FACES.map((f) => NORMAL[f]);
@@ -211,47 +210,213 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
     const [dx, dy] = [e.clientX - d.x, e.clientY - d.y];
     if (!d.moved && Math.hypot(dx, dy) < 5) return;
     d.moved = true;
-    setLook({ yaw: d.yaw + dx * 0.5, pitch: Math.max(-85, Math.min(85, d.pitch + dy * 0.5)) });
+    setLook({ yaw: d.yaw + dx * 0.5, pitch: d.pitch + dy * 0.5 });
   };
   const drop = () => {
     const d = down.current;
     down.current = null;
     if (!d) return;
-    if (d.moved && look) set({ ...state, yaw: Math.round(look.yaw) % 360, pitch: Math.round(look.pitch) });
+    if (d.moved && look) set({ ...state, yaw: Math.round(look.yaw) % 360, pitch: Math.round(look.pitch) % 360 });
     else if (d.face) turn(d.face);
     setLook(null);
   };
 
-  // ——— The rings ———
-  // The dots are beads on the rings.
-  const beads = STICKERS.map((_, i) => {
-    const [x, y] = turning ? dotDuring(i, turning, anim!.t, RINGS) : dotAt(i, RINGS);
-    return { i, x, y };
-  });
-  const ringDots = beads.map(({ i, x, y }) => {
-    const lit = !turning && hover && onLayer(hover, i) && i % 9 !== 4;
-    return (
-      <circle key={i} data-dot={i} cx={x} cy={y} r={DOT} fill={`url(#rubik-bead-${colors[i]})`} stroke={lit ? "#1971c2" : "#343a40"} strokeWidth={lit ? 3 : 1.2} />
+  // ——— The ball ———
+  const faceTitle = (f: Face) => fill(state.prime ? w.anticlockwise : w.clockwise, { face: w.faces[f] });
+  /** A point of the ball on the screen, with how far it is towards the viewer (−1 at the back to 1 at the front). */
+  const onScreen = (v: V3): V3 => {
+    const [x, y, z] = view(v, yaw, pitch);
+    return [BALL_X + BALL_K * x, BALL_Y - BALL_K * y, z];
+  };
+  /** A line over the ball cut where it goes round the back: the parts behind and the parts in front. */
+  const sides = (points: V3[]) => {
+    const out: { front: boolean; pts: string }[] = [];
+    let run: V3[] = [];
+    const flush = () => run.length > 1 && out.push({ front: run[0][2] >= 0, pts: run.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ") });
+    for (const p of points.map(onScreen)) {
+      if (run.length && run[run.length - 1][2] >= 0 !== p[2] >= 0) {
+        run.push(p);
+        flush();
+        run = [p];
+      } else run.push(p);
+    }
+    flush();
+    return out;
+  };
+  // The circles, the one a hovered face's turn slides its ring along lit up.
+  const circles = ([0, 1, 2] as const).flatMap((a) =>
+    [-1, 0, 1].map((v) => ({ key: `${a}${v}`, lit: !!hover && axisOf(hover) === a && NORMAL[hover][a] === v, parts: sides(circleOnBall(a, v)) })),
+  );
+  const drawCircles = (front: boolean) =>
+    circles.flatMap(({ key, lit, parts }) =>
+      parts
+        .filter((part) => part.front === front)
+        .map((part, k) => (
+          <polyline
+            key={`${key}-${k}`}
+            points={part.pts}
+            stroke={lit ? (front ? "#339af0" : "#a5d8ff") : front ? "#868e96" : "#ced4da"}
+            strokeWidth={lit ? (front ? 3.5 : 2) : front ? 1.6 : 1.1}
+            strokeDasharray={front ? undefined : BACK_DASH}
+          />
+        )),
     );
-  });
+  const dots = STICKERS.map((_, i) => ({ i, at: onScreen(turning ? dotOnBallDuring(i, turning, anim!.t) : dotOnBall(i)) })).sort((p, q) => p.at[2] - q.at[2]);
+  const drawDots = (front: boolean) =>
+    dots
+      .filter(({ at }) => at[2] >= 0 === front)
+      .map(({ i, at: [x, y, z] }) => {
+        const lit = !turning && hover && onLayer(hover, i) && i % 9 !== 4;
+        return (
+          <circle
+            key={i}
+            data-dot={i}
+            cx={x}
+            cy={y}
+            r={DOT * (0.85 + 0.15 * z)}
+            fill={`url(#rubik-bead-${colors[i]})`}
+            stroke={lit ? "#1971c2" : "#343a40"}
+            strokeWidth={lit ? 3 : 1.2}
+          />
+        );
+      });
   const trails =
     hover && !turning
       ? STICKERS.flatMap((_, i) =>
           onLayer(hover, i) && i % 9 !== 4
-            ? [<polyline key={i} points={Array.from({ length: 17 }, (_, k) => dotDuring(i, turnMove(hover), k / 16, RINGS).map((v) => v.toFixed(1)).join(",")).join(" ")} fill="none" stroke="#74c0fc" strokeWidth={1.6} />]
+            ? sides(Array.from({ length: 17 }, (_, k) => dotOnBallDuring(i, turnMove(hover), k / 16))).map((part, k) => (
+                <polyline key={`${i}-${k}`} points={part.pts} fill="none" stroke="#74c0fc" strokeWidth={1.6} strokeOpacity={part.front ? 1 : 0.4} />
+              ))
             : [],
         )
       : [];
+  // Each face's letter just beyond its pole, faint when the face is round the back; the pole is the place to click.
+  const letters = (front: boolean) =>
+    FACES.flatMap((f) => {
+      const [x, y, z] = onScreen(NORMAL[f].map((c) => c * 1.25) as V3);
+      if (z >= 0 !== front) return [];
+      const [px, py] = onScreen(NORMAL[f]);
+      return [
+        <g key={f} style={{ cursor: "pointer" }} onPointerDown={() => (pressed.current = f)} onPointerEnter={() => setHover(f)} onPointerLeave={() => setHover(null)}>
+          <title>{faceTitle(f)}</title>
+          {front && <circle cx={px} cy={py} r={BALL_K * 0.3} fill="transparent" />}
+          <text x={x} y={y + 8} textAnchor="middle" fontSize={22} fontWeight={700} fill={INK} opacity={front ? 1 : 0.35}>
+            {f}
+            {state.prime ? "′" : ""}
+          </text>
+        </g>,
+      ];
+    });
+
+  // ——— The circle picture ———
+  const rings = () => {
+    const at = (i: number) => (turning ? dotDuring(i, turning, anim!.t, RINGS) : dotAt(i, RINGS));
+    const pts = (ps: [number, number][]) => ps.map((p) => p.map((v) => v.toFixed(1)).join(",")).join(" ");
+    return (
+      <>
+        <g fill="none">
+          {([0, 1, 2] as const).map((a) => {
+            const [x, y] = bandCentre(a, RINGS);
+            // The circle a hovered face's turn slides its ring along.
+            const lit = hover && axisOf(hover) === a ? NORMAL[hover][a] : null;
+            return [-1, 0, 1].map((v) => (
+              <circle key={`${a}${v}`} cx={x} cy={y} r={bandRadius(a, v, RINGS)} stroke={lit === v ? "#74c0fc" : "#ced4da"} strokeWidth={lit === v ? 2.5 : 1} />
+            ));
+          })}
+        </g>
+        {/* Each face's places, its rows and columns joined: the dots slide from place to place. */}
+        <g fill="none" stroke="#868e96" strokeWidth={1}>
+          {FACES.flatMap((_, k) =>
+            [0, 1, 2].flatMap((n) => [
+              <polyline key={`${k}r${n}`} points={pts([0, 1, 2].map((c) => dotAt(9 * k + 3 * n + c, RINGS)))} />,
+              <polyline key={`${k}c${n}`} points={pts([0, 1, 2].map((r) => dotAt(9 * k + 3 * r + n, RINGS)))} />,
+            ]),
+          )}
+        </g>
+        {hover &&
+          !turning &&
+          STICKERS.flatMap((_, i) =>
+            onLayer(hover, i) && i % 9 !== 4
+              ? [<polyline key={`t${i}`} points={pts(Array.from({ length: 17 }, (_, k) => dotDuring(i, turnMove(hover), k / 16, RINGS)))} fill="none" stroke="#74c0fc" strokeWidth={1.6} />]
+              : [],
+          )}
+        {STICKERS.map((_, i) => {
+          const [x, y] = at(i);
+          const lit = !turning && hover && onLayer(hover, i) && i % 9 !== 4;
+          return <circle key={i} data-dot={i} cx={x} cy={y} r={6.5} fill={`url(#rubik-bead-${colors[i]})`} stroke={lit ? "#1971c2" : "#343a40"} strokeWidth={lit ? 3 : 1.2} />;
+        })}
+        {FACES.map((f) => {
+          const [cx, cy] = ringCentre(f, RINGS);
+          // The letter beyond the face's dots, away from the middle of the picture.
+          const k = 42 / Math.hypot(cx - RINGS.cx, cy - RINGS.cy);
+          const [x, y] = [cx + (cx - RINGS.cx) * k, cy + (cy - RINGS.cy) * k];
+          return (
+            <g key={f} style={{ cursor: "pointer" }} onClick={() => turn(f)} onPointerEnter={() => setHover(f)} onPointerLeave={() => setHover(null)}>
+              <title>{faceTitle(f)}</title>
+              <circle cx={cx} cy={cy} r={RINGS.step * 2} fill="transparent" />
+              <text x={x} y={y + 8} textAnchor="middle" fontSize={22} fontWeight={700} fill={INK}>
+                {f}
+                {state.prime ? "′" : ""}
+              </text>
+            </g>
+          );
+        })}
+      </>
+    );
+  };
+
+  // ——— The net ———
+  const net = () => (
+    <>
+      {FACES.map((f, k) => {
+        const [x, y] = netCell(9 * k);
+        return (
+          <g key={f} style={{ cursor: "pointer" }} onClick={() => turn(f)} onPointerEnter={() => setHover(f)} onPointerLeave={() => setHover(null)}>
+            <title>{faceTitle(f)}</title>
+            <rect x={NET_X + x * CELL - 3} y={NET_Y + y * CELL - 3} width={3 * CELL + 6} height={3 * CELL + 6} rx={6} fill={BODY} />
+          </g>
+        );
+      })}
+      {STICKERS.map((s, i) => {
+        const [x, y] = netCell(i);
+        // The stickers a hovered face's turn moves.
+        const lit = !turning && hover && onLayer(hover, i);
+        return (
+          <rect
+            key={i}
+            data-net={i}
+            x={NET_X + x * CELL + 2}
+            y={NET_Y + y * CELL + 2}
+            width={CELL - 4}
+            height={CELL - 4}
+            rx={4}
+            fill={FACE_COLORS[colors[i]]}
+            stroke={lit ? "#74c0fc" : "none"}
+            strokeWidth={3}
+            pointerEvents="none"
+          />
+        );
+      })}
+      {FACES.map((f) => {
+        const [x, y] = netCell(FACES.indexOf(f) * 9 + 4);
+        return (
+          <text key={f} x={NET_X + (x + 0.5) * CELL} y={NET_Y + (y + 0.5) * CELL + 5} textAnchor="middle" fontSize={15} fontWeight={700} fill={colors[FACES.indexOf(f) * 9 + 4] === "U" || colors[FACES.indexOf(f) * 9 + 4] === "D" ? INK : "#fff"} pointerEvents="none">
+            {f}
+            {state.prime ? "′" : ""}
+          </text>
+        );
+      })}
+    </>
+  );
 
   const solved = isSolved(colorsAfter(target));
   const digits = POSITIONS.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   const shownMoves = made.length > 30 ? `… ${movesText(made.slice(-30))}` : movesText(made);
-  const faceTitle = (f: Face) => fill(state.prime ? w.anticlockwise : w.clockwise, { face: w.faces[f] });
 
   return (
     <>
-      <svg ref={svgRef} width={760} height={410} viewBox="0 0 760 410" fontFamily="Georgia, 'Times New Roman', serif">
-        <rect width={760} height={410} fill="#fff" />
+      <svg ref={svgRef} width={760} height={800} viewBox="0 0 760 800" fontFamily="Georgia, 'Times New Roman', serif">
+        <rect width={760} height={800} fill="#fff" />
         <g style={{ cursor: "grab" }} onPointerDown={grab} onPointerMove={drag} onPointerUp={drop} onPointerCancel={drop}>
           <rect width={370} height={410} fill="transparent" />
           {groups.map((g) => g.map((c) => <g key={c.join()}>{cubie(c)}</g>))}
@@ -265,45 +430,28 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
             </radialGradient>
           ))}
         </defs>
-        <g fill="none" strokeLinejoin="round">
-          {([0, 1, 2] as const).map((a) => {
-            const [x, y] = bandCentre(a, RINGS);
-            const { angle, lean } = bandTilt(a, RINGS);
-            // The circle a hovered face's turn slides its ring along.
-            const lit = hover && axisOf(hover) === a ? NORMAL[hover][a] : null;
-            return (
-              <g key={a} transform={`translate(${x} ${y}) rotate(${((angle * 180) / Math.PI).toFixed(2)})`}>
-                {[-1, 0, 1].map((v) => {
-                  const [rx, ry] = [bandRadius(a, v, RINGS), bandRadius(a, v, RINGS) * lean];
-                  return (
-                    <g key={v}>
-                      <ellipse rx={rx} ry={ry} stroke={lit === v ? "#4dabf7" : "#ced4da"} strokeWidth={lit === v ? 4 : 3} />
-                      <ellipse rx={rx} ry={ry} stroke={lit === v ? "#d0ebff" : "#fff"} strokeWidth={1} transform="translate(-0.6 -0.8)" />
-                    </g>
-                  );
-                })}
-              </g>
-            );
-          })}
+        <radialGradient id="rubik-ball" cx="0.38" cy="0.32" r="0.75">
+          <stop offset="0" stopColor="#fff" stopOpacity={0.75} />
+          <stop offset="0.7" stopColor="#e7f5ff" stopOpacity={0.7} />
+          <stop offset="1" stopColor="#a5d8ff" stopOpacity={0.75} />
+        </radialGradient>
+        <g style={{ cursor: "grab" }} onPointerDown={grab} onPointerMove={drag} onPointerUp={drop} onPointerCancel={drop}>
+          <rect x={370} width={390} height={410} fill="transparent" />
+          <ellipse cx={BALL_X} cy={BALL_Y + BALL_K + 22} rx={BALL_K * 0.75} ry={10} fill="#000" opacity={0.07} />
+          {/* The back of the ball, seen through it; only the letters take clicks. */}
+          <g fill="none" pointerEvents="none">{drawCircles(false)}</g>
+          <g pointerEvents="none">{drawDots(false)}</g>
+          {letters(false)}
+          <circle cx={BALL_X} cy={BALL_Y} r={BALL_K} fill="url(#rubik-ball)" stroke="#a5d8ff" strokeWidth={1.5} />
+          <g pointerEvents="none">
+            <g fill="none">{drawCircles(true)}</g>
+            {trails}
+            {drawDots(true)}
+          </g>
+          {letters(true)}
         </g>
-        {trails}
-        <g fill="#000" opacity={0.18}>
-          {beads.map(({ i, x, y }) => <ellipse key={i} {...shadowOf(x, y)} />)}
-        </g>
-        {ringDots}
-        {FACES.map((f) => {
-          const [cx, cy] = ringCentre(f, RINGS);
-          // The letter beyond the face's dots, away from the middle of the picture.
-          const k = 50 / Math.hypot(cx - RINGS.cx, cy - RINGS.cy);
-          const [x, y] = [cx + (cx - RINGS.cx) * k, cy + (cy - RINGS.cy) * k];
-          return (
-            <g key={f} style={{ cursor: "pointer" }} onClick={() => turn(f)} onPointerEnter={() => setHover(f)} onPointerLeave={() => setHover(null)}>
-              <title>{faceTitle(f)}</title>
-              <circle cx={cx} cy={cy} r={RINGS.step * 2} fill="transparent" />
-              <text x={x} y={y + 8} textAnchor="middle" fontSize={22} fontWeight={700} fill={INK}>{f}{state.prime ? "′" : ""}</text>
-            </g>
-          );
-        })}
+        {rings()}
+        {net()}
       </svg>
       <div className="live-bar">
         {FACES.map((f) => (
