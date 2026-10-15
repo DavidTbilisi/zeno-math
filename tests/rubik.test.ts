@@ -8,6 +8,7 @@ import {
   common,
   bandCentre,
   bandRadius,
+  bandTilt,
   colorsAfter,
   cycleLengths,
   dotAt,
@@ -26,6 +27,7 @@ import {
   ringCentre,
   scramble,
   STICKERS,
+  unlean,
   type Layout,
   type Move,
 } from "../src/math/rubik.ts";
@@ -115,36 +117,57 @@ test("the animation's path: back to where two sequences part, then on", () => {
   assert.deepEqual(colors, colorsAfter(b));
 });
 
-test("the circle picture: three bands of circles, a face where two cross, a turn slides its ring along one circle", () => {
-  const l: Layout = { cx: 570, cy: 215, d: 60, rho: 110, step: 15 };
-  const dist = (p: number[], q: number[]) => Math.hypot(p[0] - q[0], p[1] - q[1]);
-  const near = (p: number[], q: number[]) => dist(p, q) < 1e-9;
-  const close = (a: number, b: number) => Math.abs(a - b) < 1e-9;
-  // Each face's middle sticker is its crossing, on the middle circles of the other two bands, and opposite faces share them.
-  FACES.forEach((f, k) => {
-    const c = ringCentre(f, l);
-    assert.ok(near(dotAt(k * 9 + 4, l), c), f);
-    for (const a of [0, 1, 2] as const) if (a !== axisOf(f)) assert.ok(close(dist(c, bandCentre(a, l)), l.rho), `${f} on band ${a}`);
+const ROUND: Layout = { cx: 570, cy: 215, d: 60, rho: 110, step: 15 };
+const LEANING: Layout = { cx: 570, cy: 215, d: 60, rho: 110, step: 17, lean: 0.8, skew: 0.25 };
+
+for (const [name, l, gap] of [["round", ROUND, 15], ["leaning", LEANING, 13]] as const)
+  test(`the circle picture (${name}): three bands of circles, a face where two cross, a turn slides its ring along one circle`, () => {
+    const dist = (p: number[], q: number[]) => Math.hypot(p[0] - q[0], p[1] - q[1]);
+    const near = (p: number[], q: number[]) => dist(p, q) < 1e-9;
+    const close = (a: number, b: number) => Math.abs(a - b) < 1e-9;
+    // How far a point is from a band's middle, on the band's own round circles.
+    const off = (a: 0 | 1 | 2, p: [number, number]) => dist(unlean(a, p, l), bandCentre(a, l));
+    // Each face's middle sticker is its crossing, on the middle circles of the other two bands, and opposite faces share them.
+    FACES.forEach((f, k) => {
+      const c = ringCentre(f, l);
+      assert.ok(near(dotAt(k * 9 + 4, l), c), f);
+      for (const a of [0, 1, 2] as const) if (a !== axisOf(f)) assert.ok(close(off(a, c), l.rho), `${f} on band ${a}`);
+    });
+    // Every sticker is on the circles of its two layers.
+    STICKERS.forEach((s, i) => {
+      for (const a of [0, 1, 2] as const)
+        if (a !== axisOf(s.face)) assert.ok(close(off(a, dotAt(i, l)), bandRadius(a, s.pos[a], l)), `sticker ${i} band ${a}`);
+    });
+    // No two dots overlap.
+    for (let i = 0; i < 54; i++) for (let j = i + 1; j < 54; j++) assert.ok(dist(dotAt(i, l), dotAt(j, l)) > gap, `${i} ${j}`);
+    for (const face of FACES)
+      for (const turns of [1, 2, 3] as const) {
+        const m = { face, turns };
+        const p = movePerm(m);
+        STICKERS.forEach((s, i) => {
+          assert.ok(near(dotDuring(i, m, 0, l), dotAt(i, l)));
+          assert.ok(near(dotDuring(i, m, 1, l), dotAt(p[i], l)), `${face}${turns} sticker ${i}`);
+          // The stickers beside the face stay on their circle all the way.
+          if (onLayer(face, i) && s.face !== face) {
+            const a = axisOf(face);
+            for (const t of [0.25, 0.5, 0.75]) assert.ok(close(off(a, dotDuring(i, m, t, l)), bandRadius(a, NORMAL[face][a], l)));
+          }
+        });
+      }
   });
-  // Every sticker is on the circles of its two layers.
-  STICKERS.forEach((s, i) => {
-    for (const a of [0, 1, 2] as const)
-      if (a !== axisOf(s.face)) assert.ok(close(dist(dotAt(i, l), bandCentre(a, l)), bandRadius(a, s.pos[a], l)), `sticker ${i} band ${a}`);
-  });
-  // No two dots overlap.
-  for (let i = 0; i < 54; i++) for (let j = i + 1; j < 54; j++) assert.ok(dist(dotAt(i, l), dotAt(j, l)) > 15, `${i} ${j}`);
-  for (const face of FACES)
-    for (const turns of [1, 2, 3] as const) {
-      const m = { face, turns };
-      const p = movePerm(m);
-      STICKERS.forEach((s, i) => {
-        assert.ok(near(dotDuring(i, m, 0, l), dotAt(i, l)));
-        assert.ok(near(dotDuring(i, m, 1, l), dotAt(p[i], l)), `${face}${turns} sticker ${i}`);
-        // The stickers beside the face stay on their circle all the way.
-        if (onLayer(face, i) && s.face !== face) {
-          const a = axisOf(face);
-          for (const t of [0.25, 0.5, 0.75]) assert.ok(close(dist(dotDuring(i, m, t, l), bandCentre(a, l)), bandRadius(a, NORMAL[face][a], l)));
-        }
-      });
-    }
+
+test("a leaning band is squashed across its long axis and keeps the crossings of the round picture", () => {
+  // Along the long axis nothing moves; across it, distances shrink to the lean.
+  const [cx, cy] = bandCentre(0, LEANING);
+  const { angle, lean } = bandTilt(0, LEANING);
+  const [ux, uy] = [Math.cos(angle), Math.sin(angle)];
+  assert.deepEqual(unlean(0, [cx + 50 * ux, cy + 50 * uy], LEANING).map((v) => +v.toFixed(9)), [cx + 50 * ux, cy + 50 * uy].map((v) => +v.toFixed(9)));
+  const p = unlean(0, [cx - 40 * uy, cy + 40 * ux], LEANING);
+  assert.ok(Math.abs(Math.hypot(p[0] - cx, p[1] - cy) - 40 / lean) < 1e-9);
+  assert.deepEqual(bandTilt(1, ROUND), { angle: (2 * Math.PI) / 3, lean: 1 });
+  // Each face stays on the same side: the inner crossings nearer the middle than the outer ones.
+  const fromMiddle = (f: (typeof FACES)[number]) => Math.hypot(ringCentre(f, LEANING)[0] - LEANING.cx, ringCentre(f, LEANING)[1] - LEANING.cy);
+  for (const [inner, outer] of [["R", "L"], ["U", "D"], ["B", "F"]] as const) assert.ok(fromMiddle(inner) < fromMiddle(outer), inner);
+  // Found once and remembered.
+  assert.equal(dotAt(7, LEANING), dotAt(7, LEANING));
 });
