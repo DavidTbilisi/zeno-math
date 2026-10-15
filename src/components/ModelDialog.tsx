@@ -18,13 +18,14 @@ import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
 import { PlaceValueMat } from "./PlaceValueMat";
+import { ADD_LIMITS, ADD_STYLES, addCase, addStepCount, type AddSpec } from "../math/addition";
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, multiplyCase, stepCount, type MultiplySpec } from "../math/multiply";
 import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
 import { PERCENT_KINDS, percRatioStepCount, RATIO_KINDS, type PercRatioSpec } from "../math/percratio";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
-const TYPES: DialogModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "multiply", "fracop", "percratio"];
+const TYPES: DialogModelType[] = ["bar", "fraction", "percent", "bond", "placeValue", "addition", "multiply", "fracop", "percratio"];
 const clampInt = (v: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(v) || 0)));
 
 export function ModelDialog({ initial, start, onSubmit, onClose }: {
@@ -47,7 +48,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
-  const tabLabel: Record<DialogModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, multiply: t.multiplication, fracop: t.fracOps, percratio: t.percRatio };
+  const tabLabel: Record<DialogModelType, string> = { bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, addition: t.addition, multiply: t.multiplication, fracop: t.fracOps, percratio: t.percRatio };
   // A division picture from before long division moved onto the board: shown, but no longer edited here.
   const oldDivision = spec.type === "division";
 
@@ -83,6 +84,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
       </div>
       )}
 
+      {spec.type === "addition" && <AdditionEditor spec={spec} onChange={(s) => update("addition", s)} />}
       {spec.type === "multiply" && <MultiplyEditor spec={spec} onChange={(s) => update("multiply", s)} />}
       {spec.type === "fracop" && <FracOpEditor spec={spec} onChange={(s) => update("fracop", s)} />}
       {spec.type === "percratio" && <PercRatioEditor spec={spec} onChange={(s) => update("percratio", s)} />}
@@ -213,6 +215,53 @@ function FractionEditor({ spec, onChange }: { spec: FractionSpec; onChange: (s: 
           <input type="checkbox" checked={spec.unitLabels} onChange={(e) => onChange({ ...spec, unitLabels: e.target.checked })} />
           <span>{t.unitLabels}</span>
         </label>
+      </div>
+    </>
+  );
+}
+
+function AdditionEditor({ spec, onChange }: { spec: AddSpec; onChange: (s: AddSpec) => void }) {
+  const { t } = useI18n();
+  const lim = ADD_LIMITS[spec.style];
+  const n = addStepCount(spec);
+  const shown = Math.min(spec.step, n);
+  const setStyle = (style: AddSpec["style"]) => {
+    const l = ADD_LIMITS[style];
+    onChange({ ...spec, style, a: Math.min(spec.a, l.a), b: Math.min(spec.b, l.b), step: 999 });
+  };
+  const setNum = (k: "a" | "b", v: string) => onChange({ ...spec, [k]: clampInt(v, 0, lim[k]), step: 999 });
+  const special = addCase(spec.a, spec.b);
+
+  return (
+    <>
+      <Segmented className="wrap" items={ADD_STYLES} value={spec.style} onChange={(s) => setStyle(s)} label={(s) => t.addStyles[s]} />
+      <div className="range-grid mult-inputs">
+        <input type="number" min={0} max={lim.a} value={spec.a} aria-label="a" onChange={(e) => setNum("a", e.target.value)} />
+        <span className="mult-sign">+</span>
+        <input type="number" min={0} max={lim.b} value={spec.b} aria-label="b" onChange={(e) => setNum("b", e.target.value)} />
+        <span className="mult-sign">= {spec.a + spec.b}</span>
+      </div>
+      <small className="hint">{t.addHint[spec.style]}</small>
+      {special && (
+        <small className="hint">
+          <b>{spec.a} + {spec.b} = {spec.a + spec.b}.</b> {t.addCases[special]}
+        </small>
+      )}
+      <div className="field">
+        <span>
+          {t.stepByStep}: {shown} / {n}
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={n}
+          step={1}
+          value={shown}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({ ...spec, step: v >= n ? 999 : v });
+          }}
+        />
       </div>
     </>
   );
