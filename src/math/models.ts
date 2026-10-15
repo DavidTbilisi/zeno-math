@@ -486,6 +486,8 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "subOne", spec: { type: "subtraction", style: "numberline", a: 7, b: 1, step: 999 } },
     { key: "subCountBack", spec: { type: "subtraction", style: "numberline", a: 13, b: 5, step: 999 } },
     { key: "subBig", spec: { type: "subtraction", style: "numberline", a: 42, b: 15, step: 999 } },
+    { key: "subSame", spec: { type: "subtraction", style: "same", a: 63, b: 28, step: 999 } },
+    { key: "subSameRound", spec: { type: "subtraction", style: "same", a: 52, b: 19, step: 999 } },
   ],
   multiply: [
     { key: "mulGroups", spec: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 } },
