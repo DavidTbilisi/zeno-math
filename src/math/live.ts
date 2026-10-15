@@ -210,11 +210,22 @@ export function samePieces(a: Frac, b: Frac): { d: number; a: number; b: number 
  */
 export type LiveDivision = { a: number; b: number; decimals: number; style: DivisionStyle; blocks: boolean; step: number; turn: boolean; share: Sharing | null };
 
-/** The numbers within the division tool's limits: a whole a ≥ 0, a whole b ≥ 1, 0 to 10 decimal places. */
+/**
+ * The numbers within the division tool's limits: a whole a ≥ 0, a whole b ≥ 0, 0 to 10 decimal places. b = 0 is let
+ * through so the class can see why it has no answer; a b that isn't a number at all becomes 1.
+ */
 export function divisionNumbers(d: Pick<LiveDivision, "a" | "b" | "decimals">): Pick<LiveDivision, "a" | "b" | "decimals"> {
-  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(Number.isFinite(v) ? v : lo)));
-  return { a: clamp(d.a, 0, DIVISION_LIMITS.a), b: clamp(d.b, 1, DIVISION_LIMITS.b), decimals: clamp(d.decimals, 0, DIVISION_LIMITS.decimals) };
+  const clamp = (v: number, lo: number, hi: number, none = lo) => Math.min(hi, Math.max(lo, Math.round(Number.isFinite(v) ? v : none)));
+  return { a: clamp(d.a, 0, DIVISION_LIMITS.a), b: clamp(d.b, 0, DIVISION_LIMITS.b, 1), decimals: clamp(d.decimals, 0, DIVISION_LIMITS.decimals) };
 }
+
+/**
+ * The special cases of division: n ÷ 0 is undefined (0 ÷ 0 too), 0 ÷ n = 0, n ÷ 1 = n and n ÷ n = 1; null for an
+ * ordinary division. When two apply (1 ÷ 1), the first in that order is named.
+ */
+export type DivisionCase = "byZero" | "zeroBy" | "byOne" | "self";
+export const divisionCase = (a: number, b: number): DivisionCase | null =>
+  b === 0 ? "byZero" : a === 0 ? "zeroBy" : b === 1 ? "byOne" : a === b ? "self" : null;
 
 export type DivisionAsk = { cur: number; b: number; q: number };
 
