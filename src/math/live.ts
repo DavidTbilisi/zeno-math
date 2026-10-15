@@ -202,6 +202,19 @@ export function samePieces(a: Frac, b: Frac): { d: number; a: number; b: number 
   return { d, a: (a.n * d) / a.d, b: (b.n * d) / b.d };
 }
 
+/** A fraction against a half: n/d against 1/2 is n + n against d (2/5: 4 < 5, so less than a half). */
+export const halfSign = ({ n, d }: Frac): CompareSign => compareSign(2 * n, d);
+
+/**
+ * a against 1/2 and 1/2 against b, when the half settles which is bigger (2/5 < 1/2 < 3/4, 2/4 = 1/2 > 1/3); null
+ * when both are on the same side of it (2/5 and 1/3), so the half does not decide.
+ */
+export function viaHalf(a: Frac, b: Frac): [CompareSign, CompareSign] | null {
+  const s = halfSign(a);
+  const t = compareSign(b.d, 2 * b.n); // 1/2 against b
+  return s === t || s === "=" || t === "=" ? [s, t] : null;
+}
+
 // ——— Long division ———
 
 /**
@@ -309,7 +322,7 @@ export type LiveStates = {
   graph: LiveGraphState;
   chance: { device: Device; tally: Tally; view: ChanceView; relative: boolean; theory: boolean; focus: number; last: number };
   compare: { a: number; b: number; joined: boolean; guess: CompareSign | null };
-  compareFractions: { a: Frac; b: Frac; joined: boolean; guess: CompareSign | null; same: boolean };
+  compareFractions: { a: Frac; b: Frac; joined: boolean; guess: CompareSign | null; same: boolean; half: boolean };
   division: LiveDivision;
   rubik: LiveRubik;
   soroban: LiveSoroban;
@@ -331,7 +344,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   graph: [640, 560],
   chance: [680, 500],
   compare: [380, 530],
-  compareFractions: [400, 580],
+  compareFractions: [400, 680],
   division: [760, 820],
   rubik: [780, 1000],
   soroban: [820, 540],
@@ -355,7 +368,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     graph: DEFAULT_LIVE_GRAPH,
     chance: { device: { kind: "die", sides: 6 }, tally: emptyTally(6), view: "bars", relative: true, theory: true, focus: 5, last: -1 },
     compare: { a: 5, b: 2, joined: false, guess: null },
-    compareFractions: { a: { n: 2, d: 3 }, b: { n: 3, d: 4 }, joined: false, guess: null, same: false },
+    compareFractions: { a: { n: 2, d: 3 }, b: { n: 3, d: 4 }, joined: false, guess: null, same: false, half: false },
     division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null },
     rubik: { scramble: "", moves: "", alg: "R U R′ U′", reps: 0, prime: false, yaw: -35, pitch: 28 },
     soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },

@@ -11,6 +11,8 @@ import {
   fracNumbers,
   fracSign,
   samePieces,
+  halfSign,
+  viaHalf,
   counters,
   DIE_SIDES,
   divisionAsk,
@@ -249,5 +251,27 @@ test("fraction bars compare like towers, and same-size pieces keep each amount",
           assert.ok(Number.isInteger(s.a) && Number.isInteger(s.b) && s.d % d === 0 && s.d % e === 0);
           assert.ok(close(s.a / s.d, n / d) && close(s.b / s.d, m / e));
           assert.equal(compareSign(s.a, s.b), sign);
+        }
+});
+
+test("comparing with a half: n + n against d, and the half decides only when the two are on different sides of it", () => {
+  assert.equal(halfSign({ n: 2, d: 5 }), "<");
+  assert.equal(halfSign({ n: 3, d: 4 }), ">");
+  assert.equal(halfSign({ n: 3, d: 6 }), "=");
+  assert.equal(halfSign({ n: 0, d: 3 }), "<");
+  assert.equal(halfSign({ n: 1, d: 1 }), ">");
+  assert.deepEqual(viaHalf({ n: 2, d: 5 }, { n: 3, d: 4 }), ["<", "<"]); // 2/5 < 1/2 < 3/4
+  assert.deepEqual(viaHalf({ n: 3, d: 4 }, { n: 2, d: 5 }), [">", ">"]);
+  assert.deepEqual(viaHalf({ n: 2, d: 4 }, { n: 1, d: 3 }), ["=", ">"]); // 2/4 = 1/2 > 1/3
+  assert.deepEqual(viaHalf({ n: 1, d: 2 }, { n: 3, d: 6 }), ["=", "="]);
+  assert.equal(viaHalf({ n: 2, d: 5 }, { n: 1, d: 3 }), null);
+  assert.equal(viaHalf({ n: 2, d: 3 }, { n: 3, d: 4 }), null);
+  // Whenever it decides, the chain agrees with cross-multiplying.
+  for (let d = 1; d <= 12; d++)
+    for (let n = 0; n <= d; n++)
+      for (let e = 1; e <= 12; e++)
+        for (let m = 0; m <= e; m++) {
+          const c = viaHalf({ n, d }, { n: m, d: e });
+          if (c) assert.equal(c.includes("<") ? "<" : c.includes(">") ? ">" : "=", fracSign({ n, d }, { n: m, d: e }), `${n}/${d} ${m}/${e}`);
         }
 });

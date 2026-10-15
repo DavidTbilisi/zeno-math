@@ -4012,6 +4012,12 @@ export const en = {
       tryPencils: "Or join the shaded parts with pencils.",
       parallel: "The shaded parts are the same height, so the pencils are parallel.",
       sameSays: "{a} = {x}/{d} and {b} = {y}/{d}: with pieces of the same size, compare {x} and {y}.",
+      half: "Compare with 1/2",
+      halfBelow: "{f} is less than 1/2: {n} + {n} = {t}, less than {d}.",
+      halfAbove: "{f} is more than 1/2: {n} + {n} = {t}, more than {d}.",
+      halfEqual: "{f} is exactly 1/2: {n} + {n} = {d}.",
+      halfDecides: "So {chain}.",
+      halfUndecided: "Both are on the same side of 1/2, so the half does not decide: try same-size pieces.",
     },
     numberLine: {
       from: "From",

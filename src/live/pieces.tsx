@@ -17,6 +17,7 @@ import {
   FRACTION_PARTS,
   fracNumbers,
   fracSign,
+  halfSign,
   handAngles,
   multiplesOf,
   PENCIL_COLORS,
@@ -25,11 +26,13 @@ import {
   snapTo,
   tapSquare,
   towerSpan,
+  viaHalf,
   wrapDay,
 } from "../math/live";
 import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
 
 const BLUE = "#1971c2";
+const RED = "#e03131";
 export const SECTION_COLORS = ["#ffc9c9", "#ffec99", "#b2f2bb", "#a5d8ff", "#d0bfff", "#ffd8a8", "#eebefa", "#99e9f2", "#c0eb75", "#e9ecef"];
 const rad = (deg: number) => (deg * Math.PI) / 180;
 /** A point at `deg` clockwise from twelve, as on a clock face or a spinner. */
@@ -596,7 +599,8 @@ const fracText = (f: Frac) => `${f.n}/${f.d}`;
  * The towers again, for fractions: two bars of the same height, each cut into equal parts, with the shaded parts as
  * the tower. Click a part to shade up to it. "Join with pencils" fades the empty parts and slides the shaded ones to
  * the middle line, and the pencils draw the sign. "Same-size pieces" cuts both bars into the same parts, so 2/3 and
- * 3/4 are read as 8 and 9 twelfths.
+ * 3/4 are read as 8 and 9 twelfths. "Compare with 1/2" draws the half-way line across both bars and says which side of it
+ * each fraction is on (2/5 < 1/2 < 3/4), or that the half does not decide when both are on the same side.
  */
 export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareFractions">) {
   const { a, b } = state;
@@ -606,6 +610,7 @@ export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareF
   const same = samePieces(a, b);
   const canSame = same.d <= SAME_PIECES_MAX;
   const showSame = state.same && canSame;
+  const half = !!state.half;
 
   const [bw, whole, floor, mid] = [64, 240, 286, 166];
   const bars = [
@@ -674,7 +679,23 @@ export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareF
       <text x={cx} y={374} fontSize={30} textAnchor="middle" fill={INK}>{f.d}</text>
     </g>
   );
+  // Each fraction against the half, and what that says about the two.
+  const halfLine = (f: Frac) => {
+    const s = halfSign(f);
+    return fill(wc[s === "<" ? "halfBelow" : s === ">" ? "halfAbove" : "halfEqual"], { f: fracText(f), n: f.n, t: 2 * f.n, d: f.d });
+  };
+  const chain = viaHalf(a, b);
+  const halfSays = [halfLine(a), halfLine(b), chain ? fill(wc.halfDecides, { chain: `${fracText(a)} ${chain[0]} 1/2 ${chain[1]} ${fracText(b)}` }) : wc.halfUndecided].join(" ");
   const random = () => {
+    if (half) {
+      // One below a half and one above, in either order.
+      const d = 3 + Math.floor(Math.random() * 10);
+      const e = 3 + Math.floor(Math.random() * 10);
+      const lo = { n: 1 + Math.floor(Math.random() * (Math.ceil(d / 2) - 1)), d };
+      const hi = { n: Math.floor(e / 2) + 1 + Math.floor(Math.random() * (e - 1 - Math.floor(e / 2))), d: e };
+      const [na, nb] = Math.random() < 0.5 ? [lo, hi] : [hi, lo];
+      return set({ ...state, a: na, b: nb, joined: false, guess: null });
+    }
     const pick = () => {
       const d = 2 + Math.floor(Math.random() * 9);
       return { n: 1 + Math.floor(Math.random() * (d - 1)), d };
@@ -689,6 +710,13 @@ export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareF
     <>
       <svg ref={svgRef} width={380} height={390} viewBox="0 0 380 390" fontFamily={FONT}>
         {bars.map(bar)}
+        {/* Half-way up both bars; it fades as the shaded parts slide to the middle. */}
+        {half && (
+          <g opacity={1 - slide} pointerEvents="none">
+            <line x1={42} y1={floor - whole / 2} x2={338} y2={floor - whole / 2} stroke={RED} strokeWidth={2} strokeDasharray="8 5" />
+            <text x={190} y={floor - whole / 2 - 8} fontSize={18} fontWeight={700} textAnchor="middle" fill={RED}>1/2</text>
+          </g>
+        )}
         <Pencil from={[114, spans[0][0]]} to={[266, spans[1][0]]} color={PENCIL_COLORS[0]} k={pencils} />
         <Pencil from={[114, spans[0][1]]} to={[266, spans[1][1]]} color={PENCIL_COLORS[1]} k={pencils} />
         {fracCard(82, a)}
@@ -713,6 +741,7 @@ export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareF
       <div className="live-bar">
         <Toggle on={state.joined} onClick={() => set({ ...state, joined: !state.joined })}>✏️ {w.compare.join}</Toggle>
         <Toggle on={showSame} title={canSame ? undefined : wc.tooMany} onClick={() => canSame && set({ ...state, same: !state.same })}>✂️ {wc.same}</Toggle>
+        <Toggle on={half} onClick={() => set({ ...state, half: !half })}>½ {wc.half}</Toggle>
         <button className="live-btn" title={wc.random} aria-label={wc.random} onClick={random}>🎲</button>
       </div>
       <p className="live-hint">
@@ -725,6 +754,7 @@ export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareF
       {showSame && (
         <p className="live-hint">{fill(wc.sameSays, { a: fracText(a), b: fracText(b), x: same.a, y: same.b, d: same.d })}</p>
       )}
+      {half && <p className="live-hint">{halfSays}</p>}
     </>
   );
 }
