@@ -928,6 +928,20 @@ function sorobanPreview(): Piece[] {
   ];
 }
 
+function patternsPreview(): Piece[] {
+  // Two pointers on 1 2 3 4 6: the ends compared, L and R under them.
+  const BLUE = "#1971c2";
+  const cell = (i: number, v: string, hot: boolean) => [
+    rect(i * 34, 0, 30, 30, hot ? { fill: "#ffe8cc", color: "#e8590c", width: 2 } : { color: "#868e96", width: 1 }, true),
+    text(i * 34 + 15, 4, v, 18),
+  ];
+  return [
+    ...["1", "2", "3", "4", "6"].flatMap((v, i) => cell(i, v, i === 0 || i === 4)),
+    text(15, 38, "↑L", 15, "center", BLUE),
+    text(4 * 34 + 15, 38, "↑R", 15, "center", BLUE),
+  ];
+}
+
 function divisionPreview(): Piece[] {
   // 624 ÷ 12 under the long-division bracket, 52 on top and the first step's working.
   const col = (c: number) => 60 + c * 22;
@@ -962,6 +976,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDivision", group: "live", build: divisionPreview, live: "division" },
   { id: "liveRubik", group: "live", build: rubikPreview, live: "rubik" },
   { id: "liveSoroban", group: "live", build: sorobanPreview, live: "soroban" },
+  { id: "livePatterns", group: "live", build: patternsPreview, live: "patterns" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
