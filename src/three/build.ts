@@ -1,9 +1,11 @@
-// Builds three.js scene content for a 3D spec: solids (with foldable nets) and unit-cube stacks.
+// Builds three.js scene content for a 3D spec: solids (with foldable nets), unit-cube stacks, 3×3 transformations
+// and solids of revolution.
 import * as THREE from "three";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
-import { canUnfold, cubeHeights, interpolated, type CubesSpec, type SolidSpec, type Spec3D, type Transform3DSpec } from "./spec";
+import type { Column, Revolution } from "../math/revolution";
+import { canUnfold, cubeHeights, interpolated, type CubesSpec, type RevolutionSpec, type SolidSpec, type Spec3D, type Transform3DSpec } from "./spec";
 
 const INK = 0x1e1e1e;
 const COLORS = { base: 0xa5d8ff, side1: 0xffd8a8, side2: 0xb2f2bb, top: 0xeebefa };
@@ -576,6 +578,116 @@ function buildTransform3D(spec: Transform3DSpec): { group: THREE.Group; lineMats
   return { group, lineMats: ctx.lineMats };
 }
 
+// ---------- solids of revolution ----------
+
+/**
+ * Math coordinates (x along, y up) turned by θ about the x-axis or the y-axis, in three.js space. Both turn the
+ * region away from +z, the side the camera starts on, so the part not yet turned is the side facing the viewer.
+ */
+const turn = (axis: "x" | "y", x: number, y: number, th: number) =>
+  axis === "x" ? V(x, y * Math.cos(th), -y * Math.sin(th)) : V(x * Math.cos(th), y, -x * Math.sin(th));
+
+/** The surface a polyline sweeps as it turns through Θ; null when the polyline lies on the axis. */
+function sweptSurface(pts: [number, number][], axis: "x" | "y", Th: number, steps: number) {
+  if (pts.every(([x, y]) => Math.abs(axis === "x" ? y : x) < 1e-9)) return null;
+  const pos: number[] = [];
+  const idx: number[] = [];
+  for (let j = 0; j <= steps; j++) for (const [x, y] of pts) pos.push(...turn(axis, x, y, (Th * j) / steps).toArray());
+  const m = pts.length;
+  for (let j = 0; j < steps; j++)
+    for (let i = 0; i + 1 < m; i++) {
+      const [p, q] = [j * m + i, (j + 1) * m + i];
+      idx.push(p, p + 1, q, p + 1, q + 1, q);
+    }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/** The flat region between lo and hi, turned to θ. */
+function regionFace(cols: Column[], axis: "x" | "y", th: number) {
+  const pos: number[] = [];
+  const idx: number[] = [];
+  cols.forEach((c, i) => {
+    pos.push(...turn(axis, c.x, c.lo, th).toArray(), ...turn(axis, c.x, c.hi, th).toArray());
+    if (i) idx.push(2 * i - 2, 2 * i, 2 * i - 1, 2 * i - 1, 2 * i, 2 * i + 1);
+  });
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/**
+ * One region (the whole one, or one slab) turned through Θ: the surfaces its edges sweep, the flat region where the
+ * turn starts and where it stops, and its outline at both ends with the arcs its corners draw.
+ */
+function sweepRegion(cols: Column[], axis: "x" | "y", Th: number, color: number, ctx: Ctx, group: THREE.Group) {
+  const full = Th > 2 * Math.PI - 1e-6;
+  const steps = Math.max(2, Math.ceil((96 * Th) / (2 * Math.PI)));
+  const first = cols[0];
+  const last = cols[cols.length - 1];
+  const lo = cols.map((c): [number, number] => [c.x, c.lo]);
+  const hi = cols.map((c): [number, number] => [c.x, c.hi]);
+  if (Th > 0)
+    for (const edge of [lo, hi, [[first.x, first.lo], [first.x, first.hi]], [[last.x, last.lo], [last.x, last.hi]]] as [number, number][][]) {
+      const geo = sweptSurface(edge, axis, Th, steps);
+      if (geo) group.add(new THREE.Mesh(geo, faceMat(color, ctx)));
+    }
+  const ends = full ? [0] : Th > 0 ? [0, Th] : [0];
+  for (const th of ends) {
+    group.add(new THREE.Mesh(regionFace(cols, axis, th), faceMat(COLORS.base, ctx)));
+    const ring = [...lo, ...[...hi].reverse(), lo[0]].map(([x, y]) => turn(axis, x, y, th));
+    group.add(segments(ring.slice(1).flatMap((p, i) => [ring[i], p]), ctx, { width: 1.6 }));
+  }
+  if (Th > 0) {
+    const arcs: THREE.Vector3[] = [];
+    for (const [x, y] of [[first.x, first.lo], [first.x, first.hi], [last.x, last.lo], [last.x, last.hi]]) {
+      if (Math.abs(axis === "x" ? y : x) < 1e-9) continue;
+      for (let j = 0; j < steps; j++) arcs.push(turn(axis, x, y, (Th * j) / steps), turn(axis, x, y, (Th * (j + 1)) / steps));
+    }
+    if (arcs.length) group.add(segments(arcs, ctx, { width: 1.2 }));
+  }
+}
+
+function buildRevolution(spec: RevolutionSpec, rev: Revolution | undefined): Built {
+  const group = new THREE.Group();
+  if (!rev) return { group, lineMats: [], fitBox: new THREE.Box3() };
+  const { axis } = spec;
+  const [s0, s1] = rev.along;
+  const ctx: Ctx = { lineMats: [], seeThrough: spec.seeThrough, L: Math.max(2 * rev.reach, s1 - s0, 1) };
+  const Th = Math.min(1, Math.max(0, spec.sweep)) * 2 * Math.PI;
+
+  if (rev.slabs.length) rev.slabs.forEach((slab, k) => sweepRegion(slab, axis, Th, LAYER_COLORS[k % 2 ? 1 : 3], ctx, group));
+  else sweepRegion(rev.columns, axis, Th, COLORS.side1, ctx, group);
+
+  // The curves themselves, in the plane where the turn starts.
+  const curve = (pick: (c: Column) => number) => rev.columns.slice(1).flatMap((c, i) => [turn(axis, rev.columns[i].x, pick(rev.columns[i]), 0), turn(axis, c.x, pick(c), 0)]);
+  group.add(segments(curve((c) => c.hi), ctx, { color: 0x1971c2, width: 3 }));
+  if (spec.g.trim() || axis === "y") group.add(segments(curve((c) => c.lo), ctx, { color: 0xe8590c, width: 3 }));
+
+  // Both axes, the one turned about drawn darker and right through the solid.
+  const pad = ctx.L * 0.15;
+  const gray = 0x868e96;
+  const xs: [number, number] = axis === "x" ? [Math.min(0, s0) - pad, Math.max(0, s1) + pad] : [-rev.reach - pad, rev.reach + pad];
+  const ys: [number, number] = axis === "y" ? [Math.min(0, s0) - pad, Math.max(0, s1) + pad] : [-rev.reach - pad, rev.reach + pad];
+  const o = ctx.L * 0.07;
+  group.add(
+    segments([V(xs[0], 0, 0), V(xs[1], 0, 0)], ctx, { color: axis === "x" ? INK : gray, width: axis === "x" ? 2 : 1.2, onTop: axis === "x" }),
+    segments([V(0, ys[0], 0), V(0, ys[1], 0)], ctx, { color: axis === "y" ? INK : gray, width: axis === "y" ? 2 : 1.2, onTop: axis === "y" }),
+    label("x", V(xs[1] + o, 0, 0), ctx, "#868e96"),
+    label("y", V(0, ys[1] + o, 0), ctx, "#868e96"),
+  );
+
+  // Frame the whole solid, so the picture stays put while it turns.
+  const R = rev.reach;
+  const fitBox = axis === "x" ? new THREE.Box3(V(s0, -R, -R), V(s1, R, R)) : new THREE.Box3(V(-R, s0, -R), V(R, s1, R));
+  return { group, lineMats: ctx.lineMats, fitBox };
+}
+
 export function disposeObject(obj: THREE.Object3D) {
   obj.traverse((o) => {
     const any = o as THREE.Mesh;
@@ -599,7 +711,8 @@ function boxOf(group: THREE.Group) {
   return box;
 }
 
-export function build3D(spec: Spec3D): Built {
+export function build3D(spec: Spec3D, rev?: Revolution): Built {
+  if (spec.type === "revolution") return buildRevolution(spec, rev);
   if (spec.type === "transform3d") {
     const b = buildTransform3D(spec);
     return { ...b, fitBox: boxOf(b.group) };

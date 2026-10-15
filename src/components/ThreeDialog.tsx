@@ -1,17 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "../i18n";
+import { MAX_SLICES, revCaption, revolve, type Revolution } from "../math/revolution";
 import {
   canUnfold,
   captionLines,
   DEFAULT_CUBES,
+  DEFAULT_REVOLUTION,
   DEFAULT_SOLID,
   DEFAULT_TRANSFORM3D,
   interpolated,
+  REVOLUTION_PRESETS,
   TRANSFORM3D_PRESETS,
   DEFAULT_VIEW,
+  REVOLUTION_VIEW,
   SOLID_DEFAULT_DIMS,
   SOLID_SHAPES,
   type CubesSpec,
+  type RevolutionSpec,
   type SolidShape,
   type SolidSpec,
   type Spec3D,
@@ -21,7 +26,9 @@ import { Viewer, type Snapshot } from "../three/viewer";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
 
+const TABS = ["solid", "cubes", "transform3d", "revolution"] as const;
 const BASIS_COLORS = ["#2f9e44", "#e03131", "#1971c2"];
+const SLICE_CHOICES = [0, 4, 8, 16, MAX_SLICES];
 const fmtEntry = (v: number) => String(Math.round(v * 100) / 100).replace("-", "−");
 
 const num = (v: string, min: number, max: number, fallback: number) => {
@@ -38,18 +45,30 @@ export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
   const { t } = useI18n();
   const [solid, setSolid] = useState<SolidSpec>(initial?.type === "solid" ? initial : DEFAULT_SOLID);
   const [cubes, setCubes] = useState<CubesSpec>(initial?.type === "cubes" ? initial : DEFAULT_CUBES);
-  const [tab, setTab] = useState<Spec3D["type"]>(initial?.type ?? startOr(start, ["solid", "cubes", "transform3d"] as const, "solid"));
+  const [tab, setTab] = useState<Spec3D["type"]>(initial?.type ?? startOr(start, TABS, "solid"));
   const [tf, setTf] = useState<Transform3DSpec>(initial?.type === "transform3d" ? initial : DEFAULT_TRANSFORM3D);
-  const spec: Spec3D = tab === "solid" ? solid : tab === "cubes" ? cubes : tf;
+  const [revSpec, setRevSpec] = useState<RevolutionSpec>(initial?.type === "revolution" ? initial : DEFAULT_REVOLUTION);
+  const spec: Spec3D = tab === "solid" ? solid : tab === "cubes" ? cubes : tab === "transform3d" ? tf : revSpec;
 
+  // The solid of revolution is worked out once per change, for the picture and the caption alike.
+  const rev = useMemo((): { ok?: Revolution; error?: string } => {
+    if (tab !== "revolution") return {};
+    try {
+      return { ok: revolve(revSpec, t.revWords) };
+    } catch (e) {
+      return { error: (e as Error).message };
+    }
+  }, [tab, revSpec, t]);
+
+  const homeView = tab === "revolution" ? REVOLUTION_VIEW : DEFAULT_VIEW;
   const hostRef = useRef<HTMLDivElement>(null);
   const viewer = useRef<Viewer | null>(null);
 
   useEffect(() => {
     const v = new Viewer(hostRef.current!);
     viewer.current = v;
-    v.show(spec);
-    v.setView(initial?.view ?? DEFAULT_VIEW);
+    v.show(spec, rev.ok);
+    v.setView(initial?.view ?? homeView);
     return () => {
       v.dispose();
       viewer.current = null;
@@ -58,11 +77,20 @@ export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Each tab starts from its own view (the one it opened with stays until the tab changes).
+  const firstTab = useRef(tab);
   useEffect(() => {
-    viewer.current?.show(spec);
-  }, [spec]);
+    if (tab !== firstTab.current) viewer.current?.setView(homeView);
+    firstTab.current = tab;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
 
-  const caption = spec.formulas ? captionLines(spec, t.cubes) : [];
+  useEffect(() => {
+    // A region that can't be read keeps the last good picture, with the error above it.
+    if (!rev.error) viewer.current?.show(spec, rev.ok);
+  }, [spec, rev]);
+
+  const caption = !spec.formulas ? [] : spec.type !== "revolution" ? captionLines(spec, t.cubes) : rev.ok ? revCaption(spec, rev.ok, t.revWords) : [];
 
   const insert = () => {
     const v = viewer.current!;
@@ -90,17 +118,18 @@ export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" onClick={insert}>{initial ? t.update : t.insert}</button>
+          <button className="btn primary" disabled={!!rev.error} onClick={insert}>{initial ? t.update : t.insert}</button>
         </>
       }
     >
       {!initial && (
-        <Tabs items={(["solid", "cubes", "transform3d"] as const)} value={tab} onChange={setTab} label={(k) => k === "solid" ? t.solids : k === "cubes" ? t.unitCubes : t.matrix3d} />
+        <Tabs items={TABS} value={tab} onChange={setTab} label={(k) => ({ solid: t.solids, cubes: t.unitCubes, transform3d: t.matrix3d, revolution: t.revolution })[k]} />
       )}
 
       {tab === "solid" && <SolidControls spec={solid} onChange={setSolid} shapeLabel={shapeLabel} />}
       {tab === "cubes" && <CubesControls spec={cubes} onChange={setCubes} />}
       {tab === "transform3d" && <Transform3DControls spec={tf} onChange={setTf} />}
+      {tab === "revolution" && <RevolutionControls spec={revSpec} onChange={setRevSpec} error={rev.error} />}
 
       <div className="viewer-wrap">
         <div ref={hostRef} className="viewer" />
@@ -110,7 +139,7 @@ export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
             <button className="btn small ghost" onClick={() => viewer.current?.setView({ azimuth: 0, polar: 0.0001, zoom: 1 })}>
               ⬒ {t.topView}
             </button>
-            <button className="btn small ghost" onClick={() => viewer.current?.setView(DEFAULT_VIEW)}>⟲ {t.resetView}</button>
+            <button className="btn small ghost" onClick={() => viewer.current?.setView(homeView)}>⟲ {t.resetView}</button>
           </div>
         </div>
         {caption.length > 0 && (
@@ -345,6 +374,60 @@ function Transform3DControls({ spec, onChange }: { spec: Transform3DSpec; onChan
           <span>{t.showFormulas}</span>
         </label>
       </div>
+    </>
+  );
+}
+
+function RevolutionControls({ spec, onChange, error }: { spec: RevolutionSpec; onChange: (s: RevolutionSpec) => void; error?: string }) {
+  const { t } = useI18n();
+  const w = t.revWords;
+  const set = (patch: Partial<RevolutionSpec>) => onChange({ ...spec, ...patch });
+  const text = (key: "f" | "g" | "a" | "b", label: string, width: number, placeholder = "") => (
+    <label>
+      <span>{label}</span>
+      <input type="text" className="mono" style={{ width }} spellCheck={false} placeholder={placeholder} value={spec[key]} onChange={(e) => set({ [key]: e.target.value })} />
+    </label>
+  );
+
+  return (
+    <>
+      <small className="hint">{t.revHint}</small>
+      <div className="field">
+        <span>{t.examples}</span>
+        <div className="snippets">
+          {REVOLUTION_PRESETS.map((p) => (
+            <button key={p.key} className="chip text" onClick={() => set({ ...p.spec, slices: 0 })}>
+              {w.presets[p.key as keyof typeof w.presets]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="range-grid">
+        {text("f", "f(x)", 150)}
+        {text("g", "g(x)", 150, w.gEmpty)}
+        {text("a", t.from, 70)}
+        {text("b", t.to, 70)}
+      </div>
+      <Segmented items={(["x", "y"] as const)} value={spec.axis} onChange={(axis) => set({ axis })} label={(k) => (k === "x" ? w.axisX : w.axisY)} />
+      <div className="field">
+        <span>{w.turn}: {Math.round(spec.sweep * 360)}°</span>
+        <input type="range" min={0} max={1} step={0.01} value={spec.sweep} onChange={(e) => set({ sweep: Number(e.target.value) })} />
+      </div>
+      <div className="field">
+        <span>{w.slices}</span>
+        <Segmented items={SLICE_CHOICES} value={spec.slices} onChange={(slices) => set({ slices })} label={(n) => (n ? String(n) : w.smooth)} />
+      </div>
+      <div className="range-grid">
+        <label className="check">
+          <input type="checkbox" checked={spec.seeThrough} onChange={(e) => set({ seeThrough: e.target.checked })} />
+          <span>{t.seeThrough}</span>
+        </label>
+        <label className="check">
+          <input type="checkbox" checked={spec.formulas} onChange={(e) => set({ formulas: e.target.checked })} />
+          <span>{t.showFormulas}</span>
+        </label>
+      </div>
+      {error && <span className="error">{error}</span>}
     </>
   );
 }

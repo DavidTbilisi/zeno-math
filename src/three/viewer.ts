@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { build3D, disposeObject } from "./build";
+import type { Revolution } from "../math/revolution";
 import type { Spec3D, View } from "./spec";
 
 export type Snapshot = { dataURL: string; width: number; height: number };
@@ -65,13 +66,13 @@ export class Viewer {
     this.camera.updateProjectionMatrix();
   }
 
-  /** Replaces the content, keeping the current viewing direction and zoom. */
-  show(spec: Spec3D) {
+  /** Replaces the content, keeping the current viewing direction and zoom. A solid of revolution comes worked out. */
+  show(spec: Spec3D, rev?: Revolution) {
     if (this.content) {
       this.scene.remove(this.content);
       disposeObject(this.content);
     }
-    const built = build3D(spec);
+    const built = build3D(spec, rev);
     this.content = built.group;
     this.lineMats = built.lineMats;
     this.scene.add(built.group);

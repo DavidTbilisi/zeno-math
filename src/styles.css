@@ -162,7 +162,9 @@ input.invalid { border-color: var(--danger); }
 .modal.wide .tabs { flex-wrap: wrap; overflow-x: visible; row-gap: 0; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 6px; }
 .modal-header h2 { font-size: 17px; }
-.modal-body { padding: 8px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+/* The scrollbar keeps its place: otherwise a body near the height limit can flicker as it comes and goes (a 3D view
+   narrows with it, gets shorter, the scrollbar goes, it widens again). */
+.modal-body { padding: 8px 16px; overflow-y: auto; scrollbar-gutter: stable; display: flex; flex-direction: column; gap: 14px; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px 16px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field > span, .field-label, .range-grid label > span { font-size: 13px; font-weight: 600; color: var(--muted); }
