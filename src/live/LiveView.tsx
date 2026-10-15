@@ -10,6 +10,7 @@ import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred,
 import { Chance } from "./Chance";
 import { LongDivision } from "./LongDivision";
 import { Rubik } from "./Rubik";
+import { Soroban } from "./Soroban";
 import type { PieceProps } from "./ui";
 
 export type LiveHost = {
@@ -38,6 +39,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   compareFractions: CompareFractions,
   division: LongDivision,
   rubik: Rubik,
+  soroban: Soroban,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

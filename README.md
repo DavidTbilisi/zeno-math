@@ -544,6 +544,10 @@ UI in English, Russian and Georgian.
     solved; type moves such as R U R′ U′ to do them, see their order (the lcm of the cycles the stickers go round:
     6 for R U R′ U′, 105 for R U) and repeat them until the cube comes back. Under it, the 43 252 003 274 489 856 000
     positions and God's number, 20
+  - *Soroban*: a Japanese abacus of 3 to 13 rods: click a bead to push it to the beam or away, and the number (and,
+    if wanted, each rod's digit) is written underneath. "Add" and "Take away" step through a sum a rod at a time from
+    the highest place, saying whether the beads go straight on or off or need a friend of 5 (+4 = +5 − 1) or of 10
+    (+7 = +10 − 3, carrying 1 to the left), or both; "Show a number" asks for one and says when the beads show it
   - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
     the sliders' values put in); the graph, the experiment and long division are in the Algebra, Discrete and
     Arithmetic menus too
@@ -874,6 +878,8 @@ src/math/live.ts          the live pieces' arithmetic: geared clock, chance devi
 src/math/liveGraph.ts     the live graph's letters, curves, zoom and frozen copies (mathjs)
 src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, moves read and written, orders,
                           scrambles, and the dots of the Borromean-rings picture
+src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums a rod at a time with the friends of 5
+                          and 10
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
