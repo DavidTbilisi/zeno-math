@@ -468,6 +468,8 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "mulGroups", spec: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 } },
     { key: "mulArray", spec: { type: "multiply", style: "array", a: 4, b: 6, step: 999 } },
     { key: "mulJumps", spec: { type: "multiply", style: "numberline", a: 5, b: 3, step: 999 } },
+    { key: "mulZero", spec: { type: "multiply", style: "groups", a: 3, b: 0, step: 999 } },
+    { key: "mulOne", spec: { type: "multiply", style: "array", a: 1, b: 6, step: 999 } },
     { key: "mulDistributive", spec: { type: "multiply", style: "area", a: 7, b: 12, step: 999 } },
     { key: "mulArea", spec: { type: "multiply", style: "area", a: 23, b: 14, step: 999 } },
     { key: "mulBig", spec: { type: "multiply", style: "area", a: 123, b: 45, step: 999 } },

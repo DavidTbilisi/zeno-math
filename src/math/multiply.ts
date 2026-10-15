@@ -1,6 +1,7 @@
 // Multiplication models, from counting to algebra: equal groups, arrays, number-line jumps
 // the place-value area model and the lattice (gelosia) method. a × b reads "a groups of b". `step` reveals the model
-// one group / row / jump / cell at a time (a large value shows everything).
+// one group / row / jump / cell at a time (a large value shows everything). A factor may be 0: a groups of nothing,
+// or no groups at all. Under a special case (× 0 or × 1) its rule is written in symbols, n × 0 = 0 or n × 1 = n.
 import type { RenderedSvg } from "./latex";
 
 export type MultiplyStyle = "groups" | "array" | "numberline" | "area" | "lattice";
@@ -49,6 +50,22 @@ export function placeParts(n: number): number[] {
   return parts.length ? parts : [0];
 }
 
+/**
+ * The special cases of multiplication: anything times 0 is 0, and anything times 1 is itself (either way round). When
+ * both apply (0 × 1), it is the 0 that decides.
+ */
+export type MultiplyCase = "zero" | "one";
+export const multiplyCase = (a: number, b: number): MultiplyCase | null =>
+  a === 0 || b === 0 ? "zero" : a === 1 || b === 1 ? "one" : null;
+
+/** The rule a special case follows, written the way round the numbers are: n × 0 = 0, 0 × n = 0, n × 1 = n, 1 × n = n. */
+export function multiplyRule(a: number, b: number): string | null {
+  const c = multiplyCase(a, b);
+  if (c === "zero") return b === 0 ? "n × 0 = 0" : "0 × n = 0";
+  if (c === "one") return b === 1 ? "n × 1 = n" : "1 × n = n";
+  return null;
+}
+
 /** How many reveal steps a model has. */
 export function stepCount(spec: MultiplySpec): number {
   if (spec.style === "area") return placeParts(spec.a).length * placeParts(spec.b).length;
@@ -60,12 +77,12 @@ export function stepCount(spec: MultiplySpec): number {
 }
 
 function groups({ a, b }: MultiplySpec, k: number) {
-  const cols = Math.min(b, 5);
-  const rows = Math.ceil(b / 5);
+  const cols = Math.max(1, Math.min(b, 5)); // a group of 0 is still drawn, empty
+  const rows = Math.max(1, Math.ceil(b / 5));
   const P = 22;
   const gw = cols * P + 20;
   const gh = rows * P + 20;
-  const perRow = Math.min(a, 5);
+  const perRow = Math.max(1, Math.min(a, 5));
   const out: string[] = [];
   for (let g = 0; g < a; g++) {
     const gx = PAD + (g % perRow) * (gw + 18);
@@ -115,36 +132,43 @@ function array({ a, b }: MultiplySpec, k: number) {
 
 function numberline({ a, b }: MultiplySpec, k: number) {
   const L = a * b;
-  const unit = Math.max(4, Math.min(36, 560 / (L + 1)));
+  const end = Math.max(L, b, 4); // with a product of 0 the line still runs on a little
+  const unit = Math.max(4, Math.min(36, 560 / (end + 1)));
   const x0 = PAD + 12;
   const lineY = PAD + 90;
   const X = (v: number) => x0 + v * unit;
   const out: string[] = [];
   out.push(
     `<defs><marker id="j" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#e8590c"/></marker></defs>`,
-    `<line x1="${X(0) - 8}" y1="${lineY}" x2="${X(L) + 16}" y2="${lineY}" stroke="${INK}" stroke-width="2"/>`,
+    `<line x1="${X(0) - 8}" y1="${lineY}" x2="${X(end) + 16}" y2="${lineY}" stroke="${INK}" stroke-width="2"/>`,
   );
   const everyUnit = unit >= 9;
-  for (let v = 0; v <= L; v++) {
-    const major = v % b === 0;
+  for (let v = 0; v <= end; v++) {
+    const major = b === 0 ? v === 0 : v % b === 0;
     if (!major && !everyUnit) continue;
     out.push(`<line x1="${X(v)}" y1="${lineY - (major ? 8 : 5)}" x2="${X(v)}" y2="${lineY + (major ? 8 : 5)}" stroke="${INK}" stroke-width="${major ? 2 : 1}"/>`);
     if (major) {
-      const landed = v > 0 && v / b <= k;
+      const landed = v > 0 && v / b <= k && v <= L;
       out.push(text(X(v), lineY + 28, String(v), { bold: landed, color: landed ? "#e8590c" : INK, size: landed ? 17 : 14 }));
     }
   }
   const arcH = Math.min(60, 18 + b * unit * 0.35);
-  for (let i = 0; i < k && i < a; i++) {
+  for (let i = 0; i < k && i < a && b > 0; i++) {
     const s = X(i * b);
     const e = X((i + 1) * b);
     out.push(`<path d="M${s},${lineY - 4} Q${(s + e) / 2},${lineY - 4 - arcH * 2} ${e},${lineY - 4}" fill="none" stroke="#e8590c" stroke-width="2.5" marker-end="url(#j)"/>`);
     out.push(text((s + e) / 2, lineY - 4 - arcH - 6, `+${b}`, { bold: true, color: "#e8590c", size: 14 }));
   }
+  // Jumps of 0 go nowhere: one loop at 0 for the jumps made so far.
+  if (b === 0 && Math.min(k, a) > 0) {
+    const x = X(0);
+    out.push(`<path d="M${x - 3},${lineY - 6} C${x - 26},${lineY - 56} ${x + 26},${lineY - 56} ${x + 3},${lineY - 6}" fill="none" stroke="#e8590c" stroke-width="2.5" marker-end="url(#j)"/>`);
+    out.push(text(x - 12, lineY - 52, Array(Math.min(k, a)).fill("+0").join(" "), { bold: true, color: "#e8590c", size: 14, anchor: "start" }));
+  }
   const eqY = lineY + 70;
   const eq = k >= a ? `${a} × ${b} = ${a * b}` : `${k} × ${b} = ${k * b}`;
   out.push(text(PAD, eqY, eq, { anchor: "start", size: 22, bold: true }));
-  return wrap(Math.max(X(L) + 40, PAD * 2 + width(eq, 22)), eqY + PAD, out.join(""));
+  return wrap(Math.max(X(end) + 40, PAD * 2 + width(eq, 22)), eqY + PAD, out.join(""));
 }
 
 function area({ a, b }: MultiplySpec, k: number) {
@@ -157,7 +181,7 @@ function area({ a, b }: MultiplySpec, k: number) {
   };
   // Keep the rectangle's aspect ≈ a : b so it really has "area a × b" (within readable bounds).
   const ws = size(colsP, 460, 92);
-  const hs = size(rowsP, Math.min(320, Math.max(120, (460 * a) / b)), 58);
+  const hs = size(rowsP, b ? Math.min(320, Math.max(120, (460 * a) / b)) : 120, 58);
   const x0 = PAD + 56;
   const y0 = PAD + 34;
   const out: string[] = [];
@@ -169,7 +193,8 @@ function area({ a, b }: MultiplySpec, k: number) {
     colsP.forEach((cp, j) => {
       const c = CELLS[(i * colsP.length + j) % CELLS.length];
       const shown = n < k;
-      out.push(`<rect x="${x}" y="${y}" width="${ws[j]}" height="${hs[i]}" fill="${shown ? c.fill : "#ffffff"}" stroke="${shown ? c.stroke : "#ced4da"}" stroke-width="2"/>`);
+      const empty = rp * cp === 0; // a side of 0: the rectangle has no area, drawn as an outline only
+      out.push(`<rect x="${x}" y="${y}" width="${ws[j]}" height="${hs[i]}" fill="${shown && !empty ? c.fill : "#ffffff"}" stroke="${shown ? c.stroke : "#ced4da"}" stroke-width="2"${empty ? ' stroke-dasharray="6 5"' : ""}/>`);
       if (shown) {
         out.push(text(x + ws[j] / 2, y + hs[i] / 2 - 2, `${rp} × ${cp}`, { size: 14 }));
         out.push(text(x + ws[j] / 2, y + hs[i] / 2 + 18, String(rp * cp), { size: 18, bold: true, color: c.stroke }));
@@ -288,8 +313,15 @@ function lattice({ a, b }: MultiplySpec, k: number) {
 
 export function renderMultiply(spec: MultiplySpec): RenderedSvg {
   const lim = MULTIPLY_LIMITS[spec.style];
-  if (!(spec.a >= 1 && spec.b >= 1 && spec.a <= lim.a && spec.b <= lim.b)) throw new Error("range");
-  const k = Math.max(0, Math.min(spec.step, stepCount(spec)));
+  if (!(Number.isInteger(spec.a) && Number.isInteger(spec.b) && spec.a >= 0 && spec.b >= 0 && spec.a <= lim.a && spec.b <= lim.b)) throw new Error("range");
+  const n = stepCount(spec);
+  const k = Math.max(0, Math.min(spec.step, n));
+  const pic = drawStyle(spec, k);
+  const rule = k >= n ? multiplyRule(spec.a, spec.b) : null;
+  return rule ? withRule(pic, rule) : pic;
+}
+
+function drawStyle(spec: MultiplySpec, k: number): RenderedSvg {
   switch (spec.style) {
     case "groups":
       return groups(spec, k);
@@ -302,4 +334,14 @@ export function renderMultiply(spec: MultiplySpec): RenderedSvg {
     case "lattice":
       return lattice(spec, k);
   }
+}
+
+/** The picture with the special case's rule written under it, once every step is shown. */
+function withRule(pic: RenderedSvg, rule: string): RenderedSvg {
+  const H = pic.height + 34;
+  const W = Math.max(pic.width, Math.ceil(PAD * 2 + width(rule, 18)));
+  const svg = pic.svg
+    .replace(/^<svg([^>]*) width="\d+" height="\d+" viewBox="0 0 \d+ \d+"/, `<svg$1 width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"`)
+    .replace(/<\/g><\/svg>$/, `${text(PAD, pic.height + 14, rule, { anchor: "start", size: 18, color: "#2f9e44", bold: true })}</g></svg>`);
+  return { svg, width: W, height: H };
 }
