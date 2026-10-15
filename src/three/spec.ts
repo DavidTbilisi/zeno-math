@@ -1,8 +1,11 @@
 // 3D model specs and their formula captions. No three.js imports here so the
 // board page can reference these types without pulling three.js into its bundle.
+import type { RevAxis } from "../math/revolution";
 
 export type View = { azimuth: number; polar: number; zoom: number };
 export const DEFAULT_VIEW: View = { azimuth: Math.PI / 5, polar: 1.1, zoom: 1 };
+/** Solids of revolution: from a little behind and above, so the axis runs across and the cut-away faces the viewer. */
+export const REVOLUTION_VIEW: View = { azimuth: -0.45, polar: 0.95, zoom: 1 };
 
 export type SolidShape = "cuboid" | "prism" | "pyramid" | "cylinder" | "cone" | "sphere";
 export const SOLID_SHAPES: SolidShape[] = ["cuboid", "prism", "pyramid", "cylinder", "cone", "sphere"];
@@ -48,7 +51,48 @@ export type Transform3DSpec = {
   view?: View;
 };
 
-export type Spec3D = SolidSpec | CubesSpec | Transform3DSpec;
+/** The region between y = f(x) and y = g(x) (the x-axis when g is empty) on a ≤ x ≤ b, turned about an axis. */
+export type RevolutionSpec = {
+  type: "revolution";
+  f: string;
+  g: string;
+  a: string;
+  b: string;
+  axis: RevAxis;
+  sweep: number; // how much of a full turn: 0 = the flat region, 1 = the whole solid
+  slices: number; // 0 = the smooth solid, n = cut into n discs, washers or shells
+  seeThrough: boolean;
+  formulas: boolean;
+  view?: View;
+};
+
+export type Spec3D = SolidSpec | CubesSpec | Transform3DSpec | RevolutionSpec;
+
+export const DEFAULT_REVOLUTION: RevolutionSpec = {
+  type: "revolution",
+  f: "x^2",
+  g: "",
+  a: "0",
+  b: "2",
+  axis: "x",
+  sweep: 0.75,
+  slices: 0,
+  seeThrough: false,
+  formulas: true,
+};
+
+/** Regions worth turning: the same as the Applied tool's volumes, and a torus and Gabriel's horn. */
+export const REVOLUTION_PRESETS: { key: string; spec: Pick<RevolutionSpec, "f" | "g" | "a" | "b" | "axis"> }[] = [
+  { key: "paraboloid", spec: { f: "x^2", g: "", a: "0", b: "2", axis: "x" } },
+  { key: "root", spec: { f: "sqrt(x)", g: "", a: "0", b: "4", axis: "x" } },
+  { key: "cone", spec: { f: "x/2", g: "", a: "0", b: "4", axis: "x" } },
+  { key: "sphere", spec: { f: "sqrt(9 - x^2)", g: "", a: "-3", b: "3", axis: "x" } },
+  { key: "washer", spec: { f: "x", g: "x^2", a: "0", b: "1", axis: "x" } },
+  { key: "torus", spec: { f: "3 + sqrt(1 - x^2)", g: "3 - sqrt(1 - x^2)", a: "-1", b: "1", axis: "x" } },
+  { key: "horn", spec: { f: "1/x", g: "", a: "1", b: "8", axis: "x" } },
+  { key: "shell", spec: { f: "x^2", g: "", a: "0", b: "2", axis: "y" } },
+  { key: "shell2", spec: { f: "2x - x^2", g: "", a: "0", b: "2", axis: "y" } },
+];
 
 export const DEFAULT_TRANSFORM3D: Transform3DSpec = {
   type: "transform3d",
@@ -123,7 +167,7 @@ export function cubeHeights(spec: CubesSpec): number[][] {
 
 const fmt = (v: number) => String(Math.round(v * 100) / 100);
 
-export function captionLines(spec: Spec3D, cubesWord: string): string[] {
+export function captionLines(spec: Exclude<Spec3D, RevolutionSpec>, cubesWord: string): string[] {
   if (spec.type === "transform3d") {
     const d = det3(interpolated(spec));
     const f = (v: number) => fmt(v).replace("-", "−");
