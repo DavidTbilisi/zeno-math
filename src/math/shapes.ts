@@ -905,6 +905,29 @@ function rubikPreview(): Piece[] {
   ]);
 }
 
+function sorobanPreview(): Piece[] {
+  // Five rods showing 2026 (with a nought on the left rod): the five beads above the beam, the one beads below it.
+  const [sp, top, beam, bh, bw] = [22, 8, 34, 9, 18];
+  const wood = { fill: "#6b4226", color: "#6b4226", width: 1 };
+  const bead = (x: number, y: number) =>
+    poly([[x - bw / 2, y + bh / 2], [x - bw / 2 + 5, y], [x + bw / 2 - 5, y], [x + bw / 2, y + bh / 2], [x + bw / 2 - 5, y + bh], [x - bw / 2 + 5, y + bh]], { fill: "#e8913a", color: "#7a4513", width: 1 });
+  const bottom = beam + 6 + 5 * bh;
+  return [
+    rect(0, 0, 5 * sp + 16, bottom + top, wood),
+    rect(5, top, 5 * sp + 6, bottom - top, { fill: "#f8f1e7", color: "#f8f1e7", width: 1 }),
+    ...[0, 2, 0, 2, 6].flatMap((digit, i) => {
+      const x = 8 + sp / 2 + i * sp;
+      const ones = digit % 5;
+      return [
+        seg([x, top], [x, bottom], { color: "#868e96", width: 2 }),
+        bead(x, digit >= 5 ? beam - bh : top),
+        ...[0, 1, 2, 3].map((b) => bead(x, beam + 6 + (b < ones ? b : b + 1) * bh)),
+      ];
+    }),
+    rect(5, beam, 5 * sp + 6, 6, wood),
+  ];
+}
+
 function divisionPreview(): Piece[] {
   // 624 ÷ 12 under the long-division bracket, 52 on top and the first step's working.
   const col = (c: number) => 60 + c * 22;
@@ -938,6 +961,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCompareFractions", group: "live", build: compareFractionsPreview, live: "compareFractions" },
   { id: "liveDivision", group: "live", build: divisionPreview, live: "division" },
   { id: "liveRubik", group: "live", build: rubikPreview, live: "rubik" },
+  { id: "liveSoroban", group: "live", build: sorobanPreview, live: "soroban" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

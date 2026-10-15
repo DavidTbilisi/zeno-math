@@ -1,7 +1,7 @@
 // The arithmetic behind the live pieces on the board (the ones that respond to clicks and drags): a geared clock,
 // chance devices and the tallies of an experiment, dot multiplication, the counts shown under a ten frame or a
 // hundred square, towers of blocks and bars of fractions to compare, long division a step at a time, and the state
-// of a Rubik's cube. Kept free of React and Excalidraw so it can be tested on its own.
+// of a Rubik's cube and of a soroban. Kept free of React and Excalidraw so it can be tested on its own.
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import type { Sharing } from "./sharing";
 
@@ -235,6 +235,23 @@ export const judgeDigit = (ask: DivisionAsk, g: number): "right" | "tooBig" | "t
  */
 export type LiveRubik = { scramble: string; moves: string; alg: string; reps: number; prime: boolean; yaw: number; pitch: number };
 
+// ——— Soroban ———
+
+/**
+ * A soroban (the bead rules are in soroban.ts): how many rods it has and the number on them; whether the number and
+ * each rod's digit are written underneath; the number to add or take away, and the sum being stepped through (where it
+ * started, and how many rods have been moved); and a number the pupil has been asked to show.
+ */
+export type LiveSoroban = {
+  rods: number;
+  value: number;
+  showValue: boolean;
+  showDigits: boolean;
+  n: number;
+  work: { start: number; sign: 1 | -1; n: number; step: number } | null;
+  target: number | null;
+};
+
 // ——— The kinds of live piece, their sizes and where each starts ———
 
 export type LiveParam = { v: number; min: number; max: number };
@@ -273,6 +290,7 @@ export type LiveStates = {
   compareFractions: { a: Frac; b: Frac; joined: boolean; guess: CompareSign | null; same: boolean };
   division: LiveDivision;
   rubik: LiveRubik;
+  soroban: LiveSoroban;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -292,6 +310,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   compareFractions: [400, 580],
   division: [760, 820],
   rubik: [780, 610],
+  soroban: [820, 540],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -313,6 +332,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     compareFractions: { a: { n: 2, d: 3 }, b: { n: 3, d: 4 }, joined: false, guess: null, same: false },
     division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null },
     rubik: { scramble: "", moves: "", alg: "R U R′ U′", reps: 0, prime: false, yaw: -35, pitch: 28 },
+    soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },
   };
   return structuredClone(start[kind]);
 }
