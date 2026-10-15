@@ -977,6 +977,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveRubik", group: "live", build: rubikPreview, live: "rubik" },
   { id: "liveSoroban", group: "live", build: sorobanPreview, live: "soroban" },
   { id: "livePatterns", group: "live", build: patternsPreview, live: "patterns" },
+  { id: "liveNumberLine", group: "live", build: numberLine, live: "numberLine" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

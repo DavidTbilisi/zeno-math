@@ -576,6 +576,8 @@ input.invalid { border-color: var(--danger); }
 .live-note { font-size: 12px; color: #868e96; }
 .live-stage { display: flex; align-items: center; justify-content: center; flex: none; }
 .live .live-num { width: 7em; font-family: ui-monospace, Menlo, Consolas, monospace; text-align: right; }
+.live-field { display: inline-flex; align-items: center; gap: 4px; }
+.live .live-field .live-num { width: 5em; }
 .live-digits { display: inline-flex; gap: 3px; }
 .live-digits .live-btn { min-width: 2em; font-weight: 700; }
 .live-said { margin: 0; font-size: 13px; color: #c92a2a; text-align: center; }
