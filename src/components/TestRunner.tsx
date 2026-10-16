@@ -159,7 +159,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
           }}
         />
       )}
-      {ex.answer.k === "near" && (
+      {(ex.answer.k === "near" || ex.answer.k === "pick") && (
         <ChoicePicks
           choices={ex.answer.options.map((o) => ({ label: o.text, value: o.plain }))}
           onPick={(s) => {

@@ -13,6 +13,10 @@ import type { LiveWall } from "./fractionWall";
 import type { LiveEquiv } from "./equivMatch";
 import type { LiveOrder } from "./fracOrder";
 import type { LiveShade } from "./shadeFrac";
+import type { LiveBalance } from "./balance";
+import type { LiveMachine } from "./machine";
+import type { LiveGrow } from "./growing";
+import type { LiveExprMatch } from "./exprMatch";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -346,6 +350,10 @@ export type LiveStates = {
   equivMatch: LiveEquiv;
   fracOrder: LiveOrder;
   shadeFrac: LiveShade;
+  balance: LiveBalance;
+  machine: LiveMachine;
+  growing: LiveGrow;
+  exprMatch: LiveExprMatch;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -377,6 +385,10 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   equivMatch: [620, 480],
   fracOrder: [720, 470],
   shadeFrac: [600, 560],
+  balance: [680, 560],
+  machine: [600, 560],
+  growing: [600, 660],
+  exprMatch: [780, 400],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -410,6 +422,10 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     fracOrder: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], sel: 0, checked: false, streak: 0, said: null },
     shadeFrac: { mode: "puzzle", stage: 0, level: 1, seed: 1, shaded: [], misses: 0, done: false, streak: 0, said: null },
+    balance: { mode: "puzzle", stage: 0, level: 1, seed: 1, guess: [], weighed: false, misses: 0, done: false, streak: 0, said: null },
+    machine: { mode: "puzzle", stage: 0, level: 1, seed: 1, tried: [], typed: "", misses: 0, done: false, streak: 0, said: null },
+    growing: { mode: "puzzle", stage: 0, level: 1, seed: 1, built: [], typed: "", misses: 0, done: false, streak: 0, said: null },
+    exprMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
   };
   return structuredClone(start[kind]);
 }

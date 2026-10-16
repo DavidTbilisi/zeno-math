@@ -16,6 +16,10 @@ import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
 import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
 import { eqQuestion, partsSvg } from "./equivMatch";
 import { encodeShade, judgeShade, shadeSvg, shadeTask, type ShadePlay } from "./shadeFrac";
+import { balanceSteps, balanceSvg, balanceTask, oneSideOnly } from "./balance";
+import { machineAnswer, ruleQuestion, ruleSteps, ruleTable, scaledOutput, undoOrder } from "./machine";
+import { countOf, figuresSvg, growAnswer, growQuestion, growSteps, scaledFigure } from "./growing";
+import { exprQuestion, exprSteps, exprTex, judgePick, type ExprOption } from "./exprMatch";
 import { bottomsOrder, judgeOrder, orderTask, rightOrder, type OrderItem, type OrderProblem } from "./fracOrder";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
@@ -29,10 +33,10 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -61,6 +65,8 @@ type Answer = (
   | { k: "order"; items: OrderItem[]; seq: number[] }
   /** `count` of the shape's pieces shaded ("shade:0,1,5"), any of them. */
   | { k: "shade"; play: ShadePlay; count: number }
+  /** One of the expressions offered, picked or typed as written (not any equal one: that would be the question). */
+  | { k: "pick"; options: ExprOption[]; right: number }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
 export type Play =
@@ -221,6 +227,12 @@ export type PracticeWords = {
     orderFractions: string;
     shadeShape: string;
     shadeSet: string;
+    balance: string;
+    findRuleOut: string;
+    findRuleIn: string;
+    growCount: string;
+    growWhich: string;
+    sameExpression: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -249,6 +261,7 @@ export type PracticeWords = {
     near: { unreadable: string; notOption: string };
     order: Record<OrderProblem | "reversed", string>;
     shading: { unreadable: string; none: string; outside: string; twice: string; count: string };
+    pick: { notOption: string };
   };
   answer: string;
   answers: string;
@@ -758,6 +771,83 @@ const GENS: Record<SkillId, Gen> = {
       x = fr(d - a * b, a - c);
     }
     return { prompt: w.prompts.linear, q: T(eq.split("=")[0]) + " = " + T(eq.split("=")[1]), answer: num(x.toNumber()), show: `x = ${x.tex()}`, plain: plainFrac(x), format: "exact", solution: { kind: "algebra", spec: { topic: "linear", eq, method: "factor" } } };
+  },
+
+  balance(r, L, w) {
+    // Scales that balance, and what one ■ weighs (src/math/balance.ts): one shape, the same shape on both pans, two
+    // shapes on two scales.
+    const t = balanceTask(L, r.next);
+    const pic = balanceSvg(t);
+    const slip = oneSideOnly(t);
+    const traps: Trap[] = slip ? [{ id: "oneSideOnly", a: num(slip.v), vars: { c: slip.c, k: slip.a - slip.c, b: slip.b, d: slip.d } }] : [];
+    const steps = balanceSteps(t);
+    return {
+      prompt: w.prompts.balance,
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h + 4, w: pic.w },
+      answer: { ...num(t.values[0]), traps },
+      show: `\\blacksquare = ${t.values[0]}`,
+      plain: String(t.values[0]),
+      format: "number",
+      solution: { kind: "balance", spec: { task: t, steps } },
+    };
+  },
+
+  findRule(r, L, w) {
+    // A machine's rule from four pairs (src/math/machine.ts): what comes out for a bigger number, or what went in.
+    const q = ruleQuestion(L, r.next);
+    const v = machineAnswer(q);
+    const traps: Trap[] = [];
+    const scaled = scaledOutput(q);
+    if (scaled) traps.push({ id: "scaledOutput", a: num(scaled.v), vars: { k: scaled.k, o: scaled.o } });
+    const back = undoOrder(q);
+    // Named only when the machine adds: "take −4 away first" would say it worse than the steps do.
+    if (back !== null && q.rule.add > 0 && q.ask.dir === "in")
+      traps.push({ id: "undoOrder", a: num(back), vars: { rule: `${q.rule.mul}n + ${q.rule.add}`, a: q.rule.add, out: q.ask.out, r: q.ask.out - q.rule.add, m: q.rule.mul } });
+    return {
+      prompt: q.ask.dir === "out" ? fill(w.prompts.findRuleOut, { n: q.ask.n }) : fill(w.prompts.findRuleIn, { out: q.ask.out }),
+      q: ruleTable(q),
+      answer: { ...num(v), traps },
+      show: q.ask.dir === "out" ? `${q.ask.n} \\mapsto ${v}` : `${v} \\mapsto ${q.ask.out}`,
+      plain: String(v),
+      format: "number",
+      steps: ruleSteps(q),
+    };
+  },
+
+  growingPattern(r, L, w) {
+    // Figures 1 to 3 of a pattern of squares, and figure k or which figure (src/math/growing.ts).
+    const t = growQuestion(L, r.next);
+    const v = growAnswer(t);
+    const slip = scaledFigure(t);
+    const traps: Trap[] = slip ? [{ id: "scaledFigure", a: num(slip.v), vars: { k: slip.k, f1: slip.f1, s: slip.s, k1: slip.k - 1, v } }] : [];
+    const pic = figuresSvg(t.kind, false, 420);
+    const steps = growSteps(t);
+    return {
+      prompt: t.ask.dir === "which" ? fill(w.prompts.growWhich, { n: t.ask.count }) : fill(w.prompts.growCount, { k: t.ask.dir === "count" ? t.ask.k : 4 }),
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h + 4, w: pic.w },
+      answer: { ...num(v), traps },
+      show: t.ask.dir === "which" ? `n = ${v}, \\quad ${countOf(t.kind, v)}` : steps[steps.length - 1],
+      plain: String(v),
+      format: "number",
+      solution: { kind: "grow", spec: { task: t, steps } },
+    };
+  },
+
+  sameExpression(r, L, w) {
+    // The one of four expressions equal to one given (src/math/exprMatch.ts); the wrong ones are slips that get named.
+    const q = exprQuestion(L, r.next);
+    const best = q.options[q.right];
+    return {
+      prompt: fill(w.prompts.sameExpression, { e: q.given.text }),
+      q: exprTex(q.given.text),
+      answer: { k: "pick", options: q.options, right: q.right, traps: q.traps.map((x) => ({ id: x.id, a: { k: "pick", options: q.options, right: x.at }, vars: x.vars })) },
+      show: `${exprTex(q.given.text)} = ${best.tex}`,
+      plain: best.plain,
+      format: "pick",
+      steps: exprSteps(q),
+    };
   },
 
   expand(r, L, w) {
@@ -2994,7 +3084,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -3115,6 +3205,11 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         if (!unit && v.seq.every((i, k) => i === a.seq[a.seq.length - 1 - k])) return { ok: false, why: w.reasons.order.reversed };
         return { ok: false };
       }
+      case "pick": {
+        const v = judgePick(a, src);
+        if (v.ok) return v;
+        return "problem" in v ? { ok: false, why: fill(w.reasons.pick.notOption, { opts: a.options.map((o) => o.text).join(", ") }) } : { ok: false };
+      }
       case "near": {
         const v = judgeNear(a, src);
         if (v.ok) return v;
@@ -3157,7 +3252,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
-  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade") return null;
+  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade" || ex.answer.k === "pick") return null;
   if (ex.answer.k === "target") {
     // The sum as maths, and what it makes so far.
     const e = parseSum(s);

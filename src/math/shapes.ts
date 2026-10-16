@@ -862,6 +862,54 @@ function shadeFracPreview(): Piece[] {
   return [...out, text(160, 50, "3/4", 22)];
 }
 
+function balancePreview(): Piece[] {
+  // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
+  const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
+  return [
+    poly([[130, 130], [170, 130], [153, 20], [147, 20]], { fill: FILL.gray, width: 1 }),
+    seg([60, 20], [240, 20], { width: 4 }),
+    ...pan(60),
+    ...pan(240),
+    ...[0, 1, 2].map((i) => rect(30 + i * 22, 70, 18, 18, { fill: FILL.blue, width: 1.5 })),
+    rect(36, 50, 22, 18, { fill: FILL.gray, width: 1.5 }),
+    text(47, 59, "2", 13),
+    rect(224, 70, 32, 18, { fill: FILL.gray, width: 1.5 }),
+    text(240, 79, "14", 13),
+  ];
+}
+
+function machinePreview(): Piece[] {
+  // 3 going into a machine with a hidden rule, and 11 coming out.
+  return [
+    rect(0, 30, 50, 36, { fill: FILL.yellow, width: 1.5 }, true),
+    text(25, 48, "3", 20),
+    arrow([56, 48], [86, 48]),
+    rect(92, 14, 90, 68, { fill: FILL.blue, width: 2 }, true),
+    text(137, 48, "⚙ ?", 24),
+    arrow([188, 48], [218, 48]),
+    rect(224, 30, 50, 36, { fill: FILL.blue, width: 1.5 }, true),
+    text(249, 48, "11", 20),
+  ];
+}
+
+function growingPreview(): Piece[] {
+  // Figures 1, 2 and 3 of an L that grows by two squares each time.
+  const out: Piece[] = [];
+  let x = 0;
+  for (const n of [1, 2, 3]) {
+    const cells: Pt[] = [[0, 0], ...Array.from({ length: n }, (_, i): Pt => [0, i + 1]), ...Array.from({ length: n }, (_, i): Pt => [i + 1, 0])];
+    for (const [cx, cy] of cells) out.push(rect(x + cx * 18, 80 - cy * 18, 18, 18, { fill: cx === 0 && cy === 0 ? FILL.yellow : FILL.blue, width: 1.5 }));
+    x += (n + 1) * 18 + 30;
+  }
+  return out;
+}
+
+function exprMatchPreview(): Piece[] {
+  // Two cards that say the same: 2(x + 3) and 2x + 6.
+  const card = (x: number, t: string, fill: string) => [rect(x, 0, 110, 56, { fill, width: 1.5 }, true), text(x + 55, 28, t, 20)];
+  return [...card(0, "2(x + 3)", FILL.green), ...card(126, "2x + 6", FILL.green)];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1076,6 +1124,10 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveEquivMatch", group: "games", build: equivMatchPreview, live: "equivMatch" },
   { id: "liveFracOrder", group: "games", build: fracOrderPreview, live: "fracOrder" },
   { id: "liveShadeFrac", group: "games", build: shadeFracPreview, live: "shadeFrac" },
+  { id: "liveBalance", group: "games", build: balancePreview, live: "balance" },
+  { id: "liveMachine", group: "games", build: machinePreview, live: "machine" },
+  { id: "liveGrowing", group: "games", build: growingPreview, live: "growing" },
+  { id: "liveExprMatch", group: "games", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoboard", group: "games", build: geoboardPreview, live: "geoboard" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },

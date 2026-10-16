@@ -39,8 +39,9 @@ function wrong(ex: Exercise): string {
     case "order":
       // The right order turned round.
       return [...a.seq].reverse().map((i) => a.items[i].text).join(", ");
+    case "pick":
     case "near":
-      // The benchmark next to the right one.
+      // The option (or benchmark) next to the right one.
       return a.options[a.right === 0 ? 1 : a.right - 1].plain;
     case "target":
       // One card alone is never the target.
