@@ -10,6 +10,7 @@ import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred,
 import { Chance } from "./Chance";
 import { CloserTo } from "./CloserTo";
 import { LongDivision } from "./LongDivision";
+import { EquivMatch } from "./EquivMatch";
 import { Estimate } from "./Estimate";
 import { FractionWall } from "./FractionWall";
 import { Geoboard } from "./Geoboard";
@@ -56,6 +57,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   target: Target,
   closerTo: CloserTo,
   fractionWall: FractionWall,
+  equivMatch: EquivMatch,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

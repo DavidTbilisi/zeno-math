@@ -75,11 +75,13 @@ export function nearSteps(t: NearTask): string[] {
   return [...head, t.options.map(dist).join(", \\quad ")];
 }
 
-/** The benchmark typed or picked (40, 1/2, ½, 0.5), or null. */
+/** The option typed or picked (40, 1/2, ½, 0.5, 75 %), or null. */
 export function readBench(src: string): number | null {
   const s = src.trim().replace("½", "1/2").replace(",", ".").replace(/\s*\/\s*/, "/");
   const f = s.match(/^(\d+)\/(\d+)$/);
   if (f) return Number(f[2]) ? Number(f[1]) / Number(f[2]) : null;
+  const p = s.match(/^(\d+(?:\.\d+)?)\s*%$/);
+  if (p) return Number(p[1]) / 100;
   return /^-?\d+(\.\d+)?$/.test(s) ? Number(s) : null;
 }
 export type NearVerdict = { ok: true } | { ok: false; problem: "unreadable" | "notOption" } | { ok: false; picked: number };
