@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-export type ToolItem = { icon: string; label: string; onPick: () => void };
+/** A menu item; items with a `section` are listed under its heading, in the order given. */
+export type ToolItem = { icon: string; label: string; section?: string; onPick: () => void };
 
 /** A toolbar button that opens a dropdown of tools. The list is position:fixed so the bar's overflow can't clip it.
  *  `label` is shown on the button; `title` (the full group name) is the tooltip and the menu's accessible name. */
@@ -63,7 +64,10 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
       </button>
       {open && (
         <div ref={list} className="tool-menu" role="menu" aria-label={title} style={pos} onKeyDown={onListKey}>
-          {items.map((it) => (
+          {items.map((it, i) => [
+            it.section && it.section !== items[i - 1]?.section && (
+              <div key={`§${it.section}`} className="tool-menu-heading" role="presentation">{it.section}</div>
+            ),
             <button
               key={it.label}
               role="menuitem"
@@ -77,8 +81,8 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
             >
               <span className="tool-menu-icon">{it.icon}</span>
               {it.label}
-            </button>
-          ))}
+            </button>,
+          ])}
         </div>
       )}
     </>

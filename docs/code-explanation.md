@@ -80,6 +80,7 @@ The existing documents describe Zeno from above: `README.md` (features), `docs/a
   - [src/live/element.ts — the element encoding](#srcliveelementts--the-element-encoding)
   - [src/math/live.ts — the arithmetic of the pieces](#srcmathlivets--the-arithmetic-of-the-pieces)
   - [src/live/ui.tsx — shared props and widgets](#srcliveuitsx--shared-props-and-widgets)
+  - [src/live/ladderUi.tsx — what every game shares](#srcliveladderuitsx--what-every-game-shares)
   - [src/live/pieces.tsx — the eight light pieces](#srclivepiecestsx--the-eight-light-pieces)
   - [src/live/Chance.tsx — the chance experiment](#srclivechancetsx--the-chance-experiment)
   - [src/math/rubik.ts and src/live/Rubik.tsx — the Rubik's cube](#srcmathrubikts-and-srcliverubiktsx--the-rubiks-cube)
@@ -1973,6 +1974,13 @@ Builds a fresh piece (`:21-28`). It asks `convertToExcalidrawElements` for a `re
 - `FONT`, `INK = "#1e1e1e"`, a local `fill` template helper (`:15-17`).
 - `svgPoint(svg, e)`: pointer position in the SVG's own units: `new DOMPoint(clientX, clientY).matrixTransform(svg.getScreenCTM().inverse())` (`:20-25`). This is what makes drags correct "whatever the board's zoom and the piece's scale": the CTM already includes Excalidraw's zoom and the `LiveView` scale transform.
 - `Toggle` (`aria-pressed` button with `.on`) and `Stepper` (−/+ around a bold number, disabled at the bounds) (`:27-44`).
+
+### src/live/ladderUi.tsx — what every game shares
+
+- `useLadder(key, size, keys)` reads a game's ladder (stars, discoveries, best streak) from this browser once and writes it back on every change; `newSeed()` and `nextStage(stage, size)` (the puzzle after, or the same again after the last).
+- `GameNav` is the top of every game: the row of puzzles (`LadderBar`), with ∞ Endless (`onEndless`) or ✏️ Free play (`onFree`) first; under it, in the endless run, the three levels and the streak (with an optional `pace` before it), and in a puzzle its `children` (the round's `RoundDots`, the misses so far).
+- `Onward` is the button that moves on, named from where it goes: Next within a round or in the endless run, Next round or Next after a finished one, Play again after the last. `Found` is the discoveries count with the ones made in its tooltip; `SoundToggle`, `Cheer` and `starText` complete the set.
+- The words they use are `live.game` in each locale (Endless, Next, Next round, Play again, Check, Clear, the streak, the sound switch, Discoveries); each game's own words, including what a puzzle is called (Puzzle, Round, Board, Line), stay under its name.
 
 ### src/live/pieces.tsx — the eight light pieces
 

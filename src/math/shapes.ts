@@ -17,7 +17,7 @@ export type Piece =
   | ({ kind: "rect"; x: number; y: number; w: number; h: number; round?: boolean } & Style)
   | { kind: "text"; x: number; y: number; text: string; size: number; align: "left" | "center" | "right"; color?: string };
 
-export const SHAPE_GROUPS = ["live", "measure", "graphs", "geometry", "solids", "number", "algebra", "stats"] as const;
+export const SHAPE_GROUPS = ["games", "live", "measure", "graphs", "geometry", "solids", "number", "algebra", "stats"] as const;
 export type ShapeGroup = (typeof SHAPE_GROUPS)[number];
 /** The words some pieces write on themselves, in the board's language. */
 export type ShapeWords = {
@@ -1068,6 +1068,15 @@ function divisionPreview(): Piece[] {
 }
 
 export const SHAPES: readonly ShapeDef[] = [
+  { id: "liveEstimate", group: "games", build: estimatePreview, live: "estimate" },
+  { id: "liveQuickLook", group: "games", build: quickLookPreview, live: "quickLook" },
+  { id: "liveTarget", group: "games", build: targetPreview, live: "target" },
+  { id: "liveCloserTo", group: "games", build: closerToPreview, live: "closerTo" },
+  { id: "liveFractionWall", group: "games", build: fractionWallPreview, live: "fractionWall" },
+  { id: "liveEquivMatch", group: "games", build: equivMatchPreview, live: "equivMatch" },
+  { id: "liveFracOrder", group: "games", build: fracOrderPreview, live: "fracOrder" },
+  { id: "liveShadeFrac", group: "games", build: shadeFracPreview, live: "shadeFrac" },
+  { id: "liveGeoboard", group: "games", build: geoboardPreview, live: "geoboard" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
@@ -1085,15 +1094,6 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSoroban", group: "live", build: sorobanPreview, live: "soroban" },
   { id: "livePatterns", group: "live", build: patternsPreview, live: "patterns" },
   { id: "liveNumberLine", group: "live", build: numberLine, live: "numberLine" },
-  { id: "liveGeoboard", group: "live", build: geoboardPreview, live: "geoboard" },
-  { id: "liveEstimate", group: "live", build: estimatePreview, live: "estimate" },
-  { id: "liveQuickLook", group: "live", build: quickLookPreview, live: "quickLook" },
-  { id: "liveTarget", group: "live", build: targetPreview, live: "target" },
-  { id: "liveCloserTo", group: "live", build: closerToPreview, live: "closerTo" },
-  { id: "liveFractionWall", group: "live", build: fractionWallPreview, live: "fractionWall" },
-  { id: "liveEquivMatch", group: "live", build: equivMatchPreview, live: "equivMatch" },
-  { id: "liveFracOrder", group: "live", build: fracOrderPreview, live: "fracOrder" },
-  { id: "liveShadeFrac", group: "live", build: shadeFracPreview, live: "shadeFrac" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

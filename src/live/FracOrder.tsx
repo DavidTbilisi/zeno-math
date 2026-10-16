@@ -3,7 +3,6 @@
 // was put. In order earns two stars, and in order with every card within 5 % of its place, three. Nine lines open in
 // turn; the endless run keeps a streak of lines put in order.
 import { useState } from "react";
-import { useI18n } from "../i18n";
 import { withBest, withFound, withStars } from "../math/ladder";
 import {
   ORDER_LADDER,
@@ -17,18 +16,16 @@ import {
   type OrderLevel,
 } from "../math/fracOrder";
 import { play } from "./juice";
-import { Cheer, LadderBar, SoundToggle, starText, useLadder } from "./ladderUi";
-import { fill, FONT, HtmlFrac, INK, svgPoint, SvgFrac, Toggle, type PieceProps } from "./ui";
+import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { fill, FONT, HtmlFrac, INK, svgPoint, SvgFrac, type PieceProps } from "./ui";
 
 const W = 680;
 const [X0, X1, Y] = [40, 640, 120];
 const GREEN = "#2f9e44";
 const BLUE = "#1971c2";
-const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 export function FracOrder({ state: d, set, w: words, svgRef }: PieceProps<"fracOrder">) {
-  const w = words.fracOrder;
-  const { t } = useI18n();
+  const [w, g] = [words.fracOrder, words.game];
   const [ladder, keep] = useLadder("zeno.fracorder.v1", ORDER_LADDER.length, ORDER_NOTICES);
   const [cheer, setCheer] = useState(0);
   const task = orderNow(d);
@@ -66,7 +63,7 @@ export function FracOrder({ state: d, set, w: words, svgRef }: PieceProps<"fracO
   const fresh: Pick<LiveOrder, "placed" | "sel" | "checked" | "said"> = { placed: [], sel: 0, checked: false, said: null };
   const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
   const endless = (l: OrderLevel) => set({ ...d, ...fresh, mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(d.stage + 1 < ORDER_LADDER.length ? d.stage + 1 : d.stage));
+  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, ORDER_LADDER.length)));
 
   const stars = all ? orderStars(task, placed as number[]) : 0;
   const rankOf = Object.fromEntries(rightOrder(task.items).map((i, k) => [i, k])) as Record<number, number>;
@@ -76,10 +73,7 @@ export function FracOrder({ state: d, set, w: words, svgRef }: PieceProps<"fracO
     : `${d.said?.kind === "notice" ? `${w.notices[d.said.key]} ` : ""}${inOrder ? fill(stars === 3 ? w.sharp : w.inOrder, { stars: starText(stars) }) : w.outOfOrder}`;
   return (
     <>
-      <LadderBar stars={ladder.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "endless"} onClick={() => endless(d.level)}>∞ {w.endless}</Toggle>
-      </LadderBar>
-      {d.mode === "endless" && <span className="est-streak">{fill(w.streak, { n: d.streak, best: ladder.best })}</span>}
+      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
       <div className="live-bar order-cards">
         {task.items.map((it, i) => (
           <button
@@ -142,20 +136,16 @@ export function FracOrder({ state: d, set, w: words, svgRef }: PieceProps<"fracO
         {cheer > 0 && d.checked && inOrder && <Cheer key={cheer} text={starText(stars)} />}
       </div>
       <div className="live-bar">
-        {d.mode === "endless" &&
-          ([1, 2, 3] as const).map((l) => (
-            <Toggle key={l} on={d.level === l} onClick={() => endless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
-        {!d.checked && <button className="live-btn on" disabled={!all} onClick={check}>{w.check}</button>}
-        {d.checked && <button className="live-btn on" onClick={onward}>{d.mode === "endless" || d.stage + 1 < ORDER_LADDER.length ? w.next : w.again} →</button>}
         {d.checked && !inOrder && <button className="live-btn" onClick={() => set({ ...d, ...fresh })}>{w.retry}</button>}
-        <SoundToggle title={w.sound} />
+        {d.checked ? (
+          <Onward mode={d.mode} stage={d.stage} size={ORDER_LADDER.length} onClick={onward} g={g} />
+        ) : (
+          <button className="live-btn on" disabled={!all} onClick={check}>{g.check}</button>
+        )}
+        <SoundToggle title={g.sound} />
       </div>
       <p className={d.said?.kind === "notice" ? "live-said notice" : d.checked ? (inOrder ? "live-said ok" : "live-said") : "live-hint"}>
-        {said}{" "}
-        <span className="geo-found" title={ladder.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: ladder.found.length, of: ORDER_NOTICES.length })}
-        </span>
+        {said} <Found ladder={ladder} of={ORDER_NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );

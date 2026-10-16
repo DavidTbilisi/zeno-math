@@ -17,6 +17,7 @@ import "@excalidraw/excalidraw/index.css";
 
 import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
+import type { Dict } from "../locales/en";
 import { ToolMenu } from "../components/ToolMenu";
 import { ShareBox } from "../components/ShareBox";
 import { CommandPalette } from "../components/CommandPalette";
@@ -74,22 +75,15 @@ const libraryStore = {
   },
 };
 
+type LiveEntry = { kind: LiveKind; icon: string; name: keyof Dict["shapes"]["names"] };
+
 // Live pieces offered in the tool menus too (all of them are in the Shapes panel), by menu.
-const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" | "liveDivision" | "liveRubik" | "liveSoroban" | "livePatterns" | "liveNumberLine" | "liveGeoboard" | "liveEstimate" | "liveQuickLook" | "liveTarget" | "liveCloserTo" | "liveFractionWall" | "liveEquivMatch" | "liveFracOrder" | "liveShadeFrac" }[]> = {
+const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
   groupArithmetic: [
     { kind: "division", icon: "÷", name: "liveDivision" },
     { kind: "soroban", icon: "🧮", name: "liveSoroban" },
     { kind: "numberLine", icon: "↔", name: "liveNumberLine" },
-    { kind: "estimate", icon: "📍", name: "liveEstimate" },
-    { kind: "quickLook", icon: "👀", name: "liveQuickLook" },
-    { kind: "target", icon: "🎯", name: "liveTarget" },
-    { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
-    { kind: "fractionWall", icon: "▤", name: "liveFractionWall" },
-    { kind: "equivMatch", icon: "🃏", name: "liveEquivMatch" },
-    { kind: "fracOrder", icon: "⇢", name: "liveFracOrder" },
-    { kind: "shadeFrac", icon: "◔", name: "liveShadeFrac" },
   ],
-  groupGeometryShort: [{ kind: "geoboard", icon: "⬠", name: "liveGeoboard" }],
   groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],
   groupDiscreteShort: [
     { kind: "chance", icon: "🎲", name: "liveChance" },
@@ -97,6 +91,27 @@ const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveG
     { kind: "patterns", icon: "👆", name: "livePatterns" },
   ],
 };
+
+// The games, apart from the tools in a menu of their own, by the sense each one builds.
+const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseShape"; games: LiveEntry[] }[] = [
+  {
+    sense: "senseNumber", games: [
+      { kind: "estimate", icon: "📍", name: "liveEstimate" },
+      { kind: "quickLook", icon: "👀", name: "liveQuickLook" },
+      { kind: "target", icon: "🎯", name: "liveTarget" },
+      { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
+    ],
+  },
+  {
+    sense: "senseFraction", games: [
+      { kind: "fractionWall", icon: "▤", name: "liveFractionWall" },
+      { kind: "equivMatch", icon: "🃏", name: "liveEquivMatch" },
+      { kind: "fracOrder", icon: "⇢", name: "liveFracOrder" },
+      { kind: "shadeFrac", icon: "◔", name: "liveShadeFrac" },
+    ],
+  },
+  { sense: "senseShape", games: [{ kind: "geoboard", icon: "⬠", name: "liveGeoboard" }] },
+];
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
   el?.type === "image" && isToolKind(el.customData?.kind) ? (el.customData as MathData) : undefined;
@@ -540,6 +555,9 @@ export function BoardPage({ id }: { id: string }) {
             ...(LIVE_IN_MENUS[m.label] ?? []).map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], onPick: () => addLive(it.kind) })),
           ]} />
         ))}
+        <ToolMenu icon="🎮" label={t.gamesMenu} items={GAME_MENU.flatMap((s) =>
+          s.games.map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], section: t[s.sense], onPick: () => addLive(it.kind) })),
+        )} />
         <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })} />
         <LangSelect />
       </header>

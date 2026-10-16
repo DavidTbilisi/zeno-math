@@ -20,16 +20,12 @@ import {
   type LiveQuickLook,
   type LookLevel,
 } from "../math/quickLook";
-import { useI18n } from "../i18n";
 import { play } from "./juice";
-import { Cheer, LadderBar, SoundToggle, starText, useLadder } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
-
-const newSeed = () => Math.floor(Math.random() * 2 ** 31);
+import { Cheer, Found, GameNav, newSeed, nextStage, Onward, RoundDots, SoundToggle, starText, useLadder } from "./ladderUi";
+import { fill, FONT, type PieceProps } from "./ui";
 
 export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quickLook">) {
-  const w = words.quickLook;
-  const { t } = useI18n();
+  const [w, g] = [words.quickLook, words.game];
   const [ladder, keep] = useLadder("zeno.quicklook.v1", LOOK_LADDER.length, LOOK_NOTICES);
   const [cheer, setCheer] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -79,7 +75,7 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
   const roundDone = d.mode === "puzzle" && d.said?.kind === "done";
   const onward = () => {
     if (d.mode === "endless") return look({ ...d, seed: newSeed(), answer: null, said: null });
-    if (roundDone) return go(d.stage + 1 < LOOK_LADDER.length ? d.stage + 1 : d.stage);
+    if (roundDone) return go(nextStage(d.stage, LOOK_LADDER.length));
     look({ ...d, i: d.i + 1, answer: null, said: null });
   };
 
@@ -95,18 +91,9 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
     : null;
   return (
     <>
-      <LadderBar stars={ladder.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "endless"} onClick={() => endless(d.level)}>∞ {w.endless}</Toggle>
-      </LadderBar>
-      {d.mode === "puzzle" ? (
-        <span className="est-dots" aria-label={`${d.i + 1} / ${ROUND}`}>
-          {Array.from({ length: ROUND }, (_, k) => (
-            <i key={k} className={k < d.results.length ? (d.results[k] ? "ok" : "off") : k === d.i ? "now" : ""} />
-          ))}
-        </span>
-      ) : (
-        <span className="est-streak">⚡ {(ms / 1000).toFixed(2)} s · {fill(w.streak, { n: d.streak, best: ladder.best })}</span>
-      )}
+      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} pace={`⚡ ${(ms / 1000).toFixed(2)} s · `}>
+        <RoundDots results={d.results} i={d.i} size={ROUND} />
+      </GameNav>
       <div className="geo-stage-wrap">
         <svg ref={svgRef} width={480} height={360} viewBox={`0 0 ${LOOK_W} 240`} fontFamily={FONT} role="img" aria-label={w.howMany}>
           <rect x={1} y={1} width={LOOK_W - 2} height={238} rx={12} fill={shown ? "#fff" : "#f1f3f5"} stroke="#dee2e6" strokeWidth={2} />
@@ -127,28 +114,17 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
       ) : (
         <div className="live-bar">
           {d.phase === "ready" && <button className="live-btn on look-go" onClick={() => look(d)}>👀 {w.look}</button>}
-          {d.phase === "shown" && (
-            <button className="live-btn on" onClick={onward}>
-              {roundDone ? (d.stage + 1 < LOOK_LADDER.length ? w.nextRound : w.again) : w.next} →
-            </button>
-          )}
+          {d.phase === "shown" && <Onward mode={d.mode} stage={d.stage} size={LOOK_LADDER.length} rounds finished={roundDone} onClick={onward} g={g} />}
         </div>
       )}
       <div className="live-bar">
-        {d.mode === "endless" &&
-          ([1, 2, 3] as const).map((l) => (
-            <Toggle key={l} on={d.level === l} onClick={() => endless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
         {d.mode === "puzzle" && d.phase === "answer" && (
           <button className="live-btn" title={w.peek} onClick={() => look({ ...d, relooked: true })}>👀 {w.lookAgain}</button>
         )}
-        <SoundToggle title={w.sound} />
+        <SoundToggle title={g.sound} />
       </div>
       <p className={d.said?.kind === "notice" ? "live-said notice" : d.said?.kind === "done" || right ? "live-said ok" : d.phase === "shown" ? "live-said" : "live-hint"}>
-        {said}{" "}
-        <span className="geo-found" title={ladder.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: ladder.found.length, of: LOOK_NOTICES.length })}
-        </span>
+        {said} <Found ladder={ladder} of={LOOK_NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );

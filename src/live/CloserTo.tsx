@@ -3,7 +3,6 @@
 // endless run a bar runs down for every question, four seconds at first and a tenth less with every right answer in a
 // row, and when it runs out the question counts as missed.
 import { useEffect, useRef, useState } from "react";
-import { useI18n } from "../i18n";
 import {
   NEAR_LADDER,
   NEAR_NOTICES,
@@ -18,18 +17,16 @@ import {
 } from "../math/benchmark";
 import { withBest, withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, LadderBar, SoundToggle, starText, useLadder } from "./ladderUi";
-import { fill, FONT, INK, Toggle, type PieceProps } from "./ui";
+import { Cheer, Found, GameNav, newSeed, nextStage, Onward, RoundDots, SoundToggle, starText, useLadder } from "./ladderUi";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 
 const W = 600;
 const [X0, X1, Y] = [80, 520, 150];
 const GREEN = "#2f9e44";
 const RED = "#e03131";
-const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 export function CloserTo({ state: d, set, w: words, svgRef }: PieceProps<"closerTo">) {
-  const w = words.closerTo;
-  const { t } = useI18n();
+  const [w, g] = [words.closerTo, words.game];
   const [ladder, keep] = useLadder("zeno.closerto.v1", NEAR_LADDER.length, NEAR_NOTICES);
   const [cheer, setCheer] = useState(0);
   const shownAt = useRef(performance.now());
@@ -77,7 +74,7 @@ export function CloserTo({ state: d, set, w: words, svgRef }: PieceProps<"closer
   const roundDone = d.said?.kind === "done";
   const onward = () => {
     if (d.mode === "endless") return set({ ...d, seed: newSeed(), picked: null, said: null });
-    if (roundDone) return go(d.stage + 1 < NEAR_LADDER.length ? d.stage + 1 : d.stage);
+    if (roundDone) return go(nextStage(d.stage, NEAR_LADDER.length));
     set({ ...d, i: d.i + 1, picked: null, said: null });
   };
 
@@ -92,18 +89,9 @@ export function CloserTo({ state: d, set, w: words, svgRef }: PieceProps<"closer
     : w.ask;
   return (
     <>
-      <LadderBar stars={ladder.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "endless"} onClick={() => endless(d.level)}>∞ {w.endless}</Toggle>
-      </LadderBar>
-      {d.mode === "puzzle" ? (
-        <span className="est-dots" aria-label={`${d.i + 1} / ${ROUND}`}>
-          {Array.from({ length: ROUND }, (_, k) => (
-            <i key={k} className={k < d.results.length ? (d.results[k] ? "ok" : "off") : k === d.i ? "now" : ""} />
-          ))}
-        </span>
-      ) : (
-        <span className="est-streak">{fill(w.streak, { n: d.streak, best: ladder.best })}</span>
-      )}
+      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g}>
+        <RoundDots results={d.results} i={d.i} size={ROUND} />
+      </GameNav>
       {d.mode === "endless" && (
         <div className="near-clock" aria-hidden="true">
           {!answered && <i key={`${d.seed}`} style={{ animationDuration: `${limit}ms` }} />}
@@ -145,22 +133,11 @@ export function CloserTo({ state: d, set, w: words, svgRef }: PieceProps<"closer
         ))}
       </div>
       <div className="live-bar">
-        {d.mode === "endless" &&
-          ([1, 2, 3] as const).map((l) => (
-            <Toggle key={l} on={d.level === l} onClick={() => endless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
-        {answered && (
-          <button className="live-btn on" onClick={onward}>
-            {roundDone ? (d.stage + 1 < NEAR_LADDER.length ? w.nextRound : w.again) : w.next} →
-          </button>
-        )}
-        <SoundToggle title={w.sound} />
+        {answered && <Onward mode={d.mode} stage={d.stage} size={NEAR_LADDER.length} rounds finished={roundDone} onClick={onward} g={g} />}
+        <SoundToggle title={g.sound} />
       </div>
       <p className={d.said?.kind === "notice" ? "live-said notice" : d.said?.kind === "done" || right ? "live-said ok" : answered ? "live-said" : "live-hint"}>
-        {said}{" "}
-        <span className="geo-found" title={ladder.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: ladder.found.length, of: NEAR_NOTICES.length })}
-        </span>
+        {said} <Found ladder={ladder} of={NEAR_NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );

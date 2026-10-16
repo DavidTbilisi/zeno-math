@@ -3,7 +3,6 @@
 // the fewest tiles there can be, three. Too much shows red past the end. Nine puzzles open in turn; the endless run keeps
 // a streak of puzzles filled with the fewest tiles first time.
 import { useState } from "react";
-import { useI18n } from "../i18n";
 import {
   fillState,
   sumOf,
@@ -18,16 +17,14 @@ import {
 } from "../math/fractionWall";
 import { withBest, withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, LadderBar, SoundToggle, starText, useLadder } from "./ladderUi";
-import { fill, FONT, HtmlFrac, INK, SvgFrac, Toggle, type PieceProps } from "./ui";
+import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { fill, FONT, HtmlFrac, INK, SvgFrac, type PieceProps } from "./ui";
 
 const W = 620;
 const [BX, BY, BH] = [20, 40, 70];
-const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fractionWall">) {
-  const w = words.fractionWall;
-  const { t } = useI18n();
+  const [w, g] = [words.fractionWall, words.game];
   const [ladder, keep] = useLadder("zeno.fractionwall.v1", WALL_LADDER.length, WALL_NOTICES);
   const [cheer, setCheer] = useState(0);
   const task = wallNow(d);
@@ -55,7 +52,7 @@ export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fr
   const fresh: Pick<LiveWall, "placed" | "best" | "said"> = { placed: [], best: 0, said: null };
   const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
   const endless = (level: WallLevel) => set({ ...d, ...fresh, mode: "endless", level, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(d.stage + 1 < WALL_LADDER.length ? d.stage + 1 : d.stage));
+  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, WALL_LADDER.length)));
 
   // The tiles in the bar, left to right: the fixed ones, then the ones put in.
   let x = BX;
@@ -75,10 +72,7 @@ export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fr
     : w.hint;
   return (
     <>
-      <LadderBar stars={ladder.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "endless"} onClick={() => endless(d.level)}>∞ {w.endless}</Toggle>
-      </LadderBar>
-      {d.mode === "endless" && <span className="est-streak">{fill(w.streak, { n: d.streak, best: ladder.best })}</span>}
+      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
       <div className="geo-stage-wrap">
         <svg ref={svgRef} width={W} height={140} viewBox={`0 0 ${W} 140`} fontFamily={FONT} role="img" aria-label={fill(w.make, { t: task.target.isInt() ? String(task.target.n) : `${task.target.n}/${task.target.d}` })}>
           <rect width={W} height={140} fill="#fff" />
@@ -112,20 +106,13 @@ export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fr
         ))}
       </div>
       <div className="live-bar">
-        {d.mode === "endless" &&
-          ([1, 2, 3] as const).map((l) => (
-            <Toggle key={l} on={d.level === l} onClick={() => endless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
-        <button className="live-btn" disabled={!d.placed.length} onClick={() => put([])}>{w.clear}</button>
-        {d.best > 0 && <button className="live-btn on" onClick={onward}>{d.mode === "endless" || d.stage + 1 < WALL_LADDER.length ? w.next : w.again} →</button>}
-        <SoundToggle title={w.sound} />
+        <button className="live-btn" disabled={!d.placed.length} onClick={() => put([])}>{g.clear}</button>
+        {d.best > 0 && <Onward mode={d.mode} stage={d.stage} size={WALL_LADDER.length} onClick={onward} g={g} />}
+        <SoundToggle title={g.sound} />
       </div>
       <p className={d.said?.kind === "notice" ? "live-said notice" : state === "exact" ? "live-said ok" : state === "over" ? "live-said" : "live-hint"}>
         {said}
-        {status}{" "}
-        <span className="geo-found" title={ladder.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: ladder.found.length, of: WALL_NOTICES.length })}
-        </span>
+        {status} <Found ladder={ladder} of={WALL_NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );
