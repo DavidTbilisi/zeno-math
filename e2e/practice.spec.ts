@@ -86,7 +86,8 @@ test("on a board, practice opens beside it and stays while other tools are used"
   const boardBox = (await page.locator(".canvas-wrap").boundingBox())!;
   const dockBox = (await dock.boundingBox())!;
   expect(boardBox.x + boardBox.width).toBeLessThanOrEqual(dockBox.x + 1);
-  // Typing an answer stays in the answer field rather than reaching the board's shortcuts.
+  // Typing an answer stays in the answer field rather than reaching the board's shortcuts (algebra: every answer is typed).
+  await dock.getByRole("tab", { name: "Algebra" }).click();
   await dock.getByLabel("Your answer").pressSequentially("2; -3");
   await expect(dock.getByLabel("Your answer")).toHaveValue("2; -3");
   // Inserting the question puts it on the board and practice goes on.

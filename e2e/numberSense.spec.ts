@@ -1,10 +1,12 @@
 // Number-sense games: a round of the estimation game played for three stars (kept after a reload, the next round
-// open), and a practice question answered by putting the pin on the line. Pins are dropped where the line draws the
+// open), and a practice question answered by putting the pin on the line; a round of quick look answered right, and a
+// practice question whose dots flash before the number is typed. Pins are dropped where the line draws the
 // number, wherever the piece or the dialog has been scaled to.
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { ESTIMATE_LADDER, roundTasks, shareAlong, type PinPlay } from "../src/math/estimate.ts";
 import { check, exercise } from "../src/math/practice.ts";
+import { LOOK_LADDER, lookRound } from "../src/math/quickLook.ts";
 
 const w = en.pracWords;
 
@@ -81,4 +83,57 @@ test("a practice question answered by putting the pin on the line", async ({ pag
   await dropPin(page, line, play, v, [36, 444, 480, 54]);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+/** A new board with one live piece from the Shapes panel, ready to use (clicked in its middle). */
+async function boardWith(page: Page, name: string, piece: string): Promise<Locator> {
+  await page.goto("/");
+  await page.getByRole("button", { name: /New board/ }).first().click();
+  await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: "Shapes" }).click();
+  await page.getByRole("button", { name, exact: true }).click();
+  const game = page.locator(piece);
+  await game.waitFor();
+  const box = (await game.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  return game;
+}
+
+test("a round of quick look, every flash counted right, earns three stars", async ({ page }) => {
+  const game = await boardWith(page, "Quick look: how many dots?", ".live-quickLook");
+  const round = lookRound(LOOK_LADDER[0].level, LOOK_LADDER[0].seed);
+  await game.getByRole("button", { name: "👀 Look!" }).click();
+  for (const [i, t] of round.entries()) {
+    // The dots hide, and the buttons to answer with come up.
+    await game.getByRole("button", { name: String(t.n), exact: true }).click();
+    if (i < round.length - 1) await game.getByRole("button", { name: "Next →" }).click();
+  }
+  await expect(game.getByText("Round done! ★★★")).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Round 2/ })).toBeEnabled();
+});
+
+test("a practice question whose dots flash: look, then type how many", async ({ page, request }) => {
+  const r = 0.61;
+  const ex = exercise("quickLook", 1, Math.floor(r * 2 ** 31), w);
+  const made = await (await request.post("/api/boards", { data: { title: "Quick look" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.type("Practice");
+  await page.keyboard.press("Enter");
+  await page.getByRole("tab", { name: "Number" }).click();
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Quick look: how many?", exact: true }).click();
+  const box = page.locator(".flash-answer input");
+  await expect(box).toBeDisabled();
+  await page.getByRole("button", { name: "👀 Look" }).click();
+  await expect(page.locator(".flash-box circle").first()).toBeVisible();
+  // Hidden again after the flash.
+  await expect(page.locator(".flash-box circle")).toHaveCount(0);
+  await box.fill(ex.plain);
+  await box.press("Enter");
+  await expect(page.getByText("Correct!")).toBeVisible();
+  await expect(page.locator(".flash-box circle")).toHaveCount(Number(ex.plain));
 });

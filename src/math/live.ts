@@ -6,6 +6,7 @@
 import type { LiveNumberLine } from "./numberLine";
 import type { LiveGeoboard } from "./geoPlay";
 import type { LiveEstimate } from "./estimate";
+import type { LiveQuickLook } from "./quickLook";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -332,6 +333,7 @@ export type LiveStates = {
   numberLine: LiveNumberLine;
   geoboard: LiveGeoboard;
   estimate: LiveEstimate;
+  quickLook: LiveQuickLook;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -356,6 +358,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   numberLine: [800, 460],
   geoboard: [600, 660],
   estimate: [720, 390],
+  quickLook: [620, 580],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -382,6 +385,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     numberLine: { from: 0, to: 10, step: 1, fractions: false, marks: [], jumps: true, together: false },
     geoboard: { mode: "free", stage: 0, pts: [], misses: 0, peeked: false, area: true, perim: true, said: null, last: null },
     estimate: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], pin: null, half: false, peeked: false, streak: 0, said: null },
+    quickLook: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], phase: "ready", answer: null, relooked: false, streak: 0, said: null },
   };
   return structuredClone(start[kind]);
 }

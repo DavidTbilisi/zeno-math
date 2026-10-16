@@ -855,6 +855,17 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function quickLookPreview(): Piece[] {
+  // A ten frame with seven counters, a 👀 beside it.
+  const out: Piece[] = [];
+  for (let k = 0; k < 10; k++) {
+    const [x, y] = [(k % 5) * 30, Math.floor(k / 5) * 30];
+    out.push(rect(x, y, 30, 30, { color: MUTED, width: 1.5 }));
+    if (k < 7) out.push(ellipse(x + 15, y + 15, 10, 10, { fill: "#1e1e1e", color: "#1e1e1e", width: 1 }));
+  }
+  return [...out, text(190, 38, "👀", 30)];
+}
+
 function estimatePreview(): Piece[] {
   // A line from 0 to 100 with only its ends, a pin dropped on it and the number's real place just beside.
   const [x0, x1, y] = [0, 240, 60];
@@ -1007,6 +1018,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveNumberLine", group: "live", build: numberLine, live: "numberLine" },
   { id: "liveGeoboard", group: "live", build: geoboardPreview, live: "geoboard" },
   { id: "liveEstimate", group: "live", build: estimatePreview, live: "estimate" },
+  { id: "liveQuickLook", group: "live", build: quickLookPreview, live: "quickLook" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

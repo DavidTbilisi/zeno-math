@@ -2827,6 +2827,72 @@
    "input": "pin:here",
    "label": "form",
    "note": "unreadable"
+  },
+  {
+   "skill": "quickLook",
+   "level": 1,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "quickLook",
+   "level": 1,
+   "seed": 7,
+   "input": "2",
+   "label": "wrong"
+  },
+  {
+   "skill": "quickLook",
+   "level": 1,
+   "seed": 7,
+   "input": "one",
+   "label": "form",
+   "note": "a word for the number"
+  },
+  {
+   "skill": "quickLook",
+   "level": 2,
+   "seed": 7,
+   "input": "5",
+   "label": "correct"
+  },
+  {
+   "skill": "quickLook",
+   "level": 2,
+   "seed": 7,
+   "input": " 5 ",
+   "label": "correct"
+  },
+  {
+   "skill": "quickLook",
+   "level": 2,
+   "seed": 7,
+   "input": "6",
+   "label": "wrong",
+   "note": "one counted twice"
+  },
+  {
+   "skill": "quickLook",
+   "level": 3,
+   "seed": 7,
+   "input": "11",
+   "label": "correct"
+  },
+  {
+   "skill": "quickLook",
+   "level": 3,
+   "seed": 7,
+   "input": "10",
+   "label": "wrong",
+   "note": "the frame counted, not the one beside it"
+  },
+  {
+   "skill": "quickLook",
+   "level": 3,
+   "seed": 7,
+   "input": "12",
+   "label": "wrong"
   }
  ]
 }

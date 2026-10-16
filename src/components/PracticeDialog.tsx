@@ -17,7 +17,7 @@ import {
 import { renderSolution } from "../math/practiceSolve";
 import { svgToDataUrl } from "../math/svg";
 import { Countdown } from "./Countdown";
-import { PlayAnswer } from "./PlayAnswer";
+import { AnswerField, PlayAnswer } from "./PlayAnswer";
 import { muted, play as playSound, setMuted } from "../live/juice";
 import { Cheer } from "../live/ladderUi";
 import { Modal } from "./Modal";
@@ -510,11 +510,15 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
             </div>
           )}
-          <label className="field">
+          {/* A question answered by doing has buttons of its own: in a label, a click anywhere would press the first. */}
+          <AnswerField className="field" play={!!cur.ex.play}>
             <span>{w.ui.answerHere} <span className="hint">({w.formats[cur.ex.format]})</span></span>
             {cur.ex.play ? (
               <PlayAnswer
+                key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
                 play={cur.ex.play}
+                look={w.ui.look}
+                onEnter={() => (done ? next() : onCheck())}
                 value={input}
                 disabled={done !== null}
                 label={cur.ex.prompt}
@@ -547,7 +551,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               {typed && !done && <img className="practice-typed" src={typed} alt="" />}
             </div>
             )}
-          </label>
+          </AnswerField>
           {cur.ex.format === "sign" && !done && (
             <SignPicks
               onPick={(s) => {

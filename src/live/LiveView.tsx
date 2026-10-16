@@ -13,6 +13,7 @@ import { Estimate } from "./Estimate";
 import { Geoboard } from "./Geoboard";
 import { NumberLine } from "./NumberLine";
 import { Patterns } from "./Patterns";
+import { QuickLook } from "./QuickLook";
 import { Rubik } from "./Rubik";
 import { Soroban } from "./Soroban";
 import type { PieceProps } from "./ui";
@@ -48,6 +49,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   numberLine: NumberLine,
   geoboard: Geoboard,
   estimate: Estimate,
+  quickLook: QuickLook,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {
