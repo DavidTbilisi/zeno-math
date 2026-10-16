@@ -25,11 +25,11 @@ import {
 } from "../math/geoPlay";
 import { play } from "./juice";
 import { GeoGrid } from "./GeoGrid";
-import { Cheer, LadderBar, SoundToggle, starText as stars, useLadder } from "./ladderUi";
+import { Cheer, Found, GameNav, nextStage, Onward, SoundToggle, starText as stars, useLadder } from "./ladderUi";
 import { fill, Toggle, type PieceProps } from "./ui";
 
 export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboard">) {
-  const w = words.geoboard;
+  const [w, g] = [words.geoboard, words.game];
   const { t } = useI18n();
   const pw = t.pracWords;
   const [progress, keep] = useLadder("zeno.geoplay.v1", GEO_LADDER.length, NOTICES);
@@ -96,9 +96,7 @@ export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboa
 
   return (
     <>
-      <LadderBar stars={progress.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "free"} onClick={() => set({ ...d, mode: "free", area: true, perim: true, said: null })}>✏️ {w.free}</Toggle>
-      </LadderBar>
+      <GameNav ladder={progress} mode={d.mode} stage={d.stage} onPuzzle={go} onFree={() => set({ ...d, mode: "free", area: true, perim: true, said: null })} words={w} g={g} />
       <p className="live-said geo-prompt">{prompt}</p>
       <div className="geo-stage-wrap">
         <GeoGrid
@@ -119,21 +117,17 @@ export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboa
         <Toggle on={d.area} onClick={() => toggle("area")} title={d.mode === "puzzle" ? w.peek : undefined}>▦ {w.area}</Toggle>
         <Toggle on={d.perim} onClick={() => toggle("perim")} title={d.mode === "puzzle" ? w.peek : undefined}>⬚ {w.perimeter}</Toggle>
         <button className="live-btn" disabled={!d.pts.length || done} onClick={() => change(d.pts.slice(0, -1))}>↶ {w.undo}</button>
-        <button className="live-btn" disabled={!d.pts.length || done} onClick={() => change([])}>{w.clear}</button>
+        <button className="live-btn" disabled={!d.pts.length || done} onClick={() => change([])}>{g.clear}</button>
         {d.mode === "puzzle" &&
           (done ? (
-            d.stage + 1 < GEO_LADDER.length && <button className="live-btn on" onClick={() => go(d.stage + 1)}>{w.next} →</button>
+            <Onward mode={d.mode} stage={d.stage} size={GEO_LADDER.length} onClick={() => go(nextStage(d.stage, GEO_LADDER.length))} g={g} />
           ) : (
-            <button className="live-btn on" disabled={d.pts.length < 3} onClick={check}>{w.check}</button>
+            <button className="live-btn on" disabled={d.pts.length < 3} onClick={check}>{g.check}</button>
           ))}
-        <SoundToggle title={w.sound} />
+        <SoundToggle title={g.sound} />
       </div>
       <p className={said ? `live-said${d.said?.kind === "right" ? " ok" : d.said?.kind === "notice" ? " notice" : ""}` : "live-hint"}>
-        {said ?? (d.mode === "puzzle" ? w.hint : allDone ? w.allDone : w.hint)}
-        {" "}
-        <span className="geo-found" title={progress.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: progress.found.length, of: NOTICES.length })}
-        </span>
+        {said ?? (d.mode === "puzzle" ? w.hint : allDone ? w.allDone : w.hint)} <Found ladder={progress} of={NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );

@@ -3,7 +3,6 @@
 // number. Right first time earns three stars, after one miss two. Nine puzzles open in turn — as many pieces as the
 // bottom, then more, then counters too — and the endless run keeps a streak of shapes shaded right first time.
 import { useState } from "react";
-import { useI18n } from "../i18n";
 import { withBest, withFound, withStars } from "../math/ladder";
 import {
   encodeShade,
@@ -19,16 +18,14 @@ import {
   type ShadeLevel,
 } from "../math/shadeFrac";
 import { play } from "./juice";
-import { Cheer, LadderBar, SoundToggle, starText, useLadder } from "./ladderUi";
+import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
 import { ShadePieces } from "./ShadePieces";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, type PieceProps } from "./ui";
 
 const SIZE = 300;
-const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 export function ShadeGame({ state: d, set, w: words, svgRef }: PieceProps<"shadeFrac">) {
-  const w = words.shadeFrac;
-  const { t } = useI18n();
+  const [w, g] = [words.shadeFrac, words.game];
   const [ladder, keep] = useLadder("zeno.shadefrac.v1", SHADE_LADDER.length, SHADE_NOTICES);
   const [cheer, setCheer] = useState(0);
   const task = shadeNow(d);
@@ -60,7 +57,7 @@ export function ShadeGame({ state: d, set, w: words, svgRef }: PieceProps<"shade
   const fresh: Pick<LiveShade, "shaded" | "misses" | "done" | "said"> = { shaded: [], misses: 0, done: false, said: null };
   const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
   const endless = (l: ShadeLevel) => set({ ...d, ...fresh, mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(d.stage + 1 < SHADE_LADDER.length ? d.stage + 1 : d.stage));
+  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, SHADE_LADDER.length)));
 
   const stars = shadeStars(d.misses);
   const done = d.done ? fill(w.right, { stars: starText(stars), k: task.count, p: task.play.pieces }) : "";
@@ -71,10 +68,7 @@ export function ShadeGame({ state: d, set, w: words, svgRef }: PieceProps<"shade
     : fill(w.count, { k: d.shaded.length, p: task.play.pieces });
   return (
     <>
-      <LadderBar stars={ladder.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "endless"} onClick={() => endless(d.level)}>∞ {w.endless}</Toggle>
-      </LadderBar>
-      {d.mode === "endless" && <span className="est-streak">{fill(w.streak, { n: d.streak, best: ladder.best })}</span>}
+      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
       <p className="live-said geo-prompt">{fill(task.play.shape === "set" ? w.shadeSet : w.shadeShape, { f: `${task.n}/${task.d}` })}</p>
       <div className="geo-stage-wrap">
         <svg ref={svgRef} width={box.w + 8} height={box.h + 8} viewBox={`-4 -4 ${box.w + 8} ${box.h + 8}`} fontFamily={FONT} role="group" aria-label={fill(task.play.shape === "set" ? w.shadeSet : w.shadeShape, { f: `${task.n}/${task.d}` })}>
@@ -84,23 +78,16 @@ export function ShadeGame({ state: d, set, w: words, svgRef }: PieceProps<"shade
         {cheer > 0 && d.done && <Cheer key={cheer} text={starText(stars)} />}
       </div>
       <div className="live-bar">
-        {d.mode === "endless" &&
-          ([1, 2, 3] as const).map((l) => (
-            <Toggle key={l} on={d.level === l} onClick={() => endless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
-        <button className="live-btn" disabled={!d.shaded.length || d.done} onClick={() => set({ ...d, shaded: [], said: null })}>{w.clear}</button>
+        <button className="live-btn" disabled={!d.shaded.length || d.done} onClick={() => set({ ...d, shaded: [], said: null })}>{g.clear}</button>
         {d.done ? (
-          <button className="live-btn on" onClick={onward}>{d.mode === "endless" || d.stage + 1 < SHADE_LADDER.length ? w.next : w.again} →</button>
+          <Onward mode={d.mode} stage={d.stage} size={SHADE_LADDER.length} onClick={onward} g={g} />
         ) : (
-          <button className="live-btn on" disabled={!d.shaded.length} onClick={check}>{w.check}</button>
+          <button className="live-btn on" disabled={!d.shaded.length} onClick={check}>{g.check}</button>
         )}
-        <SoundToggle title={w.sound} />
+        <SoundToggle title={g.sound} />
       </div>
       <p className={d.said?.kind === "notice" ? "live-said notice" : d.done ? "live-said ok" : d.said?.kind === "wrong" ? "live-said" : "live-hint"}>
-        {said}{" "}
-        <span className="geo-found" title={ladder.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: ladder.found.length, of: SHADE_NOTICES.length })}
-        </span>
+        {said} <Found ladder={ladder} of={SHADE_NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );

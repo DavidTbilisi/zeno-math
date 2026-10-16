@@ -12,7 +12,7 @@ UI in English, Russian and Georgian.
 *Every picture on the board is a live, editable object — double-click it to change the numbers. See [more screenshots](#screenshots).*
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
-- **🧮 Counting — place-value mat (Singapore method, concrete stage)**: drag base-ten blocks
+- **🧮 Place-value mat (Singapore method, concrete stage)**, the Place value tab of Models: drag base-ten blocks
   (hundreds, tens, ones) onto a Hundreds | Tens | Ones mat — mouse or touch
   - Trade by dragging: a ten onto Ones breaks into 10 ones; a one onto Tens groups 10 ones into a ten
     (same for hundreds); drag off the mat to remove. Ones sit in ten-frames so tens are easy to see
@@ -543,16 +543,23 @@ UI in English, Russian and Georgian.
     from log n to n! with running times at 10⁸ operations per second
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
-- The tools sit in four menus on the top bar: **Arithmetic** (counting, models, mental math), **Geometry** (geometry,
+- The tools sit in four menus on the top bar: **Arithmetic** (models, with place value among them, and mental math), **Geometry** (geometry,
   school geometry, coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, polynomials, powers & logs, sequences &
   series,
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs, numerical methods) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
-  **Practice** by area
+  **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
+  look, make the target, closer to?), fraction sense (make a whole, equal amounts, fractions on the line, shade the
+  fraction) and shape sense (the geoboard). In the Shapes tab the games are a group of their own, before the live
+  pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
 - **🎛 Live pieces**: the first group of the Shapes tab, and on the board they answer clicks — click the middle of
-  one to use it, drag its edge to move it, and every change is saved with the board and can be undone:
+  one to use it, drag its edge to move it, and every change is saved with the board and can be undone. The games
+  among them are all laid out alike: along the top, the row of puzzles with their stars (each opens once the
+  one before it has a star) and ∞ Endless (✏️ Free play on the geoboard); under it, the round's dots, or in the
+  endless run its levels (easy, medium, hard) and the streak; along the bottom, the game's own buttons, then Check or
+  Next → (Next round after a round, Play again after the last), the sound switch and the discoveries so far:
   - *Clock with hands*: drag either hand (they're geared, like a real clock), digital time on or off, snap to five
     minutes, 🎲 for a random time to read
   - *Dice to roll* (one to three, with the totals so far), a *spinner to spin* (2–10 sections, counts per section) and

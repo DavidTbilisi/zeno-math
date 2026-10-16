@@ -182,7 +182,7 @@ export function ShapesPanel({ api, theme }: { api: () => ExcalidrawImperativeAPI
       {SHAPE_GROUPS.map((g) => (
         <section key={g}>
           <h3>{w.groups[g]}</h3>
-          {g === "live" && <p className="hint">{w.liveHint}</p>}
+          {(g === "games" || g === "live") && <p className="hint">{w.liveHint}</p>}
           <div className="shape-grid">
             {SHAPES.filter((s) => s.group === g).map((s) => (
               <Tile key={s.id} shape={s} words={words} name={w.names[s.id as keyof typeof w.names]} thumb={svg[s.id]} onInsert={insert} />

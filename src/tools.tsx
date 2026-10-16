@@ -96,7 +96,6 @@ export type MenuGroup = { icon: string; label: Word; title?: Word; items: MenuEn
 export const MENUS: MenuGroup[] = [
   {
     icon: "🧮", label: "groupArithmetic", items: [
-      { kind: "model", icon: "🧮", label: "counting", start: "placeValue" },
       { kind: "model", icon: "▦", label: "models" },
       { kind: "mental", icon: "🧠", label: "mental" },
     ],

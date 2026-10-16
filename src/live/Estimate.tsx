@@ -3,7 +3,6 @@
 // stars for how close they come on average, showing the half-way mark caps them at two, and a round opens once the
 // one before it has a star; the endless run keeps a streak of pins within 5 %, and the best streak is kept.
 import { useState } from "react";
-import { useI18n } from "../i18n";
 import {
   currentTask,
   ESTIMATE_LADDER,
@@ -20,7 +19,7 @@ import {
 } from "../math/estimate";
 import { withBest, withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, LadderBar, SoundToggle, starText, useLadder } from "./ladderUi";
+import { Cheer, Found, GameNav, newSeed, nextStage, Onward, RoundDots, SoundToggle, starText, useLadder } from "./ladderUi";
 import { fill, FONT, INK, svgPoint, Toggle, type PieceProps } from "./ui";
 
 const W = 700;
@@ -32,11 +31,9 @@ const BLUE = "#1971c2";
 const GREEN = "#2f9e44";
 const ORANGE = "#e8590c";
 const RED = "#e03131";
-const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estimate">) {
-  const w = words.estimate;
-  const { t } = useI18n();
+  const [w, g] = [words.estimate, words.game];
   const [ladder, keep] = useLadder("zeno.estimate.v1", ESTIMATE_LADDER.length, ESTIMATE_NOTICES);
   const [drag, setDrag] = useState<number | null>(null);
   const [cheer, setCheer] = useState(0);
@@ -90,7 +87,7 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
   const endless = (level: EstimateLevel) => set({ ...d, mode: "endless", level, seed: newSeed(), i: 0, errors: [], pin: null, peeked: false, said: null });
   const next = () => {
     if (d.mode === "endless") return set({ ...d, seed: newSeed(), pin: null, said: null });
-    if (roundDone) return d.stage + 1 < ESTIMATE_LADDER.length ? go(d.stage + 1) : go(d.stage);
+    if (roundDone) return go(nextStage(d.stage, ESTIMATE_LADDER.length));
     set({ ...d, i: d.i + 1, pin: null, said: null });
   };
   const toggleHalf = () => set({ ...d, half: !d.half, peeked: d.peeked || (d.mode === "puzzle" && !d.half && !roundDone) });
@@ -106,16 +103,9 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
 
   return (
     <>
-      <LadderBar stars={ladder.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "endless"} onClick={() => endless(d.level)}>∞ {w.endless}</Toggle>
-      </LadderBar>
-      {d.mode === "puzzle" && (
-        <span className="est-dots" aria-label={`${d.i + 1} / ${ROUND}`}>
-          {Array.from({ length: ROUND }, (_, k) => (
-            <i key={k} className={k < d.errors.length ? (d.errors[k] <= 0.05 ? "ok" : "off") : k === d.i ? "now" : ""} />
-          ))}
-        </span>
-      )}
+      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g}>
+        <RoundDots results={d.errors.map((e) => e <= 0.05)} i={d.i} size={ROUND} />
+      </GameNav>
       <div className="geo-stage-wrap">
         <svg
           ref={svgRef}
@@ -158,25 +148,15 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
         {cheer > 0 && roundDone && d.said?.kind === "done" && <Cheer key={cheer} text={starText(d.said.stars)} />}
       </div>
       <div className="live-bar">
-        {d.mode === "endless" &&
-          ([1, 2, 3] as const).map((l) => (
-            <Toggle key={l} on={d.level === l} onClick={() => endless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
         <Toggle on={d.half} onClick={toggleHalf} title={d.mode === "puzzle" ? w.peek : undefined}>½ {w.half}</Toggle>
-        <button className="live-btn on" disabled={!placed} onClick={next}>
-          {roundDone ? (d.stage + 1 < ESTIMATE_LADDER.length ? w.nextRound : w.again) : w.next} →
-        </button>
-        <SoundToggle title={w.sound} />
+        {placed && <Onward mode={d.mode} stage={d.stage} size={ESTIMATE_LADDER.length} rounds finished={roundDone} onClick={next} g={g} />}
+        <SoundToggle title={g.sound} />
       </div>
       <p
         className={d.said?.kind === "notice" ? "live-said notice" : d.said?.kind === "done" ? "live-said ok" : result ? "live-said" : "live-hint"}
         style={result && !said ? { color: result.color } : undefined}
       >
-        {said ?? result?.text ?? w.hint}
-        {d.mode === "endless" && <b className="est-streak"> · {fill(w.streak, { n: d.streak, best: ladder.best })}</b>}{" "}
-        <span className="geo-found" title={ladder.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: ladder.found.length, of: ESTIMATE_NOTICES.length })}
-        </span>
+        {said ?? result?.text ?? w.hint} <Found ladder={ladder} of={ESTIMATE_NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );

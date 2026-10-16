@@ -1,10 +1,23 @@
-// The parts of a game on the board that every game shares: its ladder kept in this browser, the row of puzzles with
-// their stars (a puzzle opens once the one before it has a star), the celebration when one is done (outside the
-// piece's picture, so the 📷 copy never has confetti in it) and the sound switch.
+// The parts of a game on the board that every game shares, so a player finds their way round each one alike: its ladder
+// kept in this browser; at the top the row of puzzles with their stars (a puzzle opens once the one before it has a
+// star), the way into the endless run (or free play) and, under it, where the player is — the round's dots, or the
+// endless run's levels and streak; at the bottom the button that moves on, the sound switch and the discoveries so
+// far; and the celebration when a puzzle is done (outside the piece's picture, so the 📷 copy never has confetti in it).
 import { useState, type CSSProperties, type ReactNode } from "react";
+import { useI18n } from "../i18n";
+import type { Dict } from "../locales/en";
 import { isOpen, readLadder, type Ladder } from "../math/ladder";
 import { muted, setMuted } from "./juice";
 import { fill, Toggle } from "./ui";
+
+export type GameWords = Dict["live"]["game"];
+export type GameLevel = 1 | 2 | 3;
+export const GAME_LEVELS: readonly GameLevel[] = [1, 2, 3];
+
+export const newSeed = () => Math.floor(Math.random() * 2 ** 31);
+
+/** The puzzle after `stage`, or the same one again after the last. */
+export const nextStage = (stage: number, size: number) => (stage + 1 < size ? stage + 1 : stage);
 
 /** A game's ladder, read from this browser once and written back on every change. */
 export function useLadder<K extends string>(key: string, size: number, keys: readonly K[]): [Ladder<K>, (next: Ladder<K>) => void] {
@@ -67,6 +80,83 @@ export function Cheer({ text, small }: { text: string; small?: boolean }) {
       {Array.from({ length: small ? 14 : 18 }, (_, i) => <i key={i} style={{ "--i": i } as CSSProperties} />)}
       <b>{text}</b>
     </div>
+  );
+}
+
+/**
+ * The top of a game. The row of puzzles, with the way out of them first: ∞ into the endless run (at the level it was
+ * last played at) or ✏️ into free play. Under it, in the endless run, its levels and the streak (with `pace` before
+ * it, such as how long the dots show); in a puzzle, `children` (the round's dots, the misses so far), if any.
+ */
+export function GameNav({ ladder, mode, stage, level, streak, onPuzzle, onEndless, onFree, words, g, pace, children }: {
+  ladder: Ladder<string>;
+  mode: "puzzle" | "endless" | "free";
+  stage: number;
+  level?: GameLevel;
+  streak?: number;
+  onPuzzle: (stage: number) => void;
+  onEndless?: (level: GameLevel) => void;
+  onFree?: () => void;
+  words: { puzzle: string; locked: string; free?: string };
+  g: GameWords;
+  pace?: ReactNode;
+  children?: ReactNode;
+}) {
+  const { t } = useI18n();
+  return (
+    <>
+      <LadderBar stars={ladder.stars} current={mode === "puzzle" ? stage : null} onPick={onPuzzle} words={words}>
+        {onEndless && <Toggle on={mode === "endless"} onClick={() => onEndless(level ?? 1)}>∞ {g.endless}</Toggle>}
+        {onFree && <Toggle on={mode === "free"} onClick={onFree}>✏️ {words.free}</Toggle>}
+      </LadderBar>
+      {mode === "endless" && onEndless ? (
+        <div className="live-bar">
+          {GAME_LEVELS.map((l) => (
+            <Toggle key={l} on={level === l} onClick={() => onEndless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
+          ))}
+          <span className="est-streak">{pace}{fill(g.streak, { n: streak ?? 0, best: ladder.best })}</span>
+        </div>
+      ) : (
+        children
+      )}
+    </>
+  );
+}
+
+/** A round's questions as dots: green right (or close enough), orange not, ringed blue the one being asked. */
+export function RoundDots({ results, i, size }: { results: boolean[]; i: number; size: number }) {
+  return (
+    <span className="est-dots" aria-label={`${i + 1} / ${size}`}>
+      {Array.from({ length: size }, (_, k) => (
+        <i key={k} className={k < results.length ? (results[k] ? "ok" : "off") : k === i ? "now" : ""} />
+      ))}
+    </span>
+  );
+}
+
+/**
+ * The button that moves on: to the next question of a round (`finished` false), to the next puzzle or round, or after
+ * the last one to the same again; in the endless run, to the next puzzle.
+ */
+export function Onward({ mode, stage, size, rounds, finished = true, onClick, g }: {
+  mode: "puzzle" | "endless" | "free";
+  stage: number;
+  size: number;
+  rounds?: boolean;
+  finished?: boolean;
+  onClick: () => void;
+  g: GameWords;
+}) {
+  const word = mode === "endless" || !finished ? g.next : stage + 1 < size ? (rounds ? g.nextRound : g.next) : g.again;
+  return <button className="live-btn on" onClick={onClick}>{word} →</button>;
+}
+
+/** The discoveries made so far out of all of them; the tooltip names the ones made. */
+export function Found({ ladder, of, notices, g }: { ladder: Ladder<string>; of: number; notices: Record<string, string>; g: GameWords }) {
+  return (
+    <span className="geo-found" title={ladder.found.map((k) => notices[k]).join("\n")}>
+      {fill(g.found, { n: ladder.found.length, of })}
+    </span>
   );
 }
 

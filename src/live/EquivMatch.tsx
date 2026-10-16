@@ -3,7 +3,6 @@
 // and stay, and two that don't go together flash red. Clearing the board with no misses earns three stars. The endless
 // run deals board after board and keeps a streak of groups made without a miss.
 import { useRef, useState } from "react";
-import { useI18n } from "../i18n";
 import {
   EQ_LADDER,
   EQ_NOTICES,
@@ -19,11 +18,10 @@ import {
 } from "../math/equivMatch";
 import { withBest, withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, LadderBar, SoundToggle, starText, useLadder } from "./ladderUi";
-import { fill, FONT, INK, SvgFrac, Toggle, type PieceProps } from "./ui";
+import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { fill, FONT, INK, SvgFrac, type PieceProps } from "./ui";
 
 const [CW, CH, GAP] = [132, 92, 12];
-const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 function Face({ c, x, y }: { c: Card; x: number; y: number }) {
   const [cx, cy] = [x + CW / 2, y + CH / 2];
@@ -33,8 +31,7 @@ function Face({ c, x, y }: { c: Card; x: number; y: number }) {
 }
 
 export function EquivMatch({ state: d, set, w: words, svgRef }: PieceProps<"equivMatch">) {
-  const w = words.equivMatch;
-  const { t } = useI18n();
+  const [w, g] = [words.equivMatch, words.game];
   const [ladder, keep] = useLadder("zeno.equivmatch.v1", EQ_LADDER.length, EQ_NOTICES);
   const [cheer, setCheer] = useState(0);
   const started = useRef(performance.now());
@@ -81,7 +78,7 @@ export function EquivMatch({ state: d, set, w: words, svgRef }: PieceProps<"equi
   };
   const go = (stage: number) => restart({ mode: "puzzle", stage });
   const endless = (l: EqLevel) => restart({ mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? restart({ seed: newSeed() }) : go(d.stage + 1 < EQ_LADDER.length ? d.stage + 1 : d.stage));
+  const onward = () => (d.mode === "endless" ? restart({ seed: newSeed() }) : go(nextStage(d.stage, EQ_LADDER.length)));
 
   const missed = d.said?.kind === "miss" ? [d.said.a, d.said.b] : [];
   const stars = eqStars(d.misses);
@@ -92,12 +89,9 @@ export function EquivMatch({ state: d, set, w: words, svgRef }: PieceProps<"equi
     : size === 3 ? w.hintThrees : w.hint;
   return (
     <>
-      <LadderBar stars={ladder.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
-        <Toggle on={d.mode === "endless"} onClick={() => endless(d.level)}>∞ {w.endless}</Toggle>
-      </LadderBar>
-      <span className="est-streak">
-        {d.mode === "endless" ? fill(w.streak, { n: d.streak, best: ladder.best }) : fill(w.misses, { n: d.misses })}
-      </span>
+      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g}>
+        <span className="est-streak">{fill(w.misses, { n: d.misses })}</span>
+      </GameNav>
       <div className="geo-stage-wrap">
         <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={size === 3 ? w.hintThrees : w.hint}>
           <rect width={W} height={H} fill="#fff" />
@@ -117,18 +111,11 @@ export function EquivMatch({ state: d, set, w: words, svgRef }: PieceProps<"equi
         {cheer > 0 && done && <Cheer key={cheer} text={starText(stars)} />}
       </div>
       <div className="live-bar">
-        {d.mode === "endless" &&
-          ([1, 2, 3] as const).map((l) => (
-            <Toggle key={l} on={d.level === l} onClick={() => endless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
-        {done && <button className="live-btn on" onClick={onward}>{d.mode === "endless" || d.stage + 1 < EQ_LADDER.length ? w.next : w.again} →</button>}
-        <SoundToggle title={w.sound} />
+        {done && <Onward mode={d.mode} stage={d.stage} size={EQ_LADDER.length} onClick={onward} g={g} />}
+        <SoundToggle title={g.sound} />
       </div>
       <p className={d.said?.kind === "notice" ? "live-said notice" : d.said?.kind === "done" ? "live-said ok" : d.said?.kind === "miss" ? "live-said" : "live-hint"}>
-        {said}{" "}
-        <span className="geo-found" title={ladder.found.map((k) => w.notices[k]).join("\n")}>
-          {fill(w.found, { n: ladder.found.length, of: EQ_NOTICES.length })}
-        </span>
+        {said} <Found ladder={ladder} of={EQ_NOTICES.length} notices={w.notices} g={g} />
       </p>
     </>
   );
