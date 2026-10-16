@@ -131,7 +131,7 @@ test("the practice question: its answer is the shape, its mistakes are named, it
 test("the ladder's puzzles are the practice questions of their level and seed, all different", () => {
   const goals = GEO_LADDER.map((s, i) => {
     const t = ladderTask(i);
-    assert.deepEqual(t.play, exercise("shapeArea", s.level, s.seed, w).play, `puzzle ${i + 1}`);
+    assert.deepEqual({ kind: "grid", ...t.play }, exercise("shapeArea", s.level, s.seed, w).play, `puzzle ${i + 1}`);
     return JSON.stringify(t.play.goal);
   });
   assert.equal(new Set(goals).size, GEO_LADDER.length);

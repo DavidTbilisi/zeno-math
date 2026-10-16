@@ -350,8 +350,8 @@ A smaller dry run is part of `npm test`, so CI checks the whole pipeline on ever
 
 ## Answer checker
 
-A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 370 typed answers to questions from
-all 45 skills, each marked the way a teacher would:
+A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 385 typed answers to questions from
+all 46 skills, each marked the way a teacher would:
 
 - correct;
 - close (a rounding slip);
@@ -362,12 +362,12 @@ all 45 skills, each marked the way a teacher would:
 
 | teacher \ checker | correct | close | wrong | form |
 |---|---|---|---|---|
-| correct (173) | 170 | 0 | 1 | 2 |
-| close (16) | 0 | 0 | 3 | 13 |
-| wrong (138) | 0 | 0 | 138 | 0 |
-| form (43) | 2 | 0 | 8 | 33 |
+| correct (180) | 177 | 0 | 1 | 2 |
+| close (19) | 0 | 3 | 3 | 13 |
+| wrong (141) | 0 | 0 | 141 | 0 |
+| form (45) | 2 | 0 | 8 | 35 |
 
-The checker agrees 92.2 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+The checker agrees 92.5 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
 
 - `13*17` for "work out 13 × 17";
 - an integral without `+ C`.
@@ -376,8 +376,8 @@ It rejects one right answer: `50%` as a probability.
 
 Its other disagreements are mild:
 
-- **Rounding slips are sent back, not marked close.** The checker never gives "close", so a slip costs a retry
-  rather than a mark.
+- **Rounding slips are sent back, not marked close.** The checker gives "close" only to a pin put on a number line
+  within 10 % of the line's length, so elsewhere a slip costs a retry rather than a mark.
 - **A rounded decimal for an exact answer is marked wrong.** A teacher would ask for the exact value instead.
 - **A few forms it can't read come back as unreadable**, such as `76.24 to 82.16`.
 
@@ -389,7 +389,7 @@ wrong and counts as a miss; in practice the student also reads what the slip was
 give no feedback, so the names appear only in the exports' analysis.
 
 38 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 38,
-and names none in the 100 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
+and names none in the 103 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
 found in students' answers, so this says what the checker can recognise, not how often students make each mistake.
 
 Building the corpus found two real faults, now fixed:

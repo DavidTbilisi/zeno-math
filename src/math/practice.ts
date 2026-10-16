@@ -12,6 +12,7 @@ import { tUpper, zUpper } from "./inference";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
+import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
 import { compareSign, fracSign, samePieces, type CompareSign, type Frac as Fraction } from "./live";
 import type { MistakeId } from "./mistakes";
 import { AREAS, SKILLS, type Area, type SkillId } from "./practiceSkills";
@@ -21,10 +22,10 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape";
+  | "inequality" | "standard" | "sign" | "shape" | "pin";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -43,7 +44,11 @@ type Answer = (
   | { k: "sign"; v: CompareSign }
   /** A shape made on a dot grid, typed as its corners ("poly:1,1;5,1;5,4"); sample is one that does it. */
   | { k: "poly"; play: GeoPlay; sample: string }
+  /** A pin put on a number line ("pin:36.8"): right within 5 % of the line of v, close within 10 %. */
+  | { k: "pin"; play: PinPlay; v: number }
 ) & { traps?: Trap[] };
+/** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
+export type Play = ({ kind: "grid" } & GeoPlay) | ({ kind: "pin" } & PinPlay);
 
 export type Exercise = {
   skill: SkillId;
@@ -64,8 +69,8 @@ export type Exercise = {
   solution?: { kind: SolutionKind; spec: unknown };
   /** Worked lines when no tool draws the solution. */
   steps?: string[];
-  /** Answered by making a shape on a dot grid rather than typing (the answer is still text: its corners). */
-  play?: GeoPlay;
+  /** Answered by doing rather than typing: a shape made on a grid, a pin put on a line (the answer is still text). */
+  play?: Play;
 };
 
 export type PracticeWords = {
@@ -182,6 +187,7 @@ export type PracticeWords = {
     shapeRect: string;
     shapeTriangle: string;
     shapeAreaPerim: string;
+    estimatePlace: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -205,6 +211,7 @@ export type PracticeWords = {
     notStandard: string;
     notSign: string;
     shape: Record<PolyProblem, string>;
+    pin: { unreadable: string; offLine: string; left: string; right: string };
   };
   answer: string;
   answers: string;
@@ -1280,12 +1287,38 @@ const GENS: Record<SkillId, Gen> = {
       prompt,
       q: L === 3 ? `A = ${A}, \\quad P = ${goal.perim}` : `A = ${A}`,
       pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${grid.body}</g>`, h: grid.h, w: grid.w },
-      play: t.play,
+      play: { kind: "grid", ...t.play },
       answer: { k: "poly", play: t.play, sample: encodePoly(t.sample), traps },
       show: lines.join(", \\quad "),
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  estimateLine(r, L, w) {
+    // Where a number goes on a line with only its ends labelled; the answer is the pin's place (src/math/estimate.ts).
+    const t = estimateTask(L, r.next);
+    const { from, to } = t.play;
+    const share = shareAlong(t.play, t.v);
+    const s3 = Number(share.toFixed(3));
+    const eq = s3 === share ? "=" : "\\approx";
+    const lines: string[] = [];
+    if (from < 0) lines.push(`\\frac{${t.tex} - (${from})}{${to} - (${from})} = \\frac{${t.v - from}}{${to - from}} ${eq} ${s3}`);
+    else if (to !== 1) lines.push(`\\frac{${t.tex}}{${to}} ${eq} ${s3}`);
+    else if (t.tex.startsWith("\\frac")) lines.push(`${t.tex} ${eq} ${s3}`);
+    lines.push(`${s3} ${share < 0.5 ? "<" : share > 0.5 ? ">" : "="} \\frac{1}{2}`);
+    const line = lineSvg(t.play);
+    return {
+      prompt: fill(w.prompts.estimatePlace, { a: numText(from), b: numText(to) }),
+      q: t.tex,
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${line.body}</g>`, h: line.h, w: line.w },
+      play: { kind: "pin", ...t.play },
+      answer: { k: "pin", play: t.play, v: t.v },
+      show: lines[0],
+      plain: encodePin(t.play, t.v),
+      format: "pin",
+      solution: { kind: "pin", spec: { play: t.play, v: t.v, text: t.text, steps: lines } },
     };
   },
 
@@ -2777,7 +2810,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -2883,6 +2916,13 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         const v = judgePoly(a.play, src);
         return v.ok ? v : v.problem ? { ok: false, why: w.reasons.shape[v.problem] } : { ok: false };
       }
+      case "pin": {
+        const v = judgePin(a.play, a.v, src);
+        if (v.ok) return v;
+        if ("problem" in v) return { ok: false, why: w.reasons.pin[v.problem] };
+        // Which way it was off is said, whether it was close or not.
+        return { ok: false, close: v.close || undefined, hint: w.reasons.pin[v.side] };
+      }
       case "ineq": {
         const got = readIneq(src);
         if (!got) return { ok: false, why: w.reasons.notIneq };
@@ -2904,7 +2944,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
-  if (ex.answer.k === "poly") return null;
+  if (ex.answer.k === "poly" || ex.answer.k === "pin") return null;
   try {
     if (ex.answer.k === "set" || ex.answer.k === "tuple") return parts(s).map((p) => tex(parseE(bare(p)))).join(", \\; ");
     if (ex.answer.k === "sign") {

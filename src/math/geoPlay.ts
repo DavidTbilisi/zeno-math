@@ -4,6 +4,7 @@
 // and what the geoboard on the board adds: a ladder of puzzles with stars, and things worth noticing while playing.
 // Kept apart from the practice generators so the board can load it without the maths typesetting.
 import { polyArea2, type Pt } from "./geometry";
+import { isOpen, readLadder, withFound as foundIn, withStars, type Ladder } from "./ladder";
 import { rng } from "./random";
 
 export type GeoPt = Pt;
@@ -233,25 +234,10 @@ export type LiveGeoboard = {
 /** Three stars first time without a peek at the numbers; a miss or two, or a peek, cost one each, down to one. */
 export const starsFor = (misses: number, peeked: boolean) => Math.max(1, (misses === 0 ? 3 : misses <= 2 ? 2 : 1) - (peeked ? 1 : 0));
 
-export type GeoProgress = { stars: number[]; found: NoticeKey[] };
-export function readProgress(json: string | null): GeoProgress {
-  try {
-    const p = JSON.parse(json ?? "null") as Partial<GeoProgress> | null;
-    const stars = GEO_LADDER.map((_, i) => {
-      const s = Array.isArray(p?.stars) ? Number(p.stars[i]) : 0;
-      return s >= 1 && s <= 3 ? Math.floor(s) : 0;
-    });
-    const found = Array.isArray(p?.found) ? NOTICES.filter((k) => p.found!.includes(k)) : [];
-    return { stars, found };
-  } catch {
-    return { stars: GEO_LADDER.map(() => 0), found: [] };
-  }
-}
-/** The best stars of each puzzle are kept. */
-export const withStars = (p: GeoProgress, stage: number, stars: number): GeoProgress => ({ ...p, stars: p.stars.map((s, i) => (i === stage ? Math.max(s, stars) : s)) });
-export const withFound = (p: GeoProgress, k: NoticeKey): GeoProgress => (p.found.includes(k) ? p : { ...p, found: NOTICES.filter((n) => n === k || p.found.includes(n)) });
-/** A puzzle opens once the one before it has a star. */
-export const isOpen = (p: GeoProgress, stage: number) => stage === 0 || p.stars[stage - 1] > 0;
+export type GeoProgress = Ladder<NoticeKey>;
+export const readProgress = (json: string | null): GeoProgress => readLadder(json, GEO_LADDER.length, NOTICES);
+export const withFound = (p: GeoProgress, k: NoticeKey) => foundIn(p, k, NOTICES);
+export { isOpen, withStars };
 
 /** Things worth noticing in free play, each said once a shape shows it. */
 export type NoticeKey = "square" | "tiltedSquare" | "sameArea" | "samePerim";

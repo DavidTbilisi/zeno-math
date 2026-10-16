@@ -12,53 +12,31 @@ import {
   GEO_COLS,
   GEO_LADDER,
   GEO_ROWS,
-  isOpen,
   judgePoly,
   ladderTask,
   measurePoly,
   notice,
   NOTICES,
-  readProgress,
   shapeProblem,
   starsFor,
   withFound,
   withStars,
-  type GeoProgress,
   type GeoPt,
 } from "../math/geoPlay";
-import { muted, play, setMuted } from "./juice";
+import { play } from "./juice";
 import { GeoGrid } from "./GeoGrid";
+import { Cheer, LadderBar, SoundToggle, starText as stars, useLadder } from "./ladderUi";
 import { fill, Toggle, type PieceProps } from "./ui";
-
-const KEY = "zeno.geoplay.v1";
-function load(): GeoProgress {
-  try {
-    return readProgress(localStorage.getItem(KEY));
-  } catch {
-    return readProgress(null);
-  }
-}
-function save(p: GeoProgress) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(p));
-  } catch {
-    // private mode: the stars last until the page closes
-  }
-}
-
-const stars = (n: number) => "★".repeat(n) + "☆".repeat(3 - n);
 
 export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboard">) {
   const w = words.geoboard;
   const { t } = useI18n();
   const pw = t.pracWords;
-  const [progress, setProgress] = useState(load);
-  const [quiet, setQuiet] = useState(muted);
+  const [progress, keep] = useLadder("zeno.geoplay.v1", GEO_LADDER.length, NOTICES);
   // Bumped on every puzzle done, so the celebration plays again.
   const [cheer, setCheer] = useState(0);
   const task = d.mode === "puzzle" ? ladderTask(d.stage) : null;
   const goal = task?.play.goal;
-  const keep = (p: GeoProgress) => (setProgress(p), save(p));
 
   const prompt = !task || !goal
     ? w.freeHint
@@ -118,25 +96,9 @@ export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboa
 
   return (
     <>
-      <div className="live-bar geo-ladder">
+      <LadderBar stars={progress.stars} current={d.mode === "puzzle" ? d.stage : null} onPick={go} words={w}>
         <Toggle on={d.mode === "free"} onClick={() => set({ ...d, mode: "free", area: true, perim: true, said: null })}>✏️ {w.free}</Toggle>
-        {GEO_LADDER.map((_, i) => {
-          const open = isOpen(progress, i);
-          return (
-            <button
-              key={i}
-              className={`live-btn geo-stage${d.mode === "puzzle" && d.stage === i ? " on" : ""}`}
-              disabled={!open}
-              title={open ? fill(w.puzzle, { n: i + 1 }) : w.locked}
-              aria-label={open ? `${fill(w.puzzle, { n: i + 1 })}: ${progress.stars[i]} ★` : w.locked}
-              onClick={() => go(i)}
-            >
-              <b>{i + 1}</b>
-              <small>{open ? stars(progress.stars[i]) : "🔒"}</small>
-            </button>
-          );
-        })}
-      </div>
+      </LadderBar>
       <p className="live-said geo-prompt">{prompt}</p>
       <div className="geo-stage-wrap">
         <GeoGrid
@@ -151,12 +113,7 @@ export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboa
           label={prompt}
           disabled={done}
         />
-        {cheer > 0 && done && (
-          <div key={cheer} className="celebrate" aria-hidden="true">
-            {Array.from({ length: 18 }, (_, i) => <i key={i} style={{ "--i": i } as React.CSSProperties} />)}
-            <b>{stars(d.said?.kind === "right" ? d.said.stars : 0)}</b>
-          </div>
-        )}
+        {cheer > 0 && done && <Cheer key={cheer} text={stars(d.said?.kind === "right" ? d.said.stars : 0)} />}
       </div>
       <div className="live-bar">
         <Toggle on={d.area} onClick={() => toggle("area")} title={d.mode === "puzzle" ? w.peek : undefined}>▦ {w.area}</Toggle>
@@ -169,7 +126,7 @@ export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboa
           ) : (
             <button className="live-btn on" disabled={d.pts.length < 3} onClick={check}>{w.check}</button>
           ))}
-        <Toggle on={!quiet} title={w.sound} onClick={() => (setMuted(!quiet), setQuiet(!quiet))}>{quiet ? "🔇" : "🔊"}</Toggle>
+        <SoundToggle title={w.sound} />
       </div>
       <p className={said ? `live-said${d.said?.kind === "right" ? " ok" : d.said?.kind === "notice" ? " notice" : ""}` : "live-hint"}>
         {said ?? (d.mode === "puzzle" ? w.hint : allDone ? w.allDone : w.hint)}

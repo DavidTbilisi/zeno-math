@@ -17,8 +17,9 @@ import {
 import { renderSolution } from "../math/practiceSolve";
 import { svgToDataUrl } from "../math/svg";
 import { Countdown } from "./Countdown";
-import { GeoAnswer } from "./GeoAnswer";
+import { PlayAnswer } from "./PlayAnswer";
 import { muted, play as playSound, setMuted } from "../live/juice";
+import { Cheer } from "../live/ladderUi";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
@@ -512,7 +513,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
           <label className="field">
             <span>{w.ui.answerHere} <span className="hint">({w.formats[cur.ex.format]})</span></span>
             {cur.ex.play ? (
-              <GeoAnswer
+              <PlayAnswer
                 play={cur.ex.play}
                 value={input}
                 disabled={done !== null}
@@ -571,10 +572,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               {quiet ? "🔇" : "🔊"}
             </button>
             {cheer > 0 && done === "solved" && CHEER_AT.includes(score.streak) && (
-              <div key={cheer} className="celebrate small" aria-hidden="true">
-                {Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--i": i } as React.CSSProperties} />)}
-                <b>🔥 {score.streak}</b>
-              </div>
+              <Cheer key={cheer} text={`🔥 ${score.streak}`} small />
             )}
           </div>
           {verdict && (

@@ -2713,6 +2713,120 @@
    "input": "poly:0,0;4,0;4,2;1,4",
    "label": "form",
    "note": "a slanted side"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 1,
+   "seed": 7,
+   "input": "pin:1",
+   "label": "correct"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 1,
+   "seed": 7,
+   "input": "pin:1.4",
+   "label": "correct",
+   "note": "within 5 % of the line"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 1,
+   "seed": 7,
+   "input": "pin:1.8",
+   "label": "close",
+   "note": "within 10 % of the line"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 1,
+   "seed": 7,
+   "input": "pin:4",
+   "label": "wrong"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 1,
+   "seed": 7,
+   "input": "pin:12",
+   "label": "form",
+   "note": "off the line"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 2,
+   "seed": 7,
+   "input": "pin:8",
+   "label": "correct"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 2,
+   "seed": 7,
+   "input": "8",
+   "label": "correct",
+   "note": "the number alone"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 2,
+   "seed": 7,
+   "input": "pin:12",
+   "label": "correct",
+   "note": "within 5 % of the line"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 2,
+   "seed": 7,
+   "input": "pin:15",
+   "label": "close",
+   "note": "within 10 % of the line"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 2,
+   "seed": 7,
+   "input": "pin:30",
+   "label": "wrong"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 3,
+   "seed": 7,
+   "input": "pin:0.667",
+   "label": "correct"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 3,
+   "seed": 7,
+   "input": "pin:0.7",
+   "label": "correct",
+   "note": "within 5 % of the line"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 3,
+   "seed": 7,
+   "input": "pin:0.58",
+   "label": "close",
+   "note": "within 10 % of the line"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 3,
+   "seed": 7,
+   "input": "pin:0.3",
+   "label": "wrong"
+  },
+  {
+   "skill": "estimateLine",
+   "level": 3,
+   "seed": 7,
+   "input": "pin:here",
+   "label": "form",
+   "note": "unreadable"
   }
  ]
 }
