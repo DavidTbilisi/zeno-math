@@ -33,6 +33,9 @@ function wrong(ex: Exercise): string {
     case "poly":
       // One square: never the shape asked for.
       return "poly:0,0;1,0;1,1;0,1";
+    case "target":
+      // One card alone is never the target.
+      return String(a.puzzle.cards[0]);
     case "pin":
       // The far end of the line.
       return `pin:${a.v - a.play.from > (a.play.to - a.play.from) / 2 ? a.play.from : a.play.to}`;

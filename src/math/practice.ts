@@ -12,6 +12,7 @@ import { tUpper, zUpper } from "./inference";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
+import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
 import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
 import { compareSign, fracSign, samePieces, type CompareSign, type Frac as Fraction } from "./live";
@@ -26,7 +27,7 @@ export const LEVELS: Level[] = [1, 2, 3];
 export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -47,6 +48,8 @@ type Answer = (
   | { k: "poly"; play: GeoPlay; sample: string }
   /** A pin put on a number line ("pin:36.8"): right within 5 % of the line of v, close within 10 %. */
   | { k: "pin"; play: PinPlay; v: number }
+  /** A sum of the cards (each at most once, every one when `all`) that makes the target. */
+  | { k: "target"; puzzle: Pick<TargetPuzzle, "cards" | "target" | "ops" | "all">; sample: string }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
 export type Play =
@@ -194,6 +197,8 @@ export type PracticeWords = {
     shapeAreaPerim: string;
     estimatePlace: string;
     quickLook: string;
+    makeTarget: string;
+    makeTargetAll: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -218,6 +223,7 @@ export type PracticeWords = {
     notSign: string;
     shape: Record<PolyProblem, string>;
     pin: { unreadable: string; offLine: string; left: string; right: string };
+    target: { unreadable: string; other: string; notAll: string; op: string; divZero: string; makes: string };
   };
   answer: string;
   answers: string;
@@ -334,6 +340,10 @@ const bracket = (a: number, b: number) => `(${polyStr([b, a])})`;
 const T = (src: string) => tex(parseE(src));
 /** A number as a typed answer: 3/4, -2. */
 const plainFrac = (f: Frac) => (f.d === 1 ? String(f.n) : `${f.n}/${f.d}`);
+/** The signs of a sum as words list them: × and ÷, a true minus. */
+const OP_SIGN = { "+": "+", "-": "−", "*": "×", "/": "÷" } as const;
+/** A sum of cards in LaTeX: (3 + 5) \times 2. */
+const sumTex = (e: Parameters<typeof sumText>[0]) => sumText(e).replace(/×/g, "\\times").replace(/÷/g, "\\div").replace(/−/g, "-");
 /** An area given as twice itself, in LaTeX: 7 or 7\frac{1}{2}. */
 const areaTex = (area2: number) => (area2 % 2 ? `${area2 > 1 ? (area2 - 1) / 2 : ""}\\frac{1}{2}` : String(area2 / 2));
 /** p + q√m in LaTeX. */
@@ -1300,6 +1310,22 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  makeTarget(r, L, w) {
+    // Cards and a target, and a sum of the cards that makes it (src/math/target.ts); the answer is the sum, typed.
+    const p = targetPuzzle(L, r.next);
+    const vars = { t: p.target, cards: p.cards.join(", "), ops: p.ops.map((o) => OP_SIGN[o]).join(" ") };
+    const solved = `${sumTex(parseSum(p.sample)!)} = ${p.target}`;
+    return {
+      prompt: fill(p.all ? w.prompts.makeTargetAll : w.prompts.makeTarget, vars),
+      q: `${p.cards.join(", \\quad ")} \\quad \\Rightarrow \\quad ${p.target}`,
+      answer: { k: "target", puzzle: { cards: p.cards, target: p.target, ops: p.ops, all: p.all }, sample: p.sample },
+      show: solved,
+      plain: p.sample,
+      format: "target",
+      steps: [solved],
     };
   },
 
@@ -2836,7 +2862,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -2942,6 +2968,15 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         const v = judgePoly(a.play, src);
         return v.ok ? v : v.problem ? { ok: false, why: w.reasons.shape[v.problem] } : { ok: false };
       }
+      case "target": {
+        const v = judgeTarget(a.puzzle, src);
+        if (v.ok) return v;
+        const ops = a.puzzle.ops.map((o) => OP_SIGN[o]).join(" ");
+        if ("problem" in v) return { ok: false, why: fill(w.reasons.target[v.problem], { ops }) };
+        // Worked from left to right, it would have made the target: the order of operations is the slip.
+        if (v.leftToRight) return { ok: false, mistake: "leftToRight", hint: w.mistakes.leftToRight };
+        return { ok: false, hint: fill(w.reasons.target.makes, { v: qText(v.makes), t: a.puzzle.target }) };
+      }
       case "pin": {
         const v = judgePin(a.play, a.v, src);
         if (v.ok) return v;
@@ -2971,6 +3006,12 @@ export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
   if (ex.answer.k === "poly" || ex.answer.k === "pin") return null;
+  if (ex.answer.k === "target") {
+    // The sum as maths, and what it makes so far.
+    const e = parseSum(s);
+    const v = e && valueOf(e);
+    return e && `${sumTex(e)}${v ? ` = ${v[1] === 1 ? v[0] : `\\frac{${v[0]}}{${v[1]}}`}` : ""}`;
+  }
   try {
     if (ex.answer.k === "set" || ex.answer.k === "tuple") return parts(s).map((p) => tex(parseE(bare(p)))).join(", \\; ");
     if (ex.answer.k === "sign") {

@@ -4,7 +4,8 @@
 // outbox, like practice, so a dropped connection loses nothing.
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
-import { SignPicks } from "./ui";
+import { SignPicks, TargetPicks } from "./ui";
+import { addPiece, dropPiece } from "../math/target";
 import { AnswerField, PlayAnswer } from "./PlayAnswer";
 import { newId, type ClassPlan, type Outbox, type Student, type TestAnswer } from "../learner";
 import { fill } from "../math/text";
@@ -146,6 +147,17 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
             setMessage(null);
             inputRef.current?.focus();
           }}
+        />
+      )}
+      {ex.answer.k === "target" && (
+        <TargetPicks
+          cards={ex.answer.puzzle.cards}
+          ops={ex.answer.puzzle.ops}
+          onPick={(s) => {
+            setInput((x) => addPiece(x, s));
+            setMessage(null);
+          }}
+          onBack={() => setInput(dropPiece)}
         />
       )}
       <div className="field-row">

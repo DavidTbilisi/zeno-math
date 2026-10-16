@@ -23,7 +23,8 @@ import { Cheer } from "../live/ladderUi";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
-import { Segmented, SignPicks, startOr, Tabs } from "./ui";
+import { Segmented, SignPicks, startOr, Tabs, TargetPicks } from "./ui";
+import { addPiece, dropPiece } from "../math/target";
 
 type Mode = "practise" | "sheet";
 type Pick = SkillId | "mixed";
@@ -558,6 +559,21 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
                 setInput(s);
                 setVerdict(null);
                 inputRef.current?.focus();
+              }}
+            />
+          )}
+          {cur.ex.answer.k === "target" && !done && (
+            <TargetPicks
+              cards={cur.ex.answer.puzzle.cards}
+              ops={cur.ex.answer.puzzle.ops}
+              onPick={(s) => {
+                setInput((x) => addPiece(x, s));
+                setVerdict(null);
+                inputRef.current?.focus();
+              }}
+              onBack={() => {
+                setInput(dropPiece);
+                setVerdict(null);
               }}
             />
           )}

@@ -16,6 +16,7 @@ import { Patterns } from "./Patterns";
 import { QuickLook } from "./QuickLook";
 import { Rubik } from "./Rubik";
 import { Soroban } from "./Soroban";
+import { Target } from "./Target";
 import type { PieceProps } from "./ui";
 
 export type LiveHost = {
@@ -50,6 +51,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   geoboard: Geoboard,
   estimate: Estimate,
   quickLook: QuickLook,
+  target: Target,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

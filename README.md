@@ -431,7 +431,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 47 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 48 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -446,6 +446,11 @@ UI in English, Russian and Georgian.
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
     and fractions; the sign is typed or picked from three buttons, and the worked solution lays two pencils across the
     towers to draw it
+  - Make the target: number cards and a target, answered with a sum of the cards, typed or tapped from buttons — three
+    cards with + and −, then four with + − ×, then all four with + − × ÷ (like the 24 game). The sum is worked out
+    exactly in fractions with × and ÷ first, and the preview shows what it makes as it is typed; a number not on the
+    cards, a card twice, a sign the level doesn't allow or a card left out is sent back, and a sum that hits the
+    target only when worked from left to right is named as that slip
   - Quick look: dots shown for a moment when Look is pressed, then hidden, and the number typed — a die or scattered
     dots up to 6, then ten frames, two dice or two groups up to 12, then two ten frames or three groups up to 20 (one
     more look after a wrong answer); the worked solution colours the groups and adds them (10 − 2 = 8, 4 + 3 + 5 = 12)
@@ -551,6 +556,10 @@ UI in English, Russian and Georgian.
   - *Comparing fractions*: the same for two fractions, as bars of equal height cut into 1 to 12 parts with the shaded
     parts as the towers; "Same-size pieces" cuts both bars into the lowest common parts (2/3 and 3/4 as 8 and 9
     twelfths)
+  - *Make the target*: tap the cards and signs to build a sum, and what it makes shows as it grows. A sum that makes
+    the target earns two stars, a second, different way the third (3 + 4 and 4 + 3 are one way), and the hint — the
+    first step of one way — leaves one; the endless run keeps a streak of puzzles made without a hint. Four
+    discoveries (two ways, every card used, made within 15 seconds, ten in a row)
   - *Quick look*: dots flash and hide, and the player taps how many. Nine rounds of five (up to 6; ten frames, dice
     and groups up to 12; two frames or three groups up to 20) earn stars for how many were right, a second look
     capping them at two; the endless run's flash gets an eighth shorter with every right answer in a row. After each
@@ -843,7 +852,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (47 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (48 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -869,7 +878,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 394 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 407 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.
