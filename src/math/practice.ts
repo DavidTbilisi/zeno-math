@@ -14,6 +14,7 @@ import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
 import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
+import { eqQuestion, partsSvg } from "./equivMatch";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
 import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
@@ -52,7 +53,7 @@ type Answer = (
   | { k: "pin"; play: PinPlay; v: number }
   /** A sum of the cards (each at most once, every one when `all`) that makes the target. */
   | { k: "target"; puzzle: Pick<TargetPuzzle, "cards" | "target" | "ops" | "all">; sample: string }
-  /** The benchmark nearest a number, picked from `options`. */
+  /** One of the options offered, picked: the benchmark nearest a number, or the one equal to a fraction. */
   | { k: "near"; options: Bench[]; right: number }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
@@ -206,6 +207,9 @@ export type PracticeWords = {
     closerTo: string;
     closerToCalc: string;
     makeWhole: string;
+    equivShaded: string;
+    equivFraction: string;
+    equivDecimal: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -1318,6 +1322,28 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  equivalent(r, L, w) {
+    // The one of four equal to a fraction (src/math/equivMatch.ts); the wrong ones are slips that get named.
+    const t = eqQuestion(L, r.next);
+    const best = t.options[t.right];
+    const f = `\\frac{${t.n}}{${t.d}}`;
+    const steps =
+      L === 1 ? [`${t.n} + ${t.d - t.n} = ${t.d}, \\quad ${f}`]
+      : L === 2 ? [`${f} = \\frac{${t.n} \\times ${t.k}}{${t.d} \\times ${t.k}} = ${best.tex}`]
+      : [`${t.n} \\div ${t.d} = ${Number((t.n / t.d).toFixed(3))}`, `${Number((t.n / t.d).toFixed(3))} = ${Number(((t.n / t.d) * 100).toFixed(1))}\\%`];
+    const pic = L === 1 ? partsSvg(t.n, t.d) : null;
+    return {
+      prompt: L === 1 ? w.prompts.equivShaded : fill(L === 2 ? w.prompts.equivFraction : w.prompts.equivDecimal, { f: `${t.n}/${t.d}` }),
+      q: L === 1 ? "" : f,
+      ...(pic ? { pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic}</g>`, h: 50, w: 240 } } : {}),
+      answer: { k: "near", options: t.options, right: t.right, traps: t.traps.map((x) => ({ id: x.id, a: { k: "near", options: t.options, right: x.at }, vars: x.vars })) },
+      show: L === 1 ? f : `${f} = ${best.tex}`,
+      plain: best.plain,
+      format: "near",
+      steps,
     };
   },
 

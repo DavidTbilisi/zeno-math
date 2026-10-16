@@ -855,6 +855,18 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function equivMatchPreview(): Piece[] {
+  // Four cards: 3/4, 0.75, 75 % and a bar three quarters shaded.
+  const card = (x: number, y: number) => rect(x, y, 90, 56, { fill: FILL.gray, width: 1.5 }, true);
+  return [
+    card(0, 0), text(45, 34, "3/4", 20),
+    card(104, 0), text(149, 34, "0.75", 20),
+    card(0, 70), text(45, 104, "75%", 20),
+    card(104, 70),
+    ...[0, 1, 2, 3].map((i) => rect(112 + i * 18.5, 86, 18.5, 24, { fill: i < 3 ? FILL.blue : "#ffffff", width: 1.5 })),
+  ];
+}
+
 function fractionWallPreview(): Piece[] {
   // A bar of ½ and ¼ tiles with a quarter left to fill.
   const h = 40;
@@ -1056,6 +1068,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTarget", group: "live", build: targetPreview, live: "target" },
   { id: "liveCloserTo", group: "live", build: closerToPreview, live: "closerTo" },
   { id: "liveFractionWall", group: "live", build: fractionWallPreview, live: "fractionWall" },
+  { id: "liveEquivMatch", group: "live", build: equivMatchPreview, live: "equivMatch" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

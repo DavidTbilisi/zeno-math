@@ -30,5 +30,8 @@ export const MISTAKES = [
   "sameGap",
   "areaPerimeter",
   "triangleHalf",
+  "unshadedPart",
+  "partToPart",
+  "fractionDigits",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

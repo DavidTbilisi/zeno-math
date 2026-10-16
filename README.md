@@ -431,7 +431,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 50 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 51 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -440,7 +440,7 @@ UI in English, Russian and Georgian.
   - A wrong answer that a known mistake gives is named, with a way to see it: tops and bottoms of fractions added,
     (a + b)² as a² + b², a negative power taken as a negative number, × and ÷ worked from left to right after + and −,
     digits cut off instead of rounded, an inequality's sign not turned round, the right size with the wrong sign, more
-    digits after the point taken for a bigger decimal, more pieces taken for a bigger fraction, a perimeter made for an area, and more (28 in all, in
+    digits after the point taken for a bigger decimal, more pieces taken for a bigger fraction, a perimeter made for an area, the unshaded part counted, and more (31 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -470,6 +470,10 @@ UI in English, Russian and Georgian.
     a triangle whose base × height is, is named as the mistake it is
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
+  - Equal fractions: which of four is equal — the fraction of a bar that is shaded, a fraction with bigger numbers, or
+    a fraction's decimal or percentage — typed or picked. The wrong options are the slips people make, each named when
+    picked: the unshaded part, shaded against unshaded, the same number added to top and bottom, the fraction's digits
+    read as a decimal (3/4 as 0.34)
   - Make a whole: a bar with unit-fraction tiles in it (½ + ⅓ + ? = 1), the missing fraction typed in lowest terms —
     halves, quarters and eighths, then thirds, sixths and twelfths or fifths and tenths, then targets of ¾, ⅚ or 1½.
     Tops and bottoms added (½ + ⅓ as 2/5) is named; the worked solution fills the gap with the fewest tiles
@@ -563,6 +567,10 @@ UI in English, Russian and Georgian.
   - *Comparing fractions*: the same for two fractions, as bars of equal height cut into 1 to 12 parts with the shaded
     parts as the towers; "Same-size pieces" cuts both bars into the lowest common parts (2/3 and 3/4 as 8 and 9
     twelfths)
+  - *Equal amounts*: cards to pair up — a fraction and its picture, a fraction and an equal one with bigger numbers —
+    or to put in threes: a fraction, its decimal and its percentage. Tap the cards that go together; a board cleared
+    with no misses earns three stars, and the endless run deals board after board with a streak of groups made without
+    a miss. Four discoveries (a clean board, one under 20 seconds, a board of threes with no misses, twenty in a row)
   - *Make a whole*: a bar with fraction tiles already in it and a gap to the target; tap tiles of the puzzle's family
     to fill it (tap one in the bar to take it out), too much showing red past the end. An exact fill earns two stars,
     the fewest tiles there can be three; the endless run keeps a streak of puzzles filled with the fewest tiles first
@@ -868,7 +876,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (50 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (51 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -894,7 +902,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 429 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 440 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.
