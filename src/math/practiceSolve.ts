@@ -64,6 +64,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./quickLook").DotsSolution & { steps: string[] };
       return (await import("./quickLook")).renderDots(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "wall": {
+      // The gap filled with the fewest tiles, with the written steps beneath.
+      const spec = s as import("./fractionWall").WallSolution & { steps: string[] };
+      return (await import("./fractionWall")).renderWall(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }

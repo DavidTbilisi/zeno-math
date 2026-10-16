@@ -431,7 +431,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 49 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 50 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -470,6 +470,9 @@ UI in English, Russian and Georgian.
     a triangle whose base × height is, is named as the mistake it is
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
+  - Make a whole: a bar with unit-fraction tiles in it (½ + ⅓ + ? = 1), the missing fraction typed in lowest terms —
+    halves, quarters and eighths, then thirds, sixths and twelfths or fifths and tenths, then targets of ¾, ⅚ or 1½.
+    Tops and bottoms added (½ + ⅓ as 2/5) is named; the worked solution fills the gap with the fewest tiles
   - Comparing fractions: the same bottom or one piece each with the bars drawn, then the same top, either side of a
     half and one piece short of a whole, then a common bottom; the worked solution shows the bars, the pencils across
     their shaded parts and, over a common bottom, the bars cut into the same pieces
@@ -560,6 +563,10 @@ UI in English, Russian and Georgian.
   - *Comparing fractions*: the same for two fractions, as bars of equal height cut into 1 to 12 parts with the shaded
     parts as the towers; "Same-size pieces" cuts both bars into the lowest common parts (2/3 and 3/4 as 8 and 9
     twelfths)
+  - *Make a whole*: a bar with fraction tiles already in it and a gap to the target; tap tiles of the puzzle's family
+    to fill it (tap one in the bar to take it out), too much showing red past the end. An exact fill earns two stars,
+    the fewest tiles there can be three; the endless run keeps a streak of puzzles filled with the fewest tiles first
+    time. Four discoveries (one tile that fits, three sizes in one fill, six or more of one size, ten in a row)
   - *Closer to?*: a number or a calculation and two or three benchmarks; tap the nearest, and a little line shows
     where the number really is between them. Nine rounds of eight earn stars for how many were right; in the endless
     run a bar runs down for every question, four seconds at first and a tenth less with every right answer in a row,
@@ -861,7 +868,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (49 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (50 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -887,7 +894,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 419 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 429 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.

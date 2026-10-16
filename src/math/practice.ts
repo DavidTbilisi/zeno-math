@@ -13,6 +13,7 @@ import { latexToSvg, type RenderedSvg } from "./latex";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
+import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
 import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
@@ -25,7 +26,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near";
@@ -204,6 +205,7 @@ export type PracticeWords = {
     makeTargetAll: string;
     closerTo: string;
     closerToCalc: string;
+    makeWhole: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -1316,6 +1318,32 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  makeWhole(r, L, w) {
+    // Unit-fraction tiles in a bar and the fraction missing to make the target (src/math/fractionWall.ts).
+    const t = wallTask(L, r.next);
+    const unit = (d: number) => `\\frac{1}{${d}}`;
+    const den = lcm([...t.fixed, t.target.d]);
+    const have = sumOf(t.fixed);
+    const lines = [
+      ...(t.fixed.length > 1 ? [`${t.fixed.map(unit).join(" + ")} = ${t.fixed.map((d) => `\\frac{${den / d}}{${den}}`).join(" + ")} = ${have.tex()}`] : []),
+      `${t.target.tex()} - ${have.tex()} = ${t.gap.tex()}`,
+    ];
+    // Tops added and bottoms added (½ + ⅓ as 2/5): the gap that gives.
+    const across = acrossGap(t);
+    const traps: Trap[] = across ? [{ id: "addAcross", a: num(across.gap.toNumber()), vars: { r: `${across.across.n}/${across.across.d}`, big: `1/${across.big}` } }] : [];
+    const pic = wallSvg(t, null);
+    return {
+      prompt: fill(w.prompts.makeWhole, { t: t.target.isInt() ? String(t.target.n) : `${t.target.n}/${t.target.d}` }),
+      q: `${t.fixed.map(unit).join(" + ")} + \\square = ${t.target.tex()}`,
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(t.gap.toNumber(), 1e-9, { lowest: true }), traps },
+      show: t.gap.tex(),
+      plain: `${t.gap.n}/${t.gap.d}`,
+      format: "fraction",
+      solution: { kind: "wall", spec: { task: t, steps: lines } },
     };
   },
 
