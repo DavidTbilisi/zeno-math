@@ -5,7 +5,7 @@
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
 import { SignPicks } from "./ui";
-import { PlayAnswer } from "./PlayAnswer";
+import { AnswerField, PlayAnswer } from "./PlayAnswer";
 import { newId, type ClassPlan, type Outbox, type Student, type TestAnswer } from "../learner";
 import { fill } from "../math/text";
 import { latexToSvg } from "../math/latex";
@@ -41,7 +41,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
   const card = useMemo(() => {
     if (!item) return null;
     try {
-      return svgToDataUrl(renderPractice({ area: areaOf(item.skill), skill: item.skill, level: item.level, seed: item.seed, count: 1, answers: false }, w).svg);
+      return svgToDataUrl(renderPractice({ area: areaOf(item.skill), skill: item.skill, level: item.level, seed: item.seed, count: 1, answers: false, screen: true }, w).svg);
     } catch {
       return null;
     }
@@ -101,11 +101,15 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
         {card && <img src={card} alt="" style={{ maxWidth: "100%" }} />}
         <SpokenMath text={ex.prompt} tex={ex.q} />
       </div>
-      <label className="field">
+      {/* A question answered by doing has buttons of its own: in a label, a click anywhere would press the first. */}
+      <AnswerField className="field" play={!!ex.play}>
         <span>{w.ui.answerHere} <span className="hint">({w.formats[ex.format]})</span></span>
         {ex.play ? (
           <PlayAnswer
+            key={index}
             play={ex.play}
+            look={w.ui.look}
+            onEnter={submit}
             value={input}
             label={ex.prompt}
             onChange={(s) => {
@@ -134,7 +138,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
           {typed && <img className="practice-typed" src={typed} alt="" />}
         </div>
         )}
-      </label>
+      </AnswerField>
       {ex.format === "sign" && (
         <SignPicks
           onPick={(s) => {

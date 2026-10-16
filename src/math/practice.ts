@@ -12,6 +12,7 @@ import { tUpper, zUpper } from "./inference";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
+import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
 import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
 import { compareSign, fracSign, samePieces, type CompareSign, type Frac as Fraction } from "./live";
 import type { MistakeId } from "./mistakes";
@@ -22,7 +23,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin";
@@ -48,7 +49,11 @@ type Answer = (
   | { k: "pin"; play: PinPlay; v: number }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
-export type Play = ({ kind: "grid" } & GeoPlay) | ({ kind: "pin" } & PinPlay);
+export type Play =
+  | ({ kind: "grid" } & GeoPlay)
+  | ({ kind: "pin" } & PinPlay)
+  /** Dots shown for `ms` and hidden, then the number typed: the dots' picture, `h` high. */
+  | { kind: "flash"; ms: number; body: string; h: number };
 
 export type Exercise = {
   skill: SkillId;
@@ -188,6 +193,7 @@ export type PracticeWords = {
     shapeTriangle: string;
     shapeAreaPerim: string;
     estimatePlace: string;
+    quickLook: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -216,6 +222,7 @@ export type PracticeWords = {
   answer: string;
   answers: string;
   ui: {
+    look: string;
     practise: string;
     sheet: string;
     check: string;
@@ -1293,6 +1300,25 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  quickLook(r, L, w) {
+    // Dots shown for a moment, then hidden (src/math/quickLook.ts); the answer is how many, typed.
+    const t = lookTask(L, r.next);
+    const body = dotsSvg(t);
+    const h = dotsHeight(t);
+    const steps = lookSteps(t);
+    return {
+      prompt: w.prompts.quickLook,
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${body}</g>`, h, w: LOOK_W },
+      play: { kind: "flash", ms: FLASH_MS[L], body, h },
+      answer: num(t.n),
+      show: steps,
+      plain: String(t.n),
+      format: "number",
+      solution: { kind: "dots", spec: { task: t, steps: [steps] } },
     };
   },
 
@@ -2974,7 +3000,16 @@ export function preview(ex: Exercise, input: string): string | null {
 // ---------- worksheets ----------
 
 /** A sheet of questions (count 1: a single question card). */
-export type PracticeSpec = { area: Area; skill: SkillId | "mixed"; level: Level; seed: number; count: number; answers: boolean };
+export type PracticeSpec = {
+  area: Area;
+  skill: SkillId | "mixed";
+  level: Level;
+  seed: number;
+  count: number;
+  answers: boolean;
+  /** For a screen that shows a question answered by doing with its own picture (the grid, the line, the dots that flash): its picture is left off the card. */
+  screen?: boolean;
+};
 
 /** The seed of question i on a sheet. */
 const seedOf = (seed: number, i: number) => (Math.imul(seed ^ 0x9e3779b9, 2654435761) + i * 7919) >>> 0;
@@ -3023,7 +3058,7 @@ export function renderPractice(spec: PracticeSpec, w: PracticeWords): RenderedSv
       parts.push(q.svg);
       y += q.h + 10;
     }
-    if (ex.pic) {
+    if (ex.pic && !(spec.screen && ex.play)) {
       parts.push(ex.pic.svg(x0 + 10, y));
       y += ex.pic.h;
     }
