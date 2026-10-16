@@ -15,6 +15,7 @@ import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type 
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
 import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
 import { eqQuestion, partsSvg } from "./equivMatch";
+import { encodeShade, judgeShade, shadeSvg, shadeTask, type ShadePlay } from "./shadeFrac";
 import { bottomsOrder, judgeOrder, orderTask, rightOrder, type OrderItem, type OrderProblem } from "./fracOrder";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
@@ -28,10 +29,10 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -58,13 +59,17 @@ type Answer = (
   | { k: "near"; options: Bench[]; right: number }
   /** The items listed in the order `seq` (places in `items`): smallest first, or the order a slip gives. */
   | { k: "order"; items: OrderItem[]; seq: number[] }
+  /** `count` of the shape's pieces shaded ("shade:0,1,5"), any of them. */
+  | { k: "shade"; play: ShadePlay; count: number }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
 export type Play =
   | ({ kind: "grid" } & GeoPlay)
   | ({ kind: "pin" } & PinPlay)
   /** Dots shown for `ms` and hidden, then the number typed: the dots' picture, `h` high. */
-  | { kind: "flash"; ms: number; body: string; h: number };
+  | { kind: "flash"; ms: number; body: string; h: number }
+  /** A shape cut into pieces to shade by tapping. */
+  | ({ kind: "shade" } & ShadePlay);
 
 export type Exercise = {
   skill: SkillId;
@@ -214,6 +219,8 @@ export type PracticeWords = {
     equivFraction: string;
     equivDecimal: string;
     orderFractions: string;
+    shadeShape: string;
+    shadeSet: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -241,6 +248,7 @@ export type PracticeWords = {
     target: { unreadable: string; other: string; notAll: string; op: string; divZero: string; makes: string };
     near: { unreadable: string; notOption: string };
     order: Record<OrderProblem | "reversed", string>;
+    shading: { unreadable: string; none: string; outside: string; twice: string; count: string };
   };
   answer: string;
   answers: string;
@@ -1327,6 +1335,28 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  shadeFraction(r, L, w) {
+    // A fraction of a shape cut into equal pieces, shaded by tapping (src/math/shadeFrac.ts); any pieces will do.
+    const t = shadeTask(L, r.next);
+    const m = t.play.pieces / t.d;
+    // The top number of pieces shaded (3 for ¾ of 12), when the shape has more pieces than the bottom.
+    const traps: Trap[] = m > 1 ? [{ id: "topAsPieces", a: { k: "shade", play: t.play, count: t.n }, vars: { n: t.n, d: t.d, p: t.play.pieces, g: m, k: t.count } }] : [];
+    const f = `\\frac{${t.n}}{${t.d}}`;
+    const pic = shadeSvg(t.play, [], 220);
+    const steps = [`${t.play.pieces} \\div ${t.d} = ${m}, \\quad ${t.n} \\times ${m} = ${t.count}`];
+    return {
+      prompt: fill(t.play.shape === "set" ? w.prompts.shadeSet : w.prompts.shadeShape, { f: `${t.n}/${t.d}` }),
+      q: f,
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h + 4, w: pic.w },
+      play: { kind: "shade", ...t.play },
+      answer: { k: "shade", play: t.play, count: t.count, traps },
+      show: m > 1 ? `${f} = \\frac{${t.count}}{${t.play.pieces}}` : f,
+      plain: encodeShade(Array.from({ length: t.count }, (_, i) => i)),
+      format: "shade",
+      solution: { kind: "shade", spec: { play: t.play, count: t.count, steps } },
     };
   },
 
@@ -2964,7 +2994,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -3070,6 +3100,11 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         const v = judgePoly(a.play, src);
         return v.ok ? v : v.problem ? { ok: false, why: w.reasons.shape[v.problem] } : { ok: false };
       }
+      case "shade": {
+        const v = judgeShade(a.play, a.count, src);
+        if (v.ok) return v;
+        return "problem" in v ? { ok: false, why: w.reasons.shading[v.problem] } : { ok: false, hint: fill(w.reasons.shading.count, { k: v.shaded }) };
+      }
       case "order": {
         const v = judgeOrder(a.items, a.seq, src);
         if (v.ok) return v;
@@ -3122,7 +3157,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
-  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order") return null;
+  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade") return null;
   if (ex.answer.k === "target") {
     // The sum as maths, and what it makes so far.
     const e = parseSum(s);

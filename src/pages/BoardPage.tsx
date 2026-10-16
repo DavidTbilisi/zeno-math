@@ -75,7 +75,7 @@ const libraryStore = {
 };
 
 // Live pieces offered in the tool menus too (all of them are in the Shapes panel), by menu.
-const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" | "liveDivision" | "liveRubik" | "liveSoroban" | "livePatterns" | "liveNumberLine" | "liveGeoboard" | "liveEstimate" | "liveQuickLook" | "liveTarget" | "liveCloserTo" | "liveFractionWall" | "liveEquivMatch" | "liveFracOrder" }[]> = {
+const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" | "liveDivision" | "liveRubik" | "liveSoroban" | "livePatterns" | "liveNumberLine" | "liveGeoboard" | "liveEstimate" | "liveQuickLook" | "liveTarget" | "liveCloserTo" | "liveFractionWall" | "liveEquivMatch" | "liveFracOrder" | "liveShadeFrac" }[]> = {
   groupArithmetic: [
     { kind: "division", icon: "÷", name: "liveDivision" },
     { kind: "soroban", icon: "🧮", name: "liveSoroban" },
@@ -87,6 +87,7 @@ const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveG
     { kind: "fractionWall", icon: "▤", name: "liveFractionWall" },
     { kind: "equivMatch", icon: "🃏", name: "liveEquivMatch" },
     { kind: "fracOrder", icon: "⇢", name: "liveFracOrder" },
+    { kind: "shadeFrac", icon: "◔", name: "liveShadeFrac" },
   ],
   groupGeometryShort: [{ kind: "geoboard", icon: "⬠", name: "liveGeoboard" }],
   groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],

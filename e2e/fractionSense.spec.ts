@@ -1,11 +1,12 @@
 // Fraction-sense games: a make-a-whole puzzle filled with the fewest tiles for three stars, and its practice question;
 // a board of equal amounts cleared with no misses, and the equal fraction picked in practice; a line of fractions put
-// in their places, and a practice list tapped in order.
+// in their places, and a practice list tapped in order; a fraction of a shape shaded right first time, and in practice.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { WALL_LADDER, wallTask } from "../src/math/fractionWall.ts";
 import { eqNow, same } from "../src/math/equivMatch.ts";
 import { ORDER_LADDER, orderTask, rightOrder } from "../src/math/fracOrder.ts";
+import { SHADE_LADDER, shadeTask } from "../src/math/shadeFrac.ts";
 import { exercise } from "../src/math/practice.ts";
 import { rng } from "../src/math/random.ts";
 import { boardWith, practise, seedOf } from "./helpers.ts";
@@ -95,6 +96,33 @@ test("fractions in order in practice: tapped smallest first", async ({ page, req
   await practise(page, request, { tab: "Number", skill: "Fractions in order", level: "medium", r, prompt: ex.prompt });
   for (const i of rightOrder(items)) await page.locator(".sign-picks").getByRole("button", { name: items[i].text, exact: true }).click();
   await expect(page.getByLabel("Your answer")).toHaveValue(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("shade the fraction: the right number of pieces shaded first time earns three stars", async ({ page }) => {
+  const game = await boardWith(page, "Shade the fraction", ".live-shadeFrac");
+  const t = shadeTask(SHADE_LADDER[0].level, rng(SHADE_LADDER[0].seed));
+  const piece = (k: number) => game.locator(".shade-piece").nth(k);
+  await expect(async () => {
+    await piece(0).click();
+    await expect(piece(0)).toHaveAttribute("aria-pressed", "true", { timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < t.count; k++) await piece(k).click();
+  await game.getByRole("button", { name: "Check" }).click();
+  await expect(game.getByText(/Right! .*★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("shade the fraction in practice: pieces tapped, scattered or not", async ({ page, request }) => {
+  const r = 0.18;
+  const ex = exercise("shadeFraction", 2, seedOf(r), w);
+  if (ex.answer.k !== "shade") throw new Error();
+  const { count, play } = ex.answer;
+  await practise(page, request, { tab: "Number", skill: "Shade the fraction", level: "medium", r, prompt: ex.prompt });
+  // Every other piece from the end, so the pieces needn't be side by side.
+  const pieces = page.locator(".shade-shape .shade-piece");
+  for (let k = 0; k < count; k++) await pieces.nth(play.pieces - 1 - ((2 * k) % play.pieces)).click();
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });

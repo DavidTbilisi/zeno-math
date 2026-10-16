@@ -33,5 +33,6 @@ export const MISTAKES = [
   "unshadedPart",
   "partToPart",
   "fractionDigits",
+  "topAsPieces",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
