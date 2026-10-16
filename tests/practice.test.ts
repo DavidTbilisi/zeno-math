@@ -30,6 +30,9 @@ function wrong(ex: Exercise): string {
       return ex.plain.replace(/-?\d+$/, (v) => String(Number(v) + 1));
     case "sign":
       return a.v === "=" ? "<" : "=";
+    case "poly":
+      // One square: never the shape asked for.
+      return "poly:0,0;1,0;1,1;0,1";
   }
 }
 

@@ -17,6 +17,8 @@ import {
 import { renderSolution } from "../math/practiceSolve";
 import { svgToDataUrl } from "../math/svg";
 import { Countdown } from "./Countdown";
+import { GeoAnswer } from "./GeoAnswer";
+import { muted, play as playSound, setMuted } from "../live/juice";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
@@ -52,6 +54,8 @@ function save(p: Progress) {
 const MATH_SCALE = 1.4;
 /** Questions answered before a missed one comes back. */
 const REVIEW_AFTER = 3;
+/** Right answers in a row that earn a celebration. */
+const CHEER_AT = [3, 5, 10, 15, 20];
 
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 const areaLabel = (t: Dict, a: Area) =>
@@ -94,6 +98,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
   const [sheetSeed, setSheetSeed] = useState(initial?.seed ?? newSeed());
   const [progress, setProgress] = useState<Progress>(load);
   const [score, setScore] = useState({ right: 0, total: 0, streak: 0 });
+  const [cheer, setCheer] = useState(0);
+  const [quiet, setQuiet] = useState(muted);
 
   // ---------- practise ----------
 
@@ -274,12 +280,16 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
     logAnswer(log.current, input, v);
     setVerdict(v);
     if (v.ok) {
+      playSound("good");
+      // Every few right in a row, a celebration.
+      if (CHEER_AT.includes(score.streak + 1)) setCheer((c) => c + 1);
       settle(true);
       setDone("solved");
       return;
     }
     // A message (lowest terms, rounding, not factorised, unreadable) asks for another try without counting a miss.
     if (v.why) return;
+    playSound("miss");
     const n = wrongs + 1;
     setWrongs(n);
     if (n >= 2) reveal();
@@ -488,7 +498,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               ) : (
                 <>
                   {question.math && <img src={question.math.src} alt="" style={{ width: question.math.width * MATH_SCALE }} />}
-                  {question.pic && <img src={question.pic.src} alt="" style={{ width: question.pic.width * MATH_SCALE }} />}
+                  {question.pic && !cur.ex.play && <img src={question.pic.src} alt="" style={{ width: question.pic.width * MATH_SCALE }} />}
                 </>
               )}
               <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
@@ -501,6 +511,19 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
           )}
           <label className="field">
             <span>{w.ui.answerHere} <span className="hint">({w.formats[cur.ex.format]})</span></span>
+            {cur.ex.play ? (
+              <GeoAnswer
+                play={cur.ex.play}
+                value={input}
+                disabled={done !== null}
+                label={cur.ex.prompt}
+                tone={done === "solved" ? "right" : verdict && !verdict.ok && !verdict.why ? "wrong" : null}
+                onChange={(s) => {
+                  setInput(s);
+                  setVerdict(null);
+                }}
+              />
+            ) : (
             <div className="field-row">
               <input
                 ref={inputRef}
@@ -522,6 +545,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               />
               {typed && !done && <img className="practice-typed" src={typed} alt="" />}
             </div>
+            )}
           </label>
           {cur.ex.format === "sign" && !done && (
             <SignPicks
@@ -532,11 +556,26 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               }}
             />
           )}
-          <div className="field-row">
+          <div className="field-row practice-actions">
             {!done && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
             {!done && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
             {done && <button className="btn primary" onClick={next}>{w.ui.next} →</button>}
             <span className="hint">{fill(w.ui.score, score)}</span>
+            <button
+              className="btn small practice-sound"
+              title={w.ui.sound}
+              aria-label={w.ui.sound}
+              aria-pressed={!quiet}
+              onClick={() => (setMuted(!quiet), setQuiet(!quiet))}
+            >
+              {quiet ? "🔇" : "🔊"}
+            </button>
+            {cheer > 0 && done === "solved" && CHEER_AT.includes(score.streak) && (
+              <div key={cheer} className="celebrate small" aria-hidden="true">
+                {Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--i": i } as React.CSSProperties} />)}
+                <b>🔥 {score.streak}</b>
+              </div>
+            )}
           </div>
           {verdict && (
             <div className={`practice-verdict ${verdict.ok ? "ok" : verdict.close || verdict.why ? "close" : "bad"}`} role="status">

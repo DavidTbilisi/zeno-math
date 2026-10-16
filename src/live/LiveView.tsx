@@ -9,6 +9,7 @@ import { liveDataOf, type LiveData } from "./element";
 import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
 import { Chance } from "./Chance";
 import { LongDivision } from "./LongDivision";
+import { Geoboard } from "./Geoboard";
 import { NumberLine } from "./NumberLine";
 import { Patterns } from "./Patterns";
 import { Rubik } from "./Rubik";
@@ -44,6 +45,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   soroban: Soroban,
   patterns: Patterns,
   numberLine: NumberLine,
+  geoboard: Geoboard,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

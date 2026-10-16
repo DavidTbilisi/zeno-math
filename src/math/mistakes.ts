@@ -28,5 +28,7 @@ export const MISTAKES = [
   "biggerBottom",
   "biggerTop",
   "sameGap",
+  "areaPerimeter",
+  "triangleHalf",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

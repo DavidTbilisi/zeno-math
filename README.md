@@ -431,7 +431,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 44 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 45 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -440,12 +440,20 @@ UI in English, Russian and Georgian.
   - A wrong answer that a known mistake gives is named, with a way to see it: tops and bottoms of fractions added,
     (a + b)² as a² + b², a negative power taken as a negative number, × and ÷ worked from left to right after + and −,
     digits cut off instead of rounded, an inequality's sign not turned round, the right size with the wrong sign, more
-    digits after the point taken for a bigger decimal, more pieces taken for a bigger fraction, and more (26 in all, in
+    digits after the point taken for a bigger decimal, more pieces taken for a bigger fraction, a perimeter made for an area, and more (28 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
     and fractions; the sign is typed or picked from three buttons, and the worked solution lays two pencils across the
     towers to draw it
+  - Area on a grid, answered by making the shape: tap dots on a grid to put its corners (drag one to move it, tap it
+    to take it off) — a rectangle with an area, then a triangle with an area (half squares come in), then a shape on
+    the grid lines with an area and a perimeter. The shape is stored as its corners (`poly:1,1;5,1;5,4;1,4`) and
+    marked in whole numbers, so the server marks it again like a typed answer; a shape whose sides cross, or the right
+    area in the wrong shape, is sent back without counting, and a rectangle whose perimeter is the area asked for, or
+    a triangle whose base × height is, is named as the mistake it is
+  - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
+    3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - Comparing fractions: the same bottom or one piece each with the bars drawn, then the same top, either side of a
     half and one piece short of a whole, then a common bottom; the worked solution shows the bars, the pencils across
     their shaded parts and, over a common bottom, the bars cut into the same pieces
@@ -536,6 +544,12 @@ UI in English, Russian and Georgian.
   - *Comparing fractions*: the same for two fractions, as bars of equal height cut into 1 to 12 parts with the shaded
     parts as the towers; "Same-size pieces" cuts both bars into the lowest common parts (2/3 and 3/4 as 8 and 9
     twelfths)
+  - *Geoboard*: a dot grid to make shapes on by tapping, with the area and perimeter following the shape and each
+    side along the grid labelled with its length. Free play says when a shape shows something: a square, a tilted
+    square, the same area as the last shape with a different perimeter, or the other way round (four discoveries,
+    kept in the browser). Nine puzzles — rectangles, triangles, then shapes with an area and a perimeter, each the
+    practice question of its level — earn up to three stars, a miss or a peek at the numbers costing one, and a
+    puzzle opens once the one before has a star
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
@@ -812,7 +826,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (44 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (45 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -838,7 +852,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 354 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 370 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.
