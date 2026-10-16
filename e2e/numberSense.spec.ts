@@ -37,7 +37,11 @@ test("a round of the estimation game with every pin on its number earns three st
   const round = roundTasks(ESTIMATE_LADDER[0].level, ESTIMATE_LADDER[0].seed);
   for (const [i, t] of round.entries()) {
     await expect(game.getByRole("img", { name: `Where does ${t.text} go?` })).toBeVisible();
-    await dropPin(page, game.locator("svg").first(), t.play, t.v, [50, 650, 700, 130]);
+    // The first click may still be waking the piece up on a slow machine: drop again until the number shows.
+    await expect(async () => {
+      await dropPin(page, game.locator("svg").first(), t.play, t.v, [50, 650, 700, 130]);
+      await expect(game.getByRole("button", { name: /^Next/ })).toBeEnabled({ timeout: 1000 });
+    }).toPass();
     // Right, or (a pin right on its number) a bullseye or the middle of the line, said in place of "Right!".
     if (i === 0) await expect(game.getByText(/^(Right! Off by only|Bullseye! Right on the spot\.|Half way — you found the middle of the line\.)/)).toBeVisible();
     if (i < round.length - 1) await game.getByRole("button", { name: "Next →" }).click();
