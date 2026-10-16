@@ -34,5 +34,12 @@ export const MISTAKES = [
   "partToPart",
   "fractionDigits",
   "topAsPieces",
+  "oneSideOnly",
+  "scaledOutput",
+  "undoOrder",
+  "scaledFigure",
+  "joinedUnlike",
+  "firstTermOnly",
+  "squareAsDouble",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

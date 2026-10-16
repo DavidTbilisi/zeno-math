@@ -20,6 +20,10 @@ import { Patterns } from "./Patterns";
 import { QuickLook } from "./QuickLook";
 import { Rubik } from "./Rubik";
 import { ShadeGame } from "./ShadeGame";
+import { Balance } from "./Balance";
+import { Machine } from "./Machine";
+import { Growing } from "./Growing";
+import { ExprMatch } from "./ExprMatch";
 import { Soroban } from "./Soroban";
 import { Target } from "./Target";
 import type { PieceProps } from "./ui";
@@ -62,6 +66,10 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   equivMatch: EquivMatch,
   fracOrder: FracOrder,
   shadeFrac: ShadeGame,
+  balance: Balance,
+  machine: Machine,
+  growing: Growing,
+  exprMatch: ExprMatch,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

@@ -3406,6 +3406,204 @@
    "input": "shade:1,1,2,3,4",
    "label": "form",
    "note": "a piece counted twice"
+  },
+  {
+   "skill": "balance",
+   "level": 1,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "balance",
+   "level": 1,
+   "seed": 7,
+   "input": "19",
+   "label": "wrong"
+  },
+  {
+   "skill": "balance",
+   "level": 1,
+   "seed": 7,
+   "input": "one",
+   "label": "form"
+  },
+  {
+   "skill": "balance",
+   "level": 2,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "balance",
+   "level": 2,
+   "seed": 7,
+   "input": "1/2",
+   "label": "wrong",
+   "mistake": "oneSideOnly"
+  },
+  {
+   "skill": "balance",
+   "level": 3,
+   "seed": 7,
+   "input": "2",
+   "label": "correct"
+  },
+  {
+   "skill": "balance",
+   "level": 3,
+   "seed": 7,
+   "input": "1",
+   "label": "wrong"
+  },
+  {
+   "skill": "findRule",
+   "level": 1,
+   "seed": 7,
+   "input": "22",
+   "label": "correct"
+  },
+  {
+   "skill": "findRule",
+   "level": 1,
+   "seed": 7,
+   "input": "28",
+   "label": "wrong",
+   "mistake": "scaledOutput"
+  },
+  {
+   "skill": "findRule",
+   "level": 2,
+   "seed": 7,
+   "input": "195",
+   "label": "correct"
+  },
+  {
+   "skill": "findRule",
+   "level": 2,
+   "seed": 7,
+   "input": "150",
+   "label": "wrong",
+   "mistake": "scaledOutput"
+  },
+  {
+   "skill": "findRule",
+   "level": 3,
+   "seed": 7,
+   "input": "20",
+   "label": "correct"
+  },
+  {
+   "skill": "findRule",
+   "level": 3,
+   "seed": 7,
+   "input": "56",
+   "label": "wrong"
+  },
+  {
+   "skill": "growingPattern",
+   "level": 1,
+   "seed": 7,
+   "input": "11",
+   "label": "correct"
+  },
+  {
+   "skill": "growingPattern",
+   "level": 1,
+   "seed": 7,
+   "input": "15",
+   "label": "wrong",
+   "mistake": "scaledFigure"
+  },
+  {
+   "skill": "growingPattern",
+   "level": 2,
+   "seed": 7,
+   "input": "21",
+   "label": "correct"
+  },
+  {
+   "skill": "growingPattern",
+   "level": 2,
+   "seed": 7,
+   "input": "30",
+   "label": "wrong",
+   "mistake": "scaledFigure"
+  },
+  {
+   "skill": "growingPattern",
+   "level": 3,
+   "seed": 7,
+   "input": "144",
+   "label": "correct"
+  },
+  {
+   "skill": "growingPattern",
+   "level": 3,
+   "seed": 7,
+   "input": "24",
+   "label": "wrong"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 1,
+   "seed": 7,
+   "input": "2x + 1",
+   "label": "correct"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 1,
+   "seed": 7,
+   "input": "3x",
+   "label": "wrong",
+   "mistake": "joinedUnlike"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 1,
+   "seed": 7,
+   "input": "1 + 2x",
+   "label": "correct",
+   "note": "equal, but not one of the expressions offered: sent back to pick one"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 2,
+   "seed": 7,
+   "input": "5x - 5",
+   "label": "correct"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 2,
+   "seed": 7,
+   "input": "5x−5",
+   "label": "correct"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 2,
+   "seed": 7,
+   "input": "5x - 1",
+   "label": "wrong",
+   "mistake": "firstTermOnly"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 3,
+   "seed": 7,
+   "input": "2x²",
+   "label": "correct"
+  },
+  {
+   "skill": "sameExpression",
+   "level": 3,
+   "seed": 7,
+   "input": "4x",
+   "label": "wrong",
+   "mistake": "squareAsDouble"
   }
  ]
 }

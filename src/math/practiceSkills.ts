@@ -4,7 +4,7 @@ export type Area = "number" | "algebra" | "geometry" | "calculus" | "data";
 export const AREAS: Area[] = ["number", "algebra", "geometry", "calculus", "data"];
 export const SKILLS = {
   number: ["compare", "quickLook", "estimateLine", "closerTo", "times", "makeTarget", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "percent", "rounding", "hcf", "primes"],
-  algebra: ["linear", "inequalities", "expand", "factor", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions"],
+  algebra: ["balance", "findRule", "growingPattern", "sameExpression", "linear", "inequalities", "expand", "factor", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions"],
   geometry: ["shapeArea", "line", "distance", "trigexact", "righttri", "circles", "similarity", "volume", "identities", "vectors", "dotangle"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite", "numroots", "numint"],
   data: ["average", "probability", "counting", "ci"],

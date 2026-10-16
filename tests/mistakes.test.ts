@@ -44,6 +44,13 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   partToPart: ["equivalent", [1]],
   fractionDigits: ["equivalent", [3]],
   topAsPieces: ["shadeFraction", [2, 3]],
+  oneSideOnly: ["balance", [2]],
+  scaledOutput: ["findRule", [1, 2]],
+  undoOrder: ["findRule", [3]],
+  scaledFigure: ["growingPattern", [1, 2]],
+  joinedUnlike: ["sameExpression", [1]],
+  firstTermOnly: ["sameExpression", [2, 3]],
+  squareAsDouble: ["sameExpression", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {

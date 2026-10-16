@@ -572,7 +572,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               }}
             />
           )}
-          {cur.ex.answer.k === "near" && !done && (
+          {(cur.ex.answer.k === "near" || cur.ex.answer.k === "pick") && !done && (
             <ChoicePicks
               choices={cur.ex.answer.options.map((o) => ({ label: o.text, value: o.plain }))}
               onPick={(s) => {

@@ -431,7 +431,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 53 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 57 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -440,7 +440,8 @@ UI in English, Russian and Georgian.
   - A wrong answer that a known mistake gives is named, with a way to see it: tops and bottoms of fractions added,
     (a + b)² as a² + b², a negative power taken as a negative number, × and ÷ worked from left to right after + and −,
     digits cut off instead of rounded, an inequality's sign not turned round, the right size with the wrong sign, more
-    digits after the point taken for a bigger decimal, more pieces taken for a bigger fraction, a perimeter made for an area, the unshaded part counted, the top number of pieces shaded, and more (32 in all, in
+    digits after the point taken for a bigger decimal, more pieces taken for a bigger fraction, a perimeter made for an area, the unshaded part counted, the top number of pieces shaded, the shapes on a balance's other pan left out, ten times
+    the input taken for ten times the output, x · x taken for 2x, and more (39 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -486,6 +487,19 @@ UI in English, Russian and Georgian.
   - Comparing fractions: the same bottom or one piece each with the bars drawn, then the same top, either side of a
     half and one piece short of a whole, then a common bottom; the worked solution shows the bars, the pencils across
     their shaded parts and, over a common bottom, the bars cut into the same pieces
+  - Balance puzzles: scales that balance with squares and weights on them, drawn, and what one square weighs typed —
+    one shape on one pan (■ ■ ■ + 2 = 14), then the same shape on both (■ ■ ■ + 2 = ■ + 10), then two shapes on two
+    scales. Leaving the squares on the other pan out (■ ■ ■ + 2 = 10 for the second) is named, and the worked solution
+    takes the same off both pans a line at a time
+  - Find the rule: four pairs a machine makes (1 ↦ 5, 2 ↦ 8, 3 ↦ 11, 5 ↦ 17) and what it makes of a bigger number, or
+    at hard what went in to make one — n + 7 or 4n, then 3n + 2 for up to 100, then backwards. Ten times as much in
+    taken for ten times as much out (10 ↦ 2 × 17) and the steps undone in the wrong order are named
+  - Growing patterns: figures 1, 2 and 3 of a pattern of squares (an L, a T, a plus, a frame, a square), and how many
+    squares figure 5, 10 to 20 or 12 has (n² and n(n + 1) at hard), or which figure has so many. Figure 10 taken for
+    ten figure 1s is named; the worked solution colours the part that stays and the part that grows
+  - Equal expressions: which of four is equal to x + 1 + x, 3(x − 2) or x · 2x for every x, typed or picked. The
+    wrong options are the slips people make, each named when picked: unlike terms joined (3x for 2x + 1), only the
+    first term in the bracket multiplied, x · x taken for 2x
   - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
     and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
@@ -550,7 +564,8 @@ UI in English, Russian and Georgian.
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
   look, make the target, closer to?), fraction sense (make a whole, equal amounts, fractions on the line, shade the
-  fraction) and shape sense (the geoboard). In the Shapes tab the games are a group of their own, before the live
+  fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions) and shape sense
+  (the geoboard). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -583,6 +598,23 @@ UI in English, Russian and Georgian.
   - *Shade the fraction*: a shape cut into equal pieces, or a set of counters, and a fraction of it to shade; tap
     pieces, then check. Right first time earns three stars, and the endless run keeps a streak of shapes shaded right
     first time. Four discoveries (pieces not side by side, twenty or more pieces, a fraction of a set, ten in a row)
+  - *Balance the scales*: one or two scales that balance with shapes and weights on their pans; set what each shape
+    weighs with − and +, then weigh: the scales tip as those weights would make them, with each pan's total beneath.
+    Balanced at the first weighing earns three stars, and the endless run keeps a streak of puzzles balanced at the
+    first weighing. Four discoveries (a shape on both pans, two shapes at the first weighing, a shape of 10 or more,
+    ten in a row)
+  - *Guess my rule*: a machine with a hidden rule; put in numbers from 0 to 10 and see what comes out in a table,
+    then tap in what it makes of a number too big to put in, or what went in; once answered the machine shows its rule.
+    Right first time earns three stars. Four discoveries (0 put in, the rule found from two numbers, backwards right
+    first time, ten in a row)
+  - *Growing patterns*: figures 1, 2 and 3 of a pattern of squares; build figure 4 by tapping squares on a grid
+    (anywhere on it, as long as it is the shape), or tap in how many squares figure 10, 20 or 50 has, or which figure
+    has so many. Right first time earns three stars, and the figures then colour the part that stays and the part
+    that grows. Four discoveries (figure 50, a pattern that isn't a step each time, which figure, ten in a row)
+  - *Equal expressions*: cards to pair up, each with the simplest way to write it — x + 4 + x with 2x + 4, 3(x + 2)
+    with 3x + 6, x · x with x² — with a near miss on the board too (2x + 3 beside 2(x + 3), x + x beside x · x). A board
+    cleared with no misses earns three stars. Four discoveries (a clean board, the near miss left alone, products and
+    powers with no misses, twenty pairs in a row)
   - *Fractions on the line*: four or five fraction cards to put on a line from 0 to 1 (or 2): tap a card, then the
     line. Check shows where each really is, joined to where it was put; in order earns two stars, in order with every
     card within 5 % of its place three, and the endless run keeps a streak of lines put in order. Four discoveries
@@ -896,7 +928,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (53 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (57 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -922,7 +954,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 462 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 489 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.

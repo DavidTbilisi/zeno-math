@@ -738,3 +738,12 @@ input.invalid { border-color: var(--danger); }
 .share-box input { width: 100%; }
 .shared-title { padding: 0 8px; }
 
+/* The algebra games: a shape's weight beside its stepper, the number pad, the machine's inputs, the squares to build. */
+.balance-guess { display: inline-flex; align-items: center; gap: 4px; font-size: 16px; }
+.balance-shape { font-size: 22px; line-height: 1; }
+.balance-shape.s0 { color: #1971c2; }
+.balance-shape.s1 { color: #e8590c; }
+.keypad { max-width: 520px; }
+.keypad .live-btn { min-width: 2.4em; font-size: 17px; font-weight: 700; padding: 5px 8px; }
+.keypad-shown { min-width: 4.5em; padding: 4px 10px; border: 2px solid #1971c2; border-radius: 8px; font-size: 20px; font-weight: 700; text-align: center; background: #fff; }
+.machine-inputs .live-btn { min-width: 2.2em; font-weight: 700; }
