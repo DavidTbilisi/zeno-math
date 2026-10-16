@@ -90,6 +90,19 @@ export function ChoicePicks({ choices, onPick, disabled }: { choices: { label: s
   );
 }
 
+/** Buttons that list items in the order they are tapped, each once, with one to take the last back. */
+export function ListPicks({ items, typed, onChange, disabled }: { items: string[]; typed: string; onChange: (typed: string) => void; disabled?: boolean }) {
+  const listed = typed.split(",").map((s) => s.trim()).filter(Boolean);
+  return (
+    <div className="field-row sign-picks">
+      {items.map((it) => (
+        <button key={it} className="btn" disabled={disabled || listed.includes(it)} onClick={() => onChange([...listed, it].join(", "))}>{it}</button>
+      ))}
+      <button className="btn" disabled={disabled || !listed.length} aria-label="⌫" onClick={() => onChange(listed.slice(0, -1).join(", "))}>⌫</button>
+    </div>
+  );
+}
+
 /** Buttons that type a sum: the cards, the signs that may be used, brackets, and one to take the last piece back. */
 export function TargetPicks({ cards, ops, onPick, onBack, disabled }: { cards: number[]; ops: string[]; onPick: (s: string) => void; onBack: () => void; disabled?: boolean }) {
   const sign: Record<string, string> = { "+": "+", "-": "−", "*": "×", "/": "÷" };
