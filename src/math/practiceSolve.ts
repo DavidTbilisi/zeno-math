@@ -69,6 +69,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./fractionWall").WallSolution & { steps: string[] };
       return (await import("./fractionWall")).renderWall(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "orderline": {
+      // The fractions in their places on the line, with the written steps beneath.
+      const spec = s as import("./fracOrder").OrderSolution & { steps: string[] };
+      return (await import("./fracOrder")).renderOrder(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }

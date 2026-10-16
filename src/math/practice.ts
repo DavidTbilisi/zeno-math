@@ -15,6 +15,7 @@ import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type 
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
 import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
 import { eqQuestion, partsSvg } from "./equivMatch";
+import { bottomsOrder, judgeOrder, orderTask, rightOrder, type OrderItem, type OrderProblem } from "./fracOrder";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
 import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
@@ -27,10 +28,10 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -55,6 +56,8 @@ type Answer = (
   | { k: "target"; puzzle: Pick<TargetPuzzle, "cards" | "target" | "ops" | "all">; sample: string }
   /** One of the options offered, picked: the benchmark nearest a number, or the one equal to a fraction. */
   | { k: "near"; options: Bench[]; right: number }
+  /** The items listed in the order `seq` (places in `items`): smallest first, or the order a slip gives. */
+  | { k: "order"; items: OrderItem[]; seq: number[] }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
 export type Play =
@@ -210,6 +213,7 @@ export type PracticeWords = {
     equivShaded: string;
     equivFraction: string;
     equivDecimal: string;
+    orderFractions: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -236,6 +240,7 @@ export type PracticeWords = {
     pin: { unreadable: string; offLine: string; left: string; right: string };
     target: { unreadable: string; other: string; notAll: string; op: string; divZero: string; makes: string };
     near: { unreadable: string; notOption: string };
+    order: Record<OrderProblem | "reversed", string>;
   };
   answer: string;
   answers: string;
@@ -1322,6 +1327,26 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  orderFractions(r, L, w) {
+    // Four or five fractions, smallest first (src/math/fracOrder.ts); the answer is the list, typed or tapped.
+    const t = orderTask(L, r.next);
+    const seq = rightOrder(t.items);
+    // Unit fractions put in the order of their bottoms (½, ⅓, ⅕ — a bigger bottom taken as bigger).
+    const byBottoms = bottomsOrder(t.items);
+    const ds = t.items.map((i) => i.d);
+    const traps: Trap[] = byBottoms ? [{ id: "biggerBottom", a: { k: "order", items: t.items, seq: byBottoms }, vars: { n: 1, d: Math.max(...ds), e: Math.min(...ds) } }] : [];
+    const dec = (v: number) => Number(v.toFixed(3));
+    return {
+      prompt: fill(w.prompts.orderFractions, { list: t.items.map((i) => i.text).join(", ") }),
+      q: t.items.map((i) => i.tex).join(", \\quad "),
+      answer: { k: "order", items: t.items, seq, traps },
+      show: seq.map((i) => t.items[i].tex).join(" < "),
+      plain: seq.map((i) => t.items[i].text).join(", "),
+      format: "order",
+      solution: { kind: "orderline", spec: { task: t, steps: [seq.map((i) => `${t.items[i].tex} ${Number.isInteger(t.items[i].v * 1000) ? "=" : "\\approx"} ${dec(t.items[i].v)}`).join(", \\quad ")] } },
     };
   },
 
@@ -2939,7 +2964,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -3045,6 +3070,16 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         const v = judgePoly(a.play, src);
         return v.ok ? v : v.problem ? { ok: false, why: w.reasons.shape[v.problem] } : { ok: false };
       }
+      case "order": {
+        const v = judgeOrder(a.items, a.seq, src);
+        if (v.ok) return v;
+        if ("problem" in v) return { ok: false, why: fill(w.reasons.order[v.problem], { n: a.items.length }) };
+        // Biggest first: the right idea the wrong way round, sent back — unless they are unit fractions, where it is
+        // also the order of their bottoms, a slip the traps name.
+        const unit = a.items.every((i) => i.n === 1);
+        if (!unit && v.seq.every((i, k) => i === a.seq[a.seq.length - 1 - k])) return { ok: false, why: w.reasons.order.reversed };
+        return { ok: false };
+      }
       case "near": {
         const v = judgeNear(a, src);
         if (v.ok) return v;
@@ -3087,7 +3122,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
-  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near") return null;
+  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order") return null;
   if (ex.answer.k === "target") {
     // The sum as maths, and what it makes so far.
     const e = parseSum(s);

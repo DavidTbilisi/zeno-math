@@ -649,6 +649,9 @@ input.invalid { border-color: var(--danger); }
 .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; vertical-align: middle; }
 .frac b { font-weight: 700; padding: 0 2px; border-bottom: 1.5px solid currentColor; }
 .frac i { font-style: normal; font-weight: 700; }
+.order-cards .live-btn.order-card { min-width: 3em; padding: 6px 12px; font-size: 18px; background: #fff3bf; border-color: #fab005; }
+.order-cards .live-btn.order-card.placed { background: #f1f3f5; border-color: #ced4da; }
+.order-cards .live-btn.order-card.on { background: #d0ebff; border-color: #1971c2; }
 .wall-tray .live-btn.wall-tile { min-width: 3em; padding: 6px 10px; font-size: 18px; border-color: #495057; }
 @keyframes near-fade { from { opacity: 1; } to { opacity: 0.15; } }
 .flash-answer { flex-direction: column; align-items: center; gap: 8px; }

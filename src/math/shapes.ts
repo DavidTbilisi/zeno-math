@@ -855,6 +855,22 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function fracOrderPreview(): Piece[] {
+  // A line from 0 to 1 with three fraction cards standing on it.
+  const at = (v: number) => v * 220;
+  const card = (v: number, label: string, up: number) => [seg([at(v), 60], [at(v), 60 - up], { width: 1.5 }), rect(at(v) - 20, 60 - up - 28, 40, 28, { fill: FILL.yellow, width: 1.5 }, true), text(at(v), 60 - up - 9, label, 14)];
+  return [
+    seg([0, 60], [220, 60], { width: 2 }),
+    seg([0, 52], [0, 68], { width: 2 }),
+    seg([220, 52], [220, 68], { width: 2 }),
+    text(0, 86, "0", 14),
+    text(220, 86, "1", 14),
+    ...card(0.2, "1/5", 14),
+    ...card(0.5, "1/2", 40),
+    ...card(0.8, "4/5", 14),
+  ];
+}
+
 function equivMatchPreview(): Piece[] {
   // Four cards: 3/4, 0.75, 75 % and a bar three quarters shaded.
   const card = (x: number, y: number) => rect(x, y, 90, 56, { fill: FILL.gray, width: 1.5 }, true);
@@ -1069,6 +1085,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCloserTo", group: "live", build: closerToPreview, live: "closerTo" },
   { id: "liveFractionWall", group: "live", build: fractionWallPreview, live: "fractionWall" },
   { id: "liveEquivMatch", group: "live", build: equivMatchPreview, live: "equivMatch" },
+  { id: "liveFracOrder", group: "live", build: fracOrderPreview, live: "fracOrder" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

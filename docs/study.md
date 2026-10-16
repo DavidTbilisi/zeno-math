@@ -350,8 +350,8 @@ A smaller dry run is part of `npm test`, so CI checks the whole pipeline on ever
 
 ## Answer checker
 
-A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 440 typed answers to questions from
-all 51 skills, each marked the way a teacher would:
+A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 451 typed answers to questions from
+all 52 skills, each marked the way a teacher would:
 
 - correct;
 - close (a rounding slip);
@@ -362,12 +362,12 @@ all 51 skills, each marked the way a teacher would:
 
 | teacher \ checker | correct | close | wrong | form |
 |---|---|---|---|---|
-| correct (203) | 200 | 0 | 1 | 2 |
+| correct (209) | 206 | 0 | 1 | 2 |
 | close (19) | 0 | 3 | 3 | 13 |
-| wrong (163) | 0 | 0 | 163 | 0 |
-| form (55) | 2 | 0 | 8 | 45 |
+| wrong (166) | 0 | 0 | 166 | 0 |
+| form (57) | 2 | 0 | 8 | 47 |
 
-The checker agrees 93.4 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+The checker agrees 93.6 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
 
 - `13*17` for "work out 13 × 17";
 - an integral without `+ C`.
@@ -389,7 +389,7 @@ wrong and counts as a miss; in practice the student also reads what the slip was
 give no feedback, so the names appear only in the exports' analysis.
 
 45 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 45,
-and names none in the 118 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
+and names none in the 121 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
 found in students' answers, so this says what the checker can recognise, not how often students make each mistake.
 
 Building the corpus found two real faults, now fixed:

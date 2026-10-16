@@ -12,6 +12,7 @@ import { CloserTo } from "./CloserTo";
 import { LongDivision } from "./LongDivision";
 import { EquivMatch } from "./EquivMatch";
 import { Estimate } from "./Estimate";
+import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
 import { Geoboard } from "./Geoboard";
 import { NumberLine } from "./NumberLine";
@@ -58,6 +59,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   closerTo: CloserTo,
   fractionWall: FractionWall,
   equivMatch: EquivMatch,
+  fracOrder: FracOrder,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

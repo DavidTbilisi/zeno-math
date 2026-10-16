@@ -33,6 +33,9 @@ function wrong(ex: Exercise): string {
     case "poly":
       // One square: never the shape asked for.
       return "poly:0,0;1,0;1,1;0,1";
+    case "order":
+      // The right order turned round.
+      return [...a.seq].reverse().map((i) => a.items[i].text).join(", ");
     case "near":
       // The benchmark next to the right one.
       return a.options[a.right === 0 ? 1 : a.right - 1].plain;
