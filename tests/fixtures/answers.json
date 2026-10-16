@@ -2990,6 +2990,96 @@
    "seed": 7,
    "input": "12 + 9 + 1 + 1",
    "label": "wrong"
+  },
+  {
+   "skill": "closerTo",
+   "level": 1,
+   "seed": 7,
+   "input": "20",
+   "label": "correct"
+  },
+  {
+   "skill": "closerTo",
+   "level": 1,
+   "seed": 7,
+   "input": "10",
+   "label": "wrong",
+   "mistake": "truncated"
+  },
+  {
+   "skill": "closerTo",
+   "level": 1,
+   "seed": 7,
+   "input": "15",
+   "label": "form",
+   "note": "not one of the numbers offered"
+  },
+  {
+   "skill": "closerTo",
+   "level": 1,
+   "seed": 7,
+   "input": "twenty",
+   "label": "form",
+   "note": "a word"
+  },
+  {
+   "skill": "closerTo",
+   "level": 2,
+   "seed": 7,
+   "input": "1/2",
+   "label": "correct"
+  },
+  {
+   "skill": "closerTo",
+   "level": 2,
+   "seed": 7,
+   "input": "½",
+   "label": "correct"
+  },
+  {
+   "skill": "closerTo",
+   "level": 2,
+   "seed": 7,
+   "input": "0.5",
+   "label": "correct",
+   "note": "a half as a decimal"
+  },
+  {
+   "skill": "closerTo",
+   "level": 2,
+   "seed": 7,
+   "input": "1",
+   "label": "wrong"
+  },
+  {
+   "skill": "closerTo",
+   "level": 2,
+   "seed": 7,
+   "input": "2/3",
+   "label": "form",
+   "note": "the number itself, not a benchmark"
+  },
+  {
+   "skill": "closerTo",
+   "level": 3,
+   "seed": 7,
+   "input": "1500",
+   "label": "correct"
+  },
+  {
+   "skill": "closerTo",
+   "level": 3,
+   "seed": 7,
+   "input": "2000",
+   "label": "wrong"
+  },
+  {
+   "skill": "closerTo",
+   "level": 3,
+   "seed": 7,
+   "input": "1632",
+   "label": "form",
+   "note": "worked out exactly, not a benchmark"
   }
  ]
 }

@@ -75,7 +75,7 @@ const libraryStore = {
 };
 
 // Live pieces offered in the tool menus too (all of them are in the Shapes panel), by menu.
-const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" | "liveDivision" | "liveRubik" | "liveSoroban" | "livePatterns" | "liveNumberLine" | "liveGeoboard" | "liveEstimate" | "liveQuickLook" | "liveTarget" }[]> = {
+const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveGraph" | "liveChance" | "liveDivision" | "liveRubik" | "liveSoroban" | "livePatterns" | "liveNumberLine" | "liveGeoboard" | "liveEstimate" | "liveQuickLook" | "liveTarget" | "liveCloserTo" }[]> = {
   groupArithmetic: [
     { kind: "division", icon: "÷", name: "liveDivision" },
     { kind: "soroban", icon: "🧮", name: "liveSoroban" },
@@ -83,6 +83,7 @@ const LIVE_IN_MENUS: Record<string, { kind: LiveKind; icon: string; name: "liveG
     { kind: "estimate", icon: "📍", name: "liveEstimate" },
     { kind: "quickLook", icon: "👀", name: "liveQuickLook" },
     { kind: "target", icon: "🎯", name: "liveTarget" },
+    { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
   ],
   groupGeometryShort: [{ kind: "geoboard", icon: "⬠", name: "liveGeoboard" }],
   groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],

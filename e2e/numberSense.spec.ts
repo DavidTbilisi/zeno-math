@@ -1,7 +1,8 @@
 // Number-sense games: a round of the estimation game played for three stars (kept after a reload, the next round
 // open), and a practice question answered by putting the pin on the line; a round of quick look answered right, and a
 // practice question whose dots flash before the number is typed; a target made on the board by tapping cards and
-// signs, and a practice sum typed with the card buttons. Pins are dropped where the line draws the
+// signs, and a practice sum typed with the card buttons; a round of "closer to?" all right, and a practice benchmark
+// picked from its buttons. Pins are dropped where the line draws the
 // number, wherever the piece or the dialog has been scaled to.
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -10,6 +11,7 @@ import { check, exercise } from "../src/math/practice.ts";
 import { LOOK_LADDER, lookRound } from "../src/math/quickLook.ts";
 import { TARGET_LADDER, targetPuzzle, tokens } from "../src/math/target.ts";
 import { rng } from "../src/math/random.ts";
+import { NEAR_LADDER, nearRound } from "../src/math/benchmark.ts";
 
 const w = en.pracWords;
 
@@ -168,6 +170,40 @@ test("a practice sum typed with the card buttons", async ({ page, request }) => 
   const sign: Record<string, string> = { "+": "+", "-": "−" };
   for (const t of tokens(ex.plain)!) await picks.getByRole("button", { name: typeof t === "number" ? String(t) : sign[t] ?? t, exact: true }).first().click();
   await expect(page.getByLabel("Your answer")).toHaveValue(ex.plain.replace(/-/g, "−"));
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("closer to?: a round of eight picked right earns three stars", async ({ page }) => {
+  const game = await boardWith(page, "Closer to? Benchmarks against the clock", ".live-closerTo");
+  const round = nearRound(NEAR_LADDER[0].level, NEAR_LADDER[0].seed);
+  for (const [i, t] of round.entries()) {
+    await expect(game.getByRole("img", { name: `Which is ${t.text} closest to?` })).toBeVisible();
+    await game.locator(".near-options").getByRole("button", { name: t.options[t.right].text, exact: true }).click();
+    if (i < round.length - 1) await game.getByRole("button", { name: "Next →" }).click();
+  }
+  await expect(game.getByText(/Round done! ★★★|A perfect round/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Round 2/ })).toBeEnabled();
+});
+
+test("a practice benchmark picked from its buttons", async ({ page, request }) => {
+  const r = 0.44;
+  const ex = exercise("closerTo", 2, Math.floor(r * 2 ** 31), w);
+  if (ex.answer.k !== "near") throw new Error("not a benchmark question");
+  const best = ex.answer.options[ex.answer.right];
+  const made = await (await request.post("/api/boards", { data: { title: "Closer" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.type("Practice");
+  await page.keyboard.press("Enter");
+  await page.getByRole("tab", { name: "Number" }).click();
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "medium" }).click();
+  await page.getByRole("button", { name: "Closer to?", exact: true }).click();
+  await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
+  await page.locator(".sign-picks").getByRole("button", { name: best.text, exact: true }).click();
+  await expect(page.getByLabel("Your answer")).toHaveValue(best.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
