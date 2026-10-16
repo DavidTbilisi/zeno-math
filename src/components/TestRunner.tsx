@@ -5,7 +5,7 @@
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
 import { SignPicks } from "./ui";
-import { GeoAnswer } from "./GeoAnswer";
+import { PlayAnswer } from "./PlayAnswer";
 import { newId, type ClassPlan, type Outbox, type Student, type TestAnswer } from "../learner";
 import { fill } from "../math/text";
 import { latexToSvg } from "../math/latex";
@@ -104,7 +104,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
       <label className="field">
         <span>{w.ui.answerHere} <span className="hint">({w.formats[ex.format]})</span></span>
         {ex.play ? (
-          <GeoAnswer
+          <PlayAnswer
             play={ex.play}
             value={input}
             label={ex.prompt}

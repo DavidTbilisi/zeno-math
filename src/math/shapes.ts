@@ -855,6 +855,23 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function estimatePreview(): Piece[] {
+  // A line from 0 to 100 with only its ends, a pin dropped on it and the number's real place just beside.
+  const [x0, x1, y] = [0, 240, 60];
+  const at = (v: number) => x0 + (v / 100) * (x1 - x0);
+  return [
+    seg([x0, y], [x1, y], { width: 2 }),
+    seg([x0, y - 8], [x0, y + 8], { width: 2 }),
+    seg([x1, y - 8], [x1, y + 8], { width: 2 }),
+    text(x0, y + 26, "0", 16),
+    text(x1, y + 26, "100", 16),
+    text(120, 10, "37", 22),
+    seg([at(40), y - 22], [at(40), y + 4], { color: "#1971c2", width: 3 }),
+    ellipse(at(40), y - 26, 6, 6, { fill: "#1971c2", color: "#1971c2", width: 1 }),
+    poly([[at(37), y - 3], [at(37) - 7, y - 16], [at(37) + 7, y - 16]], { fill: "#2f9e44", color: "#2f9e44", width: 1 }),
+  ];
+}
+
 function geoboardPreview(): Piece[] {
   // A dot grid with an L-shaped shape on it, its corners on the dots.
   const s = 24;
@@ -989,6 +1006,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "livePatterns", group: "live", build: patternsPreview, live: "patterns" },
   { id: "liveNumberLine", group: "live", build: numberLine, live: "numberLine" },
   { id: "liveGeoboard", group: "live", build: geoboardPreview, live: "geoboard" },
+  { id: "liveEstimate", group: "live", build: estimatePreview, live: "estimate" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

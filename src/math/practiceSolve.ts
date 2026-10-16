@@ -54,6 +54,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./geoPlay").ShapeSolution & { steps: string[] };
       return (await import("./geoPlay")).renderShape(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "pin": {
+      // The number on the line, with the written steps beneath.
+      const spec = s as import("./estimate").PinSolution & { steps: string[] };
+      return (await import("./estimate")).renderPin(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }

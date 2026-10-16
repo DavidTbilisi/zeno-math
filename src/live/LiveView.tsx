@@ -9,6 +9,7 @@ import { liveDataOf, type LiveData } from "./element";
 import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
 import { Chance } from "./Chance";
 import { LongDivision } from "./LongDivision";
+import { Estimate } from "./Estimate";
 import { Geoboard } from "./Geoboard";
 import { NumberLine } from "./NumberLine";
 import { Patterns } from "./Patterns";
@@ -46,6 +47,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   patterns: Patterns,
   numberLine: NumberLine,
   geoboard: Geoboard,
+  estimate: Estimate,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {
