@@ -27,8 +27,11 @@ test("items spread evenly over the class's skills and levels", () => {
   // More skills than items: spread across the curriculum, not bunched at the start.
   const many = testItems("C", CURRICULUM, "A", 12);
   assert.equal(new Set(many.map((i) => i.skill)).size, 12);
-  assert.equal(many[0].skill, CURRICULUM[1]);
-  assert.equal(many.at(-1)!.skill, CURRICULUM[CURRICULUM.length - 2]);
+  // Item i takes the skill in the middle of its twelfth of the curriculum, however many skills there are.
+  const n = CURRICULUM.length;
+  assert.equal(many[0].skill, CURRICULUM[Math.floor((0.5 * n) / 12)]);
+  assert.equal(many.at(-1)!.skill, CURRICULUM[Math.floor((11.5 * n) / 12)]);
+  assert.ok(Math.floor((0.5 * n) / 12) <= 2 && Math.floor((11.5 * n) / 12) >= n - 3, "near both ends");
   assert.deepEqual([...new Set(many.map((i) => i.level))].sort(), [1, 2, 3]);
 });
 

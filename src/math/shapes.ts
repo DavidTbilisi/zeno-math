@@ -855,6 +855,14 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function targetPreview(): Piece[] {
+  // The target, and four cards beneath it.
+  return [
+    text(110, 20, "🎯 24", 28),
+    ...[3, 8, 2, 6].flatMap((n, i) => [rect(i * 56, 52, 44, 52, { fill: FILL.yellow, width: 1.5 }, true), text(i * 56 + 22, 86, String(n), 22)]),
+  ];
+}
+
 function quickLookPreview(): Piece[] {
   // A ten frame with seven counters, a 👀 beside it.
   const out: Piece[] = [];
@@ -1019,6 +1027,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveGeoboard", group: "live", build: geoboardPreview, live: "geoboard" },
   { id: "liveEstimate", group: "live", build: estimatePreview, live: "estimate" },
   { id: "liveQuickLook", group: "live", build: quickLookPreview, live: "quickLook" },
+  { id: "liveTarget", group: "live", build: targetPreview, live: "target" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
