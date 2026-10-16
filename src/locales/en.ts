@@ -3773,7 +3773,7 @@ export const en = {
   practiceData: "Probability & statistics",
   practiceHints: {
     number: "Comparing numbers and fractions, multiplication, negative numbers, order of operations, fractions, percentages, rounding and estimation, HCF and LCM, prime factors.",
-    algebra: "Linear equations, inequalities, expanding, factorising, quadratics, simultaneous equations, polynomials, indices, logarithms, surds.",
+    algebra: "Balance puzzles, finding the rule, growing patterns, equal expressions, linear equations, inequalities, expanding, factorising, quadratics, simultaneous equations, polynomials, indices, logarithms, surds.",
     geometry: "Equations of lines, distances and midpoints, exact trigonometric values, right triangles, circle theorems, similar shapes, surface area and volume, trig identities.",
     calculus: "Derivatives, gradients and tangents, stationary points, integrals, numerical methods.",
     data: "Averages, probability, counting, confidence intervals.",
