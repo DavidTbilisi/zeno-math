@@ -41,8 +41,8 @@ test("a round of the estimation game with every pin on its number earns three st
   for (const [i, t] of round.entries()) {
     await expect(game.getByRole("img", { name: `Where does ${t.text} go?` })).toBeVisible();
     await dropPin(page, game.locator("svg").first(), t.play, t.v, [50, 650, 700, 130]);
-    // A pin right on its number is a bullseye (or the middle of the line found), said in place of "Right!".
-    if (i === 0) await expect(game.getByText(/^(Bullseye! Right on the spot\.|Half way — you found the middle of the line\.)/)).toBeVisible();
+    // Right, or (a pin right on its number) a bullseye or the middle of the line, said in place of "Right!".
+    if (i === 0) await expect(game.getByText(/^(Right! Off by only|Bullseye! Right on the spot\.|Half way — you found the middle of the line\.)/)).toBeVisible();
     if (i < round.length - 1) await game.getByRole("button", { name: "Next →" }).click();
   }
   await expect(game.getByText("Round done! ★★★")).toBeVisible();
