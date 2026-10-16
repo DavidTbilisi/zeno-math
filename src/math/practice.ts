@@ -12,6 +12,7 @@ import { tUpper, zUpper } from "./inference";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
+import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
 import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
@@ -27,7 +28,7 @@ export const LEVELS: Level[] = [1, 2, 3];
 export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -50,6 +51,8 @@ type Answer = (
   | { k: "pin"; play: PinPlay; v: number }
   /** A sum of the cards (each at most once, every one when `all`) that makes the target. */
   | { k: "target"; puzzle: Pick<TargetPuzzle, "cards" | "target" | "ops" | "all">; sample: string }
+  /** The benchmark nearest a number, picked from `options`. */
+  | { k: "near"; options: Bench[]; right: number }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
 export type Play =
@@ -199,6 +202,8 @@ export type PracticeWords = {
     quickLook: string;
     makeTarget: string;
     makeTargetAll: string;
+    closerTo: string;
+    closerToCalc: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -224,6 +229,7 @@ export type PracticeWords = {
     shape: Record<PolyProblem, string>;
     pin: { unreadable: string; offLine: string; left: string; right: string };
     target: { unreadable: string; other: string; notAll: string; op: string; divZero: string; makes: string };
+    near: { unreadable: string; notOption: string };
   };
   answer: string;
   answers: string;
@@ -1310,6 +1316,23 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  closerTo(r, L, w) {
+    // Which benchmark a number is nearest (src/math/benchmark.ts); the answer is the benchmark, typed or picked.
+    const t = nearTask(L, r.next);
+    const best = t.options[t.right];
+    // Easy, between two tens: the lower ten when the next digit is 5 or more is a cut, not a rounding.
+    const traps: Trap[] = L === 1 && t.options.length === 2 && t.right === 1 ? [{ id: "truncated", a: { k: "near", options: t.options, right: 0 } }] : [];
+    return {
+      prompt: fill(L === 3 ? w.prompts.closerToCalc : w.prompts.closerTo, { opts: t.options.map((o) => o.text).join(", ") }),
+      q: t.tex,
+      answer: { k: "near", options: t.options, right: t.right, traps },
+      show: `${t.tex} \\approx ${best.tex}`,
+      plain: best.plain,
+      format: "near",
+      steps: nearSteps(t),
     };
   },
 
@@ -2862,7 +2885,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -2968,6 +2991,11 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         const v = judgePoly(a.play, src);
         return v.ok ? v : v.problem ? { ok: false, why: w.reasons.shape[v.problem] } : { ok: false };
       }
+      case "near": {
+        const v = judgeNear(a, src);
+        if (v.ok) return v;
+        return "problem" in v ? { ok: false, why: fill(w.reasons.near[v.problem], { opts: a.options.map((o) => o.text).join(", ") }) } : { ok: false };
+      }
       case "target": {
         const v = judgeTarget(a.puzzle, src);
         if (v.ok) return v;
@@ -3005,7 +3033,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
-  if (ex.answer.k === "poly" || ex.answer.k === "pin") return null;
+  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near") return null;
   if (ex.answer.k === "target") {
     // The sum as maths, and what it makes so far.
     const e = parseSum(s);

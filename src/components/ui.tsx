@@ -79,6 +79,17 @@ export const startOr = <K extends string>(start: string | undefined, items: read
   (items as readonly string[]).includes(start ?? "") ? (start as K) : fallback;
 
 /** The three signs as buttons, for an answer that is a sign between two numbers (no hunting for < on a keyboard). */
+/** Buttons that each type one of a few answers (the benchmarks a number could be nearest). */
+export function ChoicePicks({ choices, onPick, disabled }: { choices: { label: string; value: string }[]; onPick: (value: string) => void; disabled?: boolean }) {
+  return (
+    <div className="field-row sign-picks">
+      {choices.map((c) => (
+        <button key={c.value} className="btn" disabled={disabled} onClick={() => onPick(c.value)}>{c.label}</button>
+      ))}
+    </div>
+  );
+}
+
 /** Buttons that type a sum: the cards, the signs that may be used, brackets, and one to take the last piece back. */
 export function TargetPicks({ cards, ops, onPick, onBack, disabled }: { cards: number[]; ops: string[]; onPick: (s: string) => void; onBack: () => void; disabled?: boolean }) {
   const sign: Record<string, string> = { "+": "+", "-": "−", "*": "×", "/": "÷" };

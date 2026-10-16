@@ -23,7 +23,7 @@ import { Cheer } from "../live/ladderUi";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
-import { Segmented, SignPicks, startOr, Tabs, TargetPicks } from "./ui";
+import { ChoicePicks, Segmented, SignPicks, startOr, Tabs, TargetPicks } from "./ui";
 import { addPiece, dropPiece } from "../math/target";
 
 type Mode = "practise" | "sheet";
@@ -555,6 +555,16 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
           </AnswerField>
           {cur.ex.format === "sign" && !done && (
             <SignPicks
+              onPick={(s) => {
+                setInput(s);
+                setVerdict(null);
+                inputRef.current?.focus();
+              }}
+            />
+          )}
+          {cur.ex.answer.k === "near" && !done && (
+            <ChoicePicks
+              choices={cur.ex.answer.options.map((o) => ({ label: o.text, value: o.plain }))}
               onPick={(s) => {
                 setInput(s);
                 setVerdict(null);

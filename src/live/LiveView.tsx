@@ -8,6 +8,7 @@ import { LIVE_SIZES, type LiveGraphState, type LiveKind } from "../math/live";
 import { liveDataOf, type LiveData } from "./element";
 import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
 import { Chance } from "./Chance";
+import { CloserTo } from "./CloserTo";
 import { LongDivision } from "./LongDivision";
 import { Estimate } from "./Estimate";
 import { Geoboard } from "./Geoboard";
@@ -52,6 +53,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   estimate: Estimate,
   quickLook: QuickLook,
   target: Target,
+  closerTo: CloserTo,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

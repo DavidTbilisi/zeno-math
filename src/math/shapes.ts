@@ -855,6 +855,17 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function closerToPreview(): Piece[] {
+  // 37, and the two tens it lies between, the nearer one ringed.
+  return [
+    text(100, 18, "37", 30),
+    rect(10, 56, 70, 44, { fill: FILL.gray, width: 1.5 }, true),
+    text(45, 86, "30", 22),
+    rect(120, 56, 70, 44, { fill: FILL.green, color: "#2f9e44", width: 2.5 }, true),
+    text(155, 86, "40", 22),
+  ];
+}
+
 function targetPreview(): Piece[] {
   // The target, and four cards beneath it.
   return [
@@ -1028,6 +1039,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveEstimate", group: "live", build: estimatePreview, live: "estimate" },
   { id: "liveQuickLook", group: "live", build: quickLookPreview, live: "quickLook" },
   { id: "liveTarget", group: "live", build: targetPreview, live: "target" },
+  { id: "liveCloserTo", group: "live", build: closerToPreview, live: "closerTo" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
