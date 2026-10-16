@@ -42,3 +42,22 @@ export function Stepper({ value, min, max, onChange, less, more }: { value: numb
     </span>
   );
 }
+
+/** A fraction top over bottom, in SVG. */
+export function SvgFrac({ n, d, x, y, size = 16 }: { n: number; d: number; x: number; y: number; size?: number }) {
+  const w = Math.max(String(n).length, String(d).length) * size * 0.6 + 4;
+  return (
+    <g fontSize={size} textAnchor="middle" fill={INK}>
+      <text x={x} y={y - size * 0.15}>{n}</text>
+      <line x1={x - w / 2} y1={y + size * 0.05} x2={x + w / 2} y2={y + size * 0.05} stroke={INK} strokeWidth={1.5} />
+      <text x={x} y={y + size * 0.95}>{d}</text>
+    </g>
+  );
+}
+/** A fraction top over bottom, in a button. */
+export const HtmlFrac = ({ n, d }: { n: number; d: number }) => (
+  <span className="frac">
+    <b>{n}</b>
+    <i>{d}</i>
+  </span>
+);

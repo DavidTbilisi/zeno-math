@@ -9,6 +9,7 @@ import type { LiveEstimate } from "./estimate";
 import type { LiveQuickLook } from "./quickLook";
 import type { LiveTarget } from "./target";
 import type { LiveNear } from "./benchmark";
+import type { LiveWall } from "./fractionWall";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -338,6 +339,7 @@ export type LiveStates = {
   quickLook: LiveQuickLook;
   target: LiveTarget;
   closerTo: LiveNear;
+  fractionWall: LiveWall;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -365,6 +367,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   quickLook: [620, 580],
   target: [640, 430],
   closerTo: [640, 470],
+  fractionWall: [660, 380],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -394,6 +397,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     quickLook: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], phase: "ready", answer: null, relooked: false, streak: 0, said: null },
     target: { mode: "puzzle", stage: 0, level: 1, seed: 1, sum: [], ways: [], hinted: false, streak: 0, said: null },
     closerTo: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], picked: null, streak: 0, said: null },
+    fractionWall: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], best: 0, streak: 0, said: null },
   };
   return structuredClone(start[kind]);
 }

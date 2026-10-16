@@ -11,6 +11,7 @@ import { Chance } from "./Chance";
 import { CloserTo } from "./CloserTo";
 import { LongDivision } from "./LongDivision";
 import { Estimate } from "./Estimate";
+import { FractionWall } from "./FractionWall";
 import { Geoboard } from "./Geoboard";
 import { NumberLine } from "./NumberLine";
 import { Patterns } from "./Patterns";
@@ -54,6 +55,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   quickLook: QuickLook,
   target: Target,
   closerTo: CloserTo,
+  fractionWall: FractionWall,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

@@ -855,6 +855,21 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function fractionWallPreview(): Piece[] {
+  // A bar of ½ and ¼ tiles with a quarter left to fill.
+  const h = 40;
+  return [
+    rect(0, 0, 120, h, { fill: FILL.yellow, width: 1.5 }),
+    text(60, 26, "1/2", 16),
+    rect(120, 0, 60, h, { fill: FILL.green, width: 1.5 }),
+    text(150, 26, "1/4", 16),
+    rect(180, 0, 60, h, { width: 1.5, dashed: true }),
+    text(210, 26, "?", 20),
+    seg([240, -8], [240, h + 8], { width: 3 }),
+    text(240, -16, "1", 16),
+  ];
+}
+
 function closerToPreview(): Piece[] {
   // 37, and the two tens it lies between, the nearer one ringed.
   return [
@@ -1040,6 +1055,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveQuickLook", group: "live", build: quickLookPreview, live: "quickLook" },
   { id: "liveTarget", group: "live", build: targetPreview, live: "target" },
   { id: "liveCloserTo", group: "live", build: closerToPreview, live: "closerTo" },
+  { id: "liveFractionWall", group: "live", build: fractionWallPreview, live: "fractionWall" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
