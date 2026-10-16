@@ -1,11 +1,12 @@
 // The answer to a question answered by doing rather than typing, whatever the doing is: a shape on a dot grid, or a
-// pin on a number line, dots that flash and are counted. Each gives its answer as text, so checking, logging and
+// pin on a number line, dots that flash and are counted, pieces of a shape shaded. Each gives its answer as text, so checking, logging and
 // marking stay the same.
 import type { ReactNode } from "react";
 import type { Play } from "../math/practice";
 import { FlashAnswer } from "./FlashAnswer";
 import { GeoAnswer } from "./GeoAnswer";
 import { PinAnswer } from "./PinAnswer";
+import { ShadeAnswer } from "./ShadeAnswer";
 
 export function PlayAnswer({ play, ...rest }: {
   play: Play;
@@ -21,6 +22,7 @@ export function PlayAnswer({ play, ...rest }: {
 }) {
   const { onEnter, look, ...common } = rest;
   if (play.kind === "flash") return <FlashAnswer play={play} {...common} onEnter={onEnter} look={look} />;
+  if (play.kind === "shade") return <ShadeAnswer play={play} {...common} />;
   return play.kind === "grid" ? <GeoAnswer play={play} {...common} /> : <PinAnswer play={play} {...common} />;
 }
 

@@ -33,6 +33,9 @@ function wrong(ex: Exercise): string {
     case "poly":
       // One square: never the shape asked for.
       return "poly:0,0;1,0;1,1;0,1";
+    case "shade":
+      // One piece more than asked.
+      return `shade:${Array.from({ length: a.count + 1 }, (_, i) => i).join(",")}`;
     case "order":
       // The right order turned round.
       return [...a.seq].reverse().map((i) => a.items[i].text).join(", ");

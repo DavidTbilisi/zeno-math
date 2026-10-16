@@ -12,6 +12,7 @@ import type { LiveNear } from "./benchmark";
 import type { LiveWall } from "./fractionWall";
 import type { LiveEquiv } from "./equivMatch";
 import type { LiveOrder } from "./fracOrder";
+import type { LiveShade } from "./shadeFrac";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -344,6 +345,7 @@ export type LiveStates = {
   fractionWall: LiveWall;
   equivMatch: LiveEquiv;
   fracOrder: LiveOrder;
+  shadeFrac: LiveShade;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -374,6 +376,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   fractionWall: [660, 380],
   equivMatch: [620, 480],
   fracOrder: [720, 470],
+  shadeFrac: [600, 560],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -406,6 +409,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     fractionWall: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], best: 0, streak: 0, said: null },
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     fracOrder: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], sel: 0, checked: false, streak: 0, said: null },
+    shadeFrac: { mode: "puzzle", stage: 0, level: 1, seed: 1, shaded: [], misses: 0, done: false, streak: 0, said: null },
   };
   return structuredClone(start[kind]);
 }

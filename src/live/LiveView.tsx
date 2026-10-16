@@ -19,6 +19,7 @@ import { NumberLine } from "./NumberLine";
 import { Patterns } from "./Patterns";
 import { QuickLook } from "./QuickLook";
 import { Rubik } from "./Rubik";
+import { ShadeGame } from "./ShadeGame";
 import { Soroban } from "./Soroban";
 import { Target } from "./Target";
 import type { PieceProps } from "./ui";
@@ -60,6 +61,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   fractionWall: FractionWall,
   equivMatch: EquivMatch,
   fracOrder: FracOrder,
+  shadeFrac: ShadeGame,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

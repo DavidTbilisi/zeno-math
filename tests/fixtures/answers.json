@@ -3322,6 +3322,90 @@
    "seed": 7,
    "input": "1/9, 4/5, 3/2, 7/5, 5/3",
    "label": "wrong"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 1,
+   "seed": 7,
+   "input": "shade:0",
+   "label": "correct"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 1,
+   "seed": 7,
+   "input": "shade:1",
+   "label": "correct",
+   "note": "the other half"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 1,
+   "seed": 7,
+   "input": "shade:0,1",
+   "label": "wrong",
+   "note": "all of it"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 1,
+   "seed": 7,
+   "input": "shade:",
+   "label": "form",
+   "note": "nothing shaded"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 2,
+   "seed": 7,
+   "input": "shade:0,1,2,3",
+   "label": "correct"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 2,
+   "seed": 7,
+   "input": "shade:0,2,4,6",
+   "label": "correct",
+   "note": "pieces not side by side"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 2,
+   "seed": 7,
+   "input": "shade:0",
+   "label": "wrong",
+   "mistake": "topAsPieces"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 2,
+   "seed": 7,
+   "input": "shade:0,1,2",
+   "label": "wrong"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 3,
+   "seed": 7,
+   "input": "shade:5,6,7,8,9",
+   "label": "correct"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 3,
+   "seed": 7,
+   "input": "shade:3",
+   "label": "wrong",
+   "mistake": "topAsPieces"
+  },
+  {
+   "skill": "shadeFraction",
+   "level": 3,
+   "seed": 7,
+   "input": "shade:1,1,2,3,4",
+   "label": "form",
+   "note": "a piece counted twice"
   }
  ]
 }

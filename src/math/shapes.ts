@@ -855,6 +855,13 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function shadeFracPreview(): Piece[] {
+  // A 3 × 4 grid with nine squares shaded: 3/4 of 12.
+  const out: Piece[] = [];
+  for (let k = 0; k < 12; k++) out.push(rect((k % 4) * 30, Math.floor(k / 4) * 30, 30, 30, { fill: k < 9 ? FILL.blue : "#ffffff", width: 1.5 }));
+  return [...out, text(160, 50, "3/4", 22)];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1086,6 +1093,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFractionWall", group: "live", build: fractionWallPreview, live: "fractionWall" },
   { id: "liveEquivMatch", group: "live", build: equivMatchPreview, live: "equivMatch" },
   { id: "liveFracOrder", group: "live", build: fracOrderPreview, live: "fracOrder" },
+  { id: "liveShadeFrac", group: "live", build: shadeFracPreview, live: "shadeFrac" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },
