@@ -2591,6 +2591,128 @@
    "seed": 7,
    "input": ">",
    "label": "wrong"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 1,
+   "seed": 7,
+   "input": "poly:1,1;3,1;3,3;1,3",
+   "label": "correct"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 1,
+   "seed": 7,
+   "input": "poly:5,5;5,7;7,7;7,5",
+   "label": "correct",
+   "note": "elsewhere on the grid, the other way round"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 1,
+   "seed": 7,
+   "input": "poly:1,1;2,1;3,1;3,3;1,3",
+   "label": "correct",
+   "note": "a dot in the middle of a side"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 1,
+   "seed": 7,
+   "input": "poly:1,1;4,1;4,3;1,3",
+   "label": "wrong"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 1,
+   "seed": 7,
+   "input": "poly:0,0;1,0;1,1;0,1",
+   "label": "wrong",
+   "mistake": "areaPerimeter"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 1,
+   "seed": 7,
+   "input": "poly:0,0;3,0;3,1;1,1;1,2;0,2",
+   "label": "form",
+   "note": "the right area, but not a rectangle"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 1,
+   "seed": 7,
+   "input": "poly:0,0;2,2;2,0;0,2",
+   "label": "form",
+   "note": "sides that cross"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 2,
+   "seed": 7,
+   "input": "poly:1,3;3,3;3,1",
+   "label": "correct"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 2,
+   "seed": 7,
+   "input": "poly:0,0;4,0;0,1",
+   "label": "correct"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 2,
+   "seed": 7,
+   "input": "poly:0,0;3,0;0,3",
+   "label": "wrong"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 2,
+   "seed": 7,
+   "input": "poly:0,2;1,2;0,0",
+   "label": "wrong",
+   "mistake": "triangleHalf"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 2,
+   "seed": 7,
+   "input": "poly:0,0;2,0;2,1;0,1",
+   "label": "form",
+   "note": "the right area, but not a triangle"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 3,
+   "seed": 7,
+   "input": "poly:1,1;4,1;4,3;3,3;3,4;1,4",
+   "label": "correct"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 3,
+   "seed": 7,
+   "input": "poly:0,0;4,0;4,2;0,2",
+   "label": "correct",
+   "note": "a rectangle does it too"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 3,
+   "seed": 7,
+   "input": "poly:0,0;8,0;8,1;0,1",
+   "label": "wrong",
+   "note": "the right area, the wrong perimeter"
+  },
+  {
+   "skill": "shapeArea",
+   "level": 3,
+   "seed": 7,
+   "input": "poly:0,0;4,0;4,2;1,4",
+   "label": "form",
+   "note": "a slanted side"
   }
  ]
 }

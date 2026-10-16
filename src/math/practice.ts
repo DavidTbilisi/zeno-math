@@ -11,6 +11,7 @@ import { Frac } from "./fraction";
 import { tUpper, zUpper } from "./inference";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
+import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
 import { compareSign, fracSign, samePieces, type CompareSign, type Frac as Fraction } from "./live";
 import type { MistakeId } from "./mistakes";
 import { AREAS, SKILLS, type Area, type SkillId } from "./practiceSkills";
@@ -20,10 +21,10 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign";
+  | "inequality" | "standard" | "sign" | "shape";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -40,6 +41,8 @@ type Answer = (
   | { k: "ineq"; lo: Bound | null; hi: Bound | null }
   /** The sign between two numbers. */
   | { k: "sign"; v: CompareSign }
+  /** A shape made on a dot grid, typed as its corners ("poly:1,1;5,1;5,4"); sample is one that does it. */
+  | { k: "poly"; play: GeoPlay; sample: string }
 ) & { traps?: Trap[] };
 
 export type Exercise = {
@@ -61,6 +64,8 @@ export type Exercise = {
   solution?: { kind: SolutionKind; spec: unknown };
   /** Worked lines when no tool draws the solution. */
   steps?: string[];
+  /** Answered by making a shape on a dot grid rather than typing (the answer is still text: its corners). */
+  play?: GeoPlay;
 };
 
 export type PracticeWords = {
@@ -174,6 +179,9 @@ export type PracticeWords = {
     precTen: string;
     ineqSolve: string;
     ineqWord: string;
+    shapeRect: string;
+    shapeTriangle: string;
+    shapeAreaPerim: string;
   };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
@@ -196,6 +204,7 @@ export type PracticeWords = {
     notIneq: string;
     notStandard: string;
     notSign: string;
+    shape: Record<PolyProblem, string>;
   };
   answer: string;
   answers: string;
@@ -311,6 +320,8 @@ const bracket = (a: number, b: number) => `(${polyStr([b, a])})`;
 const T = (src: string) => tex(parseE(src));
 /** A number as a typed answer: 3/4, -2. */
 const plainFrac = (f: Frac) => (f.d === 1 ? String(f.n) : `${f.n}/${f.d}`);
+/** An area given as twice itself, in LaTeX: 7 or 7\frac{1}{2}. */
+const areaTex = (area2: number) => (area2 % 2 ? `${area2 > 1 ? (area2 - 1) / 2 : ""}\\frac{1}{2}` : String(area2 / 2));
 /** p + q√m in LaTeX. */
 function surdTex(p: Frac, q: Frac, m: number): string {
   if (m === 1) return p.add(q).tex();
@@ -1247,6 +1258,35 @@ const GENS: Record<SkillId, Gen> = {
     }
     const plain = show.replace(/\\sqrt\{(\d+)\}/g, "sqrt($1)").replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1)/($2)");
     return { prompt: w.prompts.trigexact, q: `\\${f} ${angleTex}`, answer: num(v), show, plain, format: "exact", solution: { kind: "trig", spec: { topic: "circle", angle: deg, unit: "deg" } } };
+  },
+
+  shapeArea(r, L, w) {
+    // A shape made on a dot grid by tapping: a rectangle, a triangle (half squares) or a shape on the grid lines with
+    // an area and a perimeter. The answer is the shape's corners as text, marked in whole numbers (src/math/geoPlay.ts).
+    const t = polyTask(L, r.next);
+    const { goal } = t.play;
+    const A = areaTex(goal.area2!);
+    const lines =
+      L === 1 ? [`${t.dims[0]} \\times ${t.dims[1]} = ${A}`]
+      : L === 2 ? [`${t.dims[0]} \\times ${t.dims[1]} = ${t.dims[0] * t.dims[1]}`, `\\frac{1}{2} \\times ${t.dims[0] * t.dims[1]} = ${A}`]
+      : [`${t.dims[0]} \\times ${t.dims[1]} - ${t.dims[2]} \\times ${t.dims[3]} = ${A}`, `P = 2 \\times (${t.dims[0]} + ${t.dims[1]}) = ${goal.perim}`];
+    const prompt =
+      L === 1 ? fill(w.prompts.shapeRect, { n: areaText(goal.area2!) })
+      : L === 2 ? fill(w.prompts.shapeTriangle, { n: areaText(goal.area2!) })
+      : fill(w.prompts.shapeAreaPerim, { a: areaText(goal.area2!), p: goal.perim! });
+    const traps: Trap[] = polyTraps(t).map((p) => ({ id: p.id, a: { k: "poly", play: { ...t.play, goal: p.goal }, sample: encodePoly(p.sample) }, vars: p.vars }));
+    const grid = geoGridSvg(t.play);
+    return {
+      prompt,
+      q: L === 3 ? `A = ${A}, \\quad P = ${goal.perim}` : `A = ${A}`,
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${grid.body}</g>`, h: grid.h, w: grid.w },
+      play: t.play,
+      answer: { k: "poly", play: t.play, sample: encodePoly(t.sample), traps },
+      show: lines.join(", \\quad "),
+      plain: encodePoly(t.sample),
+      format: "shape",
+      solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
   },
 
   righttri(r, L, w) {
@@ -2737,7 +2777,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -2839,6 +2879,10 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         const got = readSign(src);
         return got ? { ok: got === a.v } : { ok: false, why: w.reasons.notSign };
       }
+      case "poly": {
+        const v = judgePoly(a.play, src);
+        return v.ok ? v : v.problem ? { ok: false, why: w.reasons.shape[v.problem] } : { ok: false };
+      }
       case "ineq": {
         const got = readIneq(src);
         if (!got) return { ok: false, why: w.reasons.notIneq };
@@ -2860,6 +2904,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
+  if (ex.answer.k === "poly") return null;
   try {
     if (ex.answer.k === "set" || ex.answer.k === "tuple") return parts(s).map((p) => tex(parseE(bare(p)))).join(", \\; ");
     if (ex.answer.k === "sign") {

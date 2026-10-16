@@ -4,6 +4,7 @@
 // of a Rubik's cube, of a soroban and of an algorithm pattern being stepped through. Kept free of React and Excalidraw so
 // it can be tested on its own.
 import type { LiveNumberLine } from "./numberLine";
+import type { LiveGeoboard } from "./geoPlay";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -328,6 +329,7 @@ export type LiveStates = {
   soroban: LiveSoroban;
   patterns: LivePatterns;
   numberLine: LiveNumberLine;
+  geoboard: LiveGeoboard;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -350,6 +352,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   soroban: [820, 540],
   patterns: [800, 600],
   numberLine: [800, 460],
+  geoboard: [600, 660],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -374,6 +377,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },
     patterns: { pattern: "twoptr", ...PATTERN_EXAMPLES.twoptr, step: 0, quiz: false },
     numberLine: { from: 0, to: 10, step: 1, fractions: false, marks: [], jumps: true, together: false },
+    geoboard: { mode: "free", stage: 0, pts: [], misses: 0, peeked: false, area: true, perim: true, said: null, last: null },
   };
   return structuredClone(start[kind]);
 }

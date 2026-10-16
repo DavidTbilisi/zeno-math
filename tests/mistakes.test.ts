@@ -38,6 +38,8 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   biggerBottom: ["compare", [3]],
   biggerTop: ["compareFractions", [2, 3]],
   sameGap: ["compareFractions", [2]],
+  areaPerimeter: ["shapeArea", [1]],
+  triangleHalf: ["shapeArea", [2]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {

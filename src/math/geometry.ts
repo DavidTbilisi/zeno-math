@@ -102,7 +102,8 @@ function angleAt(p: Pt, v: Pt, n: Pt): number {
   return (Math.atan2(Math.abs(cross(a, b)), dot(a, b)) * 180) / Math.PI;
 }
 
-const polyArea2 = (pts: Pt[]) => pts.reduce((s, p, i) => s + cross(p, pts[(i + 1) % pts.length]), 0);
+/** Twice the signed area of a polygon (the shoelace sum). */
+export const polyArea2 = (pts: Pt[]) => pts.reduce((s, p, i) => s + cross(p, pts[(i + 1) % pts.length]), 0);
 
 /** Interior angles of a simple polygon (handles reflex corners). */
 function interiorAngles(pts: Pt[]): number[] {

@@ -855,6 +855,16 @@ function chancePreview(): Piece[] {
   ];
 }
 
+function geoboardPreview(): Piece[] {
+  // A dot grid with an L-shaped shape on it, its corners on the dots.
+  const s = 24;
+  const ink = { fill: MUTED, color: MUTED, width: 1 };
+  const dots: Piece[] = [];
+  for (let i = 0; i <= 6; i++) for (let j = 0; j <= 5; j++) dots.push(ellipse(i * s, j * s, 2.5, 2.5, ink));
+  const corners: Pt[] = [[1, 1], [5, 1], [5, 3], [3, 3], [3, 4], [1, 4]];
+  return [...dots, poly(corners.map(([x, y]): Pt => [x * s, y * s]), { fill: FILL.blue, color: "#1971c2", width: 2 })];
+}
+
 function comparePreview(): Piece[] {
   const [w, h, mid, gap] = [40, 16, 40, 60];
   const colors = [FILL.red, FILL.yellow, FILL.green, FILL.violet, FILL.blue];
@@ -978,6 +988,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSoroban", group: "live", build: sorobanPreview, live: "soroban" },
   { id: "livePatterns", group: "live", build: patternsPreview, live: "patterns" },
   { id: "liveNumberLine", group: "live", build: numberLine, live: "numberLine" },
+  { id: "liveGeoboard", group: "live", build: geoboardPreview, live: "geoboard" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },
   { id: "setSquare45", group: "measure", build: setSquare45 },

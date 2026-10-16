@@ -49,6 +49,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       return (await import("./polynomials")).renderPolynomials(s, t.polyWords);
     case "euclid":
       return (await import("./euclid")).renderEuclid(s, t.euclidWords);
+    case "shape": {
+      // The shape that does it on the grid, with the written steps beneath.
+      const spec = s as import("./geoPlay").ShapeSolution & { steps: string[] };
+      return (await import("./geoPlay")).renderShape(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }

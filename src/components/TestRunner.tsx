@@ -5,6 +5,7 @@
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
 import { SignPicks } from "./ui";
+import { GeoAnswer } from "./GeoAnswer";
 import { newId, type ClassPlan, type Outbox, type Student, type TestAnswer } from "../learner";
 import { fill } from "../math/text";
 import { latexToSvg } from "../math/latex";
@@ -102,6 +103,17 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
       </div>
       <label className="field">
         <span>{w.ui.answerHere} <span className="hint">({w.formats[ex.format]})</span></span>
+        {ex.play ? (
+          <GeoAnswer
+            play={ex.play}
+            value={input}
+            label={ex.prompt}
+            onChange={(s) => {
+              setInput(s);
+              setMessage(null);
+            }}
+          />
+        ) : (
         <div className="field-row">
           <input
             ref={inputRef}
@@ -121,6 +133,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
           />
           {typed && <img className="practice-typed" src={typed} alt="" />}
         </div>
+        )}
       </label>
       {ex.format === "sign" && (
         <SignPicks

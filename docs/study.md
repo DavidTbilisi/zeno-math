@@ -350,8 +350,8 @@ A smaller dry run is part of `npm test`, so CI checks the whole pipeline on ever
 
 ## Answer checker
 
-A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 354 typed answers to questions from
-all 44 skills, each marked the way a teacher would:
+A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 370 typed answers to questions from
+all 45 skills, each marked the way a teacher would:
 
 - correct;
 - close (a rounding slip);
@@ -362,12 +362,12 @@ all 44 skills, each marked the way a teacher would:
 
 | teacher \ checker | correct | close | wrong | form |
 |---|---|---|---|---|
-| correct (166) | 163 | 0 | 1 | 2 |
+| correct (173) | 170 | 0 | 1 | 2 |
 | close (16) | 0 | 0 | 3 | 13 |
-| wrong (133) | 0 | 0 | 133 | 0 |
-| form (39) | 2 | 0 | 8 | 29 |
+| wrong (138) | 0 | 0 | 138 | 0 |
+| form (43) | 2 | 0 | 8 | 33 |
 
-The checker agrees 91.8 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+The checker agrees 92.2 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
 
 - `13*17` for "work out 13 × 17";
 - an integral without `+ C`.
@@ -384,12 +384,12 @@ Its other disagreements are mild:
 **Naming the mistake.** Many wrong answers are predictable: ½ + ⅓ answered as 2/5 (tops and bottoms added),
 (2x + 7)² as 4x² + 49, x > −8 where dividing by a negative should have turned the sign round. Each question lists the
 answers the known mistakes would give from its own numbers ([`src/math/mistakes.ts`](../src/math/mistakes.ts) has the
-17 of them), and "right size, wrong sign" is tried on every question. A wrong answer that matches one is still marked
+28 of them), and "right size, wrong sign" is tried on every question. A wrong answer that matches one is still marked
 wrong and counts as a miss; in practice the student also reads what the slip was and a number to test it with. Tests
 give no feedback, so the names appear only in the exports' analysis.
 
-36 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 36,
-and names none in the 97 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
+38 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 38,
+and names none in the 100 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
 found in students' answers, so this says what the checker can recognise, not how often students make each mistake.
 
 Building the corpus found two real faults, now fixed:

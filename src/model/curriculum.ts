@@ -4,7 +4,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "compare", "times", "integers", "order", "compareFractions", "fractions", "percent", "rounding", "hcf", "primes", "average", "linear", "inequalities", "expand", "factor", "line", "distance", "righttri",
+  "compare", "times", "shapeArea", "integers", "order", "compareFractions", "fractions", "percent", "rounding", "hcf", "primes", "average", "linear", "inequalities", "expand", "factor", "line", "distance", "righttri",
   "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -13,6 +13,7 @@ export const CURRICULUM: readonly SkillId[] = [
 /** The skills each skill builds on directly. */
 export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>>> = {
   times: ["compare"],
+  shapeArea: ["times"],
   integers: ["times"],
   order: ["integers"],
   compareFractions: ["compare", "times"],
