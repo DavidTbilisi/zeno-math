@@ -64,6 +64,13 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   flatMoving: ["graphStory", [1, 2, 3]],
   steepSlow: ["graphStory", [2, 3]],
   runOverRise: ["slope", [1, 2, 3]],
+  countedEven: ["oneStroke", [1, 2]],
+  fourOdd: ["oneStroke", [3]],
+  degreeColours: ["colouring", [1, 2, 3]],
+  oddLoop: ["colouring", [2, 3]],
+  fewestRoads: ["shortestPath", [1, 2, 3]],
+  greedyRoute: ["shortestPath", [1, 2, 3]],
+  cheapestRoads: ["spanningTree", [2, 3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {

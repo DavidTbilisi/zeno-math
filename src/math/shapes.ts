@@ -1001,6 +1001,46 @@ function slopeLinePreview(): Piece[] {
   ];
 }
 
+/** A small graph for the graph games' previews: five vertices of a house shape, and its edges. */
+const HOUSE: Pt[] = [[90, 0], [10, 60], [170, 60], [10, 150], [170, 150]];
+const HOUSE_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4], [3, 4], [1, 4], [2, 3]];
+
+function oneStrokePreview(): Piece[] {
+  // The house drawn in one stroke: most of its edges done in blue, the rest still grey.
+  return [
+    ...HOUSE_EDGES.map(([a, b], i) => seg(HOUSE[a], HOUSE[b], i < 5 ? { color: BLUE, width: 5 } : { color: MUTED, width: 2 })),
+    ...HOUSE.map((p) => ellipse(p[0], p[1], 9, 9, { fill: "#ffffff", width: 2 })),
+  ];
+}
+
+function colourMapPreview(): Piece[] {
+  // The house's vertices in three colours, no edge joining two alike.
+  const fills = [FILL.yellow, FILL.red, FILL.blue, FILL.blue, FILL.red];
+  return [...HOUSE_EDGES.slice(0, 6).map(([a, b]) => seg(HOUSE[a], HOUSE[b], { color: MUTED, width: 2.5 })), ...HOUSE.map((p, i) => ellipse(p[0], p[1], 12, 12, { fill: fills[i], width: 2 }))];
+}
+
+function shortestPathPreview(): Piece[] {
+  // Roads with their lengths, and the shortest route from the green place to the orange one in blue.
+  const pts: Pt[] = [[0, 70], [80, 0], [80, 140], [170, 70]];
+  const roads: [number, number, string, boolean][] = [[0, 1, "2", true], [1, 3, "3", true], [0, 2, "1", false], [2, 3, "6", false], [1, 2, "4", false]];
+  return [
+    ...roads.map(([a, b, , on]) => seg(pts[a], pts[b], on ? { color: BLUE, width: 5 } : { color: MUTED, width: 2 })),
+    ...roads.map(([a, b, t]) => text((pts[a][0] + pts[b][0]) / 2 + 10, (pts[a][1] + pts[b][1]) / 2 - 4, t, 15)),
+    ellipse(0, 70, 10, 10, { fill: FILL.green, width: 2 }),
+    ellipse(80, 0, 10, 10, { fill: "#ffffff", width: 2 }),
+    ellipse(80, 140, 10, 10, { fill: "#ffffff", width: 2 }),
+    ellipse(170, 70, 10, 10, { fill: "#ffd8a8", width: 2 }),
+  ];
+}
+
+function connectTownsPreview(): Piece[] {
+  // Towns joined by the cheapest roads, thick, with the roads left out dashed.
+  return [
+    ...HOUSE_EDGES.map(([a, b], i) => seg(HOUSE[a], HOUSE[b], [0, 2, 3, 5].includes(i) ? { color: BLUE, width: 5 } : { color: MUTED, width: 1.5, dashed: true })),
+    ...HOUSE.map((p) => ellipse(p[0], p[1], 10, 10, { fill: FILL.yellow, width: 2 })),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1228,6 +1268,10 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBarChart", group: "games", build: barChartPreview, live: "barChart" },
   { id: "liveGraphStory", group: "games", build: graphStoryPreview, live: "graphStory" },
   { id: "liveSlopeLine", group: "games", build: slopeLinePreview, live: "slopeLine" },
+  { id: "liveOneStroke", group: "games", build: oneStrokePreview, live: "oneStroke" },
+  { id: "liveColourMap", group: "games", build: colourMapPreview, live: "colourMap" },
+  { id: "liveShortestPath", group: "games", build: shortestPathPreview, live: "shortestPath" },
+  { id: "liveConnectTowns", group: "games", build: connectTownsPreview, live: "connectTowns" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

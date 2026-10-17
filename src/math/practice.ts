@@ -28,6 +28,11 @@ import { plotSteps, plotSvg, plotTask, ptText, signed, swapped } from "./plotPoi
 import { chartQuestion, chartSteps, chartSvg, chartTraps } from "./barChart";
 import { storyChoicesSvg, storyOptions, storyQuestion, storyWords, type StoryWord } from "./graphStory";
 import { gradTex, gradText, runOverRise, slopeQuestion, slopeQuestionSvg, slopeSteps } from "./slope";
+import { evenCount, strokeQuestion, strokeQuestionSvg, strokeSteps } from "./oneStroke";
+import { colourQuestion, colourSvg, colourTraps } from "./colouring";
+import { pathSteps, pathSvg, pathTask, pathTraps } from "./shortestPath";
+import { cheapestRoads, townSteps, townSvg, townTask } from "./connectTowns";
+import { name as vertexName } from "./graphPlay";
 import { bottomsOrder, judgeOrder, orderTask, rightOrder, type OrderItem, type OrderProblem } from "./fracOrder";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
@@ -41,7 +46,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick";
@@ -253,6 +258,11 @@ export type PracticeWords = {
     chartTotal: string;
     graphStory: string;
     slope: string;
+    oddVertices: string;
+    oneStroke: string;
+    colouring: string;
+    shortestPath: string;
+    spanningTree: string;
   };
   /** A walk from home told part by part (graph stories): each part, and what joins them. */
   story: { parts: Record<StoryWord, string>; then: string };
@@ -1557,6 +1567,81 @@ const GENS: Record<SkillId, Gen> = {
       plain: gradText(dy, dx).replace("−", "-"),
       format: Number.isInteger(m) ? "number" : "fraction",
       solution: { kind: "slope", spec: { q, steps: slopeSteps(q) } },
+    };
+  },
+
+  oneStroke(r, L, w) {
+    // Euler trails (src/math/oneStroke.ts): how many vertices have an odd degree, or which of four graphs can be drawn
+    // in one stroke.
+    const q = strokeQuestion(L, r.next);
+    const pic = strokeQuestionSvg(q);
+    const picture = { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w };
+    const solution = { kind: "stroke" as const, spec: { q, steps: strokeSteps(q) } };
+    if (q.level === 3) {
+      const options = LETTERS.slice(0, 4).map((l) => ({ text: l, plain: l, tex: `\\text{${l}}` }));
+      const traps: Trap[] = [0, 1, 2, 3].filter((i) => i !== q.right).map((at) => ({ id: "fourOdd", a: { k: "pick", options, right: at }, vars: { x: LETTERS[at] } }));
+      return { prompt: w.prompts.oneStroke, q: "", pic: picture, answer: { k: "pick", options, right: q.right, traps }, show: `\\text{${LETTERS[q.right]}}`, plain: LETTERS[q.right], format: "pick", solution };
+    }
+    const even = evenCount(q as { g: import("./graphPlay").Graph; odd: number });
+    const odd = (q as { odd: number }).odd;
+    return {
+      prompt: w.prompts.oddVertices,
+      q: "",
+      pic: picture,
+      answer: { ...num(odd), traps: even !== odd ? [{ id: "countedEven", a: num(even), vars: { v: odd } }] : [] },
+      show: String(odd),
+      plain: String(odd),
+      format: "number",
+      solution,
+    };
+  },
+
+  colouring(r, L, w) {
+    // The fewest colours for the vertices so no edge joins two alike (src/math/colouring.ts).
+    const t = colourQuestion(L, r.next);
+    const pic = colourSvg(t.g, [], [], { scale: 0.8 });
+    return {
+      prompt: w.prompts.colouring,
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(t.k), traps: colourTraps(t).map((x) => ({ id: x.id, a: num(x.v), vars: { v: t.k } })) },
+      show: String(t.k),
+      plain: String(t.k),
+      format: "number",
+      solution: { kind: "colour", spec: { task: t, steps: [] } },
+    };
+  },
+
+  shortestPath(r, L, w) {
+    // The length of the shortest route between two places on a map of roads (src/math/shortestPath.ts).
+    const t = pathTask(L, r.next);
+    const pic = pathSvg(t, [t.a], { scale: 0.8 });
+    return {
+      prompt: fill(w.prompts.shortestPath, { a: vertexName(t.a), b: vertexName(t.b) }),
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(t.best), traps: pathTraps(t).map((x) => ({ id: x.id, a: num(x.v), vars: x.vars })) },
+      show: String(t.best),
+      plain: String(t.best),
+      format: "number",
+      solution: { kind: "route", spec: { task: t, steps: pathSteps(t) } },
+    };
+  },
+
+  spanningTree(r, L, w) {
+    // The least total cost of roads joining every town: a minimum spanning tree (src/math/connectTowns.ts).
+    const t = townTask(L, r.next);
+    const pic = townSvg(t.g, [], { scale: 0.8 });
+    const naive = cheapestRoads(t.g);
+    return {
+      prompt: w.prompts.spanningTree,
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(t.best.total), traps: naive !== t.best.total ? [{ id: "cheapestRoads", a: num(naive), vars: { k: t.g.pts.length - 1, v: t.best.total } }] : [] },
+      show: String(t.best.total),
+      plain: String(t.best.total),
+      format: "number",
+      solution: { kind: "network", spec: { task: t, steps: townSteps(t) } },
     };
   },
 

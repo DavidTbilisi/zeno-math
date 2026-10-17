@@ -756,3 +756,7 @@ input.invalid { border-color: var(--danger); }
 .story-parts li.now { border-color: #1971c2; }
 .story-parts li.off { border-color: #e03131; color: #c92a2a; }
 .story-piece { padding: 2px 6px; line-height: 0; }
+/* The graph-theory games: the colours to colour with, and a route's roads added up. */
+.colour-pen { width: 2.6em; height: 2em; border: 2px solid #ced4da; }
+.colour-pen.on { border-color: #1e1e1e; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1e1e1e; }
+.route-sum { min-height: 1.3em; font-weight: 600; }
