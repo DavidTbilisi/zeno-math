@@ -305,15 +305,17 @@ input.invalid { border-color: var(--danger); }
 .pv-verdict { font-weight: 600; font-size: 14px; }
 .pv-verdict.correct { color: var(--ok); }
 .pv-verdict.tooMany, .pv-verdict.notEnough { color: var(--danger); }
-.pv-mat { display: flex; align-self: center; border: 1.5px solid var(--border); border-radius: 10px; background: #ffffff; overflow: hidden; }
+.pv-mat { display: flex; align-self: center; max-width: 100%; border: 1.5px solid var(--border); border-radius: 10px; background: #ffffff; overflow-x: auto; }
 .pv-col { display: flex; flex-direction: column; flex: none; transition: background 0.15s; }
 .pv-col + .pv-col { border-left: 1.5px solid #dee2e6; }
 .pv-col.over { background: #e7f5ff; }
 .pv-head { margin: 6px; padding: 4px; border-radius: 6px; text-align: center; font-weight: 600; font-size: 14px; }
+.pv-th .pv-head { background: #e5dbff; color: #6741d9; }
 .pv-h .pv-head { background: #d0ebff; color: #1971c2; }
 .pv-t .pv-head { background: #d3f9d8; color: #2f9e44; }
 .pv-o .pv-head { background: #ffe8cc; color: #e8590c; }
 .pv-body { position: relative; height: 290px; }
+.pv-divider { position: absolute; width: 0; border-left: 1.5px dashed #2f9e44; opacity: 0.6; transform: translateX(-0.75px); pointer-events: none; }
 .pv-placed { position: absolute; cursor: grab; touch-action: none; animation: pv-pop 0.18s ease-out; }
 .pv-placed:hover { filter: brightness(0.95) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)); }
 .pv-block, .pv-block svg { display: block; }
@@ -324,6 +326,16 @@ input.invalid { border-color: var(--danger); }
 .pv-digit.over10 { color: #e03131; }
 .pv-trades { display: flex; gap: 2px; }
 .pv-tray { display: flex; flex-direction: column; gap: 6px; }
+.pv-sum { font-size: 18px; }
+.pv-num { width: 72px; font-size: 18px; font-weight: 600; text-align: center; }
+.pv-zone { border-top: 1.5px dashed #adb5bd; background: #f8f9fa; transition: background 0.15s; }
+.pv-zone.over { background: #e7f5ff; }
+.pv-zone-head { display: flex; align-items: flex-start; gap: 6px; height: 34px; padding: 4px 8px 0; font-size: 12px; }
+.pv-zone-tag { margin-left: auto; font-weight: 700; color: #495057; }
+.pv-zone-tag.done { color: var(--ok); }
+.pv-zone-short { color: var(--danger); font-weight: 600; line-height: 1.2; }
+.pv-zone-body { position: relative; }
+.pv-zone.sub .pv-placed { opacity: 0.4; filter: grayscale(0.6); }
 .pv-sources { display: flex; gap: 12px; align-items: flex-end; }
 .pv-source {
   display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px;
