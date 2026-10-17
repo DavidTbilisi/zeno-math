@@ -54,6 +54,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
 
   return (
     <Modal
+      wide={spec.type === "placeValue"}
       title={initial ? t.editModel : t.models}
       onClose={onClose}
       footer={
