@@ -1,4 +1,4 @@
-// Graph-sense games: a round of points tapped on the grid for three stars, and a practice point whose numbers typed the
+// Graphs-and-charts games: a round of points tapped on the grid for three stars, and a practice point whose numbers typed the
 // wrong way round are named before it is typed right; a bar chart raised with the arrow keys and right first time,
 // and a practice chart whose lines counted are named; a walk's graph built piece by piece, and a practice graph whose
 // stop taken for a walk is named; a line drawn through A with its gradient, and a practice gradient typed along over

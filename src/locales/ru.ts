@@ -278,7 +278,7 @@ export const ru: Dict = {
   senseFraction: "Чувство дроби",
   senseAlgebra: "Чувство алгебры",
   senseShape: "Чувство формы",
-  senseGraph: "Чувство графиков",
+  senseChart: "Графики и диаграммы",
   placeValue: "Разряды",
   hundreds: "Сотни",
   tens: "Десятки",

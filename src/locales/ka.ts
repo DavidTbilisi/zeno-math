@@ -278,7 +278,7 @@ export const ka: Dict = {
   senseFraction: "წილადის შეგრძნება",
   senseAlgebra: "ალგებრის შეგრძნება",
   senseShape: "ფიგურის შეგრძნება",
-  senseGraph: "გრაფიკის შეგრძნება",
+  senseChart: "გრაფიკები და დიაგრამები",
   placeValue: "თანრიგები",
   hundreds: "ასეულები",
   tens: "ათეულები",

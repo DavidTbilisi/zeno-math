@@ -595,7 +595,7 @@ UI in English, Russian and Georgian.
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
   look, make the target, closer to?), fraction sense (make a whole, equal amounts, fractions on the line, shade the
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
-  (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graph sense (plot the point, make
+  (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them

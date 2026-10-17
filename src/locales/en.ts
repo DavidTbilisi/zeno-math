@@ -277,7 +277,7 @@ export const en = {
   senseFraction: "Fraction sense",
   senseAlgebra: "Algebra sense",
   senseShape: "Shape sense",
-  senseGraph: "Graph sense",
+  senseChart: "Graphs & charts",
   placeValue: "Place value",
   hundreds: "Hundreds",
   tens: "Tens",
