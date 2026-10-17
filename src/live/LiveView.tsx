@@ -24,6 +24,14 @@ import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
 import { ExprMatch } from "./ExprMatch";
+import { AngleGuess } from "./AngleGuess";
+import { AngleHunt } from "./AngleHunt";
+import { Mirror } from "./Mirror";
+import { CubeNet } from "./CubeNet";
+import { PlotPoint } from "./PlotPoint";
+import { BarChart } from "./BarChart";
+import { GraphStory } from "./GraphStory";
+import { SlopeLine } from "./SlopeLine";
 import { Soroban } from "./Soroban";
 import { Target } from "./Target";
 import type { PieceProps } from "./ui";
@@ -70,6 +78,14 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   machine: Machine,
   growing: Growing,
   exprMatch: ExprMatch,
+  angleGuess: AngleGuess,
+  angleHunt: AngleHunt,
+  mirror: Mirror,
+  cubeNet: CubeNet,
+  plotPoint: PlotPoint,
+  barChart: BarChart,
+  graphStory: GraphStory,
+  slopeLine: SlopeLine,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

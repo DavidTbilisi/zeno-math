@@ -93,7 +93,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
 };
 
 // The games, apart from the tools in a menu of their own, by the sense each one builds.
-const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "senseShape"; games: LiveEntry[] }[] = [
+const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart"; games: LiveEntry[] }[] = [
   {
     sense: "senseNumber", games: [
       { kind: "estimate", icon: "📍", name: "liveEstimate" },
@@ -118,7 +118,23 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "exprMatch", icon: "x=", name: "liveExprMatch" },
     ],
   },
-  { sense: "senseShape", games: [{ kind: "geoboard", icon: "⬠", name: "liveGeoboard" }] },
+  {
+    sense: "senseShape", games: [
+      { kind: "geoboard", icon: "⬠", name: "liveGeoboard" },
+      { kind: "angleGuess", icon: "∠", name: "liveAngleGuess" },
+      { kind: "angleHunt", icon: "📐", name: "liveAngleHunt" },
+      { kind: "mirror", icon: "🦋", name: "liveMirror" },
+      { kind: "cubeNet", icon: "🎲", name: "liveCubeNet" },
+    ],
+  },
+  {
+    sense: "senseChart", games: [
+      { kind: "plotPoint", icon: "⌖", name: "livePlotPoint" },
+      { kind: "barChart", icon: "📊", name: "liveBarChart" },
+      { kind: "graphStory", icon: "🚶", name: "liveGraphStory" },
+      { kind: "slopeLine", icon: "📈", name: "liveSlopeLine" },
+    ],
+  },
 ];
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>

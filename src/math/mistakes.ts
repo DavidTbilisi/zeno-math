@@ -41,5 +41,18 @@ export const MISTAKES = [
   "joinedUnlike",
   "firstTermOnly",
   "squareAsDouble",
+  "acuteObtuse",
+  "insideAngle",
+  "wrongTotal",
+  "notHalved",
+  "diagonalMirror",
+  "sixSquares",
+  "nextToOpposite",
+  "swappedXY",
+  "countedLines",
+  "notDifference",
+  "flatMoving",
+  "steepSlow",
+  "runOverRise",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

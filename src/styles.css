@@ -747,3 +747,12 @@ input.invalid { border-color: var(--danger); }
 .keypad .live-btn { min-width: 2.4em; font-size: 17px; font-weight: 700; padding: 5px 8px; }
 .keypad-shown { min-width: 4.5em; padding: 4px 10px; border: 2px solid #1971c2; border-radius: 8px; font-size: 20px; font-weight: 700; text-align: center; background: #fff; }
 .machine-inputs .live-btn { min-width: 2.2em; font-weight: 700; }
+/* The graph games: the numbers a chart is made from, a walk's parts in order, and the pieces its graph is built of. */
+.chart-data { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-size: 18px; }
+.chart-data .off { color: #e8590c; }
+.story-parts { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 8px; margin: 0; padding: 0; list-style: none; counter-reset: part; font-size: 14px; }
+.story-parts li { counter-increment: part; padding: 2px 8px; border: 1.5px solid #dee2e6; border-radius: 12px; background: #fff; }
+.story-parts li::before { content: counter(part) " "; font-weight: 700; color: #1971c2; }
+.story-parts li.now { border-color: #1971c2; }
+.story-parts li.off { border-color: #e03131; color: #c92a2a; }
+.story-piece { padding: 2px 6px; line-height: 0; }

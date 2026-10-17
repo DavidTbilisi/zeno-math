@@ -2715,6 +2715,273 @@
    "note": "a slanted side"
   },
   {
+   "skill": "estimateAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "30",
+   "label": "correct"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "30°",
+   "label": "correct"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "150",
+   "label": "wrong",
+   "mistake": "acuteObtuse"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "10",
+   "label": "form",
+   "note": "the angle itself, not one of the sizes offered"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 2,
+   "seed": 7,
+   "input": "90",
+   "label": "correct"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 2,
+   "seed": 7,
+   "input": "120",
+   "label": "wrong"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 2,
+   "seed": 7,
+   "input": "94",
+   "label": "form",
+   "note": "the angle itself, not one of the sizes offered"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 3,
+   "seed": 7,
+   "input": "180",
+   "label": "correct"
+  },
+  {
+   "skill": "estimateAngle",
+   "level": 3,
+   "seed": 7,
+   "input": "225",
+   "label": "wrong"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "54",
+   "label": "correct"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "54°",
+   "label": "correct"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "x = 54",
+   "label": "correct"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "234",
+   "label": "wrong",
+   "mistake": "wrongTotal"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 1,
+   "seed": 7,
+   "input": "126",
+   "label": "wrong",
+   "note": "the angle given, not the one marked"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 2,
+   "seed": 7,
+   "input": "146",
+   "label": "correct"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 2,
+   "seed": 7,
+   "input": "214",
+   "label": "wrong",
+   "note": "the two angles given added"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 2,
+   "seed": 7,
+   "input": "-34",
+   "label": "wrong",
+   "note": "180° taken for the whole turn"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 3,
+   "seed": 7,
+   "input": "77",
+   "label": "correct"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 3,
+   "seed": 7,
+   "input": "77.0",
+   "label": "correct"
+  },
+  {
+   "skill": "missingAngle",
+   "level": 3,
+   "seed": 7,
+   "input": "154",
+   "label": "wrong",
+   "mistake": "notHalved"
+  },
+  {
+   "skill": "symmetryLines",
+   "level": 1,
+   "seed": 7,
+   "input": "2",
+   "label": "correct"
+  },
+  {
+   "skill": "symmetryLines",
+   "level": 1,
+   "seed": 7,
+   "input": "4",
+   "label": "wrong",
+   "mistake": "diagonalMirror"
+  },
+  {
+   "skill": "symmetryLines",
+   "level": 1,
+   "seed": 7,
+   "input": "two",
+   "label": "form",
+   "note": "a word"
+  },
+  {
+   "skill": "symmetryLines",
+   "level": 2,
+   "seed": 7,
+   "input": "2",
+   "label": "correct"
+  },
+  {
+   "skill": "symmetryLines",
+   "level": 2,
+   "seed": 7,
+   "input": "4",
+   "label": "wrong"
+  },
+  {
+   "skill": "symmetryLines",
+   "level": 3,
+   "seed": 7,
+   "input": "8",
+   "label": "correct"
+  },
+  {
+   "skill": "symmetryLines",
+   "level": 3,
+   "seed": 7,
+   "input": "4",
+   "label": "wrong"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 1,
+   "seed": 7,
+   "input": "D",
+   "label": "correct"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 1,
+   "seed": 7,
+   "input": "d",
+   "label": "correct"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 1,
+   "seed": 7,
+   "input": "C",
+   "label": "wrong",
+   "mistake": "sixSquares"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 1,
+   "seed": 7,
+   "input": "A",
+   "label": "wrong",
+   "note": "a shape with a 2 × 2 block"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 2,
+   "seed": 7,
+   "input": "D",
+   "label": "correct"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 2,
+   "seed": 7,
+   "input": "B",
+   "label": "wrong",
+   "mistake": "sixSquares"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 3,
+   "seed": 7,
+   "input": "E",
+   "label": "correct"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 3,
+   "seed": 7,
+   "input": "A",
+   "label": "wrong",
+   "mistake": "nextToOpposite"
+  },
+  {
+   "skill": "cubeNets",
+   "level": 3,
+   "seed": 7,
+   "input": "F",
+   "label": "form",
+   "note": "not one of the faces"
+  },
+  {
    "skill": "estimateLine",
    "level": 1,
    "seed": 7,
@@ -3604,6 +3871,321 @@
    "input": "4x",
    "label": "wrong",
    "mistake": "squareAsDouble"
+  },
+  {
+   "skill": "coordinates",
+   "level": 1,
+   "seed": 7,
+   "input": "(0, 0)",
+   "label": "correct"
+  },
+  {
+   "skill": "coordinates",
+   "level": 1,
+   "seed": 7,
+   "input": "0, 0",
+   "label": "correct"
+  },
+  {
+   "skill": "coordinates",
+   "level": 1,
+   "seed": 7,
+   "input": "(0, 1)",
+   "label": "wrong"
+  },
+  {
+   "skill": "coordinates",
+   "level": 1,
+   "seed": 7,
+   "input": "0",
+   "label": "form",
+   "note": "one number for a point"
+  },
+  {
+   "skill": "coordinates",
+   "level": 2,
+   "seed": 7,
+   "input": "(-6, -6)",
+   "label": "correct"
+  },
+  {
+   "skill": "coordinates",
+   "level": 2,
+   "seed": 7,
+   "input": "(−6; −6)",
+   "label": "correct"
+  },
+  {
+   "skill": "coordinates",
+   "level": 2,
+   "seed": 7,
+   "input": "(6, 6)",
+   "label": "wrong",
+   "note": "the signs lost"
+  },
+  {
+   "skill": "coordinates",
+   "level": 3,
+   "seed": 7,
+   "input": "(-3, -3)",
+   "label": "correct"
+  },
+  {
+   "skill": "coordinates",
+   "level": 3,
+   "seed": 7,
+   "input": "(3, -3)",
+   "label": "wrong"
+  },
+  {
+   "skill": "readChart",
+   "level": 1,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "readChart",
+   "level": 1,
+   "seed": 7,
+   "input": "3",
+   "label": "wrong",
+   "mistake": "notDifference"
+  },
+  {
+   "skill": "readChart",
+   "level": 1,
+   "seed": 7,
+   "input": "5",
+   "label": "wrong",
+   "note": "the two added"
+  },
+  {
+   "skill": "readChart",
+   "level": 1,
+   "seed": 7,
+   "input": "one",
+   "label": "form",
+   "note": "a word for a number"
+  },
+  {
+   "skill": "readChart",
+   "level": 2,
+   "seed": 7,
+   "input": "2",
+   "label": "correct"
+  },
+  {
+   "skill": "readChart",
+   "level": 2,
+   "seed": 7,
+   "input": "1",
+   "label": "wrong",
+   "mistake": "countedLines"
+  },
+  {
+   "skill": "readChart",
+   "level": 2,
+   "seed": 7,
+   "input": "12",
+   "label": "wrong",
+   "mistake": "notDifference"
+  },
+  {
+   "skill": "readChart",
+   "level": 2,
+   "seed": 7,
+   "input": "22",
+   "label": "wrong",
+   "note": "the two added"
+  },
+  {
+   "skill": "readChart",
+   "level": 3,
+   "seed": 7,
+   "input": "110",
+   "label": "correct"
+  },
+  {
+   "skill": "readChart",
+   "level": 3,
+   "seed": 7,
+   "input": "11",
+   "label": "wrong",
+   "mistake": "countedLines"
+  },
+  {
+   "skill": "readChart",
+   "level": 3,
+   "seed": 7,
+   "input": "10",
+   "label": "wrong",
+   "note": "the difference, not the total"
+  },
+  {
+   "skill": "graphStory",
+   "level": 1,
+   "seed": 7,
+   "input": "B",
+   "label": "correct"
+  },
+  {
+   "skill": "graphStory",
+   "level": 1,
+   "seed": 7,
+   "input": "b",
+   "label": "correct"
+  },
+  {
+   "skill": "graphStory",
+   "level": 1,
+   "seed": 7,
+   "input": "D",
+   "label": "wrong",
+   "mistake": "flatMoving"
+  },
+  {
+   "skill": "graphStory",
+   "level": 1,
+   "seed": 7,
+   "input": "A",
+   "label": "wrong"
+  },
+  {
+   "skill": "graphStory",
+   "level": 1,
+   "seed": 7,
+   "input": "E",
+   "label": "form",
+   "note": "not one of the graphs"
+  },
+  {
+   "skill": "graphStory",
+   "level": 2,
+   "seed": 7,
+   "input": "B",
+   "label": "correct"
+  },
+  {
+   "skill": "graphStory",
+   "level": 2,
+   "seed": 7,
+   "input": "D",
+   "label": "wrong",
+   "mistake": "steepSlow"
+  },
+  {
+   "skill": "graphStory",
+   "level": 2,
+   "seed": 7,
+   "input": "C",
+   "label": "wrong",
+   "mistake": "flatMoving"
+  },
+  {
+   "skill": "graphStory",
+   "level": 3,
+   "seed": 7,
+   "input": "C",
+   "label": "correct"
+  },
+  {
+   "skill": "graphStory",
+   "level": 3,
+   "seed": 7,
+   "input": "B",
+   "label": "wrong",
+   "mistake": "flatMoving"
+  },
+  {
+   "skill": "graphStory",
+   "level": 3,
+   "seed": 7,
+   "input": "A",
+   "label": "wrong"
+  },
+  {
+   "skill": "slope",
+   "level": 1,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "slope",
+   "level": 1,
+   "seed": 7,
+   "input": "2",
+   "label": "wrong"
+  },
+  {
+   "skill": "slope",
+   "level": 1,
+   "seed": 7,
+   "input": "-1",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "slope",
+   "level": 1,
+   "seed": 7,
+   "input": "4/4",
+   "label": "form",
+   "note": "not in lowest terms"
+  },
+  {
+   "skill": "slope",
+   "level": 2,
+   "seed": 7,
+   "input": "-1",
+   "label": "correct"
+  },
+  {
+   "skill": "slope",
+   "level": 2,
+   "seed": 7,
+   "input": "1",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "slope",
+   "level": 3,
+   "seed": 7,
+   "input": "-1/4",
+   "label": "correct"
+  },
+  {
+   "skill": "slope",
+   "level": 3,
+   "seed": 7,
+   "input": "-0.25",
+   "label": "correct"
+  },
+  {
+   "skill": "slope",
+   "level": 3,
+   "seed": 7,
+   "input": "-4",
+   "label": "wrong",
+   "mistake": "runOverRise"
+  },
+  {
+   "skill": "slope",
+   "level": 3,
+   "seed": 7,
+   "input": "-2/8",
+   "label": "form",
+   "note": "not in lowest terms"
+  },
+  {
+   "skill": "slope",
+   "level": 3,
+   "seed": 7,
+   "input": "1/4",
+   "label": "wrong",
+   "mistake": "sign"
   }
  ]
 }

@@ -910,6 +910,97 @@ function exprMatchPreview(): Piece[] {
   return [...card(0, "2(x + 3)", FILL.green), ...card(126, "2x + 6", FILL.green)];
 }
 
+function angleGuessPreview(): Piece[] {
+  // An angle of about 55° with its arc, and a guess beside it dashed.
+  const o: Pt = [20, 130];
+  return [
+    path(arc(o[0], o[1], 40, 40, 0, 55), { color: "#2f9e44", width: 2.5 }),
+    seg(o, polar(o[0], o[1], 190, 65), { color: BLUE, width: 2, dashed: true }),
+    seg(o, [210, 130], { width: 4 }),
+    seg(o, polar(o[0], o[1], 190, 55), { width: 4 }),
+    text(110, 112, "?°", 22, "center", "#2f9e44"),
+  ];
+}
+
+function angleHuntPreview(): Piece[] {
+  // A straight line with an arm from its middle: 130° given, the angle beside it marked ?.
+  const o: Pt = [130, 110];
+  return [
+    path(arc(o[0], o[1], 30, 30, 0, 50), { color: "#e8590c", width: 2.5 }),
+    path(arc(o[0], o[1], 40, 40, 50, 180), { width: 2 }),
+    seg([0, 110], [260, 110], { width: 4 }),
+    seg(o, polar(o[0], o[1], 120, 50), { width: 4 }),
+    text(196, 86, "?", 22, "center", "#e8590c"),
+    text(110, 66, "130°", 18),
+  ];
+}
+
+function mirrorPreview(): Piece[] {
+  // A kite with its one mirror line dashed down the middle, and a diagonal that only halves it.
+  return [
+    poly([[100, 0], [160, 60], [100, 170], [40, 60]], { fill: FILL.blue, color: BLUE, width: 3 }),
+    seg([100, -15], [100, 185], { color: RED, width: 2.5, dashed: true }),
+    seg([20, 60], [180, 60], { color: MUTED, width: 1.5, dashed: true }),
+  ];
+}
+
+function cubeNetPreview(): Piece[] {
+  // A cross of six squares, its opposite faces coloured alike.
+  const s = 40;
+  const cells: [number, number, string][] = [[1, 0, FILL.red], [0, 1, FILL.green], [1, 1, FILL.blue], [2, 1, FILL.green], [1, 2, FILL.red], [1, 3, FILL.blue]];
+  return cells.map(([x, y, fill]) => rect(x * s, y * s, s, s, { fill, width: 2 }));
+}
+
+function plotPointPreview(): Piece[] {
+  // Axes on a grid, and a point with dashed lines leading to it from them.
+  const s = 22;
+  const lines: Piece[] = [];
+  for (let k = 0; k <= 7; k++) lines.push(seg([k * s, 0], [k * s, 7 * s], { color: "#dee2e6", width: 1 }), seg([0, k * s], [7 * s, k * s], { color: "#dee2e6", width: 1 }));
+  const p: Pt = [5 * s, 2 * s];
+  return [
+    ...lines,
+    seg([0, 7 * s], [7 * s + 10, 7 * s], { width: 2 }),
+    seg([0, 7 * s], [0, -10], { width: 2 }),
+    seg([p[0], 7 * s], p, { color: "#2f9e44", width: 2, dashed: true }),
+    seg([0, p[1]], p, { color: "#2f9e44", width: 2, dashed: true }),
+    ellipse(p[0], p[1], 6, 6, { fill: "#2f9e44", color: "#2f9e44", width: 1 }),
+    text(p[0] + 30, p[1] - 22, "(5, 5)", 15, "center", "#2f9e44"),
+  ];
+}
+
+function barChartPreview(): Piece[] {
+  // Four bars against a scale, the last one still being raised to its dashed mark.
+  const hs = [5, 8, 3, 6];
+  const out: Piece[] = [seg([0, 0], [0, 150], { width: 2 }), seg([0, 150], [190, 150], { width: 2 })];
+  hs.forEach((h, k) => out.push(rect(14 + k * 44, 150 - h * 15, 30, h * 15, { fill: k === 3 ? FILL.yellow : FILL.blue, color: k === 3 ? "#e8590c" : BLUE, width: 2 })));
+  out.push(seg([8 + 3 * 44, 150 - 8 * 15], [50 + 3 * 44, 150 - 8 * 15], { color: "#2f9e44", width: 2.5, dashed: true }));
+  return out;
+}
+
+function graphStoryPreview(): Piece[] {
+  // Distance from home against time: away, a stop, then back home.
+  return [
+    seg([0, 0], [0, 120], { width: 2 }),
+    seg([0, 120], [220, 120], { width: 2 }),
+    path([[0, 120], [70, 40], [130, 40], [200, 120]], { color: BLUE, width: 4 }),
+    text(-12, 10, "d", 16, "center"),
+    text(214, 140, "t", 16, "center"),
+  ];
+}
+
+function slopeLinePreview(): Piece[] {
+  // A line through two points, with the step between them: 2 along, 2 up.
+  const s = 24;
+  return [
+    seg([0, 150], [150, 0], { color: BLUE, width: 3 }),
+    path([[2 * s, 150 - 2 * s], [4 * s, 150 - 2 * s], [4 * s, 150 - 4 * s]], { color: "#2f9e44", width: 2, dashed: true }),
+    dot([2 * s, 150 - 2 * s], 5),
+    dot([4 * s, 150 - 4 * s], 5),
+    text(3 * s, 150 - 2 * s + 18, "2", 15, "center", "#2f9e44"),
+    text(4 * s + 14, 150 - 3 * s + 5, "2", 15, "center", "#2f9e44"),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1129,6 +1220,14 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveGrowing", group: "games", build: growingPreview, live: "growing" },
   { id: "liveExprMatch", group: "games", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoboard", group: "games", build: geoboardPreview, live: "geoboard" },
+  { id: "liveAngleGuess", group: "games", build: angleGuessPreview, live: "angleGuess" },
+  { id: "liveAngleHunt", group: "games", build: angleHuntPreview, live: "angleHunt" },
+  { id: "liveMirror", group: "games", build: mirrorPreview, live: "mirror" },
+  { id: "liveCubeNet", group: "games", build: cubeNetPreview, live: "cubeNet" },
+  { id: "livePlotPoint", group: "games", build: plotPointPreview, live: "plotPoint" },
+  { id: "liveBarChart", group: "games", build: barChartPreview, live: "barChart" },
+  { id: "liveGraphStory", group: "games", build: graphStoryPreview, live: "graphStory" },
+  { id: "liveSlopeLine", group: "games", build: slopeLinePreview, live: "slopeLine" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
