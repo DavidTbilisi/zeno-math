@@ -78,7 +78,7 @@ test("every question: four different options, the right one equal to the express
     }
   assert.deepEqual([...named].sort(), ["firstTermOnly", "joinedUnlike", "squareAsDouble"]);
   const ex = exercise("sameExpression", 1, 7, w);
-  assert.equal(check(ex, "1 + 2x", w).why, "Pick one of the expressions offered: 2x + 1, 3x + 1, 3x, x + 2.");
+  assert.equal(check(ex, "1 + 2x", w).why, "Pick one of the options offered: 2x + 1, 3x + 1, 3x, x + 2.");
   const q = { skill: "sameExpression" as const, level: 2, seed: 7 };
   assert.deepEqual([mark(q, "5x - 5"), mark(q, "5x - 1"), mark(q, "5(x-1)")], ["correct", "wrong", "form"]);
 });

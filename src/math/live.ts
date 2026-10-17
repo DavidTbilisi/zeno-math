@@ -17,6 +17,14 @@ import type { LiveBalance } from "./balance";
 import type { LiveMachine } from "./machine";
 import type { LiveGrow } from "./growing";
 import type { LiveExprMatch } from "./exprMatch";
+import type { LiveAngleGuess } from "./angleGuess";
+import type { LiveAngleHunt } from "./missingAngle";
+import type { LiveMirror } from "./symmetry";
+import type { LiveCubeNet } from "./cubeNets";
+import type { LivePlot } from "./plotPoint";
+import type { LiveBarChart } from "./barChart";
+import type { LiveGraphStory } from "./graphStory";
+import type { LiveSlope } from "./slope";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -354,6 +362,14 @@ export type LiveStates = {
   machine: LiveMachine;
   growing: LiveGrow;
   exprMatch: LiveExprMatch;
+  angleGuess: LiveAngleGuess;
+  angleHunt: LiveAngleHunt;
+  mirror: LiveMirror;
+  cubeNet: LiveCubeNet;
+  plotPoint: LivePlot;
+  barChart: LiveBarChart;
+  graphStory: LiveGraphStory;
+  slopeLine: LiveSlope;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -389,6 +405,14 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   machine: [600, 560],
   growing: [600, 660],
   exprMatch: [780, 400],
+  angleGuess: [600, 620],
+  angleHunt: [600, 620],
+  mirror: [560, 620],
+  cubeNet: [700, 600],
+  plotPoint: [560, 700],
+  barChart: [560, 600],
+  graphStory: [600, 600],
+  slopeLine: [560, 700],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -426,6 +450,14 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     machine: { mode: "puzzle", stage: 0, level: 1, seed: 1, tried: [], typed: "", misses: 0, done: false, streak: 0, said: null },
     growing: { mode: "puzzle", stage: 0, level: 1, seed: 1, built: [], typed: "", misses: 0, done: false, streak: 0, said: null },
     exprMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
+    angleGuess: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], typed: "", guess: null, streak: 0, said: null },
+    angleHunt: { mode: "puzzle", stage: 0, level: 1, seed: 1, typed: "", misses: 0, done: false, streak: 0, said: null },
+    mirror: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
+    cubeNet: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], checked: false, misses: 0, done: false, streak: 0, said: null },
+    plotPoint: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], tap: null, streak: 0, said: null },
+    barChart: { mode: "puzzle", stage: 0, level: 1, seed: 1, bars: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
+    graphStory: { mode: "puzzle", stage: 0, level: 1, seed: 1, drawn: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
+    slopeLine: { mode: "puzzle", stage: 0, level: 1, seed: 1, b: null, misses: 0, done: false, streak: 0, said: null },
   };
   return structuredClone(start[kind]);
 }

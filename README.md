@@ -431,7 +431,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 57 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 65 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -441,7 +441,9 @@ UI in English, Russian and Georgian.
     (a + b)² as a² + b², a negative power taken as a negative number, × and ÷ worked from left to right after + and −,
     digits cut off instead of rounded, an inequality's sign not turned round, the right size with the wrong sign, more
     digits after the point taken for a bigger decimal, more pieces taken for a bigger fraction, a perimeter made for an area, the unshaded part counted, the top number of pieces shaded, the shapes on a balance's other pan left out, ten times
-    the input taken for ten times the output, x · x taken for 2x, and more (39 in all, in
+    the input taken for ten times the output, x · x taken for 2x, 360° taken for a straight line, a rectangle's
+    diagonals taken for mirror lines, a point's numbers the wrong way round, a chart's lines counted instead of its
+    scale read, a flat line taken for moving, along over up for a gradient, and more (52 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -469,6 +471,34 @@ UI in English, Russian and Georgian.
     marked in whole numbers, so the server marks it again like a typed answer; a shape whose sides cross, or the right
     area in the wrong shape, is sent back without counting, and a rectangle whose perimeter is the area asked for, or
     a triangle whose base × height is, is named as the mistake it is
+  - Estimating angles: an angle drawn, and the nearest of a few sizes picked (30°, 90° or 150°; then four in 30s,
+    turned any way; then reflex angles against sizes in 45s). The size a protractor's other scale gives (180° − the
+    angle) and the angle on the inside (360° − the angle) are among the options, and named when picked
+  - Missing angles: a figure drawn to size with all its angles but one marked — on a straight line or in a right
+    angle, then around a point or in a triangle, then an isosceles triangle's base angle from its top one, or a
+    quadrilateral's last angle. The wrong total (360° for a line, 180° for a whole turn) and an isosceles triangle's
+    two base angles not shared out are named; the worked solution draws the figure with the angle filled in
+  - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
+    rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
+    squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked
+    solution draws the lines
+  - Nets of a cube: which of four shapes of six squares folds into a cube (a net with four in a row against shapes
+    with a 2 × 2 block and a look-alike, then a net without four in a row against look-alikes), or which face of a net
+    is opposite ★, typed or picked as a letter. A look-alike picked, or a face next to ★ in the net, is named; the
+    worked solution colours the net's opposite faces alike
+  - Coordinates: a point drawn on a grid and its coordinates typed — in the first quadrant, then in all four, then the
+    fourth corner of a rectangle whose other three are drawn. The numbers the wrong way round, (y, x), are named; the
+    worked solution draws dashed lines from the axes to the point
+  - Gradient of a line: a line drawn through P and Q on a grid, a few steps apart, and its gradient typed — 1 to 3,
+    then −3 to 3, then a fraction in lowest terms. Along over up is named (a line going the wrong way is the sign
+    slip); the worked solution draws the step from P to Q as a triangle
+  - Reading bar charts: a chart of fruit against a scale in ones, then twos or fives, then tens or twenties, with bars
+    ending half-way between lines — how many, how many more, or how many altogether. The lines counted instead of the
+    scale read, and the bigger number given for "how many more", are named; the worked solution marks the bars
+  - Graph stories: a walk from home told in parts (walks away slowly, runs away, stops, walks or runs back) and four
+    graphs of the distance from home against the time to pick from, by letter — walking only, then walking and running,
+    then four parts. A graph with a stop and a walk mixed up, or with walking and running the wrong way round, is
+    named; the worked solution numbers the parts on the right graph
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
@@ -564,8 +594,9 @@ UI in English, Russian and Georgian.
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
   look, make the target, closer to?), fraction sense (make a whole, equal amounts, fractions on the line, shade the
-  fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions) and shape sense
-  (the geoboard). In the Shapes tab the games are a group of their own, before the live
+  fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
+  (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graph sense (plot the point, make
+  the bar chart, graph stories, draw the gradient). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -652,6 +683,42 @@ UI in English, Russian and Georgian.
     kept in the browser). Nine puzzles — rectangles, triangles, then shapes with an area and a perimeter, each the
     practice question of its level — earn up to three stars, a miss or a peek at the numbers costing one, and a
     puzzle opens once the one before has a star
+  - *Guess the angle*: an angle drawn, and its size typed in degrees by eye; check, and its real size shows with the
+    guess drawn beside it, dashed. Nine rounds of five (an arm along the bottom, turned any way, reflex) earn up to
+    three stars for how close they come on average (5° or less three, 10° two), and the endless run keeps a streak of
+    guesses within 10°. Four discoveries (spot on, a right angle seen for what it is, a reflex angle within 5°, ten in
+    a row)
+  - *Missing angles*: a figure drawn to size with its angles marked and one to find, typed in degrees. A wrong answer
+    on arms from a point draws the arm it would make, dashed, so it can be seen to be too big or too small. Right
+    first time earns three stars. Four discoveries (a whole turn's last angle, one under 30°, an isosceles base angle,
+    ten in a row)
+  - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
+    it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
+    folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four
+    discoveries (no mirror line at all, the diagonals left alone, six or more lines, ten in a row)
+  - *Cube nets*: six shapes of six squares; tap the ones that fold into a cube, then check. A shape that doesn't fold
+    shows in red the squares that land on the same face, and once the board is right each net colours its opposite
+    faces alike. The last three puzzles fold one net in the mind: tap the face opposite ★, pair by pair. No misses
+    earns three stars. Four discoveries (a board with no misses, a net without four in a row, every pair of opposite
+    faces first time, ten in a row)
+  - *Plot the point*: a coordinate grid and a point to tap — (3, 5) in the first quadrant, then in all four, then the
+    fourth corner of a rectangle whose other three are drawn. The point then shows with dashed lines from the axes, and
+    a tap on (y, x) is told it has the numbers the wrong way round. Nine rounds of five earn up to three stars (every
+    point found three, all but one two). Four discoveries (a point on an axis, both numbers negative, a rectangle's
+    fourth corner, ten in a row)
+  - *Make the bar chart*: how many of each fruit, and a bar for each to raise to its number against a scale in ones,
+    then twos or fives, then tens or twenties — tap the column at a height, or use the arrow keys on a bar. The bars
+    still wrong at a check turn orange with a dashed mark where they should reach, and a bar raised to its number of
+    lines is told what each line is worth. Right at the first check earns three stars. Four discoveries (a bar of 0, a
+    scale in tens or more, a bar between two lines, ten in a row)
+  - *Graph stories*: a walk from home told part by part, and its graph of the distance from home against the time
+    built from pieces — walking away climbs gently, running steeply, a stop is flat, coming back goes down. The parts
+    drawn wrong turn red, with why the first one is. Right at the first check earns three stars. Four discoveries (a
+    stop drawn flat, walking and running told apart, a walk back home, ten in a row)
+  - *Draw the gradient*: a point A and a gradient (1 to 3, then up or down, then fractions); tap a second point B and
+    the line runs across the grid. Checked, the step from A to B shows as a triangle, and a line along over up, the
+    wrong way or straight up is told so; any point of the line will do. Right at the first check earns three stars.
+    Four discoveries (a negative gradient, a fraction, B further than one step, ten in a row)
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
@@ -928,7 +995,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (57 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (65 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -954,7 +1021,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 489 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 567 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.

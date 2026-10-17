@@ -51,6 +51,19 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   joinedUnlike: ["sameExpression", [1]],
   firstTermOnly: ["sameExpression", [2, 3]],
   squareAsDouble: ["sameExpression", [3]],
+  acuteObtuse: ["estimateAngle", [1, 2]],
+  insideAngle: ["estimateAngle", [3]],
+  wrongTotal: ["missingAngle", [1, 2]],
+  notHalved: ["missingAngle", [3]],
+  diagonalMirror: ["symmetryLines", [1, 2]],
+  sixSquares: ["cubeNets", [1, 2]],
+  nextToOpposite: ["cubeNets", [3]],
+  swappedXY: ["coordinates", [1, 2, 3]],
+  countedLines: ["readChart", [2, 3]],
+  notDifference: ["readChart", [1, 2, 3]],
+  flatMoving: ["graphStory", [1, 2, 3]],
+  steepSlow: ["graphStory", [2, 3]],
+  runOverRise: ["slope", [1, 2, 3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {

@@ -20,6 +20,14 @@ import { balanceSteps, balanceSvg, balanceTask, oneSideOnly } from "./balance";
 import { machineAnswer, ruleQuestion, ruleSteps, ruleTable, scaledOutput, undoOrder } from "./machine";
 import { countOf, figuresSvg, growAnswer, growQuestion, growSteps, scaledFigure } from "./growing";
 import { exprQuestion, exprSteps, exprTex, judgePick, type ExprOption } from "./exprMatch";
+import { angleQuestion, angleSteps, angleSvg } from "./angleGuess";
+import { huntSteps, huntSvg, huntTask, huntTraps } from "./missingAngle";
+import { falseDiagonals, mirrorsOf, symSvg, symTask } from "./symmetry";
+import { LETTERS, netOptions, netQuestion, netSteps, netSvg } from "./cubeNets";
+import { plotSteps, plotSvg, plotTask, ptText, signed, swapped } from "./plotPoint";
+import { chartQuestion, chartSteps, chartSvg, chartTraps } from "./barChart";
+import { storyChoicesSvg, storyOptions, storyQuestion, storyWords, type StoryWord } from "./graphStory";
+import { gradTex, gradText, runOverRise, slopeQuestion, slopeQuestionSvg, slopeSteps } from "./slope";
 import { bottomsOrder, judgeOrder, orderTask, rightOrder, type OrderItem, type OrderProblem } from "./fracOrder";
 import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
 import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
@@ -33,7 +41,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick";
@@ -233,7 +241,21 @@ export type PracticeWords = {
     growCount: string;
     growWhich: string;
     sameExpression: string;
+    estimateAngle: string;
+    missingAngle: string;
+    symmetryLines: string;
+    cubeNet: string;
+    cubeOpposite: string;
+    coordinates: string;
+    coordCorner: string;
+    chartOne: string;
+    chartMore: string;
+    chartTotal: string;
+    graphStory: string;
+    slope: string;
   };
+  /** A walk from home told part by part (graph stories): each part, and what joins them. */
+  story: { parts: Record<StoryWord, string>; then: string };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
   formats: Record<Format, string>;
@@ -1425,6 +1447,152 @@ const GENS: Record<SkillId, Gen> = {
       plain: encodePoly(t.sample),
       format: "shape",
       solution: { kind: "shape", spec: { play: t.play, pts: t.sample, steps: lines } },
+    };
+  },
+
+  estimateAngle(r, L, w) {
+    // About how big an angle is, by eye (src/math/angleGuess.ts): the nearest of a few sizes, typed or picked.
+    const q = angleQuestion(L, r.next);
+    const pic = angleSvg(q.task, { R: 100, crop: true });
+    const traps: Trap[] = q.trap ? [{ id: q.trap.id, a: { k: "near", options: q.options, right: q.trap.at }, vars: { v: q.options[q.trap.at].v, a: L === 3 ? 360 : 180 } }] : [];
+    return {
+      prompt: fill(w.prompts.estimateAngle, { opts: q.options.map((o) => o.text).join(", ") }),
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { k: "near", options: q.options, right: q.right, traps },
+      show: `${q.task.size}^\\circ \\approx ${q.options[q.right].tex}`,
+      plain: q.options[q.right].plain,
+      format: "near",
+      solution: { kind: "angle", spec: { task: q.task, steps: angleSteps(q) } },
+    };
+  },
+
+  missingAngle(r, L, w) {
+    // An angle to find from the others, the figure drawn to size (src/math/missingAngle.ts): on a line, in a right
+    // angle, around a point, in a triangle, an isosceles triangle or a quadrilateral.
+    const t = huntTask(L, r.next);
+    const pic = huntSvg(t.fig);
+    const traps: Trap[] = huntTraps(t).map((x) => ({ id: x.id, a: num(x.v), vars: x.vars }));
+    return {
+      prompt: w.prompts.missingAngle,
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(t.v), traps },
+      show: `? = ${t.v}^\\circ`,
+      plain: String(t.v),
+      format: "number",
+      solution: { kind: "angles", spec: { task: t, steps: huntSteps(t) } },
+    };
+  },
+
+  symmetryLines(r, L, w) {
+    // How many lines a shape folds onto itself along (src/math/symmetry.ts); a quadrilateral's diagonals that only
+    // halve it, counted as well, are the slip named.
+    const t = symTask(L, r.next);
+    const n = mirrorsOf(t).length;
+    const extra = falseDiagonals(t);
+    const pic = symSvg(t, 220);
+    return {
+      prompt: w.prompts.symmetryLines,
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(n), traps: extra ? [{ id: "diagonalMirror", a: num(n + extra), vars: { v: n } }] : [] },
+      show: String(n),
+      plain: String(n),
+      format: "number",
+      solution: { kind: "mirror", spec: { task: t, steps: [] } },
+    };
+  },
+
+  cubeNets(r, L, w) {
+    // Which of four shapes folds into a cube, or which face of a net is opposite ★ (src/math/cubeNets.ts); a letter,
+    // typed or picked.
+    const q = netQuestion(L, r.next);
+    const options = netOptions(q);
+    const slips = q.level === 3 ? q.beside.map((at) => ({ id: "nextToOpposite" as const, at })) : q.lookalikes.map((at) => ({ id: "sixSquares" as const, at }));
+    const pic = netSvg(q);
+    return {
+      prompt: q.level === 3 ? w.prompts.cubeOpposite : w.prompts.cubeNet,
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { k: "pick", options, right: q.right, traps: slips.map(({ id, at }) => ({ id, a: { k: "pick", options, right: at }, vars: { x: LETTERS[at] } })) },
+      show: `\\text{${LETTERS[q.right]}}`,
+      plain: LETTERS[q.right],
+      format: "pick",
+      solution: { kind: "net", spec: { q, steps: netSteps(q) } },
+    };
+  },
+
+  coordinates(r, L, w) {
+    // A point drawn on a grid, its coordinates to read (src/math/plotPoint.ts); at the hard level the fourth corner of
+    // a rectangle whose other three are drawn.
+    const t = plotTask(L, r.next);
+    const [x, y] = t.p;
+    const pic = plotSvg(t, { asked: true, cell: 26 });
+    return {
+      prompt: L === 3 ? w.prompts.coordCorner : w.prompts.coordinates,
+      q: "",
+      pic: { svg: (px: number, py: number) => `<g transform="translate(${r2(px)} ${r2(py)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { k: "tuple", vs: [x, y], tol: 1e-9, traps: x !== y ? [{ id: "swappedXY", a: { k: "tuple", vs: swapped(t.p), tol: 1e-9 }, vars: { x, y, p: ptText(t.p), s: ptText(swapped(t.p)) } }] : [] },
+      show: `(${x}, \\; ${y})`,
+      plain: `(${x}, ${y})`,
+      format: "point",
+      solution: { kind: "plot", spec: { task: t, steps: plotSteps(t) } },
+    };
+  },
+
+  slope(r, L, w) {
+    // The gradient of a line drawn through two points of a grid (src/math/slope.ts): up (or down) over along.
+    const q = slopeQuestion(L, r.next);
+    const [dx, dy] = [q.q[0] - q.p[0], q.q[1] - q.p[1]];
+    const m = dy / dx;
+    const pic = slopeQuestionSvg(q);
+    const flip = runOverRise(q);
+    return {
+      prompt: w.prompts.slope,
+      q: "",
+      pic: { svg: (px: number, py: number) => `<g transform="translate(${r2(px)} ${r2(py)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(m, 1e-9, { lowest: true }), traps: Math.abs(m) !== 1 ? [{ id: "runOverRise", a: num(flip), vars: { dx, dy: signed(dy), v: gradText(dy, dx), u: gradText(dx, dy) } }] : [] },
+      show: `m = ${gradTex(dy, dx)}`,
+      plain: gradText(dy, dx).replace("−", "-"),
+      format: Number.isInteger(m) ? "number" : "fraction",
+      solution: { kind: "slope", spec: { q, steps: slopeSteps(q) } },
+    };
+  },
+
+  readChart(r, L, w) {
+    // A bar chart to read against its scale (src/math/barChart.ts): how many, how many more, or how many altogether.
+    const q = chartQuestion(L, r.next);
+    const [a, b] = q.at.map((k) => q.task.items[k].icon);
+    const pic = chartSvg(q.task, { gap: 22 });
+    const prompt = q.ask === "one" ? w.prompts.chartOne : q.ask === "more" ? w.prompts.chartMore : w.prompts.chartTotal;
+    return {
+      prompt: fill(prompt, { a, b }),
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { ...num(q.v), traps: chartTraps(q).map((t) => ({ id: t.id, a: num(t.v), vars: t.vars })) },
+      show: String(q.v),
+      plain: String(q.v),
+      format: "number",
+      solution: { kind: "chart", spec: { q, steps: chartSteps(q) } },
+    };
+  },
+
+  graphStory(r, L, w) {
+    // Which of four graphs is a walk's, the distance from home against the time (src/math/graphStory.ts); a letter,
+    // typed or picked.
+    const q = storyQuestion(L, r.next);
+    const options = storyOptions();
+    const pic = storyChoicesSvg(q);
+    return {
+      prompt: fill(w.prompts.graphStory, { story: storyWords(q.task.parts).map((p) => w.story.parts[p]).join(w.story.then) }),
+      q: "",
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: { k: "pick", options, right: q.right, traps: q.traps.map(({ id, at }) => ({ id, a: { k: "pick", options, right: at }, vars: { x: LETTERS[at] } })) },
+      show: `\\text{${LETTERS[q.right]}}`,
+      plain: LETTERS[q.right],
+      format: "pick",
+      solution: { kind: "story", spec: { task: q.task, steps: [] } },
     };
   },
 
@@ -3084,7 +3252,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : null;
     return input === null ? [] : [{ id, input }];
   });
 }

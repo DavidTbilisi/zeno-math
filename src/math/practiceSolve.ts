@@ -89,6 +89,46 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./growing").GrowSolution & { steps: string[] };
       return (await import("./growing")).renderGrow(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "angle": {
+      // The angle with its size, with the working beneath.
+      const spec = s as import("./angleGuess").AngleSolution & { steps: string[] };
+      return (await import("./angleGuess")).renderAngle(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
+    case "angles": {
+      // The figure with the angle filled in, with the working beneath.
+      const spec = s as import("./missingAngle").HuntSolution & { steps: string[] };
+      return (await import("./missingAngle")).renderHunt(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
+    case "mirror": {
+      // The shape with its mirror lines dashed.
+      const spec = s as import("./symmetry").SymSolution;
+      return (await import("./symmetry")).renderSym(spec, null);
+    }
+    case "net": {
+      // The net with opposite faces coloured alike, with the working beneath.
+      const spec = s as import("./cubeNets").NetSolution & { steps: string[] };
+      return (await import("./cubeNets")).renderNet(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
+    case "plot": {
+      // The point with dashed lines to it from the axes, with the working beneath.
+      const spec = s as import("./plotPoint").PlotSolution & { steps: string[] };
+      return (await import("./plotPoint")).renderPlot(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
+    case "chart": {
+      // The chart with the bars asked about marked, with the working beneath.
+      const spec = s as import("./barChart").ChartSolution & { steps: string[] };
+      return (await import("./barChart")).renderChart(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
+    case "story": {
+      // The walk's graph with its parts numbered.
+      const spec = s as import("./graphStory").StorySolution;
+      return (await import("./graphStory")).renderStory(spec, null);
+    }
+    case "slope": {
+      // The line with the step from P to Q drawn, with the working beneath.
+      const spec = s as import("./slope").SlopeSolution & { steps: string[] };
+      return (await import("./slope")).renderSlope(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }
