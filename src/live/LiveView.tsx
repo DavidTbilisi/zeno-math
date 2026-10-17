@@ -32,6 +32,10 @@ import { PlotPoint } from "./PlotPoint";
 import { BarChart } from "./BarChart";
 import { GraphStory } from "./GraphStory";
 import { SlopeLine } from "./SlopeLine";
+import { OneStroke } from "./OneStroke";
+import { ColourMap } from "./ColourMap";
+import { ShortestPath } from "./ShortestPath";
+import { ConnectTowns } from "./ConnectTowns";
 import { Soroban } from "./Soroban";
 import { Target } from "./Target";
 import type { PieceProps } from "./ui";
@@ -86,6 +90,10 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   barChart: BarChart,
   graphStory: GraphStory,
   slopeLine: SlopeLine,
+  oneStroke: OneStroke,
+  colourMap: ColourMap,
+  shortestPath: ShortestPath,
+  connectTowns: ConnectTowns,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

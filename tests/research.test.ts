@@ -233,7 +233,7 @@ test("codes and summaries", () => {
 test("a class practises the skills it was given, in curriculum order", async () => {
   const made = await call("POST", "/api/classes", { name: "9C", skills: ["average", "algebra", "linear"] }, TEACHER);
   assert.equal(made.status, 201);
-  assert.deepEqual(made.body.skills.slice(0, 7), ["average", "graphStory", "findRule", "growingPattern", "balance", "sameExpression", "linear"]);
+  assert.deepEqual(made.body.skills.slice(0, 7), ["average", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear"]);
   assert.equal(made.body.skills.length, 19); // the 18 algebra skills and averages
   assert.equal((await call("POST", "/api/classes", { skills: ["astrology"] }, TEACHER)).status, 400);
   assert.equal((await call("POST", "/api/classes", { skills: [] }, TEACHER)).status, 400);

@@ -129,6 +129,26 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./slope").SlopeSolution & { steps: string[] };
       return (await import("./slope")).renderSlope(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "stroke": {
+      // The odd vertices filled in, or the graph that can be drawn with its stroke numbered, with the working beneath.
+      const spec = s as import("./oneStroke").StrokeSolution & { steps: string[] };
+      return (await import("./oneStroke")).renderStroke(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
+    case "colour": {
+      // The graph in its fewest colours.
+      const spec = s as import("./colouring").ColourSolution;
+      return (await import("./colouring")).renderColour(spec, null);
+    }
+    case "route": {
+      // The shortest route drawn, with its roads added up beneath.
+      const spec = s as import("./shortestPath").PathSolution & { steps: string[] };
+      return (await import("./shortestPath")).renderPath(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
+    case "network": {
+      // The cheapest network drawn, with its roads added up beneath.
+      const spec = s as import("./connectTowns").TownSolution & { steps: string[] };
+      return (await import("./connectTowns")).renderTowns(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }

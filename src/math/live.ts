@@ -25,6 +25,10 @@ import type { LivePlot } from "./plotPoint";
 import type { LiveBarChart } from "./barChart";
 import type { LiveGraphStory } from "./graphStory";
 import type { LiveSlope } from "./slope";
+import type { LiveStroke } from "./oneStroke";
+import type { LiveColour } from "./colouring";
+import type { LivePath } from "./shortestPath";
+import type { LiveTowns } from "./connectTowns";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -370,6 +374,10 @@ export type LiveStates = {
   barChart: LiveBarChart;
   graphStory: LiveGraphStory;
   slopeLine: LiveSlope;
+  oneStroke: LiveStroke;
+  colourMap: LiveColour;
+  shortestPath: LivePath;
+  connectTowns: LiveTowns;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -413,6 +421,10 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   barChart: [560, 600],
   graphStory: [600, 600],
   slopeLine: [560, 700],
+  oneStroke: [560, 500],
+  colourMap: [560, 540],
+  shortestPath: [560, 540],
+  connectTowns: [560, 500],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -458,6 +470,10 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     barChart: { mode: "puzzle", stage: 0, level: 1, seed: 1, bars: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
     graphStory: { mode: "puzzle", stage: 0, level: 1, seed: 1, drawn: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
     slopeLine: { mode: "puzzle", stage: 0, level: 1, seed: 1, b: null, misses: 0, done: false, streak: 0, said: null },
+    oneStroke: { mode: "puzzle", stage: 0, level: 1, seed: 1, trail: [], misses: 0, done: false, streak: 0, said: null },
+    colourMap: { mode: "puzzle", stage: 0, level: 1, seed: 1, colours: [], pen: 0, misses: 0, done: false, streak: 0, said: null },
+    shortestPath: { mode: "puzzle", stage: 0, level: 1, seed: 1, route: [], misses: 0, done: false, streak: 0, said: null },
+    connectTowns: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], misses: 0, done: false, streak: 0, said: null },
   };
   return structuredClone(start[kind]);
 }

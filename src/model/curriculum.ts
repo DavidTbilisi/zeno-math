@@ -4,7 +4,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "integers", "coordinates", "order", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "percent", "rounding", "hcf", "primes", "average", "missingAngle", "graphStory", "findRule", "growingPattern", "balance", "sameExpression", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "coordinates", "order", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "percent", "rounding", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri",
   "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -21,8 +21,12 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   cubeNets: ["shapeArea"],
   missingAngle: ["estimateAngle", "integers"],
   readChart: ["times"],
+  oneStroke: ["compare"],
+  colouring: ["oneStroke"],
+  shortestPath: ["oneStroke"],
+  spanningTree: ["shortestPath"],
   coordinates: ["integers"],
-  graphStory: ["coordinates"],
+  graphStory: ["coordinates", "findRule"],
   slope: ["coordinates", "fractions"],
   makeTarget: ["times"],
   integers: ["times"],

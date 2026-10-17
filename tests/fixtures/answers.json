@@ -4186,6 +4186,252 @@
    "input": "1/4",
    "label": "wrong",
    "mistake": "sign"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 1,
+   "seed": 7,
+   "input": "2",
+   "label": "correct"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 1,
+   "seed": 7,
+   "input": "4",
+   "label": "wrong",
+   "mistake": "countedEven"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 1,
+   "seed": 7,
+   "input": "3",
+   "label": "wrong",
+   "note": "an odd count of odd vertices"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 1,
+   "seed": 7,
+   "input": "two",
+   "label": "form",
+   "note": "a word for a number"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 2,
+   "seed": 7,
+   "input": "4",
+   "label": "correct"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 2,
+   "seed": 7,
+   "input": "5",
+   "label": "wrong",
+   "mistake": "countedEven"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 3,
+   "seed": 7,
+   "input": "A",
+   "label": "correct"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 3,
+   "seed": 7,
+   "input": "a",
+   "label": "correct"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 3,
+   "seed": 7,
+   "input": "C",
+   "label": "wrong",
+   "mistake": "fourOdd"
+  },
+  {
+   "skill": "oneStroke",
+   "level": 3,
+   "seed": 7,
+   "input": "E",
+   "label": "form",
+   "note": "not one of the graphs"
+  },
+  {
+   "skill": "colouring",
+   "level": 1,
+   "seed": 7,
+   "input": "2",
+   "label": "correct"
+  },
+  {
+   "skill": "colouring",
+   "level": 1,
+   "seed": 7,
+   "input": "4",
+   "label": "wrong",
+   "mistake": "degreeColours"
+  },
+  {
+   "skill": "colouring",
+   "level": 1,
+   "seed": 7,
+   "input": "1",
+   "label": "wrong"
+  },
+  {
+   "skill": "colouring",
+   "level": 2,
+   "seed": 7,
+   "input": "3",
+   "label": "correct"
+  },
+  {
+   "skill": "colouring",
+   "level": 2,
+   "seed": 7,
+   "input": "2",
+   "label": "wrong",
+   "mistake": "oddLoop"
+  },
+  {
+   "skill": "colouring",
+   "level": 2,
+   "seed": 7,
+   "input": "5",
+   "label": "wrong",
+   "mistake": "degreeColours"
+  },
+  {
+   "skill": "colouring",
+   "level": 3,
+   "seed": 7,
+   "input": "3",
+   "label": "correct"
+  },
+  {
+   "skill": "colouring",
+   "level": 3,
+   "seed": 7,
+   "input": "6",
+   "label": "wrong",
+   "mistake": "degreeColours"
+  },
+  {
+   "skill": "colouring",
+   "level": 3,
+   "seed": 7,
+   "input": "4",
+   "label": "wrong"
+  },
+  {
+   "skill": "shortestPath",
+   "level": 1,
+   "seed": 7,
+   "input": "15",
+   "label": "correct"
+  },
+  {
+   "skill": "shortestPath",
+   "level": 1,
+   "seed": 7,
+   "input": "14",
+   "label": "wrong"
+  },
+  {
+   "skill": "shortestPath",
+   "level": 2,
+   "seed": 7,
+   "input": "16",
+   "label": "correct"
+  },
+  {
+   "skill": "shortestPath",
+   "level": 2,
+   "seed": 7,
+   "input": "18",
+   "label": "wrong",
+   "mistake": "fewestRoads"
+  },
+  {
+   "skill": "shortestPath",
+   "level": 2,
+   "seed": 7,
+   "input": "16 km",
+   "label": "form",
+   "note": "a unit the question doesn't use"
+  },
+  {
+   "skill": "shortestPath",
+   "level": 3,
+   "seed": 7,
+   "input": "27",
+   "label": "correct"
+  },
+  {
+   "skill": "shortestPath",
+   "level": 3,
+   "seed": 7,
+   "input": "30",
+   "label": "wrong"
+  },
+  {
+   "skill": "spanningTree",
+   "level": 1,
+   "seed": 7,
+   "input": "17",
+   "label": "correct"
+  },
+  {
+   "skill": "spanningTree",
+   "level": 1,
+   "seed": 7,
+   "input": "15",
+   "label": "wrong",
+   "mistake": "cheapestRoads"
+  },
+  {
+   "skill": "spanningTree",
+   "level": 2,
+   "seed": 7,
+   "input": "38",
+   "label": "correct"
+  },
+  {
+   "skill": "spanningTree",
+   "level": 2,
+   "seed": 7,
+   "input": "36",
+   "label": "wrong",
+   "mistake": "cheapestRoads"
+  },
+  {
+   "skill": "spanningTree",
+   "level": 2,
+   "seed": 7,
+   "input": "40",
+   "label": "wrong"
+  },
+  {
+   "skill": "spanningTree",
+   "level": 3,
+   "seed": 7,
+   "input": "77",
+   "label": "correct"
+  },
+  {
+   "skill": "spanningTree",
+   "level": 3,
+   "seed": 7,
+   "input": "66",
+   "label": "wrong",
+   "mistake": "cheapestRoads"
   }
  ]
 }

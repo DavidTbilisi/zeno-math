@@ -54,5 +54,12 @@ export const MISTAKES = [
   "flatMoving",
   "steepSlow",
   "runOverRise",
+  "countedEven",
+  "fourOdd",
+  "degreeColours",
+  "oddLoop",
+  "fewestRoads",
+  "greedyRoute",
+  "cheapestRoads",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
