@@ -3953,6 +3953,7 @@ export const ka: Dict = {
     clock: {
       showTime: "ციფრული დრო",
       snap: "5-წუთიანი ბიჯი",
+      showMinutes: "წუთები",
       random: "შემთხვევითი დრო",
     },
     dice: {

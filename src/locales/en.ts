@@ -3952,6 +3952,7 @@ export const en = {
     clock: {
       showTime: "Digital time",
       snap: "Snap to 5 minutes",
+      showMinutes: "Minutes",
       random: "Random time",
     },
     dice: {
