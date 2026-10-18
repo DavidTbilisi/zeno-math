@@ -5,7 +5,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import { randomInt, timingSafeEqual } from "node:crypto";
 import { ALL_SKILLS, AREAS, FIRST_SKILLS, SKILLS, areaOf, type Area, type SkillId } from "../src/math/practiceSkills.ts";
-import { CURRICULUM, inCurriculumOrder } from "../src/model/curriculum.ts";
+import { CURRICULUM, inCurriculumOrder, skillsOfYear, type Year } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
 import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
@@ -110,15 +110,20 @@ export function initResearch(db: DatabaseSync) {
   initProtocol(db);
 }
 
-/** A class's skills from what a teacher sent: skill ids and area names (all of that area), in curriculum order. */
+/**
+ * A class's skills from what a teacher sent: skill ids, area names (all of that area) and years of the primary syllabus
+ * ("P4": every skill with a level in it), in curriculum order.
+ */
 export function parseSkills(value: unknown): SkillId[] | null {
   if (value === undefined || value === null) return null;
-  if (!Array.isArray(value) || !value.length) throw new HttpError(400, "skills must be a list of skills or areas");
+  if (!Array.isArray(value) || !value.length) throw new HttpError(400, "skills must be a list of skills, areas or years");
   const out = new Set<string>();
   for (const v of value) {
+    const year = typeof v === "string" && /^P[1-6]$/.test(v) ? (Number(v[1]) as Year) : null;
     if (AREAS.includes(v as Area)) SKILLS[v as Area].forEach((k) => out.add(k));
+    else if (year) skillsOfYear(year).forEach((k) => out.add(k));
     else if (ALL_SKILLS.includes(v as SkillId)) out.add(v);
-    else throw new HttpError(400, `unknown skill or area: ${String(v).slice(0, 40)}`);
+    else throw new HttpError(400, `unknown skill, area or year: ${String(v).slice(0, 40)}`);
   }
   return inCurriculumOrder([...out]);
 }

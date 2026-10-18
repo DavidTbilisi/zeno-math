@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ALL_SKILLS, type SkillId } from "../src/math/practiceSkills.ts";
-import { CURRICULUM, inCurriculumOrder, PREREQUISITES } from "../src/model/curriculum.ts";
+import { CURRICULUM, inCurriculumOrder, PREREQUISITES, skillsOfYear, SYLLABUS, YEARS } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
 import { adaptiveChoice, choose, fixedChoice, MASTERED_AT, openSkills, PER_LEVEL, TARGET } from "../src/model/policy.ts";
 
@@ -17,6 +17,18 @@ test("the curriculum has every skill once, each after what it builds on", () => 
       assert.ok(CURRICULUM.indexOf(pre) < CURRICULUM.indexOf(skill as SkillId), `${pre} must come before ${skill}`);
     }
   assert.deepEqual(inCurriculumOrder(["factor", "times", "nonsense", "times"]), ["times", "factor"]);
+});
+
+test("skills are tagged with the years of the primary syllabus their levels belong to", () => {
+  for (const [skill, years] of Object.entries(SYLLABUS)) {
+    assert.ok(ALL_SKILLS.includes(skill as SkillId), skill);
+    assert.ok(years!.some((y) => y !== null), `${skill} has no level in the syllabus`);
+  }
+  for (const y of YEARS) assert.ok(skillsOfYear(y).length >= 3, `P${y}`);
+  assert.deepEqual(skillsOfYear(1), ["quickLook", "compare", "estimateLine", "closerTo", "makeTarget"]);
+  assert.deepEqual(skillsOfYear(6).filter((k) => ["ratio", "percent", "balance", "average", "rate"].includes(k)), ["percent", "ratio", "average", "balance"]);
+  // The secondary topics and graph theory are not on it.
+  for (const k of ["integers", "primes", "linear", "oneStroke", "probability"] as const) assert.equal(SYLLABUS[k], undefined);
 });
 
 test("the fixed sequence walks each skill level by level, then comes round again", () => {

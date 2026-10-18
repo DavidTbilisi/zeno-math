@@ -988,7 +988,8 @@ couldn't load back.
 
 Zeno can run a study that compares two ways of choosing practice questions: an adaptive learner model (aiming at a
 target chance of a right answer, as in Math Garden) against a fixed curriculum sequence. A teacher makes a class at
-**`#/teacher`**. Students join with its code, are randomised to a condition in balanced blocks and get a code of
+**`#/teacher`**, choosing the areas it practises or the years of Singapore's primary syllabus (P1 to P6; every skill
+has each of its three levels tagged with the year that teaches it, in `src/model/curriculum.ts`). Students join with its code, are randomised to a condition in balanced blocks and get a code of
 their own (no names or emails), see what taking part means and agree before they join. The teacher then moves the
 class through a pre-test, timed practice and a post-test, with parallel forms counterbalanced within each condition.
 The dashboard shows the two groups, mastery by skill, the tests and how well the model predicts; both data sets
