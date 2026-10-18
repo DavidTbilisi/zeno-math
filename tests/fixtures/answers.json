@@ -4551,6 +4551,358 @@
    "input": "5, 43",
    "label": "form",
    "note": "a divisor not asked about, though it divides"
+  },
+  {
+   "skill": "money",
+   "level": 1,
+   "seed": 7,
+   "input": "2.09",
+   "label": "correct"
+  },
+  {
+   "skill": "money",
+   "level": 1,
+   "seed": 7,
+   "input": "$2.09",
+   "label": "correct",
+   "note": "with the dollar sign"
+  },
+  {
+   "skill": "money",
+   "level": 1,
+   "seed": 7,
+   "input": "2,09",
+   "label": "correct",
+   "note": "decimal comma"
+  },
+  {
+   "skill": "money",
+   "level": 1,
+   "seed": 7,
+   "input": "2.9",
+   "label": "wrong",
+   "note": "9 cents written as .9",
+   "mistake": "centsOneDigit"
+  },
+  {
+   "skill": "money",
+   "level": 1,
+   "seed": 7,
+   "input": "209",
+   "label": "wrong",
+   "note": "still in cents"
+  },
+  {
+   "skill": "money",
+   "level": 2,
+   "seed": 7,
+   "input": "52.91",
+   "label": "correct"
+  },
+  {
+   "skill": "money",
+   "level": 2,
+   "seed": 7,
+   "input": "$52.91",
+   "label": "correct",
+   "note": "with the dollar sign"
+  },
+  {
+   "skill": "money",
+   "level": 2,
+   "seed": 7,
+   "input": "52.81",
+   "label": "wrong",
+   "note": "a carry lost"
+  },
+  {
+   "skill": "money",
+   "level": 2,
+   "seed": 7,
+   "input": "5291",
+   "label": "wrong",
+   "note": "in cents, not dollars"
+  },
+  {
+   "skill": "money",
+   "level": 3,
+   "seed": 7,
+   "input": "1.70",
+   "label": "correct"
+  },
+  {
+   "skill": "money",
+   "level": 3,
+   "seed": 7,
+   "input": "1.7",
+   "label": "correct",
+   "note": "the last zero left off"
+  },
+  {
+   "skill": "money",
+   "level": 3,
+   "seed": 7,
+   "input": "3.5",
+   "label": "wrong",
+   "note": "paid for one pen",
+   "mistake": "oneOfEach"
+  },
+  {
+   "skill": "money",
+   "level": 3,
+   "seed": 7,
+   "input": "8.30",
+   "label": "wrong",
+   "note": "the cost, not the change"
+  },
+  {
+   "skill": "decimals",
+   "level": 1,
+   "seed": 7,
+   "input": "150.32",
+   "label": "correct"
+  },
+  {
+   "skill": "decimals",
+   "level": 1,
+   "seed": 7,
+   "input": "150,32",
+   "label": "correct",
+   "note": "decimal comma"
+  },
+  {
+   "skill": "decimals",
+   "level": 1,
+   "seed": 7,
+   "input": "62.39",
+   "label": "wrong",
+   "note": "last digits lined up",
+   "mistake": "alignedRight"
+  },
+  {
+   "skill": "decimals",
+   "level": 1,
+   "seed": 7,
+   "input": "150.3",
+   "label": "wrong",
+   "note": "the exact sum was asked"
+  },
+  {
+   "skill": "decimals",
+   "level": 2,
+   "seed": 7,
+   "input": "0.5219",
+   "label": "correct"
+  },
+  {
+   "skill": "decimals",
+   "level": 2,
+   "seed": 7,
+   "input": ".5219",
+   "label": "correct",
+   "note": "no leading zero"
+  },
+  {
+   "skill": "decimals",
+   "level": 2,
+   "seed": 7,
+   "input": "521900",
+   "label": "wrong",
+   "note": "multiplied instead of divided",
+   "mistake": "pointWrongWay"
+  },
+  {
+   "skill": "decimals",
+   "level": 2,
+   "seed": 7,
+   "input": "0.05219",
+   "label": "wrong",
+   "note": "a place too far"
+  },
+  {
+   "skill": "decimals",
+   "level": 3,
+   "seed": 7,
+   "input": "13.985",
+   "label": "correct"
+  },
+  {
+   "skill": "decimals",
+   "level": 3,
+   "seed": 7,
+   "input": "13985000",
+   "label": "wrong",
+   "note": "multiplied instead of divided",
+   "mistake": "pointWrongWay"
+  },
+  {
+   "skill": "decimals",
+   "level": 3,
+   "seed": 7,
+   "input": "1.3985",
+   "label": "wrong"
+  },
+  {
+   "skill": "ratio",
+   "level": 1,
+   "seed": 7,
+   "input": "9:7",
+   "label": "correct"
+  },
+  {
+   "skill": "ratio",
+   "level": 1,
+   "seed": 7,
+   "input": "9 : 7",
+   "label": "correct",
+   "note": "spaces"
+  },
+  {
+   "skill": "ratio",
+   "level": 1,
+   "seed": 7,
+   "input": "27:21",
+   "label": "form",
+   "note": "not in its simplest form"
+  },
+  {
+   "skill": "ratio",
+   "level": 1,
+   "seed": 7,
+   "input": "9/7",
+   "label": "form",
+   "note": "a fraction, not a ratio"
+  },
+  {
+   "skill": "ratio",
+   "level": 1,
+   "seed": 7,
+   "input": "7:9",
+   "label": "wrong",
+   "note": "the terms swapped"
+  },
+  {
+   "skill": "ratio",
+   "level": 2,
+   "seed": 7,
+   "input": "49",
+   "label": "correct"
+  },
+  {
+   "skill": "ratio",
+   "level": 2,
+   "seed": 7,
+   "input": "63",
+   "label": "wrong",
+   "note": "A's share"
+  },
+  {
+   "skill": "ratio",
+   "level": 2,
+   "seed": 7,
+   "input": "16",
+   "label": "wrong",
+   "note": "the number of parts"
+  },
+  {
+   "skill": "ratio",
+   "level": 3,
+   "seed": 7,
+   "input": "1:9:7",
+   "label": "correct"
+  },
+  {
+   "skill": "ratio",
+   "level": 3,
+   "seed": 7,
+   "input": "2:18:14",
+   "label": "form",
+   "note": "not in its simplest form"
+  },
+  {
+   "skill": "ratio",
+   "level": 3,
+   "seed": 7,
+   "input": "1:9",
+   "label": "form",
+   "note": "a term missing"
+  },
+  {
+   "skill": "ratio",
+   "level": 3,
+   "seed": 7,
+   "input": "1:7:9",
+   "label": "wrong"
+  },
+  {
+   "skill": "rate",
+   "level": 1,
+   "seed": 7,
+   "input": "18",
+   "label": "correct"
+  },
+  {
+   "skill": "rate",
+   "level": 1,
+   "seed": 7,
+   "input": "$18",
+   "label": "correct",
+   "note": "with the dollar sign"
+  },
+  {
+   "skill": "rate",
+   "level": 1,
+   "seed": 7,
+   "input": "4.5",
+   "label": "wrong",
+   "note": "divided instead of multiplied"
+  },
+  {
+   "skill": "rate",
+   "level": 2,
+   "seed": 7,
+   "input": "12",
+   "label": "correct"
+  },
+  {
+   "skill": "rate",
+   "level": 2,
+   "seed": 7,
+   "input": "1728",
+   "label": "wrong",
+   "note": "multiplied instead of divided"
+  },
+  {
+   "skill": "rate",
+   "level": 3,
+   "seed": 7,
+   "input": "4.40",
+   "label": "correct"
+  },
+  {
+   "skill": "rate",
+   "level": 3,
+   "seed": 7,
+   "input": "4.4",
+   "label": "correct",
+   "note": "the last zero left off"
+  },
+  {
+   "skill": "rate",
+   "level": 3,
+   "seed": 7,
+   "input": "5.60",
+   "label": "wrong",
+   "note": "2 kg more taken as $2 more",
+   "mistake": "addedNotScaled"
+  },
+  {
+   "skill": "rate",
+   "level": 3,
+   "seed": 7,
+   "input": "0.40",
+   "label": "wrong",
+   "note": "the price of 1 kg"
   }
  ]
 }

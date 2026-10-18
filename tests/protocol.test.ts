@@ -31,7 +31,8 @@ test("items spread evenly over the class's skills and levels", () => {
   const n = CURRICULUM.length;
   assert.equal(many[0].skill, CURRICULUM[Math.floor((0.5 * n) / 12)]);
   assert.equal(many.at(-1)!.skill, CURRICULUM[Math.floor((11.5 * n) / 12)]);
-  assert.ok(Math.floor((0.5 * n) / 12) <= 2 && Math.floor((11.5 * n) / 12) >= n - 3, "near both ends");
+  // Within the first and the last 24th of it.
+  assert.ok(Math.floor((0.5 * n) / 12) <= n / 24 && Math.floor((11.5 * n) / 12) >= n - 1 - n / 24, "near both ends");
   assert.deepEqual([...new Set(many.map((i) => i.level))].sort(), [1, 2, 3]);
 });
 

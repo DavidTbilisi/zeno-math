@@ -65,5 +65,13 @@ export const MISTAKES = [
   "threeForNine",
   "oddSix",
   "tenOnly",
+  "centsOneDigit",
+  "smallerFromLarger",
+  "oneOfEach",
+  "alignedRight",
+  "pointWrongWay",
+  "addedNotScaled",
+  "ratioAsFraction",
+  "rateInverted",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

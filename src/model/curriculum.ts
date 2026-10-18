@@ -4,7 +4,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "coordinates", "order", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "percent", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "coordinates", "order", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri",
   "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -36,8 +36,12 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   equivalent: ["compareFractions"],
   orderFractions: ["compareFractions"],
   makeWhole: ["equivalent"],
+  money: ["times"],
   fractions: ["times"],
+  decimals: ["fractions", "money"],
   percent: ["fractions"],
+  ratio: ["fractions"],
+  rate: ["decimals"],
   rounding: ["times"],
   divisibility: ["times"],
   hcf: ["times"],
