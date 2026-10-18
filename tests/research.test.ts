@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { initResearch, normalizeCode, parseAttempt } from "../server/research.ts";
 import { GRACE, initProtocol, logPhase, onTime, phaseWindows, PRACTICE_PHASES } from "../server/protocol.ts";
+import { skillsOfYear } from "../src/model/curriculum.ts";
 import { EloModel } from "../src/model/elo.ts";
 import { observationsFromCsv, parseCsv, replay } from "../src/model/evaluate.ts";
 import { usesOf } from "../src/model/ideaState.ts";
@@ -237,6 +238,10 @@ test("a class practises the skills it was given, in curriculum order", async () 
   assert.equal(made.body.skills.length, 19); // the 18 algebra skills and averages
   assert.equal((await call("POST", "/api/classes", { skills: ["astrology"] }, TEACHER)).status, 400);
   assert.equal((await call("POST", "/api/classes", { skills: [] }, TEACHER)).status, 400);
+  // A year of the primary syllabus: every skill with a level in it.
+  const p6 = (await call("POST", "/api/classes", { name: "P6", skills: ["P6"] }, TEACHER)).body;
+  assert.deepEqual(p6.skills, skillsOfYear(6));
+  assert.equal((await call("POST", "/api/classes", { skills: ["P7"] }, TEACHER)).status, 400);
   const all = (await call("POST", "/api/classes", { name: "everything" }, TEACHER)).body;
   assert.equal(all.skills.length, ALL_SKILLS.length);
   const listed = (await call("GET", "/api/classes", undefined, TEACHER)).body as { code: string; skills: string[] }[];

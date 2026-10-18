@@ -4937,6 +4937,8 @@ export const en = {
     newClass: "New class",
     className: "Name",
     skillsHint: "Areas to practise (none chosen: all of them)",
+    yearsHint: "…or years of the primary syllabus (P1–P6): each adds the skills taught that year",
+    year: "P{n}",
     create: "Create class",
     code: "Class code",
     codeHint: "Students join with this code in Practice, then write down the student code they get.",

@@ -678,6 +678,8 @@ Rebuilds the three maps. For `levels`, the key is cut at its **last** colon: "Th
 
 `CURRICULUM` (`:6-11`) is the fixed sequence's order of all 42 `SkillId`s: "number, then algebra and geometry side by side, calculus last; data where its maths is ready". `PREREQUISITES` (`:14-56`) maps each skill to the skills it builds on directly (e.g. `quadratic: ["factor"]`, `dotangle: ["vectors", "trigexact"]`, `stationary: ["differentiate", "quadratic"]`). "A class can practise any subset; prerequisites outside the subset are ignored" (`:3`). `inCurriculumOrder(skills)` (`:59`) filters `CURRICULUM` by membership, which both orders and de-duplicates and drops unknown names. `tests/policy.test.ts:12-20` pins that every skill appears once, every prerequisite exists and precedes its dependant.
 
+`SYLLABUS` tags each skill's three levels with a year of Singapore's 2021 primary syllabus (`Year`, 1 to 6, the Standard track): the first year by which the syllabus has taught every kind of question the level asks, or `null` when some of them go past P6. `money: [2, 3, 4]` reads: decimal notation and cents in P2, adding and subtracting in P3, an amount times a digit in P4; `average: [6, null, null]` has the mean in P6 and the median and standard deviation beyond it. A comment on each line names the syllabus items. Skills with no primary level (graph theory, which the syllabus doesn't teach, and the secondary topics) are left out. `skillsOfYear(year)` lists, in curriculum order, the skills with a level in that year; it is what a teacher's year chip and a `"P4"` in a class's skill list expand to. `tests/policy.test.ts` pins that every tagged skill exists and has a primary level, that every year has skills, and the P1 list.
+
 ### src/model/policy.ts — choosing the next question
 
 The header (`:1-10`): the two conditions "differ only here: feedback, worked solutions and the review of missed questions are the same for both". Constants (`:18-32`):
@@ -1680,7 +1682,7 @@ The password is kept in `sessionStorage["zeno.teacher"]` ("for this tab only", `
 
 #### Layout
 
-Sidebar (`:210-260`): the class list (name, code, "{n} students · {a} adaptive, {f} fixed"), and the New class form: name (max 100), questions per test (clamped to `MIN_TEST_LENGTH..MAX_TEST_LENGTH`, 4..30, default 12), area chips (none = all), Create.
+Sidebar (`:210-260`): the class list (name, code, "{n} students · {a} adaptive, {f} fixed"), and the New class form: name (max 100), questions per test (clamped to `MIN_TEST_LENGTH..MAX_TEST_LENGTH`, 4..30, default 12), area chips and P1–P6 year chips (`PickChip`, each year chip titled with its skills; none chosen = all), Create.
 
 Main (`:262-446`):
 - Class head: name, the code in large monospace, hint, and Refresh / Download answers / Download tests / Print the tests.
@@ -3547,7 +3549,7 @@ Column additions use the same `add(table, column, type)` helper pattern as proto
 
 #### `parseSkills(value): SkillId[] | null` and `classSkills` (`server/research.ts:112-124`)
 
-`undefined`/`null` → `null` (caller substitutes the full `CURRICULUM`). Otherwise a non-empty array of skill ids or area names (an area expands to all `SKILLS[area]`), unknown entries → 400 `unknown skill or area: …` (truncated to 40 chars), empty → 400. The set is returned in curriculum order, so `["average", "algebra", "linear"]` yields the 13 algebra skills plus `average` starting `average, linear, inequalities, expand` (`tests/research.test.ts:232-243`). `classSkills(json)` parses the stored column, falling back to `CURRICULUM` for `null`.
+`undefined`/`null` → `null` (caller substitutes the full `CURRICULUM`). Otherwise a non-empty array of skill ids, area names (an area expands to all `SKILLS[area]`) and years `P1`–`P6` (a year expands to `skillsOfYear`), unknown entries → 400 `unknown skill, area or year: …` (truncated to 40 chars), empty → 400. The set is returned in curriculum order, so `["average", "algebra", "linear"]` yields the 13 algebra skills plus `average` starting `average, linear, inequalities, expand` (`tests/research.test.ts:232-243`). `classSkills(json)` parses the stored column, falling back to `CURRICULUM` for `null`.
 
 #### The replay cache: `currentModel(db)`, `currentIdeas(db, studentId)` and `forgetModel` (`server/research.ts:127-155`)
 

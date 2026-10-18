@@ -2,7 +2,7 @@
 // practice, pre-test, timed sessions, post-test), then follow each class: the two groups side by side, the tests,
 // mastery by skill for every student, and whether the learner model's predictions come true. The teacher password
 // (TEACHER_PASSWORD on the server) is kept for this tab only.
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
@@ -10,6 +10,7 @@ import { LangSelect, useI18n } from "../i18n";
 import { fill } from "../math/text";
 import type { Phase } from "../learner";
 import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
+import { skillsOfYear, YEARS } from "../model/curriculum";
 import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH } from "../model/testForms";
 
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
@@ -38,6 +39,17 @@ const remember = (password: string) => {
 /** waiting: too many wrong passwords; the server won't check another for a few minutes. */
 type Access = "checking" | "locked" | "wrong" | "waiting" | "open" | "offline";
 
+/** An area or a year to practise, on or off. */
+function PickChip({ pick, picks, setPicks, title, children }: { pick: string; picks: string[]; setPicks: (f: (s: string[]) => string[]) => void; title?: string; children: ReactNode }) {
+  const on = picks.includes(pick);
+  return (
+    <button type="button" className={`chip text${on ? " selected" : ""}`} aria-pressed={on} title={title}
+      onClick={() => setPicks((s) => (on ? s.filter((x) => x !== pick) : [...s, pick]))}>
+      {children}
+    </button>
+  );
+}
+
 export function TeacherPage() {
   const { t, lang } = useI18n();
   const w = t.teacher;
@@ -51,7 +63,8 @@ export function TeacherPage() {
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [name, setName] = useState("");
-  const [areas, setAreas] = useState<Area[]>([]);
+  // Areas and years of the syllabus ("P4") the new class practises, as the server takes them.
+  const [picks, setPicks] = useState<string[]>([]);
   const [showNumbers, setShowNumbers] = useState(false);
   const [showCodes, setShowCodes] = useState(false);
   const [showTable, setShowTable] = useState(false);
@@ -110,9 +123,9 @@ export function TeacherPage() {
 
   const create = async () => {
     try {
-      const made = await api.create(name.trim(), areas.length ? areas : undefined, testLength);
+      const made = await api.create(name.trim(), picks.length ? picks : undefined, testLength);
       setName("");
-      setAreas([]);
+      setPicks([]);
       setTestLength(DEFAULT_TEST_LENGTH);
       setClasses(await api.classes());
       setSelected(made.code);
@@ -244,15 +257,17 @@ export function TeacherPage() {
             <span className="hint">{w.skillsHint}</span>
             <div className="snippets">
               {AREAS.map((a) => (
-                <button
-                  key={a}
-                  type="button"
-                  className={`chip text${areas.includes(a) ? " selected" : ""}`}
-                  aria-pressed={areas.includes(a)}
-                  onClick={() => setAreas((s) => (s.includes(a) ? s.filter((x) => x !== a) : [...s, a]))}
-                >
+                <PickChip key={a} pick={a} picks={picks} setPicks={setPicks}>
                   {areaLabel(a)}
-                </button>
+                </PickChip>
+              ))}
+            </div>
+            <span className="hint">{w.yearsHint}</span>
+            <div className="snippets">
+              {YEARS.map((y) => (
+                <PickChip key={y} pick={`P${y}`} picks={picks} setPicks={setPicks} title={skillsOfYear(y).map(skillName).join(", ")}>
+                  {fill(w.year, { n: y })}
+                </PickChip>
               ))}
             </div>
             <button className="btn primary" type="submit">{w.create}</button>
