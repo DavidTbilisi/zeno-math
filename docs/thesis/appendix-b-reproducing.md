@@ -8,7 +8,7 @@ commit, because every random choice is seeded. The run times below were measured
 | ASSISTments import (section 3.1) | `npm run import-assistments -- data/skill_builder_data.csv --out data/assistments.json` | ~10 s |
 | Prediction on ASSISTments (Table 3.2) | `npm run model -- --observations data/assistments.json --fit --calibration bins.csv` | ~1.5 min |
 | H1, the paired bootstrap (section 3.1) | `npm run h1 -- --observations data/assistments.json` | ~4.5 min |
-| H2, settings and comparison (Tables 3.1, 4.3 to 4.5) | `npm run mastery -- --curves mastery-curves.csv` | ~2.5 min |
+| H2, settings and comparison (Tables 3.1, 3.3 to 3.5) | `npm run mastery -- --curves mastery-curves.csv` | ~2.5 min |
 | H2 with mastery at 0.8 (Table 3.6) | `npm run mastery -- --worlds elo,irt2pl --mastered-at 0.8` | ~1 min |
 | BKT above 0.9999, mastery at 0.9 (Table 3.7) | `npm run mastery -- --worlds elo,irt2pl --beyond` | ~1.5 min |
 | BKT above 0.9999, mastery at 0.8 (Table 3.7) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.8` | ~1.5 min |
@@ -21,11 +21,11 @@ commit, because every random choice is seeded. The run times below were measured
 | G3, components against practice length (Table 3.14) | `npm run atoms -- --atoms 1,2,4,8,16 --length 120` | ~40 min |
 | G4 on ASSISTments (Table 3.15) | `npm run grain -- --observations data/assistments.json` | ~2.5 min |
 | G4 on the simulated class (Table 3.16) | `npm run grain -- --simulate` | ~1 min |
-| Every simulated table on seeds 2 to 5 (Table 3.17) | the commands above with `--seed 2` to `--seed 5` | as each run above |
-| H2 by the definition of mastery (Table 3.18) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.7` (and 0.75 to 0.95) | ~1.5 min each |
+| Every simulated table on seeds 2 to 5 (Table D.1) | the commands above with `--seed 2` to `--seed 5` | as each run above |
+| H2 by the definition of mastery (Table D.2) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.7` (and 0.75 to 0.95) | ~1.5 min each |
 | G4 on split seeds 2 to 5, and resampling classes (section 3.3) | `npm run grain -- --observations data/assistments.json --seed 2` (to 5) | ~2.5 min each |
-| G4's topics against random groupings (section 3.3) | `npm run grain -- --observations data/assistments.json --partitions 100` | ~1 h |
-| H1 and G4 on practices of ten answers or more (section 3.3) | `npm run h1 -- --observations data/assistments.json --min-practice 10`; `npm run grain -- --observations data/assistments.json --min-practice 10 --seed 1` (to 5) | ~4.5 min; ~2.5 min each |
+| G4's topics against random groupings (Appendix D) | `npm run grain -- --observations data/assistments.json --partitions 100` | ~1 h |
+| H1 and G4 on practices of ten answers or more (Appendix D) | `npm run h1 -- --observations data/assistments.json --min-practice 10`; `npm run grain -- --observations data/assistments.json --min-practice 10 --seed 1` (to 5) | ~4.5 min; ~2.5 min each |
 | The figures, with Figures 3.1 and 3.2 | `npm run build`, then `npm run figures` | ~10 min |
 | Proposition 1 and 2 checks | `npm test` (`tests/mastery.test.ts`) | ~4 min for the whole suite |
 | The thesis as a PDF | `npm run thesis-pdf` | ~1 min |
@@ -55,5 +55,5 @@ command.
 | 3.10 to 3.12 | 9180a75 |
 | 3.13, 3.14, 3.16 | 66ee9af |
 | 3.2, 3.9, 3.15 and the ASSISTments counts | 3633cc1 |
-| 3.17 | the commit that adds Appendix C, where seed 1 reproduces Tables 3.3 to 3.14; the world of ideas at 9180a75, since Zeno's generators have changed since |
-| 3.18, and the G4 checks of section 3.3 | the commit that adds Appendix C |
+| D.1 | the commit that adds Appendix C, where seed 1 reproduces Tables 3.3 to 3.14; the world of ideas at 9180a75, since Zeno's generators have changed since |
+| D.2, and the G4 checks of Appendix D | the commit that adds Appendix C |

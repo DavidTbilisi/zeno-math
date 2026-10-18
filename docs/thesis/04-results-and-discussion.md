@@ -499,7 +499,7 @@ hcf; on fractions it declares for nobody at 0.95 within 30 questions, and at the
 threshold, as the eight-component rows of Table 3.10 lead one to expect. The last column already shows G2's condition:
 on hcf, whose questions need different ideas at different levels and whose arithmetic was settled in times, carried BKT
 on each idea names the missing idea 62 and 80 % of the time on this seed, and 24 to 62 % and 41 to 80 % over seeds 1 to 5
-(section 3.3), against 17 % by chance, where started afresh in hcf it is below chance, because
+(Appendix D), against 17 % by chance, where started afresh in hcf it is below chance, because
 the three arithmetic ideas that every hcf question needs can only tie; on fractions at the higher rate it names it 51 %
 of the time against 6 % by chance, and at the lower rate, where only 128 held-out moments had a learner one idea short,
 it is at chance.
@@ -575,7 +575,7 @@ higher rate only 47 % of learners know every idea, hardly any at the lower rate,
 between settings, from 20 to 68 %, because few learners ever come within one idea of mastery. A quarter of the questions
 alone also gives the EMA and the streak rule enough separate evidence to declare within 120 answers, at 105 answers
 against carried BKT on each idea's 75. Carrying saves 0.8 to 3.9 answers at 120 questions and nothing at 30, where
-nothing is declared; the blame of a recognised mistake adds between nothing and six points to the share found. The gain from a quarter of the questions alone does not survive other seeds (section 3.3). Over seeds 1 to 5, at 120
+nothing is declared; the blame of a recognised mistake adds between nothing and six points to the share found. The gain from a quarter of the questions alone does not survive other seeds (Appendix D). Over seeds 1 to 5, at 120
 answers, the generator as it is found the missing idea 72 and 74 % of the time on average at the two rates and a
 quarter alone 67 and 70 %, ahead on two seeds of five at each rate; only at the lower rate within 30 answers did
 isolating questions help on most seeds, from 19 to 31 % on average, on four of five. The condition G2 states is
@@ -847,17 +847,17 @@ better than the exponential moving average. On split seed 1 BKT's mean log-loss 
 0.0225, with a 95 % interval of [−0.0264, −0.0183] from 10,000 resamples of the held-out students; the interval excludes
 zero and the estimate exceeds the 0.005 fixed as the smallest difference that counts, so by the rule fixed in advance
 BKT is better and H1 holds. The four other splits give the same verdict, with estimates from 0.021 to 0.025, and so does
-resampling whole classes, and so do the practices of ten answers or more alone, by about two thirds as much (section
-3.3).
+resampling whole classes, and so do the practices of ten answers or more alone, by about two thirds as much (Appendix
+D).
 
 H2 asked whether, in simulated worlds that break BKT's assumptions, BKT needs fewer answers than the moving average and
 the streak rule before its declarations of mastery are right at least 90 % of the time. The answer depends on which
 assumption is broken. Where students forget, BKT needs one to two answers fewer than either simpler rule, at both learning rates, so H2
 holds in that world, and it holds on four more seeds, with savings of 0.1 to 2.0 answers and every interval excluding
-zero (Table 3.17). Where students learn gradually, BKT's declarations were never right 90 % of
+zero (Table D.1). Where students learn gradually, BKT's declarations were never right 90 % of
 the time at any threshold fixed in advance, up to 0.9999, while the moving average and the streak rule reached that
 standard by waiting longer, so by the rule fixed in advance H2 does not hold in either gradual world, on any of five seeds, nor for any stricter
-definition of mastery (Table 3.18). A check made
+definition of mastery (Table D.2). A check made
 after the results, with thresholds up to $1 - 10^{-15}$, qualifies this: BKT then met the standard in three of the four
 gradual settings, and at the higher learning rate needed 0.3 to 0.4 answers fewer than the moving average. Its failure
 was a matter of where its threshold has to be, not of whether one exists. In BKT's own world, the fitted model was as
@@ -989,18 +989,11 @@ declaring mastery too early, and there are few answers after any declaration to 
 and G4: practices mostly end soon after a run of three right, so the prediction comparisons are made on sequences of
 that kind, and their results need not hold for students who keep practising for 20 or 30 questions. This is why H3 is
 exploratory and the comparisons of decisions are simulated. As a check made on 18 October, after every result, H1 and
-G4 were run again on the practices that went on to ten answers or more, 8,723 of the 36,974, which hold 159,438 of the
-259,399 answers, 18 on average, with everything else as before (`--min-practice 10`). Both hold. On split seed 1, now 459 held-out
-students with 31,265 answers, BKT minus the EMA is −0.0150 in log-loss per answer with an interval of [−0.0197,
-−0.0097], and −0.0164 to −0.0138 on the other four splits, every interval excluding zero with students or whole
-classes resampled. That is about two thirds of the −0.0225 on every practice, so BKT's lead narrows on long practices
-but does not go. For G4, BKT at the data set's grain, the 88 skills these practices cover, predicts better
-than at one skill, by −0.0272 [−0.0339, −0.0212] on split seed 1 and −0.0334 to −0.0301 on the others, each interval
-excluding zero with students or classes resampled. The EMA's difference from that grain to one skill is between
-−0.0050 and +0.0006, at the smallest difference that counts on one split and below it on the others, and inconclusive
-or negligible on every split with classes resampled, so it stays indifferent to the grain; coarsening costs BKT 0.025
-to 0.031 per answer more than it costs the EMA. The streak policy therefore limits what the real data can say about the
-streak rule's decisions, not the two comparisons of prediction.
+G4 were run again on the practices that went on to ten answers or more, about a quarter of them, holding three fifths
+of the answers (Appendix D). Both hold on every split, with students or whole classes resampled: BKT's lead over the
+EMA narrows to about two thirds of what it is on every practice but does not go, BKT still predicts better at the data
+set's grain than at one skill, and the EMA stays indifferent to the grain. The streak policy therefore limits what the
+real data can say about the streak rule's decisions, not the two comparisons of prediction.
 
 Appendix C gives, from the public history of the repository, the order in which every hypothesis, rule and result was
 made, with times recorded by GitHub as well as by the author's machine. It shows both confirmatory tests fixed days
@@ -1020,7 +1013,7 @@ the usual thresholds and the sweep tables at the same time.
 The thresholds were chosen on training students and judged on held-out ones, and five of the 14 rules chosen in Table
 3.3 fell slightly below 90 % on the held-out students, as did several in the granularity sweeps. The standard is
 therefore met on average, not guaranteed, and a comparison at a precision a few points lower or higher could reorder
-close results. The large differences in Tables 3.3 and 4.10 are not of this kind, but the differences of a few tenths of
+close results. The large differences in Tables 3.3 and 3.10 are not of this kind, but the differences of a few tenths of
 an answer between BKT and EMA in Table 3.7, and between the forms of BKT on each idea in Table 3.12, may be. The usual
 threshold at which the EMA is judged in the granularity sweeps is the one costing what the streak rule costs on the
 training learners, since the EMA has no usual threshold of its own; a different choice would move its precision at the
@@ -1051,87 +1044,33 @@ The simulated practice has every student answer a fixed number of questions per 
 cycle of levels, with every question teaching the same amount and no transfer between skills except the shared ideas.
 Real practice varies in all these respects, and the results may depend on them. At the lower learning rate, few
 students in the gradual worlds or on fractions mastered a skill within 30 questions, so a method could meet the
-standard only by declaring almost nobody, and the comparison there says little about which method is better. All simulations use one random seed for their tables. Table 3.17 repeats every simulated
-table on seeds 2 to 5, each seed drawing new learners and a new split, at a commit where seed 1 reproduces every table exactly; these runs were made on 18 October, after every result (Appendix C). Every verdict
-stands on every seed. H2 holds with forgetting on all five, each interval excluding zero, though on seed 5 at the lower
-rate BKT saved only 0.12 answers against the EMA [0.01, 0.24], and in the gradual worlds BKT met the standard at no
-threshold up to 0.9999 on any seed. In G1 BKT on the skill falls with the number of components on every seed, and from
-four components asked one at a time no threshold up to 0.9999 met the standard on any. In G3 the Brier score rises and
-the fits degenerate with each split on every seed. Two findings of a single seed do not survive. The share of hcf's
-missing idea found by carried BKT on each idea, 62 and 80 % on seed 1, is 24 to 62 % and 41 to 80 % over the five,
-still well above the 17 % of chance; and the gain on fractions from a quarter of the questions asking for one idea
-alone, at 120 answers, is a loss on three seeds of five at each rate, which is why the conclusions about G2 rest on the
-length of practice and not on isolating questions. The ranges are the sampling error of a world with 400 learners, of
-whom about 80 are held out, and are wider where fewer of them come within one idea of mastery.
-
-| Result | Setting | Seed 1 | Seeds 1 to 5 |
-|---|---|---:|---:|
-| H2, BKT's answers saved against the EMA, with forgetting | rate 0.02 / 0.1 | 1.20 / 1.99 | 0.12 to 1.62 / 0.75 to 1.99 |
-| H2, BKT's answers saved against the streak rule, with forgetting | rate 0.02 / 0.1 | 1.38 / 0.68 | 0.88 to 1.70 / 0.61 to 0.70 |
-| H2, BKT's threshold at 90 % in the elo and irt2pl worlds | both rates | never | never |
-| G1, BKT on the skill at 0.95, right | 1 component | 98.0 / 98.4 % | 96.3 to 98.4 % |
-| | 2 components | 58.8 / 71.3 % | 55.2 to 74.9 % |
-| | 4 components | 23.3 / 28.3 % | 17.9 to 32.1 % |
-| | 8 components | 7.7 / 5.0 % | 4.8 to 7.7 % |
-| | 16 components | 0.5 / 3.4 % | 0.5 to 3.4 % |
-| G1, BKT on the skill's threshold at 90 % | 4 to 16 components | never | never |
-| G1, the EMA at its usual threshold, right | 1 / 16 components | 97.1 / 0.5 % | 95.9 to 99.0 / 0.5 to 3.5 % |
-| G1, ideas, BKT on the skill at 0.95, right | times / hcf / fractions | 94 / 55 / 30 % | 94 to 100 / 55 to 86 / 5 to 30 % |
-| G1, ideas, hcf's missing idea found, carried | rate 0.02 / 0.1 | 62.3 / 80.3 % | 23.7 to 62.3 / 41.0 to 80.3 % |
-| G2, fractions' missing idea found, carried, generator as it is | rate 0.02, 30 / 120 answers | 7.8 / 66.3 % | 2.4 to 47.1 / 63.5 to 78.0 % |
-| | rate 0.1, 30 / 120 answers | 51.4 / 68.8 % | 33.2 to 64.3 / 68.8 to 81.3 % |
-| G2, a quarter alone minus the generator as it is, found, 120 answers | rate 0.02 / 0.1 | +3.6 / +2.0 | −14.3 to +7.0 / −9.6 to +2.0 |
-| G2, carried BKT on each idea at 90 %, 120 answers, rate 0.1 | answers / declared | 73.0 / 86 % | 69.2 to 83.7 / 79 to 88 % |
-| G3, BKT on each part's Brier score, split 1 / 2 / 4 | rate 0.1 | 0.082 / 0.149 / 0.384 | 0.073 to 0.082 / 0.136 to 0.149 / 0.362 to 0.395 |
-| G3, BKT on each part's fits at the bound, split 1 / 2 / 4 | rate 0.1 | 0 / 29 / 80 % | 0 / 17 to 29 / 75 to 83 % |
-
-Table: The simulated results on seeds 1 to 5: seed 1 as in Tables 3.3 to 3.14, and the lowest and highest value over
-the five seeds; for G1 on components, the two rates are given for seed 1 and pooled in the range (`npm run mastery`,
-`npm run atoms` and `npm run ideas` with `--seed 2` to `--seed 5`, the commands of Appendix B, at the commits recorded there).
+standard only by declaring almost nobody, and the comparison there says little about which method is better. All
+simulations use one random seed for their tables. Every simulated table was repeated on seeds 2 to 5 on 18 October,
+after every result, and every verdict stands on every seed (Table D.1). Two findings of a single seed do not survive.
+The share of hcf's missing idea found by carried BKT on each idea ranges from 24 to 80 % over the five seeds, though it
+stays well above the 17 % of chance, and the gain on fractions from a quarter of the questions asking for one idea
+alone, at 120 answers, is a loss on three seeds of five, which is why the conclusions about G2 rest on the length of
+practice and not on isolating questions.
 
 The real data come from US middle-school students in 2009 and 2010, using a system unlike Zeno, with skill tags made by
 the system's authors. This is typical of the field: the public data sets for knowledge tracing are mostly mathematics
 from a few countries, and most carry no demographic information [@abdelrahman2023survey]. Zeno's students are
 Georgian, and the result transfers to them only as an expectation. The three grains of G4 are also only three: the data set's tags are one grain among many the same problems could be given, and the topic areas are the importer's,
-grouped by keywords in the skills' names. To see whether that grouping matters, the five topics were set beside 100
-random groupings of the same 110 skills into groups of the same sizes, with the same students held out, a check made
-after the results. For BKT the grouping does not matter: at the topic grain its log-loss is 0.5962, and 78 of the 100
-random groupings predict at least as well, from 0.5923 to 0.5988, so BKT at the middle grain is what any five groups
-give it, every fit at the bound, and its place between the finest and the coarsest grain is a matter of the number of
-groups. For the EMA the grouping matters: at the topics it is 0.5854, and every random grouping is worse, from 0.5878
-to 0.5919, worse even than one skill for everything, so the EMA uses what the topics put together, a sequence of
-related skills to average over, which a random group of the same size does not give it. The confirmatory test of G4,
-the data set's grain against one skill, does not involve the topics at all.
+grouped by keywords in the skills' names. Set beside 100 random groupings of the same skills into groups of the same
+sizes, a check made after the results, the topics predict no better than chance for BKT, whose place between the
+finest and the coarsest grain is a matter of the number of groups, and better than every random grouping for the EMA,
+which uses the sequence of related skills the topics put together (Appendix D). The confirmatory test of G4, the data
+set's grain against one skill, does not involve the topics at all.
 
 The threat to construct validity lies in what "mastered" means. In the gradual worlds it is a threshold on the true
 chance of a right answer, fixed in advance at 0.9. With 0.8 instead, BKT met the standard in one more setting and tied
 with EMA there (Table 3.6); with the search continued above 0.9999 it met the standard in all four settings (Table 3.7).
-Table 3.18 runs the definition from 0.7 to 0.95, a check made on 18 October after the results, to show where the
-verdict turns. At the lower learning rate BKT met the standard below 0.9999 at no definition. At the higher rate it met
-it there, at 0.995 to 0.9999, with mastery defined at 0.8 or below, and there tied the moving average, within half an
-answer; from 0.85 up it did not. So H2's verdict in the gradual worlds holds for the definition fixed in advance and
-for any stricter one, and at the higher rate turns into a tie for a looser one. What does not depend on the definition
-is the reason the moving average is recommended: the threshold BKT needs climbs with the definition, from about
-$1 - 10^{-5}$ at 0.7 to $1 - 10^{-12.6}$ at 0.9 at the lower rate, while the moving average's stays between 0.75 and
-0.99 at every definition, and where both meet the standard they need about the same number of answers.
-
-| Mastered at | elo, 0.02 | irt2pl, 0.02 | elo, 0.1 | irt2pl, 0.1 |
-|---:|---|---|---|---|
-| 0.7 | $1 - 10^{-5.3}$†, 26.7 / 0.80, 26.1 | $1 - 10^{-5.7}$†, 27.3 / 0.82, 27.0 | 0.995, 17.1 / 0.75, 17.1 | 0.998, 18.5 / 0.78, 19.0 |
-| 0.75 | $1 - 10^{-6.6}$†, 27.9 / 0.85, 27.6 | $1 - 10^{-7.2}$†, 28.5 / 0.86, 28.1 | 0.999, 18.9 / 0.79, 18.8 | 0.9997, 20.5 / 0.82, 20.7 |
-| 0.8 | $1 - 10^{-8.3}$†, 29.0 / 0.89, 28.6 | $1 - 10^{-8.9}$†, 29.2 / 0.90, 29.0 | 0.9999, 21.0 / 0.84, 21.1 | $1 - 10^{-4.5}$†, 22.4 / 0.86, 22.8 |
-| 0.85 | $1 - 10^{-10.2}$†, 29.7 / 0.93, 29.5 | $1 - 10^{-11}$†, 29.7 / 0.93, 29.5 | $1 - 10^{-5}$†, 22.8 / 0.88, 23.0 | $1 - 10^{-6}$†, 24.8 / 0.91, 25.2 |
-| 0.9 | $1 - 10^{-12.6}$†, 30.0 / 0.97, 30.0 | never / 0.96, 29.9 | $1 - 10^{-6.9}$†, 25.4 / 0.93, 25.7 | $1 - 10^{-7.9}$†, 26.9 / 0.95, 27.3 |
-| 0.95 | none | none | $1 - 10^{-10}$†, 28.3 / 0.98, 29.0 | $1 - 10^{-10.8}$†, 28.9 / 0.99, 29.7 |
-
-Table: H2 in the gradual worlds by the definition of mastery, the true chance of a right answer at which a simulated
-student counts as having mastered the skill: in each cell BKT's cheapest threshold right 90 % of the time on the
-training students and its mean answers on the held-out students, then the same for the EMA. The search runs to
-$1 - 10^{-15}$; a dagger marks a threshold above 0.9999, which the rule fixed in advance does not reach. "None": no
-method met the standard, almost no student having mastered a skill (`npm run mastery -- --worlds elo,irt2pl --beyond
---mastered-at` 0.7 to 0.95, seed 1).
-
-In the component worlds the definition is sharper, every
+With the definition run from 0.7 to 0.95, a check made on 18 October after the results (Table D.2), H2's verdict in the
+gradual worlds holds for the definition fixed in advance and for any stricter one, and at the higher learning rate
+turns into a tie, within half an answer, for one of 0.8 or below. What does not depend on the definition is the reason
+the moving average is recommended: the threshold BKT needs climbs with the definition, from about $1 - 10^{-5}$ at 0.7
+to $1 - 10^{-12.6}$ at 0.9 at the lower rate, while the moving average's stays between 0.75 and 0.99 at every
+definition. In the component worlds the definition is sharper, every
 component known, and does not move with the model's grain, which is what makes the grains comparable; but it is also
 strict, since a learner one component short of sixteen is counted as not having mastered the skill, and a system might
 reasonably count them otherwise. In the corrected ASSISTments file a problem tagged with several skills is one row
