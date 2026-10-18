@@ -21,6 +21,10 @@ commit, because every random choice is seeded. The run times below were measured
 | G3, components against practice length (Table 3.14) | `npm run atoms -- --atoms 1,2,4,8,16 --length 120` | ~40 min |
 | G4 on ASSISTments (Table 3.15) | `npm run grain -- --observations data/assistments.json` | ~2.5 min |
 | G4 on the simulated class (Table 3.16) | `npm run grain -- --simulate` | ~1 min |
+| Every simulated table on seeds 2 to 5 (Table 3.17) | the commands above with `--seed 2` to `--seed 5` | as each run above |
+| H2 by the definition of mastery (Table 3.18) | `npm run mastery -- --worlds elo,irt2pl --beyond --mastered-at 0.7` (and 0.75 to 0.95) | ~1.5 min each |
+| G4 on split seeds 2 to 5, and resampling classes (section 3.3) | `npm run grain -- --observations data/assistments.json --seed 2` (to 5) | ~2.5 min each |
+| G4's topics against random groupings (section 3.3) | `npm run grain -- --observations data/assistments.json --partitions 100` | ~1 h |
 | Proposition 1 and 2 checks | `npm test` (`tests/mastery.test.ts`) | ~4 min for the whole suite |
 | The thesis as a PDF | `npm run thesis-pdf` | ~1 min |
 
@@ -43,9 +47,11 @@ command.
 
 | Tables | Commit |
 |---|---|
-| 4.1, 4.3 to 4.6 | 88c4af7 |
-| 4.7 | 66c2eda |
-| 4.8 | ba04c48 |
-| 4.10 to 4.12 | 9180a75 |
-| 4.13, 4.14, 4.16 | 66ee9af |
-| 4.2, 4.9, 4.15 and the ASSISTments counts | 3633cc1 |
+| 3.1, 3.3 to 3.6 | 88c4af7 |
+| 3.7 | 66c2eda |
+| 3.8 | ba04c48 |
+| 3.10 to 3.12 | 9180a75 |
+| 3.13, 3.14, 3.16 | 66ee9af |
+| 3.2, 3.9, 3.15 and the ASSISTments counts | 3633cc1 |
+| 3.17 | the commit that adds Appendix C, where seed 1 reproduces Tables 3.3 to 3.14; the world of ideas at 9180a75, since Zeno's generators have changed since |
+| 3.18, and the G4 checks of section 3.3 | the commit that adds Appendix C |

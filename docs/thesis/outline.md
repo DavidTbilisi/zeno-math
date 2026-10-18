@@ -37,6 +37,16 @@ holds (BKT better than the EMA by 0.0225 in log-loss per answer on every split),
 skills better than at one skill by 0.0346), and H3 reports that BKT at 0.95 declares in 69 % of the held-out practices
 against 48 % for the simple rules, with 77 to 80 % right on the next three answers after every rule.
 
+**Robustness checks (18 October 2026, after every result).** Every simulated table repeated on seeds 2 to 5 (Table
+3.17): every verdict holds; two seed-1 numbers do not (hcf's missing idea found, 24 to 80 %; the gain on fractions from a
+quarter isolating questions, a loss on three seeds of five), so G2's conclusion rests on practice length. G4 on split
+seeds 2 to 5 and with whole classes resampled: holds on all; the EMA's gain from coarsening does not. H2 by the
+definition of mastery from 0.7 to 0.95 (Table 3.18): the verdict holds at 0.9 and above, a tie at the higher rate at
+0.8 and below. G4's topics against 100 random groupings of the same sizes: for BKT no better than random (0.5962; 78 of 100 random
+groupings at least as good, 0.5923 to 0.5988), for the EMA better than all 100 (0.5854 against 0.5878 to 0.5919,
+p = 0.01). The order of hypotheses and results
+from the repository's history: Appendix C.
+
 **Methods compared**, at every grain.
 
 | Method | Parameters | Gives a probability? | Declares mastery when |
@@ -171,13 +181,14 @@ stated for the sweeps that have not yet been run.
   component short, how often the lowest P(known) is that one; chance is 1/k), and the answers saved by carrying
   components across skills. First runs: on hcf (four of six components a question, arithmetic settled earlier) BKT
   per component carried from the earlier skill needed 2.2 answers fewer than started afresh and 3.8 fewer than the
-  EMA at the higher rate, was best calibrated and found the missing idea 47 to 79 % of the time; on fractions (eight
+  EMA at the higher rate, was best calibrated and found the missing idea 47 to 79 % of the time on seed 1 (24 to 80 % over seeds 1 to 5); on fractions (eight
   components a question) it was at chance (6 to 8 % against 6.7 %) until questions asking for one idea alone were
   added, when it found the idea two times in three. The sweep (seed 1, 400 learners): on fractions BKT on the skill
   meets the standard at no setting and at 0.95 is right 0 to 30 % of the time, and the EMA and the streak rule meet
   it only by declaring for almost nobody. Length does more than the isolating share: with the generators as they
   are the missing idea is found 8 % of the time after 30 answers at the low rate and 66 % after 120, and 51 to 69 %
-  at the high rate; a quarter of the questions asking for one idea alone lifts that to 70 to 71 % at 120 answers
+  at the high rate; on seed 1 a quarter of the questions asking for one idea alone lifts that to 70 to 71 % at 120 answers (over seeds 1
+  to 5 it does not: 67 and 70 % on average against 72 and 74 % for the generator as it is, ahead on two seeds of five)
   while leaving learning as it was (93 % of learners knowing every idea at the high rate, against 89 %), half lifts
   it to 65 to 76 % but teaches less, and every question alone teaches one idea at a time, so after 120 answers at
   the high rate only 47 % know every idea and the share found falls back (20 to 68 %, unstable). Carried BKT per
@@ -214,7 +225,9 @@ stated for the sweeps that have not yet been run.
   and under what condition. Result: holds. BKT at the skill grain against one skill is −0.0346 [−0.0392, −0.0302]
   (log-loss 0.5690 at 110 skills, 0.5962 at 5 topics, 0.6037 at one), skill against topic −0.0272 [−0.0316, −0.0230],
   topic against one −0.0075 [−0.0097, −0.0053], all finer better. The EMA goes the other way: 0.5915, 0.5854, 0.5847,
-  with skill against one +0.0068 [+0.0024, +0.0110], coarser better, and topic against one no practical difference.
+  with skill against one +0.0068 [+0.0024, +0.0110], coarser better, and topic against one no practical difference; on split seeds 2 to 5 and with classes resampled the EMA's gain is
+  inconclusive, so the EMA is indifferent to the grain, while BKT skill against one is −0.0369 to −0.0394 on seeds 2 to
+  5 and every BKT interval excludes zero with classes resampled.
   Coarsening from skills to one costs BKT +0.0414 [+0.0366, +0.0463] per answer more than it costs the EMA. Fits at the
   bound / edge: 63.6 % / 80.0 % of 110 at the skill grain, every fit at the coarser two; EMA α 0.15, 0.1, 0.05. BKT at
   0.95 declares for 68.6 %, 64.2 %, 72.0 % of practices after 3.3, 6.1, 8.9 answers, right after 78.6 %, 73.4 %,

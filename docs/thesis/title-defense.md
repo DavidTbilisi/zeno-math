@@ -74,9 +74,10 @@ components it needs. That restores precision at an ordinary threshold, and it ad
 can say which component the student lacks. But only on a condition, that the questions tell the components apart. I
 swept that condition on fractions, with Zeno's own generated questions. Within the thirty questions of a session the
 model is at chance about which idea is missing, because an operation on fractions needs seven to ten ideas at once and
-the evidence is spread too thin. What meets the condition is either four times the practice, after which the model
-names the missing idea two times in three and is the only rule that declares fractions mastered in time, or one
-question in four asking for one idea alone, which does the same without slowing learning. Every question alone, I also
+the evidence is spread too thin. What meets the condition is four times the practice, after which the model names the missing idea about two times in
+three and declares fractions mastered sooner and for more learners than any other rule. On the first seed one question
+in four asking for one idea alone seemed to do the same, but on five seeds it did not reliably help: the generator's own
+forms already isolate the ideas enough, and what is missing is length. Every question alone, I also
 found, teaches too little to be worth it. So the right grain is usable if and only if the questions identify the
 components and the practice is long enough to ask about each.
 
@@ -205,7 +206,8 @@ sixteen, in proportion to how much of the skill each question leaves untested; f
 to 0.9999 meets the standard. At the right grain, BKT on each component keeps its precision at an ordinary threshold at
 every k and names the missing component, on the condition that the questions tell the components apart and the
 practice is long enough to ask about each: on fractions, sixteen ideas of which a question needs six, that takes about
-120 questions or one question in four asking for one idea alone, and within Zeno's thirty it is not met. Too fine,
+120 questions, and within Zeno's thirty it is not met; more questions on one idea alone did not reliably help on five
+seeds. Too fine,
 splitting a component in two or four costs answers for nothing, doubles the Brier score and degenerates the fits. So
 the right grain is a property of the model, the questions and the practice together, and a system finds it by the
 share of its components a question tests and by the evidence per component. This is an old question in the field, from
@@ -233,7 +235,7 @@ than at five topics or one skill, by 0.035, while the moving average is indiffer
 with no higher share right afterwards. The recommendation for Zeno rests on both: the
 moving average, with a threshold set from data, to decide mastery of a skill within a session; the state at the grain
 of the ideas to choose what to practise next; and BKT on each idea as the mastery rule where the questions and the
-practice allow it, as on hcf now and on fractions with one isolating question in four.
+practice allow it, as on hcf now and on fractions with about four times the practice.
 
 **Why does BKT predict better and still not get the recommendation for deciding mastery?** Prediction and the
 decision are different things. BKT's learnt state per skill tells students apart sooner than a moving average that
@@ -250,18 +252,33 @@ to the coarsest and the moving average loses nothing. The simulations say that a
 shows itself in BKT's fits and in generous declarations; on ASSISTments two thirds of BKT's fits at the finest grain
 have a guess or slip at the bound, and BKT at 0.95 declares in a fifth more practices than the simpler rules with no
 higher share right afterwards. What the real data cannot give is the truth, so they cannot say which rule's
-declarations are right; that is the part only the simulations answer. One difference is worth stating: on the real
-data the moving average is slightly better at the coarser grain, not merely indifferent, because a longer sequence
-gives it more to average over.
+declarations are right; that is the part only the simulations answer. On the real data the moving average is indifferent to the grain: on the first split it was slightly better at the
+coarser grain, but not on four other splits, nor with whole classes resampled.
 
-**Why is the moving average better at the coarser grain on real data?** It carries no parameters per skill, only a
-rate and a start, so coarsening takes nothing from it, and a student's whole history is a longer sequence than their
-practice on one skill, which gives the average more to work with. The gain is small, 0.007 per answer from 110 skills
-to one, and it is a gain in prediction, not in deciding mastery: at the coarsest grain every rule is followed by a
+**Why does coarsening not hurt the moving average on real data?** It carries no parameters per skill, only a rate and
+a start, so coarsening takes nothing from it, and a student's whole history is a longer sequence than their practice on
+one skill, which gives the average more to work with. On the first split it even gained a little, 0.007 per answer from
+110 skills to one, but on four other splits the gain was 0.001 to 0.005 and inconclusive, and with whole classes
+resampled it was inconclusive on every split, so I call it indifferent. And it is prediction, not deciding mastery: at the coarsest grain every rule is followed by a
 share right within six points of the data set's overall rate, so a declaration there means little.
 
 **What is the role of Zeno, the platform?** It is the context and the code base, not what is evaluated. The thesis
 describes it briefly; the experiment is the contribution.
+
+**Did you check whether your results hold up, or are they one lucky run?** I checked four ways, after the results,
+and the thesis reports each as a check. Every simulated table was repeated on four more seeds: every verdict held, H2
+with forgetting on all five and BKT never meeting the standard in the gradual worlds on any, and two numbers of a
+single seed did not, the share of hcf's missing idea found, which ranges from a quarter to four fifths, and the gain
+from more isolating questions on fractions, which became a loss on three seeds of five; I changed the conclusions to
+rest on practice length instead. G4 was repeated on four more splits and with whole classes resampled, and it holds on
+every one; the moving average's small gain from coarsening did not, so I now call it indifferent to the grain. I ran
+the definition of mastery from 0.7 to 0.95: H2's verdict holds at 0.9 and every stricter definition, and at the higher
+learning rate becomes a tie at 0.8 or below, while BKT's needed threshold climbs from about 1 − 10⁻⁵ to 1 − 10⁻¹³ and
+the moving average's stays between 0.75 and 0.99. And the middle grain of G4, the topics I grouped by keywords, was set beside 100 random groupings of the same sizes:
+for BKT the keyword topics are no better than random, 78 of 100 do as well, so only the number of groups matters to it;
+for the moving average they beat all 100, so it does use a sequence of related skills. The confirmatory test, 110 skills
+against one, never involved the topics. Finally, Appendix C lists, from the public repository, when each
+hypothesis and each result was committed, with GitHub's own merge times, so anyone can see the tests were fixed first.
 
 ## Plan by stage
 

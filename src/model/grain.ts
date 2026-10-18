@@ -13,6 +13,7 @@ import { fitShares, type FitShares } from "./atoms.ts";
 import type { Observation } from "./elo.ts";
 import { answerLoss, BktModel, bootstrapGroups, EmaModel, heldOutPredictions, pairedLogLoss, sequencesBySkill, SMALLEST_DIFFERENCE, splitByStudent, type PairedTest, type StudentPrediction } from "./evaluate.ts";
 import { judge, practicesFrom, rightAfter, usualRules, type Fitted, type Judgement } from "./mastery.ts";
+import { rng } from "./random.ts";
 
 export type Grain = "skill" | "topic" | "one";
 /** Finest first. */
@@ -53,7 +54,11 @@ export function primary(observations: readonly Observation[]): boolean[] {
   });
 }
 
-export type GrainOptions = { seed?: number; testShare?: number; resamples?: number; smallest?: number; streak?: number };
+/**
+ * classOf, where the data set names each student's class, gives every paired test and the contrast a second interval
+ * from resampling whole classes, as H1's robustness check does; it decides nothing.
+ */
+export type GrainOptions = { seed?: number; testShare?: number; resamples?: number; smallest?: number; streak?: number; classOf?: (student: string) => string };
 export type GrainResult = {
   grain: Grain;
   /** Skills at this grain in the training answers. */
@@ -74,17 +79,20 @@ export type GrainComparison = {
   resamples: number;
   smallest: number;
   grains: GrainResult[];
-  /** Paired tests on the answers every grain has, each the finer grain first (below zero, the finer predicts better); the first, BKT skill against one, is the confirmatory one. */
-  tests: { name: string; test: PairedTest }[];
-  /** What coarsening from skills to one costs BKT minus what it costs the EMA, per answer, with its interval over students: above zero, BKT loses more. */
-  emaLosesLess: { estimate: number; interval: [number, number] };
+  /**
+   * Paired tests on the answers every grain has, each the finer grain first (below zero, the finer predicts better);
+   * the first, BKT skill against one, is the confirmatory one. byClass is the same test resampling whole classes.
+   */
+  tests: { name: string; test: PairedTest; byClass?: PairedTest }[];
+  /** What coarsening from skills to one costs BKT minus what it costs the EMA, per answer, with its interval over students (and over classes): above zero, BKT loses more. */
+  emaLosesLess: { estimate: number; interval: [number, number]; byClass?: [number, number] };
 };
 
 /**
  * G4: the answers at every grain, split by student (the same students held out at each), BKT and the EMA fitted and
  * replayed at each, the paired tests between grains, and the declarations each method makes at each grain.
  */
-export function compareGrains(observations: readonly Observation[], topicOf: (skill: string) => string, { seed = 1, testShare = 0.2, resamples = 10000, smallest = SMALLEST_DIFFERENCE, streak = 3 }: GrainOptions = {}): GrainComparison {
+export function compareGrains(observations: readonly Observation[], topicOf: (skill: string) => string, { seed = 1, testShare = 0.2, resamples = 10000, smallest = SMALLEST_DIFFERENCE, streak = 3, classOf }: GrainOptions = {}): GrainComparison {
   const predictions = new Map<string, StudentPrediction[]>();
   const grains = GRAINS.map((grain): GrainResult => {
     const at = regrain(observations, grain, topicOf);
@@ -110,26 +118,34 @@ export function compareGrains(observations: readonly Observation[], topicOf: (sk
     };
   });
   const of = (name: string) => ({ name, predictions: predictions.get(name)! });
-  const pair = (first: string, second: string) => ({ name: `${first} against ${second}`, test: pairedLogLoss(of(first), of(second), { resamples, seed, smallest }) });
+  const pair = (first: string, second: string) => ({
+    name: `${first} against ${second}`,
+    test: pairedLogLoss(of(first), of(second), { resamples, seed, smallest }),
+    ...(classOf && { byClass: pairedLogLoss(of(first), of(second), { resamples, seed, smallest, groupOf: classOf }) }),
+  });
   const tests = [pair("BKT skill", "BKT one"), pair("BKT skill", "BKT topic"), pair("BKT topic", "BKT one"), pair("EMA skill", "EMA one"), pair("EMA skill", "EMA topic"), pair("EMA topic", "EMA one")];
-  return { seed, testShare, resamples, smallest, grains, tests, emaLosesLess: contrast([["BKT one", 1], ["BKT skill", -1], ["EMA one", -1], ["EMA skill", 1]].map(([name, w]) => [predictions.get(name as string)!, w as number]), resamples, seed) };
+  const terms = ([["BKT one", 1], ["BKT skill", -1], ["EMA one", -1], ["EMA skill", 1]] as const).map(([name, w]) => [predictions.get(name)!, w] as const);
+  const emaLosesLess = { ...contrast(terms, resamples, seed), ...(classOf && { byClass: contrast(terms, resamples, seed, classOf).interval }) };
+  return { seed, testShare, resamples, smallest, grains, tests, emaLosesLess };
 }
 
 const meanLoss = (ps: readonly StudentPrediction[]) => ps.reduce((s, p) => s + answerLoss(p), 0) / ps.length;
 
 /**
  * A weighted sum of several models' log-losses on the same answers, per answer, with its interval from resampling
- * students: the mean over all answers of Σ weight × loss. Models must predict the same answers in the same order.
+ * students (or the groups groupOf puts them in): the mean over all answers of Σ weight × loss. Models must predict the
+ * same answers in the same order.
  */
-export function contrast(terms: readonly (readonly [readonly StudentPrediction[], number])[], resamples = 10000, seed = 1): { estimate: number; interval: [number, number] } {
+export function contrast(terms: readonly (readonly [readonly StudentPrediction[], number])[], resamples = 10000, seed = 1, groupOf = (student: string) => student): { estimate: number; interval: [number, number] } {
   const [first] = terms[0];
   for (const [ps] of terms) if (ps.length !== first.length || ps.some((p, i) => p.student !== first[i].student || p.correct !== first[i].correct)) throw new Error("the models must predict the same answers in the same order");
   const index = new Map<string, number>();
   const sums: number[] = [], counts: number[] = [];
   let total = 0;
   first.forEach((p, i) => {
-    let k = index.get(p.student);
-    if (k === undefined) index.set(p.student, (k = sums.length)), sums.push(0), counts.push(0);
+    const group = groupOf(p.student);
+    let k = index.get(group);
+    if (k === undefined) index.set(group, (k = sums.length)), sums.push(0), counts.push(0);
     let v = 0;
     for (const [ps, w] of terms) v += w * answerLoss(ps[i]);
     (sums[k] += v), counts[k]++, (total += v);
@@ -140,4 +156,39 @@ export function contrast(terms: readonly (readonly [readonly StudentPrediction[]
     return n ? s / n : NaN;
   };
   return { estimate: total / first.length, interval: bootstrapGroups(sums.length, meanOver, resamples, seed) };
+}
+
+/**
+ * Whether the topic grain owes anything to which skills are put together, or only to how many groups there are: the
+ * held-out log-loss of BKT and the EMA with the skills in their topics, beside the same with the skills dealt into
+ * groups of the same sizes at random, `partitions` times. The same students are held out throughout, and the losses
+ * are on the answers every grain has, as in compareGrains. `beaten` is the share of random groupings that predict at
+ * least as well as the topics, a one-sided permutation p-value (counting the topics themselves among the groupings).
+ */
+export function topicBaseline(observations: readonly Observation[], topicOf: (skill: string) => string, { seed = 1, testShare = 0.2, partitions = 100 }: { seed?: number; testShare?: number; partitions?: number } = {}) {
+  const skills = [...new Set(observations.map((o) => o.skill))].sort();
+  const labels = skills.map(topicOf);
+  const lossesAt = (groupOf: (skill: string) => string) => {
+    const at = regrain(observations, "topic", groupOf);
+    const { train, test } = splitByStudent(at, testShare, seed);
+    if (!train.length || !test.length) throw new Error("too few students to hold some out");
+    const keep = primary(test);
+    const loss = (ps: StudentPrediction[]) => meanLoss(ps.filter((_, i) => keep[i]));
+    return { bkt: loss(heldOutPredictions(new BktModel(), train, test)), ema: loss(heldOutPredictions(new EmaModel(), train, test)) };
+  };
+  const topics = lossesAt(topicOf);
+  const r = rng(seed);
+  const random: { bkt: number; ema: number }[] = [];
+  for (let k = 0; k < partitions; k++) {
+    const dealt = [...labels];
+    for (let i = dealt.length - 1; i > 0; i--) {
+      const j = Math.floor(r.next() * (i + 1));
+      [dealt[i], dealt[j]] = [dealt[j], dealt[i]];
+    }
+    const groupOf = new Map(skills.map((s, i) => [s, dealt[i]]));
+    random.push(lossesAt((skill) => groupOf.get(skill)!));
+  }
+  const beaten = (of: "bkt" | "ema") => (1 + random.filter((x) => x[of] <= topics[of]).length) / (1 + random.length);
+  const sizes = Object.fromEntries([...new Set(labels)].sort().map((t) => [t, labels.filter((l) => l === t).length]));
+  return { seed, partitions, sizes, topics, random, beaten: { bkt: beaten("bkt"), ema: beaten("ema") } };
 }
