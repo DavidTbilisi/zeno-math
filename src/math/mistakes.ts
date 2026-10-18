@@ -61,5 +61,9 @@ export const MISTAKES = [
   "fewestRoads",
   "greedyRoute",
   "cheapestRoads",
+  "evenForFour",
+  "threeForNine",
+  "oddSix",
+  "tenOnly",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

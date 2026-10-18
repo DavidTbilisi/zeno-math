@@ -9,6 +9,7 @@ import type { LiveEstimate } from "./estimate";
 import type { LiveQuickLook } from "./quickLook";
 import type { LiveTarget } from "./target";
 import type { LiveNear } from "./benchmark";
+import type { LiveDivisible } from "./divisible";
 import type { LiveWall } from "./fractionWall";
 import type { LiveEquiv } from "./equivMatch";
 import type { LiveOrder } from "./fracOrder";
@@ -358,6 +359,7 @@ export type LiveStates = {
   quickLook: LiveQuickLook;
   target: LiveTarget;
   closerTo: LiveNear;
+  divisible: LiveDivisible;
   fractionWall: LiveWall;
   equivMatch: LiveEquiv;
   fracOrder: LiveOrder;
@@ -405,6 +407,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   quickLook: [620, 580],
   target: [640, 430],
   closerTo: [640, 470],
+  divisible: [600, 480],
   fractionWall: [660, 380],
   equivMatch: [620, 480],
   fracOrder: [720, 470],
@@ -454,6 +457,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     quickLook: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], phase: "ready", answer: null, relooked: false, streak: 0, said: null },
     target: { mode: "puzzle", stage: 0, level: 1, seed: 1, sum: [], ways: [], hinted: false, streak: 0, said: null },
     closerTo: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], picked: null, streak: 0, said: null },
+    divisible: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], wrong: [], misses: 0, hint: null, done: false, streak: 0, said: null },
     fractionWall: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], best: 0, streak: 0, said: null },
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     fracOrder: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], sel: 0, checked: false, streak: 0, said: null },

@@ -13,6 +13,7 @@ import { latexToSvg, type RenderedSvg } from "./latex";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
+import { divSlips, divTask, judgeDivisors, rulesSpec } from "./divisible";
 import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
 import { eqQuestion, partsSvg } from "./equivMatch";
 import { encodeShade, judgeShade, shadeSvg, shadeTask, type ShadePlay } from "./shadeFrac";
@@ -46,10 +47,10 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -80,6 +81,8 @@ type Answer = (
   | { k: "shade"; play: ShadePlay; count: number }
   /** One of the expressions offered, picked or typed as written (not any equal one: that would be the question). */
   | { k: "pick"; options: ExprOption[]; right: number }
+  /** The divisors of n among those `offered`, listed in any order. */
+  | { k: "divisors"; n: number; offered: number[]; right: number[] }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
 export type Play =
@@ -263,6 +266,7 @@ export type PracticeWords = {
     colouring: string;
     shortestPath: string;
     spanningTree: string;
+    divisibility: string;
   };
   /** A walk from home told part by part (graph stories): each part, and what joins them. */
   story: { parts: Record<StoryWord, string>; then: string };
@@ -294,6 +298,7 @@ export type PracticeWords = {
     order: Record<OrderProblem | "reversed", string>;
     shading: { unreadable: string; none: string; outside: string; twice: string; count: string };
     pick: { notOption: string };
+    divisors: { unreadable: string; notOffered: string; more: string };
   };
   answer: string;
   answers: string;
@@ -723,6 +728,23 @@ const GENS: Record<SkillId, Gen> = {
     }
     const now = (a * (100 + p)) / 100;
     return { prompt: fill(w.prompts.percentReverse, { p, a: now }), q: "", answer: num(a), show: String(a), plain: String(a), format: "number", solution: { kind: "model", spec: P("reverseChange", p, now, 1, true) } };
+  },
+
+  divisibility(r, L, w) {
+    // Which of the divisors offered divide a number (src/math/divisible.ts): 2, 5 and 10; then 3 and 9; then 4, 6 and
+    // 8. The answer lists them, typed or tapped, in any order; the worked solution is the Divisibility tab's table of
+    // tests for those divisors.
+    const t = divTask(L, r.next);
+    const traps: Trap[] = divSlips(t).map((s) => ({ id: s.id, a: { k: "divisors", n: t.n, offered: t.offered, right: s.right }, vars: s.vars }));
+    return {
+      prompt: fill(w.prompts.divisibility, { divs: t.offered.join(", ") }),
+      q: String(t.n),
+      answer: { k: "divisors", n: t.n, offered: t.offered, right: t.right, traps },
+      show: t.right.join(", "),
+      plain: t.right.join(", "),
+      format: "divisors",
+      solution: { kind: "rules", spec: rulesSpec(t) },
+    };
   },
 
   hcf(r, L, w) {
@@ -3337,7 +3359,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -3463,6 +3485,13 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         if (v.ok) return v;
         return "problem" in v ? { ok: false, why: fill(w.reasons.pick.notOption, { opts: a.options.map((o) => o.text).join(", ") }) } : { ok: false };
       }
+      case "divisors": {
+        const v = judgeDivisors(a, src);
+        if (v.ok) return v;
+        if ("problem" in v) return { ok: false, why: fill(w.reasons.divisors[v.problem], { divs: a.offered.join(", "), d: "d" in v ? v.d : "" }) };
+        // Every one listed divides it, but some are missing: said, as the board does.
+        return v.more ? { ok: false, hint: fill(w.reasons.divisors.more, { n: a.n }) } : { ok: false };
+      }
       case "near": {
         const v = judgeNear(a, src);
         if (v.ok) return v;
@@ -3505,7 +3534,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = input.trim();
   if (!s) return null;
-  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade" || ex.answer.k === "pick") return null;
+  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade" || ex.answer.k === "pick" || ex.answer.k === "divisors") return null;
   if (ex.answer.k === "target") {
     // The sum as maths, and what it makes so far.
     const e = parseSum(s);

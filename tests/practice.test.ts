@@ -43,6 +43,11 @@ function wrong(ex: Exercise): string {
     case "near":
       // The option (or benchmark) next to the right one.
       return a.options[a.right === 0 ? 1 : a.right - 1].plain;
+    case "divisors": {
+      // The first divisor offered taken out if it divides, or put in if it doesn't.
+      const d = a.offered[0];
+      return (a.right.includes(d) ? a.right.filter((x) => x !== d) : [d, ...a.right]).join(", ") || String(a.offered.find((x) => !a.right.includes(x)));
+    }
     case "target":
       // One card alone is never the target.
       return String(a.puzzle.cards[0]);

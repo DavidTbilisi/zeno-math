@@ -431,7 +431,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 69 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 70 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers, fractions, mixed numbers, surds, sets of roots in any order,
     points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -444,7 +444,7 @@ UI in English, Russian and Georgian.
     the input taken for ten times the output, x · x taken for 2x, 360° taken for a straight line, a rectangle's
     diagonals taken for mirror lines, a point's numbers the wrong way round, a chart's lines counted instead of its
     scale read, a flat line taken for moving, along over up for a gradient, the route with the fewest roads taken for the shortest,
-    the cheapest roads taken though they make a loop, and more (59 in all, in
+    the cheapest roads taken though they make a loop, an even number taken for a multiple of 4, and more (63 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -454,6 +454,11 @@ UI in English, Russian and Georgian.
     or against 0, 50 and 100, then a fraction or a decimal against 0, ½ and 1, then a sum, product or quotient to
     estimate against three round numbers; never a tie or a near one. The lower ten for a number whose next digit is 5
     or more is named as a cut rather than a rounding, and the steps give the distance to each benchmark
+  - Divisible by?: which of a few divisors divide a number, listed in any order, typed or tapped from buttons — 2, 5
+    and 10, then 3 and 9 as well, then 4, 6 and 8 too; every number divides by at least one. A divisor not offered is
+    sent back; an even number taken for a multiple of 4, a multiple of 3 for one of 9, an odd multiple of 3 for one of
+    6, and a multiple of 10 given without 2 and 5 are named; the worked solution is the Divisibility tab's table of
+    tests for those divisors
   - Make the target: number cards and a target, answered with a sum of the cards, typed or tapped from buttons — three
     cards with + and −, then four with + − ×, then all four with + − × ÷ (like the 24 game). The sum is worked out
     exactly in fractions with × and ÷ first, and the preview shows what it makes as it is typed; a number not on the
@@ -606,7 +611,7 @@ UI in English, Russian and Georgian.
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs, numerical methods) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
-  look, make the target, closer to?), fraction sense (make a whole, equal amounts, fractions on the line, shade the
+  look, make the target, closer to?, divisible by?), fraction sense (make a whole, equal amounts, fractions on the line, shade the
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
@@ -677,6 +682,13 @@ UI in English, Russian and Georgian.
     run a bar runs down for every question, four seconds at first and a tenth less with every right answer in a row,
     and running out counts as a miss. Four discoveries (within a second, a perfect round, an estimate within 2 %, ten
     in a row)
+  - *Divisible by?*: a number and a row of divisors; tap every one that divides it and check. One chosen wrongly turns
+    red with the number divided by it and what is left over, and right ones with some missing are told there are more.
+    Right at the first check earns three stars, at the second two; the hint — the Divisibility tab's test for one
+    divisor applied to this number (its last two digits, its digit sum) — costs one. Nine puzzles open in turn (2, 5
+    and 10; then 3 and 9; then 4, 6 and 8), and the endless run keeps a streak of numbers right first time without the
+    hint. Four discoveries (every divisor, a trap such as even but not by 4 seen through, all found within five
+    seconds, ten in a row)
   - *Make the target*: tap the cards and signs to build a sum, and what it makes shows as it grows. A sum that makes
     the target earns two stars, a second, different way the third (3 + 4 and 4 + 3 are one way), and the hint — the
     first step of one way — leaves one; the endless run keeps a streak of puzzles made without a hint. Four
@@ -1024,7 +1036,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (69 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (70 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -1050,7 +1062,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 600 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 616 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.

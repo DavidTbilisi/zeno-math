@@ -4432,6 +4432,125 @@
    "input": "66",
    "label": "wrong",
    "mistake": "cheapestRoads"
+  },
+  {
+   "skill": "divisibility",
+   "level": 1,
+   "seed": 7,
+   "input": "2",
+   "label": "correct"
+  },
+  {
+   "skill": "divisibility",
+   "level": 1,
+   "seed": 7,
+   "input": "2, 5",
+   "label": "wrong"
+  },
+  {
+   "skill": "divisibility",
+   "level": 1,
+   "seed": 7,
+   "input": "2, 5, 10",
+   "label": "wrong"
+  },
+  {
+   "skill": "divisibility",
+   "level": 1,
+   "seed": 7,
+   "input": "two",
+   "label": "form",
+   "note": "a word"
+  },
+  {
+   "skill": "divisibility",
+   "level": 1,
+   "seed": 7,
+   "input": "2, 11",
+   "label": "form",
+   "note": "a divisor not asked about, though it divides"
+  },
+  {
+   "skill": "divisibility",
+   "level": 2,
+   "seed": 7,
+   "input": "2, 5, 10",
+   "label": "correct"
+  },
+  {
+   "skill": "divisibility",
+   "level": 2,
+   "seed": 7,
+   "input": "10, 5, 2",
+   "label": "correct",
+   "note": "any order"
+  },
+  {
+   "skill": "divisibility",
+   "level": 2,
+   "seed": 7,
+   "input": "2 5 10",
+   "label": "correct",
+   "note": "spaces between"
+  },
+  {
+   "skill": "divisibility",
+   "level": 2,
+   "seed": 7,
+   "input": "10",
+   "label": "wrong",
+   "mistake": "tenOnly"
+  },
+  {
+   "skill": "divisibility",
+   "level": 2,
+   "seed": 7,
+   "input": "2, 5",
+   "label": "wrong"
+  },
+  {
+   "skill": "divisibility",
+   "level": 2,
+   "seed": 7,
+   "input": "2, 3, 5, 10",
+   "label": "wrong"
+  },
+  {
+   "skill": "divisibility",
+   "level": 2,
+   "seed": 7,
+   "input": "2, 5, 10, 11",
+   "label": "form",
+   "note": "a divisor not asked about"
+  },
+  {
+   "skill": "divisibility",
+   "level": 3,
+   "seed": 7,
+   "input": "5",
+   "label": "correct"
+  },
+  {
+   "skill": "divisibility",
+   "level": 3,
+   "seed": 7,
+   "input": "5, 10",
+   "label": "wrong"
+  },
+  {
+   "skill": "divisibility",
+   "level": 3,
+   "seed": 7,
+   "input": "3, 5",
+   "label": "wrong"
+  },
+  {
+   "skill": "divisibility",
+   "level": 3,
+   "seed": 7,
+   "input": "5, 43",
+   "label": "form",
+   "note": "a divisor not asked about, though it divides"
   }
  ]
 }

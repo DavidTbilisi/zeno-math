@@ -100,6 +100,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "quickLook", icon: "👀", name: "liveQuickLook" },
       { kind: "target", icon: "🎯", name: "liveTarget" },
       { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
+      { kind: "divisible", icon: "➗", name: "liveDivisible" },
     ],
   },
   {
