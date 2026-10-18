@@ -2,7 +2,8 @@
 // open), and a practice question answered by putting the pin on the line; a round of quick look answered right, and a
 // practice question whose dots flash before the number is typed; a target made on the board by tapping cards and
 // signs, and a practice sum typed with the card buttons; a round of "closer to?" all right, and a practice benchmark
-// picked from its buttons. Pins are dropped where the line draws the
+// picked from its buttons; a "divisible by?" puzzle tapped right first time, and a practice list of divisors tapped
+// from its buttons. Pins are dropped where the line draws the
 // number, wherever the piece or the dialog has been scaled to.
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -10,6 +11,7 @@ import { ESTIMATE_LADDER, roundTasks, shareAlong, type PinPlay } from "../src/ma
 import { check, exercise } from "../src/math/practice.ts";
 import { LOOK_LADDER, lookRound } from "../src/math/quickLook.ts";
 import { TARGET_LADDER, targetPuzzle, tokens } from "../src/math/target.ts";
+import { DIV_LADDER, divTask } from "../src/math/divisible.ts";
 import { rng } from "../src/math/random.ts";
 import { NEAR_LADDER, nearRound } from "../src/math/benchmark.ts";
 
@@ -208,6 +210,43 @@ test("a practice benchmark picked from its buttons", async ({ page, request }) =
   await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
   await page.locator(".sign-picks").getByRole("button", { name: best.text, exact: true }).click();
   await expect(page.getByLabel("Your answer")).toHaveValue(best.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("divisible by?: every divisor tapped and checked earns three stars and opens the next", async ({ page }) => {
+  const game = await boardWith(page, "Divisible by? Tap every divisor", ".live-divisible");
+  const t = divTask(DIV_LADDER[0].level, rng(DIV_LADDER[0].seed));
+  await expect(game.getByRole("img", { name: `Which of these divide ${t.n}?` })).toBeVisible();
+  for (const d of t.right) await game.locator(".div-options").getByRole("button", { name: String(d), exact: true }).click();
+  await game.getByRole("button", { name: "Check" }).click();
+  await expect(game.getByText(`Right! ${t.n} is divisible by ${t.right.join(", ")}. ★★★`)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("a practice list of divisors tapped from its buttons, in any order", async ({ page, request }) => {
+  const r = 0.57;
+  const ex = exercise("divisibility", 3, Math.floor(r * 2 ** 31), w);
+  const a = ex.answer;
+  if (a.k !== "divisors") throw new Error("not a divisors question");
+  const made = await (await request.post("/api/boards", { data: { title: "Divisible" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.type("Practice");
+  await page.keyboard.press("Enter");
+  await page.getByRole("tab", { name: "Number" }).click();
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "hard" }).click();
+  await page.getByRole("button", { name: "Divisible by?", exact: true }).click();
+  await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
+  const picks = page.locator(".sign-picks");
+  // A divisor that doesn't divide it, tapped and tapped off again; the right ones in reverse.
+  const off = a.offered.find((d) => !a.right.includes(d))!;
+  await picks.getByRole("button", { name: String(off), exact: true }).click();
+  for (const d of [...a.right].reverse()) await picks.getByRole("button", { name: String(d), exact: true }).click();
+  await picks.getByRole("button", { name: String(off), exact: true }).click();
+  await expect(page.getByLabel("Your answer")).toHaveValue(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });

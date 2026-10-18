@@ -103,6 +103,24 @@ export function ListPicks({ items, typed, onChange, disabled }: { items: string[
   );
 }
 
+/** Buttons that each put an item in a list or take it out again (the divisors of a number), kept in the buttons' order. */
+export function TogglePicks({ items, typed, onChange, disabled }: { items: string[]; typed: string; onChange: (typed: string) => void; disabled?: boolean }) {
+  const listed = typed.split(/[\s,;]+/).filter(Boolean);
+  // Anything typed that isn't a button stays, at the end.
+  const rank = (x: string) => (items.includes(x) ? items.indexOf(x) : items.length);
+  const toggle = (it: string) => {
+    const on = listed.includes(it) ? listed.filter((x) => x !== it) : [...listed, it];
+    onChange(on.sort((a, b) => rank(a) - rank(b)).join(", "));
+  };
+  return (
+    <div className="field-row sign-picks">
+      {items.map((it) => (
+        <button key={it} className="btn" aria-pressed={listed.includes(it)} disabled={disabled} onClick={() => toggle(it)}>{it}</button>
+      ))}
+    </div>
+  );
+}
+
 /** Buttons that type a sum: the cards, the signs that may be used, brackets, and one to take the last piece back. */
 export function TargetPicks({ cards, ops, onPick, onBack, disabled }: { cards: number[]; ops: string[]; onPick: (s: string) => void; onBack: () => void; disabled?: boolean }) {
   const sign: Record<string, string> = { "+": "+", "-": "−", "*": "×", "/": "÷" };

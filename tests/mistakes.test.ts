@@ -71,6 +71,10 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   fewestRoads: ["shortestPath", [1, 2, 3]],
   greedyRoute: ["shortestPath", [1, 2, 3]],
   cheapestRoads: ["spanningTree", [2, 3]],
+  evenForFour: ["divisibility", [3]],
+  threeForNine: ["divisibility", [2, 3]],
+  oddSix: ["divisibility", [3]],
+  tenOnly: ["divisibility", [1, 2]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {

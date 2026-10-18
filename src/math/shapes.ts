@@ -1095,6 +1095,17 @@ function closerToPreview(): Piece[] {
   ];
 }
 
+function divisiblePreview(): Piece[] {
+  // 534, and four divisors beneath it: 2, 3 and 6 divide it (green), 4 doesn't.
+  return [
+    text(100, 18, "534", 30),
+    ...[2, 3, 4, 6].flatMap((d, i) => [
+      rect(i * 52, 56, 44, 44, d === 4 ? { fill: FILL.gray, width: 1.5 } : { fill: FILL.green, color: "#2f9e44", width: 2.5 }, true),
+      text(i * 52 + 22, 86, String(d), 22),
+    ]),
+  ];
+}
+
 function targetPreview(): Piece[] {
   // The target, and four cards beneath it.
   return [
@@ -1251,6 +1262,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveQuickLook", group: "games", build: quickLookPreview, live: "quickLook" },
   { id: "liveTarget", group: "games", build: targetPreview, live: "target" },
   { id: "liveCloserTo", group: "games", build: closerToPreview, live: "closerTo" },
+  { id: "liveDivisible", group: "games", build: divisiblePreview, live: "divisible" },
   { id: "liveFractionWall", group: "games", build: fractionWallPreview, live: "fractionWall" },
   { id: "liveEquivMatch", group: "games", build: equivMatchPreview, live: "equivMatch" },
   { id: "liveFracOrder", group: "games", build: fracOrderPreview, live: "fracOrder" },

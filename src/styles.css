@@ -505,6 +505,7 @@ input.invalid { border-color: var(--danger); }
 .card .hint { margin: 0; }
 .field-row.wrap { flex-wrap: wrap; }
 .sign-picks .btn { min-width: 3em; justify-content: center; text-align: center; font-size: 20px; font-weight: 700; line-height: 1.1; }
+.sign-picks .btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
 .data-table { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
 .data-table th, .data-table td { padding: 6px 12px; border-bottom: 1px solid var(--border); text-align: right; }
 .data-table th[scope="row"], .data-table thead th:first-child { text-align: left; font-weight: 500; color: var(--muted); }
@@ -667,6 +668,9 @@ input.invalid { border-color: var(--danger); }
 .near-options .live-btn { min-width: 4em; padding: 10px 16px; font-size: 24px; font-weight: 700; }
 .near-options .live-btn.right { background: #d3f9d8; border-color: #2f9e44; opacity: 1; }
 .near-options .live-btn.wrong { background: #ffe3e3; border-color: #e03131; opacity: 1; }
+.div-options .live-btn { min-width: 2.6em; padding: 8px 12px; font-size: 24px; font-weight: 700; }
+.div-options .live-btn.right { background: #d3f9d8; border-color: #2f9e44; opacity: 1; }
+.div-options .live-btn.wrong { background: #ffe3e3; border-color: #e03131; }
 .near-clock { width: 360px; height: 6px; border-radius: 3px; background: #f1f3f5; overflow: hidden; }
 .near-clock i { display: block; height: 100%; background: #f08c00; animation: near-clock linear forwards; }
 @keyframes near-clock { from { width: 100%; } to { width: 0; } }

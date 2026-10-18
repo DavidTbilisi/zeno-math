@@ -19,9 +19,10 @@ export const MAJOR_SYSTEMS: MajorSystem[] = ["en", "ru"];
 
 /**
  * multiply: a × b near base (blank = the nearest power of 10) · check: a op b = c (c blank = the true result;
- * for ÷, c is "q" or "q r R") · sqrt / cbrt / cube / magic: a · major: a is the number, words the user's words.
+ * for ÷, c is "q" or "q r R") · sqrt / cbrt / cube / magic: a · major: a is the number, words the user's words ·
+ * rules: a, with only the tests for `divisors` when they are given (a practice question's worked solution).
  */
-export type MentalSpec = { topic: MentalTopic; a: string; b: string; c: string; base: string; op: CheckOp; sys: MajorSystem; words: string; method?: DivMethod };
+export type MentalSpec = { topic: MentalTopic; a: string; b: string; c: string; base: string; op: CheckOp; sys: MajorSystem; words: string; method?: DivMethod; divisors?: number[] };
 
 export type MentalWords = {
   bad: string;
@@ -859,9 +860,10 @@ function renderDivide(s: MentalSpec, w: MentalWords): RenderedSvg {
 
 // ---------- divisibility rules ----------
 
-type DivTest = { d: number; test: string; ok: boolean };
+export type DivTest = { d: number; test: string; ok: boolean };
 
-function divisibility(n: number): DivTest[] {
+/** The tests for 2–11 and 13 applied to n: the digits each one looks at (or the number shrunk), and the verdict. */
+export function divisibility(n: number): DivTest[] {
   const str = String(n);
   const last = (k: number) => `…${str.slice(-k)}`;
   const sumChain = () => {
@@ -906,7 +908,7 @@ function divisibility(n: number): DivTest[] {
 function renderRules(s: MentalSpec, w: MentalWords): RenderedSvg {
   const n = int(s.a, w, 1e12);
   if (n <= 0) throw new Error(fill(w.bad, { s: s.a }));
-  const tests = divisibility(n);
+  const tests = divisibility(n).filter((x) => !s.divisors || s.divisors.includes(x.d));
   const tb = table(
     12,
     4,
@@ -921,8 +923,8 @@ function renderRules(s: MentalSpec, w: MentalWords): RenderedSvg {
   const yes = tests.filter((x) => x.ok).map((x) => x.d);
   const caps: Caption[] = [
     { text: yes.length ? fill(w.rules.yes, { n: pretty(n), list: yes.join(", ") }) : fill(w.rules.none, { n: pretty(n) }), color: yes.length ? C.green : "#495057" },
-    { text: w.rules.also, color: "#495057" },
-    { text: w.info.rules, color: "#495057" },
+    // The notes on the shrinking tests and on 2 … 13 only where every test is shown.
+    ...(s.divisors ? [] : [{ text: w.rules.also, color: "#495057" }, { text: w.info.rules, color: "#495057" }]),
   ];
   return compose(`${texNum(n)}`, tb.svg, tb.h + 8, caps);
 }
