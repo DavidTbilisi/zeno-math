@@ -33,6 +33,8 @@ export const ka: Dict = {
   searchNone: "ვერაფერი მოიძებნა.",
   searchButton: "ინსტრუმენტის ძებნა (Ctrl+K ან /)",
   close: "დახურვა",
+  maximize: "გაშლა",
+  restore: "ზომის აღდგენა",
   colorLabel: "ფერი",
   colorNames: { "#1e1e1e": "შავი", "#1971c2": "ლურჯი", "#e03131": "წითელი", "#2f9e44": "მწვანე", "#9c36b5": "იისფერი", "#e8590c": "ნარინჯისფერი" },
   latexSource: "LaTeX",

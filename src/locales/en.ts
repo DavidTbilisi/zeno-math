@@ -32,6 +32,8 @@ export const en = {
   searchNone: "Nothing found.",
   searchButton: "Find a tool (Ctrl+K or /)",
   close: "Close",
+  maximize: "Maximise",
+  restore: "Restore size",
   colorLabel: "Colour",
   colorNames: { "#1e1e1e": "Black", "#1971c2": "Blue", "#e03131": "Red", "#2f9e44": "Green", "#9c36b5": "Purple", "#e8590c": "Orange" },
   latexSource: "LaTeX",
