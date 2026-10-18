@@ -50,8 +50,10 @@ export const LEVELS: Level[] = [1, 2, 3];
 export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio";
 
+/** The units a measurement is converted between (decimals). */
+export type MeasureUnit = "km" | "m" | "cm" | "kg" | "g" | "l" | "ml";
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
 /** A predictable mistake and the answer it gives (with the numbers its message names). */
@@ -83,6 +85,8 @@ type Answer = (
   | { k: "pick"; options: ExprOption[]; right: number }
   /** The divisors of n among those `offered`, listed in any order. */
   | { k: "divisors"; n: number; offered: number[]; right: number[] }
+  /** A ratio of whole numbers in its simplest form, a : b or a : b : c. */
+  | { k: "ratio"; vs: number[] }
 ) & { traps?: Trap[] };
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
 export type Play =
@@ -267,11 +271,40 @@ export type PracticeWords = {
     shortestPath: string;
     spanningTree: string;
     divisibility: string;
+    moneyDollars: string;
+    moneyCents: string;
+    moneyFromCents: string;
+    moneyAdd: string;
+    moneyChange: string;
+    moneyLeft: string;
+    moneyShop: string;
+    convertUnit: string;
+    decimalQuotient: string;
+    decimalQuotient2: string;
+    ratioSimplify: string;
+    ratioMissing: string;
+    ratioShare: string;
+    ratioShare3: string;
+    ratioPart: string;
+    ratioWhole: string;
+    ratioFraction: string;
+    rateCost: string;
+    rateCostTotal: string;
+    rateCostUnits: string;
+    rateCostTwo: string;
+    rateTap: string;
+    rateTapTotal: string;
+    rateTapUnits: string;
+    rateTapTwo: string;
   };
   /** A walk from home told part by part (graph stories): each part, and what joins them. */
   story: { parts: Record<StoryWord, string>; then: string };
   events: { even: string; greater: string; prime: string; mult3: string };
   marbleNames: { first: string; second: string };
+  /** An amount of money in the language's own currency ({v} is the number, e.g. 4.05). */
+  money: string;
+  /** Units of length, mass and volume as they are written after a number. */
+  units: Record<MeasureUnit, string>;
   formats: Record<Format, string>;
   /** What each recognised mistake is, said kindly: the slip, and how to see it. */
   mistakes: Record<MistakeId, string>;
@@ -299,6 +332,7 @@ export type PracticeWords = {
     shading: { unreadable: string; none: string; outside: string; twice: string; count: string };
     pick: { notOption: string };
     divisors: { unreadable: string; notOffered: string; more: string };
+    ratio: { unreadable: string; notSimplest: string };
   };
   answer: string;
   answers: string;
@@ -536,6 +570,29 @@ const fmtM = (m: number, p: number, k = p) => (m / 10 ** p).toFixed(Math.max(0, 
 /** A decimal without trailing zeros, safe from floating dust: 7.350000001 → "7.35". */
 const tidy = (v: number) => String(Number(v.toFixed(10)));
 
+// ---------- money, decimals, ratio and rate ----------
+
+/** An amount of money in the language's currency: a whole amount bare, any other with its two places (20, 4.05). */
+const money = (w: PracticeWords, v: number) => fill(w.money, { v: Number.isInteger(v) ? String(v) : v.toFixed(2) });
+/** Cents as dollars with both places, for the working: 405 → 4.05. */
+const dollars = (cents: number) => (cents / 100).toFixed(2);
+/** A whole number from lo to hi that doesn't end in 0, so a decimal made from it shows all its places. */
+function noZeroEnd(r: Rng, lo: number, hi: number): number {
+  for (;;) {
+    const m = r.int(lo, hi);
+    if (m % 10) return m;
+  }
+}
+/**
+ * a − b worked column by column taking the smaller digit from the larger and never exchanging (2000 − 1365 → 1365):
+ * the classic slip in a subtraction, of whole numbers (amounts in cents).
+ */
+function smallerFromLarger(a: number, b: number): number {
+  const x = String(a);
+  const y = String(b).padStart(x.length, "0");
+  return Number([...x].map((d, i) => Math.abs(Number(d) - Number(y[i]))).join(""));
+}
+
 /** The steepest angle a right-triangle picture draws to scale. */
 export const STEEPEST = 66;
 /**
@@ -667,6 +724,59 @@ const GENS: Record<SkillId, Gen> = {
     return { prompt: w.prompts.times, q: `${a} \\times ${b}`, answer: num(a * b), show: String(a * b), plain: String(a * b), format: "number", solution: { kind: "model", spec: { type: "multiply", style: "area", a, b, step: 999 } } };
   },
 
+  money(r, L, w) {
+    if (L === 1) {
+      // Dollars and cents in decimal notation, and in cents only (P2). Writing 5 cents as .5 is the trap.
+      const [d, c] = [r.int(2, 20), r.next() < 0.5 ? r.int(1, 9) : r.int(10, 95)];
+      const cents = 100 * d + c;
+      const traps: Trap[] = c < 10 ? [{ id: "centsOneDigit", a: num(d + c / 10), vars: { c, d } }] : [];
+      const kind = r.int(0, 2);
+      if (kind === 1)
+        return { prompt: fill(w.prompts.moneyCents, { a: money(w, cents / 100) }), q: "", answer: num(cents), show: String(cents), plain: String(cents), format: "number", steps: [`${dollars(cents)} \\times 100 = ${cents}`] };
+      const prompt = kind === 0 ? fill(w.prompts.moneyDollars, { d, c }) : fill(w.prompts.moneyFromCents, { n: cents });
+      const steps = kind === 0 ? [`${c} \\div 100 = ${dollars(c)}`, `${d} + ${dollars(c)} = ${dollars(cents)}`] : [`${cents} \\div 100 = ${dollars(cents)}`];
+      return { prompt, q: "", answer: { ...num(cents / 100), traps }, show: dollars(cents), plain: dollars(cents), format: "number", steps };
+    }
+    if (L === 2) {
+      // Adding two amounts, the change from a note, or what is left of an amount after spending some (P3), worked in
+      // cents so nothing is lost to rounding.
+      const kind = r.int(0, 2);
+      if (kind === 0) {
+        const [a, b] = [r.int(105, 4995), r.int(105, 4995)];
+        return { prompt: fill(w.prompts.moneyAdd, { a: money(w, a / 100), b: money(w, b / 100) }), q: "", answer: num((a + b) / 100), show: dollars(a + b), plain: dollars(a + b), format: "number", steps: [`${dollars(a)} + ${dollars(b)} = ${dollars(a + b)}`] };
+      }
+      if (kind === 1) {
+        const note = r.pick([10, 20, 50]);
+        let price: number;
+        do price = r.int(105, 100 * note - 5);
+        while (price % 100 === 0);
+        const change = 100 * note - price;
+        return { prompt: fill(w.prompts.moneyChange, { a: money(w, price / 100), b: money(w, note) }), q: "", answer: num(change / 100), show: dollars(change), plain: dollars(change), format: "number", steps: [`${dollars(100 * note)} - ${dollars(price)} = ${dollars(change)}`] };
+      }
+      // Two amounts with an exchange to make: taking the smaller digit from the larger in every column is the trap.
+      let a: number, b: number;
+      do [a, b] = [r.int(1005, 4995), r.int(105, 2995)];
+      while (b >= a || smallerFromLarger(a, b) === a - b);
+      const traps: Trap[] = [{ id: "smallerFromLarger", a: num(smallerFromLarger(a, b) / 100), vars: { a: dollars(a), b: dollars(b), v: dollars(a - b) } }];
+      return { prompt: fill(w.prompts.moneyLeft, { a: money(w, a / 100), b: money(w, b / 100) }), q: "", answer: { ...num((a - b) / 100), traps }, show: dollars(a - b), plain: dollars(a - b), format: "number", steps: [`${dollars(a)} - ${dollars(b)} = ${dollars(a - b)}`] };
+    }
+    // A few of one thing and one of another, paid with the smallest note that covers them. Paying for one of each is the trap.
+    const [p, b, k] = [5 * r.int(11, 99), 5 * r.int(100, 400), r.int(2, 4)];
+    const cost = k * p + b;
+    const paid = 100 * [10, 20, 50, 100].find((n) => 100 * n > cost)!;
+    const change = paid - cost;
+    const traps: Trap[] = [{ id: "oneOfEach", a: num((paid - p - b) / 100), vars: { k, p: money(w, p / 100) } }];
+    return {
+      prompt: fill(w.prompts.moneyShop, { p: money(w, p / 100), b: money(w, b / 100), k, t: money(w, paid / 100) }),
+      q: "",
+      answer: { ...num(change / 100), traps },
+      show: dollars(change),
+      plain: dollars(change),
+      format: "number",
+      steps: [`${k} \\times ${dollars(p)} = ${dollars(k * p)}`, `${dollars(k * p)} + ${dollars(b)} = ${dollars(cost)}`, `${dollars(paid)} - ${dollars(cost)} = ${dollars(change)}`],
+    };
+  },
+
   fractions(r, L, w) {
     const op = L === 1 ? r.pick(["+", "-"] as const) : r.pick(["+", "-", "×", "÷"] as const);
     const part = () => {
@@ -728,6 +838,189 @@ const GENS: Record<SkillId, Gen> = {
     }
     const now = (a * (100 + p)) / 100;
     return { prompt: fill(w.prompts.percentReverse, { p, a: now }), q: "", answer: num(a), show: String(a), plain: String(a), format: "number", solution: { kind: "model", spec: P("reverseChange", p, now, 1, true) } };
+  },
+
+  decimals(r, L, w) {
+    if (L === 1) {
+      // Adding or subtracting decimals of one or two places (P4), worked with the points lined up: the one with fewer
+      // places gets a zero. Lining up the last digits instead is the trap.
+      const part = () => {
+        const p = r.int(1, 2);
+        return { m: noZeroEnd(r, 10 ** p + 1, 10 ** (p + 2) - 1), p };
+      };
+      const plus = r.next() < 0.5;
+      let [a, b] = [part(), part()];
+      const P = Math.max(a.p, b.p);
+      /** The number in the smaller place of the two (tenths or hundredths). */
+      const at = (x: typeof a) => x.m * 10 ** (P - x.p);
+      while (at(a) === at(b)) b = part();
+      if (!plus && at(a) < at(b)) [a, b] = [b, a];
+      const res = plus ? at(a) + at(b) : at(a) - at(b);
+      const v = res / 10 ** P;
+      const slip = plus ? a.m + b.m : a.m - b.m;
+      const [fa, fb] = [fmtM(a.m, a.p), fmtM(b.m, b.p)];
+      const traps: Trap[] = a.p !== b.p && slip > 0 && slip !== res ? [{ id: "alignedRight", a: num(slip / 10 ** P), vars: { a: a.p < P ? fa : fb, pa: a.p < P ? fmtM(at(a), P) : fmtM(at(b), P) } }] : [];
+      const op = plus ? "+" : "-";
+      const steps = a.p === b.p ? [`${fa} ${op} ${fb} = ${tidy(v)}`] : [`${fa} ${op} ${fb} = ${fmtM(at(a), P)} ${op} ${fmtM(at(b), P)}`, `= ${fmtM(res, P)}`];
+      return { prompt: w.prompts.times, q: `${fa} ${op} ${fb}`, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", steps };
+    }
+    /** x × f or x ÷ f (f a power of ten), with the other one as the trap: the digits moved the wrong way. */
+    const shifted = (m: number, p: number, f: number, times: boolean) => {
+      const [up, down] = [Number(tidy((m * f) / 10 ** p)), Number(tidy(m / 10 ** p / f))];
+      const [v, slip] = times ? [up, down] : [down, up];
+      return { v, traps: [{ id: "pointWrongWay", a: num(slip), vars: { f } }] as Trap[] };
+    };
+    if (L === 2) {
+      if (r.next() < 0.5) {
+        // Multiplying or dividing by 10, 100 or 1000 (P5): the digits move past the point.
+        const [p, f, times] = [r.int(1, 3), 10 ** r.int(1, 3), r.next() < 0.5];
+        const m = noZeroEnd(r, 11, 9999);
+        const { v, traps } = shifted(m, p, f, times);
+        const q = `${fmtM(m, p)} ${times ? "\\times" : "\\div"} ${f}`;
+        return { prompt: w.prompts.times, q, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", steps: [`${q} = ${tidy(v)}`] };
+      }
+      // A decimal times or divided by a one-digit number (P4), worked in tenths or hundredths as whole numbers. For a
+      // division the answer is drawn first, so it comes out exactly.
+      const [p, d] = [r.int(1, 2), r.int(2, 9)];
+      const f = 10 ** p;
+      if (r.next() < 0.5) {
+        const m = noZeroEnd(r, f + 1, 30 * f);
+        const v = (m * d) / f;
+        return { prompt: w.prompts.times, q: `${fmtM(m, p)} \\times ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", steps: [`${fmtM(m, p)} \\times ${d} = \\frac{${m} \\times ${d}}{${f}} = \\frac{${m * d}}{${f}} = ${tidy(v)}`] };
+      }
+      let m: number;
+      do m = noZeroEnd(r, f + 1, 20 * f);
+      while ((m * d) % 10 === 0);
+      const v = m / f;
+      return { prompt: w.prompts.times, q: `${fmtM(m * d, p)} \\div ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", steps: [`${fmtM(m * d, p)} \\div ${d} = \\frac{${m * d} \\div ${d}}{${f}} = \\frac{${m}}{${f}} = ${tidy(v)}`] };
+    }
+    if (r.next() < 0.5) {
+      // A measurement from one unit to the other in decimal form (P5): km and m, m and cm, kg and g, litres and ml.
+      const [big, small, f] = r.pick([["km", "m", 1000], ["m", "cm", 100], ["kg", "g", 1000], ["l", "ml", 1000]] as const);
+      const down = r.next() < 0.5;
+      const p = down ? r.int(1, f === 100 ? 2 : 3) : 0;
+      let m: number;
+      do m = down ? noZeroEnd(r, 10 ** p + 1, 20 * 10 ** p) : r.int(15, 20 * f);
+      while (!down && m % f === 0);
+      const { v, traps } = shifted(m, p, f, down);
+      const a = `${fmtM(m, p)} ${w.units[down ? big : small]}`;
+      return { prompt: fill(w.prompts.convertUnit, { a, u: w.units[down ? small : big] }), q: "", answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", steps: [`${fmtM(m, p)} ${down ? "\\times" : "\\div"} ${f} = ${tidy(v)}`] };
+    }
+    // A whole number divided by a whole number, the answer as a decimal (P4): exact when the divisor goes into a power of
+    // ten, else rounded to 2 places. The worked solution is the long division, carried past the point.
+    const exact = r.next() < 0.5;
+    const b = r.pick(exact ? [4, 8, 20, 25, 40] : [3, 6, 7, 9, 11, 12]);
+    let a: number;
+    do a = r.int(b + 1, 12 * b);
+    while (a % b === 0);
+    const v = exact ? a / b : Math.round((100 * a) / b) / 100;
+    const places = exact ? (tidy(v).split(".")[1] ?? "").length : 3;
+    const solution = { kind: "model" as const, spec: { type: "division", style: "bracket", a, b, decimals: places, step: 999 } };
+    const q = `${a} \\div ${b}`;
+    if (exact) return { prompt: w.prompts.decimalQuotient, q, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution };
+    return { prompt: w.prompts.decimalQuotient2, q, answer: num(v, 0.0051), show: v.toFixed(2), plain: v.toFixed(2), format: "dp2", solution };
+  },
+
+  ratio(r, L, w) {
+    // Ratios of whole numbers (P6), drawn with the Percentages & ratios tool's bar models. Whole numbers from 1 to max
+    // with no common factor, all different.
+    const coprime = (n: number, max: number) => {
+      for (;;) {
+        const vs = Array.from({ length: n }, () => r.int(1, max));
+        if (vs.reduce(gcd) === 1 && new Set(vs).size === n) return vs;
+      }
+    };
+    const model = (kind: string, terms: number[], a = 1, b = 1) => ({ kind: "model" as const, spec: { type: "percratio", kind, p: "0", a: String(a), b: String(b), ratio: terms.join(":"), up: true, step: 999 } });
+    const asked = (vs: number[], k: number, prompt: string) => {
+      const terms = vs.map((v) => k * v);
+      return { prompt, q: terms.join(" : "), answer: { k: "ratio" as const, vs }, show: vs.join(" : "), plain: vs.join(" : "), format: "ratio" as const, solution: model("simplify", terms) };
+    };
+    if (L === 1) {
+      const [m, n] = coprime(2, 9);
+      const k = r.int(2, 9);
+      if (r.next() < 0.5) return asked([m, n], k, w.prompts.ratioSimplify);
+      // The missing term of two equal ratios. Adding what the first term grew by, instead of multiplying, is the trap.
+      const traps: Trap[] = [{ id: "addedNotScaled", a: num(k * m + n - m), vars: { a: m, b: k * m, k } }];
+      return { prompt: w.prompts.ratioMissing, q: `${m} : ${n} = ${k * m} : \\,?`, answer: { ...num(k * n), traps }, show: String(k * n), plain: String(k * n), format: "number", solution: model("proportion", [m, n], k * m) };
+    }
+    if (L === 2) {
+      const [m, n] = coprime(2, 9);
+      const u = r.int(2, 12);
+      if (r.next() < 0.5) {
+        // A total shared in a ratio: m + n equal parts. Taking A's share as m/n of the total is the trap.
+        const second = r.next() < 0.5;
+        const T = u * (m + n);
+        const v = u * (second ? n : m);
+        const traps: Trap[] = !second && m < n && (T * m) % n === 0 ? [{ id: "ratioAsFraction", a: num((T * m) / n), vars: { m, n, s: m + n } }] : [];
+        return { prompt: fill(w.prompts.ratioShare, { t: T, r: `${m} : ${n}`, who: second ? "B" : "A" }), q: "", answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number", solution: model("share", [m, n], T) };
+      }
+      // One part known: the other part (adding what A's part grew by is the trap), or the whole.
+      const whole = r.next() < 0.5;
+      const v = u * (whole ? m + n : n);
+      const traps: Trap[] = whole ? [] : [{ id: "addedNotScaled", a: num(u * m + n - m), vars: { a: m, b: u * m, k: u } }];
+      return { prompt: fill(whole ? w.prompts.ratioWhole : w.prompts.ratioPart, { r: `${m} : ${n}`, a: u * m }), q: "", answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number", solution: model("partKnown", [m, n], u * m, 1) };
+    }
+    const kind = r.int(0, 2);
+    if (kind === 0) return asked(coprime(3, 9), r.int(2, 6), w.prompts.ratioSimplify);
+    if (kind === 1) {
+      // Shared between three.
+      const vs = coprime(3, 6);
+      const u = r.int(2, 12);
+      const T = u * vs.reduce((s, v) => s + v, 0);
+      const who = r.int(0, 2);
+      return { prompt: fill(w.prompts.ratioShare3, { t: T, r: vs.join(" : "), who: "ABC"[who] }), q: "", answer: num(u * vs[who]), show: String(u * vs[who]), plain: String(u * vs[who]), format: "number", solution: model("share", vs, T) };
+    }
+    // A part as a fraction of the whole (fraction and ratio). Taking m : n as m/n is the trap.
+    const [m, n] = coprime(2, 9);
+    const s = m + n;
+    const traps: Trap[] = [{ id: "ratioAsFraction", a: num(m / n), vars: { m, n, s } }];
+    return { prompt: fill(w.prompts.ratioFraction, { r: `${m} : ${n}` }), q: "", answer: { ...num(m / s, 1e-9, { lowest: true }), traps }, show: fracTex(m, s), plain: `${m}/${s}`, format: "fraction", steps: [`${m} + ${n} = ${s}`, `\\frac{${m}}{${s}}`] };
+  },
+
+  rate(r, L, w) {
+    // A rate as the amount for one unit (P5): rice at so much a kilogram, or a tap letting out so many litres a
+    // minute. Given two of the rate, the total and the number of units, the third.
+    const cost = r.next() < 0.5;
+    const P = w.prompts;
+    /** In the prompt: money, or litres as a plain number. */
+    const said = (v: number) => (cost ? money(w, v) : tidy(v));
+    /** In the working and the answer: money with both places when it has cents. */
+    const shown = (v: number) => (cost && !Number.isInteger(v) ? v.toFixed(2) : tidy(v));
+    const one = (v: number, steps: string[], traps: Trap[] = []) => ({ q: "", answer: { ...num(v), traps }, show: shown(v), plain: shown(v), format: "number" as const, steps });
+    /** The rate from the total: dividing the other way round is the trap. */
+    const inverted = (t: number, n: number): Trap[] => [{ id: "rateInverted", a: num(n / t), vars: { t: shown(t), n } }];
+    if (L === 1) {
+      const [u, n] = [r.int(2, 12), r.int(2, 9)];
+      const t = u * n;
+      if (r.next() < 0.5) return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${t} \\div ${n} = ${u}`], inverted(t, n)) };
+      return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${u} \\times ${n} = ${t}`]) };
+    }
+    if (L === 2) {
+      const kind = r.int(0, 2);
+      if (kind === 0) {
+        // How many units: the total divided by the rate.
+        const [u, n] = [r.int(2, 12), r.int(3, 15)];
+        return { prompt: fill(cost ? P.rateCostUnits : P.rateTapUnits, { r: said(u), t: said(u * n) }), ...one(n, [`${u * n} \\div ${u} = ${n}`]) };
+      }
+      // A rate with cents (1.05 to 4.95 a kilogram) or tenths of a litre, worked in cents or tenths.
+      const f = cost ? 100 : 10;
+      const uf = cost ? 5 * r.int(21, 99) : noZeroEnd(r, 11, 99);
+      const n = r.int(3, 9);
+      const [u, t] = [uf / f, (uf * n) / f];
+      if (kind === 1) return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${shown(u)} \\times ${n} = ${shown(t)}`]) };
+      return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${shown(t)} \\div ${n} = ${shown(u)}`], inverted(t, n)) };
+    }
+    // Two steps, the rate first (the unitary method): n units for t, so m units for? Adding the difference in units to
+    // the total, as if each unit added one, is the trap.
+    const u = cost ? 5 * r.int(5, 60) / 100 : r.int(2, 12);
+    const n = r.int(2, 9);
+    let m: number;
+    do m = r.int(2, 15);
+    while (m === n || m % n === 0);
+    const [t, v] = [Number(tidy(u * n)), Number(tidy(u * m))];
+    // At 1 a unit, adding and multiplying agree.
+    const traps: Trap[] = t + m - n > 0 && u !== 1 ? [{ id: "addedNotScaled", a: num(Number(tidy(t + m - n))), vars: { a: n, b: m, k: plainFrac(fr(m, n)) } }] : [];
+    return { prompt: fill(cost ? P.rateCostTwo : P.rateTapTwo, { n, t: said(t), m }), ...one(v, [`${shown(t)} \\div ${n} = ${shown(u)}`, `${shown(u)} \\times ${m} = ${shown(v)}`], traps) };
   },
 
   divisibility(r, L, w) {
@@ -3179,8 +3472,8 @@ export type Verdict = { ok: boolean; why?: string; close?: boolean; mistake?: Mi
 
 const SAMPLES = [-2.71, -1.33, -0.62, 0.37, 0.91, 1.73, 2.29, 3.11, 0.17, 1.19, 2.63, -0.23, 4.37, 5.71, 7.13, -4.61];
 
-/** "x = 2", "θ = 35°", "25%" → the bare value. */
-const bare = (s: string) => s.trim().replace(/^[a-zA-Zθ]\w*\s*=\s*/, "").replace(/[%°]/g, "").trim();
+/** "x = 2", "θ = 35°", "25%", "$4.05" → the bare value. */
+const bare = (s: string) => s.trim().replace(/^[a-zA-Zθ]\w*\s*=\s*/, "").replace(/[%°$₾₽]/g, "").trim();
 
 function value(s: string): number {
   const t = bare(s);
@@ -3359,7 +3652,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : a.k === "ratio" ? a.vs.join(" : ") : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -3492,6 +3785,16 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         // Every one listed divides it, but some are missing: said, as the board does.
         return v.more ? { ok: false, hint: fill(w.reasons.divisors.more, { n: a.n }) } : { ok: false };
       }
+      case "ratio": {
+        // The same ratio is each term the same multiple of the one asked for; a multiple other than 1 is not simplest.
+        const ps = src.split(/[:∶]/);
+        const vs = ps.map(value);
+        if (ps.length < 2 || vs.some((v) => !Number.isFinite(v) || v <= 0)) return { ok: false, why: fill(w.reasons.ratio.unreadable, { s: input }) };
+        if (vs.length !== a.vs.length) return { ok: false, why: fill(w.reasons.count, { n: a.vs.length }) };
+        const k = vs[0] / a.vs[0];
+        if (!vs.every((v, i) => near(v, k * a.vs[i], 1e-9 * Math.max(1, v)))) return { ok: false };
+        return near(k, 1, 1e-9) ? { ok: true } : { ok: false, close: true, why: w.reasons.ratio.notSimplest };
+      }
       case "near": {
         const v = judgeNear(a, src);
         if (v.ok) return v;
@@ -3543,6 +3846,7 @@ export function preview(ex: Exercise, input: string): string | null {
   }
   try {
     if (ex.answer.k === "set" || ex.answer.k === "tuple") return parts(s).map((p) => tex(parseE(bare(p)))).join(", \\; ");
+    if (ex.answer.k === "ratio") return s.split(/[:∶]/).map((p) => tex(parseE(bare(p)))).join(" : ");
     if (ex.answer.k === "sign") {
       const got = readSign(s);
       return got && ex.q.replace("\\square", got);

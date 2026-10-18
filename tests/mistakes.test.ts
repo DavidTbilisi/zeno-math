@@ -75,6 +75,14 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   threeForNine: ["divisibility", [2, 3]],
   oddSix: ["divisibility", [3]],
   tenOnly: ["divisibility", [1, 2]],
+  centsOneDigit: ["money", [1]],
+  smallerFromLarger: ["money", [2]],
+  oneOfEach: ["money", [3]],
+  alignedRight: ["decimals", [1]],
+  pointWrongWay: ["decimals", [2, 3]],
+  addedNotScaled: ["ratio", [1, 2]],
+  ratioAsFraction: ["ratio", [2, 3]],
+  rateInverted: ["rate", [1, 2]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -118,7 +126,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "decimals", "ratio", "rate"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

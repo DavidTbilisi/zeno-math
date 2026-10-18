@@ -22,6 +22,9 @@ function wrong(ex: Exercise): string {
       return [a.vs[0] + 1, ...a.vs.slice(1)].join("; ");
     case "tuple":
       return [a.vs[0] + 1, a.vs[1]].join("; ");
+    case "ratio":
+      // The first term one more: never the same ratio.
+      return [a.vs[0] + 1, ...a.vs.slice(1)].join(" : ");
     case "expr":
       return `${ex.plain.replace(/\+\s*C$/, "")} + x`;
     case "primes":
