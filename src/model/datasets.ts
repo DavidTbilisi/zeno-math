@@ -158,3 +158,15 @@ export function fromFile(f: DatasetFile): Dataset {
     observations: f.rows.map(([student, skill, level, right, problem]) => ({ student, skill, level: (level === 1 || level === 3 ? level : 2) as 1 | 2 | 3, correct: right === 1, ...(problem === undefined ? {} : { problem }) })),
   };
 }
+
+/**
+ * Only the practices of at least `min` answers, a practice being a student's answers on one skill, kept whole and in
+ * order. ASSISTments' skill builders mostly end at three right in a row, so its practices are short; the long ones are
+ * those that went on, the check of whether a result holds beyond the streak rule's own stopping point.
+ */
+export function longPractices(observations: Observation[], min: number): Observation[] {
+  const length = new Map<string, number>();
+  const key = (o: Observation) => `${o.student}\u0000${o.skill}`;
+  for (const o of observations) length.set(key(o), (length.get(key(o)) ?? 0) + 1);
+  return observations.filter((o) => length.get(key(o))! >= min);
+}

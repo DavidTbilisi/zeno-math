@@ -6,14 +6,15 @@
 // and the mastery declarations each method makes at each grain, counted as H3 counts them. Where the data set names
 // classes, every paired test is also made by resampling whole classes, as H1's robustness check is. With --partitions
 // the topic grain is set beside the same skills dealt into groups of the same sizes at random, that many times, to
-// show whether the topics' grouping matters or only their number.
+// show whether the topics' grouping matters or only their number. With --min-practice only the practices of at least
+// that many answers at the data set's own grain are kept, before any coarsening, as in H1's check.
 //
 //   npm run grain -- --observations assistments.json     a data set (scripts/import-assistments.ts); topics from its areas
 //   npm run grain -- --simulate                          synthetic learners, topics being the curriculum's areas
-//   --seed 1   --test-share 0.2   --resamples 10000   --smallest 0.005   --streak 3   --partitions 0   --json
+//   --seed 1   --test-share 0.2   --resamples 10000   --smallest 0.005   --streak 3   --partitions 0   --min-practice 1   --json
 import { readFileSync } from "node:fs";
 import { AREAS, type SkillId } from "../src/math/practiceSkills.ts";
-import { assistmentsTopic, fromFile, type DatasetFile } from "../src/model/datasets.ts";
+import { assistmentsTopic, fromFile, longPractices, type DatasetFile } from "../src/model/datasets.ts";
 import type { Observation } from "../src/model/elo.ts";
 import { SMALLEST_DIFFERENCE } from "../src/model/evaluate.ts";
 import { compareGrains, topicBaseline, type GrainResult } from "../src/model/grain.ts";
@@ -29,19 +30,21 @@ const fail = (message: string) => {
   process.exit(2);
 };
 const dataset = opt("--observations");
-if (!dataset && !args.includes("--simulate")) fail("usage: npm run grain -- --observations <data.json> | --simulate   [--seed 1] [--test-share 0.2] [--resamples 10000] [--smallest 0.005] [--streak 3] [--partitions 0] [--json]");
+if (!dataset && !args.includes("--simulate")) fail("usage: npm run grain -- --observations <data.json> | --simulate   [--seed 1] [--test-share 0.2] [--resamples 10000] [--smallest 0.005] [--streak 3] [--partitions 0] [--min-practice 1] [--json]");
 const seed = Number(opt("--seed") ?? 1);
 const testShare = Number(opt("--test-share") ?? 0.2);
 const resamples = Number(opt("--resamples") ?? 10000);
 const smallest = Number(opt("--smallest") ?? SMALLEST_DIFFERENCE);
 const streak = Number(opt("--streak") ?? 3);
 const partitions = Number(opt("--partitions") ?? 0);
+const minPractice = Number(opt("--min-practice") ?? 1);
 if (!Number.isInteger(seed)) fail("--seed must be a whole number");
 if (!(testShare > 0 && testShare < 1)) fail("--test-share must be between 0 and 1");
 if (!Number.isInteger(resamples) || resamples < 100) fail("--resamples must be a whole number of at least 100");
 if (!(smallest > 0)) fail("--smallest must be above 0");
 if (!Number.isInteger(streak) || streak < 1) fail("--streak must be a whole number above 0");
 if (!Number.isInteger(partitions) || partitions < 0) fail("--partitions must be a whole number");
+if (!Number.isInteger(minPractice) || minPractice < 1) fail("--min-practice must be a whole number above 0");
 
 let source = "simulated class";
 let observations: Observation[];
@@ -56,7 +59,8 @@ if (dataset) {
   const areaOf = new Map<string, string>(AREAS.flatMap((a) => (SIM_SKILLS[a] as readonly SkillId[]).map((s) => [s, a] as const)));
   topicOf = (skill) => areaOf.get(skill) ?? "other";
 }
-if (!observations.length) fail("no usable answers in the file");
+observations = longPractices(observations, minPractice);
+if (!observations.length) fail(minPractice > 1 ? `no practice of ${minPractice} answers or more` : "no usable answers in the file");
 const withProblems = observations.filter((o) => o.problem !== undefined).length;
 
 // A student with no class stands alone, as in H1's check.
@@ -65,13 +69,13 @@ const result = compareGrains(observations, topicOf, { seed, testShare, resamples
 const baseline = partitions ? topicBaseline(observations, topicOf, { seed, testShare, partitions }) : undefined;
 
 if (args.includes("--json")) {
-  process.stdout.write(JSON.stringify({ source, withProblems, ...result, ...(baseline && { baseline }) }, null, 2) + "\n");
+  process.stdout.write(JSON.stringify({ source, minPractice, withProblems, ...result, ...(baseline && { baseline }) }, null, 2) + "\n");
 } else {
   const n = (x: number) => x.toLocaleString("en");
   const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
   const signed = (x: number) => `${x < 0 ? "−" : "+"}${Math.abs(x).toFixed(4)}`;
   const span = ([lo, hi]: [number, number]) => `[${signed(lo)}, ${signed(hi)}]`;
-  console.log(`${source}: ${n(observations.length)} answers${withProblems ? ` (${n(withProblems)} name their problem)` : " (no problems named: nothing falls together at a coarser grain)"}; ${(testShare * 100).toFixed(0)} % of students held out, seed ${seed}; ${n(resamples)} resamples of students; smallest difference that counts ${smallest}\n`);
+  console.log(`${source}: ${n(observations.length)} answers${minPractice > 1 ? ` in practices of ${minPractice} or more` : ""}${withProblems ? ` (${n(withProblems)} name their problem)` : " (no problems named: nothing falls together at a coarser grain)"}; ${(testShare * 100).toFixed(0)} % of students held out, seed ${seed}; ${n(resamples)} resamples of students; smallest difference that counts ${smallest}\n`);
   console.log(`${"grain".padEnd(8)}${"skills".padStart(7)}${"train".padStart(10)}${"test".padStart(9)}${"BKT".padStart(9)}${"EMA".padStart(9)}  ${"BKT fits at bound / edge".padEnd(26)}EMA α`);
   for (const g of result.grains)
     console.log(`${g.grain.padEnd(8)}${n(g.skills).padStart(7)}${n(g.answers.train).padStart(10)}${n(g.answers.test).padStart(9)}${g.bkt.logLoss.toFixed(4).padStart(9)}${g.ema.logLoss.toFixed(4).padStart(9)}  ${`${pct(g.bkt.fits.atBound)} / ${pct(g.bkt.fits.atEdge)} of ${g.bkt.fits.fits}`.padEnd(26)}${g.ema.alpha}`);

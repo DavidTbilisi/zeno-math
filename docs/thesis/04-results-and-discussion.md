@@ -435,7 +435,8 @@ each component at 0.95 declared mastery for no held-out learner within 30 answer
 a time at the higher rate it declared for 0.2 % of them, and asked two at a time at the lower rate for 0.3 % (`npm run
 atoms -- --atoms 1,2,4,8,16 --per-question 1,2,4`, commit 9180a75).
 
-Asked one component at a time, BKT on the skill at its usual threshold loses its precision as the components multiply:
+Asked one component at a time, BKT on the skill at its usual threshold loses its precision as the components multiply
+(Figure 3.1):
 right 98 % of the time with one component, where the world is BKT's own, 59 to 71 % with two, 23 to 28 % with four, 5
 to 8 % with eight and under 4 % with sixteen. The cheapest threshold that meets the 90 % standard moves the same way,
 from 0.80 to 0.86 with one component to 0.999 and 0.9999 with two, and from four components on no threshold up to
@@ -454,6 +455,11 @@ thresholds of 0.76 to 0.94, by declaring late, where BKT on the skill has none f
 Brier score stays between 0.17 and 0.33 where BKT's reaches 0.68. G1 hypothesised that the simpler rules lose less, and
 this holds for the Brier score and for whether any threshold meets the standard, not for precision at the usual
 threshold.
+
+![G1 in the world of components, asked one at a time: the share of each method's declarations right on the held-out
+learners at its usual threshold (BKT at 0.95, the EMA at the streak rule's cost, three right in a row), against the
+number of components in the skill, from the top half of Table 3.10. BKT per component is left out where it declared
+for fewer than 20 held-out practices, as with eight and sixteen components.](figures/g1-components.png)
 
 Asked several at a time, the picture depends not on $k$ but on how much of the skill each question leaves untested.
 When every question asks for every component, two of two or four of four, the skill is one unit again to every
@@ -658,7 +664,8 @@ answers that belonged to the whole: four in five of them at the bound when split
 read over-splitting from its own fits, but not a shortage of practice, which shows itself instead in declarations that
 never come.
 
-Table 3.15 gives G4, the same real answers modelled at three grains. At the data set's own grain BKT predicts the
+Table 3.15 gives G4, the same real answers modelled at three grains, and Figure 3.2 draws its log-loss. At the data
+set's own grain BKT predicts the
 held-out answers with a log-loss of 0.5690, at the topic grain 0.5962 and with one skill for everything 0.6037; the EMA
 goes the other way, 0.5915, 0.5854 and 0.5847. The test compares BKT at the skill grain with BKT at one skill: the
 difference is −0.0346 per answer with an interval of [−0.0392, −0.0302] from 10,000 resamples of students, which
@@ -697,6 +704,10 @@ Table: G4 on ASSISTments: BKT and the EMA fitted on 3,310 training students (207
 held-out students (51,452 answers at every grain) at three grains; the paired differences between grains with intervals
 from 10,000 resamples of students (below zero, the finer grain predicts better) and the verdict by H1's rule. The test
 is BKT at the skill grain against one skill (`npm run grain -- --observations data/assistments.json`, commit 3633cc1).
+
+![G4 on ASSISTments: the log-loss of BKT and the EMA per held-out answer at the three grains of Table 3.15, on the same
+51,452 answers at every grain (lower is better). BKT predicts worse at every coarsening; the EMA changes
+little.](figures/g4-grains.png)
 
 As a check of the method, Table 3.16 runs the same analysis on the one-grain simulation's
 students, whose 38 skills fall into five areas, so that the three grains are 38, 5 and 1 skills. Simulated answers name
@@ -836,7 +847,8 @@ better than the exponential moving average. On split seed 1 BKT's mean log-loss 
 0.0225, with a 95 % interval of [−0.0264, −0.0183] from 10,000 resamples of the held-out students; the interval excludes
 zero and the estimate exceeds the 0.005 fixed as the smallest difference that counts, so by the rule fixed in advance
 BKT is better and H1 holds. The four other splits give the same verdict, with estimates from 0.021 to 0.025, and so does
-resampling whole classes.
+resampling whole classes, and so do the practices of ten answers or more alone, by about two thirds as much (section
+3.3).
 
 H2 asked whether, in simulated worlds that break BKT's assumptions, BKT needs fewer answers than the moving average and
 the streak rule before its declarations of mastery are right at least 90 % of the time. The answer depends on which
@@ -887,7 +899,8 @@ right grain is a property of the model and the practice together.
 
 G4 asked whether the same real answers are predicted better at a finer grain. On ASSISTments BKT at the data set's own grain, 110 skills,
 predicts held-out answers better than at one skill, by 0.0346 per answer with an interval of [−0.0392, −0.0302], so G4
-holds by the rule fixed in advance; it holds on four more splits and with whole classes resampled. Each step of
+holds by the rule fixed in advance; it holds on four more splits, with whole classes resampled and on the practices of
+ten answers or more alone. Each step of
 coarsening costs BKT, and the EMA is indifferent to the grain, so that coarsening costs BKT 0.041 per answer more than
 it costs the EMA (0.038 to 0.044 on five splits), with an interval that excludes zero. The declarations move with the grain, BKT needing 3.3 answers at the finest grain and 8.9 at the
 coarsest, with the share right after a declaration falling from 79 % to 73 %. On a simulated class the finer grain predicted better for BKT
@@ -975,7 +988,19 @@ so a practice usually stops at the streak rule's own decision. The real data the
 declaring mastery too early, and there are few answers after any declaration to judge it by. The same policy shapes H1
 and G4: practices mostly end soon after a run of three right, so the prediction comparisons are made on sequences of
 that kind, and their results need not hold for students who keep practising for 20 or 30 questions. This is why H3 is
-exploratory and the comparisons of decisions are simulated.
+exploratory and the comparisons of decisions are simulated. As a check made on 18 October, after every result, H1 and
+G4 were run again on the practices that went on to ten answers or more, 8,723 of the 36,974, which hold 159,438 of the
+259,399 answers, 18 on average, with everything else as before (`--min-practice 10`). Both hold. On split seed 1, now 459 held-out
+students with 31,265 answers, BKT minus the EMA is −0.0150 in log-loss per answer with an interval of [−0.0197,
+−0.0097], and −0.0164 to −0.0138 on the other four splits, every interval excluding zero with students or whole
+classes resampled. That is about two thirds of the −0.0225 on every practice, so BKT's lead narrows on long practices
+but does not go. For G4, BKT at the data set's grain, the 88 skills these practices cover, predicts better
+than at one skill, by −0.0272 [−0.0339, −0.0212] on split seed 1 and −0.0334 to −0.0301 on the others, each interval
+excluding zero with students or classes resampled. The EMA's difference from that grain to one skill is between
+−0.0050 and +0.0006, at the smallest difference that counts on one split and below it on the others, and inconclusive
+or negligible on every split with classes resampled, so it stays indifferent to the grain; coarsening costs BKT 0.025
+to 0.031 per answer more than it costs the EMA. The streak policy therefore limits what the real data can say about the
+streak rule's decisions, not the two comparisons of prediction.
 
 Appendix C gives, from the public history of the repository, the order in which every hypothesis, rule and result was
 made, with times recorded by GitHub as well as by the author's machine. It shows both confirmatory tests fixed days

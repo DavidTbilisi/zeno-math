@@ -37,5 +37,6 @@ equal practice has a result in the same commit as the revision (section 2.2). Th
 BKT's thresholds above 0.9999 was made after H2's results, and is reported as a check (Table 3.7). The worlds of
 components and of ideas were built on the 12th and 13th, after H2's results, and their first runs came before G1 to G4
 were stated; the hypotheses were then stated for the sweeps, which came after them. The checks of robustness in
-section 3.3, from other seeds, from resampling whole classes, from random groupings of the skills and from other
-definitions of mastery, were all made after every result above, on 18 October, and are reported as checks.
+section 3.3, from other seeds, from resampling whole classes, from random groupings of the skills, from other
+definitions of mastery and from the long practices alone, were all made after every result above, on 18 October, and
+are reported as checks.

@@ -345,7 +345,8 @@ section 3.2 the four granularity studies, section 3.3 what follows for Zeno and 
 
 ### Threats to validity (section 3.3)
 
-Those of the draft (the ASSISTments streak policy, worlds of our making, the revisions after first runs, the 0.9
+Those of the draft (the ASSISTments streak policy, checked after the results by rerunning H1 and G4 on the practices
+of ten answers or more, where both hold, H1 by about two thirds as much; worlds of our making, the revisions after first runs, the 0.9
 definition, coarse fitting, non-independent students, one confirmatory test), plus: the atoms and ideas worlds were
 built after H2's results and their first runs are checks; the coarsening of ASSISTments into topics is by keyword and
 checked by eye, so G4's middle grain is one of many possible; a single data set at three grains cannot say what a
@@ -375,4 +376,4 @@ decomposed by hand.
 | Right grain, isolating share (G2) | `npm run ideas -- --skills fractions --isolate 0,0.25,0.5,1 --length 30,60,120` | exists; components a question in `npm run atoms -- --per-question` |
 | Too fine, over-splitting (G3) | `npm run atoms -- --atoms 2 --split 1,2,4` | exists; also reports fits at the grid's edge and threshold stability |
 | Real data at three grains (G4) | `npm run grain -- --observations data/assistments.json` | run at 3633cc1 |
-| Figures | `npm run figures` | exists; grain plots to add |
+| Figures | `npm run figures` | exists; G1 precision against components (Figure 3.1) and G4 log-loss by grain (Figure 3.2) |
