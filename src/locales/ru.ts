@@ -33,6 +33,8 @@ export const ru: Dict = {
   searchNone: "Ничего не найдено.",
   searchButton: "Найти инструмент (Ctrl+K или /)",
   close: "Закрыть",
+  maximize: "Развернуть",
+  restore: "Восстановить размер",
   colorLabel: "Цвет",
   colorNames: { "#1e1e1e": "Чёрный", "#1971c2": "Синий", "#e03131": "Красный", "#2f9e44": "Зелёный", "#9c36b5": "Фиолетовый", "#e8590c": "Оранжевый" },
   latexSource: "LaTeX",

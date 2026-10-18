@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -13,6 +13,7 @@ export function Modal({ title, onClose, children, footer, wide = false }: {
 }) {
   const { t } = useI18n();
   const box = useRef<HTMLDivElement>(null);
+  const [max, setMax] = useState(false);
   // Callers pass a new arrow each render; keep the latest without re-attaching the listeners.
   const close = useRef(onClose);
   close.current = onClose;
@@ -46,10 +47,18 @@ export function Modal({ title, onClose, children, footer, wide = false }: {
 
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className={`modal${wide ? " wide" : ""}`} role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
-        <header className="modal-header">
+      <div className={`modal${wide ? " wide" : ""}${max ? " max" : ""}`} role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
+        {/* A double click on the title bar does what it does on a window. */}
+        <header className="modal-header" onDoubleClick={(e) => !(e.target as Element).closest("button") && setMax(!max)}>
           <h2>{title}</h2>
-          <button className="icon-btn" onClick={onClose} aria-label={t.close}>×</button>
+          <div className="modal-actions">
+            <button className="icon-btn modal-max" onClick={() => setMax(!max)} aria-label={max ? t.restore : t.maximize} aria-pressed={max} title={max ? t.restore : t.maximize}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                {max ? <path d="M4.5 4.5V1.75h7.75v7.75H9.5M1.75 4.5h7.75v7.75H1.75z" /> : <rect x="2" y="2" width="10" height="10" rx="1" />}
+              </svg>
+            </button>
+            <button className="icon-btn" onClick={onClose} aria-label={t.close}>×</button>
+          </div>
         </header>
         <div className="modal-body">{children}</div>
         <footer className="modal-footer">{footer}</footer>
