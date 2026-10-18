@@ -38,10 +38,10 @@ skills better than at one skill by 0.0346), and H3 reports that BKT at 0.95 decl
 against 48 % for the simple rules, with 77 to 80 % right on the next three answers after every rule.
 
 **Robustness checks (18 October 2026, after every result).** Every simulated table repeated on seeds 2 to 5 (Table
-3.17): every verdict holds; two seed-1 numbers do not (hcf's missing idea found, 24 to 80 %; the gain on fractions from a
+D.1): every verdict holds; two seed-1 numbers do not (hcf's missing idea found, 24 to 80 %; the gain on fractions from a
 quarter isolating questions, a loss on three seeds of five), so G2's conclusion rests on practice length. G4 on split
 seeds 2 to 5 and with whole classes resampled: holds on all; the EMA's gain from coarsening does not. H2 by the
-definition of mastery from 0.7 to 0.95 (Table 3.18): the verdict holds at 0.9 and above, a tie at the higher rate at
+definition of mastery from 0.7 to 0.95 (Table D.2): the verdict holds at 0.9 and above, a tie at the higher rate at
 0.8 and below. G4's topics against 100 random groupings of the same sizes: for BKT no better than random (0.5962; 78 of 100 random
 groupings at least as good, 0.5923 to 0.5988), for the EMA better than all 100 (0.5854 against 0.5878 to 0.5919,
 p = 0.01). The order of hypotheses and results
@@ -362,7 +362,7 @@ decomposed by hand.
 
 ## Appendices
 
-- A. Zeno in brief. B. Reproducing every number.
+- A. Zeno in brief. B. Reproducing every number. C. When each hypothesis was fixed. D. Robustness checks.
 
 ## Reproducing every number
 
