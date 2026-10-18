@@ -1,13 +1,14 @@
 // The same answers at several grains (src/model/grain.ts): regraining keeps the order and folds a problem's skills
 // that fall together into one observation, the primary answers are the ones every grain keeps, the comparison fits
 // and judges each grain on the same held-out students and pairs the grains on the same answers, and a contrast of
-// losses is the paired test's difference when it has two terms.
+// losses is the paired test's difference when it has two terms. With classes the tests are also made by resampling
+// classes, and the topic grain can be set beside random groupings of the skills of the same sizes.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { AREAS, type SkillId } from "../src/math/practiceSkills.ts";
 import type { Observation } from "../src/model/elo.ts";
 import { BktModel, heldOutPredictions, logLoss, pairedLogLoss, splitByStudent } from "../src/model/evaluate.ts";
-import { compareGrains, contrast, GRAINS, ONE_SKILL, primary, regrain } from "../src/model/grain.ts";
+import { compareGrains, contrast, GRAINS, ONE_SKILL, primary, regrain, topicBaseline } from "../src/model/grain.ts";
 import { SIM_SKILLS, simulateRandom } from "../src/model/simulate.ts";
 
 const topicOf = (skill: string) => skill[0];
@@ -98,4 +99,40 @@ test("a contrast of two losses is the paired test's difference; the terms must b
   assert.deepEqual(con.interval, paired.interval);
   assert.throws(() => contrast([[a, 1], [b.slice(1), -1]]), /same answers in the same order/);
   assert.throws(() => contrast([[a, 1], [b.map((p) => ({ ...p, correct: !p.correct })), -1]]), /same answers in the same order/);
+});
+
+test("with classes, every paired test and the contrast also resample whole classes; without, they do not", () => {
+  const { observations } = simulateRandom({ students: 40, questions: 40, seed: 4 });
+  const areaOf = new Map<string, string>(AREAS.flatMap((a) => (SIM_SKILLS[a] as readonly SkillId[]).map((s) => [s, a] as const)));
+  const area = (skill: string) => areaOf.get(skill)!;
+  const classOf = (student: string) => `class ${student.length % 3}`;
+  const without = compareGrains(observations, area, { seed: 1, testShare: 0.25, resamples: 100 });
+  assert.ok(without.tests.every((t) => t.byClass === undefined) && without.emaLosesLess.byClass === undefined);
+  const c = compareGrains(observations, area, { seed: 1, testShare: 0.25, resamples: 100, classOf });
+  for (const [i, t] of c.tests.entries()) {
+    assert.deepEqual(t.test, without.tests[i].test, "the student-level test is unchanged");
+    assert.equal(t.byClass!.difference, t.test.difference);
+    assert.ok(t.byClass!.groups <= 3);
+  }
+  assert.equal(c.emaLosesLess.estimate, without.emaLosesLess.estimate);
+  assert.ok(c.emaLosesLess.byClass![0] <= c.emaLosesLess.estimate && c.emaLosesLess.estimate <= c.emaLosesLess.byClass![1]);
+});
+
+test("topicBaseline: the topics' losses are compareGrains' topic grain, the random groupings keep the topics' sizes, and the share is a permutation p-value", () => {
+  const { observations } = simulateRandom({ students: 40, questions: 60, seed: 3 });
+  const areaOf = new Map<string, string>(AREAS.flatMap((a) => (SIM_SKILLS[a] as readonly SkillId[]).map((s) => [s, a] as const)));
+  const area = (skill: string) => areaOf.get(skill)!;
+  const b = topicBaseline(observations, area, { seed: 2, testShare: 0.25, partitions: 9 });
+  const topic = compareGrains(observations, area, { seed: 2, testShare: 0.25, resamples: 100 }).grains[1];
+  const close = (a: number, x: number) => assert.ok(Math.abs(a - x) < 1e-12, `${a} ≉ ${x}`);
+  close(b.topics.bkt, topic.bkt.logLoss);
+  close(b.topics.ema, topic.ema.logLoss);
+  const skills = new Set(observations.map((x) => x.skill));
+  assert.equal(Object.values(b.sizes).reduce((s, k) => s + k, 0), skills.size);
+  assert.equal(b.random.length, 9);
+  for (const model of ["bkt", "ema"] as const) {
+    assert.ok(b.beaten[model] >= 0.1 && b.beaten[model] <= 1);
+    assert.equal(b.beaten[model], (1 + b.random.filter((x) => x[model] <= b.topics[model]).length) / 10);
+  }
+  assert.deepEqual(topicBaseline(observations, area, { seed: 2, testShare: 0.25, partitions: 9 }), b, "seeded");
 });

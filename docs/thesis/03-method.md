@@ -328,7 +328,9 @@ that one, which is what a system would need to know to choose the next question.
 
 Every parameter and threshold is chosen on training students only. A fifth of the students are held out, chosen by a
 hash of their identifier and a seed, so the split is the same on every run and no student's answers are split between
-the two sides. Seed 1 is used throughout, and for H1 seeds 2 to 5 as well (section 2.3).
+the two sides. Seed 1 is used throughout, and for H1 and G4 seeds 2 to 5 as well (section 2.3). The simulations draw their learners
+from a seed too, seed 1 for every table; every simulated table was repeated on seeds 2 to 5 as a check after the
+results (section 3.3).
 
 BKT is fitted for each skill separately by a search over a grid: the starting probability from 0.05 to 0.95 in steps
 of 0.1, the learning probability at 0.01, 0.03, 0.05, 0.1, 0.15, 0.2 and 0.3, and the guess and slip probabilities
@@ -367,13 +369,17 @@ each skill, each skill's rate and the overall rate) are reported as reference ro
 The difference between two models in mean log-loss per answer is computed on the same held-out answers, so the
 comparison is paired. Its 95 % interval comes from 10,000 bootstrap resamples of whole students, because one
 student's answers are not independent of each other, and the verdict follows the rule in section 2.2 (`npm run h1`,
-`npm run grain`). Split seed 1 decides H1 and G4. For H1, seeds 2 to 5 show whether the result depends on which
-students happened to be held out. Students in one class share a teacher and lessons, so their answers are related too,
+`npm run grain`). Split seed 1 decides H1 and G4. For both, seeds 2 to 5 show whether the result depends on which students happened to
+be held out. Students in one class share a teacher and lessons, so their answers are related too,
 and resampling students as if they were independent makes the interval too narrow. As a robustness check, not a second
 test, the interval is also computed by resampling whole classes. For G4 the paired comparisons are BKT at the finest
 grain against BKT at the coarsest, which is the test, and the other pairs of grains for BKT and for the EMA as
 description; and what coarsening costs BKT minus what it costs the EMA, per answer, with an interval from the same
-resampling.
+resampling. Every one of these is also made by resampling whole classes. The middle grain is the importer's grouping of
+the skills into topics by keywords, and to see whether the grouping matters or only the number of groups, the topics
+are set beside 100 random groupings of the same skills into groups of the same sizes, with the same students held out;
+the share of random groupings that predict at least as well is a one-sided permutation p-value (`npm run grain --
+--partitions 100`). Both are checks made after the results.
 
 For mastery decisions where the truth is known (H2, G1 to G3), each method's rule gives, for each held-out student and
 skill, the answer after which it first declares mastery, or none. Three measures describe a rule. Its precision is the
