@@ -123,4 +123,5 @@ parts and the data they are tested on; and how the methods are fitted and each h
 reports and discusses the results, first for the methods at one grain and then for the four granularity studies, and
 closes with the conclusion: the answers to the hypotheses and the research question, the recommendation of how Zeno
 should decide mastery and at what grain, the threats to validity and the work that should follow. Appendix A
-describes Zeno briefly, and Appendix B lists the command behind every number.
+describes Zeno briefly, Appendix B lists the command behind every number, Appendix C records when each hypothesis was
+fixed, Appendix D gives the robustness checks, and Appendix E sets Zeno's skills against a primary syllabus.
