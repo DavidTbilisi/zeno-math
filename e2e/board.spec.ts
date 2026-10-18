@@ -1,6 +1,7 @@
 // A teacher's board: make it, put a shape and a live piece on it, use the piece, and find everything again after a
-// reload (and on the server).
+// reload (and on the server); a piece changed in the moment after the click that starts it still answers clicks.
 import { expect, test } from "@playwright/test";
+import { boardWith } from "./helpers.ts";
 
 test("a board keeps a shape and a live piece's state across a reload", async ({ page, request }) => {
   const errors: string[] = [];
@@ -41,4 +42,12 @@ test("a board keeps a shape and a live piece's state across a reload", async ({ 
   await expect(page.locator(".live-dice .live-history .live-chip")).toHaveCount(1);
   expect(await saved()).toEqual(before);
   expect(errors).toEqual([]);
+});
+
+test("a piece changed in the 100 ms before Excalidraw starts it still answers clicks", async ({ page }) => {
+  // Excalidraw starts a piece 100 ms after the click in its middle, holding the element as it was at the click; a
+  // change in between (here a mirror line chosen at once) used to leave the piece behind the canvas for good.
+  const game = await boardWith(page, "Lines of symmetry: fold the shape", ".live-mirror");
+  await game.getByRole("button", { name: "Line 1", exact: true }).dispatchEvent("click");
+  await game.getByRole("button", { name: "Check" }).click({ timeout: 5000 });
 });
