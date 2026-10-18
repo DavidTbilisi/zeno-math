@@ -12,6 +12,31 @@ async function openPractice(page: Page) {
   await page.locator(".practice-join, .practice-class").first().waitFor();
 }
 
+/**
+ * Answers the practice question wrong if it can: true when it is marked wrong, false when the only answer it takes was
+ * right. A typed answer of the wrong kind (one root of two, a number for an inequality) is sent back for its form, so
+ * kinds are tried until one is marked wrong; a question answered from buttons (equal expressions, graph stories) sends
+ * back every typed answer, so its first option is picked, which may be the right one.
+ */
+async function answerWrong(page: Page): Promise<boolean> {
+  const verdict = page.locator(".practice-verdict");
+  const marked = async () => {
+    await page.getByRole("button", { name: "Check" }).click();
+    await expect(verdict).toBeVisible();
+    return verdict.evaluate((e) => (e.classList.contains("bad") ? "bad" : e.classList.contains("ok") ? "ok" : "again"));
+  };
+  for (const wrong of ["12345", "12345; 12346", "x > 12345", "x^7 + 12345"]) {
+    await page.getByLabel("Your answer").fill(wrong);
+    if ((await marked()) === "bad") return true;
+  }
+  const pick = page.locator(".sign-picks button").first();
+  if (!(await pick.count())) throw new Error(`no answer marked wrong: ${await page.locator(".practice-prompt").textContent()}`);
+  await pick.click();
+  const after = await marked();
+  if (after === "again") throw new Error(`the first option was sent back: ${await verdict.textContent()}`);
+  return after === "bad";
+}
+
 test("a teacher makes a class, a student joins and practises, and the pre-test reaches the student", async ({ browser, request }) => {
   // The teacher: sign in, make a class of algebra with a four-question test.
   const teacher = await browser.newPage();
@@ -44,23 +69,21 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await expect(student.getByText(/Chosen for you:/)).toBeVisible();
   // The question is a picture; a screen reader gets its words (and its maths as MathML) instead.
   expect((await student.locator(".preview .sr-only").first().textContent())!.trim().length).toBeGreaterThan(5);
-  // A wrong answer of the right kind: an answer of the wrong kind (one root of two, a number for an inequality) is
-  // sent back for its form, so try kinds until one is marked wrong.
-  for (const wrong of ["12345", "12345; 12346", "x > 12345", "x^7 + 12345"]) {
-    await student.getByLabel("Your answer").fill(wrong);
-    await student.getByRole("button", { name: "Check" }).click();
-    const verdict = student.locator(".practice-verdict");
-    await expect(verdict).toBeVisible();
-    if (await verdict.evaluate((e) => e.classList.contains("bad"))) break;
+  // A question whose first option was the right one is answered and left for the next.
+  let questions = 1;
+  while (!(await answerWrong(student))) {
+    expect(questions, "a wrong answer within ten questions").toBeLessThan(10);
+    await student.getByRole("button", { name: "Next" }).click();
+    questions++;
   }
   await expect(student.getByText("Not quite — try again.")).toBeVisible();
   await student.getByRole("button", { name: "Show solution" }).click();
   await student.getByRole("button", { name: "Next" }).click();
 
-  // The attempt reaches the server, under the student's condition.
+  // The attempts reach the server, under the student's condition.
   const attempts = async () =>
     (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers: { "X-Teacher-Password": TEACHER } })).text()).trim().split("\n").length - 1;
-  await expect.poll(attempts).toBe(1);
+  await expect.poll(attempts).toBe(questions);
 
   // The teacher starts the pre-test; the student's practice dialog, opened again, shows the test.
   await teacher.getByRole("button", { name: "Pre-test" }).click();
