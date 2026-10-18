@@ -3,7 +3,7 @@
 // bootstrap of BKT against the moving average.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { assistmentsTopic, csvRecords, fromAssistments, fromFile, toFile } from "../src/model/datasets.ts";
+import { assistmentsTopic, csvRecords, fromAssistments, fromFile, longPractices, toFile } from "../src/model/datasets.ts";
 import { EloModel, type Observation } from "../src/model/elo.ts";
 import {
   BktModel, bktStep, bootstrapGroups, EmaModel, evaluateHeldOut, fitBkt, fitLogistic, globalRate, heldOutPredictions, pairedLogLoss, PfaModel, solve, splitByStudent,
@@ -98,6 +98,14 @@ function answers(students: number, perStudent: number) {
   const r = rng(5);
   return Array.from({ length: students * perStudent }, (_, i): Observation => ({ student: `s${i % students}`, skill: "k", level: 2, correct: r.next() < 2 / 3 }));
 }
+
+test("only the practices long enough are kept, each whole and in order", () => {
+  const o = (student: string, skill: string, correct: boolean): Observation => ({ student, skill, level: 2, correct });
+  const answers = [o("a", "x", false), o("b", "x", true), o("a", "y", true), o("a", "x", true), o("b", "x", true), o("a", "x", false)];
+  assert.deepEqual(longPractices(answers, 3), [answers[0], answers[3], answers[5]]);
+  assert.deepEqual(longPractices(answers, 2), [answers[0], answers[1], answers[3], answers[4], answers[5]]);
+  assert.deepEqual(longPractices(answers, 1), answers);
+});
 
 test("the split keeps each student whole, on the same side every run, in the order answered", () => {
   const all = answers(500, 4);

@@ -4,14 +4,16 @@
 // better) gets a 95 % interval from the paired bootstrap over students, and a verdict by the rule fixed in advance.
 // The first split seed is the test; the others only show whether the result hangs on one split. When the data set
 // names each student's class, the interval is also made by resampling whole classes, a robustness check and not a
-// second test: students in one class share a teacher and lessons, so resampling students alone is optimistic.
+// second test: students in one class share a teacher and lessons, so resampling students alone is optimistic. With
+// --min-practice only the practices of at least that many answers are kept, a check that the result holds beyond the
+// short practices a stopping rule leaves (src/model/datasets.ts).
 //
 //   npm run h1 -- --observations assistments.json     a data set (scripts/import-assistments.ts)
 //   npm run h1 -- zeno-attempts.csv                   the CSV from /api/research/attempts.csv
 //   npm run h1 -- --simulate                          synthetic learners, to try it without data
-//   --seeds 1,2,3,4,5   --test-share 0.2   --resamples 10000   --smallest 0.005   --json
+//   --seeds 1,2,3,4,5   --test-share 0.2   --resamples 10000   --smallest 0.005   --min-practice 1   --json
 import { readFileSync } from "node:fs";
-import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
+import { fromFile, longPractices, type DatasetFile } from "../src/model/datasets.ts";
 import type { Observation } from "../src/model/elo.ts";
 import { BktModel, EmaModel, heldOutPredictions, observationsFromCsv, pairedLogLoss, SMALLEST_DIFFERENCE, splitByStudent, type PairedTest } from "../src/model/evaluate.ts";
 import { simulateRandom } from "../src/model/simulate.ts";
@@ -25,18 +27,20 @@ const fail = (message: string) => {
   console.error(message);
   process.exit(2);
 };
-const valued = new Set(["--observations", "--seeds", "--test-share", "--resamples", "--smallest"]);
+const valued = new Set(["--observations", "--seeds", "--test-share", "--resamples", "--smallest", "--min-practice"]);
 const file = args.find((a, i) => !a.startsWith("--") && !valued.has(args[i - 1]));
 const dataset = opt("--observations");
-if (!file && !dataset && !args.includes("--simulate")) fail("usage: npm run h1 -- <attempts.csv> | --observations <data.json> | --simulate   [--seeds 1,2,3,4,5] [--test-share 0.2] [--resamples 10000] [--smallest 0.005] [--json]");
+if (!file && !dataset && !args.includes("--simulate")) fail("usage: npm run h1 -- <attempts.csv> | --observations <data.json> | --simulate   [--seeds 1,2,3,4,5] [--test-share 0.2] [--resamples 10000] [--smallest 0.005] [--min-practice 1] [--json]");
 const seeds = (opt("--seeds") ?? "1,2,3,4,5").split(",").map(Number);
 const testShare = Number(opt("--test-share") ?? 0.2);
 const resamples = Number(opt("--resamples") ?? 10000);
 const smallest = Number(opt("--smallest") ?? SMALLEST_DIFFERENCE);
+const minPractice = Number(opt("--min-practice") ?? 1);
 if (!seeds.length || seeds.some((s) => !Number.isInteger(s))) fail("--seeds must be whole numbers, separated by commas");
 if (!(testShare > 0 && testShare < 1)) fail("--test-share must be between 0 and 1");
 if (!Number.isInteger(resamples) || resamples < 100) fail("--resamples must be a whole number of at least 100");
 if (!(smallest > 0)) fail("--smallest must be above 0");
+if (!Number.isInteger(minPractice) || minPractice < 1) fail("--min-practice must be a whole number above 0");
 
 let source = "simulated class";
 let observations: Observation[];
@@ -44,7 +48,8 @@ let classes: Record<string, string> = {};
 if (dataset) ({ source, observations, classes } = fromFile(JSON.parse(readFileSync(dataset, "utf8")) as DatasetFile));
 else if (file) (source = file), (observations = observationsFromCsv(readFileSync(file, "utf8")));
 else observations = simulateRandom().observations;
-if (!observations.length) fail("no usable attempts in the file");
+observations = longPractices(observations, minPractice);
+if (!observations.length) fail(minPractice > 1 ? `no practice of ${minPractice} answers or more` : "no usable attempts in the file");
 
 // A student with no class stands alone, as in the student-level bootstrap.
 const classOf = (student: string) => (student in classes ? `class ${classes[student]}` : `student ${student}`);
@@ -62,11 +67,11 @@ const runs: (PairedTest & { seed: number; ema: EmaModel["params"]; byClass?: Pai
 });
 
 if (args.includes("--json")) {
-  console.log(JSON.stringify({ source, testShare, resamples, smallest, runs }, null, 2));
+  console.log(JSON.stringify({ source, minPractice, testShare, resamples, smallest, runs }, null, 2));
 } else {
   const n = (x: number) => x.toLocaleString("en");
   const signed = (x: number) => `${x < 0 ? "−" : "+"}${Math.abs(x).toFixed(4)}`;
-  console.log(`${source}: ${n(observations.length)} answers; ${(testShare * 100).toFixed(0)} % of students held out; ${n(resamples)} resamples of students; smallest difference that counts ${smallest}\n`);
+  console.log(`${source}: ${n(observations.length)} answers${minPractice > 1 ? ` in practices of ${minPractice} or more` : ""}; ${(testShare * 100).toFixed(0)} % of students held out; ${n(resamples)} resamples of students; smallest difference that counts ${smallest}\n`);
   console.log(`${"seed".padEnd(8)}${"students".padStart(9)}${"answers".padStart(10)}${"BKT".padStart(9)}${"EMA".padStart(9)}${"BKT − EMA".padStart(11)}  ${"95 % interval".padEnd(20)}verdict`);
   for (const r of runs)
     console.log(`${`${r.seed}${r === runs[0] ? " (test)" : ""}`.padEnd(8)}${n(r.students).padStart(9)}${n(r.answers).padStart(10)}${r.firstLogLoss.toFixed(4).padStart(9)}${r.secondLogLoss.toFixed(4).padStart(9)}${signed(r.difference).padStart(11)}  ${`[${signed(r.interval[0])}, ${signed(r.interval[1])}]`.padEnd(20)}${r.verdict.replace("first", "BKT").replace("second", "EMA")}`);

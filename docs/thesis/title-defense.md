@@ -265,7 +265,15 @@ share right within six points of the data set's overall rate, so a declaration t
 **What is the role of Zeno, the platform?** It is the context and the code base, not what is evaluated. The thesis
 describes it briefly; the experiment is the contribution.
 
-**Did you check whether your results hold up, or are they one lucky run?** I checked four ways, after the results,
+**The ASSISTments skill builders stopped at three right in a row. Doesn't that decide your real-data results?** It
+limits them, and I checked how far. It means the real data cannot show the streak rule declaring too early, which is
+why H3 is exploratory and the decisions are compared in simulation. For prediction I reran H1 and G4 on only the
+practices that went on to ten answers or more, 8,723 of them with 159,000 answers. Both hold on all five splits and with
+whole classes resampled: BKT still predicts better than the moving average, by 0.015 per answer instead of 0.023, and
+still better at the finest grain than at one skill, by 0.027 to 0.033, while the moving average stays indifferent to the
+grain.
+
+**Did you check whether your results hold up, or are they one lucky run?** I checked five ways, after the results,
 and the thesis reports each as a check. Every simulated table was repeated on four more seeds: every verdict held, H2
 with forgetting on all five and BKT never meeting the standard in the gradual worlds on any, and two numbers of a
 single seed did not, the share of hcf's missing idea found, which ranges from a quarter to four fifths, and the gain
@@ -277,7 +285,7 @@ learning rate becomes a tie at 0.8 or below, while BKT's needed threshold climbs
 the moving average's stays between 0.75 and 0.99. And the middle grain of G4, the topics I grouped by keywords, was set beside 100 random groupings of the same sizes:
 for BKT the keyword topics are no better than random, 78 of 100 do as well, so only the number of groups matters to it;
 for the moving average they beat all 100, so it does use a sequence of related skills. The confirmatory test, 110 skills
-against one, never involved the topics. Finally, Appendix C lists, from the public repository, when each
+against one, never involved the topics. H1 and G4 also hold on the long practices alone, as in the previous answer. Finally, Appendix C lists, from the public repository, when each
 hypothesis and each result was committed, with GitHub's own merge times, so anyone can see the tests were fixed first.
 
 ## Plan by stage
