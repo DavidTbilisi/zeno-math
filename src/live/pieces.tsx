@@ -108,9 +108,14 @@ export function Clock({ state, set, w, svgRef }: PieceProps<"clock">) {
           return <line key={m} x1={x0} y1={y0} x2={x1} y2={y1} stroke={INK} strokeWidth={m % 5 ? 1.5 : 3.5} />;
         })}
         {Array.from({ length: 12 }, (_, i) => {
-          const [x, y] = around(c, c, r - 44, (i + 1) * 30);
+          const [x, y] = around(c, c, r - (state.showMinutes ? 56 : 44), (i + 1) * 30);
           return <text key={i} x={x} y={y + 9} fontSize={26} textAnchor="middle" fill={INK}>{i + 1}</text>;
         })}
+        {state.showMinutes &&
+          Array.from({ length: 12 }, (_, i) => {
+            const [x, y] = around(c, c, r - 32, (i + 1) * 30);
+            return <text key={i} x={x} y={y + 5} fontSize={14} textAnchor="middle" fill={BLUE}>{(i + 1) * 5}</text>;
+          })}
         {state.showTime && (
           <g>
             <rect x={c - 50} y={306} width={100} height={38} rx={6} fill="#f1f3f5" stroke="#ced4da" />
@@ -123,6 +128,7 @@ export function Clock({ state, set, w, svgRef }: PieceProps<"clock">) {
       </svg>
       <div className="live-bar">
         <Toggle on={state.showTime} onClick={() => set({ ...state, showTime: !state.showTime })}>{w.clock.showTime}</Toggle>
+        <Toggle on={!!state.showMinutes} onClick={() => set({ ...state, showMinutes: !state.showMinutes })}>{w.clock.showMinutes}</Toggle>
         <Toggle on={state.snap} onClick={() => set({ ...state, snap: !state.snap, minutes: state.snap ? state.minutes : snapTo(state.minutes, 5) })}>{w.clock.snap}</Toggle>
         <button className="live-btn" title={w.clock.random} aria-label={w.clock.random} onClick={() => set({ ...state, minutes: 5 * Math.floor(Math.random() * 144) })}>🎲</button>
       </div>

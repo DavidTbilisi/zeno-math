@@ -3953,6 +3953,7 @@ export const ru: Dict = {
     clock: {
       showTime: "Цифровое время",
       snap: "Шаг 5 минут",
+      showMinutes: "Минуты",
       random: "Случайное время",
     },
     dice: {

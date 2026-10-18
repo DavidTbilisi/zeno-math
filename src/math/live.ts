@@ -337,7 +337,7 @@ export const DEFAULT_LIVE_GRAPH: LiveGraphState = {
 export type ChanceView = "bars" | "time";
 
 export type LiveStates = {
-  clock: { minutes: number; showTime: boolean; snap: boolean };
+  clock: { minutes: number; showTime: boolean; snap: boolean; showMinutes?: boolean };
   dice: { count: number; faces: number[]; history: number[] };
   spinner: { sections: number; angle: number; result: number; counts: number[] };
   coin: { side: number; counts: [number, number] };
@@ -435,7 +435,7 @@ export const isLiveKind = (k: unknown): k is LiveKind => typeof k === "string" &
 
 export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
   const start: LiveStates = {
-    clock: { minutes: 10 * 60 + 10, showTime: true, snap: true },
+    clock: { minutes: 10 * 60 + 10, showTime: true, snap: true, showMinutes: true },
     dice: { count: 2, faces: [3, 5], history: [] },
     spinner: { sections: 4, angle: 30, result: -1, counts: [0, 0, 0, 0] },
     coin: { side: 0, counts: [0, 0] },
