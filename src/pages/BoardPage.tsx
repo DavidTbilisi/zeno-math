@@ -342,6 +342,19 @@ export function BoardPage({ id }: { id: string }) {
     const math = mathOf(sel) ? (sel as ExcalidrawImageElement) : undefined;
     setSelectedMath((prev) => (prev?.id === math?.id && prev?.version === math?.version ? prev : math));
 
+    // Excalidraw makes a piece active 100 ms after the click in its middle, with the element as it was at the click.
+    // A piece changed in between is a new element by then, so Excalidraw would keep it behind the canvas: point it at
+    // the element as it is now (as liveHost.update does for changes made while active).
+    const active = appState.activeEmbeddable;
+    const current = active && elements.find((e) => e.id === active.element.id);
+    if (current && current !== active.element && !current.isDeleted)
+      window.setTimeout(() => {
+        const ex = excalidraw.current;
+        const now = ex?.getAppState().activeEmbeddable;
+        const el = now && ex.getSceneElements().find((e) => e.id === now.element.id);
+        if (el && el !== now.element) ex.updateScene({ appState: { activeEmbeddable: { element: el, state: now.state } }, captureUpdate: CaptureUpdateAction.NEVER });
+      }, 0);
+
     // Debounced autosave, only when the drawing actually changed.
     const version = getSceneVersion(elements);
     if (version === lastSaved.current.version && Object.keys(files).length === lastSaved.current.files) return;
