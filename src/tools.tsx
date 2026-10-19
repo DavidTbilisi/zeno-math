@@ -151,6 +151,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "ai", icon: "∂", label: "aiBackprop", start: "backprop" },
       { kind: "ai", icon: "eᶻ", label: "aiSoftmax", start: "softmax" },
       { kind: "ai", icon: "∠", label: "aiEmbed", start: "embed" },
+      { kind: "ai", icon: "Σ", label: "aiSvd", start: "svd" },
     ],
   },
   {

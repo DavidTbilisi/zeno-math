@@ -407,7 +407,7 @@ UI in English, Russian and Georgian.
     and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
   - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
     around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
-- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, gradient descent, backpropagation, softmax with cross-entropy, and embeddings with cosine similarity
+- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, gradient descent, backpropagation, softmax with cross-entropy, embeddings with cosine similarity, and SVD with PCA
   - *Tensors* as NumPy and PyTorch see them, a box of numbers with a shape: type a number, a list `[5, 3, 7]`, a
     nested list `[[1, 2], [3, 4]]` or a shape `2x3x4` (filled 1, 2, 3, … in memory order; `shape 5` for a vector).
     A scalar is drawn as one cell, a vector as a row, a matrix as a grid with its rows and columns as axis 0 and
@@ -461,6 +461,18 @@ UI in English, Russian and Georgian.
     longer vector first; `analogy king - man + woman` finds the nearest vector to the sum, leaving the three out. With
     three or more vectors the matrix of cosines (E Eᵀ for unit rows) is drawn beside them, and vectors in a plane are
     drawn as arrows with the angle between the pair and the analogy's steps dashed
+  - *SVD & PCA*: a matrix such as `[[3, 2, 2], [2, 3, -2]]` (up to 8 × 8) taken apart as A = UΣVᵀ, the four matrices
+    drawn as shaded grids and the singular values as bars with their share of σ₁² + σ₂² + … (the sum of the squared
+    entries). The captions give the rank (the number of σ that are not 0), A as a sum of rank-1 pieces σᵢuᵢvᵢᵀ, the
+    eigenvalues of a symmetric matrix, and the condition number; for a 2 × 2 matrix the unit circle is drawn beside the
+    ellipse A makes of it, v₁ and v₂ going to σ₁u₁ and σ₂u₂. `rank 1` keeps the first pieces, fades the rest, and draws
+    A₁ beside what it misses, which is √(the dropped σ²) and no rank-1 matrix beats (Eckart–Young). With `pca`, the
+    rows are points (up to 30, with 2 to 8 features, also written `(2.5, 2.4), (0.5, 0.7), …`): they are centred
+    (and with `standardize` scaled), and the covariance matrix, the principal components as its eigenvectors (the
+    right singular vectors of the centred data), the variance each explains and what keeping k loses are worked out.
+    Two features are drawn as points with the components from the mean and each point's projection onto PC1; more
+    are drawn by their scores on PC1 and PC2. A feature whose variance is over 100 times another's is pointed out,
+    since PC1 then follows its units
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1247,8 +1259,9 @@ src/math/numerical.ts     numerical methods: change of sign, bisection, Newton�
 src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank),
                           their operations (reshape, permute, reductions, broadcasting, @), gradient descent (rates,
                           momentum, verdicts, curvature), backpropagation (computational graphs, the chain rule),
-                          softmax with cross-entropy and embeddings (cosine similarity, nearest neighbours,
-                          analogies) + pictures
+                          softmax with cross-entropy, embeddings (cosine similarity, nearest neighbours,
+                          analogies) and SVD with PCA (Jacobi SVD, rank-k approximation, principal components)
+                          + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

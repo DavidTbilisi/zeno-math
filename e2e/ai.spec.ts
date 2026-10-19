@@ -5,7 +5,8 @@
 // Backprop opens on a neuron's squared error, says which input has no value, and draws a step of gradient descent.
 // Softmax opens on cat, dog and bird with cat as the target, refuses a target that is not a class, and draws three
 // temperatures onto the board. Embeddings open on three words with a query, say which name is unknown, and draw
-// king − man + woman onto the board.
+// king − man + woman onto the board. SVD & PCA opens on a best rank-1 approximation, refuses a rank too large, and
+// draws PCA of points onto the board.
 import { expect, test } from "@playwright/test";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
@@ -168,4 +169,32 @@ test("embeddings: an unknown name is refused, and an analogy inserts", async ({ 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue(/; analogy king - man \+ woman$/);
+});
+
+test("SVD & PCA: a rank too large is refused, and PCA of points inserts", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "SVD" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /SVD & PCA/ }).click();
+
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("tab", { name: "SVD & PCA" })).toHaveAttribute("aria-selected", "true");
+  await expect(dialog.getByRole("tab", { name: "SVD & PCA" })).toBeInViewport({ ratio: 0.95 });
+  await expect(dialog.getByRole("textbox")).toHaveValue("[[3, 2, 2], [2, 3, -2]]; rank 1");
+  const preview = dialog.locator(".preview img");
+  await expect(preview).toBeVisible();
+
+  await dialog.getByRole("textbox").fill("[[3, 2, 2], [2, 3, -2]]; rank 3");
+  await expect(dialog.locator(".preview .error")).toHaveText(/Keep from 1 to 2 singular values/);
+  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
+
+  await dialog.getByRole("button", { name: "PCA: the line through the points" }).click();
+  await expect(preview).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("svd.png") });
+  await dialog.getByRole("button", { name: "Insert" }).click();
+
+  await expect(dialog).toHaveCount(0);
+  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue(/; pca$/);
 });
