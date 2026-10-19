@@ -407,7 +407,7 @@ UI in English, Russian and Georgian.
     and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
   - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
     around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
-- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, gradient descent and backpropagation
+- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, gradient descent, backpropagation, and softmax with cross-entropy
   - *Tensors* as NumPy and PyTorch see them, a box of numbers with a shape: type a number, a list `[5, 3, 7]`, a
     nested list `[[1, 2], [3, 4]]` or a shape `2x3x4` (filled 1, 2, 3, … in memory order; `shape 5` for a vector).
     A scalar is drawn as one cell, a vector as a row, a matrix as a grid with its rows and columns as axis 0 and
@@ -445,6 +445,13 @@ UI in English, Russian and Georgian.
     each path from it to L and added up where it is used more than once (`; explain w`), with the path drawn in
     orange and checked by a central difference; a dead ReLU or a saturated sigmoid is pointed out; and
     `; learn w b; rate 0.01` takes one step of gradient descent with the new values and the new L
+  - *Softmax & cross-entropy*: scores such as `[2, 1, 0.1]`, with `labels cat, dog, bird`, a `target` (a class by
+    number or label, or a distribution such as `[0.8, 0.1, 0.1]`) and up to three temperatures
+    (`temperature 0.5, 1, 5`). One row per class: its score, e^(z − max), its probability as a bar over the target's
+    dashed one, and the gradient p − y as a signed bar. The captions say why the largest score is taken off first
+    (and when e^z would overflow without it), that two classes are the sigmoid of the difference, how temperature
+    sharpens or flattens, the cross-entropy worked out against a uniform guess (ln k), a confident mistake, and for a
+    soft target the entropy H(y) it can never go below and the KL divergence above it
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1230,8 +1237,8 @@ src/math/numerical.ts     numerical methods: change of sign, bisection, Newton�
                           Simpson, numerical derivatives + pictures
 src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank),
                           their operations (reshape, permute, reductions, broadcasting, @), gradient descent (rates,
-                          momentum, verdicts, curvature) and backpropagation (computational graphs, the chain rule) +
-                          pictures
+                          momentum, verdicts, curvature), backpropagation (computational graphs, the chain rule) and
+                          softmax with cross-entropy + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures
