@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
@@ -407,6 +407,16 @@ UI in English, Russian and Georgian.
     and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
   - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
     around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
+- **🤖 Math for AI** — the maths that machine learning is written in, starting with tensors
+  - *Tensors* as NumPy and PyTorch see them, a box of numbers with a shape: type a number, a list `[5, 3, 7]`, a
+    nested list `[[1, 2], [3, 4]]` or a shape `2x3x4` (filled 1, 2, 3, … in memory order; `shape 5` for a vector).
+    A scalar is drawn as one cell, a vector as a row, a matrix as a grid with its rows and columns as axis 0 and
+    axis 1, an order-3 tensor as its slices T[0], T[1], … beside the box they stack into, and an order-4 one (a
+    batch) as rows of slices. The header writes it as T ∈ ℝ²ˣ³ˣ⁴ with the number of entries; the captions give the
+    order (how many indices pick out one number), the shape, the strides of row-major storage, and for a matrix its
+    rank, kept apart from its order (both get called "rank"). A column vector written as a 3 × 1 matrix has order 2,
+    the list has order 1. `; T[1, 2, 3]` picks out an entry and shows where it sits in memory (1·12 + 2·4 + 3·1 =
+    23). A list that is not a full box (rows of different lengths) is refused with the reason
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1190,6 +1200,8 @@ src/math/euclid.ts        school geometry: circle theorems, similarity & congrue
                           volume, constructions & loci + figures
 src/math/numerical.ts     numerical methods: change of sign, bisection, Newton–Raphson, iteration, trapezium &
                           Simpson, numerical derivatives + pictures
+src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank) +
+                          pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

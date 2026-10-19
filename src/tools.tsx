@@ -19,7 +19,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -85,6 +85,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   polynomials: { Dialog: load(() => import("./components/PolyDialog"), "PolyDialog"), edit: "editPolynomials", topics: (t) => t.polyTopics, hints: (t) => t.polyHints },
   euclid: { Dialog: load(() => import("./components/EuclidDialog"), "EuclidDialog"), edit: "editEuclid", topics: (t) => t.euclidTopics, hints: (t) => t.euclidHints },
   numerical: { Dialog: load(() => import("./components/NumDialog"), "NumDialog"), edit: "editNumerical", topics: (t) => t.numTopics, hints: (t) => t.numHints },
+  ai: { Dialog: load(() => import("./components/AiDialog"), "AiDialog"), edit: "editAi", topics: (t) => t.aiTopics, hints: (t) => t.aiHints },
 };
 
 export const isToolKind = (k: unknown): k is ToolKind => typeof k === "string" && Object.hasOwn(TOOLS, k);
@@ -140,6 +141,11 @@ export const MENUS: MenuGroup[] = [
       { kind: "algo", icon: "⇅", label: "algo" },
       { kind: "statistics", icon: "📊", label: "statistics" },
       { kind: "inference", icon: "H₀", label: "inference" },
+    ],
+  },
+  {
+    icon: "🤖", label: "groupAi", title: "groupAiTitle", items: [
+      { kind: "ai", icon: "⊞", label: "aiTensors", start: "tensor" },
     ],
   },
   {
