@@ -36,6 +36,7 @@ import { renderIdentities, ID_PRESETS } from "../src/math/identities.ts";
 import { renderPolynomials, POLY_PRESETS } from "../src/math/polynomials.ts";
 import { renderEuclid, EUCLID_PRESETS } from "../src/math/euclid.ts";
 import { renderNumerical, NUM_PRESETS } from "../src/math/numerical.ts";
+import { renderAi, AI_PRESETS } from "../src/math/ai.ts";
 
 // Presets come as a list or as { topic: list }, of specs or of { label, spec }.
 function specs(presets: unknown): any[] {
@@ -73,6 +74,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["polynomials", specs(POLY_PRESETS), (s, t) => renderPolynomials(s, t.polyWords)],
   ["school geometry", specs(EUCLID_PRESETS), (s, t) => renderEuclid(s, t.euclidWords)],
   ["numerical methods", specs(NUM_PRESETS), (s, t) => renderNumerical(s, t.numWords)],
+  ["math for AI", specs(AI_PRESETS), (s, t) => renderAi(s, t.aiWords)],
   ["vector spaces", SPACE_PRESETS.map((p) => ({ ...DEFAULT_SPACE, op: p.op, A: p.A, w: p.w ?? DEFAULT_SPACE.w })), (s, t) => renderSpace(s, t.spaceWords)],
 ];
 
