@@ -73,12 +73,13 @@ export function Target({ state: d, set, w: words, svgRef }: PieceProps<"target">
   const stars = targetStars(d.ways.length, d.hinted);
   const right = value && value[1] === 1 && value[0] === p.target;
   const madeText = fill(d.ways.length >= 2 ? w.twoWays : w.made, { stars: starText(stars) });
+  // The level's way of thinking about the puzzle stays in view, before the hint and beside its first step.
+  const think = fill(w.think[p.level], { t: p.target });
   const said =
     d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${madeText}`
     : made ? madeText
-    : d.hinted ? fill(w.hintText, { s: firstStep(p.sample) })
-    : p.all ? fill(w.useAll, { n: p.cards.length })
-    : w.hint;
+    : d.hinted ? `${think} ${fill(w.hintText, { s: firstStep(p.sample) })}`
+    : `${p.all ? fill(w.useAll, { n: p.cards.length }) : w.hint} ${think}`;
   return (
     <>
       <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />

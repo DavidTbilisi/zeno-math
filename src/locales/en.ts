@@ -4171,6 +4171,12 @@ export const en = {
       hintBtn: "Hint",
       hintCost: "The hint leaves one star",
       hintText: "Try starting with {s}.",
+      // How to think about a puzzle at each level: a number bond, a times fact and a bond, two smaller puzzles.
+      think: {
+        1: "Think of {t} as two parts: a card and the rest. Can the other cards make the rest?",
+        2: "Look for a times fact near {t} and make up the difference with the other cards, or split {t} into parts the cards can make.",
+        3: "Choose the last step: two numbers that make {t}, such as a factor pair. Then make each from its own group of cards.",
+      },
       back: "Take the last piece back",
       skip: "Skip",
       notices: {
