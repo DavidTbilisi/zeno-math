@@ -2,6 +2,7 @@
 // says why, and the picture goes on the board and opens again for editing. Tensor operations open on their own tab,
 // shapes that do not broadcast say why, and a matrix product goes on the board. Gradient descent opens on three
 // learning rates, refuses a rate that is not positive, and draws a path in two variables onto the board.
+// Backprop opens on a neuron's squared error, says which input has no value, and draws a step of gradient descent.
 import { expect, test } from "@playwright/test";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
@@ -83,4 +84,31 @@ test("gradient descent: three rates, a wrong rate refused, a valley inserted", a
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("x^2 + 10y^2; start (8, 1); rate 0.09");
+});
+
+test("backprop: a missing value is named, and a step of gradient descent inserts", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Backprop" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Backpropagation/ }).click();
+
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("tab", { name: "Backprop" })).toHaveAttribute("aria-selected", "true");
+  await expect(dialog.getByRole("textbox")).toHaveValue("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; explain w");
+  const preview = dialog.locator(".preview img");
+  await expect(preview).toBeVisible();
+
+  await dialog.getByRole("textbox").fill("(w x + b - y)^2; x = 2, w = 3, b = 1");
+  await expect(dialog.locator(".preview .error")).toHaveText(/y has no value/);
+  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
+
+  await dialog.getByRole("button", { name: "and one step of gradient descent" }).click();
+  await expect(preview).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("backprop.png") });
+  await dialog.getByRole("button", { name: "Insert" }).click();
+
+  await expect(dialog).toHaveCount(0);
+  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; learn w b; rate 0.01");
 });

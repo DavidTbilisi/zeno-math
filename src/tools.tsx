@@ -148,6 +148,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "ai", icon: "⊞", label: "aiTensors", start: "tensor" },
       { kind: "ai", icon: "⇄", label: "aiOps", start: "ops" },
       { kind: "ai", icon: "↘", label: "aiDescent", start: "descent" },
+      { kind: "ai", icon: "∂", label: "aiBackprop", start: "backprop" },
     ],
   },
   {
