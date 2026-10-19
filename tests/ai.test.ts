@@ -10,12 +10,15 @@
 // options are refused. Backpropagation: on random expressions every input's gradient matches a central difference of
 // the same expression written as plain JavaScript; implicit products, folded constants and inputs used more than once
 // are read and added as they should be; the chain rule is written out along every path; a step of gradient descent
-// moves the learnt inputs; and wrong inputs are refused.
+// moves the learnt inputs; and wrong inputs are refused. Softmax and cross-entropy: probabilities follow the formula,
+// add up to 1 and ignore a shift of every score, sharpen and flatten with the temperature, stay finite for huge
+// scores; the loss is −Σ y ln p and never below the target's entropy, the gradient p − y matches a central difference,
+// and wrong options are refused.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { fill } from "../src/math/text.ts";
-import { buildAi, buildBackprop, buildDescent, buildOps, matrixRank, strides } from "../src/math/ai.ts";
+import { buildAi, buildBackprop, buildDescent, buildOps, buildSoftmax, matrixRank, softmax, strides } from "../src/math/ai.ts";
 
 const w = en.aiWords;
 const T = w.tensor;
@@ -610,6 +613,120 @@ test("wrong expressions, values and options are refused with the reason", () => 
 test("every backprop picture draws", () => {
   for (const src of ["(x + y) z; x = -2, y = 5, z = -4", "w; w = 2", "x x; x = 3", "(v relu(w x + b) + c - y)^2; x = 1, w = 2, b = -0.5, v = 3, c = 0.5, y = 3; learn w b v c; rate 0.01"]) {
     const { svg } = buildBackprop({ topic: "backprop", src }, w).svg;
+    assert.match(svg, /^<svg/);
+    assert.doesNotMatch(svg, /NaN|undefined/, src);
+  }
+});
+
+// ---------- softmax and cross-entropy ----------
+
+const X_ = w.softmax;
+const sm = (src: string) => buildSoftmax({ topic: "softmax", src }, w).data;
+const smCaptions = (src: string) => [...buildSoftmax({ topic: "softmax", src }, w).svg.svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(" ");
+const smThrows = (src: string, message: string) => assert.throws(() => buildSoftmax({ topic: "softmax", src }, w), { message }, src);
+const randomLogits = () => Array.from({ length: int(2, 6) }, () => int(-40, 40) / 10);
+
+test("softmax: the formula, a sum of 1, the order kept, a shift ignored, finite for huge scores", () => {
+  for (let i = 0; i < 60; i++) {
+    const z = randomLogits();
+    const p = softmax(z);
+    const sum = z.reduce((a, v) => a + Math.exp(v), 0);
+    p.forEach((v, j) => close(v, Math.exp(z[j]) / sum, `p${j}`));
+    close(p.reduce((a, b) => a + b, 0), 1, "Σp");
+    softmax(z.map((v) => v + 1000)).forEach((v, j) => close(v, p[j], "shifted"));
+    for (let a = 0; a < z.length; a++) for (let b = 0; b < z.length; b++) if (z[a] > z[b]) assert.ok(p[a] > p[b]);
+    assert.deepEqual(sm(JSON.stringify(z)).probs[0], p);
+  }
+  const huge = sm("[1000, 999, 990]; target 1");
+  assert.ok(huge.probs[0].every(Number.isFinite));
+  close(huge.probs[0][0], 1 / (1 + Math.exp(-1) + Math.exp(-10)), "p₀ of huge scores");
+  assert.ok(smCaptions("[1000, 999, 990]").includes(fill(X_.overflow, { m: "1000" }).split(" (")[0]));
+  assert.ok(!smCaptions("[2, 1, 0.1]").includes("overflow a computer"));
+  // Plain numbers without brackets are read too.
+  assert.deepEqual(sm("2, 1, 0.1").logits, [2, 1, 0.1]);
+});
+
+test("temperature: low T heads for the largest score, high T for uniform; two classes are a sigmoid", () => {
+  const z = [2, 1, 0.1];
+  const d = sm("[2, 1, 0.1]; temperature 0.05, 1, 100");
+  assert.deepEqual(d.temps, [0.05, 1, 100]);
+  assert.ok(d.probs[0][0] > 0.9999);
+  d.probs[2].forEach((v) => assert.ok(Math.abs(v - 1 / 3) < 0.01));
+  d.probs.forEach((q, j) => q.forEach((v, i) => close(v, softmax(z.map((t) => t / d.temps[j]))[i], "p at T")));
+  assert.equal(d.grad, undefined);
+  assert.ok(smCaptions("[2, 1, 0.1]; T = 0.5").includes(fill(X_.temp, { t: "0.5", p: "0.8638", label: fill(X_.classN, { i: 0 }) })));
+  const two = sm("[1.5, 0]; target 0");
+  close(two.probs[0][0], 1 / (1 + Math.exp(-1.5)), "σ(1.5)");
+  assert.ok(smCaptions("[1.5, 0]").includes("σ(1.5) = 0.8176"));
+  assert.ok(!smCaptions("[1.5, 0, 1]").includes("sigmoid of the difference"));
+});
+
+test("cross-entropy: −ln p for a class, −Σ y ln p for a distribution, never below the target's entropy", () => {
+  for (let i = 0; i < 40; i++) {
+    const z = randomLogits();
+    const c = int(0, z.length - 1);
+    const d = sm(`${JSON.stringify(z)}; target ${c}`);
+    close(d.loss![0], -Math.log(softmax(z)[c]), "−ln p");
+    assert.deepEqual(d.target, z.map((_, j) => (j === c ? 1 : 0)));
+    // A soft target: random weights that add up to 1.
+    const raw = z.map(() => int(1, 9));
+    const y = raw.map((v) => v / raw.reduce((a, b) => a + b, 0));
+    const soft = sm(`${JSON.stringify(z)}; target ${JSON.stringify(y)}`);
+    const H = -y.reduce((a, v) => a + v * Math.log(v), 0);
+    close(soft.loss![0], -y.reduce((a, v, j) => a + v * Math.log(softmax(z)[j]), 0), "−Σ y ln p");
+    assert.ok(soft.loss![0] >= H - 1e-12, "Gibbs");
+    // Scores ln y give p = y, where the loss is the entropy itself.
+    close(sm(`${JSON.stringify(y.map(Math.log))}; target ${JSON.stringify(y)}`).loss![0], H, "H(y)");
+  }
+  const labelled = sm("[2, 1, 0.1]; labels cat, dog, bird; target bird");
+  close(labelled.loss![0], -Math.log(softmax([2, 1, 0.1])[2]), "by label");
+  const c = smCaptions("[2, 1, 0.1]; labels cat, dog, bird; target cat");
+  assert.ok(c.includes("Cross-entropy with target cat: L = −ln p = −ln 0.659 = 0.417."));
+  assert.ok(c.includes(fill(X_.uniform, { k: 3, u: "1.0986" })));
+  assert.ok(smCaptions("[8, 1, -2]; labels cat, dog, bird; target dog").includes(fill(X_.confident, { label: "cat", p: "0.9988", L: "7.001" }).split(":")[0]));
+  assert.ok(!smCaptions("[2, 1, 0.1]; target 1").includes("Confidently wrong"));
+  assert.ok(smCaptions("[2, 1, 0.1]; target [0.8, 0.1, 0.1]").includes("the KL divergence"));
+  const temps = sm("[2, 1, 0.1]; temperature 0.5, 1, 5; target 0");
+  temps.loss!.forEach((L, j) => close(L, -Math.log(softmax([2, 1, 0.1].map((v) => v / temps.temps[j]))[0]), "loss at T"));
+  // When the labels are numbers themselves, a label wins over a class number, as target cat does.
+  assert.deepEqual(sm("[1, 2]; labels 1 0; target 1").target, [1, 0]);
+});
+
+test("the gradient of the loss with respect to the scores is (p − y) / T", () => {
+  for (let i = 0; i < 40; i++) {
+    const z = randomLogits();
+    const c = int(0, z.length - 1);
+    const T = [1, 0.5, 2][int(0, 2)];
+    const d = sm(`${JSON.stringify(z)}; target ${c}; temperature ${T}`);
+    const L = (zs: number[]) => -Math.log(softmax(zs, T)[c]);
+    z.forEach((_, j) => {
+      const h = 1e-6;
+      const num = (L(z.map((v, k) => (k === j ? v + h : v))) - L(z.map((v, k) => (k === j ? v - h : v)))) / (2 * h);
+      assert.ok(Math.abs(d.grad![j] - num) < 1e-6, `∂L/∂z${j}: ${d.grad![j]} vs ${num}`);
+    });
+  }
+  assert.ok(smCaptions("[2, 1, 0.1]; target 0").includes(fill(X_.gradient, { g: "pᵢ − yᵢ" }).split(":")[0]));
+  assert.ok(smCaptions("[2, 1, 0.1]; target 0; T = 2").includes("(pᵢ − yᵢ) / T, with T = 2"));
+  assert.ok(smCaptions("[2, 1, 0.1]; target [0.5, 0.5, 0]").includes(fill(X_.gradientSoft, { g: "pᵢ − yᵢ" }).split(":")[0]));
+});
+
+test("wrong scores and options are refused with the reason", () => {
+  const count = fill(X_.count, { max: 10 });
+  smThrows("", w.need.softmax);
+  smThrows("[3]", count);
+  smThrows(JSON.stringify(Array.from({ length: 11 }, (_, i) => i)), count);
+  smThrows("[[1, 2], [3, 4]]", count);
+  smThrows("[1, a]", fill(w.bad, { s: "a]" }));
+  smThrows("[1, 2]; colour red", fill(X_.badOpt, { s: "colour red" }));
+  smThrows("[1, 2, 3]; labels a, b", fill(X_.badLabels, { k: 3 }));
+  for (const t of ["0", "-1", "1, 2, 3, 4", ""]) smThrows(`[1, 2]; temperature ${t}`, fill(X_.badTemp, { max: 3 }));
+  const target = fill(X_.badTarget, { last: 2, k: 3 });
+  for (const t of ["3", "cat", "[0.5, 0.5]", "[0.5, 0.6, -0.1]", "[0.3, 0.3, 0.3]"]) smThrows(`[1, 2, 3]; target ${t}`, target);
+});
+
+test("every softmax picture draws", () => {
+  for (const src of ["[2, 1, 0.1]", "[2, 1, 0.1]; labels cat, dog, bird; target cat", "[2, 1, 0.1]; temperature 0.5, 1, 5; target 0", "[2, 1, 0.1]; target [0.8, 0.1, 0.1]", "[1000, 999, 990]; target 1", "[0.2, -1, 3.1, 0.5, -0.3, 1.2, 0, -2, 2.4, 0.1]; target 8"]) {
+    const { svg } = buildSoftmax({ topic: "softmax", src }, w).svg;
     assert.match(svg, /^<svg/);
     assert.doesNotMatch(svg, /NaN|undefined/, src);
   }

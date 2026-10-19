@@ -11,14 +11,17 @@
 // point when a path settled in a local minimum, and the largest rate the curvature allows. And backpropagation: an
 // expression in named inputs drawn as its computational graph, every node's value worked out forwards and its
 // gradient ∂L/∂node backwards by the chain rule, the local derivative on every edge, one input's chain written out
-// along each path, checked numerically, and an optional step of gradient descent.
+// along each path, checked numerically, and an optional step of gradient descent. And softmax with cross-entropy:
+// scores turned into probabilities (with the largest taken off first), at up to three temperatures, against a target
+// class or distribution, with the loss, how it compares with a uniform guess, entropy and KL divergence for a soft
+// target, and the gradient p − y.
 import { arrow, axes, C, compose, contours, curve, dot, esc, fill, FONT, lbl, makeFrame, nt, r2, sampleY, W, yRange, type Caption } from "./chart";
 import { derive } from "./derive";
 import { evalE, exprMessages, has, parseE, simp, substitute, tex, V, X, type E } from "./expr";
 import type { RenderedSvg } from "./latex";
 
-export type AiTopic = "tensor" | "ops" | "descent" | "backprop";
-export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent", "backprop"];
+export type AiTopic = "tensor" | "ops" | "descent" | "backprop" | "softmax";
+export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent", "backprop", "softmax"];
 export type AiSpec = { topic: AiTopic; src: string };
 
 export type AiWords = {
@@ -142,6 +145,27 @@ export type AiWords = {
     step: string;
     lossDown: string;
     lossUp: string;
+  };
+  softmax: {
+    count: string;
+    badOpt: string;
+    badLabels: string;
+    badTemp: string;
+    badTarget: string;
+    normalise: string;
+    overflow: string;
+    two: string;
+    temp: string;
+    temps: string;
+    hard: string;
+    hardWhy: string;
+    confident: string;
+    soft: string;
+    entropy: string;
+    uniform: string;
+    gradient: string;
+    gradientSoft: string;
+    classN: string;
   };
 };
 
@@ -1534,6 +1558,157 @@ function drawGraph(nodes: GNode[], v: number[], grad: number[], local: number[][
   return { svg: s, h: 8 + rows * rh - 14 };
 }
 
+// ---------- softmax and cross-entropy ----------
+
+const MAX_CLASSES = 10;
+const MAX_TEMPS = 3;
+
+/** What a softmax picture shows, for the tests: the scores, the temperatures, the probabilities at each, the target
+ * as a distribution, the cross-entropy at each temperature and the gradient of the first. */
+export type SoftmaxData = { logits: number[]; temps: number[]; probs: number[][]; target?: number[]; loss?: number[]; grad?: number[] };
+
+/** softmax(z / T), with the largest score taken off first so that e^z cannot overflow. */
+export function softmax(z: number[], T = 1): number[] {
+  const s = z.map((v) => v / T);
+  const m = Math.max(...s);
+  const e = s.map((v) => Math.exp(v - m));
+  const sum = e.reduce((a, b) => a + b, 0);
+  return e.map((v) => v / sum);
+}
+
+/** −Σ yᵢ ln pᵢ, the terms with yᵢ = 0 left out (they add nothing, even where pᵢ is 0). */
+const crossEntropy = (y: number[], p: number[]) => -y.reduce((s, yi, i) => s + (yi ? yi * Math.log(p[i]) : 0), 0);
+
+function renderSoftmax(main: string, opts: string[]): { svg: RenderedSvg; data: SoftmaxData } {
+  const Sw = words.softmax;
+  const list = readList(/^\[/.test(main) ? main : `[${main}]`);
+  if (!Array.isArray(list) || !list.every((v) => typeof v === "number") || list.length < 2 || list.length > MAX_CLASSES) fail(Sw.count, { max: MAX_CLASSES });
+  const z = list as number[];
+  const k = z.length;
+  let labels = range(k).map(String);
+  let temps = [1];
+  let targetSrc: string | undefined;
+  const nums = (s: string) => s.replace(/[[\]()]/g, " ").split(/[\s,]+/).filter(Boolean).map((v) => Number(v.replace("−", "-")));
+  for (const o of opts) {
+    const m = /^(labels|classes|target|y|temperature|temp|t)\b\s*=?\s*(.*)$/i.exec(o);
+    if (!m) fail(Sw.badOpt, { s: o });
+    const name = m![1].toLowerCase();
+    if (name === "labels" || name === "classes") {
+      const ls = m![2].split(/\s*,\s*|\s+/).filter(Boolean);
+      if (ls.length !== k) fail(Sw.badLabels, { k });
+      labels = ls;
+    } else if (name === "temperature" || name === "temp" || name === "t") {
+      const ts = nums(m![2]);
+      if (!ts.length || ts.length > MAX_TEMPS || !ts.every((t) => t > 0)) fail(Sw.badTemp, { max: MAX_TEMPS });
+      temps = ts;
+    } else targetSrc = m![2].trim();
+  }
+  // A class is called by its label, or "class 2" when it has none.
+  const named = labels.some((l, i) => l !== String(i));
+  const call = (i: number) => (named ? labels[i] : fill(Sw.classN, { i }));
+  // The target: a class by number or label, or a whole distribution.
+  let y: number[] | undefined;
+  if (targetSrc !== undefined) {
+    const bad = (): never => fail(Sw.badTarget, { last: k - 1, k });
+    const at = labels.indexOf(targetSrc);
+    if (at >= 0 && named) y = z.map((_, i) => (i === at ? 1 : 0));
+    else if (/^\d+$/.test(targetSrc)) {
+      const c = Number(targetSrc);
+      if (c >= k) bad();
+      y = z.map((_, i) => (i === c ? 1 : 0));
+    } else {
+      const ys = nums(targetSrc);
+      if (ys.length !== k || !ys.every((v) => v >= 0 && Number.isFinite(v)) || Math.abs(ys.reduce((a, b) => a + b, 0) - 1) > 1e-6) bad();
+      y = ys;
+    }
+  }
+  const probs = temps.map((T) => softmax(z, T));
+  const p = probs[0];
+  const T0 = temps[0];
+  const hard = y && y.filter((v) => v === 1).length === 1 ? y.indexOf(1) : -1;
+  const loss = y && probs.map((q) => crossEntropy(y!, q));
+  // Comparing temperatures, a gradient at one of them would be misleading, so there is none.
+  const many = temps.length > 1;
+  const grad = y && !many ? p.map((v, i) => (v - y![i]) / T0) : undefined;
+
+  const caps: Caption[] = [];
+  const mx = Math.max(...z.map((v) => v / T0));
+  const sum = z.reduce((a, v) => a + Math.exp(v / T0 - mx), 0);
+  const top = p.indexOf(Math.max(...p));
+  caps.push({ text: fill(Sw.normalise, { sum: nt(sum), m: nt(mx), label: call(top), p: nt(p[top]) }) });
+  if (Math.max(...z.map((v) => Math.abs(v / T0))) > 709) caps.push({ text: fill(Sw.overflow, { m: nt(mx) }), color: C.red });
+  if (k === 2) caps.push({ text: fill(Sw.two, { d: nt((z[0] - z[1]) / T0), p: nt(p[0]) }), color: C.grey });
+  if (many || T0 !== 1) {
+    if (!y) probs.forEach((q, j) => caps.push({ text: fill(Sw.temp, { t: nt(temps[j]), p: nt(Math.max(...q)), label: call(q.indexOf(Math.max(...q))) }), color: PATH[j] }));
+    caps.push({ text: fill(Sw.temps, { k, u: nt(1 / k) }), color: C.grey });
+  }
+  if (y && loss) {
+    if (hard >= 0) {
+      probs.forEach((q, j) => caps.push({ text: fill(Sw.hard, { label: call(hard), p: nt(q[hard]), L: nt(loss[j]), t: many ? ` (T = ${nt(temps[j])})` : "" }), color: many ? PATH[j] : HI }));
+      caps.push({ text: Sw.hardWhy, color: C.grey });
+      if (p[hard] < 0.05 && p[top] > 0.8 && top !== hard) caps.push({ text: fill(Sw.confident, { label: call(top), p: nt(p[top]), L: nt(loss[0]) }), color: C.red });
+    } else {
+      const terms = y.flatMap((yi, i) => (yi ? [`${nt(yi)} · ln ${nt(p[i])}`] : [])).join(" + ");
+      const H = crossEntropy(y, y);
+      caps.push({ text: fill(Sw.soft, { terms, L: nt(loss[0]) }), color: HI });
+      caps.push({ text: fill(Sw.entropy, { H: nt(H), kl: nt(loss[0] - H) }), color: C.grey });
+    }
+    caps.push({ text: fill(Sw.uniform, { k, u: nt(Math.log(k)) }), color: C.grey });
+    const g = T0 === 1 ? "pᵢ − yᵢ" : `(pᵢ − yᵢ) / T, with T = ${nt(T0)}`;
+    if (grad) caps.push({ text: fill(hard >= 0 ? Sw.gradient : Sw.gradientSoft, { g }), color: C.green });
+  }
+
+  const byT = T0 !== 1 || many ? " / T" : "";
+  let tex = `p_i = \\frac{e^{z_i${byT}}}{\\sum_j e^{z_j${byT}}}`;
+  if (y && loss) {
+    tex += hard >= 0 ? `, \\quad L = -\\ln p_{${hard}}` : `, \\quad L = -\\sum_i y_i \\ln p_i`;
+    if (!many) tex += hard >= 0 ? ` = -\\ln ${nt(p[hard])} = ${nt(loss[0])}` : ` = ${nt(loss[0])}`;
+  }
+  const drawn = drawSoftmax(z, labels, probs, temps, y, grad);
+  return { svg: compose(tex, drawn.svg, drawn.h, caps), data: { logits: z, temps, probs, target: y, loss, grad } };
+}
+
+/** One row per class: its score, e^(z − max), its probability as a bar over the target's dashed one, and p − y. */
+function drawSoftmax(z: number[], labels: string[], probs: number[][], temps: number[], y?: number[], grad?: number[]): { svg: string; h: number } {
+  const many = temps.length > 1;
+  const T0 = temps[0];
+  const mx = Math.max(...z.map((v) => v / T0));
+  const rowH = many ? 12 + 13 * temps.length : 30;
+  const top = 34;
+  const [bx, bw] = many ? [220, 340] : grad ? [262, 190] : [262, 300];
+  const [gx, gw] = [566, 52];
+  let s = "";
+  const head = (x: number, t: string, anchor = "middle") => txt(x, 18, t, C.grey, 12.5, anchor, "700");
+  s += head(16, "", "start") + head(120, "zᵢ") + (many ? "" : head(198, "e^(zᵢ − max)")) + head(bx, "pᵢ", "start");
+  if (grad) s += head(gx, T0 === 1 ? "pᵢ − yᵢ" : "(pᵢ − yᵢ) / T");
+  z.forEach((v, i) => {
+    const yy = top + i * rowH;
+    const on = y?.[i] === 1;
+    if (on) s += `<rect x="8" y="${yy}" width="${W - 16}" height="${rowH - 4}" rx="6" fill="#fff4e6"/>`;
+    s += txt(16, yy + rowH / 2 + 3, labels[i], on ? HI : C.ink, 13, "start", "700");
+    s += txt(120, yy + rowH / 2 + 3, nt(v), C.ink, 12.5);
+    if (!many) s += txt(198, yy + rowH / 2 + 3, nt(Math.exp(v / T0 - mx)), C.ink, 12.5);
+    if (y && y[i] > 0) s += `<rect x="${bx}" y="${yy + 4}" width="${r2(bw * y[i])}" height="${rowH - 12}" fill="none" stroke="${HI}" stroke-width="1.6" stroke-dasharray="5 3"/>`;
+    const h = (rowH - 12) / probs.length;
+    probs.forEach((q, j) => {
+      s += `<rect x="${bx}" y="${r2(yy + 4 + j * h)}" width="${r2(Math.max(1, bw * q[i]))}" height="${r2(h - 1)}" fill="${PATH[j]}" opacity="0.85"/>`;
+      s += txt(bx + bw * q[i] + 5, yy + 4 + j * h + h / 2 + 4, nt(q[i], 3), PATH[j], many ? 10.5 : 12, "start");
+    });
+    if (grad) {
+      const g = Math.max(-1, Math.min(1, grad[i] * T0));
+      const [x0, x1] = [gx, gx + g * gw];
+      s += `<rect x="${r2(Math.min(x0, x1))}" y="${yy + 6}" width="${r2(Math.abs(x1 - x0))}" height="${rowH - 16}" fill="${grad[i] < 0 ? C.green : C.red}" opacity="0.8"/>`;
+      s += txt(g >= 0 ? gx - 4 : gx + 4, yy + rowH / 2 + 3, nt(grad[i], 3), grad[i] < 0 ? C.green : C.red, 11, g >= 0 ? "end" : "start");
+    }
+  });
+  const bottom = top + z.length * rowH;
+  s += `<line x1="${bx}" y1="${top - 2}" x2="${bx}" y2="${bottom}" stroke="#868e96" stroke-width="1.2"/>`;
+  for (const t of [0, 0.5, 1]) s += txt(bx + bw * t, bottom + 14, String(t), C.grey, 11);
+  if (grad) s += `<line x1="${gx}" y1="${top - 2}" x2="${gx}" y2="${bottom}" stroke="#868e96" stroke-width="1.2"/>`;
+  if (many) s += temps.map((t, j) => txt(bx + 60 + j * 90, bottom + 32, `T = ${nt(t)}`, PATH[j], 12.5, "middle", "700")).join("");
+  return { svg: s, h: bottom + (many ? 40 : 22) };
+}
+
 // ---------- the tool ----------
 
 /** The main part of the input and what follows it after semicolons. */
@@ -1550,6 +1725,7 @@ export function renderAi(spec: AiSpec, w: AiWords): RenderedSvg {
   if (spec.topic === "ops") return buildOps(spec, w).svg;
   if (spec.topic === "descent") return buildDescent(spec, w).svg;
   if (spec.topic === "backprop") return buildBackprop(spec, w).svg;
+  if (spec.topic === "softmax") return buildSoftmax(spec, w).svg;
   return buildAi(spec, w).svg;
 }
 export function buildAi(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: AiData } {
@@ -1563,6 +1739,9 @@ export function buildDescent(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data
 }
 export function buildBackprop(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: BackpropData } {
   return renderBackprop(...parts(spec, w));
+}
+export function buildSoftmax(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: SoftmaxData } {
+  return renderSoftmax(...parts(spec, w));
 }
 
 const S = (topic: AiTopic, src: string): AiSpec => ({ topic, src });
@@ -1618,6 +1797,17 @@ export const AI_PRESETS: { [K in AiTopic]: { label: string; spec: AiSpec }[] } =
     { label: "a saturated sigmoid", spec: S("backprop", "sigmoid(w x); x = 10, w = 1") },
     { label: "two layers", spec: S("backprop", "(v relu(w x + b) + c - y)^2; x = 1, w = 2, b = -0.5, v = 3, c = 0.5, y = 3; explain w") },
   ],
+  softmax: [
+    { label: "scores → probabilities", spec: S("softmax", "[2, 1, 0.1]") },
+    { label: "cross-entropy: right class", spec: S("softmax", "[2, 1, 0.1]; labels cat, dog, bird; target cat") },
+    { label: "cross-entropy: wrong class", spec: S("softmax", "[2, 1, 0.1]; labels cat, dog, bird; target bird") },
+    { label: "confidently wrong", spec: S("softmax", "[8, 1, -2]; labels cat, dog, bird; target dog") },
+    { label: "temperature 0.5, 1, 5", spec: S("softmax", "[2, 1, 0.1]; temperature 0.5, 1, 5; target 0") },
+    { label: "a soft target (label smoothing)", spec: S("softmax", "[2, 1, 0.1]; target [0.8, 0.1, 0.1]") },
+    { label: "two classes: the sigmoid", spec: S("softmax", "[1.5, 0]; target 0") },
+    { label: "huge scores: subtract the max", spec: S("softmax", "[1000, 999, 990]; target 1") },
+    { label: "ten digits", spec: S("softmax", "[0.2, -1, 3.1, 0.5, -0.3, 1.2, 0, -2, 2.4, 0.1]; target 8") },
+  ],
 };
 
 /** What the tool opens on: a tensor with three axes says more than the first example, a single number. */
@@ -1626,4 +1816,5 @@ export const AI_DEFAULT: Record<AiTopic, AiSpec> = {
   ops: S("ops", "2x3x4; reshape 4x6"),
   descent: S("descent", "(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12"),
   backprop: S("backprop", "(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; explain w"),
+  softmax: S("softmax", "[2, 1, 0.1]; labels cat, dog, bird; target cat"),
 };
