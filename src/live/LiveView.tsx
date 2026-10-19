@@ -37,6 +37,7 @@ import { OneStroke } from "./OneStroke";
 import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
 import { ConnectTowns } from "./ConnectTowns";
+import { DescentLab } from "./DescentLab";
 import { Soroban } from "./Soroban";
 import { Target } from "./Target";
 import type { PieceProps } from "./ui";
@@ -96,6 +97,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   colourMap: ColourMap,
   shortestPath: ShortestPath,
   connectTowns: ConnectTowns,
+  descentLab: DescentLab,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {
