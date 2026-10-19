@@ -85,7 +85,10 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
     { kind: "numberLine", icon: "↔", name: "liveNumberLine" },
   ],
   groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],
-  groupAi: [{ kind: "descentLab", icon: "⛳", name: "liveDescentLab" }],
+  groupAi: [
+    { kind: "descentLab", icon: "⛳", name: "liveDescentLab" },
+    { kind: "pcaLab", icon: "📏", name: "livePcaLab" },
+  ],
   groupDiscreteShort: [
     { kind: "chance", icon: "🎲", name: "liveChance" },
     { kind: "rubik", icon: "🧩", name: "liveRubik" },

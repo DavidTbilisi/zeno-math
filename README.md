@@ -482,6 +482,18 @@ UI in English, Russian and Georgian.
     is 0 and it cannot move until dragged off; the deeper of two valleys; and momentum to coast over the hump between
     them. A failed try says why (crept too slowly, flew off, still bouncing, settled in the other valley, no slope),
     stars go to a puzzle done at the first try, and six discoveries are kept. Free play takes any f(x)
+  - *PCA lab* (a live piece on the board, from the AI menu or the Shapes panel): a cloud of points and a line through
+    it, turned by dragging an end or with a slider. Each point's distance from the line is drawn with the square on
+    it, the error being the mean of those squares, and the points' shadows on the line are marked; bars beside show
+    the kept spread (the shadows') and the lost spread (the error) end to end against the whole spread, which they
+    make up exactly when the line goes through the mean. Eight puzzles, each with a Check: the line with the least
+    error (PC1), the line with the widest shadows (the same line, by Pythagoras), the line with the most error (PC2,
+    at right angles), the best line when it can also be moved (through the mean), the best line for distances
+    measured straight up (least squares, flatter than PC1), a point dragged until PC1 stands upright (an outlier's
+    pull), the place of a point's shadow along PC1 (its score), and points dragged until PC1 keeps 95 % of the spread
+    (one number per point is enough). A wrong check says by how much or why, stars go to a puzzle done at the first
+    try, and eight discoveries are kept. Free play takes any points (click to add, drag, tap to take away), with PC1
+    or the least-squares line shown on request
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1220,6 +1232,8 @@ src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums
 src/math/patternSteps.ts  the algorithm patterns as frames to step through, with the questions for "Your turn"
 src/math/descentLab.ts    the gradient descent lab: steps with momentum, the nine puzzles and how a try is judged,
                           free play's functions, and the picture
+src/math/pcaLab.ts        the PCA lab: PC1 and least squares from the covariance, a line's error and kept spread,
+                          the eight puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)

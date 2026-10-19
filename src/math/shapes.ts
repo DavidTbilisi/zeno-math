@@ -1017,6 +1017,18 @@ function descentLabPreview(): Piece[] {
   ];
 }
 
+function pcaLabPreview(): Piece[] {
+  // A cloud stretched along a line, the line through it, and each point's distance from the line.
+  const along: [number, number][] = [[-80, 12], [-55, -16], [-30, 8], [-8, 18], [12, -12], [35, 14], [58, -10], [82, 6]];
+  const [c, s] = [Math.cos(-0.5), Math.sin(-0.5)];
+  const at = (a: number, b: number): Pt => [100 + a * c - b * s, 80 + a * s + b * c];
+  return [
+    seg(at(-100, 0), at(100, 0), { color: BLUE, width: 3 }),
+    ...along.map(([a, b]) => seg(at(a, b), at(a, 0), { color: "#e03131", width: 2 })),
+    ...along.map(([a, b]) => dot(at(a, b), 4)),
+  ];
+}
+
 /** A small graph for the graph games' previews: five vertices of a house shape, and its edges. */
 const HOUSE: Pt[] = [[90, 0], [10, 60], [170, 60], [10, 150], [170, 150]];
 const HOUSE_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4], [3, 4], [1, 4], [2, 3]];
@@ -1301,6 +1313,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveShortestPath", group: "games", build: shortestPathPreview, live: "shortestPath" },
   { id: "liveConnectTowns", group: "games", build: connectTownsPreview, live: "connectTowns" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
+  { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
