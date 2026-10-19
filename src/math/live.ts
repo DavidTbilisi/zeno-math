@@ -31,6 +31,7 @@ import type { LiveColour } from "./colouring";
 import type { LivePath } from "./shortestPath";
 import type { LiveTowns } from "./connectTowns";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
+import { PCA_START, type LivePca } from "./pcaLab";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -397,6 +398,7 @@ export type LiveStates = {
   shortestPath: LivePath;
   connectTowns: LiveTowns;
   descentLab: LiveDescent;
+  pcaLab: LivePca;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -446,6 +448,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   shortestPath: [560, 540],
   connectTowns: [560, 500],
   descentLab: [660, 610],
+  pcaLab: [660, 640],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -497,6 +500,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     shortestPath: { mode: "puzzle", stage: 0, level: 1, seed: 1, route: [], misses: 0, done: false, streak: 0, said: null },
     connectTowns: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], misses: 0, done: false, streak: 0, said: null },
     descentLab: DESCENT_START,
+    pcaLab: PCA_START,
   };
   return structuredClone(start[kind]);
 }

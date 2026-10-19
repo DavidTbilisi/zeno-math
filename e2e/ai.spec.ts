@@ -7,9 +7,11 @@
 // temperatures onto the board. Embeddings open on three words with a query, say which name is unknown, and draw
 // king − man + woman onto the board. SVD & PCA opens on a best rank-1 approximation, refuses a rank too large, and
 // draws PCA of points onto the board. The gradient descent lab goes on the board from the AI menu: a rate too small
-// runs out of steps and says so, the slider sets a better one, and the ball rolls to the bottom for two stars.
+// runs out of steps and says so, the slider sets a better one, and the ball rolls to the bottom for two stars. The PCA
+// lab goes on the board too: a line across the cloud is not the best, and turned along it, it is PC1, for two stars.
 import { expect, test } from "@playwright/test";
 import { etaIndex } from "../src/math/descentLab.ts";
+import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
@@ -224,5 +226,32 @@ test("the gradient descent lab: too small a rate runs out of steps, a better one
   await lab.getByRole("button", { name: /Run/ }).click();
   await expect(lab.getByText(/Done! Steps: \d+\. ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("descent-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the PCA lab: a line across the cloud is not the best, turned along it is PC1", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "PCA lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /PCA lab/ }).click();
+  const lab = page.locator(".live-pcaLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Turn the line .* add up to as little as they can/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/Not the best line yet/)).toBeVisible();
+
+  const angle = lab.getByRole("slider", { name: "Angle of the line" });
+  const a1 = Math.round(principal(moments(PCA_LADDER[0].pts)).angle);
+  await angle.fill(String(a1));
+  await angle.dispatchEvent("pointerup");
+  await expect(lab.getByText(`θ = ${a1}°`)).toBeVisible();
+  await expect(lab.getByText(/kept \+ lost = .* = 4\.21/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/PC1, the first principal component.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("pca-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
