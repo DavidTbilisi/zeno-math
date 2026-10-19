@@ -9,9 +9,11 @@
 // draws PCA of points onto the board. The gradient descent lab goes on the board from the AI menu: a rate too small
 // runs out of steps and says so, the slider sets a better one, and the ball rolls to the bottom for two stars. The PCA
 // lab goes on the board too: a line across the cloud is not the best, and turned along it, it is PC1, for two stars.
+// So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
 import { expect, test } from "@playwright/test";
 import { etaIndex } from "../src/math/descentLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
+import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
@@ -253,5 +255,36 @@ test("the PCA lab: a line across the cloud is not the best, turned along it is P
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/PC1, the first principal component.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("pca-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the softmax lab: cat's probability is short, its bar dragged up gets it over 0.8", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Softmax lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Softmax lab/ }).click();
+  const lab = page.locator(".live-softmaxLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/so that cat gets at least 0\.8 of the probability/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/p\(cat\) is 0\.31, short of 0\.8/)).toBeVisible();
+
+  // Drag cat's bar from 0.5 up to 4.
+  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const k = svg.width / SM_PLOT.w;
+  const x = svg.x + (SM_PLOT.zLeft + (SM_PLOT.zRight - SM_PLOT.zLeft) / 6) * k;
+  await page.mouse.move(x, svg.y + zToY(0.5) * k);
+  await page.mouse.down();
+  await page.mouse.move(x, svg.y + zToY(2) * k, { steps: 4 });
+  await page.mouse.move(x, svg.y + zToY(4) * k, { steps: 4 });
+  await page.mouse.up();
+  await expect(lab.getByText(/Σ e\^\(z\/T\) = 54\.60 \+ 2\.72 \+ 1\.00 = 58\.32/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/always add up to 1!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("softmax-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
