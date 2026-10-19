@@ -5,12 +5,17 @@
 // by its indices, and for a matrix its rank, which is a different thing from its order. Then what is done to tensors:
 // reshape and permute (the same memory read with new strides, and when that stops being contiguous), sums and other
 // reductions along an axis, entry-by-entry arithmetic with broadcasting, and the matrix product @ with batches, each
-// drawn before and after with the entries that make up one entry of the result picked out.
-import { arrow, C, compose, esc, fill, FONT, nt, r2, W, type Caption } from "./chart";
+// drawn before and after with the entries that make up one entry of the result picked out. And gradient descent on a
+// function of x, or of x and y: the steps on the curve or across the level curves, for up to three learning rates and
+// with momentum, each path judged (settles, crawls, overshoots, runs away, stops on a maximum or a saddle), a lower
+// point when a path settled in a local minimum, and the largest rate the curvature allows.
+import { arrow, axes, C, compose, contours, curve, dot, esc, fill, FONT, lbl, makeFrame, nt, r2, sampleY, W, yRange, type Caption } from "./chart";
+import { derive } from "./derive";
+import { evalE, exprMessages, has, parseE, simp, substitute, tex, V, X, type E } from "./expr";
 import type { RenderedSvg } from "./latex";
 
-export type AiTopic = "tensor" | "ops";
-export const AI_TOPICS: AiTopic[] = ["tensor", "ops"];
+export type AiTopic = "tensor" | "ops" | "descent";
+export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent"];
 export type AiSpec = { topic: AiTopic; src: string };
 
 export type AiWords = {
@@ -84,6 +89,34 @@ export type AiWords = {
     matRight: string;
     matDot: string;
     matPick: string;
+  };
+  descent: {
+    vars: string;
+    badOpt: string;
+    badStart: string;
+    badRate: string;
+    badSteps: string;
+    badMomentum: string;
+    undefinedAt: string;
+    first1: string;
+    first2: string;
+    momentum: string;
+    converged: string;
+    slow: string;
+    small: string;
+    bounce: string;
+    diverged: string;
+    max: string;
+    saddle: string;
+    zigzag1: string;
+    zigzag2: string;
+    local: string;
+    everywhere: string;
+    near: string;
+    curve1: string;
+    curve2: string;
+    valley: string;
+    table: string;
   };
 };
 
@@ -832,6 +865,279 @@ function renderOps(main: string, opts: string[]): { svg: RenderedSvg; data: OpsD
   return { svg: compose(built.tex, drawn.svg, drawn.h, built.caps), data: built.data };
 }
 
+// ---------- gradient descent ----------
+
+const SUBS = (n: number) => String(n).replace(/\d/g, (d) => "₀₁₂₃₄₅₆₇₈₉"[Number(d)]);
+const MAX_STEPS = 100;
+const MAX_RATES = 3;
+/** One colour per learning rate, so that each path and the sentence about it match. */
+const PATH = [C.blue, C.orange, C.purple];
+
+type Verdict = "converged" | "slow" | "bounce" | "diverged" | "max" | "saddle";
+export type DescentPath = { eta: number; points: number[][]; f: number[]; grad: number[][]; verdict: Verdict; settled?: number; zigzag: boolean };
+/** What a descent picture shows, for the tests: the number of variables, each rate's path and verdict, and a point
+ * where f is lower than where a path settled, when there is one. */
+export type DescentData = { vars: 1 | 2; paths: DescentPath[]; lower?: number[]; curvature?: number[] };
+
+const norm = (v: number[]) => Math.hypot(...v);
+const point = (p: number[]) => (p.length === 1 ? nt(p[0]) : `(${p.map((v) => nt(v)).join(", ")})`);
+
+/** The eigenvalues of a symmetric matrix [[a, b], [b, c]], the larger first. */
+function eigen2(a: number, b: number, c: number): [number, number] {
+  const m = (a + c) / 2;
+  const r = Math.hypot((a - c) / 2, b);
+  return [m + r, m - r];
+}
+
+/** x_{k+1} = x_k + v_{k+1}, v_{k+1} = β v_k − η ∇f(x_k), until the steps run off to infinity. */
+function descend(F: (p: number[]) => number, G: (p: number[]) => number[], start: number[], eta: number, beta: number, steps: number): Omit<DescentPath, "verdict" | "zigzag"> & { blewUp: boolean } {
+  const points = [start];
+  const f = [F(start)];
+  const grad = [G(start)];
+  let v = start.map(() => 0);
+  let blewUp = false;
+  for (let k = 0; k < steps; k++) {
+    const p = points[k];
+    v = v.map((vi, i) => beta * vi - eta * grad[k][i]);
+    const q = p.map((pi, i) => pi + v[i]);
+    const fq = F(q);
+    const gq = G(q);
+    if (![...q, fq, ...gq].every(Number.isFinite) || norm(q) > 1e12) {
+      blewUp = true;
+      break;
+    }
+    points.push(q);
+    f.push(fq);
+    grad.push(gq);
+  }
+  return { eta, points, f, grad, blewUp };
+}
+
+function renderDescent(main: string, opts: string[]): { svg: RenderedSvg; data: DescentData } {
+  const Dw = words.descent;
+  exprMessages({ bad: words.bad, onlyX: Dw.vars, tooBig: Dw.vars });
+  const f = parseE(main.replace(/^f\s*(\([^)]*\))?\s*=/i, ""), ["y"]);
+  const two = has(f, "y");
+  const n = two ? 2 : 1;
+  const num = (s: string) => Number(s.replace("−", "-"));
+  let start = two ? [2, 2] : [2];
+  let rates = [0.1];
+  let steps = 50;
+  let beta = 0;
+  for (const o of opts) {
+    const m = /^(start|x0|from|rate|lr|eta|η|steps|momentum|beta|β)\s*=?\s*(.*)$/i.exec(o);
+    if (!m) fail(Dw.badOpt, { s: o });
+    const name = m![1].toLowerCase();
+    const vals = m![2].replace(/[()]/g, " ").split(/[\s,;]+/).filter(Boolean);
+    const nums = vals.map(num);
+    const ok = vals.length > 0 && nums.every(Number.isFinite);
+    if (name === "start" || name === "x0" || name === "from") {
+      if (!ok || nums.length !== n) fail(Dw.badStart, { n, example: two ? "(4, 1)" : "4" });
+      start = nums;
+    } else if (name === "steps") {
+      if (!ok || nums.length !== 1 || !Number.isInteger(nums[0]) || nums[0] < 1 || nums[0] > MAX_STEPS) fail(Dw.badSteps, { max: MAX_STEPS });
+      steps = nums[0];
+    } else if (name === "momentum" || name === "beta" || name === "β") {
+      if (!ok || nums.length !== 1 || nums[0] < 0 || nums[0] >= 1) fail(Dw.badMomentum);
+      beta = nums[0];
+    } else {
+      if (!ok || nums.length > MAX_RATES || nums.some((r) => r <= 0)) fail(Dw.badRate, { max: MAX_RATES });
+      rates = nums;
+    }
+  }
+
+  // ∂/∂y is ∂/∂x with x and y swapped.
+  const swap = (e: E) => substitute(substitute(substitute(e, "x", V("t")), "y", X), "t", V("y"));
+  const dx = (e: E) => simp(derive(e));
+  const dy = (e: E) => swap(dx(swap(e)));
+  const grad = two ? [dx(f), dy(f)] : [dx(f)];
+  const hess = two ? [dx(grad[0]), dy(grad[0]), dy(grad[1])] : [dx(grad[0])];
+  const at = (e: E, p: number[]) => evalE(e, p[0], { y: p[1] ?? 0 });
+  const F = (p: number[]) => at(f, p);
+  const G = (p: number[]) => grad.map((g) => at(g, p));
+  /** The curvatures at a point: f″, or the Hessian's eigenvalues, the larger first. */
+  const curv = (p: number[]) => (two ? eigen2(at(hess[0], p), at(hess[1], p), at(hess[2], p)) : [at(hess[0], p)]);
+  if (![F(start), ...G(start)].every(Number.isFinite)) fail(Dw.undefinedAt, { p: point(start) });
+
+  const paths: DescentPath[] = rates.map((eta) => {
+    const r = descend(F, G, start, eta, beta, steps);
+    const last = r.points.length - 1;
+    const tol = 1e-3 * Math.max(1, norm(r.grad[0]));
+    const settled = r.grad.findIndex((g) => norm(g) <= tol);
+    // A zigzag: along some axis most steps go back the other way from the one before.
+    const moves = r.points.slice(1).map((q, k) => q.map((v, i) => v - r.points[k][i]));
+    const zigzag = start.some((_, i) => {
+      let pairs = 0;
+      let flips = 0;
+      for (let k = 1; k < moves.length; k++) {
+        if (!moves[k][i] || !moves[k - 1][i]) continue;
+        pairs++;
+        if (Math.sign(moves[k][i]) !== Math.sign(moves[k - 1][i])) flips++;
+      }
+      return pairs > 1 && flips > pairs / 2;
+    });
+    const same = Math.abs(r.f[last] - r.f[0]) <= 1e-9 * Math.max(1, Math.abs(r.f[0]));
+    let verdict: Verdict = r.blewUp || (r.f[last] > r.f[0] && !same) ? "diverged" : same && zigzag && last > 1 ? "bounce" : "slow";
+    if (!r.blewUp && norm(r.grad[last]) <= tol) {
+      const c = curv(r.points[last]);
+      verdict = c.every((v) => v < -1e-9) ? "max" : c.some((v) => v < -1e-9) && c.some((v) => v > 1e-9) ? "saddle" : "converged";
+    }
+    return { eta, points: r.points, f: r.f, grad: r.grad, verdict, settled: verdict === "slow" || verdict === "bounce" || verdict === "diverged" ? undefined : settled, zigzag };
+  });
+
+  // The window: the start and the points near it, with room around them; a path that runs away leaves it.
+  const lim = 10 * Math.max(1, ...start.map(Math.abs));
+  const near = paths.flatMap((p) => p.points).filter((q) => q.every((v, i) => Math.abs(v - start[i]) <= lim));
+  const lo = start.map((_, i) => Math.min(...near.map((q) => q[i])));
+  const hi = start.map((_, i) => Math.max(...near.map((q) => q[i])));
+  const half = lo.map((l, i) => Math.max(1, ((hi[i] - l) / 2) * 1.2));
+  const mid = lo.map((l, i) => (l + hi[i]) / 2);
+  // A lower point in a wider search shows that a path stopped in a local minimum.
+  let lower: number[] | undefined;
+  const best = paths.find((p) => p.verdict === "converged");
+  if (best) {
+    const end = best.points[best.points.length - 1];
+    const reach = half.map((h) => Math.max(4, 2 * h));
+    const grid = two ? 80 : 600;
+    const cells: number[][] = [];
+    if (two) for (let i = 0; i <= grid; i++) for (let j = 0; j <= grid; j++) cells.push([mid[0] - reach[0] + (2 * reach[0] * i) / grid, mid[1] - reach[1] + (2 * reach[1] * j) / grid]);
+    else for (let i = 0; i <= grid; i++) cells.push([mid[0] - reach[0] + (2 * reach[0] * i) / grid]);
+    const vals = cells.map(F);
+    const fin = vals.filter(Number.isFinite);
+    const margin = 1e-3 * (Math.max(...fin) - Math.min(...fin));
+    let k = -1;
+    vals.forEach((v, i) => {
+      if (Number.isFinite(v) && v < F(end) - margin && norm(cells[i].map((c, j) => c - end[j])) > 0.1 * Math.max(...reach) && (k < 0 || v < vals[k])) k = i;
+    });
+    if (k >= 0) {
+      lower = cells[k];
+      lower.forEach((v, i) => {
+        lo[i] = Math.min(lo[i], v);
+        hi[i] = Math.max(hi[i], v);
+        mid[i] = (lo[i] + hi[i]) / 2;
+        half[i] = Math.max(1, ((hi[i] - lo[i]) / 2) * 1.2);
+      });
+    }
+  }
+
+  const caps: Caption[] = [];
+  const first = paths[0];
+  const g0 = first.grad[0];
+  const p1 = first.points[1];
+  if (p1) {
+    const g = two ? `(${g0.map((v) => nt(v)).join(", ")})` : nt(g0[0]);
+    caps.push({ text: fill(two ? Dw.first2 : Dw.first1, { p0: point(start), g, gt: two ? g : term(g0[0]), eta: nt(first.eta), p1: point(p1) }) });
+  }
+  if (beta) caps.push({ text: fill(Dw.momentum, { beta: nt(beta) }), color: C.grey });
+  paths.forEach((p, i) => {
+    const last = p.points.length - 1;
+    const end = p.points[last];
+    const v = {
+      eta: nt(p.eta), p: point(end), f: nt(p.f[last]), k: p.settled ?? last, n: last,
+      g: nt(norm(p.grad[last])), g0: nt(norm(p.grad[0])), f0: nt(p.f[0]),
+    };
+    caps.push({ text: fill(Dw[p.verdict], v), color: PATH[i] });
+    if (p.zigzag && p.verdict !== "diverged" && p.verdict !== "bounce") caps.push({ text: fill(two ? Dw.zigzag2 : Dw.zigzag1, v), color: PATH[i] });
+    else if (p.verdict === "slow") caps.push({ text: fill(Dw.small, v), color: PATH[i] });
+  });
+  if (lower) caps.push({ text: fill(Dw.local, { q: point(lower), f: nt(F(lower)) }), color: C.green });
+  // How large a rate may be, from the curvature where a path settled, or anywhere when f is a quadratic.
+  const quadratic = hess.every((h) => !has(h, "x") && !has(h, "y"));
+  const where = best ? best.points[best.points.length - 1] : quadratic ? start : undefined;
+  let curvature: number[] | undefined;
+  if (where) {
+    const c = curv(where);
+    if (c.every((v) => v > 1e-9)) {
+      curvature = c;
+      const near = quadratic ? Dw.everywhere : fill(Dw.near, { p: point(where) });
+      // The bounds on η are those of plain gradient descent; momentum moves them.
+      if (beta) {
+        if (two && c[0] / c[1] >= 4) caps.push({ text: fill(Dw.valley, { r: nt(c[0] / c[1], 2) }), color: C.grey });
+      } else if (!two) caps.push({ text: fill(Dw.curve1, { near, c: nt(c[0]), lim: nt(2 / c[0]), half: nt(1 / c[0]) }), color: C.grey });
+      else {
+        caps.push({ text: fill(Dw.curve2, { near, a: nt(c[0]), b: nt(c[1]), lim: nt(2 / c[0]) }), color: C.grey });
+        if (c[0] / c[1] >= 4) caps.push({ text: fill(Dw.valley, { r: nt(c[0] / c[1], 2) }), color: C.grey });
+      }
+    }
+  }
+
+  const body = two ? drawDescent2(F, paths, start, mid, half, lower) : drawDescent1(F, paths, mid[0], half[0], lower);
+  const table = stepTable(first, two);
+  const rule = beta
+    ? `v_{k+1} = \\beta v_k - \\eta \\nabla f, \\quad ${two ? "\\mathbf{x}" : "x"}_{k+1} = ${two ? "\\mathbf{x}" : "x"}_k + v_{k+1}`
+    : two ? "\\mathbf{x}_{k+1} = \\mathbf{x}_k - \\eta \\nabla f(\\mathbf{x}_k)" : "x_{k+1} = x_k - \\eta f'(x_k)";
+  const def = two ? `f(x, y) = ${tex(f)}, \\quad \\nabla f = \\left(${tex(grad[0])},\\ ${tex(grad[1])}\\right)` : `f(x) = ${tex(f)}, \\quad f'(x) = ${tex(grad[0])}`;
+  const svg = compose(`\\begin{gathered} ${def} \\\\ ${rule} \\end{gathered}`, body.svg + `<g transform="translate(0 ${r2(body.h + 8)})">${table.svg}</g>`, body.h + 8 + table.h, caps);
+  return { svg, data: { vars: n as 1 | 2, paths, lower, curvature } };
+}
+
+/** The first path's steps as a table: the start, the first steps and the last. */
+function stepTable(p: DescentPath, two: boolean): { svg: string; h: number } {
+  const last = p.points.length - 1;
+  const rows = last > 6 ? [0, 1, 2, 3, 4, -1, last] : p.points.map((_, k) => k);
+  const xs = two ? [70, 220, 380, 530] : [70, 175, 295, 415, 540];
+  const head = two ? ["k", "(xₖ, yₖ)", "f", "∇f"] : ["k", "xₖ", "f(xₖ)", "f′(xₖ)", "−η f′(xₖ)"];
+  let s = txt(W / 2, 14, fill(words.descent.table, { eta: nt(p.eta) }), PATH[0], 13, "middle", "700");
+  s += head.map((h, i) => txt(xs[i], 36, h, C.grey, 12.5, "middle", "700")).join("");
+  rows.forEach((k, r) => {
+    const y = 56 + r * 19;
+    if (k < 0) return (s += txt(xs[0], y, "…", C.grey, 12.5));
+    const g = p.grad[k];
+    const cells = two ? [String(k), point(p.points[k]), nt(p.f[k]), point(g)] : [String(k), nt(p.points[k][0]), nt(p.f[k]), nt(g[0]), nt(-p.eta * g[0])];
+    cells.forEach((c, i) => (s += txt(xs[i], y, c, C.ink, 12.5)));
+  });
+  return { svg: s, h: 56 + rows.length * 19 - 8 };
+}
+
+/** The path's points on the curve, an arrow for each step. */
+function drawDescent1(F: (p: number[]) => number, paths: DescentPath[], mid: number, half: number, lower?: number[]): { svg: string; h: number } {
+  const [x0, x1] = [mid - half, mid + half];
+  const g = (x: number) => F([x]);
+  const inside = paths.flatMap((p) => p.points.map((q, k) => (q[0] >= x0 && q[0] <= x1 ? p.f[k] : NaN)));
+  const fr = makeFrame("gd1", 48, 6, W - 48 - 18, 300, [x0, x1], yRange(sampleY(g, x0, x1), inside));
+  let s = axes(fr) + curve(fr, g, C.ink, 2);
+  s += `<g clip-path="url(#${fr.id})">`;
+  paths.forEach((p, i) => {
+    const pts = p.points.map((q, k) => [fr.sx(q[0]), fr.sy(p.f[k])]);
+    for (let k = 0; k + 1 < pts.length; k++) s += Math.hypot(pts[k + 1][0] - pts[k][0], pts[k + 1][1] - pts[k][1]) > 9 ? arrow(pts[k][0], pts[k][1], pts[k + 1][0], pts[k + 1][1], PATH[i], 1.8) : "";
+    pts.forEach(([x, y]) => (s += dot(x, y, PATH[i], 3.2)));
+  });
+  if (lower) s += dot(fr.sx(lower[0]), fr.sy(g(lower[0])), C.green, 6, true);
+  s += "</g>";
+  const [sx, sy] = [fr.sx(paths[0].points[0][0]), fr.sy(paths[0].f[0])];
+  s += lbl(sx + 6, sy - 8, `x${SUBS(0)}`, C.ink);
+  return { svg: s, h: fr.bottom + 22 };
+}
+
+/** Level curves of f, equal scales on both axes so that −∇f crosses them at right angles, and the paths. */
+function drawDescent2(F: (p: number[]) => number, paths: DescentPath[], start: number[], mid: number[], half: number[], lower?: number[]): { svg: string; h: number } {
+  const fw = W - 48 - 18;
+  const fh = 380;
+  const scale = Math.max((2 * half[0]) / fw, (2 * half[1]) / fh);
+  const xr = [mid[0] - (fw * scale) / 2, mid[0] + (fw * scale) / 2];
+  const yr = [mid[1] - (fh * scale) / 2, mid[1] + (fh * scale) / 2];
+  const fr = makeFrame("gd2", 48, 6, fw, fh, xr, yr);
+  const g = (x: number, y: number) => F([x, y]);
+  // Levels at quantiles of f over the window, so that they spread out whatever its scale, and one through the start.
+  const vals = range(41).flatMap((i) => range(31).map((j) => g(xr[0] + ((xr[1] - xr[0]) * i) / 40, yr[0] + ((yr[1] - yr[0]) * j) / 30))).filter(Number.isFinite).sort((a, b) => a - b);
+  const q = [0.02, 0.06, 0.12, 0.2, 0.3, 0.42, 0.56, 0.72, 0.88].map((t) => vals[Math.floor(t * (vals.length - 1))]);
+  const levels = [...new Set([...q, g(start[0], start[1])])].filter(Number.isFinite);
+  let s = axes(fr) + contours(fr, g, levels, "#adb5bd", 1.2);
+  s += `<g clip-path="url(#${fr.id})">`;
+  paths.forEach((p, i) => {
+    const pts = p.points.map((pt) => [fr.sx(pt[0]), fr.sy(pt[1])]);
+    for (let k = 0; k + 1 < pts.length; k++) {
+      const [a, b] = [pts[k], pts[k + 1]];
+      s += Math.hypot(b[0] - a[0], b[1] - a[1]) > 9 ? arrow(a[0], a[1], b[0], b[1], PATH[i], 1.8) : `<line x1="${r2(a[0])}" y1="${r2(a[1])}" x2="${r2(b[0])}" y2="${r2(b[1])}" stroke="${PATH[i]}" stroke-width="1.8"/>`;
+    }
+    pts.forEach(([x, y]) => (s += dot(x, y, PATH[i], 2.8)));
+  });
+  if (lower) s += dot(fr.sx(lower[0]), fr.sy(lower[1]), C.green, 6, true);
+  s += "</g>";
+  s += lbl(fr.sx(start[0]) + 6, fr.sy(start[1]) - 8, `x${SUBS(0)}`, C.ink);
+  return { svg: s, h: fr.bottom + 22 };
+}
+
 // ---------- the tool ----------
 
 /** The main part of the input and what follows it after semicolons. */
@@ -845,13 +1151,16 @@ function parts(spec: AiSpec, w: AiWords): [string, string[]] {
 }
 
 export function renderAi(spec: AiSpec, w: AiWords): RenderedSvg {
-  return spec.topic === "ops" ? buildOps(spec, w).svg : buildAi(spec, w).svg;
+  return spec.topic === "ops" ? buildOps(spec, w).svg : spec.topic === "descent" ? buildDescent(spec, w).svg : buildAi(spec, w).svg;
 }
 export function buildAi(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: AiData } {
   return renderTensor(...parts(spec, w));
 }
 export function buildOps(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: OpsData } {
   return renderOps(...parts(spec, w));
+}
+export function buildDescent(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: DescentData } {
+  return renderDescent(...parts(spec, w));
 }
 
 const S = (topic: AiTopic, src: string): AiSpec => ({ topic, src });
@@ -884,7 +1193,23 @@ export const AI_PRESETS: { [K in AiTopic]: { label: string; spec: AiSpec }[] } =
     { label: "dot product", spec: S("ops", "[1, 2, 3] @ [4, 5, 6]") },
     { label: "batched: (2, 2, 3) @ (3, 2)", spec: S("ops", "2x2x3 @ 3x2; [1, 0, 1]") },
   ],
+  descent: [
+    { label: "(x − 3)², η = 0.1", spec: S("descent", "(x - 3)^2; start 0; rate 0.1") },
+    { label: "three rates: too small, good, too big", spec: S("descent", "(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12") },
+    { label: "η = 1 / f″: one step", spec: S("descent", "(x - 3)^2; start 0; rate 0.5; steps 3") },
+    { label: "a local minimum", spec: S("descent", "x^4 - 3x^2 + x; start 1.5; rate 0.05") },
+    { label: "stuck on a maximum", spec: S("descent", "x^4/4 - x^2; start 0") },
+    { label: "a round bowl", spec: S("descent", "x^2 + y^2; start (4, 3); rate 0.2; steps 25") },
+    { label: "a long valley zigzags", spec: S("descent", "x^2 + 10y^2; start (8, 1); rate 0.09") },
+    { label: "momentum in the valley", spec: S("descent", "x^2 + 10y^2; start (8, 1); rate 0.05; momentum 0.5") },
+    { label: "a saddle point", spec: S("descent", "x^2 - y^2; start (3, 0); rate 0.1") },
+    { label: "Rosenbrock's banana", spec: S("descent", "(1 - x)^2 + 100(y - x^2)^2; start (-1.2, 1); rate 0.001; steps 100") },
+  ],
 };
 
 /** What the tool opens on: a tensor with three axes says more than the first example, a single number. */
-export const AI_DEFAULT: Record<AiTopic, AiSpec> = { tensor: S("tensor", "2x3x4"), ops: S("ops", "2x3x4; reshape 4x6") };
+export const AI_DEFAULT: Record<AiTopic, AiSpec> = {
+  tensor: S("tensor", "2x3x4"),
+  ops: S("ops", "2x3x4; reshape 4x6"),
+  descent: S("descent", "(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12"),
+};

@@ -131,6 +131,46 @@ export function curve(f: Frame, fn: (x: number) => number, color: string, width 
     .join("")}</g>`;
 }
 
+/** The level curves g(x, y) = c for each c in `levels`, traced cell by cell (marching squares) on one grid. */
+export function contours(fr: Frame, g: (x: number, y: number) => number, levels: number[], color: string, width = 2.4): string {
+  const nx = 240;
+  const ny = Math.round((nx * (fr.bottom - fr.top)) / (fr.right - fr.left));
+  const X_ = (i: number) => fr.x0 + ((fr.x1 - fr.x0) * i) / nx;
+  const Y_ = (j: number) => fr.y0 + ((fr.y1 - fr.y0) * j) / ny;
+  const z: number[][] = [];
+  for (let j = 0; j <= ny; j++) {
+    z.push([]);
+    for (let i = 0; i <= nx; i++) z[j].push(g(X_(i) + 1e-9, Y_(j) + 1e-9));
+  }
+  let d = "";
+  for (const level of levels) {
+    const v = z.map((row) => row.map((w) => (w === level ? 1e-12 : w - level)));
+    for (let j = 0; j < ny; j++)
+      for (let i = 0; i < nx; i++) {
+        const c = [v[j][i], v[j][i + 1], v[j + 1][i + 1], v[j + 1][i]];
+        const pts: [number, number][] = [];
+        const corner = [
+          [i, j],
+          [i + 1, j],
+          [i + 1, j + 1],
+          [i, j + 1],
+        ];
+        for (let e = 0; e < 4; e++) {
+          const [a, b] = [c[e], c[(e + 1) % 4]];
+          if (a > 0 !== b > 0 && Number.isFinite(a) && Number.isFinite(b)) {
+            const t = a / (a - b);
+            const [p, q] = [corner[e], corner[(e + 1) % 4]];
+            pts.push([X_(p[0] + (q[0] - p[0]) * t), Y_(p[1] + (q[1] - p[1]) * t)]);
+          }
+        }
+        for (let s = 0; s + 1 < pts.length; s += 2) d += `M${r2(fr.sx(pts[s][0]))} ${r2(fr.sy(pts[s][1]))}L${r2(fr.sx(pts[s + 1][0]))} ${r2(fr.sy(pts[s + 1][1]))}`;
+      }
+  }
+  return `<path clip-path="url(#${fr.id})" d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+}
+/** The curve g(x, y) = 0. */
+export const contour = (fr: Frame, g: (x: number, y: number) => number, color: string, width = 2.4) => contours(fr, g, [0], color, width);
+
 export const sampleY = (fn: (x: number) => number, x0: number, x1: number, n = 600) =>
   Array.from({ length: n + 1 }, (_, i) => fn(x0 + ((x1 - x0) * i) / n));
 
