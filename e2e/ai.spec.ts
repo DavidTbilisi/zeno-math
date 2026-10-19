@@ -10,8 +10,10 @@
 // runs out of steps and says so, the slider sets a better one, and the ball rolls to the bottom for two stars. The PCA
 // lab goes on the board too: a line across the cloud is not the best, and turned along it, it is PC1, for two stars.
 // So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
+// And the embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
 import { expect, test } from "@playwright/test";
 import { etaIndex } from "../src/math/descentLab.ts";
+import { EMBED_PLOT, toPage as embedPage } from "../src/math/embedLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
 import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 
@@ -286,5 +288,35 @@ test("the softmax lab: cat's probability is short, its bar dragged up gets it ov
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/always add up to 1!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("softmax-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the embeddings lab: dog at right angles to cat is not alike, beside it it is", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Embeddings lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Embeddings lab/ }).click();
+  const lab = page.locator(".live-embedLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/so that cat and dog are alike: a cosine of at least 0\.95/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/The cosine is 0\. Turn the arrow/)).toBeVisible();
+
+  // Drag dog's tip from (−1, 2.5) to (2.4, 1.3), beside cat's.
+  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const k = svg.width / EMBED_PLOT.w;
+  const at = (x: number, y: number) => embedPage([x, y]).map((v, i) => (i ? svg.y : svg.x) + v * k) as [number, number];
+  await page.mouse.move(...at(-1, 2.5));
+  await page.mouse.down();
+  await page.mouse.move(...at(1, 2), { steps: 4 });
+  await page.mouse.move(...at(2.4, 1.3), { steps: 4 });
+  await page.mouse.up();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/Alike means pointing the same way.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("embed-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });

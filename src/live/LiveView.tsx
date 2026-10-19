@@ -40,6 +40,7 @@ import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
 import { PcaLab } from "./PcaLab";
 import { SoftmaxLab } from "./SoftmaxLab";
+import { EmbedLab } from "./EmbedLab";
 import { Soroban } from "./Soroban";
 import { Target } from "./Target";
 import type { PieceProps } from "./ui";
@@ -102,6 +103,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   descentLab: DescentLab,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,
+  embedLab: EmbedLab,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

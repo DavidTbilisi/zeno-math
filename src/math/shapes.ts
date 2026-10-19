@@ -1043,6 +1043,23 @@ function softmaxLabPreview(): Piece[] {
   ];
 }
 
+function embedLabPreview(): Piece[] {
+  // Word arrows from one origin, two close together with the angle between them, one far off.
+  const o: Pt = [40, 140];
+  const tip = (x: number, y: number, c: string): Piece[] => {
+    const d = Math.hypot(x - o[0], y - o[1]);
+    const [ux, uy] = [(x - o[0]) / d, (y - o[1]) / d];
+    return [seg(o, [x, y], { color: c, width: 3 }), path([[x - 10 * ux - 5 * uy, y - 10 * uy + 5 * ux], [x, y], [x - 10 * ux + 5 * uy, y - 10 * uy - 5 * ux]], { color: c, width: 3 })];
+  };
+  return [
+    ...tip(190, 70, BLUE),
+    ...tip(170, 30, "#e8590c"),
+    ...tip(30, 10, "#495057"),
+    path([[80, 121], [84, 113], [86, 104]], { color: "#9c36b5", width: 2 }),
+    dot(o, 3),
+  ];
+}
+
 /** A small graph for the graph games' previews: five vertices of a house shape, and its edges. */
 const HOUSE: Pt[] = [[90, 0], [10, 60], [170, 60], [10, 150], [170, 150]];
 const HOUSE_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4], [3, 4], [1, 4], [2, 3]];
@@ -1329,6 +1346,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
+  { id: "liveEmbedLab", group: "games", build: embedLabPreview, live: "embedLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

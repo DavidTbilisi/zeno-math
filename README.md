@@ -503,6 +503,17 @@ UI in English, Russian and Georgian.
     locked and T turned down to sharpen and up to flatten, a loss below 0.1 by following the arrows, and two of five
     classes sharing the top (a soft arg max). A wrong check says why, stars go to a puzzle done at the first try, and
     eight discoveries are kept. Free play takes two to five classes, any temperature and any target
+  - *Embeddings lab* (a live piece on the board, from the AI menu or the Shapes panel): words as arrows from the origin
+    of a plane, their tips dragged about (snapping to 0.1), with the numbers each puzzle is about beside them as bars:
+    a cosine and the angle, a length, the words nearest a query, how far an analogy lands from its word, dot products.
+    Eight puzzles, each with a Check: two words alike (a cosine of 0.95), unrelated (about 0, at right angles) and
+    opposite (−0.95), an arrow twice as long that is still as alike (cosine ignores length), a query placed so that its
+    two nearest words are banana and cherry (embedding search), queen placed where king − man + woman lands (drawn as
+    the arrow from man to woman laid again from king), woman placed so that one direction serves two analogies, and a
+    query scoring at least 4 with one key and at most 0 with another by the dot product, as attention does. A wrong
+    check says why, stars go to a puzzle done at the first try, and eight discoveries are kept. In free play any word
+    can be dragged, and tapping words picks them: one shows its nearest words, two how alike they are, three where
+    their analogy lands
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1245,6 +1256,8 @@ src/math/pcaLab.ts        the PCA lab: PC1 and least squares from the covariance
                           the eight puzzles and how a check is judged, and the picture
 src/math/softmaxLab.ts    the softmax lab: softmax with a temperature, the loss and its gradient, the eight puzzles
                           and how a check is judged, and the picture
+src/math/embedLab.ts      the embeddings lab: cosine, nearest words and analogies, the eight puzzles and how a check
+                          is judged, the readout, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
