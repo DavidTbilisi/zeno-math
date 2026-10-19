@@ -407,7 +407,7 @@ UI in English, Russian and Georgian.
     and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
   - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
     around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
-- **🤖 Math for AI** — the maths that machine learning is written in, starting with tensors and what is done to them
+- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, and gradient descent
   - *Tensors* as NumPy and PyTorch see them, a box of numbers with a shape: type a number, a list `[5, 3, 7]`, a
     nested list `[[1, 2], [3, 4]]` or a shape `2x3x4` (filled 1, 2, 3, … in memory order; `shape 5` for a vector).
     A scalar is drawn as one cell, a vector as a row, a matrix as a grid with its rows and columns as axis 0 and
@@ -428,6 +428,15 @@ UI in English, Russian and Georgian.
     `@` multiplies rows by columns, takes a vector as a row on the left and a column on the right (two vectors give
     the dot product), and multiplies a batch matrix by matrix with the batch axes broadcast. One entry of the result
     is worked out (`; [1, 0]` picks which), with the entries that make it up picked out in the inputs
+  - *Gradient descent* on a function of x, or of x and y: `(x - 3)^2; start 0; rate 0.1`, with up to three rates
+    side by side (`rate 0.02, 0.4, 1.05`), `steps` and `momentum 0.9`. The gradient is found symbolically and the
+    rule written out; in one variable the steps are drawn on the curve, in two across the level curves (equal scales,
+    so −∇f crosses them at right angles), with a table of the first steps and the first one worked out. Each rate's
+    path is judged: it settles (the gradient under 0.1 % of where it started), is still on its way, overshoots or
+    zigzags, bounces at the edge, runs away, or stops on a maximum or a saddle point because the slope is flat there;
+    a lower point is found when it settled in a local minimum. From the curvature where it settled (or anywhere, for
+    a quadratic) the largest rate is given, η < 2 / f″, or 2 over the Hessian's largest eigenvalue, and a long
+    valley's steep-to-gentle ratio explains the zigzag that momentum smooths out
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1211,8 +1220,9 @@ src/math/euclid.ts        school geometry: circle theorems, similarity & congrue
                           volume, constructions & loci + figures
 src/math/numerical.ts     numerical methods: change of sign, bisection, Newton–Raphson, iteration, trapezium &
                           Simpson, numerical derivatives + pictures
-src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank) and
-                          their operations (reshape, permute, reductions, broadcasting, @) + pictures
+src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank),
+                          their operations (reshape, permute, reductions, broadcasting, @) and gradient descent (rates,
+                          momentum, verdicts, curvature) + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

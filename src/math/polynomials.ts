@@ -4,7 +4,7 @@
 // polynomial inequalities with a sign table; the binomial expansion of (a + b)ⁿ with Pascal's triangle, a single term,
 // and the binomial series for any power with its interval of validity; simultaneous equations where one is linear and
 // the other a curve; partial fractions by substitution (the cover-up rule) and comparing coefficients. All exact.
-import { axes, C, compose, curve, dot, fill, lbl, makeFrame, r2, sampleY, texLines, tn, W, yRange, type Caption, type Frame, type TexLine } from "./chart";
+import { axes, C, compose, contour, curve, dot, fill, lbl, makeFrame, r2, sampleY, texLines, tn, W, yRange, type Caption, type Frame, type TexLine } from "./chart";
 import { add, exprMessages, gcd, mul, N, neg, numericRoots, parseE, powFrac, qs, qsAdd, qsMul, qsNum, qsTex, realRoots, rootFrac, sqrtSplit, substitute, tex, V, type E, type QS } from "./expr";
 import { Frac } from "./fraction";
 import { latexToSvg, type RenderedSvg } from "./latex";
@@ -1658,44 +1658,6 @@ function p2Sub(p: P2, subj: "x" | "y", m: Frac, c: Frac): P {
     out = padd(out, t);
   }
   return ptrim(out);
-}
-
-/** The curve g(x, y) = 0 traced cell by cell (marching squares). */
-function contour(fr: Frame, g: (x: number, y: number) => number, color: string, width = 2.4): string {
-  const nx = 240;
-  const ny = Math.round((nx * (fr.bottom - fr.top)) / (fr.right - fr.left));
-  const X_ = (i: number) => fr.x0 + ((fr.x1 - fr.x0) * i) / nx;
-  const Y_ = (j: number) => fr.y0 + ((fr.y1 - fr.y0) * j) / ny;
-  const v: number[][] = [];
-  for (let j = 0; j <= ny; j++) {
-    v.push([]);
-    for (let i = 0; i <= nx; i++) {
-      const z = g(X_(i) + 1e-9, Y_(j) + 1e-9);
-      v[j].push(z === 0 ? 1e-12 : z);
-    }
-  }
-  let d = "";
-  for (let j = 0; j < ny; j++)
-    for (let i = 0; i < nx; i++) {
-      const c = [v[j][i], v[j][i + 1], v[j + 1][i + 1], v[j + 1][i]];
-      const pts: [number, number][] = [];
-      const corner = [
-        [i, j],
-        [i + 1, j],
-        [i + 1, j + 1],
-        [i, j + 1],
-      ];
-      for (let e = 0; e < 4; e++) {
-        const [a, b] = [c[e], c[(e + 1) % 4]];
-        if (a > 0 !== b > 0 && Number.isFinite(a) && Number.isFinite(b)) {
-          const t = a / (a - b);
-          const [p, q] = [corner[e], corner[(e + 1) % 4]];
-          pts.push([X_(p[0] + (q[0] - p[0]) * t), Y_(p[1] + (q[1] - p[1]) * t)]);
-        }
-      }
-      for (let s = 0; s + 1 < pts.length; s += 2) d += `M${r2(fr.sx(pts[s][0]))} ${r2(fr.sy(pts[s][1]))}L${r2(fr.sx(pts[s + 1][0]))} ${r2(fr.sy(pts[s + 1][1]))}`;
-    }
-  return `<path clip-path="url(#${fr.id})" d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
 }
 
 function renderSimultaneous(src: string): RenderedSvg {

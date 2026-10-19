@@ -4,12 +4,15 @@
 // with a brute-force count, and the rank caption tells it apart from the order. Operations: reshape keeps memory and
 // permute reads it with moved strides, as an independent lookup finds; reductions, broadcasting and @ agree with a
 // direct computation over nested lists, and the entries said to make up one entry of the result are those that do;
-// every mistake in an operation is refused with its message.
+// every mistake in an operation is refused with its message. Gradient descent: on quadratics the steps follow the
+// closed form, with and without momentum, and overshoot, settle or run away as the curvature says; the gradient
+// agrees with one worked out by hand; maxima, saddles, local minima and slow progress are told apart; and wrong
+// options are refused.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { fill } from "../src/math/text.ts";
-import { buildAi, buildOps, matrixRank, strides } from "../src/math/ai.ts";
+import { buildAi, buildDescent, buildOps, matrixRank, strides } from "../src/math/ai.ts";
 
 const w = en.aiWords;
 const T = w.tensor;
@@ -339,4 +342,137 @@ test("every operation draws, each slice under its own name", () => {
   }
   const c = opsCaptions("2x2x3 @ 3x2");
   assert.ok(c.includes("A[1]") && c.includes("out[1]") && !c.includes("T[1]"));
+});
+
+// ---------- gradient descent ----------
+
+const G = w.descent;
+const descent = (src: string) => buildDescent({ topic: "descent", src }, w).data;
+const descentCaptions = (src: string) => [...buildDescent({ topic: "descent", src }, w).svg.svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(" ").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+const descentThrows = (src: string, message: string) => assert.throws(() => buildDescent({ topic: "descent", src }, w), { message }, src);
+const close = (a: number, b: number, what: string) => assert.ok(Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(b)), `${what}: ${a} vs ${b}`);
+
+test("on a parabola the steps shrink by 1 − 2aη each time: they settle, overshoot or run away as that says", () => {
+  for (let i = 0; i < 60; i++) {
+    const [a, c, x0] = [int(1, 4), int(-5, 5), int(-5, 5)];
+    const eta = Math.round(rnd() * 120) / 100 / a;
+    if (!eta) continue;
+    const d = descent(`${a}(x - ${c})^2; start ${x0}; rate ${eta}; steps 12`);
+    const p = d.paths[0];
+    const r = 1 - 2 * a * eta;
+    p.points.forEach(([x], k) => close(x, c + (x0 - c) * r ** k, `x${k}`));
+    assert.equal(d.vars, 1);
+    assert.deepEqual(d.curvature, [2 * a]);
+    if (x0 === c) assert.equal(p.verdict, "converged");
+    else if (Math.abs(r) > 1) assert.equal(p.verdict, "diverged");
+    else if (Math.abs(r) ** 12 * 2 * a * Math.abs(x0 - c) <= 1e-3 * Math.max(1, 2 * a * Math.abs(x0 - c))) assert.equal(p.verdict, "converged");
+    else assert.equal(p.verdict, r === -1 ? "bounce" : "slow");
+    if (x0 !== c && Math.abs(r) > 1e-9) assert.equal(p.zigzag, r < 0, `zigzag at r = ${r}`);
+  }
+  const once = descent("(x - 3)^2; start 0; rate 0.5; steps 3").paths[0];
+  assert.deepEqual(once.points.map((p) => p[0]), [0, 3, 3, 3]);
+  assert.equal(once.settled, 1);
+});
+
+test("a bowl in two variables: each coordinate follows its own parabola, and the curvatures are the Hessian's eigenvalues", () => {
+  for (let i = 0; i < 30; i++) {
+    const [a, b] = [int(1, 6), int(1, 6)];
+    const [x0, y0] = [int(-4, 4), int(-4, 4)];
+    const eta = Math.round(rnd() * 15) / 100 + 0.01;
+    const d = descent(`${a}x^2 + ${b}y^2; start (${x0}, ${y0}); rate ${eta}; steps 15`);
+    d.paths[0].points.forEach(([x, y], k) => {
+      close(x, x0 * (1 - 2 * a * eta) ** k, `x${k}`);
+      close(y, y0 * (1 - 2 * b * eta) ** k, `y${k}`);
+    });
+    assert.equal(d.vars, 2);
+    assert.deepEqual(d.curvature, [2 * Math.max(a, b), 2 * Math.min(a, b)]);
+  }
+  // A tilted bowl: x² + xy + y² has curvatures 3 and 1.
+  descent("x^2 + x y + y^2; start (2, 1)").curvature!.forEach((c, i) => close(c, [3, 1][i], "curvature"));
+});
+
+test("momentum: v = βv − η∇f, x = x + v, step by step", () => {
+  for (let i = 0; i < 20; i++) {
+    const [a, b] = [int(1, 5), int(1, 10)];
+    const eta = Math.round(rnd() * 8) / 100 + 0.01;
+    const beta = Math.round(rnd() * 90) / 100;
+    const d = descent(`${a}x^2 + ${b}y^2; start (5, 2); rate ${eta}; momentum ${beta}; steps 20`);
+    let [x, y, vx, vy] = [5, 2, 0, 0];
+    d.paths[0].points.forEach((p, k) => {
+      close(p[0], x, `x${k}`);
+      close(p[1], y, `y${k}`);
+      [vx, vy] = [beta * vx - eta * 2 * a * x, beta * vy - eta * 2 * b * y];
+      [x, y] = [x + vx, y + vy];
+    });
+  }
+  // In the long valley, momentum gets there in fewer steps than the best plain rate.
+  const plain = descent("x^2 + 10y^2; start (8, 1); rate 0.09").paths[0];
+  const heavy = descent("x^2 + 10y^2; start (8, 1); rate 0.05; momentum 0.5").paths[0];
+  assert.ok(heavy.settled! < plain.settled!);
+  assert.ok(plain.zigzag);
+  const c = descentCaptions("x^2 + 10y^2; start (8, 1); rate 0.05; momentum 0.5");
+  assert.ok(c.includes(fill(G.momentum, { beta: "0.5" }).split(":")[0]));
+  assert.ok(c.includes(fill(G.valley, { r: "10" }).split(":")[0]));
+  assert.ok(!c.includes("η < 2 / 20"));
+});
+
+test("the gradient is the one worked out by hand", () => {
+  for (let i = 0; i < 30; i++) {
+    const [x, y] = [int(-20, 20) / 10, int(-20, 20) / 10];
+    const g = descent(`sin(x) y + x^2 y^3 + e^(x - y); start (${x}, ${y}); steps 1`).paths[0].grad[0];
+    close(g[0], Math.cos(x) * y + 2 * x * y ** 3 + Math.exp(x - y), "∂f/∂x");
+    close(g[1], Math.sin(x) + 3 * x ** 2 * y ** 2 - Math.exp(x - y), "∂f/∂y");
+  }
+  close(descent("f(x) = x^3 - 2x; start 1.5; steps 1").paths[0].grad[0][0], 3 * 1.5 ** 2 - 2, "f′");
+  close(descent("f(x, y) = x y; start (2, 3); steps 1").paths[0].grad[0][1], 2, "∂f/∂y");
+});
+
+test("a maximum, a saddle, a local minimum, slow progress and steps that run off to infinity", () => {
+  const max = descent("x^4/4 - x^2; start 0");
+  assert.equal(max.paths[0].verdict, "max");
+  assert.equal(max.paths[0].settled, 0);
+  assert.equal(descent("-(x^2 + y^2); start (0, 0)").paths[0].verdict, "max");
+  assert.equal(descent("x^2 - y^2; start (3, 0); rate 0.1").paths[0].verdict, "saddle");
+  const local = descent("x^4 - 3x^2 + x; start 1.5; rate 0.05");
+  assert.equal(local.paths[0].verdict, "converged");
+  assert.ok(Math.abs(local.lower![0] + 1.2979) < 0.02);
+  assert.equal(descent("x^4 - 3x^2 + x; start -1.5; rate 0.05").lower, undefined);
+  assert.equal(descent("(1 - x)^2 + 100(y - x^2)^2; start (-1.2, 1); rate 0.001; steps 100").paths[0].verdict, "slow");
+  const away = descent("x^4; start 3; rate 0.5; steps 20").paths[0];
+  assert.equal(away.verdict, "diverged");
+  assert.ok(away.points.length < 21 && away.points.flat().every(Number.isFinite));
+  const three = descent("(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12").paths.map((p) => p.verdict);
+  assert.deepEqual(three, ["slow", "converged", "diverged"]);
+  const c = descentCaptions("(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12");
+  assert.ok(c.includes("f′(0) = −6, so x₁ = 0 − 0.02 · (−6) = 0.12"));
+  assert.ok(c.includes("η < 2 / f″ = 1"));
+  assert.ok(c.includes(fill(G.small, { eta: "0.02" })));
+  assert.ok(!c.includes(fill(G.small, { eta: "1.05" })));
+  const bounce = descent("(x - 3)^2; start 0; rate 1; steps 6").paths[0];
+  assert.equal(bounce.verdict, "bounce");
+  assert.deepEqual(bounce.points.map((p) => p[0]), [0, 6, 0, 6, 0, 6, 0]);
+  assert.ok(descentCaptions("x^4 - 3x^2 + x; start 1.5; rate 0.05").includes("f is lower at −1.29"));
+  assert.ok(descentCaptions("x^2 - y^2; start (3, 0); rate 0.1").includes("saddle point"));
+});
+
+test("wrong options are refused with the reason", () => {
+  descentThrows("", w.need.descent);
+  descentThrows("x + z", G.vars);
+  descentThrows("x^2; speed 3", fill(G.badOpt, { s: "speed 3" }));
+  descentThrows("x^2; start (1, 2)", fill(G.badStart, { n: 1, example: "4" }));
+  descentThrows("x^2 + y^2; start 1", fill(G.badStart, { n: 2, example: "(4, 1)" }));
+  descentThrows("x^2; start a", fill(G.badStart, { n: 1, example: "4" }));
+  for (const r of ["0", "-0.1", "0.1, 0.2, 0.3, 0.4", ""]) descentThrows(`x^2; rate ${r}`, fill(G.badRate, { max: 3 }));
+  for (const n of ["0", "101", "2.5", "1 2"]) descentThrows(`x^2; steps ${n}`, fill(G.badSteps, { max: 100 }));
+  for (const m of ["1", "-0.1", "0.5 0.5"]) descentThrows(`x^2; momentum ${m}`, G.badMomentum);
+  descentThrows("ln(x); start 0", fill(G.undefinedAt, { p: "0" }));
+  descentThrows("sqrt(x) + y; start (-1, 0)", fill(G.undefinedAt, { p: "(−1, 0)" }));
+});
+
+test("every descent picture draws", () => {
+  for (const src of ["(x - 3)^2; start 0; rate 0.1", "x^4/4 - x^2; start 0", "x^4 - 3x^2 + x; start 1.5; rate 0.05", "x^2 + 10y^2; start (8, 1); rate 0.09", "x^2; start 0", "7; start 1", "x^4; start 3; rate 0.5; steps 5"]) {
+    const { svg } = buildDescent({ topic: "descent", src }, w).svg;
+    assert.match(svg, /^<svg/);
+    assert.doesNotMatch(svg, /NaN|undefined/, src);
+  }
 });

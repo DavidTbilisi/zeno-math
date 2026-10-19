@@ -147,6 +147,7 @@ export const MENUS: MenuGroup[] = [
     icon: "🤖", label: "groupAi", title: "groupAiTitle", items: [
       { kind: "ai", icon: "⊞", label: "aiTensors", start: "tensor" },
       { kind: "ai", icon: "⇄", label: "aiOps", start: "ops" },
+      { kind: "ai", icon: "↘", label: "aiDescent", start: "descent" },
     ],
   },
   {
