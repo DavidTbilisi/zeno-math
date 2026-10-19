@@ -4,7 +4,8 @@
 // learning rates, refuses a rate that is not positive, and draws a path in two variables onto the board.
 // Backprop opens on a neuron's squared error, says which input has no value, and draws a step of gradient descent.
 // Softmax opens on cat, dog and bird with cat as the target, refuses a target that is not a class, and draws three
-// temperatures onto the board.
+// temperatures onto the board. Embeddings open on three words with a query, say which name is unknown, and draw
+// king − man + woman onto the board.
 import { expect, test } from "@playwright/test";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
@@ -140,4 +141,31 @@ test("softmax: a wrong target is refused, and three temperatures insert", async 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("[2, 1, 0.1]; temperature 0.5, 1, 5; target 0");
+});
+
+test("embeddings: an unknown name is refused, and an analogy inserts", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Embeddings" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Embeddings & cosine similarity/ }).click();
+
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("tab", { name: "Embeddings" })).toHaveAttribute("aria-selected", "true");
+  await expect(dialog.getByRole("textbox")).toHaveValue("cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2], car [0.1, 0.2, 0.9]; query cat");
+  const preview = dialog.locator(".preview img");
+  await expect(preview).toBeVisible();
+
+  await dialog.getByRole("textbox").fill("cat [0.9, 0.8], dog [0.85, 0.75]; query bird");
+  await expect(dialog.locator(".preview .error")).toHaveText(/There is no vector called bird: the names are cat, dog/);
+  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
+
+  await dialog.getByRole("button", { name: "king − man + woman" }).click();
+  await expect(preview).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("embeddings.png") });
+  await dialog.getByRole("button", { name: "Insert" }).click();
+
+  await expect(dialog).toHaveCount(0);
+  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue(/; analogy king - man \+ woman$/);
 });

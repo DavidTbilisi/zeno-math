@@ -407,7 +407,7 @@ UI in English, Russian and Georgian.
     and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
   - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
     around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
-- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, gradient descent, backpropagation, and softmax with cross-entropy
+- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, gradient descent, backpropagation, softmax with cross-entropy, and embeddings with cosine similarity
   - *Tensors* as NumPy and PyTorch see them, a box of numbers with a shape: type a number, a list `[5, 3, 7]`, a
     nested list `[[1, 2], [3, 4]]` or a shape `2x3x4` (filled 1, 2, 3, … in memory order; `shape 5` for a vector).
     A scalar is drawn as one cell, a vector as a row, a matrix as a grid with its rows and columns as axis 0 and
@@ -452,6 +452,15 @@ UI in English, Russian and Georgian.
     (and when e^z would overflow without it), that two classes are the sigmoid of the difference, how temperature
     sharpens or flattens, the cross-entropy worked out against a uniform guess (ln k), a confident mistake, and for a
     soft target the entropy H(y) it can never go below and the KL divergence above it
+  - *Embeddings & cosine similarity*: named vectors such as `cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2]` (or the rows
+    of a list, called a, b, …), up to 8 of up to 12 entries, drawn as rows of cells shaded by value with their lengths.
+    One pair is worked out (`compare cat dog`, or the first two): the dot product term by term, cos θ = a · b / (|a| |b|)
+    with the angle and what it means (alike, something in common, unrelated, apart), why scaling a vector leaves the
+    cosine alone but not the distance, and that for unit vectors the cosine is the dot product and
+    |â − b̂|² = 2 − 2 cos θ. `query cat` ranks the others by cosine and says when the plain dot product would rank a
+    longer vector first; `analogy king - man + woman` finds the nearest vector to the sum, leaving the three out. With
+    three or more vectors the matrix of cosines (E Eᵀ for unit rows) is drawn beside them, and vectors in a plane are
+    drawn as arrows with the angle between the pair and the analogy's steps dashed
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1237,8 +1246,9 @@ src/math/numerical.ts     numerical methods: change of sign, bisection, Newton�
                           Simpson, numerical derivatives + pictures
 src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank),
                           their operations (reshape, permute, reductions, broadcasting, @), gradient descent (rates,
-                          momentum, verdicts, curvature), backpropagation (computational graphs, the chain rule) and
-                          softmax with cross-entropy + pictures
+                          momentum, verdicts, curvature), backpropagation (computational graphs, the chain rule),
+                          softmax with cross-entropy and embeddings (cosine similarity, nearest neighbours,
+                          analogies) + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures
