@@ -407,7 +407,7 @@ UI in English, Russian and Georgian.
     and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
   - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
     around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
-- **🤖 Math for AI** — the maths that machine learning is written in, starting with tensors
+- **🤖 Math for AI** — the maths that machine learning is written in, starting with tensors and what is done to them
   - *Tensors* as NumPy and PyTorch see them, a box of numbers with a shape: type a number, a list `[5, 3, 7]`, a
     nested list `[[1, 2], [3, 4]]` or a shape `2x3x4` (filled 1, 2, 3, … in memory order; `shape 5` for a vector).
     A scalar is drawn as one cell, a vector as a row, a matrix as a grid with its rows and columns as axis 0 and
@@ -417,6 +417,17 @@ UI in English, Russian and Georgian.
     rank, kept apart from its order (both get called "rank"). A column vector written as a 3 × 1 matrix has order 2,
     the list has order 1. `; T[1, 2, 3]` picks out an entry and shows where it sits in memory (1·12 + 2·4 + 3·1 =
     23). A list that is not a full box (rows of different lengths) is refused with the reason
+  - *Tensor operations*, each drawn before and after with its line of code: a tensor and, after `;`, one of
+    `reshape 4x6` (`-1` for the length to work out), `flatten`, `T`, `transpose 0 1` (swap two axes), `permute 2 0 1`
+    or `sum`, `mean`, `max`, `min` with an axis and `keepdims`; or two tensors joined by `+`, `−`, `*`, `/` or `@`.
+    Reshape keeps every number where it is in memory and gives it new strides; permute moves the strides with the
+    axes, and when they stop being row-major the result is shown not to be contiguous, with the places in memory a
+    row-by-row read visits (an image HWC → CHW with `permute 2 0 1`). A reduction uses up its axis, and keepdims
+    keeps it with length 1 to broadcast back. Broadcasting lines the shapes up from the right and draws each operand
+    stretched to the result, the copies pale (really stride 0); shapes that cannot broadcast say which lengths clash.
+    `@` multiplies rows by columns, takes a vector as a row on the left and a column on the right (two vectors give
+    the dot product), and multiplies a batch matrix by matrix with the batch axes broadcast. One entry of the result
+    is worked out (`; [1, 0]` picks which), with the entries that make it up picked out in the inputs
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1200,8 +1211,8 @@ src/math/euclid.ts        school geometry: circle theorems, similarity & congrue
                           volume, constructions & loci + figures
 src/math/numerical.ts     numerical methods: change of sign, bisection, Newton–Raphson, iteration, trapezium &
                           Simpson, numerical derivatives + pictures
-src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank) +
-                          pictures
+src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank) and
+                          their operations (reshape, permute, reductions, broadcasting, @) + pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

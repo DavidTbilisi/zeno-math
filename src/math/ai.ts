@@ -2,12 +2,15 @@
 // 2x3x4 (filled 1, 2, 3, … in memory order) or a nested list such as [[1, 2], [3, 4]] is drawn axis by axis — a
 // scalar as one cell, a vector as a row, a matrix as a grid, an order-3 tensor as its slices with the box beside
 // them, an order-4 one as rows of slices — with its order, shape, number of entries and strides, one entry picked out
-// by its indices, and for a matrix its rank, which is a different thing from its order.
+// by its indices, and for a matrix its rank, which is a different thing from its order. Then what is done to tensors:
+// reshape and permute (the same memory read with new strides, and when that stops being contiguous), sums and other
+// reductions along an axis, entry-by-entry arithmetic with broadcasting, and the matrix product @ with batches, each
+// drawn before and after with the entries that make up one entry of the result picked out.
 import { arrow, C, compose, esc, fill, FONT, nt, r2, W, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 
-export type AiTopic = "tensor";
-export const AI_TOPICS: AiTopic[] = ["tensor"];
+export type AiTopic = "tensor" | "ops";
+export const AI_TOPICS: AiTopic[] = ["tensor", "ops"];
 export type AiSpec = { topic: AiTopic; src: string };
 
 export type AiWords = {
@@ -36,12 +39,62 @@ export type AiWords = {
     strides: string;
     pick: string;
   };
+  ops: {
+    oneOp: string;
+    opMissing: string;
+    unknownOp: string;
+    noAxes: string;
+    axisRange: string;
+    reshapeCount: string;
+    reshapeTwoFree: string;
+    reshapeSplit: string;
+    permBad: string;
+    swapCount: string;
+    incompatible: string;
+    divZero: string;
+    matScalar: string;
+    inner: string;
+    panel: string;
+    stretched: string;
+    reshape: string;
+    reshapeFree: string;
+    flatten: string;
+    reshapePick: string;
+    permute: string;
+    contiguous: string;
+    notContiguous: string;
+    vectorT: string;
+    permutePick: string;
+    fn: { sum: string; mean: string; max: string; min: string };
+    reduceAxis: string;
+    reduceAll: string;
+    keepdims: string;
+    reducePick: string;
+    same: string;
+    lineUp: string;
+    scalar: string;
+    stretch: string;
+    missing: string;
+    strideZero: string;
+    hadamard: string;
+    broadcastPick: string;
+    matShape: string;
+    matBatch: string;
+    matLeft: string;
+    matRight: string;
+    matDot: string;
+    matPick: string;
+  };
 };
 
 /** A tensor: its shape and its numbers in memory order (row-major, the last index changing fastest). */
 export type Tensor = { shape: number[]; data: number[] };
 /** What a picture shows, for the tests: the tensor, its strides, the entry picked and where it sits, a matrix's rank. */
 export type AiData = { tensor: Tensor; strides: number[]; pick?: number[]; at?: number; rank?: number };
+/** What an operation's picture shows, for the tests: the tensors it starts from and the result; for reshape and
+ * permute the result's strides into the same memory and whether they are row-major; the entry of the result explained
+ * and, for each input, the places in its memory of the entries that make it up. */
+export type OpsData = { inputs: Tensor[]; out: Tensor; strides?: number[]; contiguous?: boolean; pick?: number[]; cells?: number[][] };
 
 const MAX_ORDER = 4;
 const MAX_AXIS = 12;
@@ -115,13 +168,32 @@ function readShape(src: string): number[] | null {
   return parts.map(Number);
 }
 
-function readTensor(src: string): Tensor {
-  const shape = readShape(src);
-  const t = shape ? { shape, data: Array.from({ length: shape.reduce((a, b) => a * b, 1) }, (_, i) => i + 1) } : boxOf(readList(src));
+const size = (shape: number[]) => shape.reduce((a, b) => a * b, 1);
+
+/** A tensor small enough to draw. */
+function drawable(t: Tensor): Tensor {
   if (t.shape.includes(0)) fail(words.tensor.empty);
   if (t.shape.length > MAX_ORDER || t.shape.some((d) => d > MAX_AXIS) || t.data.length > MAX_ENTRIES)
     fail(words.tensor.tooBig, { order: MAX_ORDER, axis: MAX_AXIS, n: MAX_ENTRIES });
   return t;
+}
+
+function readTensor(src: string): Tensor {
+  const shape = readShape(src);
+  return drawable(shape ? { shape, data: Array.from({ length: size(shape) }, (_, i) => i + 1) } : boxOf(readList(src)));
+}
+
+/** "T[1, 2]", "out[1, 2]" or "[1, 2]": an entry picked by its indices; null when the text is not one. */
+function readPick(src: string, shape: number[]): number[] | null {
+  const m = /^(?:T|out)?\s*\[([^\]]*)\]$/i.exec(src);
+  if (!m) return null;
+  const idx = m[1].split(/[\s,]+/).filter(Boolean);
+  if (idx.length !== shape.length || !idx.every((v) => /^\d+$/.test(v))) fail(words.tensor.pickCount, { n: shape.length });
+  const pick = idx.map(Number);
+  pick.forEach((v, k) => {
+    if (v >= shape[k]) fail(words.tensor.pickRange, { i: v, k, m: shape[k] - 1 });
+  });
+  return pick;
 }
 
 /** How many places in memory one step along each axis moves. */
@@ -152,6 +224,12 @@ export function matrixRank(rows: number[][]): number {
 const TINT = ["#d0ebff", "#d3f9d8", "#ffe8cc", "#f3d9fa", "#fff3bf", "#ffe3e3", "#c5f6fa", "#e5dbff", "#e9ecef", "#ffdeeb", "#d8f5a2", "#ffec99"];
 const EDGE = [C.blue, C.green, C.orange, C.purple, "#f08c00", C.red, "#0c8599", "#6741d9", C.grey, "#c2255c", "#5c940d", "#e67700"];
 const HI = "#ff922b";
+const GHOST = "#f8f9fa";
+
+/** How an entry is drawn: picked out, a copy made by broadcasting, or plain. */
+type Mark = "hi" | "ghost" | undefined;
+/** The mark of the entry at each place in memory. */
+type Marks = (at: number) => Mark;
 
 const txt = (x: number, y: number, s: string, color: string, size: number, anchor = "middle", weight = "400", turn = "") =>
   `<text x="${r2(x)}" y="${r2(y)}" text-anchor="${anchor}" ${FONT} font-size="${r2(size)}" font-weight="${weight}" fill="${color}"${turn}>${esc(s)}</text>`;
@@ -159,17 +237,19 @@ const txt = (x: number, y: number, s: string, color: string, size: number, ancho
 /** A label running up the page beside a vertical arrow, so that a long word takes no room on the left. */
 const upward = (x: number, y: number, s: string, color: string) => txt(x, y, s, color, 13, "middle", "700", ` transform="rotate(-90 ${r2(x)} ${r2(y)})"`);
 
-/** A grid of cells with their numbers; `hi` is the cell to pick out. */
-function grid(x: number, y: number, rows: number, cols: number, cs: number, value: ((r: number, c: number) => number) | null, tint: string, edge: string, hi?: [number, number]): string {
+/** A grid of cells with their numbers, each cell drawn as its mark says. */
+function grid(x: number, y: number, rows: number, cols: number, cs: number, value: ((r: number, c: number) => number) | null, tint: string, edge: string, mark?: (r: number, c: number) => Mark): string {
   let s = "";
   for (let r = 0; r < rows; r++)
     for (let c = 0; c < cols; c++) {
-      const on = hi && hi[0] === r && hi[1] === c;
-      s += `<rect x="${r2(x + c * cs)}" y="${r2(y + r * cs)}" width="${r2(cs)}" height="${r2(cs)}" fill="${on ? HI : tint}" stroke="${edge}" stroke-width="${on ? 2.4 : 1.1}"/>`;
+      const m = mark?.(r, c);
+      const on = m === "hi";
+      const ghost = m === "ghost";
+      s += `<rect x="${r2(x + c * cs)}" y="${r2(y + r * cs)}" width="${r2(cs)}" height="${r2(cs)}" fill="${on ? HI : ghost ? GHOST : tint}" stroke="${ghost ? C.grey : edge}" stroke-width="${on ? 2.4 : 1.1}"${ghost ? ` stroke-dasharray="3 2"` : ""}/>`;
       if (!value) continue;
       const label = nt(value(r, c));
       const size = Math.min(15, cs * 0.42, (cs * 1.7) / Math.max(2, label.length));
-      s += txt(x + (c + 0.5) * cs, y + (r + 0.5) * cs + size * 0.36, label, C.ink, size, "middle", on ? "700" : "400");
+      s += txt(x + (c + 0.5) * cs, y + (r + 0.5) * cs + size * 0.36, label, ghost ? C.grey : C.ink, size, "middle", on ? "700" : "400");
     }
   return s;
 }
@@ -189,23 +269,23 @@ function axisArrow(x0: number, y0: number, x1: number, y1: number, label: string
   return arrow(x0, y0, x1, y1, color, 2) + txt(lx, ly, label, color, 13, anchor, "700");
 }
 
-function drawScalar(t: Tensor): { svg: string; h: number } {
+function drawScalar(t: Tensor, mark?: Marks): { svg: string; h: number } {
   const cs = 60;
-  return { svg: grid((W - cs) / 2, 8, 1, 1, cs, () => t.data[0], TINT[0], EDGE[0]), h: cs + 16 };
+  return { svg: grid((W - cs) / 2, 8, 1, 1, cs, () => t.data[0], TINT[0], EDGE[0], mark && (() => mark(0))), h: cs + 16 };
 }
 
-function drawVector(t: Tensor, pick?: number[]): { svg: string; h: number } {
+function drawVector(t: Tensor, mark?: Marks): { svg: string; h: number } {
   const n = t.shape[0];
   const cs = Math.min(50, (W - 80) / n);
   const x = (W - n * cs) / 2;
   let s = indicesAcross(x, 14, n, cs, 12);
-  s += grid(x, 22, 1, n, cs, (_, c) => t.data[c], TINT[0], EDGE[0], pick && [0, pick[0]]);
+  s += grid(x, 22, 1, n, cs, (_, c) => t.data[c], TINT[0], EDGE[0], mark && ((_, c) => mark(c)));
   const y = 22 + cs + 16;
   s += axisArrow(x, y, x + n * cs, y, axisName(0), C.blue, x + (n * cs) / 2, y + 20);
   return { svg: s, h: y + 30 };
 }
 
-function drawMatrix(t: Tensor, pick?: number[]): { svg: string; h: number } {
+function drawMatrix(t: Tensor, mark?: Marks): { svg: string; h: number } {
   const [rows, cols] = t.shape;
   const cs = Math.min(46, (W - 220) / cols, 300 / rows);
   const x = Math.max(150, (W - cols * cs) / 2);
@@ -213,7 +293,7 @@ function drawMatrix(t: Tensor, pick?: number[]): { svg: string; h: number } {
   let s = axisArrow(x, 24, x + cols * cs, 24, axisName(1), C.orange, x + (cols * cs) / 2, 14);
   s += indicesAcross(x, y - 8, cols, cs, 12) + indicesDown(x - 8, y, rows, cs, 12);
   s += axisArrow(x - 30, y, x - 30, y + rows * cs, axisName(0), C.blue, x - 40, y + (rows * cs) / 2 + 5, "end");
-  s += grid(x, y, rows, cols, cs, (r, c) => t.data[r * cols + c], TINT[0], EDGE[0], pick && [pick[0], pick[1]]);
+  s += grid(x, y, rows, cols, cs, (r, c) => t.data[r * cols + c], TINT[0], EDGE[0], mark && ((r, c) => mark(r * cols + c)));
   return { svg: s, h: y + rows * cs + 12 };
 }
 
@@ -257,7 +337,7 @@ function drawBox(t: Tensor, right: number, top: number): { svg: string; h: numbe
 }
 
 /** Slices side by side, wrapping onto more lines when they do not fit. */
-function drawOrder3(t: Tensor, pick?: number[]): { svg: string; h: number } {
+function drawOrder3(t: Tensor, mark?: Marks, name = "T"): { svg: string; h: number } {
   const [d0, d1, d2] = t.shape;
   const boxRight = W - 46;
   const boxW = boxCell(t.shape) * (d2 + 0.55 * d0) + 52;
@@ -279,8 +359,8 @@ function drawOrder3(t: Tensor, pick?: number[]): { svg: string; h: number } {
   for (let i = 0; i < d0; i++) {
     const x = x0 + (i % per) * (d2 * cs + gap);
     const y = 26 + Math.floor(i / per) * lineH;
-    s += txt(x + (d2 * cs) / 2, y + 14, `T[${i}]`, EDGE[i % EDGE.length], 13, "middle", "700");
-    s += grid(x, y + 22, d1, d2, cs, (r, c) => t.data[i * d1 * d2 + r * d2 + c], TINT[i % TINT.length], EDGE[i % EDGE.length], pick && pick[0] === i ? [pick[1], pick[2]] : undefined);
+    s += txt(x + (d2 * cs) / 2, y + 14, `${name}[${i}]`, EDGE[i % EDGE.length], 13, "middle", "700");
+    s += grid(x, y + 22, d1, d2, cs, (r, c) => t.data[i * d1 * d2 + r * d2 + c], TINT[i % TINT.length], EDGE[i % EDGE.length], mark && ((r, c) => mark(i * d1 * d2 + r * d2 + c)));
   }
   const gy = 26 + 22;
   s += arrow(x0 - 12, gy, x0 - 12, gy + d1 * cs, C.orange, 2) + upward(x0 - 22, gy + (d1 * cs) / 2, axisName(1), C.orange);
@@ -291,7 +371,7 @@ function drawOrder3(t: Tensor, pick?: number[]): { svg: string; h: number } {
 }
 
 /** One line of slices T[i, 0], T[i, 1], … for each i. */
-function drawOrder4(t: Tensor, pick?: number[]): { svg: string; h: number } {
+function drawOrder4(t: Tensor, mark?: Marks, name = "T"): { svg: string; h: number } {
   const [d0, d1, d2, d3] = t.shape;
   const gap = 18;
   const x0 = 110;
@@ -300,17 +380,23 @@ function drawOrder4(t: Tensor, pick?: number[]): { svg: string; h: number } {
   let s = axisArrow(x0, 12, x0 + d1 * d3 * cs + (d1 - 1) * gap, 12, axisName(1), C.orange, x0 - 8, 16, "end");
   for (let i = 0; i < d0; i++) {
     const y = 26 + i * lineH;
-    s += txt(x0 - 14, y + 22 + (d2 * cs) / 2 + 5, `T[${i}]`, EDGE[i % EDGE.length], 13, "end", "700");
+    s += txt(x0 - 14, y + 22 + (d2 * cs) / 2 + 5, `${name}[${i}]`, EDGE[i % EDGE.length], 13, "end", "700");
     for (let j = 0; j < d1; j++) {
       const x = x0 + j * (d3 * cs + gap);
-      const on = pick && pick[0] === i && pick[1] === j;
-      s += txt(x + (d3 * cs) / 2, y + 14, `T[${i}, ${j}]`, EDGE[i % EDGE.length], 12, "middle", "700");
-      s += grid(x, y + 22, d2, d3, cs, (r, c) => t.data[((i * d1 + j) * d2 + r) * d3 + c], TINT[i % TINT.length], EDGE[i % EDGE.length], on ? [pick[2], pick[3]] : undefined);
+      const at = (r: number, c: number) => ((i * d1 + j) * d2 + r) * d3 + c;
+      s += txt(x + (d3 * cs) / 2, y + 14, `${name}[${i}, ${j}]`, EDGE[i % EDGE.length], 12, "middle", "700");
+      s += grid(x, y + 22, d2, d3, cs, (r, c) => t.data[at(r, c)], TINT[i % TINT.length], EDGE[i % EDGE.length], mark && ((r, c) => mark(at(r, c))));
     }
   }
   const h = 26 + d0 * lineH;
   s += axisArrow(30, 30, 30, h - 22, axisName(0), C.blue, 36, h - 6, "start");
   return { svg: s, h: h + 4 };
+}
+
+/** A tensor as its order calls for; `name` heads the slices of an order-3 or order-4 one. */
+function drawTensor(t: Tensor, mark?: Marks, name?: string): { svg: string; h: number } {
+  const order = t.shape.length;
+  return order === 0 ? drawScalar(t, mark) : order === 1 ? drawVector(t, mark) : order === 2 ? drawMatrix(t, mark) : order === 3 ? drawOrder3(t, mark, name) : drawOrder4(t, mark, name);
 }
 
 // ---------- the tensor topic ----------
@@ -324,23 +410,15 @@ function renderTensor(main: string, opts: string[]): { svg: RenderedSvg; data: A
   const { shape, data } = t;
   const order = shape.length;
   let pick: number[] | undefined;
-  for (const o of opts) {
-    const m = /^T?\s*\[([^\]]*)\]$/i.exec(o);
-    if (!m) fail(words.unknown, { s: o });
-    const idx = m![1].split(/[\s,]+/).filter(Boolean);
-    if (idx.length !== order || !idx.every((v) => /^\d+$/.test(v))) fail(T.pickCount, { n: order });
-    pick = idx.map(Number);
-    pick.forEach((v, k) => {
-      if (v >= shape[k]) fail(T.pickRange, { i: v, k, m: shape[k] - 1 });
-    });
-  }
+  for (const o of opts) pick = readPick(o, shape) ?? fail(words.unknown, { s: o });
 
-  const drawn = order === 0 ? drawScalar(t) : order === 1 ? drawVector(t, pick) : order === 2 ? drawMatrix(t, pick) : order === 3 ? drawOrder3(t, pick) : drawOrder4(t, pick);
+  const st = strides(shape);
+  const at = pick && pick.reduce((a, v, k) => a + v * st[k], 0);
+  const drawn = drawTensor(t, at === undefined ? undefined : (i) => (i === at ? "hi" : undefined));
   const space = `\\mathbb{R}^{${shape.join("\\times ")}}`;
   const entries = data.length;
   const tex = order === 0 ? `T = ${nt(data[0])} \\in \\mathbb{R}` : `T \\in ${space}` + (order > 1 ? `\\qquad ${shape.join(" \\cdot ")} = ${entries}` : "");
 
-  const st = strides(shape);
   const out: AiData = { tensor: t, strides: st, pick };
   const caps: Caption[] = [];
   const letters = "ijkl".slice(0, order).split("");
@@ -358,26 +436,422 @@ function renderTensor(main: string, opts: string[]): { svg: RenderedSvg; data: A
   if (order === 3) caps.push({ text: fill(T.slices3, { n: shape[0], last: shape[0] - 1, r: shape[1], c: shape[2] }), color: C.grey });
   if (order === 4) caps.push({ text: fill(T.slices4, { n: shape[0], last: shape[0] - 1, shape: list(shape.slice(1)) }), color: C.grey });
   if (order >= 2) caps.push({ text: fill(T.strides, { s: list(st) }), color: C.grey });
-  if (pick) {
-    const at = (out.at = pick.reduce((a, v, k) => a + v * st[k], 0));
+  if (pick && at !== undefined) {
+    out.at = at;
     const sum = pick.map((v, k) => `${v}·${st[k]}`).join(" + ");
     caps.push({ text: fill(T.pick, { idx: list(pick), v: nt(data[at]), sum: order > 1 ? `${sum} = ${at}` : String(at) }), color: HI });
   }
   return { svg: compose(tex, drawn.svg, drawn.h, caps), data: out };
 }
 
+// ---------- operations ----------
+
+/** The place in memory of an entry, row-major. */
+const ravel = (idx: number[], shape: number[]) => idx.reduce((a, v, k) => a * shape[k] + v, 0);
+/** The indices of the entry at a place in memory. */
+function unravel(at: number, shape: number[]): number[] {
+  const idx: number[] = [];
+  for (let k = shape.length - 1; k >= 0; k--) {
+    idx[k] = at % shape[k];
+    at = Math.floor(at / shape[k]);
+  }
+  return idx;
+}
+const tabulate = (shape: number[], f: (idx: number[]) => number): Tensor => drawable({ shape, data: Array.from({ length: size(shape) }, (_, i) => f(unravel(i, shape))) });
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
+const markAt = (cells: number[]): Marks => (i) => (cells.includes(i) ? "hi" : undefined);
+/** A number as a term of a sum: a negative one in brackets. */
+const term = (v: number) => (v < 0 ? `(${nt(v)})` : nt(v));
+const R = (shape: number[]) => (shape.length ? `\\mathbb{R}^{${shape.join("\\times ")}}` : "\\mathbb{R}");
+const isInt = (s: string) => /^[-−]?\d+$/.test(s);
+const int = (s: string) => Number(s.replace("−", "-"));
+
+/** One tensor of an operation's picture: the code that makes it, the name its slices go by, and its marks. */
+type Panel = { code: string; name: string; t: Tensor; mark?: Marks; label?: string };
+
+/** The tensors one under another, each under its line of code and its shape. */
+function stack(panels: Panel[]): { svg: string; h: number } {
+  let s = "";
+  let y = 0;
+  for (const p of panels) {
+    s += txt(W / 2, y + 16, p.label ?? fill(words.ops.panel, { code: p.code, shape: list(p.t.shape) }), C.ink, 14, "middle", "700");
+    const d = drawTensor(p.t, p.mark, p.name);
+    s += `<g transform="translate(0 ${r2(y + 26)})">${d.svg}</g>`;
+    y += 26 + d.h + 16;
+  }
+  return { svg: s, h: y - 16 };
+}
+
+type Built = { tex: string; panels: Panel[]; caps: Caption[]; data: OpsData };
+
+/** An axis as typed (−1 for the last), as a number from 0. */
+function axisOf(t: Tensor, s: string): number {
+  const n = t.shape.length;
+  const k = int(s);
+  if (!n) fail(words.ops.noAxes);
+  if (k >= n || k < -n) fail(words.ops.axisRange, { k, last: n - 1, n });
+  return k < 0 ? k + n : k;
+}
+
+function reshape(t: Tensor, dims: number[], code: string, pickSrc?: string): Built {
+  const O = words.ops;
+  const n = t.data.length;
+  const free = dims.filter((d) => d === -1).length;
+  if (free > 1) fail(O.reshapeTwoFree);
+  if (dims.includes(0)) fail(words.tensor.empty);
+  const known = size(dims.filter((d) => d !== -1));
+  if (free && n % known) fail(O.reshapeSplit, { n, m: known });
+  const shape = dims.map((d) => (d === -1 ? n / known : d));
+  if (size(shape) !== n) fail(O.reshapeCount, { n, shape: list(shape), m: size(shape) });
+  const out = drawable({ shape, data: t.data });
+  const data: OpsData = { inputs: [t], out, strides: strides(shape), contiguous: true };
+  const caps: Caption[] = [{ text: fill(O.reshape, { a: list(strides(t.shape)), b: list(strides(shape)) }), color: C.blue }];
+  if (code.includes("flatten")) caps.unshift({ text: fill(O.flatten, { n }), color: C.blue });
+  if (free && dims.length > 1) caps.push({ text: fill(O.reshapeFree, { n, m: known, k: n / known }), color: C.grey });
+  let mark: Marks | undefined;
+  if (pickSrc) {
+    const pick = readPick(pickSrc, shape)!;
+    const at = ravel(pick, shape);
+    Object.assign(data, { pick, cells: [[at]] });
+    mark = markAt([at]);
+    caps.push({ text: fill(O.reshapePick, { idx: list(pick), v: nt(t.data[at]), at, orig: list(unravel(at, t.shape)) }), color: HI });
+  }
+  return {
+    tex: `${R(t.shape)} \\xrightarrow{\\texttt{${code.slice(1)}}} ${R(shape)}`,
+    panels: [{ code: "T", name: "T", t, mark }, { code, name: "out", t: out, mark }],
+    caps,
+    data,
+  };
+}
+
+function permute(t: Tensor, perm: number[], code: string, pickSrc?: string): Built {
+  const O = words.ops;
+  const st = strides(t.shape);
+  const shape = perm.map((k) => t.shape[k]);
+  const view = perm.map((k) => st[k]);
+  const place = (idx: number[]) => idx.reduce((a, v, k) => a + v * view[k], 0);
+  const out = tabulate(shape, (idx) => t.data[place(idx)]);
+  const rowMajor = strides(shape);
+  const contiguous = shape.every((d, k) => d === 1 || view[k] === rowMajor[k]);
+  const data: OpsData = { inputs: [t], out, strides: view, contiguous };
+  const caps: Caption[] = [{ text: fill(O.permute, { perm: list(perm), a: list(t.shape), b: list(shape), sa: list(st), sb: list(view) }), color: C.blue }];
+  if (contiguous) caps.push({ text: O.contiguous, color: C.green });
+  else {
+    const n = Math.min(8, out.data.length);
+    const places = range(n).map((o) => place(unravel(o, shape)));
+    caps.push({ text: fill(O.notContiguous, { places: list(places) + (out.data.length > n ? ", …" : "") }), color: C.red });
+  }
+  let mark: Marks | undefined;
+  let outMark: Marks | undefined;
+  if (pickSrc) {
+    const pick = readPick(pickSrc, shape)!;
+    const at = place(pick);
+    Object.assign(data, { pick, cells: [[at]] });
+    mark = markAt([at]);
+    outMark = markAt([ravel(pick, shape)]);
+    const sum = pick.map((v, k) => `${v}·${view[k]}`).join(" + ");
+    caps.push({ text: fill(O.permutePick, { idx: list(pick), orig: list(unravel(at, t.shape)), v: nt(t.data[at]), sum: `${sum} = ${at}` }), color: HI });
+  }
+  return {
+    tex: `${R(t.shape)} \\xrightarrow{\\texttt{${code.slice(1)}}} ${R(shape)}`,
+    panels: [{ code: "T", name: "T", t, mark }, { code, name: "out", t: out, mark: outMark }],
+    caps,
+    data,
+  };
+}
+
+type Fn = "sum" | "mean" | "max" | "min";
+const APPLY: Record<Fn, (xs: number[]) => number> = {
+  sum: (xs) => xs.reduce((a, b) => a + b, 0),
+  mean: (xs) => xs.reduce((a, b) => a + b, 0) / xs.length,
+  max: (xs) => Math.max(...xs),
+  min: (xs) => Math.min(...xs),
+};
+
+/** The working of a reduction, shortened in the middle when it has many terms. */
+function working(fn: Fn, xs: number[]): string {
+  const ts = xs.length > 8 ? [...xs.slice(0, 3).map(term), "…", term(xs[xs.length - 1])] : xs.map(term);
+  if (fn === "sum") return ts.join(" + ");
+  if (fn === "mean") return `(${ts.join(" + ")}) / ${xs.length}`;
+  return `${fn}(${ts.join(", ")})`;
+}
+
+function reduce(t: Tensor, fn: Fn, axis: number | undefined, keep: boolean, code: string, pickSrc?: string): Built {
+  const O = words.ops;
+  const gone = (k: number) => axis === undefined || k === axis;
+  const shape = t.shape.flatMap((d, k) => (!gone(k) ? [d] : keep ? [1] : []));
+  // Each entry of the result gathers the places in memory of the entries that have its indices on the axes kept.
+  const groups: number[][] = range(size(shape)).map(() => []);
+  t.data.forEach((_, i) => {
+    const idx = unravel(i, t.shape).flatMap((v, k) => (!gone(k) ? [v] : keep ? [0] : []));
+    groups[ravel(idx, shape)].push(i);
+  });
+  const out = drawable({ shape, data: groups.map((g) => APPLY[fn](g.map((i) => t.data[i]))) });
+  const pick = pickSrc ? readPick(pickSrc, shape)! : shape.map(() => 0);
+  const o = ravel(pick, shape);
+  const cells = groups[o];
+  const caps: Caption[] = [];
+  if (axis === undefined) caps.push({ text: fill(O.reduceAll, { fn: O.fn[fn], n: t.data.length }), color: C.blue });
+  else {
+    caps.push({ text: fill(O.reduceAxis, { fn: O.fn[fn], k: axis, a: list(t.shape), b: list(shape) }), color: C.blue });
+    if (keep) caps.push({ text: fill(O.keepdims, { k: axis, b: list(shape), fn }), color: C.grey });
+  }
+  const idx = shape.length ? `out[${list(pick)}]` : "out";
+  caps.push({ text: fill(O.reducePick, { idx, work: working(fn, cells.map((i) => t.data[i])), v: nt(out.data[o]) }), color: HI });
+  return {
+    tex: `${R(t.shape)} \\xrightarrow{\\texttt{${code.slice(1)}}} ${R(shape)}`,
+    panels: [{ code: "T", name: "T", t, mark: markAt(cells) }, { code, name: "out", t: out, mark: markAt([o]) }],
+    caps,
+    data: { inputs: [t], out, pick, cells: [cells] },
+  };
+}
+
+/** The shape two shapes broadcast to, lined up from the right. */
+function broadcastShape(a: number[], b: number[]): number[] {
+  const n = Math.max(a.length, b.length);
+  const out: number[] = [];
+  for (let i = 1; i <= n; i++) {
+    const x = a[a.length - i] ?? 1;
+    const y = b[b.length - i] ?? 1;
+    if (x !== y && x !== 1 && y !== 1) fail(words.ops.incompatible, { a: list(a), b: list(b), x, y });
+    out.unshift(Math.max(x, y));
+  }
+  return out;
+}
+
+/** The indices in a broadcast operand of the entry that lands at `idx` in the result. */
+const source = (idx: number[], shape: number[]) => idx.slice(idx.length - shape.length).map((v, k) => (shape[k] === 1 ? 0 : v));
+
+const OP_TEX: Record<string, string> = { "+": "+", "−": "-", "*": "\\odot", "/": "\\oslash" };
+const OP_APPLY: Record<string, (x: number, y: number) => number> = { "+": (x, y) => x + y, "−": (x, y) => x - y, "*": (x, y) => x * y, "/": (x, y) => x / y };
+
+function broadcast(A: Tensor, op: string, B: Tensor, pickSrc?: string): Built {
+  const O = words.ops;
+  const shape = broadcastShape(A.shape, B.shape);
+  const out = tabulate(shape, (idx) => {
+    const y = B.data[ravel(source(idx, B.shape), B.shape)];
+    if (op === "/" && y === 0) fail(O.divZero, { idx: list(idx) });
+    return OP_APPLY[op](A.data[ravel(source(idx, A.shape), A.shape)], y);
+  });
+  const pick = pickSrc ? readPick(pickSrc, shape)! : shape.map(() => 0);
+  const o = ravel(pick, shape);
+  const caps: Caption[] = [];
+  const named = [["A", A], ["B", B]] as const;
+  const stretched = named.some(([, t]) => t.shape.length !== shape.length || t.shape.some((d, k) => d !== shape[k]));
+  if (!stretched) caps.push({ text: O.same, color: C.blue });
+  else {
+    caps.push({ text: fill(O.lineUp, { a: list(A.shape), b: list(B.shape), c: list(shape) }), color: C.blue });
+    for (const [name, t] of named) {
+      if (!t.shape.length) {
+        caps.push({ text: fill(O.scalar, { name }), color: C.grey });
+        continue;
+      }
+      const off = shape.length - t.shape.length;
+      shape.forEach((d, k) => {
+        if (d === 1) return;
+        if (k < off) caps.push({ text: fill(O.missing, { name, k, n: d }), color: C.grey });
+        else if (t.shape[k - off] === 1) caps.push({ text: fill(O.stretch, { name, k, n: d }), color: C.grey });
+      });
+    }
+    caps.push({ text: O.strideZero, color: C.grey });
+  }
+  if (op === "*") caps.push({ text: O.hadamard, color: C.purple });
+  // Each operand drawn stretched to the result's shape: the entries copied by broadcasting are pale.
+  const panels: Panel[] = named.map(([name, t]) => {
+    const off = shape.length - t.shape.length;
+    const big = tabulate(shape, (idx) => t.data[ravel(source(idx, t.shape), t.shape)]);
+    const copy = (idx: number[]) => idx.some((v, k) => v > 0 && (k < off || t.shape[k - off] === 1));
+    const same = off === 0 && t.shape.every((d, k) => d === shape[k]);
+    return {
+      code: name,
+      name,
+      t: big,
+      mark: (i: number) => (i === o ? "hi" : copy(unravel(i, shape)) ? "ghost" : undefined),
+      label: same ? undefined : fill(O.stretched, { name, a: list(t.shape), shape: list(shape) }),
+    };
+  });
+  panels.push({ code: `A ${op} B`, name: "out", t: out, mark: markAt([o]) });
+  const [ia, ib] = [source(pick, A.shape), source(pick, B.shape)];
+  const ref = (name: string, idx: number[]) => (idx.length ? `${name}[${list(idx)}]` : name);
+  const [x, y] = [A.data[ravel(ia, A.shape)], B.data[ravel(ib, B.shape)]];
+  caps.push({
+    text: fill(O.broadcastPick, { out: shape.length ? `out[${list(pick)}]` : "out", a: ref("A", ia), b: ref("B", ib), op, x: term(x), y: term(y), v: nt(out.data[o]) }).replace(/ \* /g, " · "),
+    color: HI,
+  });
+  return {
+    tex: `${R(A.shape)} ${OP_TEX[op]} ${R(B.shape)} \\to ${R(shape)}`,
+    panels,
+    caps,
+    data: { inputs: [A, B], out, pick, cells: [[ravel(ia, A.shape)], [ravel(ib, B.shape)]] },
+  };
+}
+
+function matmul(A: Tensor, B: Tensor, pickSrc?: string): Built {
+  const O = words.ops;
+  if (!A.shape.length || !B.shape.length) fail(O.matScalar);
+  // A vector on the left is a row, one on the right a column; that axis is dropped from the result again.
+  const left = A.shape.length === 1;
+  const right = B.shape.length === 1;
+  const a = left ? [1, ...A.shape] : A.shape;
+  const b = right ? [...B.shape, 1] : B.shape;
+  const [n, k] = a.slice(-2);
+  const [k2, m] = b.slice(-2);
+  if (k !== k2) fail(O.inner, { k, k2, a: list(A.shape), b: list(B.shape) });
+  const batch = broadcastShape(a.slice(0, -2), b.slice(0, -2));
+  const nb = batch.length;
+  const shape = [...batch, ...(left ? [] : [n]), ...(right ? [] : [m])];
+  const full = (idx: number[]) => [...idx.slice(0, nb), left ? 0 : idx[nb], right ? 0 : idx[left ? nb : nb + 1]];
+  /** The places in A's and B's memory of the row and the column that make up an entry of the result. */
+  const parts = (idx: number[]) => {
+    const f = full(idx);
+    const ba = source(f.slice(0, nb), a.slice(0, -2));
+    const bb = source(f.slice(0, nb), b.slice(0, -2));
+    return [range(k).map((t) => ravel([...ba, f[nb], t], a)), range(k).map((t) => ravel([...bb, t, f[nb + 1]], b))];
+  };
+  const out = tabulate(shape, (idx) => {
+    const [ra, cb] = parts(idx);
+    return ra.reduce((s, at, t) => s + A.data[at] * B.data[cb[t]], 0);
+  });
+  const pick = pickSrc ? readPick(pickSrc, shape)! : shape.map(() => 0);
+  const o = ravel(pick, shape);
+  const [ra, cb] = parts(pick);
+  const caps: Caption[] = [];
+  if (left && right) caps.push({ text: O.matDot, color: C.blue });
+  else {
+    caps.push({ text: fill(O.matShape, { a: list(A.shape), b: list(B.shape), c: list(shape), k }), color: C.blue });
+    if (left) caps.push({ text: fill(O.matLeft, { k }), color: C.grey });
+    if (right) caps.push({ text: fill(O.matRight, { k }), color: C.grey });
+  }
+  if (nb) caps.push({ text: fill(O.matBatch, { batch: list(batch) }), color: C.grey });
+  const terms = ra.map((at, t) => `${term(A.data[at])}·${term(B.data[cb[t]])}`).join(" + ");
+  caps.push({ text: fill(O.matPick, { idx: shape.length ? `out[${list(pick)}]` : "out", terms, v: nt(out.data[o]) }), color: HI });
+  return {
+    tex: `${R(A.shape)} \\mathbin{@} ${R(B.shape)} \\to ${R(shape)}`,
+    panels: [
+      { code: "A", name: "A", t: A, mark: markAt(ra) },
+      { code: "B", name: "B", t: B, mark: markAt(cb) },
+      { code: "A @ B", name: "out", t: out, mark: markAt([o]) },
+    ],
+    caps,
+    data: { inputs: [A, B], out, pick, cells: [ra, cb] },
+  };
+}
+
+/** "A + B" split at its operator, outside brackets: + − * / need a space on each side, so −1 and 2*3 stay as they are. */
+function splitBinary(s: string): [string, string, string] | null {
+  let depth = 0;
+  let found: [number, string] | null = null;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === "[" || ch === "(") depth++;
+    else if (ch === "]" || ch === ")") depth--;
+    else if (depth === 0 && (ch === "@" || ("+-−*/".includes(ch) && /\s/.test(s[i - 1] ?? "") && /\s/.test(s[i + 1] ?? "")))) {
+      if (found) fail(words.ops.oneOp);
+      found = [i, ch === "-" ? "−" : ch];
+    }
+  }
+  return found && [s.slice(0, found[0]).trim(), found[1], s.slice(found[0] + 1).trim()];
+}
+
+/** One operation on T, as typed after ";": reshape 4x6, T.reshape(4, -1), flatten, T, transpose 0 1, permute 2 0 1, sum axis 0, mean(axis=1, keepdims=True). */
+function unary(t: Tensor, src: string, pickSrc?: string): Built {
+  const O = words.ops;
+  const bad = () => fail(O.unknownOp, { s: src });
+  const s = src.replace(/^T?\s*\./, "");
+  if (s === "T") {
+    if (t.shape.length === 0) fail(O.noAxes);
+    if (t.shape.length === 1) {
+      const b = permute(t, [0], "T.T", pickSrc);
+      b.caps = [{ text: fill(O.vectorT, { n: t.shape[0] }), color: C.blue }, ...b.caps.slice(2)];
+      return b;
+    }
+    return permute(t, range(t.shape.length).reverse(), "T.T", pickSrc);
+  }
+  const tok = s.replace(/[(),=]/g, " ").replace(/(\d)\s*[x×]\s*(?=[-−\d])/g, "$1 ").trim().split(/\s+/);
+  const name = tok[0].toLowerCase();
+  const rest = tok.slice(1);
+  const ints = () => (rest.every(isInt) ? rest.map(int) : bad());
+  if (name === "reshape" || name === "view") {
+    const dims = ints();
+    if (!dims.length || dims.some((d) => d < -1)) bad();
+    return reshape(t, dims, `T.${name}(${dims.join(", ")})`, pickSrc);
+  }
+  if (name === "flatten") return rest.length ? bad() : reshape(t, [-1], "T.flatten()", pickSrc);
+  if (name === "permute") {
+    const p = ints().map((k) => axisOf(t, String(k)));
+    if (p.length !== t.shape.length || new Set(p).size !== p.length) fail(O.permBad, { last: t.shape.length - 1, example: list(range(t.shape.length).reverse()) });
+    return permute(t, p, `T.permute(${rest.map(int).join(", ")})`, pickSrc);
+  }
+  if (name === "transpose" || name === "swapaxes") {
+    if (!rest.length) return unary(t, "T", pickSrc);
+    if (rest.length !== 2) fail(O.swapCount);
+    const [i, j] = ints().map((k) => axisOf(t, String(k)));
+    const p = range(t.shape.length);
+    [p[i], p[j]] = [p[j], p[i]];
+    return permute(t, p, `T.transpose(${rest.map(int).join(", ")})`, pickSrc);
+  }
+  if (Object.hasOwn(APPLY, name)) {
+    let axis: number | undefined;
+    let keep = false;
+    for (let j = 0; j < rest.length; j++) {
+      const w = rest[j].toLowerCase();
+      if (w === "axis" || w === "dim") continue;
+      if (w === "keepdims" || w === "keepdim") {
+        keep = /^(true|false)$/i.test(rest[j + 1] ?? "") ? rest[++j].toLowerCase() === "true" : true;
+        continue;
+      }
+      if (isInt(w) && axis === undefined) axis = axisOf(t, w);
+      else bad();
+    }
+    const args = [...(axis === undefined ? [] : [`axis=${axis}`]), ...(keep ? ["keepdims=True"] : [])];
+    return reduce(t, name as Fn, axis, keep, `T.${name}(${args.join(", ")})`, pickSrc);
+  }
+  return bad();
+}
+
+function renderOps(main: string, opts: string[]): { svg: RenderedSvg; data: OpsData } {
+  const O = words.ops;
+  const bin = splitBinary(main);
+  let op: string | undefined;
+  let pickSrc: string | undefined;
+  for (const o of opts) {
+    if (/^(?:T|out)?\s*\[/i.test(o)) pickSrc = o;
+    else if (op || bin) fail(O.oneOp);
+    else op = o;
+  }
+  let built: Built;
+  if (bin) {
+    const [a, sym, b] = bin;
+    if (!a || !b) fail(words.bad, { s: main });
+    const A = readTensor(a);
+    const B = readTensor(b);
+    built = sym === "@" ? matmul(A, B, pickSrc) : broadcast(A, sym, B, pickSrc);
+  } else if (op) built = unary(readTensor(main), op, pickSrc);
+  else return fail(O.opMissing);
+  const drawn = stack(built.panels);
+  return { svg: compose(built.tex, drawn.svg, drawn.h, built.caps), data: built.data };
+}
+
 // ---------- the tool ----------
 
-export function renderAi(spec: AiSpec, w: AiWords): RenderedSvg {
-  return buildAi(spec, w).svg;
-}
-export function buildAi(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: AiData } {
+/** The main part of the input and what follows it after semicolons. */
+function parts(spec: AiSpec, w: AiWords): [string, string[]] {
   words = w;
   const src = spec.src.trim();
   if (!src) throw new Error(w.need[spec.topic]);
   const [main, ...opts] = src.split(";").map((p) => p.trim());
   if (!main) throw new Error(w.need[spec.topic]);
-  return renderTensor(main, opts.filter(Boolean));
+  return [main, opts.filter(Boolean)];
+}
+
+export function renderAi(spec: AiSpec, w: AiWords): RenderedSvg {
+  return spec.topic === "ops" ? buildOps(spec, w).svg : buildAi(spec, w).svg;
+}
+export function buildAi(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: AiData } {
+  return renderTensor(...parts(spec, w));
+}
+export function buildOps(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: OpsData } {
+  return renderOps(...parts(spec, w));
 }
 
 const S = (topic: AiTopic, src: string): AiSpec => ({ topic, src });
@@ -393,7 +867,24 @@ export const AI_PRESETS: { [K in AiTopic]: { label: string; spec: AiSpec }[] } =
     { label: "an RGB image 3 × 4 × 4", spec: S("tensor", "3x4x4") },
     { label: "order 4: a batch 2 × 3 × 2 × 2", spec: S("tensor", "2x3x2x2; T[1, 0, 1, 1]") },
   ],
+  ops: [
+    { label: "reshape 2 × 3 × 4 → 4 × 6", spec: S("ops", "2x3x4; reshape 4x6") },
+    { label: "reshape (3, −1)", spec: S("ops", "2x3x4; reshape(3, -1); [2, 5]") },
+    { label: "flatten", spec: S("ops", "2x2x3; flatten") },
+    { label: "transpose T.T", spec: S("ops", "[[1, 2, 3], [4, 5, 6]]; T") },
+    { label: "image HWC → CHW: permute(2, 0, 1)", spec: S("ops", "4x4x3; permute 2 0 1; [1, 0, 2]") },
+    { label: "sum over axis 0", spec: S("ops", "[[1, 2, 3], [4, 5, 6]]; sum axis 0") },
+    { label: "mean over axis 1, keepdims", spec: S("ops", "[[1, 2, 3], [4, 5, 6]]; mean(axis=1, keepdims=True)") },
+    { label: "max over the last axis", spec: S("ops", "2x3x4; max axis -1; [1, 2]") },
+    { label: "broadcast (3, 1) + (4)", spec: S("ops", "[[0], [10], [20]] + [1, 2, 3, 4]; [2, 1]") },
+    { label: "add a bias to a batch", spec: S("ops", "[[1, 2, 3], [4, 5, 6]] + [10, 20, 30]") },
+    { label: "scale by a number", spec: S("ops", "2x3 * 10") },
+    { label: "matrix product", spec: S("ops", "[[1, 2, 3], [4, 5, 6]] @ [[7, 8], [9, 10], [11, 12]]; [1, 0]") },
+    { label: "matrix times vector", spec: S("ops", "[[1, 2], [3, 4], [5, 6]] @ [10, 1]") },
+    { label: "dot product", spec: S("ops", "[1, 2, 3] @ [4, 5, 6]") },
+    { label: "batched: (2, 2, 3) @ (3, 2)", spec: S("ops", "2x2x3 @ 3x2; [1, 0, 1]") },
+  ],
 };
 
 /** What the tool opens on: a tensor with three axes says more than the first example, a single number. */
-export const AI_DEFAULT: Record<AiTopic, AiSpec> = { tensor: S("tensor", "2x3x4") };
+export const AI_DEFAULT: Record<AiTopic, AiSpec> = { tensor: S("tensor", "2x3x4"), ops: S("ops", "2x3x4; reshape 4x6") };
