@@ -712,6 +712,14 @@ input.invalid { border-color: var(--danger); }
 .live-slider input[type="range"] { flex: 1; min-width: 0; padding: 0; }
 .live .live-bound { flex: none; width: 34px; padding: 2px; font-size: 12px; text-align: center; }
 .live-slider .live-btn { flex: none; padding: 2px 7px; }
+/* Gradient descent lab (live/DescentLab.tsx): the update rule and where the ball is, the dashed hop's step, and the
+   η and β dials side by side. */
+.descent-read { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 13px; color: #495057; }
+.descent-rule { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; color: #1e1e1e; }
+.descent-next { color: #9c36b5; font-weight: 600; }
+.descent-dials { align-self: stretch; }
+.descent-dials .live-slider { flex: 1; min-width: 240px; }
+.live .descent-fn { width: 16em; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .live-pattern-idea { max-width: 760px; font-size: 13px; color: #495057; }
 .live-pattern-stage { position: relative; flex: none; }
 .live .live-pattern-edit {

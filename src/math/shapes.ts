@@ -1001,6 +1001,22 @@ function slopeLinePreview(): Piece[] {
   ];
 }
 
+function descentLabPreview(): Piece[] {
+  // A valley, the ball's hops down one side of it, and a flag at the bottom.
+  const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
+  const hop = (a: number, b: number): Piece => path([at(a), [(a + b) / 2, Math.min(at(a)[1], at(b)[1]) - 22], at(b)], { color: "#e8590c", width: 2, dashed: true });
+  return [
+    path(Array.from({ length: 21 }, (_, i) => at(i * 10)), { color: BLUE, width: 3 }),
+    hop(8, 50),
+    hop(50, 80),
+    seg(at(100), [100, 108], { color: "#2f9e44", width: 2 }),
+    path([[100, 108], [114, 113], [100, 118]], { color: "#2f9e44", width: 2 }),
+    dot(at(8), 4),
+    dot(at(50), 4),
+    dot(at(80), 7),
+  ];
+}
+
 /** A small graph for the graph games' previews: five vertices of a house shape, and its edges. */
 const HOUSE: Pt[] = [[90, 0], [10, 60], [170, 60], [10, 150], [170, 150]];
 const HOUSE_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4], [3, 4], [1, 4], [2, 3]];
@@ -1284,6 +1300,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveColourMap", group: "games", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", group: "games", build: shortestPathPreview, live: "shortestPath" },
   { id: "liveConnectTowns", group: "games", build: connectTownsPreview, live: "connectTowns" },
+  { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

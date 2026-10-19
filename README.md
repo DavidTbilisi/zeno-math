@@ -473,6 +473,15 @@ UI in English, Russian and Georgian.
     Two features are drawn as points with the components from the mean and each point's projection onto PC1; more
     are drawn by their scores on PC1 and PC2. A feature whose variance is over 100 times another's is pointed out,
     since PC1 then follows its units
+  - *Gradient descent lab* (a live piece on the board, from the AI menu or the Shapes panel): a ball on a curve, dragged
+    to where it starts, and a learning rate η on a slider (momentum β too, in the last puzzle and in free play). A
+    dashed hop shows where the next step, −η · f′(x), would land before it is taken, so moving the slider shows what
+    the rate does; Step takes one step and Run plays them until the try is judged. Nine puzzles: reach the bottom of
+    (x − 3)² in 10 steps, in one step (η = 1/f″), jumping past it on the way, bouncing for ever (η = 2/f″); a steep
+    and then a shallow valley, where the right rate is far smaller or far larger; a ball on a hilltop, where the slope
+    is 0 and it cannot move until dragged off; the deeper of two valleys; and momentum to coast over the hump between
+    them. A failed try says why (crept too slowly, flew off, still bouncing, settled in the other valley, no slope),
+    stars go to a puzzle done at the first try, and six discoveries are kept. Free play takes any f(x)
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1209,6 +1218,8 @@ src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, 
 src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums a rod at a time with the friends of 5
                           and 10
 src/math/patternSteps.ts  the algorithm patterns as frames to step through, with the questions for "Your turn"
+src/math/descentLab.ts    the gradient descent lab: steps with momentum, the nine puzzles and how a try is judged,
+                          free play's functions, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)

@@ -6,8 +6,10 @@
 // Softmax opens on cat, dog and bird with cat as the target, refuses a target that is not a class, and draws three
 // temperatures onto the board. Embeddings open on three words with a query, say which name is unknown, and draw
 // king − man + woman onto the board. SVD & PCA opens on a best rank-1 approximation, refuses a rank too large, and
-// draws PCA of points onto the board.
+// draws PCA of points onto the board. The gradient descent lab goes on the board from the AI menu: a rate too small
+// runs out of steps and says so, the slider sets a better one, and the ball rolls to the bottom for two stars.
 import { expect, test } from "@playwright/test";
+import { etaIndex } from "../src/math/descentLab.ts";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
@@ -68,7 +70,7 @@ test("gradient descent: three rates, a wrong rate refused, a valley inserted", a
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
   await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Gradient descent/ }).click();
+  await page.getByRole("menuitem", { name: /Gradient descent$/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("tab", { name: "Gradient descent" })).toHaveAttribute("aria-selected", "true");
@@ -197,4 +199,30 @@ test("SVD & PCA: a rank too large is refused, and PCA of points inserts", async 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue(/; pca$/);
+});
+
+test("the gradient descent lab: too small a rate runs out of steps, a better one reaches the bottom", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Descent lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Gradient descent lab/ }).click();
+  const lab = page.locator(".live-descentLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Roll the ball to the bottom of the valley in 10 steps or fewer/)).toBeVisible();
+  await lab.getByRole("button", { name: /Run/ }).click();
+  await expect(lab.getByText(/Out of steps: the ball crept towards the bottom/)).toBeVisible();
+
+  const eta = lab.getByRole("slider", { name: "Learning rate η" });
+  await eta.fill(String(etaIndex(0.4)));
+  await eta.dispatchEvent("pointerup");
+  await expect(lab.getByText("η = 0.4")).toBeVisible();
+  await expect(lab.getByText(/The next step, −η · f′\(x\), is 2\.4/)).toBeVisible();
+  await lab.getByRole("button", { name: /Run/ }).click();
+  await expect(lab.getByText(/Done! Steps: \d+\. ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("descent-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
