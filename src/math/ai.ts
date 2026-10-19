@@ -14,14 +14,17 @@
 // along each path, checked numerically, and an optional step of gradient descent. And softmax with cross-entropy:
 // scores turned into probabilities (with the largest taken off first), at up to three temperatures, against a target
 // class or distribution, with the loss, how it compares with a uniform guess, entropy and KL divergence for a soft
-// target, and the gradient p − y.
-import { arrow, axes, C, compose, contours, curve, dot, esc, fill, FONT, lbl, makeFrame, nt, r2, sampleY, W, yRange, type Caption } from "./chart";
+// target, and the gradient p − y. And embeddings: named vectors shaded by value with their lengths, the cosine of
+// one pair worked out with its angle, why length does not change it and what it is for unit vectors, the others
+// ranked against a query (and when the plain dot product would rank them differently), an analogy such as
+// king − man + woman, the matrix of cosines, and for vectors in a plane the arrows with the angle between them.
+import { arrow, axes, C, compose, contours, curve, dot, esc, fill, FONT, lbl, makeFrame, nt, r2, sampleY, tn, W, yRange, type Caption } from "./chart";
 import { derive } from "./derive";
 import { evalE, exprMessages, has, parseE, simp, substitute, tex, V, X, type E } from "./expr";
 import type { RenderedSvg } from "./latex";
 
-export type AiTopic = "tensor" | "ops" | "descent" | "backprop" | "softmax";
-export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent", "backprop", "softmax"];
+export type AiTopic = "tensor" | "ops" | "descent" | "backprop" | "softmax" | "embed";
+export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent", "backprop", "softmax", "embed"];
 export type AiSpec = { topic: AiTopic; src: string };
 
 export type AiWords = {
@@ -166,6 +169,30 @@ export type AiWords = {
     gradient: string;
     gradientSoft: string;
     classN: string;
+  };
+  embed: {
+    count: string;
+    dims: string;
+    twice: string;
+    zero: string;
+    noName: string;
+    badOpt: string;
+    badAnalogy: string;
+    badPair: string;
+    analogyFew: string;
+    dot: string;
+    angle: string;
+    close: string;
+    some: string;
+    right: string;
+    apart: string;
+    length: string;
+    unit: string;
+    ranked: string;
+    byDot: string;
+    analogy: string;
+    analogyBest: string;
+    matrix: string;
   };
 };
 
@@ -1709,6 +1736,271 @@ function drawSoftmax(z: number[], labels: string[], probs: number[][], temps: nu
   return { svg: s, h: bottom + (many ? 40 : 22) };
 }
 
+// ---------- embeddings and cosine similarity ----------
+
+const MAX_WORDS = 8;
+const MAX_DIMS = 12;
+
+/** What an embeddings picture shows, for the tests: the vectors, their lengths, the cosine of every pair, the pair
+ * worked out with its dot product, angle (in degrees) and distance, the others ranked against a query, and an
+ * analogy's vector with the nearest vector to it. */
+export type EmbedData = {
+  names: string[];
+  vectors: number[][];
+  norms: number[];
+  cos: number[][];
+  pair?: [number, number];
+  dot?: number;
+  angle?: number;
+  distance?: number;
+  ranked?: { name: string; cos: number }[];
+  analogy?: { vector: number[]; best: string; cos: number };
+};
+
+const dotOf = (a: number[], b: number[]) => a.reduce((s, v, i) => s + v * b[i], 0);
+/** Rounding noise such as 1e−16 taken off, so that parallel vectors show cos θ = 1 and θ = 0. */
+const clean = (v: number) => Math.round(v * 1e12) / 1e12;
+/** a · b / (|a| |b|). */
+export const cosine = (a: number[], b: number[]) => clean(dotOf(a, b) / (norm(a) * norm(b)));
+
+/** A name and its vector, such as cat [0.9, 0.8] or cat = [0.9, 0.8], with a comma before the next. */
+const NAMED = /^\s*([\p{L}_][\p{L}\p{N}_']*)\s*[=:]?\s*(\[[^\]]*\])\s*,?/u;
+
+/** Named vectors, or the rows of a list of lists, which are called a, b, c, … */
+function readVectors(main: string): { names: string[]; vectors: number[][] } {
+  const E = words.embed;
+  const names: string[] = [];
+  const rows: Nested[] = [];
+  if (/^\[/.test(main)) {
+    const v = readList(/^\[\s*\[/.test(main) ? main : `[${main}]`) as Nested[];
+    v.forEach((r, i) => (names.push(String.fromCharCode(97 + i)), rows.push(r)));
+  } else
+    for (let rest = main; rest.trim(); ) {
+      const m = NAMED.exec(rest);
+      if (!m) return fail(words.bad, { s: rest.trim() });
+      if (names.includes(m[1])) fail(E.twice, { s: m[1] });
+      names.push(m[1]);
+      rows.push(readList(m[2]));
+      rest = rest.slice(m[0].length);
+    }
+  if (rows.length < 2 || rows.length > MAX_WORDS) fail(E.count, { max: MAX_WORDS });
+  const n = Array.isArray(rows[0]) ? rows[0].length : 0;
+  if (n < 2 || n > MAX_DIMS || !rows.every((r) => Array.isArray(r) && r.length === n && r.every((x) => typeof x === "number"))) fail(E.dims, { max: MAX_DIMS });
+  const vectors = rows as number[][];
+  vectors.forEach((v, i) => norm(v) === 0 && fail(E.zero, { s: names[i] }));
+  return { names, vectors };
+}
+
+const textTex = (s: string) => `\\text{${s.replace(/_/g, "\\_")}}`;
+/** Up to six terms, then an ellipsis, so that a long vector does not fill the caption. */
+const some = (xs: string[], join: string) => (xs.length > 6 ? [...xs.slice(0, 5), "…"] : xs).join(join);
+
+function renderEmbed(main: string, opts: string[]): { svg: RenderedSvg; data: EmbedData } {
+  const E = words.embed;
+  const { names, vectors } = readVectors(main);
+  const k = names.length;
+  const find = (s: string) => {
+    const at = names.indexOf(s);
+    return at >= 0 ? at : fail(E.noName, { s, names: names.join(", ") });
+  };
+  let query: number | undefined;
+  let pair: [number, number] | undefined;
+  let trio: [number, number, number] | undefined;
+  for (const o of opts) {
+    const m = /^(query|nearest|compare|pair|analogy)\b\s*=?\s*(.*)$/i.exec(o);
+    if (!m) fail(E.badOpt, { s: o });
+    const kind = m![1].toLowerCase();
+    const arg = m![2].trim();
+    if (kind === "query" || kind === "nearest") query = find(arg);
+    else if (kind === "analogy") {
+      const a = /^(\S+?)\s*[-−]\s*(\S+?)\s*\+\s*(\S+)$/.exec(arg);
+      if (!a) fail(E.badAnalogy);
+      trio = [find(a![1]), find(a![2]), find(a![3])];
+    } else {
+      const ns = arg.split(/[\s,]+/).filter(Boolean);
+      if (ns.length !== 2 || ns[0] === ns[1]) fail(E.badPair);
+      pair = [find(ns[0]), find(ns[1])];
+    }
+  }
+  const norms = vectors.map(norm);
+  const cos = vectors.map((a) => vectors.map((b) => cosine(a, b)));
+  const byCos = (from: number[], skip: number[]) =>
+    range(k)
+      .filter((i) => !skip.includes(i))
+      .map((i) => ({ name: names[i], cos: cosine(from, vectors[i]) }))
+      .sort((a, b) => b.cos - a.cos);
+  const ranked = query === undefined ? undefined : byCos(vectors[query], [query]);
+  let analogy: EmbedData["analogy"];
+  if (trio) {
+    const [a, b, c] = trio;
+    if (new Set(trio).size + 1 > k) fail(E.analogyFew, { a: names[a], b: names[b], c: names[c] });
+    const vector = vectors[a].map((v, i) => clean(v - vectors[b][i] + vectors[c][i]));
+    if (norm(vector) === 0) fail(E.zero, { s: `${names[a]} − ${names[b]} + ${names[c]}` });
+    const best = byCos(vector, trio)[0];
+    analogy = { vector, best: best.name, cos: best.cos };
+  }
+  // Without a pair asked for, the query and its nearest are worked out, or else the first two (but not beside an
+  // analogy, which has its own working).
+  if (!pair && query !== undefined) pair = [query, names.indexOf(ranked![0].name)];
+  if (!pair && !trio) pair = [0, 1];
+
+  const caps: Caption[] = [];
+  let tex = "";
+  const data: EmbedData = { names, vectors, norms, cos, pair, ranked, analogy };
+  if (pair) {
+    const [i, j] = pair;
+    const [a, b, A, B] = [vectors[i], vectors[j], names[i], names[j]];
+    const d = dotOf(a, b);
+    const c = cos[i][j];
+    const angle = (Math.acos(c) * 180) / Math.PI;
+    const distance = norm(a.map((v, t) => v - b[t]));
+    Object.assign(data, { dot: d, angle, distance });
+    caps.push({ text: fill(E.dot, { a: A, b: B, terms: some(a.map((v, t) => `${nt(v)} · ${term(b[t])}`), " + "), d: nt(d) }), color: HI });
+    const how = c > 0.9 ? E.close : c >= 0.1 ? E.some : c > -0.1 ? E.right : E.apart;
+    caps.push({ text: fill(E.angle, { a: A, b: B, c: nt(c), deg: nt(angle, 1), how: fill(how, { a: A, b: B }) }) });
+    const far = norm(a.map((v, t) => 2 * v - b[t]));
+    caps.push({ text: fill(E.length, { a: A, b: B, e: nt(distance), e2: nt(far) }), color: C.grey });
+    caps.push({ text: fill(E.unit, { v: nt(2 - 2 * c) }), color: C.grey });
+    tex = `\\cos\\theta = \\frac{${textTex(A)}\\cdot${textTex(B)}}{\\lVert${textTex(A)}\\rVert\\,\\lVert${textTex(B)}\\rVert} = \\frac{${tn(d)}}{${tn(norms[i])} \\cdot ${tn(norms[j])}} = ${tn(c)}`;
+  }
+  if (ranked) {
+    caps.push({ text: fill(E.ranked, { q: names[query!], list: ranked.map((r) => `${r.name} ${nt(r.cos, 3)}`).join(", ") }), color: C.blue });
+    // The plain dot product rewards length, so a long vector can come first by it.
+    const byDot = range(k)
+      .filter((i) => i !== query)
+      .sort((x, y) => dotOf(vectors[query!], vectors[y]) - dotOf(vectors[query!], vectors[x]))[0];
+    if (names[byDot] !== ranked[0].name) caps.push({ text: fill(E.byDot, { x: names[byDot], n: nt(norms[byDot]), y: ranked[0].name }), color: C.red });
+  }
+  if (analogy && trio) {
+    const [a, b, c] = trio.map((t) => names[t]);
+    caps.push({ text: fill(E.analogy, { a, b, c, v: `[${some(analogy.vector.map((v) => nt(v)), ", ")}]` }), color: C.purple });
+    caps.push({ text: fill(E.analogyBest, { a, b, c, best: analogy.best, cos: nt(analogy.cos, 3) }), color: C.purple });
+    if (!tex) tex = `${textTex(a)} - ${textTex(b)} + ${textTex(c)} \\approx ${textTex(analogy.best)}, \\quad \\cos\\theta = ${tn(analogy.cos)}`;
+  }
+  if (k > 2) caps.push({ text: E.matrix, color: C.grey });
+
+  const drawn = drawEmbed(names, vectors, norms, cos, pair, query, trio, analogy?.vector);
+  return { svg: compose(tex, drawn.svg, drawn.h, caps), data };
+}
+
+const BLUE_RGB = [25, 113, 194];
+const RED_RGB = [224, 49, 49];
+/** White to blue for a positive value, white to red for a negative one, by its size from 0 to 1. */
+const heat = (v: number) => `rgb(${(v < 0 ? RED_RGB : BLUE_RGB).map((c) => Math.round(255 + (c - 255) * Math.min(1, Math.abs(v)) * 0.85)).join(",")})`;
+const onHeat = (v: number) => (Math.abs(v) > 0.55 ? "#ffffff" : C.ink);
+/** Two decimals always, so that 0.996 does not pass for the diagonal's 1. */
+const two = (v: number) => (Math.abs(v) < 0.005 ? "0" : v === 1 ? "1" : v.toFixed(2).replace("-", "−"));
+
+/** The vectors as rows of cells shaded by value with their lengths, the matrix of cosines beside or under them, and
+ * for vectors in a plane, the arrows themselves with the angle between the pair. */
+function drawEmbed(names: string[], vectors: number[][], norms: number[], cos: number[][], pair?: [number, number], query?: number, trio?: number[], made?: number[]): { svg: string; h: number } {
+  const k = names.length;
+  const n = vectors[0].length;
+  const big = Math.max(...vectors.flat().map(Math.abs));
+  const nameW = 16 + Math.min(110, 8 * Math.max(...names.map((s) => s.length)));
+  const lit = (i: number) => pair?.includes(i) || i === query;
+  const ms = Math.min(34, 260 / k);
+  const matW = k > 2 ? nameW + k * ms : 0;
+  // Side by side when both fit, else the matrix goes under the vectors.
+  const side = matW > 0 && nameW + n * 30 + 70 + 24 + matW <= W - 16;
+  const cs = side ? 30 : Math.min(34, (W - 32 - nameW - 70) / n);
+  const top = 22;
+  let s = "";
+  vectors.forEach((v, i) => {
+    const y = top + i * cs;
+    if (lit(i)) s += `<rect x="8" y="${r2(y)}" width="${r2(nameW + n * cs + 66)}" height="${r2(cs)}" rx="5" fill="#fff4e6"/>`;
+    s += txt(nameW, y + cs / 2 + 4.5, names[i], lit(i) ? HI : C.ink, 13, "end", "700");
+    v.forEach((x, t) => {
+      const cx = nameW + 8 + t * cs;
+      s += `<rect x="${r2(cx)}" y="${r2(y + 1)}" width="${r2(cs - 2)}" height="${r2(cs - 2)}" rx="3" fill="${heat(x / big)}"/>`;
+      const label = nt(x, 2);
+      s += txt(cx + cs / 2 - 1, y + cs / 2 + 4, label, onHeat(x / big), Math.min(12, (cs * 1.6) / Math.max(3, label.length)));
+    });
+    s += txt(nameW + 14 + n * cs, y + cs / 2 + 4.5, nt(norms[i], 3), C.grey, 12, "start");
+  });
+  range(n).forEach((t) => (s += txt(nameW + 8 + (t + 0.5) * cs - 1, top - 7, String(t), C.grey, 10.5)));
+  s += txt(nameW + 14 + n * cs, top - 7, "‖v‖", C.grey, 11.5, "start", "700");
+  let h = top + k * cs + 10;
+  if (k > 2) {
+    // The names over the columns lean right, so the matrix keeps clear of the edge.
+    const mx = side ? W - 52 - matW : 16;
+    const my = side ? top + 34 : h + 46;
+    s += drawSimilarity(names, cos, mx, my, nameW, ms, pair);
+    h = Math.max(h, my + k * ms + 10);
+  }
+  if (n === 2) {
+    const plane = drawPlane(names, vectors, h + 8, pair, trio, made);
+    s += plane.svg;
+    h = plane.h;
+  }
+  return { svg: s, h };
+}
+
+/** The cosine of every pair, shaded from −1 (red) through 0 (white) to 1 (blue), the pair worked out picked out. */
+function drawSimilarity(names: string[], cos: number[][], x: number, y: number, nameW: number, ms: number, pair?: [number, number]): string {
+  let s = "";
+  names.forEach((name, i) => {
+    s += txt(x + nameW - 6, y + (i + 0.5) * ms + 4, name, C.ink, 12, "end", "600");
+    const cx = x + nameW + (i + 0.5) * ms;
+    s += txt(cx, y - 6, name, C.ink, 12, "start", "600", ` transform="rotate(-45 ${r2(cx)} ${r2(y - 6)})"`);
+    cos[i].forEach((c, j) => {
+      const on = pair && ((pair[0] === i && pair[1] === j) || (pair[0] === j && pair[1] === i));
+      s += `<rect x="${r2(x + nameW + j * ms)}" y="${r2(y + i * ms)}" width="${r2(ms)}" height="${r2(ms)}" fill="${heat(c)}" stroke="${on ? HI : "#ffffff"}" stroke-width="${on ? 3 : 1}"/>`;
+      s += txt(x + nameW + (j + 0.5) * ms, y + (i + 0.5) * ms + 4, two(c), onHeat(c), Math.min(12, ms * 0.36));
+    });
+  });
+  return s;
+}
+
+/** Arrows from the origin, at equal scales so that angles are true, the angle between the pair marked, and an
+ * analogy's steps drawn dashed: from the first vector, take away the second, add the third. */
+function drawPlane(names: string[], vectors: number[][], top: number, pair?: [number, number], trio?: number[], made?: number[]): { svg: string; h: number } {
+  const mid = trio && made ? vectors[trio[0]].map((v, i) => v - vectors[trio[1]][i]) : undefined;
+  const pts = [[0, 0], ...vectors, ...(mid && made ? [mid, made] : [])];
+  const lo = [0, 1].map((a) => Math.min(...pts.map((p) => p[a])));
+  const hi = [0, 1].map((a) => Math.max(...pts.map((p) => p[a])));
+  const fw = W - 48 - 18;
+  const fh = 300;
+  const scale = Math.max((hi[0] - lo[0]) / (fw - 70), (hi[1] - lo[1]) / (fh - 50));
+  const c = [0, 1].map((a) => (lo[a] + hi[a]) / 2);
+  const fr = makeFrame("emb", 48, top, fw, fh, [c[0] - (fw * scale) / 2, c[0] + (fw * scale) / 2], [c[1] - (fh * scale) / 2, c[1] + (fh * scale) / 2]);
+  const [ox, oy] = [fr.sx(0), fr.sy(0)];
+  let s = axes(fr);
+  const tip = (p: number[], label: string, color: string) => {
+    const [dx, dy] = [fr.sx(p[0]) - ox, fr.sy(p[1]) - oy];
+    const L = Math.hypot(dx, dy) || 1;
+    const anchor = dx / L > 0.3 ? "start" : dx / L < -0.3 ? "end" : "middle";
+    return txt(ox + dx + (dx / L) * 10, oy + dy + (dy / L) * 10 + 4, label, color, 13, anchor, "700");
+  };
+  vectors.forEach((v, i) => {
+    const color = EDGE[i % EDGE.length];
+    s += arrow(ox, oy, fr.sx(v[0]), fr.sy(v[1]), color, pair?.includes(i) ? 3 : 2) + tip(v, names[i], color);
+  });
+  if (pair && cosine(vectors[pair[0]], vectors[pair[1]]) < 0.99995) {
+    const [a, b] = pair.map((i) => vectors[i]);
+    const ta = Math.atan2(a[1], a[0]);
+    // The turn from a to b, counter-clockwise positive; exactly opposite vectors go round counter-clockwise.
+    const turn = Math.atan2(a[0] * b[1] - a[1] * b[0], dotOf(a, b));
+    const tb = ta + turn;
+    const lenPx = Math.min(...pair.map((i) => norm(vectors[i]) / scale));
+    const r = Math.min(44, 0.6 * lenPx);
+    const at = (t: number, rr: number) => [ox + rr * Math.cos(t), oy - rr * Math.sin(t)];
+    const [p, q] = [at(ta, r), at(tb, r)];
+    // Counter-clockwise on the page is sweep 0 in SVG, whose y runs down.
+    s += `<path d="M${r2(p[0])},${r2(p[1])}A${r2(r)},${r2(r)} 0 0 ${turn > 0 ? 0 : 1} ${r2(q[0])},${r2(q[1])}" fill="none" stroke="${HI}" stroke-width="2.4"/>`;
+    const [lx, ly] = at(ta + turn / 2, r + 16);
+    s += txt(lx, ly + 4, "θ", HI, 15, "middle", "700");
+  }
+  if (trio && mid && made) {
+    const [a] = trio.map((i) => vectors[i]);
+    s += arrow(fr.sx(a[0]), fr.sy(a[1]), fr.sx(mid[0]), fr.sy(mid[1]), C.purple, 1.8, true);
+    s += arrow(fr.sx(mid[0]), fr.sy(mid[1]), fr.sx(made[0]), fr.sy(made[1]), C.purple, 1.8, true);
+    s += arrow(ox, oy, fr.sx(made[0]), fr.sy(made[1]), C.purple, 2.4, true);
+    s += dot(fr.sx(made[0]), fr.sy(made[1]), C.purple, 4.5, true);
+  }
+  return { svg: s, h: fr.bottom + 22 };
+}
+
 // ---------- the tool ----------
 
 /** The main part of the input and what follows it after semicolons. */
@@ -1726,6 +2018,7 @@ export function renderAi(spec: AiSpec, w: AiWords): RenderedSvg {
   if (spec.topic === "descent") return buildDescent(spec, w).svg;
   if (spec.topic === "backprop") return buildBackprop(spec, w).svg;
   if (spec.topic === "softmax") return buildSoftmax(spec, w).svg;
+  if (spec.topic === "embed") return buildEmbed(spec, w).svg;
   return buildAi(spec, w).svg;
 }
 export function buildAi(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: AiData } {
@@ -1742,6 +2035,9 @@ export function buildBackprop(spec: AiSpec, w: AiWords): { svg: RenderedSvg; dat
 }
 export function buildSoftmax(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: SoftmaxData } {
   return renderSoftmax(...parts(spec, w));
+}
+export function buildEmbed(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: EmbedData } {
+  return renderEmbed(...parts(spec, w));
 }
 
 const S = (topic: AiTopic, src: string): AiSpec => ({ topic, src });
@@ -1808,6 +2104,17 @@ export const AI_PRESETS: { [K in AiTopic]: { label: string; spec: AiSpec }[] } =
     { label: "huge scores: subtract the max", spec: S("softmax", "[1000, 999, 990]; target 1") },
     { label: "ten digits", spec: S("softmax", "[0.2, -1, 3.1, 0.5, -0.3, 1.2, 0, -2, 2.4, 0.1]; target 8") },
   ],
+  embed: [
+    { label: "two words: their cosine", spec: S("embed", "cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2]") },
+    { label: "nearest neighbours", spec: S("embed", "cat [0.9, 0.8, 0.1, 0.2], dog [0.85, 0.75, 0.2, 0.1], tiger [0.8, 0.9, 0.1, 0.7], car [0.1, 0.2, 0.9, 0.3], truck [0.05, 0.3, 0.95, 0.5]; query cat") },
+    { label: "in the plane: the angle", spec: S("embed", "a [3, 1], b [1, 2]") },
+    { label: "length does not matter", spec: S("embed", "a [1, 2], b [2, 4], c [2, -1]; compare a b") },
+    { label: "opposite: −1, at right angles: 0", spec: S("embed", "up [0, 1], down [0, -2], right [3, 0]; compare up down") },
+    { label: "the dot product favours length", spec: S("embed", "q [1, 0.1], near [0.9, 0.2], long [2, 1.5]; query q") },
+    { label: "king − man + woman", spec: S("embed", "king [0.95, 0.9], queen [0.92, -0.85], man [0.1, 0.85], woman [0.12, -0.8], prince [0.55, 0.6], princess [0.5, -0.55]; analogy king - man + woman") },
+    { label: "Paris − France + Italy", spec: S("embed", "paris [0.9, 0.9, 0, 0.05], france [0.1, 0.95, 0.05, 0.1], italy [0.1, 0.05, 0.95, 0.05], rome [0.9, 0.05, 0.9, 0], berlin [0.9, 0.05, 0, 0.9], germany [0.1, 0.1, 0.05, 0.95]; analogy paris - france + italy") },
+    { label: "rows of a matrix", spec: S("embed", "[[1, 0, 1], [0, 1, 1], [1, 1, 0], [1, 1, 1]]") },
+  ],
 };
 
 /** What the tool opens on: a tensor with three axes says more than the first example, a single number. */
@@ -1817,4 +2124,5 @@ export const AI_DEFAULT: Record<AiTopic, AiSpec> = {
   descent: S("descent", "(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12"),
   backprop: S("backprop", "(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; explain w"),
   softmax: S("softmax", "[2, 1, 0.1]; labels cat, dog, bird; target cat"),
+  embed: S("embed", "cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2], car [0.1, 0.2, 0.9]; query cat"),
 };

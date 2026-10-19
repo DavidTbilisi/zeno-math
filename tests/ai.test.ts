@@ -13,12 +13,14 @@
 // moves the learnt inputs; and wrong inputs are refused. Softmax and cross-entropy: probabilities follow the formula,
 // add up to 1 and ignore a shift of every score, sharpen and flatten with the temperature, stay finite for huge
 // scores; the loss is −Σ y ln p and never below the target's entropy, the gradient p − y matches a central difference,
-// and wrong options are refused.
+// and wrong options are refused. Embeddings: the cosine follows the formula, stays within [−1, 1], ignores length and
+// is the dot product of unit vectors, with |â − b̂|² = 2 − 2 cos θ; the matrix is symmetric with 1 on the diagonal; a
+// query's ranking and an analogy's nearest vector agree with a brute-force search; and wrong vectors are refused.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { fill } from "../src/math/text.ts";
-import { buildAi, buildBackprop, buildDescent, buildOps, buildSoftmax, matrixRank, softmax, strides } from "../src/math/ai.ts";
+import { AI_DEFAULT, AI_PRESETS, AI_TOPICS, buildAi, buildBackprop, buildDescent, buildEmbed, buildOps, buildSoftmax, cosine, matrixRank, renderAi, softmax, strides } from "../src/math/ai.ts";
 
 const w = en.aiWords;
 const T = w.tensor;
@@ -730,4 +732,163 @@ test("every softmax picture draws", () => {
     assert.match(svg, /^<svg/);
     assert.doesNotMatch(svg, /NaN|undefined/, src);
   }
+});
+
+// ---------- embeddings and cosine similarity ----------
+
+const Em = w.embed;
+const emb = (src: string) => buildEmbed({ topic: "embed", src }, w).data;
+const emCaptions = (src: string) => [...buildEmbed({ topic: "embed", src }, w).svg.svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(" ");
+const emThrows = (src: string, message: string) => assert.throws(() => buildEmbed({ topic: "embed", src }, w), { message }, src);
+const len = (v: number[]) => Math.sqrt(v.reduce((a, x) => a + x * x, 0));
+const dotP = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0);
+/** A vector of whole tenths that is not all zeros. */
+const randomVec = (n: number): number[] => {
+  const v = Array.from({ length: n }, () => int(-30, 30) / 10);
+  return len(v) ? v : randomVec(n);
+};
+const named = (vs: number[][]) => vs.map((v, i) => `w${i} ${JSON.stringify(v)}`).join(", ");
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
+
+test("cosine: a · b / (|a| |b|), within [−1, 1], blind to length, the dot product of unit vectors", () => {
+  for (let i = 0; i < 60; i++) {
+    const n = int(2, 6);
+    const [a, b] = [randomVec(n), randomVec(n)];
+    const c = cosine(a, b);
+    close(c, dotP(a, b) / (len(a) * len(b)), "cos");
+    assert.ok(Math.abs(c) <= 1, "Cauchy–Schwarz");
+    const s = int(1, 9) / 2;
+    close(cosine(a.map((x) => x * s), b), c, "scaled");
+    close(cosine(a.map((x) => -x * s), b), -c, "turned round");
+    const [ua, ub] = [a.map((x) => x / len(a)), b.map((x) => x / len(b))];
+    close(dotP(ua, ub), c, "â · b̂");
+    close(len(ua.map((x, t) => x - ub[t])) ** 2, 2 - 2 * c, "|â − b̂|²");
+    const d = emb(named([a, b]));
+    assert.deepEqual(d.pair, [0, 1]);
+    close(d.cos[0][1], c, "matrix");
+    close(d.dot!, dotP(a, b), "dot");
+    close(d.angle!, (Math.acos(c) * 180) / Math.PI, "angle");
+    close(d.distance!, len(a.map((x, t) => x - b[t])), "distance");
+    d.norms.forEach((v, j) => close(v, len([a, b][j]), "norm"));
+  }
+  for (let i = 0; i < 20; i++) {
+    const vs = Array.from({ length: int(2, 8) }, () => randomVec(3));
+    const { cos } = emb(named(vs));
+    cos.forEach((row, r) => row.forEach((c, k) => (close(c, cos[k][r], "symmetric"), r === k && close(c, 1, "diagonal"))));
+  }
+  assert.equal(cosine([1, 0], [0, 1]), 0);
+  assert.equal(cosine([1, 2], [-2, -4]), -1);
+  const parallel = emb("a [1, 2], b [2, 4]");
+  assert.equal(parallel.cos[0][1], 1);
+  assert.equal(parallel.angle, 0);
+  assert.ok(emCaptions("a [1, 2], b [2, 4]").includes("|2 · a − b| = 0"));
+});
+
+test("the angle is put in words: alike, something in common, unrelated, apart", () => {
+  const how = (src: string, s: string, a = "a", b = "b") => assert.ok(emCaptions(src).includes(fill(s, { a, b }).split(" (")[0]), src);
+  how("a [1, 0.1], b [1, 0]", Em.close);
+  how("a [1, 1], b [1, 0]", Em.some);
+  how("a [1, 0], b [0, 1]", Em.right);
+  how("a [1, 0], b [-1, -0.2]", Em.apart);
+  assert.ok(emCaptions("a [3, 1], b [1, 2]").includes("θ = 45°"));
+  assert.ok(emCaptions("cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2]").includes("cat · dog = 0.9 · 0.85 + 0.8 · 0.75 + 0.1 · 0.2 = 1.385."));
+  // Negative entries are bracketed in the products, and a long vector is cut short.
+  assert.ok(emCaptions("a [1, -2], b [-3, 4]").includes("1 · (−3) + −2 · 4"));
+  assert.ok(emCaptions(named([range(10).map((t) => t + 1), range(10).map(() => 1)])).includes("+ 4 · 1 + 5 · 1 + … ="));
+});
+
+test("a query ranks the others by cosine, and says when the plain dot product would not", () => {
+  for (let i = 0; i < 40; i++) {
+    const vs = Array.from({ length: int(2, 8) }, () => randomVec(3));
+    const q = int(0, vs.length - 1);
+    const d = emb(`${named(vs)}; query w${q}`);
+    const want = vs.map((v, j) => ({ j, c: cosine(vs[q], v) })).filter((x) => x.j !== q);
+    assert.equal(d.ranked!.length, vs.length - 1);
+    d.ranked!.forEach((r, t) => {
+      assert.notEqual(r.name, `w${q}`);
+      close(r.cos, cosine(vs[q], vs[Number(r.name.slice(1))]), "ranked cos");
+      if (t) assert.ok(d.ranked![t - 1].cos >= r.cos, "nearest first");
+    });
+    close(d.ranked![0].cos, Math.max(...want.map((x) => x.c)), "the nearest");
+    assert.deepEqual(d.pair, [q, Number(d.ranked![0].name.slice(1))]);
+  }
+  const c = emCaptions("q [1, 0.1], near [0.9, 0.2], long [2, 1.5]; query q");
+  assert.ok(c.includes("Nearest to q by cosine: near 0.993, long 0.856."));
+  assert.ok(c.includes(fill(Em.byDot, { x: "long", y: "near", n: "2.5" }).split(":")[0]));
+  assert.ok(!emCaptions("cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2], car [0.1, 0.2, 0.9]; query cat").includes("plain dot product"));
+  // compare picks the pair whatever the query.
+  assert.deepEqual(emb("a [1, 0], b [0, 1], c [1, 1]; query a; compare b c").pair, [1, 2]);
+});
+
+test("an analogy: a − b + c, and the nearest vector to it besides those three", () => {
+  const royal = emb(AI_PRESETS.embed.find((p) => p.label === "king − man + woman")!.spec.src);
+  assert.equal(royal.analogy!.best, "queen");
+  assert.deepEqual(royal.analogy!.vector, [0.97, -0.75]);
+  assert.equal(royal.pair, undefined);
+  const capital = emb(AI_PRESETS.embed.find((p) => p.label === "Paris − France + Italy")!.spec.src);
+  assert.equal(capital.analogy!.best, "rome");
+  assert.deepEqual(capital.analogy!.vector, [0.9, 0, 0.9, 0]);
+  for (let i = 0; i < 40; i++) {
+    const vs = Array.from({ length: int(4, 8) }, () => randomVec(3));
+    const [a, b, c] = [0, 1, 2];
+    const v = vs[a].map((x, t) => x - vs[b][t] + vs[c][t]);
+    if (!len(v)) continue;
+    const d = emb(`${named(vs)}; analogy w${a} − w${b} + w${c}`);
+    const others = range(vs.length).filter((j) => j > 2);
+    const best = others.reduce((m, j) => (cosine(v, vs[j]) > cosine(v, vs[m]) ? j : m));
+    close(d.analogy!.cos, cosine(v, vs[best]), "nearest cos");
+    d.analogy!.vector.forEach((x, t) => close(x, v[t], "a − b + c"));
+  }
+  const c = emCaptions("king [0.95, 0.9], queen [0.92, -0.85], man [0.1, 0.85], woman [0.12, -0.8]; analogy king - man + woman");
+  assert.ok(c.includes("king − man + woman = [0.97, −0.75]."));
+  assert.ok(c.includes("man is to king as woman is to queen."));
+  assert.deepEqual(emb("a [1, 0], b [0, 1], c [1, 1], d [2, 1]; analogy a - b + c; compare a d").pair, [0, 3]);
+});
+
+test("vectors are read named, with = or :, in any alphabet, or as the rows of a list", () => {
+  assert.deepEqual(emb("[[1, 0, 1], [0, 1, 1]]").names, ["a", "b"]);
+  assert.deepEqual(emb("[1, 0], [0, 1], [1, 1]").vectors, [[1, 0], [0, 1], [1, 1]]);
+  assert.deepEqual(emb("кот [1, 0], ძაღლი = [0, 1], c_1: [1, 1]").names, ["кот", "ძაღლი", "c_1"]);
+  assert.deepEqual(emb("x [1 2], y [−3 4]").vectors, [[1, 2], [-3, 4]]);
+  // Two vectors have no matrix to speak of; three do.
+  assert.ok(!emCaptions("a [1, 0], b [0, 1]").includes("EEᵀ"));
+  assert.ok(emCaptions("a [1, 0], b [0, 1], c [1, 1]").includes("EEᵀ"));
+});
+
+test("wrong vectors and options are refused with the reason", () => {
+  const count = fill(Em.count, { max: 8 });
+  const dims = fill(Em.dims, { max: 12 });
+  emThrows("", w.need.embed);
+  emThrows("cat [1, 2]", count);
+  emThrows("[1, 2]", count);
+  emThrows(named(Array.from({ length: 9 }, () => [1, 2])), count);
+  emThrows("a [1, 2], b [1, 2, 3]", dims);
+  emThrows("a [1], b [2]", dims);
+  emThrows("a [], b []", dims);
+  emThrows(named([range(13), range(13)]), dims);
+  emThrows("[[1, 2], [3, [4]]]", dims);
+  emThrows("a [1, 2], a [3, 4]", fill(Em.twice, { s: "a" }));
+  emThrows("a [0, 0], b [1, 2]", fill(Em.zero, { s: "a" }));
+  emThrows("a [1, 2] b", fill(w.bad, { s: "b" }));
+  emThrows("a [1, x], b [1, 2]", fill(w.bad, { s: "x]" }));
+  const ab = "a [1, 2], b [2, 1], c [1, -1]";
+  emThrows(`${ab}; colour red`, fill(Em.badOpt, { s: "colour red" }));
+  emThrows(`${ab}; query z`, fill(Em.noName, { s: "z", names: "a, b, c" }));
+  emThrows(`${ab}; analogy a b c`, Em.badAnalogy);
+  emThrows(`${ab}; compare a`, Em.badPair);
+  emThrows(`${ab}; compare a a`, Em.badPair);
+  emThrows(`${ab}; analogy a - b + c`, fill(Em.analogyFew, { a: "a", b: "b", c: "c" }));
+  emThrows(`${ab}, d [1, 1]; analogy a - b + c`, fill(Em.zero, { s: "a − b + c" }));
+});
+
+test("every embeddings picture draws", () => {
+  for (const { spec } of [{ spec: AI_DEFAULT.embed }, ...AI_PRESETS.embed]) {
+    const { svg } = buildEmbed(spec, w).svg;
+    assert.match(svg, /^<svg/);
+    assert.doesNotMatch(svg, /NaN|undefined|Infinity/, spec.src);
+  }
+});
+
+test("the tool draws every topic's default", () => {
+  for (const topic of AI_TOPICS) assert.match(renderAi(AI_DEFAULT[topic], w).svg, /^<svg/, topic);
 });
