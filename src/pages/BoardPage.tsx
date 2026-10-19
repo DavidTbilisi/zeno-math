@@ -88,6 +88,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
   groupAi: [
     { kind: "descentLab", icon: "⛳", name: "liveDescentLab" },
     { kind: "pcaLab", icon: "📏", name: "livePcaLab" },
+    { kind: "softmaxLab", icon: "📊", name: "liveSoftmaxLab" },
   ],
   groupDiscreteShort: [
     { kind: "chance", icon: "🎲", name: "liveChance" },

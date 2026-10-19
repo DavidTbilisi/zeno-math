@@ -494,6 +494,15 @@ UI in English, Russian and Georgian.
     (one number per point is enough). A wrong check says by how much or why, stars go to a puzzle done at the first
     try, and eight discoveries are kept. Free play takes any points (click to add, drag, tap to take away), with PC1
     or the least-squares line shown on request
+  - *Softmax lab* (a live piece on the board, from the AI menu or the Shapes panel): a score bar for each class, dragged
+    up or down, and the probabilities softmax makes of them beside, with a strip showing they add up to 1; a
+    temperature T on a slider, buttons that shift every score at once, and with a target the cross-entropy loss
+    −ln p(target) and its gradient p − y as arrows on the scores. Eight puzzles, each with a Check: one class to at
+    least 0.8 (raising one score takes from all the others), equal odds (equal scores), a score raised without changing
+    any probability (only differences matter), one class twice as likely as another (a difference of ln 2), the scores
+    locked and T turned down to sharpen and up to flatten, a loss below 0.1 by following the arrows, and two of five
+    classes sharing the top (a soft arg max). A wrong check says why, stars go to a puzzle done at the first try, and
+    eight discoveries are kept. Free play takes two to five classes, any temperature and any target
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1234,6 +1243,8 @@ src/math/descentLab.ts    the gradient descent lab: steps with momentum, the nin
                           free play's functions, and the picture
 src/math/pcaLab.ts        the PCA lab: PC1 and least squares from the covariance, a line's error and kept spread,
                           the eight puzzles and how a check is judged, and the picture
+src/math/softmaxLab.ts    the softmax lab: softmax with a temperature, the loss and its gradient, the eight puzzles
+                          and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
