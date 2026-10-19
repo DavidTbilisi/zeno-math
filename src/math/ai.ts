@@ -8,14 +8,17 @@
 // drawn before and after with the entries that make up one entry of the result picked out. And gradient descent on a
 // function of x, or of x and y: the steps on the curve or across the level curves, for up to three learning rates and
 // with momentum, each path judged (settles, crawls, overshoots, runs away, stops on a maximum or a saddle), a lower
-// point when a path settled in a local minimum, and the largest rate the curvature allows.
+// point when a path settled in a local minimum, and the largest rate the curvature allows. And backpropagation: an
+// expression in named inputs drawn as its computational graph, every node's value worked out forwards and its
+// gradient ∂L/∂node backwards by the chain rule, the local derivative on every edge, one input's chain written out
+// along each path, checked numerically, and an optional step of gradient descent.
 import { arrow, axes, C, compose, contours, curve, dot, esc, fill, FONT, lbl, makeFrame, nt, r2, sampleY, W, yRange, type Caption } from "./chart";
 import { derive } from "./derive";
 import { evalE, exprMessages, has, parseE, simp, substitute, tex, V, X, type E } from "./expr";
 import type { RenderedSvg } from "./latex";
 
-export type AiTopic = "tensor" | "ops" | "descent";
-export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent"];
+export type AiTopic = "tensor" | "ops" | "descent" | "backprop";
+export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent", "backprop"];
 export type AiSpec = { topic: AiTopic; src: string };
 
 export type AiWords = {
@@ -117,6 +120,28 @@ export type AiWords = {
     curve2: string;
     valley: string;
     table: string;
+  };
+  backprop: {
+    noInputs: string;
+    tooBig: string;
+    notReal: string;
+    notInput: string;
+    badOpt: string;
+    badRate: string;
+    extraValue: string;
+    badValue: string;
+    noValue: string;
+    forward: string;
+    backward: string;
+    manyPaths: string;
+    fanout: string;
+    check: string;
+    dead: string;
+    saturated: string;
+    grads: string;
+    step: string;
+    lossDown: string;
+    lossUp: string;
   };
 };
 
@@ -1138,6 +1163,377 @@ function drawDescent2(F: (p: number[]) => number, paths: DescentPath[], start: n
   return { svg: s, h: fr.bottom + 22 };
 }
 
+// ---------- backpropagation ----------
+
+type BFn = "sigmoid" | "relu" | "tanh" | "exp" | "ln" | "sin" | "cos" | "sqrt" | "abs";
+type BOp = "+" | "-" | "*" | "/" | "^";
+type Ast = { k: "num"; v: number } | { k: "var"; name: string } | { k: "bin"; op: BOp; a: Ast; b: Ast } | { k: "neg"; a: Ast } | { k: "fn"; f: BFn; a: Ast };
+
+const B_FNS: Record<string, BFn> = { sigmoid: "sigmoid", σ: "sigmoid", relu: "relu", tanh: "tanh", exp: "exp", ln: "ln", log: "ln", sin: "sin", cos: "cos", sqrt: "sqrt", abs: "abs" };
+const MAX_NODES = 24;
+const MAX_COLS = 8;
+
+/** + − × ÷ ^, brackets, the functions above, and implicit products (2w, w x, w1x1): a name is one letter with an
+ * optional index (w1, x_2), so wx is w times x. */
+function readAst(src: string): Ast {
+  const s = src.replace(/[−–]/g, "-").replace(/[×·]/g, "*").replace(/÷/g, "/").replace(/²/g, "^2").replace(/³/g, "^3");
+  type Tok = { t: "num" | "id" | "fn" | "op"; v: string };
+  const toks: Tok[] = [];
+  for (let i = 0; i < s.length; ) {
+    const rest = s.slice(i);
+    let m: RegExpExecArray | null;
+    if (/^\s/.test(rest)) i++;
+    else if ((m = /^(\d+\.?\d*|\.\d+)/.exec(rest))) (toks.push({ t: "num", v: m[0] }), (i += m[0].length));
+    else if ((m = /^(sigmoid|relu|tanh|exp|ln|log|sin|cos|sqrt|abs|σ)(?=\s*\()/i.exec(rest))) (toks.push({ t: "fn", v: B_FNS[m[0].toLowerCase()] }), (i += m[0].length));
+    // A function's name without its bracket is a mistake, not a product of letters.
+    else if (/^(sigmoid|relu|tanh|exp|ln|log|sin|cos|sqrt|abs)/i.test(rest)) return fail(words.bad, { s: src.trim() });
+    else if ((m = /^[a-z](_?\d+)?/i.exec(rest))) (toks.push({ t: "id", v: m[0].replace("_", "") }), (i += m[0].length));
+    else if ("+-*/^()".includes(s[i])) (toks.push({ t: "op", v: s[i] }), i++);
+    else return fail(words.bad, { s: src.trim() });
+  }
+  let i = 0;
+  const bad = (): never => fail(words.bad, { s: src.trim() });
+  const isOp = (v: string) => toks[i]?.t === "op" && toks[i].v === v;
+  const startsAtom = () => !!toks[i] && (toks[i].t !== "op" || toks[i].v === "(");
+  const expr = (): Ast => {
+    let a = term();
+    while (isOp("+") || isOp("-")) {
+      const op = toks[i++].v as BOp;
+      a = { k: "bin", op, a, b: term() };
+    }
+    return a;
+  };
+  const term = (): Ast => {
+    let a = unary();
+    for (;;) {
+      if (isOp("*") || isOp("/")) {
+        const op = toks[i++].v as BOp;
+        a = { k: "bin", op, a, b: unary() };
+      } else if (startsAtom()) a = { k: "bin", op: "*", a, b: power() };
+      else return a;
+    }
+  };
+  const unary = (): Ast => (isOp("-") ? (i++, { k: "neg", a: unary() }) : power());
+  const power = (): Ast => {
+    const a = atom();
+    return isOp("^") ? (i++, { k: "bin", op: "^", a, b: unary() }) : a;
+  };
+  const group = (): Ast => {
+    if (!isOp("(")) bad();
+    i++;
+    const a = expr();
+    if (!isOp(")")) bad();
+    i++;
+    return a;
+  };
+  const atom = (): Ast => {
+    const tk = toks[i];
+    if (!tk) return bad();
+    if (tk.t === "num") return i++, { k: "num", v: Number(tk.v) };
+    if (tk.t === "id") return i++, { k: "var", name: tk.v };
+    if (tk.t === "fn") return i++, { k: "fn", f: tk.v as BFn, a: group() };
+    return group();
+  };
+  const a = expr();
+  if (i < toks.length) bad();
+  return a;
+}
+
+const nameTex = (n: string) => n.replace(/^([a-z])(\d+)$/i, "$1_{$2}");
+const FN_TEX_B: Record<BFn, (a: string) => string> = {
+  sigmoid: (a) => `\\sigma\\left(${a}\\right)`, relu: (a) => `\\operatorname{ReLU}\\left(${a}\\right)`, tanh: (a) => `\\tanh\\left(${a}\\right)`,
+  exp: (a) => `e^{${a}}`, ln: (a) => `\\ln\\left(${a}\\right)`, sin: (a) => `\\sin\\left(${a}\\right)`, cos: (a) => `\\cos\\left(${a}\\right)`,
+  sqrt: (a) => `\\sqrt{${a}}`, abs: (a) => `\\left|${a}\\right|`,
+};
+/** The expression as it was typed, in TeX, with brackets only where the order of operations needs them. */
+function astTex(a: Ast, outer = 0): string {
+  const wrap = (s: string, level: number) => (level < outer ? `\\left(${s}\\right)` : s);
+  switch (a.k) {
+    case "num":
+      return nt(a.v).replace("−", "-");
+    case "var":
+      return nameTex(a.name);
+    case "fn":
+      return FN_TEX_B[a.f](astTex(a.a));
+    case "neg":
+      return wrap(`-${astTex(a.a, 3)}`, 2);
+    case "bin":
+      if (a.op === "+" || a.op === "-") return wrap(`${astTex(a.a, 1)} ${a.op} ${astTex(a.b, 2)}`, 1);
+      if (a.op === "/") return wrap(`\\frac{${astTex(a.a)}}{${astTex(a.b)}}`, 3);
+      if (a.op === "*") return wrap(`${astTex(a.a, 2)}${a.a.k === "num" && a.b.k === "num" ? " \\cdot " : "\\,"}${astTex(a.b, 3)}`, 2);
+      // A power as the base keeps its bracket: (x²)², not x²².
+      return wrap(`${astTex(a.a, 5)}^{${astTex(a.b)}}`, 4);
+  }
+}
+
+/** A node of the graph: an input, or an operation on the nodes in `args` (a constant is folded into its label). */
+type GNode = {
+  leaf: boolean;
+  name: string;
+  label: string;
+  args: number[];
+  fwd: (xs: number[]) => number;
+  /** The local derivatives ∂node/∂arg, from the inputs' values and the node's own. */
+  local: (xs: number[], self: number) => number[];
+};
+
+const sig = (t: number) => 1 / (1 + Math.exp(-t));
+const FN_B: Record<BFn, { label: string; f: (t: number) => number; d: (t: number, self: number) => number }> = {
+  sigmoid: { label: "σ", f: sig, d: (_, s) => s * (1 - s) },
+  relu: { label: "ReLU", f: (t) => Math.max(0, t), d: (t) => (t > 0 ? 1 : 0) },
+  tanh: { label: "tanh", f: Math.tanh, d: (_, s) => 1 - s * s },
+  exp: { label: "exp", f: Math.exp, d: (_, s) => s },
+  ln: { label: "ln", f: Math.log, d: (t) => 1 / t },
+  sin: { label: "sin", f: Math.sin, d: (t) => Math.cos(t) },
+  cos: { label: "cos", f: Math.cos, d: (t) => -Math.sin(t) },
+  sqrt: { label: "√", f: Math.sqrt, d: (_, s) => 1 / (2 * s) },
+  abs: { label: "|·|", f: Math.abs, d: (t) => Math.sign(t) },
+};
+const SYM: Record<BOp, string> = { "+": "+", "-": "−", "*": "×", "/": "÷", "^": "^" };
+const BIN: Record<BOp, { f: (a: number, b: number) => number; d: (a: number, b: number, self: number) => [number, number] }> = {
+  "+": { f: (a, b) => a + b, d: () => [1, 1] },
+  "-": { f: (a, b) => a - b, d: () => [1, -1] },
+  "*": { f: (a, b) => a * b, d: (a, b) => [b, a] },
+  "/": { f: (a, b) => a / b, d: (a, b) => [1 / b, -a / (b * b)] },
+  "^": { f: (a, b) => a ** b, d: (a, b, s) => [b * a ** (b - 1), s * Math.log(a)] },
+};
+
+/** The graph, children before parents, each input once however often it is used; the last node is the output. */
+function buildGraph(ast: Ast): GNode[] {
+  const nodes: GNode[] = [];
+  const leaves = new Map<string, number>();
+  const add = (n: Omit<GNode, "name">) => nodes.push({ ...n, name: "" }) - 1;
+  type Built = { c: number } | { n: number };
+  const build = (a: Ast): Built => {
+    if (a.k === "num") return { c: a.v };
+    if (a.k === "var") {
+      if (!leaves.has(a.name)) leaves.set(a.name, add({ leaf: true, label: a.name, args: [], fwd: () => NaN, local: () => [] }));
+      return { n: leaves.get(a.name)! };
+    }
+    if (a.k === "neg") {
+      const x = build(a.a);
+      return "c" in x ? { c: -x.c } : { n: add({ leaf: false, label: "−·", args: [x.n], fwd: ([t]) => -t, local: () => [-1] }) };
+    }
+    if (a.k === "fn") {
+      const x = build(a.a);
+      const F = FN_B[a.f];
+      return "c" in x ? { c: F.f(x.c) } : { n: add({ leaf: false, label: F.label, args: [x.n], fwd: ([t]) => F.f(t), local: ([t], s) => [F.d(t, s)] }) };
+    }
+    const [x, y] = [build(a.a), build(a.b)];
+    const op = BIN[a.op];
+    if ("c" in x && "c" in y) return { c: op.f(x.c, y.c) };
+    if ("n" in x && "n" in y) return { n: add({ leaf: false, label: SYM[a.op], args: [x.n, y.n], fwd: ([p, q]) => op.f(p, q), local: ([p, q], s) => op.d(p, q, s) }) };
+    // One side is a number: a node with one input, the number in its label.
+    if ("n" in x) {
+      const c = (y as { c: number }).c;
+      const label = a.op === "^" && (c === 2 || c === 3) ? `·${c === 2 ? "²" : "³"}` : `· ${SYM[a.op]} ${nt(c)}`;
+      return { n: add({ leaf: false, label, args: [x.n], fwd: ([t]) => op.f(t, c), local: ([t], s) => [op.d(t, c, s)[0]] }) };
+    }
+    const c = x.c;
+    return { n: add({ leaf: false, label: `${nt(c)} ${SYM[a.op]} ·`, args: [(y as { n: number }).n], fwd: ([t]) => op.f(c, t), local: ([t], s) => [op.d(c, t, s)[1]] }) };
+  };
+  const top = build(ast);
+  if ("c" in top || !leaves.size) return fail(words.backprop.noInputs);
+  // Names: the inputs keep theirs, the operations are u₁, u₂, … in the order they are worked out, the output is L.
+  let k = 0;
+  nodes.forEach((nd, i) => (nd.name = nd.leaf ? nd.label : i === nodes.length - 1 ? "L" : `u${SUBS(++k)}`));
+  if (nodes.length > MAX_NODES) fail(words.backprop.tooBig, { n: MAX_NODES, c: MAX_COLS });
+  return nodes;
+}
+
+/** Every node's value, inputs first. */
+function forward(nodes: GNode[], values: Record<string, number>): number[] {
+  const v: number[] = [];
+  nodes.forEach((nd, i) => {
+    v[i] = nd.leaf ? values[nd.label] : nd.fwd(nd.args.map((j) => v[j]));
+    if (!Number.isFinite(v[i])) fail(words.backprop.notReal, { node: nd.name, label: nd.label });
+  });
+  return v;
+}
+
+/** Every node's gradient ∂L/∂node and every edge's local derivative, from the output back. */
+function backward(nodes: GNode[], v: number[]): { grad: number[]; local: number[][] } {
+  const grad = nodes.map((_, i) => (i === nodes.length - 1 ? 1 : 0));
+  const local: number[][] = nodes.map(() => []);
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const nd = nodes[i];
+    if (nd.leaf) continue;
+    local[i] = nd.local(nd.args.map((j) => v[j]), v[i]);
+    if (!local[i].every(Number.isFinite)) fail(words.backprop.notReal, { node: nd.name, label: nd.label });
+    nd.args.forEach((j, a) => (grad[j] += grad[i] * local[i][a]));
+  }
+  return { grad, local };
+}
+
+/** What a backprop picture shows, for the tests: each node's name, value and gradient, the inputs' gradients, the
+ * numerical check of the one explained, and after a step the new values and the new L. */
+export type BackpropData = {
+  nodes: { name: string; label: string; value: number; grad: number }[];
+  grads: Record<string, number>;
+  explain: string;
+  check: number;
+  paths: number;
+  step?: { values: Record<string, number>; loss: number };
+};
+
+function renderBackprop(main: string, opts: string[]): { svg: RenderedSvg; data: BackpropData } {
+  const Bw = words.backprop;
+  const ast = readAst(main.replace(/^L\s*=/i, ""));
+  const nodes = buildGraph(ast);
+  const inputs = nodes.filter((n) => n.leaf).map((n) => n.label);
+  const values: Record<string, number> = {};
+  let learn: string[] | undefined;
+  let rate: number | undefined;
+  let explain: string | undefined;
+  const known = (v: string) => (inputs.includes(v) ? v : fail(Bw.notInput, { v }));
+  for (const o of opts) {
+    let m: RegExpExecArray | null;
+    if ((m = /^(learn|explain)\s+(.+)$/i.exec(o))) {
+      const vs = m[2].split(/[\s,]+/).filter(Boolean).map((v) => known(v.replace("_", "")));
+      if (m[1].toLowerCase() === "learn") learn = vs;
+      else if (vs.length === 1) explain = vs[0];
+      else fail(Bw.badOpt, { s: o });
+    } else if ((m = /^(?:rate|lr|eta|η)\s*=?\s*(.+)$/i.exec(o))) {
+      rate = Number(m[1].replace("−", "-"));
+      if (!(rate > 0)) fail(Bw.badRate);
+    } else if (o.includes("=")) {
+      for (const part of o.split(",")) {
+        const a = /^\s*([a-z](?:_?\d+)?)\s*=\s*(.+?)\s*$/i.exec(part);
+        if (!a) fail(Bw.badOpt, { s: part.trim() });
+        const name = a![1].replace("_", "");
+        if (!inputs.includes(name)) fail(Bw.extraValue, { v: name });
+        const val = Number(a![2].replace("−", "-"));
+        if (!Number.isFinite(val)) fail(Bw.badValue, { s: part.trim() });
+        values[name] = val;
+      }
+    } else fail(Bw.badOpt, { s: o });
+  }
+  for (const v of inputs) if (!(v in values)) fail(Bw.noValue, { v });
+
+  const v = forward(nodes, values);
+  const { grad, local } = backward(nodes, v);
+  const out = nodes.length - 1;
+  const grads = Object.fromEntries(nodes.flatMap((n, i) => (n.leaf ? [[n.label, grad[i]]] : [])));
+  explain ??= learn?.[0] ?? inputs[0];
+  const ex = nodes.findIndex((n) => n.leaf && n.label === explain);
+
+  // Every path from the explained input up to the output, as the edges (node, argument) it climbs.
+  const parents: [number, number][][] = nodes.map(() => []);
+  nodes.forEach((nd, i) => nd.args.forEach((j, a) => parents[j].push([i, a])));
+  const paths: [number, number][][] = [];
+  const climb = (j: number, path: [number, number][]) => {
+    if (j === out) return void paths.push(path);
+    for (const [i, a] of parents[j]) climb(i, [...path, [i, a]]);
+  };
+  climb(ex, []);
+  const onPath = new Set(paths.flat().map(([i, a]) => `${i}:${a}`));
+
+  // A numerical check of the explained input's gradient.
+  const h = 1e-5;
+  const at = (dv: number) => forward(nodes, { ...values, [explain]: values[explain] + dv })[out];
+  const check = (at(h) - at(-h)) / (2 * h);
+
+  const caps: Caption[] = [];
+  caps.push({ text: fill(Bw.forward, { L: nt(v[out]) }) });
+  caps.push({ text: Bw.backward, color: C.red });
+  const d = (top: string, bottom: string) => `∂${top}/∂${bottom}`;
+  if (paths.length && paths.length <= 4) {
+    const sym = paths.map((p) => {
+      const chain = [...p].reverse().map(([i], k, r) => d(nodes[i].name, k + 1 < r.length ? nodes[r[k + 1][0]].name : explain!));
+      return chain.join(" · ");
+    });
+    const num = paths.map((p) => [...p].reverse().map(([i, a]) => term(local[i][a])).join(" · "));
+    caps.push({ text: `${d("L", explain)} = ${sym.join(" + ")} = ${num.join(" + ")} = ${nt(grad[ex])}`, color: HI });
+  } else caps.push({ text: fill(Bw.manyPaths, { v: explain, n: paths.length, g: nt(grad[ex]) }), color: HI });
+  if (parents[ex].length > 1) caps.push({ text: fill(Bw.fanout, { v: explain, n: parents[ex].length }), color: HI });
+  caps.push({ text: fill(Bw.check, { v: explain, n: nt(check) }), color: C.grey });
+  nodes.forEach((nd, i) => {
+    if (nd.label === "ReLU" && v[nd.args[0]] <= 0) caps.push({ text: fill(Bw.dead, { node: nd.name, a: nt(v[nd.args[0]]) }), color: C.purple });
+    if (nd.label === "σ" && local[i][0] < 0.01) caps.push({ text: fill(Bw.saturated, { node: nd.name, a: nt(v[nd.args[0]]), d: nt(local[i][0]) }), color: C.purple });
+  });
+  if (inputs.length > 1) caps.push({ text: fill(Bw.grads, { list: inputs.map((n) => `${d("L", n)} = ${nt(grads[n])}`).join(", ") }) });
+
+  let step: BackpropData["step"];
+  if (learn || rate !== undefined) {
+    const eta = rate ?? 0.1;
+    const moved = { ...values };
+    const which = learn ?? inputs;
+    for (const n of which) moved[n] = values[n] - eta * grads[n];
+    const loss = forward(nodes, moved)[out];
+    step = { values: moved, loss };
+    const moves = which.map((n) => `${n} = ${nt(values[n])} − ${nt(eta)} · ${term(grads[n])} = ${nt(moved[n])}`).join(", ");
+    caps.push({ text: fill(Bw.step, { eta: nt(eta), moves }), color: C.green });
+    caps.push({ text: fill(loss <= v[out] ? Bw.lossDown : Bw.lossUp, { a: nt(v[out]), b: nt(loss) }), color: C.green });
+  }
+
+  const drawn = drawGraph(nodes, v, grad, local, onPath, ex);
+  return {
+    svg: compose(`L = ${astTex(ast)}`, drawn.svg, drawn.h, caps),
+    data: { nodes: nodes.map((n, i) => ({ name: n.name, label: n.label, value: v[i], grad: grad[i] })), grads, explain, check, paths: paths.length, step },
+  };
+}
+
+/** The graph left to right: inputs just before the first node they feed, each operation one column after its
+ * latest input; rows as in a tree drawn from the output, nodes in a column kept apart. */
+function drawGraph(nodes: GNode[], v: number[], grad: number[], local: number[][], onPath: Set<string>, ex: number): { svg: string; h: number } {
+  const n = nodes.length;
+  const depth: number[] = [];
+  nodes.forEach((nd, i) => (depth[i] = nd.leaf ? 0 : 1 + Math.max(...nd.args.map((j) => depth[j]))));
+  const col = depth.slice();
+  nodes.forEach((nd, j) => {
+    if (!nd.leaf) return;
+    const feeds = nodes.flatMap((p, i) => (p.args.includes(j) ? [depth[i]] : []));
+    // An input that feeds nothing is the whole expression.
+    col[j] = feeds.length ? Math.min(...feeds) - 1 : 0;
+  });
+  const cols = Math.max(...col) + 1;
+  if (cols > MAX_COLS) fail(words.backprop.tooBig, { n: MAX_NODES, c: MAX_COLS });
+  // Rows: inputs take the next free row as a walk from the output meets them; an operation sits level with its inputs.
+  const row: number[] = new Array(n).fill(NaN);
+  let next = 0;
+  const place = (i: number): number => {
+    if (!Number.isNaN(row[i])) return row[i];
+    if (nodes[i].leaf) return (row[i] = next++);
+    const rs = nodes[i].args.map(place);
+    return (row[i] = rs.reduce((a, b) => a + b, 0) / rs.length);
+  };
+  place(n - 1);
+  for (let c = 0; c < cols; c++) {
+    const ids = range(n).filter((i) => col[i] === c).sort((a, b) => row[a] - row[b]);
+    ids.forEach((i, k) => k && (row[i] = Math.max(row[i], row[ids[k - 1]] + 1)));
+  }
+  const lo = Math.min(...row);
+  const rows = Math.max(...row) - lo + 1;
+  const gap = 26;
+  const nw = Math.min(90, (W - 32 - (cols - 1) * gap) / cols);
+  const step = cols > 1 ? (W - 32 - nw) / (cols - 1) : 0;
+  const nh = 52;
+  const rh = nh + 22;
+  const X = (i: number) => 16 + col[i] * step + (cols === 1 ? (W - 32 - nw) / 2 : 0);
+  const Y = (i: number) => 8 + (row[i] - lo) * rh;
+  let s = "";
+  nodes.forEach((nd, i) =>
+    nd.args.forEach((j, a) => {
+      const dup = nd.args.slice(0, a).filter((k) => k === j).length;
+      const lit = onPath.has(`${i}:${a}`);
+      const [x0, y0, x1, y1] = [X(j) + nw, Y(j) + nh / 2 + dup * 8, X(i), Y(i) + nh / 2 + dup * 8 + (nd.args.length > 1 ? (a ? 6 : -6) : 0)];
+      s += arrow(x0, y0, x1 - 2, y1, lit ? HI : "#adb5bd", lit ? 2.4 : 1.6);
+      s += lbl((x0 + x1) / 2, (y0 + y1) / 2 - 4, nt(local[i][a]), lit ? HI : C.grey, "middle", 11, false);
+    }),
+  );
+  nodes.forEach((nd, i) => {
+    const [x, y] = [X(i), Y(i)];
+    const fillC = i === ex ? "#ffe8cc" : nd.leaf ? "#e7f5ff" : i === n - 1 ? "#fff3bf" : "#f8f9fa";
+    const edge = i === ex ? HI : nd.leaf ? C.blue : "#868e96";
+    s += `<rect x="${r2(x)}" y="${r2(y)}" width="${r2(nw)}" height="${nh}" rx="8" fill="${fillC}" stroke="${edge}" stroke-width="${i === ex ? 2.2 : 1.2}"/>`;
+    const size = Math.min(12.5, Math.max(9.5, nw / 5.2));
+    s += txt(x + nw / 2, y + 16, nd.leaf ? nd.name : `${nd.name}: ${nd.label}`, C.ink, size, "middle", "700");
+    s += txt(x + nw / 2, y + 32, nt(v[i]), C.ink, size);
+    s += txt(x + nw / 2, y + 47, nt(grad[i]), C.red, size, "middle", "700");
+  });
+  return { svg: s, h: 8 + rows * rh - 14 };
+}
+
 // ---------- the tool ----------
 
 /** The main part of the input and what follows it after semicolons. */
@@ -1151,7 +1547,10 @@ function parts(spec: AiSpec, w: AiWords): [string, string[]] {
 }
 
 export function renderAi(spec: AiSpec, w: AiWords): RenderedSvg {
-  return spec.topic === "ops" ? buildOps(spec, w).svg : spec.topic === "descent" ? buildDescent(spec, w).svg : buildAi(spec, w).svg;
+  if (spec.topic === "ops") return buildOps(spec, w).svg;
+  if (spec.topic === "descent") return buildDescent(spec, w).svg;
+  if (spec.topic === "backprop") return buildBackprop(spec, w).svg;
+  return buildAi(spec, w).svg;
 }
 export function buildAi(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: AiData } {
   return renderTensor(...parts(spec, w));
@@ -1161,6 +1560,9 @@ export function buildOps(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: Op
 }
 export function buildDescent(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: DescentData } {
   return renderDescent(...parts(spec, w));
+}
+export function buildBackprop(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: BackpropData } {
+  return renderBackprop(...parts(spec, w));
 }
 
 const S = (topic: AiTopic, src: string): AiSpec => ({ topic, src });
@@ -1205,6 +1607,17 @@ export const AI_PRESETS: { [K in AiTopic]: { label: string; spec: AiSpec }[] } =
     { label: "a saddle point", spec: S("descent", "x^2 - y^2; start (3, 0); rate 0.1") },
     { label: "Rosenbrock's banana", spec: S("descent", "(1 - x)^2 + 100(y - x^2)^2; start (-1.2, 1); rate 0.001; steps 100") },
   ],
+  backprop: [
+    { label: "the classic: (x + y) z", spec: S("backprop", "(x + y) z; x = -2, y = 5, z = -4") },
+    { label: "one neuron, squared error", spec: S("backprop", "(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; explain w") },
+    { label: "and one step of gradient descent", spec: S("backprop", "(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; learn w b; rate 0.01") },
+    { label: "a sigmoid neuron", spec: S("backprop", "sigmoid(w1 x1 + w2 x2 + b); x1 = 1, x2 = -2, w1 = 0.5, w2 = 0.3, b = 0.1; explain w2") },
+    { label: "sigmoid with log loss", spec: S("backprop", "-ln(sigmoid(w x + b)); x = 2, w = 0.5, b = -1; explain w") },
+    { label: "a variable used twice", spec: S("backprop", "x y + x; x = 2, y = 3; explain x") },
+    { label: "a dead ReLU", spec: S("backprop", "relu(w x + b); x = 1, w = -2, b = 1") },
+    { label: "a saturated sigmoid", spec: S("backprop", "sigmoid(w x); x = 10, w = 1") },
+    { label: "two layers", spec: S("backprop", "(v relu(w x + b) + c - y)^2; x = 1, w = 2, b = -0.5, v = 3, c = 0.5, y = 3; explain w") },
+  ],
 };
 
 /** What the tool opens on: a tensor with three axes says more than the first example, a single number. */
@@ -1212,4 +1625,5 @@ export const AI_DEFAULT: Record<AiTopic, AiSpec> = {
   tensor: S("tensor", "2x3x4"),
   ops: S("ops", "2x3x4; reshape 4x6"),
   descent: S("descent", "(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12"),
+  backprop: S("backprop", "(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; explain w"),
 };

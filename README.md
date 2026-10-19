@@ -407,7 +407,7 @@ UI in English, Russian and Georgian.
     and with n = 2, 4, 8, … the observed order of the error (h² and h⁴); also from a table of values
   - *Numerical f′(x)*: forward, backward and central differences against the exact derivative, the chords drawn
     around the tangent; several h show error ∝ h and ∝ h², and where round-off takes over
-- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, and gradient descent
+- **🤖 Math for AI** — the maths that machine learning is written in: tensors, what is done to them, gradient descent and backpropagation
   - *Tensors* as NumPy and PyTorch see them, a box of numbers with a shape: type a number, a list `[5, 3, 7]`, a
     nested list `[[1, 2], [3, 4]]` or a shape `2x3x4` (filled 1, 2, 3, … in memory order; `shape 5` for a vector).
     A scalar is drawn as one cell, a vector as a row, a matrix as a grid with its rows and columns as axis 0 and
@@ -437,6 +437,14 @@ UI in English, Russian and Georgian.
     a lower point is found when it settled in a local minimum. From the curvature where it settled (or anywhere, for
     a quadratic) the largest rate is given, η < 2 / f″, or 2 over the Hessian's largest eigenvalue, and a long
     valley's steep-to-gentle ratio explains the zigzag that momentum smooths out
+  - *Backpropagation*: an expression in named inputs and their values, `(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10`
+    (names are a letter with an optional number, so `w1x1` is w1 times x1; `sigmoid`, `relu`, `tanh`, `exp`, `ln`,
+    `sin`, `cos`, `sqrt`, `abs`), drawn as its computational graph left to right: each input once however often it
+    is used, constants folded into their operation (`· + 3`), every node with its value worked out forwards and its
+    gradient ∂L/∂node backwards, every edge with its local derivative. One input's chain rule is written out along
+    each path from it to L and added up where it is used more than once (`; explain w`), with the path drawn in
+    orange and checked by a central difference; a dead ReLU or a saturated sigmoid is pointed out; and
+    `; learn w b; rate 0.01` takes one step of gradient descent with the new values and the new L
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1221,8 +1229,9 @@ src/math/euclid.ts        school geometry: circle theorems, similarity & congrue
 src/math/numerical.ts     numerical methods: change of sign, bisection, Newton–Raphson, iteration, trapezium &
                           Simpson, numerical derivatives + pictures
 src/math/ai.ts            math for AI: tensors (order, shape, strides, slices, picking an entry, matrix rank),
-                          their operations (reshape, permute, reductions, broadcasting, @) and gradient descent (rates,
-                          momentum, verdicts, curvature) + pictures
+                          their operations (reshape, permute, reductions, broadcasting, @), gradient descent (rates,
+                          momentum, verdicts, curvature) and backpropagation (computational graphs, the chain rule) +
+                          pictures
 src/math/sequences.ts     sequences & series: rules, arithmetic, geometric, Σ notation, recurrences (exact) + pictures
 src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendicular, intersections, circles, shapes
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures

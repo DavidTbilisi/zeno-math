@@ -7,12 +7,15 @@
 // every mistake in an operation is refused with its message. Gradient descent: on quadratics the steps follow the
 // closed form, with and without momentum, and overshoot, settle or run away as the curvature says; the gradient
 // agrees with one worked out by hand; maxima, saddles, local minima and slow progress are told apart; and wrong
-// options are refused.
+// options are refused. Backpropagation: on random expressions every input's gradient matches a central difference of
+// the same expression written as plain JavaScript; implicit products, folded constants and inputs used more than once
+// are read and added as they should be; the chain rule is written out along every path; a step of gradient descent
+// moves the learnt inputs; and wrong inputs are refused.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { fill } from "../src/math/text.ts";
-import { buildAi, buildDescent, buildOps, matrixRank, strides } from "../src/math/ai.ts";
+import { buildAi, buildBackprop, buildDescent, buildOps, matrixRank, strides } from "../src/math/ai.ts";
 
 const w = en.aiWords;
 const T = w.tensor;
@@ -472,6 +475,141 @@ test("wrong options are refused with the reason", () => {
 test("every descent picture draws", () => {
   for (const src of ["(x - 3)^2; start 0; rate 0.1", "x^4/4 - x^2; start 0", "x^4 - 3x^2 + x; start 1.5; rate 0.05", "x^2 + 10y^2; start (8, 1); rate 0.09", "x^2; start 0", "7; start 1", "x^4; start 3; rate 0.5; steps 5"]) {
     const { svg } = buildDescent({ topic: "descent", src }, w).svg;
+    assert.match(svg, /^<svg/);
+    assert.doesNotMatch(svg, /NaN|undefined/, src);
+  }
+});
+
+// ---------- backpropagation ----------
+
+const P = w.backprop;
+const backprop = (src: string) => buildBackprop({ topic: "backprop", src }, w).data;
+const backpropCaptions = (src: string) => [...buildBackprop({ topic: "backprop", src }, w).svg.svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(" ");
+const backpropThrows = (src: string, message: string) => assert.throws(() => buildBackprop({ topic: "backprop", src }, w), { message }, src);
+
+/** A random expression in a, b and c, as typed and as JavaScript. */
+function randomExpr(depth: number): [string, string] {
+  if (depth === 0 || rnd() < 0.2) {
+    const v = ["a", "b", "c", "2", "0.5"][int(0, 4)];
+    return [v, v];
+  }
+  const [x, jx] = randomExpr(depth - 1);
+  const [y, jy] = randomExpr(depth - 1);
+  switch (int(0, 8)) {
+    case 0: return [`(${x} + ${y})`, `(${jx} + ${jy})`];
+    case 1: return [`(${x} - ${y})`, `(${jx} - ${jy})`];
+    case 2: return [`(${x}) (${y})`, `(${jx}) * (${jy})`];
+    case 3: return [`(${x}) / ((${y})^2 + 1)`, `(${jx}) / ((${jy}) ** 2 + 1)`];
+    case 4: return [`(${x})^2`, `(${jx}) ** 2`];
+    case 5: return [`sigmoid(${x})`, `1 / (1 + Math.exp(-(${jx})))`];
+    case 6: return [`tanh(${x})`, `Math.tanh(${jx})`];
+    case 7: return [`sin(${x})`, `Math.sin(${jx})`];
+    default: return [`-(${x})`, `-(${jx})`];
+  }
+}
+
+test("on random expressions every gradient matches a central difference of the same expression in JavaScript", () => {
+  let checked = 0;
+  while (checked < 80) {
+    const [src, js] = randomExpr(3);
+    if (!/[abc]/.test(src.replace(/sigmoid|tanh|sin/g, ""))) continue;
+    const f = new Function("a", "b", "c", `return ${js};`) as (a: number, b: number, c: number) => number;
+    const vals = { a: int(-20, 20) / 10, b: int(-20, 20) / 10, c: int(-20, 20) / 10 };
+    const names = src.replace(/sigmoid|tanh|sin/g, "");
+    const used = (["a", "b", "c"] as const).filter((v) => names.includes(v));
+    let d;
+    try {
+      d = backprop(`${src}; ${used.map((v) => `${v} = ${vals[v]}`).join(", ")}`);
+    } catch (e) {
+      // A random expression can be too big to draw; that is refused, not wrong.
+      assert.equal((e as Error).message, fill(P.tooBig, { n: 24, c: 8 }));
+      continue;
+    }
+    const L = (dv: Partial<typeof vals>) => f(dv.a ?? vals.a, dv.b ?? vals.b, dv.c ?? vals.c);
+    close(d.nodes[d.nodes.length - 1].value, L({}), `L of ${src}`);
+    for (const v of used) {
+      const h = 1e-6;
+      const num = (L({ [v]: vals[v] + h }) - L({ [v]: vals[v] - h })) / (2 * h);
+      assert.ok(Math.abs(d.grads[v] - num) <= 1e-5 * Math.max(1, Math.abs(num)), `∂/∂${v} of ${src}: ${d.grads[v]} vs ${num}`);
+    }
+    checked++;
+  }
+});
+
+test("names, implicit products, folded constants and an input used more than once", () => {
+  const d = backprop("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10");
+  assert.deepEqual(d.nodes.map((n) => n.name), ["w", "x", "u₁", "b", "u₂", "y", "u₃", "L"]);
+  assert.deepEqual(d.grads, { w: -12, x: -18, b: -6, y: 6 });
+  assert.equal(d.nodes[7].label, "·²");
+  assert.equal(d.explain, "w");
+  assert.equal(d.paths, 1);
+  close(d.check, -12, "check");
+  assert.deepEqual(backprop("w1x1 + w_2 x2; w1 = 2, x1 = 3, w2 = 4, x2 = 5").grads, { w1: 3, x1: 2, w2: 5, x2: 4 });
+  assert.deepEqual(backprop("2w + 3; w = 5").nodes.map((n) => n.label), ["w", "2 × ·", "· + 3"]);
+  assert.deepEqual(backprop("1 - x / 4; x = 2").nodes.map((n) => n.label), ["x", "· ÷ 4", "1 − ·"]);
+  assert.equal(backprop("-x^2; x = 3").nodes[2].value, -9);
+  assert.equal(backprop("L = 2(x + 1); x = 1").grads.x, 2);
+  close(backprop("σ(x) + log(x); x = 1").grads.x, Math.exp(-1) / (1 + Math.exp(-1)) ** 2 + 1, "σ′ + 1/x");
+  close(backprop("2^x; x = 3").grads.x, 8 * Math.log(2), "2^x");
+  close(backprop("x^y; x = 2, y = 3").grads.y, 8 * Math.log(2), "x^y in y");
+  close(backprop("sqrt(x) + abs(y) + exp(z) + cos(t) - (2 + 3) * relu(u); x = 4, y = -2, z = 0, t = 0, u = 1").grads.u, -5, "folded 2 + 3");
+  const twice = backprop("x x; x = 3; explain x");
+  assert.equal(twice.grads.x, 6);
+  assert.equal(twice.paths, 2);
+  const many = backprop("x x x x x; x = 1.5");
+  close(many.grads.x, 5 * 1.5 ** 4, "x⁵");
+  assert.equal(many.paths, 5);
+  assert.ok(backpropCaptions("x x x x x; x = 1.5").includes(fill(P.manyPaths, { v: "x", n: 5, g: "25.3125" })));
+  const c = backpropCaptions("x y + x; x = 2, y = 3; explain x");
+  assert.ok(c.includes("∂L/∂x = ∂L/∂u₁ · ∂u₁/∂x + ∂L/∂x = 1 · 3 + 1 = 4"));
+  assert.ok(c.includes(fill(P.fanout, { v: "x", n: 2 }).split(",")[0]));
+  assert.ok(backpropCaptions("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10").includes("= (−6) · 1 · 1 · 2 = −12"));
+  // A lone input is its own output.
+  assert.deepEqual(backprop("w; w = 2").grads, { w: 1 });
+});
+
+test("dead ReLUs, saturated sigmoids and a step of gradient descent", () => {
+  assert.ok(backpropCaptions("relu(w x + b); x = 1, w = -2, b = 1").includes(fill(P.dead, { node: "L", a: "−1" }).split(",")[0]));
+  assert.deepEqual(backprop("relu(w x + b); x = 1, w = -2, b = 1").grads, { w: 0, x: 0, b: 0 });
+  assert.ok(backpropCaptions("sigmoid(w x); x = 10, w = 1").includes("σ′ = 4.5e−5"));
+  assert.ok(!backpropCaptions("sigmoid(w x); x = 1, w = 1").includes("saturated"));
+  const s = backprop("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; learn w b; rate 0.01").step!;
+  assert.deepEqual(s.values, { x: 2, w: 3.12, b: 1.06, y: 10 });
+  close(s.loss, (3.12 * 2 + 1.06 - 10) ** 2, "new L");
+  assert.ok(backpropCaptions("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; learn w b; rate 0.01").includes(fill(P.lossDown, { a: "9", b: "7.29" })));
+  // learn alone takes η = 0.1; rate alone moves every input; too large a rate makes L rise.
+  assert.equal(backprop("w^2; w = 1; learn w").step!.values.w, 0.8);
+  assert.deepEqual(backprop("w x; w = 1, x = 2; rate 0.5").step!.values, { w: 0, x: 1.5 });
+  assert.ok(backpropCaptions("w^2; w = 1; rate 1.5").includes(fill(P.lossUp, { a: "1", b: "4" })));
+  assert.equal(backprop("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; learn b; explain x").explain, "x");
+  assert.equal(backprop("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; learn b").explain, "b");
+});
+
+test("wrong expressions, values and options are refused with the reason", () => {
+  backpropThrows("", w.need.backprop);
+  backpropThrows("w +; w = 1", fill(w.bad, { s: "w +" }));
+  backpropThrows("w $ 2", fill(w.bad, { s: "w $ 2" }));
+  backpropThrows("(w + 1", fill(w.bad, { s: "(w + 1" }));
+  backpropThrows("sigmoid w", fill(w.bad, { s: "sigmoid w" }));
+  backpropThrows("2 + 3", P.noInputs);
+  backpropThrows("ln(x); x = -1", fill(P.notReal, { node: "L", label: "ln" }));
+  backpropThrows("x / y; x = 1, y = 0", fill(P.notReal, { node: "L", label: "÷" }));
+  backpropThrows("sqrt(x); x = 0", fill(P.notReal, { node: "L", label: "√" }));
+  backpropThrows("w x; w = 1, x = 2; explain z", fill(P.notInput, { v: "z" }));
+  backpropThrows("w x; w = 1, x = 2; explain w x", fill(P.badOpt, { s: "explain w x" }));
+  backpropThrows("w x; w = 1, x = 2; fast", fill(P.badOpt, { s: "fast" }));
+  backpropThrows("w x; w = 1, x = 2, 3", fill(P.badOpt, { s: "3" }));
+  backpropThrows("w x; w = 1, x = 2; rate 0", P.badRate);
+  backpropThrows("w x; w = 1, x = 2, z = 3", fill(P.extraValue, { v: "z" }));
+  backpropThrows("w x; w = 1, x = a", fill(P.badValue, { s: "x = a" }));
+  backpropThrows("w x; w = 1", fill(P.noValue, { v: "x" }));
+  backpropThrows(`${Array.from({ length: 13 }, (_, i) => `x${i}`).join(" + ")}; ${Array.from({ length: 13 }, (_, i) => `x${i} = 1`).join(", ")}`, fill(P.tooBig, { n: 24, c: 8 }));
+  backpropThrows("sin(cos(sin(cos(sin(cos(sin(cos(x)))))))); x = 1", fill(P.tooBig, { n: 24, c: 8 }));
+});
+
+test("every backprop picture draws", () => {
+  for (const src of ["(x + y) z; x = -2, y = 5, z = -4", "w; w = 2", "x x; x = 3", "(v relu(w x + b) + c - y)^2; x = 1, w = 2, b = -0.5, v = 3, c = 0.5, y = 3; learn w b v c; rate 0.01"]) {
+    const { svg } = buildBackprop({ topic: "backprop", src }, w).svg;
     assert.match(svg, /^<svg/);
     assert.doesNotMatch(svg, /NaN|undefined/, src);
   }
