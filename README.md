@@ -650,7 +650,10 @@ UI in English, Russian and Georgian.
     a *coin to toss* (heads and tails counted)
   - *Fractions to shade* (a circle or a bar in 1–12 parts, the fraction written under it), a *ten frame* (or two)
     with red and yellow counters that reads 3 + 1 = 4, and a *hundred square* to colour by hand or show the multiples
-    of 2–12
+    of 2–12; with Jumps on, a tap picks a start and +1, +10, −1 and −10 (or a tap on the square next door) jump from
+    it, each jump an arrow beside the numbers (green up, red down) over a trail of the squares visited, the sum written
+    under it jump by jump and as one (100 − 10 − 10 − 10 − 1 − … = 64, 100 − 36 = 64), and Replay draws the walk again
+    a jump at a time
   - *Dot multiplication*: two rows of k squares for numbers from k to 2k; tap a square to fill the dots through it,
     and the four steps — add the dots, count each as 2k, multiply the empty squares, add — work out the product
   - *Graph with sliders*: type functions on the board; every letter in them (a, b, c, k…) gets a slider with its own
