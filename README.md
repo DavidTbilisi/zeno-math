@@ -710,7 +710,9 @@ UI in English, Russian and Georgian.
     seconds, ten in a row)
   - *Make the target*: tap the cards and signs to build a sum, and what it makes shows as it grows. A sum that makes
     the target earns two stars, a second, different way the third (3 + 4 and 4 + 3 are one way), and the hint — the
-    first step of one way — leaves one; the endless run keeps a streak of puzzles made without a hint. Four
+    first step of one way — leaves one; the endless run keeps a streak of puzzles made without a hint. Under the
+    cards, a way to think about the level stays in view: the target as two parts (a number bond), then a times fact
+    near it and the difference made up, then the last step as two numbers each made from its own group of cards. Four
     discoveries (two ways, every card used, made within 15 seconds, ten in a row)
   - *Quick look*: dots flash and hide, and the player taps how many. Nine rounds of five (up to 6; ten frames, dice
     and groups up to 12; two frames or three groups up to 20) earn stars for how many were right, a second look
