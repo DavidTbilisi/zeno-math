@@ -3989,6 +3989,11 @@ export const en = {
       show: "Show",
       clear: "Clear",
       marked: "{n} marked",
+      jumps: "Jumps",
+      walkHint: "Tap a square to start. Tap the square next to it, or +1, +10, −1 or −10, to jump.",
+      back: "Take the last jump back",
+      replay: "Replay",
+      again: "Start again",
     },
     dots: {
       title: "Dot multiplication",

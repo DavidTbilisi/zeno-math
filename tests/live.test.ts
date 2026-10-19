@@ -24,6 +24,9 @@ import {
   handAngles,
   judgeDigit,
   MAX_TRIALS,
+  hundredJump,
+  hundredPath,
+  hundredSum,
   multiplesOf,
   outcomes,
   runTrials,
@@ -112,6 +115,19 @@ test("dot multiplication gives the product for every pair, whatever the row leng
 test("counters and multiples", () => {
   assert.deepEqual(counters([1, 1, 2, 0, 1, 0, 0, 0, 2, 0]), { a: 3, b: 2, n: 5 });
   assert.deepEqual(multiplesOf(15), [15, 30, 45, 60, 75, 90]);
+});
+
+test("jumps on the hundred square", () => {
+  assert.equal(hundredJump(100, -10), 90);
+  assert.equal(hundredJump(10, 1), 11); // to the start of the next row
+  assert.equal(hundredJump(95, 10), null);
+  assert.equal(hundredJump(1, -1), null);
+  // 100 − 36: three tens back, then six ones.
+  const steps = [-10, -10, -10, -1, -1, -1, -1, -1, -1];
+  assert.deepEqual(hundredPath(100, steps), [100, 90, 80, 70, 69, 68, 67, 66, 65, 64]);
+  assert.deepEqual(hundredSum(100, steps), { long: "100 − 10 − 10 − 10 − 1 − 1 − 1 − 1 − 1 − 1 = 64", short: "100 − 36 = 64" });
+  assert.equal(hundredSum(42, [10, -1])?.short, "42 + 9 = 51");
+  assert.equal(hundredSum(42, []), null);
 });
 
 test("the live graph finds its letters and draws with them", () => {

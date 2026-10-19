@@ -19,6 +19,11 @@ import {
   fracSign,
   halfSign,
   handAngles,
+  HUNDRED_STEPS,
+  hundredJump,
+  hundredPath,
+  hundredSum,
+  type LiveStates,
   multiplesOf,
   PENCIL_COLORS,
   SAME_PIECES_MAX,
@@ -369,23 +374,99 @@ export function TenFrame({ state, set, w, svgRef }: PieceProps<"tenFrame">) {
 
 // ——— Hundred square ———
 
+const GREEN = "#2f9e44";
+/** The written-out jumps in lines of at most `max` characters, a jump never split from its number. */
+const wrapWords = (words: string[], max: number) =>
+  words.reduce<string[]>((lines, word) => {
+    const last = lines.at(-1);
+    return last !== undefined && last.length + 1 + word.length <= max ? [...lines.slice(0, -1), `${last} ${word}`] : [...lines, word];
+  }, []);
+
 export function Hundred({ state, set, w, svgRef }: PieceProps<"hundred">) {
   const s = 38;
   const marked = new Set(state.marked);
   const toggle = (v: number) => set({ ...state, marked: marked.has(v) ? state.marked.filter((m) => m !== v) : [...state.marked, v] });
+  // The walk: a start and the jumps from it. Replay draws it again a jump at a time.
+  const [shown, setShown] = useState<number | null>(null);
+  const steps = state.steps ?? [];
+  const start = state.walk ? (state.start ?? null) : null;
+  const path = start === null ? [] : hundredPath(start, steps);
+  const at = path.at(-1) ?? null;
+  const upTo = shown ?? steps.length;
+  const visited = new Set(path.slice(0, upTo + 1));
+  const sum = start === null ? null : hundredSum(start, steps);
+  const walkTo = (next: Partial<LiveStates["hundred"]>) => (setShown(null), set({ ...state, ...next }));
+  const jump = (step: number) => at !== null && hundredJump(at, step) !== null && walkTo({ steps: [...steps, step] });
+  // A tap one jump away from where the walk is goes there; any other tap starts a new walk.
+  const tap = (v: number) => {
+    if (!state.walk) return toggle(v);
+    const step = at === null ? null : HUNDRED_STEPS.find((d) => at + d === v);
+    return step ? jump(step) : walkTo({ start: v, steps: [] });
+  };
+  useEffect(() => {
+    if (shown === null) return;
+    const t = setTimeout(() => setShown(shown < steps.length ? shown + 1 : null), shown < steps.length ? 450 : 900);
+    return () => clearTimeout(t);
+  }, [shown, steps.length]);
+
+  const centre = (v: number): [number, number] => [2 + ((v - 1) % 10) * s + s / 2, 2 + Math.floor((v - 1) / 10) * s + s / 2];
+  // Each jump an arrow from square to square, kept to its left-hand side so it runs beside the numbers, not over
+  // them: a +1 above them, a −1 below, a +10 to the right, a −10 to the left, and a jump there and back two arrows.
+  const arrow = (a: number, b: number, i: number) => {
+    const [[x0, y0], [x1, y1]] = [centre(a), centre(b)];
+    const len = Math.hypot(x1 - x0, y1 - y0);
+    const [ux, uy] = [(x1 - x0) / len, (y1 - y0) / len];
+    const [nx, ny] = [uy, -ux];
+    const side = 12;
+    const bend = side + Math.min(14, len * 0.2);
+    const up = b > a;
+    return (
+      <path
+        key={i}
+        d={`M${x0 + ux * 6 + nx * side},${y0 + uy * 6 + ny * side} Q${(x0 + x1) / 2 + nx * bend},${(y0 + y1) / 2 + ny * bend} ${x1 - ux * 8 + nx * side},${y1 - uy * 8 + ny * side}`}
+        fill="none"
+        stroke={up ? GREEN : RED}
+        strokeWidth={2.5}
+        markerEnd={`url(#hundred-${up ? "up" : "down"})`}
+      />
+    );
+  };
+  const lines = sum ? wrapWords(sum.long.split(/ (?=[+−=] )/).map((p) => p.replace(/^([+−=]) /, "$1 ")), 46) : [];
+  const H = 384 + (sum ? 44 + lines.length * 22 : 0);
   return (
     <>
-      <svg ref={svgRef} width={384} height={384} viewBox="0 0 384 384" fontFamily={FONT}>
+      <svg ref={svgRef} width={384} height={H} viewBox={`0 0 384 ${H}`} fontFamily={FONT}>
+        <defs>
+          {[["up", GREEN], ["down", RED]].map(([id, c]) => (
+            <marker key={id} id={`hundred-${id}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M0,0L10,5L0,10z" fill={c} />
+            </marker>
+          ))}
+        </defs>
+        <rect width={384} height={H} fill="#fff" />
         {Array.from({ length: 100 }, (_, i) => {
           const v = i + 1;
           const [x, y] = [2 + (i % 10) * s, 2 + Math.floor(i / 10) * s];
           return (
-            <g key={v} style={{ cursor: "pointer" }} onClick={() => toggle(v)}>
-              <rect x={x} y={y} width={s} height={s} fill={marked.has(v) ? "#ffec99" : "#fff"} stroke={INK} strokeWidth={1.2} />
-              <text x={x + s / 2} y={y + s / 2 + 6} fontSize={16} textAnchor="middle" fill={INK} fontWeight={marked.has(v) ? 700 : 400}>{v}</text>
+            <g key={v} style={{ cursor: "pointer" }} onClick={() => tap(v)}>
+              <rect x={x} y={y} width={s} height={s} fill={visited.has(v) ? "#d0ebff" : marked.has(v) ? "#ffec99" : "#fff"} stroke={INK} strokeWidth={1.2} />
+              <text x={x + s / 2} y={y + s / 2 + 6} fontSize={16} textAnchor="middle" fill={INK} fontWeight={marked.has(v) || visited.has(v) ? 700 : 400}>{v}</text>
             </g>
           );
         })}
+        <g pointerEvents="none">
+          {path.slice(1, upTo + 1).map((b, i) => arrow(path[i], b, i))}
+          {start !== null && <circle cx={centre(start)[0]} cy={centre(start)[1]} r={16} fill="none" stroke={INK} strokeWidth={2.5} />}
+          {path.length > 1 && <circle cx={centre(path[upTo])[0]} cy={centre(path[upTo])[1]} r={16} fill="none" stroke={BLUE} strokeWidth={3} />}
+        </g>
+        {sum && (
+          <>
+            <text x={192} y={384 + 30} fontSize={22} fontWeight={700} textAnchor="middle" fill={INK}>{sum.short}</text>
+            {lines.map((l, i) => (
+              <text key={i} x={192} y={384 + 56 + i * 22} fontSize={15} textAnchor="middle" fill="#495057">{l}</text>
+            ))}
+          </>
+        )}
       </svg>
       <div className="live-bar">
         <span>{w.hundred.multiples}</span>
@@ -394,6 +475,21 @@ export function Hundred({ state, set, w, svgRef }: PieceProps<"hundred">) {
         <button className="live-btn" onClick={() => set({ ...state, marked: [] })}>{w.hundred.clear}</button>
         <span className="live-note">{fill(w.hundred.marked, { n: state.marked.length })}</span>
       </div>
+      <div className="live-bar">
+        <Toggle on={!!state.walk} onClick={() => walkTo({ walk: !state.walk })}>↷ {w.hundred.jumps}</Toggle>
+        {state.walk &&
+          HUNDRED_STEPS.map((d) => (
+            <button key={d} className="live-btn" disabled={at === null || hundredJump(at, d) === null} onClick={() => jump(d)}>{d > 0 ? `+${d}` : `−${-d}`}</button>
+          ))}
+        {state.walk && (
+          <>
+            <button className="live-btn" disabled={!steps.length} aria-label={w.hundred.back} title={w.hundred.back} onClick={() => walkTo({ steps: steps.slice(0, -1) })}>⌫</button>
+            <button className="live-btn" disabled={!steps.length} onClick={() => setShown(0)}>▶ {w.hundred.replay}</button>
+            <button className="live-btn" disabled={start === null} onClick={() => walkTo({ start: null, steps: [] })}>{w.hundred.again}</button>
+          </>
+        )}
+      </div>
+      {state.walk && <p className="live-hint">{w.hundred.walkHint}</p>}
     </>
   );
 }

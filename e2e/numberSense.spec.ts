@@ -254,3 +254,20 @@ test("a practice list of divisors tapped from its buttons, in any order", async 
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("hundred square: jumps from a start traced as arrows, and the sum they make", async ({ page }) => {
+  const game = await boardWith(page, "Hundred square to colour", ".live-hundred");
+  await game.getByRole("button", { name: /Jumps/ }).click();
+  await game.locator("svg text", { hasText: /^100$/ }).click();
+  // 100 − 36: three tens back, then six ones.
+  for (const step of ["−10", "−10", "−10", "−1", "−1", "−1", "−1", "−1", "−1"]) await game.getByRole("button", { name: step, exact: true }).click();
+  await expect(game.getByText("100 − 36 = 64")).toBeVisible();
+  await expect(game.locator("svg path[marker-end]")).toHaveCount(9);
+  // A tap on the square next to where the walk is jumps there; ⌫ takes it back.
+  await game.locator("svg text", { hasText: /^65$/ }).click();
+  await expect(game.getByText("100 − 35 = 65")).toBeVisible();
+  await game.getByRole("button", { name: "Take the last jump back" }).click();
+  await expect(game.getByText("100 − 36 = 64")).toBeVisible();
+  await game.getByRole("button", { name: /Replay/ }).click();
+  await expect(game.locator("svg path[marker-end]")).toHaveCount(9, { timeout: 10_000 });
+});

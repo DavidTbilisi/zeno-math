@@ -178,6 +178,20 @@ export function counters(cells: number[]): { a: number; b: number; n: number } {
 
 export const multiplesOf = (n: number, upTo = 100) => Array.from({ length: Math.floor(upTo / n) }, (_, i) => n * (i + 1));
 
+/** The jumps on the hundred square: one along a row, ten down a column, and back. */
+export const HUNDRED_STEPS = [1, 10, -1, -10] as const;
+/** Where a jump from `at` lands, or null when it would leave the square (below 1 or past 100). */
+export const hundredJump = (at: number, step: number) => (at + step >= 1 && at + step <= 100 ? at + step : null);
+/** Every square a walk visits, the start first. */
+export const hundredPath = (start: number, steps: number[]) => steps.reduce((p, s) => [...p, p[p.length - 1] + s], [start]);
+const signed = (n: number) => (n < 0 ? `− ${-n}` : `+ ${n}`);
+/** A walk written out jump by jump (100 − 10 − 10 − 1 = 79) and as one sum (100 − 21 = 79). */
+export function hundredSum(start: number, steps: number[]): { long: string; short: string } | null {
+  if (!steps.length) return null;
+  const end = hundredPath(start, steps).at(-1)!;
+  return { long: `${start} ${steps.map(signed).join(" ")} = ${end}`, short: `${start} ${signed(end - start)} = ${end}` };
+}
+
 // ——— Comparing two numbers with towers of blocks ———
 
 export type CompareSign = "<" | "=" | ">";
@@ -343,7 +357,8 @@ export type LiveStates = {
   coin: { side: number; counts: [number, number] };
   fractions: { shape: "circle" | "bar"; parts: number; shaded: boolean[] };
   tenFrame: { double: boolean; cells: number[] };
-  hundred: { marked: number[]; n: number };
+  /** With `walk` on, a tap picks the start and the jumps from it are traced; squares saved before have none. */
+  hundred: { marked: number[]; n: number; walk?: boolean; start?: number | null; steps?: number[] };
   dots: { k: number; top: number; bottom: number };
   graph: LiveGraphState;
   chance: { device: Device; tally: Tally; view: ChanceView; relative: boolean; theory: boolean; focus: number; last: number };
@@ -391,7 +406,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   coin: [260, 300],
   fractions: [320, 372],
   tenFrame: [340, 300],
-  hundred: [400, 486],
+  hundred: [400, 650],
   dots: [520, 600],
   graph: [640, 560],
   chance: [680, 500],
