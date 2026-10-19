@@ -15,12 +15,17 @@
 // scores; the loss is −Σ y ln p and never below the target's entropy, the gradient p − y matches a central difference,
 // and wrong options are refused. Embeddings: the cosine follows the formula, stays within [−1, 1], ignores length and
 // is the dot product of unit vectors, with |â − b̂|² = 2 − 2 cos θ; the matrix is symmetric with 1 on the diagonal; a
-// query's ranking and an analogy's nearest vector agree with a brute-force search; and wrong vectors are refused.
+// query's ranking and an analogy's nearest vector agree with a brute-force search; and wrong vectors are refused. SVD:
+// U and V are orthonormal, σ falls, UΣVᵀ = A and AᵀA v = σ² v on random and low-rank matrices, the rank agrees with
+// elimination, the first k pieces miss A by the root of the dropped σ² and nudged rank-k matrices do no better
+// (Eckart–Young). PCA: the mean, covariance matrix, its eigenvectors and variances, uncorrelated scores and what keeping
+// k loses agree with a direct computation; standardizing gives the correlation matrix and ignores units; and wrong
+// matrices, points and options are refused.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { fill } from "../src/math/text.ts";
-import { AI_DEFAULT, AI_PRESETS, AI_TOPICS, buildAi, buildBackprop, buildDescent, buildEmbed, buildOps, buildSoftmax, cosine, matrixRank, renderAi, softmax, strides } from "../src/math/ai.ts";
+import { AI_DEFAULT, AI_PRESETS, AI_TOPICS, buildAi, buildBackprop, buildDescent, buildEmbed, buildOps, buildSoftmax, buildSvd, cosine, matrixRank, renderAi, softmax, strides } from "../src/math/ai.ts";
 
 const w = en.aiWords;
 const T = w.tensor;
@@ -891,4 +896,177 @@ test("every embeddings picture draws", () => {
 
 test("the tool draws every topic's default", () => {
   for (const topic of AI_TOPICS) assert.match(renderAi(AI_DEFAULT[topic], w).svg, /^<svg/, topic);
+});
+
+const Sv = w.svd;
+const sv = (src: string) => buildSvd({ topic: "svd", src }, w).data;
+const svCaptions = (src: string) => [...buildSvd({ topic: "svd", src }, w).svg.svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(" ");
+const svThrows = (src: string, message: string) => assert.throws(() => buildSvd({ topic: "svd", src }, w), { message }, src);
+const col = (M: number[][], j: number) => M.map((r) => r[j]);
+const mul = (A: number[][], B: number[][]) => A.map((r) => B[0].map((_, j) => r.reduce((s, v, k) => s + v * B[k][j], 0)));
+const tr = (M: number[][]) => M[0].map((_, j) => M.map((r) => r[j]));
+const frob = (M: number[][]) => Math.sqrt(M.flat().reduce((s, v) => s + v * v, 0));
+const minus = (A: number[][], B: number[][]) => A.map((r, i) => r.map((v, j) => v - B[i][j]));
+const near = (a: number, b: number, what: string, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${what}: ${a} vs ${b}`);
+const randomMatrix = (m: number, n: number) => Array.from({ length: m }, () => Array.from({ length: n }, () => int(-90, 90) / 10));
+/** A random m × n matrix of rank at most r, as the product of an m × r and an r × n one. */
+const lowRank = (m: number, n: number, r: number) => mul(randomMatrix(m, r), randomMatrix(r, n)).map((row) => row.map((v) => Math.round(v * 1e6) / 1e6));
+const asList = (M: number[][]) => JSON.stringify(M).replace(/,/g, ", ");
+
+test("SVD: U and V orthonormal, σ falling and ≥ 0, UΣVᵀ = A, AᵀA v = σ² v, and the rank found by elimination", () => {
+  for (let i = 0; i < 120; i++) {
+    const [m, n] = [int(1, 8), int(1, 8)];
+    const A = i % 3 ? randomMatrix(m, n) : lowRank(m, n, int(1, Math.min(m, n)));
+    const src = asList(A);
+    const { U, sigma, V, rank } = sv(src);
+    const p = Math.min(m, n);
+    assert.equal(sigma.length, p, src);
+    assert.deepEqual([U.length, U[0].length, V.length, V[0].length], [m, p, n, p], src);
+    for (const Q of [U, V])
+      for (let a = 0; a < p; a++) for (let b = 0; b < p; b++) near(col(Q, a).reduce((s, v, k) => s + v * col(Q, b)[k], 0), a === b ? 1 : 0, `${src} orthonormal`);
+    sigma.forEach((s, k) => assert.ok(s >= 0 && (k === 0 || s <= sigma[k - 1] + 1e-12), `${src}: σ = ${sigma}`));
+    const big = Math.max(1, ...A.flat().map(Math.abs));
+    const back = mul(mul(U, sigma.map((s, r) => sigma.map((_, c) => (r === c ? s : 0)))), tr(V));
+    back.forEach((r, a) => r.forEach((v, b) => near(v, A[a][b], `${src} UΣVᵀ`, 1e-9 * big)));
+    const AtA = mul(tr(A), A);
+    sigma.forEach((s, k) => mul(AtA, col(V, k).map((v) => [v])).forEach(([v], j) => near(v, s * s * V[j][k], `${src} AᵀA v${k}`, 1e-8 * big * big)));
+    near(sigma.reduce((t, s) => t + s * s, 0), frob(A) ** 2, `${src} Σσ² = ‖A‖²`, 1e-9 * big * big);
+    assert.equal(rank, matrixRank(A), src);
+    // Each pair is turned so that the largest entry of v is positive.
+    sigma.forEach((_, k) => {
+      const v = col(V, k);
+      const top = Math.max(...v.map(Math.abs));
+      assert.ok(v[v.findIndex((x) => Math.abs(x) > top - 1e-9)] > 0, `${src} sign of v${k}`);
+    });
+  }
+});
+
+test("SVD: known singular values", () => {
+  assert.deepEqual(sv("[[3, 2, 2], [2, 3, -2]]").sigma, [5, 3]);
+  const e = sv("[[3, 0], [4, 5]]").sigma;
+  near(e[0], 3 * Math.sqrt(5), "3√5");
+  near(e[1], Math.sqrt(5), "√5");
+  assert.deepEqual(sv("[[0.6, -0.8], [0.8, 0.6]]").sigma, [1, 1]);
+  assert.deepEqual(sv("[[1, 2], [2, 4], [3, 6]]").sigma, [Math.round(Math.sqrt(70) * 1e12) / 1e12, 0]);
+  assert.deepEqual(sv("[[0, 0, 2], [0, -5, 0]]").sigma, [5, 2]);
+  assert.deepEqual(sv("[4, 3]").sigma, [5]);
+  assert.deepEqual(sv("7").sigma, [7]);
+  assert.equal(sv("[[1, 2], [2, 4], [3, 6]]").rank, 1);
+});
+
+test("Eckart–Young: the first k pieces miss A by the root of the dropped σ², and no rank-k matrix nearby does better", () => {
+  for (let i = 0; i < 60; i++) {
+    const [m, n] = [int(2, 7), int(2, 7)];
+    const A = randomMatrix(m, n);
+    const p = Math.min(m, n);
+    const k = int(1, p);
+    const src = `${asList(A)}; rank ${k}`;
+    const { U, sigma, V, approx, error, keep } = sv(src);
+    assert.equal(keep, k);
+    near(error!, Math.sqrt(sigma.slice(k).reduce((t, s) => t + s * s, 0)), `${src} error`);
+    near(frob(minus(A, approx!)), error!, `${src} ‖A − Ak‖`, 1e-8);
+    assert.equal(matrixRank(approx!), Math.min(k, matrixRank(A)), src);
+    // Nudging the kept factors gives other matrices of rank k, all further away.
+    const Uk = U.map((r) => r.slice(0, k));
+    const SVk = tr(V.map((r) => r.slice(0, k).map((v, c) => v * sigma[c])));
+    for (let t = 0; t < 5; t++) {
+      const nudge = (M: number[][]) => M.map((r) => r.map((v) => v + (rnd() - 0.5) * 0.02));
+      assert.ok(frob(minus(A, mul(nudge(Uk), nudge(SVk)))) >= error! - 1e-9, src);
+    }
+  }
+});
+
+test("SVD captions: rank, keeping all, a symmetric matrix's eigenvalues, the ellipse, a flattened circle, the condition number", () => {
+  assert.ok(svCaptions("[[1, 2], [2, 4], [3, 6]]").includes(fill(Sv.lowRank, { r: 1 })));
+  assert.ok(svCaptions("[[3, 2, 2], [2, 3, -2]]").includes(fill(Sv.fullRank, { r: 2 })));
+  assert.ok(svCaptions("[[1, 2], [2, 4], [3, 6]]; rank 2").includes(fill(Sv.keepAll, { k: 2, r: 1 })));
+  assert.ok(svCaptions("[[3, 2, 2], [2, 3, -2]]; rank 1").includes("misses A by √9 = 3"));
+  assert.ok(svCaptions("[[1, 2], [2, -2]]").includes(fill(Sv.symmetric, { list: "−3, 2" })));
+  assert.ok(!svCaptions("[[1, 2], [3, 4]]").includes("symmetric"));
+  assert.ok(svCaptions("[[3, 0], [4, 5]]").includes("|det A| = σ₁σ₂ = 15"));
+  assert.ok(svCaptions("[[1, 1], [2, 2]]").includes(Sv.line));
+  assert.ok(svCaptions("[[1, 1], [1, 1.001]]").includes("σ₁ / σ₂ = 4002"));
+  assert.ok(!svCaptions("[[1, 1], [2, 2]]").includes("condition"));
+});
+
+test("PCA: centred data, the covariance matrix, its eigenvectors and variances, the scores and what keeping k loses", () => {
+  for (let i = 0; i < 60; i++) {
+    const [m, n] = [int(2, 30), int(2, 6)];
+    const X = randomMatrix(m, n);
+    if (X.every((r) => r.every((v, j) => v === X[0][j]))) continue;
+    const src = `${asList(X)}; pca`;
+    const d = sv(src);
+    const { mean, cov, variance, explained, scores } = d.pca!;
+    const p = Math.min(m, n);
+    range(n).forEach((j) => near(mean[j], X.reduce((s, r) => s + r[j], 0) / m, `${src} mean`));
+    const Xc = X.map((r) => r.map((v, j) => v - mean[j]));
+    range(n).forEach((a) => range(n).forEach((b) => near(cov[a][b], Xc.reduce((s, r) => s + r[a] * r[b], 0) / (m - 1), `${src} cov`, 1e-8)));
+    variance.forEach((l, k) => mul(cov, col(d.V, k).map((v) => [v])).forEach(([v], j) => near(v, l * d.V[j][k], `${src} C v${k}`, 1e-8 * Math.max(1, variance[0]))));
+    near(variance.reduce((s, l) => s + l, 0), range(n).reduce((s, j) => s + cov[j][j], 0), `${src} Σλ = trace C`, 1e-8);
+    near(explained.reduce((s, e) => s + e, 0), 1, `${src} shares`);
+    // The scores along each component have that component's variance, and are uncorrelated.
+    range(p).forEach((a) => range(p).forEach((b) => near(col(scores, a).reduce((s, v, r) => s + v * scores[r][b], 0) / (m - 1), a === b ? variance[a] : 0, `${src} scores`, 1e-7 * Math.max(1, variance[0]))));
+    const k = d.keep!;
+    assert.equal(k, n === 2 ? 1 : 2, src);
+    // What keeping k loses is the squared distances from each point to its projection onto the first k components.
+    const Vk = d.V.map((r) => r.slice(0, k));
+    const lost = Xc.reduce((s, r) => {
+      const t = Vk[0].map((_, c) => r.reduce((u, v, j) => u + v * Vk[j][c], 0));
+      return s + r.reduce((u, v, j) => u + (v - t.reduce((z, tc, c) => z + tc * Vk[j][c], 0)) ** 2, 0);
+    }, 0);
+    near(d.error! ** 2, lost, `${src} lost`, 1e-7);
+    near(lost, (m - 1) * variance.slice(k).reduce((s, l) => s + l, 0), `${src} lost = (m − 1) Σ dropped λ`, 1e-7);
+  }
+});
+
+test("PCA: standardizing gives the correlation matrix and ignores units; without it, units decide", () => {
+  const pts = [[6, 62], [7.5, 75], [8, 88], [5.5, 55], [7, 70], [9, 92], [6.5, 60], [8.5, 80]];
+  const inMinutes = pts.map(([h, s]) => [h * 60, s]);
+  const a = sv(`${asList(pts)}; standardize`).pca!;
+  const b = sv(`${asList(inMinutes)}; standardize`).pca!;
+  a.cov.forEach((r, i) => r.forEach((v, j) => (i === j ? near(v, 1, "diagonal") : assert.ok(Math.abs(v) <= 1))));
+  a.variance.forEach((l, k) => near(l, b.variance[k], "units ignored"));
+  assert.ok(svCaptions(`${asList(pts)}; pca`).includes(fill(Sv.units, { a: "x₂", b: "x₁", r: "120" })));
+  assert.ok(!svCaptions(`${asList(pts)}; standardize`).includes("standardize to"));
+  assert.ok(svCaptions(`${asList(pts)}; standardize`).includes(Sv.scaled.slice(-20)));
+  assert.notDeepEqual(sv(`${asList(pts)}; pca`).V, sv(`${asList(inMinutes)}; pca`).V);
+});
+
+test("matrices and points are read as rows, with brackets or parentheses", () => {
+  assert.deepEqual(sv("(1, 2), (3, 5), (4, 4); pca").pca, sv("[[1, 2], [3, 5], [4, 4]]; PCA").pca);
+  assert.deepEqual(sv("[1, 2], [3, 4]").A, [[1, 2], [3, 4]]);
+  assert.deepEqual(sv("[1, 2, 3]").A, [[1, 2, 3]]);
+  assert.deepEqual(sv("[[1, 2], [3, 4]]; k = 1").keep, 1);
+  assert.deepEqual(sv("[[1, 2], [3, 4]]; keep 2").keep, 2);
+  assert.equal(sv("(1, 2, 0), (3, 5, 1), (4, 4, 2); pca; keep 1").keep, 1);
+});
+
+test("wrong matrices, points and options are refused with the reason", () => {
+  const matrix = fill(Sv.matrix, { max: 8 });
+  const points = fill(Sv.points, { max: 30, f: 8 });
+  svThrows("", w.need.svd);
+  svThrows("[[1, 2], [3]]", matrix);
+  svThrows("[[1, [2]], [3, 4]]", matrix);
+  svThrows("[]", matrix);
+  svThrows(asList([range(9)]), matrix);
+  svThrows(asList(range(9).map(() => [1])), matrix);
+  svThrows("[[1, 2], [x, 4]]", fill(w.bad, { s: "x, 4]]" }));
+  svThrows("[[0, 0], [0, 0]]", Sv.zero);
+  svThrows("[[1, 2]]; pca", points);
+  svThrows("[[1], [2]]; pca", points);
+  svThrows(`${asList(range(31).map((i) => [i, 1]))}; pca`, points);
+  svThrows(`${asList(range(3).map((i) => range(9).map((j) => i * j)))}; pca`, points);
+  svThrows("(1, 2), (1, 2); pca", Sv.flat);
+  svThrows("(1, 2), (1, 3); standardize", fill(Sv.constant, { x: "x₁" }));
+  svThrows("[[1, 2], [3, 4]]; colour red", fill(Sv.badOpt, { s: "colour red" }));
+  svThrows("[[1, 2], [3, 4]]; pca 2", fill(Sv.badOpt, { s: "pca 2" }));
+  for (const k of ["0", "3", "x", ""]) svThrows(`[[1, 2], [3, 4]]; rank ${k}`.trim(), fill(Sv.badKeep, { p: 2 }));
+});
+
+test("every SVD and PCA picture draws", () => {
+  for (const { spec } of [{ spec: AI_DEFAULT.svd }, ...AI_PRESETS.svd]) {
+    const { svg } = buildSvd(spec, w).svg;
+    assert.match(svg, /^<svg/);
+    assert.doesNotMatch(svg, /NaN|undefined|Infinity|e[−-]\d/, spec.src);
+  }
 });

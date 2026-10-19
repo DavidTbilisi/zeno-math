@@ -1,5 +1,5 @@
 // Small controls shared by the tool dialogs.
-import type { KeyboardEvent, ReactNode } from "react";
+import { useEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
 
 /** Arrow keys (and Home / End) move between the buttons of a group and pick the one they land on. */
 function arrowKeys<K>(items: readonly K[], value: K, onChange: (k: K) => void) {
@@ -26,8 +26,17 @@ export function Tabs<K extends string>({ items, value, onChange, label }: {
   onChange: (k: K) => void;
   label: (k: K) => ReactNode;
 }) {
+  const row = useRef<HTMLDivElement>(null);
+  // A tab opened from a menu can sit past the edge of a row that scrolls sideways: bring it into view.
+  useEffect(() => {
+    const tab = row.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (!row.current || !tab) return;
+    const [r, t] = [row.current.getBoundingClientRect(), tab.getBoundingClientRect()];
+    if (t.right > r.right) row.current.scrollLeft += Math.ceil(t.right - r.right);
+    else if (t.left < r.left) row.current.scrollLeft -= Math.ceil(r.left - t.left);
+  }, [value]);
   return (
-    <div className="tabs" role="tablist" onKeyDown={arrowKeys(items, value, onChange)}>
+    <div className="tabs" role="tablist" ref={row} onKeyDown={arrowKeys(items, value, onChange)}>
       {items.map((k) => (
         <button
           key={k}

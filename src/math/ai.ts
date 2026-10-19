@@ -18,13 +18,17 @@
 // one pair worked out with its angle, why length does not change it and what it is for unit vectors, the others
 // ranked against a query (and when the plain dot product would rank them differently), an analogy such as
 // king − man + woman, the matrix of cosines, and for vectors in a plane the arrows with the angle between them.
-import { arrow, axes, C, compose, contours, curve, dot, esc, fill, FONT, lbl, makeFrame, nt, r2, sampleY, tn, W, yRange, type Caption } from "./chart";
+// And the singular value decomposition A = UΣVᵀ: the four matrices shaded, the singular values with their share of
+// ‖A‖²_F, the rank, the best rank-k approximation and what it misses (Eckart–Young), and for a 2 × 2 matrix the unit
+// circle turned into an ellipse; with PCA, the points centred (and perhaps scaled), their covariance matrix, the
+// principal components as its eigenvectors with the variance each explains, and the points projected onto them.
+import { arrow, axes, C, compose, contours, curve, dot, esc, fill, FONT, lbl, makeFrame, nt, r2, sampleY, tn, W, yRange, type Caption, type Frame } from "./chart";
 import { derive } from "./derive";
 import { evalE, exprMessages, has, parseE, simp, substitute, tex, V, X, type E } from "./expr";
 import type { RenderedSvg } from "./latex";
 
-export type AiTopic = "tensor" | "ops" | "descent" | "backprop" | "softmax" | "embed";
-export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent", "backprop", "softmax", "embed"];
+export type AiTopic = "tensor" | "ops" | "descent" | "backprop" | "softmax" | "embed" | "svd";
+export const AI_TOPICS: AiTopic[] = ["tensor", "ops", "descent", "backprop", "softmax", "embed", "svd"];
 export type AiSpec = { topic: AiTopic; src: string };
 
 export type AiWords = {
@@ -193,6 +197,38 @@ export type AiWords = {
     analogy: string;
     analogyBest: string;
     matrix: string;
+  };
+  svd: {
+    matrix: string;
+    points: string;
+    zero: string;
+    flat: string;
+    constant: string;
+    badOpt: string;
+    badKeep: string;
+    factor: string;
+    values: string;
+    lowRank: string;
+    fullRank: string;
+    pieces: string;
+    energy: string;
+    symmetric: string;
+    keep: string;
+    keepAll: string;
+    circle: string;
+    line: string;
+    cond: string;
+    bars: string;
+    mean: string;
+    scaled: string;
+    cov: string;
+    pcs: string;
+    explained: string;
+    keepPca: string;
+    projection: string;
+    scores: string;
+    units: string;
+    varHead: string;
   };
 };
 
@@ -2001,6 +2037,400 @@ function drawPlane(names: string[], vectors: number[][], top: number, pair?: [nu
   return { svg: s, h: fr.bottom + 22 };
 }
 
+// ---------- SVD and PCA ----------
+
+const MAX_SIDE = 8;
+const MAX_POINTS = 30;
+
+/** What an SVD or PCA picture shows, for the tests: the matrix taken apart (for PCA the centred, perhaps scaled,
+ * data) into U, the singular values and V, its rank, the first k pieces added up and how far that is from it; for PCA
+ * also the mean, the standard deviations divided by, the covariance matrix, the variance along each component, the
+ * share of the total each explains and the points' scores. */
+export type SvdData = {
+  A: number[][];
+  U: number[][];
+  sigma: number[];
+  V: number[][];
+  rank: number;
+  keep?: number;
+  approx?: number[][];
+  error?: number;
+  pca?: { mean: number[]; sd?: number[]; cov: number[][]; variance: number[]; explained: number[]; scores: number[][] };
+};
+
+const transpose = (M: number[][]) => M[0].map((_, j) => M.map((r) => r[j]));
+const column = (M: number[][], j: number) => M.map((r) => r[j]);
+const identity = (n: number) => range(n).map((i) => range(n).map((j) => (i === j ? 1 : 0)));
+const product = (A: number[][], B: number[][]) => A.map((r) => B[0].map((_, j) => clean(r.reduce((s, v, k) => s + v * B[k][j], 0))));
+
+/** The plane rotation that puts two columns at right angles, from their squared lengths and their dot product. */
+function jacobi(alpha: number, beta: number, gamma: number): [number, number] {
+  const zeta = (beta - alpha) / (2 * gamma);
+  const t = (zeta < 0 ? -1 : 1) / (Math.abs(zeta) + Math.hypot(1, zeta));
+  const c = 1 / Math.hypot(1, t);
+  return [c, c * t];
+}
+
+/** Columns p and q of M turned by the rotation with cosine c and sine s. */
+function rotate(M: number[][], p: number, q: number, c: number, s: number) {
+  for (const r of M) [r[p], r[q]] = [c * r[p] - s * r[q], s * r[p] + c * r[q]];
+}
+
+/** A = UΣVᵀ for a matrix at least as tall as it is wide, by one-sided Jacobi: the columns of AV are turned in pairs
+ * until all are at right angles, and their lengths are then the singular values. */
+function svdTall(A: number[][]): { U: number[][]; sigma: number[]; V: number[][] } {
+  const [m, n] = [A.length, A[0].length];
+  const B = A.map((r) => r.slice());
+  const V = identity(n);
+  for (let sweep = 0; sweep < 60; sweep++) {
+    let turned = false;
+    for (let p = 0; p < n; p++)
+      for (let q = p + 1; q < n; q++) {
+        const [bp, bq] = [column(B, p), column(B, q)];
+        const [alpha, beta, gamma] = [dotOf(bp, bp), dotOf(bq, bq), dotOf(bp, bq)];
+        if (Math.abs(gamma) <= 1e-15 * Math.sqrt(alpha * beta)) continue;
+        turned = true;
+        const [c, s] = jacobi(alpha, beta, gamma);
+        rotate(B, p, q, c, s);
+        rotate(V, p, q, c, s);
+      }
+    if (!turned) break;
+  }
+  const len = range(n).map((j) => norm(column(B, j)));
+  const order = range(n).sort((i, j) => len[j] - len[i]);
+  const sigma = order.map((j) => (len[j] <= 1e-10 * len[order[0]] ? 0 : clean(len[j])));
+  const cols = order.map((j, i) => (sigma[i] ? column(B, j).map((v) => v / len[j]) : []));
+  // A zero singular value leaves its column of U free: any unit vector at right angles to the others will do.
+  cols.forEach((u, i) => {
+    for (let e = 0; e < m && !u.length; e++) {
+      const w = range(m).map((k) => (k === e ? 1 : 0));
+      for (const o of cols) {
+        const d = dotOf(w, o);
+        o.forEach((v, k) => (w[k] -= d * v));
+      }
+      if (norm(w) > 1e-6) cols[i] = u = w.map((v) => v / norm(w));
+    }
+  });
+  return { U: transpose(cols), sigma, V: V.map((r) => order.map((j) => r[j])) };
+}
+
+/** A = UΣVᵀ: the singular values from the largest down, and U and V with min(m, n) orthonormal columns each; each
+ * pair of singular vectors is turned round, if need be, so that the largest entry of v is positive. */
+export function svd(A: number[][]): { U: number[][]; sigma: number[]; V: number[][] } {
+  const wide = A.length < A[0].length;
+  const t = svdTall(wide ? transpose(A) : A);
+  const [U, V] = wide ? [t.V, t.U] : [t.U, t.V];
+  t.sigma.forEach((_, j) => {
+    const v = column(V, j);
+    const big = Math.max(...v.map(Math.abs));
+    if (v[v.findIndex((x) => Math.abs(x) > big - 1e-9)] < 0) for (const M of [U, V]) for (const r of M) r[j] = -r[j];
+  });
+  return { U, sigma: t.sigma, V };
+}
+
+/** A matrix as the list of its rows, a single list being one row; points may be written (1, 2), (3, 4). */
+function readMatrix(main: string, pca: boolean): number[][] {
+  const Sv = words.svd;
+  const s = main.replace(/\(/g, "[").replace(/\)/g, "]");
+  const v = readList(/^\[\s*\[/.test(s) ? s : `[${s}]`) as Nested[];
+  const rows = v.every((x) => typeof x === "number") ? [v] : v;
+  const n = Array.isArray(rows[0]) ? rows[0].length : 0;
+  const ok = rows.every((r) => Array.isArray(r) && r.length === n && r.every((x) => typeof x === "number"));
+  if (pca) {
+    if (!ok || rows.length < 2 || rows.length > MAX_POINTS || n < 2 || n > MAX_SIDE) fail(Sv.points, { max: MAX_POINTS, f: MAX_SIDE });
+  } else if (!ok || n < 1 || n > MAX_SIDE || rows.length > MAX_SIDE) fail(Sv.matrix, { max: MAX_SIDE });
+  return rows as number[][];
+}
+
+/** A share as a percentage to one decimal, a tiny one as "<0.1%" rather than in scientific notation. */
+const pct = (v: number) => (v > 0 && v < 0.0005 ? "<0.1%" : `${(100 * v).toFixed(1).replace(/\.0$/, "")}%`);
+const feature = (j: number) => `x${SUBS(j + 1)}`;
+
+function renderSvd(main: string, opts: string[]): { svg: RenderedSvg; data: SvdData } {
+  const Sv = words.svd;
+  let keepSrc: string | undefined;
+  let pca = false;
+  let scaled = false;
+  for (const o of opts) {
+    const m = /^(rank|keep|k|pca|standardi[sz]e|scale)\b\s*=?\s*(.*)$/i.exec(o);
+    if (!m) fail(Sv.badOpt, { s: o });
+    const kind = m![1].toLowerCase();
+    if (/^(rank|keep|k)$/.test(kind)) keepSrc = m![2].trim();
+    else if (m![2].trim()) fail(Sv.badOpt, { s: o });
+    else if (kind === "pca") pca = true;
+    else pca = scaled = true;
+  }
+  const X = readMatrix(main, pca);
+  const [m, n] = [X.length, X[0].length];
+  const tiny = 1e-9 * Math.max(1, ...X.flat().map(Math.abs));
+  let A = X;
+  let mean: number[] = [];
+  let sd: number[] | undefined;
+  if (pca) {
+    mean = range(n).map((j) => clean(X.reduce((s, r) => s + r[j], 0) / m));
+    A = X.map((r) => r.map((v, j) => clean(v - mean[j])));
+    if (scaled) {
+      const s = range(n).map((j) => Math.sqrt(A.reduce((t, r) => t + r[j] ** 2, 0) / (m - 1)));
+      s.forEach((d, j) => d <= tiny && fail(Sv.constant, { x: feature(j) }));
+      A = A.map((r) => r.map((v, j) => v / s[j]));
+      sd = s;
+    }
+  }
+  if (A.every((r) => r.every((v) => Math.abs(v) <= tiny))) fail(pca ? Sv.flat : Sv.zero);
+  const { U, sigma, V } = svd(A);
+  const p = sigma.length;
+  const rank = sigma.filter((s) => s > 0).length;
+  if (keepSrc !== undefined && !(/^\d+$/.test(keepSrc) && Number(keepSrc) >= 1 && Number(keepSrc) <= p)) fail(Sv.badKeep, { p });
+  const keep = keepSrc !== undefined ? Number(keepSrc) : pca ? Math.min(p, n === 2 ? 1 : 2) : undefined;
+  const total = sigma.reduce((s, v) => s + v * v, 0);
+  const data: SvdData = { A, U, sigma, V, rank, keep };
+  if (keep !== undefined) {
+    data.approx = A.map((_, r) => range(n).map((c) => clean(range(keep).reduce((s, i) => s + sigma[i] * U[r][i] * V[c][i], 0))));
+    data.error = clean(Math.sqrt(sigma.slice(keep).reduce((s, v) => s + v * v, 0)));
+  }
+  const kk = SUBS(keep ?? 0);
+
+  const caps: Caption[] = [];
+  let tex: string;
+  if (!pca) {
+    caps.push({ text: fill(Sv.factor, { m, n, p }) });
+    caps.push({ text: fill(Sv.values, { list: sigma.map((s) => nt(s)).join(", ") }) });
+    caps.push({ text: rank < p ? fill(Sv.lowRank, { z: p - rank, r: rank }) : fill(Sv.fullRank, { r: rank }) });
+    if (rank > 1) caps.push({ text: Sv.pieces });
+    caps.push({ text: fill(Sv.energy, { total: nt(total), share: pct(sigma[0] ** 2 / total) }), color: C.grey });
+    // For a symmetric matrix u = ±v, and the sign is the sign of the eigenvalue.
+    const uv = range(rank).map((i) => dotOf(column(U, i), column(V, i)));
+    if (m === n && A.every((r, i) => r.every((v, j) => Math.abs(v - A[j][i]) <= tiny)) && uv.every((d) => Math.abs(d) > 0.999))
+      caps.push({ text: fill(Sv.symmetric, { list: sigma.map((s, i) => nt(i < rank && uv[i] < 0 ? -s : s)).join(", ") }) });
+    if (keep !== undefined)
+      caps.push({
+        text: keep >= rank ? fill(Sv.keepAll, { k: keep, r: rank }) : fill(Sv.keep, { k: keep, kk, k1: SUBS(keep + 1), d: nt(data.error! ** 2), e: nt(data.error!), s: nt(sigma[keep]) }),
+        color: HI,
+      });
+    if (m === 2 && n === 2) caps.push({ text: sigma[1] ? fill(Sv.circle, { s1: nt(sigma[0]), s2: nt(sigma[1]), d: nt(sigma[0] * sigma[1]) }) : Sv.line, color: C.purple });
+    if (m === n && n > 1 && rank === n) caps.push({ text: fill(Sv.cond, { nn: SUBS(n), c: nt(sigma[0] / sigma[n - 1]) }), color: C.grey });
+    tex = `A = U\\Sigma V^{\\top}, \\quad \\sigma = (${sigma.map((s) => tn(s)).join(", ")})`;
+    if (keep !== undefined && keep < rank) tex += `, \\quad \\lVert A - A_{${keep}}\\rVert_F = ${tn(data.error!)}`;
+    const drawn = drawSvd(A, U, sigma, V, keep, data.approx);
+    return { svg: compose(tex, drawn.svg, drawn.h, caps), data };
+  }
+
+  const cov = product(transpose(A), A).map((r) => r.map((v) => clean(v / (m - 1))));
+  const variance = sigma.map((s) => clean((s * s) / (m - 1)));
+  const sum = variance.reduce((s, v) => s + v, 0);
+  const explained = variance.map((v) => v / sum);
+  const scores = product(A, V);
+  data.pca = { mean, sd, cov, variance, explained, scores };
+  const k = keep!;
+  caps.push({ text: fill(Sv.mean, { m, mu: vectorText(mean) }) });
+  if (sd) caps.push({ text: fill(Sv.scaled, { sd: vectorText(sd) }) });
+  caps.push({ text: Sv.cov });
+  const pcs = range(Math.min(p, 3)).map((i) => `PC${i + 1} = [${column(V, i).map((v) => nt(v, 3)).join(", ")}]`);
+  caps.push({ text: fill(Sv.pcs, { list: pcs.join(", ") + (p > 3 ? ", …" : "") }) });
+  caps.push({ text: fill(Sv.explained, { list: explained.map((e, i) => `PC${i + 1} ${pct(e)}`).join(", "), total: nt(sum) }), color: C.blue });
+  const kept = explained.slice(0, k).reduce((s, e) => s + e, 0);
+  caps.push({ text: fill(Sv.keepPca, { k, share: pct(kept), lost: nt(data.error! ** 2), m1: m - 1 }), color: HI });
+  if (n === 2 && k === 1) caps.push({ text: fill(Sv.projection, { v: nt(variance[0]) }), color: C.purple });
+  if (n > 2) caps.push({ text: fill(Sv.scores, { share: pct(explained[0] + explained[1]) }), color: C.grey });
+  // A feature measured in large units has a large variance, and PC1 follows it for that reason alone.
+  const fv = range(n).map((j) => cov[j][j]);
+  const [hiF, loF] = [fv.indexOf(Math.max(...fv)), fv.indexOf(Math.min(...fv))];
+  if (!sd && fv[hiF] > 100 * fv[loF]) caps.push({ text: fill(Sv.units, { a: feature(hiF), b: feature(loF), r: nt(fv[hiF] / fv[loF], 0) }), color: C.red });
+  tex = `C = \\tfrac{1}{${m - 1}}\\,\\bar X^{\\top}\\bar X, \\quad \\lambda = (${variance.map((v) => tn(v)).join(", ")}), \\quad \\text{PC}_{1${k > 1 ? `..${k}` : ""}}: ${tn(100 * kept, 1)}\\%`;
+  const drawn = drawPca(X, A, mean, cov, V, variance, explained, k, scores, !!sd);
+  return { svg: compose(tex, drawn.svg, drawn.h, caps), data };
+}
+
+/** A matrix as cells shaded by value (scaled by `big`) with their numbers; null leaves a cell empty, and a cell
+ * `fade` picks out is drawn faint. */
+function heatCells(x: number, y: number, M: (number | null)[][], cs: number, big: number, fade?: (r: number, c: number) => boolean): string {
+  let s = "";
+  M.forEach((row, r) =>
+    row.forEach((v, c) => {
+      const [cx, cy] = [x + c * cs, y + r * cs];
+      s += `<g${fade?.(r, c) ? ` opacity="0.28"` : ""}>`;
+      if (v === null) s += `<rect x="${r2(cx + 1)}" y="${r2(cy + 1)}" width="${r2(cs - 2)}" height="${r2(cs - 2)}" rx="3" fill="#ffffff" stroke="#e9ecef"/>`;
+      else {
+        const label = Math.abs(v) < 0.005 ? "0" : nt(v, 2);
+        s += `<rect x="${r2(cx + 1)}" y="${r2(cy + 1)}" width="${r2(cs - 2)}" height="${r2(cs - 2)}" rx="3" fill="${heat(v / big)}" stroke="#e9ecef"/>`;
+        s += txt(cx + cs / 2, cy + cs / 2 + 4, label, onHeat(v / big), Math.min(12, (cs * 1.6) / Math.max(3, label.length)));
+      }
+      s += "</g>";
+    }),
+  );
+  return s;
+}
+
+/** Bars for the singular values or the variances, the kept ones blue, with each one's share of the total. */
+function shareBars(top: number, head: string, names: string[], values: number[], shares: number[], keep?: number): { svg: string; h: number } {
+  let s = txt(78, top, head, C.grey, 11.5, "start", "700");
+  const most = Math.max(...values);
+  values.forEach((v, i) => {
+    const y = top + 8 + i * 24;
+    const on = keep === undefined || i < keep;
+    const bw = Math.max(1.5, (v / most) * 300);
+    s += txt(70, y + 13, names[i], on ? C.ink : C.grey, 13, "end", "700");
+    s += `<rect x="78" y="${r2(y)}" width="${r2(bw)}" height="17" rx="3" fill="${on ? C.blue : "#ced4da"}"/>`;
+    s += txt(86 + bw, y + 13, `${nt(v)} · ${pct(shares[i])}`, on ? C.ink : C.grey, 12, "start");
+  });
+  return { svg: s, h: top + 8 + values.length * 24 };
+}
+
+/** A = U Σ Vᵀ as four grids of shaded cells, the pieces left out of a rank-k approximation faded; the singular values
+ * as bars; the approximation beside what it misses; and for a 2 × 2 matrix, the unit circle and the ellipse A makes
+ * of it. */
+function drawSvd(A: number[][], U: number[][], sigma: number[], V: number[][], keep?: number, approx?: number[][]): { svg: string; h: number } {
+  const [m, n, p] = [A.length, A[0].length, sigma.length];
+  const big = Math.max(...A.flat().map(Math.abs));
+  const gap = 30;
+  const cs = Math.min(34, (W - 32 - 3 * gap) / (2 * (n + p)));
+  const top = 24;
+  let x = (W - 2 * (n + p) * cs - 3 * gap) / 2;
+  let s = "";
+  const cut = keep ?? p;
+  const parts: [string, (number | null)[][], number, string, ((r: number, c: number) => boolean)?][] = [
+    ["A", A, big, `${m} × ${n}`],
+    ["U", U, 1, `${m} × ${p}`, (_, c) => c >= cut],
+    ["Σ", range(p).map((r) => range(p).map((c) => (r === c ? sigma[r] : null))), sigma[0], `${p} × ${p}`, (r) => r >= cut],
+    ["Vᵀ", transpose(V), 1, `${p} × ${n}`, (r) => r >= cut],
+  ];
+  parts.forEach(([name, M, scale, shape, fade], i) => {
+    const w = M[0].length * cs;
+    s += txt(x + w / 2, top - 8, name, C.ink, 15, "middle", "700");
+    s += heatCells(x, top, M, cs, scale, fade);
+    s += txt(x + w / 2, top + M.length * cs + 15, shape, C.grey, 11);
+    if (i === 0) s += txt(x + w + gap / 2, top + (M.length * cs) / 2 + 6, "=", C.ink, 18, "middle", "700");
+    x += w + gap;
+  });
+  let h = top + Math.max(m, p) * cs + 46;
+  const bars = shareBars(h, words.svd.bars, sigma.map((_, i) => `σ${SUBS(i + 1)}`), sigma, sigma.map((v) => (v * v) / sigma.reduce((t, u) => t + u * u, 0)), keep);
+  s += bars.svg;
+  h = bars.h + 16;
+  if (approx && keep !== undefined) {
+    const c2 = Math.min(34, (W - 32 - 70) / (2 * n));
+    const x0 = (W - 2 * n * c2 - 70) / 2;
+    const y0 = h + 22;
+    const rest = A.map((r, i) => r.map((v, j) => clean(v - approx[i][j])));
+    s += txt(x0 + (n * c2) / 2, y0 - 8, `A${SUBS(keep)}`, HI, 15, "middle", "700");
+    s += heatCells(x0, y0, approx, c2, big);
+    s += txt(x0 + n * c2 + 35, y0 + (m * c2) / 2 + 6, "+", C.ink, 18, "middle", "700");
+    s += txt(x0 + n * c2 + 70 + (n * c2) / 2, y0 - 8, `A − A${SUBS(keep)}`, C.grey, 15, "middle", "700");
+    s += heatCells(x0 + n * c2 + 70, y0, rest, c2, big);
+    h = y0 + m * c2 + 16;
+  }
+  if (m === 2 && n === 2) {
+    const ring = drawRing(A, U, sigma, V, h + 8);
+    s += ring.svg;
+    h = ring.h;
+  }
+  return { svg: s, h };
+}
+
+/** Where a label goes beyond the tip of an arrow from the origin, so that it does not sit on the arrow. */
+function tipLabel(fr: Frame, p: number[], label: string, color: string): string {
+  const [ox, oy] = [fr.sx(0), fr.sy(0)];
+  const [dx, dy] = [fr.sx(p[0]) - ox, fr.sy(p[1]) - oy];
+  const L = Math.hypot(dx, dy) || 1;
+  const anchor = dx / L > 0.3 ? "start" : dx / L < -0.3 ? "end" : "middle";
+  return lbl(ox + dx + (dx / L) * 9, oy + dy + (dy / L) * 9 + 4, label, color, anchor, 13, false);
+}
+
+/** Ticks for a narrow frame running from −R to R: a round step of at least R / 2, so that the labels do not crowd. */
+function fewTicks(R: number): { v: number; label: string }[] {
+  const mag = 10 ** Math.floor(Math.log10(R / 2));
+  const step = [1, 2, 5, 10].map((k) => k * mag).find((t) => t >= R / 2)!;
+  return range(Math.floor(R / step))
+    .map((i) => (i + 1) * step)
+    .flatMap((v) => [-v, v])
+    .map((v) => ({ v, label: nt(v, 3) }));
+}
+
+/** The unit circle with v₁ and v₂ on it, and beside it the ellipse A makes of it, with σ₁u₁ and σ₂u₂ its half-axes. */
+function drawRing(A: number[][], U: number[][], sigma: number[], V: number[][], top: number): { svg: string; h: number } {
+  const [fw, fh] = [250, 220];
+  const R = 1.25 * sigma[0];
+  const frames = [makeFrame("svdIn", 56, top + 18, fw, fh, [-1.35, 1.35], [(-1.35 * fh) / fw, (1.35 * fh) / fw]), makeFrame("svdOut", 362, top + 18, fw, fh, [-R, R], [(-R * fh) / fw, (R * fh) / fw])];
+  const ring = range(121).map((i) => [Math.cos((i * Math.PI) / 60), Math.sin((i * Math.PI) / 60)]);
+  const shapes = [ring, ring.map(([a, b]) => [A[0][0] * a + A[0][1] * b, A[1][0] * a + A[1][1] * b])];
+  let s = "";
+  frames.forEach((fr, f) => {
+    const path = shapes[f].map(([a, b], i) => `${i ? "L" : "M"}${r2(fr.sx(a))},${r2(fr.sy(b))}`).join("");
+    s += axes(fr, { xTicks: fewTicks(fr.x1) }) + `<path d="${path}z" fill="${f ? "#f3d9fa" : "#f1f3f5"}" fill-opacity="0.7" stroke="${f ? C.purple : C.grey}" stroke-width="2"/>`;
+    s += txt((fr.left + fr.right) / 2, top + 8, f ? "Ax" : "‖x‖ = 1", f ? C.purple : C.grey, 13, "middle", "700");
+    [0, 1].forEach((i) => {
+      const color = i ? C.orange : C.blue;
+      const tip = f ? column(U, i).map((v) => v * sigma[i]) : column(V, i);
+      s += arrow(fr.sx(0), fr.sy(0), fr.sx(tip[0]), fr.sy(tip[1]), color, 2.6) + tipLabel(fr, tip, f ? `σ${SUBS(i + 1)}u${SUBS(i + 1)}` : `v${SUBS(i + 1)}`, color);
+    });
+  });
+  s += arrow(56 + fw + 14, top + 18 + fh / 2, 362 - 14, top + 18 + fh / 2, C.ink, 2) + txt(56 + fw + 28, top + 18 + fh / 2 - 10, "A", C.ink, 14, "middle", "700");
+  return { svg: s, h: top + 18 + fh + 22 };
+}
+
+/** The covariance matrix and the components as shaded grids, the variance along each as bars, and the points: for
+ * two features as they are, with the components drawn from the mean (two standard deviations long) and each point's
+ * projection onto PC1 when only it is kept; for more, by their scores on PC1 and PC2. */
+function drawPca(X: number[][], A: number[][], mean: number[], cov: number[][], V: number[][], variance: number[], explained: number[], keep: number, scores: number[][], scaled: boolean): { svg: string; h: number } {
+  const [n, p] = [cov.length, variance.length];
+  const hdr = 28;
+  const gap = 44;
+  const cs = Math.min(34, (W - 32 - 2 * hdr - gap) / (n + p));
+  const top = 40;
+  const xs = [16 + hdr, 16 + hdr + n * cs + gap + hdr];
+  let s = "";
+  const heads = [range(n).map(feature), range(p).map((i) => `PC${i + 1}`)];
+  [cov, V].forEach((M, f) => {
+    s += txt(xs[f] + (M[0].length * cs) / 2, top - 26, f ? "V" : "C", C.ink, 15, "middle", "700");
+    heads[f].forEach((h, c) => (s += txt(xs[f] + (c + 0.5) * cs, top - 6, h, f && c >= keep ? C.grey : C.ink, Math.min(12, cs * 0.4), "middle", "600")));
+    range(n).forEach((r) => (s += txt(xs[f] - 6, top + (r + 0.5) * cs + 4, feature(r), C.ink, Math.min(12, cs * 0.4), "end", "600")));
+    s += heatCells(xs[f], top, M, cs, f ? 1 : Math.max(...cov.flat().map(Math.abs)), f ? (_, c) => c >= keep : undefined);
+  });
+  const bars = shareBars(top + n * cs + 30, words.svd.varHead, range(p).map((i) => `PC${i + 1}`), variance, explained, keep);
+  s += bars.svg;
+  const inPlane = n === 2;
+  // Two features are drawn as they are (or as scaled); more are drawn by their scores, in the plane of PC1 and PC2.
+  const pts = inPlane ? (scaled ? A : X) : scores.map((r) => [r[0], r[1]]);
+  const c = inPlane && !scaled ? mean : [0, 0];
+  const dirs = [0, 1].map((i) => (inPlane ? column(V, i) : [1 - i, i]).map((v) => v * 2 * Math.sqrt(variance[i] ?? 0)));
+  const ends = dirs.map((d) => [c[0] + d[0], c[1] + d[1]]);
+  const all = [...pts, ...ends, ...dirs.map((d) => [c[0] - d[0], c[1] - d[1]])];
+  const lo = [0, 1].map((a) => Math.min(...all.map((q) => q[a])));
+  const hi = [0, 1].map((a) => Math.max(...all.map((q) => q[a])));
+  const fw = W - 48 - 18;
+  const fh = 300;
+  const unit = Math.max((hi[0] - lo[0]) / (fw - 40), (hi[1] - lo[1]) / (fh - 40)) || 1;
+  const mid = [0, 1].map((a) => (lo[a] + hi[a]) / 2);
+  const fr = makeFrame("pca", 48, bars.h + 20, fw, fh, [mid[0] - (fw * unit) / 2, mid[0] + (fw * unit) / 2], [mid[1] - (fh * unit) / 2, mid[1] + (fh * unit) / 2]);
+  s += axes(fr);
+  if (inPlane && keep === 1) {
+    const v = column(V, 0);
+    const far = (fw + fh) * unit;
+    s += `<line clip-path="url(#pca)" x1="${r2(fr.sx(c[0] - far * v[0]))}" y1="${r2(fr.sy(c[1] - far * v[1]))}" x2="${r2(fr.sx(c[0] + far * v[0]))}" y2="${r2(fr.sy(c[1] + far * v[1]))}" stroke="${C.blue}" stroke-width="1.4" stroke-dasharray="6 4"/>`;
+    pts.forEach((q) => {
+      const t = (q[0] - c[0]) * v[0] + (q[1] - c[1]) * v[1];
+      const foot = [c[0] + t * v[0], c[1] + t * v[1]];
+      s += `<line x1="${r2(fr.sx(q[0]))}" y1="${r2(fr.sy(q[1]))}" x2="${r2(fr.sx(foot[0]))}" y2="${r2(fr.sy(foot[1]))}" stroke="${C.purple}" stroke-width="1.3"/>`;
+      s += dot(fr.sx(foot[0]), fr.sy(foot[1]), C.purple, 3, true);
+    });
+  }
+  pts.forEach((q) => (s += dot(fr.sx(q[0]), fr.sy(q[1]), C.ink, 3.5)));
+  dirs.forEach((d, i) => {
+    // An arrow too short to see would only hide the mean under its label.
+    if (i >= p || Math.hypot(d[0], d[1]) / unit < 12) return;
+    const color = i ? C.orange : C.blue;
+    s += arrow(fr.sx(c[0]), fr.sy(c[1]), fr.sx(ends[i][0]), fr.sy(ends[i][1]), color, 2.8);
+    const L = Math.hypot(d[0], d[1]);
+    s += lbl(fr.sx(ends[i][0] + (d[0] / L) * 14 * unit), fr.sy(ends[i][1] + (d[1] / L) * 14 * unit) + 4, `PC${i + 1}`, color, "middle", 13, false);
+  });
+  if (inPlane) {
+    // μ is labelled on the side away from PC2, which keeps it off both arrows and the PC1 line.
+    const v2 = column(V, 1);
+    s += dot(fr.sx(c[0]), fr.sy(c[1]), HI, 5) + lbl(fr.sx(c[0]) - 16 * v2[0], fr.sy(c[1]) + 16 * v2[1] + 5, "μ", HI, "middle", 14, false);
+    s += lbl(fr.right - 6, fr.bottom - 8, feature(0), C.grey, "end", 13, false) + lbl(fr.left + 8, fr.top + 16, feature(1), C.grey, "start", 13, false);
+  }
+  return { svg: s, h: fr.bottom + 22 };
+}
+
 // ---------- the tool ----------
 
 /** The main part of the input and what follows it after semicolons. */
@@ -2019,6 +2449,7 @@ export function renderAi(spec: AiSpec, w: AiWords): RenderedSvg {
   if (spec.topic === "backprop") return buildBackprop(spec, w).svg;
   if (spec.topic === "softmax") return buildSoftmax(spec, w).svg;
   if (spec.topic === "embed") return buildEmbed(spec, w).svg;
+  if (spec.topic === "svd") return buildSvd(spec, w).svg;
   return buildAi(spec, w).svg;
 }
 export function buildAi(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: AiData } {
@@ -2038,6 +2469,9 @@ export function buildSoftmax(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data
 }
 export function buildEmbed(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: EmbedData } {
   return renderEmbed(...parts(spec, w));
+}
+export function buildSvd(spec: AiSpec, w: AiWords): { svg: RenderedSvg; data: SvdData } {
+  return renderSvd(...parts(spec, w));
 }
 
 const S = (topic: AiTopic, src: string): AiSpec => ({ topic, src });
@@ -2115,6 +2549,21 @@ export const AI_PRESETS: { [K in AiTopic]: { label: string; spec: AiSpec }[] } =
     { label: "Paris − France + Italy", spec: S("embed", "paris [0.9, 0.9, 0, 0.05], france [0.1, 0.95, 0.05, 0.1], italy [0.1, 0.05, 0.95, 0.05], rome [0.9, 0.05, 0.9, 0], berlin [0.9, 0.05, 0, 0.9], germany [0.1, 0.1, 0.05, 0.95]; analogy paris - france + italy") },
     { label: "rows of a matrix", spec: S("embed", "[[1, 0, 1], [0, 1, 1], [1, 1, 0], [1, 1, 1]]") },
   ],
+  svd: [
+    { label: "SVD of a 2 × 3 matrix", spec: S("svd", "[[3, 2, 2], [2, 3, -2]]") },
+    { label: "the best rank-1 approximation", spec: S("svd", "[[3, 2, 2], [2, 3, -2]]; rank 1") },
+    { label: "2 × 2: the circle becomes an ellipse", spec: S("svd", "[[3, 0], [4, 5]]") },
+    { label: "rank 1: one σ is 0", spec: S("svd", "[[1, 2], [2, 4], [3, 6]]") },
+    { label: "a rotation: every σ is 1", spec: S("svd", "[[0.6, -0.8], [0.8, 0.6]]") },
+    { label: "symmetric: σ = |λ|", spec: S("svd", "[[1, 2], [2, -2]]") },
+    { label: "nearly singular", spec: S("svd", "[[1, 1], [1, 1.001]]") },
+    { label: "compress a 6 × 6 picture", spec: S("svd", "[[0, 0, 1, 1, 0, 0], [0, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1], [0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 0, 0]]; rank 2") },
+    { label: "PCA: the line through the points", spec: S("svd", "(2.5, 2.4), (0.5, 0.7), (2.2, 2.9), (1.9, 2.2), (3.1, 3), (2.3, 2.7), (2, 1.6), (1, 1.1), (1.5, 1.6), (1.1, 0.9); pca") },
+    { label: "PCA: both components", spec: S("svd", "(2.5, 2.4), (0.5, 0.7), (2.2, 2.9), (1.9, 2.2), (3.1, 3), (2.3, 2.7), (2, 1.6), (1, 1.1), (1.5, 1.6), (1.1, 0.9); pca; keep 2") },
+    { label: "PCA: three features, two components", spec: S("svd", "[[2.1, 1.8, 1.2], [0.4, 1.9, 0.3], [3.2, 2.7, 2.1], [1.1, 0.2, 0.4], [2.6, 3.4, 1.4], [0.9, 2.6, 0.2], [3.5, 1.3, 2.5], [1.7, 1.1, 1.3]]; pca") },
+    { label: "PCA: units matter", spec: S("svd", "(6, 62), (7.5, 75), (8, 88), (5.5, 55), (7, 70), (9, 92), (6.5, 60), (8.5, 80); pca") },
+    { label: "PCA: standardized", spec: S("svd", "(6, 62), (7.5, 75), (8, 88), (5.5, 55), (7, 70), (9, 92), (6.5, 60), (8.5, 80); standardize") },
+  ],
 };
 
 /** What the tool opens on: a tensor with three axes says more than the first example, a single number. */
@@ -2125,4 +2574,5 @@ export const AI_DEFAULT: Record<AiTopic, AiSpec> = {
   backprop: S("backprop", "(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; explain w"),
   softmax: S("softmax", "[2, 1, 0.1]; labels cat, dog, bird; target cat"),
   embed: S("embed", "cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2], car [0.1, 0.2, 0.9]; query cat"),
+  svd: S("svd", "[[3, 2, 2], [2, 3, -2]]; rank 1"),
 };
