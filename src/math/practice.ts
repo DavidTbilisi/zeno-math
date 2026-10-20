@@ -15,6 +15,7 @@ import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type 
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
 import { divSlips, divTask, judgeDivisors, rulesSpec } from "./divisible";
 import { kakSet, kakSum, kakTraps } from "./kakooma";
+import { inversions as countInversions } from "./tactics";
 import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
 import { eqQuestion, partsSvg } from "./equivMatch";
 import { encodeShade, judgeShade, shadeSvg, shadeTask, type ShadePlay } from "./shadeFrac";
@@ -273,6 +274,8 @@ export type PracticeWords = {
     colouring: string;
     shortestPath: string;
     spanningTree: string;
+    parity: string;
+    inversions: string;
     divisibility: string;
     moneyDollars: string;
     moneyCents: string;
@@ -1960,6 +1963,94 @@ const GENS: Record<SkillId, Gen> = {
       plain: String(t.best.total),
       format: "number",
       solution: { kind: "network", spec: { task: t, steps: townSteps(t) } },
+    };
+  },
+
+  parity(r, L, w) {
+    // Parity (src/math/tactics.ts): ±1 ±2 … ±n makes t exactly when t is at most 1 + … + n = S in size and differs
+    // from S by an even number, since turning +k into −k lowers the total by 2k. Four totals are offered, one of them
+    // makeable; one of the wrong parity, and (above easy) one of the right parity but out of reach, are the slips.
+    const n = L === 1 ? r.int(3, 5) : L === 2 ? r.int(6, 9) : r.int(10, 14);
+    const S = (n * (n + 1)) / 2;
+    const lo = L === 3 ? -S : 0;
+    let t: number;
+    do t = r.int(lo, S);
+    while ((S - t) % 2);
+    const taken = new Set([t]);
+    const fresh = (make: () => number) => {
+      let x: number;
+      do x = make();
+      while (taken.has(x));
+      taken.add(x);
+      return x;
+    };
+    const odd = Array.from({ length: L === 1 ? 3 : 2 }, () => fresh(() => {
+      let x: number;
+      do x = r.int(lo, S);
+      while ((S - x) % 2 === 0);
+      return x;
+    }));
+    const far = L === 1 ? [] : [fresh(() => (L === 3 && r.next() < 0.5 ? -1 : 1) * (S + 2 * r.int(1, 3)))];
+    const values = [t, ...odd, ...far].sort((a, b) => a - b);
+    const options = values.map((v) => ({ v, text: String(v).replace("-", "−"), plain: String(v), tex: String(v) }));
+    const at = (v: number) => values.indexOf(v);
+    const traps: Trap[] = [
+      ...odd.map((x): Trap => ({ id: "parityIgnored", a: { k: "near", options, right: at(x) }, vars: { t: String(x).replace("-", "−"), s: S, n } })),
+      ...far.map((x): Trap => ({ id: "beyondReach", a: { k: "near", options, right: at(x) }, vars: { t: String(x).replace("-", "−"), s: S } })),
+    ];
+    // The signs: the numbers whose sign is turned to − add up to (S − t) / 2, picked greedily from the top.
+    const minus = new Set<number>();
+    let rest = (S - t) / 2;
+    for (let k = n; k >= 1; k--)
+      if (k <= rest) {
+        minus.add(k);
+        rest -= k;
+      }
+    const signed = Array.from({ length: n }, (_, i) => (minus.has(i + 1) ? `- ${i + 1}` : i ? `+ ${i + 1}` : "1")).join(" ").replace(/^- 1/, "-1");
+    return {
+      prompt: fill(w.prompts.parity, { n }),
+      q: options.map((o) => o.tex).join(", \\quad "),
+      answer: { k: "near", options, right: at(t), traps },
+      show: `${signed} = ${t}`,
+      plain: String(t),
+      format: "near",
+      steps: [`1 + 2 + \\dots + ${n} = ${S}`, `${S} - ${t < 0 ? `(${t})` : t} = ${S - t} = 2 \\cdot ${(S - t) / 2}`, `${signed} = ${t}`],
+    };
+  },
+
+  inversions(r, L, w) {
+    // A monovariant (src/math/tactics.ts): swapping two neighbours that are out of order puts that pair right and
+    // leaves every other pair as it was, so sorting that way takes exactly as many swaps as there are pairs out of
+    // order. Counting only the neighbours out of order at the start, or the numbers out of place, are the slips.
+    const len = L === 1 ? 4 : L === 2 ? 5 : 7;
+    const [least, most] = L === 1 ? [2, 5] : L === 2 ? [4, 8] : [8, 16];
+    let a: number[];
+    let k: number;
+    do {
+      const pool = Array.from({ length: len + 5 }, (_, i) => i + 1);
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = r.int(0, i);
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      a = pool.slice(0, len);
+      k = countInversions(a);
+    } while (k < least || k > most);
+    const sorted = [...a].sort((x, y) => x - y);
+    const neighbours = a.filter((x, i) => i + 1 < a.length && x > a[i + 1]).length;
+    const outOfPlace = a.filter((x, i) => x !== sorted[i]).length;
+    const traps: Trap[] = [];
+    if (neighbours !== k) traps.push({ id: "neighboursOnly", a: num(neighbours), vars: { d: neighbours } });
+    if (outOfPlace !== k && outOfPlace !== neighbours) traps.push({ id: "outOfPlace", a: num(outOfPlace), vars: { m: outOfPlace } });
+    // The working: for each number, how many smaller ones come after it.
+    const after = a.map((x, i) => a.slice(i + 1).filter((y) => y < x).length);
+    return {
+      prompt: w.prompts.inversions,
+      q: a.join(",\\ "),
+      answer: { ...num(k), traps },
+      show: String(k),
+      plain: String(k),
+      format: "number",
+      steps: [a.map((x, i) => `${x}\\!:\\ ${after[i]}`).join(",\\quad "), `${after.join(" + ")} = ${k}`],
     };
   },
 

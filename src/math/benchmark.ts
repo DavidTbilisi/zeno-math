@@ -77,7 +77,7 @@ export function nearSteps(t: NearTask): string[] {
 
 /** The option typed or picked (40, 1/2, ½, 0.5, 75 %), or null. */
 export function readBench(src: string): number | null {
-  const s = src.trim().replace(/\s*°$/, "").replace("½", "1/2").replace(",", ".").replace(/\s*\/\s*/, "/");
+  const s = src.trim().replace(/\s*°$/, "").replace("½", "1/2").replace(",", ".").replace(/\s*\/\s*/, "/").replace(/^[−–]/, "-");
   const f = s.match(/^(\d+)\/(\d+)$/);
   if (f) return Number(f[2]) ? Number(f[1]) / Number(f[2]) : null;
   const p = s.match(/^(\d+(?:\.\d+)?)\s*%$/);

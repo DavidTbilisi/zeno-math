@@ -350,8 +350,8 @@ A smaller dry run is part of `npm test`, so CI checks the whole pipeline on ever
 
 ## Answer checker
 
-A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 677 typed answers to questions from
-all 75 skills, each marked the way a teacher would:
+A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 701 typed answers to questions from
+all 77 skills, each marked the way a teacher would:
 
 - correct;
 - close (a rounding slip);
@@ -362,12 +362,12 @@ all 75 skills, each marked the way a teacher would:
 
 | teacher \ checker | correct | close | wrong | form |
 |---|---|---|---|---|
-| correct (305) | 301 | 0 | 1 | 3 |
+| correct (313) | 309 | 0 | 1 | 3 |
 | close (19) | 0 | 3 | 3 | 13 |
-| wrong (270) | 0 | 0 | 270 | 0 |
-| form (83) | 2 | 0 | 8 | 73 |
+| wrong (283) | 0 | 0 | 283 | 0 |
+| form (86) | 2 | 0 | 8 | 76 |
 
-The checker agrees 95.6 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+The checker agrees 95.7 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
 
 - `13*17` for "work out 13 × 17";
 - an integral without `+ C`.

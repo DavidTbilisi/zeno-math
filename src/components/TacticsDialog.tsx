@@ -75,6 +75,15 @@ export function TacticsDialog({ initial, start, onSubmit, onClose }: {
       </div>
 
       {topic === "symmetry" && <div className="range-grid">{field("n", f.n)}</div>}
+      {topic === "extreme" && row("pts", f.pts)}
+      {topic === "parity" && (
+        <div className="range-grid">
+          {field("n", f.n)}
+          {field("t", f.t)}
+        </div>
+      )}
+      {topic === "modular" && row("abc", f.abc)}
+      {topic === "monovariant" && row("nums", f.nums)}
       {topic === "pigeonhole" && (
         <>
           <Segmented items={PIGEON_MODES} value={spec.mode} onChange={(m) => set({ mode: m })} label={(m) => t.pigeonModes[m]} />

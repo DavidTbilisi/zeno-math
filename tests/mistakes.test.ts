@@ -86,6 +86,10 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   partForWhole: ["kakooma", [1, 2, 3]],
   usedTwice: ["kakooma", [1, 2, 3]],
   sumNotProduct: ["kakooma", [3]],
+  parityIgnored: ["parity", [1, 2, 3]],
+  beyondReach: ["parity", [2, 3]],
+  neighboursOnly: ["inversions", [1, 2, 3]],
+  outOfPlace: ["inversions", [1, 2, 3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
