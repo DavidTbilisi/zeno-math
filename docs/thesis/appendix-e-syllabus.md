@@ -4,25 +4,27 @@ Zeno's practice skills were written for secondary school and extended downwards,
 primary curriculum they reach. This appendix sets them against Singapore's primary mathematics syllabus, the version
 introduced with the 2021 Primary One cohort and updated in October 2025 [@moe2025primary], chosen because it lists its
 content year by year from Primary 1 (P1) to Primary 6 (P6) in short, checkable items. The comparison was made on 18
-October 2026, after every result, and plays no part in any of them. It uses the Standard track; the Foundation track of
+October 2026, after every result, and plays no part in any of them; it was brought up to date on 20 October 2026, when
+the Kakooma skill was added. It uses the Standard track; the Foundation track of
 P5 and P6 repeats topics of the Standard track's earlier years.
 
 Table E.1 takes the syllabus topic by topic, under its numbered headings, and names the Zeno skills whose questions
 practise the topic, with the levels (1 to 3) at which they do. A topic counts as covered in part when one of its items
-is practised, and the table says so where only some are. Of the 65 topics, 41 are practised at least in part and 24
-not at all. Coverage is thinnest in the first two years, 2 topics of 8 in P1 and 3 of 10 in P2, against 8 of 12
+is practised, and the table says so where only some are. Of the 65 topics, 42 are practised at least in part and 23
+not at all. Coverage is thinnest in the first two years, 2 topics of 8 in P1 and 4 of 10 in P2, against 8 of 12
 in P3, 13 of 15 in P4, 10 of 12 in P5 and 5 of 8 in P6. The gaps fall into four groups. Measurement has no skill at all: length, mass,
 volume of liquid and time, which fill six topics of P1 to P3, are practised only where Decimals converts between units
 in decimal form. The shapes themselves, 2D and 3D figures, parallel and perpendicular lines and the properties of
 quadrilaterals, are not practised; the geometry skills work with area, angles, symmetry and nets. Whole-number
-arithmetic is practised through multiplication, estimation and the target puzzles, but not through the written
-algorithms of addition and subtraction, the early multiplication tables or division. Data stops at bar charts and the
+arithmetic is practised through multiplication, estimation and the target and Kakooma puzzles, but not through the
+written algorithms of addition and subtraction or division, and the early multiplication tables only as Kakooma's
+products, mixed with the later ones. Data stops at bar charts and the
 mean, without picture graphs, tables, line graphs or pie charts.
 
 | Year | Syllabus topic | Zeno skills (levels) |
 |----|--------------------------------------------|------------------------------------------------|
 | P1 | Numbers up to 100 | Quick look (1 to 3), Comparing numbers (1), Number line (1), Closer to (1) |
-| P1 | Addition and subtraction | Quick look (2, 3), Make the target (1) |
+| P1 | Addition and subtraction | Quick look (2, 3), Make the target (1), Kakooma (1, 2) |
 | P1 | Multiplication and division within 40 | none |
 | P1 | Money: counting cents and dollars | none |
 | P1 | Length in centimetres | none |
@@ -31,7 +33,7 @@ mean, without picture graphs, tables, line graphs or pie charts.
 | P1 | Picture graphs | none |
 | P2 | Numbers up to 1000 | Comparing numbers (2), Number line (2) |
 | P2 | Addition and subtraction up to 3 digits | none |
-| P2 | Multiplication tables of 2, 3, 4, 5 and 10 | none |
+| P2 | Multiplication tables of 2, 3, 4, 5 and 10 | Kakooma (3), among the tables of 6 to 9 |
 | P2 | Fraction of a whole | Shade the fraction (1), Equal fractions (1), Comparing fractions (1), Fractions in order (1) |
 | P2 | Adding and subtracting like fractions | none |
 | P2 | Money in decimal notation and in cents | Money (1) |
@@ -41,7 +43,7 @@ mean, without picture graphs, tables, line graphs or pie charts.
 | P2 | Picture graphs with scales | none |
 | P3 | Numbers up to 10 000 | none |
 | P3 | Addition and subtraction up to 4 digits | Closer to (3), estimating sums only |
-| P3 | Tables of 6 to 9, division with remainder, 3 digits by 1 digit | Multiplication (1), Find the rule (1); no division |
+| P3 | Tables of 6 to 9, division with remainder, 3 digits by 1 digit | Multiplication (1), Find the rule (1), Kakooma (3); no division |
 | P3 | Equivalent fractions, comparing unlike fractions | Shade the fraction (2), Equal fractions (2), Comparing fractions (2, 3), Fractions in order (2) |
 | P3 | Adding and subtracting related fractions | Make a whole (1) |
 | P3 | Adding and subtracting money | Money (2) |
@@ -96,7 +98,7 @@ gives each level the first year by which the syllabus has taught every kind of q
 "past P6" a level some of whose questions the syllabus never reaches. The level therefore takes the year of its most
 advanced question: the first level of Fractions belongs to P6 because one of its kinds asks for a reciprocal, though
 its other kinds are P4's, and the first level of Order of operations goes past P6 because some of its answers are
-negative, so it appears in Table E.1 but not in Table E.2. Thirty-one of the 74 skills have a level in the primary
+negative, so it appears in Table E.1 but not in Table E.2. Thirty-two of the 75 skills have a level in the primary
 syllabus. The other 43 are the secondary topics, from integers and coordinates to calculus, and the four graph theory
 skills, which the syllabus does not teach. The tags are kept in the code (`SYLLABUS` in `src/model/curriculum.ts`), and
 a teacher can make a class of the skills with a level in a chosen year.
@@ -108,6 +110,7 @@ a teacher can make a class of the skills with a level in a chosen year.
 | Number line | P1 | P2 | past P6 |
 | Closer to | P1 | P4 | P4 |
 | Make the target | P1 | P5 | P5 |
+| Kakooma | P1 | P1 | P3 |
 | Multiplication | P3 | P4 | P4 |
 | Money | P2 | P3 | P4 |
 | Shade the fraction | P2 | P3 | P4 |
