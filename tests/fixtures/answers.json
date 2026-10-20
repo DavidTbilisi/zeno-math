@@ -3259,6 +3259,129 @@
    "label": "wrong"
   },
   {
+   "skill": "kakooma",
+   "level": 1,
+   "seed": 7,
+   "input": "8",
+   "label": "correct"
+  },
+  {
+   "skill": "kakooma",
+   "level": 1,
+   "seed": 7,
+   "input": " 8 ",
+   "label": "correct"
+  },
+  {
+   "skill": "kakooma",
+   "level": 1,
+   "seed": 7,
+   "input": "3",
+   "label": "wrong",
+   "mistake": "partForWhole"
+  },
+  {
+   "skill": "kakooma",
+   "level": 1,
+   "seed": 7,
+   "input": "6",
+   "label": "wrong",
+   "mistake": "usedTwice"
+  },
+  {
+   "skill": "kakooma",
+   "level": 1,
+   "seed": 7,
+   "input": "eight",
+   "label": "form",
+   "note": "a word"
+  },
+  {
+   "skill": "kakooma",
+   "level": 1,
+   "seed": 7,
+   "input": "9",
+   "label": "form",
+   "note": "not one of the numbers offered"
+  },
+  {
+   "skill": "kakooma",
+   "level": 2,
+   "seed": 7,
+   "input": "19",
+   "label": "correct"
+  },
+  {
+   "skill": "kakooma",
+   "level": 2,
+   "seed": 7,
+   "input": "20",
+   "label": "wrong",
+   "mistake": "usedTwice"
+  },
+  {
+   "skill": "kakooma",
+   "level": 2,
+   "seed": 7,
+   "input": "9",
+   "label": "wrong",
+   "mistake": "partForWhole"
+  },
+  {
+   "skill": "kakooma",
+   "level": 2,
+   "seed": 7,
+   "input": "15",
+   "label": "wrong",
+   "note": "no two of the others add up to it"
+  },
+  {
+   "skill": "kakooma",
+   "level": 3,
+   "seed": 7,
+   "input": "30",
+   "label": "correct"
+  },
+  {
+   "skill": "kakooma",
+   "level": 3,
+   "seed": 7,
+   "input": "30.0",
+   "label": "correct"
+  },
+  {
+   "skill": "kakooma",
+   "level": 3,
+   "seed": 7,
+   "input": "25",
+   "label": "wrong",
+   "mistake": "usedTwice"
+  },
+  {
+   "skill": "kakooma",
+   "level": 3,
+   "seed": 7,
+   "input": "5",
+   "label": "wrong",
+   "mistake": "partForWhole"
+  },
+  {
+   "skill": "kakooma",
+   "level": 3,
+   "seed": 7,
+   "input": "45",
+   "label": "wrong",
+   "note": "no two of the others multiply to it"
+  },
+  {
+   "skill": "kakooma",
+   "level": 3,
+   "seed": 7,
+   "input": "11",
+   "label": "form",
+   "note": "5 + 6, not one of the numbers offered"
+  },
+  {
    "skill": "closerTo",
    "level": 1,
    "seed": 7,

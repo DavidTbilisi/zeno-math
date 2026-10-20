@@ -73,5 +73,8 @@ export const MISTAKES = [
   "addedNotScaled",
   "ratioAsFraction",
   "rateInverted",
+  "partForWhole",
+  "usedTwice",
+  "sumNotProduct",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

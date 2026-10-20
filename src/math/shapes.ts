@@ -1191,6 +1191,17 @@ function divisiblePreview(): Piece[] {
   ];
 }
 
+function kakoomaPreview(): Piece[] {
+  // Four numbers round a circle; 7 = 3 + 4 is green, with its two parts ringed.
+  return [
+    ellipse(80, 80, 78, 78, { fill: FILL.gray, width: 1.5 }),
+    ...([[3, 80, 30], [7, 130, 80], [4, 80, 130], [5, 30, 80]] as const).flatMap(([n, x, y]) => [
+      ellipse(x, y, 22, 22, n === 7 ? { fill: FILL.green, color: "#2f9e44", width: 2.5 } : n === 5 ? { fill: "#ffffff", width: 1.5 } : { fill: "#ffffff", color: "#2f9e44", width: 2.5 }),
+      text(x, y, String(n), 22),
+    ]),
+  ];
+}
+
 function targetPreview(): Piece[] {
   // The target, and four cards beneath it.
   return [
@@ -1348,6 +1359,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTarget", group: "games", build: targetPreview, live: "target" },
   { id: "liveCloserTo", group: "games", build: closerToPreview, live: "closerTo" },
   { id: "liveDivisible", group: "games", build: divisiblePreview, live: "divisible" },
+  { id: "liveKakooma", group: "games", build: kakoomaPreview, live: "kakooma" },
   { id: "liveFractionWall", group: "games", build: fractionWallPreview, live: "fractionWall" },
   { id: "liveEquivMatch", group: "games", build: equivMatchPreview, live: "equivMatch" },
   { id: "liveFracOrder", group: "games", build: fracOrderPreview, live: "fracOrder" },

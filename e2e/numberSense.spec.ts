@@ -3,7 +3,7 @@
 // practice question whose dots flash before the number is typed; a target made on the board by tapping cards and
 // signs, and a practice sum typed with the card buttons; a round of "closer to?" all right, and a practice benchmark
 // picked from its buttons; a "divisible by?" puzzle tapped right first time, and a practice list of divisors tapped
-// from its buttons. Pins are dropped where the line draws the
+// from its buttons; Kakooma's first two puzzles and its first grid, and a practice Kakooma picked from its buttons. Pins are dropped where the line draws the
 // number, wherever the piece or the dialog has been scaled to.
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -14,6 +14,8 @@ import { TARGET_LADDER, targetPuzzle, tokens } from "../src/math/target.ts";
 import { DIV_LADDER, divTask } from "../src/math/divisible.ts";
 import { rng } from "../src/math/random.ts";
 import { NEAR_LADDER, nearRound } from "../src/math/benchmark.ts";
+import { KAK_LADDER, kakTask } from "../src/math/kakooma.ts";
+import { practise, seedOf } from "./helpers.ts";
 
 const w = en.pracWords;
 
@@ -270,4 +272,42 @@ test("hundred square: jumps from a start traced as arrows, and the sum they make
   await expect(game.getByText("100 − 36 = 64")).toBeVisible();
   await game.getByRole("button", { name: /Replay/ }).click();
   await expect(game.locator("svg path[marker-end]")).toHaveCount(9, { timeout: 10_000 });
+});
+
+test("kakooma: a set tapped right, one after a slip, and a grid solved corner by corner, then its middle", async ({ page }) => {
+  const game = await boardWith(page, "Kakooma: find the sum of two others", ".live-kakooma");
+  const tasks = KAK_LADDER.slice(0, 3).map((p) => kakTask(p.level, p.grid, p.seed));
+  const tapIn = (nums: (number | string)[], n: number) => game.getByRole("group", { name: `Numbers ${nums.join(", ")}`, exact: true }).getByRole("button", { name: String(n), exact: true }).click();
+  // 7 = 2 + 5, first time.
+  const [one] = tasks[0].sets;
+  await tapIn(one.nums, one.answer);
+  await expect(game.getByText("Right! 7 = 2 + 5. ★★★")).toBeVisible();
+  await game.getByRole("button", { name: "Next →" }).click();
+  // 9 = 4 + 5 beside 8: 8 tapped first would need the 4 twice.
+  const [two] = tasks[1].sets;
+  await tapIn(two.nums, 8);
+  await expect(game.getByText("4 + 4 = 8, but there is only one 4: a number can't be used twice.")).toBeVisible();
+  await tapIn(two.nums, two.answer);
+  await expect(game.getByText("Right! 9 = 4 + 5. ★★☆")).toBeVisible();
+  await game.getByRole("button", { name: "Next →" }).click();
+  // The grid: each corner, its answer filling the middle, then the middle.
+  const sets = tasks[2].sets;
+  for (const [i, s] of sets.slice(0, 4).entries()) {
+    await tapIn(s.nums, s.answer);
+    if (i < 3) await expect(game.getByText(/into the middle it goes\./)).toBeVisible();
+  }
+  await expect(game.getByText(/The middle is full: now solve it\./)).toBeVisible();
+  await tapIn(sets[4].nums, sets[4].answer);
+  await expect(game.getByText(/A whole grid with no misses! Right! .* ★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 4/ })).toBeEnabled();
+});
+
+test("a practice kakooma picked from its buttons", async ({ page, request }) => {
+  const r = 0.61;
+  const ex = exercise("kakooma", 3, seedOf(r), w);
+  await practise(page, request, { tab: "Number", skill: "Kakooma", level: "hard", r, prompt: ex.prompt });
+  await page.locator(".sign-picks").getByRole("button", { name: ex.plain, exact: true }).click();
+  await expect(page.getByLabel("Your answer")).toHaveValue(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
 });
