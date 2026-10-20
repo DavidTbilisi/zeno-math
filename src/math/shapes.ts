@@ -1077,6 +1077,15 @@ function backpropLabPreview(): Piece[] {
   ];
 }
 
+function tensorLabPreview(): Piece[] {
+  // Two slices of a tensor, one entry picked out, and under them its place in the strip of memory.
+  const cells: Piece[] = [];
+  for (const [x0, fill] of [[0, FILL.blue], [100, FILL.green]] as const)
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) cells.push(rect(x0 + c * 26, r * 26, 26, 26, { fill: x0 + c * 26 === 126 && r === 1 ? "#ff922b" : fill, width: 1.5 }));
+  for (let p = 0; p < 12; p++) cells.push(rect(p * 15, 110, 15, 15, { fill: p === 10 ? "#ff922b" : p < 6 ? FILL.blue : FILL.green, width: 1 }));
+  return [...cells, path([[139, 52], [157, 108]], { color: "#d9480f", width: 2 })];
+}
+
 /** A small graph for the graph games' previews: five vertices of a house shape, and its edges. */
 const HOUSE: Pt[] = [[90, 0], [10, 60], [170, 60], [10, 150], [170, 150]];
 const HOUSE_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4], [3, 4], [1, 4], [2, 3]];
@@ -1365,6 +1374,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
   { id: "liveEmbedLab", group: "games", build: embedLabPreview, live: "embedLab" },
   { id: "liveBackpropLab", group: "games", build: backpropLabPreview, live: "backpropLab" },
+  { id: "liveTensorLab", group: "games", build: tensorLabPreview, live: "tensorLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

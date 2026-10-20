@@ -42,6 +42,7 @@ import { PcaLab } from "./PcaLab";
 import { SoftmaxLab } from "./SoftmaxLab";
 import { EmbedLab } from "./EmbedLab";
 import { BackpropLab } from "./BackpropLab";
+import { TensorLab } from "./TensorLab";
 import { Soroban } from "./Soroban";
 import { Target } from "./Target";
 import type { PieceProps } from "./ui";
@@ -106,6 +107,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   softmaxLab: SoftmaxLab,
   embedLab: EmbedLab,
   backpropLab: BackpropLab,
+  tensorLab: TensorLab,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {

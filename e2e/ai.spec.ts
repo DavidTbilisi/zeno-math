@@ -12,20 +12,22 @@
 // So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
 // The embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
 // And the backprop lab: a Check with the boxes empty says which one, and q's box tapped and both boxes filled in are
-// right, for two stars.
+// right, for two stars. The tensors lab: a Check with nothing tapped says so, T[2, 1] for T[1, 2] has the indices the
+// wrong way round, and T[1, 2] is right after those two tries for one star; then T[2, 1]'s place in memory at the first try, linked to it.
 import { expect, test } from "@playwright/test";
 import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
 import { etaIndex } from "../src/math/descentLab.ts";
 import { EMBED_PLOT, toPage as embedPage } from "../src/math/embedLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
 import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
+import { TN_PLOT, tnLayout, tnSetup, viewOf } from "../src/math/tensorLab.ts";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
   await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Tensors/ }).click();
+  await page.getByRole("menuitem", { name: /Tensors(?! lab)/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Math for AI" })).toBeVisible();
@@ -355,4 +357,47 @@ test("the backprop lab goes on the board from the AI menu, and its boxes are fil
   await expect(lab.getByText(/A × gate swaps its inputs.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("backprop-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the tensors lab goes on the board from the AI menu, and its entries and places are tapped", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Tensors lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Tensors lab/ }).click();
+  const lab = page.locator(".live-tensorLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Tap the entry T\[1, 2\]/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/Nothing is tapped yet/)).toBeVisible();
+
+  // The cells of the 3 × 4 matrix, and the places in memory, in the picture's own units; the picture is found afresh
+  // for each tap, since a longer prompt above it moves it down.
+  const { cells, mem } = tnLayout(viewOf(tnSetup("m34")));
+  const tap = async (b: { x: number; y: number; cs: number }) => {
+    const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+    const k = svg.width / TN_PLOT.w;
+    await page.mouse.click(svg.x + (b.x + b.cs / 2) * k, svg.y + (b.y + b.cs / 2) * k);
+  };
+  await tap(cells[2 * 4 + 1]);
+  await expect(lab.getByText("Tapped: T[2, 1] = 62.")).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/T\[2, 1\] has the right indices in the wrong order/)).toBeVisible();
+  await tap(cells[1 * 4 + 2]);
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/Indices count from 0.*Done! ★☆☆/)).toBeVisible();
+
+  // Puzzle 2: T[2, 1] at place 2·4 + 1 = 9, and once done the entry and its place are linked.
+  await lab.getByRole("button", { name: /^Puzzle 2/ }).click();
+  await tap(cells[2 * 4 + 1]);
+  await expect(lab.getByText(/Tapped/)).toHaveCount(0);
+  await tap(mem[9]);
+  await expect(lab.getByText("Tapped: place 9.")).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/Row-major.*Done! ★★★/)).toBeVisible();
+  await expect(lab.getByText("T[2, 1] = 62 sits at place 2·4 + 1·1 = 9.")).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("tensor-lab.png") });
 });
