@@ -34,6 +34,7 @@ import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { PCA_START, type LivePca } from "./pcaLab";
 import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
+import { BP_START, type LiveBackprop } from "./backpropLab";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { Sharing } from "./sharing";
@@ -403,6 +404,7 @@ export type LiveStates = {
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
   embedLab: LiveEmbed;
+  backpropLab: LiveBackprop;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -455,6 +457,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   pcaLab: [660, 640],
   softmaxLab: [660, 640],
   embedLab: [660, 600],
+  backpropLab: [660, 560],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -509,6 +512,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,
     embedLab: EMBED_START,
+    backpropLab: BP_START,
   };
   return structuredClone(start[kind]);
 }

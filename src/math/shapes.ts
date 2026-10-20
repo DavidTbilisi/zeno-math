@@ -1060,6 +1060,23 @@ function embedLabPreview(): Piece[] {
   ];
 }
 
+function backpropLabPreview(): Piece[] {
+  // Two inputs into a gate, the gate into the output, and a gradient arrow coming back under them.
+  const PURPLE = "#9c36b5";
+  return [
+    seg([22, 50], [86, 76], { color: MUTED, width: 2 }),
+    seg([22, 110], [86, 84], { color: MUTED, width: 2 }),
+    seg([114, 80], [168, 80], { color: MUTED, width: 2 }),
+    ellipse(14, 50, 10, 10, { fill: "#ffffff", width: 2 }),
+    ellipse(14, 110, 10, 10, { fill: "#ffffff", width: 2 }),
+    ellipse(100, 80, 15, 15, { fill: "#ffffff", width: 2 }),
+    ellipse(180, 80, 12, 12, { fill: "#ffffff", width: 2 }),
+    text(100, 85, "×", 18, "center"),
+    path([[180, 120], [100, 140], [20, 140]], { color: PURPLE, width: 3 }),
+    path([[32, 132], [20, 140], [32, 148]], { color: PURPLE, width: 3 }),
+  ];
+}
+
 /** A small graph for the graph games' previews: five vertices of a house shape, and its edges. */
 const HOUSE: Pt[] = [[90, 0], [10, 60], [170, 60], [10, 150], [170, 150]];
 const HOUSE_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4], [3, 4], [1, 4], [2, 3]];
@@ -1347,6 +1364,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
   { id: "liveEmbedLab", group: "games", build: embedLabPreview, live: "embedLab" },
+  { id: "liveBackpropLab", group: "games", build: backpropLabPreview, live: "backpropLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
