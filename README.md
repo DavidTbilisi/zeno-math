@@ -559,7 +559,7 @@ UI in English, Russian and Georgian.
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 75 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 77 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), fractions, mixed
     numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, and expressions in x that are checked for equivalence (any form of a derivative, any + C)
@@ -575,7 +575,8 @@ UI in English, Russian and Georgian.
     the cheapest roads taken though they make a loop, an even number taken for a multiple of 4, 5 cents written as .5,
     the smaller digit taken from the larger in every column, the last digits of decimals lined up instead of the
     points, a ratio's terms added to instead of multiplied, m : n taken for the fraction m/n, a rate worked the wrong way
-    round, one of two parts given for the number they make, a number used twice, and more (74 in all, in
+    round, one of two parts given for the number they make, a number used twice, a total of the wrong parity, only
+    the neighbours out of order counted, and more (78 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -669,6 +670,12 @@ UI in English, Russian and Georgian.
   - Connecting towns: the least total cost of roads joining every town (a minimum spanning tree), on six, nine and
     twelve towns, every cost different. The n − 1 cheapest roads taken though they make a loop is named; the worked
     solution draws the cheapest network and adds it up
+  - Plus or minus (parity): which of four totals can ±1 ±2 … ±n make, for n up to 5, 9 and 14 (negative totals on
+    hard)? A total of the wrong parity, and one of the right parity but beyond 1 + … + n, are named; the working
+    shows the sum, the even difference and the signs that do it
+  - Swaps to sort (a monovariant): how many swaps of neighbours that are out of order put 4, 5 or 7 numbers in order?
+    Exactly the pairs out of order. Counting only the neighbours out of order at the start, or the numbers out of
+    place, is named; the working counts, for each number, the smaller ones after it
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
@@ -721,9 +728,25 @@ UI in English, Russian and Georgian.
     picture of v and A·v on the eigenvector lines
 - **♟ Problem-solving tactics** (after Zeitz, *The Art and Craft of Problem Solving*)
   - *Symmetry*: 1 + 2 + … + n as a staircase and its turned copy filling an n × (n + 1) rectangle, with Gauss's pairing
+  - *Extreme principle*: everyone squirts their nearest neighbour with a water pistol — the closest pair is forced to
+    squirt each other, so an odd crowd always leaves someone dry; arrows to each nearest person, the dry ones in green
   - *Pigeonhole*: p pigeons in h holes, or numbers sorted into boxes by remainder — two in one box differ by a multiple of n
+  - *Parity*: can ±1 ±2 … ±n make t? Turning a + into a − changes the total by an even number, so the parity of
+    1 + … + n decides; when it can be done, the signs that do it
+  - *Mod 3 invariant*: red, green and blue chameleons, two of different colours meet and both take the third colour —
+    the remainders mod 3 shift together, so all one colour is possible exactly when two of them agree; the fewest
+    meetings drawn when it is
   - *Colouring*: can dominoes tile a board with squares removed? The chessboard colouring rules it out when the
     colours do not balance; otherwise a search draws a tiling or shows that none exists
+  - *Monovariant*: swap neighbours that are out of order until the list is sorted — each swap removes exactly one
+    inversion, so it stops after exactly that many swaps, whichever pair you pick
+- **♞ Problem-solving strategies** — how to start, before you know which tactic a problem needs
+  - *Pólya's four phases* (*How to Solve It*): understand, devise a plan, carry it out, look back — a card for your
+    own problem with your notes in each phase, and Pólya's own questions in any phase you leave empty
+  - *Start-up strategies* (Zeitz): get your hands dirty, make it easier, the penultimate step and wishful thinking,
+    each worked on a sample problem for the n you type — the sum of the first n odd numbers (L-shapes round a
+    square), handshakes (every pair joined round a circle), the locker problem (the open lockers are the squares) and
+    a take-1-to-3 stones game (the lost piles are the multiples of 4)
 - **⇅ Algorithms** — algorithms and data structures, traced step by step with every count shown
   - A step slider on every trace: rows, table rows, graph and tree states, calls and board positions appear one
     step at a time (the newest one highlighted), and the answer is only stated on the last step
@@ -761,7 +784,7 @@ UI in English, Russian and Georgian.
   school geometry, coordinate geometry, vectors, trigonometry, trig identities, 3D), **Algebra** (formulas, graphs, functions, equations, polynomials, powers & logs, sequences &
   series,
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs, numerical methods) and
-  **Discrete** (number theory, combinatorics, graph theory, logic, tactics, algorithms, statistics, inference), plus
+  **Discrete** (number theory, combinatorics, graph theory, logic, tactics, strategies, algorithms, statistics, inference), plus
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
   look, make the target, closer to?, divisible by?, Kakooma), fraction sense (make a whole, equal amounts, fractions on the line, shade the
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
@@ -1201,7 +1224,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (75 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (77 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -1227,7 +1250,7 @@ any split of its input, the ASSISTments importer keeps the right rows, the held-
 and BKT match hand-worked steps and BKT's fit recovers the parameters its data came from, the ANCOVA, Welch's test and
 t quantiles match hand-worked values and printed tables, every simulated world teaches and every arm runs, a dry run
 of the whole study through the server keeps every guarantee, and the answer checker agrees with a teacher's marking
-of 677 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
+of 701 typed answers at least 89 % of the time, crediting at most two wrong answers, and names every mistake a
 teacher names in them and almost none that a teacher doesn't. GitHub Actions runs the typecheck,
 lint, tests with coverage, build and end-to-end tests on every push, and builds the Docker image, saves a board in
 it and checks that it marks a practice answer itself.
@@ -1356,7 +1379,8 @@ src/math/derive.ts        derivatives: rules one level at a time, first principl
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
 src/math/mental.ts        mental math: base multiplication, division (base, flag, Trachtenberg), divisibility,
                           reciprocals, digit-sum check, roots, cubing, magic squares, Major System
-src/math/tactics.ts       problem-solving tactics: symmetry, pigeonhole, domino tiling by colouring
+src/math/tactics.ts       problem-solving tactics: symmetry, the extreme principle, pigeonhole, parity, mod 3, colouring, a monovariant
+src/math/strategies.ts    problem-solving strategies: Pólya's four phases, Zeitz's start-up strategies on sample problems
 src/math/matrix.ts        matrix operations → LaTeX with worked steps
 src/math/transform.ts     2×2 matrix as a plane transformation → SVG
 src/three/                3D: spec + formulas (spec.ts), scene building (build.ts), viewer & PNG snapshot (viewer.ts)

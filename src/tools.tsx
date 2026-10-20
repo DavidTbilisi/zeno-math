@@ -19,7 +19,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -64,6 +64,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   complex: { Dialog: load(() => import("./components/ComplexDialog"), "ComplexDialog"), edit: "editComplex", topics: (t) => t.cxTopics, hints: (t) => t.cxHints },
   mental: { Dialog: load(() => import("./components/MentalDialog"), "MentalDialog"), edit: "editMental", topics: (t) => t.mentalTopics, hints: (t) => t.mentalHints },
   tactics: { Dialog: load(() => import("./components/TacticsDialog"), "TacticsDialog"), edit: "editTactics", topics: (t) => t.tacticsTopics, hints: (t) => t.tacticsHints },
+  strategies: { Dialog: load(() => import("./components/StrategiesDialog"), "StrategiesDialog"), edit: "editStrategies", topics: (t) => t.strategiesTopics, hints: (t) => t.strategiesHints },
   algebra: { Dialog: load(() => import("./components/AlgebraDialog"), "AlgebraDialog"), edit: "editAlgebra", topics: (t) => t.algebraTopics, hints: (t) => t.algebraHints },
   coord: { Dialog: load(() => import("./components/CoordDialog"), "CoordDialog"), edit: "editCoord", topics: (t) => t.coordTopics, hints: (t) => t.coordHints },
   vectors: { Dialog: load(() => import("./components/VecDialog"), "VecDialog"), edit: "editVectors", topics: (t) => t.vecTopics, hints: (t) => t.vecHints },
@@ -138,6 +139,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "gt", icon: "⬡", label: "gt" },
       { kind: "logic", icon: "∧", label: "logic" },
       { kind: "tactics", icon: "♟", label: "tactics" },
+      { kind: "strategies", icon: "♞", label: "strategies" },
       { kind: "algo", icon: "⇅", label: "algo" },
       { kind: "statistics", icon: "📊", label: "statistics" },
       { kind: "inference", icon: "H₀", label: "inference" },

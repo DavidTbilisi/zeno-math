@@ -76,5 +76,9 @@ export const MISTAKES = [
   "partForWhole",
   "usedTwice",
   "sumNotProduct",
+  "parityIgnored",
+  "beyondReach",
+  "neighboursOnly",
+  "outOfPlace",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

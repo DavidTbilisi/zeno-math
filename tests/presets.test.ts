@@ -22,6 +22,7 @@ import { TRIG_PRESETS, renderTrig } from "../src/math/trig.ts";
 import { DEFAULT_SPACE, renderSpace, SPACE_PRESETS } from "../src/math/vectorspace.ts";
 import { MENTAL_PRESETS, renderMental } from "../src/math/mental.ts";
 import { renderTactics, TACTICS_PRESETS } from "../src/math/tactics.ts";
+import { renderStrategies, STRATEGY_PRESETS } from "../src/math/strategies.ts";
 import { ALGEBRA_PRESETS, renderAlgebra } from "../src/math/algebra.ts";
 import { POWERS_PRESETS, renderPowers } from "../src/math/powers.ts";
 import { COORD_PRESETS, renderCoord } from "../src/math/coordgeom.ts";
@@ -60,6 +61,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["trigonometry", specs(TRIG_PRESETS), (s, t) => renderTrig(s, t.trigWords)],
   ["mental math", specs(MENTAL_PRESETS), (s, t) => renderMental(s, t.mentalWords)],
   ["tactics", specs(TACTICS_PRESETS), (s, t) => renderTactics(s, t.tacticsWords)],
+  ["strategies", specs(STRATEGY_PRESETS), (s, t) => renderStrategies(s, t.strategiesWords)],
   ["algebra", specs(ALGEBRA_PRESETS), (s, t) => renderAlgebra(s, t.algebraWords)],
   ["powers", specs(POWERS_PRESETS), (s, t) => renderPowers(s, t.powersWords)],
   ["coordinate geometry", specs(COORD_PRESETS), (s, t) => renderCoord(s, t.coordWords)],
