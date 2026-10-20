@@ -3,7 +3,7 @@
 export type Area = "number" | "algebra" | "geometry" | "calculus" | "data";
 export const AREAS: Area[] = ["number", "algebra", "geometry", "calculus", "data"];
 export const SKILLS = {
-  number: ["compare", "quickLook", "estimateLine", "closerTo", "times", "money", "makeTarget", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes"],
+  number: ["compare", "quickLook", "estimateLine", "closerTo", "times", "money", "makeTarget", "kakooma", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes"],
   algebra: ["balance", "findRule", "growingPattern", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions"],
   geometry: ["shapeArea", "estimateAngle", "missingAngle", "symmetryLines", "cubeNets", "coordinates", "slope", "line", "distance", "trigexact", "righttri", "circles", "similarity", "volume", "identities", "vectors", "dotangle"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite", "numroots", "numint"],

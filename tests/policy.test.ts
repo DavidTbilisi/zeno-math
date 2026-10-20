@@ -25,7 +25,7 @@ test("skills are tagged with the years of the primary syllabus their levels belo
     assert.ok(years!.some((y) => y !== null), `${skill} has no level in the syllabus`);
   }
   for (const y of YEARS) assert.ok(skillsOfYear(y).length >= 3, `P${y}`);
-  assert.deepEqual(skillsOfYear(1), ["quickLook", "compare", "estimateLine", "closerTo", "makeTarget"]);
+  assert.deepEqual(skillsOfYear(1), ["quickLook", "compare", "estimateLine", "closerTo", "makeTarget", "kakooma"]);
   assert.deepEqual(skillsOfYear(6).filter((k) => ["ratio", "percent", "balance", "average", "rate"].includes(k)), ["percent", "ratio", "average", "balance"]);
   // The secondary topics and graph theory are not on it.
   for (const k of ["integers", "primes", "linear", "oneStroke", "probability"] as const) assert.equal(SYLLABUS[k], undefined);

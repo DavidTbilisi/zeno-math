@@ -83,6 +83,9 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   addedNotScaled: ["ratio", [1, 2]],
   ratioAsFraction: ["ratio", [2, 3]],
   rateInverted: ["rate", [1, 2]],
+  partForWhole: ["kakooma", [1, 2, 3]],
+  usedTwice: ["kakooma", [1, 2, 3]],
+  sumNotProduct: ["kakooma", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
