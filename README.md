@@ -525,6 +525,16 @@ UI in English, Russian and Georgian.
     slope without the gradient above). Stars go to a puzzle done at the first try, and eight discoveries are kept. Free
     play takes any of the seven graphs, inputs changed by halves with every gradient shown, and a nudge of 0.01 to the
     chosen input that changes L by about its gradient times 0.01
+  - *Tensors lab* (a live piece on the board, from the AI menu or the Shapes panel): a tensor's entries drawn as slices,
+    rows and columns, and under them the one line of memory they are kept in, row-major. Eight puzzles, each with a
+    Check: tap T[1, 2] (indices count from 0), T[2, 1]'s place in memory (the rows one after another), T[1, 0, 2] in a
+    2 × 3 × 4 (the first index picks the slice), T[1, 2, 3]'s place (strides 12, 4, 1), the entry at place 17 (whole
+    slices, then rows, then what is left), the strides of a 4 × 3 × 2 typed in (each the product of the lengths after
+    it), where T[1, 0, 2] lands in T.reshape(4, 6) (the same memory, new strides) and where Tᵀ[3, 1] sits (the strides
+    swapped, so Tᵀ is not contiguous). A wrong check says why (counting from 1, the indices the wrong way round, a view
+    read as if laid out on its own, column-major order, one place off). Stars go to a puzzle done at the first try, and
+    eight discoveries are kept. Free play takes any of ten shapes and views (a transpose, reshapes, a permute): a tap on
+    an entry or a place lights the other with the sum that links them, and Next entry walks the view in its own order
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1271,6 +1281,8 @@ src/math/embedLab.ts      the embeddings lab: cosine, nearest words and analogie
                           is judged, the readout, and the picture
 src/math/backpropLab.ts   the backprop lab: the graphs' forward and backward passes, the eight puzzles and how a
                           check is judged, free play's nudge, the hints, and the picture
+src/math/tensorLab.ts     the tensors lab: shapes, views and their strides, places and indices, the eight puzzles and
+                          how a check is judged, free play's walk, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
