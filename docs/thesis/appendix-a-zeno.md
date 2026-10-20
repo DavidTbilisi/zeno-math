@@ -14,7 +14,7 @@ and English.
 
 The whiteboard is built on Excalidraw [@excalidraw] and adds 33 mathematics tools, among them graphs, geometry,
 step-by-step algebra and statistics, and 72 ready-made mathematical shapes. Inside it, a practice dialog generates
-questions for 74 skills in five areas, each at three levels of difficulty, checks typed answers, names common mistakes
+questions for 75 skills in five areas, each at three levels of difficulty, checks typed answers, names common mistakes
 behind wrong answers and shows worked solutions. Appendix E sets the skills against a primary syllabus.
 
 Students join a class with a code and need no account. Zeno collects no names, email addresses or other directly
