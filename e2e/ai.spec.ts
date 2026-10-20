@@ -10,8 +10,11 @@
 // runs out of steps and says so, the slider sets a better one, and the ball rolls to the bottom for two stars. The PCA
 // lab goes on the board too: a line across the cloud is not the best, and turned along it, it is PC1, for two stars.
 // So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
-// And the embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
+// The embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
+// And the backprop lab: a Check with the boxes empty says which one, and q's box tapped and both boxes filled in are
+// right, for two stars.
 import { expect, test } from "@playwright/test";
+import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
 import { etaIndex } from "../src/math/descentLab.ts";
 import { EMBED_PLOT, toPage as embedPage } from "../src/math/embedLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
@@ -318,5 +321,38 @@ test("the embeddings lab: dog at right angles to cat is not alike, beside it it 
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/Alike means pointing the same way.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("embed-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the backprop lab goes on the board from the AI menu, and its boxes are filled in by hand", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Backprop lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Backprop lab/ }).click();
+  const lab = page.locator(".live-backpropLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Fill in ∂L\/∂q and ∂L\/∂z/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText("The box for ∂L/∂q is empty.")).toBeVisible();
+
+  // A tap on q's box, under its circle, goes to its field; Enter goes on to z's.
+  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const k = svg.width / BP_PLOT.w;
+  const [qx, qy] = bpPos(bpGraph("classic")).q;
+  await page.mouse.click(svg.x + qx * k, svg.y + (qy + 36) * k);
+  await expect(lab.getByLabel("∂L/∂q")).toBeFocused();
+  await page.keyboard.type("−4");
+  await page.keyboard.press("Enter");
+  await expect(lab.getByLabel("∂L/∂z")).toBeFocused();
+  await expect(lab.getByText(/z goes into L = q × z, with local slope q/)).toBeVisible();
+  await page.keyboard.type("3");
+  await page.keyboard.press("Enter");
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/A × gate swaps its inputs.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("backprop-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });

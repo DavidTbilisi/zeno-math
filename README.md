@@ -514,6 +514,17 @@ UI in English, Russian and Georgian.
     check says why, stars go to a puzzle done at the first try, and eight discoveries are kept. In free play any word
     can be dragged, and tapping words picks them: one shows its nearest words, two how alike they are, three where
     their analogy lands
+  - *Backprop lab* (a live piece on the board, from the AI menu or the Shapes panel): a small computational graph, its
+    inputs on the left and the loss L on the right, each node with its value from the forward pass and under it a box
+    for its gradient ∂L/∂node, typed in by hand going back from L (−4, 0.25 and 1/4 all count). Eight puzzles, each
+    with a Check: the boxes of a × gate (the inputs swap) and of a + gate (the gradient passes unchanged), one neuron's
+    squared error (the local slopes multiply along the chain), a value used twice (the paths add), a sigmoid (its slope
+    σ(1 − σ)), a ReLU that is off (nothing comes back), two layers (the later weight multiplies what reaches the first)
+    and log loss on a sigmoid (σ − 1). The box being typed in shows the arrows out of its node with their local slopes;
+    a wrong check points at the first box from L that is off and says why (the wrong sign, one path of two, the local
+    slope without the gradient above). Stars go to a puzzle done at the first try, and eight discoveries are kept. Free
+    play takes any of the seven graphs, inputs changed by halves with every gradient shown, and a nudge of 0.01 to the
+    chosen input that changes L by about its gradient times 0.01
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1258,6 +1269,8 @@ src/math/softmaxLab.ts    the softmax lab: softmax with a temperature, the loss 
                           and how a check is judged, and the picture
 src/math/embedLab.ts      the embeddings lab: cosine, nearest words and analogies, the eight puzzles and how a check
                           is judged, the readout, and the picture
+src/math/backpropLab.ts   the backprop lab: the graphs' forward and backward passes, the eight puzzles and how a
+                          check is judged, free play's nudge, the hints, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)

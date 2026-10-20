@@ -90,6 +90,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
     { kind: "pcaLab", icon: "📏", name: "livePcaLab" },
     { kind: "softmaxLab", icon: "📊", name: "liveSoftmaxLab" },
     { kind: "embedLab", icon: "🧭", name: "liveEmbedLab" },
+    { kind: "backpropLab", icon: "🔙", name: "liveBackpropLab" },
   ],
   groupDiscreteShort: [
     { kind: "chance", icon: "🎲", name: "liveChance" },
