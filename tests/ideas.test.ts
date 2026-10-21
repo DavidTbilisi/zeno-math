@@ -66,6 +66,25 @@ test("the ideas world: the skill known when every idea is, ideas kept once learn
   assert.deepEqual(simulateIdeas({ students: 4, length: 5 }), simulateIdeas({ students: 4, length: 5 }));
 });
 
+test("the checklist: ticks only after a wrong answer no mistake explains, among the ideas it needed, as many as were missing when the student is never wrong about them; the blamed forms read them", () => {
+  const ps = simulateIdeas({ students: 40, length: 20, learnRate: 0.1, checklist: { hit: 1, falseAlarm: 0 } });
+  let asked = 0;
+  for (const p of ps)
+    for (let i = 1; i < p.answers.length; i++) {
+      const ticked = p.ticked![i];
+      const missing = p.needs[i].filter((j) => !p.ideaKnown[j][i - 1]);
+      if (p.answers[i] === 0 && p.gap[i] < 0) assert.deepEqual(ticked, missing);
+      else assert.deepEqual(ticked, [], "nothing asked after a right answer or a named mistake");
+      if (ticked.length) asked++;
+    }
+  assert.ok(asked > 50, `${asked} checklists with a tick`);
+  assert.ok(simulateIdeas({ students: 4, length: 5 }).every((p) => p.ticked === undefined), "no checklist, nothing drawn for it");
+  const fit: IdeaFit = { idea: fitIdeas(ps), question: () => ({ guess: 0.2, slip: 0.1 }) };
+  const without = diagnosis(fit, ps, { blame: true }), read = diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps, { blame: true });
+  assert.ok(read.right > without.right + 0.1, `the missing idea found ${read.right} with the ticks read, ${without.right} without`);
+  assert.equal(diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps).right, diagnosis(fit, ps).right, "the form without blame passes them over");
+});
+
 test("the conjunctive step is BKT's step with one idea, or with the others certainly known, and leaves ideas not needed alone", () => {
   const one = [0.3];
   conjunctiveStep(one, [0], () => 0.1, params, true);

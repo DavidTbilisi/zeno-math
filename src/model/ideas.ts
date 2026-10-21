@@ -4,7 +4,8 @@
 // fractions in curriculum order, each needing the ideas arithmeticUses and fractionsUses read from it: seven to ten at
 // once on fractions, almost never one alone. An answer is right (but for a slip) only when every idea it needs is
 // known, and otherwise a guess; a wrong answer may take the form of a mistake the checker recognises (addAcross,
-// flipFirst) when the idea that mistake shows missing is among the unknown ones. Each needed idea that is unknown may
+// flipFirst) when the idea that mistake shows missing is among the unknown ones; a wrong answer no mistake explains may
+// be followed by a checklist of the question's ideas, the ones the student found hard ticked. Each needed idea that is unknown may
 // be learnt from the question. The skill is mastered when every idea its questions can need is known, which is the
 // gradual worlds' definition here too: only then is the chance of a right answer on the next question 1 − slip. A
 // share of the questions can be made to ask for one idea alone, which the generators do not do yet, to see what such
@@ -12,14 +13,14 @@
 //
 // Compared, by H2's standard: BKT on the skill, EMA and the streak rule as H2 ran them; and BKT on each idea, which
 // reads the ideas each question needs and updates them together (a conjunctive question: right only if all were
-// known), started afresh in every skill, then with the blame of a recognised mistake put on its one idea, then also
-// carried from skill to skill. Beyond cost and precision, the diagnosis: when exactly one of the skill's ideas is
+// known), started afresh in every skill, then with the blame of a recognised mistake put on its one idea (and the
+// checklist's ticks read, when there is one), then also carried from skill to skill. Beyond cost and precision, the diagnosis: when exactly one of the skill's ideas is
 // unknown, how often it is the one with the lowest P(known).
 import { en } from "../locales/en.ts";
 import { exercise } from "../math/practice.ts";
 import { FRACTIONS, type FractionsNode } from "./conceptGraph.ts";
 import { sigmoid } from "./elo.ts";
-import { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill } from "./ideaState.ts";
+import { conjunctiveStep, gapIdea, IDEA_SKILLS, tickStep, usesOf, type IdeaSkill, type TickRates } from "./ideaState.ts";
 import { bktStep, calibration, fitBkt, rmse, type BktParams, type Prediction } from "./evaluate.ts";
 import {
   bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtPrecision, costOf, decide, FINE_THRESHOLDS, fitRules, judge, masteryCalibration, PRECISION_TARGET,
@@ -31,7 +32,7 @@ import { DEFAULT_SIM } from "./simulate.ts";
 
 // The skills with a graph, the ideas a question needs, the idea a mistake blames and the step on several ideas at once
 // live in ideaState.ts, which the app reads too; here they are the world's.
-export { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill };
+export { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill, type TickRates };
 
 /** Questions generated per level to find which ideas a skill's questions can need. */
 const SAMPLE = 300;
@@ -49,9 +50,12 @@ export function ideasOf(skill: IdeaSkill): FractionsNode[] {
 
 /**
  * A skill's answers with the ideas behind them: the skill's ideas (ids), which of them each question needed (indices
- * into ids), the idea a recognised mistake blamed (an index, or −1), and whether each idea was known after each answer.
+ * into ids), the idea a recognised mistake blamed (an index, or −1), the ideas ticked as hard after a wrong answer
+ * (indices, none when no checklist was asked or nothing was ticked), and whether each idea was known after each answer.
  */
-export type IdeaPractice = Practice & { known: Uint8Array; ids: readonly string[]; needs: readonly (readonly number[])[]; gap: Int8Array; ideaKnown: Uint8Array[] };
+export type IdeaPractice = Practice & {
+  known: Uint8Array; ids: readonly string[]; needs: readonly (readonly number[])[]; gap: Int8Array; ticked?: readonly (readonly number[])[]; ideaKnown: Uint8Array[];
+};
 
 export type IdeaParams = {
   students: number;
@@ -67,12 +71,25 @@ export type IdeaParams = {
    * every question.
    */
   isolateRate: number;
+  /** The chance of a right answer when an idea the question needs is unknown. */
+  guess: number;
+  /**
+   * Which wrong answers say what is missing. "mapped": the generators' own recognised mistakes, as above. "every": a
+   * multiple-choice question whose every wrong option is the mistake of one idea it needs, so every wrong answer
+   * blames one: a missing one trapRate of the time, else any of them at random (a slip, or a guess among the options).
+   */
+  distractors: "mapped" | "every";
+  /**
+   * "What exactly was hard?": after a wrong answer no recognised mistake explains, the student ticks each idea the
+   * question needed that they are missing with chance hit, and each they know with chance falseAlarm. null: not asked.
+   */
+  checklist: TickRates | null;
   seed: number;
 };
-export const DEFAULT_IDEAS: IdeaParams = { students: 400, length: 30, learnRate: 0.02, trapRate: 0.5, isolateRate: 0, seed: 1 };
+export const DEFAULT_IDEAS: IdeaParams = { students: 400, length: 30, learnRate: 0.02, trapRate: 0.5, isolateRate: 0, guess: 0.2, distractors: "mapped", checklist: null, seed: 1 };
 
-/** The BKT world's chances at level 2, where H2's questions are. */
-const GUESS = 0.2, SLIP = 0.1;
+/** The BKT world's chance of a slip at level 2, where H2's questions are (its guess is DEFAULT_IDEAS.guess). */
+const SLIP = 0.1;
 const LEARN_PER_RATE = 2.5;
 
 /**
@@ -99,7 +116,7 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
       const ability = global + r.normal(spread.skill);
       for (const id of ids) if (!known.has(id)) known.set(id, r.next() < sigmoid(ability - difficulty.get(id)!));
       const answers = new Uint8Array(p.length), all = new Uint8Array(p.length), gap = new Int8Array(p.length).fill(-1);
-      const needs: number[][] = [];
+      const needs: number[][] = [], ticked: number[][] = [];
       const ideaKnown = ids.map(() => new Uint8Array(p.length));
       for (let i = 0; i < p.length; i++) {
         // A question asking for one idea alone has no recognised mistakes; otherwise the generator's own question.
@@ -111,18 +128,24 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
           if (j < 0) throw new Error(`${skill} asked for ${n}, which its sample of questions never needed`);
           return j;
         }));
-        const right = r.next() < (needed.every((n) => known.get(n)) ? 1 - SLIP : GUESS);
+        const right = r.next() < (needed.every((n) => known.get(n)) ? 1 - SLIP : p.guess);
         answers[i] = right ? 1 : 0;
-        if (!right && ex) {
+        if (!right && p.distractors === "every") {
+          const missing = needed.filter((n) => !known.get(n));
+          const shown = missing.length && r.next() < p.trapRate ? r.pick(missing) : r.pick(needed);
+          gap[i] = ids.indexOf(shown);
+        } else if (!right && ex) {
           // A wrong answer in the shape of a recognised mistake, when the question has one whose idea is missing.
           const missing = (ex.answer.traps ?? []).map((t) => gapIdea(t.id)).find((g) => g && needed.includes(g) && !known.get(g));
           if (missing && r.next() < p.trapRate) gap[i] = ids.indexOf(missing);
         }
+        const asked = !right && p.checklist && gap[i] < 0;
+        ticked.push(asked ? needs[i].filter((j) => r.next() < (known.get(ids[j]) ? p.checklist!.falseAlarm : p.checklist!.hit)) : []);
         for (const n of needed) if (!known.get(n) && r.next() < learn) known.set(n, true);
         ids.forEach((id, j) => (ideaKnown[j][i] = known.get(id) ? 1 : 0));
         all[i] = ids.every((id) => known.get(id)) ? 1 : 0;
       }
-      out.push({ student: `sim${s + 1}`, skill, answers, known: all, ids, needs, gap, ideaKnown });
+      out.push({ student: `sim${s + 1}`, skill, answers, known: all, ids, needs, gap, ...(p.checklist ? { ticked } : {}), ideaKnown });
     }
   }
   return out;
@@ -130,8 +153,8 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
 
 // ---------- BKT on each idea ----------
 
-/** BKT's parameters for each idea, and the guess and slip of a question on each skill. */
-export type IdeaFit = { idea: (id: string) => BktParams; question: (skill: string) => { guess: number; slip: number } };
+/** BKT's parameters for each idea, the guess and slip of a question on each skill, and how the checklist's ticks are taken to follow what is known. */
+export type IdeaFit = { idea: (id: string) => BktParams; question: (skill: string) => { guess: number; slip: number }; tick?: TickRates };
 /** How the ideas' P(known) are read: a recognised mistake's blame on its one idea or not, and where each skill starts. */
 export type IdeaOptions = { blame?: boolean; starts?: Starts };
 /** Where each of a practice's ideas starts: its P(known) carried from the student's earlier skills (see carriedIdeas). */
@@ -140,12 +163,16 @@ export type Starts = ReadonlyMap<Practice, readonly number[]>;
 /**
  * One answer into the ideas' P(known). A wrong answer in the shape of a recognised mistake, with blame on, is a wrong
  * answer on that idea alone (the mistake says the student got as far as it); any other answer updates every idea the
- * question needed, together.
+ * question needed, together, with blame on after the ideas ticked as hard (tickStep).
  */
 function stepIdeas(known: number[], p: IdeaPractice, i: number, fit: IdeaFit, blame: boolean | undefined) {
   const q = fit.question(p.skill), g = p.gap[i];
   if (blame && g >= 0) known[g] = bktStep(known[g], { ...q, init: 0, learn: fit.idea(p.ids[g]).learn }, false).known;
-  else conjunctiveStep(known, p.needs[i], (j) => fit.idea(p.ids[j]).learn, q, p.answers[i] === 1);
+  else {
+    const ticked = p.ticked?.[i];
+    if (blame && fit.tick && ticked?.length) tickStep(known, p.needs[i], ticked, fit.tick);
+    conjunctiveStep(known, p.needs[i], (j) => fit.idea(p.ids[j]).learn, q, p.answers[i] === 1);
+  }
 }
 
 /**
@@ -274,9 +301,13 @@ export type IdeasComparison = {
  * H2's comparison on one skill in the world of ideas, with the three forms of BKT on each idea added beside BKT on the
  * skill. Each is the cheapest of its family meeting the target on the training practices, judged on the test practices,
  * with intervals over students. The fits use every skill's training practices; carrying walks every student's practices
- * in order, so the skills before the one judged are what it carries from.
+ * in order, so the skills before the one judged are what it carries from. tick is how the blamed forms take the
+ * checklist's ticks to follow what is known (the world's own rates, or others to see what a wrong guess at them costs).
  */
-export function compareIdeas(train: readonly IdeaPractice[], test: readonly IdeaPractice[], skill: IdeaSkill = "fractions", target = PRECISION_TARGET, resamples = 2000, seed = 1, thresholds: readonly number[] = FINE_THRESHOLDS): IdeasComparison {
+export function compareIdeas(
+  train: readonly IdeaPractice[], test: readonly IdeaPractice[], skill: IdeaSkill = "fractions", target = PRECISION_TARGET, resamples = 2000, seed = 1,
+  thresholds: readonly number[] = FINE_THRESHOLDS, tick?: TickRates,
+): IdeasComparison {
   const fitted = fitRules(train);
   const trainS = train.filter((p) => p.skill === skill), testS = test.filter((p) => p.skill === skill);
   const onSkill = compareAtPrecision(trainS, testS, fitted, target, resamples, seed, thresholds);
@@ -297,8 +328,8 @@ export function compareIdeas(train: readonly IdeaPractice[], test: readonly Idea
   };
   // BKT on the skill chosen again as compareAtPrecision chose it, for the paired differences.
   const bktOnSkill = best(thresholds.map((t) => bktRule(fitted.bkt, t))).cost;
-  const afresh: IdeaFit = { idea: fitIdeas(train), question: fitted.bkt };
-  const across: IdeaFit = { idea: fitIdeas(train, true), question: fitted.bkt };
+  const afresh: IdeaFit = { idea: fitIdeas(train), question: fitted.bkt, tick };
+  const across: IdeaFit = { idea: fitIdeas(train, true), question: fitted.bkt, tick };
   const starts = carriedIdeas(across, [...train, ...test], true);
   const forms = [
     { fit: afresh, options: {} },

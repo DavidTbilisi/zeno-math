@@ -13,8 +13,8 @@ export type Question = { skill: SkillId; level: number; seed: number };
 export type Answered = { input: string; verdict: AnswerVerdict };
 
 /** Moves a student's ideas on by one stored attempt, as the browser does (learnFromAttempt): it rebuilds the question. */
-export function trackIdeas(state: IdeaState, q: Question, outcome: string, answers: readonly Answered[]): void {
-  learnFromAttempt(state, { skill: q.skill, level: q.level as Level, seed: q.seed, outcome: outcome as Outcome, answers: answers.map((a) => ({ ...a, ms: 0 })) });
+export function trackIdeas(state: IdeaState, q: Question, outcome: string, answers: readonly Answered[], hard?: string[]): void {
+  learnFromAttempt(state, { skill: q.skill, level: q.level as Level, seed: q.seed, outcome: outcome as Outcome, answers: answers.map((a) => ({ ...a, ms: 0 })), hard });
 }
 
 /** The verdict the checker gives this input for the question: correct, close, wrong or form (sent back). */

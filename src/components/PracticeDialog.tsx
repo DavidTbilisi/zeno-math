@@ -3,7 +3,7 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, withProtocol,
+  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { choose as choosePolicy } from "../model/policy";
@@ -135,6 +135,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
   const [wrongs, setWrongs] = useState(0);
   const [done, setDone] = useState<"solved" | "revealed" | null>(null);
   const [solution, setSolution] = useState<{ src?: string; error?: string } | null>(null);
+  /** The ideas ticked as hard on this question, as the log keeps them for the attempt. */
+  const [hard, setHard] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // ---------- the class study: what happens on each question is saved under the student's code ----------
@@ -309,6 +311,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
     setWrongs(0);
     setDone(null);
     setSolution(null);
+    setHard([]);
   }
   const next = () => {
     leaveQuestion();
@@ -364,6 +367,14 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
       return null;
     }
   }, [cur, shown]);
+  // Once a question is over after a wrong answer, a signed-in student is asked what exactly was hard: the ticks go with
+  // the attempt and move their ideas (ideaState.ts), so they are asked only where something keeps them.
+  const hardChoices = useMemo(() => (done && student ? whatWasHard(cur.ex, log.current) : null), [done, cur, student]);
+  const toggleHard = (id: string) => {
+    const ticked = (hardChoices ?? []).filter((i) => (i === id) !== hard.includes(i));
+    setHard(ticked);
+    log.current.hard = ticked;
+  };
   const answerSrc = useMemo(() => (done ? svgToDataUrl(latexToSvg(cur.ex.show, "#2f9e44").svg) : null), [cur, done]);
 
   // ---------- worksheet ----------
@@ -648,6 +659,18 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
                 </div>
               )}
             </div>
+          )}
+          {hardChoices && (
+            <fieldset className="practice-hard">
+              <legend>{w.ui.whatWasHard}</legend>
+              {hardChoices.map((id) => (
+                <label key={id} className="check inline">
+                  <input type="checkbox" checked={hard.includes(id)} onChange={() => toggleHard(id)} />
+                  <span>{w.ideas[id]}</span>
+                </label>
+              ))}
+              <small className="hint">{w.ui.hardNote}</small>
+            </fieldset>
           )}
           <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
           {progress.answered > 0 && (

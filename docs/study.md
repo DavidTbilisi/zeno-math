@@ -29,10 +29,14 @@ A signed-in student practises in one of two ways:
     graph, `src/model/conceptGraph.ts`), the question is then the one bearing most on the idea the student is least
     likely to know: the server replays every stored answer into one probability per idea (`src/model/ideaState.ts`,
     sent with the plan under `ideas`), and of a hundred fresh questions the browser asks the one that needs that idea
-    with the fewest others, on fractions the form asking for it alone (`exerciseFor` in `src/learner.ts`).
+    with the fewest others, on fractions the form asking for it alone (`exerciseFor` in `src/learner.ts`). After a
+    wrong answer on such a skill that no recognised mistake explains, the student is asked what exactly was hard and
+    ticks any of the question's ideas; the ticks go with the attempt (`hard`) and move those probabilities as noisy
+    evidence, a ticked idea down and the others up (`tickStep`, at rates not yet fitted: a missing idea ticked half
+    the time, a known one one time in ten). An attempt with nothing ticked says nothing more than the wrong answer.
 
-  Everything else is the same for both groups: the feedback, the worked solutions, and missed questions coming back
-  three questions later.
+  Everything else is the same for both groups: the feedback, the worked solutions, the list of what was hard (asked
+  of both, though only the adaptive policy reads it), and missed questions coming back three questions later.
 - **Free practice:** the student picks the topic and level, as without a class.
 
 Each attempt records who chose it (`adaptive`, `fixed`, `free` or `review`) and the model's chance of a right answer
