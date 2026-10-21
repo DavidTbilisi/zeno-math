@@ -1110,6 +1110,26 @@ remains is to run on real class answers the three tests of whether an idea is le
 tests it alone, whether its error rate falls as one smooth curve, and whether practice on one form of it carries over
 to the others [@cen2006lfa], which is how the grain of Zeno's own skills would be found rather than drawn by hand.
 
+A sixth is to ask the student. A wrong answer that is not a recognised mistake says only that some idea the question
+needed is missing, not which, and on fractions a question needs about six. Since 21 October Zeno asks, after such an
+answer, what exactly was hard, with the question's own ideas to tick, and the adaptive condition reads each tick as
+noisy evidence on its idea: given the chances of ticking an idea that is missing and one that is known, a tick lowers
+that idea's probability and an idea left unticked rises a little, before the answer's own update. Both conditions are
+asked, so the feedback stays the same, and the ticks are stored with the answers. In the world of ideas, in a check
+made on 21 October after every result, the question helps where the answers help least. On fractions at the lower
+learning rate, within 30 answers, carried BKT on each idea named the missing idea 8, 26 and 2 % of the time on seeds 1
+to 3 from the answers alone, against about 6 % by chance. With students who tick a missing idea half the time and a
+known one a tenth of the time, it named it 55, 49 and 57 % of the time, and 78, 82 and 74 % with students who tick a
+missing idea four times in five and a known one once in twenty. With students who tick a missing idea three times in
+ten and a known one twice in ten, while the model assumes the first rates, it still named it 39, 40 and 32 % of the
+time. The other way to make a wrong answer say which idea, multiple choice whose every wrong option is the mistake of
+one idea, raised the share for BKT on each idea fitted afresh with the mistake's blame from 8, 13 and 2 % to 62, 21
+and 26 %, far less steadily, and it makes a right answer easier to guess. The question did not let any rule declare fractions mastered within 30 answers, and at the higher
+learning rate, where more wrong answers are slips, a tick can blame an idea the student knows and the gain was mixed.
+Whether it helps real students therefore turns on how well they can say what they do not know, which is untested. The
+rates of a half and a tenth are assumed, and the class's answers would fit them, as they would the parameters of each
+idea.
+
 Zeno's own class data would give a replication on the students the result is meant for. The system already exports
 every first answer in the format the evaluation reads, so the prediction test, the agreement of the mastery methods
 and the analysis across grains can be run on it unchanged.
