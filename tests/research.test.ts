@@ -22,7 +22,7 @@ import { usesOf } from "../src/model/ideaState.ts";
 import { testItems } from "../src/model/testForms.ts";
 import { verdictOf } from "../src/learner.ts";
 import { en } from "../src/locales/en.ts";
-import { check, exercise, type SkillId } from "../src/math/practice.ts";
+import { check, exercise, stepsOf, type SkillId } from "../src/math/practice.ts";
 
 const PORT = 20000 + Math.floor(Math.random() * 20000);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -504,6 +504,46 @@ test("the server marks every answer itself, and keeps the browser's verdict wher
   assert.ok(!rows[1].answers.includes("client"));
   // The model learns from the server's verdict: the claimed right answer counts as a miss.
   assert.deepEqual(observationsFromCsv(csvOf(rows)).map((o) => o.correct), [false, false]);
+});
+
+test("steps worked after a wrong answer are checked, marked again, replayed into the ideas and exported", async () => {
+  const { code } = await newClass("Steps");
+  const [withSteps, without] = [(await call("POST", "/api/students", { class: code })).body.code, (await call("POST", "/api/students", { class: code })).body.code];
+  // A sum over two denominators: its first step is their lowest common denominator.
+  const seed = (() => {
+    for (let s = 1; ; s++) if (stepsOf(exercise("fractions", 1, s, en.pracWords), en.pracWords)[0]?.prompt === en.pracWords.prompts.fracLcd) return s;
+  })();
+  const steps = stepsOf(exercise("fractions", 1, seed, en.pracWords), en.pracWords);
+  const missed = { policy: "free", skill: "fractions", level: 1, seed, outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] };
+  const step = (input: string, verdict: string, shown = false) => ({ answers: [{ input, verdict, ms: 12000 }], shown });
+  const refused = [
+    [],
+    [{ answers: [], shown: false }],
+    steps.map(() => ({ answers: [], shown: true })).concat([{ answers: [], shown: true }]),
+    [{ answers: [{ input: "1", verdict: "correct", ms: 1 }, { input: "2", verdict: "wrong", ms: 2 }], shown: false }],
+    "lcd",
+  ];
+  for (const bad of refused) assert.equal((await call("POST", "/api/attempts", attempt(withSteps, { ...missed, steps: bad }))).status, 400, JSON.stringify(bad));
+  const right = { ...missed, outcome: "solved", answers: [{ verdict: "correct", ms: 9000 }] };
+  assert.equal((await call("POST", "/api/attempts", attempt(withSteps, { ...right, steps: [step("1", "wrong", true)] }))).status, 400, "no steps after a right answer");
+  assert.equal((await call("POST", "/api/attempts", attempt(withSteps, { ...missed, skill: "linear", seed: 1, steps: [step("1", "wrong", true)] }))).status, 400, "no steps on a question without them");
+
+  // The first step missed (the browser claimed it right), the second right.
+  const worked = [step("12345", "correct", true), step(steps[1].plain, "correct")];
+  assert.equal((await call("POST", "/api/attempts", attempt(withSteps, { ...missed, steps: worked }))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(without, missed))).status, 201);
+  const ideas = async (student: string) => (await call("GET", `/api/students/${student}/plan`)).body.ideas as Record<string, number>;
+  const [a, b] = [await ideas(withSteps), await ideas(without)];
+  assert.ok(a.commonDenom < b.commonDenom, "the step missed lowers its idea");
+  assert.ok(a.equivalent > b.equivalent, "the step done right raises its idea");
+  const rows = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  const stored = rows.find((r) => r.steps)!;
+  assert.deepEqual(JSON.parse(stored.steps), [
+    { answers: [{ input: "12345", verdict: "wrong", ms: 12000, client: "correct" }], shown: true },
+    { answers: [{ input: steps[1].plain, verdict: "correct", ms: 12000 }], shown: false },
+  ]);
+  assert.equal(stored.remarked, "1");
+  assert.equal(rows.filter((r) => !r.steps).length, 1);
 });
 
 test("answers that come long after their phase are kept and marked late", async () => {

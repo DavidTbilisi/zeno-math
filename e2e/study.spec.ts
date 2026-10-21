@@ -1,6 +1,8 @@
 // The class study from both sides: a teacher makes a class, a student agrees and joins with its code and answers a
 // question that reaches the server, and when the teacher starts the pre-test the student gets the test.
 import { expect, test, type Page } from "@playwright/test";
+import { en } from "../src/locales/en.ts";
+import { exercise, stepsOf } from "../src/math/practice.ts";
 
 const TEACHER = "e2e-teacher";
 
@@ -126,4 +128,46 @@ test("after a wrong answer on fractions the student is asked what exactly was ha
   // The export's answers column holds JSON with commas in it, so the ticked ideas are found by their own quoting.
   expect(head.split(",")).toContain("hard");
   expect(row).toMatch(/"\[""[a-zA-Z]+""\]"/);
+});
+
+test("a wrong answer on a fractions operation is worked in steps, and the steps reach the server", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const { code } = await (await request.post("/api/classes", { data: { name: "Steps", skills: ["fractions"] }, headers })).json();
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  await student.locator(".practice-join summary").click();
+  await student.getByLabel("Class code").fill(code);
+  await student.getByLabel("I understand and want to take part").check();
+  await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
+  await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();
+
+  // The class may aim at one idea alone, which has no steps, so the operation is asked in free practice, which is
+  // saved under the student's code just the same; Math.random fixed so it is a question known here.
+  const r = Array.from({ length: 500 }, (_, i) => (i + 1) / 501).find((x) => stepsOf(exercise("fractions", 1, Math.floor(x * 2 ** 31), en.pracWords), en.pracWords).length > 1)!;
+  await student.getByRole("radio", { name: "Free practice" }).click();
+  await student.getByRole("tab", { name: "Number" }).click();
+  await student.evaluate((x) => (Math.random = () => x), r);
+  await student.getByRole("radio", { name: "easy" }).click();
+  await student.getByRole("button", { name: "Fractions", exact: true }).click();
+  await expect(student.locator(".practice-prompt")).toHaveText("Work out, in lowest terms:");
+  const steps = student.getByRole("region", { name: "Let's work it out step by step." });
+  await student.getByLabel("Your answer").fill("12345");
+  await student.getByRole("button", { name: "Check" }).click();
+  await expect(steps).toBeVisible();
+  // The first step missed once, then every step's answer shown.
+  const first = steps.getByLabel(/^Step 1 of \d+$/);
+  await first.fill("12345");
+  await first.press("Enter");
+  while (await steps.getByRole("button", { name: "Show this step" }).count()) await steps.getByRole("button", { name: "Show this step" }).click();
+  await expect(student.getByText("Now answer the whole question again.")).toBeVisible();
+  // The steps said which idea went wrong: nothing more is asked.
+  await student.getByRole("button", { name: "Show solution" }).click();
+  await expect(student.getByRole("group", { name: "What exactly was hard? Tick everything that was." })).toHaveCount(0);
+  await student.getByRole("button", { name: "Next" }).click();
+
+  const csv = async () => (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers })).text()).trim();
+  await expect.poll(async () => (await csv()).includes('""shown"":true')).toBe(true);
+  expect((await csv()).split("\n")[0].split(",")).toContain("steps");
 });

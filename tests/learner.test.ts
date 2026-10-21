@@ -5,9 +5,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
-import { check, exercise, trapInputs } from "../src/math/practice.ts";
+import { check, exercise, stepsOf, trapInputs } from "../src/math/practice.ts";
 import {
-  applyAttempt, attemptEvidence, finish, learnFromAttempt, logAnswer, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, whatWasHard, withProtocol, type Attempt,
+  applyAttempt, attemptEvidence, finish, learnFromAttempt, logAnswer, logStep, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, whatWasHard, withProtocol, type Attempt,
   type Origin, type Protocol, type SendResult, type Slot,
 } from "../src/learner.ts";
 import { EloModel } from "../src/model/elo.ts";
@@ -195,4 +195,33 @@ test("what was hard is asked after a miss no recognised mistake explains, and th
   assert.equal(toAttempt(miss, ex, free, student)!.hard, undefined, "nothing ticked, nothing sent");
   miss.hard = [usesOf(ex)[1]];
   assert.deepEqual(toAttempt(miss, ex, free, student)!.hard, [usesOf(ex)[1]]);
+});
+
+test("a question worked in steps: each step goes with the attempt and moves the ideas it needs", () => {
+  // A sum over two denominators: its first step is their lowest common denominator, its second a fraction over it.
+  const ex = (() => {
+    for (let seed = 1; ; seed++) {
+      const e = exercise("fractions", 1, seed, w);
+      if (stepsOf(e, w)[0]?.prompt === w.prompts.fracLcd) return e;
+    }
+  })();
+  const [lcd, convert] = stepsOf(ex, w);
+  const log = startLog();
+  logAnswer(log, "12345", check(ex, "12345", w));
+  logStep(log, 0, "1", check(lcd, "1", w));
+  logStep(log, 0, null);
+  logStep(log, 1, convert.plain, check(convert, convert.plain, w));
+  finish(log, "revealed");
+  assert.deepEqual(log.steps.map((s) => [s.answers.map((a) => a.verdict), s.shown]), [[["wrong"], true], [["correct"], false]]);
+  assert.equal(whatWasHard(ex, log), null, "the steps said which idea went wrong");
+  const a = toAttempt(log, ex, free, student)!;
+  assert.deepEqual(a.steps, log.steps);
+  assert.equal(toAttempt(startLog(), ex, free, student), null);
+
+  // The idea of the step missed ends lower than after the miss alone; the idea of the step done right, higher.
+  const plain: IdeaState = {}, stepped: IdeaState = {};
+  learnFromAttempt(plain, { ...a, steps: undefined });
+  learnFromAttempt(stepped, a);
+  assert.ok(stepped.commonDenom! < plain.commonDenom!);
+  assert.ok(stepped.equivalent! > plain.equivalent!);
 });

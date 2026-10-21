@@ -120,7 +120,7 @@ minute, when they next ask for the plan.
 
 ```text
 { clientId, student, skill, level, seed, review, outcome, policy?, predicted?, solutionViewed, msTotal, shownAt,
-  answers: [{ input, verdict, ms }], hard? }
+  answers: [{ input, verdict, ms }], hard?, steps?: [{ answers: [{ input, verdict, ms }], shown }] }
 ```
 
 - **`clientId`**: made by the browser (8–64 of `A-Za-z0-9-`).
@@ -133,15 +133,21 @@ minute, when they next ask for the plan.
 - **`hard`**: the ideas the student ticked when asked what exactly was hard after a wrong answer, each an idea of the
   fractions graph (`part`, `commonDenom`, `hcf`, …) once. Only on times, hcf and fractions, and left out when nothing
   was ticked; it moves the student's ideas in the plan.
+- **`steps`**: a fractions operation worked in steps after a wrong first answer, one entry per step reached, in the
+  order of the question's steps: the answers to that step (as `answers`, and nothing after a correct one) and
+  whether its answer was shown. No more entries than the question has steps, each answered or shown, and none when
+  the first counted answer was right. The server marks each step's answers again, and each step moves the ideas it
+  needs in the plan.
 
 The answers must agree with the outcome, or the attempt is refused with 400:
 
 - `solved` ends on a correct answer, and nothing follows a correct one.
 - A `skipped` question had at least one try.
 
-The server marks every answer again with the same checker (the question follows from skill, level and seed) and
-stores its own verdict; where the browser's differed, the answer keeps it as `client`, and `remarked` counts them. The
-summary columns (right first time, wrong answers, form retries) are worked out from the server's verdicts, so they
+The server marks every answer again with the same checker (the question follows from skill, level and seed, and so
+do its steps) and stores its own verdict; where the browser's differed, the answer keeps it as `client`, and `remarked`
+counts them, steps included. The summary columns (right first time, wrong answers, form retries) are worked out from
+the server's verdicts on the whole question's answers, so they
 can't disagree; the outcome stays as the browser sent it. Class practice (`adaptive` or `fixed`) that arrives more
 than five minutes after the class's practice time ended (open practice, or a session until its time is up) is stored
 with `late` set, for the analysis to report: an offline tablet's questions aren't lost. The answer is 201
@@ -194,7 +200,7 @@ used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=
 
 - **`attempts.csv`** columns: attempt, student, class, condition, policy, predicted, area, skill, level, seed,
   review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, hard,
-  remarked, late, shown_at, created_at.
+  steps, remarked, late, shown_at, created_at.
 - **`tests.csv`** columns: response, student, class, condition, test_order, phase, form, item, area, skill, level,
   seed, input, verdict, correct, client_verdict, late, retries, ms, created_at.
 

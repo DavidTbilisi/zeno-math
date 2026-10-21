@@ -34,9 +34,17 @@ A signed-in student practises in one of two ways:
     ticks any of the question's ideas; the ticks go with the attempt (`hard`) and move those probabilities as noisy
     evidence, a ticked idea down and the others up (`tickStep`, at rates not yet fitted: a missing idea ticked half
     the time, a known one one time in ten). An attempt with nothing ticked says nothing more than the wrong answer.
+    A fractions operation answered wrong is first worked in steps (`stepsOf` in `src/math/practice.ts`): each mixed
+    number as an improper fraction, the lowest common denominator, each fraction over it, the tops added or
+    multiplied, the reciprocal for a division, lowest terms; each step is checked as a question of its own, two tries
+    and then its answer is shown, and then the student answers the whole question again. The steps go with the
+    attempt (`steps`), and each step moves the ideas it needs as a question of its own would, so a wrong step says
+    which idea went wrong; a question worked in steps is not asked what was hard.
 
-  Everything else is the same for both groups: the feedback, the worked solutions, the list of what was hard (asked
-  of both, though only the adaptive policy reads it), and missed questions coming back three questions later.
+  Everything else is the same for both groups: the feedback, the worked solutions, the steps after a wrong answer on
+  a fractions operation, the list of what was hard (asked of both, though only the adaptive policy reads them), and
+  missed questions coming back three questions later. The first answer to a question is given before any step, so
+  `first_correct` means what it meant before the steps.
 - **Free practice:** the student picks the topic and level, as without a class.
 
 Each attempt records who chose it (`adaptive`, `fixed`, `free` or `review`) and the model's chance of a right answer
