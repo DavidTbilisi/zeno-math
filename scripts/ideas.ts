@@ -15,6 +15,11 @@
 //   --isolate 0,0.3         the share of questions asking for one idea alone (0: the generators as they are; 1: every question)
 //   --length 30,60,120      questions on each skill
 //   --test-share 0.2  --target 0.9  --resamples 2000
+//   --guess 0.2             the chance of a right answer with an idea missing (0.25 for four options)
+//   --every-distractor      multiple choice: every wrong answer blames one needed idea, a missing one --trap-rate of the time
+//   --checklist 0.5,0.1     "what exactly was hard?" after a wrong answer no mistake explains: an idea ticked with chance
+//                           0.5 when it is missing and 0.1 when it is known (hit, false alarm); the blamed forms read the ticks
+//   --assume 0.7,0.05       the rates the blamed forms take the ticks to have, when not the world's own
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
 //   --json     machine-readable output
 import { compareIdeas, DEFAULT_IDEAS, IDEA_SKILLS, ideasOf, simulateIdeas, type IdeasComparison, type IdeaSkill } from "../src/model/ideas.ts";
@@ -49,15 +54,26 @@ const isolates = opt("--isolate", "0").split(",").map(Number);
 if (isolates.some((x) => !(x >= 0 && x <= 1))) fail("--isolate must be shares from 0 to 1, separated by commas");
 const lengths = opt("--length", String(DEFAULT_IDEAS.length)).split(",").map(Number);
 if (lengths.some((n) => !Number.isInteger(n) || n < 1)) fail("--length must be whole numbers above 0, separated by commas");
+/** Two rates, "hit,false alarm", each from 0 to 1. */
+const rates2 = (name: string) => {
+  if (!args.includes(name)) return null;
+  const [hit, falseAlarm, ...rest] = opt(name, "").split(",").map(Number);
+  if (rest.length || !(hit >= 0 && hit <= 1) || !(falseAlarm >= 0 && falseAlarm <= 1)) fail(`${name} must be two chances from 0 to 1: hit,false alarm`);
+  return { hit, falseAlarm };
+};
 const base = {
   students: whole("--students", DEFAULT_IDEAS.students),
   trapRate: share("--trap-rate", DEFAULT_IDEAS.trapRate),
+  guess: share("--guess", DEFAULT_IDEAS.guess),
+  distractors: (args.includes("--every-distractor") ? "every" : "mapped") as "every" | "mapped",
+  checklist: rates2("--checklist"),
   seed: whole("--seed", DEFAULT_IDEAS.seed),
 };
 const testShare = share("--test-share", 0.2);
 const target = share("--target", PRECISION_TARGET);
 const resamples = whole("--resamples", 2000);
 const thresholds = args.includes("--beyond") ? BEYOND_THRESHOLDS : FINE_THRESHOLDS;
+const assumed = rates2("--assume") ?? base.checklist ?? undefined;
 
 type Result = { learnRate: number; isolateRate: number; length: number; knownAtEnd: number; ideasPerQuestion: number } & IdeasComparison;
 const results: Result[] = [];
@@ -69,11 +85,11 @@ for (const learnRate of rates)
         const mine = test.filter((p) => p.skill === skill);
         const knownAtEnd = mine.filter((p) => p.known[p.known.length - 1]).length / mine.length;
         const ideasPerQuestion = mine.reduce((s, p) => s + p.needs.reduce((t, n) => t + n.length, 0), 0) / mine.reduce((s, p) => s + p.needs.length, 0);
-        results.push({ learnRate, isolateRate, length, knownAtEnd, ideasPerQuestion, ...compareIdeas(train, test, skill, target, resamples, base.seed, thresholds) });
+        results.push({ learnRate, isolateRate, length, knownAtEnd, ideasPerQuestion, ...compareIdeas(train, test, skill, target, resamples, base.seed, thresholds, assumed) });
       }
     }
 // Written with a single write, not console.log and process.exit: a large JSON on a pipe is cut off by an exit before it has drained.
-if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, lengths, learnRates: rates, isolateRates: isolates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
+if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, assumed: assumed ?? null, lengths, learnRates: rates, isolateRates: isolates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
 else report();
 
 function report() {
@@ -88,6 +104,10 @@ function report() {
   const chosen = (a: AtPrecision) => (a.rule ? a.rule.replace(/^.* θ /, "") : "never");
   console.log(`${base.students} simulated learners × ${IDEA_SKILLS.join(", ")} × ${lengths.join(", ")} questions from the generators; ${pct(testShare)} of learners held out, seed ${base.seed}`);
   console.log(`a wrong answer is a recognised mistake ${pct(base.trapRate)} of the time when the question has one and its idea is missing`);
+  if (base.checklist) {
+    const assumes = assumed && (assumed.hit !== base.checklist.hit || assumed.falseAlarm !== base.checklist.falseAlarm) ? `; the blamed forms take them to be ${pct(assumed.hit)} and ${pct(assumed.falseAlarm)}` : "";
+    console.log(`after any other wrong answer the student ticks what was hard: a missing idea ${pct(base.checklist.hit)} of the time, a known one ${pct(base.checklist.falseAlarm)}${assumes}`);
+  }
   console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
   for (const r of results) {
     const alone = r.isolateRate ? `, ${pct(r.isolateRate)} of questions asking for one idea alone` : "";

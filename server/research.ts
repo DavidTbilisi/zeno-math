@@ -8,6 +8,7 @@ import { ALL_SKILLS, AREAS, FIRST_SKILLS, SKILLS, areaOf, type Area, type SkillI
 import { CURRICULUM, inCurriculumOrder, skillsOfYear, type Year } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
+import { FRACTIONS } from "../src/model/conceptGraph.ts";
 import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
 import { RECENT } from "../src/model/policy.ts";
 import { dashboard } from "./dashboard.ts";
@@ -107,6 +108,8 @@ export function initResearch(db: DatabaseSync) {
   add("attempts", "remarked", "INTEGER NOT NULL DEFAULT 0");
   // 1: class practice that arrived more than GRACE after the class's practice time ended (protocol.ts).
   add("attempts", "late", "INTEGER NOT NULL DEFAULT 0");
+  // The ideas the student ticked as hard after a wrong answer (JSON array), or NULL: not asked, or nothing ticked.
+  add("attempts", "hard", "TEXT");
   initProtocol(db);
 }
 
@@ -138,8 +141,10 @@ function replay(db: DatabaseSync): Replay {
   let cache = replays.get(db);
   if (!cache) replays.set(db, (cache = { model: new EloModel(), ideas: new Map(), lastId: 0 }));
   const rows = stmt(db, `
-    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
-  `).all(cache.lastId) as { id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; counted: number }[];
+    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
+  `).all(cache.lastId) as {
+    id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; hard: string | null; counted: number;
+  }[];
   for (const r of rows) {
     // Counted answers are those not sent back for their form, as the export reads them (evaluate.ts, observation).
     const correct = evidence(r.counted, r.outcome, r.first_correct === 1);
@@ -147,7 +152,7 @@ function replay(db: DatabaseSync): Replay {
     // On a skill made of ideas, the question is rebuilt and the student's ideas move as the browser's did (learner.ts).
     if (hasIdeas(r.skill)) {
       const ideas = cache.ideas.get(r.student_id) ?? cache.ideas.set(r.student_id, {}).get(r.student_id)!;
-      trackIdeas(ideas, { skill: r.skill, level: r.level, seed: r.seed }, r.outcome, JSON.parse(r.answers) as Answered[]);
+      trackIdeas(ideas, { skill: r.skill, level: r.level, seed: r.seed }, r.outcome, JSON.parse(r.answers) as Answered[], r.hard ? (JSON.parse(r.hard) as string[]) : undefined);
     }
     cache.lastId = r.id;
   }
@@ -205,12 +210,14 @@ export type AttemptRow = {
   msTotal: number;
   answers: Answer[];
   shownAt: number;
+  /** The ideas ticked as hard, each one of the fractions graph's, on a skill with ideas. */
+  hard?: string[];
 };
 
 /** Checks an uploaded attempt and works out the summary columns from its answers, so they can't disagree. */
 export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   const bad = (what: string) => new HttpError(400, `invalid ${what}`);
-  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null } = body;
+  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard } = body;
   if (typeof clientId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(clientId)) throw bad("clientId");
   if (!oneOf(ALL_SKILLS, skill)) throw bad("skill");
   if (!isInt(level, 1, 3)) throw bad("level");
@@ -232,7 +239,13 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   if (correctAt >= 0 && correctAt !== list.length - 1) throw bad("answers");
   if ((outcome === "solved") !== (correctAt >= 0)) throw bad("outcome");
   if (outcome === "skipped" && !list.length) throw bad("outcome");
-  return { clientId, skill, level, seed, review, outcome, policy, predicted, ...summary(list), solutionViewed, msFirst: list[0]?.ms ?? null, msTotal, answers: list, shownAt };
+  // What was ticked as hard: ideas of the graph, each once, and only on a skill made of them.
+  const ideas = Object.keys(FRACTIONS.nodes);
+  if (hard !== undefined && (!hasIdeas(skill) || !Array.isArray(hard) || !hard.length || new Set(hard).size !== hard.length || !hard.every((h) => ideas.includes(h)))) throw bad("hard");
+  return {
+    clientId, skill, level, seed, review, outcome, policy, predicted, ...summary(list), solutionViewed, msFirst: list[0]?.ms ?? null, msTotal, answers: list, shownAt,
+    ...(hard ? { hard: hard as string[] } : {}),
+  };
 }
 
 /** The summary columns, from the answers: a form message doesn't count as a try. */
@@ -260,7 +273,7 @@ const csvCell = (v: unknown) => {
 };
 const CSV_COLUMNS = [
   "attempt", "student", "class", "condition", "policy", "predicted", "area", "skill", "level", "seed", "review", "outcome", "first_correct", "wrongs",
-  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "remarked", "late", "shown_at", "created_at",
+  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "remarked", "late", "shown_at", "created_at",
 ] as const;
 
 const TEST_CSV_COLUMNS = [
@@ -399,11 +412,11 @@ export async function handleResearch(
     const late = classPractice && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
     const result = stmt(db, `
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
-        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       a.clientId, student.id, a.skill, a.level, a.seed, Number(a.review), a.outcome, a.policy, a.predicted, Number(a.firstCorrect), a.wrongs, a.retries,
-      Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), now,
+      Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), a.hard ? JSON.stringify(a.hard) : null, now,
     );
     // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
     return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
@@ -421,7 +434,7 @@ export async function handleResearch(
     teacher(req);
     const rows = forClass(query.get("class"), `
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
-        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.remarked, a.late, a.shown_at, a.created_at,
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.remarked, a.late, a.shown_at, a.created_at,
         json_array_length(a.answers) AS n_answers
       FROM attempts a JOIN students s ON s.id = a.student_id
       {where}

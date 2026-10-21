@@ -281,6 +281,17 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   const ideas = (await plan()).ideas as Record<string, number>;
   assert.deepEqual(Object.keys(ideas).sort(), [...usesOf(sum)].sort());
   for (const p of Object.values(ideas)) assert.ok(p > 0.5 && p < 1);
+  // A miss with an idea ticked as hard lowers that idea more than the others; the ticks are checked, stored and exported.
+  const missed = { policy: "free", skill: "fractions", level: 1, seed: 5, outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] };
+  const [idea, unticked] = usesOf(sum);
+  for (const hard of [[], ["nope"], [idea, idea], "part"])
+    assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { ...missed, hard }))).status, 400, JSON.stringify(hard));
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { ...missed, skill: "volume", seed: 1, hard: [idea] }))).status, 400, "only on a skill made of ideas");
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { ...missed, hard: [idea] }))).status, 201);
+  const lowered = (await plan()).ideas as Record<string, number>;
+  assert.ok(ideas[idea] - lowered[idea] > ideas[unticked] - lowered[unticked], `${idea} fell more than ${unticked}`);
+  const exported = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual(exported.map((r) => r.hard).filter(Boolean), [JSON.stringify([idea])]);
   assert.equal((await call("GET", `/api/students/${joined.code}/nope`)).status, 404);
 
   const csv = (await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string;

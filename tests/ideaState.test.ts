@@ -1,5 +1,6 @@
 // The student's ideas as the app keeps them (src/model/ideaState.ts): a question moves only the ideas it needs, a
-// recognised mistake is blamed on its one idea, a skill without a graph says nothing; the weakest idea is the lowest,
+// recognised mistake is blamed on its one idea, a skill without a graph says nothing, what a student ticks as hard
+// lowers the ticked ideas and raises the rest by Bayes; the weakest idea is the lowest,
 // a random one while all are level; a question bears most on an idea when it asks for it alone, and exerciseFor
 // (src/learner.ts) finds that question: on fractions, the form for the idea.
 import { test } from "node:test";
@@ -8,7 +9,9 @@ import { en } from "../src/locales/en.ts";
 import { AIM_TRIES, exerciseFor } from "../src/learner.ts";
 import { exercise, trapInputs, type Exercise, type FractionForm, type Level } from "../src/math/practice.ts";
 import { bktStep } from "../src/model/evaluate.ts";
-import { bearing, hasIdeas, IDEA_PRIOR, knownOf, learnIdeas, SKILL_IDEAS, usesOf, weakestIdea, type IdeaState } from "../src/model/ideaState.ts";
+import {
+  asksWhatWasHard, bearing, conjunctiveStep, hasIdeas, IDEA_PRIOR, knownOf, learnIdeas, SKILL_IDEAS, TICK_PRIOR, tickStep, usesOf, weakestIdea, type IdeaState,
+} from "../src/model/ideaState.ts";
 import { rng } from "../src/model/random.ts";
 
 const w = en.pracWords;
@@ -67,6 +70,49 @@ test("a question moves the ideas it needs; a recognised mistake is blamed on its
   const arithmetic: IdeaState = {};
   learnIdeas(arithmetic, exercise("hcf", 2, 3, w), true);
   for (const id of Object.keys(arithmetic)) assert.ok(SKILL_IDEAS.hcf.includes(id as never), id);
+});
+
+test("what was ticked as hard: Bayes on each idea, nothing ticked says nothing, and a tick says nothing when it is as likely either way", () => {
+  const rates = { hit: 0.6, falseAlarm: 0.1 };
+  const known = [0.5, 0.5, 0.8];
+  tickStep(known, [0, 1], [0], rates);
+  assert.ok(Math.abs(known[0] - (0.5 * 0.1) / (0.5 * 0.1 + 0.5 * 0.6)) < 1e-12, "a ticked idea: P(known) · falseAlarm over P(tick)");
+  assert.ok(Math.abs(known[1] - (0.5 * 0.9) / (0.5 * 0.9 + 0.5 * 0.4)) < 1e-12, "an unticked one: P(known) · (1 − falseAlarm) over P(no tick)");
+  assert.equal(known[2], 0.8, "an idea the question did not need is left alone");
+  const untouched = [0.5, 0.3];
+  tickStep(untouched, [0, 1], [], rates);
+  assert.deepEqual(untouched, [0.5, 0.3]);
+  const blind = [0.5, 0.3];
+  tickStep(blind, [0, 1], [1], { hit: 0.4, falseAlarm: 0.4 });
+  assert.deepEqual(blind, [0.5, 0.3]);
+});
+
+test("a wrong answer with ticks: the ticked ideas fall below a plain miss and the others stay above it; ticks on a right answer, a named mistake or another question's ideas are passed over", () => {
+  const ex = fractions(1, { trap: "addAcross" });
+  const needed = usesOf(ex);
+  const [ticked, other] = [needed[0], needed[1]];
+  const stray = SKILL_IDEAS.fractions.find((id) => !needed.includes(id))!;
+  const plain: IdeaState = {}, withTicks: IdeaState = {};
+  learnIdeas(plain, ex, false);
+  learnIdeas(withTicks, ex, false, undefined, [ticked, stray]);
+  assert.ok(withTicks[ticked]! < plain[ticked]! && withTicks[other]! > plain[other]!);
+  assert.equal(withTicks[stray], undefined, "an idea the question did not need is not met");
+  // The step is the tick step then the plain one, at the prior's rates.
+  const known = needed.map(() => IDEA_PRIOR.init), all = needed.map((_, j) => j);
+  tickStep(known, all, [0], TICK_PRIOR);
+  conjunctiveStep(known, all, () => IDEA_PRIOR.learn, IDEA_PRIOR, false);
+  needed.forEach((id, j) => assert.equal(withTicks[id], known[j], id));
+  const right: IdeaState = {}, rightTicked: IdeaState = {};
+  learnIdeas(right, ex, true);
+  learnIdeas(rightTicked, ex, true, undefined, [ticked]);
+  assert.deepEqual(rightTicked, right);
+  const blamed: IdeaState = {}, blamedTicked: IdeaState = {};
+  learnIdeas(blamed, ex, false, "addAcross");
+  learnIdeas(blamedTicked, ex, false, "addAcross", [ticked]);
+  assert.deepEqual(blamedTicked, blamed);
+  // The list is asked after a wrong answer on a skill with ideas, unless a mistake already named one of the question's.
+  assert.ok(asksWhatWasHard(ex) && asksWhatWasHard(ex, "flipFirst") && !asksWhatWasHard(ex, "addAcross"));
+  assert.ok(!asksWhatWasHard(exercise("linear", 1, 1, w)));
 });
 
 test("the weakest idea is the lowest; while all are level, a random one of the skill's", () => {

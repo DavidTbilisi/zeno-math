@@ -92,3 +92,38 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await openPractice(student);
   await expect(student.getByText("No marks during the test", { exact: false })).toBeVisible();
 });
+
+test("after a wrong answer on fractions the student is asked what exactly was hard, and the ticks reach the server", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const { code } = await (await request.post("/api/classes", { data: { name: "Fractions", skills: ["fractions"] }, headers })).json();
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  await student.locator(".practice-join summary").click();
+  await student.getByLabel("Class code").fill(code);
+  await student.getByLabel("I understand and want to take part").check();
+  await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
+  await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();
+
+  // Nothing is asked before the question is over; a wrong answer and the solution bring the list of its ideas.
+  const list = student.getByRole("group", { name: "What exactly was hard? Tick everything that was." });
+  await student.getByLabel("Your answer").fill("12345");
+  await student.getByRole("button", { name: "Check" }).click();
+  await expect(student.locator(".practice-verdict.bad")).toBeVisible();
+  await expect(list).toHaveCount(0);
+  await student.getByRole("button", { name: "Show solution" }).click();
+  await expect(list).toBeVisible();
+  const first = list.getByRole("checkbox").first();
+  const idea = (await list.locator("label").first().textContent())!.trim();
+  expect(idea.length).toBeGreaterThan(3);
+  await first.check();
+  await student.getByRole("button", { name: "Next" }).click();
+
+  const rows = async () => (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers })).text()).trim().split("\n");
+  await expect.poll(async () => (await rows()).length).toBe(2);
+  const [head, row] = await rows();
+  // The export's answers column holds JSON with commas in it, so the ticked ideas are found by their own quoting.
+  expect(head.split(",")).toContain("hard");
+  expect(row).toMatch(/"\[""[a-zA-Z]+""\]"/);
+});

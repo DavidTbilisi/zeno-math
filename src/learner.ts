@@ -5,7 +5,8 @@ import { check, exercise, type Exercise, type PracticeWords, type Verdict } from
 import type { SkillId } from "./math/practiceSkills";
 import { EloModel, type ModelState } from "./model/elo";
 import { evidence } from "./model/evaluate";
-import { bearing, hasIdeas, learnIdeas, type IdeaState } from "./model/ideaState";
+import type { FractionsNode } from "./model/conceptGraph";
+import { asksWhatWasHard, bearing, hasIdeas, learnIdeas, usesOf, type IdeaState } from "./model/ideaState";
 import { RECENT, type Choice } from "./model/policy";
 import type { Form, TestPhase } from "./model/testForms";
 
@@ -48,6 +49,8 @@ export type Attempt = {
   msTotal: number;
   answers: LoggedAnswer[];
   shownAt: number;
+  /** The ideas the student ticked as hard after a wrong answer (whatWasHard), when they ticked any. */
+  hard?: string[];
 };
 
 /** One question as the student works on it. Times are from performance.now(), so a clock change doesn't skew them. */
@@ -59,10 +62,12 @@ export type QuestionLog = {
   /** When the question was finished; a solution looked at afterwards still counts, but not the time spent on it. */
   msTotal: number | null;
   solutionViewed: boolean;
+  /** The ideas ticked as hard, in the order the list shows them. */
+  hard: string[];
 };
 
 export const startLog = (shownAt = Date.now(), t0 = performance.now()): QuestionLog =>
-  ({ shownAt, t0, answers: [], outcome: null, msTotal: null, solutionViewed: false });
+  ({ shownAt, t0, answers: [], outcome: null, msTotal: null, solutionViewed: false, hard: [] });
 
 export const verdictOf = (v: Verdict): AnswerVerdict => (v.ok ? "correct" : v.why ? "form" : v.close ? "close" : "wrong");
 
@@ -94,6 +99,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
     msTotal: log.msTotal ?? ms(log, now),
     answers: log.answers,
     shownAt: log.shownAt,
+    ...(log.hard.length ? { hard: log.hard } : {}),
   };
 }
 
@@ -133,18 +139,34 @@ export function attemptEvidence(a: Pick<Attempt, "outcome" | "answers">): boolea
   return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct");
 }
 
+/** The mistake the checker recognises in the first counted answer, when that answer was wrong. */
+const firstMistake = (ex: Exercise, answers: readonly Pick<LoggedAnswer, "input" | "verdict">[]) => {
+  const first = answers.find((x) => x.verdict !== "form");
+  return first && first.verdict !== "correct" ? check(ex, first.input, en.pracWords).mistake : undefined;
+};
+
 /**
  * What the attempt tells the student's ideas (src/model/ideaState.ts), the same on the server and in the browser: the
- * question is rebuilt from its skill, level and seed, and the mistake, if the first counted answer made one the checker
- * recognises, is read off that answer. The words don't matter to either; English rebuilds it everywhere.
+ * question is rebuilt from its skill, level and seed, the mistake, if the first counted answer made one the checker
+ * recognises, is read off that answer, and what the student ticked as hard goes with it. The words don't matter to
+ * either; English rebuilds it everywhere.
  */
-export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers">) {
+export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "hard">) {
   if (!hasIdeas(a.skill)) return;
   const correct = attemptEvidence(a);
   if (correct === null) return;
   const ex = exercise(a.skill, a.level, a.seed, en.pracWords);
-  const first = a.answers.find((x) => x.verdict !== "form");
-  learnIdeas(state, ex, correct, correct || !first ? undefined : check(ex, first.input, en.pracWords).mistake);
+  learnIdeas(state, ex, correct, correct ? undefined : firstMistake(ex, a.answers), a.hard);
+}
+
+/**
+ * The ideas to ask about once a question is over ("what exactly was hard?"), or null when there is nothing to ask: the
+ * first counted answer was right, or wrong in the shape of a mistake that already names the idea, or the skill has no
+ * ideas. The question's own ideas, in the graph's order.
+ */
+export function whatWasHard(ex: Exercise, log: Pick<QuestionLog, "outcome" | "answers">): readonly FractionsNode[] | null {
+  if (!hasIdeas(ex.skill) || attemptEvidence({ outcome: log.outcome ?? "skipped", answers: log.answers }) !== false) return null;
+  return asksWhatWasHard(ex, firstMistake(ex, log.answers)) ? usesOf(ex) : null;
 }
 
 /** Questions tried when aiming at an idea: a form asked in one question of fifteen is missing from all of them once in a thousand. */

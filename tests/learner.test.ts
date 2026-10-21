@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, trapInputs } from "../src/math/practice.ts";
 import {
-  applyAttempt, attemptEvidence, finish, learnFromAttempt, logAnswer, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, withProtocol, type Attempt,
+  applyAttempt, attemptEvidence, finish, learnFromAttempt, logAnswer, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, whatWasHard, withProtocol, type Attempt,
   type Origin, type Protocol, type SendResult, type Slot,
 } from "../src/learner.ts";
 import { EloModel } from "../src/model/elo.ts";
@@ -160,4 +160,39 @@ test("an attempt teaches the ideas as the server will: the question rebuilt from
   learnFromAttempt(formOnly, { ...base, outcome: "skipped", answers: [{ input: "((", verdict: "form", ms: 1 }] });
   learnFromAttempt(formOnly, { skill: "linear", level: 1, seed: 1, outcome: "solved", answers: [{ input: "1", verdict: "correct", ms: 1 }] });
   assert.deepEqual(formOnly, {});
+  // What was ticked as hard goes with a miss: the ticked idea ends lower than after the plain miss.
+  const ticked: IdeaState = {};
+  const idea = usesOf(ex)[0];
+  learnFromAttempt(ticked, { ...base, outcome: "revealed", answers: [{ input: "12345", verdict: "wrong", ms: 1 }], hard: [idea] });
+  assert.ok(ticked[idea]! < miss[idea]!);
+});
+
+test("what was hard is asked after a miss no recognised mistake explains, and the ticks go with the attempt", () => {
+  const ex = exercise("fractions", 1, 3, w);
+  const miss = startLog();
+  logAnswer(miss, "12345", check(ex, "12345", w));
+  finish(miss, "revealed");
+  assert.deepEqual(whatWasHard(ex, miss), usesOf(ex));
+  const right = startLog();
+  logAnswer(right, ex.plain, check(ex, ex.plain, w));
+  finish(right, "solved");
+  assert.equal(whatWasHard(ex, right), null);
+  const trapEx = (() => {
+    for (let seed = 1; ; seed++) {
+      const e = exercise("fractions", 1, seed, w);
+      const trap = trapInputs(e).find((t) => t.id === "addAcross");
+      if (trap) return { e, trap };
+    }
+  })();
+  const trapped = startLog();
+  logAnswer(trapped, trapEx.trap.input, check(trapEx.e, trapEx.trap.input, w));
+  finish(trapped, "revealed");
+  assert.equal(whatWasHard(trapEx.e, trapped), null, "the mistake already names the idea");
+  const other = exercise("linear", 1, 1, w), otherMiss = startLog();
+  logAnswer(otherMiss, "12345", check(other, "12345", w));
+  finish(otherMiss, "revealed");
+  assert.equal(whatWasHard(other, otherMiss), null);
+  assert.equal(toAttempt(miss, ex, free, student)!.hard, undefined, "nothing ticked, nothing sent");
+  miss.hard = [usesOf(ex)[1]];
+  assert.deepEqual(toAttempt(miss, ex, free, student)!.hard, [usesOf(ex)[1]]);
 });

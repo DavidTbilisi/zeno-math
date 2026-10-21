@@ -2,7 +2,9 @@
 // are least likely to know. The skills with a concept graph (src/model/conceptGraph.ts) are times, hcf and fractions;
 // every question on them is read for the ideas it needs, and one BKT step moves those ideas together, as in the world
 // of ideas (src/model/ideas.ts): a question is right only when every idea it needs is known, and a wrong answer in
-// the shape of a recognised mistake (3/10 for 1/5 + 2/5) is blamed on the one idea the mistake shows is missing. The
+// the shape of a recognised mistake (3/10 for 1/5 + 2/5) is blamed on the one idea the mistake shows is missing; after
+// any other wrong answer the student is asked what exactly was hard, with the question's ideas to tick, and the ticks
+// are read as noisy evidence on each idea (tickStep). The
 // state is one number per idea, P(known), kept per student beside the Elo model: the server replays it from the stored
 // attempts and the browser carries it forward (src/learner.ts). Nothing here needs the generators, so the server and
 // the policy can import it; rebuilding a question from its seed is the learner's and the checker's business.
@@ -74,12 +76,46 @@ export const IDEA_PRIOR: BktParams = { init: 0.5, learn: 0.05, guess: 0.2, slip:
 
 export const knownOf = (state: IdeaState, idea: string, params: BktParams = IDEA_PRIOR) => state[idea] ?? params.init;
 
+/** How a student's ticks on "what exactly was hard?" follow what they know: the chance of ticking an idea they don't know (hit) and one they do (falseAlarm). */
+export type TickRates = { hit: number; falseAlarm: number };
+/**
+ * The rates until there are class answers to fit them on, unfitted like IDEA_PRIOR: an idea the student is missing is
+ * ticked half the time, since a misconception is seldom one its holder can name, and an idea they know one time in ten.
+ */
+export const TICK_PRIOR: TickRates = { hit: 0.5, falseAlarm: 0.1 };
+
+/**
+ * What a student ticked as hard on a question they got wrong, into the P(known) of the ideas it needed (indices into
+ * known): Bayes on each idea with the chance of its tick, or of no tick, given that it is known or not. A tick is taken
+ * to depend only on whether its own idea is known, so with the ideas independent this comes before the answer's own
+ * step (conjunctiveStep) on the same moment. Nothing ticked says nothing: the student may have passed the list by.
+ */
+export function tickStep(known: number[], needed: readonly number[], ticked: readonly number[], rates: TickRates): void {
+  if (!ticked.length) return;
+  for (const j of needed) {
+    const on = ticked.includes(j);
+    const ifKnown = on ? rates.falseAlarm : 1 - rates.falseAlarm, ifNot = on ? rates.hit : 1 - rates.hit;
+    const seen = known[j] * ifKnown + (1 - known[j]) * ifNot;
+    if (seen > 0) known[j] = (known[j] * ifKnown) / seen;
+  }
+}
+
+/** Whether a wrong answer asks what was hard: on a skill with ideas, unless a recognised mistake already names the idea. */
+export const asksWhatWasHard = (ex: Exercise, mistake?: MistakeId) => {
+  if (!hasIdeas(ex.skill)) return false;
+  const gap = mistake && gapIdea(mistake);
+  return !(gap && usesOf(ex).includes(gap));
+};
+
 /**
  * One answer into the student's ideas. A wrong answer in the shape of a recognised mistake is a wrong answer on that
  * idea alone (the mistake says the student got as far as it); any other answer updates every idea the question
- * needed, together. A question on a skill without a graph says nothing.
+ * needed, together, a wrong one after what the student ticked as hard (ideas the question did not need are passed
+ * over). A question on a skill without a graph says nothing.
  */
-export function learnIdeas(state: IdeaState, ex: Exercise, correct: boolean, mistake?: MistakeId, params: BktParams = IDEA_PRIOR): void {
+export function learnIdeas(
+  state: IdeaState, ex: Exercise, correct: boolean, mistake?: MistakeId, hard?: readonly string[], params: BktParams = IDEA_PRIOR, rates: TickRates = TICK_PRIOR,
+): void {
   if (!hasIdeas(ex.skill)) return;
   const ids = usesOf(ex);
   const gap = mistake && gapIdea(mistake);
@@ -88,7 +124,9 @@ export function learnIdeas(state: IdeaState, ex: Exercise, correct: boolean, mis
     return;
   }
   const known = ids.map((id) => knownOf(state, id, params));
-  conjunctiveStep(known, known.map((_, j) => j), () => params.learn, params, correct);
+  const all = known.map((_, j) => j);
+  if (!correct && hard) tickStep(known, all, all.filter((j) => hard.includes(ids[j])), rates);
+  conjunctiveStep(known, all, () => params.learn, params, correct);
   ids.forEach((id, j) => (state[id] = known[j]));
 }
 
