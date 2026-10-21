@@ -3,7 +3,7 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, whatWasHard, withProtocol,
+  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { choose as choosePolicy } from "../model/policy";
@@ -11,7 +11,7 @@ import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
 import {
-  AREAS, areaOf, check, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, type Area, type Exercise, type Level, type PracticeSpec,
+  AREAS, areaOf, check, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, stepsOf, type Area, type Exercise, type Level, type PracticeSpec,
   type SkillId, type Verdict,
 } from "../math/practice";
 import { renderSolution } from "../math/practiceSolve";
@@ -24,6 +24,8 @@ import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
+import { WorkInSteps } from "./WorkInSteps";
+import { ComingBack, SESSION, SessionCard, SessionSummary, type SessionResult } from "./PracticeSession";
 import { addPiece, dropPiece } from "../math/target";
 
 type Mode = "practise" | "sheet";
@@ -100,6 +102,10 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
   const [sheetSeed, setSheetSeed] = useState(initial?.seed ?? newSeed());
   const [progress, setProgress] = useState<Progress>(load);
   const [score, setScore] = useState({ right: 0, total: 0, streak: 0 });
+  // The page's free practice comes in sessions of SESSION questions, with a summary at the end.
+  const page = !onSubmit;
+  const [session, setSession] = useState<SessionResult[]>([]);
+  const [summary, setSummary] = useState(false);
   const [cheer, setCheer] = useState(0);
   const [quiet, setQuiet] = useState(muted);
 
@@ -137,6 +143,9 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
   const [solution, setSolution] = useState<{ src?: string; error?: string } | null>(null);
   /** The ideas ticked as hard on this question, as the log keeps them for the attempt. */
   const [hard, setHard] = useState<string[]>([]);
+  /** A fractions operation answered wrong is worked in steps before the student tries the whole of it again. */
+  const steps = useMemo(() => stepsOf(cur.ex, w), [cur, w]);
+  const [stepping, setStepping] = useState<"no" | "now" | "done">("no");
   const inputRef = useRef<HTMLInputElement>(null);
 
   // ---------- the class study: what happens on each question is saved under the student's code ----------
@@ -264,6 +273,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
     if (!ok) mistakes.push({ skill: ex.skill, level: ex.level, seed: ex.seed, due: progress.answered + 1 + REVIEW_AFTER });
     record({ stats: { ...progress.stats, [ex.skill]: { seen: s.seen + 1, right: s.right + (ok ? 1 : 0) } }, mistakes, answered: progress.answered + 1 });
     setScore((sc) => ({ right: sc.right + (ok ? 1 : 0), total: sc.total + 1, streak: ok ? sc.streak + 1 : 0 }));
+    if (sessionOn) setSession((r) => [...r, { skill: ex.skill, right: ok }]);
   };
 
   const showSolution = (ex: Exercise) => {
@@ -296,7 +306,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
     playSound("miss");
     const n = wrongs + 1;
     setWrongs(n);
-    if (n >= 2) reveal();
+    if (n === 1 && steps.length) setStepping("now");
+    else if (n >= 2) reveal();
   };
   const reveal = () => {
     if (!done) settle(false);
@@ -312,14 +323,28 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
     setDone(null);
     setSolution(null);
     setHard([]);
+    setStepping("no");
   }
   const next = () => {
     leaveQuestion();
     show(nextExercise(area, pick, level, progress, classPlan()));
     inputRef.current?.focus();
   };
+  /** After the session's last question, its summary; after any other, the next question. */
+  const onNext = () => {
+    if (!sessionOver) return next();
+    leaveQuestion();
+    setSummary(true);
+  };
+  const newSession = () => {
+    setSession([]);
+    setSummary(false);
+    show(nextExercise(area, pick, level, progress, classPlan()));
+  };
   // A new topic or level starts a new question (free practice only: class practice has no topic menus).
   const choose = (a: Area, p: Pick, L: Level) => {
+    // From a session's summary, a new topic starts the next session.
+    if (summary) (setSession([]), setSummary(false));
     setArea(a);
     setPick(p);
     setLevel(L);
@@ -404,6 +429,20 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
   };
 
   const classOn = !!student && inClass;
+  const sessionOn = page && !classOn && mode === "practise";
+  const sessionOver = sessionOn && session.length >= SESSION;
+  const studentPanel = <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />;
+  const resetButton = progress.answered > 0 && (
+    <button
+      className="btn small add-fn"
+      onClick={() => {
+        record(empty());
+        setScore({ right: 0, total: 0, streak: 0 });
+      }}
+    >
+      {w.ui.reset}
+    </button>
+  );
   // What the class's phase allows right now (class practice only; free practice is always open).
   const plan = classOn && planStatus === "ready" ? planRef.current : null;
   const testPhase = plan?.phase === "pretest" ? "pre" : plan?.phase === "posttest" ? "post" : null;
@@ -466,7 +505,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               <span className="hint">{w.ui.loadingPlan}</span>
             )}
           </div>
-          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
+          {!page && studentPanel}
         </>
       ) : plan && student && testPhase ? (
         <>
@@ -483,13 +522,15 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               sendQueued();
             }}
           />
-          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
+          {!page && studentPanel}
         </>
       ) : blocked ? (
         <>
           <div className="practice-verdict ok" role="status">{blocked}</div>
-          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
+          {!page && studentPanel}
         </>
+      ) : sessionOn && summary ? (
+        <SessionSummary results={session} comingBack={progress.mistakes.length} w={w} onAgain={newSession} />
       ) : mode === "practise" ? (
         <>
           {plan?.phase === "session" && plan.sessionEnds !== null && (
@@ -530,7 +571,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
                 key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
                 play={cur.ex.play}
                 look={w.ui.look}
-                onEnter={() => (done ? next() : onCheck())}
+                onEnter={() => (done ? onNext() : onCheck())}
                 value={input}
                 disabled={done !== null}
                 label={cur.ex.prompt}
@@ -548,7 +589,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
                 spellCheck={false}
                 autoComplete="off"
                 value={input}
-                disabled={done !== null}
+                disabled={done !== null || stepping === "now"}
                 onChange={(e) => {
                   setInput(e.target.value);
                   setVerdict(null);
@@ -556,7 +597,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
                 onKeyDown={(e) => {
                   if (e.key !== "Enter") return;
                   e.preventDefault();
-                  if (done) next();
+                  if (done) onNext();
                   else onCheck();
                 }}
               />
@@ -619,10 +660,10 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
             />
           )}
           <div className="field-row practice-actions">
-            {!done && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
+            {!done && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
             {!done && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
-            {done && <button className="btn primary" onClick={next}>{w.ui.next} →</button>}
-            <span className="hint">{fill(w.ui.score, score)}</span>
+            {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
+            {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
             <button
               className="btn small practice-sound"
               title={w.ui.sound}
@@ -641,6 +682,21 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               {verdict.ok ? `✓ ${w.ui.correct}` : verdict.why ?? `✗ ${w.ui.wrong}`}
               {verdict.hint && <div className="practice-hint">{verdict.hint}</div>}
             </div>
+          )}
+          {stepping !== "no" && !done && (
+            <WorkInSteps
+              key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
+              steps={steps}
+              w={w}
+              onAnswer={(i, typed, v) => logStep(log.current, i, typed, v)}
+              onShow={(i) => logStep(log.current, i, null)}
+              onDone={() => {
+                setStepping("done");
+                setInput("");
+                setVerdict(null);
+                setTimeout(() => inputRef.current?.focus());
+              }}
+            />
           )}
           {done === "revealed" && <div className="practice-verdict close" role="status">{w.ui.revealed}</div>}
           {done && (
@@ -672,18 +728,8 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
               <small className="hint">{w.ui.hardNote}</small>
             </fieldset>
           )}
-          <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />
-          {progress.answered > 0 && (
-            <button
-              className="btn small add-fn"
-              onClick={() => {
-                record(empty());
-                setScore({ right: 0, total: 0, streak: 0 });
-              }}
-            >
-              {w.ui.reset}
-            </button>
-          )}
+          {!page && studentPanel}
+          {!page && resetButton}
         </>
       ) : (
         <>
@@ -703,8 +749,19 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
     </>
   );
 
-  // The page has no board to insert into, so no worksheet either.
-  if (!onSubmit) return <div className="practice-body">{body}</div>;
+  // The page has no board to insert into, so no worksheet either; beside the practice, the session and what comes back.
+  if (!onSubmit)
+    return (
+      <div className="practice-layout">
+        <div className="practice-body">{body}</div>
+        <aside className="practice-side">
+          {sessionOn && !summary && <SessionCard results={session} streak={score.streak} w={w} />}
+          <ComingBack mistakes={progress.mistakes} answered={progress.answered} w={w} />
+          {studentPanel}
+          {resetButton}
+        </aside>
+      </div>
+    );
   const title = initial ? t.editPractice : t.practice;
   const insertButton = (
     <button className="btn primary" disabled={classOn && (planStatus !== "ready" || !!testPhase || !!blocked) ? true : mode === "sheet" ? !sheet?.rendered : "error" in card} onClick={insert}>

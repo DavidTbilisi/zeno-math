@@ -16,7 +16,7 @@
 // three tests at the end ask that of an idea: whether a question tests it alone, whether its learning curve is one
 // smooth fall, and whether practice on one form of it carries over to the others. Nothing in the app reads this yet.
 import type { MistakeId } from "../math/mistakes.ts";
-import type { Exercise, FractionForm } from "../math/practice.ts";
+import type { Exercise, StepForm } from "../math/practice.ts";
 import { fitLogistic } from "./evaluate.ts";
 
 export type EdgeKind = "needs" | "joins";
@@ -149,8 +149,11 @@ const inGraphOrder = (nodes: ReadonlySet<FractionsNode>) => (Object.keys(FRACTIO
  * its numbers: a missing top needs equivalent and the product that scales it; lowest terms needs lowest and the common
  * factor; the lowest common denominator needs commonDenom and the multiple; a reciprocal needs reciprocal, and of a
  * mixed number toImproper too; the conversions need toImproper or toMixed, the only question that asks for toMixed.
+ * The steps of an operation (stepsOf in practice.ts) are read the same way, with the operation's own step once the
+ * fractions are ready for it: tops added or taken over one denominator need addSub; tops times tops need multiply and
+ * the two products, and after a division divide too.
  */
-function formIdeas(form: FractionForm, a: string, b: string | null): Set<FractionsNode> {
+function formIdeas(form: StepForm, a: string, b: string | null): Set<FractionsNode> {
   const nodes = new Set<FractionsNode>(["part"]);
   const times = (x: number, y: number) => product(x, y).forEach((n) => nodes.add(n));
   const mixed = (s: string) => {
@@ -183,6 +186,17 @@ function formIdeas(form: FractionForm, a: string, b: string | null): Set<Fractio
     case "toMixed":
       nodes.add("toMixed");
       break;
+    case "addTops":
+      nodes.add("addSub").add("addWhole");
+      break;
+    case "timesTops":
+    case "divideTops": {
+      const x = improper(a), y = improper(b!);
+      nodes.add("multiply");
+      if (form === "divideTops") nodes.add("divide");
+      (times(x.n, y.n), times(x.d, y.d));
+      break;
+    }
   }
   return nodes;
 }
@@ -194,7 +208,7 @@ function formIdeas(form: FractionForm, a: string, b: string | null): Set<Fractio
  * common factor). A question asking for one idea alone is read by formIdeas.
  */
 export function fractionsUses(ex: Exercise): Uses<FractionsNode> {
-  const spec = ex.solution?.spec as { form?: FractionForm; op: "+" | "-" | "×" | "÷"; a: string; b: string };
+  const spec = ex.solution?.spec as { form?: StepForm; op: "+" | "-" | "×" | "÷"; a: string; b: string };
   if (spec.form) return usesOf(FRACTIONS, inGraphOrder(formIdeas(spec.form, spec.a, spec.b)));
   const a = improper(spec.a), b = improper(spec.b);
   const nodes = new Set<FractionsNode>(["part"]);

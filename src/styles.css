@@ -425,7 +425,31 @@ input.invalid { border-color: var(--danger); }
 .practice-card-icon { font-size: 32px; }
 .practice-card-text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .practice-card-text strong { font-size: 18px; }
-.practice-page { max-width: 820px; }
+.practice-page { max-width: 1180px; }
+/* The page: the practice, and beside it the session, the missed questions coming back and the class panel. */
+.practice-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.practice-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 16px; }
+.practice-side-card {
+  display: flex; flex-direction: column; gap: 8px; padding: 16px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+}
+.practice-summary { display: flex; flex-direction: column; gap: 10px; }
+.practice-side-card h2, .practice-summary h3 { margin: 0; font-size: 15px; }
+.practice-side-card ul, .practice-summary ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.practice-summary h2 { margin: 0; font-size: 24px; }
+.practice-summary p { margin: 0; }
+.practice-summary-score { font-size: 18px; }
+.session-dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.session-dots span { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); }
+.session-dots span.right { background: var(--ok); border-color: var(--ok); }
+.session-dots span.missed { background: #e8590c; border-color: #e8590c; }
+.session-dots span.now { border-color: var(--accent); }
+/* On a narrow screen the session goes above the practice, and the rest of the side column below it. */
+@media (max-width: 960px) {
+  .practice-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .practice-side { display: contents; }
+  .practice-session { order: -1; }
+}
 .practice-page .brand { flex-direction: column; align-items: flex-start; gap: 4px; }
 .practice-body {
   display: flex; flex-direction: column; gap: 16px; padding: 20px;
@@ -455,6 +479,15 @@ input.invalid { border-color: var(--danger); }
 .practice-hard { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 8px 12px 10px; border: 1px solid var(--border); border-radius: 8px; }
 .practice-hard legend { font-weight: 600; font-size: 14px; padding: 0 4px; }
 .practice-review { color: #e8590c; }
+.practice-steps { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
+.practice-steps-intro { margin: 0; font-weight: 600; }
+.practice-steps ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.practice-steps li { display: flex; flex-direction: column; gap: 6px; padding-left: 10px; border-left: 3px solid var(--border); }
+.practice-steps li.right { border-left-color: var(--ok); }
+.practice-steps li.shown { border-left-color: #e8590c; }
+.practice-steps li.current { border-left-color: var(--accent); }
+.practice-step-math { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.practice-step-math img { max-width: 100%; height: auto; background: #ffffff; border-radius: 4px; padding: 4px 6px; }
 .practice-clock { font-variant-numeric: tabular-nums; align-self: flex-end; }
 .practice-class { display: flex; flex-direction: column; gap: 6px; }
 .practice-join summary { cursor: pointer; width: fit-content; }

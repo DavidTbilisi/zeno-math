@@ -138,6 +138,9 @@ export type PracticeWords = {
     fracReciprocal: string;
     fracImproper: string;
     fracMixed: string;
+    stepTops: string;
+    stepTimes: string;
+    stepDivide: string;
     percentOf: string;
     percentChange: string;
     percentReverse: string;
@@ -397,6 +400,24 @@ export type PracticeWords = {
     timeLeft: string;
     sessionOver: string;
     classClosed: string;
+    inSteps: string;
+    stepOf: string;
+    showStep: string;
+    stepsDone: string;
+    sessionTitle: string;
+    sessionCount: string;
+    sessionRight: string;
+    sessionDone: string;
+    sessionScore: string;
+    sessionTopics: string;
+    sessionTopic: string;
+    sessionBack: string;
+    sessionClean: string;
+    sessionAgain: string;
+    seeSummary: string;
+    comingBack: string;
+    backNext: string;
+    backIn: string;
   };
 };
 
@@ -635,8 +656,10 @@ type Gen = (r: Rng, L: Level, w: PracticeWords) => Omit<Exercise, "skill" | "lev
 const FRACTION_FORM_SHARE = 0.4;
 export type FractionForm = "equivalent" | "lowest" | "lcd" | "reciprocal" | "toImproper" | "toMixed";
 const FRACTION_FORMS: readonly FractionForm[] = ["equivalent", "lowest", "lcd", "reciprocal", "toImproper", "toMixed"];
+/** A step of an operation worked in steps (stepsOf): a form, or the operation itself once the fractions are ready for it. */
+export type StepForm = FractionForm | "addTops" | "timesTops" | "divideTops";
 /** The worked picture of a fraction form: bars of the fractions named, with the form and numbers kept so the question can be read for its ideas. */
-const fracBars = (form: FractionForm, a: string, b: string | null, rows: { n: number; d: number }[]) => ({
+const fracBars = (form: StepForm, a: string, b: string | null, rows: { n: number; d: number }[]) => ({
   kind: "model" as const,
   spec: { type: "fraction", form, a, b, rows, shape: "bar", unitLabels: true },
 });
@@ -701,6 +724,59 @@ function fractionForm(r: Rng, L: Level, w: PracticeWords): Omit<Exercise, "skill
       return { prompt: w.prompts.fracMixed, q: fracTex(top, d), answer: num(top / d, 1e-9, { lowest: true, form: "mixed" }), show: mixedTex(whole, n, d), plain: `${whole} ${n}/${d}`, format: "fraction", solution: bars };
     }
   }
+}
+
+/**
+ * A fractions operation worked in steps, as the usual method does it (src/math/fracop.ts): each mixed number as an
+ * improper fraction; for + and −, the lowest common denominator, each fraction over it, then the tops added or taken
+ * away; for ÷, the reciprocal; for × and ÷, tops times tops over bottoms times bottoms; then the result in lowest terms
+ * when it isn't. Each step is a question of its own, read for its ideas as a form is (src/model/conceptGraph.ts), so a
+ * wrong step says which idea went wrong. The practice offers them after a wrong answer. Any other question has none.
+ */
+export function stepsOf(ex: Exercise, w: PracticeWords): Exercise[] {
+  const spec = ex.solution?.spec as { type?: string; op: "+" | "-" | "×" | "÷"; a: string; b: string } | undefined;
+  if (ex.skill !== "fractions" || spec?.type !== "fracop") return [];
+  const steps: Exercise[] = [];
+  const fraction = (n: number, d: number) => ({ show: d === 1 ? String(n) : fracTex(n, d), plain: d === 1 ? String(n) : `${n}/${d}`, format: "fraction" as const });
+  const count = (v: number) => ({ show: String(v), plain: String(v), format: "number" as const });
+  const add = (form: StepForm, prompt: string, q: string, answer: Answer, given: ReturnType<typeof count | typeof fraction>, a: string, b: string | null = null) =>
+    steps.push({ skill: ex.skill, level: ex.level, seed: ex.seed, prompt, q, answer, ...given, solution: fracBars(form, a, b, []) });
+  // A mixed number's whole times the top is the mistake to name, as in the form asking for it alone.
+  const [x, y] = [spec.a, spec.b].map((s) => {
+    const [, whole, n, d] = /^(?:(\d+) )?(\d+)\/(\d+)$/.exec(s)!.map(Number);
+    if (!whole) return { n, d };
+    const top = whole * d + n;
+    const traps: Trap[] = whole > 1 ? [{ id: "wholeTimesTop", a: num((whole * n + d) / d), vars: { w: whole, n, d, wd: whole * d, top } }] : [];
+    add("toImproper", w.prompts.fracImproper, mixedTex(whole, n, d), { ...num(top / d, 1e-9, { form: "improper" }), traps }, fraction(top, d), s);
+    return { n: top, d };
+  });
+  let raw: [number, number];
+  if (spec.op === "+" || spec.op === "-") {
+    const L = (x.d / gcd(x.d, y.d)) * y.d;
+    if (x.d !== y.d) {
+      add("lcd", w.prompts.fracLcd, `${fracTex(x.n, x.d)},\\ ${fracTex(y.n, y.d)}`, num(L), count(L), `${x.n}/${x.d}`, `${y.n}/${y.d}`);
+      for (const p of [x, y]) {
+        if (p.d === L) continue;
+        const k = L / p.d;
+        const traps: Trap[] = [{ id: "addedToBoth", a: num(p.n + L - p.d), vars: { n: p.n, d: p.d, k, kd: L } }];
+        add("equivalent", w.prompts.fracEquivalent, `${fracTex(p.n, p.d)} = \\frac{?}{${L}}`, { ...num(p.n * k), traps }, count(p.n * k), `${p.n}/${p.d}`, `${p.n * k}/${L}`);
+      }
+    }
+    const [a1, a2] = [(x.n * L) / x.d, (y.n * L) / y.d];
+    raw = [spec.op === "+" ? a1 + a2 : a1 - a2, L];
+    add("addTops", w.prompts.stepTops, `${fracTex(a1, L)} ${spec.op} ${fracTex(a2, L)}`, num(raw[0] / L), fraction(...raw), `${a1}/${L}`, `${a2}/${L}`);
+  } else {
+    const divide = spec.op === "÷";
+    const by = divide ? { n: y.d, d: y.n } : y;
+    if (divide) add("reciprocal", w.prompts.fracReciprocal, fracTex(y.n, y.d), num(by.n / by.d), fraction(by.n, by.d), `${y.n}/${y.d}`);
+    raw = [x.n * by.n, x.d * by.d];
+    const times = `${fracTex(x.n, x.d)} \\times ${fracTex(by.n, by.d)}`;
+    add(divide ? "divideTops" : "timesTops", divide ? w.prompts.stepDivide : w.prompts.stepTimes, divide ? `${fracTex(x.n, x.d)} \\div ${fracTex(y.n, y.d)} = ${times}` : times,
+      num(raw[0] / raw[1]), fraction(...raw), `${x.n}/${x.d}`, `${by.n}/${by.d}`);
+  }
+  const g = gcd(...raw);
+  if (raw[0] !== 0 && g > 1) add("lowest", w.prompts.fracLowest, fracTex(...raw), num(raw[0] / raw[1], 1e-9, { lowest: true }), fraction(raw[0] / g, raw[1] / g), `${raw[0]}/${raw[1]}`);
+  return steps;
 }
 
 const FLIP_SIGN: Record<CompareSign, CompareSign> = { "<": ">", "=": "=", ">": "<" };

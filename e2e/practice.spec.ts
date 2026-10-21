@@ -1,9 +1,9 @@
-// Free practice in the browser: a wrong answer that a known mistake gives is named under the verdict, and an inequality
-// typed with ≥ is accepted. The dialog's question comes from Math.random, so the test fixes it, works out the same
+// Free practice in the browser: a wrong answer that a known mistake gives is named under the verdict and the question is
+// worked in steps, an inequality typed with ≥ is accepted, and the page counts a session of ten and sums it up. The dialog's question comes from Math.random, so the test fixes it, works out the same
 // question here, and types its answers.
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
-import { check, exercise, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
+import { check, exercise, stepsOf, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
 
 const w = en.pracWords;
 const seedOf = (r: number) => Math.floor(r * 2 ** 31);
@@ -31,7 +31,7 @@ async function practise(page: Page, request: APIRequestContext, area: string, sk
   await page.getByRole("button", { name: skill, exact: true }).click();
 }
 
-test("a known mistake is named, and still counts as a miss", async ({ page, request }) => {
+test("a known mistake is named, still counts as a miss, and the question is then worked in steps", async ({ page, request }) => {
   const { r, ex } = questionWith("fractions", (e) => trapInputs(e).some((t) => t.id === "addAcross"));
   const typed = trapInputs(ex).find((t) => t.id === "addAcross")!.input;
   const want = check(ex, typed, w);
@@ -41,6 +41,19 @@ test("a known mistake is named, and still counts as a miss", async ({ page, requ
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.locator(".practice-verdict.bad")).toContainText("Not quite — try again.");
   await expect(page.locator(".practice-hint")).toHaveText(want.hint!);
+  // Each step in turn, the first missed once; the whole question waits until the last is done.
+  const steps = stepsOf(ex, w);
+  await expect(page.getByLabel("Your answer")).toBeDisabled();
+  const first = page.getByLabel(`Step 1 of ${steps.length}`);
+  await first.fill("12345");
+  await first.press("Enter");
+  await expect(page.locator(".practice-steps .practice-verdict.bad")).toBeVisible();
+  for (const [i, step] of steps.entries()) {
+    const field = page.getByLabel(`Step ${i + 1} of ${steps.length}`);
+    await field.fill(step.plain);
+    await field.press("Enter");
+  }
+  await expect(page.getByText(w.ui.stepsDone)).toBeVisible();
   // The right answer still goes through.
   await page.getByLabel("Your answer").fill(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
@@ -70,6 +83,29 @@ test("practice has a page of its own, reached from the home page", async ({ page
   await page.getByLabel("Your answer").fill(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("the practice page counts a session of ten and sums it up", async ({ page }) => {
+  const { r } = questionWith("fractions", () => true);
+  await page.goto("/#/practice");
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  const session = page.getByRole("region", { name: w.ui.sessionTitle });
+  await expect(session).toContainText("0 of 10 questions");
+  for (let i = 1; i <= 10; i++) {
+    await page.getByRole("button", { name: "Show solution" }).click();
+    await expect(session).toContainText(`${i} of 10 questions`);
+    await page.getByRole("button", { name: i < 10 ? "Next →" : w.ui.seeSummary }).click();
+  }
+  await expect(page.getByRole("heading", { name: w.ui.sessionDone })).toBeVisible();
+  await expect(page.getByText("You got 0 of 10 right.")).toBeVisible();
+  await expect(page.getByText("Fractions: 0 of 10")).toBeVisible();
+  // The missed question waits to come back; another session starts from nothing.
+  await expect(page.getByRole("region", { name: w.ui.comingBack })).toContainText("Fractions");
+  await page.getByRole("button", { name: "Another 10 questions" }).click();
+  await expect(session).toContainText("0 of 10 questions");
+  await expect(page.locator(".practice-prompt")).toBeVisible();
 });
 
 test("on a board, practice opens beside it and stays while other tools are used", async ({ page, request }) => {

@@ -1,7 +1,7 @@
 // The student's side of the practice study: the code they joined a class with, the record of the question they are
 // on, and an outbox that keeps finished questions in this browser until the server has them (classroom Wi-Fi drops).
 import { en } from "./locales/en";
-import { check, exercise, type Exercise, type PracticeWords, type Verdict } from "./math/practice";
+import { check, exercise, stepsOf, type Exercise, type PracticeWords, type Verdict } from "./math/practice";
 import type { SkillId } from "./math/practiceSkills";
 import { EloModel, type ModelState } from "./model/elo";
 import { evidence } from "./model/evaluate";
@@ -32,6 +32,8 @@ export type Protocol = {
 /** What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me", their ideas under "ideas". */
 export type Plan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: ModelState; ideas: IdeaState };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
+/** One step of a question worked in steps (stepsOf in practice.ts), in the steps' order: the answers to it, and whether its answer was shown. */
+export type StepLog = { answers: LoggedAnswer[]; shown: boolean };
 
 /** What the server stores for one question (see server/research.ts, which works out the summary columns). */
 export type Attempt = {
@@ -51,6 +53,8 @@ export type Attempt = {
   shownAt: number;
   /** The ideas the student ticked as hard after a wrong answer (whatWasHard), when they ticked any. */
   hard?: string[];
+  /** The steps the student worked after a wrong answer, when the question was worked in steps. */
+  steps?: StepLog[];
 };
 
 /** One question as the student works on it. Times are from performance.now(), so a clock change doesn't skew them. */
@@ -64,16 +68,24 @@ export type QuestionLog = {
   solutionViewed: boolean;
   /** The ideas ticked as hard, in the order the list shows them. */
   hard: string[];
+  /** The steps worked so far, when the question is being worked in steps. */
+  steps: StepLog[];
 };
 
 export const startLog = (shownAt = Date.now(), t0 = performance.now()): QuestionLog =>
-  ({ shownAt, t0, answers: [], outcome: null, msTotal: null, solutionViewed: false, hard: [] });
+  ({ shownAt, t0, answers: [], outcome: null, msTotal: null, solutionViewed: false, hard: [], steps: [] });
 
 export const verdictOf = (v: Verdict): AnswerVerdict => (v.ok ? "correct" : v.why ? "form" : v.close ? "close" : "wrong");
 
 const ms = (log: QuestionLog, now: number) => Math.max(0, Math.round(now - log.t0));
 export const logAnswer = (log: QuestionLog, input: string, v: Verdict, now = performance.now()) =>
   log.answers.push({ input: input.trim().slice(0, 200), verdict: verdictOf(v), ms: ms(log, now) });
+/** An answer to step i, or (input null) its answer shown. */
+export function logStep(log: QuestionLog, i: number, input: string | null, v?: Verdict, now = performance.now()) {
+  while (log.steps.length <= i) log.steps.push({ answers: [], shown: false });
+  if (input === null) log.steps[i].shown = true;
+  else log.steps[i].answers.push({ input: input.trim().slice(0, 200), verdict: verdictOf(v!), ms: ms(log, now) });
+}
 export function finish(log: QuestionLog, outcome: Exclude<Outcome, "skipped">, now = performance.now()) {
   if (log.outcome) return;
   log.outcome = outcome;
@@ -100,6 +112,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
     answers: log.answers,
     shownAt: log.shownAt,
     ...(log.hard.length ? { hard: log.hard } : {}),
+    ...(log.steps.length ? { steps: log.steps } : {}),
   };
 }
 
@@ -138,6 +151,8 @@ export function attemptEvidence(a: Pick<Attempt, "outcome" | "answers">): boolea
   const counted = a.answers.filter((x) => x.verdict !== "form");
   return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct");
 }
+/** What a step says, by the same rule: its first counted answer, or wrong when its answer was shown untried. */
+const stepEvidence = (s: StepLog) => attemptEvidence({ outcome: s.shown ? "revealed" : "skipped", answers: s.answers });
 
 /** The mistake the checker recognises in the first counted answer, when that answer was wrong. */
 const firstMistake = (ex: Exercise, answers: readonly Pick<LoggedAnswer, "input" | "verdict">[]) => {
@@ -148,24 +163,30 @@ const firstMistake = (ex: Exercise, answers: readonly Pick<LoggedAnswer, "input"
 /**
  * What the attempt tells the student's ideas (src/model/ideaState.ts), the same on the server and in the browser: the
  * question is rebuilt from its skill, level and seed, the mistake, if the first counted answer made one the checker
- * recognises, is read off that answer, and what the student ticked as hard goes with it. The words don't matter to
- * either; English rebuilds it everywhere.
+ * recognises, is read off that answer, and what the student ticked as hard goes with it. Then each step worked, as a
+ * question of its own on the ideas it needs. The words don't matter to either; English rebuilds it everywhere.
  */
-export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "hard">) {
+export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "hard" | "steps">) {
   if (!hasIdeas(a.skill)) return;
   const correct = attemptEvidence(a);
   if (correct === null) return;
   const ex = exercise(a.skill, a.level, a.seed, en.pracWords);
   learnIdeas(state, ex, correct, correct ? undefined : firstMistake(ex, a.answers), a.hard);
+  const steps = a.steps?.length ? stepsOf(ex, en.pracWords) : [];
+  a.steps?.forEach((s, i) => {
+    const right = stepEvidence(s);
+    if (right !== null && steps[i]) learnIdeas(state, steps[i], right, right ? undefined : firstMistake(steps[i], s.answers));
+  });
 }
 
 /**
  * The ideas to ask about once a question is over ("what exactly was hard?"), or null when there is nothing to ask: the
- * first counted answer was right, or wrong in the shape of a mistake that already names the idea, or the skill has no
- * ideas. The question's own ideas, in the graph's order.
+ * first counted answer was right, or wrong in the shape of a mistake that already names the idea, or the question was
+ * worked in steps, which said which idea went wrong, or the skill has no ideas. The question's own ideas, in the
+ * graph's order.
  */
-export function whatWasHard(ex: Exercise, log: Pick<QuestionLog, "outcome" | "answers">): readonly FractionsNode[] | null {
-  if (!hasIdeas(ex.skill) || attemptEvidence({ outcome: log.outcome ?? "skipped", answers: log.answers }) !== false) return null;
+export function whatWasHard(ex: Exercise, log: Pick<QuestionLog, "outcome" | "answers" | "steps">): readonly FractionsNode[] | null {
+  if (!hasIdeas(ex.skill) || log.steps.length || attemptEvidence({ outcome: log.outcome ?? "skipped", answers: log.answers }) !== false) return null;
   return asksWhatWasHard(ex, firstMistake(ex, log.answers)) ? usesOf(ex) : null;
 }
 

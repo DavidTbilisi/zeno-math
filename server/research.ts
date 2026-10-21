@@ -15,7 +15,7 @@ import { dashboard } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
-import { mark, trackIdeas, type Answered } from "./marking.ts";
+import { mark, stepCount, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
 import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
@@ -110,6 +110,8 @@ export function initResearch(db: DatabaseSync) {
   add("attempts", "late", "INTEGER NOT NULL DEFAULT 0");
   // The ideas the student ticked as hard after a wrong answer (JSON array), or NULL: not asked, or nothing ticked.
   add("attempts", "hard", "TEXT");
+  // The steps worked after a wrong answer (JSON array, one {answers, shown} per step), or NULL: not worked in steps.
+  add("attempts", "steps", "TEXT");
   initProtocol(db);
 }
 
@@ -141,9 +143,10 @@ function replay(db: DatabaseSync): Replay {
   let cache = replays.get(db);
   if (!cache) replays.set(db, (cache = { model: new EloModel(), ideas: new Map(), lastId: 0 }));
   const rows = stmt(db, `
-    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
+    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, steps, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
   `).all(cache.lastId) as {
-    id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; hard: string | null; counted: number;
+    id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; hard: string | null; steps: string | null;
+    counted: number;
   }[];
   for (const r of rows) {
     // Counted answers are those not sent back for their form, as the export reads them (evaluate.ts, observation).
@@ -152,7 +155,8 @@ function replay(db: DatabaseSync): Replay {
     // On a skill made of ideas, the question is rebuilt and the student's ideas move as the browser's did (learner.ts).
     if (hasIdeas(r.skill)) {
       const ideas = cache.ideas.get(r.student_id) ?? cache.ideas.set(r.student_id, {}).get(r.student_id)!;
-      trackIdeas(ideas, { skill: r.skill, level: r.level, seed: r.seed }, r.outcome, JSON.parse(r.answers) as Answered[], r.hard ? (JSON.parse(r.hard) as string[]) : undefined);
+      const json = <T>(v: string | null) => (v ? (JSON.parse(v) as T) : undefined);
+      trackIdeas(ideas, { skill: r.skill, level: r.level, seed: r.seed }, r.outcome, JSON.parse(r.answers) as Answered[], json<string[]>(r.hard), json<SteppedThrough[]>(r.steps));
     }
     cache.lastId = r.id;
   }
@@ -193,6 +197,8 @@ const oneOf = <T extends string>(items: readonly T[], v: unknown): v is T => ite
 type Verdict = (typeof VERDICTS)[number];
 /** An answer as stored: the server's verdict, and the browser's as client where it differed. */
 type Answer = { input: string; verdict: Verdict; ms: number; client?: Verdict };
+/** A step of a question worked in steps: its answers, and whether its answer was shown. */
+type Step = { answers: Answer[]; shown: boolean };
 export type AttemptRow = {
   clientId: string;
   skill: SkillId;
@@ -212,12 +218,14 @@ export type AttemptRow = {
   shownAt: number;
   /** The ideas ticked as hard, each one of the fractions graph's, on a skill with ideas. */
   hard?: string[];
+  /** The steps worked after a wrong answer, in order, no more than the question has. */
+  steps?: Step[];
 };
 
 /** Checks an uploaded attempt and works out the summary columns from its answers, so they can't disagree. */
 export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   const bad = (what: string) => new HttpError(400, `invalid ${what}`);
-  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard } = body;
+  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard, steps } = body;
   if (typeof clientId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(clientId)) throw bad("clientId");
   if (!oneOf(ALL_SKILLS, skill)) throw bad("skill");
   if (!isInt(level, 1, 3)) throw bad("level");
@@ -229,22 +237,40 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   if (typeof solutionViewed !== "boolean") throw bad("solutionViewed");
   if (!isInt(msTotal, 0, DAY)) throw bad("msTotal");
   if (!isInt(shownAt, 0, Number.MAX_SAFE_INTEGER)) throw bad("shownAt");
-  if (!Array.isArray(answers) || answers.length > MAX_ANSWERS) throw bad("answers");
-  const list: Answer[] = answers.map((a) => {
-    if (!a || typeof a !== "object" || typeof a.input !== "string" || !oneOf(VERDICTS, a.verdict) || !isInt(a.ms, 0, DAY)) throw bad("answer");
-    return { input: a.input.slice(0, MAX_INPUT), verdict: a.verdict, ms: a.ms };
-  });
-  // What happened has to match the answers: solved ends on a correct one; nothing follows a correct one; a skip had a try.
+  const answerList = (value: unknown, what: string): Answer[] => {
+    if (!Array.isArray(value) || value.length > MAX_ANSWERS) throw bad(what);
+    const list = value.map((a): Answer => {
+      if (!a || typeof a !== "object" || typeof a.input !== "string" || !oneOf(VERDICTS, a.verdict) || !isInt(a.ms, 0, DAY)) throw bad("answer");
+      return { input: a.input.slice(0, MAX_INPUT), verdict: a.verdict, ms: a.ms };
+    });
+    // Nothing follows a correct answer.
+    const correctAt = list.findIndex((a) => a.verdict === "correct");
+    if (correctAt >= 0 && correctAt !== list.length - 1) throw bad(what);
+    return list;
+  };
+  const list = answerList(answers, "answers");
+  // What happened has to match the answers: solved ends on a correct one; a skip had a try.
   const correctAt = list.findIndex((a) => a.verdict === "correct");
-  if (correctAt >= 0 && correctAt !== list.length - 1) throw bad("answers");
   if ((outcome === "solved") !== (correctAt >= 0)) throw bad("outcome");
   if (outcome === "skipped" && !list.length) throw bad("outcome");
   // What was ticked as hard: ideas of the graph, each once, and only on a skill made of them.
   const ideas = Object.keys(FRACTIONS.nodes);
   if (hard !== undefined && (!hasIdeas(skill) || !Array.isArray(hard) || !hard.length || new Set(hard).size !== hard.length || !hard.every((h) => ideas.includes(h)))) throw bad("hard");
+  // The steps: only after a wrong first answer, no more than the question has, each answered or shown.
+  let stepList: Step[] | undefined;
+  if (steps !== undefined) {
+    if (!Array.isArray(steps) || !steps.length || summary(list).firstCorrect || !list.length || steps.length > stepCount({ skill, level, seed })) throw bad("steps");
+    stepList = steps.map((s): Step => {
+      if (!s || typeof s !== "object" || typeof s.shown !== "boolean") throw bad("steps");
+      const stepAnswers = answerList(s.answers, "steps");
+      if (!stepAnswers.length && !s.shown) throw bad("steps");
+      return { answers: stepAnswers, shown: s.shown };
+    });
+  }
   return {
     clientId, skill, level, seed, review, outcome, policy, predicted, ...summary(list), solutionViewed, msFirst: list[0]?.ms ?? null, msTotal, answers: list, shownAt,
     ...(hard ? { hard: hard as string[] } : {}),
+    ...(stepList ? { steps: stepList } : {}),
   };
 }
 
@@ -260,11 +286,14 @@ function summary(list: readonly Answer[]) {
  * remarked says how many, and the export shows both.
  */
 export function markAttempt(a: AttemptRow): AttemptRow & { remarked: number } {
-  const answers = a.answers.map((x): Answer => {
-    const verdict = mark(a, x.input);
+  const remark = (list: Answer[], step?: number) => list.map((x): Answer => {
+    const verdict = mark(a, x.input, step);
     return verdict === x.verdict ? x : { ...x, verdict, client: x.verdict };
   });
-  return { ...a, ...summary(answers), answers, remarked: answers.filter((x) => x.client).length };
+  const answers = remark(a.answers);
+  const steps = a.steps?.map((s, i) => ({ ...s, answers: remark(s.answers, i) }));
+  const remarked = [answers, ...(steps ?? []).map((s) => s.answers)].flat().filter((x) => x.client).length;
+  return { ...a, ...summary(answers), answers, ...(steps ? { steps } : {}), remarked };
 }
 
 const csvCell = (v: unknown) => {
@@ -273,7 +302,7 @@ const csvCell = (v: unknown) => {
 };
 const CSV_COLUMNS = [
   "attempt", "student", "class", "condition", "policy", "predicted", "area", "skill", "level", "seed", "review", "outcome", "first_correct", "wrongs",
-  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "remarked", "late", "shown_at", "created_at",
+  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "steps", "remarked", "late", "shown_at", "created_at",
 ] as const;
 
 const TEST_CSV_COLUMNS = [
@@ -412,11 +441,12 @@ export async function handleResearch(
     const late = classPractice && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
     const result = stmt(db, `
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
-        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       a.clientId, student.id, a.skill, a.level, a.seed, Number(a.review), a.outcome, a.policy, a.predicted, Number(a.firstCorrect), a.wrongs, a.retries,
-      Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), a.hard ? JSON.stringify(a.hard) : null, now,
+      Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), a.hard ? JSON.stringify(a.hard) : null,
+      a.steps ? JSON.stringify(a.steps) : null, now,
     );
     // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
     return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
@@ -434,7 +464,7 @@ export async function handleResearch(
     teacher(req);
     const rows = forClass(query.get("class"), `
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
-        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.remarked, a.late, a.shown_at, a.created_at,
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.remarked, a.late, a.shown_at, a.created_at,
         json_array_length(a.answers) AS n_answers
       FROM attempts a JOIN students s ON s.id = a.student_id
       {where}
