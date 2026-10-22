@@ -1140,8 +1140,18 @@ five seeds. Students who tick a missing idea three times in ten and a known one 
 40 %, on every seed, and those who tick a missing idea seven times in ten even with a known one ticked three times in
 ten, to 49 %. Ticks that say nothing, a missing and a known idea alike, cost little, from 3 points below to 1 above
 (20 to 24 %), but ticks that run the wrong way, a known idea more often than a missing one, cost much more: a tenth
-against seven tenths gave 2 %. A model told the students' real rates turns even those into evidence, which is the case
-for fitting the rates on a class's ticks, as the parameters of each idea would be, rather than assuming them. The test
+against seven tenths gave 2 %. A model told the students' real rates turns even those into evidence, and the rates need not be told: they can be
+fitted on a class's ticks, as the parameters of each idea are fitted on its answers, as the rates under which the
+ticks seen are likeliest given each idea's P(known) after the wrong answer, read from the answers alone. Fitted on the
+training learners of each of the same 25 worlds and seeds, the chance of ticking a known idea came back within two
+hundredths of the truth everywhere, and equal rates came back equal, but the chance of ticking a missing one came back
+about halfway towards the other, 0.33 for 0.1 against 0.7 and 0.49 for 0.9 against 0.05. The cause is the model, not
+the fit: after a wrong answer its P(known) is too low, and on seed 1 of the world of a tenth against seven tenths, of
+the ideas it put below 10 % more than a third were known, so a tick on an idea it took for missing was often a tick on a known
+one. The order of the two rates, which is what decides the idea a tick blames, came back right on every seed. With
+the fitted rates the missing idea was named within 6 points of the share with the real ones in every world, 59 %
+instead of 2 % for a tenth against seven tenths and 32 % instead of 14 % for three tenths against a half, and never
+more than 4 points below the share with a half and a tenth assumed. The test
 left for real students is therefore narrow: whether children tick an idea they are missing more often than one they
 know.
 

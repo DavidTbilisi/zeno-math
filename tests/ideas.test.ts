@@ -6,11 +6,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
-import { SKILL_IDEAS } from "../src/model/ideaState.ts";
+import { SKILL_IDEAS, TICK_PRIOR } from "../src/model/ideaState.ts";
 import { bktRule, fitRules, judge, streakRule } from "../src/model/mastery.ts";
 import {
-  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaPractice,
+  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaPractice,
 } from "../src/model/ideas.ts";
+import { rng } from "../src/model/random.ts";
 
 const params = { init: 0.3, learn: 0.1, guess: 0.2, slip: 0.1 };
 const fit: IdeaFit = { idea: () => params, question: () => params };
@@ -85,6 +86,27 @@ test("the checklist: ticks only after a wrong answer no mistake explains, among 
   const without = diagnosis(fit, ps, { blame: true }), read = diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps, { blame: true });
   assert.ok(read.right > without.right + 0.1, `the missing idea found ${read.right} with the ticks read, ${without.right} without`);
   assert.equal(diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps).right, diagnosis(fit, ps).right, "the form without blame passes them over");
+});
+
+test("the checklist's rates fitted on the ticks: found again when the model's P(known) is right, read the right way round in the world of ideas, and the prior with nothing ticked", () => {
+  // Students whose ideas stand where the model puts them, who tick each by the rates from the P(known) the wrong answer leaves.
+  const r = rng(5), rates = { hit: 0.6, falseAlarm: 0.15 }, ps: IdeaPractice[] = [], starts = new Map<IdeaPractice, number[]>();
+  for (let s = 0; s < 3000; s++) {
+    const start = [r.next(), r.next(), r.next()], before = [...start];
+    conjunctiveStep(before, [0, 1, 2], () => 0, params, false);
+    const p = { ...practice(`s${s}`, "fractions", ["a", "b", "c"], [[0, 1, 2]], [0]), ticked: [[0, 1, 2].filter((j) => r.next() < (r.next() < before[j] ? rates.falseAlarm : rates.hit))] };
+    ps.push(p);
+    starts.set(p, start);
+  }
+  const found = fitTicks(fit, ps, { starts });
+  assert.ok(Math.abs(found.hit - rates.hit) < 0.04 && Math.abs(found.falseAlarm - rates.falseAlarm) < 0.04, `fitted ${JSON.stringify(found)}`);
+  for (const world of [{ hit: 0.9, falseAlarm: 0.05 }, { hit: 0.1, falseAlarm: 0.7 }]) {
+    const sim = simulateIdeas({ students: 60, length: 20, learnRate: 0.1, checklist: world });
+    const across: IdeaFit = { idea: fitIdeas(sim, true), question: () => params };
+    const got = fitTicks(across, sim, { blame: true, starts: carriedIdeas(across, sim, true) });
+    assert.equal(got.hit > got.falseAlarm, world.hit > world.falseAlarm, `${JSON.stringify(world)} fitted as ${JSON.stringify(got)}`);
+  }
+  assert.deepEqual(fitTicks(fit, [practice("s", "fractions", ["a"], [[0]], [0])]), TICK_PRIOR);
 });
 
 test("the conjunctive step is BKT's step with one idea, or with the others certainly known, and leaves ideas not needed alone", () => {
