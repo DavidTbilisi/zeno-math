@@ -306,8 +306,8 @@ const CSV_COLUMNS = [
 ] as const;
 
 const TEST_CSV_COLUMNS = [
-  "response", "student", "class", "condition", "test_order", "phase", "form", "item", "area", "skill", "level", "seed", "input", "verdict",
-  "correct", "client_verdict", "late", "retries", "ms", "created_at",
+  "response", "student", "class", "condition", "test_order", "phase", "form", "test_length", "item", "area", "skill", "level", "seed", "input",
+  "verdict", "correct", "client_verdict", "late", "retries", "ms", "created_at",
 ] as const;
 function sendCsv(res: ServerResponse, name: string, columns: readonly string[], rows: Record<string, unknown>[]) {
   const stamp = new Date().toISOString().slice(0, 10);
@@ -484,9 +484,9 @@ export async function handleResearch(
     teacher(req);
     const rows = forClass(query.get("class"), `
       SELECT t.id AS response, 's' || s.id AS student, s.class_code AS class, s.condition, COALESCE(s.test_order, '') AS test_order,
-        t.phase, t.form, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct,
+        t.phase, t.form, c.test_length, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct,
         t.client_verdict, t.late, t.retries, t.ms, t.created_at
-      FROM test_responses t JOIN students s ON s.id = t.student_id
+      FROM test_responses t JOIN students s ON s.id = t.student_id JOIN classes c ON c.code = s.class_code
       {where}
       ORDER BY s.id, t.phase DESC, t.item
     `);

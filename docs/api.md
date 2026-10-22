@@ -201,7 +201,8 @@ used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=
 - **`attempts.csv`** columns: attempt, student, class, condition, policy, predicted, area, skill, level, seed,
   review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, hard,
   steps, remarked, late, shown_at, created_at.
-- **`tests.csv`** columns: response, student, class, condition, test_order, phase, form, item, area, skill, level,
-  seed, input, verdict, correct, client_verdict, late, retries, ms, created_at.
+- **`tests.csv`** columns: response, student, class, condition, test_order, phase, form, test_length, item, area,
+  skill, level, seed, input, verdict, correct, client_verdict, late, retries, ms, created_at. `test_length` is the
+  number of questions on each of the class's tests.
 
 `npm run model` reads the first and `npm run analyse` the second.

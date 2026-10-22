@@ -19,6 +19,7 @@ import { skillsOfYear } from "../src/model/curriculum.ts";
 import { EloModel } from "../src/model/elo.ts";
 import { observationsFromCsv, parseCsv, replay } from "../src/model/evaluate.ts";
 import { usesOf } from "../src/model/ideaState.ts";
+import { analyseStudy, scoresFromTests } from "../src/model/analysis.ts";
 import { testItems } from "../src/model/testForms.ts";
 import { verdictOf } from "../src/learner.ts";
 import { en } from "../src/locales/en.ts";
@@ -544,6 +545,57 @@ test("steps worked after a wrong answer are checked, marked again, replayed into
   ]);
   assert.equal(stored.remarked, "1");
   assert.equal(rows.filter((r) => !r.steps).length, 1);
+});
+
+test("the dashboard and the planned analysis score every test alike, across classes given tests of different lengths", async () => {
+  const skills = ["linear", "expand", "factor"];
+  /** A class of four whose tests have `length` questions; each student gets `right` of them right, and the last stops the post-test short. */
+  async function sitClass(length: number, right: (student: number, phase: "pre" | "post") => number) {
+    const { code } = (await call("POST", "/api/classes", { name: `Len${length}`, skills, testLength: length }, TEACHER)).body;
+    const students: string[] = [];
+    for (let i = 0; i < 4; i++) students.push((await call("POST", "/api/students", { class: code })).body.code);
+    let k = 0;
+    for (const phase of ["pre", "post"] as const) {
+      await call("POST", `/api/classes/${code}/phase`, { phase: `${phase}test` }, TEACHER);
+      for (const [i, student] of students.entries()) {
+        const form = (await call("GET", `/api/students/${student}/plan`)).body.tests[phase].form;
+        const answered = phase === "post" && i === 3 ? length - 1 : length;
+        for (const [item, q] of testItems(code, skills as never, form, length).slice(0, answered).entries()) {
+          const verdict = item < right(i, phase) ? "correct" : "wrong";
+          const sent = await call("POST", "/api/tests", { clientId: `len-${Date.now()}-${length}-${k++}`, student, phase, item, input: typed(q, verdict), verdict, retries: 0, ms: 9000 });
+          assert.equal(sent.status, 201, JSON.stringify(sent.body));
+        }
+      }
+    }
+    return code;
+  }
+  const classes = [await sitClass(4, (i, phase) => (phase === "pre" ? i % 3 : 1 + (i % 4))), await sitClass(6, (i, phase) => (phase === "pre" ? 1 + i : 6 - i))];
+
+  // The planned analysis on the export of both classes together, as a study with several classes would run it.
+  const rows = parseCsv((await call("GET", "/api/research/tests.csv", undefined, TEACHER)).body as string).filter((r) => classes.includes(r.class));
+  const scores = new Map(scoresFromTests(rows).map((s) => [s.student, s]));
+  const analysis = analyseStudy([...scores.values()]);
+  assert.deepEqual(analysis.testLengths, [4, 6]);
+  type Test = { score: number; complete: boolean } | null;
+  const finished: { condition: string; gain: number }[] = [];
+  for (const code of classes) {
+    const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+    for (const student of d.students as { id: string; condition: string; pre: Test; post: Test }[]) {
+      const mine = scores.get(student.id)!;
+      for (const phase of ["pre", "post"] as const) {
+        const t = mine[phase]!;
+        assert.deepEqual([t.correct / mine.testLength!, t.answered >= mine.testLength!], [student[phase]!.score, student[phase]!.complete], `${student.id} ${phase}`);
+      }
+      if (student.pre!.complete && student.post!.complete) finished.push({ condition: student.condition, gain: student.post!.score - student.pre!.score });
+    }
+  }
+  // Every class's last student is left out of both, for an unfinished post-test, and the gains agree.
+  for (const c of ["adaptive", "fixed"]) {
+    const mine = finished.filter((f) => f.condition === c);
+    assert.equal(analysis.students[c].complete, mine.length, c);
+    close(analysis.means[c].gain, mine.reduce((a, f) => a + f.gain, 0) / mine.length);
+  }
+  assert.equal(finished.length, 6);
 });
 
 test("answers that come long after their phase are kept and marked late", async () => {
