@@ -79,6 +79,8 @@ test("the checklist: ticks only after a wrong answer no mistake explains, among 
     }
   assert.ok(asked > 50, `${asked} checklists with a tick`);
   assert.ok(simulateIdeas({ students: 4, length: 5 }).every((p) => p.ticked === undefined), "no checklist, nothing drawn for it");
+  const { ticked: _, ...world } = ps[7], plain = simulateIdeas({ students: 40, length: 20, learnRate: 0.1 });
+  assert.deepEqual(world, plain[7], "a seed is the same students with the checklist or without it, so the two compare pair by pair");
   const fit: IdeaFit = { idea: fitIdeas(ps), question: () => ({ guess: 0.2, slip: 0.1 }) };
   const without = diagnosis(fit, ps, { blame: true }), read = diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps, { blame: true });
   assert.ok(read.right > without.right + 0.1, `the missing idea found ${read.right} with the ticks read, ${without.right} without`);

@@ -103,6 +103,8 @@ const LEARN_PER_RATE = 2.5;
 export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] {
   const p = { ...DEFAULT_IDEAS, ...params };
   const r = rng(p.seed);
+  // The ticks draw from a stream of their own, so a seed is the same class of students with the checklist or without it.
+  const tick = rng((p.seed ^ 0x9e3779b9) >>> 0);
   const { spread } = DEFAULT_SIM;
   const difficulty = new Map(Object.keys(FRACTIONS.nodes).map((id) => [id, r.normal(spread.difficulty)]));
   const learn = Math.min(1, LEARN_PER_RATE * p.learnRate);
@@ -140,7 +142,7 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
           if (missing && r.next() < p.trapRate) gap[i] = ids.indexOf(missing);
         }
         const asked = !right && p.checklist && gap[i] < 0;
-        ticked.push(asked ? needs[i].filter((j) => r.next() < (known.get(ids[j]) ? p.checklist!.falseAlarm : p.checklist!.hit)) : []);
+        ticked.push(asked ? needs[i].filter((j) => tick.next() < (known.get(ids[j]) ? p.checklist!.falseAlarm : p.checklist!.hit)) : []);
         for (const n of needed) if (!known.get(n) && r.next() < learn) known.set(n, true);
         ids.forEach((id, j) => (ideaKnown[j][i] = known.get(id) ? 1 : 0));
         all[i] = ids.every((id) => known.get(id)) ? 1 : 0;
