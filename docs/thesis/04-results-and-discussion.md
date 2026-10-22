@@ -1151,7 +1151,18 @@ the ideas it put below 10 % more than a third were known, so a tick on an idea i
 one. The order of the two rates, which is what decides the idea a tick blames, came back right on every seed. With
 the fitted rates the missing idea was named within 6 points of the share with the real ones in every world, 59 %
 instead of 2 % for a tenth against seven tenths and 32 % instead of 14 % for three tenths against a half, and never
-more than 4 points below the share with a half and a tenth assumed. The test
+more than 4 points below the share with a half and a tenth assumed. Children may also tick by habit rather than by
+what they know, so the same check was made with a share of the students, a quarter, a half or all of them, who for
+every answer tick every idea listed, only the first, nothing, or each at even odds, the others ticking at a half and
+a tenth. Students who tick nothing only take their own information away, and are the yardstick: with a quarter or a
+half of them the missing idea was named 48 and 32 % of the time, against 52 % with none. Ticking every idea, only the
+first or each at even odds cost at most 6 points more than ticking nothing: 48, 45 and 42 % with a quarter of the
+class, and 30, 28 and 32 % with half of it. A whole class ticking by one habit, with a half and
+a tenth assumed, did harm: 17 % for every idea, 10 % for the first and 16 % at even odds, below the 23 % of the
+answers alone. With the rates fitted on the class's ticks it did not, since the fit found the ticks to say nothing
+(the two rates came back equal) and so read them as nothing: 23, 22 and 24 %. Mixed into an honest class, habits
+cost little more than silence, so the one case that does harm, a class ticking by habit as a whole, is the one that
+fitting the rates guards against. The test
 left for real students is therefore narrow: whether children tick an idea they are missing more often than one they
 know.
 
