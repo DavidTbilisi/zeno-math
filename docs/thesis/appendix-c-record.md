@@ -49,3 +49,10 @@ students as finished. Each test is now finished and scored on its own class's le
 as the dashboard counts it, and a test of the server checks that the two agree on every student across two classes
 with tests of different lengths. With one class, or classes whose tests are all one length, the analysis is
 unchanged.
+
+The check of the checklist in the world of ideas (section 3.3), also made after every result, was changed on 22
+October. The simulated students' ticks had been drawn from the same stream of random numbers as everything else, so a
+seed with the checklist was a different class of students from the same seed without it, and the shares of the
+missing idea named with and without the ticks were compared across different students. The ticks now have a stream of
+their own, a test checks that a seed is the same students either way, and the shares in section 3.3 are those of the
+same students. No result outside the checklist changed, since without it nothing is drawn for the ticks.
