@@ -84,9 +84,17 @@ export type IdeaParams = {
    * question needed that they are missing with chance hit, and each they know with chance falseAlarm. null: not asked.
    */
   checklist: TickRates | null;
+  /**
+   * Students who do not tick by what they know: each student is one of them, for every answer, with chance share, and
+   * ticks every idea the checklist lists ("all"), only the first ("first"), nothing ("none"), or each at even odds
+   * ("random"). The others tick by checklist's rates. null: every student does.
+   */
+  tickStyle: { kind: TickStyle; share: number } | null;
   seed: number;
 };
-export const DEFAULT_IDEAS: IdeaParams = { students: 400, length: 30, learnRate: 0.02, trapRate: 0.5, isolateRate: 0, guess: 0.2, distractors: "mapped", checklist: null, seed: 1 };
+export const TICK_STYLES = ["all", "first", "none", "random"] as const;
+export type TickStyle = (typeof TICK_STYLES)[number];
+export const DEFAULT_IDEAS: IdeaParams = { students: 400, length: 30, learnRate: 0.02, trapRate: 0.5, isolateRate: 0, guess: 0.2, distractors: "mapped", checklist: null, tickStyle: null, seed: 1 };
 
 /** The BKT world's chance of a slip at level 2, where H2's questions are (its guess is DEFAULT_IDEAS.guess). */
 const SLIP = 0.1;
@@ -113,6 +121,7 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
   for (let s = 0; s < p.students; s++) {
     const global = r.normal(spread.global);
     const known = new Map<string, boolean>();
+    const style = p.tickStyle && tick.next() < p.tickStyle.share ? p.tickStyle.kind : null;
     for (const skill of IDEA_SKILLS) {
       const ids = ideasOf(skill);
       const ability = global + r.normal(spread.skill);
@@ -142,7 +151,9 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
           if (missing && r.next() < p.trapRate) gap[i] = ids.indexOf(missing);
         }
         const asked = !right && p.checklist && gap[i] < 0;
-        ticked.push(asked ? needs[i].filter((j) => tick.next() < (known.get(ids[j]) ? p.checklist!.falseAlarm : p.checklist!.hit)) : []);
+        const ticks = (j: number, k: number) =>
+          style === "all" ? true : style === "first" ? k === 0 : style === "none" ? false : tick.next() < (style === "random" ? 0.5 : known.get(ids[j]) ? p.checklist!.falseAlarm : p.checklist!.hit);
+        ticked.push(asked ? needs[i].filter(ticks) : []);
         for (const n of needed) if (!known.get(n) && r.next() < learn) known.set(n, true);
         ids.forEach((id, j) => (ideaKnown[j][i] = known.get(id) ? 1 : 0));
         all[i] = ids.every((id) => known.get(id)) ? 1 : 0;

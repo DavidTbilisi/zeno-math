@@ -9,7 +9,7 @@ import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
 import { SKILL_IDEAS, TICK_PRIOR } from "../src/model/ideaState.ts";
 import { bktRule, fitRules, judge, streakRule } from "../src/model/mastery.ts";
 import {
-  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaPractice,
+  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaParams, type IdeaPractice,
 } from "../src/model/ideas.ts";
 import { rng } from "../src/model/random.ts";
 
@@ -86,6 +86,18 @@ test("the checklist: ticks only after a wrong answer no mistake explains, among 
   const without = diagnosis(fit, ps, { blame: true }), read = diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps, { blame: true });
   assert.ok(read.right > without.right + 0.1, `the missing idea found ${read.right} with the ticks read, ${without.right} without`);
   assert.equal(diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps).right, diagnosis(fit, ps).right, "the form without blame passes them over");
+});
+
+test("students who tick by a style: every idea listed, the first, or nothing, the whole class or a share of it, on the same students", () => {
+  const honest = { hit: 1, falseAlarm: 0 }, sim = (tickStyle: IdeaParams["tickStyle"]) => simulateIdeas({ students: 30, length: 15, learnRate: 0.1, checklist: honest, tickStyle });
+  const asked = (p: IdeaPractice, i: number) => p.answers[i] === 0 && p.gap[i] < 0;
+  for (const [kind, expect] of [["all", (n: readonly number[]) => n], ["first", (n: readonly number[]) => n.slice(0, 1)], ["none", () => []]] as const)
+    for (const p of sim({ kind, share: 1 })) p.needs.forEach((n, i) => assert.deepEqual(p.ticked![i], asked(p, i) ? expect(n) : [], kind));
+  const half = sim({ kind: "all", share: 0.5 }), plain = sim(null);
+  // A student ticking everything is one who ticks an idea the honest students would not have: one they know.
+  const styled = new Set(half.filter((p) => p.needs.some((n, i) => asked(p, i) && p.ticked![i].length !== plain.find((q) => q.student === p.student && q.skill === p.skill)!.ticked![i].length)).map((p) => p.student));
+  assert.ok(styled.size > 5 && styled.size < 25, `${styled.size} of 30 students tick everything`);
+  half.forEach((p, k) => assert.deepEqual(p.answers, plain[k].answers, "the same students answer the same"));
 });
 
 test("the checklist's rates fitted on the ticks: found again when the model's P(known) is right, read the right way round in the world of ideas, and the prior with nothing ticked", () => {

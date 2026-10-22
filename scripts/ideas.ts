@@ -19,11 +19,13 @@
 //   --every-distractor      multiple choice: every wrong answer blames one needed idea, a missing one --trap-rate of the time
 //   --checklist 0.5,0.1     "what exactly was hard?" after a wrong answer no mistake explains: an idea ticked with chance
 //                           0.5 when it is missing and 0.1 when it is known (hit, false alarm); the blamed forms read the ticks
+//   --style first,0.5       a share of the students tick by a style, not by what they know: every idea (all), only the
+//                           first listed (first), nothing (none), or each at even odds (random)
 //   --assume 0.7,0.05       the rates the blamed forms take the ticks to have, when not the world's own; "fit" fits them
 //                           on the training learners' ticks
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
 //   --json     machine-readable output
-import { compareIdeas, DEFAULT_IDEAS, IDEA_SKILLS, ideasOf, simulateIdeas, type IdeasComparison, type IdeaSkill } from "../src/model/ideas.ts";
+import { compareIdeas, DEFAULT_IDEAS, IDEA_SKILLS, ideasOf, simulateIdeas, TICK_STYLES, type IdeasComparison, type IdeaSkill, type TickStyle } from "../src/model/ideas.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import { BEYOND_THRESHOLDS, FINE_THRESHOLDS, PRECISION_TARGET, type AtPrecision } from "../src/model/mastery.ts";
 
@@ -62,12 +64,21 @@ const rates2 = (name: string) => {
   if (rest.length || !(hit >= 0 && hit <= 1) || !(falseAlarm >= 0 && falseAlarm <= 1)) fail(`${name} must be two chances from 0 to 1: hit,false alarm`);
   return { hit, falseAlarm };
 };
+/** "kind,share": a style of ticking and the share of students who tick by it. */
+const style = () => {
+  if (!args.includes("--style")) return null;
+  const [kind, share, ...rest] = opt("--style", "").split(",");
+  if (rest.length || !TICK_STYLES.includes(kind as TickStyle) || !(Number(share) > 0 && Number(share) <= 1)) fail(`--style must be one of ${TICK_STYLES.join(", ")} and a share above 0 up to 1`);
+  if (!args.includes("--checklist")) fail("--style needs --checklist: the rates the other students tick by");
+  return { kind: kind as TickStyle, share: Number(share) };
+};
 const base = {
   students: whole("--students", DEFAULT_IDEAS.students),
   trapRate: share("--trap-rate", DEFAULT_IDEAS.trapRate),
   guess: share("--guess", DEFAULT_IDEAS.guess),
   distractors: (args.includes("--every-distractor") ? "every" : "mapped") as "every" | "mapped",
   checklist: rates2("--checklist"),
+  tickStyle: style(),
   seed: whole("--seed", DEFAULT_IDEAS.seed),
 };
 const testShare = share("--test-share", 0.2);
@@ -108,7 +119,8 @@ function report() {
   console.log(`a wrong answer is a recognised mistake ${pct(base.trapRate)} of the time when the question has one and its idea is missing`);
   if (base.checklist) {
     const assumes = assumed === "fit" ? "; the blamed forms fit them on the training learners' ticks" : assumed && (assumed.hit !== base.checklist.hit || assumed.falseAlarm !== base.checklist.falseAlarm) ? `; the blamed forms take them to be ${pct(assumed.hit)} and ${pct(assumed.falseAlarm)}` : "";
-    console.log(`after any other wrong answer the student ticks what was hard: a missing idea ${pct(base.checklist.hit)} of the time, a known one ${pct(base.checklist.falseAlarm)}${assumes}`);
+    const styled = base.tickStyle ? `; ${pct(base.tickStyle.share)} of students tick by the style "${base.tickStyle.kind}" instead` : "";
+    console.log(`after any other wrong answer the student ticks what was hard: a missing idea ${pct(base.checklist.hit)} of the time, a known one ${pct(base.checklist.falseAlarm)}${styled}${assumes}`);
   }
   console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
   for (const r of results) {
