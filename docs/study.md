@@ -130,7 +130,10 @@ npm run analyse -- zeno-tests.csv
   phase (see [Answer checker](#answer-checker)). It works on any export, including ones made before the checker
   named mistakes, because skill, level and seed fix the question.
 
-Only students who finished both tests are analysed; the script says how many in each group did. It also counts, per
+Only students who finished both tests are analysed; the script says how many in each group did. A test is finished,
+and scored, on its own class's length (the export's `test_length`), as the dashboard counts it, so classes given tests
+of different lengths are analysed together; an export from before that column takes the longest test anyone answered
+for every class. It also counts, per
 group, the test answers that came late and those the browser marked differently from the server (the analysis uses
 the server's verdicts and keeps every answer). Report these and the practice time per group from the dashboard
 alongside it.

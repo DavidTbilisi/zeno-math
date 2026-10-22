@@ -86,9 +86,11 @@ test("the tests export becomes scores per student, and only students who finishe
   ];
   const scores = scoresFromTests(rows);
   assert.equal(scores.length, 8);
-  assert.deepEqual(scores[0], { student: "s1", class: "K", condition: "adaptive", order: "AB", pre: { form: "A", answered: 4, correct: 1 }, post: { form: "B", answered: 4, correct: 3 } });
+  assert.deepEqual(scores[0], {
+    student: "s1", class: "K", condition: "adaptive", order: "AB", testLength: null, pre: { form: "A", answered: 4, correct: 1 }, post: { form: "B", answered: 4, correct: 3 },
+  });
   const r = analyseStudy(scores);
-  assert.equal(r.testLength, 4);
+  assert.deepEqual(r.testLengths, [4], "without the export's test_length, the most questions anyone answered");
   assert.deepEqual(r.students, { adaptive: { all: 4, complete: 3 }, fixed: { all: 4, complete: 3 } });
   close(r.means.adaptive.pre, 5 / 12);
   close(r.means.adaptive.post, 10 / 12);
@@ -97,6 +99,28 @@ test("the tests export becomes scores per student, and only students who finishe
   close(r.gains!.estimate, 5 / 12 - 1 / 12);
   // Form check: every finished pre-test (s7's too), A against B.
   close(r.forms!.estimate, (1 + 2 + 1 + 3 + 0) / 5 / 4 - (2 + 2 + 2) / 3 / 4);
+});
+
+test("classes given tests of different lengths are analysed together, each test scored on its own class's length", () => {
+  // Class K's tests have four questions; class L's six. With every row carrying its class's length, a finished test of
+  // either is finished, a test of L stopped at four questions is not, and each is scored out of its own length.
+  const inClass = (klass: string, length: number, rows: Record<string, string>[]) => rows.map((r) => ({ ...r, class: klass, test_length: String(length) }));
+  const six = (student: string, condition: string, pre: number, post: number, answered = 6) => [
+    ...[0, 1, 2, 3, 4, 5].slice(0, answered).map((i) => row(student, condition, "AB", "pre", "A", i, i < pre)),
+    ...[0, 1, 2, 3, 4, 5].slice(0, answered).map((i) => row(student, condition, "AB", "post", "B", i, i < post)),
+  ];
+  const rows = [
+    ...inClass("K", 4, [...sit("k1", "adaptive", "AB", 1, 3), ...sit("k2", "fixed", "AB", 2, 2)]),
+    ...inClass("L", 6, [...six("l1", "adaptive", 3, 6), ...six("l2", "fixed", 3, 3), ...six("l3", "fixed", 4, 4, 4)]),
+  ];
+  const r = analyseStudy(scoresFromTests(rows));
+  assert.deepEqual(r.testLengths, [4, 6]);
+  assert.deepEqual(r.students, { adaptive: { all: 2, complete: 2 }, fixed: { all: 3, complete: 2 } }, "l3 stopped at four of six");
+  close(r.means.adaptive.pre, (1 / 4 + 3 / 6) / 2);
+  close(r.means.fixed.post, (2 / 4 + 3 / 6) / 2);
+  // Without the lengths, the longest test is taken for every class, and class K drops out of the analysis.
+  const old = analyseStudy(scoresFromTests(rows.map(({ test_length: _, ...rest }) => rest)));
+  assert.deepEqual(old.students, { adaptive: { all: 2, complete: 1 }, fixed: { all: 3, complete: 1 } });
 });
 
 test("late answers and the browser's disagreements are counted per condition, from any export", () => {

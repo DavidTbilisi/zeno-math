@@ -22,7 +22,7 @@ if (args.includes("--json")) {
   const pct = (x: number) => `${(x * 100).toFixed(1)} %`;
   const pts = (x: number) => `${x >= 0 ? "+" : "−"}${Math.abs(x * 100).toFixed(1)}`;
   const line = (e: Estimate) => `${pts(e.estimate)} points (95 % CI ${pts(e.ci[0])} to ${pts(e.ci[1])}), t(${e.df.toFixed(1)}) = ${e.t.toFixed(2)}, p = ${e.p < 0.001 ? "< 0.001" : e.p.toFixed(3)}`;
-  console.log(`${file}: ${result.testLength} questions per test\n`);
+  console.log(`${file}: ${result.testLengths.join(" or ")} questions per test\n`);
   for (const [c, n] of Object.entries(result.students)) {
     const m = result.means[c];
     console.log(`${c.padEnd(9)} ${n.complete} of ${n.all} students finished both tests` + (m ? `; pre ${pct(m.pre)}, post ${pct(m.post)}, gain ${pts(m.gain)} points` : ""));

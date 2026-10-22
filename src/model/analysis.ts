@@ -120,6 +120,8 @@ export type StudentScores = {
   class: string;
   condition: string;
   order: string;
+  /** The questions on each of the class's tests (the export's test_length), or null from an export without it. */
+  testLength: number | null;
   pre: { form: string; answered: number; correct: number } | null;
   post: { form: string; answered: number; correct: number } | null;
 };
@@ -128,7 +130,9 @@ export type StudentScores = {
 export function scoresFromTests(rows: readonly Record<string, string>[]): StudentScores[] {
   const students = new Map<string, StudentScores>();
   for (const r of rows) {
-    const s = students.get(r.student) ?? students.set(r.student, { student: r.student, class: r.class, condition: r.condition, order: r.test_order, pre: null, post: null }).get(r.student)!;
+    const testLength = Number(r.test_length) || null;
+    const s = students.get(r.student) ??
+      students.set(r.student, { student: r.student, class: r.class, condition: r.condition, order: r.test_order, testLength, pre: null, post: null }).get(r.student)!;
     const phase = r.phase === "pre" ? "pre" : r.phase === "post" ? "post" : null;
     if (!phase) continue;
     const t = (s[phase] ??= { form: r.form, answered: 0, correct: 0 });
@@ -157,7 +161,8 @@ export function answerChecks(rows: readonly Record<string, string>[]): Record<st
 export type StudyAnalysis = {
   /** Students in each condition, and how many of them finished both tests. */
   students: Record<string, { all: number; complete: number }>;
-  testLength: number;
+  /** The lengths of the tests analysed, shortest first: one for one class, more when classes were given different lengths. */
+  testLengths: number[];
   means: Record<string, { pre: number; post: number; gain: number }>;
   ancova: Ancova | null;
   gains: Estimate | null;
@@ -167,30 +172,33 @@ export type StudyAnalysis = {
 
 /**
  * The pre-registered analysis of a study's test answers. A test is finished when every question on it has an answer
- * (a passed question counts as answered and wrong); the length is the most questions any student answered.
+ * (a passed question counts as answered and wrong), and scored as the share of its questions right. Its length is the
+ * student's class's, as the teacher's dashboard counts it, so classes given tests of different lengths are analysed
+ * together; an export without the length takes the most questions any student answered.
  */
 export function analyseStudy(scores: readonly StudentScores[]): StudyAnalysis {
-  const testLength = Math.max(0, ...scores.flatMap((s) => [s.pre?.answered ?? 0, s.post?.answered ?? 0]));
-  const done = (t: StudentScores["pre"]) => !!t && t.answered === testLength;
-  const complete = scores.filter((s) => done(s.pre) && done(s.post));
+  const longest = Math.max(0, ...scores.flatMap((s) => [s.pre?.answered ?? 0, s.post?.answered ?? 0]));
+  const lengthOf = (s: StudentScores) => s.testLength ?? longest;
+  const done = (s: StudentScores, t: StudentScores["pre"]) => !!t && t.answered >= lengthOf(s);
+  const complete = scores.filter((s) => done(s, s.pre) && done(s, s.post));
   const conditions = [...new Set(scores.map((s) => s.condition))].sort();
-  const share = (t: NonNullable<StudentScores["pre"]>) => t.correct / testLength;
-  const rows: StudyRow[] = complete.map((s) => ({ treated: s.condition === "adaptive" ? 1 : 0, pre: share(s.pre!), post: share(s.post!), class: s.class, order: s.order }));
+  const share = (s: StudentScores, t: NonNullable<StudentScores["pre"]>) => t.correct / lengthOf(s);
+  const rows: StudyRow[] = complete.map((s) => ({ treated: s.condition === "adaptive" ? 1 : 0, pre: share(s, s.pre!), post: share(s, s.post!), class: s.class, order: s.order }));
   const means = Object.fromEntries(conditions.map((c) => {
     const of = complete.filter((s) => s.condition === c);
-    const pre = mean(of.map((s) => share(s.pre!)));
-    const post = mean(of.map((s) => share(s.post!)));
+    const pre = mean(of.map((s) => share(s, s.pre!)));
+    const post = mean(of.map((s) => share(s, s.post!)));
     return [c, { pre, post, gain: post - pre }];
   }));
   const enough = (g: 0 | 1) => rows.filter((r) => r.treated === g).length >= 2;
   const canCompare = enough(0) && enough(1) && rows.length > ancovaParams(rows) + 1;
   const gainsOf = (g: 0 | 1) => rows.filter((r) => r.treated === g).map((r) => r.post - r.pre);
-  const finishedPre = scores.filter((s) => done(s.pre));
-  const preOn = (form: string) => finishedPre.filter((s) => s.pre!.form === form).map((s) => share(s.pre!));
+  const finishedPre = scores.filter((s) => done(s, s.pre));
+  const preOn = (form: string) => finishedPre.filter((s) => s.pre!.form === form).map((s) => share(s, s.pre!));
   const [onA, onB] = [preOn("A"), preOn("B")];
   return {
     students: Object.fromEntries(conditions.map((c) => [c, { all: scores.filter((s) => s.condition === c).length, complete: complete.filter((s) => s.condition === c).length }])),
-    testLength,
+    testLengths: [...new Set(scores.map(lengthOf))].sort((a, b) => a - b),
     means,
     ancova: canCompare ? ancova(rows) : null,
     gains: canCompare ? welch(gainsOf(1), gainsOf(0)) : null,

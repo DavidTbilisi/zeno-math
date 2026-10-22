@@ -40,3 +40,12 @@ were stated; the hypotheses were then stated for the sweeps, which came after th
 section 3.3 and Appendix D, from other seeds, from resampling whole classes, from random groupings of the skills, from other
 definitions of mastery and from the long practices alone, were all made after every result above, on 18 October, and
 are reported as checks.
+
+The analysis planned for the class study (`src/model/analysis.ts`), which belongs to the future work and has no result
+yet, was changed once after it was fixed, on 22 October, before any class had answered. It had taken the length of a
+test to be the most questions any student answered, across every class in the export, so that a class given shorter
+tests than another would have dropped out of the analysis without notice, while the teacher's dashboard counted those
+students as finished. Each test is now finished and scored on its own class's length, which the export now carries,
+as the dashboard counts it, and a test of the server checks that the two agree on every student across two classes
+with tests of different lengths. With one class, or classes whose tests are all one length, the analysis is
+unchanged.

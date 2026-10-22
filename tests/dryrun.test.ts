@@ -18,7 +18,7 @@ test("a dry run of the study through the server keeps every guarantee and can be
     for (const world of ["elo", "bkt"] as const) {
       const result = await dryRun({ base: server.base, teacher: "dry", students: 8, questions: 6, testLength: 4, world, seed: 2, refreshEvery: 3 });
       for (const c of result.checks) assert.ok(c.ok, `${world}: ${c.name} (${c.detail})`);
-      assert.equal(result.analysis.testLength, 4);
+      assert.deepEqual(result.analysis.testLengths, [4]);
       assert.ok(Number.isFinite(result.predictedLogLoss));
       // The mistakes behind the wrong answers can be found again from the exports alone.
       const total = (o: Record<string, number>) => Object.values(o).reduce((a, b) => a + b, 0);
