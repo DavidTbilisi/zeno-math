@@ -20,7 +20,7 @@ import { en } from "../locales/en.ts";
 import { exercise } from "../math/practice.ts";
 import { FRACTIONS, type FractionsNode } from "./conceptGraph.ts";
 import { sigmoid } from "./elo.ts";
-import { conjunctiveStep, gapIdea, IDEA_SKILLS, tickStep, usesOf, type IdeaSkill, type TickRates } from "./ideaState.ts";
+import { conjunctiveStep, gapIdea, IDEA_SKILLS, TICK_PRIOR, tickStep, usesOf, type IdeaSkill, type TickRates } from "./ideaState.ts";
 import { bktStep, calibration, fitBkt, rmse, type BktParams, type Prediction } from "./evaluate.ts";
 import {
   bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtPrecision, costOf, decide, FINE_THRESHOLDS, fitRules, judge, masteryCalibration, PRECISION_TARGET,
@@ -278,6 +278,58 @@ export function diagnosis(fit: IdeaFit, practices: readonly IdeaPractice[], opti
   return { moments, right: moments ? right / moments : NaN, chance: moments ? chance / moments : NaN };
 }
 
+/**
+ * The checklist's rates fitted on a class's ticks, as the parameters of each idea are fitted on its answers, so that
+ * they need not be assumed. Walking each practice with the answers alone (fit without its tick), at every wrong answer
+ * with something ticked, each needed idea's P(known) given the history and that wrong answer, before anything is
+ * learnt from it, gives the chance it is ticked, q = (1 − P(known))·hit + P(known)·falseAlarm. The rates are the ones
+ * under which the ticks seen are likeliest, given that at least one was ticked (nothing ticked is never read, since
+ * the student may have passed the list by), found on a grid of twentieths, then hundredths, then thousandths. It needs the
+ * P(known) to be calibrated: a class whose ideas the model misjudges gets rates that carry the misjudgement.
+ */
+export function fitTicks(fit: IdeaFit, practices: readonly IdeaPractice[], options: IdeaOptions = {}): TickRates {
+  const untick: IdeaFit = { ...fit, tick: undefined };
+  const seen: { known: number[]; on: boolean[] }[] = [];
+  for (const p of practices) {
+    const known = [...(options.starts?.get(p) ?? p.ids.map((id) => fit.idea(id).init))];
+    for (let i = 0; i < p.answers.length; i++) {
+      const ticked = p.ticked?.[i];
+      if (ticked?.length) {
+        const before = [...known];
+        conjunctiveStep(before, p.needs[i], () => 0, fit.question(p.skill), false);
+        seen.push({ known: p.needs[i].map((j) => before[j]), on: p.needs[i].map((j) => ticked.includes(j)) });
+      }
+      stepIdeas(known, p, i, untick, options.blame);
+    }
+  }
+  const logLikelihood = (hit: number, falseAlarm: number) => {
+    let sum = 0;
+    for (const { known, on } of seen) {
+      let none = 1;
+      for (let k = 0; k < known.length; k++) {
+        const q = (1 - known[k]) * hit + known[k] * falseAlarm;
+        sum += Math.log(on[k] ? q : 1 - q);
+        none *= 1 - q;
+      }
+      sum -= Math.log(1 - none);
+    }
+    return sum;
+  };
+  const search = (around: TickRates, step: number, reach: number) => {
+    let best = around, top = -Infinity;
+    for (let h = around.hit - reach; h <= around.hit + reach + 1e-9; h += step)
+      for (let f = around.falseAlarm - reach; f <= around.falseAlarm + reach + 1e-9; f += step) {
+        if (h < 0.005 || h > 0.995 || f < 0.005 || f > 0.995) continue;
+        const l = logLikelihood(h, f);
+        if (l > top) [best, top] = [{ hit: h, falseAlarm: f }, l];
+      }
+    return best;
+  };
+  if (!seen.length) return TICK_PRIOR;
+  const coarse = search({ hit: 0.5, falseAlarm: 0.5 }, 0.05, 0.45);
+  return search(search(coarse, 0.01, 0.05), 0.001, 0.01);
+}
+
 export type IdeasComparison = {
   skill: IdeaSkill;
   /** H2's comparison on the skill: BKT, EMA and the streak rule, as compareAtPrecision gives it. */
@@ -298,17 +350,20 @@ export type IdeasComparison = {
    * of BKT on each idea at 0.95.
    */
   usual: Judgement[];
+  /** The checklist's rates fitted on the training practices (fitTicks), when they were fitted rather than given. */
+  fittedTicks?: TickRates;
 };
 /**
  * H2's comparison on one skill in the world of ideas, with the three forms of BKT on each idea added beside BKT on the
  * skill. Each is the cheapest of its family meeting the target on the training practices, judged on the test practices,
  * with intervals over students. The fits use every skill's training practices; carrying walks every student's practices
  * in order, so the skills before the one judged are what it carries from. tick is how the blamed forms take the
- * checklist's ticks to follow what is known (the world's own rates, or others to see what a wrong guess at them costs).
+ * checklist's ticks to follow what is known: the world's own rates, others to see what a wrong guess at them costs, or
+ * "fit" to fit them on the training practices' ticks (fitTicks).
  */
 export function compareIdeas(
   train: readonly IdeaPractice[], test: readonly IdeaPractice[], skill: IdeaSkill = "fractions", target = PRECISION_TARGET, resamples = 2000, seed = 1,
-  thresholds: readonly number[] = FINE_THRESHOLDS, tick?: TickRates,
+  thresholds: readonly number[] = FINE_THRESHOLDS, rates?: TickRates | "fit",
 ): IdeasComparison {
   const fitted = fitRules(train);
   const trainS = train.filter((p) => p.skill === skill), testS = test.filter((p) => p.skill === skill);
@@ -330,6 +385,10 @@ export function compareIdeas(
   };
   // BKT on the skill chosen again as compareAtPrecision chose it, for the paired differences.
   const bktOnSkill = best(thresholds.map((t) => bktRule(fitted.bkt, t))).cost;
+  // Fitted on the training practices of every skill, read from the answers alone carried from skill to skill.
+  const tick = rates !== "fit" ? rates : fitTicks({ idea: fitIdeas(train, true), question: fitted.bkt }, train, {
+    blame: true, starts: carriedIdeas({ idea: fitIdeas(train, true), question: fitted.bkt }, train, true),
+  });
   const afresh: IdeaFit = { idea: fitIdeas(train), question: fitted.bkt, tick };
   const across: IdeaFit = { idea: fitIdeas(train, true), question: fitted.bkt, tick };
   const starts = carriedIdeas(across, [...train, ...test], true);
@@ -350,5 +409,6 @@ export function compareIdeas(
     calibration: [...masteryCalibration(fitted, testS), ...forms.map(({ fit, options }) => ideasCalibration(fit, testS, options))],
     diagnosis: forms.map(({ fit, options }) => diagnosis(fit, testS, options)),
     usual: [...usualRules(fitted, trainS), ...forms.map(({ fit, options }) => ideasRule(fit, USUAL_THRESHOLD, options))].map((rule) => judge(rule, testS)),
+    ...(rates === "fit" ? { fittedTicks: tick } : {}),
   };
 }

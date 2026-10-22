@@ -19,7 +19,8 @@
 //   --every-distractor      multiple choice: every wrong answer blames one needed idea, a missing one --trap-rate of the time
 //   --checklist 0.5,0.1     "what exactly was hard?" after a wrong answer no mistake explains: an idea ticked with chance
 //                           0.5 when it is missing and 0.1 when it is known (hit, false alarm); the blamed forms read the ticks
-//   --assume 0.7,0.05       the rates the blamed forms take the ticks to have, when not the world's own
+//   --assume 0.7,0.05       the rates the blamed forms take the ticks to have, when not the world's own; "fit" fits them
+//                           on the training learners' ticks
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
 //   --json     machine-readable output
 import { compareIdeas, DEFAULT_IDEAS, IDEA_SKILLS, ideasOf, simulateIdeas, type IdeasComparison, type IdeaSkill } from "../src/model/ideas.ts";
@@ -73,7 +74,8 @@ const testShare = share("--test-share", 0.2);
 const target = share("--target", PRECISION_TARGET);
 const resamples = whole("--resamples", 2000);
 const thresholds = args.includes("--beyond") ? BEYOND_THRESHOLDS : FINE_THRESHOLDS;
-const assumed = rates2("--assume") ?? base.checklist ?? undefined;
+const fitTicks = opt("--assume", "") === "fit";
+const assumed = fitTicks ? "fit" as const : rates2("--assume") ?? base.checklist ?? undefined;
 
 type Result = { learnRate: number; isolateRate: number; length: number; knownAtEnd: number; ideasPerQuestion: number } & IdeasComparison;
 const results: Result[] = [];
@@ -105,7 +107,7 @@ function report() {
   console.log(`${base.students} simulated learners × ${IDEA_SKILLS.join(", ")} × ${lengths.join(", ")} questions from the generators; ${pct(testShare)} of learners held out, seed ${base.seed}`);
   console.log(`a wrong answer is a recognised mistake ${pct(base.trapRate)} of the time when the question has one and its idea is missing`);
   if (base.checklist) {
-    const assumes = assumed && (assumed.hit !== base.checklist.hit || assumed.falseAlarm !== base.checklist.falseAlarm) ? `; the blamed forms take them to be ${pct(assumed.hit)} and ${pct(assumed.falseAlarm)}` : "";
+    const assumes = assumed === "fit" ? "; the blamed forms fit them on the training learners' ticks" : assumed && (assumed.hit !== base.checklist.hit || assumed.falseAlarm !== base.checklist.falseAlarm) ? `; the blamed forms take them to be ${pct(assumed.hit)} and ${pct(assumed.falseAlarm)}` : "";
     console.log(`after any other wrong answer the student ticks what was hard: a missing idea ${pct(base.checklist.hit)} of the time, a known one ${pct(base.checklist.falseAlarm)}${assumes}`);
   }
   console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
@@ -123,6 +125,7 @@ function report() {
     console.log(`  Brier score against the truth after every answer: ${r.calibration.map((c, i) => `${names[i]} ${c.brier.toFixed(3)}`).join(", ")}`);
     const d = r.diagnosis;
     console.log(`  the one missing idea found (of ${d[0].moments} moments; chance ${pct(d[0].chance)}): per idea ${pct(d[0].right)}, blamed ${pct(d[1].right)}, carried ${pct(d[2].right)}`);
+    if (r.fittedTicks) console.log(`  the checklist's rates fitted on the training learners: a missing idea ticked ${pct(r.fittedTicks.hit)} of the time, a known one ${pct(r.fittedTicks.falseAlarm)}`);
     console.log(`  at the usual thresholds (set without a truth): ${r.usual.map((u) => `${u.rule} right ${pct(u.precision)}, declared ${pct(u.declared)}, ${answers(u.cost)} answers`).join("; ")}`);
   }
   if (results.length < 2) return;
