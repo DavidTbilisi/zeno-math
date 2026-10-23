@@ -14,8 +14,8 @@ gradual pattern exactly, in proportion to how much of the skill each question le
 method's precision; BKT's probability becomes the least calibrated score and the threshold it needs leaves the range in
 which a probability can be read. Modelling at the learners' grain restores precision at an ordinary threshold and names
 the component a student lacks, if and only if the questions tell the components apart and the practice is long enough
-to ask about each: on fractions as Zeno's generators ask it, sixteen ideas of which a question needs six, this takes
-about 120 questions. Modelling finer than the learners costs answers
+to ask about each: on fractions as Zeno's generators ask it, sixteen ideas of which a question needs six, 30 questions
+name the missing idea about half the time, and declaring mastery takes about 120. Modelling finer than the learners costs answers
 for no gain in precision and shows itself in degenerate fits. On ASSISTments the same real answers are modelled at three
 grains: BKT predicts held-out answers better than the moving average, and better at the data set's 110 skills than
 at five topics or one skill, by the pre-specified test, while the moving average is indifferent to the grain. For Zeno, the system this work grew out of, the recommendation is a moving
@@ -40,7 +40,8 @@ ideas to choose what to practise next, becoming the mastery rule where the quest
 შესაძლებელია. მოსწავლეების მარცვალზე მოდელირება სიზუსტეს ჩვეულ ზღურბლზე აღადგენს და ასახელებს კომპონენტს, რომელიც
 მოსწავლეს აკლია, მაშინ და მხოლოდ მაშინ, თუ კითხვები კომპონენტებს ერთმანეთისგან არჩევს და პრაქტიკა საკმარისად
 გრძელია, რომ თითოეული შემოწმდეს: წილადებზე, როგორც მათ ზენოს გენერატორები სვამენ, თექვსმეტი იდეით, რომელთაგან
-კითხვას ექვსი სჭირდება, ამას დაახლოებით 120 კითხვა სჭირდება. მოსწავლეებზე
+კითხვას ექვსი სჭირდება, 30 კითხვა დაკარგულ იდეას დაახლოებით ნახევარ შემთხვევაში ასახელებს, ოსტატობის
+გამოცხადებას კი დაახლოებით 120 კითხვა სჭირდება. მოსწავლეებზე
 უფრო წვრილი მოდელირება პასუხებს უსარგებლოდ ხარჯავს და გადაგვარებულ მორგებებში ვლინდება. ASSISTments-ზე ერთი და იგივე
 რეალური პასუხები სამ მარცვალზეა მოდელირებული: BKT გამოყოფილ პასუხებს მოძრავ საშუალოზე უკეთ წინასწარმეტყველებს,
 ხოლო მონაცემთა ბაზის 110 უნარზე უკეთ, ვიდრე ხუთ თემაზე ან ერთ უნარზე, წინასწარ განსაზღვრული ტესტით; მოძრავი საშუალო

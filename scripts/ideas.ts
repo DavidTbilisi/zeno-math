@@ -23,8 +23,8 @@
 //                           first listed (first), nothing (none), or each at even odds (random)
 //   --assume 0.7,0.05       the rates the blamed forms take the ticks to have, when not the world's own; "fit" fits them
 //                           on the training learners' ticks
-//   --idea-fit likelihood   fit each idea's init and learn on the conjunctive model's own likelihood, not by the
-//                           heuristic that takes a wrong answer as wrong on every idea the question needed
+//   --idea-fit heuristic    fit each idea by the heuristic that takes a wrong answer as wrong on every idea the question
+//                           needed (the thesis's results before 23 October), not on the conjunctive model's likelihood
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
 //   --json     machine-readable output
 import { compareIdeas, DEFAULT_IDEAS, type IdeaFitting, IDEA_SKILLS, ideasOf, simulateIdeas, TICK_STYLES, type IdeasComparison, type IdeaSkill, type TickStyle } from "../src/model/ideas.ts";
@@ -83,7 +83,7 @@ const base = {
   tickStyle: style(),
   seed: whole("--seed", DEFAULT_IDEAS.seed),
 };
-const fitting = opt("--idea-fit", "heuristic") as IdeaFitting;
+const fitting = opt("--idea-fit", "likelihood") as IdeaFitting;
 if (fitting !== "heuristic" && fitting !== "likelihood") fail("--idea-fit must be heuristic or likelihood");
 const testShare = share("--test-share", 0.2);
 const target = share("--target", PRECISION_TARGET);
@@ -126,7 +126,7 @@ function report() {
     const styled = base.tickStyle ? `; ${pct(base.tickStyle.share)} of students tick by the style "${base.tickStyle.kind}" instead` : "";
     console.log(`after any other wrong answer the student ticks what was hard: a missing idea ${pct(base.checklist.hit)} of the time, a known one ${pct(base.checklist.falseAlarm)}${styled}${assumes}`);
   }
-  if (fitting === "likelihood") console.log("each idea's init and learn fitted on the conjunctive model's own likelihood");
+  if (fitting === "heuristic") console.log("each idea fitted by the heuristic: a wrong answer counted as wrong on every idea the question needed");
   console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
   for (const r of results) {
     const alone = r.isolateRate ? `, ${pct(r.isolateRate)} of questions asking for one idea alone` : "";

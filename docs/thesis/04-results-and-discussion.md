@@ -476,33 +476,37 @@ by chance.
 
 | Skill | Ideas (a question) | Rate | BKT 0.95 right | BKT $\theta$ at 90 % | BKT Brier | EMA right | EMA $\theta$ at 90 % | EMA Brier | Per idea, carried, 0.95 right | $\theta$ at 90 % | Brier | Missing idea found, afresh / carried |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| times | 3 (3.0) | 0.02 | 94.3 % | 0.82 | 0.062 | 86.0 % | 0.53 | 0.099 | 100.0 % | 0.64 | 0.102 | 0.0 % / 1.5 % |
-| hcf | 6 (3.9) | 0.02 | 54.8 % | never | 0.228 | 50.0 % | 0.86 | 0.135 | 100.0 % | 0.57 | 0.105 | 5.6 % / 62.3 % |
-| fractions | 16 (6.1) | 0.02 | 30.0 % | never | 0.115 | 11.4 % | 0.94 | 0.128 | – | never | 0.084 | 4.7 % / 7.8 % |
-| times | 3 (3.0) | 0.1 | 94.6 % | 0.89 | 0.043 | 94.6 % | 0.50 | 0.093 | 94.6 % | 0.85 | 0.053 | 0.0 % / 3.7 % |
-| hcf | 6 (3.9) | 0.1 | 77.0 % | 0.999 | 0.148 | 78.4 % | 0.72 | 0.118 | 98.5 % | 0.77 | 0.076 | 11.1 % / 80.3 % |
-| fractions | 16 (6.1) | 0.1 | 16.4 % | never | 0.470 | 12.3 % | 0.99 | 0.274 | – | 0.76 | 0.152 | 44.1 % / 51.4 % |
+| times | 3 (3.0) | 0.02 | 94.3 % | 0.82 | 0.062 | 86.0 % | 0.53 | 0.099 | 94.3 % | 0.82 | 0.061 | 41.8 % / 27.8 % |
+| hcf | 6 (3.9) | 0.02 | 54.8 % | never | 0.228 | 50.0 % | 0.86 | 0.135 | 100.0 % | 0.88 | 0.062 | 10.2 % / 52.8 % |
+| fractions | 16 (6.1) | 0.02 | 30.0 % | never | 0.115 | 11.4 % | 0.94 | 0.128 | – | 0.91 | 0.032 | 11.7 % / 35.2 % |
+| times | 3 (3.0) | 0.1 | 94.6 % | 0.89 | 0.043 | 94.6 % | 0.50 | 0.093 | 94.6 % | 0.94 | 0.043 | 25.2 % / 57.5 % |
+| hcf | 6 (3.9) | 0.1 | 77.0 % | 0.999 | 0.148 | 78.4 % | 0.72 | 0.118 | 98.5 % | 0.76 | 0.076 | 39.0 % / 84.8 % |
+| fractions | 16 (6.1) | 0.1 | 16.4 % | never | 0.470 | 12.3 % | 0.99 | 0.274 | 100.0 % | 0.95 | 0.120 | 45.4 % / 56.7 % |
 
 Table: G1 in the world of ideas: the three skills of three, six and sixteen ideas modelled as one, asked by Zeno's
 generators, 400 learners, 30 questions per skill, the measures as in Table 3.10, and the missing idea found by BKT on
-each idea started afresh in every skill and carried from the earlier skills, against 33.3 %, 16.7 % and 6.3 % by chance
-(`npm run ideas`, commit 9180a75).
+each idea started afresh in every skill and carried from the earlier skills, against 33.3 %, 16.7 % and 6.3 % by chance,
+with each idea's parameters fitted on the conjunctive model's likelihood (`npm run ideas`, at the commit recorded in
+Appendix B).
 
 The three skills line up with the sweep. On times, whose every question needs all three ideas, the skill is one unit:
 BKT on the skill at 0.95 is right 94 % of the time and meets the standard at 0.82 and 0.89, and BKT on each idea gains
-nothing, costing 0.1 to 1.0 answers more at the standard. On hcf, four of six ideas a question, BKT on the skill is
-right 55 and 77 % of the time at 0.95 and meets the standard at no threshold at the lower rate and at 0.999 at the
-higher. On fractions, six of sixteen ideas a question, it is right 30 and 16 % of the time, meets the standard at no
-threshold and at the higher rate has the worst Brier score of every method, 0.470 against the EMA's 0.274. BKT on each
-idea carried from times and hcf is right 98 to 100 % of the time wherever it declares and has the lowest Brier score on
-hcf; on fractions it declares for nobody at 0.95 within 30 questions, and at the lower rate meets the standard at no
-threshold, as the eight-component rows of Table 3.10 lead one to expect. The last column already shows G2's condition:
-on hcf, whose questions need different ideas at different levels and whose arithmetic was settled in times, carried BKT
-on each idea names the missing idea 62 and 80 % of the time on this seed, and 24 to 62 % and 41 to 80 % over seeds 1 to 5
-(Appendix D), against 17 % by chance, where started afresh in hcf it is below chance, because
-the three arithmetic ideas that every hcf question needs can only tie; on fractions at the higher rate it names it 51 %
-of the time against 6 % by chance, and at the lower rate, where only 128 held-out moments had a learner one idea short,
-it is at chance.
+nothing, needing the same number of answers at the standard or up to 0.9 more. On hcf, four of six ideas a question,
+BKT on the skill is right 55 and 77 % of the time at 0.95 and meets the standard at no threshold at the lower rate and
+at 0.999 at the higher. On fractions, six of sixteen ideas a question, it is right 30 and 16 % of the time, meets the
+standard at no threshold and at the higher rate has the worst Brier score of every method, 0.470 against the EMA's
+0.274. BKT on each idea carried from the earlier skills is right 94 to 100 % of the time wherever it declares and has
+the lowest Brier score on hcf and fractions, and on hcf it decides sooner than the EMA, after 21.8 answers against
+24.9 at the lower rate and 11.0 against 11.7 at the higher. On fractions it meets the standard on the training learners
+at 0.91 and 0.95 but declares for 4 % of the held-out learners within 30 questions, as the eight-component rows of
+Table 3.10 lead one to expect. The last column already shows G2's condition. On hcf, whose questions need different
+ideas at different levels and whose arithmetic was settled in times, carried BKT on each idea names the missing idea 53
+and 85 % of the time on this seed, and 43 to 53 % and 57 to 85 % over seeds 1 to 5 (Appendix D), against 17 % by
+chance; started afresh in hcf it is 10 and 39 %, and at or below chance on five of the ten seeds and rates, because the
+three arithmetic ideas that every hcf question needs are told apart only by what times settled. On fractions carried
+BKT on each idea names it 35 and 57 % of the time, and 35 to 62 % and 39 to 59 % over the five seeds, against 6 % by
+chance: within 30 questions the generated questions already tell the ideas apart well enough to say which one is
+missing, though not well enough to declare them all known.
 
 G2 holds that BKT on each component restores the standard and names the missing component if and only if the questions
 tell the components apart, and it was swept on fractions, the skill where the generated questions tell them apart
@@ -515,38 +519,39 @@ idea. BKT on the skill and the EMA are described in the text.
 
 | Alone | $n$ | Rate | Ideas a question | Know all at the end | Carried $\theta$ | Answers | Right | Declared | Found afresh | blamed | carried |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 % | 30 | 0.02 | 6.1 | 12.2 % | never | – | – | – | 4.7 % | 7.8 % | 7.8 % |
-| 0 % | 60 | 0.02 | 6.1 | 14.9 % | 0.50 | 59.9 | 100 % | 1.4 % | 0.2 % | 8.1 % | 13.5 % |
-| 0 % | 120 | 0.02 | 6.2 | 35.1 % | 0.58 | 108.2 | 84.6 % | 35.1 % | 56.4 % | 62.0 % | 66.3 % |
-| 25 % | 30 | 0.02 | 4.8 | 4.1 % | never | – | – | – | 26.0 % | 26.0 % | 35.0 % |
-| 25 % | 60 | 0.02 | 4.9 | 10.8 % | 0.50 | 60.0 | 100 % | 1.4 % | 35.6 % | 37.3 % | 38.2 % |
-| 25 % | 120 | 0.02 | 4.9 | 24.3 % | 0.60 | 112.9 | 77.8 % | 24.3 % | 62.7 % | 61.0 % | 69.8 % |
-| 50 % | 30 | 0.02 | 3.6 | 5.4 % | never | – | – | – | 17.6 % | 17.6 % | 47.1 % |
-| 50 % | 60 | 0.02 | 3.5 | 5.4 % | 0.50 | 60.0 | – | 0.0 % | 47.7 % | 57.5 % | 56.5 % |
-| 50 % | 120 | 0.02 | 3.6 | 16.2 % | 0.70 | 117.4 | 100 % | 12.2 % | 80.2 % | 78.9 % | 76.0 % |
-| 100 % | 30 | 0.02 | 1.0 | 0.0 % | never | – | – | – | 46.7 % | 46.7 % | 46.7 % |
-| 100 % | 60 | 0.02 | 1.0 | 4.1 % | 0.50 | 59.5 | 100 % | 2.7 % | 52.4 % | 52.4 % | 52.4 % |
-| 100 % | 120 | 0.02 | 1.0 | 0.0 % | 0.69 | 120.0 | – | 0.0 % | 20.2 % | 20.2 % | 22.5 % |
-| 0 % | 30 | 0.1 | 6.1 | 36.5 % | 0.76 | 29.8 | 83.3 % | 8.1 % | 44.1 % | 49.4 % | 51.4 % |
-| 0 % | 60 | 0.1 | 6.1 | 73.0 % | 0.80 | 54.0 | 85.2 % | 36.5 % | 53.6 % | 54.7 % | 57.3 % |
-| 0 % | 120 | 0.1 | 6.2 | 89.2 % | 0.75 | 73.0 | 92.2 % | 86.5 % | 67.7 % | 66.2 % | 68.8 % |
-| 25 % | 30 | 0.1 | 4.9 | 29.7 % | 0.80 | 29.9 | 100 % | 2.7 % | 30.9 % | 26.8 % | 35.2 % |
-| 25 % | 60 | 0.1 | 4.9 | 68.9 % | 0.79 | 51.7 | 97.4 % | 51.4 % | 47.3 % | 49.6 % | 57.3 % |
-| 25 % | 120 | 0.1 | 4.9 | 93.2 % | 0.76 | 75.3 | 90.6 % | 86.5 % | 65.1 % | 67.9 % | 70.8 % |
-| 50 % | 30 | 0.1 | 3.6 | 14.9 % | 0.71 | 30.0 | 0.0 % | 1.4 % | 40.7 % | 33.6 % | 37.7 % |
-| 50 % | 60 | 0.1 | 3.5 | 60.8 % | 0.80 | 57.1 | 94.7 % | 25.7 % | 44.0 % | 43.6 % | 50.4 % |
-| 50 % | 120 | 0.1 | 3.6 | 87.8 % | 0.77 | 76.1 | 82.5 % | 85.1 % | 62.3 % | 61.9 % | 65.4 % |
-| 100 % | 30 | 0.1 | 1.0 | 1.4 % | 0.61 | 30.0 | – | 0.0 % | 19.2 % | 19.2 % | 22.4 % |
-| 100 % | 60 | 0.1 | 1.0 | 10.8 % | 0.78 | 60.0 | 100 % | 1.4 % | 50.5 % | 50.5 % | 50.5 % |
-| 100 % | 120 | 0.1 | 1.0 | 47.3 % | 0.88 | 113.3 | 90.5 % | 28.4 % | 68.1 % | 68.1 % | 68.2 % |
+| 0 % | 30 | 0.02 | 6.1 | 12.2 % | 0.91 | 29.7 | 100 % | 4.1 % | 11.7 % | 14.1 % | 35.2 % |
+| 0 % | 60 | 0.02 | 6.1 | 14.9 % | 0.96 | 59.6 | 100 % | 1.4 % | 40.8 % | 44.5 % | 49.2 % |
+| 0 % | 120 | 0.02 | 6.2 | 35.1 % | 0.69 | 106.8 | 90.0 % | 27.0 % | 73.1 % | 72.3 % | 78.2 % |
+| 25 % | 30 | 0.02 | 4.8 | 4.1 % | 0.71 | 29.7 | 50.0 % | 2.7 % | 54.5 % | 55.3 % | 66.7 % |
+| 25 % | 60 | 0.02 | 4.9 | 10.8 % | 0.75 | 59.1 | 100 % | 5.4 % | 67.2 % | 60.7 % | 59.5 % |
+| 25 % | 120 | 0.02 | 4.9 | 24.3 % | 0.77 | 112.4 | 92.3 % | 17.6 % | 81.7 % | 77.5 % | 80.5 % |
+| 50 % | 30 | 0.02 | 3.6 | 5.4 % | 0.75 | 29.9 | 100 % | 1.4 % | 50.6 % | 51.8 % | 45.9 % |
+| 50 % | 60 | 0.02 | 3.5 | 5.4 % | 0.74 | 59.2 | 100 % | 2.7 % | 64.9 % | 64.9 % | 66.7 % |
+| 50 % | 120 | 0.02 | 3.6 | 16.2 % | 0.83 | 115.9 | 100 % | 9.5 % | 79.6 % | 79.3 % | 77.3 % |
+| 100 % | 30 | 0.02 | 1.0 | 0.0 % | never | – | – | – | 54.2 % | 54.2 % | 54.2 % |
+| 100 % | 60 | 0.02 | 1.0 | 4.1 % | 0.51 | 59.5 | 100 % | 2.7 % | 52.4 % | 52.4 % | 52.4 % |
+| 100 % | 120 | 0.02 | 1.0 | 0.0 % | 0.77 | 120.0 | – | 0.0 % | 30.7 % | 30.7 % | 33.0 % |
+| 0 % | 30 | 0.1 | 6.1 | 36.5 % | 0.95 | 29.9 | 100 % | 4.1 % | 45.4 % | 53.3 % | 56.7 % |
+| 0 % | 60 | 0.1 | 6.1 | 73.0 % | 0.83 | 52.0 | 85.7 % | 47.3 % | 60.2 % | 63.6 % | 66.9 % |
+| 0 % | 120 | 0.1 | 6.2 | 89.2 % | 0.74 | 68.5 | 77.8 % | 85.1 % | 79.4 % | 77.9 % | 78.8 % |
+| 25 % | 30 | 0.1 | 4.9 | 29.7 % | 0.90 | 29.8 | 100 % | 4.1 % | 41.1 % | 41.1 % | 53.7 % |
+| 25 % | 60 | 0.1 | 4.9 | 68.9 % | 0.87 | 49.8 | 94.1 % | 45.9 % | 56.8 % | 57.4 % | 59.3 % |
+| 25 % | 120 | 0.1 | 4.9 | 93.2 % | 0.80 | 74.9 | 92.1 % | 85.1 % | 69.7 % | 71.2 % | 71.0 % |
+| 50 % | 30 | 0.1 | 3.6 | 14.9 % | 0.78 | 29.6 | 25.0 % | 5.4 % | 41.0 % | 44.4 % | 48.8 % |
+| 50 % | 60 | 0.1 | 3.5 | 60.8 % | 0.86 | 56.4 | 88.2 % | 23.0 % | 62.8 % | 64.4 % | 67.3 % |
+| 50 % | 120 | 0.1 | 3.6 | 87.8 % | 0.84 | 76.4 | 90.0 % | 81.1 % | 65.7 % | 64.9 % | 68.0 % |
+| 100 % | 30 | 0.1 | 1.0 | 1.4 % | 0.71 | 29.9 | 0.0 % | 2.7 % | 41.6 % | 41.6 % | 65.6 % |
+| 100 % | 60 | 0.1 | 1.0 | 10.8 % | 0.82 | 59.7 | 100 % | 1.4 % | 54.8 % | 54.8 % | 54.2 % |
+| 100 % | 120 | 0.1 | 1.0 | 47.3 % | 0.88 | 113.4 | 94.4 % | 24.3 % | 70.1 % | 70.1 % | 70.7 % |
 
 Table: G2 on fractions (sixteen ideas): the share of generated questions replaced by a question on one idea alone
 ("Alone"; 0 % is the generator as it is, with two forms in five), against the length of the practice $n$, 400
 learners. "Know all at the end" is the share of held-out learners knowing every idea after the last answer. Carried
 BKT on each idea is at the cheapest threshold right 90 % of the time on the training learners ("never": none up to
 0.9999; a dash under "Right": declared for nobody held out). The missing idea found is for BKT on each idea started
-afresh, with a recognised mistake's blame on its idea, and carried from the earlier skills, against 6.3 % by chance
-(`npm run ideas -- --skills fractions --isolate 0,0.25,0.5,1 --length 30,60,120`, commit 9180a75).
+afresh, with a recognised mistake's blame on its idea, and carried from the earlier skills, against 6.3 % by chance;
+each idea's parameters fitted on the conjunctive model's likelihood (`npm run ideas -- --skills fractions --isolate
+0,0.25,0.5,1 --length 30,60,120`, at the commit recorded in Appendix B).
 
 BKT on the skill meets the standard at no setting of the sweep, and at 0.95 it is right between 0 and 30 % of the time.
 The EMA meets the standard in 20 of the 24 settings, at thresholds of 0.87 to 0.9993, but within 60 questions only by
@@ -555,33 +560,37 @@ of the questions ask for one idea alone, at 103 to 105 answers; the streak rule 
 things about the finer grain.
 
 The first is that the length of the practice does more than the share of isolating questions. With the generator as it
-is, the missing idea is found 8 % of the time after 30 answers at the lower rate, at chance, 14 % after 60 and 66 %
-after 120; at the higher rate 51, 57 and 69 %. The rise with length holds on every one of five seeds, from 2 to 47 %
-after 30 answers to 64 to 78 % after 120 at the lower rate, and from 33 to 64 % to 69 to 81 % at the higher. The 30 questions of Zeno's class study are too few for sixteen ideas,
-as they were for eight components in Table 3.10, and the same questions suffice when there are enough of them. At 120
-questions and the higher rate, carried BKT on each idea is the only rule that declares fractions mastered in time: it
-needs 73.0 answers, is right 92 % of the time and declares for 87 % of learners, where the EMA and the streak rule at
-their cheapest threshold meeting the standard declare for nobody within 120 answers. Seed 1 is the extreme case here:
-on seeds 2 to 5 carried BKT on each idea needs 69 to 84 answers and declares for 79 to 88 % of learners, and the EMA
-and the streak rule declare for 11 to 47 % after more than 100. At the lower rate it needs 108.2
-answers and declares for 35 %, every learner who knew every idea, though held out its precision is 85 %.
+is, the missing idea is found 35 % of the time after 30 answers at the lower rate, 49 % after 60 and 78 % after 120; at
+the higher rate 57, 67 and 79 %. The rise with length holds on every one of five seeds, from 35 to 62 % after 30
+answers to 77 to 81 % after 120 at the lower rate, and from 39 to 59 % to 73 to 84 % at the higher. The 30 questions of
+Zeno's class study are enough to name the missing idea about half the time, seven to eight times chance, but too few to
+declare sixteen ideas known, as they were for eight components in Table 3.10: carried BKT on each idea declares for 4 %
+of learners within 30 answers at both rates. At 120 questions and the higher rate, carried BKT on each idea is the only
+rule that declares fractions mastered for most learners in time: it needs 68.5 answers and declares for 85 % of
+learners, where the EMA and the streak rule at their cheapest threshold meeting the standard declare for nobody within
+120 answers. Its declarations are right 78 % of the time on the held-out learners of this seed, below the standard its
+threshold met on the training learners. Over seeds 1 to 5 it needs 67 to 87 answers, declares for 74 to 88 % of
+learners and is right 78 to 95 % of the time held out, at or above the standard on three seeds, while the EMA and the
+streak rule declare for at most 47 % after more than 100. At the lower rate it needs 106.8 answers and declares for
+27 %, right 90 % of the time held out.
 
 The second is what the isolating questions do. Replacing a quarter of the generated questions with questions on one
-idea alone lifts the share found to 70 and 71 % at 120 answers on this seed, at both rates, and at the higher rate leaves learning as
-it was: 93 % of learners know every idea at the end, against 89 % with the generator as it is, since the operations
-still teach several ideas at once. Replacing half lifts it to 65 and 76 % but teaches less, 88 % knowing every idea at
-the higher rate and 16 % at the lower. Replacing every question teaches one idea at a time, so after 120 answers at the
-higher rate only 47 % of learners know every idea, hardly any at the lower rate, and the share found is unstable
-between settings, from 20 to 68 %, because few learners ever come within one idea of mastery. A quarter of the questions
-alone also gives the EMA and the streak rule enough separate evidence to declare within 120 answers, at 105 answers
-against carried BKT on each idea's 75. Carrying saves 0.8 to 3.9 answers at 120 questions and nothing at 30, where
-nothing is declared; the blame of a recognised mistake adds between nothing and six points to the share found. The gain from a quarter of the questions alone does not survive other seeds (Appendix D). Over seeds 1 to 5, at 120
-answers, the generator as it is found the missing idea 72 and 74 % of the time on average at the two rates and a
-quarter alone 67 and 70 %, ahead on two seeds of five at each rate; only at the lower rate within 30 answers did
-isolating questions help on most seeds, from 19 to 31 % on average, on four of five. The condition G2 states is
-therefore met on fractions by a practice long enough for the ideas to be asked about. The generator's own two forms in
-five already isolate the ideas enough, and more isolating questions did not reliably add to them; within 30 questions
-the condition is not met.
+idea alone changes the share found at 120 answers on this seed from 78 to 81 % at the lower rate and from 79 to 71 % at
+the higher, and at the higher rate leaves learning as it was: 93 % of learners know every idea at the end, against 89 %
+with the generator as it is, since the operations still teach several ideas at once. Replacing half gives 77 and 68 %
+and teaches less, 88 % knowing every idea at the higher rate and 16 % at the lower. Replacing every question teaches one
+idea at a time, so after 120 answers at the higher rate only 47 % of learners know every idea, hardly any at the lower
+rate, and the share found is unstable between settings, from 33 to 71 %, because few learners ever come within one idea
+of mastery. A quarter of the questions alone also gives the EMA and the streak rule enough separate evidence to declare
+within 120 answers, at 105 answers against carried BKT on each idea's 75. Carrying changes the cost at 120 questions by
+between 0.9 answers less and 1.4 more, and the blame of a recognised mistake moves the share found by between minus 7
+and plus 8 points. Over seeds 1 to 5, at 120 answers, the generator as it is found the missing idea 79 and 78 % of the
+time on average at the two rates and a quarter alone 76 and 73 %, ahead on two seeds of five at the lower rate and on
+none at the higher; only at the lower rate within 30 answers did isolating questions help on most seeds, from 47 to 53 %
+on average, on four of five. The condition G2 states is therefore met on fractions by a practice long enough for the
+ideas to be asked about. The generator's own two forms in five already isolate the ideas enough to name the missing one,
+and more isolating questions did not reliably add to them; within 30 questions the condition is met for naming the
+missing idea and not for declaring mastery.
 
 G3 concerns a model too fine for its learners or for the practice. The first way of being too fine models a component
 that is learnt as one thing as several. Table 3.13 keeps the learners of the two-component world as they are, with their
@@ -763,10 +772,11 @@ probability can be read.
 Modelling at the learners' grain restores what the coarse grain lost, under a condition that G2 states and the sweeps
 measure. BKT on each component was right 97 to 100 % of the time at 0.95 wherever it declared and met the standard at
 thresholds between 0.66 and 0.89 at every $k$ (Table 3.10); on hcf, carried from the arithmetic settled in times, it had
-the best Brier score, decided sooner than the EMA and named the missing idea 62 and 80 % of the time (Table 3.11). The
+the best Brier score, decided sooner than the EMA and named the missing idea 53 and 85 % of the time (Table 3.11). The
 condition is that the questions tell the components apart. On fractions as Zeno generates them, where an operation
-needs seven to ten ideas and the forms need two, started afresh it was at chance at the lower rate, and no form of it
-declared mastery within 30 questions. The reason is in the model's own arithmetic. A conjunctive model that is nearly
+needs seven to ten ideas and the forms need two, carried BKT on each idea named the missing idea 35 and 57 % of the
+time within 30 questions, but started afresh only 12 and 45 %, and no form of it declared mastery for more than one
+learner in twenty. The reason is in the model's own arithmetic. A conjunctive model that is nearly
 sure not every idea is known puts a right answer down to guessing and a wrong one to whichever idea is missing, so a
 question that needs eight ideas moves none of them much, and the estimate drifts with the learning step instead
 [@xu2012subskills]. This is the identifiability problem of student modelling [@beck2007identifiability] at the level of
@@ -774,20 +784,23 @@ the components: the finer the grain, the more the questions must differ in what 
 Q-matrix provides [@tatsuoka1983rulespace] and what learning factors analysis checks a decomposition for [@cen2006lfa].
 
 The sweep says how the condition can be met and what it costs. Length does most of the work: the same generated
-questions that left the model at chance after 30 answers let it name the missing idea two times in three after 120 and
-made carried BKT on each idea the rule that declared fractions mastered soonest, after 69 to 84 answers for four in five
-learners over five seeds, where the EMA and the streak rule declared for at most half of them after more than 100
-(Table 3.12). More isolating questions did not reliably help once the generator's own forms were there, and they have a
-price. A quarter of the questions asking for one idea alone raised the share found on the first seed and not on most of
-the others; half taught less; and every question alone taught one idea at a time, so that few learners ever came within
+questions that let the model name the missing idea about half the time after 30 answers let it name it about four
+times in five after 120, and made carried BKT on each idea the rule that declared fractions mastered soonest, after 67
+to 87 answers for 74 to 88 % of learners over five seeds, where the EMA and the streak rule declared for at
+most half of them after more than 100 (Table 3.12). Its declarations were right 78 to 95 % of the time on the held-out
+learners, so the threshold set on the training learners meets the standard on average and not on every seed. More isolating questions did not reliably help once the generator's own forms were there, and they have a
+price. A quarter of the questions asking for one idea alone raised the share found at 120 answers on two seeds of five
+at the lower rate and on none at the higher; half taught less; and every question alone taught one idea at a time, so that few learners ever came within
 one idea of mastery and the measure itself became unstable. This is the trade-off a generator faces between questions
 that diagnose and questions that teach, and on fractions the generator's two forms in five already sit on the side of
-it where length, not more isolation, is what is missing. Carrying what earlier skills settled saved up to four answers where the skill was
-declared at all, and a recognised mistake's blame added a few points to the diagnosis; neither replaces evidence that
-the questions do not provide. The second answer to the research question is therefore conditional: the fine grain is
+it where length, not more isolation, is what is missing. Carrying what earlier skills settled saved under one answer on fractions where the skill
+was declared at all, and on hcf it raised the share of the missing idea found from 4 to 51 % started afresh to 43 to
+85 % over the seeds; a recognised mistake's blame moved the diagnosis by a few points either way. Neither replaces
+evidence that the questions do not provide. The second answer to the research question is therefore conditional: the fine grain is
 the accurate and reliable one, with an ordinary threshold and a calibrated probability, if and only if the questions
-identify the components and the practice is long enough for each to be asked about, and on Zeno's fractions within a
-session of 30 questions that condition is not met.
+identify the components and the practice is long enough for each to be asked about. On Zeno's fractions within a
+session of 30 questions the condition is met far enough to name the missing idea about half the time, and not far
+enough to declare mastery.
 
 Going finer than the learners costs answers for no gain, in both of the ways G3 distinguished. Modelling a component
 that is learnt as one thing as two or four parts left precision where it was and doubled the Brier score with each
@@ -832,7 +845,8 @@ pattern is what a coarse grain does: a skill of several components looks gradual
 each question leaves untested, and every method's precision at its usual threshold falls with it, BKT's probability
 furthest. The right grain restores precision and an ordinary threshold, and lets the model say what a student lacks,
 on the condition that the questions identify the components and the practice is long enough to ask about each; on
-Zeno's fractions that takes about 120 questions. Finer than the learners costs
+Zeno's fractions 30 questions are enough to say which idea is missing about half the time, and declaring mastery takes
+about 120. Finer than the learners costs
 answers for nothing and shows itself in degenerate fits; more components than the practice supports shows itself only
 in declarations that never come. For Zeno the evidence points to the moving average for deciding
 mastery at the grain of the skill, with a threshold set from data, and to the state at the grain of the ideas for
@@ -883,10 +897,12 @@ whose questions need all of its ideas, is one unit; hcf and fractions are not.
 G2 asked whether the right grain restores what the coarse one lost and under what condition. It does, if and only if
 the questions tell the components apart and the practice is long enough to ask about each. BKT on each component kept
 its precision at an ordinary threshold at every number of components, and on hcf, carried from the arithmetic settled
-earlier, decided sooner than the moving average, was best calibrated and named the missing idea two to four times in five over five seeds, against one in six by chance. On
-fractions, sixteen ideas of which a question needs about six, it could not within 30 questions: the sweep showed that
-about 120 questions meet the condition, after which it names the missing idea about two times in three and declares
-fractions mastered sooner and for more learners than any other rule; that more questions on one idea alone did not
+earlier, decided sooner than the moving average, was best calibrated and named the missing idea two to four times in
+five over five seeds, against one in six by chance. On fractions, sixteen ideas of which a question needs about six,
+it named the missing idea about half the time within 30 questions, seven to eight times chance, but could not declare
+mastery: the sweep showed that about 120 questions meet the condition, after which it names the missing idea about
+four times in five and declares fractions mastered sooner and for more learners than any other rule, its declarations
+right nine times in ten on average though not on every seed; that more questions on one idea alone did not
 reliably help, on five seeds, once the generator's own forms were there; and that every question alone teaches too
 little to be worth it.
 
@@ -963,11 +979,12 @@ which can, favour the rule whose failure is milder.
 
 At the grain of the ideas, BKT becomes the right tool where the questions tell the ideas apart. On hcf it already does:
 BKT on each idea carried from times decided sooner than the moving average, was better calibrated and named the idea a
-student lacked two to four times in five. On fractions it does not yet, within a session of 30 questions: the forms Zeno's
-generator now deals, two in five, let it name the missing idea about seven times as often as chance at the higher
-learning rate, which is what the adaptive policy uses to choose the next form, but no rule declares fractions mastered
-in 30 questions, and the sweep says what would change that: about 120 questions, after which carried BKT on each idea declares for four in five learners in 69 to 84 answers, where
-the moving average declares for at most half of them after more than 100. The recommendation is therefore split by grain and by purpose. For deciding mastery within a
+student lacked two to four times in five. On fractions it does so far, within a session of 30 questions: the forms
+Zeno's generator now deals, two in five, let it name the missing idea about half the time, seven to eight times as
+often as chance, which is what the adaptive policy uses to choose the next form, but no rule declares fractions
+mastered for more than a few learners in 30 questions, and the sweep says what would change that: about 120 questions,
+after which carried BKT on each idea declares for three in four to nine in ten learners in 67 to 87 answers, right nine
+times in ten on average, where the moving average declares for at most half of them after more than 100. The recommendation is therefore split by grain and by purpose. For deciding mastery within a
 session, the moving average on the skill, with its threshold set from data. For choosing what to practise next, the
 state at the grain of the ideas, which Zeno already keeps, since even where it cannot declare mastery it can say which
 idea is weakest. And if Zeno lengthens its fractions practice, BKT on each idea becomes the mastery rule on fractions as well, with the moving average as the fallback on skills
@@ -1019,24 +1036,25 @@ threshold at which the EMA is judged in the granularity sweeps is the one costin
 training learners, since the EMA has no usual threshold of its own; a different choice would move its precision at the
 usual threshold, though not the cheapest threshold meeting the standard or the Brier score.
 
-BKT on each component is fitted heuristically, with each answer counted as evidence on every component its question
-needed, where the conjunctive model's own fit would need expectation–maximisation over the hidden states. A better fit
-could only help the finer grain, so the condition G2 states may be met somewhat sooner than the sweep shows; it could
-not make the coarse grain look better. The heuristic's cost was measured after every result, on 23 October. A wrong
-answer counts against a component the student knows whenever another the question needs is missing, so each
-component's chance of being known at the start is fitted too low, on fractions at or near the bottom of its grid, and
-the P(known) of each component is too low wherever it is not near certain: on seed 1, of the components it put below
-10 %, 44 % were known. A second fit keeps the heuristic as its starting point and moves each component's starting
-chance and rate of learning, one at a time on a grid, to make the training answers likeliest under the conjunctive
-model as it is run, so a wrong answer blames a component only as far as the product of the components' P(known) does.
-On fractions at the lower learning rate, within 30 answers, over seeds 1 to 5, the Brier score of each component's
-P(known) against the truth fell from 0.257 to 0.165 and that of P(all known) from 0.038 to 0.022, and the missing
-component was named 47 % of the time instead of 23 %, more on every seed. On seed 1 with 120 answers, the cheapest
-threshold of carried BKT on each component met the standard on the held-out learners, 90.0 % against the heuristic's
-84.6 %, at about the same cost, 107 answers against 108, so the condition G2 states may indeed be met somewhat
-sooner. The second fit errs the other way, less: its P(known) is too far from a half, on seed 1 0.84 where 0.67 were
-known and 0.25 where 0.41 were, since the fit takes the components to stay independent given the answers when a wrong answer
-makes them depend on each other. The results of the sweep are the heuristic's, as they were made.
+BKT on each component in the world of ideas is fitted on the conjunctive model's own likelihood, as section 2.3
+describes; until 23 October, after every result, it was fitted heuristically, with each answer counted as evidence on
+every component its question needed, and Tables 3.11 and 3.12 were made again with the new fit (Appendix C). The
+heuristic's fault was in its direction. A wrong answer counted against a component the student knew whenever another
+the question needed was missing, so each component's chance of being known at the start was fitted too low, on
+fractions at or near the bottom of its grid, and its P(known) was too low wherever it was not near certain: on seed 1,
+of the components it put below 10 %, 44 % were known. On fractions at the lower learning rate within 30 answers, over
+seeds 1 to 5, the Brier score of each component's P(known) against the truth was 0.257 with the heuristic and is 0.164
+with the likelihood fit, that of P(all known) 0.038 and 0.022, and the missing component was named 23 % of the time
+then and 50 % now, more on every seed. The heuristic left the conclusions about the coarse grain as they were, since
+those methods do not use it, and understated the fine grain, as the thesis expected; the new fit moved two findings,
+which the sections above state: within 30 questions on fractions the missing idea can be named about half the time, no
+longer at chance, and at 120 questions carried BKT on each idea declares sooner but is right on the held-out learners
+78 to 95 % of the time over the seeds, not on every seed at the standard. The likelihood fit errs the other way, less:
+its P(known) is too far from a half, on seed 1 0.84 where 0.68 were known and 0.15 where 0.29 were, since it takes the
+components to stay independent given the answers when a wrong answer makes them depend on each other, and components
+always asked together are told apart only by the questions that ask for one without the other, so their fitted
+starting chances can sit at the ends of the grid. The conjunctive model's exact fit would need
+expectation–maximisation over the hidden states of all the components a question needs.
 
 BKT's thresholds were first tried up to 0.9999, a range set before the results. The search above it (Table 3.7) was
 made after the results had been seen, so it is reported as a check beside H2's verdict, not in place of it. Its own
@@ -1060,11 +1078,14 @@ Real practice varies in all these respects, and the results may depend on them. 
 students in the gradual worlds or on fractions mastered a skill within 30 questions, so a method could meet the
 standard only by declaring almost nobody, and the comparison there says little about which method is better. All
 simulations use one random seed for their tables. Every simulated table was repeated on seeds 2 to 5 on 18 October,
-after every result, and every verdict stands on every seed (Table D.1). Two findings of a single seed do not survive.
-The share of hcf's missing idea found by carried BKT on each idea ranges from 24 to 80 % over the five seeds, though it
-stays well above the 17 % of chance, and the gain on fractions from a quarter of the questions asking for one idea
-alone, at 120 answers, is a loss on three seeds of five, which is why the conclusions about G2 rest on the length of
-practice and not on isolating questions.
+after every result, and those of the world of ideas again on 23 October with each idea fitted on the conjunctive
+model's likelihood; every verdict stands on every seed (Table D.1). Findings of a single seed vary. The share of hcf's
+missing idea found by carried BKT on each idea ranges from 43 to 85 % over the five seeds, well above the 17 % of
+chance; a quarter of the questions asking for one idea alone, at 120 answers, finds the missing idea less often than
+the generator as it is on three seeds of five at the lower rate and on all five at the higher, which is why the
+conclusions about G2 rest on the length of practice and not on isolating questions; and carried BKT on each idea's
+declarations at 120 answers and the higher rate are right on the held-out learners 78 % of the time on seed 1 and 78 to
+95 % over the five, at or above the standard on three.
 
 The real data come from US middle-school students in 2009 and 2010, using a system unlike Zeno, with skill tags made by
 the system's authors. This is typical of the field: the public data sets for knowledge tracing are mostly mathematics
@@ -1130,59 +1151,54 @@ answer, what exactly was hard, with the question's own ideas to tick, and the ad
 noisy evidence on its idea: given the chances of ticking an idea that is missing and one that is known, a tick lowers
 that idea's probability and an idea left unticked rises a little, before the answer's own update. Both conditions are
 asked, so the feedback stays the same, and the ticks are stored with the answers. In the world of ideas, in a check
-made after every result and repeated on 22 October with the ticks drawn apart from everything else, so that a seed is
-the same students with the question or without it, the question helps where the answers help least. On fractions at
-the lower learning rate, within 30 answers, carried BKT on each idea named the missing idea 8, 26 and 2 % of the time
-on seeds 1 to 3 from the answers alone, against about 6 % by chance. With students who tick a missing idea half the
-time and a known one a tenth of the time, it named it 48, 52 and 32 % of the time on the same students, and 88, 60 and
-41 % with students who tick a missing idea four times in five and a known one once in twenty. With students who tick a
-missing idea three times in ten and a known one twice in ten, while the model assumes the first rates, it still named
-it 30, 28 and 14 % of the time. The other way to make a wrong answer say which idea, multiple choice whose every wrong option is the mistake of
-one idea, raised the share for BKT on each idea fitted afresh with the mistake's blame from 8, 13 and 2 % to 62, 21
-and 26 %, far less steadily, and it makes a right answer easier to guess. The question did not let any rule declare
-fractions mastered within 30 answers, and it left the score for mastery of the whole skill as calibrated as before
-(its Brier score moved in the fourth decimal), since a tick changes which idea is blamed more than how much. At the
-higher learning rate, where more wrong answers are slips, the gain was smaller, from 51, 46 and 33 % to 53, 54 and
-44 %.
+made after every result, with the ticks drawn apart from everything else so that a seed is the same students with the
+question or without it, the question added less than the answers left room for. On fractions at the lower learning
+rate, within 30 answers, carried BKT on each idea named the missing idea 35, 47 and 36 % of the time on seeds 1 to 3
+from the answers alone, against about 6 % by chance. With students who tick a missing idea half the time and a known
+one a tenth of the time, it named it 27, 58 and 57 % of the time on the same students, and 76, 63 and 63 % with
+students who tick a missing idea four times in five and a known one once in twenty. With students who tick a missing
+idea three times in ten and a known one twice in ten, while the model assumes the first rates, it named it 18, 49 and
+42 % of the time. The other way to make a wrong answer say which idea, multiple choice whose every wrong option is the
+mistake of one idea, raised the share for BKT on each idea fitted afresh with the mistake's blame from 14, 35 and 26 %
+to 47, 47 and 27 %, and it makes a right answer easier to guess. The question let no rule declare fractions mastered
+for more than one learner in twenty within 30 answers, and it moved the score for mastery of the whole skill little, a
+Brier score of 0.022 over five seeds with the question as without it, since a tick changes which idea is blamed more
+than how much. At the higher learning rate, where more wrong answers are slips, it changed the share from 57, 59 and 39
+% to 52, 68 and 45 %.
 
 Whether it helps real students therefore turns on how well they can say what they do not know, which is untested, but
 the simulation can say how well that must be. Over a grid of the two rates, with tick chances of a tenth to nine
 tenths for a missing idea and of a twentieth to seven tenths for a known one, on seeds 1 to 5 and with the model
-assuming a half and a tenth as Zeno does, the line where the question stops helping is where a student is as likely to
-tick an idea they know as one they do not. From the answers alone the missing idea was named 23 % of the time over the
-five seeds. Students who tick a missing idea three times in ten and a known one a tenth of the time raised that to
-40 %, on every seed, and those who tick a missing idea seven times in ten even with a known one ticked three times in
-ten, to 49 %. Ticks that say nothing, a missing and a known idea alike, cost little, from 3 points below to 1 above
-(20 to 24 %), but ticks that run the wrong way, a known idea more often than a missing one, cost much more: a tenth
-against seven tenths gave 2 %. A model told the students' real rates turns even those into evidence, and the rates need not be told: they can be
-fitted on a class's ticks, as the parameters of each idea are fitted on its answers, as the rates under which the
-ticks seen are likeliest given each idea's P(known) after the wrong answer, read from the answers alone. Fitted on the
-training learners of each of the same 25 worlds and seeds, the chance of ticking a known idea came back within two
-hundredths of the truth everywhere, and equal rates came back equal, but the chance of ticking a missing one came back
-about halfway towards the other, 0.33 for 0.1 against 0.7 and 0.49 for 0.9 against 0.05. The cause is the model, not
-the fit: after a wrong answer its P(known) is too low, and on seed 1 of the world of a tenth against seven tenths, of
-the ideas it put below 10 % more than a third were known, so a tick on an idea it took for missing was often a tick on a known
-one. The order of the two rates, which is what decides the idea a tick blames, came back right on every seed. With
-the fitted rates the missing idea was named within 6 points of the share with the real ones in every world, 59 %
-instead of 2 % for a tenth against seven tenths and 32 % instead of 14 % for three tenths against a half, and never
-more than 4 points below the share with a half and a tenth assumed. Children may also tick by habit rather than by
-what they know, so the same check was made with a share of the students, a quarter, a half or all of them, who for
-every answer tick every idea listed, only the first, nothing, or each at even odds, the others ticking at a half and
-a tenth. Students who tick nothing only take their own information away, and are the yardstick: with a quarter or a
-half of them the missing idea was named 48 and 32 % of the time, against 52 % with none. Ticking every idea, only the
-first or each at even odds cost at most 6 points more than ticking nothing: 48, 45 and 42 % with a quarter of the
-class, and 30, 28 and 32 % with half of it. A whole class ticking by one habit, with a half and
-a tenth assumed, did harm: 17 % for every idea, 10 % for the first and 16 % at even odds, below the 23 % of the
-answers alone. With the rates fitted on the class's ticks it did not, since the fit found the ticks to say nothing
-(the two rates came back equal) and so read them as nothing: 23, 22 and 24 %. Mixed into an honest class, habits
-cost little more than silence, so the one case that does harm, a class ticking by habit as a whole, is the one that
-fitting the rates guards against. With each component fitted on the conjunctive model's likelihood (see the limitations
-above), the answers alone named the missing idea 47 % of the time and ticks at a half and a tenth raised it to
-60 %, so the question adds less where the answers already say more; the fitted rates were pulled together from both
-sides rather than one, 0.34 and 0.58 for a tenth against seven tenths and 0.47 and 0.22 for nine tenths against a
-twentieth, still in the right order on every seed. The test
-left for real students is therefore narrow: whether children tick an idea they are missing more often than one they
-know.
+assuming a half and a tenth as Zeno does, the missing idea was named 51 % of the time from the answers alone. Students
+who tick a missing idea half the time and a known one a tenth raised that to 57 %, and those who tick a missing idea
+nine times in ten and a known one a twentieth to 73 %; three times in ten against a tenth left it at 51 %, and a half
+against three tenths lowered it to 49 %. With the rates assumed, the question helped by more than two points in 9
+of the 25 worlds, in every one of them with a missing idea ticked at least twice as often as a known one, and cost more
+than two points in 13. Ticks that say nothing, a missing and a known idea alike, cost 10 to
+15 points (36 to 41 %), and ticks that run the wrong way cost more: a tenth against seven tenths gave 13 %. A model told
+the students' real rates turns even those into evidence, and the rates need not be told: they can be fitted on a
+class's ticks, as the parameters of each idea are fitted on its answers, as the rates under which the ticks seen are
+likeliest given each idea's P(known) after the wrong answer, read from the answers alone. Fitted on the training
+learners of each of the same 25 worlds and seeds, the two rates came back pulled towards each other from both sides,
+0.32 and 0.58 for a tenth against seven tenths and 0.50 and 0.20 for nine tenths against a twentieth, because the
+model's P(known) is further from a half than the truth, but equal rates came back equal and the order of the two,
+which is what decides the idea a tick blames, came back right on every seed. With the fitted rates the question never
+named the missing idea less often than the answers alone, by more than a point, in any world: 50 % where ticks said
+nothing, 62 % instead of 13 % for a tenth against seven tenths, and up to 69 % for nine tenths against a twentieth,
+within 8 points of the share with the real rates. Children may also tick by habit rather than by what they know, so
+the same check was made with a share of the students, a quarter, a half or all of them, who for every answer tick
+every idea listed, only the first, nothing, or each at even odds, the others ticking at a half and a tenth. With a
+half and a tenth assumed, students who tick nothing only take their own information away: with a quarter or a half of
+them the missing idea was named 60 and 54 % of the time, against 57 % with none. Ticking every idea, only the first or
+each at even odds cost up to 10 points more than ticking nothing with a quarter of the class (60, 55 and 50 %) and up
+to 13 with half of it (46, 41 and 44 %), and a whole class ticking by one habit did real harm: 33 % for every idea,
+27 % for the first and 30 % at even odds, against 51 % from the answers alone. With the rates fitted on the class's
+ticks, a class ticking every idea or at even odds lost nothing, 51 % each, since the fit found those ticks to say
+nothing and read them as nothing; a class ticking only the first idea still lost 11 points, 40 %, since the fit found
+those ticks to say a little, a missing idea ticked 0.09 of the time against a known one 0.01 or 0.02 on four seeds of
+five, and read them so. Fitting the rates
+therefore guards against most of the harm, and the question is worth asking only where children tick an idea they
+are missing clearly more often than one they know, which is the test left for real students.
 
 Zeno's own class data would give a replication on the students the result is meant for. The system already exports
 every first answer in the format the evaluation reads, so the prediction test, the agreement of the mastery methods

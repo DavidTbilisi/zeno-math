@@ -228,13 +228,15 @@ test("every question asking for one idea alone: no generated questions, no recog
   }
 });
 
-test("on hcf, carried from times, BKT on each idea is better calibrated and finds the missing idea; afresh does not", () => {
+test("on hcf, carried from times, BKT on each idea is better calibrated and finds the missing idea more often than afresh, which the heuristic fit left below chance", () => {
   const { train, test: held } = splitByStudent(simulateIdeas({ students: 150, learnRate: 0.1 }), 0.2, 1);
   const c = compareIdeas(train, held, "hcf", 0.9, 50);
   assert.ok(c.carryingSaves!.estimate < 0, `carried minus afresh ${c.carryingSaves!.estimate} ${c.carryingSaves!.interval}`);
   const [, , , afresh, , carried] = c.calibration.map((x) => x.brier);
   assert.ok(carried < afresh, `Brier carried ${carried}, afresh ${afresh}`);
-  assert.ok(c.diagnosis[2].right > 0.5 && c.diagnosis[0].right < c.diagnosis[0].chance, `carried ${c.diagnosis[2].right}, afresh ${c.diagnosis[0].right}`);
+  assert.ok(c.diagnosis[2].right > 0.5 && c.diagnosis[2].right > c.diagnosis[0].right && c.diagnosis[0].right > c.diagnosis[0].chance, `carried ${c.diagnosis[2].right}, afresh ${c.diagnosis[0].right}`);
+  const heuristic = compareIdeas(train, held, "hcf", 0.9, 50, 1, undefined, undefined, "heuristic").diagnosis[0];
+  assert.ok(heuristic.right < heuristic.chance, `afresh with the heuristic fit ${heuristic.right}`);
   // On times, every question needs all three ideas: BKT on the skill meets the standard and BKT on each idea is no cheaper.
   const t = compareIdeas(train, held, "times", 0.9, 50);
   assert.ok(t.onSkill[0].rule && t.perIdea.bktSaves!.estimate >= 0, `per idea minus on the skill ${t.perIdea.bktSaves?.estimate}`);

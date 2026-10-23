@@ -11,11 +11,14 @@ stands on every seed. H2 holds with forgetting on all five, each interval exclud
 rate BKT saved only 0.12 answers against the EMA [0.01, 0.24], and in the gradual worlds BKT met the standard at no
 threshold up to 0.9999 on any seed. In G1 BKT on the skill falls with the number of components on every seed, and from
 four components asked one at a time no threshold up to 0.9999 met the standard on any. In G3 the Brier score rises and
-the fits degenerate with each split on every seed. Two findings of a single seed do not survive. The share of hcf's
-missing idea found by carried BKT on each idea, 62 and 80 % on seed 1, is 24 to 62 % and 41 to 80 % over the five,
-still well above the 17 % of chance; and the gain on fractions from a quarter of the questions asking for one idea
-alone, at 120 answers, is a loss on three seeds of five at each rate, which is why the conclusions about G2 rest on the
-length of practice and not on isolating questions. The ranges are the sampling error of a world with 400 learners, of
+the fits degenerate with each split on every seed. The rows of the world of ideas were made again on 23 October, with
+each idea fitted on the conjunctive model's likelihood (section 3.3, Appendix C), on all five seeds. Findings of a
+single seed vary. The share of hcf's missing idea found by carried BKT on each idea, 53 and 85 % on seed 1, is 43 to
+53 % and 57 to 85 % over the five, well above the 17 % of chance; a quarter of the questions asking for one idea alone,
+at 120 answers, finds the missing idea less often than the generator as it is on three seeds of five at the lower rate
+and on all five at the higher, which is why the conclusions about G2 rest on the length of practice and not on
+isolating questions; and carried BKT on each idea's declarations at 120 answers and the higher rate, right 78 % of the
+time on seed 1's held-out learners, are right 78 to 95 % over the five. The ranges are the sampling error of a world with 400 learners, of
 whom about 80 are held out, and are wider where fewer of them come within one idea of mastery.
 
 | Result | Setting | Seed 1 | Seeds 1 to 5 |
@@ -31,11 +34,12 @@ whom about 80 are held out, and are wider where fewer of them come within one id
 | G1, BKT on the skill's threshold at 90 % | 4 to 16 components | never | never |
 | G1, the EMA at its usual threshold, right | 1 / 16 components | 97.1 / 0.5 % | 95.9 to 99.0 / 0.5 to 3.5 % |
 | G1, ideas, BKT on the skill at 0.95, right | times / hcf / fractions | 94 / 55 / 30 % | 94 to 100 / 55 to 86 / 5 to 30 % |
-| G1, ideas, hcf's missing idea found, carried | rate 0.02 / 0.1 | 62.3 / 80.3 % | 23.7 to 62.3 / 41.0 to 80.3 % |
-| G2, fractions' missing idea found, carried, generator as it is | rate 0.02, 30 / 120 answers | 7.8 / 66.3 % | 2.4 to 47.1 / 63.5 to 78.0 % |
-| | rate 0.1, 30 / 120 answers | 51.4 / 68.8 % | 33.2 to 64.3 / 68.8 to 81.3 % |
-| G2, a quarter alone minus the generator as it is, found, 120 answers | rate 0.02 / 0.1 | +3.6 / +2.0 | −14.3 to +7.0 / −9.6 to +2.0 |
-| G2, carried BKT on each idea at 90 %, 120 answers, rate 0.1 | answers / declared | 73.0 / 86 % | 69.2 to 83.7 / 79 to 88 % |
+| G1, ideas, hcf's missing idea found, carried | rate 0.02 / 0.1 | 52.8 / 84.8 % | 42.7 to 52.8 / 57.0 to 84.8 % |
+| G2, fractions' missing idea found, carried, generator as it is | rate 0.02, 30 / 120 answers | 35.2 / 78.2 % | 35.2 to 62.4 / 77.4 to 81.3 % |
+| | rate 0.1, 30 / 120 answers | 56.7 / 78.8 % | 39.0 to 58.5 / 72.9 to 83.7 % |
+| G2, a quarter alone minus the generator as it is, found, 120 answers | rate 0.02 / 0.1 | +2.3 / −7.8 | −12.0 to +2.3 / −7.8 to −3.2 |
+| G2, carried BKT on each idea at 90 %, 120 answers, rate 0.1 | answers / declared | 68.5 / 85 % | 67.2 to 86.5 / 74 to 88 % |
+| | right, held out | 77.8 % | 77.8 to 94.6 % |
 | G3, BKT on each part's Brier score, split 1 / 2 / 4 | rate 0.1 | 0.082 / 0.149 / 0.384 | 0.073 to 0.082 / 0.136 to 0.149 / 0.362 to 0.395 |
 | G3, BKT on each part's fits at the bound, split 1 / 2 / 4 | rate 0.1 | 0 / 29 / 80 % | 0 / 17 to 29 / 75 to 83 % |
 

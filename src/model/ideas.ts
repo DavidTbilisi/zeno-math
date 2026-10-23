@@ -15,12 +15,13 @@
 // reads the ideas each question needs and updates them together (a conjunctive question: right only if all were
 // known), started afresh in every skill, then with the blame of a recognised mistake put on its one idea (and the
 // checklist's ticks read, when there is one), then also carried from skill to skill. Beyond cost and precision, the diagnosis: when exactly one of the skill's ideas is
-// unknown, how often it is the one with the lowest P(known).
+// unknown, how often it is the one with the lowest P(known). Each idea's init and learn are fitted on the conjunctive
+// model's own likelihood (fitIdeasByLikelihood), or by the heuristic the thesis first used (fitIdeas).
 import { en } from "../locales/en.ts";
 import { exercise } from "../math/practice.ts";
 import { FRACTIONS, type FractionsNode } from "./conceptGraph.ts";
 import { sigmoid } from "./elo.ts";
-import { conjunctiveStep, gapIdea, IDEA_SKILLS, TICK_PRIOR, tickStep, usesOf, type IdeaSkill, type TickRates } from "./ideaState.ts";
+import { conjunctiveStep, gapIdea, IDEA_PRIOR, IDEA_SKILLS, TICK_PRIOR, tickStep, usesOf, type IdeaSkill, type TickRates } from "./ideaState.ts";
 import { bktStep, calibration, fitBkt, rmse, type BktParams, type Prediction } from "./evaluate.ts";
 import {
   bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtPrecision, costOf, decide, FINE_THRESHOLDS, fitRules, judge, masteryCalibration, PRECISION_TARGET,
@@ -256,32 +257,49 @@ const LEARN_GRID = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.15, 0.2, 0.3];
  * Each idea's init and learn fitted on the model the forms run: the chance it gives each answer before it, P(all the
  * question needs known)(1 − slip) + (1 − that)·guess with the skill's own guess and slip, summed in logs over the
  * training answers, walked as conjunctiveStep walks them (afresh in each skill, or carried from skill to skill). The
- * heuristic fit takes a wrong answer as a wrong answer on every idea the question needed, so an idea known but asked
- * beside a missing one is fitted as less often known than it is, and the P(known) it gives after a wrong answer is too
- * low; this one blames the ideas only as far as the product does. Ideas always asked together are told apart only by
- * the questions that ask for one without the other. Found by coordinate ascent from the heuristic fit, each idea's init
- * then learn on a grid in turn, three times over. A recognised mistake's blame is not read, as in the heuristic fit.
+ * heuristic fit (fitIdeas) takes a wrong answer as a wrong answer on every idea the question needed, so an idea known
+ * but asked beside a missing one is fitted as less often known than it is, and the P(known) it gives after a wrong
+ * answer is too low; this one blames the ideas only as far as the product does. Ideas always asked together are told
+ * apart only by the questions that ask for one without the other. Found by coordinate ascent from IDEA_PRIOR, each
+ * idea's init then learn on a grid in turn, until a round changes nothing or after five. A recognised mistake's blame
+ * is not read, as in the heuristic fit, and an idea no training question needed keeps IDEA_PRIOR.
  */
 export function fitIdeasByLikelihood(train: readonly IdeaPractice[], question: (skill: string) => { guess: number; slip: number }, acrossSkills = false): (idea: string) => BktParams {
-  const start = fitIdeas(train, acrossSkills);
   const names = [...new Set(train.flatMap((p) => p.ids))];
-  const init = names.map((id) => start(id).init), learn = names.map((id) => start(id).learn);
   const index = new Map(names.map((id, g) => [id, g]));
-  const walks = train.map((p) => ({ p, global: p.ids.map((id) => index.get(id)!), q: question(p.skill) }));
+  const init = names.map(() => IDEA_PRIOR.init), learn = names.map(() => IDEA_PRIOR.learn);
+  // Every answer flattened: its practice's first answer, whether it is right, and the ideas it needed as indices into names.
+  const starts: number[] = [], firstOf: number[] = [], guess: number[] = [], slip: number[] = [], right: number[] = [], from: number[] = [0], needs: number[] = [];
+  const ideasOf: number[][] = [];
+  train.forEach((p, k) => {
+    const fresh = !acrossSkills || k === 0 || train[k - 1].student !== p.student;
+    starts.push(fresh ? 1 : 0);
+    firstOf.push(right.length);
+    ideasOf.push(p.ids.map((id) => index.get(id)!));
+    const q = question(p.skill);
+    for (let i = 0; i < p.answers.length; i++) {
+      right.push(p.answers[i]);
+      guess.push(q.guess);
+      slip.push(q.slip);
+      for (const j of p.needs[i]) needs.push(index.get(p.ids[j])!);
+      from.push(needs.length);
+    }
+  });
+  firstOf.push(right.length);
   const known = new Float64Array(names.length), met = new Uint8Array(names.length);
   const logLikelihood = () => {
-    let sum = 0, student = "";
-    for (const { p, global, q } of walks) {
-      if (!acrossSkills || p.student !== student) met.fill(0), (student = p.student);
-      for (const g of global) if (!met[g]) (known[g] = init[g]), (met[g] = 1);
-      for (let i = 0; i < p.answers.length; i++) {
-        const needs = p.needs[i], right = p.answers[i] === 1;
+    let sum = 0;
+    for (let k = 0; k < train.length; k++) {
+      if (starts[k]) met.fill(0);
+      for (const g of ideasOf[k]) if (!met[g]) (known[g] = init[g]), (met[g] = 1);
+      for (let a = firstOf[k]; a < firstOf[k + 1]; a++) {
         let all = 1;
-        for (const j of needs) all *= known[global[j]];
-        const seen = right ? all * (1 - q.slip) + (1 - all) * q.guess : all * q.slip + (1 - all) * (1 - q.guess);
+        for (let n = from[a]; n < from[a + 1]; n++) all *= known[needs[n]];
+        const ok = right[a] === 1, gu = guess[a], sl = slip[a];
+        const seen = ok ? all * (1 - sl) + (1 - all) * gu : all * sl + (1 - all) * (1 - gu);
         sum += Math.log(seen);
-        for (const j of needs) {
-          const g = global[j], joint = right ? all * (1 - q.slip) + (known[g] - all) * q.guess : all * q.slip + (known[g] - all) * (1 - q.guess);
+        for (let n = from[a]; n < from[a + 1]; n++) {
+          const g = needs[n], joint = ok ? all * (1 - sl) + (known[g] - all) * gu : all * sl + (known[g] - all) * (1 - gu);
           const posterior = joint / seen;
           known[g] = posterior + (1 - posterior) * learn[g];
         }
@@ -291,22 +309,27 @@ export function fitIdeasByLikelihood(train: readonly IdeaPractice[], question: (
   };
   let top = logLikelihood();
   const tune = (values: number[], g: number, grid: readonly number[]) => {
-    let best = values[g];
+    const was = values[g];
+    let best = was;
     for (const v of grid) {
+      if (v === was) continue;
       values[g] = v;
       const l = logLikelihood();
       if (l > top) (top = l), (best = v);
     }
     values[g] = best;
+    return best !== was;
   };
-  for (let round = 0; round < 3; round++)
+  for (let round = 0, moved = true; moved && round < 5; round++) {
+    moved = false;
     for (let g = 0; g < names.length; g++) {
-      tune(init, g, INIT_GRID);
-      tune(learn, g, LEARN_GRID);
+      if (tune(init, g, INIT_GRID)) moved = true;
+      if (tune(learn, g, LEARN_GRID)) moved = true;
     }
+  }
   return (idea) => {
-    const g = index.get(idea), base = start(idea);
-    return g === undefined ? base : { ...base, init: init[g], learn: learn[g] };
+    const g = index.get(idea);
+    return g === undefined ? IDEA_PRIOR : { ...IDEA_PRIOR, init: init[g], learn: learn[g] };
   };
 }
 
@@ -456,7 +479,7 @@ export type IdeasComparison = {
  */
 export function compareIdeas(
   train: readonly IdeaPractice[], test: readonly IdeaPractice[], skill: IdeaSkill = "fractions", target = PRECISION_TARGET, resamples = 2000, seed = 1,
-  thresholds: readonly number[] = FINE_THRESHOLDS, rates?: TickRates | "fit", fitting: IdeaFitting = "heuristic",
+  thresholds: readonly number[] = FINE_THRESHOLDS, rates?: TickRates | "fit", fitting: IdeaFitting = "likelihood",
 ): IdeasComparison {
   const fitted = fitRules(train);
   const trainS = train.filter((p) => p.skill === skill), testS = test.filter((p) => p.skill === skill);

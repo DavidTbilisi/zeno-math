@@ -56,3 +56,15 @@ seed with the checklist was a different class of students from the same seed wit
 missing idea named with and without the ticks were compared across different students. The ticks now have a stream of
 their own, a test checks that a seed is the same students either way, and the shares in section 3.3 are those of the
 same students. No result outside the checklist changed, since without it nothing is drawn for the ticks.
+
+The fit of BKT on each component in the world of ideas was changed on 23 October, after every result. It had been
+fitted heuristically, each answer counted as evidence on every component its question needed, which section 3.3 had
+named as a limitation. A check made that day found the heuristic fitted each component as less often known than it
+was, so a fit on the conjunctive model's own likelihood replaced it (section 2.3), and Tables 3.11 and 3.12, the
+rows of the world of ideas in Table D.1 and the checks of the checklist in section 3.3 were made again with it, on
+every seed. The methods at the grain of the skill do not use the fit and are unchanged. Two findings moved: within 30
+questions on fractions the missing idea is named about half the time rather than at chance, and at 120 questions
+carried BKT on each idea declares sooner but is right on the held-out learners 78 to 95 % of the time over the seeds
+rather than at the standard on every one. The conclusions of G2, that length rather than isolating questions meets the
+condition and that 30 questions do not let any rule declare fractions mastered, stand. The heuristic remains in the
+code (`--idea-fit heuristic`), and the earlier Tables 3.11 and 3.12 can be made with it at commit 9180a75.
