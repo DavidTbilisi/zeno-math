@@ -1279,6 +1279,7 @@ src/model/datasets.ts     public data sets (ASSISTments) as observations, read a
 src/model/analysis.ts     the study's planned analysis: ANCOVA, Welch's test, least squares, scores from the export
 src/math/distributions.ts normal, t and χ² tails and their inverses (no imports, for the server and scripts too)
 scripts/evaluate-model.ts `npm run model`: the model against the logistic model, PFA, BKT and baselines on held-out students
+scripts/benchmark.ts      `npm run benchmark`: the benchmark CSVs in docs/results (prediction, paired splits, mastery rules) for the dashboard
 scripts/import-assistments.ts  `npm run import-assistments`: the ASSISTments file as observations
 scripts/simulate-study.ts `npm run simulate`: the conditions on simulated classes, across worlds and assumptions; power
 scripts/analyse-study.ts  `npm run analyse`: the planned analysis on the tests export

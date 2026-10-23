@@ -402,3 +402,31 @@ export function rightAfter(rule: MasteryRule, practices: readonly Practice[], k 
   }
   return { rule: rule.name, practices: withAnswers, answers, right: answers ? right / answers : NaN };
 }
+
+/**
+ * The first rule minus the second on the same practices: the share right of the next k answers after each declares
+ * mastery, and the mean answers before it (a practice never declared counting its full length), each with a 95 %
+ * interval from resampling students.
+ */
+export function compareAfter(first: MasteryRule, second: MasteryRule, practices: readonly Practice[], resamples = 2000, seed = 1, k = 3) {
+  const each = (rule: MasteryRule) =>
+    practices.map((p) => {
+      const at = rule.declare(p.skill, p.answers, p);
+      let right = 0, n = 0;
+      if (at !== null) for (let i = at; i < Math.min(p.answers.length, at + k); i++) (n++, (right += p.answers[i]));
+      return { right, n, cost: at ?? p.answers.length };
+    });
+  const a = each(first), b = each(second);
+  const stats = (indices: readonly number[]) => {
+    let ra = 0, na = 0, rb = 0, nb = 0, cost = 0;
+    for (const i of indices) (ra += a[i].right), (na += a[i].n), (rb += b[i].right), (nb += b[i].n), (cost += a[i].cost - b[i].cost);
+    return { right: ra / na - rb / nb, cost: cost / indices.length };
+  };
+  const all = stats(practices.map((_, i) => i));
+  return {
+    rule: second.name,
+    ...all,
+    rightInterval: bootstrapByStudent(practices, (ix) => stats(ix).right, resamples, seed),
+    costInterval: bootstrapByStudent(practices, (ix) => stats(ix).cost, resamples, seed),
+  };
+}

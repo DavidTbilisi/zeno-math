@@ -1,0 +1,11 @@
+model,kind,log_loss,rmse,auc,accuracy,answers
+"elo","elo",0.5607,0.4351,0.7242,0.7189,51452
+"elo, one area","elo",0.5581,0.4338,0.7277,0.7215,51452
+"logistic","logistic",0.5221,0.4163,0.7758,0.7448,51452
+"logistic, no question difficulty","logistic",0.5457,0.4271,0.7445,0.7332,51452
+"PFA","standard",0.5814,0.4437,0.7011,0.7035,51452
+"BKT","standard",0.569,0.4385,0.7113,0.7154,51452
+"EMA","standard",0.5915,0.4493,0.6919,0.7014,51452
+"student-skill rate","counting",0.6106,0.4599,0.6898,0.6874,51452
+"item rate","counting",0.6173,0.4625,0.6145,0.6698,51452
+"global rate","counting",0.6371,0.4717,0.5027,0.6661,51452

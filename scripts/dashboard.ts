@@ -1,5 +1,5 @@
-// The data behind the results dashboard (a claude.ai artifact): chapter 3's tables as rows, the simulation, calibration
-// and stuck-practice CSVs in docs/results, each research question's verdict, and learning profiles drawn by the simulator itself. The tables are
+// The data behind the results dashboard (a claude.ai artifact): chapter 3's tables as rows, the simulation, calibration,
+// stuck-practice and benchmark CSVs in docs/results, each research question's verdict, and learning profiles drawn by the simulator itself. The tables are
 // read from the thesis as printed, so the dashboard shows what the thesis says; remake a table with its own command
 // (Appendix B) and the thesis first, then this.
 //
@@ -169,6 +169,11 @@ const RESULT_FILES = [
   { id: "stuck_warning", file: "docs/results/stuck-warning.csv", title: "Early warning: the first three", description: "Visits with no three in a row in their first three answers, by how many of those were right: the share reaching three in a row by the 10th answer, stuck, or ended before then without (npm run stuck)." },
   { id: "stuck_next", file: "docs/results/stuck-next.csv", title: "The answer after a wrong one", description: "The next answer in the same visit, by what the answer before was (right, a wrong try with or without hints, a hint or the scaffolding first), in stuck visits and the rest, against the problems' usual share right (npm run stuck)." },
   { id: "stuck_skills", file: "docs/results/stuck-skills.csv", title: "Stuck visits by skill", description: "Each ASSISTments skill's visits, stuck visits and their answers, the share of its visits stuck and its share of all stuck answers (npm run stuck)." },
+  { id: "bench_models", file: "docs/results/benchmark-models.csv", title: "Benchmark: predicting the next answer", description: "Each model's log-loss, RMSE, AUC and accuracy on ASSISTments' held-out students, split seed 1: Elo, the logistic model with and without a difficulty per question, PFA, BKT, EMA and three counting baselines (npm run benchmark)." },
+  { id: "bench_paired", file: "docs/results/benchmark-paired.csv", title: "Benchmark: logistic against Elo by split", description: "The logistic model's mean log-loss per answer minus Elo's on the same held-out answers, with 95 % intervals from resampling students and whole classes, on five splits (npm run benchmark)." },
+  { id: "bench_mastery", file: "docs/results/benchmark-mastery.csv", title: "Benchmark: mastery rules on real answers", description: "H3's rules and the logistic rule on ASSISTments' held-out practices, split seed 1: mean answers before mastery is declared, the share declared, and the share right of the next three answers (npm run benchmark)." },
+  { id: "bench_versus", file: "docs/results/benchmark-versus.csv", title: "Benchmark: logistic rule against others", description: "The logistic rule minus each of H3's rules, on five splits: the share right of the next three answers after mastery and the answers before it, with 95 % intervals from resampling students (npm run benchmark)." },
+  { id: "bench_curve", file: "docs/results/benchmark-curve.csv", title: "Benchmark: mastery trade-off curves", description: "Every setting of each mastery rule on the held-out practices of split seed 1: answers before mastery against the share right of the next three (description: these settings are not set on training students; npm run benchmark)." },
 ];
 
 export type ManifestEntry = { id: string; file: string; title: string; description: string };
