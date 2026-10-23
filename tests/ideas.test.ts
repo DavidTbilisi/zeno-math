@@ -9,7 +9,7 @@ import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
 import { SKILL_IDEAS, TICK_PRIOR } from "../src/model/ideaState.ts";
 import { bktRule, fitRules, judge, streakRule } from "../src/model/mastery.ts";
 import {
-  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaParams, type IdeaPractice,
+  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitIdeasByLikelihood, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaParams, type IdeaPractice,
 } from "../src/model/ideas.ts";
 import { rng } from "../src/model/random.ts";
 
@@ -86,6 +86,19 @@ test("the checklist: ticks only after a wrong answer no mistake explains, among 
   const without = diagnosis(fit, ps, { blame: true }), read = diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps, { blame: true });
   assert.ok(read.right > without.right + 0.1, `the missing idea found ${read.right} with the ticks read, ${without.right} without`);
   assert.equal(diagnosis({ ...fit, tick: { hit: 0.9, falseAlarm: 0.05 } }, ps).right, diagnosis(fit, ps).right, "the form without blame passes them over");
+});
+
+test("each idea fitted on the conjunctive model's likelihood: an idea asked beside a missing one is not taken for missing", () => {
+  // Students who know a nine times in ten and b three times in ten, and learn neither; questions need a and b, or one alone.
+  const r = rng(11), question = { guess: 0.2, slip: 0.1 }, ps: IdeaPractice[] = [];
+  for (let s = 0; s < 400; s++) {
+    const knows = [r.next() < 0.9, r.next() < 0.3], needs = Array.from({ length: 12 }, (_, i) => (i % 3 === 0 ? [0] : i % 3 === 1 ? [1] : [0, 1]));
+    ps.push(practice(`s${s}`, "fractions", ["a", "b"], needs, needs.map((n) => (r.next() < (n.every((j) => knows[j]) ? 1 - question.slip : question.guess) ? 1 : 0))));
+  }
+  const fitted = fitIdeasByLikelihood(ps, () => question), heuristic = fitIdeas(ps);
+  assert.ok(Math.abs(fitted("a").init - 0.9) <= 0.06 && Math.abs(fitted("b").init - 0.3) <= 0.06, `fitted a ${fitted("a").init}, b ${fitted("b").init}`);
+  assert.ok(heuristic("a").init < fitted("a").init, `the heuristic takes a for missing more often: ${heuristic("a").init} against ${fitted("a").init}`);
+  assert.ok(fitted("a").learn <= 0.05 && fitted("b").learn <= 0.05, `little learnt: ${fitted("a").learn}, ${fitted("b").learn}`);
 });
 
 test("students who tick by a style: every idea listed, the first, or nothing, the whole class or a share of it, on the same students", () => {

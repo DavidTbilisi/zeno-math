@@ -1022,7 +1022,21 @@ usual threshold, though not the cheapest threshold meeting the standard or the B
 BKT on each component is fitted heuristically, with each answer counted as evidence on every component its question
 needed, where the conjunctive model's own fit would need expectation–maximisation over the hidden states. A better fit
 could only help the finer grain, so the condition G2 states may be met somewhat sooner than the sweep shows; it could
-not make the coarse grain look better.
+not make the coarse grain look better. The heuristic's cost was measured after every result, on 23 October. A wrong
+answer counts against a component the student knows whenever another the question needs is missing, so each
+component's chance of being known at the start is fitted too low, on fractions at or near the bottom of its grid, and
+the P(known) of each component is too low wherever it is not near certain: on seed 1, of the components it put below
+10 %, 44 % were known. A second fit keeps the heuristic as its starting point and moves each component's starting
+chance and rate of learning, one at a time on a grid, to make the training answers likeliest under the conjunctive
+model as it is run, so a wrong answer blames a component only as far as the product of the components' P(known) does.
+On fractions at the lower learning rate, within 30 answers, over seeds 1 to 5, the Brier score of each component's
+P(known) against the truth fell from 0.257 to 0.165 and that of P(all known) from 0.038 to 0.022, and the missing
+component was named 47 % of the time instead of 23 %, more on every seed. On seed 1 with 120 answers, the cheapest
+threshold of carried BKT on each component met the standard on the held-out learners, 90.0 % against the heuristic's
+84.6 %, at about the same cost, 107 answers against 108, so the condition G2 states may indeed be met somewhat
+sooner. The second fit errs the other way, less: its P(known) is too far from a half, on seed 1 0.84 where 0.67 were
+known and 0.25 where 0.41 were, since the fit takes the components to stay independent given the answers when a wrong answer
+makes them depend on each other. The results of the sweep are the heuristic's, as they were made.
 
 BKT's thresholds were first tried up to 0.9999, a range set before the results. The search above it (Table 3.7) was
 made after the results had been seen, so it is reported as a check beside H2's verdict, not in place of it. Its own
@@ -1162,7 +1176,11 @@ a tenth assumed, did harm: 17 % for every idea, 10 % for the first and 16 % at e
 answers alone. With the rates fitted on the class's ticks it did not, since the fit found the ticks to say nothing
 (the two rates came back equal) and so read them as nothing: 23, 22 and 24 %. Mixed into an honest class, habits
 cost little more than silence, so the one case that does harm, a class ticking by habit as a whole, is the one that
-fitting the rates guards against. The test
+fitting the rates guards against. With each component fitted on the conjunctive model's likelihood (see the limitations
+above), the answers alone named the missing idea 47 % of the time and ticks at a half and a tenth raised it to
+60 %, so the question adds less where the answers already say more; the fitted rates were pulled together from both
+sides rather than one, 0.34 and 0.58 for a tenth against seven tenths and 0.47 and 0.22 for nine tenths against a
+twentieth, still in the right order on every seed. The test
 left for real students is therefore narrow: whether children tick an idea they are missing more often than one they
 know.
 

@@ -247,6 +247,86 @@ export function fitIdeas(train: readonly IdeaPractice[], acrossSkills = false): 
   return (idea) => params.get(idea) ?? (pooled ??= fitBkt([...byIdea.values()].flat()));
 }
 
+/** How each idea's parameters are fitted: fitIdeas' heuristic, or on the conjunctive model's own likelihood (fitIdeasByLikelihood). */
+export type IdeaFitting = "heuristic" | "likelihood";
+const INIT_GRID = [0.02, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.98];
+const LEARN_GRID = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.15, 0.2, 0.3];
+
+/**
+ * Each idea's init and learn fitted on the model the forms run: the chance it gives each answer before it, P(all the
+ * question needs known)(1 − slip) + (1 − that)·guess with the skill's own guess and slip, summed in logs over the
+ * training answers, walked as conjunctiveStep walks them (afresh in each skill, or carried from skill to skill). The
+ * heuristic fit takes a wrong answer as a wrong answer on every idea the question needed, so an idea known but asked
+ * beside a missing one is fitted as less often known than it is, and the P(known) it gives after a wrong answer is too
+ * low; this one blames the ideas only as far as the product does. Ideas always asked together are told apart only by
+ * the questions that ask for one without the other. Found by coordinate ascent from the heuristic fit, each idea's init
+ * then learn on a grid in turn, three times over. A recognised mistake's blame is not read, as in the heuristic fit.
+ */
+export function fitIdeasByLikelihood(train: readonly IdeaPractice[], question: (skill: string) => { guess: number; slip: number }, acrossSkills = false): (idea: string) => BktParams {
+  const start = fitIdeas(train, acrossSkills);
+  const names = [...new Set(train.flatMap((p) => p.ids))];
+  const init = names.map((id) => start(id).init), learn = names.map((id) => start(id).learn);
+  const index = new Map(names.map((id, g) => [id, g]));
+  const walks = train.map((p) => ({ p, global: p.ids.map((id) => index.get(id)!), q: question(p.skill) }));
+  const known = new Float64Array(names.length), met = new Uint8Array(names.length);
+  const logLikelihood = () => {
+    let sum = 0, student = "";
+    for (const { p, global, q } of walks) {
+      if (!acrossSkills || p.student !== student) met.fill(0), (student = p.student);
+      for (const g of global) if (!met[g]) (known[g] = init[g]), (met[g] = 1);
+      for (let i = 0; i < p.answers.length; i++) {
+        const needs = p.needs[i], right = p.answers[i] === 1;
+        let all = 1;
+        for (const j of needs) all *= known[global[j]];
+        const seen = right ? all * (1 - q.slip) + (1 - all) * q.guess : all * q.slip + (1 - all) * (1 - q.guess);
+        sum += Math.log(seen);
+        for (const j of needs) {
+          const g = global[j], joint = right ? all * (1 - q.slip) + (known[g] - all) * q.guess : all * q.slip + (known[g] - all) * (1 - q.guess);
+          const posterior = joint / seen;
+          known[g] = posterior + (1 - posterior) * learn[g];
+        }
+      }
+    }
+    return sum;
+  };
+  let top = logLikelihood();
+  const tune = (values: number[], g: number, grid: readonly number[]) => {
+    let best = values[g];
+    for (const v of grid) {
+      values[g] = v;
+      const l = logLikelihood();
+      if (l > top) (top = l), (best = v);
+    }
+    values[g] = best;
+  };
+  for (let round = 0; round < 3; round++)
+    for (let g = 0; g < names.length; g++) {
+      tune(init, g, INIT_GRID);
+      tune(learn, g, LEARN_GRID);
+    }
+  return (idea) => {
+    const g = index.get(idea), base = start(idea);
+    return g === undefined ? base : { ...base, init: init[g], learn: learn[g] };
+  };
+}
+
+/**
+ * Each idea's own P(known) against whether it is known, after every answer: of every idea of the skill, or only of the
+ * ideas the question needed at a wrong answer no recognised mistake explains, where the checklist asks.
+ */
+export function ideaCalibration(fit: IdeaFit, practices: readonly IdeaPractice[], options: IdeaOptions = {}, atWrong = false): Calibration {
+  const ps: Prediction[] = [];
+  for (const p of practices) {
+    const known = [...(options.starts?.get(p) ?? p.ids.map((id) => fit.idea(id).init))];
+    for (let i = 0; i < p.answers.length; i++) {
+      stepIdeas(known, p, i, fit, options.blame);
+      if (atWrong && (p.answers[i] === 1 || p.gap[i] >= 0)) continue;
+      for (const j of atWrong ? p.needs[i] : p.ids.map((_, j) => j)) ps.push({ p: known[j], correct: p.ideaKnown[j][i] === 1 });
+    }
+  }
+  return { score: "BKT P(known)", n: ps.length, brier: rmse(ps) ** 2, bins: calibration(ps) };
+}
+
 /** How well BKT on each idea says the skill is mastered: the product of its ideas' P(known), against every idea known. */
 export function ideasCalibration(fit: IdeaFit, practices: readonly IdeaPractice[], options: IdeaOptions = {}): Calibration {
   const ps: Prediction[] = [];
@@ -361,6 +441,8 @@ export type IdeasComparison = {
    * of BKT on each idea at 0.95.
    */
   usual: Judgement[];
+  /** Each idea's own P(known) under carried BKT on each idea against the truth (ideaCalibration): after every answer, then at the wrong answers the checklist asks after. */
+  ideaCalibration: Calibration[];
   /** The checklist's rates fitted on the training practices (fitTicks), when they were fitted rather than given. */
   fittedTicks?: TickRates;
 };
@@ -370,11 +452,11 @@ export type IdeasComparison = {
  * with intervals over students. The fits use every skill's training practices; carrying walks every student's practices
  * in order, so the skills before the one judged are what it carries from. tick is how the blamed forms take the
  * checklist's ticks to follow what is known: the world's own rates, others to see what a wrong guess at them costs, or
- * "fit" to fit them on the training practices' ticks (fitTicks).
+ * "fit" to fit them on the training practices' ticks (fitTicks). fitting is how each idea's parameters are fitted.
  */
 export function compareIdeas(
   train: readonly IdeaPractice[], test: readonly IdeaPractice[], skill: IdeaSkill = "fractions", target = PRECISION_TARGET, resamples = 2000, seed = 1,
-  thresholds: readonly number[] = FINE_THRESHOLDS, rates?: TickRates | "fit",
+  thresholds: readonly number[] = FINE_THRESHOLDS, rates?: TickRates | "fit", fitting: IdeaFitting = "heuristic",
 ): IdeasComparison {
   const fitted = fitRules(train);
   const trainS = train.filter((p) => p.skill === skill), testS = test.filter((p) => p.skill === skill);
@@ -396,12 +478,13 @@ export function compareIdeas(
   };
   // BKT on the skill chosen again as compareAtPrecision chose it, for the paired differences.
   const bktOnSkill = best(thresholds.map((t) => bktRule(fitted.bkt, t))).cost;
+  const ideaFit = (acrossSkills: boolean) => (fitting === "likelihood" ? fitIdeasByLikelihood(train, fitted.bkt, acrossSkills) : fitIdeas(train, acrossSkills));
+  const ideaAfresh = ideaFit(false), ideaAcross = ideaFit(true);
   // Fitted on the training practices of every skill, read from the answers alone carried from skill to skill.
-  const tick = rates !== "fit" ? rates : fitTicks({ idea: fitIdeas(train, true), question: fitted.bkt }, train, {
-    blame: true, starts: carriedIdeas({ idea: fitIdeas(train, true), question: fitted.bkt }, train, true),
-  });
-  const afresh: IdeaFit = { idea: fitIdeas(train), question: fitted.bkt, tick };
-  const across: IdeaFit = { idea: fitIdeas(train, true), question: fitted.bkt, tick };
+  const answersAlone: IdeaFit = { idea: ideaAcross, question: fitted.bkt };
+  const tick = rates !== "fit" ? rates : fitTicks(answersAlone, train, { blame: true, starts: carriedIdeas(answersAlone, train, true) });
+  const afresh: IdeaFit = { idea: ideaAfresh, question: fitted.bkt, tick };
+  const across: IdeaFit = { idea: ideaAcross, question: fitted.bkt, tick };
   const starts = carriedIdeas(across, [...train, ...test], true);
   const forms = [
     { fit: afresh, options: {} },
@@ -420,6 +503,7 @@ export function compareIdeas(
     calibration: [...masteryCalibration(fitted, testS), ...forms.map(({ fit, options }) => ideasCalibration(fit, testS, options))],
     diagnosis: forms.map(({ fit, options }) => diagnosis(fit, testS, options)),
     usual: [...usualRules(fitted, trainS), ...forms.map(({ fit, options }) => ideasRule(fit, USUAL_THRESHOLD, options))].map((rule) => judge(rule, testS)),
+    ideaCalibration: [false, true].map((atWrong) => ideaCalibration(across, testS, { blame: true, starts }, atWrong)),
     ...(rates === "fit" ? { fittedTicks: tick } : {}),
   };
 }
