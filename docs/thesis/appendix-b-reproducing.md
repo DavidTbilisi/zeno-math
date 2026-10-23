@@ -52,8 +52,9 @@ command.
 | 3.1, 3.3 to 3.6 | 88c4af7 |
 | 3.7 | 66c2eda |
 | 3.8 | ba04c48 |
-| 3.10 to 3.12 | 9180a75 |
+| 3.10 | 9180a75 |
+| 3.11, 3.12 | the commit that fits each idea on the conjunctive model's likelihood by default (23 October) |
 | 3.13, 3.14, 3.16 | 66ee9af |
 | 3.2, 3.9, 3.15 and the ASSISTments counts | 3633cc1 |
-| D.1 | the commit that adds Appendix C, where seed 1 reproduces Tables 3.3 to 3.14; the world of ideas at 9180a75, since Zeno's generators have changed since |
+| D.1 | the commit that adds Appendix C, where seed 1 reproduces Tables 3.3 to 3.14; the world of ideas at the commit of Tables 3.11 and 3.12 |
 | D.2, and the G4 checks of Appendix D | the commit that adds Appendix C |

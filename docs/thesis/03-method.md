@@ -340,12 +340,18 @@ training student practised uses one set of parameters fitted on all skills toget
 runs on whatever the skills are at that grain, so at the coarsest grain of G4 one set of parameters is fitted for all
 of mathematics.
 
-BKT on each component is fitted in the same way, one set of parameters per component, on the answers of the questions
-that asked for the component: within one skill for the afresh form, and across every skill a student practised, in
-order, for the carried form. Where a question asks for several components this is a heuristic, since it treats the
-answer as evidence on each component alone, and the conjunctive model's own fit would need expectation–maximisation
-over the hidden states of all the components a question needs. The guess and slip of a question on several components
-are those fitted for BKT on the skill. A fit is counted as degenerate when its guess or slip is at the bound of 0.3,
+BKT on each component is fitted in two ways. In the world of components, where a question asks for one component, it
+is fitted as BKT on the skill is, one set of parameters per component, on the answers of the questions that asked for
+it. In the world of ideas, where a question asks for several, that would treat each answer as evidence on each
+component alone, and a wrong answer would count against a component the student knows whenever another is missing.
+There each component's chance of being known at the start and of being learnt from a question are fitted instead on
+the conjunctive model's own likelihood: the chance it gives each training answer before it is seen, walked through the
+answers as the model runs, within one skill for the afresh form and across every skill a student practised, in order,
+for the carried form. The fit moves one parameter of one component at a time over the grid's starting chances and
+rates of learning, keeping a move that makes the training answers likelier, until a round over every component moves
+nothing. The conjunctive model's exact fit would need expectation–maximisation over the hidden states of all the
+components a question needs. The guess and slip of a question on several components are those fitted for BKT on the
+skill. A fit is counted as degenerate when its guess or slip is at the bound of 0.3,
 which is what the bound is there to stop, and as at the edge when any parameter is at an end of its grid.
 
 EMA has one decay rate for all skills. Its starting score is fixed first, at the share of right answers among the
