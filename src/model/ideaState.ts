@@ -9,8 +9,8 @@
 // attempts and the browser carries it forward (src/learner.ts). Nothing here needs the generators, so the server and
 // the policy can import it; rebuilding a question from its seed is the learner's and the checker's business.
 //
-// The parameters are the simulation's, not fitted: no class has answered yet. Once one has, fitIdeas in ideas.ts on
-// the export is the fit to put here.
+// The parameters are the simulation's, not fitted: no class has answered yet. Once one has, fitIdeasByLikelihood in
+// ideas.ts on the export is the fit to put here: fitIdeas, the heuristic, fits each idea as less often known than it is.
 import type { MistakeId } from "../math/mistakes.ts";
 import type { Exercise } from "../math/practice.ts";
 import type { SkillId } from "../math/practiceSkills.ts";

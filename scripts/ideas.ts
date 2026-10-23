@@ -23,9 +23,11 @@
 //                           first listed (first), nothing (none), or each at even odds (random)
 //   --assume 0.7,0.05       the rates the blamed forms take the ticks to have, when not the world's own; "fit" fits them
 //                           on the training learners' ticks
+//   --idea-fit likelihood   fit each idea's init and learn on the conjunctive model's own likelihood, not by the
+//                           heuristic that takes a wrong answer as wrong on every idea the question needed
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
 //   --json     machine-readable output
-import { compareIdeas, DEFAULT_IDEAS, IDEA_SKILLS, ideasOf, simulateIdeas, TICK_STYLES, type IdeasComparison, type IdeaSkill, type TickStyle } from "../src/model/ideas.ts";
+import { compareIdeas, DEFAULT_IDEAS, type IdeaFitting, IDEA_SKILLS, ideasOf, simulateIdeas, TICK_STYLES, type IdeasComparison, type IdeaSkill, type TickStyle } from "../src/model/ideas.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import { BEYOND_THRESHOLDS, FINE_THRESHOLDS, PRECISION_TARGET, type AtPrecision } from "../src/model/mastery.ts";
 
@@ -81,6 +83,8 @@ const base = {
   tickStyle: style(),
   seed: whole("--seed", DEFAULT_IDEAS.seed),
 };
+const fitting = opt("--idea-fit", "heuristic") as IdeaFitting;
+if (fitting !== "heuristic" && fitting !== "likelihood") fail("--idea-fit must be heuristic or likelihood");
 const testShare = share("--test-share", 0.2);
 const target = share("--target", PRECISION_TARGET);
 const resamples = whole("--resamples", 2000);
@@ -98,11 +102,11 @@ for (const learnRate of rates)
         const mine = test.filter((p) => p.skill === skill);
         const knownAtEnd = mine.filter((p) => p.known[p.known.length - 1]).length / mine.length;
         const ideasPerQuestion = mine.reduce((s, p) => s + p.needs.reduce((t, n) => t + n.length, 0), 0) / mine.reduce((s, p) => s + p.needs.length, 0);
-        results.push({ learnRate, isolateRate, length, knownAtEnd, ideasPerQuestion, ...compareIdeas(train, test, skill, target, resamples, base.seed, thresholds, assumed) });
+        results.push({ learnRate, isolateRate, length, knownAtEnd, ideasPerQuestion, ...compareIdeas(train, test, skill, target, resamples, base.seed, thresholds, assumed, fitting) });
       }
     }
 // Written with a single write, not console.log and process.exit: a large JSON on a pipe is cut off by an exit before it has drained.
-if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, assumed: assumed ?? null, lengths, learnRates: rates, isolateRates: isolates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
+if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, assumed: assumed ?? null, fitting, lengths, learnRates: rates, isolateRates: isolates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
 else report();
 
 function report() {
@@ -122,6 +126,7 @@ function report() {
     const styled = base.tickStyle ? `; ${pct(base.tickStyle.share)} of students tick by the style "${base.tickStyle.kind}" instead` : "";
     console.log(`after any other wrong answer the student ticks what was hard: a missing idea ${pct(base.checklist.hit)} of the time, a known one ${pct(base.checklist.falseAlarm)}${styled}${assumes}`);
   }
+  if (fitting === "likelihood") console.log("each idea's init and learn fitted on the conjunctive model's own likelihood");
   console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
   for (const r of results) {
     const alone = r.isolateRate ? `, ${pct(r.isolateRate)} of questions asking for one idea alone` : "";
@@ -135,6 +140,7 @@ function report() {
     if (r.carryingSaves) console.log(`  carried minus blamed: ${answers(r.carryingSaves.estimate)} answers ${span(r.carryingSaves.interval)}`);
     const names = ["BKT P(known)", "BKT P(right)", "EMA", "per idea", "blamed", "carried"];
     console.log(`  Brier score against the truth after every answer: ${r.calibration.map((c, i) => `${names[i]} ${c.brier.toFixed(3)}`).join(", ")}`);
+    console.log(`  each idea's own P(known), carried, against the truth: Brier ${r.ideaCalibration[0].brier.toFixed(3)} after every answer, ${r.ideaCalibration[1].brier.toFixed(3)} at the wrong answers the checklist asks after`);
     const d = r.diagnosis;
     console.log(`  the one missing idea found (of ${d[0].moments} moments; chance ${pct(d[0].chance)}): per idea ${pct(d[0].right)}, blamed ${pct(d[1].right)}, carried ${pct(d[2].right)}`);
     if (r.fittedTicks) console.log(`  the checklist's rates fitted on the training learners: a missing idea ticked ${pct(r.fittedTicks.hit)} of the time, a known one ${pct(r.fittedTicks.falseAlarm)}`);
