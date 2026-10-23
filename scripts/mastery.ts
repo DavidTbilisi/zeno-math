@@ -19,12 +19,12 @@ import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import {
-  agreement, ALL_SIM_SKILLS, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, FINE_THRESHOLDS, fitRules,
+  agreement, ALL_SIM_SKILLS, compareAfter, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, FINE_THRESHOLDS, fitRules,
   judge, MASTERED_AT, masteryCalibration, practicesFrom,
-  PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff, usualRules,
-  type AtCost, type AtPrecision, type Calibration, type CurvePoint, type MasteryRule, type Practice, type PracticeParams,
+  PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, tradeOff, usualRules,
+  type AtCost, type AtPrecision, type Calibration, type CurvePoint, type PracticeParams,
 } from "../src/model/mastery.ts";
-import { logisticRule, logisticScores } from "../src/model/logistic.ts";
+import { heldOutLogisticRule } from "../src/model/logistic.ts";
 import { isSimSkill, SIM_SKILLS } from "../src/model/simulate.ts";
 
 const args = process.argv.slice(2);
@@ -71,16 +71,10 @@ function realAnswers(file: string) {
   // The logistic model's score (src/model/logistic.ts), which reads the student's answers on every skill. Its threshold
   // is the one costing what the streak rule costs on training students held out from its fit, so that it too is set
   // with no truth and without the test students.
-  const areaOf = (k: string) => areas[k] ?? "other";
-  const answers = splitByStudent(observations, testShare, seed);
-  const inner = splitByStudent(answers.train, testShare, seed + 1);
-  const innerPractices = practicesFrom(inner.test);
-  const innerScores = logisticScores(inner.train, inner.test, { areaOf });
-  const threshold = thresholdForCost((t) => logisticRule(innerScores, t), innerPractices, judge(streakRule(streak), innerPractices).cost);
-  const logistic = logisticRule(logisticScores(answers.train, answers.test, { areaOf }), threshold);
+  const { rule: logistic, threshold } = heldOutLogisticRule(observations, { testShare, seed, streak, params: { areaOf: (k) => areas[k] ?? "other" } });
   const agree = [agreement(bkt, rules[2], test), agreement(ema, rules[2], test), agreement(bkt, ema, test)];
   const after = [...rules, logistic].map((r) => rightAfter(r, test));
-  const against = rules.map((r) => versus(logistic, r, test));
+  const against = rules.map((r) => compareAfter(logistic, r, test, resamples, seed));
   if (json) return console.log(JSON.stringify({ source, testShare, seed, ema: fitted.ema, practices: test.length, agreement: agree, after, logistic: { threshold, against } }, null, 2));
   console.log(`${source}: ${test.length.toLocaleString("en")} held-out practices (student and skill); EMA α ${fitted.ema.alpha}, start ${fitted.ema.start.toFixed(3)}\n`);
   console.log("agreement                 both    only first  only second  neither  gap (answers)");
@@ -95,33 +89,6 @@ function realAnswers(file: string) {
 /** A difference in shares, in percentage points with its sign. */
 function signed(x: number) {
   return `${x >= 0 ? "+" : "−"}${Math.abs(100 * x).toFixed(1)}`;
-}
-/**
- * The first rule minus the second on the same practices: the share right of the next three answers after each
- * declares mastery, and the mean answers before it (a practice never declared counting its full length), each with a
- * 95 % interval from resampling students.
- */
-function versus(first: MasteryRule, second: MasteryRule, practices: readonly Practice[]) {
-  const each = (rule: MasteryRule) =>
-    practices.map((p) => {
-      const at = rule.declare(p.skill, p.answers, p);
-      let right = 0, n = 0;
-      if (at !== null) for (let i = at; i < Math.min(p.answers.length, at + 3); i++) (n++, (right += p.answers[i]));
-      return { right, n, cost: at ?? p.answers.length };
-    });
-  const a = each(first), b = each(second);
-  const stats = (indices: readonly number[]) => {
-    let ra = 0, na = 0, rb = 0, nb = 0, cost = 0;
-    for (const i of indices) (ra += a[i].right), (na += a[i].n), (rb += b[i].right), (nb += b[i].n), (cost += a[i].cost - b[i].cost);
-    return { right: ra / na - rb / nb, cost: cost / indices.length };
-  };
-  const all = stats(practices.map((_, i) => i));
-  return {
-    rule: second.name,
-    ...all,
-    rightInterval: bootstrapByStudent(practices, (ix) => stats(ix).right, resamples, seed),
-    costInterval: bootstrapByStudent(practices, (ix) => stats(ix).cost, resamples, seed),
-  };
 }
 
 /** H2: every world on its own, never pooled. */

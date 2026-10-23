@@ -4,8 +4,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { Observation } from "../src/model/elo.ts";
 import { evaluateHeldOut, splitByStudent } from "../src/model/evaluate.ts";
-import { LogisticModel, logisticRule, logisticScores } from "../src/model/logistic.ts";
-import { agreement, practicesFrom, rightAfter, streakRule } from "../src/model/mastery.ts";
+import { heldOutLogisticRule, LogisticModel, logisticRule, logisticScores } from "../src/model/logistic.ts";
+import { agreement, compareAfter, judge, practicesFrom, rightAfter, streakRule, thresholdForCost } from "../src/model/mastery.ts";
 import { rng } from "../src/model/random.ts";
 
 const answer = (student: string, skill: string, correct: boolean, item?: string): Observation => ({ student, skill, level: 2, correct, ...(item ? { item } : {}) });
@@ -108,4 +108,35 @@ test("as a mastery rule: a score after every held-out answer, from the answers a
   // H3's comparisons pass each practice to the rule.
   assert.equal(rightAfter(logisticRule(scores, 0), practices).practices, 2);
   assert.equal(agreement(logisticRule(scores, 0), streakRule(1), practices).both, 2 / 3, "b never answers x right");
+});
+
+test("H3's logistic rule: its threshold costs on the inner held-out students what the streak rule costs there", () => {
+  const all = twoQuestions(300, 5);
+  const { threshold, rule, scores } = heldOutLogisticRule(all, { seed: 1, streak: 2 });
+  assert.ok(threshold > 0.5 && threshold < 1, `${threshold}`);
+  assert.equal(rule.name, logisticRule(scores, threshold).name);
+  const inner = splitByStudent(splitByStudent(all, 0.2, 1).train, 0.2, 2);
+  const innerRule = logisticRule(logisticScores(inner.train, inner.test), threshold);
+  const innerPractices = practicesFrom(inner.test);
+  // The threshold is the one costing, there, what the streak rule costs (as near as a threshold of 0.5 or more can).
+  assert.equal(threshold, thresholdForCost((t) => logisticRule(logisticScores(inner.train, inner.test), t), innerPractices, judge(streakRule(2), innerPractices).cost));
+  assert.ok(judge(innerRule, innerPractices).cost >= judge(streakRule(2), innerPractices).cost - 0.25);
+  // Its scores are for the held-out students only.
+  const held = new Set(splitByStudent(all, 0.2, 1).test.map((o) => o.student));
+  assert.ok([...scores.keys()].every((k) => held.has(k.split("\u0000")[0])));
+});
+
+test("one rule against another: the next answers' share right and the answers before, with intervals over students", () => {
+  const practices = practicesFrom([
+    ...[..."0111"].map((c) => answer("a", "x", c === "1")),
+    ...[..."1100"].map((c) => answer("b", "x", c === "1")),
+    ...[..."000"].map((c) => answer("c", "x", c === "1")),
+  ]);
+  // streak 1 declares at 2 (a) and 1 (b), never for c; streak 2 at 3 (a) and 2 (b).
+  const v = compareAfter(streakRule(1), streakRule(2), practices, 200, 1);
+  assert.equal(v.rule, "streak 2");
+  assert.equal(v.cost, (2 - 3 + (1 - 2) + 0) / 3);
+  assert.equal(v.right, 3 / 5 - 1 / 3, "a's 1 1 and b's 1 0 0 against a's 1 and b's 0 0");
+  assert.ok(v.rightInterval[0] <= v.right && v.right <= v.rightInterval[1]);
+  assert.ok(v.costInterval[0] <= v.cost && v.cost <= v.costInterval[1]);
 });

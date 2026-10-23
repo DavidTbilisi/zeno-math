@@ -1,0 +1,5 @@
+rule,kind,cost,declared,right_after,answers_after,practices_after
+"BKT θ 0.95","BKT",3.2489,0.686,0.7859,9532,3905
+"EMA θ 0.6962","EMA",4.0163,0.4798,0.8045,6874,2691
+"streak 3","streak",4.0491,0.4847,0.7717,6820,2662
+"logistic θ 0.7902","logistic",3.7368,0.6186,0.8171,8225,3390

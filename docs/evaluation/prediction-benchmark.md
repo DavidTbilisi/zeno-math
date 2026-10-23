@@ -153,7 +153,10 @@ Caveats:
 npm run import-assistments -- skill_builder_data.csv --out data/assistments.json   # keeps problem ids now
 npm run model -- --observations data/assistments.json
 npm run mastery -- --observations data/assistments.json     # H3, with the logistic rule
+npm run benchmark                                           # every table here, as docs/results/benchmark-*.csv
 ```
+
+The dashboard's Benchmark tab draws those CSVs (`npm run dashboard`).
 
 ## Sources
 

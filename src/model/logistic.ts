@@ -18,8 +18,8 @@
 // to it, by the same shrinking step U(n) = itemStep / (1 + 0.05·n) the Elo model uses (src/model/elo.ts).
 import { areaOf, type SkillId } from "../math/practiceSkills.ts";
 import type { Observation } from "./elo.ts";
-import type { Predictor } from "./evaluate.ts";
-import type { MasteryRule, Practice } from "./mastery.ts";
+import { splitByStudent, type Predictor } from "./evaluate.ts";
+import { judge, practicesFrom, streakRule, thresholdForCost, type MasteryRule, type Practice } from "./mastery.ts";
 import { rng } from "./random.ts";
 
 export type LogisticParams = {
@@ -208,3 +208,20 @@ export const logisticRule = (scores: ReadonlyMap<string, readonly number[]>, thr
     return null;
   },
 });
+/**
+ * The logistic rule on the held-out students of a split, as H3 compares it: fitted on the training students, with the
+ * threshold that costs what the streak rule costs on training students held out from the fit (split off by seed + 1),
+ * so no truth and no held-out student goes into it.
+ */
+export function heldOutLogisticRule(
+  observations: readonly Observation[],
+  { testShare = 0.2, seed = 1, streak = 3, params = {} }: { testShare?: number; seed?: number; streak?: number; params?: Partial<LogisticParams> } = {},
+) {
+  const answers = splitByStudent(observations, testShare, seed);
+  const inner = splitByStudent(answers.train, testShare, seed + 1);
+  const innerPractices = practicesFrom(inner.test);
+  const innerScores = logisticScores(inner.train, inner.test, params);
+  const threshold = thresholdForCost((t) => logisticRule(innerScores, t), innerPractices, judge(streakRule(streak), innerPractices).cost);
+  const scores = logisticScores(answers.train, answers.test, params);
+  return { threshold, rule: logisticRule(scores, threshold), scores };
+}
