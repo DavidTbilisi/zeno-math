@@ -1167,8 +1167,8 @@ The full description is in **[docs/study.md](docs/study.md)**:
 
 - how a study runs, and the API calls behind it;
 - the analysis, fixed in advance (`npm run analyse`);
-- the learner model, judged on held-out students against PFA, BKT and baselines, on simulated classes and on the
-  public ASSISTments data (`npm run model`);
+- the learner model, judged on held-out students against a logistic model, PFA, BKT and baselines, on simulated
+  classes and on the public ASSISTments data (`npm run model`; `docs/evaluation/prediction-benchmark.md`);
 - the simulation study across three kinds of simulated learner, and its power analysis (`npm run simulate`);
 - a dry run of the whole study through the real server (`npm run dry-run`);
 - the answer checker against a teacher's marking, and how often it names the mistake a teacher sees (`npm run checker-agreement`);
@@ -1263,6 +1263,7 @@ server/research.ts        class study: classes, students randomised to a conditi
 src/learner.ts            the student's side of the study: question log, attempt records, outbox kept until sent
 src/model/elo.ts          learner model: Elo ratings of students (overall / area / skill) and questions, mastery
 src/model/evaluate.ts     replay, metrics (log-loss, RMSE, AUC, calibration), baselines, reading the CSV export
+src/model/logistic.ts     a logistic student model (counts, recency, gap, question difficulty) and a mastery rule on its score
 src/model/simulate.ts     synthetic learners with a known truth, for tests and the simulation study
 src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
@@ -1277,7 +1278,7 @@ src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashb
 src/model/datasets.ts     public data sets (ASSISTments) as observations, read as a stream
 src/model/analysis.ts     the study's planned analysis: ANCOVA, Welch's test, least squares, scores from the export
 src/math/distributions.ts normal, t and χ² tails and their inverses (no imports, for the server and scripts too)
-scripts/evaluate-model.ts `npm run model`: the model against PFA, BKT and baselines on held-out students
+scripts/evaluate-model.ts `npm run model`: the model against the logistic model, PFA, BKT and baselines on held-out students
 scripts/import-assistments.ts  `npm run import-assistments`: the ASSISTments file as observations
 scripts/simulate-study.ts `npm run simulate`: the conditions on simulated classes, across worlds and assumptions; power
 scripts/analyse-study.ts  `npm run analyse`: the planned analysis on the tests export
