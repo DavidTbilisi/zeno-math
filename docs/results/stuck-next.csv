@@ -1,0 +1,11 @@
+visits,after,answers,right,usual
+"not stuck","wrong try, no hint",24718,0.6749,0.639
+"not stuck","scaffolding first",2590,0.3587,0.6277
+"not stuck","wrong try then hints",10005,0.5474,0.5971
+"not stuck","right",82751,0.8306,0.6851
+"not stuck","hint first",7756,0.3463,0.6141
+"stuck","wrong try, no hint",10873,0.4121,0.5819
+"stuck","right",11920,0.4801,0.5915
+"stuck","wrong try then hints",4640,0.3627,0.5645
+"stuck","scaffolding first",2619,0.1165,0.577
+"stuck","hint first",5758,0.1693,0.5658
