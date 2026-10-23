@@ -26,6 +26,7 @@
     "dry-run": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dry-run-study.ts",
     "checker-agreement": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/checker-agreement.ts",
     "mistakes": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/mistakes.ts",
+    "dashboard": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dashboard.ts",
     "figures": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/thesis-figures.ts",
     "thesis-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts",
     "talk-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts --talk",
