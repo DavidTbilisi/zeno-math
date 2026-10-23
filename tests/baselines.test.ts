@@ -43,12 +43,12 @@ const ASSISTMENTS = [
 test("the ASSISTments importer keeps main problems with a skill and a 0/1 result, once per skill, in the order given", async () => {
   const d = await fromAssistments(csvRecords([ASSISTMENTS.join("\n")]));
   assert.deepEqual(d.counts, { rows: 10, kept: 4, students: 2, skills: 4 });
-  // The problem is the order_id: the two skills of problem 10 share it.
+  // The problem is the order_id: the two skills of problem 10 share it. The item is the problem_id.
   assert.deepEqual(d.observations, [
-    { student: "u1", skill: "Equation Solving Two or Fewer Steps", level: 2, correct: false, problem: "10" },
-    { student: "u1", skill: "Area Rectangle", level: 2, correct: false, problem: "10" },
-    { student: "u2", skill: "Addition and Subtraction Fractions", level: 2, correct: true, problem: "22" },
-    { student: "u1", skill: "Box and Whisker", level: 2, correct: true, problem: "30" },
+    { student: "u1", skill: "Equation Solving Two or Fewer Steps", level: 2, correct: false, problem: "10", item: "2" },
+    { student: "u1", skill: "Area Rectangle", level: 2, correct: false, problem: "10", item: "2" },
+    { student: "u2", skill: "Addition and Subtraction Fractions", level: 2, correct: true, problem: "22", item: "4" },
+    { student: "u1", skill: "Box and Whisker", level: 2, correct: true, problem: "30", item: "1" },
   ]);
   assert.deepEqual(d.areas, {
     "Box and Whisker": "data",
@@ -60,6 +60,9 @@ test("the ASSISTments importer keeps main problems with a skill and a 0/1 result
   // A file written before problems were kept reads back without them.
   const older = { ...toFile(d), rows: toFile(d).rows.map((r) => r.slice(0, 4) as [string, string, number, 0 | 1]) };
   assert.deepEqual(fromFile(older).observations.map((o) => o.problem), [undefined, undefined, undefined, undefined]);
+  // And one written before items were kept, without those.
+  const noItems = { ...toFile(d), rows: toFile(d).rows.map((r) => r.slice(0, 5) as [string, string, number, 0 | 1, string]) };
+  assert.deepEqual(fromFile(noItems).observations.map((o) => [o.problem, o.item]), [["10", undefined], ["10", undefined], ["22", undefined], ["30", undefined]]);
   await assert.rejects(fromAssistments(csvRecords(["a,b\n1,2"])), /not an ASSISTments file/);
 });
 

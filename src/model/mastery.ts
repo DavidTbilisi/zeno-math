@@ -378,8 +378,8 @@ export type Agreement = {
 export function agreement(first: MasteryRule, second: MasteryRule, practices: readonly Practice[]): Agreement {
   let both = 0, onlyFirst = 0, onlySecond = 0, gap = 0;
   for (const p of practices) {
-    const a = first.declare(p.skill, p.answers);
-    const b = second.declare(p.skill, p.answers);
+    const a = first.declare(p.skill, p.answers, p);
+    const b = second.declare(p.skill, p.answers, p);
     if (a !== null && b !== null) (both++, (gap += a - b));
     else if (a !== null) onlyFirst++;
     else if (b !== null) onlySecond++;
@@ -395,7 +395,7 @@ export function agreement(first: MasteryRule, second: MasteryRule, practices: re
 export function rightAfter(rule: MasteryRule, practices: readonly Practice[], k = 3) {
   let withAnswers = 0, answers = 0, right = 0;
   for (const p of practices) {
-    const at = rule.declare(p.skill, p.answers);
+    const at = rule.declare(p.skill, p.answers, p);
     if (at === null || at >= p.answers.length) continue;
     withAnswers++;
     for (let i = at; i < Math.min(p.answers.length, at + k); i++) (answers++, (right += p.answers[i]));

@@ -166,6 +166,10 @@ the held-out students' answers one by one, learning from each after predicting i
 accuracy and calibration for:
 
 - the model, and versions of it without its middle layers (ablations);
+- a logistic model (`src/model/logistic.ts`), the best logistic model of Gervet et al. (2020) with three features
+  from memory research added: each student's counts on the skill, its area and overall on a log scale, a recency
+  record, the answers since the skill was last practised, and a difficulty per question where the data names its
+  questions (shown without one too). It is fitted on the training students; see `docs/evaluation/prediction-benchmark.md`;
 - two standard student models:
   - *PFA*, Performance Factors Analysis (Pavlik, Cen & Koedinger 2009): a logistic regression on each skill's earlier
     right and wrong answers.
@@ -189,6 +193,7 @@ On the built-in simulation (120 students × 150 questions; 18 held out):
 | Elo, three layers | 0.550 | 0.789 |
 | Elo, no area layer | 0.558 | 0.782 |
 | Elo, skill layer only | 0.597 | 0.741 |
+| logistic | 0.549 | 0.791 |
 | PFA | 0.642 | 0.678 |
 | BKT | 0.641 | 0.679 |
 | per student & skill rate | 0.654 | 0.653 |
@@ -215,6 +220,18 @@ first-attempt result, in the order they were answered. A problem with two skills
 question is level 2, since the data has no levels. The model's area layer uses a rough grouping of the skill names
 into topics (number, algebra, geometry, data, other); `elo, one area` in the output shows what that grouping adds.
 Report this table: it is the evidence on real answers.
+
+On the 853 held-out students (51,452 answers; a file imported before problem ids were kept needs importing again for
+the logistic model's question difficulties):
+
+| model | log-loss | AUC |
+|---|---|---|
+| Elo, three layers | 0.5607 | 0.724 |
+| Elo, one area | 0.5581 | 0.728 |
+| logistic | 0.5221 | 0.776 |
+| logistic, no question difficulty | 0.5457 | 0.744 |
+| PFA | 0.5814 | 0.701 |
+| BKT | 0.5690 | 0.711 |
 
 ## Simulation study
 

@@ -15,6 +15,7 @@ import { EloModel, type EloParams, type Observation } from "../src/model/elo.ts"
 import {
   BktModel, EmaModel, evaluate, evaluateHeldOut, globalRate, itemRate, observationsFromCsv, PfaModel, splitByStudent, studentSkillRate, type Metrics, type Predictor,
 } from "../src/model/evaluate.ts";
+import { LogisticModel } from "../src/model/logistic.ts";
 import { simulateRandom } from "../src/model/simulate.ts";
 
 const args = process.argv.slice(2);
@@ -60,12 +61,16 @@ if (!train.length || !test.length) {
 // A data set's own skills are grouped by its topics; Zeno's by its areas (the model's default).
 const own: Partial<EloParams> = areas ? { areaOf: (k) => areas[k] ?? "other" } : {};
 const elo = (name: string, params: Partial<EloParams> = {}) => Object.assign(new EloModel({ ...own, ...params }), { name });
-// The model, what each layer of ability adds (ablations), two standard student models, and what simply counting gets.
+// The model, what each layer of ability adds (ablations), the logistic model (with and without a difficulty per
+// question, where the data names its questions), two standard student models, and what simply counting gets.
+const items = observations.some((o) => o.item !== undefined);
 const models: Predictor[] = [
   elo("elo"),
   elo("elo, no area layer", { weights: { global: 0.4, area: 0, skill: 1 } }),
   elo("elo, skill layer only", { weights: { global: 0, area: 0, skill: 1 } }),
   ...(areas ? [elo("elo, one area", { areaOf: () => "all" })] : []),
+  new LogisticModel(own),
+  ...(items ? [new LogisticModel({ ...own, items: false }, "logistic, no question difficulty")] : []),
   new PfaModel(),
   new BktModel(),
   new EmaModel(),
