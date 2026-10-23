@@ -7,6 +7,7 @@ public/fonts
 test-results
 playwright-report
 dry-run
+dashboard
 docs/thesis/thesis.pdf
 docs/thesis/title-defense.pdf
 graphify-out
