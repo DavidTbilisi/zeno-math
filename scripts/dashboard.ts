@@ -1,5 +1,5 @@
-// The data behind the results dashboard (a claude.ai artifact): chapter 3's tables as rows, the simulation CSVs in
-// docs/results, each research question's verdict, and learning profiles drawn by the simulator itself. The tables are
+// The data behind the results dashboard (a claude.ai artifact): chapter 3's tables as rows, the simulation and calibration
+// CSVs in docs/results, each research question's verdict, and learning profiles drawn by the simulator itself. The tables are
 // read from the thesis as printed, so the dashboard shows what the thesis says; remake a table with its own command
 // (Appendix B) and the thesis first, then this.
 //
@@ -160,6 +160,9 @@ const RESULT_FILES = [
   { id: "power_main", file: "docs/results/power.csv", title: "Power, main design", description: "Share of 100 simulated studies significant at p < 0.05, 12 skills, 60 questions, 12-question tests (npm run simulate -- --power)." },
   { id: "power_focused", file: "docs/results/power-focused.csv", title: "Power, focused design", description: "4 skills, 120 questions, 24-question tests, adaptive aiming at 75 %." },
   { id: "power_focused60", file: "docs/results/power-focused-60.csv", title: "Power, focused at 60 %", description: "4 skills, 120 questions, 24-question tests, adaptive aiming at 60 %." },
+  { id: "calib_real", file: "docs/results/calibration-assistments.csv", title: "Calibration on ASSISTments", description: "Each model's predicted chance of a right answer against the share right, in ten bins, on the 51,452 first answers of 853 held-out students (npm run model -- --observations data/assistments.json --fit --calibration)." },
+  { id: "calib_sim", file: "docs/results/calibration-simulated.csv", title: "Calibration on a simulated class", description: "Each model's predicted chance against the share right, in ten bins, on a held-out share of 120 simulated students' 18,000 answers (npm run model -- --simulate --fit --calibration)." },
+  { id: "calib_mastery", file: "docs/results/calibration-mastery.csv", title: "Mastery scores against the truth", description: "Each mastery score's mean against the share of learners who truly knew the skill, in ten bins, after every answer of the held-out practices, per world and learning rate (npm run mastery -- --calibration); the bins behind Table 3.8." },
 ];
 
 export type ManifestEntry = { id: string; file: string; title: string; description: string };
