@@ -1,0 +1,111 @@
+skill,topic,visits,stuck,answers,stuck_answers,share_stuck,share_of_stuck_answers
+"Conversion of Fraction Decimals Percents","number",3604,253,18740,4297,0.0702,0.1008
+"Addition and Subtraction Integers","number",2892,186,12741,3832,0.0643,0.0899
+"Equation Solving Two or Fewer Steps","algebra",4330,185,17311,3239,0.0427,0.076
+"Proportion","algebra",1863,110,8063,1939,0.059,0.0455
+"Circle Graph","data",1386,105,6208,1815,0.0758,0.0426
+"Addition and Subtraction Fractions","number",2802,87,11334,1457,0.031,0.0342
+"Counting Methods","data",1059,99,4867,1427,0.0935,0.0335
+"Addition and Subtraction Positive Decimals","number",1043,66,4320,1323,0.0633,0.031
+"Pythagorean Theorem","geometry",1461,94,6611,1315,0.0643,0.0308
+"Equation Solving More Than Two Steps","algebra",649,81,4772,1291,0.1248,0.0303
+"76","other",552,74,3050,1272,0.1341,0.0298
+"Finding Percents","number",1200,76,6055,1199,0.0633,0.0281
+"Unit Rate","algebra",853,63,3183,1016,0.0739,0.0238
+"Multiplication Fractions","number",1409,61,5547,977,0.0433,0.0229
+"Write Linear Equation from Graph","data",348,57,1983,912,0.1638,0.0214
+"Ordering Positive Decimals","number",2380,54,7317,889,0.0227,0.0209
+"Ordering Fractions","number",1499,50,6117,691,0.0334,0.0162
+"Divisibility Rules","number",338,42,2809,683,0.1243,0.016
+"Probability of Two Distinct Events","data",804,44,3380,626,0.0547,0.0147
+"Probability of a Single Event","data",1508,49,6148,571,0.0325,0.0134
+"Solving for a variable","algebra",540,33,1792,550,0.0611,0.0129
+"Calculations with Similar Figures","geometry",1291,38,4423,530,0.0294,0.0124
+"Division Fractions","number",903,33,4029,505,0.0365,0.0118
+"Order of Operations All","algebra",1001,31,3338,487,0.031,0.0114
+"Stem and Leaf Plot","data",863,30,3828,466,0.0348,0.0109
+"Table","data",2300,31,6834,446,0.0135,0.0105
+"Ordering Integers","number",1026,28,3532,425,0.0273,0.01
+"Box and Whisker","data",1050,24,3957,421,0.0229,0.0099
+"Number Line","number",480,28,1895,417,0.0583,0.0098
+"Least Common Multiple","number",658,27,3256,393,0.041,0.0092
+"Subtraction Whole Numbers","number",1539,30,5770,390,0.0195,0.0091
+"Percent Of","number",1285,28,4240,388,0.0218,0.0091
+"Venn Diagram","data",1699,30,5809,387,0.0177,0.0091
+"Write Linear Equation from Ordered Pairs","algebra",228,18,949,385,0.0789,0.009
+"Pattern Finding","algebra",651,21,1682,370,0.0323,0.0087
+"Multiplication and Division Integers","number",2949,27,6874,367,0.0092,0.0086
+"Unit Conversion Within a System","geometry",400,22,1477,326,0.055,0.0076
+"Multiplication and Division Positive Decimals","number",385,19,1970,305,0.0494,0.0072
+"Exponents","algebra",799,18,2947,290,0.0225,0.0068
+"94","other",366,17,1533,263,0.0464,0.0062
+"Scientific Notation","algebra",297,18,1888,261,0.0606,0.0061
+"Volume Sphere","geometry",186,17,774,215,0.0914,0.005
+"Volume Cylinder","geometry",431,15,1285,206,0.0348,0.0048
+"Surface Area Rectangular Prism","geometry",461,15,1480,201,0.0325,0.0047
+"Square Root","algebra",637,14,2561,199,0.022,0.0047
+"Absolute Value","algebra",886,15,3113,197,0.0169,0.0046
+"Addition Whole Numbers","number",1333,14,3875,172,0.0105,0.004
+"Angles - Obtuse, Acute, and Right","geometry",53,10,305,168,0.1887,0.0039
+"Area Irregular Figure","geometry",195,11,750,160,0.0564,0.0038
+"Circumference","geometry",688,10,1769,137,0.0145,0.0032
+"Effect of Changing Dimensions of a Shape Prportionally","other",214,9,1099,134,0.0421,0.0031
+"Area Trapezoid","geometry",347,10,913,128,0.0288,0.003
+"Estimation","number",221,9,1584,121,0.0407,0.0028
+"96","other",287,8,843,115,0.0279,0.0027
+"Order of Operations +,-,/,* () positive reals","algebra",974,6,2339,113,0.0062,0.0027
+"Median","data",585,8,1451,110,0.0137,0.0026
+"Area Circle","geometry",462,9,1144,108,0.0195,0.0025
+"Rounding","number",354,6,951,88,0.0169,0.0021
+"Solving Systems of Linear Equations","algebra",51,7,234,85,0.1373,0.002
+"91","other",221,6,632,81,0.0271,0.0019
+"Surface Area Cylinder","geometry",135,6,491,76,0.0444,0.0018
+"Complementary and Supplementary Angles","geometry",715,6,1524,73,0.0084,0.0017
+"Polynomial Factors","algebra",27,4,392,67,0.1481,0.0016
+"Interior Angles Figures with More than 3 Sides","geometry",402,4,995,55,0.01,0.0013
+"Histogram as Table or Graph","data",610,3,1804,45,0.0049,0.0011
+"Algebraic Solving","algebra",105,4,389,45,0.0381,0.0011
+"Reflection","geometry",183,3,459,38,0.0164,0.0009
+"Rotations","geometry",166,3,427,36,0.0181,0.0008
+"Perimeter of a Polygon","geometry",304,3,595,35,0.0099,0.0008
+"Simplifying Expressions positive exponents","algebra",20,2,108,35,0.1,0.0008
+"Algebraic Simplification","algebra",15,2,90,34,0.1333,0.0008
+"Parts of a Polyomial, Terms, Coefficient, Monomial, Exponent, Variable","algebra",25,2,77,32,0.08,0.0008
+"101","other",450,2,1332,26,0.0044,0.0006
+"Translations","geometry",198,2,450,24,0.0101,0.0006
+"Finding Slope From Equation","algebra",31,1,102,24,0.0323,0.0006
+"Scale Factor","number",106,2,288,23,0.0189,0.0005
+"Scatter Plot","data",638,1,1859,13,0.0016,0.0003
+"Angles on Parallel Lines Cut by a Transversal","geometry",174,1,278,13,0.0057,0.0003
+"Write Linear Equation from Situation","algebra",188,1,906,12,0.0053,0.0003
+"Percents","number",41,1,117,11,0.0244,0.0003
+"Mean","data",392,1,732,10,0.0026,0.0002
+"Solving Systems of Linear Equations by Graphing","data",58,1,353,10,0.0172,0.0002
+"367","other",28,1,131,10,0.0357,0.0002
+"Volume Rectangular Prism","geometry",547,0,926,0,0,0
+"Congruence","geometry",474,0,587,0,0,0
+"Range","data",429,0,729,0,0,0
+"D.4.8-understanding-concept-of-probabilities","other",318,0,456,0,0,0
+"Area Rectangle","geometry",309,0,483,0,0,0
+"105","other",261,0,316,0,0,0
+"Nets of 3D Figures","geometry",249,0,280,0,0,0
+"Area Triangle","geometry",210,0,286,0,0,0
+"Prime Number","number",178,0,646,0,0,0
+"Greatest Common Factor","number",164,0,237,0,0,0
+"97_99_105","other",118,0,147,0,0,0
+"Interior Angles Triangle","geometry",118,0,181,0,0,0
+"Area Parallelogram","geometry",103,0,115,0,0,0
+"Choose an Equation from Given Information","algebra",44,0,89,0,0,0
+"Rate","algebra",39,0,91,0,0,0
+"Interpreting Coordinate Graphs","data",33,0,33,0,0,0
+"Midpoint","other",30,0,32,0,0,0
+"Percent Discount","number",29,0,47,0,0,0
+"Recognize Linear Pattern","algebra",18,0,36,0,0,0
+"Equivalent Fractions","number",14,0,15,0,0,0
+"Quadratic Formula to Solve Quadratic Equation","algebra",14,0,32,0,0,0
+"104","other",10,0,10,0,0,0
+"Distributive Property","algebra",9,0,18,0,0,0
+"Reading a Ruler or Scale","other",5,0,5,0,0,0
+"Recognize Quadratic Pattern","algebra",5,0,8,0,0,0
+"Finding Slope from Ordered Pairs","algebra",2,0,5,0,0,0
+"Finding Slope From Situation","algebra",2,0,9,0,0,0

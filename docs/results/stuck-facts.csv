@@ -1,0 +1,17 @@
+key,label,value,usual,n
+"oracle","Answers an oracle could skip: each visit's final run of right answers",0.3248,,259399
+"oracle_one_right","The same, if the oracle must see one right answer first",0.2385,,259399
+"after_streak","Answers after a visit's first three in a row",0.1397,,259399
+"after_streak_right","Of those, right",0.8036,0.6817,32042
+"carry_yes","First answer of a later visit, an earlier visit had three in a row",0.6823,0.6781,13590
+"carry_no","First answer of a later visit, no earlier three in a row",0.7107,0.6887,12978
+"stuck_visits","Visits stuck: 10 or more answers, no three in a row in the first 10",0.0377,,70019
+"stuck_answers","Answers in stuck visits",0.1643,,259399
+"stuck_right","Answers in stuck visits, right",0.3554,0.58,38166
+"students_stuck","Students stuck at least once",0.2599,,4163
+"elsewhere_stuck","Right on their other visits, students stuck somewhere",0.7207,,135856
+"elsewhere_never","Right on their visits, students never stuck",0.7111,,80915
+"hint_first_stuck","Answers begun with a hint, stuck visits",0.1611,,42628
+"hint_first_rest","Answers begun with a hint, other visits",0.052,,216771
+"fast_stuck","Tries under 5 seconds, stuck visits",0.0925,,42628
+"fast_rest","Tries under 5 seconds, other visits",0.0579,,216771

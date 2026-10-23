@@ -1,0 +1,71 @@
+group,answer,visits,answers,right,usual
+"visits of 10 or more answers",1,4976,4446,0.3234,0.6241
+"visits of 10 or more answers",2,4976,4429,0.408,0.6232
+"visits of 10 or more answers",3,4976,4430,0.4312,0.6225
+"visits of 10 or more answers",4,4976,4417,0.439,0.6169
+"visits of 10 or more answers",5,4976,4430,0.4061,0.6162
+"visits of 10 or more answers",6,4976,4423,0.4454,0.6146
+"visits of 10 or more answers",7,4976,4434,0.4727,0.6183
+"visits of 10 or more answers",8,4976,4426,0.5081,0.6169
+"visits of 10 or more answers",9,4976,4414,0.5662,0.6232
+"visits of 10 or more answers",10,4976,4426,0.617,0.6176
+"visits of 20 or more answers",1,848,769,0.2978,0.6028
+"visits of 20 or more answers",2,848,775,0.3665,0.6084
+"visits of 20 or more answers",3,848,767,0.369,0.5906
+"visits of 20 or more answers",4,848,770,0.3831,0.5932
+"visits of 20 or more answers",5,848,768,0.4076,0.6033
+"visits of 20 or more answers",6,848,776,0.3827,0.5932
+"visits of 20 or more answers",7,848,770,0.4052,0.5895
+"visits of 20 or more answers",8,848,775,0.3819,0.5902
+"visits of 20 or more answers",9,848,772,0.4093,0.5944
+"visits of 20 or more answers",10,848,765,0.3961,0.5879
+"visits of 20 or more answers",11,848,777,0.39,0.6023
+"visits of 20 or more answers",12,848,773,0.3997,0.5967
+"visits of 20 or more answers",13,848,776,0.4356,0.5954
+"visits of 20 or more answers",14,848,775,0.4168,0.5981
+"visits of 20 or more answers",15,848,769,0.4213,0.5976
+"visits of 20 or more answers",16,848,772,0.4495,0.5945
+"visits of 20 or more answers",17,848,770,0.4779,0.5929
+"visits of 20 or more answers",18,848,761,0.5256,0.5966
+"visits of 20 or more answers",19,848,774,0.5362,0.5909
+"visits of 20 or more answers",20,848,765,0.5529,0.6038
+"stuck visits",1,2642,2356,0.1694,0.5821
+"stuck visits",2,2642,2365,0.2495,0.5868
+"stuck visits",3,2642,2360,0.2555,0.5852
+"stuck visits",4,2642,2355,0.2684,0.5821
+"stuck visits",5,2642,2357,0.2898,0.5846
+"stuck visits",6,2642,2359,0.2611,0.5808
+"stuck visits",7,2642,2367,0.3046,0.5824
+"stuck visits",8,2642,2364,0.2373,0.5738
+"stuck visits",9,2642,2344,0.3306,0.58
+"stuck visits",10,2642,2358,0.4271,0.5791
+"stuck visits of 20 or more",1,570,515,0.1806,0.5714
+"stuck visits of 20 or more",2,570,524,0.2443,0.5804
+"stuck visits of 20 or more",3,570,516,0.2306,0.5616
+"stuck visits of 20 or more",4,570,517,0.2553,0.5706
+"stuck visits of 20 or more",5,570,515,0.2602,0.5737
+"stuck visits of 20 or more",6,570,521,0.2226,0.5645
+"stuck visits of 20 or more",7,570,520,0.2538,0.5567
+"stuck visits of 20 or more",8,570,521,0.2322,0.5602
+"stuck visits of 20 or more",9,570,519,0.2659,0.5574
+"stuck visits of 20 or more",10,570,515,0.2854,0.5565
+"stuck visits of 20 or more",11,570,521,0.2975,0.5656
+"stuck visits of 20 or more",12,570,523,0.3174,0.5691
+"stuck visits of 20 or more",13,570,522,0.3352,0.5647
+"stuck visits of 20 or more",14,570,519,0.3256,0.5718
+"stuck visits of 20 or more",15,570,514,0.3424,0.5702
+"stuck visits of 20 or more",16,570,519,0.341,0.565
+"stuck visits of 20 or more",17,570,518,0.3784,0.5691
+"stuck visits of 20 or more",18,570,514,0.4163,0.5666
+"stuck visits of 20 or more",19,570,519,0.4277,0.5575
+"stuck visits of 20 or more",20,570,516,0.4554,0.578
+"not stuck, 10 or more",1,2334,2090,0.4971,0.6714
+"not stuck, 10 or more",2,2334,2064,0.5896,0.6648
+"not stuck, 10 or more",3,2334,2070,0.6314,0.665
+"not stuck, 10 or more",4,2334,2062,0.6339,0.6565
+"not stuck, 10 or more",5,2334,2073,0.5384,0.652
+"not stuck, 10 or more",6,2334,2064,0.656,0.6532
+"not stuck, 10 or more",7,2334,2067,0.6652,0.6594
+"not stuck, 10 or more",8,2334,2062,0.8186,0.6664
+"not stuck, 10 or more",9,2334,2070,0.8329,0.672
+"not stuck, 10 or more",10,2334,2068,0.8337,0.6616

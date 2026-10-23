@@ -76,18 +76,19 @@ export type Dataset = {
 };
 
 /**
- * ASSISTments rows as observations, by the usual cleaning: main problems only (original = 1, not the scaffolding
- * questions a wrong answer opens), a skill and a 0/1 first-attempt result present (a missing value may be written as
- * NA), and the same problem counted once per skill. A problem tagged with several skills becomes one observation for
- * each where the file has a row per skill, as in most knowledge-tracing work; the corrected 2009–2010 file has one
- * row per problem, under the first of its skills. Answers are put in the order they were given (order_id). Every question counts as level 2: the data has no
- * levels, and the model's level step then plays no part. Students in one class share a teacher and lessons, so the
- * class (student_class_id) is kept for analyses that resample classes rather than students.
+ * One kept ASSISTments answer with what the importer's observations leave out: the assignment it was given in, the
+ * problem, the hints asked for and the first action (0 an attempt, 1 a hint, 2 the scaffolding; ASSISTments counts
+ * the last two as wrong), and how long the first response took. Columns the file lacks are empty, 0 or NaN.
  */
-export async function fromAssistments(records: AsyncIterable<string[]>, source = "ASSISTments 2009–2010 skill builder"): Promise<Dataset> {
+export type Attempt = {
+  order: number; student: string; skill: string; correct: boolean; group: string;
+  assignment: string; problem: string; hints: number; firstAction: string; ms: number;
+};
+/** The rows fromAssistments keeps, by the same cleaning, as attempts in the order they were given. */
+export async function assistmentsAttempts(records: AsyncIterable<string[]>): Promise<{ read: number; attempts: Attempt[] }> {
   let header: string[] | null = null;
   let col: Record<string, number> = {};
-  const rows: { order: number; student: string; skill: string; correct: boolean; group: string }[] = [];
+  const rows: Attempt[] = [];
   const seen = new Set<string>();
   let read = 0;
   for await (const r of records) {
@@ -115,9 +116,27 @@ export async function fromAssistments(records: AsyncIterable<string[]>, source =
     const key = `${order}\u0000${skill}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    rows.push({ order, student, skill, correct: correct === "1", group: get("student_class_id") });
+    rows.push({
+      order, student, skill, correct: correct === "1", group: get("student_class_id"),
+      assignment: get("assignment_id"), problem: get("problem_id"), hints: Number(get("hint_count")) || 0,
+      firstAction: get("first_action"), ms: get("ms_first_response") ? Number(get("ms_first_response")) : NaN,
+    });
   }
   rows.sort((a, b) => a.order - b.order);
+  return { read, attempts: rows };
+}
+
+/**
+ * ASSISTments rows as observations, by the usual cleaning: main problems only (original = 1, not the scaffolding
+ * questions a wrong answer opens), a skill and a 0/1 first-attempt result present (a missing value may be written as
+ * NA), and the same problem counted once per skill. A problem tagged with several skills becomes one observation for
+ * each where the file has a row per skill, as in most knowledge-tracing work; the corrected 2009–2010 file has one
+ * row per problem, under the first of its skills. Answers are put in the order they were given (order_id). Every question counts as level 2: the data has no
+ * levels, and the model's level step then plays no part. Students in one class share a teacher and lessons, so the
+ * class (student_class_id) is kept for analyses that resample classes rather than students.
+ */
+export async function fromAssistments(records: AsyncIterable<string[]>, source = "ASSISTments 2009–2010 skill builder"): Promise<Dataset> {
+  const { read, attempts: rows } = await assistmentsAttempts(records);
   // order_id names the problem log, so a problem tagged with several skills has the same problem on each of its observations.
   const observations: Observation[] = rows.map(({ student, skill, correct, order }) => ({ student, skill, level: 2, correct, problem: String(order) }));
   const skills = [...new Set(rows.map((r) => r.skill))];

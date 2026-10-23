@@ -1,5 +1,5 @@
-// The data behind the results dashboard (a claude.ai artifact): chapter 3's tables as rows, the simulation and calibration
-// CSVs in docs/results, each research question's verdict, and learning profiles drawn by the simulator itself. The tables are
+// The data behind the results dashboard (a claude.ai artifact): chapter 3's tables as rows, the simulation, calibration
+// and stuck-practice CSVs in docs/results, each research question's verdict, and learning profiles drawn by the simulator itself. The tables are
 // read from the thesis as printed, so the dashboard shows what the thesis says; remake a table with its own command
 // (Appendix B) and the thesis first, then this.
 //
@@ -163,6 +163,12 @@ const RESULT_FILES = [
   { id: "calib_real", file: "docs/results/calibration-assistments.csv", title: "Calibration on ASSISTments", description: "Each model's predicted chance of a right answer against the share right, in ten bins, on the 51,452 first answers of 853 held-out students (npm run model -- --observations data/assistments.json --fit --calibration)." },
   { id: "calib_sim", file: "docs/results/calibration-simulated.csv", title: "Calibration on a simulated class", description: "Each model's predicted chance against the share right, in ten bins, on a held-out share of 120 simulated students' 18,000 answers (npm run model -- --simulate --fit --calibration)." },
   { id: "calib_mastery", file: "docs/results/calibration-mastery.csv", title: "Mastery scores against the truth", description: "Each mastery score's mean against the share of learners who truly knew the skill, in ten bins, after every answer of the held-out practices, per world and learning rate (npm run mastery -- --calibration); the bins behind Table 3.8." },
+  { id: "stuck_facts", file: "docs/results/stuck-facts.csv", title: "Stuck practice: single figures", description: "On the 70,019 ASSISTments visits (a student, a skill, an assignment): the answers an oracle could skip, a streak carried to the next assignment, stuck visits and students, hints and fast tries, as shares, against the problems' usual share right where one applies (npm run stuck)." },
+  { id: "stuck_answers", file: "docs/results/stuck-answers.csv", title: "Where the answers go", description: "Every ASSISTments answer in one of three parts: each visit's final run of right answers, the answers before it, and the visits with no three in a row (npm run stuck)." },
+  { id: "stuck_curves", file: "docs/results/stuck-curves.csv", title: "Long visits: right against usual", description: "The share right at each of the first 10 or 20 answers of fixed sets of long ASSISTments visits, against the same problems' usual share right among other students (npm run stuck)." },
+  { id: "stuck_warning", file: "docs/results/stuck-warning.csv", title: "Early warning: the first three", description: "Visits with no three in a row in their first three answers, by how many of those were right: the share reaching three in a row by the 10th answer, stuck, or ended before then without (npm run stuck)." },
+  { id: "stuck_next", file: "docs/results/stuck-next.csv", title: "The answer after a wrong one", description: "The next answer in the same visit, by what the answer before was (right, a wrong try with or without hints, a hint or the scaffolding first), in stuck visits and the rest, against the problems' usual share right (npm run stuck)." },
+  { id: "stuck_skills", file: "docs/results/stuck-skills.csv", title: "Stuck visits by skill", description: "Each ASSISTments skill's visits, stuck visits and their answers, the share of its visits stuck and its share of all stuck answers (npm run stuck)." },
 ];
 
 export type ManifestEntry = { id: string; file: string; title: string; description: string };

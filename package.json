@@ -20,6 +20,7 @@
     "mastery": "node --disable-warning=ExperimentalWarning scripts/mastery.ts",
     "atoms": "node --disable-warning=ExperimentalWarning scripts/atoms.ts",
     "ideas": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/ideas.ts",
+    "stuck": "node --disable-warning=ExperimentalWarning scripts/stuck.ts",
     "h1": "node --disable-warning=ExperimentalWarning scripts/h1.ts",
     "grain": "node --disable-warning=ExperimentalWarning scripts/grain.ts",
     "analyse": "node --disable-warning=ExperimentalWarning scripts/analyse-study.ts",
