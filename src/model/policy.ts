@@ -13,7 +13,7 @@
 // form asking for that idea alone.
 import type { SkillId } from "../math/practiceSkills.ts";
 import { PREREQUISITES } from "./curriculum.ts";
-import type { EloModel, Level } from "./elo.ts";
+import type { Level } from "./elo.ts";
 import { hasIdeas, weakestIdea, type IdeaState } from "./ideaState.ts";
 
 export type Policy = "adaptive" | "fixed";
@@ -43,7 +43,16 @@ export function fixedChoice(skills: readonly SkillId[], position: number): Choic
   return { skill: skills[Math.floor(i / perSkill)], level: LEVELS[Math.floor((i % perSkill) / PER_LEVEL)] };
 }
 
+/** What the policy needs of a learner model: the chance of a right first answer (the Elo model and the logistic model both give it). */
+export type ChanceModel = { predictAt(student: string, skill: string, level: Level): number };
+
 export type AdaptiveOptions = {
+  /**
+   * A prerequisite then holds a skill back only while the student's chance on it is below this as well as UNLOCK_AT:
+   * the chance of a student with no answers, for a model whose new students don't start at an even chance (the
+   * logistic model), so that a skill still closes only once the student has shown weakness in what it builds on.
+   */
+  unlockFloor?: (skill: SkillId) => number;
   /** Skills of the last questions, most recent last. */
   recent?: readonly SkillId[];
   /** Breaks exact ties; Math.random in the app, a seeded generator in simulations. */
@@ -55,22 +64,24 @@ export type AdaptiveOptions = {
 };
 
 /** The open skills, and the hard-question predictions they were judged by (adaptiveChoice needs those again). */
-function open(model: EloModel, student: string, skills: readonly SkillId[]): { open: SkillId[]; hard: Map<SkillId, number> } {
+function open(model: ChanceModel, student: string, skills: readonly SkillId[], floor?: (skill: SkillId) => number): { open: SkillId[]; hard: Map<SkillId, number> } {
   const hard = new Map(skills.map((k) => [k, model.predictAt(student, k, 3)] as const));
   const unmastered = skills.filter((k) => hard.get(k)! < MASTERED_AT);
-  const ready = unmastered.filter((k) => (PREREQUISITES[k] ?? []).every((pre) => !skills.includes(pre) || model.predictAt(student, pre, 2) >= UNLOCK_AT));
+  const bar = (pre: SkillId) => (floor ? Math.min(UNLOCK_AT, floor(pre)) : UNLOCK_AT);
+  const ready = unmastered.filter((k) => (PREREQUISITES[k] ?? []).every((pre) => !skills.includes(pre) || model.predictAt(student, pre, 2) >= bar(pre)));
   return { open: ready.length ? ready : unmastered.length ? unmastered : [...skills], hard };
 }
 
 /** The skills the student may practise now: prerequisites met and not mastered (all of them once everything is). */
-export const openSkills = (model: EloModel, student: string, skills: readonly SkillId[]): SkillId[] => open(model, student, skills).open;
+export const openSkills = (model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor"> = {}): SkillId[] =>
+  open(model, student, skills, options.unlockFloor).open;
 
-export function adaptiveChoice(model: EloModel, student: string, skills: readonly SkillId[], options: AdaptiveOptions = {}): Choice {
+export function adaptiveChoice(model: ChanceModel, student: string, skills: readonly SkillId[], options: AdaptiveOptions = {}): Choice {
   const recent = (options.recent ?? []).slice(-RECENT);
   const random = options.random ?? Math.random;
   const target = options.target ?? TARGET;
   let best: (Choice & { score: number; tie: number }) | null = null;
-  const { open: candidates, hard } = open(model, student, skills);
+  const { open: candidates, hard } = open(model, student, skills, options.unlockFloor);
   for (const skill of candidates) {
     let penalty = 0;
     for (const k of recent) if (k === skill) penalty += RECENCY_PENALTY;
@@ -86,6 +97,6 @@ export function adaptiveChoice(model: EloModel, student: string, skills: readonl
   return choice;
 }
 
-export function choose(policy: Policy, model: EloModel, student: string, skills: readonly SkillId[], position: number, options: AdaptiveOptions = {}): Choice {
+export function choose(policy: Policy, model: ChanceModel, student: string, skills: readonly SkillId[], position: number, options: AdaptiveOptions = {}): Choice {
   return policy === "fixed" ? fixedChoice(skills, position) : adaptiveChoice(model, student, skills, options);
 }

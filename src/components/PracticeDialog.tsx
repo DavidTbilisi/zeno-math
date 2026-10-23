@@ -6,6 +6,7 @@ import {
   applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
+import { newcomerChance } from "../model/logistic";
 import { choose as choosePolicy } from "../model/policy";
 import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
@@ -124,7 +125,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
     const due = prog.mistakes.find((m) => fits(m) && m.due <= prog.answered);
     if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
     if (plan) {
-      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent, ideas: plan.ideas });
+      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent, ideas: plan.ideas, unlockFloor: newcomerChance(plan.model) });
       return { ex: exerciseFor(c, w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
     }
     const skills = SKILLS[a] as readonly SkillId[];

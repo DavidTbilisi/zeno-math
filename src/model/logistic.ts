@@ -10,16 +10,19 @@
 //            between practices (no clock is needed, so it works on data without timestamps)
 //   areas    the student's counts on the skill's area: practice on a related skill transfers in part
 //
-//   P(correct) = σ(b + e_skill,level + e_item + Σ_layers [w_c·log(1 + right) + w_f·log(1 + wrong)] + recency + gap)
+//   P(correct) = σ(b + e_skill,level + s·(level − 2) + e_item + Σ_layers [w_c·log(1 + right) + w_f·log(1 + wrong)] + recency + gap)
+//
+// The step s between levels is shared by every skill, so a skill no answer has fitted yet still has its levels in
+// order (ASSISTments has one level, where it plays no part). This is the learner model the app runs, kept up to date
+// with a class's answers by src/model/classModel.ts; its state goes to each student's browser (src/learner.ts).
 //
 // Each weight belongs to its skill (or item, or area) where the feature is the skill's own, and is fitted on the
 // training students by Adagrad over a few passes, which is enough to keep rare items' weights small. A question no
 // training student saw starts at its skill's difficulty, and every question's difficulty keeps moving with the answers
 // to it, by the same shrinking step U(n) = itemStep / (1 + 0.05·n) the Elo model uses (src/model/elo.ts).
 import { areaOf, type SkillId } from "../math/practiceSkills.ts";
-import type { Observation } from "./elo.ts";
-import { splitByStudent, type Predictor } from "./evaluate.ts";
-import { judge, practicesFrom, streakRule, thresholdForCost, type MasteryRule, type Practice } from "./mastery.ts";
+import type { Level, Observation } from "./elo.ts";
+import type { Predictor } from "./evaluate.ts";
 import { rng } from "./random.ts";
 
 export type LogisticParams = {
@@ -50,10 +53,28 @@ export const LOGISTIC_PARAMS: LogisticParams = {
 
 /** Right and wrong answers so far, and the recency record: +1 for right, −1 for wrong, weighted toward the latest. */
 type Tally = { right: number; wrong: number; recent: number };
+/** One student's records: on every skill, each skill (with the answer at which it was last practised) and each area. */
+type Learner = { answers: number; total: Tally; skills: Map<string, Tally & { lastAt: number }>; areas: Map<string, Tally> };
 type Feature = [key: string, value: number];
+/** What a prediction needs to know of an answer: whose, on what skill and level, and the question where there is one. */
+export type Asked = Pick<Observation, "student" | "skill" | "level" | "item">;
 const tally = (): Tally => ({ right: 0, wrong: 0, recent: 0 });
+const learner = (): Learner => ({ answers: 0, total: tally(), skills: new Map(), areas: new Map() });
 const phi = Math.log1p;
 const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
+
+/** A tally as [right, wrong, recent]; a skill's adds the answer at which it was last practised. */
+type TallyRow = [right: number, wrong: number, recent: number];
+/** What the model has learnt, as plain JSON: every weight, the answers each question's step rests on and each skill's answers, and the records of the students asked for. */
+export type LogisticState = {
+  weights: Record<string, number>;
+  seen: Record<string, number>;
+  /** Answers counted on each skill, everyone's. */
+  answers: Record<string, number>;
+  students: Record<string, { answers: number; total: TallyRow; skills: Record<string, [...TallyRow, number]>; areas: Record<string, TallyRow> }>;
+};
+/** How well the student knows a skill: the chance of a right first answer at each level, and how many answers on it that rests on (as the Elo model gives it). */
+export type LogisticMastery = { skill: string; n: number; p: Record<Level, number> };
 
 export class LogisticModel implements Predictor {
   readonly name: string;
@@ -61,42 +82,38 @@ export class LogisticModel implements Predictor {
   private weights = new Map<string, number>();
   /** Answers each question's difficulty rests on, for its step after the fit. */
   private seen = new Map<string, number>();
-  private records = new Map<string, Tally>();
-  /** How many answers each student has given, and at which of them each skill was last practised. */
-  private answers = new Map<string, number>();
-  private lastAt = new Map<string, number>();
+  private skillAnswers = new Map<string, number>();
+  private learners = new Map<string, Learner>();
   constructor(params: Partial<LogisticParams> = {}, name = "logistic") {
     this.params = { ...LOGISTIC_PARAMS, ...params };
     this.name = name;
   }
 
-  private record(key: string) {
-    return this.records.get(key) ?? this.records.set(key, tally()).get(key)!;
+  private learner(student: string) {
+    return this.learners.get(student) ?? this.learners.set(student, learner()).get(student)!;
   }
-  private keys(o: Observation) {
-    return { skill: `${o.student}\u0000${o.skill}`, area: `${o.student}\u0001${this.params.areaOf(o.skill)}`, total: o.student };
-  }
-  private itemKey(o: Observation) {
+  private itemKey(o: Asked) {
     return this.params.items && o.item !== undefined ? `q:${o.item}` : null;
   }
 
   /** What is known before the answer, as (weight name, value) pairs. */
-  features(o: Observation): Feature[] {
-    const k = this.keys(o);
-    const skill = this.record(k.skill), area = this.record(k.area), total = this.record(k.total);
+  features(o: Asked): Feature[] {
+    const s = this.learners.get(o.student) ?? learner();
     const a = this.params.areaOf(o.skill);
+    const skill = s.skills.get(o.skill), area = s.areas.get(a) ?? tally(), total = s.total;
     const x: Feature[] = [
       ["b", 1],
       [`e:${o.skill}:${o.level}`, 1],
-      [`sr:${o.skill}`, phi(skill.right)], [`sw:${o.skill}`, phi(skill.wrong)],
+      [`sr:${o.skill}`, phi(skill?.right ?? 0)], [`sw:${o.skill}`, phi(skill?.wrong ?? 0)],
       [`ar:${a}`, phi(area.right)], [`aw:${a}`, phi(area.wrong)],
       ["tr", phi(total.right)], ["tw", phi(total.wrong)],
     ];
+    // One step between levels, shared by every skill, so a skill no answer has fitted yet still has its levels in order.
+    if (o.level !== 2) x.push(["lv", o.level - 2]);
     const item = this.itemKey(o);
     if (item) x.push([item, 1]);
-    if (this.params.recency) x.push([`sn:${o.skill}`, skill.recent], ["sn", skill.recent], ["tn", total.recent]);
-    const last = this.lastAt.get(k.skill);
-    x.push(last === undefined ? ["new", 1] : ["gap", phi((this.answers.get(o.student) ?? 0) - last - 1)]);
+    if (this.params.recency) x.push([`sn:${o.skill}`, skill?.recent ?? 0], ["sn", skill?.recent ?? 0], ["tn", total.recent]);
+    x.push(skill === undefined ? ["new", 1] : ["gap", phi(s.answers - skill.lastAt - 1)]);
     return x;
   }
   private logit(x: readonly Feature[]) {
@@ -104,28 +121,32 @@ export class LogisticModel implements Predictor {
     for (const [key, v] of x) z += (this.weights.get(key) ?? 0) * v;
     return z;
   }
-  predict(o: Observation) {
+  predict(o: Asked) {
     return sigmoid(this.logit(this.features(o)));
+  }
+  /** The same, without an object to build: the adaptive policy asks many times per question. */
+  predictAt(student: string, skill: string, level: Level) {
+    return this.predict({ student, skill, level });
+  }
+  mastery(student: string, skill: string): LogisticMastery {
+    const t = this.learners.get(student)?.skills.get(skill);
+    const at = (level: Level) => this.predictAt(student, skill, level);
+    return { skill, n: t ? t.right + t.wrong : 0, p: { 1: at(1), 2: at(2), 3: at(3) } };
   }
 
   /** Counts the answer into the student's records, after it has been predicted. */
   private remember(o: Observation) {
-    const k = this.keys(o);
+    const s = this.learner(o.student);
     const r = this.params.recency;
-    for (const key of [k.skill, k.area, k.total]) {
-      const rec = this.record(key);
-      if (o.correct) rec.right++;
-      else rec.wrong++;
-      rec.recent = (1 - r) * rec.recent + r * (o.correct ? 1 : -1);
+    const a = this.params.areaOf(o.skill);
+    const skill = s.skills.get(o.skill) ?? s.skills.set(o.skill, { ...tally(), lastAt: 0 }).get(o.skill)!;
+    const area = s.areas.get(a) ?? s.areas.set(a, tally()).get(a)!;
+    for (const t of [skill, area, s.total]) {
+      if (o.correct) t.right++;
+      else t.wrong++;
+      t.recent = (1 - r) * t.recent + r * (o.correct ? 1 : -1);
     }
-    const n = this.answers.get(o.student) ?? 0;
-    this.lastAt.set(k.skill, n);
-    this.answers.set(o.student, n + 1);
-  }
-  private forget() {
-    this.records.clear();
-    this.answers.clear();
-    this.lastAt.clear();
+    skill.lastAt = s.answers++;
   }
 
   fit(train: readonly Observation[]) {
@@ -139,7 +160,7 @@ export class LogisticModel implements Predictor {
       if (item) this.seen.set(item, (this.seen.get(item) ?? 0) + 1);
     }
     // The training students' records are only for building their rows; the students predicted next are others.
-    this.forget();
+    this.learners.clear();
     const squares = new Map<string, number>();
     const order = rows.map((_, i) => i);
     const r = rng(this.params.seed);
@@ -170,6 +191,13 @@ export class LogisticModel implements Predictor {
       this.weights.set(item, (this.weights.get(item) ?? 0) + (this.params.itemStep / (1 + 0.05 * n)) * surprise);
       this.seen.set(item, n + 1);
     }
+    this.skillAnswers.set(o.skill, (this.skillAnswers.get(o.skill) ?? 0) + 1);
+    this.remember(o);
+  }
+
+  /** Counts an answer into the records without learning from it: how the records are rebuilt after a fit on those answers. */
+  track(o: Observation) {
+    this.skillAnswers.set(o.skill, (this.skillAnswers.get(o.skill) ?? 0) + 1);
     this.remember(o);
   }
 
@@ -177,51 +205,43 @@ export class LogisticModel implements Predictor {
   weight(key: string) {
     return this.weights.get(key) ?? 0;
   }
-}
 
-// ---------- as a mastery rule (H3) ----------
-
-const practiceKey = (student: string, skill: string) => `${student}\u0000${skill}`;
-/**
- * After each answer of each held-out student on each skill, the fitted model's chance of a right answer on a next
- * question of that skill, one with no difficulty of its own: what the student's record says, not the question. The
- * held-out answers are replayed in order, so a score uses only answers already given, on every skill.
- */
-export function logisticScores(train: readonly Observation[], test: readonly Observation[], params: Partial<LogisticParams> = {}): Map<string, number[]> {
-  const model = new LogisticModel(params);
-  model.fit(train);
-  const scores = new Map<string, number[]>();
-  for (const o of test) {
-    model.update(o);
-    const key = practiceKey(o.student, o.skill);
-    (scores.get(key) ?? scores.set(key, []).get(key)!).push(model.predict({ student: o.student, skill: o.skill, level: o.level, correct: false }));
+  /** What the model has learnt, as plain JSON: every weight, and the records of the students asked for (all if none). */
+  state(students?: readonly string[]): LogisticState {
+    const row = (t: Tally): TallyRow => [t.right, t.wrong, t.recent];
+    const ids = students ?? [...this.learners.keys()];
+    return {
+      weights: Object.fromEntries(this.weights),
+      seen: Object.fromEntries(this.seen),
+      answers: Object.fromEntries(this.skillAnswers),
+      students: Object.fromEntries(ids.flatMap((id) => {
+        const s = this.learners.get(id);
+        return s ? [[id, {
+          answers: s.answers, total: row(s.total),
+          skills: Object.fromEntries([...s.skills].map(([k, t]) => [k, [...row(t), t.lastAt] as [...TallyRow, number]])),
+          areas: Object.fromEntries([...s.areas].map(([k, t]) => [k, row(t)])),
+        }]] : [];
+      })),
+    };
   }
-  return scores;
+  /** A model that carries on from a saved state (the server's, sent to a student's browser). */
+  static fromState(state: LogisticState, params: Partial<LogisticParams> = {}): LogisticModel {
+    const m = new LogisticModel(params);
+    const t = ([right, wrong, recent]: readonly number[]): Tally => ({ right, wrong, recent });
+    m.weights = new Map(Object.entries(state.weights));
+    m.seen = new Map(Object.entries(state.seen));
+    m.skillAnswers = new Map(Object.entries(state.answers));
+    for (const [id, s] of Object.entries(state.students))
+      m.learners.set(id, {
+        answers: s.answers, total: t(s.total),
+        skills: new Map(Object.entries(s.skills).map(([k, r]) => [k, { ...t(r), lastAt: r[3] }])),
+        areas: new Map(Object.entries(s.areas).map(([k, r]) => [k, t(r)])),
+      });
+    return m;
+  }
 }
-/** Mastered once the logistic score after an answer reaches the threshold; it reads the scores of the practice's student and skill. */
-export const logisticRule = (scores: ReadonlyMap<string, readonly number[]>, threshold: number): MasteryRule => ({
-  name: `logistic θ ${Number(threshold.toFixed(4))}`,
-  declare(_skill, answers, practice?: Practice) {
-    if (!practice) throw new Error("the logistic rule needs the practice, for its student");
-    const at = scores.get(practiceKey(practice.student, practice.skill)) ?? [];
-    for (let i = 0; i < Math.min(answers.length, at.length); i++) if (at[i] >= threshold) return i + 1;
-    return null;
-  },
-});
-/**
- * The logistic rule on the held-out students of a split, as H3 compares it: fitted on the training students, with the
- * threshold that costs what the streak rule costs on training students held out from the fit (split off by seed + 1),
- * so no truth and no held-out student goes into it.
- */
-export function heldOutLogisticRule(
-  observations: readonly Observation[],
-  { testShare = 0.2, seed = 1, streak = 3, params = {} }: { testShare?: number; seed?: number; streak?: number; params?: Partial<LogisticParams> } = {},
-) {
-  const answers = splitByStudent(observations, testShare, seed);
-  const inner = splitByStudent(answers.train, testShare, seed + 1);
-  const innerPractices = practicesFrom(inner.test);
-  const innerScores = logisticScores(inner.train, inner.test, params);
-  const threshold = thresholdForCost((t) => logisticRule(innerScores, t), innerPractices, judge(streakRule(streak), innerPractices).cost);
-  const scores = logisticScores(answers.train, answers.test, params);
-  return { threshold, rule: logisticRule(scores, threshold), scores };
-}
+
+/** A student no model has seen: what the logistic model expects of someone with no answers yet. */
+const NEWCOMER = "\u0000newcomer";
+/** The chance of a right medium question for a student with no answers, per skill: the adaptive policy's unlock floor (src/model/policy.ts). */
+export const newcomerChance = (model: LogisticModel) => (skill: string) => model.predictAt(NEWCOMER, skill, 2);

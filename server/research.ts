@@ -6,7 +6,8 @@ import type { DatabaseSync } from "node:sqlite";
 import { randomInt, timingSafeEqual } from "node:crypto";
 import { ALL_SKILLS, AREAS, FIRST_SKILLS, SKILLS, areaOf, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM, inCurriculumOrder, skillsOfYear, type Year } from "../src/model/curriculum.ts";
-import { EloModel, type Level } from "../src/model/elo.ts";
+import { ClassModel } from "../src/model/classModel.ts";
+import type { Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
 import { FRACTIONS } from "../src/model/conceptGraph.ts";
 import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
@@ -136,12 +137,12 @@ const classSkills = (json: string | null): SkillId[] => (json ? JSON.parse(json)
 
 // ---------- the learner model and each student's ideas, kept up to date with every stored attempt ----------
 
-type Replay = { model: EloModel; ideas: Map<number, IdeaState>; lastId: number };
+type Replay = { model: ClassModel; ideas: Map<number, IdeaState>; lastId: number };
 const replays = new WeakMap<DatabaseSync, Replay>();
 /** Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas. */
 function replay(db: DatabaseSync): Replay {
   let cache = replays.get(db);
-  if (!cache) replays.set(db, (cache = { model: new EloModel(), ideas: new Map(), lastId: 0 }));
+  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), lastId: 0 }));
   const rows = stmt(db, `
     SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, steps, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
   `).all(cache.lastId) as {
@@ -162,10 +163,10 @@ function replay(db: DatabaseSync): Replay {
   }
   return cache;
 }
-export const currentModel = (db: DatabaseSync): EloModel => replay(db).model;
+export const currentModel = (db: DatabaseSync): ClassModel => replay(db).model;
 /** What a student knows of each idea they have met (ideaState.ts), for the adaptive policy to aim at the weakest. */
 export const currentIdeas = (db: DatabaseSync, studentId: number): IdeaState => replay(db).ideas.get(studentId) ?? {};
-/** Deleted answers can't be taken out of the ratings one by one: the next request replays what is left. */
+/** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
 const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
 function teacher(req: IncomingMessage) {
@@ -391,7 +392,7 @@ export async function handleResearch(
     const student = findStudent(decodeURIComponent(id));
     if (!student) return send(res, 404, { error: "no such student" });
     // What the student's browser needs to choose questions: their condition and skills, where they are in the fixed
-    // sequence, their last skills, the model (the class-wide difficulties and their own ratings, under "me") and their ideas.
+    // sequence, their last skills, the model (the class-wide weights and their own records, under "me") and their ideas.
     if (sub === "plan" && req.method === "GET") {
       const { skills } = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
       const { position } = stmt(db, "SELECT COUNT(*) AS position FROM attempts WHERE student_id = ? AND policy = 'fixed'").get(student.id) as { position: number };

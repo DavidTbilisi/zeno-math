@@ -43,7 +43,7 @@ flowchart TB
   end
   subgraph shared [Shared TypeScript: runs in both]
     math[src/math<br/>generators, checker, exact arithmetic, SVG]
-    model[src/model<br/>Elo model, policy, test forms, evaluation, analysis]
+    model[src/model<br/>learner model, policy, test forms, evaluation, analysis]
   end
   subgraph server [Server: Node 24, no framework]
     router[index.ts<br/>auth, routing, static files, CSP]
@@ -177,7 +177,7 @@ sequenceDiagram
   participant D as SQLite
   B->>Z: GET /api/students/:code/plan
   Z->>D: attempts since last replay
-  Z->>Z: update Elo model
+  Z->>Z: update learner model
   Z-->>B: condition, skills, position, recent, model state, protocol
   loop each question
     B->>B: choose(condition): fixed sequence or nearest the target chance
@@ -218,7 +218,7 @@ model, so the outcome measure is independent of what the adaptive condition lear
 
 | Decision | Why | Cost |
 |---|---|---|
-| Elo-style ratings with three ability layers, not BKT or deep knowledge tracing | Learns online from the first answer, needs no training data, cheap enough for a phone, explainable to a teacher, and works for skills a student hasn't tried yet (through its area). On held-out students it beats PFA and BKT on simulated data; see `npm run model` for real data. | Assumes one difficulty per skill and level; no forgetting. |
+| A logistic model (`src/model/logistic.ts`, run as `classModel.ts`), not Elo ratings, BKT or deep knowledge tracing | On real ASSISTments answers it predicts better than the Elo model the app ran before (log-loss 0.5221 against 0.5607 on held-out students; replayed from empty without problem ids, as the app runs, 0.5595 against 0.5667), and better than PFA and BKT (`docs/evaluation/prediction-benchmark.md`). Every answer moves the student's records at once, on the server and in the browser; the weights start from a simulated class and are fitted again on the class's own answers at 200 and whenever they have grown by a fifth. Cheap enough for a phone, and works for skills a student hasn't tried yet (through their area and overall counts). | Its weights move only when fitted again, where Elo's difficulties move with every answer. On simulated learners made the way Elo assumes, Elo predicts better (by 0.006 to 0.010 log-loss); on simulated BKT learners it predicts worse (by 0.02). The thesis's simulation study still runs Elo (`src/model/simulate.ts`). |
 | Questions chosen and marked in the browser, marked again on the server | Practice survives dropped connections, and the student sees a verdict at once; the stored verdict is the server's. | A modified client could pick its own questions, but only within its own condition. The server needs the checker's dependencies, so the image carries it as one bundled file. |
 | Questions generated from seeds | Reproducible forms and analyses, re-scoring, tiny storage. | Generators must never change what a seed means once a study has started. |
 | Codes instead of accounts | No personal data; children can join with a code on paper. | A lost code can't be recovered; anyone with the code can delete the record. |
