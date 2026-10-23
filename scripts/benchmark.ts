@@ -14,8 +14,10 @@ import { EloModel } from "../src/model/elo.ts";
 import {
   BktModel, EmaModel, globalRate, heldOutPredictions, itemRate, metrics, pairedLogLoss, PfaModel, splitByStudent, studentSkillRate, type Predictor,
 } from "../src/model/evaluate.ts";
-import { heldOutLogisticRule, LogisticModel, logisticRule } from "../src/model/logistic.ts";
-import { bktRule, compareAfter, emaRule, fitRules, judge, practicesFrom, rightAfter, streakRule, usualRules, type MasteryRule, type Practice } from "../src/model/mastery.ts";
+import { LogisticModel } from "../src/model/logistic.ts";
+import {
+  bktRule, compareAfter, emaRule, fitRules, heldOutLogisticRule, judge, logisticRule, practicesFrom, rightAfter, streakRule, usualRules, type MasteryRule, type Practice,
+} from "../src/model/mastery.ts";
 
 const args = process.argv.slice(2);
 const opt = (name: string, fallback: string) => {

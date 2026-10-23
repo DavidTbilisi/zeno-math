@@ -1261,9 +1261,10 @@ it and checks that it marks a practice answer itself.
 server/index.ts           HTTP server: /api/boards CRUD (SQLite) + static files
 server/research.ts        class study: classes, students randomised to a condition, practice attempts, CSV export
 src/learner.ts            the student's side of the study: question log, attempt records, outbox kept until sent
-src/model/elo.ts          learner model: Elo ratings of students (overall / area / skill) and questions, mastery
+src/model/elo.ts          the Elo model the app ran before and the thesis simulations run: ratings of students and questions, mastery
 src/model/evaluate.ts     replay, metrics (log-loss, RMSE, AUC, calibration), baselines, reading the CSV export
-src/model/logistic.ts     a logistic student model (counts, recency, gap, question difficulty) and a mastery rule on its score
+src/model/logistic.ts     the learner model: a logistic model (counts, recency, gap, question difficulty) and a mastery rule on its score
+src/model/classModel.ts   the learner model as the app runs it: starting weights from a simulated class, refitted as answers come
 src/model/simulate.ts     synthetic learners with a known truth, for tests and the simulation study
 src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)

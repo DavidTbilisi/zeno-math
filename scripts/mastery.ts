@@ -19,12 +19,11 @@ import { AREAS, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import {
-  agreement, ALL_SIM_SKILLS, compareAfter, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, FINE_THRESHOLDS, fitRules,
+  agreement, ALL_SIM_SKILLS, compareAfter, heldOutLogisticRule, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, FINE_THRESHOLDS, fitRules,
   judge, MASTERED_AT, masteryCalibration, practicesFrom,
   PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, tradeOff, usualRules,
   type AtCost, type AtPrecision, type Calibration, type CurvePoint, type PracticeParams,
 } from "../src/model/mastery.ts";
-import { heldOutLogisticRule } from "../src/model/logistic.ts";
 import { isSimSkill, SIM_SKILLS } from "../src/model/simulate.ts";
 
 const args = process.argv.slice(2);

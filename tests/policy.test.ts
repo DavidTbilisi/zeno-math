@@ -53,6 +53,19 @@ test("a new student has every skill open; weakness in a prerequisite closes what
   assert.ok(["linear", "average"].includes(adaptiveChoice(m, "s", skills, { random: () => 0 }).skill));
 });
 
+test("with an unlock floor, a prerequisite holds a skill back only once the student is below a newcomer there", () => {
+  // A model whose students start below an even chance: 0.4 on everything, and lower where a student has shown weakness.
+  const chance = (weak: SkillId | null) => ({ predictAt: (_student: string, skill: string) => (skill === weak ? 0.3 : 0.4) });
+  const newcomer = () => 0.4;
+  const skills: SkillId[] = ["fractions", "linear", "expand"];
+  assert.deepEqual(openSkills(chance(null), "s", skills), ["fractions"], "without a floor, 0.4 is below the bar of 0.5");
+  assert.deepEqual(openSkills(chance(null), "s", skills, { unlockFloor: newcomer }), skills, "a newcomer's chance is no weakness");
+  assert.deepEqual(openSkills(chance("linear"), "s", skills, { unlockFloor: newcomer }), ["fractions", "linear"], "below the newcomer on linear closes expand");
+  // A floor above UNLOCK_AT changes nothing: the bar is never higher than 0.5.
+  assert.deepEqual(openSkills({ predictAt: () => 0.55 }, "s", skills, { unlockFloor: () => 0.9 }), skills);
+  assert.equal(adaptiveChoice(chance("linear"), "s", skills, { unlockFloor: newcomer, random: () => 0.5 }).skill !== "expand", true);
+});
+
 test("the adaptive choice aims at the target, moves on after mastery and goes down after misses", () => {
   const m = new EloModel();
   for (let i = 0; i < 30; i++) answer(m, "linear", 3, true);

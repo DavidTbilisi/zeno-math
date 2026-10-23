@@ -11,7 +11,8 @@
 // nothing. A practice never declared costs its full length, as a learner who is never let go practises to the end.
 import { AREAS, type SkillId } from "../math/practiceSkills.ts";
 import type { Level, Observation } from "./elo.ts";
-import { bktStep, bootstrapGroups, calibration, emaStep, fitBkt, fitEma, rmse, type Bin, type BktParams, type EmaParams, type Prediction } from "./evaluate.ts";
+import { LogisticModel, type LogisticParams } from "./logistic.ts";
+import { bktStep, bootstrapGroups, calibration, emaStep, fitBkt, fitEma, rmse, type Bin, type BktParams, type EmaParams, type Prediction, splitByStudent } from "./evaluate.ts";
 import { DEFAULT_SIM, makeWorld, SIM_SKILLS, type SimParams, type SimLearner } from "./simulate.ts";
 
 /** One student's answers on one skill in order (1 right, 0 wrong), and in simulations whether they knew it after each. */
@@ -429,4 +430,51 @@ export function compareAfter(first: MasteryRule, second: MasteryRule, practices:
     rightInterval: bootstrapByStudent(practices, (ix) => stats(ix).right, resamples, seed),
     costInterval: bootstrapByStudent(practices, (ix) => stats(ix).cost, resamples, seed),
   };
+}
+
+// ---------- the logistic rule: mastery by the logistic model's score (src/model/logistic.ts), for H3 ----------
+
+const practiceKey = (student: string, skill: string) => `${student}\u0000${skill}`;
+/**
+ * After each answer of each held-out student on each skill, the fitted model's chance of a right answer on a next
+ * question of that skill, one with no difficulty of its own: what the student's record says, not the question. The
+ * held-out answers are replayed in order, so a score uses only answers already given, on every skill.
+ */
+export function logisticScores(train: readonly Observation[], test: readonly Observation[], params: Partial<LogisticParams> = {}): Map<string, number[]> {
+  const model = new LogisticModel(params);
+  model.fit(train);
+  const scores = new Map<string, number[]>();
+  for (const o of test) {
+    model.update(o);
+    const key = practiceKey(o.student, o.skill);
+    (scores.get(key) ?? scores.set(key, []).get(key)!).push(model.predict({ student: o.student, skill: o.skill, level: o.level }));
+  }
+  return scores;
+}
+/** Mastered once the logistic score after an answer reaches the threshold; it reads the scores of the practice's student and skill. */
+export const logisticRule = (scores: ReadonlyMap<string, readonly number[]>, threshold: number): MasteryRule => ({
+  name: `logistic θ ${Number(threshold.toFixed(4))}`,
+  declare(_skill, answers, practice?: Practice) {
+    if (!practice) throw new Error("the logistic rule needs the practice, for its student");
+    const at = scores.get(practiceKey(practice.student, practice.skill)) ?? [];
+    for (let i = 0; i < Math.min(answers.length, at.length); i++) if (at[i] >= threshold) return i + 1;
+    return null;
+  },
+});
+/**
+ * The logistic rule on the held-out students of a split, as H3 compares it: fitted on the training students, with the
+ * threshold that costs what the streak rule costs on training students held out from the fit (split off by seed + 1),
+ * so no truth and no held-out student goes into it.
+ */
+export function heldOutLogisticRule(
+  observations: readonly Observation[],
+  { testShare = 0.2, seed = 1, streak = 3, params = {} }: { testShare?: number; seed?: number; streak?: number; params?: Partial<LogisticParams> } = {},
+) {
+  const answers = splitByStudent(observations, testShare, seed);
+  const inner = splitByStudent(answers.train, testShare, seed + 1);
+  const innerPractices = practicesFrom(inner.test);
+  const innerScores = logisticScores(inner.train, inner.test, params);
+  const threshold = thresholdForCost((t) => logisticRule(innerScores, t), innerPractices, judge(streakRule(streak), innerPractices).cost);
+  const scores = logisticScores(answers.train, answers.test, params);
+  return { threshold, rule: logisticRule(scores, threshold), scores };
 }

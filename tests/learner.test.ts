@@ -10,7 +10,7 @@ import {
   applyAttempt, attemptEvidence, finish, learnFromAttempt, logAnswer, logStep, ME, Outbox, startLog, toAttempt, toClassPlan, verdictOf, whatWasHard, withProtocol, type Attempt,
   type Origin, type Protocol, type SendResult, type Slot,
 } from "../src/learner.ts";
-import { EloModel } from "../src/model/elo.ts";
+import { priorState } from "../src/model/classModel.ts";
 import { IDEA_PRIOR, usesOf, type IdeaState } from "../src/model/ideaState.ts";
 
 const w = en.pracWords;
@@ -101,7 +101,7 @@ test("the outbox survives a failing network and keeps attempts added mid-send", 
 });
 
 test("leaving a question moves the class plan on the way the server will", () => {
-  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: new EloModel().state(), ideas: {} });
+  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: priorState(), ideas: {} });
   const base = { clientId: "x", student: student.code, level: 2 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, shownAt: 0, predicted: 0.5 };
   const right: Attempt = { ...base, skill: "linear", outcome: "solved", policy: "fixed", answers: [{ input: "3", verdict: "correct", ms: 1 }] };
   const before = plan.model.predict({ student: ME, skill: "linear", level: 2 });

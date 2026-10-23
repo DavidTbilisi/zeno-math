@@ -4,8 +4,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { Observation } from "../src/model/elo.ts";
 import { evaluateHeldOut, splitByStudent } from "../src/model/evaluate.ts";
-import { heldOutLogisticRule, LogisticModel, logisticRule, logisticScores } from "../src/model/logistic.ts";
-import { agreement, compareAfter, judge, practicesFrom, rightAfter, streakRule, thresholdForCost } from "../src/model/mastery.ts";
+import { LogisticModel } from "../src/model/logistic.ts";
+import { agreement, compareAfter, heldOutLogisticRule, judge, logisticRule, logisticScores, practicesFrom, rightAfter, streakRule, thresholdForCost } from "../src/model/mastery.ts";
 import { rng } from "../src/model/random.ts";
 
 const answer = (student: string, skill: string, correct: boolean, item?: string): Observation => ({ student, skill, level: 2, correct, ...(item ? { item } : {}) });

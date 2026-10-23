@@ -109,8 +109,10 @@ minute, when they next ask for the plan.
 
 - **`position`**: how many fixed-sequence questions the student has done.
 - **`recent`**: their last few skills, for interleaving.
-- **`state`**: the learner model's class-wide difficulties, plus the student's own ratings under `students.me`, so
-  the browser can choose questions offline.
+- **`state`**: the learner model (the logistic model, `src/model/classModel.ts`): its class-wide `weights`, the
+  answers counted on each skill (`answers`), and the student's own records under `students.me` (right, wrong and
+  recent answers on each skill, each area and overall, and where each skill was last practised), so the browser can
+  choose questions offline.
 - **`tests`**: which form each test uses (counterbalanced within each condition) and which questions are already
   answered.
 

@@ -249,7 +249,7 @@ test("a class practises the skills it was given, in curriculum order", async () 
   assert.deepEqual(listed.find((c) => c.code === made.body.code)!.skills, made.body.skills);
 });
 
-test("the plan: condition, skills, place in the fixed sequence, recent skills and the student's own ratings", async () => {
+test("the plan: condition, skills, place in the fixed sequence, recent skills and the student's own records", async () => {
   const { code } = (await call("POST", "/api/classes", { skills: ["volume", "circles"] }, TEACHER)).body;
   const joined = (await call("POST", "/api/students", { class: code })).body;
   const plan = async () => (await call("GET", `/api/students/${joined.code}/plan`)).body;
@@ -272,9 +272,11 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   const after = await plan();
   assert.equal(after.position, joined.condition === "fixed" ? 1 : 0);
   assert.deepEqual(after.recent, ["volume", "circles"]);
-  // Only this student's ratings come back, under "me"; difficulties are everyone's.
+  // Only this student's records come back, under "me"; the weights and the answers per skill are everyone's.
   assert.deepEqual(Object.keys(after.state.students), ["me"]);
-  assert.ok(after.state.skills.volume && after.state.levels["volume:2"]);
+  for (const k of ["volume", "circles"]) assert.equal(after.state.answers[k], (fresh.state.answers[k] ?? 0) + 1, k);
+  assert.equal(after.state.students.me.answers, 2);
+  assert.ok(typeof after.state.weights["e:volume:2"] === "number", "volume's weights, from the simulated class");
   assert.deepEqual(after.ideas, {}, "no question on a skill made of ideas yet");
   // A fractions question, right first time, raises the ideas it needed; the plan carries them for the policy to aim at.
   const sum = exercise("fractions", 1, 5, en.pracWords);
@@ -303,10 +305,10 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   assert.equal(cells[cols.indexOf("predicted")], "0.71");
 
   // Deleting the student takes their answers out of the model as well.
-  const before = (await plan()).state.skills.circles[1];
+  const before = (await plan()).state.answers.circles;
   const second = (await call("POST", "/api/students", { class: code })).body.code;
   await call("POST", "/api/attempts", attempt(second, { skill: "circles" }));
-  const count = async () => (await call("GET", `/api/students/${second}/plan`)).body.state.skills.circles[1];
+  const count = async () => (await call("GET", `/api/students/${second}/plan`)).body.state.answers.circles;
   assert.equal(await count(), before + 1);
   await call("DELETE", `/api/students/${joined.code}`);
   assert.equal(await count(), 1);
