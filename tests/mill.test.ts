@@ -22,6 +22,9 @@ test("agreement, difference, the joint method and what is sufficient so far", ()
   const sem = readCases(preset("Semmelweis").f, w);
   assert.deepEqual([sem.agree, sem.joint, sem.sufficient], [["poor mothers", "crowded", "autopsy hands"], [], []]);
   assert.deepEqual(sem.diffs.map((d) => d.f), ["autopsy hands"]);
+  // With no case lacking the effect, there is nothing for the joint method to be absent from.
+  const choose = readCases(preset("Agreement can't choose").f, w);
+  assert.deepEqual([choose.agree, choose.joint], [["coffee", "late night"], []]);
   const two = readCases(preset("Two causes").f, w);
   assert.deepEqual([two.agree, two.diffs, two.sufficient], [[], [], ["pollen", "dust"]]);
 });

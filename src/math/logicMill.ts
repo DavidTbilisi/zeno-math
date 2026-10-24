@@ -108,7 +108,8 @@ export function readCases(src: string, w: MillWords): Presence {
   const neg = cases.filter((c) => !c.pos);
   if (!pos.length) throw new Error(w.noEffect);
   const agree = factors.filter((f) => pos.every((c) => c.factors.has(f)));
-  const joint = agree.filter((f) => neg.every((c) => !c.factors.has(f)));
+  // The joint method needs a case without the effect: with none, "in none of the others" would hold of anything.
+  const joint = neg.length ? agree.filter((f) => neg.every((c) => !c.factors.has(f))) : [];
   // Sufficient so far: every case that had it had the effect too (only worth saying when some case lacks the effect).
   const sufficient = neg.length ? factors.filter((f) => neg.every((c) => !c.factors.has(f))) : [];
   const diffs: Presence["diffs"] = [];
