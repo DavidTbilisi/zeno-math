@@ -832,3 +832,7 @@ input.invalid { border-color: var(--danger); }
 .colour-pen { width: 2.6em; height: 2em; border: 2px solid #ced4da; }
 .colour-pen.on { border-color: #1e1e1e; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1e1e1e; }
 .route-sum { min-height: 1.3em; font-weight: 600; }
+/* The solve ladder: its rungs, the passed ones ticked off in green, and options that may be whole sentences. */
+.live-solve-rungs .live-btn.passed { background: #ebfbee; border-color: #2f9e44; }
+.live-solve-options { flex-direction: column; align-items: stretch; max-width: 640px; }
+.live-solve-options .live-btn { text-align: left; white-space: normal; }

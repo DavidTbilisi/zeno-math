@@ -982,7 +982,14 @@ UI in English, Russian and Georgian.
     from the numbers typed in, the architecture a box at a time, the main requests followed through it). Pick a
     category and a problem, type its inputs, then step or play through the solution: cells with pointers, a linked
     list, a tree, a grid, a table, a graph or an architecture diagram, with a note on every step and the answer at the
-    end
+    end. "Your turn" asks before every step what happens next, choosing between the kinds of step the solution takes
+    (too small so L moves right, a triplet, too big so R moves left), or, where every step is of one kind, the number
+    it comes to. 🧗 "Solve it" works a coding question out instead of watching it, with the key idea hidden: work the
+    example by hand, name the technique (one of 28, from hash sets and two pointers to monotonic stacks, tries and
+    dynamic programming, with a hint and, for a wrong pick, what that technique is for), say what trying everything
+    would cost, make a plan of one's own and only then open the key idea, step through the solution answering before
+    every step, and say what the solution costs in time and in extra memory; at the end, how many answers were right
+    first time and on to the next problem
   - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
     the sliders' values put in); the graph, the experiment and long division are in the Algebra, Discrete and
     Arithmetic menus too
@@ -1321,7 +1328,9 @@ src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, 
 src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums a rod at a time with the friends of 5
                           and 10
 src/math/patternSteps.ts  the algorithm patterns as frames to step through, with the questions for "Your turn"
-src/math/problems/        the interview problems: core.ts (inputs, frame helpers), one file per category, index.ts
+src/math/problems/        the interview problems: core.ts (inputs, frame helpers), one file per category, index.ts,
+                          and solve.ts (each coding question's techniques and costs, the solve ladder's questions,
+                          and "what happens next?" before every step)
 src/live/scenes.tsx       the pictures of a frame (cells, rows, list, tree, grid, table, graph, architecture)
 src/math/descentLab.ts    the gradient descent lab: steps with momentum, the nine puzzles and how a try is judged,
                           free play's functions, and the picture
