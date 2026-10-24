@@ -180,6 +180,15 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
           <span>{t.knightsStatements}</span>
           <textarea className="mono" rows={4} spellCheck={false} value={spec.f} onChange={(e) => set({ f: e.target.value })} />
         </label>
+      ) : topic === "syllogism" ? (
+        <>
+          <label className="field">
+            <span>{t.sylPremises}</span>
+            <textarea className="mono" rows={2} spellCheck={false} value={spec.f} onChange={(e) => set({ f: e.target.value })} />
+          </label>
+          {field("g", t.sylConclusion)}
+          <Segmented items={([false, true] as const)} value={spec.exist === true} onChange={(exist) => set({ exist })} label={(a) => (a ? t.sylModes.aristotle : t.sylModes.modern)} />
+        </>
       ) : topic === "argument" ? (
         <>
           {field("f", t.logicPremises)}
@@ -206,7 +215,7 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         field("f", t.logicFormula)
       )}
 
-      {topic !== "board" && topic !== "knights" && topic !== "strengthen" && <div className="snippets">
+      {topic !== "board" && topic !== "knights" && topic !== "strengthen" && topic !== "syllogism" && <div className="snippets">
         {symbols.map((sym) => (
           <button key={sym} className="chip" onMouseDown={(e) => e.preventDefault()} onClick={() => insert(sym)}>
             {sym}
