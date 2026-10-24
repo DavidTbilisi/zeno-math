@@ -139,11 +139,36 @@ Caveats:
   That is the point of the rule, but it is a pretest more than practice.
 - None of this measures learning that lasts. That needs the post-test of Zeno's own study.
 
+## The app's model, run as the app runs it
+
+Since PR #144 the app runs the logistic model (`src/model/classModel.ts`). Before a class has answered, its weights
+are fitted on a simulated class. Every answer moves the student's records at once. The weights are fitted again on
+the class's own answers at 200 and whenever their number has grown by a fifth. Elo learns from every answer instead.
+
+Here both run from no answers through every answer in order, each predicted before either model learns from it.
+ASSISTments is without its problem ids, since Zeno's questions are new each time:
+
+| answers | Elo | logistic, as the app runs it |
+|---|---|---|
+| ASSISTments, every answer in order | 0.5667 (one area 0.5640) | **0.5595** |
+| simulated, Elo world (seeds 1, 2) | 0.5559, 0.5500 | 0.5653, 0.5587 |
+| simulated, IRT world | 0.5443, 0.5611 | 0.5538, 0.5675 |
+| simulated, BKT world | 0.5832, 0.5786 | **0.5628, 0.5577** |
+
+On real answers the logistic model predicts better. On simulated learners made the way Elo assumes, Elo stays ahead
+by 0.006 to 0.010, in the second half of the answers as well as the first, so this is not the cold start. Three
+changes were tried, and none closed that gap:
+- moving each skill's difficulty between fits;
+- counting answers by level;
+- feeding Elo's prediction in as a feature.
+
+`npm run benchmark -- --parts app` writes `docs/results/benchmark-app.csv`.
+
 ## What it does not change
 
-- The app still runs the Elo model. The logistic model needs answers from earlier students to fit, and Zeno's own
-  questions are new each time, so it has no question difficulty to learn on them. Without one it still beats every
-  Elo variant on ASSISTments (0.5457 against 0.5581).
+- Zeno's own questions are new each time, so the app's logistic model has no question difficulty to learn on them.
+  Without one it still beats every Elo variant on ASSISTments (0.5457 against 0.5581 held out; 0.5595 against 0.5640
+  run as the app runs it).
 - The thesis's printed results (chapter 4) are as defended.
 - The parameters were tuned on ASSISTments training students only. Another data set should be tuned the same way.
 
