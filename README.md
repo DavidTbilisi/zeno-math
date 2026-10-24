@@ -278,6 +278,14 @@ UI in English, Russian and Georgian.
     together with its contrapositive, what is forced and ruled out before any question, an "if …" assumption worked
     on a copy of the board, and a sweep of the answer options showing which constraint kills each one; options
     that are statements (`C@Kala`) are marked must be true / must be false / could be / fixes the whole board
+  - *Logic grids*: matching puzzles of two to four categories (owners, years, breeds, names), the categories and
+    clues typed in a small notation — `Anita = beagle`, `Anita ≠ 2009`, `Molly < Toby`, `Riley = beagle + 1`,
+    `Barbara ≠ beagle ≠ 2009` (all different), `{Douglas, Sam} = {2006, collie}` (one each), joined with and, or,
+    not, → — and worked out a step at a time the way a person does: "only one left" in a row, copying a ● pair's
+    marks across, each clue on its own and then with the marks so far, and, when nothing moves, supposing a pair and
+    finding the clue it breaks. Each step lights its marks on the staircase grid, with the candidates still open
+    underneath, by year or price when there is a category of numbers; at the end, solved, or how many answers the
+    clues allow
   - *Truth-tellers & liars*: Smullyan's islands solved by checking X ↔ (what X says) in every row
   - *Sets*: Venn diagrams (1–3 sets) of ∪ ∩ ∖ Δ ′ expressions, two expressions compared, and x ∈ … as logic
   - The examples include the 2025 NAEC master's exam in logical reasoning (variant I): the grouping and
@@ -1377,6 +1385,7 @@ src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern car
 src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and truth-teller / liar puzzles
 src/math/logicSyllogism.ts categorical syllogisms: mood / figure, three-circle Venn, rules, what follows
 src/math/logicTree.ts     truth trees (semantic tableaux): stacking and splitting rules, closed and open branches
+src/math/logicGrid.ts     logic grids: categories and clues, every answer counted, steps worked out as a person does
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
