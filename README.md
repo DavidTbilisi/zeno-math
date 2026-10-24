@@ -754,23 +754,25 @@ UI in English, Russian and Georgian.
     per pass, split, merge or partition, with arrows showing where every value moved, the partition being worked
     on bracketed, comparisons and swaps counted, and the complexity explained; as cells or as bars
   - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed) and linear search
-  - *Patterns*: two pointers (a pair with a given sum, the two lines that hold the most water, removing duplicates
-    in place with a slow and a fast pointer, the Dutch national flag's three-way partition), Floyd's fast and slow
-    pointers (meeting in the loop, then at its entrance — the repeated number), sliding windows (k neighbours, the
-    longest run without a repeated character, the shortest run whose sum reaches S), prefix sums with a map
-    (subarrays that add up to k, negatives allowed), a monotonic stack (the next greater value) and Kadane's
-    maximum subarray — pointer names under the cells, one row per move
+  - *Patterns*: two pointers (a pair with a given sum, the two lines that hold the most water, the rain trapped
+    between bars, removing duplicates in place with a slow and a fast pointer, the Dutch national flag's three-way
+    partition), Floyd's fast and slow pointers (meeting in the loop, then at its entrance — the repeated number),
+    sliding windows (k neighbours, the longest run without a repeated character, the shortest run whose sum
+    reaches S), prefix sums with a map (subarrays that add up to k, negatives allowed), a monotonic stack (the next
+    greater value, also wrapping round to the start) and Kadane's maximum subarray — pointer names under the cells,
+    one row per move
   - *Graphs*: type edges like `A-B 4, B-C 2`; BFS (levels, queue), DFS (recursion stack), Dijkstra (distance
     table, shortest-path tree), Bellman–Ford (negative edges, early stop, the negative cycle named), Floyd–Warshall
     (all-pairs table, each improvement marked with the vertex it went through), Prim and Kruskal (minimum spanning
     tree, cycle checks), union–find (sets after every edge) and Kahn's topological sort (layered drawing, cycle
     detection); directed or undirected
-  - *Trees & heaps*: binary search trees with all four traversals, AVL trees with balance factors and
+  - *Trees & heaps*: binary search trees with all four traversals (a repeated key goes right), AVL trees with balance factors and
     LL/RR/LR/RL rotations, and min/max-heaps built by heapify — the tree and the array side by side
   - *Stacks, queues, hashing*: push/pop/peek traces, and hash tables with chaining or linear probing
     (probe sequences, collisions, load factor)
   - *Dynamic programming*: LCS, edit distance, 0/1 knapsack and coin change as filled tables with the
-    traceback path — and greedy coin change shown failing where it does
+    traceback path — and greedy coin change shown failing where it does; the number of ways to make change (a row
+    per coin) and the ways to climb a staircase 1 to k steps at a time
   - *Recursion*: call trees for Fibonacci (repeated calls marked — or cut short with memoisation), factorial and
     the towers of Hanoi (every move numbered); N-queens by backtracking (the first steps, dead ends, the board and
     the number of solutions); subset sum as a take / skip tree with branches over the target cut
@@ -972,6 +974,15 @@ UI in English, Russian and Georgian.
     squares to recolour them and ⌖ to pick the start; then step, play, or turn on "Your turn" to say before each move
     what happens next (which pointer moves, pop or push, merge or start a new interval, which half to search, the next
     node or number), with the reason given for a right answer
+  - *Interview problems*: AlgoExpert's 200 coding questions in its fifteen categories (arrays, binary search trees,
+    binary trees, dynamic programming, famous algorithms, graphs, greedy algorithms, heaps, linked lists, recursion,
+    searching, sorting, stacks, strings, tries) and SystemsExpert's system design — 24 fundamentals as simulations to
+    run (a cache evicting by LRU, LFU or FIFO, keys on a hash ring, a token bucket, a Raft election, a map-reduce job,
+    a TLS handshake in small numbers…) and its 13 design questions walked through (requirements, estimates worked out
+    from the numbers typed in, the architecture a box at a time, the main requests followed through it). Pick a
+    category and a problem, type its inputs, then step or play through the solution: cells with pointers, a linked
+    list, a tree, a grid, a table, a graph or an architecture diagram, with a note on every step and the answer at the
+    end
   - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
     the sliders' values put in); the graph, the experiment and long division are in the Algebra, Discrete and
     Arithmetic menus too
@@ -1310,6 +1321,8 @@ src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, 
 src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums a rod at a time with the friends of 5
                           and 10
 src/math/patternSteps.ts  the algorithm patterns as frames to step through, with the questions for "Your turn"
+src/math/problems/        the interview problems: core.ts (inputs, frame helpers), one file per category, index.ts
+src/live/scenes.tsx       the pictures of a frame (cells, rows, list, tree, grid, table, graph, architecture)
 src/math/descentLab.ts    the gradient descent lab: steps with momentum, the nine puzzles and how a try is judged,
                           free play's functions, and the picture
 src/math/pcaLab.ts        the PCA lab: PC1 and least squares from the covariance, a line's error and kept spread,

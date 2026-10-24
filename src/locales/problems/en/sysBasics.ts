@@ -1,0 +1,56 @@
+import { sysNet } from "./sysNet";
+import { sysDist } from "./sysDist";
+
+export const sysBasics = {
+  designInterview: {
+    name: "The design interview",
+    idea: "A system design interview is an open conversation about building something big, with no single right answer: you lead it, from what the system must do, through rough numbers, to a design and the trade-offs in it. Plan the time, and know the four kinds of fundamentals the answers are built from — foundations, the qualities a system must have, the parts it is made of, and the real tools that provide them.",
+    labels: ["Minutes", "The system"],
+    start: "{m} minutes to design {s}: the time goes in phases, and the interviewer watches how you think as much as what you build.",
+    heads: ["Time", "What happens"],
+    phaseNames: ["Requirements", "Estimates", "API", "Data model", "High-level design", "Deep dives", "Wrap-up"],
+    phases: ["ask what it must do and for whom", "users, requests, storage", "the calls clients make", "the tables or documents", "the boxes and arrows", "the hard parts, in depth", "trade-offs, what is next"],
+    phaseNotes: [
+      "{m} min: ask before designing — what must {s} do, for how many users, how fast, how reliably? Agree on what is out of scope.",
+      "{m} min: rough numbers — requests a second, data a day, reads against writes — decide what has to scale.",
+      "{m} min: the API: the few calls clients make, their inputs and outputs.",
+      "{m} min: the data: what is stored, how it is keyed, and which store suits it.",
+      "{m} min: the high-level design: clients, load balancers, services, databases, caches, queues — drawn and explained.",
+      "{m} min: deep dives into the parts that are hard for {s}: the bottleneck, failures, consistency.",
+      "{m} min: wrap up: the trade-offs you made, and what you would do with more time.",
+    ],
+    kinds: ["Foundations", "Qualities", "Parts", "Tools"],
+    layers: [
+      ["client–server", "network protocols", "storage", "latency", "throughput"],
+      ["availability", "scalability", "consistency", "durability"],
+      ["caches", "proxies", "load balancers", "hashing", "databases", "queues"],
+      ["Redis", "ZooKeeper", "Kafka", "S3", "Nginx"],
+    ],
+    kindNotes: [
+      "Foundations: how machines talk and keep data — the client–server model, protocols, storage, latency and throughput.",
+      "Qualities a system is judged by: how often it is up, how it grows, whether every reader sees the same data, whether data survives.",
+      "The parts designs are built from: caches, proxies, load balancers, hashing, databases, queues and more — each has a topic here.",
+      "The real tools that provide those parts, to name in an interview once the design is clear.",
+    ],
+    answer: "A {m}-minute plan for {s}: {a} min on requirements, {h} on the high-level design and {d} on deep dives — and the fundamentals to build it from.",
+  },
+  caching: {
+    name: "Caching",
+    idea: "A cache keeps copies of recently used data in fast storage close to whoever needs it, so most requests skip the slow trip to the database. When it is full, the eviction policy picks what goes: the least recently used (LRU), the least frequently used (LFU) or simply the oldest (FIFO). Writes need a rule too — write-through updates the database at once, write-back later — and stale data is the price of speed.",
+    labels: ["Cache size", "Policy (LRU, LFU or FIFO)", "Requests"],
+    badPolicy: "“{s}” isn't a policy: write one of {list}.",
+    client: "Client",
+    cache: "Cache",
+    database: "Database",
+    miss: "miss",
+    held: "{n} of {c}",
+    hit: "{k} is in the cache: a hit, with no trip to the database.",
+    missNote: "{k} is not in the cache: a miss, so it is read from the database and kept.",
+    evict: "{k} is a miss and the cache is full: {x} is thrown out to make room.",
+    order: { LRU: "Least recent first", LFU: "Fewest uses first", FIFO: "Oldest first" },
+    out: "Evicted",
+    answer: "{h} hits and {m} misses: a hit rate of {r}.",
+  },
+  ...sysNet,
+  ...sysDist,
+};

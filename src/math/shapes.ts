@@ -1335,6 +1335,19 @@ function patternsPreview(): Piece[] {
   ];
 }
 
+function problemsPreview(): Piece[] {
+  // Two Number Sum part-way: the number being read, the set of numbers seen under it.
+  const cell = (x: number, y: number, v: string, hot: boolean) => [
+    rect(x, y, 30, 30, hot ? { fill: "#ffe8cc", color: "#e8590c", width: 2 } : { color: "#868e96", width: 1 }, true),
+    text(x + 15, y + 4, v, 18),
+  ];
+  return [
+    ...["4", "7", "−2", "9", "1"].flatMap((v, i) => cell(i * 34, 0, v, i === 2)),
+    text(-6, 46, "{ }", 16, "right", "#868e96"),
+    ...["4", "7"].flatMap((v, i) => cell(4 + i * 34, 40, v, false)),
+  ];
+}
+
 function divisionPreview(): Piece[] {
   // 624 ÷ 12 under the long-division bracket, 52 on top and the first step's working.
   const col = (c: number) => 60 + c * 22;
@@ -1403,6 +1416,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveRubik", group: "live", build: rubikPreview, live: "rubik" },
   { id: "liveSoroban", group: "live", build: sorobanPreview, live: "soroban" },
   { id: "livePatterns", group: "live", build: patternsPreview, live: "patterns" },
+  { id: "liveProblems", group: "live", build: problemsPreview, live: "problems" },
   { id: "liveNumberLine", group: "live", build: numberLine, live: "numberLine" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },

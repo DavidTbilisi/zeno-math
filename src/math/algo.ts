@@ -1,8 +1,9 @@
 // Algorithms and data structures: step-by-step traces of sorting and searching, graph algorithms
 // (BFS, DFS, Dijkstra, Prim, Kruskal, topological sort), binary search trees, AVL trees and heaps,
-// stacks, queues and hash tables, dynamic programming tables with traceback, and complexity
-// (the master theorem and growth rates), recursion and backtracking, string matching, and patterns
-// (two pointers, fast and slow pointers, sliding windows, prefix sums, a monotonic stack, Kadane).
+// stacks, queues and hash tables, dynamic programming tables (with traceback, ways to make change, a
+// staircase), and complexity (the master theorem and growth rates), recursion and backtracking, string
+// matching, and patterns (two pointers, trapped rain, fast and slow pointers, sliding windows, prefix sums,
+// a monotonic stack, Kadane).
 // Every picture is one standalone SVG.
 import type { RenderedSvg } from "./latex";
 import { renderDp, renderDs, renderGrowth, renderSearch, renderSort } from "./algoArrays";
@@ -15,25 +16,25 @@ export type SortAlgo = "bubble" | "insertion" | "selection" | "merge" | "quick" 
 export type SortView = "cells" | "bars";
 /** twoptr and window have moved to Patterns; boards saved before still carry them here (see upgradeAlgo). */
 export type SearchAlgo = "binary" | "linear" | "twoptr" | "window";
-export type PatternAlgo = "twoptr" | "water" | "dedupe" | "partition" | "cycle" | "window" | "distinct" | "minsum" | "prefix" | "mono" | "kadane";
+export type PatternAlgo = "twoptr" | "water" | "trap" | "dedupe" | "partition" | "cycle" | "window" | "distinct" | "minsum" | "prefix" | "mono" | "kadane";
 export type GraphAlgo = "bfs" | "dfs" | "dijkstra" | "bellman" | "floyd" | "prim" | "kruskal" | "unionfind" | "topo";
 export type RecurProblem = "fib" | "fact" | "hanoi" | "queens" | "subsets";
 export type StringAlgo = "naive" | "kmp" | "rk";
 export type TreeKind = "bst" | "avl" | "minheap" | "maxheap";
 export type DsKind = "stack" | "queue" | "chaining" | "probing";
-export type DpProblem = "lcs" | "edit" | "knapsack" | "coins";
+export type DpProblem = "lcs" | "edit" | "knapsack" | "coins" | "ways" | "stairs";
 export type GrowthMode = "master" | "compare";
 
 export const SORT_ALGOS: SortAlgo[] = ["bubble", "insertion", "selection", "shell", "merge", "quick", "heap", "counting"];
 export const SORT_VIEWS: SortView[] = ["cells", "bars"];
 export const SEARCH_ALGOS: SearchAlgo[] = ["binary", "linear"];
-export const PATTERN_ALGOS: PatternAlgo[] = ["twoptr", "water", "dedupe", "partition", "cycle", "window", "distinct", "minsum", "prefix", "mono", "kadane"];
+export const PATTERN_ALGOS: PatternAlgo[] = ["twoptr", "water", "trap", "dedupe", "partition", "cycle", "window", "distinct", "minsum", "prefix", "mono", "kadane"];
 export const GRAPH_ALGOS: GraphAlgo[] = ["bfs", "dfs", "dijkstra", "bellman", "floyd", "prim", "kruskal", "unionfind", "topo"];
 export const RECUR_PROBLEMS: RecurProblem[] = ["fib", "fact", "hanoi", "queens", "subsets"];
 export const STRING_ALGOS: StringAlgo[] = ["naive", "kmp", "rk"];
 export const TREE_KINDS: TreeKind[] = ["bst", "avl", "minheap", "maxheap"];
 export const DS_KINDS: DsKind[] = ["stack", "queue", "chaining", "probing"];
-export const DP_PROBLEMS: DpProblem[] = ["lcs", "edit", "knapsack", "coins"];
+export const DP_PROBLEMS: DpProblem[] = ["lcs", "edit", "knapsack", "coins", "ways", "stairs"];
 export const GROWTH_MODES: GrowthMode[] = ["master", "compare"];
 
 export type SortSpec = { topic: "sort"; algo: SortAlgo; data: string; view?: SortView; step?: number };
@@ -44,7 +45,7 @@ export type GraphSpec = { topic: "graph"; algo: GraphAlgo; edges: string; direct
 export type TreeSpec = { topic: "tree"; kind: TreeKind; data: string; step?: number };
 /** Stack/queue: ops is "push 3, push 5, pop, peek". Hashing: ops is the keys, m the table size. */
 export type DsSpec = { topic: "ds"; kind: DsKind; ops: string; m: string; step?: number };
-/** lcs/edit: a, b are the strings · knapsack: a weights, b values, c capacity · coins: a coins, c amount. */
+/** lcs/edit: a, b are the strings · knapsack: a weights, b values, c capacity · coins, ways: a coins, c amount · stairs: a the longest step, c the steps. */
 export type DpSpec = { topic: "dp"; problem: DpProblem; a: string; b: string; c: string; step?: number };
 /** master: T(n) = a·T(n/b) + Θ(n^d) · compare: growth rates up to n. */
 export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: string; d: string; n: string; step?: number };
@@ -55,9 +56,9 @@ export type StringSpec = { topic: "string"; algo: StringAlgo; text: string; patt
 /**
  * data: numbers (the next index of each cell for cycle, a text for distinct) · target: the pair's sum
  * (twoptr), the window size k (window), the pivot (partition), the least sum (minsum) or the sum k
- * (prefix); unused by the others.
+ * (prefix); unused by the others. circular: the next greater value wraps round to the start (mono).
  */
-export type PatternSpec = { topic: "pattern"; algo: PatternAlgo; data: string; target: string; step?: number };
+export type PatternSpec = { topic: "pattern"; algo: PatternAlgo; data: string; target: string; circular?: boolean; step?: number };
 
 /** step: how many steps of the trace to show (the slider); missing means all of them. */
 export type AlgoSpec = SortSpec | SearchSpec | PatternSpec | GraphSpec | TreeSpec | DsSpec | DpSpec | GrowthSpec | RecurSpec | StringSpec;
@@ -138,6 +139,11 @@ export type AlgoWords = {
   knapNothing: string;
   coinResult: string;
   coinNone: string;
+  waysResult: string;
+  stairsResult: string;
+  stairsRow: string;
+  stairsNow: string;
+  stairsFrom: string;
   greedy: string;
   greedyFails: string;
   greedyStuck: string;
@@ -203,7 +209,7 @@ export type AlgoWords = {
     legend: {
       lines: string; ruledOut: string; best: string; kept: string; read: string; free: string; less: string; equal: string; greater: string; unknown: string;
       slow: string; fast: string; meet: string; loop: string; offPath: string; window: string; entering: string; repeat: string; left: string; enough: string;
-      hit: string; stack: string; answered: string; none: string; run: string;
+      hit: string; stack: string; answered: string; none: string; run: string; water: string;
     };
     sortedFirst: string;
     nonNegative: string;
@@ -247,6 +253,11 @@ export type AlgoWords = {
     monoPush: string;
     monoLeft: string;
     monoResult: string;
+    monoWrap: string;
+    monoLeftWrap: string;
+    trapHold: string;
+    trapWall: string;
+    trapResult: string;
     kadaneStart: string;
     kadaneExtend: string;
     kadaneRestart: string;
@@ -275,6 +286,7 @@ export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf
   pattern: [
     { label: "Two pointers · sum 17", spec: { topic: "pattern", algo: "twoptr", data: "1, 3, 4, 6, 8, 11, 13, 15", target: "17" } },
     { label: "Most water · 1 8 6 2 5 4 8 3 7", spec: { topic: "pattern", algo: "water", data: "1, 8, 6, 2, 5, 4, 8, 3, 7", target: "" } },
+    { label: "Trapped rain · 0 1 0 2 1 0 1 3 2 1 2 1", spec: { topic: "pattern", algo: "trap", data: "0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1", target: "" } },
     { label: "Remove duplicates · 0 0 1 1 1 2 2 3 3 4", spec: { topic: "pattern", algo: "dedupe", data: "0, 0, 1, 1, 1, 2, 2, 3, 3, 4", target: "" } },
     { label: "Dutch flag · 2 0 2 1 1 0, pivot 1", spec: { topic: "pattern", algo: "partition", data: "2, 0, 2, 1, 1, 0", target: "1" } },
     { label: "Fast & slow · 1 3 4 2 2", spec: { topic: "pattern", algo: "cycle", data: "1, 3, 4, 2, 2", target: "" } },
@@ -284,6 +296,7 @@ export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf
     { label: "Shortest sum ≥ 7 · 2 3 1 2 4 3", spec: { topic: "pattern", algo: "minsum", data: "2, 3, 1, 2, 4, 3", target: "7" } },
     { label: "Prefix sums · sum 7", spec: { topic: "pattern", algo: "prefix", data: "3, 4, 7, 2, -3, 1, 4, 2", target: "7" } },
     { label: "Next greater · 73 74 75 71 69 72 76 73", spec: { topic: "pattern", algo: "mono", data: "73, 74, 75, 71, 69, 72, 76, 73", target: "" } },
+    { label: "Next greater, wrapping · 1 2 1", spec: { topic: "pattern", algo: "mono", data: "1, 2, 1", target: "", circular: true } },
     { label: "Kadane · −2 1 −3 4 −1 2 1 −5 4", spec: { topic: "pattern", algo: "kadane", data: "-2, 1, -3, 4, -1, 2, 1, -5, 4", target: "" } },
   ],
   graph: [
@@ -318,6 +331,9 @@ export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf
     { label: "Knapsack · capacity 7", spec: { topic: "dp", problem: "knapsack", a: "1, 3, 4, 5", b: "1, 4, 5, 7", c: "7" } },
     { label: "Coins · 1 3 4, amount 6", spec: { topic: "dp", problem: "coins", a: "1, 3, 4", b: "", c: "6" } },
     { label: "Coins · 1 5 10 25, amount 30", spec: { topic: "dp", problem: "coins", a: "1, 5, 10, 25", b: "", c: "30" } },
+    { label: "Ways · 1 2 5, amount 5", spec: { topic: "dp", problem: "ways", a: "1, 2, 5", b: "", c: "5" } },
+    { label: "Stairs · 4 steps, up to 2", spec: { topic: "dp", problem: "stairs", a: "2", b: "", c: "4" } },
+    { label: "Stairs · 10 steps, up to 3", spec: { topic: "dp", problem: "stairs", a: "3", b: "", c: "10" } },
   ],
   recur: [
     { label: "Fibonacci f(5)", spec: { topic: "recur", problem: "fib", n: "5", memo: false, data: "", target: "" } },

@@ -35,12 +35,31 @@ export type Frame = {
   rows?: Cells[];
   /** A linked list: node i points at next[i] (−1: nothing). */
   list?: { vals: number[]; next: number[]; roles: Role[]; ptrs: Record<string, number> };
-  /** The trace's tree, coloured. */
-  tree?: { roles: Role[] };
+  /**
+   * The trace's tree, coloured; `nodes` when this step's tree is not the trace's, `labels` to write in the nodes
+   * instead of their values (an operator, a letter), `tags` small words under them.
+   */
+  tree?: { roles: Role[]; nodes?: TreeNode[]; labels?: string[]; tags?: string[] };
   grid?: { vals: number[][]; roles: Role[][] };
   /** Intervals on a number line, a row of them per entry. */
   spans?: { label: string; items: [number, number][]; roles: Role[] }[];
+  /** A table of numbers or letters (a matrix, a board, a DP table), with optional heads for its rows and columns. */
+  mat?: { vals: (number | string)[][]; roles: Role[][]; rowHeads?: string[]; colHeads?: string[] };
+  /**
+   * A graph: nodes in a circle (evenly, or at `angle[i]` degrees clockwise from the top, as on a hash ring), or in
+   * layers (`layer[i]` is node i's row, as in a tree drawn from its root), edges with an optional weight; `tags` are
+   * small words under the nodes.
+   */
+  graph?: { nodes: string[]; edges: GraphEdge[]; roles: Role[]; directed: boolean; layer?: number[]; tags?: string[]; angle?: number[] };
+  /** A system's architecture: boxes on a grid of columns and rows, joined by arrows (dashed ones for what is async). */
+  arch?: { boxes: ArchBox[]; links: ArchLink[] };
 };
+
+export type ArchKind = "client" | "server" | "db" | "cache" | "queue" | "store" | "lb" | "cdn" | "service";
+export type ArchBox = { label: string; col: number; row: number; kind?: ArchKind; role?: Role; tag?: string };
+export type ArchLink = { a: number; b: number; label?: string; role?: Role; dashed?: boolean; both?: boolean };
+
+export type GraphEdge = { a: number; b: number; w?: string; role?: Role };
 
 export type Trace = { frames: Frame[]; answer: string; tree?: TreeNode[] };
 

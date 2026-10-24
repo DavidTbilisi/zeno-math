@@ -58,6 +58,8 @@ export type LiveHost = {
 
 // The graph needs mathjs, so it loads the first time a board has one.
 const LiveGraph = lazy(() => import("./LiveGraph").then((m) => ({ default: m.LiveGraph })));
+// The interview problems are many solvers, so they load the first time a board has one.
+const Problems = lazy(() => import("./Problems").then((m) => ({ default: m.Problems })));
 
 const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   clock: Clock,
@@ -76,6 +78,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   rubik: Rubik,
   soroban: Soroban,
   patterns: Patterns,
+  problems: Problems,
   numberLine: NumberLine,
   geoboard: Geoboard,
   estimate: Estimate,

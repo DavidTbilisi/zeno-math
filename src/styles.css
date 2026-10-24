@@ -763,6 +763,11 @@ input.invalid { border-color: var(--danger); }
 }
 .live .live-pattern-data { width: 21em; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .live .live-pattern-extra { width: 6em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .live-problem-input { width: 16em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live-problem-inputs { flex-wrap: wrap; max-width: 780px; }
+/* The interview problems' pictures vary a lot in height: one too tall for the piece shrinks to the room left. */
+.live-problem-stage { flex: 1 1 0; min-height: 0; display: flex; justify-content: center; }
+.live .live-problem-stage svg { flex: 0 1 auto; max-height: 100%; max-width: 100%; width: auto; height: auto; }
 .live-pattern-said { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 760px; }
 .live-pattern-q { font-weight: 600; }
 
