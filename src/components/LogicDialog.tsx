@@ -140,7 +140,7 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
   );
 
   const symbols = topic === "sets" ? SET_SYMBOLS : topic === "nf" ? NF_SYMBOLS : LOGIC_SYMBOLS;
-  const showTf = topic === "table" || topic === "equiv" || topic === "argument";
+  const showTf = topic === "table" || topic === "equiv" || topic === "argument" || topic === "tree";
 
   return (
     <Modal
@@ -188,6 +188,11 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
           </label>
           {field("g", t.sylConclusion)}
           <Segmented items={([false, true] as const)} value={spec.exist === true} onChange={(exist) => set({ exist })} label={(a) => (a ? t.sylModes.aristotle : t.sylModes.modern)} />
+        </>
+      ) : topic === "tree" ? (
+        <>
+          {field("f", t.logicPremises)}
+          {field("g", t.treeConclusion)}
         </>
       ) : topic === "argument" ? (
         <>
