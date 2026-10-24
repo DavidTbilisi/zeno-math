@@ -306,9 +306,11 @@ export const judgeDigit = (ask: DivisionAsk, g: number): "right" | "tooBig" | "t
 /**
  * A Rubik's cube (the maths is in rubik.ts): the scramble and the turns made since, written as R U R′ U′; the moves to
  * repeat and how many times running they have been done; whether the buttons turn anticlockwise; and the angle the
- * cube and its ball of circles are seen from, in degrees.
+ * cube and its ball of circles are seen from, in degrees. While the colours of a real cube are being painted in, `paint`
+ * holds them, the face whose colour each of the 54 stickers has (UUUUUUUUURRR…); once solved, `solution` is the turns
+ * that solve it, done one at a time as `moves`. (Boards from before either was kept have neither.)
  */
-export type LiveRubik = { scramble: string; moves: string; alg: string; reps: number; prime: boolean; yaw: number; pitch: number };
+export type LiveRubik = { scramble: string; moves: string; alg: string; reps: number; prime: boolean; yaw: number; pitch: number; paint?: string; solution?: string };
 
 // ——— Soroban ———
 

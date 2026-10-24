@@ -649,6 +649,12 @@ input.invalid { border-color: var(--danger); }
 .live-rubik-alg { display: inline-flex; align-items: center; gap: 6px; }
 .live .live-rubik-alg input { width: 15em; font-family: Georgia, "Times New Roman", serif; font-size: 15px; }
 .live-rubik-fact { font-style: italic; }
+.live-rubik-speed { min-width: 200px; }
+.live-rubik-speed b { width: auto; }
+.live .live-rubik-swatch { width: 30px; height: 30px; padding: 0; border: 2px solid #495057; }
+.live .live-rubik-swatch.on { outline: 3px solid #1971c2; outline-offset: 2px; }
+.live-rubik-solution .done { color: #adb5bd; }
+.live-rubik-solution .next { font-weight: 700; color: #1971c2; text-decoration: underline; }
 .live-snap {
   position: absolute; right: 4px; bottom: 4px; padding: 2px 4px; border: none; background: transparent;
   font-size: 15px; cursor: pointer; opacity: 0;

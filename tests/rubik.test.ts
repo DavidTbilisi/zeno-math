@@ -200,6 +200,20 @@ test("the circle picture: three bands of circles, a face where two cross, a turn
           for (const t of [0.25, 0.5, 0.75]) assert.ok(close(dist(dotDuring(i, m, t, l), bandCentre(a, l)), bandRadius(a, NORMAL[face][a], l)));
         }
       });
+      // And they all go the same way round it, a quarter turn taking the three cycles of four once round between them.
+      const [cx, cy] = bandCentre(axisOf(face), l);
+      const angle = (q: number[]) => Math.atan2(q[1] - cy, q[0] - cx);
+      const swept = STICKERS.flatMap((s, i) => {
+        if (!onLayer(face, i) || s.face === face) return [];
+        let total = 0;
+        for (let k = 0; k < 100; k++) {
+          const d = angle(dotDuring(i, m, (k + 1) / 100, l)) - angle(dotDuring(i, m, k / 100, l));
+          total += Math.atan2(Math.sin(d), Math.cos(d));
+        }
+        return [total];
+      });
+      assert.ok(swept.every((a) => Math.sign(a) === Math.sign(swept[0])), `${face}${turns}: ${swept.map((a) => a.toFixed(2))}`);
+      assert.ok(Math.abs(Math.abs(swept.reduce((a, b) => a + b, 0)) - 3 * 2 * Math.PI * (turns === 2 ? 2 : 1)) < 1e-6, `${face}${turns}`);
     }
 });
 
