@@ -39,6 +39,7 @@ import { BP_START, type LiveBackprop } from "./backpropLab";
 import { TN_START, type LiveTensor } from "./tensorLab";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
+import type { ProblemId } from "./problems/index";
 import type { Sharing } from "./sharing";
 
 // ——— Clock ———
@@ -334,6 +335,9 @@ export type LiveSoroban = {
  */
 export type LivePatterns = { pattern: PatternId; data: string; extra: string; step: number; quiz: boolean };
 
+/** One of the interview problems (math/problems): its inputs as typed (a missing one is the example's), the step it is at. */
+export type LiveProblems = { id: ProblemId; inputs: string[]; step: number; quiz: boolean };
+
 // ——— The kinds of live piece, their sizes and where each starts ———
 
 export type LiveParam = { v: number; min: number; max: number };
@@ -375,6 +379,7 @@ export type LiveStates = {
   rubik: LiveRubik;
   soroban: LiveSoroban;
   patterns: LivePatterns;
+  problems: LiveProblems;
   numberLine: LiveNumberLine;
   geoboard: LiveGeoboard;
   estimate: LiveEstimate;
@@ -430,6 +435,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   rubik: [780, 1000],
   soroban: [820, 540],
   patterns: [800, 600],
+  problems: [800, 660],
   numberLine: [800, 460],
   geoboard: [600, 660],
   estimate: [720, 390],
@@ -487,6 +493,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     rubik: { scramble: "", moves: "", alg: "R U R′ U′", reps: 0, prime: false, yaw: -35, pitch: 28 },
     soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },
     patterns: { pattern: "twoptr", ...PATTERN_EXAMPLES.twoptr, step: 0, quiz: false },
+    problems: { id: "twoNumberSum", inputs: [], step: 0, quiz: false },
     numberLine: { from: 0, to: 10, step: 1, fractions: false, marks: [], jumps: true, together: false },
     geoboard: { mode: "free", stage: 0, pts: [], misses: 0, peeked: false, area: true, perim: true, said: null, last: null },
     estimate: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], pin: null, half: false, peeked: false, streak: 0, said: null },

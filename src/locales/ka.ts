@@ -1,4 +1,5 @@
 import type { Dict } from "./en";
+import { problems } from "./problems/ka/index";
 
 export const ka: Dict = {
   appName: "Zeno",
@@ -4227,6 +4228,7 @@ export const ka: Dict = {
       liveRubik: "რუბიკის კუბი",
       liveSoroban: "სორობანი (საანგარიშო)",
       livePatterns: "ალგორითმების ხერხები, ნაბიჯ-ნაბიჯ",
+      liveProblems: "გასაუბრების ამოცანები, ნაბიჯ-ნაბიჯ",
       liveNumberLine: "რიცხვითი ღერძი, ნებისმიერი შუალედი",
       liveGeoboard: "გეოდაფა: ფიგურები და ფართობი",
       liveEstimate: "რიცხვითი ღერძის შეფასების თამაში",
@@ -5633,6 +5635,7 @@ export const ka: Dict = {
         answer: "F({n}) = {v}, ყოველი რიცხვი ერთხელ დაითვალა.",
       },
     },
+    problems,
     rubik: {
       faces: { U: "ზედა", D: "ქვედა", L: "მარცხენა", R: "მარჯვენა", F: "წინა", B: "უკანა" },
       clockwise: "{face} წახნაგის შემობრუნება საათის ისრის მიმართულებით",

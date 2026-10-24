@@ -1,4 +1,5 @@
 // English UI strings. ru.ts and ka.ts must have exactly the same keys (checked by the type below and by npm test).
+import { problems } from "./problems/en/index";
 export const en = {
   appName: "Zeno",
   tagline: "Math from zero to advanced — every small step counts",
@@ -4226,6 +4227,7 @@ export const en = {
       liveRubik: "Rubik's cube",
       liveSoroban: "Soroban (abacus)",
       livePatterns: "Algorithm patterns, step by step",
+      liveProblems: "Interview problems, step by step",
       liveNumberLine: "Number line, any range",
       liveGeoboard: "Geoboard: shapes and area",
       liveEstimate: "Number line estimation game",
@@ -5633,6 +5635,7 @@ export const en = {
         answer: "F({n}) = {v}, with each number worked out once.",
       },
     },
+    problems,
     rubik: {
       faces: { U: "top", D: "bottom", L: "left", R: "right", F: "front", B: "back" },
       clockwise: "Turn the {face} face clockwise",

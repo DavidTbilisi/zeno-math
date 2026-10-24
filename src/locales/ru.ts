@@ -1,4 +1,5 @@
 import type { Dict } from "./en";
+import { problems } from "./problems/ru/index";
 
 export const ru: Dict = {
   appName: "Zeno",
@@ -4227,6 +4228,7 @@ export const ru: Dict = {
       liveRubik: "Кубик Рубика",
       liveSoroban: "Соробан (счёты)",
       livePatterns: "Приёмы алгоритмов, по шагам",
+      liveProblems: "Задачи с собеседований, по шагам",
       liveNumberLine: "Числовая прямая, любой отрезок",
       liveGeoboard: "Геоборд: фигуры и площадь",
       liveEstimate: "Игра: оценка на числовой прямой",
@@ -5633,6 +5635,7 @@ export const ru: Dict = {
         answer: "F({n}) = {v}, каждое число вычислено один раз.",
       },
     },
+    problems,
     rubik: {
       faces: { U: "верхнюю", D: "нижнюю", L: "левую", R: "правую", F: "переднюю", B: "заднюю" },
       clockwise: "Повернуть {face} грань по часовой стрелке",
