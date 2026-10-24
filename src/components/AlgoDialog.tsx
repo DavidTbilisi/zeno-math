@@ -128,6 +128,14 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
           {segmented(PATTERN_ALGOS, (a) => w.pattern.names[a], spec.algo, (algo) => set(ALGO_PRESETS.pattern.find((p) => p.spec.algo === algo)!.spec))}
           {row(spec.algo === "distinct" ? t.algoText : spec.algo === "cycle" ? t.algoNext : t.algoData, "data")}
           {patternTarget[spec.algo] && <div className="range-grid">{text(patternTarget[spec.algo]!, "target", 90)}</div>}
+          {spec.algo === "mono" && (
+            <div className="range-grid">
+              <label className="check">
+                <input type="checkbox" checked={!!spec.circular} onChange={(e) => set({ circular: e.target.checked })} />
+                <span>{t.algoWrap}</span>
+              </label>
+            </div>
+          )}
         </>
       )}
 
@@ -162,7 +170,8 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
 
       {spec.topic === "dp" && (
         <>
-          {segmented(DP_PROBLEMS, (p) => w.dpNames[p], spec.problem, (problem) => set({ problem }))}
+          {/* Each problem reads a, b and c differently, so it starts from its own example. */}
+          {segmented(DP_PROBLEMS, (p) => w.dpNames[p], spec.problem, (problem) => set(ALGO_PRESETS.dp.find((p) => p.spec.problem === problem)!.spec))}
           {(spec.problem === "lcs" || spec.problem === "edit") && (
             <>
               {row(t.algoX, "a")}
@@ -176,11 +185,17 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
               <div className="range-grid">{text(t.algoCapacity, "c")}</div>
             </>
           )}
-          {spec.problem === "coins" && (
+          {(spec.problem === "coins" || spec.problem === "ways") && (
             <>
               {row(t.algoCoins, "a")}
               <div className="range-grid">{text(t.algoAmount, "c")}</div>
             </>
+          )}
+          {spec.problem === "stairs" && (
+            <div className="range-grid">
+              {text(t.algoStairs, "c")}
+              {text(t.algoLongest, "a")}
+            </div>
           )}
         </>
       )}

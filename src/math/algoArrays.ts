@@ -752,6 +752,10 @@ export function renderDp(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
       return renderKnapsack(spec, w, st);
     case "coins":
       return renderCoins(spec, w, st);
+    case "ways":
+      return renderWays(spec, w, st);
+    case "stairs":
+      return renderStairs(spec, w, st);
   }
 }
 
@@ -952,6 +956,79 @@ function renderCoins(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
   }
   caps.push({ text: w.dpInfo.coins, color: "#495057" });
   return compose(`C(x) = 1 + \\min_{c \\,\\le\\, x} C(x - c), \\qquad C(0) = 0`, parts.join(""), y - 14, caps);
+}
+
+/** Ways to make change: a row per coin, each cell the ways without that coin (above) plus with it (c to the left). */
+function renderWays(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
+  const coins = [...new Set(parseNums(spec.a, w, 8, true))].sort((x, y) => x - y);
+  if (coins.some((x) => x <= 0)) throw new Error(fill(w.badNumber, { s: spec.a }));
+  const A = parseNum(spec.c, w, (v) => Number.isInteger(v) && v >= 1 && v <= 24);
+  const n = coins.length;
+  const Wt = Array.from({ length: n + 1 }, () => Array.from({ length: A + 1 }, (_, x): number => (x === 0 ? 1 : 0)));
+  for (let i = 1; i <= n; i++)
+    for (let x = 1; x <= A; x++) Wt[i][x] = Wt[i - 1][x] + (x >= coins[i - 1] ? Wt[i][x - coins[i - 1]] : 0);
+  // The two cells the answer was added up from are marked once the table is full.
+  const roles: Role[][] = Wt.map((r) => r.map((): Role => "plain"));
+  roles[n][A] = "sorted";
+  roles[n - 1][A] = "compare";
+  if (A >= coins[n - 1]) roles[n][A - coins[n - 1]] = "compare";
+  const headW = 70;
+  const cs = Math.min(36, Math.floor((W - 32 - headW) / (A + 1)));
+  const filled = st.count(n + 1);
+  const vals = Wt.map((r) => r.map((x) => nt(x)));
+  blankAfter(vals, roles, undefined, filled, filled > n);
+  const g = grid(16, 0, cs, headW, ["∅", ...coins.map((c) => `+${nt(c)}`)], Array.from({ length: A + 1 }, (_, k) => String(k)), vals, roles);
+  const leg = legendRow([{ role: "compare", text: w.legend.path }], g.h + 10);
+  // A few of the ways, largest coins first.
+  const ways: number[][] = [];
+  const list = (i: number, rest: number, used: number[]) => {
+    if (ways.length > 6) return;
+    if (rest === 0) return void ways.push(used);
+    if (i < 0) return;
+    for (let k = Math.floor(rest / coins[i]); k >= 0; k--) list(i - 1, rest - k * coins[i], [...used, ...Array(k).fill(coins[i])]);
+  };
+  list(n - 1, A, []);
+  const shown = ways.slice(0, 6).map((u) => u.map(nt).join(" + ")).join(", ") + (Wt[n][A] > 6 ? ", …" : "");
+  const caps: Caption[] = [
+    ...st.final(Wt[n][A] ? { text: fill(w.waysResult, { n: Wt[n][A], a: A, list: shown }), color: C.green } : { text: fill(w.coinNone, { a: A }), color: C.red }),
+    { text: w.dpInfo.ways, color: "#495057" },
+  ];
+  return compose(`W_{i,x} = W_{i-1,x} + W_{i,\\,x-c_i}, \\qquad W_{i,0} = 1`, g.svg + leg.svg, g.h + 10 + leg.h, caps);
+}
+
+/** Climbing n stairs 1 to k at a time: each count is the sum of the k before it, as the last move was 1, 2, … or k. */
+function renderStairs(spec: DpSpec, w: AlgoWords, st: Steps): RenderedSvg {
+  const k = parseNum(spec.a, w, (v) => Number.isInteger(v) && v >= 1 && v <= 9);
+  const N = parseNum(spec.c, w, (v) => Number.isInteger(v) && v >= 1 && v <= 40);
+  const S = [1];
+  for (let i = 1; i <= N; i++) S.push(S.slice(Math.max(0, i - k), i).reduce((s, x) => s + x, 0));
+  // Steps: the counts 1 … N one at a time; the step just filled shows the k cells it was added up from.
+  const filled = Math.min(N, st.count(N));
+  const per = Math.min(N + 1, 14);
+  const cs = Math.min(36, Math.floor((W - 32 - 70) / per));
+  const parts: string[] = [];
+  let y = 0;
+  for (let from = 0; from <= N; from += per) {
+    const xs = Array.from({ length: Math.min(per, N + 1 - from) }, (_, j) => from + j);
+    const g = grid(
+      16,
+      y,
+      cs,
+      70,
+      [w.stairsRow],
+      xs.map(String),
+      [xs.map((x) => (x > filled ? "" : nt(S[x])))],
+      [xs.map((x): Role => (x > filled ? "idle" : x === filled ? (filled === N && !st.partial ? "sorted" : "key") : x >= filled - k && x < filled ? "compare" : "plain"))],
+    );
+    parts.push(g.svg);
+    y += g.h + 14;
+  }
+  const leg = legendRow([{ role: "key", text: w.stairsNow }, { role: "compare", text: w.stairsFrom }], y);
+  parts.push(leg.svg);
+  y += leg.h + 14;
+  const caps: Caption[] = [...st.final({ text: fill(w.stairsResult, { n: nt(S[N]), s: N, k }), color: C.green }), { text: w.dpInfo.stairs, color: "#495057" }];
+  const sum = k === 1 ? `S_{i-1}` : k === 2 ? `S_{i-1} + S_{i-2}` : `S_{i-1} + \\cdots + S_{i-${k}}`;
+  return compose(`S_i = ${sum}, \\qquad S_0 = 1`, parts.join(""), y - 14, caps);
 }
 
 // ---------- complexity ----------

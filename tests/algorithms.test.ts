@@ -49,9 +49,14 @@ test("patterns: pointers, windows, prefix sums, a monotonic stack", () => {
   has(pt("prefix", "3, 4, 7, 2, -3, 1, 4, 2", "7"), "4 subarray(s) add up to 7: [0–1], [2], [2–5], [5–7]");
   has(pt("prefix", "1, -1, 1", "0"), "2 subarray(s) add up to 0: [0–1], [1–2]");
   has(pt("mono", "73, 74, 75, 71, 69, 72, 76, 73"), "Next greater: [74, 75, 76, 72, 72, 76, —, —]");
+  // Wrapping round, the 2 at the end finds the 5 at the start; the 7 has nothing greater anywhere.
+  has({ ...pt("mono", "2, 5, -3, -4, 6, 7, 2"), circular: true } as AlgoSpec, "Next greater: [5, 6, 6, 6, 7, —, 5]", "nothing in the whole array is greater");
+  has(pt("trap", "0, 8, 0, 0, 5, 0, 0, 10, 0, 0, 1, 1, 0, 3"), "The bars trap 48 unit(s) of water");
+  has(pt("trap", "0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1"), "The bars trap 6 unit(s) of water");
+  has(pt("trap", "1, 2, 3"), "The bars trap 0 unit(s) of water");
   has(pt("kadane", "-2, 1, -3, 4, -1, 2, 1, -5, 4"), "Largest sum: 6, indices 3 to 6", "4 − 1 = 3");
   has(pt("kadane", "-3, -1, -2"), "Largest sum: −1, indices 1 to 1");
-  for (const [algo, data, target] of [["water", "3, -1"], ["cycle", "1, 5"], ["distinct", " "], ["minsum", "1, -2, 3", "2"], ["minsum", "1, 2", "0"], ["partition", "1, 2", ""]] as const)
+  for (const [algo, data, target] of [["water", "3, -1"], ["trap", "2, -1, 2"], ["cycle", "1, 5"], ["distinct", " "], ["minsum", "1, -2, 3", "2"], ["minsum", "1, 2", "0"], ["partition", "1, 2", ""]] as const)
     assert.throws(() => renderAlgo(pt(algo, data, target), w), `${algo}: ${data}`);
 });
 
@@ -92,6 +97,25 @@ test("string matching", () => {
   has(s("rk", "abracadabra", "abra"), "Found 2 time(s), at shift(s) 0, 7", "1 spurious hit(s)");
   has(s("kmp", "aaaa", "aa"), "Found 3 time(s), at shift(s) 0, 1, 2");
   has(s("naive", "hello", "xyz"), "The pattern does not occur in the text");
+});
+
+test("dynamic programming: ways to make change and the staircase", () => {
+  const dp = (problem: "ways" | "stairs", a: string, c: string) => ({ topic: "dp", problem, a, b: "", c }) as AlgoSpec;
+  has(dp("ways", "1, 5", "6"), "2 way(s) to make 6: 5 + 1, 1 + 1 + 1 + 1 + 1 + 1");
+  has(dp("ways", "2, 5, 1", "5"), "4 way(s) to make 5: 5, 2 + 2 + 1, 2 + 1 + 1 + 1, 1 + 1 + 1 + 1 + 1");
+  has(dp("ways", "1", "24"), "1 way(s) to make 24");
+  has(dp("ways", "10", "7"), "The amount 7 cannot be made");
+  has(dp("stairs", "2", "4"), "5 way(s) to climb 4 steps taking 1 to 2 at a time");
+  has(dp("stairs", "3", "10"), "274 way(s) to climb 10 steps");
+  has(dp("stairs", "1", "7"), "1 way(s) to climb 7 steps");
+  for (const [problem, a, c] of [["ways", "0, 1", "5"], ["ways", "1", "25"], ["stairs", "0", "4"], ["stairs", "2", "41"]] as const)
+    assert.throws(() => renderAlgo(dp(problem, a, c), w), `${problem}: ${a} / ${c}`);
+});
+
+test("search trees: a repeat goes right in a BST, an AVL tree skips it", () => {
+  has({ topic: "tree", kind: "bst", data: "10, 5, 15, 2, 5, 22, 1" }, "sorted: 1, 2, 5, 5, 10, 15, 22", "Preorder (root, left, right): 10, 5, 2, 1, 5, 15, 22");
+  assert.ok(!text({ topic: "tree", kind: "bst", data: "3, 3" }).includes("Duplicates"));
+  has({ topic: "tree", kind: "avl", data: "3, 3, 1" }, "Duplicates skipped: 3");
 });
 
 test("the step slider: every example, every step", () => {

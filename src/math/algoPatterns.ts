@@ -1,8 +1,9 @@
 // Patterns for the Algorithms tool: ways to walk an array once instead of trying every pair or every
-// subarray. Two pointers (a pair with a given sum, the container that holds the most water, removing
-// duplicates in place, a three-way partition), fast and slow pointers (Floyd's cycle finding), sliding
-// windows (a fixed size, the longest run without a repeat, the shortest with a big enough sum), prefix
-// sums with a map, a monotonic stack (the next greater value) and Kadane's maximum subarray.
+// subarray. Two pointers (a pair with a given sum, the container that holds the most water, the rain trapped
+// between bars, removing duplicates in place, a three-way partition), fast and slow pointers (Floyd's cycle
+// finding), sliding windows (a fixed size, the longest run without a repeat, the shortest with a big enough
+// sum), prefix sums with a map, a monotonic stack (the next greater value, also wrapping round) and Kadane's
+// maximum subarray.
 import type { AlgoWords, PatternSpec, Steps } from "./algo";
 import { drawRows, legendRow, parseNum, parseNums, renderScan, type Role, type Row } from "./algoArrays";
 import { C, compose, fill, nt, tn, type Caption } from "./chart";
@@ -38,6 +39,8 @@ function trace(spec: PatternSpec, w: AlgoWords, p: PW): Trace {
   switch (spec.algo) {
     case "water":
       return water(parseNums(spec.data, w, 16), spec, w, p);
+    case "trap":
+      return trap(parseNums(spec.data, w, 16), p);
     case "dedupe":
       return dedupe(parseNums(spec.data, w, 16), p);
     case "partition":
@@ -51,7 +54,7 @@ function trace(spec: PatternSpec, w: AlgoWords, p: PW): Trace {
     case "prefix":
       return prefix(parseNums(spec.data, w, 16), parseNum(spec.target, w), p);
     case "mono":
-      return mono(parseNums(spec.data, w, 16), p);
+      return mono(parseNums(spec.data, w, 16), !!spec.circular, p);
     case "kadane":
       return kadane(parseNums(spec.data, w, 16), p);
     default:
@@ -89,6 +92,55 @@ function water(a: number[], spec: PatternSpec, w: AlgoWords, p: PW): Trace {
     bars: true,
     caps: [{ text: fill(p.waterBest, { i: best.l, j: best.r, h: nt(Math.min(a[best.l], a[best.r])), w: best.r - best.l, s: nt(best.area) }), color: C.green }],
     legend: [{ role: "compare", text: p.legend.lines }, { role: "idle", text: p.legend.ruledOut }, { role: "sorted", text: p.legend.best }],
+  };
+}
+
+/**
+ * Rain between bars: the water over a bar is the lower of the highest bars on either side, less its own height.
+ * The side with the lower bar is settled by its own max, since the other side has a bar at least as high.
+ */
+function trap(a: number[], p: PW): Trace {
+  const n = a.length;
+  if (a.some((v) => v < 0)) throw new Error(p.nonNegative);
+  const held: (number | null)[] = Array(n).fill(null);
+  const rows: Row[] = [];
+  let [l, r, lmax, rmax, total] = [0, n - 1, 0, 0, 0];
+  const marks = () => held.map((d) => (d ? `+${nt(d)}` : ""));
+  while (l < r) {
+    const left = a[l] < a[r];
+    const i = left ? l : r;
+    const side = left ? "L" : "R";
+    const cmp = left ? `${nt(a[l])} < ${nt(a[r])}` : `${nt(a[l])} ≥ ${nt(a[r])}`;
+    const m = left ? lmax : rmax;
+    let note: string;
+    if (a[i] >= m) {
+      if (left) lmax = a[i];
+      else rmax = a[i];
+      held[i] = 0;
+      note = fill(p.trapWall, { s: side, cmp, v: nt(a[i]) });
+    } else {
+      held[i] = m - a[i];
+      total += m - a[i];
+      note = fill(p.trapHold, { s: side, cmp, m: nt(m), v: nt(a[i]), d: nt(m - a[i]), t: nt(total) });
+    }
+    const [cl, cr] = [l, r];
+    rows.push({
+      vals: a,
+      roles: rolesOf(n, (x) => (x === i ? "compare" : x === cl || x === cr ? "key" : held[x] ? "sorted" : x < cl || x > cr ? "idle" : "plain")),
+      marks: marks(),
+      note: `${note}  →  ${left ? "L + 1" : "R − 1"}`,
+      noteColor: held[i] ? C.green : undefined,
+    });
+    if (left) l++;
+    else r--;
+  }
+  rows.push({ vals: a, roles: rolesOf(n, (x) => (held[x] ? "sorted" : "idle")), marks: marks(), note: `Σ = ${nt(total)}`, noteColor: C.green });
+  return {
+    tex: `w_i = \\min\\bigl(\\max_{j \\le i} a_j,\\ \\max_{j \\ge i} a_j\\bigr) - a_i`,
+    rows,
+    bars: true,
+    caps: [{ text: fill(p.trapResult, { t: nt(total) }), color: C.green }],
+    legend: [{ role: "key", text: p.legend.lines }, { role: "compare", text: p.legend.read }, { role: "sorted", text: p.legend.water }, { role: "idle", text: p.legend.left }],
   };
 }
 
@@ -328,15 +380,20 @@ function prefix(a: number[], k: number, p: PW): Trace {
   };
 }
 
-/** The next greater value: the stack keeps the indices still waiting, their values falling from bottom to top. */
-function mono(a: number[], p: PW): Trace {
+/**
+ * The next greater value: the stack keeps the indices still waiting, their values falling from bottom to top.
+ * Wrapping round, a second pass reads the array again to answer those still waiting, but pushes nothing.
+ */
+function mono(a: number[], circular: boolean, p: PW): Trace {
   const n = a.length;
   const ans: (number | null)[] = Array(n).fill(null);
   const stack: number[] = [];
   const rows: Row[] = [];
   let pops = 0;
   const marks = () => ans.map((v) => (v === null ? "" : nt(v)));
-  for (let i = 0; i < n; i++) {
+  for (let k = 0; k < (circular ? 2 * n : n) && (k < n || stack.length); k++) {
+    const i = k % n;
+    const again = k >= n;
     const popped: number[] = [];
     while (stack.length && a[stack[stack.length - 1]] < a[i]) {
       const j = stack.pop()!;
@@ -344,20 +401,26 @@ function mono(a: number[], p: PW): Trace {
       popped.push(j);
       pops++;
     }
-    stack.push(i);
+    // The second time round only the values that answer someone are worth a row.
+    if (again && !popped.length) continue;
+    if (!again) stack.push(i);
     const on = new Set(stack);
     const done = new Set(popped);
+    const pop = popped.length ? fill(p.monoPop, { v: nt(a[i]), list: popped.map((j) => nt(a[j])).join(", ") }) : "";
     rows.push({
       vals: a,
-      roles: rolesOf(n, (x) => (x === i ? "compare" : done.has(x) ? "sorted" : on.has(x) ? "key" : x < i ? "idle" : "plain")),
+      roles: rolesOf(n, (x) => (x === i ? "compare" : done.has(x) ? "sorted" : on.has(x) ? "key" : x < i || again ? "idle" : "plain")),
       marks: marks(),
-      note: (popped.length ? fill(p.monoPop, { v: nt(a[i]), list: popped.map((j) => nt(a[j])).join(", ") }) : "") + fill(p.monoPush, { v: nt(a[i]), stack: stack.map((j) => nt(a[j])).join(", ") }),
+      note: again ? `${p.monoWrap}${pop}[${stack.map((j) => nt(a[j])).join(", ")}]` : pop + fill(p.monoPush, { v: nt(a[i]), stack: stack.map((j) => nt(a[j])).join(", ") }),
     });
   }
   const left = new Set(stack);
-  rows.push({ vals: a, roles: rolesOf(n, (x) => (left.has(x) ? "min" : "idle")), marks: ans.map((v) => (v === null ? "—" : nt(v))), note: fill(p.monoLeft, { list: stack.map((j) => nt(a[j])).join(", ") }) });
+  const waiting = stack.map((j) => nt(a[j])).join(", ");
+  rows.push({ vals: a, roles: rolesOf(n, (x) => (left.has(x) ? "min" : "idle")), marks: ans.map((v) => (v === null ? "—" : nt(v))), note: fill(circular ? p.monoLeftWrap : p.monoLeft, { list: waiting }) });
   return {
-    tex: `\\text{next}(i) = a_j,\\quad j = \\min\\{\\, j > i : a_j > a_i \\,\\}`,
+    tex: circular
+      ? `\\text{next}(i) = a_{j \\bmod n},\\quad j = \\min\\{\\, j \\in (i,\\ i + n) : a_{j \\bmod n} > a_i \\,\\}`
+      : `\\text{next}(i) = a_j,\\quad j = \\min\\{\\, j > i : a_j > a_i \\,\\}`,
     rows,
     caps: [{ text: fill(p.monoResult, { list: ans.map((v) => (v === null ? "—" : nt(v))).join(", "), pushes: n, pops }), color: C.green }],
     legend: [{ role: "compare", text: p.legend.read }, { role: "key", text: p.legend.stack }, { role: "sorted", text: p.legend.answered }, { role: "min", text: p.legend.none }],

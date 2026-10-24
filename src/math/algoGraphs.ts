@@ -652,12 +652,13 @@ function renderSearchTree(spec: TreeSpec, w: AlgoWords, st: Steps): RenderedSvg 
   };
   let root: TNode | null = null;
   const seen = new Set<number>();
-  // One insertion per step; the first one is always there.
+  // One insertion per step; the first one is always there. A search tree keeps a repeat (to the right of its
+  // equal); an AVL tree skips it, as its rotations assume distinct keys.
   let last = vals[0];
   for (const [i, v] of vals.entries()) {
     if (i > 0 && !st.take()) break;
     last = v;
-    if (seen.has(v)) {
+    if (avl && seen.has(v)) {
       dups.push(v);
       continue;
     }
@@ -720,7 +721,7 @@ function renderSearchTree(spec: TreeSpec, w: AlgoWords, st: Steps): RenderedSvg 
   if (avl) caps.push(rotations.length ? { text: fill(w.rotations, { list: rotations.join(", ") }), color: C.purple } : { text: w.noRotations, color: C.purple });
   if (dups.length) caps.push({ text: fill(w.duplicates, { v: list(dups) }), color: C.orange });
   caps.push({ text: w.treeInfo[spec.kind], color: "#495057" });
-  const tex = avl ? `\\left|\\, h(L) - h(R) \\,\\right| \\le 1` : `L < v < R`;
+  const tex = avl ? `\\left|\\, h(L) - h(R) \\,\\right| \\le 1` : `L < v \\le R`;
   return compose(`${tex}, \\qquad n = ${n},\\quad h = ${H}`, parts.join(""), bodyH, caps);
 }
 

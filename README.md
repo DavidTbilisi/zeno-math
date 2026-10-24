@@ -754,23 +754,25 @@ UI in English, Russian and Georgian.
     per pass, split, merge or partition, with arrows showing where every value moved, the partition being worked
     on bracketed, comparisons and swaps counted, and the complexity explained; as cells or as bars
   - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed) and linear search
-  - *Patterns*: two pointers (a pair with a given sum, the two lines that hold the most water, removing duplicates
-    in place with a slow and a fast pointer, the Dutch national flag's three-way partition), Floyd's fast and slow
-    pointers (meeting in the loop, then at its entrance — the repeated number), sliding windows (k neighbours, the
-    longest run without a repeated character, the shortest run whose sum reaches S), prefix sums with a map
-    (subarrays that add up to k, negatives allowed), a monotonic stack (the next greater value) and Kadane's
-    maximum subarray — pointer names under the cells, one row per move
+  - *Patterns*: two pointers (a pair with a given sum, the two lines that hold the most water, the rain trapped
+    between bars, removing duplicates in place with a slow and a fast pointer, the Dutch national flag's three-way
+    partition), Floyd's fast and slow pointers (meeting in the loop, then at its entrance — the repeated number),
+    sliding windows (k neighbours, the longest run without a repeated character, the shortest run whose sum
+    reaches S), prefix sums with a map (subarrays that add up to k, negatives allowed), a monotonic stack (the next
+    greater value, also wrapping round to the start) and Kadane's maximum subarray — pointer names under the cells,
+    one row per move
   - *Graphs*: type edges like `A-B 4, B-C 2`; BFS (levels, queue), DFS (recursion stack), Dijkstra (distance
     table, shortest-path tree), Bellman–Ford (negative edges, early stop, the negative cycle named), Floyd–Warshall
     (all-pairs table, each improvement marked with the vertex it went through), Prim and Kruskal (minimum spanning
     tree, cycle checks), union–find (sets after every edge) and Kahn's topological sort (layered drawing, cycle
     detection); directed or undirected
-  - *Trees & heaps*: binary search trees with all four traversals, AVL trees with balance factors and
+  - *Trees & heaps*: binary search trees with all four traversals (a repeated key goes right), AVL trees with balance factors and
     LL/RR/LR/RL rotations, and min/max-heaps built by heapify — the tree and the array side by side
   - *Stacks, queues, hashing*: push/pop/peek traces, and hash tables with chaining or linear probing
     (probe sequences, collisions, load factor)
   - *Dynamic programming*: LCS, edit distance, 0/1 knapsack and coin change as filled tables with the
-    traceback path — and greedy coin change shown failing where it does
+    traceback path — and greedy coin change shown failing where it does; the number of ways to make change (a row
+    per coin) and the ways to climb a staircase 1 to k steps at a time
   - *Recursion*: call trees for Fibonacci (repeated calls marked — or cut short with memoisation), factorial and
     the towers of Hanoi (every move numbered); N-queens by backtracking (the first steps, dead ends, the board and
     the number of solutions); subset sum as a take / skip tree with branches over the target cut
