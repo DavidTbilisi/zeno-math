@@ -974,6 +974,15 @@ UI in English, Russian and Georgian.
     squares to recolour them and ⌖ to pick the start; then step, play, or turn on "Your turn" to say before each move
     what happens next (which pointer moves, pop or push, merge or start a new interval, which half to search, the next
     node or number), with the reason given for a right answer
+  - *Interview problems*: AlgoExpert's 200 coding questions in its fifteen categories (arrays, binary search trees,
+    binary trees, dynamic programming, famous algorithms, graphs, greedy algorithms, heaps, linked lists, recursion,
+    searching, sorting, stacks, strings, tries) and SystemsExpert's system design — 24 fundamentals as simulations to
+    run (a cache evicting by LRU, LFU or FIFO, keys on a hash ring, a token bucket, a Raft election, a map-reduce job,
+    a TLS handshake in small numbers…) and its 13 design questions walked through (requirements, estimates worked out
+    from the numbers typed in, the architecture a box at a time, the main requests followed through it). Pick a
+    category and a problem, type its inputs, then step or play through the solution: cells with pointers, a linked
+    list, a tree, a grid, a table, a graph or an architecture diagram, with a note on every step and the answer at the
+    end
   - 📷 puts a picture of the piece beside it (the graph comes as an ordinary graph, editable in the graph tool, with
     the sliders' values put in); the graph, the experiment and long division are in the Algebra, Discrete and
     Arithmetic menus too
@@ -1312,6 +1321,8 @@ src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, 
 src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums a rod at a time with the friends of 5
                           and 10
 src/math/patternSteps.ts  the algorithm patterns as frames to step through, with the questions for "Your turn"
+src/math/problems/        the interview problems: core.ts (inputs, frame helpers), one file per category, index.ts
+src/live/scenes.tsx       the pictures of a frame (cells, rows, list, tree, grid, table, graph, architecture)
 src/math/descentLab.ts    the gradient descent lab: steps with momentum, the nine puzzles and how a try is judged,
                           free play's functions, and the picture
 src/math/pcaLab.ts        the PCA lab: PC1 and least squares from the covariance, a line's error and kept spread,

@@ -435,7 +435,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   rubik: [780, 1000],
   soroban: [820, 540],
   patterns: [800, 600],
-  problems: [800, 660],
+  problems: [800, 700],
   numberLine: [800, 460],
   geoboard: [600, 660],
   estimate: [720, 390],

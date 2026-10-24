@@ -3,23 +3,25 @@
 // drawn by the same scenes. Also the readers for those inputs and the small helpers the frames are built with. Kept
 // free of React so the problems can be tested on their own.
 import type { Dict } from "../../locales/en";
-import type { Cells, Frame, GraphEdge, Role, Trace, TreeNode } from "../patternSteps";
+import type { ArchBox, ArchKind, ArchLink, Cells, Frame, GraphEdge, Role, Trace, TreeNode } from "../patternSteps";
 import { fill } from "../text";
 
-export type { Cells, Frame, GraphEdge, Role, Trace, TreeNode };
+export type { ArchBox, ArchKind, ArchLink, Cells, Frame, GraphEdge, Role, Trace, TreeNode };
 export { fill };
 
 export type ProblemsWords = Dict["live"]["problems"];
 export type Errors = ProblemsWords["errors"];
 
-/** AlgoExpert's categories, in its order. */
+/** AlgoExpert's categories of coding questions, in its order, then SystemsExpert's fundamentals and design questions. */
 export const CATEGORIES = [
   "arrays", "bst", "trees", "dp", "famous", "graphs", "greedy", "heaps", "lists", "recursion", "searching", "sorting",
-  "stacks", "strings", "tries",
+  "stacks", "strings", "tries", "sysBasics", "sysDesigns",
 ] as const;
 export type Category = (typeof CATEGORIES)[number];
-/** Easy, medium, hard, very hard. */
-export type Level = 1 | 2 | 3 | 4;
+/** The categories of system design, which the piece lists apart from the coding questions. */
+export const SYSTEM_CATEGORIES: readonly Category[] = ["sysBasics", "sysDesigns"];
+/** Easy, medium, hard, very hard; 0 for the system design topics, which have no level. */
+export type Level = 0 | 1 | 2 | 3 | 4;
 
 /** Every problem's words: its name, the idea behind it, a label per input, then whatever its notes need. */
 export type ProblemText = { name: string; idea: string; labels: readonly string[] };
@@ -30,6 +32,8 @@ export type Problem<W extends ProblemText> = {
   example: readonly string[];
   solve: (input: readonly string[], w: W, e: Errors) => Trace;
 };
+/** Some of a category's problems, kept in a file of their own (their words likewise) and spread into the category. */
+export type ProblemSubset<C extends Category, K extends keyof ProblemsWords[C]> = { [P in K]: ProblemsWords[C][P] extends ProblemText ? Problem<ProblemsWords[C][P]> : never };
 export type ProblemSet<C extends Category> = { [K in keyof ProblemsWords[C]]: ProblemsWords[C][K] extends ProblemText ? Problem<ProblemsWords[C][K]> : never };
 
 // ——— Reading the inputs ———
@@ -117,14 +121,14 @@ export function intervals(s: string, e: Errors, max = 8): [number, number][] {
   return out;
 }
 
-/** Points "1,2 3,4" or "(1, 2) (3, 4)" or "1 2; 3 4". */
+/** Points "1,2 3,4" or "(1, 2) (3, 4)" or "1 2; 3 4": with ";" each part is a point, otherwise the numbers pair up. */
 export function points(s: string, e: Errors, max = 10): [number, number][] {
   const t = minus(s).replace(/[()[\]]/g, " ");
-  const groups = t.includes(";") ? t.split(";") : t.trim().split(/\s+(?=-?\d)/).length > 1 && t.includes(",") ? t.trim().split(/\s+/) : t.split(/[;\n]/);
-  const out = groups.map((g) => g.trim()).filter(Boolean).map((g): [number, number] => {
+  const groups = t.includes(";") ? t.split(";").map((g) => g.trim()).filter(Boolean) : [t];
+  const out = groups.flatMap((g): [number, number][] => {
     const p = g.split(/[,\s]+/).filter(Boolean).map(Number);
-    if (p.length !== 2 || !p.every(Number.isInteger)) throw new Error(fill(e.point, { s: g }));
-    return [p[0], p[1]];
+    if (!p.length || p.length % 2 || (t.includes(";") && p.length !== 2) || !p.every(Number.isInteger)) throw new Error(fill(e.point, { s: g }));
+    return Array.from({ length: p.length / 2 }, (_, k) => [p[2 * k], p[2 * k + 1]]);
   });
   if (!out.length) throw new Error(e.empty);
   if (out.length > max) throw new Error(fill(e.tooMany, { n: max }));

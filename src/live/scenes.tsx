@@ -3,7 +3,7 @@
 // and a graph. Each scene says how tall it is and draws itself at a given height; the height is the most any step needs,
 // so nothing jumps as a trace plays.
 import type { ReactNode } from "react";
-import type { Cells, Frame, Role, TreeNode } from "../math/patternSteps";
+import type { ArchBox, Cells, Frame, GraphEdge, Role, TreeNode } from "../math/patternSteps";
 import { INK } from "./ui";
 
 // The picture's width; its height is the most any step needs, so nothing jumps as it plays.
@@ -111,12 +111,15 @@ export function cellsScene(frames: Frame[], frame: Frame, edit: { at: (i: number
 // ——— Rows under the picture: stacks, heaps, queues, answers ———
 
 export const ROW_X = 116;
-export function rowLayout(c: Cells) {
+/** Where the rows' boxes start: after the longest label any step has (at least ROW_X), so no label runs off the edge. */
+const rowStart = (frames: Frame[]) => Math.min(260, Math.max(ROW_X, ...frames.flatMap((f) => (f.rows ?? []).map((r) => (r.label ? textW(r.label) * 0.86 + 20 : 0)))));
+
+export function rowLayout(c: Cells, x0 = ROW_X) {
   const items: { x: number; y: number; w: number }[] = [];
-  let [x, y] = [ROW_X, 0];
+  let [x, y] = [x0, 0];
   for (const v of c.vals) {
     const w = Math.max(34, textW(v) + 16);
-    if (x + w > SW - 8 && x > ROW_X) [x, y] = [ROW_X, y + 36];
+    if (x + w > SW - 8 && x > x0) [x, y] = [x0, y + 36];
     items.push({ x, y, w });
     x += w + 5;
   }
@@ -126,8 +129,9 @@ export function rowLayout(c: Cells) {
 export function rowsScene(frames: Frame[], frame: Frame): Scene {
   const rows = frame.rows ?? [];
   const most = Math.max(0, ...frames.map((f) => f.rows?.length ?? 0));
+  const x0 = rowStart(frames);
   // Each row as tall as it gets at any step.
-  const heights = Array.from({ length: most }, (_, r) => Math.max(30, ...frames.map((f) => (f.rows?.[r] ? rowLayout(f.rows[r]).h : 0))));
+  const heights = Array.from({ length: most }, (_, r) => Math.max(30, ...frames.map((f) => (f.rows?.[r] ? rowLayout(f.rows[r], x0).h : 0))));
   const indexed = frames.some((f) => f.rows?.some((row) => row.label === "P"));
   const gap = indexed ? 22 : 10;
   return {
@@ -135,12 +139,12 @@ export function rowsScene(frames: Frame[], frame: Frame): Scene {
     draw: (y0) => {
       let y = y0 + (indexed ? 12 : 0);
       return rows.map((row, r) => {
-        const { items } = rowLayout(row);
+        const { items } = rowLayout(row, x0);
         const at = y;
         y += heights[r] + gap;
         return (
           <g key={r}>
-            <text x={ROW_X - 10} y={at + 20} fontSize={14} fill={GREY} textAnchor="end">{row.label}</text>
+            <text x={x0 - 10} y={at + 20} fontSize={14} fill={GREY} textAnchor="end">{row.label}</text>
             {row.label === "P" && items.map((it, i) => <text key={`i${i}`} x={it.x + it.w / 2} y={at - 3} fontSize={10} fill={GREY} textAnchor="middle">{i}</text>)}
             {items.map((it, i) => box(i, it.x, at + it.y, it.w, 30, row.vals[i], roleOf(row.roles, i), undefined, 15))}
           </g>
@@ -319,7 +323,7 @@ export function spansScene(frames: Frame[], frame: Frame): Scene {
               return (
                 <g key={i}>
                   <rect x={xOf(a)} y={yy} width={Math.max(4, xOf(b) - xOf(a))} height={LANE - 6} rx={4} fill={r.fill} stroke={r.stroke} strokeWidth={1.6} style={{ transition: "fill 200ms, width 280ms" }} />
-                  <text x={xOf(b) + 5} y={yy + 12} fontSize={11} fill={GREY}>{`[${num(a)}, ${num(b)}]`}</text>
+                  <text x={xOf(b) + 5} y={yy + 12} fontSize={11} fill={GREY}>{a === b ? num(a) : `[${num(a)}, ${num(b)}]`}</text>
                 </g>
               );
             })}
@@ -350,25 +354,31 @@ export function spansScene(frames: Frame[], frame: Frame): Scene {
 
 export function matScene(frames: Frame[], frame: Frame): Scene {
   const m = frame.mat!;
-  const R = Math.max(...frames.map((f) => f.mat?.vals.length ?? 0));
-  const C = Math.max(...frames.map((f) => Math.max(0, ...(f.mat?.vals.map((r) => r.length) ?? [0]))));
-  const heads = frames.some((f) => f.mat?.rowHeads);
-  const colHeads = frames.some((f) => f.mat?.colHeads);
-  const headW = heads ? Math.max(28, ...frames.flatMap((f) => f.mat?.rowHeads ?? []).map((h) => textW(h) + 10)) : 22;
+  const mats = frames.flatMap((f) => (f.mat ? [f.mat] : []));
+  const R = Math.max(...mats.map((t) => t.vals.length));
+  const C = Math.max(...mats.map((t) => Math.max(0, ...t.vals.map((r) => r.length))));
+  const heads = mats.some((t) => t.rowHeads);
+  const colHeads = mats.some((t) => t.colHeads);
+  const headW = heads ? Math.max(28, ...mats.flatMap((t) => t.rowHeads ?? []).map((h) => textW(h) * 0.72 + 12)) : 22;
   const cs = Math.min(46, Math.floor((SW - 40 - headW) / Math.max(1, C)), Math.floor(380 / Math.max(1, R)));
   const size = Math.min(16, 7 + cs * 0.22);
-  const x0 = (SW - headW - C * cs) / 2 + headW;
+  // A column is as wide as its longest entry (in any step) needs, and at least a square.
+  const widths = Array.from({ length: C }, (_, c) =>
+    Math.max(cs, ...mats.flatMap((t) => t.vals.map((r) => (r[c] === undefined ? 0 : textW(r[c]) * (size / 17) + 14))), ...(colHeads ? mats.map((t) => textW(t.colHeads?.[c] ?? "") * 0.66 + 10) : [])),
+  );
+  const xs = widths.reduce((acc, wd) => [...acc, acc[acc.length - 1] + wd], [0]);
+  const x0 = (SW - headW - xs[C]) / 2 + headW;
   return {
     h: 16 + R * cs + 4,
     draw: (y) => (
       <g>
         {Array.from({ length: C }, (_, c) => (
-          <text key={`c${c}`} x={x0 + c * cs + cs / 2} y={y + 11} fontSize={11} fill={colHeads ? BLUE : GREY} fontWeight={colHeads ? 700 : 400} textAnchor="middle">{m.colHeads?.[c] ?? c}</text>
+          <text key={`c${c}`} x={x0 + xs[c] + widths[c] / 2} y={y + 11} fontSize={11} fill={colHeads ? BLUE : GREY} fontWeight={colHeads ? 700 : 400} textAnchor="middle">{m.colHeads?.[c] ?? c}</text>
         ))}
-        {m.vals.map((row, r) => (
-          <g key={r}>
-            <text x={x0 - 8} y={y + 16 + r * cs + cs / 2 + 4} fontSize={11} fill={heads ? BLUE : GREY} fontWeight={heads ? 700 : 400} textAnchor="end">{m.rowHeads?.[r] ?? r}</text>
-            {row.map((v, c) => box(`${r}:${c}`, x0 + c * cs + 1, y + 16 + r * cs + 1, cs - 2, cs - 2, v, m.roles[r]?.[c] ?? "plain", undefined, size))}
+        {m.vals.map((r, i) => (
+          <g key={i}>
+            <text x={x0 - 8} y={y + 16 + i * cs + cs / 2 + 4} fontSize={11} fill={heads ? BLUE : GREY} fontWeight={heads ? 700 : 400} textAnchor="end">{m.rowHeads?.[i] ?? i}</text>
+            {r.map((v, c) => box(`${i}:${c}`, x0 + xs[c] + 1, y + 16 + i * cs + 1, widths[c] - 2, cs - 2, v, m.roles[i]?.[c] ?? "plain", undefined, size))}
           </g>
         ))}
       </g>
@@ -379,16 +389,63 @@ export function matScene(frames: Frame[], frame: Frame): Scene {
 // ——— A graph ———
 
 /** Where each node sits: in layers (a tree from its root, a row per layer) or round a circle. */
-function graphLayout(n: number, layer: number[] | undefined, w: number, h: number): [number, number][] {
+/**
+ * Angles in degrees pushed apart until no two nodes overlap, keeping their order round the circle (ties in index
+ * order): only next-door neighbours push each other, half each way, so every node stays near where it was.
+ */
+function spread(angle: number[]): number[] {
+  const n = angle.length;
+  const gap = Math.min(22, (360 / n) * 0.95);
+  const order = angle.map((x, i) => [((x % 360) + 360) % 360, i] as const).sort((x, y) => x[0] - y[0] || x[1] - y[1]);
+  const b = order.map(([x]) => x);
+  for (let round = 0; round < 500; round++) {
+    let moved = false;
+    for (let k = 0; k < n; k++) {
+      const next = (k + 1) % n;
+      const d = b[next] + (next === 0 ? 360 : 0) - b[k];
+      if (n < 2 || d >= gap - 1e-6) continue;
+      b[k] -= (gap - d) / 2;
+      b[next] += (gap - d) / 2;
+      moved = true;
+    }
+    if (!moved) break;
+  }
+  const out: number[] = Array(n);
+  order.forEach(([, i], k) => (out[i] = b[k]));
+  return out;
+}
+
+function graphLayout(n: number, layer: number[] | undefined, edges: GraphEdge[], w: number, h: number, angle?: number[]): [number, number][] {
   if (!layer) {
     const r = Math.min(w, h) / 2 - 26;
-    return Array.from({ length: n }, (_, i) => [w / 2 + r * Math.sin((2 * Math.PI * i) / n), h / 2 - r * Math.cos((2 * Math.PI * i) / n)]);
+    const deg = angle ? spread(angle) : Array.from({ length: n }, (_, i) => (360 * i) / n);
+    return deg.map((d) => [w / 2 + r * Math.sin((Math.PI * d) / 180), h / 2 - r * Math.cos((Math.PI * d) / 180)]);
   }
   const rows = 1 + Math.max(0, ...layer);
+  const yOf = (d: number) => 26 + (rows === 1 ? 0 : (d * (h - 52)) / (rows - 1));
+  // A forest (every node below the top joined to exactly one node a layer up): the leaves take the next places left to
+  // right and each parent sits over the middle of its children, so no two edges cross.
+  const parent = Array.from({ length: n }, (_, i) => {
+    if (layer[i] === 0) return -1;
+    const up = new Set(edges.flatMap((e) => (e.a === i && layer[e.b] === layer[i] - 1 ? [e.b] : e.b === i && layer[e.a] === layer[i] - 1 ? [e.a] : [])));
+    return up.size === 1 ? [...up][0] : -2;
+  });
+  if (!parent.includes(-2)) {
+    const kids = Array.from({ length: n }, (_, v) => parent.flatMap((p, i) => (p === v ? [i] : [])));
+    const x: number[] = Array(n).fill(0);
+    let slot = 0;
+    const place = (v: number) => {
+      if (!kids[v].length) return void (x[v] = slot++);
+      kids[v].forEach(place);
+      x[v] = (x[kids[v][0]] + x[kids[v][kids[v].length - 1]]) / 2;
+    };
+    layer.forEach((d, i) => d === 0 && place(i));
+    return x.map((v, i) => [((v + 0.5) * w) / slot, yOf(layer[i])]);
+  }
   const pos: [number, number][] = [];
   for (let d = 0; d < rows; d++) {
     const here = layer.flatMap((l, i) => (l === d ? [i] : []));
-    here.forEach((i, k) => (pos[i] = [((k + 0.5) * w) / here.length, 26 + (rows === 1 ? 0 : (d * (h - 52)) / (rows - 1))]));
+    here.forEach((i, k) => (pos[i] = [((k + 0.5) * w) / here.length, yOf(d)]));
   }
   return pos;
 }
@@ -402,11 +459,12 @@ export function graphScene(frames: Frame[], frame: Frame): Scene {
   const R = Math.max(13, Math.min(19, 260 / Math.max(1, n)));
   const W = g.layer ? SW - 40 : Math.min(SW - 40, H + 160);
   const x0 = (SW - W) / 2;
-  const pos = graphLayout(n, g.layer, W, H).map(([x, yy]) => [x0 + x, yy] as [number, number]);
+  const pos = graphLayout(n, g.layer, g.edges, W, H, g.angle).map(([x, yy]) => [x0 + x, yy] as [number, number]);
   return {
     h: H + (tags ? 14 : 0),
     draw: (y) => (
       <g>
+        {g.angle && <circle cx={x0 + W / 2} cy={y + H / 2} r={Math.min(W, H) / 2 - 26} fill="none" stroke="#dee2e6" strokeWidth={2} />}
         {g.edges.map((e, i) => {
           const [ax, ay] = pos[e.a];
           const [bx, by] = pos[e.b];
@@ -452,6 +510,100 @@ export function graphScene(frames: Frame[], frame: Frame): Scene {
   };
 }
 
+// ——— A system's architecture ———
+
+const ARCH_ROW = 76;
+const ARCH_H = 40;
+const archW = (b: ArchBox) => Math.max(84, Math.min(170, b.label.length * 7.4 + 22));
+
+/** One box: a cylinder for a database or a blob store, stripes for a queue, round ends for a client. */
+function archBox(key: number, b: ArchBox, cx: number, cy: number) {
+  const r = ROLE[b.role ?? "plain"];
+  const w = archW(b);
+  const [x, y] = [cx - w / 2, cy - ARCH_H / 2];
+  const stroke = { stroke: r.stroke, strokeWidth: b.role && b.role !== "plain" ? 2.2 : 1.4, style: { transition: "fill 200ms, stroke 200ms" } };
+  let shape: ReactNode;
+  if (b.kind === "db" || b.kind === "store")
+    shape = (
+      <g>
+        <path d={`M${x},${y + 6} v${ARCH_H - 12} a${w / 2},6 0 0 0 ${w},0 v${-(ARCH_H - 12)}`} fill={r.fill} {...stroke} />
+        <ellipse cx={cx} cy={y + 6} rx={w / 2} ry={6} fill={r.fill} {...stroke} />
+      </g>
+    );
+  else if (b.kind === "queue")
+    shape = (
+      <g>
+        <rect x={x} y={y} width={w} height={ARCH_H} rx={3} fill={r.fill} {...stroke} />
+        {[1, 2, 3].map((k) => <line key={k} x1={x + w - k * 9} y1={y + 3} x2={x + w - k * 9} y2={y + ARCH_H - 3} stroke={r.stroke} strokeWidth={1} />)}
+      </g>
+    );
+  else shape = <rect x={x} y={y} width={w} height={ARCH_H} rx={b.kind === "client" ? ARCH_H / 2 : b.kind === "lb" || b.kind === "cdn" ? 12 : 5} fill={r.fill} {...stroke} strokeDasharray={b.kind === "cache" ? "5 3" : undefined} />;
+  return (
+    <g key={key}>
+      {shape}
+      <text x={cx} y={cy + 5 + (b.kind === "db" || b.kind === "store" ? 3 : 0)} fontSize={Math.min(13, (w - 12) / (b.label.length * 0.57))} textAnchor="middle" fill={r.text}>{b.label}</text>
+      {b.tag && <text x={cx} y={cy + ARCH_H / 2 + 13} fontSize={11} fontWeight={700} textAnchor="middle" fill={PURPLE}>{b.tag}</text>}
+    </g>
+  );
+}
+
+export function archScene(frames: Frame[], frame: Frame): Scene {
+  const a = frame.arch!;
+  const all = frames.flatMap((f) => f.arch?.boxes ?? []);
+  const cols = 1 + Math.max(0, ...all.map((b) => b.col));
+  const rows = 1 + Math.max(0, ...all.map((b) => b.row));
+  const colW = (SW - 20) / cols;
+  const at = (b: ArchBox): [number, number] => [10 + (b.col + 0.5) * colW, 26 + b.row * ARCH_ROW];
+  /** Where the line from a box's centre towards (tx, ty) leaves the box. */
+  const edge = (b: ArchBox, tx: number, ty: number): [number, number] => {
+    const [cx, cy] = at(b);
+    const [dx, dy] = [tx - cx, ty - cy];
+    const [hw, hh] = [archW(b) / 2 + 3, ARCH_H / 2 + 3];
+    const t = Math.min(dx ? hw / Math.abs(dx) : Infinity, dy ? hh / Math.abs(dy) : Infinity);
+    return [cx + dx * t, cy + dy * t];
+  };
+  return {
+    h: 26 + (rows - 1) * ARCH_ROW + ARCH_H / 2 + 18,
+    draw: (y) => (
+      <g>
+        {a.links.map((l, i) => {
+          const [A, B] = [a.boxes[l.a], a.boxes[l.b]];
+          const [bx, by] = at(B);
+          const [ax, ay] = at(A);
+          const [x1, y1] = edge(A, bx, by);
+          const [x2, y2] = edge(B, ax, ay);
+          const role = l.role ?? "plain";
+          const hot = role !== "plain";
+          const color = hot ? ROLE[role].stroke : GREY;
+          return (
+            <g key={`l${i}`}>
+              <line
+                x1={x1}
+                y1={y + y1}
+                x2={x2}
+                y2={y + y2}
+                stroke={color}
+                strokeWidth={hot ? 2.6 : 1.4}
+                strokeDasharray={l.dashed ? "6 4" : undefined}
+                markerEnd={hot ? "url(#pat-arrow-hot)" : "url(#pat-arrow-grey)"}
+                markerStart={l.both ? (hot ? "url(#pat-arrow-hot)" : "url(#pat-arrow-grey)") : undefined}
+                style={{ transition: "stroke 200ms" }}
+              />
+              {l.label && (
+                <text x={(x1 + x2) / 2} y={y + (y1 + y2) / 2 - 5} fontSize={11} fontWeight={hot ? 700 : 400} textAnchor="middle" fill={color} paintOrder="stroke" stroke="#fff" strokeWidth={4}>{l.label}</text>
+              )}
+            </g>
+          );
+        })}
+        {a.boxes.map((b, i) => {
+          const [cx, cy] = at(b);
+          return archBox(i, b, cx, y + cy);
+        })}
+      </g>
+    ),
+  };
+}
+
 /** The arrowheads the list and graph scenes point with. */
 export function Markers() {
   return (
@@ -461,6 +613,12 @@ export function Markers() {
       </marker>
       <marker id="pat-arrow-back" viewBox="0 0 10 10" refX={9} refY={5} markerWidth={7} markerHeight={7} orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill={PURPLE} />
+      </marker>
+      <marker id="pat-arrow-grey" viewBox="0 0 10 10" refX={9} refY={5} markerWidth={7} markerHeight={7} orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={GREY} />
+      </marker>
+      <marker id="pat-arrow-hot" viewBox="0 0 10 10" refX={9} refY={5} markerWidth={6} markerHeight={6} orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={ROLE.compare.stroke} />
       </marker>
     </defs>
   );

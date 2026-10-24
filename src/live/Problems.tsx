@@ -4,9 +4,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LiveProblems } from "../math/live";
 import type { Frame, Trace } from "../math/patternSteps";
-import { CATEGORIES, isProblemId, problemInfo, problemsIn, problemTrace, problemWords, type Category, type ProblemId } from "../math/problems/index";
+import { CATEGORIES, isProblemId, SYSTEM_CATEGORIES, problemInfo, problemsIn, problemTrace, problemWords, type Category, type ProblemId } from "../math/problems/index";
 import { depth } from "../math/problems/core";
-import { cellsScene, graphScene, gridScene, listScene, Markers, matScene, rowsScene, spansScene, SW, treeScene, type Scene } from "./scenes";
+import { archScene, cellsScene, graphScene, gridScene, listScene, Markers, matScene, rowsScene, spansScene, SW, treeScene, type Scene } from "./scenes";
 import { fill, FONT, Toggle, type PieceProps } from "./ui";
 
 const PLAY_MS = 1100;
@@ -76,6 +76,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
     if (frame.grid) scenes.push(gridScene(frame, null, null));
     if (frame.mat) scenes.push(matScene(frames, frame));
     if (frame.graph) scenes.push(graphScene(frames, frame));
+    if (frame.arch) scenes.push(archScene(frames, frame));
     if (frame.spans) scenes.push(spansScene(frames, frame));
     if (frames.some((f) => f.rows?.length)) scenes.push(rowsScene(frames, frame));
   }
@@ -99,13 +100,17 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
             if (first) pick(first);
           }}
         >
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c} disabled={!problemsIn(c).length}>{w.cats[c]}</option>
+          {([["coding", CATEGORIES.filter((c) => !SYSTEM_CATEGORIES.includes(c))], ["systems", SYSTEM_CATEGORIES]] as const).map(([group, cats]) => (
+            <optgroup key={group} label={w.groups[group]}>
+              {cats.map((c) => (
+                <option key={c} value={c} disabled={!problemsIn(c).length}>{w.cats[c]}</option>
+              ))}
+            </optgroup>
           ))}
         </select>
         <select value={id} aria-label={w.problem} onChange={(e) => pick(e.target.value as ProblemId)}>
           {problemsIn(info.cat).map((p) => (
-            <option key={p} value={p}>{`${problemWords(p, w).name} · ${w.levels[problemInfo(p).level - 1]}`}</option>
+            <option key={p} value={p}>{problemInfo(p).level ? `${problemWords(p, w).name} · ${w.levels[problemInfo(p).level - 1]}` : problemWords(p, w).name}</option>
           ))}
         </select>
         <button className="live-btn" onClick={() => restart({ inputs: [...info.example] })}>{w.example}</button>
@@ -137,7 +142,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
           </label>
         ))}
       </div>
-      <div className="live-pattern-stage">
+      <div className="live-problem-stage">
         <svg ref={svgRef} width={SW} height={height} viewBox={`0 0 ${SW} ${height}`} fontFamily={FONT}>
           <Markers />
           <rect width={SW} height={height} fill="#fff" />

@@ -15,6 +15,8 @@ import { sorting } from "./sorting";
 import { stacks } from "./stacks";
 import { strings } from "./strings";
 import { tries } from "./tries";
+import { sysBasics } from "./sysBasics";
+import { sysDesigns } from "./sysDesigns";
 
 export const problems = {
   problem: "Problem",
@@ -37,7 +39,9 @@ export const problems = {
     arrays: "Arrays", bst: "Binary search trees", trees: "Binary trees", dp: "Dynamic programming", famous: "Famous algorithms",
     graphs: "Graphs", greedy: "Greedy algorithms", heaps: "Heaps", lists: "Linked lists", recursion: "Recursion",
     searching: "Searching", sorting: "Sorting", stacks: "Stacks", strings: "Strings", tries: "Tries",
+    sysBasics: "System design: fundamentals", sysDesigns: "System design: questions",
   },
+  groups: { coding: "Coding questions", systems: "System design" },
   yes: "yes",
   no: "no",
   errors: {
@@ -60,5 +64,5 @@ export const problems = {
     sameLength: "Both need the same number of entries.",
     bad: "“{s}” doesn't fit here.",
   },
-  arrays, bst, trees, dp, famous, graphs, greedy, heaps, lists, recursion, searching, sorting, stacks, strings, tries,
+  arrays, bst, trees, dp, famous, graphs, greedy, heaps, lists, recursion, searching, sorting, stacks, strings, tries, sysBasics, sysDesigns,
 };

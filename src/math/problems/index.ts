@@ -15,12 +15,14 @@ import { SORTING } from "./sorting";
 import { STACKS } from "./stacks";
 import { STRINGS } from "./strings";
 import { TRIES } from "./tries";
-import { CATEGORIES, type Category, type Errors, type Level, type Problem, type ProblemSet, type ProblemsWords, type ProblemText, type Trace } from "./core";
+import { SYS_BASICS } from "./sysBasics";
+import { SYS_DESIGNS } from "./sysDesigns";
+import { CATEGORIES, SYSTEM_CATEGORIES, type Category, type Errors, type Level, type Problem, type ProblemSet, type ProblemsWords, type ProblemText, type Trace } from "./core";
 
-export { CATEGORIES, type Category, type Level };
+export { CATEGORIES, SYSTEM_CATEGORIES, type Category, type Level };
 
 const SETS: { [C in Category]: ProblemSet<C> } = {
-  arrays: ARRAYS, bst: BST, trees: TREES, dp: DP, famous: FAMOUS, graphs: GRAPHS, greedy: GREEDY, heaps: HEAPS, lists: LISTS, recursion: RECURSION, searching: SEARCHING, sorting: SORTING, stacks: STACKS, strings: STRINGS, tries: TRIES,
+  arrays: ARRAYS, bst: BST, trees: TREES, dp: DP, famous: FAMOUS, graphs: GRAPHS, greedy: GREEDY, heaps: HEAPS, lists: LISTS, recursion: RECURSION, searching: SEARCHING, sorting: SORTING, stacks: STACKS, strings: STRINGS, tries: TRIES, sysBasics: SYS_BASICS, sysDesigns: SYS_DESIGNS,
 };
 
 export type ProblemId = { [C in Category]: keyof ProblemsWords[C] & string }[Category];
@@ -28,7 +30,7 @@ export type ProblemId = { [C in Category]: keyof ProblemsWords[C] & string }[Cat
 type Entry = { id: ProblemId; cat: Category; problem: Problem<ProblemText> };
 /** Every problem, a category at a time and the easy ones first within it. */
 const ENTRIES: Entry[] = CATEGORIES.flatMap((cat) =>
-  Object.entries(SETS[cat] as Record<string, Problem<ProblemText>>)
+  Object.entries(SETS[cat] as unknown as Record<string, Problem<ProblemText>>)
     .map(([id, problem]) => ({ id: id as ProblemId, cat, problem }))
     .sort((a, b) => a.problem.level - b.problem.level),
 );

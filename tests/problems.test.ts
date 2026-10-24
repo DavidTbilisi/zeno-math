@@ -31,7 +31,7 @@ test("every example solves in every language and ends on its answer", () => {
       for (const [k, f] of trace.frames.entries()) {
         const where = `${id} (${lang}) @ ${k}`;
         assert.ok(f.note.trim(), `${where}: a note`);
-        assert.ok(f.cells || f.rows?.length || f.list || f.tree || f.grid || f.mat || f.graph || f.spans, `${where}: a picture`);
+        assert.ok(f.cells || f.rows?.length || f.list || f.tree || f.grid || f.mat || f.graph || f.arch || f.spans, `${where}: a picture`);
         const all = JSON.stringify(f);
         assert.doesNotMatch(all, /NaN|undefined|Infinity|\{\w+\}/, where);
       }

@@ -16,6 +16,8 @@ import { sorting } from "./sorting";
 import { stacks } from "./stacks";
 import { strings } from "./strings";
 import { tries } from "./tries";
+import { sysBasics } from "./sysBasics";
+import { sysDesigns } from "./sysDesigns";
 
 export const problems: typeof En = {
   problem: "ამოცანა",
@@ -38,7 +40,9 @@ export const problems: typeof En = {
     arrays: "მასივები", bst: "ორობითი ძებნის ხეები", trees: "ორობითი ხეები", dp: "დინამიკური პროგრამირება", famous: "ცნობილი ალგორითმები",
     graphs: "გრაფები", greedy: "ხარბი ალგორითმები", heaps: "გროვები", lists: "ბმული სიები", recursion: "რეკურსია",
     searching: "ძებნა", sorting: "დალაგება", stacks: "სტეკები", strings: "სტრიქონები", tries: "პრეფიქსული ხეები",
+    sysBasics: "სისტემების დიზაინი: საფუძვლები", sysDesigns: "სისტემების დიზაინი: ამოცანები",
   },
+  groups: { coding: "პროგრამირების ამოცანები", systems: "სისტემების დიზაინი" },
   yes: "კი",
   no: "არა",
   errors: {
@@ -61,5 +65,5 @@ export const problems: typeof En = {
     sameLength: "ორივეში ელემენტების ერთნაირი რაოდენობა უნდა იყოს.",
     bad: "„{s}“ აქ არ ჯდება.",
   },
-  arrays, bst, trees, dp, famous, graphs, greedy, heaps, lists, recursion, searching, sorting, stacks, strings, tries,
+  arrays, bst, trees, dp, famous, graphs, greedy, heaps, lists, recursion, searching, sorting, stacks, strings, tries, sysBasics, sysDesigns,
 };

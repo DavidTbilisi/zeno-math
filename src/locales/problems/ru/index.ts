@@ -16,6 +16,8 @@ import { sorting } from "./sorting";
 import { stacks } from "./stacks";
 import { strings } from "./strings";
 import { tries } from "./tries";
+import { sysBasics } from "./sysBasics";
+import { sysDesigns } from "./sysDesigns";
 
 export const problems: typeof En = {
   problem: "Задача",
@@ -38,7 +40,9 @@ export const problems: typeof En = {
     arrays: "Массивы", bst: "Двоичные деревья поиска", trees: "Двоичные деревья", dp: "Динамическое программирование", famous: "Известные алгоритмы",
     graphs: "Графы", greedy: "Жадные алгоритмы", heaps: "Кучи", lists: "Связные списки", recursion: "Рекурсия",
     searching: "Поиск", sorting: "Сортировка", stacks: "Стеки", strings: "Строки", tries: "Префиксные деревья",
+    sysBasics: "Проектирование систем: основы", sysDesigns: "Проектирование систем: задачи",
   },
+  groups: { coding: "Задачи на программирование", systems: "Проектирование систем" },
   yes: "да",
   no: "нет",
   errors: {
@@ -61,5 +65,5 @@ export const problems: typeof En = {
     sameLength: "В обоих должно быть одинаковое число элементов.",
     bad: "«{s}» здесь не подходит.",
   },
-  arrays, bst, trees, dp, famous, graphs, greedy, heaps, lists, recursion, searching, sorting, stacks, strings, tries,
+  arrays, bst, trees, dp, famous, graphs, greedy, heaps, lists, recursion, searching, sorting, stacks, strings, tries, sysBasics, sysDesigns,
 };
