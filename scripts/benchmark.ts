@@ -1,20 +1,24 @@
 // The benchmark results behind the dashboard (docs/evaluation/prediction-benchmark.md): on a data set's held-out
 // students, how well each model predicts the next first answer, the logistic model against Elo by the paired bootstrap
-// on several splits, and the mastery rules of H3 with the logistic rule beside them, their trade-off curves and how the
-// logistic rule compares on each split.
+// on several splits, the mastery rules of H3 with the logistic rule beside them, their trade-off curves and how the
+// logistic rule compares on each split, and the app's model (src/model/classModel.ts) against the Elo model it replaced,
+// each run as the app runs it: from no answers, through every answer in order.
 //
 //   npm run benchmark                                         data/assistments.json, results in docs/results
 //   npm run benchmark -- assistments.json --out docs/results --seeds 1,2,3,4,5 --resamples 2000 --test-share 0.2
+//   --parts prediction,mastery,app                            which files to write (all three by default)
 //
 // The first seed's split is the one the tables show; the others only show whether the comparisons hang on it.
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { ClassModel } from "../src/model/classModel.ts";
 import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
-import { EloModel } from "../src/model/elo.ts";
+import { EloModel, type Observation } from "../src/model/elo.ts";
 import {
-  BktModel, EmaModel, globalRate, heldOutPredictions, itemRate, metrics, pairedLogLoss, PfaModel, splitByStudent, studentSkillRate, type Predictor,
+  BktModel, EmaModel, globalRate, heldOutPredictions, itemRate, metrics, pairedLogLoss, PfaModel, replay, splitByStudent, studentSkillRate, type Predictor,
 } from "../src/model/evaluate.ts";
 import { LogisticModel } from "../src/model/logistic.ts";
+import { simulateRandom } from "../src/model/simulate.ts";
 import {
   bktRule, compareAfter, emaRule, fitRules, heldOutLogisticRule, judge, logisticRule, practicesFrom, rightAfter, streakRule, usualRules, type MasteryRule, type Practice,
 } from "../src/model/mastery.ts";
@@ -24,11 +28,12 @@ const opt = (name: string, fallback: string) => {
   const i = args.indexOf(name);
   return i >= 0 && args[i + 1] ? args[i + 1] : fallback;
 };
-const valued = new Set(["--out", "--seeds", "--resamples", "--test-share"]);
+const valued = new Set(["--out", "--seeds", "--resamples", "--test-share", "--parts"]);
 const file = args.find((a, i) => !a.startsWith("--") && !valued.has(args[i - 1])) ?? "data/assistments.json";
 const out = opt("--out", "docs/results");
 const seeds = opt("--seeds", "1,2,3,4,5").split(",").map(Number);
 const resamples = Number(opt("--resamples", "2000"));
+const parts = new Set(opt("--parts", "prediction,mastery,app").split(","));
 const testShare = Number(opt("--test-share", "0.2"));
 if (!seeds.length || seeds.some((s) => !Number.isInteger(s)) || !(resamples > 0) || !(testShare > 0 && testShare < 1)) {
   console.error("--seeds must be whole numbers separated by commas, --resamples above 0, --test-share between 0 and 1");
@@ -46,6 +51,7 @@ const write = (name: string, rows: readonly Record<string, unknown>[]) => {
 console.log(`${source}: ${observations.length.toLocaleString("en")} answers; seeds ${seeds.join(", ")}`);
 
 // ---------- predicting the next answer ----------
+if (parts.has("prediction")) {
 
 /** The models of npm run model that the dashboard shows, with the kind each is. */
 const models = (): [Predictor & { name: string }, string][] => [
@@ -87,8 +93,10 @@ for (const [s, seed] of seeds.entries()) {
 }
 write("benchmark-models.csv", predictionRows);
 write("benchmark-paired.csv", pairedRows);
+}
 
 // ---------- when to stop (H3) ----------
+if (parts.has("mastery")) {
 
 /** The next three answers after each declaration, and the mean answers before it. */
 const afterRow = (rule: MasteryRule, practices: readonly Practice[], kind: string) => {
@@ -126,3 +134,25 @@ for (const [s, seed] of seeds.entries()) {
 write("benchmark-mastery.csv", masteryRows);
 write("benchmark-versus.csv", versusRows);
 write("benchmark-curve.csv", curveRows);
+}
+
+// ---------- the app's model, run as the app runs it ----------
+if (parts.has("app")) {
+  // Every answer predicted before either model learns from it, from no answers at all: the logistic model from its
+  // simulated class's weights, fitted again as answers come; Elo with its defaults, learning from every answer.
+  const appRows: Record<string, unknown>[] = [];
+  const run = (stream: string, seed: number, answers: readonly Observation[], models: [Predictor, string][]) => {
+    for (const [m, model] of models) {
+      const ps = replay(m, answers);
+      const all = metrics(model, ps), late = metrics(model, ps.slice(Math.floor(ps.length / 2)));
+      appRows.push({ stream, seed, model, log_loss: all.logLoss, auc: all.auc, late_log_loss: late.logLoss, late_auc: late.auc, answers: all.n });
+    }
+    console.log(`  ${stream}, seed ${seed}: done`);
+  };
+  for (const world of ["elo", "irt2pl", "bkt"] as const)
+    for (const seed of [1, 2]) run(`simulated, ${world} world`, seed, simulateRandom({ seed, world }).observations, [[new EloModel(), "elo"], [new ClassModel(), "logistic, as the app runs it"]]);
+  // Zeno's questions are new each time, so ASSISTments' problems are left out: the logistic model has no question difficulty here.
+  const asked = observations.map(({ item: _, ...o }) => o);
+  run(source, 1, asked, [[new EloModel({ areaOf }), "elo"], [new EloModel({ areaOf: () => "all" }), "elo, one area"], [new ClassModel({ params: { areaOf } }), "logistic, as the app runs it"]]);
+  write("benchmark-app.csv", appRows);
+}
