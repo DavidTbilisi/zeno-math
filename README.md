@@ -258,6 +258,11 @@ UI in English, Russian and Georgian.
   - *Arguments*: validity by truth table with the counterexample row, and the rule named — modus ponens / tollens,
     hypothetical and disjunctive syllogism, transposition, dilemma — or the fallacy (affirming the consequent,
     denying the antecedent)
+  - *Syllogisms*: two premises in plain words (All / No / Some / Some … not, in English, Russian or Georgian) or
+    just a mood and figure (`EIO-2`, `Festino`); the terms found and the major premise put first, three-circle Venn
+    diagrams of the premises and the conclusion with distributed terms underlined, the medieval name, the rule that
+    is broken (undistributed middle, illicit major / minor, exclusive premises, existential fallacy), and what
+    follows when no conclusion is given; read the modern way (15 valid forms) or Aristotle's (no empty terms, 24)
   - *Strengthen / weaken*: the argument written with letters (a legend says what each means), premises, background
     links and a conclusion; an argument map with the unstated premise found automatically (the simplest extra premise
     that makes it valid), a pattern card (what people say → what to do, correlation → cause, sample → everyone,
@@ -1366,6 +1371,7 @@ src/math/graphtheory.ts   graph theory: properties, Euler, Hamilton, colouring, 
 src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh maps / minimal forms, circuits, arguments, Venn
 src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern cards, options judged by support
 src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and truth-teller / liar puzzles
+src/math/logicSyllogism.ts categorical syllogisms: mood / figure, three-circle Venn, rules, what follows
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
