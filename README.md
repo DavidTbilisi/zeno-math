@@ -286,6 +286,13 @@ UI in English, Russian and Georgian.
     finding the clue it breaks. Each step lights its marks on the staircase grid, with the candidates still open
     underneath, by year or price when there is a category of numbers; at the end, solved, or how many answers the
     clues allow
+  - *Mill's methods*: finding a cause three ways. Agreement and difference: a table of cases (`Ann: oysters, salad,
+    cake -> sick`), drawn with a ● for each factor, the column every case with the effect shares (blue; green when
+    it is also in none of the others, the joint method) and brackets joining two cases that differ in one factor
+    only, with what is necessary, what makes the difference and what is sufficient so far — and Mill's warning that
+    a factor nobody listed fools them all. Concomitant variation: rows of numbers, each factor drawn against the
+    effect with its correlation, and the warning that two factors moving together may share a third cause (ice
+    cream and drowning). Residues: the whole less the known parts as a bar model, the rest left to the factor named
   - *Truth-tellers & liars*: Smullyan's islands solved by checking X ↔ (what X says) in every row
   - *Sets*: Venn diagrams (1–3 sets) of ∪ ∩ ∖ Δ ′ expressions, two expressions compared, and x ∈ … as logic
   - The examples include the 2025 NAEC master's exam in logical reasoning (variant I): the grouping and
@@ -1386,6 +1393,8 @@ src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and 
 src/math/logicSyllogism.ts categorical syllogisms: mood / figure, three-circle Venn, rules, what follows
 src/math/logicTree.ts     truth trees (semantic tableaux): stacking and splitting rules, closed and open branches
 src/math/logicGrid.ts     logic grids: categories and clues, every answer counted, steps worked out as a person does
+src/math/logicMill.ts     Mill's methods: agreement, difference and joint method on a table of cases, concomitant
+                          variation as scatters with r, residues as a bar model
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations

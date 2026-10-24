@@ -4,6 +4,7 @@ import { LOGIC_PRESETS, LOGIC_TOPICS, renderLogic, type LogicSpec, type LogicTop
 import { BOARD_MODES, BOARD_PRESETS, type BoardSpec } from "../math/logicPuzzles";
 import { SW_ASKS, SW_PATTERNS, SW_PRESETS, type SwPattern, type SwSpec } from "../math/logicArgue";
 import { gridSteps } from "../math/logicGrid";
+import { MILL_MODES } from "../math/logicMill";
 import { fill } from "../math/text";
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
@@ -209,6 +210,14 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         <SwFields spec={spec} set={set} />
       ) : topic === "grid" ? (
         <GridFields spec={spec} set={set} />
+      ) : topic === "mill" ? (
+        <>
+          <Segmented items={MILL_MODES} value={spec.mill ?? "presence"} onChange={(mill) => set({ mill })} label={(m) => t.millModes[m]} />
+          <label className="field">
+            <span>{t.millInput[spec.mill ?? "presence"]}</span>
+            <textarea className="mono" rows={5} spellCheck={false} value={spec.f} onChange={(e) => set({ f: e.target.value })} />
+          </label>
+        </>
       ) : topic === "knights" ? (
         <label className="field">
           <span>{t.knightsStatements}</span>
@@ -254,7 +263,7 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         field("f", t.logicFormula)
       )}
 
-      {topic !== "board" && topic !== "grid" && topic !== "knights" && topic !== "strengthen" && topic !== "syllogism" && <div className="snippets">
+      {topic !== "board" && topic !== "grid" && topic !== "mill" && topic !== "knights" && topic !== "strengthen" && topic !== "syllogism" && <div className="snippets">
         {symbols.map((sym) => (
           <button key={sym} className="chip" onMouseDown={(e) => e.preventDefault()} onClick={() => insert(sym)}>
             {sym}
