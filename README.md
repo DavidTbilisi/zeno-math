@@ -258,6 +258,10 @@ UI in English, Russian and Georgian.
   - *Arguments*: validity by truth table with the counterexample row, and the rule named — modus ponens / tollens,
     hypothetical and disjunctive syllogism, transposition, dilemma — or the fallacy (affirming the consequent,
     denying the antecedent)
+  - *Truth trees*: the premises and the negated conclusion broken into their parts, ∧-like formulas stacked and
+    ∨-like ones split, every line numbered with the row and rule it came from and ticked once used; branches close
+    (✗, with the two rows) or stay open (○, with the row of the truth table they give). Leave the premises empty to
+    test a tautology, or the conclusion empty to test whether the formulas can all be true
   - *Syllogisms*: two premises in plain words (All / No / Some / Some … not, in English, Russian or Georgian) or
     just a mood and figure (`EIO-2`, `Festino`); the terms found and the major premise put first, three-circle Venn
     diagrams of the premises and the conclusion with distributed terms underlined, the medieval name, the rule that
@@ -1372,6 +1376,7 @@ src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh map
 src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern cards, options judged by support
 src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and truth-teller / liar puzzles
 src/math/logicSyllogism.ts categorical syllogisms: mood / figure, three-circle Venn, rules, what follows
+src/math/logicTree.ts     truth trees (semantic tableaux): stacking and splitting rules, closed and open branches
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
