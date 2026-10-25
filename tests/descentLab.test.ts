@@ -122,7 +122,7 @@ test("a failed try says why", () => {
 
 test("stars, notices and the slider's rates", () => {
   assert.deepEqual([descentStars(0), descentStars(1), descentStars(4)], [3, 2, 1]);
-  // Done is always worth a star, however many tries: the next puzzle opens.
+  // Done is always worth a star, however many tries, but only two (one wrong try at most) open the next puzzle.
   assert.equal(descentStars(99), 1);
   const lost = (why: "blowUp" | "grows" | "flat" | "local" | "slow") => ({ state: "lost" as const, why, x: 0, target: 0 });
   assert.deepEqual([lost("blowUp"), lost("grows"), lost("flat"), lost("local"), lost("slow")].map((v) => descentNotice(P[0], v)), ["blewUp", "blewUp", "flat", "local", null]);

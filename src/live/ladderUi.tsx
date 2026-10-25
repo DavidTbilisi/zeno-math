@@ -1,14 +1,15 @@
 // The parts of a game on the board that every game shares, so a player finds their way round each one alike: its ladder
-// kept in this browser; at the top the row of puzzles with their stars (a puzzle opens once the one before it has a
-// star), the way into the endless run (or free play) and, under it, where the player is — the round's dots, or the
-// endless run's levels and streak; at the bottom the button that moves on, the sound switch and the discoveries so
-// far; and the celebration when a puzzle is done (outside the piece's picture, so the 📷 copy never has confetti in it).
+// kept in this browser; at the top the row of puzzles with their stars (a puzzle opens once the one before it has two)
+// and the warm-up, the edge and the repair marked on them, the way into the endless run (open once every puzzle is
+// clean) or free play and, under it, where the player is — the round's dots, or the endless run's levels (each opened
+// by a streak on the one before), its clock and its streak; at the bottom the button that moves on (or plays a puzzle
+// not yet clean again), the sound switch and the discoveries so far; and the celebration when a puzzle is done (outside the piece's picture, so the 📷 copy never has confetti in it).
 // Every game is written on useGame.tsx, which puts these together and does what every outcome does; a game's own file
 // uses only `starText`, `RoundDots` and `newSeed` from here.
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
-import { burst, GAME_LEVELS, isOpen, readLadder, type GameLevel, type Ladder } from "../math/ladder";
+import { burst, clockOpen, GAME_LEVELS, isOpen, levelOpen, PASS_STREAK, readLadder, type GameLevel, type Ladder } from "../math/ladder";
 import { muted, setMuted } from "./juice";
 import { fill, Toggle } from "./ui";
 
@@ -42,12 +43,16 @@ export function useLadder<K extends string>(key: string, size: number, keys: rea
 
 export const starText = (n: number) => "★".repeat(n) + "☆".repeat(3 - n);
 
-/** The puzzles in a row, each with its stars, and anything else the game puts first (its free play). */
-export function LadderBar({ stars, current, onPick, words, children }: {
+const MARK = { anchor: "⚓", stretch: "↗", repair: "🔧" } as const;
+
+/** The puzzles in a row, each with its stars and its part in the daily block, and anything else the game puts first (its free play). */
+export function LadderBar({ stars, current, onPick, words, marks = {}, markWords, children }: {
   stars: number[];
   current: number | null;
   onPick: (stage: number) => void;
   words: { puzzle: string; locked: string };
+  marks?: Record<number, keyof typeof MARK>;
+  markWords?: Record<keyof typeof MARK, string>;
   children?: ReactNode;
 }) {
   return (
@@ -56,17 +61,20 @@ export function LadderBar({ stars, current, onPick, words, children }: {
       {stars.map((s, i) => {
         const open = isOpen({ stars }, i);
         const name = fill(words.puzzle, { n: i + 1 });
+        const mark = open ? marks[i] : undefined;
+        const role = mark && markWords ? ` (${markWords[mark]})` : "";
         return (
           <button
             key={i}
             className={`live-btn geo-stage${current === i ? " on" : ""}`}
             disabled={!open}
-            title={open ? name : words.locked}
-            aria-label={open ? `${name}: ${s} ★` : words.locked}
+            title={open ? name + role : words.locked}
+            aria-label={open ? `${name}: ${s} ★${role}` : words.locked}
             onClick={() => onPick(i)}
           >
             <b>{i + 1}</b>
             <small>{open ? starText(s) : "🔒"}</small>
+            {mark && <i className={`drill-mark ${mark}`} aria-hidden="true">{MARK[mark]}</i>}
           </button>
         );
       })}
@@ -91,17 +99,21 @@ export function Cheer({ text, small, stars, streak }: { text: string; small?: bo
 
 /**
  * The top of a game. The row of puzzles, with the way out of them first: ∞ into the endless run (at the level it was
- * last played at) or ✏️ into free play. Under it, in the endless run, its levels and the streak (with `pace` before
- * it, such as how long the dots show); in a puzzle, `children` (the round's dots, the misses so far), if any.
+ * last played at) or ✏️ into free play. Under it, in the endless run, its levels, the clock and the streak (with `pace`
+ * before it, such as the clock's bar or how long the dots show); in a puzzle, `children` (the round's dots, the misses
+ * so far), if any. What is not open yet is shown locked, with what opens it.
  */
-export function GameNav({ ladder, mode, stage, level, streak, onPuzzle, onEndless, onFree, words, g, pace, children }: {
+export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPuzzle, onEndless, onClock, onFree, words, g, pace, children }: {
   ladder: Ladder<string>;
   mode: "puzzle" | "endless" | "free";
   stage: number;
   level?: GameLevel;
   streak?: number;
+  timed?: boolean;
+  marks?: Record<number, keyof typeof MARK>;
   onPuzzle: (stage: number) => void;
   onEndless?: (level: GameLevel) => void;
+  onClock?: () => void;
   onFree?: () => void;
   /** A game's own names for its puzzles ("Round {n}"), its lock and its free play, where they differ from every game's. */
   words: { puzzle?: string; locked?: string; free?: string };
@@ -110,17 +122,43 @@ export function GameNav({ ladder, mode, stage, level, streak, onPuzzle, onEndles
   children?: ReactNode;
 }) {
   const { t } = useI18n();
+  // The endless run's way in goes to the level last played if it is open, else the first.
+  const into = level && levelOpen(ladder, level) ? level : 1;
+  const runOpen = levelOpen(ladder, 1);
   return (
     <>
-      <LadderBar stars={ladder.stars} current={mode === "puzzle" ? stage : null} onPick={onPuzzle} words={{ puzzle: words.puzzle ?? g.puzzle, locked: words.locked ?? g.locked }}>
-        {onEndless && <Toggle on={mode === "endless"} onClick={() => onEndless(level ?? 1)}>∞ {g.endless}</Toggle>}
+      <LadderBar
+        stars={ladder.stars}
+        current={mode === "puzzle" ? stage : null}
+        onPick={onPuzzle}
+        words={{ puzzle: words.puzzle ?? g.puzzle, locked: words.locked ?? g.locked }}
+        marks={marks}
+        markWords={{ anchor: g.anchorWhy, stretch: g.stretchWhy, repair: g.repairWhy }}
+      >
+        {onEndless && (
+          <Toggle on={mode === "endless"} disabled={!runOpen} title={runOpen ? undefined : g.endlessLocked} onClick={() => onEndless(into)}>
+            ∞ {g.endless}
+            {!runOpen && " 🔒"}
+          </Toggle>
+        )}
         {onFree && <Toggle on={mode === "free"} onClick={onFree}>✏️ {words.free ?? g.free}</Toggle>}
       </LadderBar>
       {mode === "endless" && onEndless ? (
         <div className="live-bar">
-          {GAME_LEVELS.map((l) => (
-            <Toggle key={l} on={level === l} onClick={() => onEndless(l)}>{t.pracWords.levels[String(l) as "1" | "2" | "3"]}</Toggle>
-          ))}
+          {GAME_LEVELS.map((l) => {
+            const open = levelOpen(ladder, l);
+            return (
+              <Toggle key={l} on={level === l} disabled={!open} title={open ? undefined : fill(g.levelLocked, { n: PASS_STREAK })} onClick={() => onEndless(l)}>
+                {t.pracWords.levels[String(l) as "1" | "2" | "3"]}
+                {!open && " 🔒"}
+              </Toggle>
+            );
+          })}
+          {onClock && (
+            <Toggle on={!!timed} disabled={!clockOpen(ladder) && !timed} title={clockOpen(ladder) ? g.clock : fill(g.clockLocked, { n: PASS_STREAK })} onClick={onClock}>
+              ⏱{!clockOpen(ladder) && " 🔒"}
+            </Toggle>
+          )}
           <span className="est-streak">{pace}{fill(g.streak, { n: streak ?? 0, best: ladder.best })}</span>
         </div>
       ) : (
@@ -143,18 +181,19 @@ export function RoundDots({ results, i, size }: { results: boolean[]; i: number;
 
 /**
  * The button that moves on: to the next question of a round (`finished` false), to the next puzzle or round, or after
- * the last one to the same again; in the endless run, to the next puzzle.
+ * the last one to the same again; a puzzle not yet clean (`retry`) is tried again; in the endless run, the next puzzle.
  */
-export function Onward({ mode, stage, size, rounds, finished = true, onClick, g }: {
+export function Onward({ mode, stage, size, rounds, finished = true, retry, onClick, g }: {
   mode: "puzzle" | "endless" | "free";
   stage: number;
   size: number;
   rounds?: boolean;
   finished?: boolean;
+  retry?: boolean;
   onClick: () => void;
   g: GameWords;
 }) {
-  const word = mode === "endless" || !finished ? g.next : stage + 1 < size ? (rounds ? g.nextRound : g.next) : g.again;
+  const word = mode === "endless" || !finished ? g.next : retry ? g.retry : stage + 1 < size ? (rounds ? g.nextRound : g.next) : g.again;
   return <button className="live-btn on" onClick={onClick}>{word} →</button>;
 }
 
