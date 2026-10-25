@@ -389,6 +389,12 @@ test("the tensors lab goes on the board from the AI menu, and its entries and pl
   await tap(cells[1 * 4 + 2]);
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/Indices count from 0.*Done! ★☆☆/)).toBeVisible();
+  // One star does not pass: puzzle 2 stays locked until puzzle 1 is done again with at most one wrong try.
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toHaveCount(0);
+  await lab.getByRole("button", { name: /Try again/ }).click();
+  await tap(cells[1 * 4 + 2]);
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/Done! ★★★/)).toBeVisible();
 
   // Puzzle 2: T[2, 1] at place 2·4 + 1 = 9, and once done the entry and its place are linked.
   await lab.getByRole("button", { name: /^Puzzle 2/ }).click();

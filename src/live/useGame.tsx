@@ -6,11 +6,31 @@
 // or 50 with a burst of its own, and plays a chord when the ninth star completes the ladder. It also moves between the
 // puzzles, the endless run and free play, and clears every timer it set when the piece goes. A thing noticed with no
 // judging (free play's discoveries) is kept and chimed too. Each outcome is one `set`, so each stays one step to undo;
-// what only moves (the shake, the cheer) is kept here, not on the board. The
-// pieces under it draw the head (the puzzles and the way out of them), the stage (with the panel over it when the
-// ladder is done), the stars still at stake, the line of feedback and the bottom bar.
+// what only moves (the shake, the cheer) is kept here, not on the board. It plays the drill ladder of math/ladder.ts:
+// a puzzle not yet clean is played again rather than left behind, a misses' count offers the step back, against the
+// clock a right answer over the player's pace does not count on the streak, and every miss on a puzzle and every
+// clean time is kept for the repair and the pace. The pieces under it draw the head (the puzzles with the warm-up,
+// the edge and the repair marked, the endless run's levels and its clock), the stage (with the panel over it when the
+// ladder is passed), the stars still at stake, the line of feedback and the bottom bar.
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { burst, isMilestone, ladderDone, nextStreak, settle, totalStars, type GameBase, type GameLevel, type GameMode, type Ladder } from "../math/ladder";
+import {
+  burst,
+  clockMs,
+  dailyBlock,
+  fallbackOf,
+  isMilestone,
+  ladderPassed,
+  nextStreak,
+  passed,
+  settle,
+  stretchOf,
+  totalStars,
+  type Drill,
+  type GameBase,
+  type GameLevel,
+  type GameMode,
+  type Ladder,
+} from "../math/ladder";
 import { play } from "./juice";
 import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder, type GameWords } from "./ladderUi";
 import { fill } from "./ui";
@@ -19,8 +39,8 @@ import { fill } from "./ui";
 export type Tone = "hint" | "prompt" | "wrong" | "near" | "ok" | "notice";
 export type Line = { tone: Tone; text: string };
 
-/** What only moves: counters that re-key a cheer or a nudge, and the pulse (a shake or a beat) the stage is in. */
-export type Fx = { cheer: number; mark: number; markN: number; pulse: number; kind: "shake" | "beat" | null };
+/** What only moves: counters that re-key a cheer or a nudge, the pulse (a shake or a beat) the stage is in, and whether the last answer was over the clock. */
+export type Fx = { cheer: number; mark: number; markN: number; pulse: number; kind: "shake" | "beat" | null; slow: boolean };
 
 type Notice<K> = (streak: number) => K | null;
 /** What a step or a win can say besides: a notice to look for, and whether it counts on the streak (a part of a puzzle solved does not). */
@@ -33,6 +53,14 @@ export type Game<K extends string, S extends GameBase<K, unknown>> = {
   modes: readonly GameMode[];
   notices: readonly K[];
   fx: Fx;
+  /** The time a solve must beat against the clock, in milliseconds; 0 when not against the clock. */
+  clock: number;
+  /** Where three misses here offer to step back to, if they do. */
+  back: Drill | null;
+  /** The drill ladder's warm-up, edge and repair. */
+  block: ReturnType<typeof dailyBlock>;
+  /** Go to a place on the ladder: a puzzle, a level of the endless run (with the clock or not), free play. */
+  drill(to: Drill): void;
   /** A move that is neither right nor wrong: a tick. */
   tap(patch: Partial<S>): void;
   /** Right, but the puzzle is not finished: a chord (higher along a streak), a beat, a notice found if any. */
@@ -47,7 +75,7 @@ export type Game<K extends string, S extends GameBase<K, unknown>> = {
   go(stage: number, patch?: Partial<S>): void;
   endless(level: GameLevel, patch?: Partial<S>): void;
   free(patch?: Partial<S>): void;
-  /** On: the next puzzle of the endless run, the puzzle after this one (the same again after the last), or free play afresh. */
+  /** On: the next puzzle of the endless run, the puzzle after this one if this one is passed (or this one again), or free play afresh. */
   onward(): void;
   /** Milliseconds since this puzzle was shown, for "quick" notices. */
   sinceShown(): number;
@@ -69,7 +97,9 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
 }): Game<K, S> {
   const { state: d, set, size, notices, modes, fresh } = o;
   const [ladder, keep] = useLadder(o.key, size, notices);
-  const [fx, setFx] = useState<Fx>({ cheer: 0, mark: 0, markN: 0, pulse: 0, kind: null });
+  const [fx, setFx] = useState<Fx>({ cheer: 0, mark: 0, markN: 0, pulse: 0, kind: null, slow: false });
+  // The misses on this puzzle, or in a row in the endless run, for the fallback; only the screen needs them.
+  const [slips, setSlips] = useState(0);
   const shownAt = useRef(performance.now());
   const timers = useRef<number[]>([]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -77,6 +107,9 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
     timers.current.push(window.setTimeout(fn, ms));
   };
 
+  const run = d as unknown as { level?: GameLevel; timed?: boolean };
+  const level = run.level ?? 1;
+  const clock = d.mode === "endless" && run.timed ? clockMs(ladder.pace[level - 1] ?? 0) : 0;
   const streakOf = (s: S) => (s as { streak?: number }).streak ?? 0;
   const streakPatch = (streak: number) => ("streak" in d ? { streak } : {});
   const saidOf = (key: K | null, patch?: Partial<S>) => (key ? { kind: "notice" as const, key } : (patch?.said ?? null));
@@ -90,8 +123,8 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
     setFx((f) => ({ ...f, mark: f.mark + 1, markN: streak }));
     return true;
   };
-  const settleIn = (streak: number, key: K | null, stars?: number) => {
-    const next = settle(ladder, { mode: d.mode, stage: d.stage, stars, streak, key, keys: notices });
+  const settleIn = (streak: number, key: K | null, stars?: number, more: { missed?: boolean; ms?: number } = {}) => {
+    const next = settle(ladder, { mode: d.mode, stage: d.stage, level, stars, streak, key, keys: notices, ...more });
     if (next !== ladder) keep(next);
     return next;
   };
@@ -114,7 +147,8 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
   const miss = (patch: Partial<S>, s: { notice?: Notice<K> } = {}) => {
     const streak = nextStreak(d.mode, streakOf(d), false);
     const key = s.notice?.(streak) ?? null;
-    settleIn(streak, key);
+    settleIn(streak, key, undefined, { missed: true });
+    setSlips((n) => n + 1);
     play("miss");
     pulse("shake");
     set({ ...d, ...patch, ...streakPatch(streak), said: patch.said ?? saidOf(key) } as S);
@@ -126,18 +160,26 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
   };
   const win = (s: { stars?: number; clean?: boolean; right?: boolean; notice?: Notice<K>; patch?: Partial<S> } & Pick<Along<K>, "counts">) => {
     const counts = s.counts ?? true;
-    const streak = counts ? nextStreak(d.mode, streakOf(d), s.clean ?? true) : streakOf(d);
+    const ms = performance.now() - shownAt.current;
+    const slow = counts && (s.clean ?? true) && clock > 0 && ms > clock;
+    const clean = (s.clean ?? true) && !slow;
+    const streak = counts ? nextStreak(d.mode, streakOf(d), clean) : streakOf(d);
     const key = s.notice?.(streak) ?? null;
-    const next = settleIn(streak, key, s.stars);
+    const next = settleIn(streak, key, s.stars, { ms: d.mode === "endless" && counts && clean ? ms : undefined });
+    if (d.mode === "endless" && counts) setSlips((n) => (clean ? 0 : n + 1));
     play(s.right ?? true ? "good" : "miss", { pitch: d.mode === "endless" ? Math.min(streak, 8) : 0 });
     later(260, () => play(s.stars === 3 ? "levelup" : "star"));
     if (counts) mark(streak);
-    if (!ladderDone(ladder.stars) && ladderDone(next.stars)) later(700, () => play("levelup"));
-    setFx((f) => ({ ...f, cheer: f.cheer + 1 }));
+    if (!ladderPassed(ladder.stars) && ladderPassed(next.stars)) later(700, () => play("levelup"));
+    setFx((f) => ({ ...f, cheer: f.cheer + 1, slow }));
     set({ ...d, ...s.patch, ...streakPatch(streak), said: saidOf(key, s.patch) } as S);
   };
 
-  const show = () => (shownAt.current = performance.now());
+  const show = () => {
+    shownAt.current = performance.now();
+    setSlips(0);
+    setFx((f) => (f.slow ? { ...f, slow: false } : f));
+  };
   const go = (stage: number, patch?: Partial<S>) => {
     show();
     set({ ...d, ...fresh, ...o.stagePatch?.(stage), mode: "puzzle", stage, ...patch } as S);
@@ -150,20 +192,47 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
     show();
     set({ ...d, ...fresh, ...o.freePatch, mode: "free", ...patch } as S);
   };
+  const block = dailyBlock(ladder, modes.includes("endless"));
+  const drill = (to: Drill) => (to.mode === "puzzle" ? go(to.stage) : to.mode === "endless" ? endless(to.level, { timed: to.timed } as unknown as Partial<S>) : free());
   const onward = () => {
-    if (d.mode === "endless") return endless((d as { level?: GameLevel }).level ?? 1);
+    if (d.mode === "endless") return endless(level);
     if (d.mode === "free") return free();
-    go(nextStage(d.stage, size));
+    if (!passed(ladder.stars, d.stage)) return go(d.stage);
+    const after = nextStage(d.stage, size);
+    const edge = stretchOf(ladder, false);
+    go(after !== d.stage ? after : edge?.mode === "puzzle" ? edge.stage : d.stage);
   };
+  const back = fallbackOf(ladder, { mode: d.mode, stage: d.stage, level, timed: run.timed, slips, hasFree: modes.includes("free") });
 
-  return { state: d, ladder, size, modes, notices, fx, tap, step, miss, spot, win, go, endless, free, onward, sinceShown: () => performance.now() - shownAt.current };
+  return {
+    state: d,
+    ladder,
+    size,
+    modes,
+    notices,
+    fx,
+    clock,
+    back,
+    block,
+    drill,
+    tap,
+    step,
+    miss,
+    spot,
+    win,
+    go,
+    endless,
+    free,
+    onward,
+    sinceShown: () => performance.now() - shownAt.current,
+  };
 }
 
 /** Any game, for the pieces that draw one. */
 export type AnyGame = Game<string, GameBase<string, unknown>>;
 
-/** The puzzle just done was the last, and every puzzle has a star: the ladder is complete. */
-export const isFinale = (game: AnyGame, done: boolean) => done && game.state.mode === "puzzle" && game.state.stage === game.size - 1 && ladderDone(game.ladder.stars);
+/** The puzzle just done was the last, and every puzzle is clean: the ladder is passed. */
+export const isFinale = (game: AnyGame, done: boolean) => done && game.state.mode === "puzzle" && game.state.stage === game.size - 1 && ladderPassed(game.ladder.stars);
 
 /** The top of a game: the puzzles with their stars and the way out of them, and under it the round's dots or the stars at stake. */
 export function GameHead({ game, g, words, pace, children }: {
@@ -174,7 +243,17 @@ export function GameHead({ game, g, words, pace, children }: {
   pace?: ReactNode;
   children?: ReactNode;
 }) {
-  const d = game.state as GameBase<string, unknown> & { level?: GameLevel; streak?: number };
+  const d = game.state as GameBase<string, unknown> & { level?: GameLevel; streak?: number; seed?: number; timed?: boolean };
+  const { block } = game;
+  const marks: Record<number, "anchor" | "stretch" | "repair"> = {};
+  if (block.anchor !== null) marks[block.anchor] = "anchor";
+  if (block.repair !== null) marks[block.repair] = "repair";
+  if (block.stretch?.mode === "puzzle" && block.stretch.stage > 0) marks[block.stretch.stage] = "stretch";
+  const clock = game.clock > 0 && (
+    <span className="live-clock" title={g.clock}>
+      <i key={`${d.seed}`} style={{ animationDuration: `${game.clock}ms` }} />
+    </span>
+  );
   return (
     <GameNav
       ladder={game.ladder}
@@ -182,12 +261,21 @@ export function GameHead({ game, g, words, pace, children }: {
       stage={d.stage}
       level={d.level}
       streak={d.streak}
+      timed={!!d.timed}
+      marks={marks}
       onPuzzle={game.go}
       onEndless={game.modes.includes("endless") ? game.endless : undefined}
+      onClock={game.modes.includes("endless") ? () => game.drill({ mode: "endless", level: d.level ?? 1, timed: !d.timed }) : undefined}
       onFree={game.modes.includes("free") ? () => game.free() : undefined}
       words={words ?? {}}
       g={g}
-      pace={pace}
+      pace={
+        <>
+          {clock}
+          {game.fx.slow && <b className="live-slow">{g.slow}</b>}
+          {pace}
+        </>
+      }
     >
       {children}
     </GameNav>
@@ -252,10 +340,17 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
   children?: ReactNode;
 }) {
   const d = game.state;
+  const retry = d.mode === "puzzle" && finished && !passed(game.ladder.stars, d.stage);
+  const back = game.back;
   return (
     <div className="live-bar">
       {(always || !done) && children}
-      {done && !isFinale(game, done && finished) && <Onward mode={d.mode} stage={d.stage} size={game.size} rounds={rounds} finished={finished} onClick={onward ?? game.onward} g={g} />}
+      {done && !isFinale(game, done && finished) && <Onward mode={d.mode} stage={d.stage} size={game.size} rounds={rounds} finished={finished} retry={retry} onClick={onward ?? game.onward} g={g} />}
+      {!done && back && (
+        <button className="live-btn" title={g.stepBackWhy} onClick={() => game.drill(back)}>
+          ↩ {g.stepBack}
+        </button>
+      )}
       <SoundToggle title={g.sound} />
     </div>
   );
@@ -263,7 +358,7 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
 
 /** Every puzzle done, over the stage: the stars in all, the discoveries made, and where to go from here. */
 export function LadderDone({ game, g, notices }: { game: AnyGame; g: GameWords; notices: Record<string, string> }) {
-  const level = (game.state as { level?: GameLevel }).level ?? 1;
+  const { anchor, stretch, repair } = game.block;
   return (
     <div className="ladder-done" role="status">
       <b>{fill(g.allDone, { n: totalStars(game.ladder.stars), of: 3 * game.size })}</b>
@@ -278,9 +373,23 @@ export function LadderDone({ game, g, notices }: { game: AnyGame; g: GameWords; 
         </>
       )}
       <div className="live-bar">
-        {game.modes.includes("endless") && <button className="live-btn on" onClick={() => game.endless(level)}>∞ {g.playEndless}</button>}
+        {stretch?.mode === "endless" && (
+          <button className="live-btn on" onClick={() => game.drill(stretch)}>
+            {stretch.timed ? `⏱ ${g.clock}` : `∞ ${g.playEndless}`}
+          </button>
+        )}
+        {anchor !== null && (
+          <button className="live-btn" title={g.anchorWhy} onClick={() => game.go(anchor)}>
+            ⚓ {fill(g.anchor, { n: anchor + 1 })}
+          </button>
+        )}
+        {repair !== null && (
+          <button className="live-btn" title={g.repairWhy} onClick={() => game.go(repair)}>
+            🔧 {fill(g.repair, { n: repair + 1 })}
+          </button>
+        )}
         {game.modes.includes("free") && <button className="live-btn on" onClick={() => game.free()}>✏️ {g.free}</button>}
-        <button className="live-btn" onClick={() => game.go(0)}>{g.replay}</button>
+        {anchor === null && <button className="live-btn" onClick={() => game.go(0)}>{g.replay}</button>}
       </div>
     </div>
   );

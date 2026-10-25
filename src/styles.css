@@ -710,6 +710,13 @@ input.invalid { border-color: var(--danger); }
 .live-said-in { display: inline-block; animation: said-in 0.3s ease-out; }
 .live-stake { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #495057; }
 .live-stake b { color: #f59f00; letter-spacing: -1px; }
+/* The drill ladder: the warm-up, the edge and the repair marked on the puzzles; the clock's bar running down; over the clock. */
+.geo-stage { position: relative; }
+.drill-mark { position: absolute; top: 2px; right: 2px; font-size: 9px; font-style: normal; line-height: 1; }
+.live-clock { display: inline-block; width: 64px; height: 6px; margin-right: 8px; border-radius: 3px; background: #e9ecef; overflow: hidden; vertical-align: middle; }
+.live-clock i { display: block; height: 100%; background: #1971c2; transform-origin: left; animation: live-clock linear forwards; }
+@keyframes live-clock { from { transform: scaleX(1); } 80% { background: #1971c2; } to { transform: scaleX(0); background: #e03131; } }
+.live-slow { margin-right: 8px; color: #e8590c; font-weight: 600; }
 .celebrate.s1 b { font-size: 44px; }
 .celebrate.s3 { --r: -220px; }
 .celebrate.s3 b { font-size: 76px; }

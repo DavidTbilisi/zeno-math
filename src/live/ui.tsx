@@ -24,9 +24,9 @@ export function svgPoint(svg: SVGSVGElement, e: { clientX: number; clientY: numb
   return [p.x, p.y];
 }
 
-export function Toggle({ on, onClick, children, title }: { on: boolean; onClick: () => void; children: ReactNode; title?: string }) {
+export function Toggle({ on, onClick, children, title, disabled }: { on: boolean; onClick: () => void; children: ReactNode; title?: string; disabled?: boolean }) {
   return (
-    <button className={`live-btn${on ? " on" : ""}`} aria-pressed={on} title={title} onClick={onClick}>
+    <button className={`live-btn${on ? " on" : ""}`} aria-pressed={on} title={title} disabled={disabled} onClick={onClick}>
       {children}
     </button>
   );
