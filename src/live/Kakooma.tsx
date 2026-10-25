@@ -21,9 +21,13 @@ const sign = (s: Pick<KakSet, "op">) => (s.op === "+" ? "+" : "×");
 
 const FRESH: Partial<LiveKakooma> = { solved: [], wrong: null, misses: 0, hinted: false, said: null };
 
-/** The numbers of a set round its centre, the first at the top; a grid's middle has them towards the corners. */
+/**
+ * The numbers of a set round its centre, the first at the top; a grid's middle has them towards the corners; hard's
+ * nine in a square, three by three, `R` apart.
+ */
 function spots(n: number, [cx, cy]: [number, number], R: number, middle: boolean): [number, number][] {
   if (middle) return CORNERS.map(([x, y]) => [cx + Math.sign(x - cx) * R * 0.75, cy + Math.sign(y - cy) * R * 0.75]);
+  if (n === 9) return Array.from({ length: 9 }, (_, i) => [cx + ((i % 3) - 1) * R, cy + (Math.floor(i / 3) - 1) * R]);
   return Array.from({ length: n }, (_, i) => [cx + R * Math.sin((2 * Math.PI * i) / n), cy - R * Math.cos((2 * Math.PI * i) / n)]);
 }
 
@@ -72,14 +76,20 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
   const drawSet = (s: KakSet, i: number) => {
     const middle = grid && i === 4;
     const centre = !grid ? MIDDLE : middle ? MIDDLE : CORNERS[i];
-    // Hard's nine numbers sit on a wider ring, smaller, so they don't touch.
-    const [R, r, font] = grid ? [52, 22, 20] : s.nums.length > 6 ? [134, 30, 26] : [104, 40, 34];
+    // Hard's nine numbers sit in a square of square cells, three by three; R is then the step from one to the next.
+    const square = s.nums.length === 9;
+    const [R, r, font] = grid ? [52, 22, 20] : square ? [92, 38, 30] : [104, 40, 34];
     const open = kakOpen(task, d.solved, i);
     const solved = d.solved.includes(i);
     const at = spots(s.nums.length, centre, R, middle);
+    const back = { fill: solved ? "#ebfbee" : "#f8f9fa", stroke: solved ? GREEN : "#ced4da", strokeWidth: 2, strokeDasharray: open ? undefined : "6 5" };
     return (
       <g key={i} role="group" aria-label={fill(w.set, { list: s.nums.map((n, k) => (middle && !d.solved.includes(k) ? "?" : n)).join(", ") })}>
-        <circle cx={centre[0]} cy={centre[1]} r={R + r + 8} fill={solved ? "#ebfbee" : "#f8f9fa"} stroke={solved ? GREEN : "#ced4da"} strokeWidth={2} strokeDasharray={open ? undefined : "6 5"} />
+        {square ? (
+          <rect x={centre[0] - R - r - 8} y={centre[1] - R - r - 8} width={2 * (R + r + 8)} height={2 * (R + r + 8)} rx={14} {...back} />
+        ) : (
+          <circle cx={centre[0]} cy={centre[1]} r={R + r + 8} {...back} />
+        )}
         {s.nums.map((n, k) => {
           const [x, y] = at[k];
           // A number of the middle shows once its corner is solved.
@@ -91,9 +101,10 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
           const fillC = isAnswer ? "#d3f9d8" : isWrong ? "#ffe3e3" : "#fff";
           const stroke = isAnswer || isPart ? GREEN : isWrong ? RED : hinted ? BLUE : "#adb5bd";
           const can = open && !solved && !done && shown;
+          const look = { fill: fillC, stroke, strokeWidth: isAnswer || isPart || isWrong || hinted ? 3 : 1.5, strokeDasharray: hinted ? "5 3" : undefined };
           return (
             <g key={k} role={can ? "button" : undefined} aria-label={shown ? String(n) : "?"} style={{ cursor: can ? "pointer" : "default" }} onClick={() => shown && tap(i, n)}>
-              <circle cx={x} cy={y} r={r} fill={fillC} stroke={stroke} strokeWidth={isAnswer || isPart || isWrong || hinted ? 3 : 1.5} strokeDasharray={hinted ? "5 3" : undefined} />
+              {square ? <rect x={x - r} y={y - r} width={2 * r} height={2 * r} rx={8} {...look} /> : <circle cx={x} cy={y} r={r} {...look} />}
               <text x={x} y={y + font * 0.36} fontSize={font} fontWeight={700} textAnchor="middle" fill={!shown ? "#adb5bd" : solved && !isAnswer && !isPart ? "#adb5bd" : isWrong ? RED : INK}>{shown ? n : "?"}</text>
             </g>
           );
@@ -115,7 +126,8 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
               <line key={k} x1={CORNERS[k][0]} y1={CORNERS[k][1]} x2={x} y2={y} stroke={d.solved.includes(k) ? GREEN : "#dee2e6"} strokeWidth={2} />
             ))}
           {task.sets.map(drawSet)}
-          {!grid && done && <text x={W / 2} y={H / 2 + 8} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakSum(task.sets[0])}</text>}
+          {/* The sum in the middle of the ring; under the square, whose middle is a number. */}
+          {!grid && done && <text x={W / 2} y={task.sets[0].nums.length === 9 ? H - 14 : H / 2 + 8} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakSum(task.sets[0])}</text>}
         </svg>
       </Stage>
       <GameActions game={game} g={g} done={done} onward={onward}>
