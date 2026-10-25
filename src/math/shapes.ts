@@ -1348,6 +1348,19 @@ function problemsPreview(): Piece[] {
   ];
 }
 
+function solverPreview(): Piece[] {
+  // A sliding window part-way along 2 1 5 1 3: the window's cells in blue with its bracket, the rule under it.
+  const cell = (i: number, v: string, hot: boolean) => [
+    rect(i * 34, 0, 30, 30, hot ? { fill: "#d0ebff", color: "#1971c2", width: 2 } : { color: "#868e96", width: 1 }, true),
+    text(i * 34 + 15, 4, v, 18),
+  ];
+  return [
+    ...["2", "1", "5", "1", "3"].flatMap((v, i) => cell(i, v, i >= 1 && i <= 3)),
+    rect(34, 34, 3 * 34 - 4, 4, { color: "#9c36b5", width: 2 }),
+    text(2 * 34 + 15, 42, "sum ≤ 7", 14, "center", "#495057"),
+  ];
+}
+
 function divisionPreview(): Piece[] {
   // 624 ÷ 12 under the long-division bracket, 52 on top and the first step's working.
   const col = (c: number) => 60 + c * 22;
@@ -1417,6 +1430,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSoroban", group: "live", build: sorobanPreview, live: "soroban" },
   { id: "livePatterns", group: "live", build: patternsPreview, live: "patterns" },
   { id: "liveProblems", group: "live", build: problemsPreview, live: "problems" },
+  { id: "liveSolver", group: "live", build: solverPreview, live: "solver" },
   { id: "liveNumberLine", group: "live", build: numberLine, live: "numberLine" },
   { id: "ruler", group: "measure", build: ruler },
   { id: "protractor", group: "measure", build: protractor },

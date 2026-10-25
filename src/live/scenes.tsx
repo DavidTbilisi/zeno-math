@@ -280,6 +280,7 @@ export function gridScene(frame: Frame, start: [number, number] | null, click: (
               return (
                 <g key={c} onClick={click ? () => click(r, c) : undefined} style={click ? { cursor: "pointer" } : undefined}>
                   <rect x={x} y={yy} width={cs} height={cs} fill={GRID_COLORS[v] ?? "#fff"} stroke="#adb5bd" style={{ transition: "fill 250ms" }} />
+                  {role === "sorted" && <rect x={x + 3} y={yy + 3} width={cs - 6} height={cs - 6} fill={ROLE.sorted.fill} stroke={ROLE.sorted.stroke} strokeWidth={2} opacity={0.85} />}
                   {(role === "key" || role === "compare") && (
                     <rect x={x + 3} y={yy + 3} width={cs - 6} height={cs - 6} fill="none" stroke={ROLE[role].stroke} strokeWidth={3} strokeDasharray={role === "compare" ? "5 3" : undefined} />
                   )}
