@@ -1,5 +1,5 @@
 // Kakooma (Greg Tang's puzzle): a few numbers, and one of them is the sum of two others — which? Easy: four numbers to
-// 10; medium: five to 20; hard: five from the times tables, and the one wanted is the product of two others. Exactly one
+// 10; medium: five to 20; hard: nine from the times tables, and the one wanted is the product of two others. Exactly one
 // number is made from two others, in exactly one way, and a number is never used twice. Medium and hard lay traps: a
 // number twice another (7 and 14, which would need the 7 twice), or its square (4 and 16), and on hard one that is the
 // sum of two others, not their product. A grid is four sets whose answers fill a fifth in the middle, solved last.
@@ -18,7 +18,7 @@ export const KAK: Record<KakLevel, { op: KakOp; size: number; lo: number; hi: nu
   1: { op: "+", size: 4, lo: 1, hi: 10, top: 10 },
   2: { op: "+", size: 5, lo: 1, hi: 20, top: 20 },
   // The parts come from the times tables, up to 10 × 10; the other numbers may be anything to 60.
-  3: { op: "*", size: 5, lo: 2, hi: 60, top: 10 },
+  3: { op: "*", size: 9, lo: 2, hi: 60, top: 10 },
 };
 const make = (op: KakOp, a: number, b: number) => (op === "+" ? a + b : a * b);
 
@@ -43,15 +43,20 @@ export function partsOf(n: number, level: KakLevel): [number, number][] {
   return out;
 }
 
+/** How many of the endless run's last sets the next one keeps clear of (their two parts, and the last two's answers). */
+export const KAK_RECENT = 8;
+
 /**
  * A set of the level whose one answer is made from two others. `answer` asks for that answer (a corner of a grid);
- * `size` and `usable` shape the middle of a grid, whose numbers must each be some corner's answer.
+ * `size` and `usable` shape the middle of a grid, whose numbers must each be some corner's answer; `recent` is the
+ * endless run's last sets' parts, not used again, nor the last two's answers.
  */
-export function kakSet(level: KakLevel, next: () => number, o: { answer?: number; size?: number; usable?: (n: number) => boolean } = {}): KakSet {
+export function kakSet(level: KakLevel, next: () => number, o: { answer?: number; size?: number; usable?: (n: number) => boolean; recent?: [number, number][] } = {}): KakSet {
   const { op, lo, hi, top } = KAK[level];
   const size = o.size ?? KAK[level].size;
   const ok = o.usable ?? (() => true);
   const int = (a: number, b: number) => a + Math.floor(next() * (b - a + 1));
+  const recent = o.recent ?? [];
   for (;;) {
     let a: number, b: number;
     if (o.answer !== undefined) {
@@ -62,14 +67,18 @@ export function kakSet(level: KakLevel, next: () => number, o: { answer?: number
       if (a === b || make(op, a, b) > hi) continue;
     }
     const x = make(op, a, b);
+    // Not two parts of the last few sets again, nor the answer of the last two (easy has only twenty sums, and 9 or 10
+    // is the answer of nearly half its sets).
+    if (recent.some(([p, q]) => p === a && q === b) || recent.slice(-2).some(([p, q]) => make(op, p, q) === x)) continue;
     const nums = [x, a, b];
     const put = (y: number) => y >= lo && y <= hi && !nums.includes(y) && nums.length < size && nums.push(y);
-    // Above easy, more often than not a trap: one of the parts doubled (or squared), and on hard now and then their sum.
+    // Above easy, more often than not a trap: one of the parts doubled (or squared), and on hard now and then their sum,
+    // seldom both, which would leave no number drawn at random and the same two parts the same set every time.
     if (level > 1 && next() < 0.7) {
       const z = next() < 0.5 ? a : b;
       put(make(op, z, z));
     }
-    if (level === 3 && next() < 0.4) put(a + b);
+    if (level === 3 && next() < (nums.length === 3 ? 0.4 : 0.15)) put(a + b);
     while (nums.length < size) put(int(lo, hi));
     if (!nums.every(ok) || ways(nums, op).length !== 1) continue;
     // Above easy the answer is seldom the largest, so looking at the biggest number first isn't enough.
@@ -82,11 +91,14 @@ export function kakSet(level: KakLevel, next: () => number, o: { answer?: number
   }
 }
 
-/** A grid: four corner sets, and the middle made of their answers (corner i's answer is the middle's i-th number). */
+/**
+ * A grid: four corner sets, and the middle made of their answers (corner i's answer is the middle's i-th number). A
+ * corner has at most five numbers, so that hard's four corners still fit round the middle.
+ */
 export type KakGrid = { corners: KakSet[]; middle: KakSet };
 export function kakGrid(level: KakLevel, next: () => number): KakGrid {
   const middle = kakSet(level, next, { size: 4, usable: (n) => partsOf(n, level).length > 0 });
-  return { corners: middle.nums.map((n) => kakSet(level, next, { answer: n })), middle };
+  return { corners: middle.nums.map((n) => kakSet(level, next, { answer: n, size: Math.min(KAK[level].size, 5) })), middle };
 }
 
 export type KakSlip = "partForWhole" | "usedTwice" | "sumNotProduct";
@@ -129,15 +141,15 @@ export const KAK_LADDER: { level: KakLevel; grid: boolean; seed: number }[] = [
   { level: 2, grid: false, seed: 208 },
   { level: 2, grid: false, seed: 202 },
   { level: 2, grid: true, seed: 203 },
-  { level: 3, grid: false, seed: 301 },
-  { level: 3, grid: false, seed: 305 },
+  { level: 3, grid: false, seed: 435 },
+  { level: 3, grid: false, seed: 522 },
   { level: 3, grid: true, seed: 303 },
 ];
 /** A puzzle or the endless run's set: one set, or a grid's four corners and its middle last. */
 export type KakTask = { level: KakLevel; sets: KakSet[] };
-export function kakTask(level: KakLevel, grid: boolean, seed: number): KakTask {
+export function kakTask(level: KakLevel, grid: boolean, seed: number, recent: [number, number][] = []): KakTask {
   const next = rng(seed);
-  if (!grid) return { level, sets: [kakSet(level, next)] };
+  if (!grid) return { level, sets: [kakSet(level, next, { recent })] };
   const g = kakGrid(level, next);
   return { level, sets: [...g.corners, g.middle] };
 }
@@ -167,7 +179,9 @@ export type LiveKakooma = EndlessGame<KakNotice, KakLevel> & {
   misses: number;
   /** Whether the hint (one of the two parts ringed in every open set) is showing. */
   hinted: boolean;
+  /** The endless run's last sets' two parts (up to KAK_RECENT), which the set being played keeps clear of. */
+  recent?: [number, number][];
 };
 /** The puzzle being played, or the endless run's set. */
-export const kakNow = (d: Pick<LiveKakooma, "mode" | "stage" | "level" | "seed">): KakTask =>
-  d.mode === "puzzle" ? kakTask(KAK_LADDER[d.stage].level, KAK_LADDER[d.stage].grid, KAK_LADDER[d.stage].seed) : kakTask(d.level, false, d.seed);
+export const kakNow = (d: Pick<LiveKakooma, "mode" | "stage" | "level" | "seed" | "recent">): KakTask =>
+  d.mode === "puzzle" ? kakTask(KAK_LADDER[d.stage].level, KAK_LADDER[d.stage].grid, KAK_LADDER[d.stage].seed) : kakTask(d.level, false, d.seed, d.recent);

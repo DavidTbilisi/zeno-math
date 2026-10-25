@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, LEVELS, trapInputs } from "../src/math/practice.ts";
 import { rng } from "../src/math/random.ts";
-import { KAK, KAK_LADDER, kakGrid, kakNotice, kakNow, kakOpen, kakSet, kakSlip, kakStars, kakSum, kakTask, kakTraps, partsOf, ways, type KakSet } from "../src/math/kakooma.ts";
+import { KAK, KAK_LADDER, KAK_RECENT, kakGrid, kakNotice, kakNow, kakOpen, kakSet, kakSlip, kakStars, kakSum, kakTask, kakTraps, partsOf, ways, type KakSet } from "../src/math/kakooma.ts";
 import { mark } from "../server/checker.ts";
 
 const w = en.pracWords;
@@ -38,6 +38,18 @@ test("every set has one number made from two others, in one way, from the level'
   }
 });
 
+test("the endless run keeps clear of its last sets: not their two parts again, nor the last two answers", () => {
+  for (const level of LEVELS) {
+    let recent: [number, number][] = [];
+    for (let seed = 1; seed <= 300; seed++) {
+      const s = kakNow({ mode: "endless", stage: 0, level, seed, recent }).sets[0];
+      assert.ok(!recent.some(([a, b]) => a === s.parts[0] && b === s.parts[1]), `level ${level}: ${kakSum(s)} again`);
+      assert.ok(!recent.slice(-2).some(([a, b]) => (s.op === "+" ? a + b : a * b) === s.answer), `level ${level}: ${s.answer} again`);
+      recent = [...recent, s.parts].slice(-KAK_RECENT);
+    }
+  }
+});
+
 test("a set made to an answer has it, and partsOf lists the ways of making a number", () => {
   assert.deepEqual(partsOf(7, 1), [[1, 6], [2, 5], [3, 4]]);
   assert.deepEqual(partsOf(36, 3), [[4, 9]], "6 × 6 would use 6 twice; 2 × 18 and 3 × 12 aren't in the tables");
@@ -49,6 +61,7 @@ test("a set made to an answer has it, and partsOf lists the ways of making a num
       assert.deepEqual(ways(g.middle.nums, KAK[level].op), [[g.middle.answer, ...g.middle.parts]]);
       g.corners.forEach((c, i) => {
         assert.equal(c.answer, g.middle.nums[i], `corner ${i} answers the middle's number ${i}`);
+        assert.equal(c.nums.length, Math.min(KAK[level].size, 5), "hard's corners keep five numbers, to fit round the middle");
         assert.deepEqual(ways(c.nums, KAK[level].op), [[c.answer, ...c.parts]]);
       });
     }
