@@ -4,7 +4,7 @@
 // one of the two parts ringed in blue, costs one. In a grid each corner's answer goes into the middle, which is solved
 // last. Nine puzzles open in turn (two sets and a grid at each level), and the endless run keeps a streak of sets done
 // with no miss and no hint. Built on the game shell (useGame), which does the ladder, the sounds and the cheer.
-import { KAK_LADDER, KAK_NOTICES, kakNotice, kakNow, kakOpen, kakSlip, kakStars, kakSum, type KakSet, type LiveKakooma } from "../math/kakooma";
+import { KAK_LADDER, KAK_NOTICES, KAK_RECENT, kakNotice, kakNow, kakOpen, kakSlip, kakStars, kakSum, type KakSet, type LiveKakooma } from "../math/kakooma";
 import { fill, FONT, INK, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 import { starText } from "./ladderUi";
@@ -50,6 +50,10 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
     });
   };
 
+  // On in the endless run: a new set, clear of the last few sets' parts; otherwise the shell's way on.
+  const onward = () =>
+    d.mode === "endless" ? game.endless(d.level, { recent: [...(d.recent ?? []), task.sets[0].parts].slice(-KAK_RECENT) }) : game.onward();
+
   const last = task.sets[task.sets.length - 1];
   const right = fill(w.right, { sum: kakSum(last), stars: starText(stars) });
   const why = (s: KakSet, n: number) => {
@@ -68,7 +72,8 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
   const drawSet = (s: KakSet, i: number) => {
     const middle = grid && i === 4;
     const centre = !grid ? MIDDLE : middle ? MIDDLE : CORNERS[i];
-    const [R, r, font] = grid ? [52, 22, 20] : [104, 40, 34];
+    // Hard's nine numbers sit on a wider ring, smaller, so they don't touch.
+    const [R, r, font] = grid ? [52, 22, 20] : s.nums.length > 6 ? [134, 30, 26] : [104, 40, 34];
     const open = kakOpen(task, d.solved, i);
     const solved = d.solved.includes(i);
     const at = spots(s.nums.length, centre, R, middle);
@@ -113,7 +118,7 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
           {!grid && done && <text x={W / 2} y={H / 2 + 8} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakSum(task.sets[0])}</text>}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={done}>
+      <GameActions game={game} g={g} done={done} onward={onward}>
         {!d.hinted && <button className="live-btn" title={w.hintCost} onClick={() => set({ ...d, hinted: true })}>💡 {w.hintBtn}</button>}
       </GameActions>
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
