@@ -284,7 +284,9 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
     const [dx, dy] = [e.clientX - d.x, e.clientY - d.y];
     if (!d.moved && Math.hypot(dx, dy) < 5) return;
     d.moved = true;
-    setLook({ yaw: d.yaw + dx * 0.5, pitch: d.pitch + dy * 0.5 });
+    // Upside down (tipped past the top or bottom), world up points down the screen, so sideways drags turn the other way.
+    const flip = Math.cos(rad(d.pitch)) < 0 ? -1 : 1;
+    setLook({ yaw: d.yaw + flip * dx * 0.5, pitch: d.pitch + dy * 0.5 });
   };
   const drop = () => {
     const d = down.current;
