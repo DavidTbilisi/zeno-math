@@ -699,6 +699,32 @@ input.invalid { border-color: var(--danger); }
 .est-dots i.ok { background: #2f9e44; border-color: #2f9e44; }
 .est-dots i.off { background: #f08c00; border-color: #f08c00; }
 .est-reveal { animation: est-in 0.35s ease-out; }
+/* What every game on the shell (live/useGame.tsx) does on a miss, a right step and at the end: the stage shakes with
+   a red flash and the line of feedback nudges; a right step glows green; the stars still at stake sit by the puzzles;
+   the stars pop bigger the more there are (one star: a pop, no confetti), a streak mark is an orange burst up top, and
+   the ladder done is a panel with its discoveries listed. */
+.live-shake { animation: live-shake 0.35s ease-in-out; }
+.live-beat { animation: live-beat 0.3s ease-out; }
+.live-flash { position: absolute; inset: 0; pointer-events: none; border-radius: 6px; background: #e03131; animation: live-flash 0.4s ease-out both; }
+.live-said-in { display: inline-block; animation: said-in 0.3s ease-out; }
+.live-stake { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #495057; }
+.live-stake b { color: #f59f00; letter-spacing: -1px; }
+.celebrate.s1 b { font-size: 44px; }
+.celebrate.s3 { --r: -220px; }
+.celebrate.s3 b { font-size: 76px; }
+.celebrate.streak { --r: -90px; align-items: flex-start; padding-top: 4px; }
+.celebrate.streak b { color: #e8590c; font-size: 28px; }
+.celebrate.streak i { background: hsl(calc(20deg + var(--i) * 6deg) 90% 55%); }
+.ladder-done {
+  position: absolute; inset: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 12px; border: 1.5px solid #f59f00; border-radius: 10px; background: rgba(255, 249, 219, 0.96); text-align: center;
+}
+.ladder-done b { font-size: 15px; }
+.ladder-done ul { margin: 0; padding-left: 1.2em; font-size: 12px; color: #9c36b5; text-align: left; overflow: auto; }
+@keyframes live-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@keyframes live-beat { 40% { transform: scale(1.03); filter: drop-shadow(0 0 6px #2f9e44); } }
+@keyframes live-flash { from { opacity: 0.25; } to { opacity: 0; } }
+@keyframes said-in { from { transform: translateX(-4px); } 50% { transform: translateX(4px); } }
 .look-pad { max-width: 560px; }
 .look-pad .live-btn { min-width: 2.6em; font-size: 18px; font-weight: 700; padding: 6px 8px; }
 .look-go { font-size: 18px; padding: 8px 18px; }
@@ -737,6 +763,9 @@ input.invalid { border-color: var(--danger); }
 @media (prefers-reduced-motion: reduce) {
   .celebrate i { display: none; }
   .geo-done, .pv-placed, .est-reveal { animation: none !important; }
+  .live-shake, .live-beat, .live-said-in { animation: none !important; }
+  /* No flash: without its fade the red would stay. */
+  .live-flash { display: none; }
   /* The clock still runs down, without sliding: it shows the time left as a fading bar. */
   .near-clock i { animation-name: near-fade; }
   /* The stars still show, without moving, and go after a moment. */

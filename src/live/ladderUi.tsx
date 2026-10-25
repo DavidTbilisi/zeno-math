@@ -3,16 +3,17 @@
 // star), the way into the endless run (or free play) and, under it, where the player is — the round's dots, or the
 // endless run's levels and streak; at the bottom the button that moves on, the sound switch and the discoveries so
 // far; and the celebration when a puzzle is done (outside the piece's picture, so the 📷 copy never has confetti in it).
+// A new game is written on useGame.tsx, which puts these together and does what every outcome does; the games written
+// before it use these parts directly.
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
-import { isOpen, readLadder, type Ladder } from "../math/ladder";
+import { burst, GAME_LEVELS, isOpen, readLadder, type GameLevel, type Ladder } from "../math/ladder";
 import { muted, setMuted } from "./juice";
 import { fill, Toggle } from "./ui";
 
 export type GameWords = Dict["live"]["game"];
-export type GameLevel = 1 | 2 | 3;
-export const GAME_LEVELS: readonly GameLevel[] = [1, 2, 3];
+export { GAME_LEVELS, type GameLevel };
 
 export const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -73,11 +74,16 @@ export function LadderBar({ stars, current, onPick, words, children }: {
   );
 }
 
-/** Stars popping up and a burst of confetti; give it a new key to play it again. */
-export function Cheer({ text, small }: { text: string; small?: boolean }) {
+/**
+ * Stars popping up and a burst of confetti; give it a new key to play it again. With `stars` the burst is in proportion
+ * (one star: no confetti); `streak` is the orange mark of a streak.
+ */
+export function Cheer({ text, small, stars, streak }: { text: string; small?: boolean; stars?: number; streak?: boolean }) {
+  const b = streak ? burst("streak") : stars !== undefined ? burst("stars", stars) : null;
+  const pieces = b ? b.pieces : small ? 14 : 18;
   return (
-    <div className={`celebrate${small ? " small" : ""}`} aria-hidden="true">
-      {Array.from({ length: small ? 14 : 18 }, (_, i) => <i key={i} style={{ "--i": i } as CSSProperties} />)}
+    <div className={`celebrate${small ? " small" : ""}${b ? ` ${b.cls}` : ""}`} aria-hidden="true">
+      {Array.from({ length: pieces }, (_, i) => <i key={i} style={{ "--i": i } as CSSProperties} />)}
       <b>{text}</b>
     </div>
   );
@@ -97,7 +103,8 @@ export function GameNav({ ladder, mode, stage, level, streak, onPuzzle, onEndles
   onPuzzle: (stage: number) => void;
   onEndless?: (level: GameLevel) => void;
   onFree?: () => void;
-  words: { puzzle: string; locked: string; free?: string };
+  /** A game's own names for its puzzles ("Round {n}"), its lock and its free play, where they differ from every game's. */
+  words: { puzzle?: string; locked?: string; free?: string };
   g: GameWords;
   pace?: ReactNode;
   children?: ReactNode;
@@ -105,9 +112,9 @@ export function GameNav({ ladder, mode, stage, level, streak, onPuzzle, onEndles
   const { t } = useI18n();
   return (
     <>
-      <LadderBar stars={ladder.stars} current={mode === "puzzle" ? stage : null} onPick={onPuzzle} words={words}>
+      <LadderBar stars={ladder.stars} current={mode === "puzzle" ? stage : null} onPick={onPuzzle} words={{ puzzle: words.puzzle ?? g.puzzle, locked: words.locked ?? g.locked }}>
         {onEndless && <Toggle on={mode === "endless"} onClick={() => onEndless(level ?? 1)}>∞ {g.endless}</Toggle>}
-        {onFree && <Toggle on={mode === "free"} onClick={onFree}>✏️ {words.free}</Toggle>}
+        {onFree && <Toggle on={mode === "free"} onClick={onFree}>✏️ {words.free ?? g.free}</Toggle>}
       </LadderBar>
       {mode === "endless" && onEndless ? (
         <div className="live-bar">

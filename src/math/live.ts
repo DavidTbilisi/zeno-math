@@ -37,6 +37,7 @@ import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
 import { BP_START, type LiveBackprop } from "./backpropLab";
 import { TN_START, type LiveTensor } from "./tensorLab";
+export type { EndlessGame, GameBase, GameLevel, GameMode, TryGame } from "./ladder";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { ProblemId } from "./problems/index";
