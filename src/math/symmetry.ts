@@ -6,6 +6,7 @@
 // rectangle's diagonals) is the slip named.
 import { withSteps } from "./angleGuess";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type SymLevel = 1 | 2 | 3;
 type P = [number, number];
@@ -171,19 +172,12 @@ export function symNotice(t: SymTask, misses: number, streak: number): SymNotice
   if (falseDiagonals(t) > 0) return "notDiagonal";
   return null;
 }
-export type LiveMirror = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: SymLevel;
-  seed: number;
-  /** The lines chosen (places in `linesOf`), those shown folding wrongly since the last check, and the misses. */
-  chosen: number[];
-  wrong: number[];
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: SymNotice } | { kind: "wrong"; more: boolean } | null;
-};
+export type LiveMirror = EndlessGame<SymNotice, SymLevel, { kind: "wrong"; more: boolean }> &
+  TryGame & {
+    /** The lines chosen (places in `linesOf`), and those shown folding wrongly since the last check. */
+    chosen: number[];
+    wrong: number[];
+  };
 /** The shape of a puzzle or of the endless run, and the lines offered. */
 export function symNow(d: Pick<LiveMirror, "mode" | "stage" | "level" | "seed">): { task: SymTask; lines: number[] } {
   const [level, seed] = d.mode === "puzzle" ? [SYM_LADDER[d.stage].level, SYM_LADDER[d.stage].seed] : [d.level, d.seed];

@@ -1,58 +1,32 @@
 // Make a whole: a bar with fraction tiles already in it and a gap to the target; tap tiles of the puzzle's family to
 // put them in the gap (tap one in the bar to take it out). Exactly filling the gap earns two stars, and filling it with
 // the fewest tiles there can be, three. Too much shows red past the end. Nine puzzles open in turn; the endless run keeps
-// a streak of puzzles filled with the fewest tiles first time.
-import { useState } from "react";
-import {
-  fillState,
-  sumOf,
-  TILE_COLORS,
-  WALL_LADDER,
-  WALL_NOTICES,
-  wallNotice,
-  wallNow,
-  wallStars,
-  type LiveWall,
-  type WallLevel,
-} from "../math/fractionWall";
-import { withBest, withFound, withStars } from "../math/ladder";
-import { play } from "./juice";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+// a streak of puzzles filled with the fewest tiles first time. Built on the game shell (useGame): a fill better than any
+// before on this puzzle wins it (again), one no better is only noticed.
+import { fillState, sumOf, TILE_COLORS, WALL_LADDER, WALL_NOTICES, wallNotice, wallNow, wallStars, type LiveWall } from "../math/fractionWall";
+import { starText } from "./ladderUi";
 import { fill, FONT, HtmlFrac, INK, SvgFrac, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const W = 620;
 const [BX, BY, BH] = [20, 40, 70];
+const FRESH: Partial<LiveWall> = { placed: [], best: 0, said: null };
 
 export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fractionWall">) {
   const [w, g] = [words.fractionWall, words.game];
-  const [ladder, keep] = useLadder("zeno.fractionwall.v1", WALL_LADDER.length, WALL_NOTICES);
-  const [cheer, setCheer] = useState(0);
+  const game = useGame({ key: "zeno.fractionwall.v1", size: WALL_LADDER.length, notices: WALL_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const task = wallNow(d);
   const span = Math.max(task.target.toNumber(), task.target.toNumber() + Math.max(0, sumOf(d.placed).sub(task.gap).toNumber()));
   const unit = (W - 2 * BX) / span;
   const state = fillState(task, d.placed);
 
+  // The first exact fill of a puzzle is the one the endless streak counts; a better fill after it wins again.
   const put = (placed: number[]) => {
     if (fillState(task, placed) !== "exact") return set({ ...d, placed, said: null });
     const stars = wallStars(task, placed);
-    const first = d.best === 0;
-    const streak = d.mode === "endless" && first ? (stars === 3 ? d.streak + 1 : 0) : d.streak;
-    const key = wallNotice(placed, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    if (d.mode === "puzzle") next = withStars(next, d.stage, stars);
-    if (key && !next.found.includes(key)) next = withFound(next, key, WALL_NOTICES);
-    if (next !== ladder) keep(next);
-    if (stars > d.best) {
-      play("good");
-      setTimeout(() => play("star"), 260);
-      setCheer((c) => c + 1);
-    }
-    set({ ...d, placed, best: Math.max(d.best, stars), streak, said: key ? { kind: "notice", key } : null });
+    if (stars > d.best) return game.win({ stars, clean: stars === 3, counts: d.best === 0, notice: (streak) => wallNotice(placed, streak), patch: { placed, best: stars } });
+    game.spot({ placed }, wallNotice(placed, d.streak));
   };
-  const fresh: Pick<LiveWall, "placed" | "best" | "said"> = { placed: [], best: 0, said: null };
-  const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
-  const endless = (level: WallLevel) => set({ ...d, ...fresh, mode: "endless", level, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, WALL_LADDER.length)));
 
   // The tiles in the bar, left to right: the fixed ones, then the ones put in.
   let x = BX;
@@ -62,18 +36,19 @@ export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fr
     return rect;
   });
   const end = BX + unit * task.target.toNumber();
-  const said =
-    d.said?.kind === "notice" ? `${w.notices[d.said.key]} `
-    : "";
   const status =
     state === "exact" ? (d.placed.length <= task.fewest.length ? fill(w.fewest, { stars: starText(3) }) : fill(w.exact, { stars: starText(2) }))
     : state === "over" ? w.over
     : d.placed.length ? fill(w.short, { n: d.placed.length })
     : w.hint;
+  const line: Line = {
+    tone: d.said?.kind === "notice" ? "notice" : state === "exact" ? "ok" : state === "over" ? "wrong" : "hint",
+    text: `${d.said?.kind === "notice" ? `${w.notices[d.said.key]} ` : ""}${status}`,
+  };
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g} />
+      <Stage game={game} stars={d.best} done={state === "exact"} g={g} notices={w.notices}>
         <svg ref={svgRef} width={W} height={140} viewBox={`0 0 ${W} 140`} fontFamily={FONT} role="img" aria-label={fill(w.make, { t: task.target.isInt() ? String(task.target.n) : `${task.target.n}/${task.target.d}` })}>
           <rect width={W} height={140} fill="#fff" />
           {/* The gap to fill, behind the tiles. */}
@@ -96,8 +71,7 @@ export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fr
           )}
           {task.target.toNumber() > 1 && <line x1={BX + unit} y1={BY + BH} x2={BX + unit} y2={BY + BH + 14} stroke={INK} strokeWidth={2} />}
         </svg>
-        {cheer > 0 && state === "exact" && <Cheer key={cheer} text={starText(d.best)} />}
-      </div>
+      </Stage>
       <div className="live-bar wall-tray">
         {task.sizes.map((den) => (
           <button key={den} className="live-btn wall-tile" style={{ background: TILE_COLORS[den] }} title={`1/${den}`} aria-label={`1/${den}`} onClick={() => put([...d.placed, den])}>
@@ -105,15 +79,10 @@ export function FractionWall({ state: d, set, w: words, svgRef }: PieceProps<"fr
           </button>
         ))}
       </div>
-      <div className="live-bar">
+      <GameActions game={game} g={g} done={d.best > 0} always>
         <button className="live-btn" disabled={!d.placed.length} onClick={() => put([])}>{g.clear}</button>
-        {d.best > 0 && <Onward mode={d.mode} stage={d.stage} size={WALL_LADDER.length} onClick={onward} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={d.said?.kind === "notice" ? "live-said notice" : state === "exact" ? "live-said ok" : state === "over" ? "live-said" : "live-hint"}>
-        {said}
-        {status} <Found ladder={ladder} of={WALL_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

@@ -6,6 +6,7 @@
 // The answer is the number, typed or tapped; three slips are named: one of the two parts given for the number they make,
 // a number used twice, and a sum given for a product.
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type KakLevel = 1 | 2 | 3;
 export type KakOp = "+" | "*";
@@ -159,19 +160,13 @@ export function kakNotice(t: KakTask, misses: number, hinted: boolean, ms: numbe
   if (ms <= 4000) return "quick";
   return null;
 }
-export type LiveKakooma = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: KakLevel;
-  seed: number;
+export type LiveKakooma = EndlessGame<KakNotice, KakLevel> & {
   /** The sets solved, the last wrong tap (which set, which number), and the misses. */
   solved: number[];
   wrong: { set: number; n: number } | null;
   misses: number;
   /** Whether the hint (one of the two parts ringed in every open set) is showing. */
   hinted: boolean;
-  streak: number;
-  said: { kind: "notice"; key: KakNotice } | null;
 };
 /** The puzzle being played, or the endless run's set. */
 export const kakNow = (d: Pick<LiveKakooma, "mode" | "stage" | "level" | "seed">): KakTask =>

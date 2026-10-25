@@ -4,6 +4,7 @@
 // that stays and the part that grows is seeing the rule: an L of figure n is a corner and two arms of n, 2n + 1.
 // Taking figure 10 for ten figure 1s (10 × 3 for 2n + 1) is the slip named.
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type GrowLevel = 1 | 2 | 3;
 export type GrowKind = "L" | "T" | "plus" | "U" | "steps" | "frame" | "square" | "rect" | "stairs";
@@ -188,19 +189,12 @@ export function growNotice(t: GrowTask, misses: number, streak: number): GrowNot
   if (t.ask.dir === "count" && t.ask.k >= 50) return "bigFigure";
   return null;
 }
-export type LiveGrow = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: GrowLevel;
-  seed: number;
-  /** The squares tapped on the grid (figure 4), or the number typed. */
-  built: number[];
-  typed: string;
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: GrowNotice } | { kind: "wrong"; v: number } | null;
-};
+export type LiveGrow = EndlessGame<GrowNotice, GrowLevel, { kind: "wrong"; v: number }> &
+  TryGame & {
+    /** The squares tapped on the grid (figure 4), or the number typed. */
+    built: number[];
+    typed: string;
+  };
 export const growNow = (d: Pick<LiveGrow, "mode" | "stage" | "level" | "seed">): GrowTask =>
   d.mode === "puzzle" ? growTask(GROW_LADDER[d.stage].level, rng(GROW_LADDER[d.stage].seed)) : growTask(d.level, rng(d.seed));
 

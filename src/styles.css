@@ -643,6 +643,7 @@ input.invalid { border-color: var(--danger); }
 .live-digits .live-btn { min-width: 2em; font-weight: 700; }
 .live-said { margin: 0; font-size: 13px; color: #c92a2a; text-align: center; }
 .live-said.ok { color: #2f9e44; }
+.live-said.near { color: #e8590c; }
 .live-said.info { color: #495057; }
 .live-sign { display: inline-block; min-width: 1em; font-size: 20px; line-height: 1; }
 .live-face { min-width: 2.6em; font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 15px; }

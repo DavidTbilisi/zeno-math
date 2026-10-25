@@ -1,27 +1,16 @@
 // Equal amounts: cards to pair up (or put in threes at hard) — a fraction and its picture, a fraction and an equal one
 // with bigger numbers, a fraction with its decimal and its percentage. Tap the cards that go together; they turn green
 // and stay, and two that don't go together flash red. Clearing the board with no misses earns three stars. The endless
-// run deals board after board and keeps a streak of groups made without a miss.
-import { useRef, useState } from "react";
-import {
-  EQ_LADDER,
-  EQ_NOTICES,
-  eqNotice,
-  eqNow,
-  eqStars,
-  groupSize,
-  partsSvg,
-  same,
-  type Card,
-  type EqLevel,
-  type LiveEquiv,
-} from "../math/equivMatch";
-import { withBest, withFound, withStars } from "../math/ladder";
-import { play } from "./juice";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+// run deals board after board and keeps a streak of groups made without a miss. Built on the game shell (useGame),
+// which does the ladder, the sounds and the cheer.
+import { EQ_LADDER, EQ_NOTICES, eqNotice, eqNow, eqStars, groupSize, partsSvg, same, type Card, type LiveEquiv } from "../math/equivMatch";
 import { fill, FONT, INK, SvgFrac, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
+import { starText } from "./ladderUi";
 
 const [CW, CH, GAP] = [132, 92, 12];
+
+const FRESH: Partial<LiveEquiv> = { cleared: [], picked: [], misses: 0, said: null };
 
 function Face({ c, x, y }: { c: Card; x: number; y: number }) {
   const [cx, cy] = [x + CW / 2, y + CH / 2];
@@ -32,9 +21,7 @@ function Face({ c, x, y }: { c: Card; x: number; y: number }) {
 
 export function EquivMatch({ state: d, set, w: words, svgRef }: PieceProps<"equivMatch">) {
   const [w, g] = [words.equivMatch, words.game];
-  const [ladder, keep] = useLadder("zeno.equivmatch.v1", EQ_LADDER.length, EQ_NOTICES);
-  const [cheer, setCheer] = useState(0);
-  const started = useRef(performance.now());
+  const game = useGame({ key: "zeno.equivmatch.v1", size: EQ_LADDER.length, notices: EQ_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const cards = eqNow(d);
   const level = d.mode === "puzzle" ? EQ_LADDER[d.stage].level : d.level;
   const size = groupSize(level);
@@ -42,57 +29,34 @@ export function EquivMatch({ state: d, set, w: words, svgRef }: PieceProps<"equi
   const rows = Math.ceil(cards.length / cols);
   const [W, H] = [cols * (CW + GAP) + GAP, rows * (CH + GAP) + GAP];
   const done = d.cleared.length === cards.length;
+  const stars = eqStars(d.misses);
 
   const tap = (i: number) => {
     if (done || d.cleared.includes(i)) return;
     if (d.picked.includes(i)) return set({ ...d, picked: d.picked.filter((j) => j !== i), said: null });
     const picked = [...d.picked, i];
-    if (!same(cards[picked[0]], cards[i])) {
-      play("miss");
-      return set({ ...d, picked: [], misses: d.misses + 1, streak: 0, said: { kind: "miss", a: picked[0], b: i } });
-    }
+    if (!same(cards[picked[0]], cards[i])) return game.miss({ picked: [], misses: d.misses + 1, said: { kind: "miss", a: picked[0], b: i } });
     if (picked.length < size) return set({ ...d, picked, said: null });
-    // A whole group: it stays, green.
+    // A whole group: it stays, green, and counts on the streak; the last one clears the board.
     const cleared = [...d.cleared, ...picked];
-    const streak = d.mode === "endless" ? d.streak + 1 : d.streak;
     const all = cleared.length === cards.length;
-    const key = eqNotice(level, all, d.misses, performance.now() - started.current, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    let said: LiveEquiv["said"] = key ? { kind: "notice", key } : null;
-    if (all) {
-      const stars = eqStars(d.misses);
-      if (d.mode === "puzzle") next = withStars(next, d.stage, stars);
-      said = key ? said : { kind: "done", stars };
-      setTimeout(() => play("star"), 260);
-      setCheer((c) => c + 1);
-    }
-    if (key && !next.found.includes(key)) next = withFound(next, key, EQ_NOTICES);
-    if (next !== ladder) keep(next);
-    play("good");
-    set({ ...d, cleared, picked: [], streak, said });
+    const notice = (streak: number) => eqNotice(level, all, d.misses, game.sinceShown(), streak);
+    if (!all) return game.step({ cleared, picked: [] }, { notice });
+    game.win({ stars, clean: true, notice, patch: { cleared, picked: [] } });
   };
-  const fresh: Pick<LiveEquiv, "cleared" | "picked" | "misses" | "said"> = { cleared: [], picked: [], misses: 0, said: null };
-  const restart = (s: Partial<LiveEquiv>) => {
-    started.current = performance.now();
-    set({ ...d, ...fresh, ...s });
-  };
-  const go = (stage: number) => restart({ mode: "puzzle", stage });
-  const endless = (l: EqLevel) => restart({ mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? restart({ seed: newSeed() }) : go(nextStage(d.stage, EQ_LADDER.length)));
 
   const missed = d.said?.kind === "miss" ? [d.said.a, d.said.b] : [];
-  const stars = eqStars(d.misses);
-  const said =
-    d.said?.kind === "notice" ? `${w.notices[d.said.key]}${done ? ` ${fill(w.done, { stars: starText(stars) })}` : ""}`
-    : d.said?.kind === "done" ? fill(w.done, { stars: starText(d.said.stars) })
-    : d.said?.kind === "miss" ? w.miss
-    : size === 3 ? w.hintThrees : w.hint;
+  const line: Line =
+    d.said?.kind === "notice" ? { tone: "notice", text: `${w.notices[d.said.key]}${done ? ` ${fill(w.done, { stars: starText(stars) })}` : ""}` }
+    : done ? { tone: "ok", text: `${fill(w.done, { stars: starText(stars) })}${d.mode === "puzzle" && stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : d.said?.kind === "miss" ? { tone: "wrong", text: w.miss }
+    : { tone: "hint", text: size === 3 ? w.hintThrees : w.hint };
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g}>
+      <GameHead game={game} g={g} words={w}>
         <span className="est-streak">{fill(w.misses, { n: d.misses })}</span>
-      </GameNav>
-      <div className="geo-stage-wrap">
+      </GameHead>
+      <Stage game={game} stars={stars} done={done} g={g} notices={w.notices}>
         <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={size === 3 ? w.hintThrees : w.hint}>
           <rect width={W} height={H} fill="#fff" />
           {cards.map((c, i) => {
@@ -108,15 +72,9 @@ export function EquivMatch({ state: d, set, w: words, svgRef }: PieceProps<"equi
             );
           })}
         </svg>
-        {cheer > 0 && done && <Cheer key={cheer} text={starText(stars)} />}
-      </div>
-      <div className="live-bar">
-        {done && <Onward mode={d.mode} stage={d.stage} size={EQ_LADDER.length} onClick={onward} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={d.said?.kind === "notice" ? "live-said notice" : d.said?.kind === "done" ? "live-said ok" : d.said?.kind === "miss" ? "live-said" : "live-hint"}>
-        {said} <Found ladder={ladder} of={EQ_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      </Stage>
+      <GameActions game={game} g={g} done={done} />
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

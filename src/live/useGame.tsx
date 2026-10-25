@@ -4,8 +4,9 @@
 // a low note and a nudge of the feedback line; a puzzle done settles the stars, the best streak and a notice found into
 // the ladder, cheers in proportion (one star a pop, three a big burst and a held chord), marks a streak of 5, 10, 25
 // or 50 with a burst of its own, and plays a chord when the ninth star completes the ladder. It also moves between the
-// puzzles, the endless run and free play, and clears every timer it set when the piece goes. Each outcome is one
-// `set`, so each stays one step to undo; what only moves (the shake, the cheer) is kept here, not on the board. The
+// puzzles, the endless run and free play, and clears every timer it set when the piece goes. A thing noticed with no
+// judging (free play's discoveries) is kept and chimed too. Each outcome is one `set`, so each stays one step to undo;
+// what only moves (the shake, the cheer) is kept here, not on the board. The
 // pieces under it draw the head (the puzzles and the way out of them), the stage (with the panel over it when the
 // ladder is done), the stars still at stake, the line of feedback and the bottom bar.
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -14,14 +15,16 @@ import { play } from "./juice";
 import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder, type GameWords } from "./ladderUi";
 import { fill } from "./ui";
 
-/** What a line of feedback is: a hint in grey, the prompt in bold, a miss in red, a right answer in green, a notice in purple. */
-export type Tone = "hint" | "prompt" | "wrong" | "ok" | "notice";
+/** What a line of feedback is: a hint in grey, the prompt in bold, a miss in red, a near miss in orange, a right answer in green, a notice in purple. */
+export type Tone = "hint" | "prompt" | "wrong" | "near" | "ok" | "notice";
 export type Line = { tone: Tone; text: string };
 
 /** What only moves: counters that re-key a cheer or a nudge, and the pulse (a shake or a beat) the stage is in. */
 export type Fx = { cheer: number; mark: number; markN: number; pulse: number; kind: "shake" | "beat" | null };
 
 type Notice<K> = (streak: number) => K | null;
+/** What a step or a win can say besides: a notice to look for, and whether it counts on the streak (a part of a puzzle solved does not). */
+type Along<K> = { notice?: Notice<K>; counts?: boolean };
 
 export type Game<K extends string, S extends GameBase<K, unknown>> = {
   state: S;
@@ -33,14 +36,17 @@ export type Game<K extends string, S extends GameBase<K, unknown>> = {
   /** A move that is neither right nor wrong: a tick. */
   tap(patch: Partial<S>): void;
   /** Right, but the puzzle is not finished: a chord (higher along a streak), a beat, a notice found if any. */
-  step(patch: Partial<S>, o?: { notice?: Notice<K> }): void;
+  step(patch: Partial<S>, o?: Along<K>): void;
   /** Wrong: a low note, a shake, the endless streak back to nought; a notice can still be found (what the miss showed). */
   miss(patch: Partial<S>, o?: { notice?: Notice<K> }): void;
+  /** Something noticed with no judging (free play, a fill no better than before): kept, and a chime if it is new. */
+  spot(patch: Partial<S>, key: K | null): void;
   /** The puzzle finished: its stars (in a puzzle), the streak (`clean` in the endless run), a notice, and the cheer. */
-  win(o: { stars?: number; clean?: boolean; right?: boolean; notice?: Notice<K>; patch?: Partial<S> }): void;
-  go(stage: number): void;
-  endless(level: GameLevel): void;
-  free(): void;
+  win(o: { stars?: number; clean?: boolean; right?: boolean; notice?: Notice<K>; patch?: Partial<S> } & Pick<Along<K>, "counts">): void;
+  /** A puzzle of the ladder, the endless run at a level, or free play, each afresh (with `patch` besides). */
+  go(stage: number, patch?: Partial<S>): void;
+  endless(level: GameLevel, patch?: Partial<S>): void;
+  free(patch?: Partial<S>): void;
   /** On: the next puzzle of the endless run, the puzzle after this one (the same again after the last), or free play afresh. */
   onward(): void;
   /** Milliseconds since this puzzle was shown, for "quick" notices. */
@@ -94,13 +100,14 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
     play("snap");
     set({ ...d, ...patch } as S);
   };
-  const step = (patch: Partial<S>, s: { notice?: Notice<K> } = {}) => {
-    const streak = nextStreak(d.mode, streakOf(d), true);
+  const step = (patch: Partial<S>, s: Along<K> = {}) => {
+    const counts = s.counts ?? true;
+    const streak = counts ? nextStreak(d.mode, streakOf(d), true) : streakOf(d);
     const key = s.notice?.(streak) ?? null;
     const next = settleIn(streak, key);
     play("good", { pitch: d.mode === "endless" ? Math.min(streak, 8) : 0 });
     if (key && !ladder.found.includes(key) && next !== ladder) later(200, () => play("star"));
-    mark(streak);
+    if (counts) mark(streak);
     pulse("beat");
     set({ ...d, ...patch, ...streakPatch(streak), said: saidOf(key, patch) } as S);
   };
@@ -112,30 +119,36 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
     pulse("shake");
     set({ ...d, ...patch, ...streakPatch(streak), said: patch.said ?? saidOf(key) } as S);
   };
-  const win = (s: { stars?: number; clean?: boolean; right?: boolean; notice?: Notice<K>; patch?: Partial<S> }) => {
-    const streak = nextStreak(d.mode, streakOf(d), s.clean ?? true);
+  const spot = (patch: Partial<S>, key: K | null) => {
+    const next = settleIn(streakOf(d), key);
+    if (key && next !== ladder) play("star");
+    set({ ...d, ...patch, said: saidOf(key, patch) } as S);
+  };
+  const win = (s: { stars?: number; clean?: boolean; right?: boolean; notice?: Notice<K>; patch?: Partial<S> } & Pick<Along<K>, "counts">) => {
+    const counts = s.counts ?? true;
+    const streak = counts ? nextStreak(d.mode, streakOf(d), s.clean ?? true) : streakOf(d);
     const key = s.notice?.(streak) ?? null;
     const next = settleIn(streak, key, s.stars);
     play(s.right ?? true ? "good" : "miss", { pitch: d.mode === "endless" ? Math.min(streak, 8) : 0 });
     later(260, () => play(s.stars === 3 ? "levelup" : "star"));
-    mark(streak);
+    if (counts) mark(streak);
     if (!ladderDone(ladder.stars) && ladderDone(next.stars)) later(700, () => play("levelup"));
     setFx((f) => ({ ...f, cheer: f.cheer + 1 }));
     set({ ...d, ...s.patch, ...streakPatch(streak), said: saidOf(key, s.patch) } as S);
   };
 
   const show = () => (shownAt.current = performance.now());
-  const go = (stage: number) => {
+  const go = (stage: number, patch?: Partial<S>) => {
     show();
-    set({ ...d, ...fresh, ...o.stagePatch?.(stage), mode: "puzzle", stage } as S);
+    set({ ...d, ...fresh, ...o.stagePatch?.(stage), mode: "puzzle", stage, ...patch } as S);
   };
-  const endless = (level: GameLevel) => {
+  const endless = (level: GameLevel, patch?: Partial<S>) => {
     show();
-    set({ ...d, ...fresh, mode: "endless", level, seed: newSeed() } as S);
+    set({ ...d, ...fresh, mode: "endless", level, seed: newSeed(), ...patch } as S);
   };
-  const free = () => {
+  const free = (patch?: Partial<S>) => {
     show();
-    set({ ...d, ...fresh, ...o.freePatch, mode: "free" } as S);
+    set({ ...d, ...fresh, ...o.freePatch, mode: "free", ...patch } as S);
   };
   const onward = () => {
     if (d.mode === "endless") return endless((d as { level?: GameLevel }).level ?? 1);
@@ -143,7 +156,7 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
     go(nextStage(d.stage, size));
   };
 
-  return { state: d, ladder, size, modes, notices, fx, tap, step, miss, win, go, endless, free, onward, sinceShown: () => performance.now() - shownAt.current };
+  return { state: d, ladder, size, modes, notices, fx, tap, step, miss, spot, win, go, endless, free, onward, sinceShown: () => performance.now() - shownAt.current };
 }
 
 /** Any game, for the pieces that draw one. */
@@ -171,7 +184,7 @@ export function GameHead({ game, g, words, pace, children }: {
       streak={d.streak}
       onPuzzle={game.go}
       onEndless={game.modes.includes("endless") ? game.endless : undefined}
-      onFree={game.modes.includes("free") ? game.free : undefined}
+      onFree={game.modes.includes("free") ? () => game.free() : undefined}
       words={words ?? {}}
       g={g}
       pace={pace}
@@ -266,7 +279,7 @@ export function LadderDone({ game, g, notices }: { game: AnyGame; g: GameWords; 
       )}
       <div className="live-bar">
         {game.modes.includes("endless") && <button className="live-btn on" onClick={() => game.endless(level)}>∞ {g.playEndless}</button>}
-        {game.modes.includes("free") && <button className="live-btn on" onClick={game.free}>✏️ {g.free}</button>}
+        {game.modes.includes("free") && <button className="live-btn on" onClick={() => game.free()}>✏️ {g.free}</button>}
         <button className="live-btn" onClick={() => game.go(0)}>{g.replay}</button>
       </div>
     </div>

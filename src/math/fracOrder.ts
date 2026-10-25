@@ -3,6 +3,7 @@
 // on 0 to 1; hard: five on 0 to 2, with some past 1 (5/4, 1 1/3) and some nearly 1 (7/8, 9/10). No two are so close
 // that placing them is a guess. Unit fractions put in order of their bottoms is the slip "a bigger bottom is bigger".
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type OrderLevel = 1 | 2 | 3;
 /** A fraction to order: n/d, as written (5/4 or 1 1/4 at hard), and its value. */
@@ -129,17 +130,11 @@ export function orderNotice(t: OrderTask, placed: number[], streak: number): Ord
   return null;
 }
 
-export type LiveOrder = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: OrderLevel;
-  seed: number;
+export type LiveOrder = EndlessGame<OrderNotice, OrderLevel> & {
   /** Where each card was put on the line (null: not yet), and the card picked up. */
   placed: (number | null)[];
   sel: number | null;
   checked: boolean;
-  streak: number;
-  said: { kind: "notice"; key: OrderNotice } | null;
 };
 export const orderNow = (d: Pick<LiveOrder, "mode" | "stage" | "level" | "seed">): OrderTask =>
   d.mode === "puzzle" ? orderTask(ORDER_LADDER[d.stage].level, rng(ORDER_LADDER[d.stage].seed)) : orderTask(d.level, rng(d.seed));

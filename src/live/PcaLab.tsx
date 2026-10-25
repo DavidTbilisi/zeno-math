@@ -3,7 +3,8 @@
 // what is kept, and the bars beside show the two adding up to the cloud's whole spread. In later puzzles the line is
 // PC1 itself and the points are dragged instead, or a mark is put where a point's shadow falls. Eight puzzles open in
 // turn, stars for doing one at the first try, and free play takes any points. What is mid-way (a drag, the slider
-// being moved) stays here until it is let go, so each change is one step to undo.
+// being moved) stays here until it is let go, so each change is one step to undo. Built on the game shell (useGame): a
+// check that meets the puzzle's goal wins it, one that does not is a miss.
 import { useState, type PointerEvent } from "react";
 import {
   KEEP_IN,
@@ -30,21 +31,23 @@ import {
   type LivePca,
   type Pt,
 } from "../math/pcaLab";
-import { withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, Found, GameNav, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** The most points free play takes. */
 const MAX_PTS = 30;
 type Grab = { what: "point"; i: number; moved: boolean } | { what: "pivot" } | { what: "turn" } | { what: "mark" };
 
 const keepIn = (v: number) => Math.round(Math.min(KEEP_IN, Math.max(-KEEP_IN, v)) * 100) / 100;
+/** A new try starts from no tries; a puzzle of the ladder sets its points and line, free play its own. */
+const FRESH: Partial<LivePca> = { tries: 0, done: false, said: null };
+const stagePatch = (stage: number): Partial<LivePca> => pcaStart(PCA_LADDER[stage]);
+const freePatch = (): Partial<LivePca> => ({ ...pcaStart(null), errors: "perp", showBest: false });
 
 export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
   const [w, g] = [words.pcaLab, words.game];
-  const [ladder, keep] = useLadder("zeno.pcalab.v1", PCA_LADDER.length, PCA_NOTICES);
-  const [cheer, setCheer] = useState(0);
   const [draft, setDraft] = useState<Partial<LivePca> | null>(null);
   const [grab, setGrab] = useState<Grab | null>(null);
   const d: LivePca = { ...state, ...draft };
@@ -64,29 +67,13 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
     set({ ...d, ...change });
   };
   const change = (c: Partial<LivePca>, done: boolean) => (done ? commit(fresh(c)) : setDraft({ ...draft, ...fresh(c) }));
-
-  function go(stage: number) {
-    commit({ mode: "puzzle", stage, ...pcaStart(PCA_LADDER[stage]), tries: 0, done: false, said: null });
-  }
-  function free() {
-    commit({ mode: "free", ...pcaStart(null), errors: "perp", showBest: false, tries: 0, done: false, said: null });
-  }
-  const onward = () => go(nextStage(d.stage, PCA_LADDER.length));
+  const game = useGame({ key: "zeno.pcalab.v1", size: PCA_LADDER.length, notices: PCA_NOTICES, modes: ["puzzle", "free"], state: d, set: commit, fresh: FRESH, stagePatch, freePatch: freePatch() });
 
   const check = () => {
     if (!p) return;
     const v = judgePca(p, d);
-    if (v.state === "won") {
-      let next = withStars(ladder, d.stage, pcaStars(d.tries));
-      next = withFound(next, p.notice, PCA_NOTICES);
-      keep(next);
-      play("good");
-      setTimeout(() => play("star"), 260);
-      setCheer((c) => c + 1);
-      return commit({ done: true, said: { kind: "notice", key: p.notice } });
-    }
-    play("miss");
-    commit({ tries: d.tries + 1, said: { kind: "wrong", why: v.why } });
+    if (v.state === "won") return game.win({ stars: pcaStars(d.tries), notice: () => p.notice, patch: { done: true } });
+    game.miss({ tries: d.tries + 1, said: { kind: "wrong", why: v.why } });
   };
 
   // Dragging: a point that can be moved, the line's middle, a handle (or, in a puzzle, anywhere else) to turn it, the
@@ -149,15 +136,12 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
   const ask = p ? fill(w.asks[`p${d.stage + 1}` as keyof typeof w.asks], { tol: p.goal.kind === "upright" ? p.goal.tol : 0, share: p.goal.kind === "keep" ? pct(p.goal.share) : 0 }) : w.freeAsk;
   const verdict = p && d.said?.kind === "wrong" ? judgePca(p, d) : null;
   const wrong = verdict?.state === "lost" ? verdict : null;
-  const said =
-    d.done && d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${fill(w.right, { stars: starText(pcaStars(d.tries)) })}`
-    : wrong ? fill(w.why[wrong.why], { have: wrong.why === "keep" ? `${pct(wrong.have)} %` : wrong.why === "upright" ? `${Math.round(wrong.have)}` : num(wrong.have), want: num(wrong.want) })
-    : !p ? w.freeHint
-    : score ? w.markHint
-    : !own ? w.pointHint
-    : move ? w.moveHint
-    : w.turnHint;
-  const sayClass = d.done ? "live-said notice" : wrong ? "live-said" : "live-hint";
+  const stars = pcaStars(d.tries);
+  const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
+  const said: Line =
+    d.done ? { tone: notice ? "notice" : "ok", text: `${notice ? `${notice} ` : ""}${fill(w.right, { stars: starText(stars) })}${stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : wrong ? { tone: "wrong", text: fill(w.why[wrong.why], { have: wrong.why === "keep" ? `${pct(wrong.have)} %` : wrong.why === "upright" ? `${Math.round(wrong.have)}` : num(wrong.have), want: num(wrong.want) }) }
+    : { tone: "hint", text: !p ? w.freeHint : score ? w.markHint : !own ? w.pointHint : move ? w.moveHint : w.turnHint };
   const read =
     !enough ? w.few
     : own ? (errors === "perp" ? fill(w.sum, { k: num(kept), l: num(lost), s: num(kept + lost) }) : fill(w.lostV, { l: num(lost) }))
@@ -166,9 +150,9 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
 
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} onPuzzle={go} onFree={free} words={w} g={g} />
-      <p className="live-said geo-prompt">{ask}</p>
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g} />
+      <Said line={{ tone: "prompt", text: ask }} />
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
           width={PCA_PLOT.w}
@@ -190,8 +174,7 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
             }}
           />
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(pcaStars(d.tries))} />}
-      </div>
+      </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
@@ -228,8 +211,8 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
           )}
         </div>
       )}
-      <div className="live-bar">
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {w.check}</button>}
+      <GameActions game={game} g={g} done={d.done} always>
+        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
         {!p && (
           <>
             <Toggle on={d.showBest} onClick={() => commit({ showBest: !d.showBest })}>{w.showBest}</Toggle>
@@ -237,13 +220,9 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
             <button className="live-btn" disabled={d.pts.length === 0} onClick={() => commit({ pts: [] })}>{w.clear}</button>
           </>
         )}
-        <button className="live-btn" onClick={() => commit(fresh(pcaStart(p)))}>↺ {w.reset}</button>
-        {d.done && p && <Onward mode="puzzle" stage={d.stage} size={PCA_LADDER.length} onClick={onward} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={sayClass}>
-        {said} <Found ladder={ladder} of={PCA_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+        <button className="live-btn" onClick={() => commit(fresh(pcaStart(p)))}>↺ {g.reset}</button>
+      </GameActions>
+      <Said line={said} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

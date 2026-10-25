@@ -2,7 +2,8 @@
 // ∂L/∂node, filled in going back from L. Eight puzzles open in turn, each checked with Check, stars for doing one at
 // the first try; tapping a box in the picture goes to its field. In free play any of the graphs is taken, its inputs
 // changed by hand with every gradient shown, and a nudge of 0.01 to the chosen input shows what its gradient means.
-// What is mid-way (a number being typed) stays here until the field is left, so each change is one step to undo.
+// What is mid-way (a number being typed) stays here until the field is left, so each change is one step to undo. Built
+// on the game shell (useGame): a check with every gradient right wins the puzzle, one with a slip is a miss.
 import { useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import {
   backward,
@@ -28,15 +29,19 @@ import {
   type BpGraphId,
   type LiveBackprop,
 } from "../math/backpropLab";
-import { withFound, withStars } from "../math/ladder";
-import { play } from "./juice";
-import { Cheer, Found, GameNav, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
+
+/** A new try starts from empty boxes; free play starts from the first graph with its first input chosen. */
+const FRESH: Partial<LiveBackprop> = { answers: {}, tries: 0, done: false, said: null };
+const freePatch = (): Partial<LiveBackprop> => {
+  const first = BP_GRAPHS[0];
+  return { graph: first.id, values: { ...first.values }, sel: inputsOf(first)[0] };
+};
 
 export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpropLab">) {
   const [w, g] = [words.backpropLab, words.game];
-  const [ladder, keep] = useLadder("zeno.backproplab.v1", BP_LADDER.length, BP_NOTICES);
-  const [cheer, setCheer] = useState(0);
   const [draft, setDraft] = useState<Partial<LiveBackprop> | null>(null);
   const [focus, setFocus] = useState<string | null>(null);
   const fields = useRef<Record<string, HTMLInputElement | null>>({});
@@ -53,30 +58,26 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
     setDraft(null);
     set({ ...d, ...change });
   };
-
-  function go(stage: number) {
-    setFocus(null);
-    commit({ mode: "puzzle", stage, answers: {}, tries: 0, done: false, said: null });
-  }
-  function free() {
-    const first = BP_GRAPHS[0];
-    setFocus(null);
-    commit({ mode: "free", graph: first.id, values: { ...first.values }, sel: inputsOf(first)[0], answers: {}, tries: 0, done: false, said: null });
-  }
-  const onward = () => go(nextStage(d.stage, BP_LADDER.length));
+  // Another puzzle (or free play) forgets which box was being typed in.
+  const game = useGame({
+    key: "zeno.backproplab.v1",
+    size: BP_LADDER.length,
+    notices: BP_NOTICES,
+    modes: ["puzzle", "free"],
+    state: d,
+    set: (s) => {
+      if (s.mode !== d.mode || s.stage !== d.stage) setFocus(null);
+      commit(s);
+    },
+    fresh: FRESH,
+    freePatch: freePatch(),
+  });
 
   const check = () => {
     if (!p) return;
     const verdict = judgeBp(p, d.answers);
-    if (verdict.state === "won") {
-      keep(withFound(withStars(ladder, d.stage, bpStars(d.tries)), p.notice, BP_NOTICES));
-      play("good");
-      setTimeout(() => play("star"), 260);
-      setCheer((c) => c + 1);
-      return commit({ done: true, said: { kind: "notice", key: p.notice } });
-    }
-    play("miss");
-    commit({ tries: d.tries + 1, said: { kind: "wrong", why: verdict.why } });
+    if (verdict.state === "won") return game.win({ stars: bpStars(d.tries), notice: () => p.notice, patch: { done: true } });
+    game.miss({ tries: d.tries + 1, said: { kind: "wrong", why: verdict.why } });
   };
 
   // Typing stays a draft until the field is left; Enter goes on to the next box. The last box typed in stays marked,
@@ -110,12 +111,12 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
 
   const verdict = p && d.said?.kind === "wrong" ? judgeBp(p, d.answers) : null;
   const wrong = verdict?.state === "lost" ? verdict : null;
-  const said =
-    d.done && d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${fill(w.right, { stars: starText(bpStars(d.tries)) })}`
-    : wrong ? fill(w.why[wrong.why], { n: wrong.node, have: wrong.have })
-    : p ? w.hint
-    : w.freeHint;
-  const sayClass = d.done ? "live-said notice" : wrong ? "live-said" : "live-hint";
+  const stars = bpStars(d.tries);
+  const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
+  const line: Line =
+    d.done ? { tone: notice ? "notice" : "ok", text: `${notice ? `${notice} ` : ""}${fill(w.right, { stars: starText(stars) })}${stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : wrong ? { tone: "wrong", text: fill(w.why[wrong.why], { n: wrong.node, have: wrong.have }) }
+    : { tone: "hint", text: p ? w.hint : w.freeHint };
   const ask = p ? w.asks[`p${d.stage + 1}` as keyof typeof w.asks] : w.freeAsk;
   // The hint for the box being typed in: the arrows out of its node, each with its local slope.
   const uses = p && focus ? usesOf(graph, focus, w.reluRule) : [];
@@ -123,9 +124,9 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
 
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} onPuzzle={go} onFree={free} words={w} g={g} />
-      <p className="live-said geo-prompt">{ask}</p>
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g} />
+      <Said line={{ tone: "prompt", text: ask }} />
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
           width={BP_PLOT.w}
@@ -143,8 +144,7 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
             }}
           />
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(bpStars(d.tries))} />}
-      </div>
+      </Stage>
       {p ? (
         <div className="live-bar">
           {p.blanks.map((id, i) => (
@@ -190,15 +190,11 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
         {uses.length > 0 && focus && <span className="descent-next">{fill(w.feeds, { n: focus, uses: uses.map((u) => fill(w.use, { p: u.to, e: u.expr, r: u.slope })).join("; ") })}</span>}
         {n && sel && <span className="descent-next">{fill(w.nudge, { n: sel, a: num4(n.before), b: num4(n.after), d: num4(n.after - n.before), g: num4(grad[sel] * 0.01) })}</span>}
       </div>
-      <div className="live-bar">
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {w.check}</button>}
-        <button className="live-btn" onClick={() => commit(fresh(p ? { answers: {} } : { values: { ...graph.values } }))}>↺ {w.reset}</button>
-        {d.done && p && <Onward mode="puzzle" stage={d.stage} size={BP_LADDER.length} onClick={onward} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={sayClass}>
-        {said} <Found ladder={ladder} of={BP_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      <GameActions game={game} g={g} done={d.done} always>
+        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
+        <button className="live-btn" onClick={() => commit(fresh(p ? { answers: {} } : { values: { ...graph.values } }))}>↺ {g.reset}</button>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

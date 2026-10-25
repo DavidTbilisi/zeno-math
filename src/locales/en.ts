@@ -4520,9 +4520,6 @@ export const en = {
       oneStar: "Try it again for more stars.",
     },
     geoboard: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       freeHint: "Make any shape: tap the dots to put its corners.",
       hint: "Tap a dot to put a corner there; drag a corner to move it, or tap it to take it off.",
       area: "Area",
@@ -4578,8 +4575,6 @@ export const en = {
       },
     },
     target: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       make: "Make {t}",
       hint: "Tap cards and signs to build a sum that makes the target. Each card once.",
       useAll: "Use all {n} cards, each once.",
@@ -4620,8 +4615,6 @@ export const en = {
       },
     },
     divisible: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       which: "Which of these divide {n}?",
       hint: "Tap every number that divides {n} exactly, then check.",
       chosen: "{n} chosen. Tap one again to take it off, then check.",
@@ -4640,8 +4633,6 @@ export const en = {
       },
     },
     kakooma: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hintSum: "One of these numbers is the sum of two others. Tap it.",
       hintProduct: "One of these numbers is the product of two others. Tap it.",
       hintGrid: "Solve each corner: its answer goes into the middle. Then solve the middle.",
@@ -4666,8 +4657,6 @@ export const en = {
       },
     },
     fractionWall: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       make: "Fill the bar to {t}",
       hint: "Tap tiles to fill the gap exactly. Tap a tile in the bar to take it out.",
       short: "{n} in so far — keep filling the gap.",
@@ -4715,8 +4704,6 @@ export const en = {
       }
     },
     shadeFrac: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       shadeShape: "Shade {f} of the shape.",
       shadeSet: "Shade {f} of the counters.",
       count: "{k} of {p} pieces shaded. Tap pieces to shade them, then check.",
@@ -4730,8 +4717,6 @@ export const en = {
       }
     },
     balance: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "The scales balance. What does the ■ weigh? Set it, then weigh.",
       hintTwo: "Both scales balance. What do the ■ and the ● weigh? Set them, then weigh.",
       weigh: "Weigh",
@@ -4747,8 +4732,6 @@ export const en = {
       }
     },
     machine: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       askOut: "What comes out when {n} goes in?",
       askIn: "{out} came out. What went in?",
       hint: "The machine does the same to every number. Put numbers in to find its rule.",
@@ -4767,8 +4750,6 @@ export const en = {
       }
     },
     growing: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       askBuild: "Build figure 4: tap the squares.",
       askCount: "How many squares in figure {k}?",
       askWhich: "Which figure has {n} squares?",
@@ -4788,8 +4769,6 @@ export const en = {
       }
     },
     exprMatch: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Tap two cards that are equal for every x.",
       miss: "{a} and {b} aren't equal — try x = 2 in both.",
       done: "Board cleared! {stars}",
@@ -4818,8 +4797,6 @@ export const en = {
       },
     },
     angleHunt: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "The figure is drawn to size. What is the angle marked ?",
       erase: "Rub out the last digit",
       wrongArm: "Not {v}° — the dashed arm shows how big {v}° would be. What do the angles add up to?",
@@ -4833,8 +4810,6 @@ export const en = {
       },
     },
     mirror: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Tap every line the shape folds onto itself along, then check. None? Just check.",
       line: "Line {n}",
       chosen: "{n} chosen. Tap a line again to take it off, then check.",
@@ -4850,8 +4825,6 @@ export const en = {
       },
     },
     cubeNet: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Which of these fold into a cube? Tap them, then check.",
       hintOpposite: "Fold the net in your mind. Tap the face opposite the ★.",
       shape: "Shape {n}",
@@ -4885,8 +4858,6 @@ export const en = {
       },
     },
     barChart: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Raise each bar to its number: tap its column at that height, or use the arrow keys. Then check.",
       wrong: "Not yet: the orange bars should reach the dashed lines. Read the numbers up the side.",
       lines: "Each line of the scale is worth {s}: the {f} bar is at {h}, but there are {v}. Read the numbers up the side.",
@@ -4899,8 +4870,6 @@ export const en = {
       },
     },
     graphStory: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Draw the walk: tap a piece for each part, in order, then check. Up is further from home.",
       ready: "Every part drawn: check it.",
       undo: "Undo",
@@ -4919,8 +4888,6 @@ export const en = {
       },
     },
     slopeLine: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Draw a line through A with gradient {m}: tap a second point.",
       askUp: "Draw a line through A with gradient {m} — up {n} for every 1 along: tap a second point.",
       hint: "Tap a crossing of the grid to put B there.",
@@ -4940,8 +4907,6 @@ export const en = {
       },
     },
     oneStroke: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Draw every edge in one stroke: tap a vertex to start, then the next one along an edge, never going over an edge twice.",
       askHard: "Draw every edge in one stroke — or, if it can't be done, say so.",
       hint: "Tap a vertex to start.",
@@ -4950,7 +4915,6 @@ export const en = {
       startOdd: "Stuck. Two vertices have an odd number of edges: start at one of them, and the stroke ends at the other.",
       can: "It can be done: no more than two vertices have an odd number of edges. Try it!",
       undo: "Undo",
-      again: "Start again",
       cant: "Can't be done",
       right: "Drawn in one stroke! {stars}",
       rightCant: "Right: more than two vertices have an odd number of edges, so it can't be done. {stars}",
@@ -4962,8 +4926,6 @@ export const en = {
       },
     },
     colourMap: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Colour every vertex with {k} colours so that no edge joins two of the same colour.",
       askFewest: "Colour every vertex so that no edge joins two of the same colour, with as few colours as you can.",
       hint: "Pick a colour, then tap the vertices to give it to them.",
@@ -4981,8 +4943,6 @@ export const en = {
       },
     },
     shortestPath: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Find the shortest route from {a} to {b}: tap the places along it in turn.",
       hint: "Tap a place joined to the last one by a road; tap the last one again to take it back.",
       arrived: "You're there: check it.",
@@ -5065,9 +5025,6 @@ export const en = {
       },
     },
     pcaLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "Turn the line (drag one of its ends, or the slider) until the red squares, the squared distances, add up to as little as they can. Then Check.",
         p2: "Turn the line so that the points' shadows on it, the purple dots, spread out as widely as they can.",
@@ -5082,8 +5039,6 @@ export const en = {
       picture: "A cloud of points and a line through it",
       angle: "Angle of the line",
       mark: "Mark along PC1",
-      check: "Check",
-      reset: "Start again",
       clear: "Clear the points",
       showBest: "Show PC1",
       vertical: "Distances straight up",
@@ -5120,9 +5075,6 @@ export const en = {
       },
     },
     softmaxLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "Drag the score bars so that {a} gets at least {p} of the probability. Then Check.",
         p2: "Make all three classes equally likely.",
@@ -5151,8 +5103,6 @@ export const en = {
       more: "One class more",
       target: "Target:",
       noTarget: "none",
-      check: "Check",
-      reset: "Start again",
       hint: "Drag a bar up or down to set a score, and watch every probability change.",
       tempHint: "Move the T slider: low T sharpens, high T flattens.",
       right: "Done! {stars}",
@@ -5179,9 +5129,6 @@ export const en = {
       },
     },
     embedLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "Drag the tip of dog's arrow so that cat and dog are alike: a cosine of at least 0.95. Then Check.",
         p2: "Drag car's arrow so that car has nothing to do with cat: a cosine between −0.1 and 0.1.",
@@ -5200,8 +5147,6 @@ export const en = {
       pickHint: "Tap a word to pick it.",
       nearestTo: "Nearest to {q}:",
       lands: "{e} lands nearest:",
-      check: "Check",
-      reset: "Start again",
       hint: "Drag the ringed tip; the numbers on the right follow it.",
       freeHint: "Tap a word's tip to pick it or let it go, drag a tip to move it.",
       right: "Done! {stars}",
@@ -5226,9 +5171,6 @@ export const en = {
       },
     },
     backpropLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "L = (x + y) · z. Fill in ∂L/∂q and ∂L/∂z, going back from L, whose own gradient is 1. Then Check.",
         p2: "∂L/∂q is in now. Fill in ∂L/∂x and ∂L/∂y, back through the + gate.",
@@ -5250,8 +5192,6 @@ export const en = {
       use: "{p} = {e}, with local slope {r}",
       reluRule: "1 if {a} > 0, else 0",
       nudge: "{n} + 0.01 takes L from {a} to {b}: a change of {d}, about ∂L/∂{n} × 0.01 = {g}.",
-      check: "Check",
-      reset: "Start again",
       hint: "Type a number in each box, such as −4, 0.25 or 1/4. Tap a box to go to it, Enter for the next.",
       freeHint: "Tap an input in the picture to choose it, then change it with − and +.",
       right: "Done! {stars}",
@@ -5275,9 +5215,6 @@ export const en = {
       },
     },
     tensorLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "T is a 3 × 4 matrix. Tap the entry T[1, 2]. Then Check.",
         p2: "In memory T's rows lie one after another. Tap the place in memory where T[2, 1] sits.",
@@ -5300,8 +5237,6 @@ export const en = {
       tapPlace: "Tapped: place {p}.",
       contiguous: "Shape ({shape}), strides ({s}): contiguous, read straight through memory.",
       jumps: "Shape ({shape}), strides ({s}): not contiguous, one step along the last axis jumps {j} places.",
-      check: "Check",
-      reset: "Start again",
       hint: "Tap your answer in the picture, then Check.",
       typeHint: "Type a whole number in each box; Enter goes on to the next.",
       freeHint: "Tap any entry or place: the dashed line joins an entry to its place in memory.",
