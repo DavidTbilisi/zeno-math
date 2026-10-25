@@ -5,6 +5,7 @@
 // digits of the fraction read as a decimal.
 import type { Bench } from "./benchmark";
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type EqLevel = 1 | 2 | 3;
 export type CardKind = "frac" | "pic" | "dec" | "pct";
@@ -137,17 +138,11 @@ export function eqNotice(level: EqLevel, cleared: boolean, misses: number, ms: n
   if (misses === 0) return "clean";
   return null;
 }
-export type LiveEquiv = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: EqLevel;
-  seed: number;
+export type LiveEquiv = EndlessGame<EqNotice, EqLevel, { kind: "miss"; a: number; b: number }> & {
   /** The places of the cards cleared, the one picked first (if any), and the misses so far. */
   cleared: number[];
   picked: number[];
   misses: number;
-  streak: number;
-  said: { kind: "notice"; key: EqNotice } | { kind: "done"; stars: number } | { kind: "miss"; a: number; b: number } | null;
 };
 /** The cards of the board being played, in the order they lie. */
 export function eqNow(d: Pick<LiveEquiv, "mode" | "stage" | "level" | "seed">): Card[] {

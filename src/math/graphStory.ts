@@ -7,6 +7,7 @@
 import { withSteps } from "./angleGuess";
 import { LETTERS } from "./cubeNets";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type StoryLevel = 1 | 2 | 3;
 export type Part = "awaySlow" | "awayFast" | "stop" | "backSlow" | "backFast";
@@ -210,19 +211,12 @@ export function storyNotice(t: StoryTask, misses: number, streak: number): Story
   if (t.parts.includes("stop")) return "still";
   return null;
 }
-export type LiveGraphStory = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: StoryLevel;
-  seed: number;
-  /** The parts drawn so far, the ones found wrong at the last check, and whether the graph is right. */
-  drawn: Part[];
-  wrong: number[];
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: StoryNotice } | { kind: "wrong"; why: "flat" | "speed" | "way" } | null;
-};
+export type LiveGraphStory = EndlessGame<StoryNotice, StoryLevel, { kind: "wrong"; why: "flat" | "speed" | "way" }> &
+  TryGame & {
+    /** The parts drawn so far, and the ones found wrong at the last check. */
+    drawn: Part[];
+    wrong: number[];
+  };
 export const storyNow = (d: Pick<LiveGraphStory, "mode" | "stage" | "level" | "seed">): StoryTask =>
   d.mode === "puzzle" ? storyTask(STORY_LADDER[d.stage].level, rng(STORY_LADDER[d.stage].seed)) : storyTask(d.level, rng(d.seed));
 

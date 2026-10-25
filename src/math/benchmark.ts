@@ -4,6 +4,7 @@
 // benchmark, typed or picked, so the server reads it back like any number. After each pick the board shows where the
 // number really is between the benchmarks.
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type NearLevel = 1 | 2 | 3;
 /** A benchmark: its value, as it is shown (½), as it is typed (1/2), and in LaTeX. */
@@ -133,17 +134,11 @@ export function nearNotice(t: NearTask, right: boolean, ms: number, round: boole
   return null;
 }
 
-export type LiveNear = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: NearLevel;
-  seed: number;
+export type LiveNear = EndlessGame<NearNotice, NearLevel> & {
   i: number;
   results: boolean[];
   /** The benchmark picked (its place), -1 when the time ran out, null before. */
   picked: number | null;
-  streak: number;
-  said: { kind: "notice"; key: NearNotice } | { kind: "done"; stars: number } | null;
 };
 export const nearNow = (d: Pick<LiveNear, "mode" | "stage" | "level" | "seed" | "i">): NearTask =>
   d.mode === "puzzle" ? nearRound(NEAR_LADDER[d.stage].level, NEAR_LADDER[d.stage].seed)[d.i] : nearTask(d.level, rng(d.seed));

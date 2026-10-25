@@ -3,6 +3,7 @@
 // game. The answer is the sum as typed ("(3 + 5) × 2"), worked out exactly in fractions, so the browser and the server
 // always agree. Two sums count as different ways only if they differ by more than order: 3 + 4 and 4 + 3 are one way.
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type TargetLevel = 1 | 2 | 3;
 export type Op = "+" | "-" | "*" | "/";
@@ -205,17 +206,11 @@ export type Piece = { card: number } | { op: Op } | { paren: "(" | ")" };
 export const pieceText = (p: Piece, cards: number[]) => ("card" in p ? String(cards[p.card]) : "op" in p ? SIGN[p.op] : p.paren);
 export const piecesText = (ps: Piece[], cards: number[]) => ps.map((p) => pieceText(p, cards)).join(" ");
 
-export type LiveTarget = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: TargetLevel;
-  seed: number;
+export type LiveTarget = EndlessGame<TargetNotice, TargetLevel> & {
   sum: Piece[];
   /** The different ways found so far (canonical), and whether the hint was shown. */
   ways: string[];
   hinted: boolean;
-  streak: number;
-  said: { kind: "notice"; key: TargetNotice } | { kind: "made"; stars: number } | null;
 };
 export const targetNow = (d: Pick<LiveTarget, "mode" | "stage" | "level" | "seed">): TargetPuzzle =>
   d.mode === "puzzle" ? targetPuzzle(TARGET_LADDER[d.stage].level, rng(TARGET_LADDER[d.stage].seed)) : targetPuzzle(d.level, rng(d.seed));

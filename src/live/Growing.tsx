@@ -2,35 +2,23 @@
 // on a grid, then check (anywhere on the grid will do, as long as it is the shape); or say how many squares figure 10,
 // 20 or 50 has, or which figure has so many. Right first time earns three stars, after one miss two. Nine puzzles open
 // in turn — figure 4 built, big figures counted, squares and rectangles and which figure — and the endless run keeps a
-// streak right first time. Once it is right, the figures colour the part that stays and the part that grows.
-import { useState } from "react";
-import {
-  buildGrid,
-  figuresSvg,
-  GROW_LADDER,
-  GROW_NOTICES,
-  growAnswer,
-  growNotice,
-  growNow,
-  growStars,
-  judgeBuilt,
-  type GrowLevel,
-  type LiveGrow,
-} from "../math/growing";
-import { withBest, withFound, withStars } from "../math/ladder";
+// streak right first time. Once it is right, the figures colour the part that stays and the part that grows. Built on
+// the game shell (useGame), which does the ladder, the sounds and the cheer.
+import { buildGrid, figuresSvg, GROW_LADDER, GROW_NOTICES, growAnswer, growNotice, growNow, growStars, judgeBuilt, type LiveGrow } from "../math/growing";
 import { readWhole } from "../math/machine";
-import { play } from "./juice";
 import { Keypad } from "./Keypad";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const W = 520;
 const CELL = 20;
 
+const FRESH: Partial<LiveGrow> = { built: [], typed: "", misses: 0, done: false, said: null };
+
 export function Growing({ state: d, set, w: words, svgRef }: PieceProps<"growing">) {
   const [w, g] = [words.growing, words.game];
-  const [ladder, keep] = useLadder("zeno.growing.v1", GROW_LADDER.length, GROW_NOTICES);
-  const [cheer, setCheer] = useState(0);
+  const game = useGame({ key: "zeno.growing.v1", size: GROW_LADDER.length, notices: GROW_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const task = growNow(d);
   const building = task.ask.dir === "build";
   const grid = buildGrid(task.kind);
@@ -38,12 +26,9 @@ export function Growing({ state: d, set, w: words, svgRef }: PieceProps<"growing
   const gridY = figs.h + 24;
   const H = building ? gridY + grid.rows * CELL + 8 : figs.h + 16;
   const gridX = (W - grid.cols * CELL) / 2;
+  const stars = growStars(d.misses);
 
-  const tap = (i: number) => {
-    if (d.done) return;
-    play("snap");
-    set({ ...d, built: d.built.includes(i) ? d.built.filter((k) => k !== i) : [...d.built, i], said: null });
-  };
+  const tap = (i: number) => !d.done && game.tap({ built: d.built.includes(i) ? d.built.filter((k) => k !== i) : [...d.built, i], said: null });
   const check = () => {
     let ok: boolean;
     let v: number;
@@ -55,43 +40,26 @@ export function Growing({ state: d, set, w: words, svgRef }: PieceProps<"growing
       if (typed === null) return;
       [ok, v] = [typed === growAnswer(task), typed];
     }
-    if (!ok) {
-      play("miss");
-      return set({ ...d, typed: "", misses: d.misses + 1, streak: 0, said: { kind: "wrong", v } });
-    }
-    const stars = growStars(d.misses);
-    const streak = d.mode === "endless" && d.misses === 0 ? d.streak + 1 : d.mode === "endless" ? 0 : d.streak;
-    const key = growNotice(task, d.misses, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    if (d.mode === "puzzle") next = withStars(next, d.stage, stars);
-    if (key && !next.found.includes(key)) next = withFound(next, key, GROW_NOTICES);
-    if (next !== ladder) keep(next);
-    play("good");
-    setTimeout(() => play("star"), 260);
-    setCheer((c) => c + 1);
-    set({ ...d, done: true, streak, said: key ? { kind: "notice", key } : null });
+    if (!ok) return game.miss({ typed: "", misses: d.misses + 1, said: { kind: "wrong", v } });
+    game.win({ stars, clean: d.misses === 0, notice: (streak) => growNotice(task, d.misses, streak), patch: { done: true } });
   };
-  const fresh: Pick<LiveGrow, "built" | "typed" | "misses" | "done" | "said"> = { built: [], typed: "", misses: 0, done: false, said: null };
-  const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
-  const endless = (l: GrowLevel) => set({ ...d, ...fresh, mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, GROW_LADDER.length)));
 
   const ask = task.ask.dir === "build" ? w.askBuild : task.ask.dir === "count" ? fill(w.askCount, { k: task.ask.k }) : fill(w.askWhich, { n: task.ask.count });
-  const stars = growStars(d.misses);
-  const right = fill(w.right, { stars: starText(stars) });
+  const right = `${fill(w.right, { stars: starText(stars) })}${d.mode === "puzzle" && stars === 1 ? ` ${g.oneStar}` : ""}`;
   const wrong = building ? fill(w.wrongBuilt, { n: d.said?.kind === "wrong" ? d.said.v : 0 }) : fill(w.wrong, { v: d.said?.kind === "wrong" ? d.said.v : "" });
-  const said =
-    d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${right}`
-    : d.done ? right
-    : d.said?.kind === "wrong" ? wrong
-    : building ? fill(w.built, { n: d.built.length })
-    : w.hint;
+  const line: Line =
+    d.said?.kind === "notice" ? { tone: "notice", text: `${w.notices[d.said.key]} ${right}` }
+    : d.done ? { tone: "ok", text: right }
+    : d.said?.kind === "wrong" ? { tone: "wrong", text: wrong }
+    : { tone: "hint", text: building ? fill(w.built, { n: d.built.length }) : w.hint };
   const on = new Set(d.built);
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
-      <p className="live-said geo-prompt">{ask}</p>
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g}>
+        <Stake stars={stars} tries={d.misses} g={g} />
+      </GameHead>
+      <Said line={{ tone: "prompt", text: ask }} />
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={ask}>
           <rect width={W} height={H} fill="#fff" />
           <g transform="translate(10 8)" dangerouslySetInnerHTML={{ __html: figs.body }} />
@@ -115,21 +83,13 @@ export function Growing({ state: d, set, w: words, svgRef }: PieceProps<"growing
               />
             ))}
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(stars)} />}
-      </div>
+      </Stage>
       {!building && !d.done && <Keypad value={d.typed} onChange={(typed) => set({ ...d, typed, said: null })} erase={w.erase} />}
-      <div className="live-bar">
-        {building && <button className="live-btn" disabled={!d.built.length || d.done} onClick={() => set({ ...d, built: [], said: null })}>{g.clear}</button>}
-        {d.done ? (
-          <Onward mode={d.mode} stage={d.stage} size={GROW_LADDER.length} onClick={onward} g={g} />
-        ) : (
-          <button className="live-btn on" disabled={building ? !d.built.length : readWhole(d.typed) === null} onClick={check}>{g.check}</button>
-        )}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={d.said?.kind === "notice" ? "live-said notice" : d.done ? "live-said ok" : d.said?.kind === "wrong" ? "live-said" : "live-hint"}>
-        {said} <Found ladder={ladder} of={GROW_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      <GameActions game={game} g={g} done={d.done}>
+        {building && <button className="live-btn" disabled={!d.built.length} onClick={() => set({ ...d, built: [], said: null })}>{g.clear}</button>}
+        <button className="live-btn on" disabled={building ? !d.built.length : readWhole(d.typed) === null} onClick={check}>{g.check}</button>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

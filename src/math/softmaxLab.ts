@@ -7,6 +7,7 @@
 // flattens, for a loss below 0.1, and for two classes sharing the top. Free play takes two to five classes. Kept free
 // of React so it can be tested on its own.
 import { nf } from "./text";
+import type { GameBase } from "./ladder";
 
 /** softmax(z / T), with the largest score taken off first so that e^z cannot overflow. */
 export function softmax(z: number[], T = 1): number[] {
@@ -99,17 +100,15 @@ export function judgeSoftmax(q: SoftmaxPuzzle, z: number[], T: number): SoftmaxV
 /** Stars: done at the first try three, at the second two, else one. */
 export const softmaxStars = (tries: number) => (tries === 0 ? 3 : tries === 1 ? 2 : 1);
 
-export type LiveSoftmax = {
+export type LiveSoftmax = GameBase<SoftmaxNotice, { kind: "wrong"; why: SoftmaxSlip }> & {
   mode: "puzzle" | "free";
-  stage: number;
   z: number[];
   T: number;
   /** Free play's target class, if any. */
   target: number | null;
-  /** Tries that failed on this puzzle, whether it is done, and what was said about the last check. */
+  /** Tries that failed on this puzzle, and whether it is done. */
   tries: number;
   done: boolean;
-  said: { kind: "notice"; key: SoftmaxNotice } | { kind: "wrong"; why: SoftmaxSlip } | null;
 };
 
 export const FREE_Z = [2, 1, 0.1];

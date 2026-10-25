@@ -4,6 +4,7 @@
 // way round — up first, then along, (y, x) for (x, y) — is the slip named. The grid is shared with the gradient game.
 import { withSteps } from "./angleGuess";
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type PlotLevel = 1 | 2 | 3;
 export type Pt = [number, number];
@@ -168,17 +169,11 @@ export function plotNotice(t: PlotTask, right: boolean, streak: number): PlotNot
   if (t.p[0] === 0 || t.p[1] === 0) return "onAxis";
   return null;
 }
-export type LivePlot = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: PlotLevel;
-  seed: number;
+export type LivePlot = EndlessGame<PlotNotice, PlotLevel> & {
   /** Which point of the round, whether each one so far was found, and where the last tap landed. */
   i: number;
   results: boolean[];
   tap: Pt | null;
-  streak: number;
-  said: { kind: "notice"; key: PlotNotice } | { kind: "done"; stars: number } | null;
 };
 export const plotNow = (d: Pick<LivePlot, "mode" | "stage" | "level" | "seed" | "i">): PlotTask =>
   d.mode === "puzzle" ? plotRound(PLOT_LADDER[d.stage].level, PLOT_LADDER[d.stage].seed)[d.i] : plotTask(d.level, rng(d.seed));

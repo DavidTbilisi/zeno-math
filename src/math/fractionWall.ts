@@ -4,6 +4,7 @@
 // missing fraction itself (½ + ⅓ + ? = 1), with the bar drawn.
 import { Frac } from "./fraction";
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type WallLevel = 1 | 2 | 3;
 /** Tiles are unit fractions, named by their bottoms: 3 is ⅓. */
@@ -88,17 +89,11 @@ export function wallNotice(placed: number[], streak: number): WallNotice | null 
   if (placed.length >= 6 && new Set(placed).size === 1) return "manySame";
   return null;
 }
-export type LiveWall = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: WallLevel;
-  seed: number;
+export type LiveWall = EndlessGame<WallNotice, WallLevel> & {
   /** The tiles put in the gap, in order. */
   placed: number[];
   /** The best stars this puzzle has earned so far (a fill with more tiles, then the fewest). */
   best: number;
-  streak: number;
-  said: { kind: "notice"; key: WallNotice } | null;
 };
 export const wallNow = (d: Pick<LiveWall, "mode" | "stage" | "level" | "seed">): WallTask =>
   d.mode === "puzzle" ? wallTask(WALL_LADDER[d.stage].level, rng(WALL_LADDER[d.stage].seed)) : wallTask(d.level, rng(d.seed));

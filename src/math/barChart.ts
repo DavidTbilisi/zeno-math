@@ -5,6 +5,7 @@
 // the lines instead of reading the scale, and the bigger number given for "how many more", are the slips named.
 import { withSteps } from "./angleGuess";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type ChartLevel = 1 | 2 | 3;
 export const FRUIT = ["🍎", "🍌", "🍇", "🍊", "🍓", "🍐"];
@@ -160,19 +161,12 @@ export function chartNotice(t: ChartTask, misses: number, streak: number): Chart
   if (t.items.some((it) => it.v % t.step !== 0)) return "halfway";
   return null;
 }
-export type LiveBarChart = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: ChartLevel;
-  seed: number;
-  /** The heights the bars are at, the ones found wrong at the last check, and whether the chart is right. */
-  bars: number[];
-  wrong: number[];
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: ChartNotice } | { kind: "wrong"; lines: number } | null;
-};
+export type LiveBarChart = EndlessGame<ChartNotice, ChartLevel, { kind: "wrong"; lines: number }> &
+  TryGame & {
+    /** The heights the bars are at, and the ones found wrong at the last check. */
+    bars: number[];
+    wrong: number[];
+  };
 export const chartNow = (d: Pick<LiveBarChart, "mode" | "stage" | "level" | "seed">): ChartTask =>
   d.mode === "puzzle" ? chartTask(CHART_LADDER[d.stage].level, rng(CHART_LADDER[d.stage].seed)) : chartTask(d.level, rng(d.seed));
 

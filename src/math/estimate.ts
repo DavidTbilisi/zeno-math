@@ -4,6 +4,7 @@
 // error as a share of the line). Easy: 0 to 10 or 20; medium: 0 to 100 or 1000; hard: fractions and decimals on 0 to 1,
 // or negative numbers. The board's game plays rounds of five, with stars for how close they came, and an endless run.
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type EstimateLevel = 1 | 2 | 3;
 /** A line from `from` to `to` (only its ends labelled); what the pin is asked for is in the question. */
@@ -133,12 +134,7 @@ export function estimateNotice(t: EstimateTask, x: number, round: number[] | nul
 }
 
 /** The estimate game on the board: rounds of the ladder or the endless run, the pin, and what has been done so far. */
-export type LiveEstimate = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  /** The endless run's level and the seed of its number. */
-  level: EstimateLevel;
-  seed: number;
+export type LiveEstimate = EndlessGame<EstimateNotice, EstimateLevel> & {
   /** The number of the round being placed, and the errors of the ones placed. */
   i: number;
   errors: number[];
@@ -146,8 +142,6 @@ export type LiveEstimate = {
   pin: number | null;
   half: boolean;
   peeked: boolean;
-  streak: number;
-  said: { kind: "notice"; key: EstimateNotice } | { kind: "done"; stars: number } | null;
 };
 /** The number being placed now. */
 export const currentTask = (d: Pick<LiveEstimate, "mode" | "stage" | "level" | "seed" | "i">): EstimateTask =>

@@ -6,6 +6,7 @@
 import { withSteps } from "./angleGuess";
 import { chromatic, colourWith, degrees, graphSvg, hasOddLoop, latticeGraph, PALETTE, type Graph } from "./graphPlay";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type ColourLevel = 1 | 2 | 3;
 /** A graph and the fewest colours it needs. */
@@ -69,19 +70,12 @@ export function colourNotice(t: ColourTask, misses: number, streak: number): Col
   if (misses > 0) return null;
   return t.k === 2 ? "two" : t.k === 3 ? "triangle" : "four";
 }
-export type LiveColour = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: ColourLevel;
-  seed: number;
-  /** Each vertex's colour (−1 none yet), the colour a tap puts, the misses, and whether it is done. */
-  colours: number[];
-  pen: number;
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: ColourNotice } | { kind: "clash" } | { kind: "fewer" } | null;
-};
+export type LiveColour = EndlessGame<ColourNotice, ColourLevel, { kind: "clash" } | { kind: "fewer" }> &
+  TryGame & {
+    /** Each vertex's colour (−1 none yet), and the colour a tap puts. */
+    colours: number[];
+    pen: number;
+  };
 export const colourNow = (d: Pick<LiveColour, "mode" | "stage" | "level" | "seed">): ColourTask =>
   d.mode === "puzzle" ? colourTask(COLOUR_LADDER[d.stage].level, rng(COLOUR_LADDER[d.stage].seed)) : colourTask(d.level, rng(d.seed));
 /** The graph coloured as far as it is, the edges whose ends clash red. */

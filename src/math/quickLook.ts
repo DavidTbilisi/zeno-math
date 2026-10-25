@@ -4,6 +4,7 @@
 // The answer is the number, typed or tapped, so the checker reads it like any other. The board's game plays rounds of
 // five flashes, with stars for how many were right, and an endless run whose flash gets shorter with every right one.
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type LookLevel = 1 | 2 | 3;
 export type LookKind = "die" | "dice" | "frame" | "frames" | "groups" | "scatter";
@@ -135,11 +136,7 @@ export function lookNotice(t: LookTask, right: boolean, ms: number, streak: numb
 }
 
 /** The game on the board: a round of the ladder or the endless run, the flash it is at and what it has shown. */
-export type LiveQuickLook = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: LookLevel;
-  seed: number;
+export type LiveQuickLook = EndlessGame<LookNotice, LookLevel> & {
   i: number;
   /** Right or not, for the flashes of the round answered so far. */
   results: boolean[];
@@ -147,8 +144,6 @@ export type LiveQuickLook = {
   phase: "ready" | "look" | "answer" | "shown";
   answer: number | null;
   relooked: boolean;
-  streak: number;
-  said: { kind: "notice"; key: LookNotice } | { kind: "done"; stars: number } | null;
 };
 export const lookNow = (d: Pick<LiveQuickLook, "mode" | "stage" | "level" | "seed" | "i">): LookTask =>
   d.mode === "puzzle" ? lookRound(LOOK_LADDER[d.stage].level, LOOK_LADDER[d.stage].seed)[d.i] : lookTask(d.level, rng(d.seed));

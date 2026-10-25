@@ -3,8 +3,8 @@
 // star), the way into the endless run (or free play) and, under it, where the player is — the round's dots, or the
 // endless run's levels and streak; at the bottom the button that moves on, the sound switch and the discoveries so
 // far; and the celebration when a puzzle is done (outside the piece's picture, so the 📷 copy never has confetti in it).
-// A new game is written on useGame.tsx, which puts these together and does what every outcome does; the games written
-// before it use these parts directly.
+// Every game is written on useGame.tsx, which puts these together and does what every outcome does; a game's own file
+// uses only `starText`, `RoundDots` and `newSeed` from here.
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";

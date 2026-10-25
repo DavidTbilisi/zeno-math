@@ -1,26 +1,13 @@
 // The estimation game: a number, a line with nothing on it but its ends, and a pin to drag along it. Let go, and the
 // number's real place shows with how far off the pin was. Nine rounds of five (easy, medium, hard) earn up to three
 // stars for how close they come on average, showing the half-way mark caps them at two, and a round opens once the
-// one before it has a star; the endless run keeps a streak of pins within 5 %, and the best streak is kept.
+// one before it has a star; the endless run keeps a streak of pins within 5 %, and the best streak is kept. Built on
+// the game shell (useGame): a pin within 5 % is a step, one further off a miss, and the fifth of a round finishes it.
 import { useState } from "react";
-import {
-  currentTask,
-  ESTIMATE_LADDER,
-  ESTIMATE_NOTICES,
-  estimateNotice,
-  judgePin,
-  numText,
-  offText,
-  pinError,
-  ROUND,
-  roundStars,
-  shareAlong,
-  type EstimateLevel,
-} from "../math/estimate";
-import { withBest, withFound, withStars } from "../math/ladder";
-import { play } from "./juice";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, RoundDots, SoundToggle, starText, useLadder } from "./ladderUi";
+import { currentTask, ESTIMATE_LADDER, ESTIMATE_NOTICES, estimateNotice, judgePin, numText, offText, pinError, ROUND, roundStars, shareAlong, type LiveEstimate } from "../math/estimate";
+import { newSeed, RoundDots, starText } from "./ladderUi";
 import { fill, FONT, INK, svgPoint, Toggle, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const W = 700;
 const H = 210;
@@ -29,14 +16,12 @@ const X1 = W - 50;
 const Y = 130;
 const BLUE = "#1971c2";
 const GREEN = "#2f9e44";
-const ORANGE = "#e8590c";
-const RED = "#e03131";
+const FRESH: Partial<LiveEstimate> = { i: 0, errors: [], pin: null, peeked: false, said: null };
 
 export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estimate">) {
   const [w, g] = [words.estimate, words.game];
-  const [ladder, keep] = useLadder("zeno.estimate.v1", ESTIMATE_LADDER.length, ESTIMATE_NOTICES);
+  const game = useGame({ key: "zeno.estimate.v1", size: ESTIMATE_LADDER.length, notices: ESTIMATE_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const [drag, setDrag] = useState<number | null>(null);
-  const [cheer, setCheer] = useState(0);
   const task = currentTask(d);
   const { from, to } = task.play;
   const X = (v: number) => X0 + shareAlong(task.play, v) * (X1 - X0);
@@ -46,30 +31,17 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
   };
 
   const placed = d.pin !== null;
-  const roundDone = d.mode === "puzzle" && d.said?.kind === "done";
+  const last = d.mode === "puzzle" && d.i === ROUND - 1;
+  const roundDone = last && placed;
+  const stars = roundDone ? roundStars(d.errors, d.peeked) : 0;
   const drop = (x: number) => {
-    const e = pinError(task.play, task.v, x);
     const v = judgePin(task.play, task.v, String(x));
-    play(v.ok ? "good" : "close" in v && v.close ? "snap" : "miss");
-    const errors = [...d.errors, e];
-    const streak = d.mode === "endless" ? (v.ok ? d.streak + 1 : 0) : d.streak;
-    const last = d.mode === "puzzle" && d.i === ROUND - 1;
-    const key = estimateNotice(task, x, last ? errors : null, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    if (key && !next.found.includes(key)) {
-      next = withFound(next, key, ESTIMATE_NOTICES);
-      setTimeout(() => play("star"), 200);
-    }
-    let said: typeof d.said = key ? { kind: "notice", key } : null;
-    if (last) {
-      const stars = roundStars(errors, d.peeked);
-      next = withStars(next, d.stage, stars);
-      said = { kind: "done", stars };
-      setTimeout(() => play("star"), 300);
-      setCheer((c) => c + 1);
-    }
-    if (next !== ladder) keep(next);
-    set({ ...d, pin: x, errors, streak, said });
+    const errors = [...d.errors, pinError(task.play, task.v, x)];
+    const patch: Partial<LiveEstimate> = { pin: x, errors };
+    const notice = (streak: number) => estimateNotice(task, x, last ? errors : null, streak);
+    if (last) return game.win({ stars: roundStars(errors, d.peeked), right: v.ok, clean: v.ok, notice, patch });
+    if (v.ok) return game.step(patch, { notice });
+    game.miss(patch, { notice });
   };
   const down = (e: React.PointerEvent<SVGSVGElement>) => {
     if (placed || !svgRef.current || e.button > 0) return;
@@ -83,30 +55,34 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
     drop(drag);
   };
 
-  const go = (stage: number) => set({ ...d, mode: "puzzle", stage, i: 0, errors: [], pin: null, peeked: false, said: null });
-  const endless = (level: EstimateLevel) => set({ ...d, mode: "endless", level, seed: newSeed(), i: 0, errors: [], pin: null, peeked: false, said: null });
+  // On: another number of the endless run, the next of the round, or (the round done) the shell's way on.
   const next = () => {
     if (d.mode === "endless") return set({ ...d, seed: newSeed(), pin: null, said: null });
-    if (roundDone) return go(nextStage(d.stage, ESTIMATE_LADDER.length));
+    if (roundDone) return game.onward();
     set({ ...d, i: d.i + 1, pin: null, said: null });
   };
   const toggleHalf = () => set({ ...d, half: !d.half, peeked: d.peeked || (d.mode === "puzzle" && !d.half && !roundDone) });
 
   const pin = drag ?? d.pin;
+  // How the pin did: within 5 % right, close in orange, far in red.
   const result = (() => {
     if (d.pin === null) return null;
     const v = judgePin(task.play, task.v, String(d.pin));
     const off = offText(task.play, task.v, d.pin);
-    return v.ok ? { text: fill(w.right, { d: off }), color: GREEN } : "close" in v && v.close ? { text: fill(w.close, { d: off }), color: ORANGE } : { text: fill(w.far, { d: off }), color: RED };
+    return v.ok ? { tone: "ok" as const, text: fill(w.right, { d: off }) } : "close" in v && v.close ? { tone: "near" as const, text: fill(w.close, { d: off }) } : { tone: "wrong" as const, text: fill(w.far, { d: off }) };
   })();
-  const said = d.said?.kind === "notice" ? w.notices[d.said.key] : d.said?.kind === "done" ? fill(w.roundDone, { stars: starText(d.said.stars) }) : null;
+  const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
+  const line: Line =
+    roundDone ? { tone: notice ? "notice" : "ok", text: `${notice ? `${notice} ` : ""}${fill(w.roundDone, { stars: starText(stars) })}${stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : notice ? { tone: "notice", text: notice }
+    : result ?? { tone: "hint", text: w.hint };
 
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g}>
+      <GameHead game={game} g={g} words={w}>
         <RoundDots results={d.errors.map((e) => e <= 0.05)} i={d.i} size={ROUND} />
-      </GameNav>
-      <div className="geo-stage-wrap">
+      </GameHead>
+      <Stage game={game} stars={stars} done={roundDone} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
           width={W}
@@ -133,7 +109,7 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
           {d.half && <line x1={(X0 + X1) / 2} y1={Y - 10} x2={(X0 + X1) / 2} y2={Y + 10} stroke="#868e96" strokeWidth={2} strokeDasharray="4 3" />}
           {placed && result && (
             <g className="est-reveal">
-              <line x1={X(d.pin!)} y1={Y + 22} x2={X(task.v)} y2={Y + 22} stroke={result.color} strokeWidth={4} strokeLinecap="round" />
+              <line x1={X(d.pin!)} y1={Y + 22} x2={X(task.v)} y2={Y + 22} stroke={result.tone === "ok" ? GREEN : result.tone === "near" ? "#e8590c" : "#e03131"} strokeWidth={4} strokeLinecap="round" />
               <path d={`M${X(task.v)},${Y - 4} l-10,-20 h20 z`} fill={GREEN} />
               <text x={X(task.v)} y={Y - 30} fontSize={20} fontWeight={700} textAnchor="middle" fill={GREEN}>{task.text}</text>
             </g>
@@ -145,19 +121,11 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
             </g>
           )}
         </svg>
-        {cheer > 0 && roundDone && d.said?.kind === "done" && <Cheer key={cheer} text={starText(d.said.stars)} />}
-      </div>
-      <div className="live-bar">
+      </Stage>
+      <GameActions game={game} g={g} done={placed} finished={roundDone} rounds onward={next} always>
         <Toggle on={d.half} onClick={toggleHalf} title={d.mode === "puzzle" ? w.peek : undefined}>½ {w.half}</Toggle>
-        {placed && <Onward mode={d.mode} stage={d.stage} size={ESTIMATE_LADDER.length} rounds finished={roundDone} onClick={next} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p
-        className={d.said?.kind === "notice" ? "live-said notice" : d.said?.kind === "done" ? "live-said ok" : result ? "live-said" : "live-hint"}
-        style={result && !said ? { color: result.color } : undefined}
-      >
-        {said ?? result?.text ?? w.hint} <Found ladder={ladder} of={ESTIMATE_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

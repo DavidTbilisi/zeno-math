@@ -8,6 +8,7 @@
 // Free play takes the words given and says, for one, two or three picked, their nearest words, how alike they are,
 // or where their analogy lands. Kept free of React so it can be tested on its own.
 import { nf } from "./text";
+import type { GameBase } from "./ladder";
 
 export type Pt = [number, number];
 /** A word's arrow: the word (a key into the words of the page's language) and where its tip is. */
@@ -128,16 +129,14 @@ const sub = (a: Pt, b: Pt): Pt => [a[0] - b[0], a[1] - b[1]];
 /** Stars: done at the first try three, at the second two, else one. */
 export const embedStars = (tries: number) => (tries === 0 ? 3 : tries === 1 ? 2 : 1);
 
-export type LiveEmbed = {
+export type LiveEmbed = GameBase<EmbedNotice, { kind: "wrong"; why: EmbedSlip }> & {
   mode: "puzzle" | "free";
-  stage: number;
   vecs: WordVec[];
   /** Free play's picked words, the last three tapped. */
   sel: string[];
-  /** Tries that failed on this puzzle, whether it is done, and what was said about the last check. */
+  /** Tries that failed on this puzzle, and whether it is done. */
   tries: number;
   done: boolean;
-  said: { kind: "notice"; key: EmbedNotice } | { kind: "wrong"; why: EmbedSlip } | null;
 };
 
 /** Free play's words. */

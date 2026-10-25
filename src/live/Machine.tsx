@@ -2,83 +2,51 @@
 // and see what comes out, in a table; then answer for a number too big to put in — or, at hard, say what went in.
 // Right first time earns three stars, after one miss two. Nine puzzles open in turn — one step (n + 7, 4n), two
 // steps (3n + 2), two steps asked for 100 or backwards — and the endless run keeps a streak right first time. Once
-// it is answered, the machine shows its rule.
-import { useState } from "react";
-import { withBest, withFound, withStars } from "../math/ladder";
-import {
-  apply,
-  INPUTS,
-  MACHINE_LADDER,
-  MACHINE_NOTICES,
-  machineAnswer,
-  machineNotice,
-  machineNow,
-  machineStars,
-  readWhole,
-  type LiveMachine,
-  type MachineLevel,
-} from "../math/machine";
-import { play } from "./juice";
+// it is answered, the machine shows its rule. Built on the game shell (useGame), which does the ladder, the sounds and
+// the cheer.
+import { apply, INPUTS, MACHINE_LADDER, MACHINE_NOTICES, machineAnswer, machineNotice, machineNow, machineStars, readWhole, type LiveMachine } from "../math/machine";
 import { Keypad } from "./Keypad";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { starText } from "./ladderUi";
 import { fill, FONT, INK, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const [W, H] = [520, 210];
 const ruleText = (mul: number, add: number) => `${mul === 1 ? "" : `× ${mul} `}${add === 0 ? "" : `${add < 0 ? "−" : "+"} ${Math.abs(add)}`}`.trim();
 
+const FRESH: Partial<LiveMachine> = { tried: [], typed: "", misses: 0, done: false, said: null };
+
 export function Machine({ state: d, set, w: words, svgRef }: PieceProps<"machine">) {
   const [w, g] = [words.machine, words.game];
-  const [ladder, keep] = useLadder("zeno.machine.v1", MACHINE_LADDER.length, MACHINE_NOTICES);
-  const [cheer, setCheer] = useState(0);
+  const game = useGame({ key: "zeno.machine.v1", size: MACHINE_LADDER.length, notices: MACHINE_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const task = machineNow(d);
   const last = d.tried.at(-1);
+  const stars = machineStars(d.misses);
 
-  const feed = (n: number) => {
-    if (d.done) return;
-    play("snap");
-    set({ ...d, tried: [...d.tried.filter((k) => k !== n), n], said: d.said?.kind === "notice" ? null : d.said });
-  };
+  const feed = (n: number) => !d.done && game.tap({ tried: [...d.tried.filter((k) => k !== n), n], said: d.said?.kind === "notice" ? null : d.said });
   const check = () => {
     const v = readWhole(d.typed);
     if (v === null) return;
-    if (v !== machineAnswer(task)) {
-      play("miss");
-      return set({ ...d, typed: "", misses: d.misses + 1, streak: 0, said: { kind: "wrong", v } });
-    }
-    const stars = machineStars(d.misses);
-    const streak = d.mode === "endless" && d.misses === 0 ? d.streak + 1 : d.mode === "endless" ? 0 : d.streak;
-    const key = machineNotice(task, d.tried, d.misses, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    if (d.mode === "puzzle") next = withStars(next, d.stage, stars);
-    if (key && !next.found.includes(key)) next = withFound(next, key, MACHINE_NOTICES);
-    if (next !== ladder) keep(next);
-    play("good");
-    setTimeout(() => play("star"), 260);
-    setCheer((c) => c + 1);
-    set({ ...d, done: true, streak, said: key ? { kind: "notice", key } : null });
+    if (v !== machineAnswer(task)) return game.miss({ typed: "", misses: d.misses + 1, said: { kind: "wrong", v } });
+    game.win({ stars, clean: d.misses === 0, notice: (streak) => machineNotice(task, d.tried, d.misses, streak), patch: { done: true } });
   };
-  const fresh: Pick<LiveMachine, "tried" | "typed" | "misses" | "done" | "said"> = { tried: [], typed: "", misses: 0, done: false, said: null };
-  const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
-  const endless = (l: MachineLevel) => set({ ...d, ...fresh, mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, MACHINE_LADDER.length)));
 
   const ask = task.ask.dir === "out" ? fill(w.askOut, { n: task.ask.n }) : fill(w.askIn, { out: task.ask.out });
-  const stars = machineStars(d.misses);
-  const right = fill(w.right, { rule: `n ${ruleText(task.rule.mul, task.rule.add)}`, stars: starText(stars) });
-  const said =
-    d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${right}`
-    : d.done ? right
-    : d.said?.kind === "wrong" ? fill(w.wrong, { v: d.said.v })
-    : d.tried.length ? w.more
-    : w.hint;
+  const right = `${fill(w.right, { rule: `n ${ruleText(task.rule.mul, task.rule.add)}`, stars: starText(stars) })}${d.mode === "puzzle" && stars === 1 ? ` ${g.oneStar}` : ""}`;
+  const line: Line =
+    d.said?.kind === "notice" ? { tone: "notice", text: `${w.notices[d.said.key]} ${right}` }
+    : d.done ? { tone: "ok", text: right }
+    : d.said?.kind === "wrong" ? { tone: "wrong", text: fill(w.wrong, { v: d.said.v }) }
+    : { tone: "hint", text: d.tried.length ? w.more : w.hint };
   // The table: what went in, in order, and what came out.
   const rows = [...d.tried].sort((a, b) => a - b);
   const colW = Math.min(40, (W - 70) / Math.max(rows.length, 1));
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
-      <p className="live-said geo-prompt">{ask}</p>
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g}>
+        <Stake stars={stars} tries={d.misses} g={g} />
+      </GameHead>
+      <Said line={{ tone: "prompt", text: ask }} />
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={ask}>
           <rect width={W} height={H} fill="#fff" />
           <rect x={60} y={20} width={86} height={50} rx={10} fill="#fff3bf" stroke="#fab005" strokeWidth={2} />
@@ -101,8 +69,7 @@ export function Machine({ state: d, set, w: words, svgRef }: PieceProps<"machine
             ))}
           </g>
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(stars)} />}
-      </div>
+      </Stage>
       <div className="live-bar machine-inputs">
         <span className="est-streak">{w.putIn}</span>
         {INPUTS.map((n) => (
@@ -110,17 +77,10 @@ export function Machine({ state: d, set, w: words, svgRef }: PieceProps<"machine
         ))}
       </div>
       {!d.done && <Keypad value={d.typed} onChange={(typed) => set({ ...d, typed, said: d.said?.kind === "wrong" ? null : d.said })} erase={w.erase} minus={task.level > 1} />}
-      <div className="live-bar">
-        {d.done ? (
-          <Onward mode={d.mode} stage={d.stage} size={MACHINE_LADDER.length} onClick={onward} g={g} />
-        ) : (
-          <button className="live-btn on" disabled={readWhole(d.typed) === null} onClick={check}>{g.check}</button>
-        )}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={d.said?.kind === "notice" ? "live-said notice" : d.done ? "live-said ok" : d.said?.kind === "wrong" ? "live-said" : "live-hint"}>
-        {said} <Found ladder={ladder} of={MACHINE_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      <GameActions game={game} g={g} done={d.done}>
+        <button className="live-btn on" disabled={readWhole(d.typed) === null} onClick={check}>{g.check}</button>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

@@ -4,6 +4,7 @@
 // number. The answer is the pieces shaded ("shade:0,1,5"), so the server can mark it again. Shading the top number of
 // pieces (3 for ¾ of 12) is the slip named.
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type ShadeLevel = 1 | 2 | 3;
 export type ShapeKind = "bar" | "grid" | "circle" | "set";
@@ -158,16 +159,9 @@ export function shadeNotice(t: ShadeTask, shaded: number[], streak: number): Sha
   if (t.play.pieces >= 20) return "manyPieces";
   return null;
 }
-export type LiveShade = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: ShadeLevel;
-  seed: number;
-  shaded: number[];
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: ShadeNotice } | { kind: "wrong"; shaded: number } | null;
-};
+export type LiveShade = EndlessGame<ShadeNotice, ShadeLevel, { kind: "wrong"; shaded: number }> &
+  TryGame & {
+    shaded: number[];
+  };
 export const shadeNow = (d: Pick<LiveShade, "mode" | "stage" | "level" | "seed">): ShadeTask =>
   d.mode === "puzzle" ? shadeTask(SHADE_LADDER[d.stage].level, rng(SHADE_LADDER[d.stage].seed)) : shadeTask(d.level, rng(d.seed));

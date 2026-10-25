@@ -9,6 +9,7 @@ import { withSteps } from "./angleGuess";
 import { degrees, edgeOf, graphSize, graphSvg, joinsAll, latticeGraph, name, oddVertices, type Graph } from "./graphPlay";
 import { LETTERS as OPTION } from "./cubeNets";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type StrokeLevel = 1 | 2 | 3;
 export type StrokeTask = { level: StrokeLevel; g: Graph };
@@ -152,18 +153,11 @@ export function strokeNotice(g: Graph, trail: number[] | null, misses: number, s
   if (trail[0] === trail[trail.length - 1]) return "circuit";
   return "oddStart";
 }
-export type LiveStroke = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: StrokeLevel;
-  seed: number;
-  /** The vertices of the stroke so far, the misses, and whether the graph is done (drawn, or said to be impossible). */
-  trail: number[];
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: StrokeNotice } | { kind: "stuck"; oddStart: boolean } | { kind: "can" } | null;
-};
+export type LiveStroke = EndlessGame<StrokeNotice, StrokeLevel, { kind: "stuck"; oddStart: boolean } | { kind: "can" }> &
+  TryGame & {
+    /** The vertices of the stroke so far; done once the graph is drawn, or said to be impossible. */
+    trail: number[];
+  };
 export const strokeNow = (d: Pick<LiveStroke, "mode" | "stage" | "level" | "seed">): StrokeTask =>
   d.mode === "puzzle" ? strokeTask(STROKE_LADDER[d.stage].level, rng(STROKE_LADDER[d.stage].seed)) : strokeTask(d.level, rng(d.seed));
 
