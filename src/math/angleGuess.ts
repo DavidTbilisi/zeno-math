@@ -4,6 +4,7 @@
 // question picks the nearest of a few sizes offered. Reading the wrong scale of a protractor (180° − the angle) and
 // measuring the angle on the inside (360° − the angle) are the slips named.
 import type { Bench } from "./benchmark";
+import type { EndlessGame } from "./ladder";
 import { rng } from "./random";
 
 export type AngleLevel = 1 | 2 | 3;
@@ -156,19 +157,8 @@ export function guessNotice(t: AngleTask, guess: number, streak: number): GuessN
   if (t.size > 180 && Math.abs(guess - t.size) <= 5) return "reflex";
   return null;
 }
-export type LiveAngleGuess = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: AngleLevel;
-  seed: number;
-  /** Which angle of the round, how far off each estimate so far was, the estimate being typed and the last one made. */
-  i: number;
-  errors: number[];
-  typed: string;
-  guess: number | null;
-  streak: number;
-  said: { kind: "notice"; key: GuessNotice } | { kind: "done"; stars: number } | null;
-};
+/** The game's state: the shared shape, and which angle of the round, how far off each estimate so far was, the estimate being typed and the last one made (a round is done once the fifth is). */
+export type LiveAngleGuess = EndlessGame<GuessNotice, AngleLevel> & { i: number; errors: number[]; typed: string; guess: number | null };
 export const guessNow = (d: Pick<LiveAngleGuess, "mode" | "stage" | "level" | "seed" | "i">): AngleTask =>
   d.mode === "puzzle" ? guessRound(GUESS_LADDER[d.stage].level, GUESS_LADDER[d.stage].seed)[d.i] : angleTask(d.level, rng(d.seed));
 

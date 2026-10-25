@@ -3,6 +3,7 @@
 // different, so the cheapest network is one. The board's game picks the roads by tapping them; the practice question
 // asks for the least total. The n − 1 cheapest roads taken whether or not they make a loop is the slip named.
 import { withSteps } from "./angleGuess";
+import type { EndlessGame, TryGame } from "./ladder";
 import { cheapestNetwork, degrees, graphSvg, joinsAll, latticeGraph, loopEdges, withLengths, type Graph } from "./graphPlay";
 import { rng } from "./random";
 
@@ -77,18 +78,8 @@ export function townNotice(t: TownTask, misses: number, streak: number): TownNot
   if (degrees(t.g).includes(1)) return "lonely";
   return null;
 }
-export type LiveTowns = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: TownLevel;
-  seed: number;
-  /** The roads chosen, the misses, and whether they are the cheapest network. */
-  chosen: number[];
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: TownNotice } | { kind: "apart" } | { kind: "loop"; edges: number[] } | { kind: "dearer"; by: number } | null;
-};
+/** The game's state: the shared shape, and the roads chosen; what is said besides a notice is what is wrong with them. */
+export type LiveTowns = EndlessGame<TownNotice, TownLevel, { kind: "apart" } | { kind: "loop"; edges: number[] } | { kind: "dearer"; by: number }> & TryGame & { chosen: number[] };
 export const townNow = (d: Pick<LiveTowns, "mode" | "stage" | "level" | "seed">): TownTask =>
   d.mode === "puzzle" ? townTask(TOWN_LADDER[d.stage].level, rng(TOWN_LADDER[d.stage].seed)) : townTask(d.level, rng(d.seed));
 

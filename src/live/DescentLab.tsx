@@ -3,7 +3,8 @@
 // the slider shows what the rate does before a step is taken; Step takes one, Run plays the steps until the try is
 // done or has failed, and a failed try says why. Nine puzzles open in turn, stars for doing one at the first try, and
 // free play takes any f(x). What is mid-way (a drag, a slider being moved, a run being played) stays here until it is
-// let go, so each change is one step to undo.
+// let go, so each change is one step to undo. Built on the game shell (useGame): a try that reaches the bottom is the
+// puzzle won, one that fails is a miss (and may still show something worth noticing).
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import {
   BETAS,
@@ -27,18 +28,20 @@ import {
   type DescentVerdict,
   type LiveDescent,
 } from "../math/descentLab";
-import { withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, Found, GameNav, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** How many steps Run plays at a time in free play. */
 const FREE_RUN = 25;
+/** A new try of a puzzle starts from no steps; a puzzle of the ladder sets the ball and the dials, free play its own. */
+const FRESH: Partial<LiveDescent> = { steps: 0, tries: 0, done: false, said: null };
+const stagePatch = (stage: number): Partial<LiveDescent> => ({ start: DESCENT_LADDER[stage].start, eta: DESCENT_LADDER[stage].eta, beta: 0 });
+const FREE_PATCH: Partial<LiveDescent> = { start: 2, eta: 0.05, beta: 0 };
 
 export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descentLab">) {
   const [w, g] = [words.descentLab, words.game];
-  const [ladder, keep] = useLadder("zeno.descentlab.v1", DESCENT_LADDER.length, DESCENT_NOTICES);
-  const [cheer, setCheer] = useState(0);
   const [draft, setDraft] = useState<Partial<LiveDescent> | null>(null);
   const [typed, setTyped] = useState<string | null>(null);
   const [run, setRun] = useState<{ at: number; to: number } | null>(null);
@@ -64,24 +67,25 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
     setDraft(null);
     set({ ...d, ...change });
   };
+  // The shell's moves (a puzzle picked, free play, a try judged) stop a run being played.
+  const game = useGame({
+    key: "zeno.descentlab.v1",
+    size: DESCENT_LADDER.length,
+    notices: DESCENT_NOTICES,
+    modes: ["puzzle", "free"],
+    state: d,
+    set: (s) => (setRun(null), commit(s)),
+    fresh: FRESH,
+    stagePatch,
+    freePatch: FREE_PATCH,
+  });
 
   const finish = (n: number) => {
     const v = verdictAt(d, n);
     if (v.state === "going") return commit({ steps: n });
     const notice = descentNotice(p, v);
-    let next = ladder;
-    if (notice && !next.found.includes(notice)) next = withFound(next, notice, DESCENT_NOTICES);
-    if (v.state === "won") {
-      if (p) next = withStars(next, d.stage, descentStars(d.tries));
-      if (next !== ladder) keep(next);
-      play("good");
-      setTimeout(() => play("star"), 260);
-      setCheer((c) => c + 1);
-      return commit({ steps: n, done: true, said: notice ? { kind: "notice", key: notice } : null });
-    }
-    if (next !== ladder) keep(next);
-    play("miss");
-    commit({ steps: n, tries: d.tries + (p ? 1 : 0), said: { kind: "wrong", why: v.why, notice: notice ?? undefined } });
+    if (v.state === "won") return game.win({ stars: p ? descentStars(d.tries) : undefined, notice: () => notice, patch: { steps: n, done: true } });
+    game.miss({ steps: n, tries: d.tries + (p ? 1 : 0), said: { kind: "wrong", why: v.why, notice: notice ?? undefined } }, { notice: () => notice });
   };
 
   // Run: the steps one after another, faster when there are many, until the try is judged.
@@ -101,9 +105,9 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
   if (!fn) {
     return (
       <>
-        <GameNav ladder={ladder} mode={d.mode} stage={d.stage} onPuzzle={(s) => go(s)} onFree={free} words={w} g={g} />
+        <GameHead game={game} g={g} />
         <FnField value={typed ?? d.expr} bad onType={setTyped} onDone={(expr) => (setTyped(null), commit(fresh({ expr })))} label={w.fn} />
-        <p className="live-said">{w.badFn}</p>
+        <Said line={{ tone: "wrong", text: w.badFn }} />
       </>
     );
   }
@@ -128,17 +132,6 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
       setRun({ at: k, to: n });
     }
   };
-
-  function go(stage: number) {
-    const q = DESCENT_LADDER[stage];
-    setRun(null);
-    commit({ mode: "puzzle", stage, start: q.start, eta: q.eta, beta: 0, steps: 0, tries: 0, done: false, said: null });
-  }
-  function free() {
-    setRun(null);
-    commit({ mode: "free", start: 2, eta: 0.05, beta: 0, steps: 0, tries: 0, done: false, said: null });
-  }
-  const onward = () => go(nextStage(d.stage, DESCENT_LADDER.length));
 
   // Dragging the ball picks where it starts.
   const scale = plotScale(fn);
@@ -184,20 +177,19 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
   const ask = p ? fill(w.asks[`p${d.stage + 1}` as keyof typeof w.asks], { max: budget }) : w.freeAsk;
   const why = d.said?.kind === "wrong" ? d.said : null;
   const lostAt = verdict.state === "lost" ? verdict : null;
-  const said =
-    d.done ? `${d.said?.kind === "notice" ? `${w.notices[d.said.key]} ` : ""}${fill(w.right, { k, stars: starText(descentStars(d.tries)) })}`
-    : why ? `${fill(p ? w.why[why.why] : w.flewOff, { x: num(lostAt?.x ?? x), t: num(lostAt?.target ?? 0) })}${why.notice ? ` ${w.notices[why.notice]}` : ""}`
-    : draggable && k === 0 ? w.dragHint
-    : w.hint;
-  const sayClass = d.done ? (d.said?.kind === "notice" ? "live-said notice" : "live-said ok") : why ? "live-said" : "live-hint";
+  const stars = descentStars(d.tries);
+  const line: Line =
+    d.done ? { tone: d.said?.kind === "notice" ? "notice" : "ok", text: `${d.said?.kind === "notice" ? `${w.notices[d.said.key]} ` : ""}${fill(w.right, { k, stars: starText(stars) })}${p && stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : why ? { tone: "wrong", text: `${fill(p ? w.why[why.why] : w.flewOff, { x: num(lostAt?.x ?? x), t: num(lostAt?.target ?? 0) })}${why.notice ? ` ${w.notices[why.notice]}` : ""}` }
+    : { tone: "hint", text: draggable && k === 0 ? w.dragHint : w.hint };
   const nextText = next === null ? "" : momentum && d.beta > 0 ? fill(w.nextMomentum, { s: num(next - x) }) : fill(w.next, { eta: num(d.eta), d: num(fn.df(x)), s: num(next - x) });
 
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} onPuzzle={go} onFree={free} words={w} g={g} />
-      <p className="live-said geo-prompt">{ask}</p>
+      <GameHead game={game} g={g} />
+      <Said line={{ tone: "prompt", text: ask }} />
       {!p && <FnField value={typed ?? d.expr} onType={setTyped} onDone={(expr) => (setTyped(null), commit(fresh({ expr })))} label={w.fn} />}
-      <div className="geo-stage-wrap">
+      <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
           width={PLOT.w}
@@ -216,8 +208,7 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
           <text x={PLOT.left} y={18} fontSize={14} fontWeight={700} fill="#1971c2">f(x) = {fn.text}</text>
           <g dangerouslySetInnerHTML={{ __html: descentSvg(fn, xs, { next: run || d.done || verdict.state === "lost" ? null : next, targets: p?.targets, away, drag: draggable && k === 0 && !run }) }} />
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(descentStars(d.tries))} />}
-      </div>
+      </Stage>
       <div className="descent-read">
         <span className="descent-rule">{momentum ? w.ruleMomentum : w.rule}</span>
         <span>
@@ -260,16 +251,12 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
           </label>
         )}
       </div>
-      <div className="live-bar">
+      <GameActions game={game} g={g} done={d.done && !!p} always>
         <button className="live-btn" disabled={!canStep} onClick={() => finish(k + 1)}>{w.step}</button>
         <button className="live-btn on" disabled={!canStep} onClick={runTo}>▶ {w.run}</button>
-        <button className="live-btn" disabled={!!run || k === 0} onClick={() => commit(fresh({}))}>↺ {w.reset}</button>
-        {d.done && p && <Onward mode="puzzle" stage={d.stage} size={DESCENT_LADDER.length} onClick={onward} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={sayClass}>
-        {said} <Found ladder={ladder} of={DESCENT_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+        <button className="live-btn" disabled={!!run || k === 0} onClick={() => commit(fresh({}))}>↺ {g.reset}</button>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

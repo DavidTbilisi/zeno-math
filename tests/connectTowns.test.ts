@@ -88,6 +88,8 @@ test("in practice: the least total typed, the cheapest roads taken loop or not n
 
 test("the board: stars from misses, the notices, the ladder", () => {
   assert.deepEqual([townStars(0), townStars(1), townStars(2)], [3, 2, 1]);
+  // Finishing is always worth a star, however many tries it took: the next puzzle opens.
+  assert.equal(townStars(50), 1);
   const t = { level: 1 as const, g: square, best: { edges: [0, 2, 1], total: 7 } };
   assert.equal(townNotice(t, 0, 1), "skipCheap");
   assert.equal(townNotice(townTask(3, rng(1)), 0, 1), "bigMap");

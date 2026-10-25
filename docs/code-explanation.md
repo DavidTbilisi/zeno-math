@@ -81,6 +81,7 @@ The existing documents describe Zeno from above: `README.md` (features), `docs/a
   - [src/math/live.ts — the arithmetic of the pieces](#srcmathlivets--the-arithmetic-of-the-pieces)
   - [src/live/ui.tsx — shared props and widgets](#srcliveuitsx--shared-props-and-widgets)
   - [src/live/ladderUi.tsx — what every game shares](#srcliveladderuitsx--what-every-game-shares)
+  - [src/live/useGame.tsx — the game shell](#srcliveusegametsx--the-game-shell)
   - [src/live/pieces.tsx — the eight light pieces](#srclivepiecestsx--the-eight-light-pieces)
   - [src/live/Chance.tsx — the chance experiment](#srclivechancetsx--the-chance-experiment)
   - [src/math/rubik.ts and src/live/Rubik.tsx — the Rubik's cube](#srcmathrubikts-and-srcliverubiktsx--the-rubiks-cube)
@@ -2045,7 +2046,18 @@ Builds a fresh piece (`:21-28`). It asks `convertToExcalidrawElements` for a `re
 - `GameNav` is the top of every game: the row of puzzles (`LadderBar`), with ∞ Endless (`onEndless`) or ✏️ Free play (`onFree`) first; under it, in the endless run, the three levels and the streak (with an optional `pace` before it), and in a puzzle its `children` (the round's `RoundDots`, the misses so far).
 - `Onward` is the button that moves on, named from where it goes: Next within a round or in the endless run, Next round or Next after a finished one, Play again after the last. `Found` is the discoveries count with the ones made in its tooltip; `SoundToggle`, `Cheer` and `starText` complete the set.
 - `Keypad` (`src/live/Keypad.tsx`) is the number pad of the games whose answer is a number too big for a row of buttons (guess my rule, growing patterns, guess the angle, missing angles): the digits, a minus sign at the front when the level needs one, ⌫, and the number so far.
-- The words they use are `live.game` in each locale (Endless, Next, Next round, Play again, Check, Clear, the streak, the sound switch, Discoveries); each game's own words, including what a puzzle is called (Puzzle, Round, Board, Line), stay under its name.
+- The words they use are `live.game` in each locale (Endless, Next, Next round, Play again, Check, Clear, the streak, the sound switch, Discoveries, and since the shell: Puzzle {n}, the lock, Free play, Start again, Try {n}, the streak mark, the ladder-done panel's lines). A game's own words stay under its name, and override the shared ones only where they differ (Round, Board, Line for a puzzle).
+
+### src/live/useGame.tsx — the game shell
+
+The hook a game is written on since October 2026 (`ConnectTowns`, `AngleGuess` and `DescentLab` so far; the others still use `ladderUi` directly and migrate one PR at a time). `useGame({ key, size, notices, modes, state, set, fresh, stagePatch?, freePatch? })` owns the ladder (`useLadder`), the transient effects (`fx`: counters that re-key a cheer or a nudge, and whether the stage is shaking or glowing) and every timer it sets (cleared on unmount). A game calls one of four outcomes, each a single `set`:
+
+- `tap(patch)`: a tick (`snap`).
+- `step(patch, { notice })`: right but not finished: `good` pitched a semitone per streak in the endless run, a green beat, `star` if the notice is new, a streak mark at 5, 10, 25, 50.
+- `miss(patch, { notice })`: `miss`, a shake with a red flash, the endless streak back to 0; `patch.said` is the game's own reason, and a notice can still be recorded (what the miss showed).
+- `win({ stars, clean, right, notice, patch })`: `settle` (`src/math/ladder.ts`) puts the stars (1–3, puzzle mode only, only up), best streak and notice into the ladder; `good` or `miss` by `right`, then `star` (or `levelup` for three stars), the streak mark, and `levelup` again when the ninth star completes the ladder; the cheer is re-keyed.
+
+Navigation is `go(stage)`, `endless(level)`, `free()` and `onward()`, each applying `fresh` (and `stagePatch(stage)` / `freePatch`). The pieces: `GameHead` (the `GameNav` with endless/free derived from `modes` and the shared puzzle/locked/free words by default), `Stake` (the stars still at stake and "Try n", for games checked in tries), `Stage` (the picture, the shake/beat class, the flash, the `Cheer` sized by `burst()`, the streak-mark `Cheer`, and the `LadderDone` overlay when `isFinale`), `Said` (a `{ tone, text }` line with `role="status"`, nudged on a miss, with `Found` after it), `GameActions` (the game's buttons, then `Onward`, then the sound switch), `LadderDone` (total stars, the discoveries listed, and buttons for the endless run, free play, or again from puzzle 1). The shared state shapes are `GameBase`, `EndlessGame` and `TryGame` in `src/math/ladder.ts`.
 
 ### src/live/pieces.tsx — the eight light pieces
 
