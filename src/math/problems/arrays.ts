@@ -1239,4 +1239,102 @@ export const ARRAYS: ProblemSet<"arrays"> = {
       return done(frames, fill(w.answer, { a: best }), { mat: pic(null) });
     },
   },
+
+  subarraysSumK: {
+    level: 2,
+    example: ["1, 2, -1, 3, -2, 1, 2", "3"],
+    solve: ([a, t], w, e) => {
+      const xs = nums(a, e, { max: 14, whole: true });
+      const k = int(t, e, -99, 99);
+      // How often each running sum has come, and where it last did (for the shortest run to draw).
+      const seen = new Map<number, number>([[0, 1]]);
+      const last = new Map<number, number>([[0, -1]]);
+      const sums = (need?: number) => {
+        const keys = [...seen.keys()];
+        return row(w.sums, keys.map((s) => `${show(s)} ×${seen.get(s)}`), (j) => (keys[j] === need ? "sorted" : "plain"));
+      };
+      const frames: Frame[] = [{ note: w.start, cells: cells(xs), rows: [sums(), row(w.total, [0])] }];
+      let [s, total] = [0, 0];
+      for (let i = 0; i < xs.length; i++) {
+        s += xs[i];
+        const need = s - k;
+        const c = seen.get(need) ?? 0;
+        const j = last.get(need) ?? -1;
+        total += c;
+        frames.push({
+          note: fill(c ? w.hit : w.miss, { i, x: show(xs[i]), s: show(s), k: show(k), need: show(need), c, t: total }),
+          cells: c
+            ? cells(xs, (m) => (m > j && m <= i ? "sorted" : "idle"), { i }, [j + 1, i])
+            : cells(xs, (m) => (m === i ? "key" : m < i ? "compare" : "plain"), { i }),
+          rows: [sums(need), row(w.total, [total], () => "sorted")],
+        });
+        seen.set(s, (seen.get(s) ?? 0) + 1);
+        last.set(s, i);
+      }
+      return done(frames, fill(w.answer, { k: show(k), t: total }));
+    },
+  },
+
+  singleNumber: {
+    level: 1,
+    example: ["6, 3, 9, 3, 6"],
+    solve: ([a], w, e) => {
+      const xs = nums(a, e, { max: 13, whole: true, min: 0 });
+      const big = xs.find((x) => x > 255);
+      if (big !== undefined) throw new Error(fill(e.atMost, { s: show(big), n: 255 }));
+      const count = new Map<number, number>();
+      for (const x of xs) count.set(x, (count.get(x) ?? 0) + 1);
+      const counts = [...count.values()];
+      if (counts.filter((c) => c === 1).length !== 1 || counts.some((c) => c > 2)) throw new Error(w.pairs);
+      const width = Math.max(...xs.map((x) => x.toString(2).length));
+      const bits = (v: number) => [...v.toString(2).padStart(width, "0")];
+      let acc = 0;
+      const frames: Frame[] = [{ note: w.start, cells: cells(xs), rows: [row(w.acc, bits(0))] }];
+      const before = new Set<number>();
+      for (const [i, x] of xs.entries()) {
+        const was = acc;
+        acc ^= x;
+        frames.push({
+          note: fill(before.has(x) ? w.cancel : w.add, { x, b: bits(x).join(""), a: bits(was).join(""), n: bits(acc).join("") }),
+          cells: cells(xs, (k) => (k === i ? "key" : k < i ? "idle" : "plain"), { i }),
+          rows: [row(w.number, bits(x), (k) => (bits(x)[k] === "1" ? "compare" : "plain")), row(w.acc, bits(acc), (k) => (bits(x)[k] === "1" ? "key" : "plain"))],
+        });
+        before.add(x);
+      }
+      return done(frames, fill(w.answer, { v: acc }), { cells: cells(xs, (k) => (xs[k] === acc ? "sorted" : "idle")) });
+    },
+  },
+
+  slidingWindowMaximum: {
+    level: 3,
+    example: ["4, 2, 12, 3, 8, 1, 5, 9, 2", "3"],
+    solve: ([a, t], w, e) => {
+      const xs = nums(a, e, { max: 12, whole: true });
+      const k = int(t, e, 1, xs.length);
+      // Indices whose numbers go down from the front to the back.
+      const dq: number[] = [];
+      const maxima: number[] = [];
+      const frames: Frame[] = [];
+      const push = (note: string, i: number, role: (m: number) => Role | undefined = () => undefined) =>
+        frames.push({
+          note,
+          cells: cells(xs, (m) => role(m) ?? (m === dq[0] ? "sorted" : dq.includes(m) ? "compare" : m > i - k && m <= i ? "plain" : "idle"), { i }, [Math.max(0, i - k + 1), i]),
+          rows: [row(w.deque, dq.map((m) => xs[m]), (j) => (j === 0 ? "sorted" : "compare")), row(w.maxima, maxima, () => "sorted")],
+        });
+      for (let i = 0; i < xs.length; i++) {
+        while (dq.length && dq[0] <= i - k) {
+          const j = dq.shift()!;
+          push(fill(w.front, { j, v: show(xs[j]) }), i, (m) => (m === j ? "min" : undefined));
+        }
+        while (dq.length && xs[dq[dq.length - 1]] <= xs[i]) {
+          const j = dq.pop()!;
+          push(fill(w.back, { j, v: show(xs[j]), i, x: show(xs[i]) }), i, (m) => (m === j ? "min" : m === i ? "key" : undefined));
+        }
+        dq.push(i);
+        if (i >= k - 1) maxima.push(xs[dq[0]]);
+        push(fill(i >= k - 1 ? w.max : w.add, { i, x: show(xs[i]), l: i - k + 1, m: show(xs[dq[0]]) }), i);
+      }
+      return done(frames, fill(w.answer, { list: listText(maxima) }));
+    },
+  },
 };
