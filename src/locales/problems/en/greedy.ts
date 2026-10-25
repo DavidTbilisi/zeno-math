@@ -72,4 +72,16 @@ export const greedy = {
     answer: "Start from city {i}.",
     short: "There isn't enough fuel to go round: {g} miles of fuel for {d} miles of road.",
   },
+  nonOverlappingIntervals: {
+    name: "Non-Overlapping Intervals",
+    idea: "Sort by where the intervals end and keep the one that ends first: of all that could come first, it leaves the most room for the rest. Then keep each interval that starts no earlier than the last kept one ends, and drop the others. Swapping the first pick of any best answer for the earliest-ending interval never makes it worse, which is why the greedy choice is right. O(n log n). Touching ends, like [1, 2] and [2, 3], don't overlap.",
+    labels: ["Intervals"],
+    sorted: "By end",
+    kept: "Kept",
+    start: "Sorted by where they end: {list}. [{a}, {b}] ends first, so it is kept.",
+    keep: "[{a}, {b}] starts at {a}, not before {e}, where the last kept one ends: it is kept, and the line is taken up to {b}.",
+    drop: "[{a}, {b}] starts at {a}, before {e}: it overlaps the last kept one, which ends no later, so this one goes.",
+    answer: "Remove {n}: {list}. The {m} left don't overlap.",
+    none: "No two of them overlap: nothing needs to go.",
+  },
 };

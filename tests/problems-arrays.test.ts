@@ -652,3 +652,48 @@ test("largest park", () => {
     assert.equal(answer("largestPark", g.map((row) => row.join(" ")).join("; ")), `The largest park has an area of ${best}.`, JSON.stringify(g));
   }
 });
+
+test("subarrays with sum k", () => {
+  assert.equal(answer("subarraysSumK", "1, 2, -1, 3, -2, 1, 2", "3"), "Runs that add up to 3: 6.");
+  assert.equal(answer("subarraysSumK", "0, 0, 0", "0"), "Runs that add up to 0: 6.");
+  assert.equal(answer("subarraysSumK", "4", "3"), "Runs that add up to 3: 0.");
+  assert.equal(answer("subarraysSumK", "-2, 5", "−2"), "Runs that add up to −2: 1.");
+  const r = rng(41);
+  for (let k = 0; k < 200; k++) {
+    const xs = randInts(r, 1 + (k % 10), -4, 4);
+    const t = -5 + Math.floor(r() * 11);
+    let count = 0;
+    for (let i = 0; i < xs.length; i++) for (let j = i; j < xs.length; j++) if (xs.slice(i, j + 1).reduce((s, x) => s + x, 0) === t) count++;
+    assert.equal(answer("subarraysSumK", xs.join(", "), String(t)), `Runs that add up to ${num(t)}: ${count}.`, `${xs} / ${t}`);
+  }
+});
+
+test("single number", () => {
+  assert.equal(answer("singleNumber", "6, 3, 9, 3, 6"), "9 is the one without a pair.");
+  assert.equal(answer("singleNumber", "0"), "0 is the one without a pair.");
+  assert.equal(answer("singleNumber", "0, 5, 5"), "0 is the one without a pair.");
+  assert.throws(() => answer("singleNumber", "1, 2"), /exactly twice/);
+  assert.throws(() => answer("singleNumber", "1, 1, 1"), /exactly twice/);
+  assert.throws(() => answer("singleNumber", "300"), /too big/);
+  const r = rng(42);
+  for (let k = 0; k < 200; k++) {
+    const pool = distinctInts(r, 1 + (k % 7), 0, 255);
+    const lone = pool[0];
+    const xs = [lone, ...pool.slice(1), ...pool.slice(1)].sort(() => r() - 0.5);
+    assert.equal(answer("singleNumber", xs.join(", ")), `${lone} is the one without a pair.`, `${xs}`);
+  }
+});
+
+test("sliding window maximum", () => {
+  assert.equal(answer("slidingWindowMaximum", "4, 2, 12, 3, 8, 1, 5, 9, 2", "3"), "The maxima, window by window: [12, 12, 12, 8, 8, 9, 9].");
+  assert.equal(answer("slidingWindowMaximum", "5, 5, 5", "2"), "The maxima, window by window: [5, 5].");
+  assert.equal(answer("slidingWindowMaximum", "3, -1", "1"), "The maxima, window by window: [3, −1].");
+  assert.throws(() => answer("slidingWindowMaximum", "1, 2", "3"), /from 1 to 2/);
+  const r = rng(43);
+  for (let k = 0; k < 200; k++) {
+    const xs = randInts(r, 1 + (k % 12), -5, 9);
+    const size = 1 + Math.floor(r() * xs.length);
+    const want = xs.slice(0, xs.length - size + 1).map((_, i) => Math.max(...xs.slice(i, i + size)));
+    assert.equal(answer("slidingWindowMaximum", xs.join(", "), String(size)), `The maxima, window by window: ${fmt(want)}.`, `${xs} / ${size}`);
+  }
+});
