@@ -32,6 +32,7 @@ import type { LiveColour } from "./colouring";
 import type { LivePath } from "./shortestPath";
 import type { LiveTowns } from "./connectTowns";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
+import { SOLVER_START, type LiveSolver } from "./solver/index";
 import { PCA_START, type LivePca } from "./pcaLab";
 import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
@@ -383,6 +384,7 @@ export type LiveStates = {
   soroban: LiveSoroban;
   patterns: LivePatterns;
   problems: LiveProblems;
+  solver: LiveSolver;
   numberLine: LiveNumberLine;
   geoboard: LiveGeoboard;
   estimate: LiveEstimate;
@@ -439,6 +441,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   soroban: [820, 540],
   patterns: [800, 600],
   problems: [800, 700],
+  solver: [800, 760],
   numberLine: [800, 460],
   geoboard: [600, 660],
   estimate: [720, 390],
@@ -497,6 +500,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },
     patterns: { pattern: "twoptr", ...PATTERN_EXAMPLES.twoptr, step: 0, quiz: false },
     problems: { id: "twoNumberSum", inputs: [], step: 0, quiz: false },
+    solver: SOLVER_START,
     numberLine: { from: 0, to: 10, step: 1, fractions: false, marks: [], jumps: true, together: false },
     geoboard: { mode: "free", stage: 0, pts: [], misses: 0, peeked: false, area: true, perim: true, said: null, last: null },
     estimate: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], pin: null, half: false, peeked: false, streak: 0, said: null },

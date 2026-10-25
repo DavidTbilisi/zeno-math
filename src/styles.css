@@ -806,6 +806,10 @@ input.invalid { border-color: var(--danger); }
 .live .live-problem-stage svg { flex: 0 1 auto; max-height: 100%; max-width: 100%; width: auto; height: auto; }
 .live-pattern-said { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 760px; }
 .live-pattern-q { font-weight: 600; }
+.live-solver-slots { flex-wrap: wrap; max-width: 780px; }
+.live .live-solver-slot { width: 24em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .live-solver-slot.short, .live .live-problem-input.short { width: 6em; }
+.live-solver-scope { max-width: 760px; font-size: 12px; color: #868e96; }
 
 /* Read by screen readers, not shown: the words and MathML behind a picture of maths. */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

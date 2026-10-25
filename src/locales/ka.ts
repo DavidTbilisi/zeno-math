@@ -1,5 +1,6 @@
 import type { Dict } from "./en";
 import { problems } from "./problems/ka/index";
+import { solver } from "./solver/ka";
 
 export const ka: Dict = {
   appName: "Zeno",
@@ -4229,6 +4230,7 @@ export const ka: Dict = {
       liveSoroban: "სორობანი (საანგარიშო)",
       livePatterns: "ალგორითმების ხერხები, ნაბიჯ-ნაბიჯ",
       liveProblems: "გასაუბრების ამოცანები, ნაბიჯ-ნაბიჯ",
+      liveSolver: "ალგორითმების ამომხსნელი: მონაცემები, ხერხი, ფორმულები",
       liveNumberLine: "რიცხვითი ღერძი, ნებისმიერი შუალედი",
       liveGeoboard: "გეოდაფა: ფიგურები და ფართობი",
       liveEstimate: "რიცხვითი ღერძის შეფასების თამაში",
@@ -5576,6 +5578,7 @@ export const ka: Dict = {
       },
     },
     problems,
+    solver,
     rubik: {
       faces: { U: "ზედა", D: "ქვედა", L: "მარცხენა", R: "მარჯვენა", F: "წინა", B: "უკანა" },
       clockwise: "{face} წახნაგის შემობრუნება საათის ისრის მიმართულებით",

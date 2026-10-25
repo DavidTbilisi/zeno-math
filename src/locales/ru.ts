@@ -1,5 +1,6 @@
 import type { Dict } from "./en";
 import { problems } from "./problems/ru/index";
+import { solver } from "./solver/ru";
 
 export const ru: Dict = {
   appName: "Zeno",
@@ -4229,6 +4230,7 @@ export const ru: Dict = {
       liveSoroban: "Соробан (счёты)",
       livePatterns: "Приёмы алгоритмов, по шагам",
       liveProblems: "Задачи с собеседований, по шагам",
+      liveSolver: "Решатель алгоритмов: данные, приём, формулы",
       liveNumberLine: "Числовая прямая, любой отрезок",
       liveGeoboard: "Геоборд: фигуры и площадь",
       liveEstimate: "Игра: оценка на числовой прямой",
@@ -5576,6 +5578,7 @@ export const ru: Dict = {
       },
     },
     problems,
+    solver,
     rubik: {
       faces: { U: "верхнюю", D: "нижнюю", L: "левую", R: "правую", F: "переднюю", B: "заднюю" },
       clockwise: "Повернуть {face} грань по часовой стрелке",
