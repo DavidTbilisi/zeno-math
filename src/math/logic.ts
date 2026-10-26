@@ -1,17 +1,26 @@
 // Propositional logic: truth tables built column by column from the subformulas, equivalence of
 // two formulas (with the rows where they differ), normal forms with a Karnaugh map (minimal sum of
 // products and product of sums by Quine–McCluskey), logic-gate circuits with the wire values,
-// validity of arguments (with named rules and fallacies), and set expressions as Venn diagrams.
+// validity of arguments (with named rules and fallacies), truth trees, categorical syllogisms, the square of opposition, logic grids, Mill's methods, and set expressions as Venn diagrams.
 import { txt } from "./algoArrays";
 import { C, compose, fill, r2, W, type Caption } from "./chart";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { renderStrengthen, SW_PRESETS, type SwSpec, type SwWords } from "./logicArgue";
 import { BOARD_PRESETS, KNIGHTS_PRESETS, renderBoard, renderKnights, type BoardSpec, type BoardWords, type KnightsWords } from "./logicPuzzles";
+import { renderSyllogism, SYL_PRESETS, type SylWords } from "./logicSyllogism";
+import { renderTree, TREE_PRESETS, type TreeWords } from "./logicTree";
+import { GRID_PRESETS, renderGrid, type GridWords } from "./logicGrid";
+import { MILL_PRESETS, renderMill, type MillMode, type MillWords } from "./logicMill";
+import { renderSquare, SQUARE_PRESETS, type SquareWords } from "./logicSquare";
 
-export type LogicTopic = "table" | "equiv" | "nf" | "circuit" | "argument" | "strengthen" | "sets" | "board" | "knights";
-export const LOGIC_TOPICS: LogicTopic[] = ["table", "equiv", "nf", "circuit", "argument", "strengthen", "board", "knights", "sets"];
-/** f: the formula (premises for arguments); g: the second formula / conclusion; vals: circuit inputs; tf: T/F instead of 1/0. */
-export type LogicSpec = { topic: LogicTopic; f: string; g: string; vals: string; tf: boolean; board?: BoardSpec; sw?: SwSpec };
+export type LogicTopic = "table" | "equiv" | "nf" | "circuit" | "argument" | "tree" | "syllogism" | "strengthen" | "sets" | "board" | "grid" | "mill" | "square" | "knights";
+export const LOGIC_TOPICS: LogicTopic[] = ["table", "equiv", "nf", "circuit", "argument", "tree", "syllogism", "square", "strengthen", "board", "grid", "mill", "knights", "sets"];
+/** f: the formula (premises for arguments and syllogisms, categories for a logic grid); g: the second formula /
+ *  conclusion (a grid's clues); vals: circuit inputs; tf: T/F instead of 1/0; exist: a syllogism read as Aristotle
+ *  did, with no term empty; step: how far a logic grid is worked out (all of it when missing); mill: which of Mill's
+ *  methods reads f (agreement and difference when missing); given: whether the square of opposition's statement is
+ *  given true (when missing) or false. */
+export type LogicSpec = { topic: LogicTopic; f: string; g: string; vals: string; tf: boolean; exist?: boolean; step?: number; mill?: MillMode; given?: boolean; board?: BoardSpec; sw?: SwSpec };
 
 export type LogicWords = {
   T: string;
@@ -50,6 +59,11 @@ export type LogicWords = {
   board: BoardWords;
   knights: KnightsWords;
   sw: SwWords;
+  syl: SylWords;
+  tree: TreeWords;
+  grid: GridWords;
+  mill: MillWords;
+  square: SquareWords;
 };
 
 // ---------- formulas ----------
@@ -1033,6 +1047,11 @@ export const LOGIC_PRESETS: { [K in LogicTopic]: { label: string; spec: LogicSpe
     { label: "NAEC 2025 · 6 (II)", spec: s("argument", "y -> v; ~v", "~y") },
     { label: "NAEC 2025 · 7", spec: s("argument", "s -> (a -> z); b -> ~z", "s -> (a -> ~b)") },
   ],
+  tree: TREE_PRESETS,
+  grid: GRID_PRESETS,
+  mill: MILL_PRESETS,
+  square: SQUARE_PRESETS,
+  syllogism: SYL_PRESETS,
   strengthen: SW_PRESETS,
   board: BOARD_PRESETS,
   knights: KNIGHTS_PRESETS,
@@ -1058,6 +1077,16 @@ export function renderLogic(spec: LogicSpec, words: LogicWords): RenderedSvg {
       return renderCircuit(spec, words);
     case "argument":
       return renderArgument(spec, words);
+    case "tree":
+      return renderTree(spec, words);
+    case "grid":
+      return renderGrid(spec, words.grid);
+    case "mill":
+      return renderMill(spec, words.mill);
+    case "square":
+      return renderSquare(spec, words.syl, words.square);
+    case "syllogism":
+      return renderSyllogism(spec, words.syl);
     case "sets":
       return renderSets(spec, words);
     case "board":
