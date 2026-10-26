@@ -1,7 +1,7 @@
 // Skills made of atoms: does a skill that is really several atoms look, to BKT, like the gradual worlds of H2? In this
 // world every skill is k atoms, and each atom is exactly what BKT assumes a skill is: known or not, learnt all at
-// once, with a guess and a slip. A question on the skill asks for one atom, chosen at random, so the questions take
-// the atoms in turn as Zeno's generators take the forms of a skill. The skill is mastered when every atom is known,
+// once, with a guess and a slip. A question on the skill asks for one atom, chosen at random, so the questions mix
+// the atoms as Zeno's generators mix the forms of a skill. The skill is mastered when every atom is known,
 // which here is the same as the gradual worlds' definition: the chance of a right answer on the next question is at
 // least 0.9 (one minus the slip) only then.
 //
