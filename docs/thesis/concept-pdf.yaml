@@ -1,0 +1,27 @@
+---
+# Settings for npm run concept-pdf (scripts/thesis-pdf.ts --concept): the concept paper, a short version of the
+# thesis plan for the concept stage (at least 8 pages). The fonts are those of pdf.yaml; the title page is written in
+# concept-paper.md itself, so the title here only names the PDF.
+title-meta: "The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems: Concept Paper"
+author-meta: "David Chincharashvili"
+documentclass: article
+papersize: a4
+fontsize: 12pt
+geometry: margin=2.5cm
+mainfont: "STIX Two Text"
+mathfont: "STIX Two Math"
+sansfont: "Noto Sans"
+monofont: "Liberation Mono"
+mainfontfallback: ["Noto Sans Math:", "Noto Serif Georgian:", "Noto Sans Symbols 2:", "Noto Sans Symbols:"]
+toc: false
+linkcolor: blue
+urlcolor: blue
+link-citations: true
+reference-section-title: References
+header-includes: |
+  \usepackage{etoolbox}
+  \setcounter{tocdepth}{1}
+  \AtBeginEnvironment{longtable}{\small}
+  \setlength\LTcapwidth{\linewidth}
+  \linespread{1.15}
+---
