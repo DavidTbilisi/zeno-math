@@ -1,11 +1,30 @@
-// Kakooma: a few numbers, one of them the sum (on hard the product) of two others; tap it. The answer turns green with
+// Kakooma: a few numbers, one of them the sum (on hard the product) of two others; tap it. The endless run can ask for
+// a difference or a quotient instead (a picker of + − × ÷): then the fact's three numbers are tapped, in any order. The answer turns green with
 // its two parts ringed; a wrong tap turns red and says why — one of the two parts, a number that would need another
 // twice, a sum among products, or simply not made from two others. No miss earns three stars, one miss two; the hint,
 // one of the two parts ringed in blue, costs one. In a grid each corner's answer goes into the middle, which is solved
 // last. Nine puzzles open in turn (two sets and a grid at each level), and the endless run keeps a streak of sets done
 // with no miss and no hint. Built on the game shell (useGame), which does the ladder, the sounds and the cheer.
-import { KAK_LADDER, KAK_NOTICES, KAK_RECENT, kakNotice, kakNow, kakOpen, kakSlip, kakStars, kakSum, type KakSet, type LiveKakooma } from "../math/kakooma";
-import { fill, FONT, INK, type PieceProps } from "./ui";
+import {
+  isFact,
+  KAK_LADDER,
+  KAK_NOTICES,
+  KAK_RECENT,
+  KAK_SIGNS,
+  kakFact,
+  kakFactSlip,
+  kakIsFact,
+  kakNotice,
+  kakNow,
+  kakOpen,
+  kakSlip,
+  kakStars,
+  kakSum,
+  type KakSet,
+  type KakSign,
+  type LiveKakooma,
+} from "../math/kakooma";
+import { fill, FONT, INK, Toggle, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 import { starText } from "./ladderUi";
 
@@ -18,8 +37,9 @@ const BLUE = "#1971c2";
 const CORNERS: [number, number][] = [[110, 95], [450, 95], [110, 285], [450, 285]];
 const MIDDLE: [number, number] = [W / 2, H / 2];
 const sign = (s: Pick<KakSet, "op">) => (s.op === "+" ? "+" : "×");
+const SIGN_TEXT: Record<KakSign, string> = { "+": "+", "-": "−", "*": "×", "/": "÷" };
 
-const FRESH: Partial<LiveKakooma> = { solved: [], wrong: null, misses: 0, hinted: false, said: null };
+const FRESH: Partial<LiveKakooma> = { solved: [], wrong: null, misses: 0, hinted: false, said: null, picked: [], missed: null };
 
 /**
  * Where a set's numbers sit, square cells `R` apart in a square: four two by two, five like a die's five (the corners and
@@ -41,11 +61,20 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
   const grid = task.sets.length > 1;
   const done = d.solved.length === task.sets.length;
   const stars = kakStars(d.misses, d.hinted);
+  const fact = isFact(task.sign);
+  const picked = d.picked ?? [];
 
   const tap = (i: number, n: number) => {
     const s = task.sets[i];
     if (done || d.solved.includes(i) || !kakOpen(task, d.solved, i)) return;
-    if (n !== s.answer) return game.miss({ wrong: { set: i, n }, misses: d.misses + 1, said: null });
+    // A difference or a quotient: the fact's three numbers in any order (a number tapped again is taken back), judged
+    // at the third.
+    if (fact) {
+      if (picked.includes(n)) return game.tap({ picked: picked.filter((x) => x !== n), missed: null, said: null });
+      const now = [...picked, n];
+      if (now.length < 3) return game.tap({ picked: now, missed: null, said: null });
+      if (!kakIsFact(s, now)) return game.miss({ picked: [], missed: now, misses: d.misses + 1, said: null });
+    } else if (n !== s.answer) return game.miss({ wrong: { set: i, n }, misses: d.misses + 1, said: null });
     const solved = [...d.solved, i];
     // One set of a grid is a step on the board, not on the streak: only a whole puzzle done clean counts.
     if (solved.length < task.sets.length) return game.step({ solved, wrong: null, said: null }, { counts: false });
@@ -53,7 +82,7 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
       stars,
       clean: d.misses === 0 && !d.hinted,
       notice: (streak) => kakNotice(task, d.misses, d.hinted, game.sinceShown(), streak),
-      patch: { solved, wrong: null },
+      patch: { solved, wrong: null, picked: [] },
     });
   };
 
@@ -62,7 +91,9 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
     d.mode === "endless" ? game.endless(d.level, { recent: [...(d.recent ?? []), task.sets[0].parts].slice(-KAK_RECENT) }) : game.onward();
 
   const last = task.sets[task.sets.length - 1];
-  const right = fill(w.right, { sum: kakSum(last), stars: starText(stars) });
+  const right = fill(w.right, { sum: kakFact(last, task.sign), stars: starText(stars) });
+  const ask = grid ? w.hintGrid : { "+": w.hintSum, "-": w.hintDiff, "*": w.hintProduct, "/": w.hintQuot }[task.sign];
+  const factSlip = d.missed ? kakFactSlip(task.sets[0], d.missed) : null;
   const why = (s: KakSet, n: number) => {
     const slip = kakSlip(s, n);
     return slip ? fill(w[slip.id], { ...slip.vars, s: sign(s) }) : fill(s.op === "+" ? w.none : w.noneProduct, { n });
@@ -72,9 +103,11 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
     d.said?.kind === "notice" ? { tone: "notice", text: `${w.notices[d.said.key]} ${right}` }
     : done ? { tone: "ok", text: `${right}${d.mode === "puzzle" && stars === 1 ? ` ${g.oneStar}` : ""}` }
     : d.wrong ? { tone: "wrong", text: why(task.sets[d.wrong.set], d.wrong.n) }
+    : factSlip ? { tone: "wrong", text: fill(w[factSlip.id], factSlip.vars) }
+    : picked.length ? { tone: "hint", text: fill(w.picked, { list: picked.join(", ") }) }
     : grid && kakOpen(task, d.solved, 4) && justSolved ? { tone: "ok", text: `${fill(w.toMiddle, { sum: kakSum(justSolved) })} ${w.middleOpen}` }
     : grid && justSolved ? { tone: "ok", text: fill(w.toMiddle, { sum: kakSum(justSolved) }) }
-    : { tone: "hint", text: grid ? w.hintGrid : task.sets[0].op === "+" ? w.hintSum : w.hintProduct };
+    : { tone: "hint", text: ask };
 
   const drawSet = (s: KakSet, i: number) => {
     const middle = grid && i === 4;
@@ -92,16 +125,18 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
           const [x, y] = at[k];
           // A number of the middle shows once its corner is solved.
           const shown = !middle || d.solved.includes(k);
-          const isWrong = d.wrong?.set === i && d.wrong.n === n && !solved;
-          const isAnswer = solved && n === s.answer;
+          const isWrong = !solved && ((d.wrong?.set === i && d.wrong.n === n) || !!d.missed?.includes(n));
+          // A difference's or quotient's three are all the answer.
+          const isAnswer = solved && (n === s.answer || (fact && s.parts.includes(n)));
+          const isPicked = !solved && picked.includes(n);
           const isPart = solved && s.parts.includes(n);
           const hinted = d.hinted && open && !solved && n === s.parts[0];
-          const fillC = isAnswer ? "#d3f9d8" : isWrong ? "#ffe3e3" : "#fff";
-          const stroke = isAnswer || isPart ? GREEN : isWrong ? RED : hinted ? BLUE : "#adb5bd";
+          const fillC = isAnswer ? "#d3f9d8" : isWrong ? "#ffe3e3" : isPicked ? "#e7f5ff" : "#fff";
+          const stroke = isAnswer || isPart ? GREEN : isWrong ? RED : isPicked || hinted ? BLUE : "#adb5bd";
           const can = open && !solved && !done && shown;
           return (
             <g key={k} role={can ? "button" : undefined} aria-label={shown ? String(n) : "?"} style={{ cursor: can ? "pointer" : "default" }} onClick={() => shown && tap(i, n)}>
-              <rect x={x - r} y={y - r} width={2 * r} height={2 * r} rx={8} fill={fillC} stroke={stroke} strokeWidth={isAnswer || isPart || isWrong || hinted ? 3 : 1.5} strokeDasharray={hinted ? "5 3" : undefined} />
+              <rect x={x - r} y={y - r} width={2 * r} height={2 * r} rx={8} fill={fillC} stroke={stroke} strokeWidth={isAnswer || isPart || isWrong || isPicked || hinted ? 3 : 1.5} strokeDasharray={hinted ? "5 3" : undefined} />
               <text x={x} y={y + font * 0.36} fontSize={font} fontWeight={700} textAnchor="middle" fill={!shown ? "#adb5bd" : solved && !isAnswer && !isPart ? "#adb5bd" : isWrong ? RED : INK}>{shown ? n : "?"}</text>
             </g>
           );
@@ -114,8 +149,18 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
       <GameHead game={game} g={g}>
         <span className="est-streak">{fill(w.misses, { n: d.misses })}</span>
       </GameHead>
+      {/* The endless run's sign: a new set of it, at the same level. */}
+      {d.mode === "endless" && (
+        <div className="live-bar">
+          {KAK_SIGNS.map((k) => (
+            <Toggle key={k} on={task.sign === k} title={w.signs[k]} onClick={() => game.endless(d.level, { sign: k })}>
+              {SIGN_TEXT[k]}
+            </Toggle>
+          ))}
+        </div>
+      )}
       <Stage game={game} stars={stars} done={done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={grid ? w.hintGrid : task.sets[0].op === "+" ? w.hintSum : w.hintProduct}>
+        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={ask}>
           <rect width={W} height={H} fill="#fff" />
           {/* In a grid, a line from each corner to its place in the middle. */}
           {grid &&
@@ -124,14 +169,14 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
             ))}
           {task.sets.map(drawSet)}
           {/* The sum, once found, under the square. */}
-          {!grid && done && <text x={W / 2} y={H - 14} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakSum(task.sets[0])}</text>}
+          {!grid && done && <text x={W / 2} y={H - 14} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakFact(task.sets[0], task.sign)}</text>}
         </svg>
       </Stage>
       <GameActions game={game} g={g} done={done} onward={onward}>
         {!d.hinted && <button className="live-btn" title={w.hintCost} onClick={() => set({ ...d, hinted: true })}>💡 {w.hintBtn}</button>}
       </GameActions>
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
-      {d.hinted && !done && <p className="live-hint">💡 {w.hintShown}</p>}
+      {d.hinted && !done && <p className="live-hint">💡 {fact ? w.hintShownFact : w.hintShown}</p>}
     </>
   );
 }
