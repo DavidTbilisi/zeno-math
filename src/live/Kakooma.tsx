@@ -22,13 +22,16 @@ const sign = (s: Pick<KakSet, "op">) => (s.op === "+" ? "+" : "×");
 const FRESH: Partial<LiveKakooma> = { solved: [], wrong: null, misses: 0, hinted: false, said: null };
 
 /**
- * The numbers of a set round its centre, the first at the top; a grid's middle has them towards the corners; hard's
- * nine in a square, three by three, `R` apart.
+ * Where a set's numbers sit, square cells `R` apart in a square: four two by two, five like a die's five (the corners and
+ * the middle), nine three by three; a grid's middle has its four towards the corners.
  */
 function spots(n: number, [cx, cy]: [number, number], R: number, middle: boolean): [number, number][] {
   if (middle) return CORNERS.map(([x, y]) => [cx + Math.sign(x - cx) * R * 0.75, cy + Math.sign(y - cy) * R * 0.75]);
-  if (n === 9) return Array.from({ length: 9 }, (_, i) => [cx + ((i % 3) - 1) * R, cy + (Math.floor(i / 3) - 1) * R]);
-  return Array.from({ length: n }, (_, i) => [cx + R * Math.sin((2 * Math.PI * i) / n), cy - R * Math.cos((2 * Math.PI * i) / n)]);
+  const cells: [number, number][] =
+    n === 4 ? [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]]
+    : n === 5 ? [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]]
+    : Array.from({ length: n }, (_, i) => [(i % 3) - 1, Math.floor(i / 3) - 1]);
+  return cells.map(([u, v]) => [cx + u * R, cy + v * R]);
 }
 
 export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma">) {
@@ -76,20 +79,15 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
   const drawSet = (s: KakSet, i: number) => {
     const middle = grid && i === 4;
     const centre = !grid ? MIDDLE : middle ? MIDDLE : CORNERS[i];
-    // Hard's nine numbers sit in a square of square cells, three by three; R is then the step from one to the next.
-    const square = s.nums.length === 9;
-    const [R, r, font] = grid ? [52, 22, 20] : square ? [92, 38, 30] : [104, 40, 34];
+    // R is the step from one cell to the next, r half a cell; the square round them reaches the outermost cells.
+    const [R, r, font] = grid ? [52, 22, 20] : s.nums.length === 4 ? [96, 40, 34] : [92, 38, 30];
     const open = kakOpen(task, d.solved, i);
     const solved = d.solved.includes(i);
     const at = spots(s.nums.length, centre, R, middle);
-    const back = { fill: solved ? "#ebfbee" : "#f8f9fa", stroke: solved ? GREEN : "#ced4da", strokeWidth: 2, strokeDasharray: open ? undefined : "6 5" };
+    const half = Math.max(...at.map(([x, y]) => Math.max(Math.abs(x - centre[0]), Math.abs(y - centre[1])))) + r + 8;
     return (
       <g key={i} role="group" aria-label={fill(w.set, { list: s.nums.map((n, k) => (middle && !d.solved.includes(k) ? "?" : n)).join(", ") })}>
-        {square ? (
-          <rect x={centre[0] - R - r - 8} y={centre[1] - R - r - 8} width={2 * (R + r + 8)} height={2 * (R + r + 8)} rx={14} {...back} />
-        ) : (
-          <circle cx={centre[0]} cy={centre[1]} r={R + r + 8} {...back} />
-        )}
+        <rect x={centre[0] - half} y={centre[1] - half} width={2 * half} height={2 * half} rx={14} fill={solved ? "#ebfbee" : "#f8f9fa"} stroke={solved ? GREEN : "#ced4da"} strokeWidth={2} strokeDasharray={open ? undefined : "6 5"} />
         {s.nums.map((n, k) => {
           const [x, y] = at[k];
           // A number of the middle shows once its corner is solved.
@@ -101,10 +99,9 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
           const fillC = isAnswer ? "#d3f9d8" : isWrong ? "#ffe3e3" : "#fff";
           const stroke = isAnswer || isPart ? GREEN : isWrong ? RED : hinted ? BLUE : "#adb5bd";
           const can = open && !solved && !done && shown;
-          const look = { fill: fillC, stroke, strokeWidth: isAnswer || isPart || isWrong || hinted ? 3 : 1.5, strokeDasharray: hinted ? "5 3" : undefined };
           return (
             <g key={k} role={can ? "button" : undefined} aria-label={shown ? String(n) : "?"} style={{ cursor: can ? "pointer" : "default" }} onClick={() => shown && tap(i, n)}>
-              {square ? <rect x={x - r} y={y - r} width={2 * r} height={2 * r} rx={8} {...look} /> : <circle cx={x} cy={y} r={r} {...look} />}
+              <rect x={x - r} y={y - r} width={2 * r} height={2 * r} rx={8} fill={fillC} stroke={stroke} strokeWidth={isAnswer || isPart || isWrong || hinted ? 3 : 1.5} strokeDasharray={hinted ? "5 3" : undefined} />
               <text x={x} y={y + font * 0.36} fontSize={font} fontWeight={700} textAnchor="middle" fill={!shown ? "#adb5bd" : solved && !isAnswer && !isPart ? "#adb5bd" : isWrong ? RED : INK}>{shown ? n : "?"}</text>
             </g>
           );
@@ -126,8 +123,8 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
               <line key={k} x1={CORNERS[k][0]} y1={CORNERS[k][1]} x2={x} y2={y} stroke={d.solved.includes(k) ? GREEN : "#dee2e6"} strokeWidth={2} />
             ))}
           {task.sets.map(drawSet)}
-          {/* The sum in the middle of the ring; under the square, whose middle is a number. */}
-          {!grid && done && <text x={W / 2} y={task.sets[0].nums.length === 9 ? H - 14 : H / 2 + 8} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakSum(task.sets[0])}</text>}
+          {/* The sum, once found, under the square. */}
+          {!grid && done && <text x={W / 2} y={H - 14} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakSum(task.sets[0])}</text>}
         </svg>
       </Stage>
       <GameActions game={game} g={g} done={done} onward={onward}>
