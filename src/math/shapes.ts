@@ -1191,6 +1191,21 @@ function divisiblePreview(): Piece[] {
   ];
 }
 
+function primeSlicePreview(): Piece[] {
+  // 21 with a stroke across it and its pieces 3 and 7 in green beside it; 13, a prime, left whole.
+  return [
+    ellipse(40, 70, 30, 30, { fill: FILL.blue, width: 2 }),
+    text(40, 70, "21", 22),
+    seg([4, 112], [80, 26], { color: "#1971c2", width: 3 }),
+    ellipse(116, 40, 20, 20, { fill: FILL.green, color: "#2f9e44", width: 2.5 }),
+    text(116, 40, "3", 20),
+    ellipse(116, 100, 20, 20, { fill: FILL.green, color: "#2f9e44", width: 2.5 }),
+    text(116, 100, "7", 20),
+    ellipse(200, 70, 30, 30, { fill: FILL.blue, width: 2 }),
+    text(200, 70, "13", 22),
+  ];
+}
+
 function kakoomaPreview(): Piece[] {
   // Four numbers in a square, two by two; 7 = 3 + 4 is green, with its two parts outlined.
   return [
@@ -1385,6 +1400,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTarget", group: "games", build: targetPreview, live: "target" },
   { id: "liveCloserTo", group: "games", build: closerToPreview, live: "closerTo" },
   { id: "liveDivisible", group: "games", build: divisiblePreview, live: "divisible" },
+  { id: "livePrimeSlice", group: "games", build: primeSlicePreview, live: "primeSlice" },
   { id: "liveKakooma", group: "games", build: kakoomaPreview, live: "kakooma" },
   { id: "liveFractionWall", group: "games", build: fractionWallPreview, live: "fractionWall" },
   { id: "liveEquivMatch", group: "games", build: equivMatchPreview, live: "equivMatch" },

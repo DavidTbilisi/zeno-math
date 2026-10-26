@@ -3,7 +3,7 @@
 // practice question whose dots flash before the number is typed; a target made on the board by tapping cards and
 // signs, and a practice sum typed with the card buttons; a round of "closer to?" all right, and a practice benchmark
 // picked from its buttons; a "divisible by?" puzzle tapped right first time, and a practice list of divisors tapped
-// from its buttons; Kakooma's first two puzzles and its first grid, and a practice Kakooma picked from its buttons. Pins are dropped where the line draws the
+// from its buttons; a prime slice wave played without a slip; Kakooma's first two puzzles and its first grid, and a practice Kakooma picked from its buttons. Pins are dropped where the line draws the
 // number, wherever the piece or the dialog has been scaled to.
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -12,6 +12,8 @@ import { check, exercise } from "../src/math/practice.ts";
 import { LOOK_LADDER, lookRound } from "../src/math/quickLook.ts";
 import { TARGET_LADDER, targetPuzzle, tokens } from "../src/math/target.ts";
 import { DIV_LADDER, divTask } from "../src/math/divisible.ts";
+import { isPrime } from "../src/math/numtheory.ts";
+import { cutsIn, sliceNow } from "../src/math/primeSlice.ts";
 import { rng } from "../src/math/random.ts";
 import { NEAR_LADDER, nearRound } from "../src/math/benchmark.ts";
 import { KAK_LADDER, kakTask } from "../src/math/kakooma.ts";
@@ -229,6 +231,32 @@ test("divisible by?: every divisor tapped and checked earns three stars and open
   for (const d of t.right) await game.locator(".div-options").getByRole("button", { name: String(d), exact: true }).click();
   await game.getByRole("button", { name: "Check" }).click();
   await expect(game.getByText(`Right! ${t.n} is divisible by ${t.right.join(", ")}. ★★★`)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("prime slice: every number that isn't prime tapped as it flies, and no prime, earns three stars and opens the next", async ({ page }) => {
+  const game = await boardWith(page, "Prime slice: cut the numbers that aren't prime", ".live-primeSlice");
+  await game.getByRole("button", { name: /Start/ }).click();
+  // Tap each number that isn't prime once it is well inside the stage, as the player would.
+  await page.waitForFunction(() => {
+    const g = document.querySelector(".live-primeSlice")!;
+    if (/Wave over/.test(g.textContent ?? "")) return true;
+    const svg = g.querySelector("svg")!;
+    const box = svg.getBoundingClientRect();
+    const prime = (n: number) => n > 1 && Array.from({ length: Math.max(0, Math.floor(Math.sqrt(n)) - 1) }, (_, i) => i + 2).every((d) => n % d !== 0);
+    for (const e of g.querySelectorAll<SVGGElement>("g[data-live]")) {
+      const r = e.querySelector("circle")!.getBoundingClientRect();
+      const [x, y] = [r.x + r.width / 2, r.y + r.height / 2];
+      if (prime(Number(e.dataset.n)) || y > box.bottom - r.height) continue;
+      const o = { bubbles: true, clientX: x, clientY: y, pointerId: 1, button: 0 };
+      svg.dispatchEvent(new PointerEvent("pointerdown", o));
+      svg.dispatchEvent(new PointerEvent("pointerup", o));
+    }
+    return false;
+  }, null, { polling: 30, timeout: 30_000 });
+  const { throws } = sliceNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+  const spared = throws.filter((t) => isPrime(t.n)).length;
+  await expect(game.getByText(`Wave over: ${cutsIn(throws)} cut, ${spared} primes let fall, 0 slips. ★★★`)).toBeVisible();
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
 

@@ -10,6 +10,7 @@ import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred,
 import { Chance } from "./Chance";
 import { CloserTo } from "./CloserTo";
 import { Divisible } from "./Divisible";
+import { PrimeSlice } from "./PrimeSlice";
 import { Kakooma } from "./Kakooma";
 import { LongDivision } from "./LongDivision";
 import { EquivMatch } from "./EquivMatch";
@@ -89,6 +90,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   target: Target,
   closerTo: CloserTo,
   divisible: Divisible,
+  primeSlice: PrimeSlice,
   kakooma: Kakooma,
   fractionWall: FractionWall,
   equivMatch: EquivMatch,

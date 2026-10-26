@@ -818,7 +818,7 @@ UI in English, Russian and Georgian.
   matrices, complex numbers, analysis, derivatives, integrals, applied calculus, ODEs, numerical methods) and
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, strategies, algorithms, statistics, inference), plus
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
-  look, make the target, closer to?, divisible by?, Kakooma), fraction sense (make a whole, equal amounts, fractions on the line, shade the
+  look, make the target, closer to?, divisible by?, prime slice, Kakooma), fraction sense (make a whole, equal amounts, fractions on the line, shade the
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
@@ -903,6 +903,14 @@ UI in English, Russian and Georgian.
     and 10; then 3 and 9; then 4, 6 and 8), and the endless run keeps a streak of numbers right first time without the
     hint. Four discoveries (every divisor, a trap such as even but not by 4 seen through, all found within five
     seconds, ten in a row)
+  - *Prime slice*: numbers are thrown up across the stage and fall; swipe across or tap every one that isn't prime
+    before it falls, and let the primes fall, for they are bombs. A number cut splits at its smallest prime factor
+    (21 = 3 × 7), and a piece that isn't prime yet is thrown up again to be cut in its turn, so 12 goes 2 × 6 and then
+    2 × 3. A prime cut and a number not prime let fall are slips: none earns three stars, one two. Nine waves open in
+    turn, from 2–20 one at a time and slowly to 2–200 three at once and fast, with more and more numbers that only look
+    prime (odd and not a multiple of 5: 49, 51, 91); the endless run keeps a streak of clean waves, and against the
+    clock the numbers come a fifth faster. Four discoveries (two in one stroke, a piece cut again, a number only 7 or
+    more divides, ten clean waves in a row)
   - *Kakooma*: a few numbers round a circle, one of them the sum of two others (on hard their product); tap it. The
     answer turns green with its two parts ringed; a wrong tap turns red and says why: one of the two parts, a number
     that would need another twice (8 beside 4), a sum among products, or not made from two others at all. No miss
