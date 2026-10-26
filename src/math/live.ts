@@ -339,8 +339,11 @@ export type LiveSoroban = {
  */
 export type LivePatterns = { pattern: PatternId; data: string; extra: string; step: number; quiz: boolean };
 
-/** One of the interview problems (math/problems): its inputs as typed (a missing one is the example's), the step it is at. */
-export type LiveProblems = { id: ProblemId; inputs: string[]; step: number; quiz: boolean };
+/**
+ * One of the interview problems (math/problems): its inputs as typed (a missing one is the example's), the step it is
+ * at; `solve` when it is being worked out on the solve ladder (coding questions only), on rung `rung`.
+ */
+export type LiveProblems = { id: ProblemId; inputs: string[]; step: number; quiz: boolean; solve?: boolean; rung?: number };
 
 // ——— The kinds of live piece, their sizes and where each starts ———
 

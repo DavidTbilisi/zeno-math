@@ -40,8 +40,8 @@ export function useStepper(frames: Frame[], step: number, quiz: boolean, setStep
 }
 export type Stepper = ReturnType<typeof useStepper>;
 
-/** ⏮ ◀ ⏵ ▶ ⏭ and "Step k of n". */
-export function StepBar({ s, w, frames }: { s: Stepper; w: StepWords; frames: Frame[] }) {
+/** ⏮ ◀ ⏵ ▶ ⏭ and "Step k of n"; with `lockLast` an open question can't be skipped to the end either. */
+export function StepBar({ s, w, frames, lockLast }: { s: Stepper; w: StepWords; frames: Frame[]; lockLast?: boolean }) {
   const { k, last, asking, playing, setPlaying, go } = s;
   return (
     <div className="live-bar">
@@ -61,14 +61,17 @@ export function StepBar({ s, w, frames }: { s: Stepper; w: StepWords; frames: Fr
         {playing ? "⏸" : "⏵"} {playing ? w.pause : w.play}
       </button>
       <button className="live-btn" disabled={k >= last || asking} title={w.next} aria-label={w.next} onClick={() => go(k + 1)}>▶</button>
-      <button className="live-btn" disabled={k >= last} title={w.last} aria-label={w.last} onClick={() => go(last)}>⏭</button>
+      <button className="live-btn" disabled={k >= last || (!!lockLast && asking)} title={w.last} aria-label={w.last} onClick={() => go(last)}>⏭</button>
       {frames.length > 0 && <span className="live-note">{fill(w.step, { k, n: last })}</span>}
     </div>
   );
 }
 
-/** The error, or the step's caption: what happened, and what comes next (as a question when the pupil takes a turn). */
-export function StepSaid({ s, w, error, setStep }: { s: Stepper; w: StepWords; error: string | null; setStep: (k: number) => void }) {
+/**
+ * The error, or the step's caption: what happened, and what comes next (as a question when the pupil takes a turn).
+ * `onAnswer` hears every answer, right or not; `optionsClass` goes on the row of options.
+ */
+export function StepSaid({ s, w, error, setStep, onAnswer, optionsClass }: { s: Stepper; w: StepWords; error: string | null; setStep: (k: number) => void; onAnswer?: (right: boolean) => void; optionsClass?: string }) {
   const { k, last, frame, asking, said, setSaid } = s;
   if (error) return <p className="live-said">{error}</p>;
   if (!frame) return null;
@@ -76,13 +79,14 @@ export function StepSaid({ s, w, error, setStep }: { s: Stepper; w: StepWords; e
     <div className="live-pattern-said">
       <p className={`live-said ${k === last ? "ok" : "info"}`}>{frame.note}</p>
       {asking ? (
-        <div className="live-bar">
+        <div className={optionsClass ? `live-bar ${optionsClass}` : "live-bar"}>
           <span className="live-pattern-q">{frame.ask!.q}</span>
           {frame.ask!.options.map((o, i) => (
             <button
               key={i}
               className="live-btn"
               onClick={() => {
+                onAnswer?.(i === frame.ask!.answer);
                 if (i !== frame.ask!.answer) return setSaid({ right: false });
                 setStep(k + 1);
                 setSaid({ right: true, why: frame.then });
