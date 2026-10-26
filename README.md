@@ -293,6 +293,12 @@ UI in English, Russian and Georgian.
     a factor nobody listed fools them all. Concomitant variation: rows of numbers, each factor drawn against the
     effect with its correlation, and the warning that two factors moving together may share a third cause (ice
     cream and drowning). Residues: the whole less the known parts as a bar model, the rest left to the factor named
+  - *Square of opposition*: one statement (All / No / Some / Some … not, in any of the three languages, or just A,
+    E, I, O) given true or false, and the square: all four statements on its terms, each true, false or open, with
+    the link that settles it — contradictories, contraries, subcontraries, subalterns — and, read the modern way
+    where a term may be empty, only the diagonals left standing. Under it, the converse, obverse and contrapositive,
+    with what still follows by limitation (All S are P → Some P are S). Every verdict comes from the Venn regions of
+    the two terms
   - *Truth-tellers & liars*: Smullyan's islands solved by checking X ↔ (what X says) in every row
   - *Sets*: Venn diagrams (1–3 sets) of ∪ ∩ ∖ Δ ′ expressions, two expressions compared, and x ∈ … as logic
   - The examples include the 2025 NAEC master's exam in logical reasoning (variant I): the grouping and
@@ -1391,6 +1397,7 @@ src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh map
 src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern cards, options judged by support
 src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and truth-teller / liar puzzles
 src/math/logicSyllogism.ts categorical syllogisms: mood / figure, three-circle Venn, rules, what follows
+src/math/logicSquare.ts   the square of opposition and immediate inferences, from the Venn regions of two terms
 src/math/logicTree.ts     truth trees (semantic tableaux): stacking and splitting rules, closed and open branches
 src/math/logicGrid.ts     logic grids: categories and clues, every answer counted, steps worked out as a person does
 src/math/logicMill.ts     Mill's methods: agreement, difference and joint method on a table of cases, concomitant

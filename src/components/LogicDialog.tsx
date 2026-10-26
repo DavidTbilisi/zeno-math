@@ -210,6 +210,12 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         <SwFields spec={spec} set={set} />
       ) : topic === "grid" ? (
         <GridFields spec={spec} set={set} />
+      ) : topic === "square" ? (
+        <>
+          {field("f", t.squareStatement)}
+          <Segmented items={([true, false] as const)} value={spec.given ?? true} onChange={(given) => set({ given })} label={(g) => (g ? t.squareGiven.true : t.squareGiven.false)} />
+          <Segmented items={([true, false] as const)} value={spec.exist === true} onChange={(exist) => set({ exist })} label={(a) => (a ? t.sylModes.aristotle : t.sylModes.modern)} />
+        </>
       ) : topic === "mill" ? (
         <>
           <Segmented items={MILL_MODES} value={spec.mill ?? "presence"} onChange={(mill) => set({ mill })} label={(m) => t.millModes[m]} />
@@ -263,7 +269,7 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         field("f", t.logicFormula)
       )}
 
-      {topic !== "board" && topic !== "grid" && topic !== "mill" && topic !== "knights" && topic !== "strengthen" && topic !== "syllogism" && <div className="snippets">
+      {topic !== "board" && topic !== "grid" && topic !== "mill" && topic !== "square" && topic !== "knights" && topic !== "strengthen" && topic !== "syllogism" && <div className="snippets">
         {symbols.map((sym) => (
           <button key={sym} className="chip" onMouseDown={(e) => e.preventDefault()} onClick={() => insert(sym)}>
             {sym}
