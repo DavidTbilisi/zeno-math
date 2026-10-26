@@ -1,33 +1,19 @@
 // The quick-look game: dots show for a moment and hide, and the player taps how many there were. Nine rounds of five
 // flashes (up to 6, up to 10 as frames, dice and groups, then up to 20) earn stars for how many were right, a second
 // look capping them at two; the endless run's flash gets an eighth shorter with every right answer in the streak.
-// After each answer the dots come back coloured by group, so 7 can be seen as 4 and 3.
-import { useEffect, useRef, useState } from "react";
-import { withBest, withFound, withStars } from "../math/ladder";
-import {
-  dotsHeight,
-  dotsSvg,
-  FLASH_MS,
-  flashFor,
-  LOOK_LADDER,
-  LOOK_NOTICES,
-  LOOK_W,
-  lookNotice,
-  lookNow,
-  lookStars,
-  padMax,
-  ROUND,
-  type LiveQuickLook,
-  type LookLevel,
-} from "../math/quickLook";
-import { play } from "./juice";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, RoundDots, SoundToggle, starText, useLadder } from "./ladderUi";
+// After each answer the dots come back coloured by group, so 7 can be seen as 4 and 3. Built on the game shell
+// (useGame): a right answer is a step, a wrong one a miss, and the fifth of a round finishes it.
+import { useEffect, useRef } from "react";
+import { dotsHeight, dotsSvg, FLASH_MS, flashFor, LOOK_LADDER, LOOK_NOTICES, LOOK_W, lookNotice, lookNow, lookStars, padMax, ROUND, type LiveQuickLook } from "../math/quickLook";
+import { newSeed, RoundDots, starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
+
+const FRESH: Partial<LiveQuickLook> = { i: 0, results: [], phase: "ready", answer: null, relooked: false, said: null };
 
 export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quickLook">) {
   const [w, g] = [words.quickLook, words.game];
-  const [ladder, keep] = useLadder("zeno.quicklook.v1", LOOK_LADDER.length, LOOK_NOTICES);
-  const [cheer, setCheer] = useState(0);
+  const game = useGame({ key: "zeno.quicklook.v1", size: LOOK_LADDER.length, notices: LOOK_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hiddenAt = useRef(0);
   useEffect(() => () => {
@@ -36,6 +22,9 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
   const task = lookNow(d);
   const level = d.mode === "puzzle" ? LOOK_LADDER[d.stage].level : d.level;
   const ms = d.mode === "endless" ? flashFor(level, d.streak) : FLASH_MS[level];
+  const last = d.mode === "puzzle" && d.i === ROUND - 1;
+  const roundDone = last && d.phase === "shown";
+  const stars = roundDone ? lookStars(d.results.filter(Boolean).length, d.relooked) : 0;
 
   /** Shows the dots of `s` for the flash, then hides them and waits for a number. */
   const look = (s: LiveQuickLook) => {
@@ -49,52 +38,37 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
   const answer = (k: number) => {
     if (d.phase !== "answer") return;
     const right = k === task.n;
-    play(right ? "good" : "miss");
     const results = [...d.results, right];
-    const streak = d.mode === "endless" ? (right ? d.streak + 1 : 0) : d.streak;
-    const key = lookNotice(task, right, performance.now() - hiddenAt.current, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    if (key && !next.found.includes(key)) {
-      next = withFound(next, key, LOOK_NOTICES);
-      setTimeout(() => play("star"), 200);
-    }
-    let said: LiveQuickLook["said"] = key ? { kind: "notice", key } : null;
-    if (d.mode === "puzzle" && d.i === ROUND - 1) {
-      const stars = lookStars(results.filter(Boolean).length, d.relooked);
-      next = withStars(next, d.stage, stars);
-      said = { kind: "done", stars };
-      setTimeout(() => play("star"), 300);
-      setCheer((c) => c + 1);
-    }
-    if (next !== ladder) keep(next);
-    set({ ...d, phase: "shown", answer: k, results, streak, said });
+    const patch: Partial<LiveQuickLook> = { phase: "shown", answer: k, results };
+    const notice = (streak: number) => lookNotice(task, right, performance.now() - hiddenAt.current, streak);
+    if (last) return game.win({ stars: lookStars(results.filter(Boolean).length, d.relooked), right, clean: right, notice, patch });
+    if (right) return game.step(patch, { notice });
+    game.miss(patch, { notice });
   };
-  const fresh: Pick<LiveQuickLook, "i" | "results" | "answer" | "relooked" | "said"> = { i: 0, results: [], answer: null, relooked: false, said: null };
-  const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage, phase: "ready" });
-  const endless = (l: LookLevel) => set({ ...d, ...fresh, mode: "endless", level: l, seed: newSeed(), phase: "ready" });
-  const roundDone = d.mode === "puzzle" && d.said?.kind === "done";
+  // On: another flash of the endless run, the next of the round, or (the round done) the shell's way on.
   const onward = () => {
     if (d.mode === "endless") return look({ ...d, seed: newSeed(), answer: null, said: null });
-    if (roundDone) return go(nextStage(d.stage, LOOK_LADDER.length));
+    if (roundDone) return game.onward();
     look({ ...d, i: d.i + 1, answer: null, said: null });
   };
 
   const h = dotsHeight(task);
   const shown = d.phase === "look" || d.phase === "shown";
   const right = d.phase === "shown" && d.answer === task.n;
-  const said =
-    d.said?.kind === "done" ? fill(w.roundDone, { stars: starText(d.said.stars) })
-    : d.said?.kind === "notice" ? w.notices[d.said.key]
-    : d.phase === "shown" ? (right ? fill(w.right, { n: task.n }) : fill(w.wrong, { n: task.n }))
-    : d.phase === "ready" ? w.ready
-    : d.phase === "answer" ? w.howMany
-    : null;
+  const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
+  const line: Line =
+    roundDone ? { tone: notice ? "notice" : "ok", text: `${notice ? `${notice} ` : ""}${fill(w.roundDone, { stars: starText(stars) })}${stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : notice ? { tone: "notice", text: notice }
+    : d.phase === "shown" ? { tone: right ? "ok" : "wrong", text: fill(right ? w.right : w.wrong, { n: task.n }) }
+    : d.phase === "ready" ? { tone: "hint", text: w.ready }
+    : d.phase === "answer" ? { tone: "hint", text: w.howMany }
+    : { tone: "hint", text: "" };
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} pace={`⚡ ${(ms / 1000).toFixed(2)} s · `}>
+      <GameHead game={game} g={g} words={w} pace={`⚡ ${(ms / 1000).toFixed(2)} s · `}>
         <RoundDots results={d.results} i={d.i} size={ROUND} />
-      </GameNav>
-      <div className="geo-stage-wrap">
+      </GameHead>
+      <Stage game={game} stars={stars} done={roundDone} g={g} notices={w.notices}>
         <svg ref={svgRef} width={480} height={360} viewBox={`0 0 ${LOOK_W} 240`} fontFamily={FONT} role="img" aria-label={w.howMany}>
           <rect x={1} y={1} width={LOOK_W - 2} height={238} rx={12} fill={shown ? "#fff" : "#f1f3f5"} stroke="#dee2e6" strokeWidth={2} />
           {shown ? (
@@ -103,29 +77,21 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
             <text x={LOOK_W / 2} y={140} fontSize={60} textAnchor="middle" fill="#adb5bd">{d.phase === "ready" ? "👀" : "?"}</text>
           )}
         </svg>
-        {cheer > 0 && roundDone && d.said?.kind === "done" && <Cheer key={cheer} text={starText(d.said.stars)} />}
-      </div>
-      {d.phase === "answer" ? (
+      </Stage>
+      {d.phase === "answer" && (
         <div className="live-bar look-pad">
           {Array.from({ length: padMax(level) }, (_, k) => (
             <button key={k} className="live-btn" onClick={() => answer(k + 1)}>{k + 1}</button>
           ))}
         </div>
-      ) : (
-        <div className="live-bar">
-          {d.phase === "ready" && <button className="live-btn on look-go" onClick={() => look(d)}>👀 {w.look}</button>}
-          {d.phase === "shown" && <Onward mode={d.mode} stage={d.stage} size={LOOK_LADDER.length} rounds finished={roundDone} onClick={onward} g={g} />}
-        </div>
       )}
-      <div className="live-bar">
+      <GameActions game={game} g={g} done={d.phase === "shown"} finished={roundDone} rounds onward={onward} always>
+        {d.phase === "ready" && <button className="live-btn on look-go" onClick={() => look(d)}>👀 {w.look}</button>}
         {d.mode === "puzzle" && d.phase === "answer" && (
           <button className="live-btn" title={w.peek} onClick={() => look({ ...d, relooked: true })}>👀 {w.lookAgain}</button>
         )}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={d.said?.kind === "notice" ? "live-said notice" : d.said?.kind === "done" || right ? "live-said ok" : d.phase === "shown" ? "live-said" : "live-hint"}>
-        {said} <Found ladder={ladder} of={LOOK_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 // Interview problems where the greedy choice is the right one: run the shortest query first, pair the fastest with the
 // slowest, take the best-paid job first. Each solver makes that choice step by step and says why at every frame.
-import { cells, done, fill, int, listText, nums, row, show, type Errors, type Frame, type ProblemSet, type Role } from "./core";
+import { cells, done, fill, int, intervals, listText, nums, rolesOf, row, show, type Errors, type Frame, type ProblemSet, type Role } from "./core";
 
 /** Sorted copies, smallest or largest first. */
 const up = (a: readonly number[]) => [...a].sort((x, y) => x - y);
@@ -196,6 +196,36 @@ export const GREEDY: ProblemSet<"greedy"> = {
         });
       }
       return done(frames, fill(w.answer, { i: start }));
+    },
+  },
+
+  nonOverlappingIntervals: {
+    level: 2,
+    example: ["[1, 4], [2, 3], [3, 6], [5, 7], [6, 8], [2, 5]"],
+    solve: ([a], w, e) => {
+      const iv = intervals(a, e, 8).sort((p, q) => p[1] - q[1] || p[0] - q[0]);
+      const ivs = (ks: readonly number[]) => ks.map((k) => listText(iv[k])).join(", ");
+      const kept = [0];
+      const gone: number[] = [];
+      const pic = (k: number) => [
+        { label: w.sorted, items: iv, roles: rolesOf(iv.length, (i): Role => (i === k ? "key" : kept.includes(i) ? "sorted" : gone.includes(i) ? "idle" : "plain")) },
+        { label: w.kept, items: kept.map((i) => iv[i]), roles: rolesOf(kept.length, () => "sorted") },
+      ];
+      const frames: Frame[] = [{ note: fill(w.start, { list: ivs(iv.map((_, k) => k)), a: show(iv[0][0]), b: show(iv[0][1]) }), spans: pic(0) }];
+      let end = iv[0][1];
+      for (let k = 1; k < iv.length; k++) {
+        const [s, t] = iv[k];
+        const v = { a: show(s), b: show(t), e: show(end) };
+        if (s >= end) {
+          kept.push(k);
+          end = t;
+          frames.push({ note: fill(w.keep, v), spans: pic(k) });
+        } else {
+          gone.push(k);
+          frames.push({ note: fill(w.drop, v), spans: pic(k) });
+        }
+      }
+      return done(frames, gone.length ? fill(w.answer, { n: gone.length, list: ivs(gone), m: kept.length }) : w.none, { spans: pic(-1) });
     },
   },
 };

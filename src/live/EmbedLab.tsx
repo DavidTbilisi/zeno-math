@@ -3,7 +3,8 @@
 // from its word, dot products). Eight puzzles open in turn, each checked with Check, stars for doing one at the first
 // try, and in free play any word can be dragged and tapping words picks them: one shows its nearest words, two how
 // alike they are, three where their analogy lands. What is mid-way (a drag) stays here until it is let go, so each
-// change is one step to undo.
+// change is one step to undo. Built on the game shell (useGame): a check that meets the puzzle's goal wins it, one that
+// does not is a miss.
 import { useState, type PointerEvent } from "react";
 import {
   analogiesOf,
@@ -23,17 +24,20 @@ import {
   toPage,
   type LiveEmbed,
 } from "../math/embedLab";
-import { withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, Found, GameNav, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 type Grab = { id: string; moved: boolean };
 
+/** A new try of a puzzle starts from no tries; a puzzle of the ladder sets its words, free play its own. */
+const FRESH: Partial<LiveEmbed> = { tries: 0, done: false, said: null };
+const stagePatch = (stage: number): Partial<LiveEmbed> => ({ vecs: embedStart(EMBED_LADDER[stage]), sel: [] });
+const freePatch = (): Partial<LiveEmbed> => ({ vecs: embedStart(null), sel: ["cat"] });
+
 export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab">) {
   const [w, g] = [words.embedLab, words.game];
-  const [ladder, keep] = useLadder("zeno.embedlab.v1", EMBED_LADDER.length, EMBED_NOTICES);
-  const [cheer, setCheer] = useState(0);
   const [draft, setDraft] = useState<Partial<LiveEmbed> | null>(null);
   const [grab, setGrab] = useState<Grab | null>(null);
   const d: LiveEmbed = { ...state, ...draft };
@@ -48,27 +52,13 @@ export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab"
     setDraft(null);
     set({ ...d, ...change });
   };
-
-  function go(stage: number) {
-    commit({ mode: "puzzle", stage, vecs: embedStart(EMBED_LADDER[stage]), sel: [], tries: 0, done: false, said: null });
-  }
-  function free() {
-    commit({ mode: "free", vecs: embedStart(null), sel: ["cat"], tries: 0, done: false, said: null });
-  }
-  const onward = () => go(nextStage(d.stage, EMBED_LADDER.length));
+  const game = useGame({ key: "zeno.embedlab.v1", size: EMBED_LADDER.length, notices: EMBED_NOTICES, modes: ["puzzle", "free"], state: d, set: commit, fresh: FRESH, stagePatch, freePatch: freePatch() });
 
   const check = () => {
     if (!p) return;
     const v = judgeEmbed(p, d.vecs);
-    if (v.state === "won") {
-      keep(withFound(withStars(ladder, d.stage, embedStars(d.tries)), p.notice, EMBED_NOTICES));
-      play("good");
-      setTimeout(() => play("star"), 260);
-      setCheer((c) => c + 1);
-      return commit({ done: true, said: { kind: "notice", key: p.notice } });
-    }
-    play("miss");
-    commit({ tries: d.tries + 1, said: { kind: "wrong", why: v.why } });
+    if (v.state === "won") return game.win({ stars: embedStars(d.tries), notice: () => p.notice, patch: { done: true } });
+    game.miss({ tries: d.tries + 1, said: { kind: "wrong", why: v.why } });
   };
 
   // Dragging a tip moves it; in free play a tap on a tip (or a word's label) picks the word.
@@ -117,18 +107,18 @@ export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab"
   const ask = p ? w.asks[`p${d.stage + 1}` as keyof typeof w.asks] : w.freeAsk;
   const verdict = p && d.said?.kind === "wrong" ? judgeEmbed(p, d.vecs) : null;
   const wrong = verdict?.state === "lost" ? verdict : null;
-  const said =
-    d.done && d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${fill(w.right, { stars: starText(embedStars(d.tries)) })}`
-    : wrong ? fill(w.why[wrong.why], { have: num(wrong.have), want: num(wrong.want), names: (wrong.names ?? []).map(n).join(", ") })
-    : p ? w.hint
-    : w.freeHint;
-  const sayClass = d.done ? "live-said notice" : wrong ? "live-said" : "live-hint";
+  const stars = embedStars(d.tries);
+  const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
+  const line: Line =
+    d.done ? { tone: notice ? "notice" : "ok", text: `${notice ? `${notice} ` : ""}${fill(w.right, { stars: starText(stars) })}${stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : wrong ? { tone: "wrong", text: fill(w.why[wrong.why], { have: num(wrong.have), want: num(wrong.want), names: (wrong.names ?? []).map(n).join(", ") }) }
+    : { tone: "hint", text: p ? w.hint : w.freeHint };
 
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} onPuzzle={go} onFree={free} words={w} g={g} />
-      <p className="live-said geo-prompt">{ask}</p>
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g} />
+      <Said line={{ tone: "prompt", text: ask }} />
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
           width={EMBED_PLOT.w}
@@ -146,17 +136,12 @@ export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab"
           <rect width={EMBED_PLOT.w} height={EMBED_PLOT.h} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: embedSvg(d.vecs, { drag: p ? drag : [], sel: p ? [] : d.sel, pair, analogies: analogiesOf(p, d.sel), readout, names }) }} />
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(embedStars(d.tries))} />}
-      </div>
-      <div className="live-bar">
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {w.check}</button>}
-        <button className="live-btn" onClick={() => commit(fresh({ vecs: embedStart(p) }))}>↺ {w.reset}</button>
-        {d.done && p && <Onward mode="puzzle" stage={d.stage} size={EMBED_LADDER.length} onClick={onward} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={sayClass}>
-        {said} <Found ladder={ladder} of={EMBED_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      </Stage>
+      <GameActions game={game} g={g} done={d.done} always>
+        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
+        <button className="live-btn" onClick={() => commit(fresh({ vecs: embedStart(p) }))}>↺ {g.reset}</button>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

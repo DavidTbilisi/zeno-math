@@ -4,6 +4,7 @@
 // pan is done to the other, and the scales still balance — the idea that turns into solving equations. Leaving the
 // shapes on the other pan out (■ ■ ■ + 2 = 10 for the medium one above) is the slip named.
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type BalanceLevel = 1 | 2 | 3;
 /** What is on a pan: how many of each shape (■, ●) and the weights, each a number. */
@@ -206,20 +207,13 @@ export function balanceNotice(t: BalanceTask, misses: number, streak: number): B
   if (t.values.some((v) => v >= 10)) return "heavy";
   return null;
 }
-export type LiveBalance = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: BalanceLevel;
-  seed: number;
-  /** What the player says each shape weighs. */
-  guess: number[];
-  /** Whether the scales show the guess (until it changes). */
-  weighed: boolean;
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: BalanceNotice } | null;
-};
+export type LiveBalance = EndlessGame<BalanceNotice, BalanceLevel> &
+  TryGame & {
+    /** What the player says each shape weighs. */
+    guess: number[];
+    /** Whether the scales show the guess (until it changes). */
+    weighed: boolean;
+  };
 export const balanceNow = (d: Pick<LiveBalance, "mode" | "stage" | "level" | "seed">): BalanceTask =>
   d.mode === "puzzle" ? balanceTask(BALANCE_LADDER[d.stage].level, rng(BALANCE_LADDER[d.stage].seed)) : balanceTask(d.level, rng(d.seed));
 

@@ -142,3 +142,26 @@ test("valid starting city", () => {
     }
   }
 });
+
+test("non-overlapping intervals", () => {
+  assert.equal(answer("nonOverlappingIntervals", "[1, 4], [2, 3], [3, 6], [5, 7], [6, 8], [2, 5]"), "Remove 3: [1, 4], [2, 5], [5, 7]. The 3 left don't overlap.");
+  assert.equal(answer("nonOverlappingIntervals", "[1, 2], [2, 3], [3, 4]"), "No two of them overlap: nothing needs to go.");
+  assert.equal(answer("nonOverlappingIntervals", "[1, 2], [1, 2], [1, 2]"), "Remove 2: [1, 2], [1, 2]. The 1 left don't overlap.");
+  assert.throws(() => answer("nonOverlappingIntervals", "[3, 1]"), /isn't an interval/);
+  const r = rng(17);
+  for (let k = 0; k < 200; k++) {
+    const iv = Array.from({ length: 1 + (k % 8) }, () => {
+      const s = Math.floor(r() * 10);
+      return [s, s + Math.floor(r() * 5)] as const;
+    });
+    // The most that can stay: try every subset, keep those with no two overlapping.
+    let most = 0;
+    for (let m = 0; m < 1 << iv.length; m++) {
+      const pick = iv.filter((_, i) => m & (1 << i));
+      if (pick.every((p, i) => pick.every((q, j) => j <= i || p[1] <= q[0] || q[1] <= p[0]))) most = Math.max(most, pick.length);
+    }
+    const got = answer("nonOverlappingIntervals", iv.map(([a, b]) => `[${a}, ${b}]`).join(", "));
+    const removed = got.startsWith("No two") ? 0 : Number(got.match(/^Remove (\d+)/)![1]);
+    assert.equal(removed, iv.length - most, `${JSON.stringify(iv)}: ${got}`);
+  }
+});

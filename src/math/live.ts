@@ -32,11 +32,13 @@ import type { LiveColour } from "./colouring";
 import type { LivePath } from "./shortestPath";
 import type { LiveTowns } from "./connectTowns";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
+import { SOLVER_START, type LiveSolver } from "./solver/index";
 import { PCA_START, type LivePca } from "./pcaLab";
 import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
 import { BP_START, type LiveBackprop } from "./backpropLab";
 import { TN_START, type LiveTensor } from "./tensorLab";
+export type { EndlessGame, GameBase, GameLevel, GameMode, TryGame } from "./ladder";
 import { DIVISION_LIMITS, planDivision, type DivisionStyle } from "./division";
 import { PATTERN_EXAMPLES, type PatternId } from "./patternSteps";
 import type { ProblemId } from "./problems/index";
@@ -306,9 +308,11 @@ export const judgeDigit = (ask: DivisionAsk, g: number): "right" | "tooBig" | "t
 /**
  * A Rubik's cube (the maths is in rubik.ts): the scramble and the turns made since, written as R U R′ U′; the moves to
  * repeat and how many times running they have been done; whether the buttons turn anticlockwise; and the angle the
- * cube and its ball of circles are seen from, in degrees.
+ * cube and its ball of circles are seen from, in degrees. While the colours of a real cube are being painted in, `paint`
+ * holds them, the face whose colour each of the 54 stickers has (UUUUUUUUURRR…); once solved, `solution` is the turns
+ * that solve it, done one at a time as `moves`. (Boards from before either was kept have neither.)
  */
-export type LiveRubik = { scramble: string; moves: string; alg: string; reps: number; prime: boolean; yaw: number; pitch: number };
+export type LiveRubik = { scramble: string; moves: string; alg: string; reps: number; prime: boolean; yaw: number; pitch: number; paint?: string; solution?: string };
 
 // ——— Soroban ———
 
@@ -383,6 +387,7 @@ export type LiveStates = {
   soroban: LiveSoroban;
   patterns: LivePatterns;
   problems: LiveProblems;
+  solver: LiveSolver;
   numberLine: LiveNumberLine;
   geoboard: LiveGeoboard;
   estimate: LiveEstimate;
@@ -439,6 +444,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   soroban: [820, 540],
   patterns: [800, 600],
   problems: [800, 700],
+  solver: [800, 760],
   numberLine: [800, 460],
   geoboard: [600, 660],
   estimate: [720, 390],
@@ -497,6 +503,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },
     patterns: { pattern: "twoptr", ...PATTERN_EXAMPLES.twoptr, step: 0, quiz: false },
     problems: { id: "twoNumberSum", inputs: [], step: 0, quiz: false },
+    solver: SOLVER_START,
     numberLine: { from: 0, to: 10, step: 1, fractions: false, marks: [], jumps: true, together: false },
     geoboard: { mode: "free", stage: 0, pts: [], misses: 0, peeked: false, area: true, perim: true, said: null, last: null },
     estimate: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], pin: null, half: false, peeked: false, streak: 0, said: null },

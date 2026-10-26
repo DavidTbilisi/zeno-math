@@ -2,85 +2,59 @@
 // chosen that doesn't fold shows in red the squares that land on the same face, and once the board is right each net
 // colours its opposite faces alike. The last three puzzles fold one net in the mind: tap the face opposite the ★, pair
 // by pair. No misses earns three stars, one two. Nine puzzles open in turn (nets with four in a row, nets without,
-// opposite faces), and the endless run keeps a streak of boards with no misses.
-import { useState, type ReactNode } from "react";
-import { clashes, fold, isNet, NET_LADDER, NET_NOTICES, netNotice, netNow, netStars, PAIR_FILL, type Cell, type LiveCubeNet, type NetLevel } from "../math/cubeNets";
-import { withBest, withFound, withStars } from "../math/ladder";
-import { play } from "./juice";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+// opposite faces), and the endless run keeps a streak of boards with no misses. Built on the game shell (useGame),
+// which does the ladder, the sounds and the cheer.
+import type { ReactNode } from "react";
+import { clashes, fold, isNet, NET_LADDER, NET_NOTICES, netNotice, netNow, netStars, PAIR_FILL, type Cell, type LiveCubeNet } from "../math/cubeNets";
 import { fill, FONT, INK, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
+import { starText } from "./ladderUi";
 
 const BOX = 200;
 const GAP = 14;
 const W = 3 * BOX + 2 * GAP + 10;
 
+const FRESH: Partial<LiveCubeNet> = { chosen: [], checked: false, misses: 0, done: false, said: null };
+
 export function CubeNet({ state: d, set, w: words, svgRef }: PieceProps<"cubeNet">) {
   const [w, g] = [words.cubeNet, words.game];
-  const [ladder, keep] = useLadder("zeno.cubenet.v1", NET_LADDER.length, NET_NOTICES);
-  const [cheer, setCheer] = useState(0);
+  const game = useGame({ key: "zeno.cubenet.v1", size: NET_LADDER.length, notices: NET_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const board = netNow(d);
-
-  const finish = (misses: number) => {
-    const stars = netStars(misses);
-    const streak = d.mode === "endless" && misses === 0 ? d.streak + 1 : d.mode === "endless" ? 0 : d.streak;
-    const key = netNotice(board, misses, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    if (d.mode === "puzzle") next = withStars(next, d.stage, stars);
-    if (key && !next.found.includes(key)) next = withFound(next, key, NET_NOTICES);
-    if (next !== ladder) keep(next);
-    play("good");
-    setTimeout(() => play("star"), 260);
-    setCheer((c) => c + 1);
-    return { done: true, streak, said: key ? { kind: "notice" as const, key } : null };
-  };
+  const stars = netStars(d.misses);
 
   // Easy and medium: choose the shapes that fold, then check.
   const toggle = (i: number) => {
     if (d.done) return;
-    play("snap");
-    set({ ...d, chosen: d.chosen.includes(i) ? d.chosen.filter((k) => k !== i) : [...d.chosen, i].sort((a, b) => a - b), checked: false, said: null });
+    game.tap({ chosen: d.chosen.includes(i) ? d.chosen.filter((k) => k !== i) : [...d.chosen, i].sort((a, b) => a - b), checked: false, said: null });
   };
   const check = () => {
     if (board.level === 3) return;
     const extra = d.chosen.filter((i) => !isNet(board.shapes[i])).length;
     const missing = board.shapes.filter((s, i) => isNet(s) && !d.chosen.includes(i)).length;
-    if (extra || missing) {
-      play("miss");
-      return set({ ...d, checked: true, misses: d.misses + 1, streak: 0, said: { kind: "wrong", extra, missing } });
-    }
-    set({ ...d, checked: true, ...finish(d.misses) });
+    if (extra || missing) return game.miss({ checked: true, misses: d.misses + 1, said: { kind: "wrong", extra, missing } });
+    game.win({ stars, clean: d.misses === 0, notice: (streak) => netNotice(board, d.misses, streak), patch: { checked: true, done: true } });
   };
   // Hard: the face opposite the ★, pair by pair; the last pair is what is left.
   const star = board.level === 3 ? board.net.findIndex((_, i) => !d.chosen.includes(i)) : -1;
   const pick = (i: number) => {
     if (board.level !== 3 || d.done || i === star || d.chosen.includes(i)) return;
     const f = fold(board.net);
-    if (f[i] !== (f[star] ^ 1)) {
-      play("miss");
-      return set({ ...d, misses: d.misses + 1, streak: 0, said: { kind: "notOpposite", cell: i } });
-    }
+    if (f[i] !== (f[star] ^ 1)) return game.miss({ misses: d.misses + 1, said: { kind: "notOpposite", cell: i } });
     let chosen = [...d.chosen, star, i];
     if (chosen.length === 4) chosen = [...chosen, ...board.net.map((_, k) => k).filter((k) => !chosen.includes(k))];
-    if (chosen.length < 6) {
-      play("good");
-      return set({ ...d, chosen, said: null });
-    }
-    set({ ...d, chosen, ...finish(d.misses) });
+    // A pair is a step on the board, not on the streak: only a net done with no misses counts.
+    if (chosen.length < 6) return game.step({ chosen, said: null }, { counts: false });
+    game.win({ stars, clean: d.misses === 0, notice: (streak) => netNotice(board, d.misses, streak), patch: { chosen, done: true } });
   };
-  const fresh: Pick<LiveCubeNet, "chosen" | "checked" | "misses" | "done" | "said"> = { chosen: [], checked: false, misses: 0, done: false, said: null };
-  const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
-  const endless = (l: NetLevel) => set({ ...d, ...fresh, mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, NET_LADDER.length)));
 
-  const stars = netStars(d.misses);
   const right = fill(w.right, { stars: starText(stars) });
   const hint = board.level === 3 ? w.hintOpposite : w.hint;
-  const said =
-    d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${right}`
-    : d.done ? right
-    : d.said?.kind === "wrong" ? (d.said.extra ? w.wrongExtra : fill(w.wrongMissing, { n: d.said.missing }))
-    : d.said?.kind === "notOpposite" ? w.notOpposite
-    : hint;
+  const line: Line =
+    d.said?.kind === "notice" ? { tone: "notice", text: `${w.notices[d.said.key]} ${right}` }
+    : d.done ? { tone: "ok", text: `${right}${d.mode === "puzzle" && stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : d.said?.kind === "wrong" ? { tone: "wrong", text: d.said.extra ? w.wrongExtra : fill(w.wrongMissing, { n: d.said.missing }) }
+    : d.said?.kind === "notOpposite" ? { tone: "wrong", text: w.notOpposite }
+    : { tone: "hint", text: hint };
 
   const squares = (cells: Cell[], x: number, y: number, s: number, fills: string[], onCell?: (k: number) => void, labels: string[] = []) =>
     cells.map(([cx, cy], k) => (
@@ -120,26 +94,20 @@ export function CubeNet({ state: d, set, w: words, svgRef }: PieceProps<"cubeNet
   }
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
-      <p className="live-said geo-prompt">{hint}</p>
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g}>
+        <Stake stars={stars} tries={d.misses} g={g} />
+      </GameHead>
+      <Said line={{ tone: "prompt", text: hint }} />
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={hint}>
           <rect width={W} height={H} fill="#fff" />
           {body}
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(stars)} />}
-      </div>
-      <div className="live-bar">
-        {d.done ? (
-          <Onward mode={d.mode} stage={d.stage} size={NET_LADDER.length} onClick={onward} g={g} />
-        ) : (
-          board.level !== 3 && <button className="live-btn on" onClick={check}>{g.check}</button>
-        )}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={d.said?.kind === "notice" ? "live-said notice" : d.done ? "live-said ok" : d.said ? "live-said" : "live-hint"}>
-        {said} <Found ladder={ladder} of={NET_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      </Stage>
+      <GameActions game={game} g={g} done={d.done}>
+        {board.level !== 3 && <button className="live-btn on" onClick={check}>{g.check}</button>}
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

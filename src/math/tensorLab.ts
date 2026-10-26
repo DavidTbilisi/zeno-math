@@ -6,6 +6,8 @@
 // same memory with new strides) and where an entry of a transpose sits (the strides swapped, so the view is no longer
 // contiguous). Free play takes any of the shapes and views, tapping an entry or a place shows the other, and a walk
 // through the view in its own order shows the memory it jumps across. Kept free of React so it can be tested on its own.
+import type { GameBase } from "./ladder";
+
 
 /** How a view reads the memory of T: as T itself, with its axes put in another order, or with another shape. */
 export type TnViewKind = { kind: "as" } | { kind: "permute"; perm: number[] } | { kind: "reshape"; dims: number[] };
@@ -179,18 +181,16 @@ export function judgeTn(q: TnPuzzle, sel: TnSel | null, answers: string[]): TnVe
 /** Stars: done at the first try three, at the second two, else one. */
 export const tnStars = (tries: number) => (tries === 0 ? 3 : tries === 1 ? 2 : 1);
 
-export type LiveTensor = {
+export type LiveTensor = GameBase<TnNotice, { kind: "wrong"; why: TnSlip }> & {
   mode: "puzzle" | "free";
-  stage: number;
   /** Free play's shape and view. */
   setup: TnSetupId;
   /** What was tapped last, and what has been typed for each stride. */
   sel: TnSel | null;
   answers: string[];
-  /** Tries that failed on this puzzle, whether it is done, and what was said about the last check. */
+  /** Tries that failed on this puzzle, and whether it is done. */
   tries: number;
   done: boolean;
-  said: { kind: "notice"; key: TnNotice } | { kind: "wrong"; why: TnSlip } | null;
 };
 export const TN_START: LiveTensor = { mode: "puzzle", stage: 0, setup: "t234", sel: null, answers: [], tries: 0, done: false, said: null };
 

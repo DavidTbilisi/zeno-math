@@ -1,5 +1,6 @@
 // English UI strings. ru.ts and ka.ts must have exactly the same keys (checked by the type below and by npm test).
 import { problems } from "./problems/en/index";
+import { solver } from "./solver/en";
 export const en = {
   appName: "Zeno",
   tagline: "Math from zero to advanced — every small step counts",
@@ -4228,6 +4229,7 @@ export const en = {
       liveSoroban: "Soroban (abacus)",
       livePatterns: "Algorithm patterns, step by step",
       liveProblems: "Interview problems, step by step",
+      liveSolver: "Algorithm solver: data, pattern, formulas",
       liveNumberLine: "Number line, any range",
       liveGeoboard: "Geoboard: shapes and area",
       liveEstimate: "Number line estimation game",
@@ -4507,11 +4509,32 @@ export const en = {
       streak: "streak {n}, best {best}",
       sound: "Sound on or off",
       found: "Discoveries: {n} of {of}",
+      puzzle: "Puzzle {n}",
+      locked: "Get two stars on the puzzle before to open this one",
+      free: "Free play",
+      reset: "Start again",
+      tries: "Try {n}",
+      streakMark: "{n} in a row!",
+      allDone: "Every puzzle done: {n} of {of} stars!",
+      discoveries: "Discoveries",
+      playEndless: "Keep going: the endless run",
+      replay: "Play again from puzzle 1",
+      oneStar: "Two stars open the next one: try it again.",
+      retry: "Try again",
+      endlessLocked: "Get two stars on every puzzle to open the endless run",
+      levelLocked: "A streak of {n} on the level before opens this one",
+      clock: "Against the clock: beat your own pace",
+      clockLocked: "A streak of {n} on the hardest level opens the clock",
+      slow: "Too slow: the streak starts again",
+      stepBack: "Step back",
+      stepBackWhy: "Three misses: go back a step and make it clean first",
+      anchor: "Warm up: {n}",
+      anchorWhy: "warm-up, already at three stars",
+      stretchWhy: "your edge: two stars here open the next",
+      repair: "Repair: {n}",
+      repairWhy: "repair, the most misses so far",
     },
     geoboard: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       freeHint: "Make any shape: tap the dots to put its corners.",
       hint: "Tap a dot to put a corner there; drag a corner to move it, or tap it to take it off.",
       area: "Area",
@@ -4532,7 +4555,7 @@ export const en = {
     },
     estimate: {
       puzzle: "Round {n}",
-      locked: "Get a star in the round before to open this one",
+      locked: "Get two stars in the round before to open this one",
       place: "Where does {n} go?",
       hint: "Drag along the line and let go where you think the number is.",
       right: "Right! Off by only {d}.",
@@ -4550,7 +4573,7 @@ export const en = {
     },
     quickLook: {
       puzzle: "Round {n}",
-      locked: "Get a star in the round before to open this one",
+      locked: "Get two stars in the round before to open this one",
       ready: "Press Look: the dots show for a moment, then hide.",
       look: "Look!",
       lookAgain: "Look again",
@@ -4567,8 +4590,6 @@ export const en = {
       },
     },
     target: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       make: "Make {t}",
       hint: "Tap cards and signs to build a sum that makes the target. Each card once.",
       useAll: "Use all {n} cards, each once.",
@@ -4594,7 +4615,7 @@ export const en = {
     },
     closerTo: {
       puzzle: "Round {n}",
-      locked: "Get a star in the round before to open this one",
+      locked: "Get two stars in the round before to open this one",
       which: "Which is {x} closest to?",
       ask: "Which is it closest to? Tap it.",
       right: "Right!",
@@ -4609,8 +4630,6 @@ export const en = {
       },
     },
     divisible: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       which: "Which of these divide {n}?",
       hint: "Tap every number that divides {n} exactly, then check.",
       chosen: "{n} chosen. Tap one again to take it off, then check.",
@@ -4629,8 +4648,6 @@ export const en = {
       },
     },
     kakooma: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hintSum: "One of these numbers is the sum of two others. Tap it.",
       hintProduct: "One of these numbers is the product of two others. Tap it.",
       hintGrid: "Solve each corner: its answer goes into the middle. Then solve the middle.",
@@ -4644,6 +4661,13 @@ export const en = {
       partForWhole: "{n} is one of the two parts. Which number do they make?",
       usedTwice: "{z} {s} {z} = {n}, but there is only one {z}: a number can't be used twice.",
       sumNotProduct: "{a} + {b} = {n}, but that's a sum: here two numbers must multiply to make it.",
+      hintDiff: "One of these numbers is the difference of two others. Tap the three numbers of that subtraction.",
+      hintQuot: "One of these numbers is the quotient of two others. Tap the three numbers of that division.",
+      picked: "Picked {list}.",
+      noDiff: "{a} − {b} isn't {c}: {b} + {c} = {d}, not {a}.",
+      noQuot: "{a} ÷ {b} isn't {c}: {b} × {c} = {d}, not {a}.",
+      hintShownFact: "One number of the fact is ringed in blue.",
+      signs: { "+": "Addition", "-": "Subtraction", "*": "Multiplication", "/": "Division" },
       hintBtn: "Hint",
       hintCost: "The hint costs a star",
       hintShown: "One of the two parts is ringed in blue.",
@@ -4655,8 +4679,6 @@ export const en = {
       },
     },
     fractionWall: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       make: "Fill the bar to {t}",
       hint: "Tap tiles to fill the gap exactly. Tap a tile in the bar to take it out.",
       short: "{n} in so far — keep filling the gap.",
@@ -4672,7 +4694,7 @@ export const en = {
     },
     equivMatch: {
       puzzle: "Board {n}",
-      locked: "Get a star on the board before to open this one",
+      locked: "Get two stars on the board before to open this one",
       hint: "Tap two cards that are the same amount.",
       hintThrees: "Tap the three cards that are the same amount: a fraction, a decimal and a percentage.",
       miss: "Those aren't the same amount.",
@@ -4688,7 +4710,7 @@ export const en = {
     },
     fracOrder: {
       puzzle: "Line {n}",
-      locked: "Get a star on the line before to open this one",
+      locked: "Get two stars on the line before to open this one",
       hint: "Tap a card, then tap the line where it goes.",
       place: "Where does {f} go? Tap the line.",
       ready: "All on the line — move any you like, then check.",
@@ -4704,8 +4726,6 @@ export const en = {
       }
     },
     shadeFrac: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       shadeShape: "Shade {f} of the shape.",
       shadeSet: "Shade {f} of the counters.",
       count: "{k} of {p} pieces shaded. Tap pieces to shade them, then check.",
@@ -4719,8 +4739,6 @@ export const en = {
       }
     },
     balance: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "The scales balance. What does the ■ weigh? Set it, then weigh.",
       hintTwo: "Both scales balance. What do the ■ and the ● weigh? Set them, then weigh.",
       weigh: "Weigh",
@@ -4736,8 +4754,6 @@ export const en = {
       }
     },
     machine: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       askOut: "What comes out when {n} goes in?",
       askIn: "{out} came out. What went in?",
       hint: "The machine does the same to every number. Put numbers in to find its rule.",
@@ -4756,8 +4772,6 @@ export const en = {
       }
     },
     growing: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       askBuild: "Build figure 4: tap the squares.",
       askCount: "How many squares in figure {k}?",
       askWhich: "Which figure has {n} squares?",
@@ -4777,8 +4791,6 @@ export const en = {
       }
     },
     exprMatch: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Tap two cards that are equal for every x.",
       miss: "{a} and {b} aren't equal — try x = 2 in both.",
       done: "Board cleared! {stars}",
@@ -4792,7 +4804,7 @@ export const en = {
     },
     angleGuess: {
       puzzle: "Round {n}",
-      locked: "Get a star in the round before to open this one",
+      locked: "Get two stars in the round before to open this one",
       ask: "How big is this angle? Type your guess in degrees.",
       erase: "Rub out the last digit",
       close: "Good guess! It's {v}° — you were {d}° off.",
@@ -4807,8 +4819,6 @@ export const en = {
       },
     },
     angleHunt: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "The figure is drawn to size. What is the angle marked ?",
       erase: "Rub out the last digit",
       wrongArm: "Not {v}° — the dashed arm shows how big {v}° would be. What do the angles add up to?",
@@ -4822,8 +4832,6 @@ export const en = {
       },
     },
     mirror: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Tap every line the shape folds onto itself along, then check. None? Just check.",
       line: "Line {n}",
       chosen: "{n} chosen. Tap a line again to take it off, then check.",
@@ -4839,8 +4847,6 @@ export const en = {
       },
     },
     cubeNet: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Which of these fold into a cube? Tap them, then check.",
       hintOpposite: "Fold the net in your mind. Tap the face opposite the ★.",
       shape: "Shape {n}",
@@ -4858,7 +4864,7 @@ export const en = {
     },
     plotPoint: {
       puzzle: "Round {n}",
-      locked: "Get a star in the round before to open this one",
+      locked: "Get two stars in the round before to open this one",
       ask: "Tap the point {p}.",
       askCorner: "A, B and C are three corners of a rectangle. Tap the fourth corner.",
       hint: "Along first, then up or down: tap the crossing where the two numbers meet.",
@@ -4874,8 +4880,6 @@ export const en = {
       },
     },
     barChart: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Raise each bar to its number: tap its column at that height, or use the arrow keys. Then check.",
       wrong: "Not yet: the orange bars should reach the dashed lines. Read the numbers up the side.",
       lines: "Each line of the scale is worth {s}: the {f} bar is at {h}, but there are {v}. Read the numbers up the side.",
@@ -4888,8 +4892,6 @@ export const en = {
       },
     },
     graphStory: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       hint: "Draw the walk: tap a piece for each part, in order, then check. Up is further from home.",
       ready: "Every part drawn: check it.",
       undo: "Undo",
@@ -4908,8 +4910,6 @@ export const en = {
       },
     },
     slopeLine: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Draw a line through A with gradient {m}: tap a second point.",
       askUp: "Draw a line through A with gradient {m} — up {n} for every 1 along: tap a second point.",
       hint: "Tap a crossing of the grid to put B there.",
@@ -4929,8 +4929,6 @@ export const en = {
       },
     },
     oneStroke: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Draw every edge in one stroke: tap a vertex to start, then the next one along an edge, never going over an edge twice.",
       askHard: "Draw every edge in one stroke — or, if it can't be done, say so.",
       hint: "Tap a vertex to start.",
@@ -4939,7 +4937,6 @@ export const en = {
       startOdd: "Stuck. Two vertices have an odd number of edges: start at one of them, and the stroke ends at the other.",
       can: "It can be done: no more than two vertices have an odd number of edges. Try it!",
       undo: "Undo",
-      again: "Start again",
       cant: "Can't be done",
       right: "Drawn in one stroke! {stars}",
       rightCant: "Right: more than two vertices have an odd number of edges, so it can't be done. {stars}",
@@ -4951,8 +4948,6 @@ export const en = {
       },
     },
     colourMap: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Colour every vertex with {k} colours so that no edge joins two of the same colour.",
       askFewest: "Colour every vertex so that no edge joins two of the same colour, with as few colours as you can.",
       hint: "Pick a colour, then tap the vertices to give it to them.",
@@ -4970,8 +4965,6 @@ export const en = {
       },
     },
     shortestPath: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Find the shortest route from {a} to {b}: tap the places along it in turn.",
       hint: "Tap a place joined to the last one by a road; tap the last one again to take it back.",
       arrived: "You're there: check it.",
@@ -4986,8 +4979,6 @@ export const en = {
       },
     },
     connectTowns: {
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       ask: "Build roads so that every town is joined, as cheaply as can be.",
       hint: "Tap a road to build it; tap it again to take it away.",
       total: "Roads: {n}, costing {v} in all.",
@@ -5003,9 +4994,6 @@ export const en = {
       },
     },
     descentLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "Roll the ball to the bottom of the valley in {max} steps or fewer: set the learning rate η, then Step or Run.",
         p2: "Get to the bottom in one single step. Which η does it?",
@@ -5026,7 +5014,6 @@ export const en = {
       more: "Larger η",
       step: "Step",
       run: "Run",
-      reset: "Start again",
       rule: "x ← x − η · f′(x)",
       ruleMomentum: "v ← β · v − η · f′(x),   x ← x + v",
       count: "Step {k} of {max}",
@@ -5060,9 +5047,6 @@ export const en = {
       },
     },
     pcaLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "Turn the line (drag one of its ends, or the slider) until the red squares, the squared distances, add up to as little as they can. Then Check.",
         p2: "Turn the line so that the points' shadows on it, the purple dots, spread out as widely as they can.",
@@ -5077,8 +5061,6 @@ export const en = {
       picture: "A cloud of points and a line through it",
       angle: "Angle of the line",
       mark: "Mark along PC1",
-      check: "Check",
-      reset: "Start again",
       clear: "Clear the points",
       showBest: "Show PC1",
       vertical: "Distances straight up",
@@ -5115,9 +5097,6 @@ export const en = {
       },
     },
     softmaxLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "Drag the score bars so that {a} gets at least {p} of the probability. Then Check.",
         p2: "Make all three classes equally likely.",
@@ -5146,8 +5125,6 @@ export const en = {
       more: "One class more",
       target: "Target:",
       noTarget: "none",
-      check: "Check",
-      reset: "Start again",
       hint: "Drag a bar up or down to set a score, and watch every probability change.",
       tempHint: "Move the T slider: low T sharpens, high T flattens.",
       right: "Done! {stars}",
@@ -5174,9 +5151,6 @@ export const en = {
       },
     },
     embedLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "Drag the tip of dog's arrow so that cat and dog are alike: a cosine of at least 0.95. Then Check.",
         p2: "Drag car's arrow so that car has nothing to do with cat: a cosine between −0.1 and 0.1.",
@@ -5195,8 +5169,6 @@ export const en = {
       pickHint: "Tap a word to pick it.",
       nearestTo: "Nearest to {q}:",
       lands: "{e} lands nearest:",
-      check: "Check",
-      reset: "Start again",
       hint: "Drag the ringed tip; the numbers on the right follow it.",
       freeHint: "Tap a word's tip to pick it or let it go, drag a tip to move it.",
       right: "Done! {stars}",
@@ -5221,9 +5193,6 @@ export const en = {
       },
     },
     backpropLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "L = (x + y) · z. Fill in ∂L/∂q and ∂L/∂z, going back from L, whose own gradient is 1. Then Check.",
         p2: "∂L/∂q is in now. Fill in ∂L/∂x and ∂L/∂y, back through the + gate.",
@@ -5245,8 +5214,6 @@ export const en = {
       use: "{p} = {e}, with local slope {r}",
       reluRule: "1 if {a} > 0, else 0",
       nudge: "{n} + 0.01 takes L from {a} to {b}: a change of {d}, about ∂L/∂{n} × 0.01 = {g}.",
-      check: "Check",
-      reset: "Start again",
       hint: "Type a number in each box, such as −4, 0.25 or 1/4. Tap a box to go to it, Enter for the next.",
       freeHint: "Tap an input in the picture to choose it, then change it with − and +.",
       right: "Done! {stars}",
@@ -5270,9 +5237,6 @@ export const en = {
       },
     },
     tensorLab: {
-      free: "Free play",
-      puzzle: "Puzzle {n}",
-      locked: "Get a star on the puzzle before to open this one",
       asks: {
         p1: "T is a 3 × 4 matrix. Tap the entry T[1, 2]. Then Check.",
         p2: "In memory T's rows lie one after another. Tap the place in memory where T[2, 1] sits.",
@@ -5295,8 +5259,6 @@ export const en = {
       tapPlace: "Tapped: place {p}.",
       contiguous: "Shape ({shape}), strides ({s}): contiguous, read straight through memory.",
       jumps: "Shape ({shape}), strides ({s}): not contiguous, one step along the last axis jumps {j} places.",
-      check: "Check",
-      reset: "Start again",
       hint: "Tap your answer in the picture, then Check.",
       typeHint: "Type a whole number in each box; Enter goes on to the next.",
       freeHint: "Tap any entry or place: the dashed line joins an entry to its place in memory.",
@@ -5636,6 +5598,7 @@ export const en = {
       },
     },
     problems,
+    solver,
     rubik: {
       faces: { U: "top", D: "bottom", L: "left", R: "right", F: "front", B: "back" },
       clockwise: "Turn the {face} face clockwise",
@@ -5647,6 +5610,31 @@ export const en = {
       alg: "Moves",
       play: "Do them",
       untilBack: "Until it comes back",
+      speed: "Speed",
+      paint: "Your cube",
+      paintTitle: "Paint in the colours of a real cube, to solve it",
+      paintHint: "Hold your cube with the white centre on top and the green one facing you. Pick a colour, then click the stickers of the cube or the net to match yours (drag the cube to see round it). The middle stickers stay as they are.",
+      colors: { U: "white", D: "yellow", F: "green", B: "blue", R: "red", L: "orange" },
+      counts: "Each colour needs nine stickers: {list}.",
+      problems: {
+        centres: "The middle stickers must be white on top, green in front, red on the right.",
+        corner: "A corner's three colours are not a real corner, or two corners are the same: check the corners.",
+        edge: "An edge's two colours are not a real edge, or two edges are the same: check the edges.",
+        twist: "One corner is twisted in its place, which turning alone can never do: check the corners' colours.",
+        flip: "One edge is flipped in its place, which turning alone can never do: check the edges' colours.",
+        parity: "Two pieces are swapped, which turning alone can never do: check where the pieces are.",
+      },
+      ready: "These colours make a cube that can be solved.",
+      solve: "Solve",
+      solveTitle: "Find turns that solve the cube shown",
+      solving: "Working out the turns…",
+      cancel: "Cancel",
+      solution: "Solved in {n} turns:",
+      next: "Next {move}",
+      rest: "The rest",
+      closeSolution: "Put the solution away",
+      step: "{k} of {n} turns done. Do the next one on your cube too, holding it white on top and green in front.",
+      offPath: "You have turned away from the solution: take your turns back, or solve again.",
       badAlg: "Write turns with the letters U D L R F B: R′ turns anticlockwise, R2 is a half turn.",
       hint: "Click a sticker or a ring of dots to turn that face, and drag the cube to look round it.",
       yourMoves: "Your turns ({n}): {moves}",

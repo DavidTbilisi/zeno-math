@@ -81,6 +81,7 @@ The existing documents describe Zeno from above: `README.md` (features), `docs/a
   - [src/math/live.ts — the arithmetic of the pieces](#srcmathlivets--the-arithmetic-of-the-pieces)
   - [src/live/ui.tsx — shared props and widgets](#srcliveuitsx--shared-props-and-widgets)
   - [src/live/ladderUi.tsx — what every game shares](#srcliveladderuitsx--what-every-game-shares)
+  - [src/live/useGame.tsx — the game shell](#srcliveusegametsx--the-game-shell)
   - [src/live/pieces.tsx — the eight light pieces](#srclivepiecestsx--the-eight-light-pieces)
   - [src/live/Chance.tsx — the chance experiment](#srclivechancetsx--the-chance-experiment)
   - [src/math/rubik.ts and src/live/Rubik.tsx — the Rubik's cube](#srcmathrubikts-and-srcliverubiktsx--the-rubiks-cube)
@@ -2045,7 +2046,34 @@ Builds a fresh piece (`:21-28`). It asks `convertToExcalidrawElements` for a `re
 - `GameNav` is the top of every game: the row of puzzles (`LadderBar`), with ∞ Endless (`onEndless`) or ✏️ Free play (`onFree`) first; under it, in the endless run, the three levels and the streak (with an optional `pace` before it), and in a puzzle its `children` (the round's `RoundDots`, the misses so far).
 - `Onward` is the button that moves on, named from where it goes: Next within a round or in the endless run, Next round or Next after a finished one, Play again after the last. `Found` is the discoveries count with the ones made in its tooltip; `SoundToggle`, `Cheer` and `starText` complete the set.
 - `Keypad` (`src/live/Keypad.tsx`) is the number pad of the games whose answer is a number too big for a row of buttons (guess my rule, growing patterns, guess the angle, missing angles): the digits, a minus sign at the front when the level needs one, ⌫, and the number so far.
-- The words they use are `live.game` in each locale (Endless, Next, Next round, Play again, Check, Clear, the streak, the sound switch, Discoveries); each game's own words, including what a puzzle is called (Puzzle, Round, Board, Line), stay under its name.
+- The words they use are `live.game` in each locale (Endless, Next, Next round, Play again, Check, Clear, the streak, the sound switch, Discoveries, and since the shell: Puzzle {n}, the lock, Free play, Start again, Try {n}, the streak mark, the ladder-done panel's lines). A game's own words stay under its name, and override the shared ones only where they differ (Round, Board, Line for a puzzle).
+
+### src/live/useGame.tsx — the game shell
+
+The hook every one of the 33 ladder games is written on (since October 2026; `ladderUi.tsx` holds the parts it is made of). `useGame({ key, size, notices, modes, state, set, fresh, stagePatch?, freePatch? })` owns the ladder (`useLadder`), the transient effects (`fx`: counters that re-key a cheer or a nudge, and whether the stage is shaking or glowing) and every timer it sets (cleared on unmount). A game calls one of five outcomes, each a single `set`:
+
+- `tap(patch)`: a tick (`snap`).
+- `step(patch, { notice, counts })`: right but not finished: `good` pitched a semitone per streak in the endless run, a green beat, `star` if the notice is new, a streak mark at 5, 10, 25, 50. `counts: false` leaves the streak alone (one set of a Kakooma grid, one pair of a cube net's faces); a matched pair or a right question of a round counts.
+- `miss(patch, { notice })`: `miss`, a shake with a red flash, the endless streak back to 0; `patch.said` is the game's own reason, and a notice can still be recorded (what the miss showed). A miss on a puzzle is counted in the ladder's `misses` (for the repair) and every miss counts towards the fallback.
+- `spot(patch, key)`: something noticed with no judging (the geoboard's free play, a fraction-wall fill no better than before): kept, and `star` if it is new.
+- `win({ stars, clean, right, counts, notice, patch })`: `settle` (`src/math/ladder.ts`) puts the stars (1–3, puzzle mode only, only up), best streak and notice into the ladder; `good` or `miss` by `right`, then `star` (or `levelup` for three stars), the streak mark, and `levelup` again when the last puzzle is passed; the cheer is re-keyed. `counts: false` again leaves the streak alone (a second way to the target, a fraction wall refilled with fewer tiles). Against the clock, a clean win over `clock` ms counts as not clean (the streak restarts, `fx.slow` shows "Too slow"); a clean endless win's time goes into the level's `pace`.
+
+Navigation is `go(stage, patch?)`, `endless(level, patch?)`, `free(patch?)`, `drill(to)` (a `Drill` place: a puzzle, a level with or without the clock, free play) and `onward()` (the next puzzle only once this one is passed, else this one again), each applying `fresh` (and `stagePatch(stage)` / `freePatch`); the round games (`AngleGuess`, `PlotPoint`, `QuickLook`, `CloserTo`, `Estimate`) keep their own `onward` for the next question inside a round and call the shell's from the fifth. The labs (`DescentLab`, `EmbedLab`, `TensorLab`, `BackpropLab`, `SoftmaxLab`, `PcaLab`) pass their `commit` as `set`, so a drag or a draft being typed stays local until it is let go, and `Geoboard` keeps its shape when it goes into free play (`fresh` does not touch `pts`; `stagePatch` clears them). The pieces: `GameHead` (the `GameNav` with endless/free derived from `modes` and the shared puzzle/locked/free words by default), `Stake` (the stars still at stake and "Try n", for games checked in tries), `Stage` (the picture, the shake/beat class, the flash, the `Cheer` sized by `burst()`, the streak-mark `Cheer`, and the `LadderDone` overlay when `isFinale`), `Said` (a `{ tone, text }` line with `role="status"`, nudged on a miss, with `Found` after it), `GameActions` (the game's buttons, then `Onward`, then the sound switch), `LadderDone` (total stars, the discoveries listed, and buttons for the edge (the endless run or the clock), the warm-up, the repair and free play). The shared state shapes are `GameBase`, `EndlessGame` (with an optional `timed`) and `TryGame` in `src/math/ladder.ts`.
+
+#### The drill ladder
+
+Since October 2026 the games follow the drill ladder of the Neural OS notes (`wiki/learning-systems/drill-ladder-patterns.md` in Neural-OS-Research): accuracy before difficulty, stability before mixing, mixing before speed. The rules are pure functions in `src/math/ladder.ts` and the shell applies them, so no game file knows about them.
+
+| Drill stage | In a game | Pass rule (opens the next) |
+|---|---|---|
+| 0 Orientation | free play (or the first puzzle) | always open |
+| 1–3 Isolation, clean repetition, controlled variation | the puzzles in order | `PASS_STARS` = 2 on a puzzle; `onward` replays a puzzle below it |
+| 4 Automaticity | the endless run, easy | every puzzle at two stars (`levelOpen(p, 1)`) |
+| 5 Mixing | the endless run, medium and hard | `PASS_STREAK` = 5 on the level before |
+| 6 Pressure | ⏱ against the clock, at any open level | a streak of 5 on hard (`clockOpen`); the limit is `clockMs(pace)`, a fifth over the running average of the player's clean times |
+| 7 Transfer | outside the game (practice, problems) | — |
+
+Fallback: `FALLBACK_MISSES` = 3 misses on a puzzle (or in a row in the endless run) show "↩ Step back" (`fallbackOf`): the puzzle before (or free play), off the clock, a level down, or from easy to the repair puzzle. The daily block (`dailyBlock`) marks the puzzles in the row: ⚓ warm-up (the furthest at three stars), ↗ edge (`stretchOf`: the first not passed, later a level or the clock), 🔧 repair (the most misses among those under three stars). Players' old ladders read back with the new fields at 0; a puzzle already starred stays open and a player who ran the endless run before keeps its first level.
 
 ### src/live/pieces.tsx — the eight light pieces
 

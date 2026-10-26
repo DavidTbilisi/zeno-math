@@ -6,6 +6,7 @@
 // in the net for its opposite, are the slips named.
 import { withSteps } from "./angleGuess";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type NetLevel = 1 | 2 | 3;
 export type Cell = [number, number];
@@ -224,19 +225,12 @@ export function netNotice(b: NetBoard, misses: number, streak: number): NetNotic
   if (b.level === 3) return "opposites";
   return b.shapes.some((s) => isNet(s) && !hasRow4(s)) ? "noRow" : "clean";
 }
-export type LiveCubeNet = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: NetLevel;
-  seed: number;
-  /** Easy and medium: the shapes chosen, and whether the last check is showing. Hard: the squares paired so far. */
-  chosen: number[];
-  checked: boolean;
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: NetNotice } | { kind: "wrong"; extra: number; missing: number } | { kind: "notOpposite"; cell: number } | null;
-};
+export type LiveCubeNet = EndlessGame<NetNotice, NetLevel, { kind: "wrong"; extra: number; missing: number } | { kind: "notOpposite"; cell: number }> &
+  TryGame & {
+    /** Easy and medium: the shapes chosen, and whether the last check is showing. Hard: the squares paired so far. */
+    chosen: number[];
+    checked: boolean;
+  };
 export function netNow(d: Pick<LiveCubeNet, "mode" | "stage" | "level" | "seed">): NetBoard {
   const [level, seed] = d.mode === "puzzle" ? [NET_LADDER[d.stage].level, NET_LADDER[d.stage].seed] : [d.level, d.seed];
   return netBoard(level, rng(seed));

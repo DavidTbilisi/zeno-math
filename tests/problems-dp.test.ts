@@ -428,3 +428,33 @@ test("square of zeroes", () => {
   assert.throws(() => answer("squareOfZeroes", "0, 0, 0; 0, 0, 0"), /square/);
   assert.throws(() => answer("squareOfZeroes", "0, 2; 0, 0"), /too big/);
 });
+
+test("burst balloons", () => {
+  assert.equal(answer("burstBalloons", "2, 4, 1, 3, 5"), "The most coins: 127, bursting in the order 1 → 3 → 4 → 2 → 5.");
+  assert.equal(answer("burstBalloons", "7"), "The most coins: 7, bursting in the order 7.");
+  assert.equal(answer("burstBalloons", "0, 0"), "The most coins: 0, bursting in the order 0 → 0.");
+  assert.throws(() => answer("burstBalloons", "12"), /too big/);
+  const r = rng(29);
+  // The coins for bursting in this order, balloon by balloon.
+  const play = (xs: readonly number[], order: readonly number[]) => {
+    const left = xs.map((_, i) => i);
+    let coins = 0;
+    for (const k of order) {
+      const at = left.indexOf(k);
+      coins += (at > 0 ? xs[left[at - 1]] : 1) * xs[k] * (at < left.length - 1 ? xs[left[at + 1]] : 1);
+      left.splice(at, 1);
+    }
+    return coins;
+  };
+  function* perms(a: number[]): Generator<number[]> {
+    if (a.length <= 1) return yield [...a];
+    for (let i = 0; i < a.length; i++) for (const p of perms([...a.slice(0, i), ...a.slice(i + 1)])) yield [a[i], ...p];
+  }
+  for (let k = 0; k < 60; k++) {
+    const xs = randInts(r, 1 + (k % 6), 0, 9);
+    let best = 0;
+    for (const p of perms(xs.map((_, i) => i))) best = Math.max(best, play(xs, p));
+    const got = answer("burstBalloons", xs.join(", "));
+    assert.ok(got.startsWith(`The most coins: ${best},`), `${xs}: ${got}`);
+  }
+});

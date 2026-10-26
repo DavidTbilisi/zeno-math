@@ -87,6 +87,8 @@ test("the board: rounds of different angles, stars from the mean error, the noti
     assert.ok(round.every((t, i) => round.every((o, j) => i === j || Math.abs(o.size - t.size) >= 10)));
   }
   assert.deepEqual([guessStars([0, 5, 10, 5, 5]), guessStars([10, 10, 10, 5, 15]), guessStars([30, 0, 0, 0, 30])], [3, 2, 1]);
+  // A round finished is always worth a star, however far off, but only two stars pass it and open the next round.
+  assert.equal(guessStars([180, 180, 180, 180, 180]), 1);
   const t = { level: 1 as const, size: 40, turn: 0 };
   assert.equal(guessNotice(t, 40, 1), "spotOn");
   assert.equal(guessNotice({ ...t, size: 90 }, 90, 1), "rightAngle");

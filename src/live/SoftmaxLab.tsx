@@ -2,7 +2,8 @@
 // with a strip showing they add up to 1. A temperature slider, buttons that shift every score at once, and with a
 // target the cross-entropy loss and its gradient as arrows on the scores. Eight puzzles open in turn, each checked
 // with Check, stars for doing one at the first try, and free play takes two to five classes. What is mid-way (a drag,
-// the slider being moved) stays here until it is let go, so each change is one step to undo.
+// the slider being moved) stays here until it is let go, so each change is one step to undo. Built on the game shell
+// (useGame): a check that meets the puzzle's goal wins it, one that does not is a miss.
 import { useState, type PointerEvent } from "react";
 import {
   columnAt,
@@ -27,18 +28,20 @@ import {
   yToZ,
   type LiveSoftmax,
 } from "../math/softmaxLab";
-import { withFound, withStars } from "../math/ladder";
 import { play } from "./juice";
-import { Cheer, Found, GameNav, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+import { starText } from "./ladderUi";
 import { fill, FONT, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** e^x for the readout: two decimals, or a power of ten once it is large. */
 const big = (v: number) => (v < 1e4 ? v.toFixed(2) : v.toExponential(1).replace("e+", "e"));
+/** A new try starts from no tries; a puzzle of the ladder sets its scores and temperature, free play its own. */
+const FRESH: Partial<LiveSoftmax> = { tries: 0, done: false, said: null };
+const stagePatch = (stage: number): Partial<LiveSoftmax> => ({ z: [...SOFTMAX_LADDER[stage].z], T: SOFTMAX_LADDER[stage].T });
+const freePatch = (): Partial<LiveSoftmax> => ({ z: [...FREE_Z], T: 1, target: 0 });
 
 export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmaxLab">) {
   const [w, g] = [words.softmaxLab, words.game];
-  const [ladder, keep] = useLadder("zeno.softmaxlab.v1", SOFTMAX_LADDER.length, SOFTMAX_NOTICES);
-  const [cheer, setCheer] = useState(0);
   const [draft, setDraft] = useState<Partial<LiveSoftmax> | null>(null);
   const [grab, setGrab] = useState<number | null>(null);
   const d: LiveSoftmax = { ...state, ...draft };
@@ -55,28 +58,13 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
     setDraft(null);
     set({ ...d, ...change });
   };
-
-  function go(stage: number) {
-    const s = SOFTMAX_LADDER[stage];
-    commit({ mode: "puzzle", stage, z: [...s.z], T: s.T, tries: 0, done: false, said: null });
-  }
-  function free() {
-    commit({ mode: "free", z: [...FREE_Z], T: 1, target: 0, tries: 0, done: false, said: null });
-  }
-  const onward = () => go(nextStage(d.stage, SOFTMAX_LADDER.length));
+  const game = useGame({ key: "zeno.softmaxlab.v1", size: SOFTMAX_LADDER.length, notices: SOFTMAX_NOTICES, modes: ["puzzle", "free"], state: d, set: commit, fresh: FRESH, stagePatch, freePatch: freePatch() });
 
   const check = () => {
     if (!q) return;
     const v = judgeSoftmax(q, d.z, d.T);
-    if (v.state === "won") {
-      keep(withFound(withStars(ladder, d.stage, softmaxStars(d.tries)), q.notice, SOFTMAX_NOTICES));
-      play("good");
-      setTimeout(() => play("star"), 260);
-      setCheer((c) => c + 1);
-      return commit({ done: true, said: { kind: "notice", key: q.notice } });
-    }
-    play("miss");
-    commit({ tries: d.tries + 1, said: { kind: "wrong", why: v.why } });
+    if (v.state === "won") return game.win({ stars: softmaxStars(d.tries), notice: () => q.notice, patch: { done: true } });
+    game.miss({ tries: d.tries + 1, said: { kind: "wrong", why: v.why } });
   };
 
   // Dragging in a column of the score panel sets that class's score.
@@ -129,21 +117,21 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
     : w.freeAsk;
   const verdict = q && d.said?.kind === "wrong" ? judgeSoftmax(q, d.z, d.T) : null;
   const wrong = verdict?.state === "lost" ? verdict : null;
-  const said =
-    d.done && d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${fill(w.right, { stars: starText(softmaxStars(d.tries)) })}`
-    : wrong ? fill(w.why[lockZ && (wrong.why === "low" || wrong.why === "uneven") ? (wrong.why === "low" ? "lowT" : "unevenT") : wrong.why], { have: wrong.why === "notYet" ? num(wrong.have) : prob(wrong.have), want: wrong.why === "notYet" ? num(wrong.want) : String(wrong.want), a: goal && "i" in goal ? name(goal.i) : "", b: goal && "j" in goal ? name(goal.j) : "", t: target !== null ? name(target) : "" })
-    : lockZ ? w.tempHint
-    : w.hint;
-  const sayClass = d.done ? "live-said notice" : wrong ? "live-said" : "live-hint";
+  const stars = softmaxStars(d.tries);
+  const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
+  const line: Line =
+    d.done ? { tone: notice ? "notice" : "ok", text: `${notice ? `${notice} ` : ""}${fill(w.right, { stars: starText(stars) })}${stars === 1 ? ` ${g.oneStar}` : ""}` }
+    : wrong ? { tone: "wrong", text: fill(w.why[lockZ && (wrong.why === "low" || wrong.why === "uneven") ? (wrong.why === "low" ? "lowT" : "unevenT") : wrong.why], { have: wrong.why === "notYet" ? num(wrong.have) : prob(wrong.have), want: wrong.why === "notYet" ? num(wrong.want) : String(wrong.want), a: goal && "i" in goal ? name(goal.i) : "", b: goal && "j" in goal ? name(goal.j) : "", t: target !== null ? name(target) : "" }) }
+    : { tone: "hint", text: lockZ ? w.tempHint : w.hint };
   const exps = d.z.map((v) => Math.exp(v / d.T));
   const sum = exps.reduce((a, b) => a + b, 0);
   const ti = tempIndex(d.T);
 
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} onPuzzle={go} onFree={free} words={w} g={g} />
-      <p className="live-said geo-prompt">{ask}</p>
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g} />
+      <Said line={{ tone: "prompt", text: ask }} />
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
           width={SM_PLOT.w}
@@ -161,8 +149,7 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
           <rect width={SM_PLOT.w} height={SM_PLOT.h} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: softmaxSvg(d.z, d.T, { target, locked: lockZ, words: { scores: w.scores, probs: w.probs, classes: w.classes } }) }} />
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(softmaxStars(d.tries))} />}
-      </div>
+      </Stage>
       <div className="descent-read">
         <span className="descent-rule">{d.T === 1 ? w.rule : w.ruleT}</span>
         <span>{fill(w.sum, { e: exps.map(big).join(" + "), s: big(sum) })}</span>
@@ -195,15 +182,11 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
           ))}
         </div>
       )}
-      <div className="live-bar">
-        {q && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {w.check}</button>}
-        <button className="live-btn" onClick={() => commit(fresh(q ? { z: [...q.z], T: q.T } : { z: [...FREE_Z, 0, 0].slice(0, d.z.length), T: 1 }))}>↺ {w.reset}</button>
-        {d.done && q && <Onward mode="puzzle" stage={d.stage} size={SOFTMAX_LADDER.length} onClick={onward} g={g} />}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={sayClass}>
-        {said} <Found ladder={ladder} of={SOFTMAX_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      <GameActions game={game} g={g} done={d.done} always>
+        {q && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
+        <button className="live-btn" onClick={() => commit(fresh(q ? { z: [...q.z], T: q.T } : { z: [...FREE_Z, 0, 0].slice(0, d.z.length), T: 1 }))}>↺ {g.reset}</button>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

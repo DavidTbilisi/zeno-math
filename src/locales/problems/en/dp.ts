@@ -226,4 +226,12 @@ export const dp = {
     answer: "Yes: the square from ({r}, {c}) to ({r2}, {c2}) has a border of zeros.",
     answerNo: "No: no square of side 2 or more has a border of zeros.",
   },
+  burstBalloons: {
+    name: "Burst Balloons",
+    idea: "Bursting a balloon pays its number times its two neighbours' (a 1 past either end). Think of the balloon burst last in a range, not first: until then it walls the range into a left part and a right part that never touch, so best(i, j) is the most over k of best(i, k − 1) + left × a[k] × right + best(k + 1, j), with left and right the balloons just outside the range. Ranges by length, O(n³).",
+    labels: ["Balloons"],
+    start: "Square (i, j) will hold the most coins for bursting balloons i to j alone, while the balloons just outside them are still there.",
+    cell: "{list}: burst {b} last, when only {l} and {r} are beside it: {left} + {l} × {b} × {r} + {right} = {c}, the most for these.",
+    answer: "The most coins: {c}, bursting in the order {order}.",
+  },
 };

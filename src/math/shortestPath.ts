@@ -5,6 +5,7 @@
 import { withSteps } from "./angleGuess";
 import { distances, edgeOf, graphSvg, latticeGraph, name, neighbours, routeLength, withLengths, type Graph } from "./graphPlay";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type PathLevel = 1 | 2 | 3;
 /** A graph with road lengths, the places to go from and to (opposite corners), and the shortest length. */
@@ -128,18 +129,11 @@ export function pathNotice(t: PathTask, route: number[], misses: number, streak:
   if (route.length - 1 >= 5) return "manyRoads";
   return null;
 }
-export type LivePath = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: PathLevel;
-  seed: number;
-  /** The places of the route after the start, the misses, and whether the shortest route is found. */
-  route: number[];
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: PathNotice } | { kind: "longer"; len: number; fewest: boolean } | null;
-};
+export type LivePath = EndlessGame<PathNotice, PathLevel, { kind: "longer"; len: number; fewest: boolean }> &
+  TryGame & {
+    /** The places of the route after the start. */
+    route: number[];
+  };
 export const pathNow = (d: Pick<LivePath, "mode" | "stage" | "level" | "seed">): PathTask =>
   d.mode === "puzzle" ? pathTask(PATH_LADDER[d.stage].level, rng(PATH_LADDER[d.stage].seed)) : pathTask(d.level, rng(d.seed));
 

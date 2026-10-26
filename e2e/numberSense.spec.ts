@@ -161,7 +161,9 @@ test("make the target: tapping the cards and signs of a sum that makes it", asyn
     else await game.locator(".target-ops").getByRole("button", { name: sign[t] ?? t, exact: true }).click();
   }
   await expect(game.getByText(/Made it! ★☆☆ Can you find another way\?/)).toBeVisible();
-  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+  // A hint leaves one star, and only two pass a puzzle: the next stays locked (the drill ladder's accuracy first).
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toHaveCount(0);
+  await expect(game.getByRole("button", { name: "Get two stars on the puzzle before to open this one" }).first()).toBeDisabled();
 });
 
 test("a practice sum typed with the card buttons", async ({ page, request }) => {

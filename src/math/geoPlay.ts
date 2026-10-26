@@ -4,7 +4,7 @@
 // and what the geoboard on the board adds: a ladder of puzzles with stars, and things worth noticing while playing.
 // Kept apart from the practice generators so the board can load it without the maths typesetting.
 import { polyArea2, type Pt } from "./geometry";
-import { isOpen, readLadder, withFound as foundIn, withStars, type Ladder } from "./ladder";
+import { isOpen, readLadder, withFound as foundIn, withStars, type Ladder, type GameBase } from "./ladder";
 import { rng } from "./random";
 
 export type GeoPt = Pt;
@@ -214,20 +214,18 @@ export const GEO_LADDER: { level: 1 | 2 | 3; seed: number }[] = [
 export const ladderTask = (stage: number): ShapeTask => polyTask(GEO_LADDER[stage].level, rng(GEO_LADDER[stage].seed));
 
 /** What the geoboard last said: a puzzle done (with its stars), a miss, a shape that can't be marked, or something noticed. */
-export type GeoSaid = { kind: "right"; stars: number } | { kind: "wrong" } | { kind: "problem"; problem: PolyProblem } | { kind: "notice"; key: NoticeKey };
+export type GeoSaid = { kind: "right"; stars: number } | { kind: "wrong" } | { kind: "problem"; problem: PolyProblem };
 /**
  * The geoboard on the board: free play or the ladder's puzzle `stage`, the corners made, the misses and peeks so far,
  * and in free play the last whole shape made (cleared or not), to notice what the next one shares with it.
  */
-export type LiveGeoboard = {
+export type LiveGeoboard = GameBase<NoticeKey, GeoSaid> & {
   mode: "free" | "puzzle";
-  stage: number;
   pts: GeoPt[];
   misses: number;
   peeked: boolean;
   area: boolean;
   perim: boolean;
-  said: GeoSaid | null;
   last?: Pick<Measure, "area2" | "perim"> | null;
 };
 

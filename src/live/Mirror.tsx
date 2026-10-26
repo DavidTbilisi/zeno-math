@@ -3,67 +3,50 @@
 // with the shape folded over it, dashed, so the halves can be seen not to meet; if the lines chosen are right but some
 // are missing, the board says so. No line at all is an answer too. Right at the first check earns three stars, at the
 // second two. Nine puzzles open in turn (standing straight, turned, octagons, stars and shapes of squares), and the
-// endless run keeps a streak right at the first check.
-import { useState } from "react";
-import { withBest, withFound, withStars } from "../math/ladder";
-import { foldedPath, lineEnds, mirrorsOf, shapePath, SYM_LADDER, SYM_NOTICES, SYM_SIDE, symNotice, symNow, symStars, type LiveMirror, type SymLevel } from "../math/symmetry";
-import { play } from "./juice";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder } from "./ladderUi";
+// endless run keeps a streak right at the first check. Built on the game shell (useGame), which does the ladder, the
+// sounds and the cheer.
+import { foldedPath, lineEnds, mirrorsOf, shapePath, SYM_LADDER, SYM_NOTICES, SYM_SIDE, symNotice, symNow, symStars, type LiveMirror } from "../math/symmetry";
+import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
+import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const S = SYM_SIDE;
 const LEN = S / 2 - 14;
 
+const FRESH: Partial<LiveMirror> = { chosen: [], wrong: [], misses: 0, done: false, said: null };
+
 export function Mirror({ state: d, set, w: words, svgRef }: PieceProps<"mirror">) {
   const [w, g] = [words.mirror, words.game];
-  const [ladder, keep] = useLadder("zeno.mirror.v1", SYM_LADDER.length, SYM_NOTICES);
-  const [cheer, setCheer] = useState(0);
+  const game = useGame({ key: "zeno.mirror.v1", size: SYM_LADDER.length, notices: SYM_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const { task, lines } = symNow(d);
   const mirrors = mirrorsOf(task);
   const isMirror = (k: number) => mirrors.includes(lines[k]);
+  const stars = symStars(d.misses);
 
   const tap = (k: number) => {
     if (d.done) return;
-    play("snap");
     const chosen = d.chosen.includes(k) ? d.chosen.filter((c) => c !== k) : [...d.chosen, k].sort((a, b) => a - b);
-    set({ ...d, chosen, wrong: [], said: null });
+    game.tap({ chosen, wrong: [], said: null });
   };
   const check = () => {
     const wrong = d.chosen.filter((k) => !isMirror(k));
     const missing = mirrors.length - (d.chosen.length - wrong.length);
-    if (wrong.length || missing) {
-      play("miss");
-      return set({ ...d, wrong, misses: d.misses + 1, streak: 0, said: { kind: "wrong", more: !wrong.length } });
-    }
-    const stars = symStars(d.misses);
-    const streak = d.mode === "endless" && d.misses === 0 ? d.streak + 1 : d.mode === "endless" ? 0 : d.streak;
-    const key = symNotice(task, d.misses, streak);
-    let next = withBest(ladder, d.mode === "endless" ? streak : 0);
-    if (d.mode === "puzzle") next = withStars(next, d.stage, stars);
-    if (key && !next.found.includes(key)) next = withFound(next, key, SYM_NOTICES);
-    if (next !== ladder) keep(next);
-    play("good");
-    setTimeout(() => play("star"), 260);
-    setCheer((c) => c + 1);
-    set({ ...d, done: true, streak, said: key ? { kind: "notice", key } : null });
+    if (wrong.length || missing) return game.miss({ wrong, misses: d.misses + 1, said: { kind: "wrong", more: !wrong.length } });
+    game.win({ stars, clean: d.misses === 0, notice: (streak) => symNotice(task, d.misses, streak), patch: { done: true } });
   };
-  const fresh: Pick<LiveMirror, "chosen" | "wrong" | "misses" | "done" | "said"> = { chosen: [], wrong: [], misses: 0, done: false, said: null };
-  const go = (stage: number) => set({ ...d, ...fresh, mode: "puzzle", stage });
-  const endless = (l: SymLevel) => set({ ...d, ...fresh, mode: "endless", level: l, seed: newSeed() });
-  const onward = () => (d.mode === "endless" ? endless(d.level) : go(nextStage(d.stage, SYM_LADDER.length)));
 
-  const stars = symStars(d.misses);
-  const right = mirrors.length ? fill(w.right, { n: mirrors.length, stars: starText(stars) }) : fill(w.rightNone, { stars: starText(stars) });
-  const said =
-    d.said?.kind === "notice" ? `${w.notices[d.said.key]} ${right}`
-    : d.done ? right
-    : d.said?.kind === "wrong" ? (d.said.more ? w.more : w.wrongFold)
-    : d.chosen.length ? fill(w.chosen, { n: d.chosen.length })
-    : w.hint;
+  const right = `${mirrors.length ? fill(w.right, { n: mirrors.length, stars: starText(stars) }) : fill(w.rightNone, { stars: starText(stars) })}${d.mode === "puzzle" && stars === 1 ? ` ${g.oneStar}` : ""}`;
+  const line: Line =
+    d.said?.kind === "notice" ? { tone: "notice", text: `${w.notices[d.said.key]} ${right}` }
+    : d.done ? { tone: "ok", text: right }
+    : d.said?.kind === "wrong" ? { tone: "wrong", text: d.said.more ? w.more : w.wrongFold }
+    : { tone: "hint", text: d.chosen.length ? fill(w.chosen, { n: d.chosen.length }) : w.hint };
   return (
     <>
-      <GameNav ladder={ladder} mode={d.mode} stage={d.stage} level={d.level} streak={d.streak} onPuzzle={go} onEndless={endless} words={w} g={g} />
-      <div className="geo-stage-wrap">
+      <GameHead game={game} g={g}>
+        <Stake stars={stars} tries={d.misses} g={g} />
+      </GameHead>
+      <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg ref={svgRef} width={S} height={S} viewBox={`0 0 ${S} ${S}`} fontFamily={FONT} role="group" aria-label={w.hint}>
           <rect width={S} height={S} fill="#fff" />
           <path d={shapePath(task, S)} fill={d.done ? "#d3f9d8" : "#a5d8ff"} stroke={d.done ? "#2f9e44" : "#1971c2"} strokeWidth={3} strokeLinejoin="round" />
@@ -87,19 +70,11 @@ export function Mirror({ state: d, set, w: words, svgRef }: PieceProps<"mirror">
             );
           })}
         </svg>
-        {cheer > 0 && d.done && <Cheer key={cheer} text={starText(stars)} />}
-      </div>
-      <div className="live-bar">
-        {d.done ? (
-          <Onward mode={d.mode} stage={d.stage} size={SYM_LADDER.length} onClick={onward} g={g} />
-        ) : (
-          <button className="live-btn on" onClick={check}>{g.check}</button>
-        )}
-        <SoundToggle title={g.sound} />
-      </div>
-      <p className={d.said?.kind === "notice" ? "live-said notice" : d.done ? "live-said ok" : d.said?.kind === "wrong" ? "live-said" : "live-hint"}>
-        {said} <Found ladder={ladder} of={SYM_NOTICES.length} notices={w.notices} g={g} />
-      </p>
+      </Stage>
+      <GameActions game={game} g={g} done={d.done}>
+        <button className="live-btn on" onClick={check}>{g.check}</button>
+      </GameActions>
+      <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
 }

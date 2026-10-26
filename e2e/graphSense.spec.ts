@@ -114,9 +114,13 @@ test("connect the towns: the cheapest network built road by road, right first ti
     await road(first).dispatchEvent("click");
     await expect(road(first)).toHaveAttribute("aria-pressed", "true", { timeout: 1000 });
   }).toPass();
+  // One road only, checked: a town is left out, said in the status line, and a star is gone from those at stake.
+  await game.getByRole("button", { name: "Check" }).click();
+  await expect(game.getByRole("status").filter({ hasText: "Not every town is joined yet." })).toBeVisible();
+  await expect(game.locator(".live-stake")).toContainText("★★☆");
   for (const e of rest) await road(e).dispatchEvent("click");
   await game.getByRole("button", { name: "Check" }).click();
-  await expect(game.getByText(new RegExp(`Right! The cheapest network costs ${t.best.total}\\. ★★★`))).toBeVisible();
+  await expect(game.getByText(new RegExp(`Right! The cheapest network costs ${t.best.total}\\. ★★☆`))).toBeVisible();
 });
 
 test("connecting towns in practice: the cheapest roads taken loop or not are named, then the least total", async ({ page, request }) => {

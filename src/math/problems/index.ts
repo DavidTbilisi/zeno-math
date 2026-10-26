@@ -1,5 +1,5 @@
-// The interview problems, AlgoExpert's two hundred, by category: which there are, where each belongs, and the frames
-// of one for the inputs typed.
+// The interview problems, AlgoExpert's two hundred and a few classics it leaves out, by category: which there are, where
+// each belongs, and the frames of one for the inputs typed.
 import { ARRAYS } from "./arrays";
 import { BST } from "./bst";
 import { TREES } from "./trees";

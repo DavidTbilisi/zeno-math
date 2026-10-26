@@ -7,6 +7,7 @@
 // 6, and a multiple of 10 given without 2 and 5.
 import { divisibility, type MentalSpec } from "./mental";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type DivLevel = 1 | 2 | 3;
 /** The divisors offered at each level. */
@@ -114,21 +115,14 @@ export function divNotice(t: DivTask, misses: number, hinted: boolean, ms: numbe
   if (ms <= 5000) return "quick";
   return null;
 }
-export type LiveDivisible = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: DivLevel;
-  seed: number;
-  /** The divisors chosen, those shown not dividing since the last check, and the misses. */
-  chosen: number[];
-  wrong: number[];
-  misses: number;
-  /** The divisor whose test the hint showed, or null before it. */
-  hint: number | null;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: DivNotice } | { kind: "wrong"; more: boolean } | null;
-};
+export type LiveDivisible = EndlessGame<DivNotice, DivLevel, { kind: "wrong"; more: boolean }> &
+  TryGame & {
+    /** The divisors chosen, and those shown not dividing since the last check. */
+    chosen: number[];
+    wrong: number[];
+    /** The divisor whose test the hint showed, or null before it. */
+    hint: number | null;
+  };
 /** The number of a puzzle or of the endless run. */
 export const divNow = (d: Pick<LiveDivisible, "mode" | "stage" | "level" | "seed">): DivTask =>
   d.mode === "puzzle" ? divTask(DIV_LADDER[d.stage].level, rng(DIV_LADDER[d.stage].seed)) : divTask(d.level, rng(d.seed));

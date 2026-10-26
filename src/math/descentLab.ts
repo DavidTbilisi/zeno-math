@@ -6,6 +6,7 @@
 // valleys, and coasts over a hump with momentum; a try that fails says why (too slow, flew off, still bouncing, the
 // other valley, no slope). Free play takes any f(x). Kept free of React so it can be tested on its own.
 import { evalE, parseE } from "./expr";
+import type { GameBase } from "./ladder";
 import { niceStep } from "./scale";
 import { nf } from "./text";
 
@@ -144,9 +145,9 @@ export function descentNotice(p: DescentPuzzle | null, v: DescentVerdict): Desce
   return p.momentum ? "momentum" : null;
 }
 
-export type LiveDescent = {
+/** The game's state: the shared shape (no endless run: free play instead), what the ball and the dials are at, and the try. */
+export type LiveDescent = GameBase<DescentNotice, { kind: "wrong"; why: DescentSlip; notice?: DescentNotice }> & {
   mode: "puzzle" | "free";
-  stage: number;
   /** Free play's function of x. */
   expr: string;
   start: number;
@@ -156,8 +157,6 @@ export type LiveDescent = {
   steps: number;
   tries: number;
   done: boolean;
-  /** A notice for a try done, or why a try failed (and what it showed, the first time). */
-  said: { kind: "notice"; key: DescentNotice } | { kind: "wrong"; why: DescentSlip; notice?: DescentNotice } | null;
 };
 
 export const DESCENT_START: LiveDescent = { mode: "puzzle", stage: 0, expr: "x^4 - 3x^2 + x", start: 0, eta: DESCENT_LADDER[0].eta, beta: 0, steps: 0, tries: 0, done: false, said: null };

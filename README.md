@@ -801,7 +801,11 @@ UI in English, Russian and Georgian.
   among them are all laid out alike: along the top, the row of puzzles with their stars (each opens once the
   one before it has a star) and ∞ Endless (✏️ Free play on the geoboard); under it, the round's dots, or in the
   endless run its levels (easy, medium, hard) and the streak; along the bottom, the game's own buttons, then Check or
-  Next → (Next round after a round, Play again after the last), the sound switch and the discoveries so far:
+  Next → (Next round after a round), the sound switch and the discoveries so far. They answer alike too: a miss shakes
+  the picture with a red flash and says why, a right step glows, a puzzle done cheers in proportion to its stars (one
+  star is a pop with a nudge to try again, three a big burst), a streak of 5, 10, 25 or 50 gets a burst of its own, and
+  the ninth star brings up a panel with every discovery made and the way on (the endless run, free play, or again from
+  the first puzzle):
   - *Clock with hands*: drag either hand (they're geared, like a real clock), digital time on or off, snap to five
     minutes, 🎲 for a random time to read
   - *Dice to roll* (one to three, with the totals so far), a *spinner to spin* (2–10 sections, counts per section) and

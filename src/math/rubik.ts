@@ -272,24 +272,29 @@ export function dotAt(i: number, l: Layout): [number, number] {
   return nearest(meet(bandCentre(b, l), bandRadius(b, s.pos[b], l), bandCentre(c, l), bandRadius(c, s.pos[c], l)), ringCentre(s.face, l));
 }
 
-const wrapAngle = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
-
 /**
  * Where sticker i is a fraction t of the way through a move. The twelve stickers beside the face slide along their
- * circle of the face's band; the face's own turn round its crossing. The angle is added up a quarter turn at a time
- * (each step is less than half way round, so its direction is never in doubt).
+ * circle of the face's band; the face's own turn round its crossing. A quarter turn carries the sticker round a cycle
+ * of four places back to its own, and all of them go the same way: the way that gets round the circle in one lap. (The
+ * shorter way from one place to the next is not always it, as one gap can be more than half the circle.)
  */
 export function dotDuring(i: number, m: Move, t: number, l: Layout): [number, number] {
   const p = dotAt(i, l);
   if (!onLayer(m.face, i)) return p;
   const [cx, cy] = STICKERS[i].face === m.face ? ringCentre(m.face, l) : bandCentre(axisOf(m.face), l);
   const q = movePerm(m.turns === 3 ? inverse({ face: m.face, turns: 1 }) : { face: m.face, turns: 1 });
-  let [j, sweep] = [i, 0];
-  for (let k = 0; k < (m.turns === 2 ? 2 : 1); k++) {
-    const [a, b] = [dotAt(j, l), dotAt(q[j], l)];
-    sweep += wrapAngle(Math.atan2(b[1] - cy, b[0] - cx) - Math.atan2(a[1] - cy, a[0] - cx));
-    j = q[j];
-  }
+  const angleOf = (k: number) => {
+    const [x, y] = dotAt(k, l);
+    return Math.atan2(y - cy, x - cx);
+  };
+  const cycle = [i];
+  while (q[cycle[cycle.length - 1]] !== i) cycle.push(q[cycle[cycle.length - 1]]);
+  const turn = 2 * Math.PI;
+  // Each step's angle going one way round (dir 1) or the other (−1); the right way adds up to a single lap.
+  const steps = (dir: number) => cycle.map((k, n) => (((dir * (angleOf(cycle[(n + 1) % cycle.length]) - angleOf(k))) % turn) + turn) % turn);
+  const dir = steps(1).reduce((a, b) => a + b, 0) <= steps(-1).reduce((a, b) => a + b, 0) ? 1 : -1;
+  const sweep = dir * steps(dir).slice(0, m.turns === 2 ? 2 : 1).reduce((a, b) => a + b, 0);
+  const j = m.turns === 2 ? q[q[i]] : q[i];
   const end = dotAt(j, l);
   const [r0, r1] = [Math.hypot(p[0] - cx, p[1] - cy), Math.hypot(end[0] - cx, end[1] - cy)];
   const a = Math.atan2(p[1] - cy, p[0] - cx) + sweep * t;

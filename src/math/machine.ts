@@ -4,6 +4,7 @@
 // first step of algebra: the same thing done to any number. Two slips are named: doubling what goes in taken to
 // double what comes out (10 ↦ 2 × 17 when 5 ↦ 17), and undoing the steps in the wrong order (47 ÷ 3 − 2).
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type MachineLevel = 1 | 2 | 3;
 /** out = mul × in + add. */
@@ -115,20 +116,13 @@ export function machineNotice(t: MachineTask, tried: number[], misses: number, s
   if (tried.includes(0) && t.rule.add !== 0) return "zero";
   return null;
 }
-export type LiveMachine = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: MachineLevel;
-  seed: number;
-  /** The numbers put in, in the order they were. */
-  tried: number[];
-  /** The answer as typed so far. */
-  typed: string;
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: MachineNotice } | { kind: "wrong"; v: number } | null;
-};
+export type LiveMachine = EndlessGame<MachineNotice, MachineLevel, { kind: "wrong"; v: number }> &
+  TryGame & {
+    /** The numbers put in, in the order they were. */
+    tried: number[];
+    /** The answer as typed so far. */
+    typed: string;
+  };
 export const machineNow = (d: Pick<LiveMachine, "mode" | "stage" | "level" | "seed">): MachineTask =>
   d.mode === "puzzle" ? machineTask(MACHINE_LADDER[d.stage].level, rng(MACHINE_LADDER[d.stage].seed)) : machineTask(d.level, rng(d.seed));
 

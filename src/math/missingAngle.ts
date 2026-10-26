@@ -6,6 +6,7 @@
 // two base angles are the slips named.
 import { arcPath, toward, withSteps } from "./angleGuess";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type HuntLevel = 1 | 2 | 3;
 /**
@@ -215,17 +216,10 @@ export function huntNotice(t: HuntTask, misses: number, streak: number): HuntNot
   if (t.v < 30) return "tiny";
   return null;
 }
-export type LiveAngleHunt = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: HuntLevel;
-  seed: number;
-  typed: string;
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: HuntNotice } | { kind: "wrong"; v: number } | null;
-};
+export type LiveAngleHunt = EndlessGame<HuntNotice, HuntLevel, { kind: "wrong"; v: number }> &
+  TryGame & {
+    typed: string;
+  };
 export const huntNow = (d: Pick<LiveAngleHunt, "mode" | "stage" | "level" | "seed">): HuntTask =>
   d.mode === "puzzle" ? huntTask(HUNT_LADDER[d.stage].level, rng(HUNT_LADDER[d.stage].seed)) : huntTask(d.level, rng(d.seed));
 

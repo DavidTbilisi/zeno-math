@@ -8,6 +8,7 @@
 // of the graphs with inputs changed by hand, every gradient shown, and a nudge of 0.01 to an input to show what its
 // gradient means. Kept free of React so it can be tested on its own.
 import { nf } from "./text";
+import type { GameBase } from "./ladder";
 
 export type BpOp = "add" | "sub" | "mul" | "sq" | "sig" | "relu" | "nln";
 /** A node: an input, or an operation on the nodes in `args`; where it is drawn, by column and row. Its id is its name. */
@@ -157,19 +158,17 @@ export function judgeBp(q: BpPuzzle, answers: Record<string, string>): BpVerdict
 /** Stars: done at the first try three, at the second two, else one. */
 export const bpStars = (tries: number) => (tries === 0 ? 3 : tries === 1 ? 2 : 1);
 
-export type LiveBackprop = {
+export type LiveBackprop = GameBase<BpNotice, { kind: "wrong"; why: BpSlip }> & {
   mode: "puzzle" | "free";
-  stage: number;
   /** Free play's graph, its inputs' values, and the input chosen to change. */
   graph: BpGraphId;
   values: Record<string, number>;
   sel: string | null;
   /** What has been typed in each box. */
   answers: Record<string, string>;
-  /** Tries that failed on this puzzle, whether it is done, and what was said about the last check. */
+  /** Tries that failed on this puzzle, and whether it is done. */
   tries: number;
   done: boolean;
-  said: { kind: "notice"; key: BpNotice } | { kind: "wrong"; why: BpSlip } | null;
 };
 
 export const BP_START: LiveBackprop = { mode: "puzzle", stage: 0, graph: "classic", values: { ...BP_GRAPHS[0].values }, sel: null, answers: {}, tries: 0, done: false, said: null };

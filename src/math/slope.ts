@@ -6,6 +6,7 @@
 import { withSteps } from "./angleGuess";
 import { gridAt, gridDot, gridSide, gridSvg, samePt, signed, type Grid, type Pt } from "./plotPoint";
 import { rng } from "./random";
+import type { EndlessGame, TryGame } from "./ladder";
 
 export type SlopeLevel = 1 | 2 | 3;
 /** A gradient rise/run in lowest terms (run > 0), and a point A that a step of it from fits on the grid. */
@@ -166,18 +167,11 @@ export function slopeNotice(t: SlopeTask, b: Pt, misses: number, streak: number)
   if (t.rise < 0) return "negative";
   return null;
 }
-export type LiveSlope = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: SlopeLevel;
-  seed: number;
-  /** The second point tapped, the misses so far and whether the line is right. */
-  b: Pt | null;
-  misses: number;
-  done: boolean;
-  streak: number;
-  said: { kind: "notice"; key: SlopeNotice } | { kind: "wrong"; why: "upright" | "flipped" | "sign" | "steep" } | null;
-};
+export type LiveSlope = EndlessGame<SlopeNotice, SlopeLevel, { kind: "wrong"; why: "upright" | "flipped" | "sign" | "steep" }> &
+  TryGame & {
+    /** The second point tapped. */
+    b: Pt | null;
+  };
 export const slopeNow = (d: Pick<LiveSlope, "mode" | "stage" | "level" | "seed">): SlopeTask =>
   d.mode === "puzzle" ? slopeTask(SLOPE_LADDER[d.stage].level, rng(SLOPE_LADDER[d.stage].seed)) : slopeTask(d.level, rng(d.seed));
 

@@ -8,6 +8,7 @@
 // and points dragged until PC1 keeps 95 % (one number per point is enough). Free play takes any points. Kept free of
 // React so it can be tested on its own.
 import { nf } from "./text";
+import type { GameBase } from "./ladder";
 
 export type Pt = [number, number];
 /** How a point's distance from the line is measured: at right angles to it (PCA), or straight up (least squares). */
@@ -171,9 +172,8 @@ export function judgePca(p: PcaPuzzle, t: PcaTry): PcaVerdict {
 /** Stars: done at the first try three, at the second two, else one. */
 export const pcaStars = (tries: number) => (tries === 0 ? 3 : tries === 1 ? 2 : 1);
 
-export type LivePca = {
+export type LivePca = GameBase<PcaNotice, { kind: "wrong"; why: PcaSlip }> & {
   mode: "puzzle" | "free";
-  stage: number;
   pts: Pt[];
   /** The player's line: its angle in degrees and its middle. */
   angle: number;
@@ -183,10 +183,9 @@ export type LivePca = {
   /** Free play's choices: how errors are measured, and whether PC1 is drawn. */
   errors: ErrorKind;
   showBest: boolean;
-  /** Tries that failed on this puzzle, whether it is done, and what was said about the last check. */
+  /** Tries that failed on this puzzle, and whether it is done. */
   tries: number;
   done: boolean;
-  said: { kind: "notice"; key: PcaNotice } | { kind: "wrong"; why: PcaSlip } | null;
 };
 
 /** Free play's cloud. */

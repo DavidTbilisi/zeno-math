@@ -833,4 +833,46 @@ export const DP: ProblemSet<"dp"> = {
       return done(frames, w.answerNo);
     },
   },
+
+  burstBalloons: {
+    level: 4,
+    example: ["2, 4, 1, 3, 5"],
+    solve: ([a], w, e) => {
+      const xs = nums(a, e, { max: 6, whole: true, min: 0 });
+      const big = xs.find((x) => x > 9);
+      if (big !== undefined) throw new Error(fill(e.atMost, { s: show(big), n: 9 }));
+      const n = xs.length;
+      /** A balloon's number, with a 1 past either end. */
+      const v = (i: number) => (i < 0 || i >= n ? 1 : xs[i]);
+      // best[i][j]: the most coins for balloons i..j alone; last[i][j]: the one to burst last for it.
+      const best = grid2<number | null>(n, n, () => null);
+      const last = grid2(n, n, () => -1);
+      const get = (i: number, j: number) => (i > j ? 0 : best[i][j]!);
+      const pic = (role: (r: number, c: number) => Role) => ({
+        vals: best.map((r) => r.map((x) => (x === null ? "" : x))),
+        roles: grid2<Role>(n, n, role),
+        rowHeads: xs.map(show),
+        colHeads: xs.map(show),
+      });
+      const frames: Frame[] = [{ note: w.start, mat: pic(() => "idle") }];
+      for (let len = 1; len <= n; len++)
+        for (let i = 0; i + len - 1 < n; i++) {
+          const j = i + len - 1;
+          for (let k = i; k <= j; k++) {
+            const c = get(i, k - 1) + v(i - 1) * v(k) * v(j + 1) + get(k + 1, j);
+            if (best[i][j] === null || c > best[i][j]!) (best[i][j] = c), (last[i][j] = k);
+          }
+          const k = last[i][j];
+          frames.push({
+            note: fill(w.cell, { list: listText(xs.slice(i, j + 1)), b: show(xs[k]), l: show(v(i - 1)), r: show(v(j + 1)), left: get(i, k - 1), right: get(k + 1, j), c: best[i][j]! }),
+            mat: pic((r, c) => (r === i && c === j ? "key" : (r === i && c === k - 1) || (r === k + 1 && c === j) ? "compare" : best[r][c] === null ? "idle" : "plain")),
+          });
+        }
+      // The two sides are burst before the one that goes last, each on its own.
+      const order = (i: number, j: number): number[] => (i > j ? [] : [...order(i, last[i][j] - 1), ...order(last[i][j] + 1, j), last[i][j]]);
+      return done(frames, fill(w.answer, { c: best[0][n - 1]!, order: order(0, n - 1).map((k) => show(xs[k])).join(" → ") }), {
+        mat: pic((r, c) => (r === 0 && c === n - 1 ? "sorted" : "plain")),
+      });
+    },
+  },
 };

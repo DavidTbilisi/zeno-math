@@ -4,6 +4,7 @@
 // question picks the expression equal to one from four, whose wrong ones are the slips named: unlike terms joined
 // (3x + 4 as 7x), only the first term in the bracket multiplied (3x + 2 for 3(x + 2)), and x · x taken for 2x.
 import { rng } from "./random";
+import type { EndlessGame } from "./ladder";
 
 export type ExprLevel = 1 | 2 | 3;
 /** An expression as written and what it is: the numbers of 1, x and x² it comes to. */
@@ -241,17 +242,11 @@ export function exprNotice(level: ExprLevel, cleared: boolean, misses: number, s
   if (!cleared || misses > 0) return null;
   return level === 3 ? "powers" : level === 2 ? "nearMiss" : "clean";
 }
-export type LiveExprMatch = {
-  mode: "puzzle" | "endless";
-  stage: number;
-  level: ExprLevel;
-  seed: number;
+export type LiveExprMatch = EndlessGame<ExprNotice, ExprLevel, { kind: "miss"; a: number; b: number }> & {
   /** The places of the cards cleared, the one picked first (if any), and the misses so far. */
   cleared: number[];
   picked: number[];
   misses: number;
-  streak: number;
-  said: { kind: "notice"; key: ExprNotice } | { kind: "done"; stars: number } | { kind: "miss"; a: number; b: number } | null;
 };
 export function exprNow(d: Pick<LiveExprMatch, "mode" | "stage" | "level" | "seed">): ExprCard[] {
   const [level, seed] = d.mode === "puzzle" ? [EXPR_LADDER[d.stage].level, EXPR_LADDER[d.stage].seed] : [d.level, d.seed];

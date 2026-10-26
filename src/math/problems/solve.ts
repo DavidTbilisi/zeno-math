@@ -62,6 +62,9 @@ const ROWS: Record<CodingId, Row> = {
   minimumAreaRectangle: ["hash", "O(n⁴)", "O(n²)", "O(n)"],
   lineThroughPoints: ["hash math", "O(n³)", "O(n²)", "O(n)"],
   largestPark: ["monoStack precompute", "O(w²·h²)", "O(w·h)", "O(w)"],
+  subarraysSumK: ["precompute hash", "O(n²)", "O(n)", "O(n)"],
+  singleNumber: ["math", "O(n²)", "O(n)", "O(1)"],
+  slidingWindowMaximum: ["window monoStack", "O(n·k)", "O(n)", "O(k)"],
   // Binary search trees
   findClosestValueInBst: ["bstWalk", "O(n)", "O(log n)", "O(1)"],
   bstConstruction: ["bstWalk design", "", "O(log n)", "O(1)"],
@@ -115,6 +118,7 @@ const ROWS: Record<CodingId, Row> = {
   longestIncreasingSubsequence: ["binarySearch dp", "O(n²)", "O(n log n)", "O(n)"],
   longestStringChain: ["dp hash sorting", "", "O(n·m²)", "O(n·m)"],
   squareOfZeroes: ["precompute dp", "O(n⁴)", "O(n³)", "O(n²)"],
+  burstBalloons: ["dp", "O(n!)", "O(n³)", "O(n²)"],
   // Famous algorithms
   kadanesAlgorithm: ["dp scan", "O(n²)", "O(n)", "O(1)"],
   stableInternships: ["greedy", "O(n!)", "O(n²)", "O(n²)"],
@@ -147,6 +151,7 @@ const ROWS: Record<CodingId, Row> = {
   optimalFreelancing: ["greedy sorting", "", "O(n log n)", "O(1)"],
   taskAssignment: ["greedy sorting twoPointers", "O(n!)", "O(n log n)", "O(n)"],
   validStartingCity: ["greedy", "O(n²)", "O(n)", "O(1)"],
+  nonOverlappingIntervals: ["greedy intervals sorting", "O(2ⁿ)", "O(n log n)", "O(1)"],
   // Heaps
   minHeapConstruction: ["heap design", "", "O(n)", "O(1)"],
   continuousMedian: ["heap", "O(n)", "O(log n)", "O(n)"],

@@ -3,16 +3,16 @@
 // works a coding question out on a ladder instead: the example by hand, the technique, the brute force's cost, a plan
 // of one's own, the trace with a question before each step, and the solution's cost. The frames come from
 // math/problems and are drawn by the same scenes as the algorithm patterns.
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import type { LiveProblems } from "../math/live";
-import type { Frame, Trace } from "../math/patternSteps";
+import type { Trace } from "../math/patternSteps";
 import { CATEGORIES, isProblemId, PROBLEM_IDS, SYSTEM_CATEGORIES, problemInfo, problemsIn, problemTrace, problemWords, type Category, type ProblemId } from "../math/problems/index";
 import { depth } from "../math/problems/core";
 import { costQuestion, DONE, isCoding, rungsOf, solveInfo, techniqueQuestion, withAsks, type Technique } from "../math/problems/solve";
 import { archScene, cellsScene, graphScene, gridScene, listScene, Markers, matScene, rowsScene, spansScene, SW, treeScene, type Scene } from "./scenes";
+import { stackScenes, StepBar, StepSaid, useStepper } from "./stepper";
 import { fill, FONT, Toggle, type PieceProps } from "./ui";
 
-const PLAY_MS = 1100;
 /** The ladder's rungs that the piece treats apart: the plan, the trace, the cost (math/problems/solve RUNGS). */
 const PLAN = 3;
 const TRACE = 4;
@@ -41,21 +41,27 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
     }
   }, [id, typed, w, s.whatNext]);
   const frames = "trace" in result ? result.trace.frames : [];
-  const last = Math.max(0, frames.length - 1);
+  const asks = frames.some((f) => f.ask);
 
-  const [playing, setPlaying] = useState(false);
-  const [said, setSaid] = useState<{ right: boolean; why?: string } | null>(null);
   const [reply, setReply] = useState<{ text: string; right: boolean } | null>(null);
   const [marksOf, setMarks] = useState<Marks>(() => fresh(id));
   const marks = marksOf.id === id ? marksOf : fresh(id);
-  // The latest state and setter for the play timer, which the board's re-renders mustn't restart.
-  const latest = useRef({ state, set });
-  latest.current = { state, set };
-
   const patch = (p: Partial<LiveProblems>) => set({ ...state, ...p });
+
+  // ——— The ladder ———
+
+  const coding = isCoding(id);
+  const solving = !!state.solve && coding;
+  const rungs = coding ? rungsOf(id) : [];
+  const rung = !solving ? -1 : state.rung === DONE || rungs.includes(state.rung ?? -1) ? state.rung! : rungs[0];
+  // Before the trace the picture is the example as given; after it, as the solution leaves it. On the ladder the
+  // trace asks before every step.
+  const st = useStepper(frames, solving && rung < TRACE ? 0 : solving && rung > TRACE ? frames.length : state.step, solving ? rung === TRACE : quiz, (k) => patch({ step: k }));
+  const { k, last, frame } = st;
+  const stepping = !solving || rung === TRACE;
+
   const hush = () => {
-    setPlaying(false);
-    setSaid(null);
+    st.stop();
     setReply(null);
   };
   /** New inputs (or a new problem) start again from the beginning. */
@@ -64,13 +70,6 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
     patch({ ...p, step: 0 });
   };
   const pick = (next: ProblemId) => restart({ id: next, inputs: [...problemInfo(next).example], rung: 0 });
-
-  // ——— The ladder ———
-
-  const coding = isCoding(id);
-  const solving = !!state.solve && coding;
-  const rungs = coding ? rungsOf(id) : [];
-  const rung = !solving ? -1 : state.rung === DONE || rungs.includes(state.rung ?? -1) ? state.rung! : rungs[0];
   const toRung = (r: number) => {
     hush();
     patch({ rung: r, step: 0 });
@@ -79,28 +78,6 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
   const mark = (key: string, right: boolean) =>
     setMarks({ ...marks, first: { [key]: right, ...marks.first }, solved: right ? { ...marks.solved, [key]: true } : marks.solved });
   const open = (key: string) => setMarks({ ...marks, shown: { ...marks.shown, [key]: true } });
-
-  // Before the trace the picture is the example as given; after it, as the solution leaves it.
-  const k = solving && rung < TRACE ? 0 : solving && rung > TRACE ? last : Math.min(Math.max(0, state.step), last);
-  const frame: Frame | undefined = frames[k];
-  const asks = frames.some((f) => f.ask);
-  const asking = (solving ? rung === TRACE : quiz) && !!frame?.ask && k < last;
-  const stepping = !solving || rung === TRACE;
-
-  const go = (step: number) => {
-    setSaid(null);
-    patch({ step: Math.max(0, Math.min(last, step)) });
-  };
-
-  useEffect(() => {
-    if (!playing) return;
-    if (k >= last || asking) {
-      setPlaying(false);
-      return;
-    }
-    const t = setTimeout(() => latest.current.set({ ...latest.current.state, step: k + 1 }), PLAY_MS);
-    return () => clearTimeout(t);
-  }, [playing, k, last, asking]);
 
   // ——— The picture ———
 
@@ -120,14 +97,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
     if (frame.spans) scenes.push(spansScene(frames, frame));
     if (frames.some((f) => f.rows?.length)) scenes.push(rowsScene(frames, frame));
   }
-  const GAP = 14;
-  let height = 4;
-  const drawn = scenes.map((sc, i) => {
-    const el = <g key={i}>{sc.draw(height)}</g>;
-    height += sc.h + GAP;
-    return el;
-  });
-  height = Math.max(120, height - GAP + 4);
+  const { height, drawn } = stackScenes(scenes);
 
   // ——— The ladder's panel ———
 
@@ -291,7 +261,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
             on={quiz}
             title={w.quizTip}
             onClick={() => {
-              setSaid(null);
+              st.setSaid(null);
               patch({ quiz: !quiz });
             }}
           >🙋 {w.quiz}</Toggle>
@@ -331,63 +301,14 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
           {drawn}
         </svg>
       </div>
-      {stepping && (
-        <div className="live-bar">
-          <button className="live-btn" disabled={k === 0} title={w.first} aria-label={w.first} onClick={() => go(0)}>⏮</button>
-          <button className="live-btn" disabled={k === 0} title={w.prev} aria-label={w.prev} onClick={() => go(k - 1)}>◀</button>
-          <button
-            className="live-btn primary"
-            disabled={!frames.length || asking}
-            title={playing ? w.pause : w.play}
-            aria-label={playing ? w.pause : w.play}
-            onClick={() => {
-              if (playing) return setPlaying(false);
-              if (k >= last) go(0);
-              setPlaying(true);
-            }}
-          >
-            {playing ? "⏸" : "⏵"} {playing ? w.pause : w.play}
-          </button>
-          <button className="live-btn" disabled={k >= last || asking} title={w.next} aria-label={w.next} onClick={() => go(k + 1)}>▶</button>
-          <button className="live-btn" disabled={k >= last || (solving && asking)} title={w.last} aria-label={w.last} onClick={() => go(last)}>⏭</button>
-          {frames.length > 0 && <span className="live-note">{fill(w.step, { k, n: last })}</span>}
-        </div>
-      )}
+      {stepping && <StepBar s={st} w={w} frames={frames} lockLast={solving} />}
       {"error" in result ? (
         <p className="live-said">{result.error}</p>
       ) : (
         <>
           {panel}
           {reply && <p className={`live-said${reply.right ? " ok" : ""}`}>{reply.text}</p>}
-          {frame && stepping && (
-            <div className="live-pattern-said">
-              <p className={`live-said ${k === last ? "ok" : "info"}`}>{frame.note}</p>
-              {asking ? (
-                <div className={`live-bar${solving ? " live-solve-options" : ""}`}>
-                  <span className="live-pattern-q">{frame.ask!.q}</span>
-                  {frame.ask!.options.map((o, i) => (
-                    <button
-                      key={i}
-                      className="live-btn"
-                      onClick={() => {
-                        const right = i === frame.ask!.answer;
-                        if (solving) mark(`step:${k}`, right);
-                        if (!right) return setSaid({ right: false });
-                        patch({ step: k + 1 });
-                        setSaid({ right: true, why: frame.then });
-                      }}
-                    >
-                      {o}
-                    </button>
-                  ))}
-                  {said && !said.right && <span className="live-said">{w.wrong}</span>}
-                </div>
-              ) : (
-                frame.then && k < last && <p className="live-said info live-pattern-then">→ {frame.then}</p>
-              )}
-              {said?.right && <p className="live-said ok">{w.right} {said.why}</p>}
-            </div>
-          )}
+          {stepping && <StepSaid s={st} w={w} error={null} setStep={(k) => patch({ step: k })} onAnswer={solving ? (right) => mark(`step:${k}`, right) : undefined} optionsClass={solving ? "live-solve-options" : undefined} />}
         </>
       )}
       {stepping && <p className="live-hint">{w.hint}</p>}

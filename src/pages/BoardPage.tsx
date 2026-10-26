@@ -98,6 +98,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
     { kind: "rubik", icon: "🧩", name: "liveRubik" },
     { kind: "patterns", icon: "👆", name: "livePatterns" },
     { kind: "problems", icon: "🧑‍💻", name: "liveProblems" },
+    { kind: "solver", icon: "🧮", name: "liveSolver" },
   ],
 };
 
