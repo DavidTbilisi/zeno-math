@@ -258,6 +258,10 @@ UI in English, Russian and Georgian.
   - *Arguments*: validity by truth table with the counterexample row, and the rule named — modus ponens / tollens,
     hypothetical and disjunctive syllogism, transposition, dilemma — or the fallacy (affirming the consequent,
     denying the antecedent)
+  - *Truth trees*: the premises and the negated conclusion broken into their parts, ∧-like formulas stacked and
+    ∨-like ones split, every line numbered with the row and rule it came from and ticked once used; branches close
+    (✗, with the two rows) or stay open (○, with the row of the truth table they give). Leave the premises empty to
+    test a tautology, or the conclusion empty to test whether the formulas can all be true
   - *Syllogisms*: two premises in plain words (All / No / Some / Some … not, in English, Russian or Georgian) or
     just a mood and figure (`EIO-2`, `Festino`); the terms found and the major premise put first, three-circle Venn
     diagrams of the premises and the conclusion with distributed terms underlined, the medieval name, the rule that
@@ -274,6 +278,27 @@ UI in English, Russian and Georgian.
     together with its contrapositive, what is forced and ruled out before any question, an "if …" assumption worked
     on a copy of the board, and a sweep of the answer options showing which constraint kills each one; options
     that are statements (`C@Kala`) are marked must be true / must be false / could be / fixes the whole board
+  - *Logic grids*: matching puzzles of two to four categories (owners, years, breeds, names), the categories and
+    clues typed in a small notation — `Anita = beagle`, `Anita ≠ 2009`, `Molly < Toby`, `Riley = beagle + 1`,
+    `Barbara ≠ beagle ≠ 2009` (all different), `{Douglas, Sam} = {2006, collie}` (one each), joined with and, or,
+    not, → — and worked out a step at a time the way a person does: "only one left" in a row, copying a ● pair's
+    marks across, each clue on its own and then with the marks so far, and, when nothing moves, supposing a pair and
+    finding the clue it breaks. Each step lights its marks on the staircase grid, with the candidates still open
+    underneath, by year or price when there is a category of numbers; at the end, solved, or how many answers the
+    clues allow
+  - *Mill's methods*: finding a cause three ways. Agreement and difference: a table of cases (`Ann: oysters, salad,
+    cake -> sick`), drawn with a ● for each factor, the column every case with the effect shares (blue; green when
+    it is also in none of the others, the joint method) and brackets joining two cases that differ in one factor
+    only, with what is necessary, what makes the difference and what is sufficient so far — and Mill's warning that
+    a factor nobody listed fools them all. Concomitant variation: rows of numbers, each factor drawn against the
+    effect with its correlation, and the warning that two factors moving together may share a third cause (ice
+    cream and drowning). Residues: the whole less the known parts as a bar model, the rest left to the factor named
+  - *Square of opposition*: one statement (All / No / Some / Some … not, in any of the three languages, or just A,
+    E, I, O) given true or false, and the square: all four statements on its terms, each true, false or open, with
+    the link that settles it — contradictories, contraries, subcontraries, subalterns — and, read the modern way
+    where a term may be empty, only the diagonals left standing. Under it, the converse, obverse and contrapositive,
+    with what still follows by limitation (All S are P → Some P are S). Every verdict comes from the Venn regions of
+    the two terms
   - *Truth-tellers & liars*: Smullyan's islands solved by checking X ↔ (what X says) in every row
   - *Sets*: Venn diagrams (1–3 sets) of ∪ ∩ ∖ Δ ′ expressions, two expressions compared, and x ∈ … as logic
   - The examples include the 2025 NAEC master's exam in logical reasoning (variant I): the grouping and
@@ -1372,6 +1397,11 @@ src/math/logic.ts         logic: parser, truth tables, equivalence, Karnaugh map
 src/math/logicArgue.ts    strengthen / weaken: the unstated premise, pattern cards, options judged by support
 src/math/logicPuzzles.ts  constraint boards (bins / slots, sweep, "if …") and truth-teller / liar puzzles
 src/math/logicSyllogism.ts categorical syllogisms: mood / figure, three-circle Venn, rules, what follows
+src/math/logicSquare.ts   the square of opposition and immediate inferences, from the Venn regions of two terms
+src/math/logicTree.ts     truth trees (semantic tableaux): stacking and splitting rules, closed and open branches
+src/math/logicGrid.ts     logic grids: categories and clues, every answer counted, steps worked out as a person does
+src/math/logicMill.ts     Mill's methods: agreement, difference and joint method on a table of cases, concomitant
+                          variation as scatters with r, residues as a bar model
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
 src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
