@@ -11,7 +11,7 @@ import { CODING_IDS, costQuestion, DONE, isCoding, RUNGS, rungsOf, solveInfo, st
 
 test("every coding question, and only those, has its techniques and costs", () => {
   const coding = PROBLEM_IDS.filter((id) => !SYSTEM_CATEGORIES.includes(problemInfo(id).cat));
-  assert.equal(coding.length, 200);
+  assert.equal(coding.length, 205);
   assert.deepEqual(new Set(CODING_IDS), new Set(coding));
   assert.equal(isCoding("lruCache"), true);
   assert.equal(isCoding("urlShortener"), false);
@@ -98,7 +98,7 @@ test("before every step, the question offers what really happens next, and other
       else assert.ok(frames.some((f) => f.ask), `${id} (${lang}): asks for a number`);
       if (lang === "en" && frames.some((f) => f.ask)) asking++;
     }
-  assert.equal(asking, 200);
+  assert.equal(asking, 205);
 });
 
 test("the ladder's words fill their placeholders in every language", () => {
