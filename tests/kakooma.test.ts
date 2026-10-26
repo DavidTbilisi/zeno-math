@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, LEVELS, trapInputs } from "../src/math/practice.ts";
 import { rng } from "../src/math/random.ts";
-import { KAK, KAK_LADDER, KAK_RECENT, kakGrid, kakNotice, kakNow, kakOpen, kakSet, kakSlip, kakStars, kakSum, kakTask, kakTraps, partsOf, ways, type KakSet } from "../src/math/kakooma.ts";
+import { KAK, KAK_LADDER, KAK_RECENT, KAK_RUN, KAK_SIGNS, kakFact, kakFactSlip, kakGrid, kakIsFact, opOf, kakNotice, kakNow, kakOpen, kakSet, kakSlip, kakStars, kakSum, kakTask, kakTraps, partsOf, ways, type KakSet } from "../src/math/kakooma.ts";
 import { mark } from "../server/checker.ts";
 
 const w = en.pracWords;
@@ -48,6 +48,35 @@ test("the endless run keeps clear of its last sets: not their two parts again, n
       recent = [...recent, s.parts].slice(-KAK_RECENT);
     }
   }
+});
+
+test("the endless run asks every sign at every level: differences from sums, quotients from products", () => {
+  for (const sign of KAK_SIGNS)
+    for (const level of LEVELS) {
+      const { op, size, lo, hi, top } = KAK_RUN[opOf(sign)][level];
+      for (let seed = 1; seed <= 200; seed++) {
+        const t = kakNow({ mode: "endless", stage: 0, level, seed, sign });
+        const [s] = t.sets;
+        assert.equal(t.sign, sign);
+        assert.equal(s.op, op);
+        assert.equal(new Set(s.nums).size, size, `${sign} ${level}: ${s.nums}`);
+        assert.ok(s.nums.every((n) => n >= lo && n <= hi) && s.parts[1] <= top, `${sign} ${level}: ${s.nums}`);
+        assert.deepEqual(ways(s.nums, op), [[s.answer, ...s.parts]], `${sign} ${level}: ${s.nums}`);
+      }
+    }
+  // Until a sign is picked, the ladder's: sums to medium, products on hard.
+  assert.equal(kakNow({ mode: "endless", stage: 0, level: 2, seed: 4 }).sign, "+");
+  assert.equal(kakNow({ mode: "endless", stage: 0, level: 3, seed: 4 }).sign, "*");
+});
+
+test("a difference or quotient: the fact's three numbers tapped, in any order; three others are read back", () => {
+  const s = set([5, 9, 4, 8]);
+  assert.deepEqual([kakFact(s, "+"), kakFact(s, "-")], ["9 = 4 + 5", "9 − 5 = 4"]);
+  assert.ok(kakIsFact(s, [4, 9, 5]) && !kakIsFact(s, [4, 9]) && !kakIsFact(s, [4, 8, 9]));
+  assert.deepEqual(kakFactSlip(s, [4, 8, 9]), { id: "noDiff", vars: { a: 9, b: 8, c: 4, d: 12 } });
+  const p = set([7, 49, 6, 13, 42, 60], "*");
+  assert.equal(kakFact(p, "/"), "42 ÷ 7 = 6");
+  assert.deepEqual(kakFactSlip(p, [60, 6, 7]), { id: "noQuot", vars: { a: 60, b: 7, c: 6, d: 42 } });
 });
 
 test("a set made to an answer has it, and partsOf lists the ways of making a number", () => {
@@ -110,10 +139,10 @@ test("the board: stars, the middle opening last, the notices, the ladder", () =>
   const g = kakTask(2, true, 5);
   assert.equal(g.sets.length, 5);
   assert.ok([0, 1, 2, 3].every((i) => kakOpen(g, [], i)) && !kakOpen(g, [0, 1, 2], 4) && kakOpen(g, [3, 1, 0, 2], 4));
-  const one = { level: 1 as const, sets: [set([7, 2, 5, 6])] };
+  const one = { level: 1 as const, sign: "+" as const, sets: [set([7, 2, 5, 6])] };
   assert.ok(kakOpen(one, [], 0));
   assert.equal(kakNotice(g, 0, false, 60000, 0), "grid");
-  assert.equal(kakNotice({ level: 2, sets: [set([5, 9, 4, 8])] }, 0, false, 9000, 0), "notFooled");
+  assert.equal(kakNotice({ level: 2, sign: "+", sets: [set([5, 9, 4, 8])] }, 0, false, 9000, 0), "notFooled");
   assert.equal(kakNotice(one, 0, false, 3000, 1), "quick");
   assert.equal(kakNotice(one, 0, false, 9000, 1), null);
   assert.equal(kakNotice(one, 1, false, 3000, 0), null);
