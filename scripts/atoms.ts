@@ -1,5 +1,5 @@
 // Skills made of atoms (src/model/atoms.ts): H2's comparison in a world where every skill is k atoms, each learnt as
-// BKT assumes, asked for in turn. For each number of atoms and learning rate, BKT on the skill, EMA and the streak rule
+// BKT assumes, asked for at random. For each number of atoms and learning rate, BKT on the skill, EMA and the streak rule
 // as H2 ran them, then BKT on each atom, which knows which atom each question asked for, started afresh in every skill
 // and carried from skill to skill; and how well each score after every answer matches the truth (every atom known).
 // With --uses above 1 skills share atoms, each atom in that many skills. With --split above 1 the model is finer than
@@ -98,7 +98,7 @@ function report() {
   const θ = (t: number | null) => (t === null ? "never" : String(t));
   const chosen = (a: AtPrecision) => (a.rule ? a.rule.replace(/^.* θ /, "") : "never");
   const setting = (r: Result) => `${r.atoms} atom${r.atoms > 1 ? "s" : ""}${r.perQuestion > 1 ? `, ${r.perQuestion} a question` : ""}${r.uses > 1 ? `, each in ${r.uses} skills` : ""}${r.split > 1 ? `, split ${r.split}` : ""}, rate ${r.learnRate}`;
-  console.log(`${base.students} simulated learners × ${base.skills} skills × ${base.length} questions; each skill is k atoms asked for in turn; ${pct(testShare)} of learners held out, seed ${base.seed}`);
+  console.log(`${base.students} simulated learners × ${base.skills} skills × ${base.length} questions; each skill is k atoms, each question asking for one at random; ${pct(testShare)} of learners held out, seed ${base.seed}`);
   console.log(`the answers each method needs for its declarations to be right at least ${pct(target)} of the time (threshold set on the training learners, up to ${thresholds === FINE_THRESHOLDS ? "0.9999" : "1 − 10^−15"})`);
   for (const r of results) {
     const shared = r.uses > 1 ? `, each in ${r.uses} skills` : "";
