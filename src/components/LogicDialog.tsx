@@ -3,6 +3,9 @@ import { useI18n } from "../i18n";
 import { LOGIC_PRESETS, LOGIC_TOPICS, renderLogic, type LogicSpec, type LogicTopic } from "../math/logic";
 import { BOARD_MODES, BOARD_PRESETS, type BoardSpec } from "../math/logicPuzzles";
 import { SW_ASKS, SW_PATTERNS, SW_PRESETS, type SwPattern, type SwSpec } from "../math/logicArgue";
+import { gridSteps } from "../math/logicGrid";
+import { MILL_MODES } from "../math/logicMill";
+import { fill } from "../math/text";
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
@@ -79,6 +82,36 @@ function SwFields({ spec, set }: { spec: LogicSpec; set: (patch: Partial<LogicSp
       {line("links", t.swLinks)}
       {line("conclusion", t.swConclusion)}
       {area("options", t.swOptions, 4)}
+    </>
+  );
+}
+
+/** Categories and clues for a logic grid, and a stepper through how it is worked out. */
+function GridFields({ spec, set }: { spec: LogicSpec; set: (patch: Partial<LogicSpec>) => void }) {
+  const { t } = useI18n();
+  const n = useMemo(() => gridSteps(spec, t.logicWords.grid), [spec, t]);
+  const k = Math.min(spec.step ?? n, n);
+  const nav = t.gridNav;
+  const go = (step: number) => set({ step: Math.max(0, Math.min(n, step)) });
+  return (
+    <>
+      <label className="field">
+        <span>{t.gridCats}</span>
+        <textarea className="mono" rows={4} spellCheck={false} value={spec.f} onChange={(e) => set({ f: e.target.value })} />
+      </label>
+      <label className="field">
+        <span>{t.gridClues}</span>
+        <textarea className="mono" rows={6} spellCheck={false} value={spec.g} onChange={(e) => set({ g: e.target.value })} />
+      </label>
+      {n > 0 && (
+        <div className="snippets">
+          <button className="chip" disabled={k === 0} title={nav.first} aria-label={nav.first} onClick={() => go(0)}>⏮</button>
+          <button className="chip" disabled={k === 0} title={nav.prev} aria-label={nav.prev} onClick={() => go(k - 1)}>◀</button>
+          <span className="hint" style={{ alignSelf: "center" }}>{fill(nav.step, { k, n })}</span>
+          <button className="chip" disabled={k === n} title={nav.next} aria-label={nav.next} onClick={() => go(k + 1)}>▶</button>
+          <button className="chip" disabled={k === n} title={nav.last} aria-label={nav.last} onClick={() => go(n)}>⏭</button>
+        </div>
+      )}
     </>
   );
 }
@@ -175,6 +208,22 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         <BoardFields spec={spec} set={set} />
       ) : topic === "strengthen" ? (
         <SwFields spec={spec} set={set} />
+      ) : topic === "grid" ? (
+        <GridFields spec={spec} set={set} />
+      ) : topic === "square" ? (
+        <>
+          {field("f", t.squareStatement)}
+          <Segmented items={([true, false] as const)} value={spec.given ?? true} onChange={(given) => set({ given })} label={(g) => (g ? t.squareGiven.true : t.squareGiven.false)} />
+          <Segmented items={([true, false] as const)} value={spec.exist === true} onChange={(exist) => set({ exist })} label={(a) => (a ? t.sylModes.aristotle : t.sylModes.modern)} />
+        </>
+      ) : topic === "mill" ? (
+        <>
+          <Segmented items={MILL_MODES} value={spec.mill ?? "presence"} onChange={(mill) => set({ mill })} label={(m) => t.millModes[m]} />
+          <label className="field">
+            <span>{t.millInput[spec.mill ?? "presence"]}</span>
+            <textarea className="mono" rows={5} spellCheck={false} value={spec.f} onChange={(e) => set({ f: e.target.value })} />
+          </label>
+        </>
       ) : topic === "knights" ? (
         <label className="field">
           <span>{t.knightsStatements}</span>
@@ -220,7 +269,7 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         field("f", t.logicFormula)
       )}
 
-      {topic !== "board" && topic !== "knights" && topic !== "strengthen" && topic !== "syllogism" && <div className="snippets">
+      {topic !== "board" && topic !== "grid" && topic !== "mill" && topic !== "square" && topic !== "knights" && topic !== "strengthen" && topic !== "syllogism" && <div className="snippets">
         {symbols.map((sym) => (
           <button key={sym} className="chip" onMouseDown={(e) => e.preventDefault()} onClick={() => insert(sym)}>
             {sym}
