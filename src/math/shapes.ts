@@ -1192,11 +1192,11 @@ function divisiblePreview(): Piece[] {
 }
 
 function kakoomaPreview(): Piece[] {
-  // Four numbers round a circle; 7 = 3 + 4 is green, with its two parts ringed.
+  // Four numbers in a square, two by two; 7 = 3 + 4 is green, with its two parts outlined.
   return [
-    ellipse(80, 80, 78, 78, { fill: FILL.gray, width: 1.5 }),
-    ...([[3, 80, 30], [7, 130, 80], [4, 80, 130], [5, 30, 80]] as const).flatMap(([n, x, y]) => [
-      ellipse(x, y, 22, 22, n === 7 ? { fill: FILL.green, color: "#2f9e44", width: 2.5 } : n === 5 ? { fill: "#ffffff", width: 1.5 } : { fill: "#ffffff", color: "#2f9e44", width: 2.5 }),
+    rect(0, 0, 160, 160, { fill: FILL.gray, width: 1.5 }, true),
+    ...([[3, 44, 44], [7, 116, 44], [4, 44, 116], [5, 116, 116]] as const).flatMap(([n, x, y]) => [
+      rect(x - 28, y - 28, 56, 56, n === 7 ? { fill: FILL.green, color: "#2f9e44", width: 2.5 } : n === 5 ? { fill: "#ffffff", width: 1.5 } : { fill: "#ffffff", color: "#2f9e44", width: 2.5 }, true),
       text(x, y, String(n), 22),
     ]),
   ];
