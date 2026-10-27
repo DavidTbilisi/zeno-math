@@ -31,7 +31,7 @@ const out = talk ? `${DIR}/title-defense.pdf` : concept ? `${DIR}/concept-paper.
 const pandoc = talk
   ? [`${DIR}/talk-pdf.yaml`, `${DIR}/title-defense.md`]
   : concept
-  ? [`${DIR}/concept-pdf.yaml`, `${DIR}/concept-paper.md`, ...citations]
+  ? [`${DIR}/concept-pdf.yaml`, `${DIR}/concept-paper.md`, `--lua-filter=${DIR}/format-only.lua`, ...citations]
   : [
       `${DIR}/pdf.yaml`, ...chapters,
       "--metadata", `date=Draft, ${date}`,
