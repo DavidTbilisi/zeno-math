@@ -1,7 +1,8 @@
 // Prime slice: numbers are thrown up across the stage and fall; swipe across (or tap) every one that is not prime and
 // it splits at its smallest prime factor, a piece that is not prime yet thrown up again to be cut in its turn. A prime
 // cut goes off like a bomb, and a number that is not prime let fall is a slip too; a prime let fall is right. The wave
-// in the air lives on the screen only (math/primeSlice.ts moves it), and the board keeps what it came to. Built on the
+// in the air lives on the screen only (math/primeSlice.ts moves it), and the board keeps what it came to, down to which
+// numbers were right and which wrong, shown on the stage once the wave is over. A piece still to cut is orange. Built on the
 // game shell (useGame): a cut is a step that leaves the streak alone, a slip a miss, and the end of the wave the win,
 // clean when nothing slipped. A wave picked from the head starts at once; the first one waits for Start.
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -11,8 +12,10 @@ import {
   BALL_R,
   cut,
   cutNotice,
+  factorText,
   FADE,
   live,
+  markWave,
   PIECE_R,
   posAt,
   SLICE_H,
@@ -27,6 +30,7 @@ import {
   type Ball,
   type LivePrimeSlice,
   type SliceEvent,
+  type SliceMark,
   type Sim,
 } from "../math/primeSlice";
 import { starText } from "./ladderUi";
@@ -36,11 +40,13 @@ import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGam
 const GREEN = "#2f9e44";
 const RED = "#e03131";
 const BLUE = "#1971c2";
+const ORANGE = "#e8590c";
+const GRAY = "#868e96";
 /** How long the blade's trail stays, in ms. */
 const TRAIL = 160;
-const FRESH: Partial<LivePrimeSlice> = { done: false, cuts: 0, spared: 0, slips: 0, said: null };
+const FRESH: Partial<LivePrimeSlice> = { done: false, cuts: 0, spared: 0, slips: 0, said: null, marks: [] };
 type Phase = "idle" | "play" | "paused";
-type Tally = { cuts: number; spared: number; slips: number; ended: boolean };
+type Tally = { cuts: number; spared: number; slips: number; ended: boolean; missed: { n: number; root: number }[] };
 
 export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"primeSlice">) {
   const [w, g] = [words.primeSlice, words.game];
@@ -52,7 +58,7 @@ export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"prim
   // The wave in the air, what it has come to so far, the stroke being drawn and the blade's trail: read and changed
   // between frames and pointer moves, so kept in refs; each frame draws them afresh.
   const sim = useRef<Sim>(startSim());
-  const tally = useRef<Tally>({ cuts: 0, spared: 0, slips: 0, ended: false });
+  const tally = useRef<Tally>({ cuts: 0, spared: 0, slips: 0, ended: false, missed: [] });
   const stroke = useRef<{ id: number; last: [number, number]; cuts: number } | null>(null);
   const strokes = useRef(0);
   const trail = useRef<{ p: [number, number]; t: number }[]>([]);
@@ -68,6 +74,7 @@ export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"prim
     const t = tally.current;
     const cuts = events.filter((e) => e.kind === "cut");
     const slips = events.filter((e) => e.kind === "boom" || e.kind === "dropped");
+    t.missed.push(...slips);
     t.cuts += cuts.length;
     t.spared += events.filter((e) => e.kind === "spared").length;
     t.slips += slips.length;
@@ -83,15 +90,15 @@ export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"prim
       stars: sliceStars(t.slips),
       clean: t.slips === 0,
       notice: (streak) => (streak === 10 ? "streak10" : null),
-      patch: { done: true, cuts: t.cuts, spared: t.spared, slips: t.slips, said: null },
+      patch: { done: true, cuts: t.cuts, spared: t.spared, slips: t.slips, said: null, marks: markWave(throws, t.missed) },
     });
   };
   const begin = () => {
     sim.current = startSim();
-    tally.current = { cuts: 0, spared: 0, slips: 0, ended: false };
+    tally.current = { cuts: 0, spared: 0, slips: 0, ended: false, missed: [] };
     trail.current = [];
     const { d, set } = latest.current;
-    if (d.done || d.cuts || d.spared || d.slips || d.said) set({ ...d, ...FRESH } as LivePrimeSlice);
+    if (d.done || d.cuts || d.spared || d.slips || d.said || d.marks?.length) set({ ...d, ...FRESH } as LivePrimeSlice);
     setPhase("play");
   };
   const fns = useRef({ report, finish });
@@ -193,20 +200,24 @@ export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"prim
           style={{ cursor: phase === "play" ? "crosshair" : "default", touchAction: "none" }}
         >
           <rect width={SLICE_W} height={SLICE_H} fill="#fff" />
-          {!playing && (
-            <g textAnchor="middle" fill={INK}>
-              <text x={SLICE_W / 2} y={SLICE_H / 2 - 10} fontSize={56} fontWeight={700}>
-                {d.done ? `✂ ${d.cuts}   ✓ ${d.spared}   ✗ ${d.slips}` : `${spec.from} – ${spec.to}`}
-              </text>
-              <text x={SLICE_W / 2} y={SLICE_H / 2 + 34} fontSize={20} fill="#868e96">{d.done ? w.key : w.ready}</text>
-            </g>
+          {!playing && d.done && d.marks?.length ? (
+            <Marks marks={d.marks} w={w} />
+          ) : (
+            !playing && (
+              <g textAnchor="middle" fill={INK}>
+                <text x={SLICE_W / 2} y={SLICE_H / 2 - 10} fontSize={56} fontWeight={700}>
+                  {d.done ? `✂ ${d.cuts}   ✓ ${d.spared}   ✗ ${d.slips}` : `${spec.from} – ${spec.to}`}
+                </text>
+                <text x={SLICE_W / 2} y={SLICE_H / 2 + 34} fontSize={20} fill={GRAY}>{d.done ? w.key : w.ready}</text>
+              </g>
+            )
           )}
           {sim.current.balls.map((b) => (
             <BallView key={b.id} b={b} t={t} />
           ))}
           {blade.length > 1 && <polyline points={blade.map((q) => q.p.join(",")).join(" ")} fill="none" stroke={BLUE} strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" opacity={0.6} />}
           {phase === "paused" && (
-            <text x={SLICE_W / 2} y={SLICE_H / 2} fontSize={48} fontWeight={700} textAnchor="middle" fill="#868e96">⏸</text>
+            <text x={SLICE_W / 2} y={SLICE_H / 2} fontSize={48} fontWeight={700} textAnchor="middle" fill={GRAY}>⏸</text>
           )}
         </svg>
       </Stage>
@@ -220,16 +231,45 @@ export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"prim
   );
 }
 
-/** A number in the air (a prime piece in green, done with), or what became of one, fading: cut, gone off, let fall. */
+/** The wave's numbers, right ones on the left and wrong ones on the right, each with its primes and what went wrong. */
+function Marks({ marks, w }: { marks: SliceMark[]; w: PieceProps<"primeSlice">["w"]["primeSlice"] }) {
+  const said = (m: SliceMark) =>
+    isPrime(m.n) ? fill(m.ok ? w.markSpared : w.markBoom, { n: m.n })
+    : `${m.n} = ${factorText(m.n)}${m.ok ? "" : `  ${m.slip === m.n ? w.markFell : fill(w.markPieceFell, { n: m.slip! })}`}`;
+  const cols = [marks.filter((m) => m.ok), marks.filter((m) => !m.ok)];
+  const rowH = Math.min(28, (SLICE_H - 76) / Math.max(1, ...cols.map((c) => c.length)));
+  return (
+    <g fontWeight={700}>
+      {cols.map((col, k) => (
+        <g key={k} fill={k ? RED : GREEN}>
+          <text x={24 + k * (SLICE_W / 2)} y={40} fontSize={24}>{`${k ? "✗" : "✓"} ${k ? w.wrong : w.right}: ${col.length}`}</text>
+          <line x1={24 + k * (SLICE_W / 2)} x2={(k + 1) * (SLICE_W / 2) - 16} y1={52} y2={52} stroke={k ? RED : GREEN} strokeWidth={2} opacity={0.4} />
+          {col.map((m, i) => (
+            <text key={m.n} x={24 + k * (SLICE_W / 2)} y={76 + i * rowH + rowH * 0.4} fontSize={Math.min(20, rowH * 0.78)}>
+              {said(m)}
+            </text>
+          ))}
+          {!col.length && <text x={24 + k * (SLICE_W / 2)} y={90} fontSize={20} fill={GRAY}>—</text>}
+        </g>
+      ))}
+    </g>
+  );
+}
+
+/** A number in the air (a prime piece in green, done with; a piece still to cut in orange, ringed), or what became of
+ * one, fading: cut, gone off, let fall. */
 function BallView({ b, t }: { b: Ball; t: number }) {
   if (!b.end) {
     const [x, y] = posAt(b.f, t);
     const r = b.piece ? PIECE_R : BALL_R;
     const done = !live(b);
+    const again = b.piece && !done;
+    const [fillC, line, ink] = done ? ["#d3f9d8", GREEN, GREEN] : again ? ["#fff4e6", ORANGE, ORANGE] : ["#e7f5ff", BLUE, INK];
     return (
       <g data-n={b.n} data-live={done ? undefined : ""}>
-        <circle cx={x} cy={y} r={r} fill={done ? "#d3f9d8" : "#e7f5ff"} stroke={done ? GREEN : BLUE} strokeWidth={2.5} />
-        <text x={x} y={y + r * 0.3} fontSize={r * 0.85} fontWeight={700} textAnchor="middle" fill={done ? GREEN : INK}>{b.n}</text>
+        {again && <circle cx={x} cy={y} r={r + 7 + 3 * Math.sin(t / 90)} fill="none" stroke={ORANGE} strokeWidth={2} strokeDasharray="5 4" />}
+        <circle cx={x} cy={y} r={r} fill={fillC} stroke={line} strokeWidth={again ? 3.5 : 2.5} />
+        <text x={x} y={y + r * 0.3} fontSize={r * 0.85} fontWeight={700} textAnchor="middle" fill={ink}>{b.n}</text>
       </g>
     );
   }

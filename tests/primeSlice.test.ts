@@ -13,10 +13,12 @@ import {
   cut,
   cutNotice,
   cutsIn,
+  factorText,
   fake,
   hits,
   live,
   looksPrime,
+  markWave,
   PIECE_R,
   pieceFlights,
   posAt,
@@ -209,5 +211,39 @@ test("stars count slips; the notices: two in a stroke, a piece cut again, a numb
   assert.equal(cutNotice([c(6, true)], 1), "chain");
   assert.equal(cutNotice([c(91)], 1), "fake");
   assert.equal(cutNotice([c(21)], 1), null);
-  assert.deepEqual(pieceFlights(100, 100, 50, 400).map((f) => Math.sign(f.vx)), [-1, 1]);
+});
+
+test("a piece not prime yet goes high, toward the middle, and floats down; the sides turn a piece back", () => {
+  // 15 = 3 × 5, both prime: they fly apart alike. 12 = 2 × 6: the 2 flies off, the 6 goes up to the top third.
+  const g = 400;
+  const [three, five] = pieceFlights(15, 100, 300, 50, g);
+  assert.deepEqual([three, five].map((f) => Math.sign(f.vx)), [-1, 1]);
+  assert.equal(three.vy, five.vy);
+  const [two, six] = pieceFlights(12, 500, 300, 50, g);
+  assert.ok(two.vx > 0 && six.vx < 0, "the 6 heads for the middle");
+  assert.ok(six.g < g);
+  const top = Math.min(...Array.from({ length: 300 }, (_, i) => posAt(six, 50 + i * 10)[1]));
+  assert.ok(Math.abs(top - SLICE_H / 3) < 1, `top ${top}`);
+  const air = (f: typeof six) => Array.from({ length: 1000 }, (_, i) => 50 + i * 10).find((t) => posAt(f, t)[1] > SLICE_H + PIECE_R)! - 50;
+  assert.ok(air(six) > 1.5 * air(two), `${air(six)} ms against ${air(two)}`);
+  for (let t = 50; t < 5000; t += 10) {
+    const x = posAt(two, t)[0];
+    assert.ok(x >= PIECE_R && x <= SLICE_W - PIECE_R, `${x}`);
+  }
+});
+
+test("at the end every number thrown is right, or wrong with what slipped; its primes are written as powers", () => {
+  assert.equal(factorText(12), "2² × 3");
+  assert.equal(factorText(128), "2⁷");
+  assert.equal(factorText(1024), "2¹⁰");
+  assert.equal(factorText(91), "7 × 13");
+  assert.equal(factorText(97), "97");
+  const throws = [12, 13, 51, 7, 45].map((n) => one(n));
+  assert.deepEqual(markWave(throws, [{ n: 6, root: 12 }, { n: 7, root: 7 }, { n: 51, root: 51 }]), [
+    { n: 12, ok: false, slip: 6 },
+    { n: 13, ok: true },
+    { n: 51, ok: false, slip: 51 },
+    { n: 7, ok: false, slip: 7 },
+    { n: 45, ok: true },
+  ]);
 });
