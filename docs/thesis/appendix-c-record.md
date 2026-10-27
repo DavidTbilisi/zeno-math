@@ -68,3 +68,10 @@ carried BKT on each idea declares sooner but is right on the held-out learners 7
 rather than at the standard on every one. The conclusions of G2, that length rather than isolating questions meets the
 condition and that 30 questions do not let any rule declare fractions mastered, stand. The heuristic remains in the
 code (`--idea-fit heuristic`), and the earlier Tables 3.11 and 3.12 can be made with it at commit 9180a75.
+
+The check of a grain chosen from the answers (section 3.3) was made on 27 October, after every result, and its rule
+was changed once the same day. Its first runs kept whichever grouping scored best on the held-out quarter of the
+training learners, and in the world where every idea is learnt alone that grouping did worse than one unit per idea on
+the test learners. A first guard, which compared the pick with one unit per idea on the same quarter, did not remove
+the loss, since the pick had been chosen on that quarter. The guard section 3.3 reports holds out a further quarter
+the search never sees. Both the runs without a guard and those with it are reported, and `npm run grouping` makes both.
