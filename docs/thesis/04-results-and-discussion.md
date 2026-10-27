@@ -1200,6 +1200,30 @@ five, and read them so. Fitting the rates
 therefore guards against most of the harm, and the question is worth asking only where children tick an idea they
 are missing clearly more often than one they know, which is the test left for real students.
 
+A seventh would let the answers choose the grain. The tests above ask whether a given idea is learnt as one thing; a
+model can also ask which grouping of a skill's ideas predicts a class's answers best, from one unit for the whole skill
+to one per idea, with BKT run on the units as it is run on the ideas and a question needing every unit that holds an
+idea it needs. In a check made on 27 October, after every result, the world of ideas was varied so that the sixteen
+ideas of fractions, practised alone, are known and learnt in clusters, six or three, or one by one. The grouping was
+chosen on the training learners, by splitting ideas off the whole skill and by merging them from one unit per idea,
+each step judged by the log-loss of a held-out quarter of the training learners, and it was then judged on 400 test
+learners, over five seeds, at the higher learning rate with 30 questions. The whole skill as one unit was the worst
+grouping in every world and at every class size, by 0.004 to 0.040 per answer against one unit per idea, as G1 would
+lead one to expect. The chosen grouping beat one unit per idea where the ideas really were learnt in clusters and the
+class was large, by 0.006 per answer with six clusters and 0.010 with three among 200 learners, within 0.003 of the
+true grouping. It seldom found the true clusters themselves, though, since ideas that almost every question needs
+cannot be told apart, and grouping them costs nothing whatever the truth. Where every idea was learnt alone, the
+chosen grouping did worse than one unit per idea, by 0.003 to 0.010 per answer and in fourteen runs of fifteen,
+because when about a hundred groupings are tried on a few learners one of them wins by chance. A guard added after
+those runs removed that loss: it held out a further quarter of the training learners that the search never saw, and
+kept a coarser grouping only where it beat one unit per idea on them with an interval above zero. Averaged over the
+seeds, the grouping it kept was never worse than one unit per idea by more than 0.0002 per answer. It also removed most
+of the gain, leaving 0.007 per answer with three clusters among 200 learners, kept on four seeds of five, and almost
+nothing with six. The grain can therefore be learnt from the answers only where the ideas as drawn are much finer than
+the way students learn them, and only from the answers of a few hundred students, not of one class. Zeno should keep
+one probability per idea until answers from several classes can be pooled, and then let those answers choose the
+grouping.
+
 Zeno's own class data would give a replication on the students the result is meant for. The system already exports
 every first answer in the format the evaluation reads, so the prediction test, the agreement of the mastery methods
 and the analysis across grains can be run on it unchanged.
