@@ -26,7 +26,7 @@ commit, because every random choice is seeded. The run times below were measured
 | G4 on split seeds 2 to 5, and resampling classes (section 3.3) | `npm run grain -- --observations data/assistments.json --seed 2` (to 5) | ~2.5 min each |
 | G4's topics against random groupings (Appendix D) | `npm run grain -- --observations data/assistments.json --partitions 100` | ~1 h |
 | H1 and G4 on practices of ten answers or more (Appendix D) | `npm run h1 -- --observations data/assistments.json --min-practice 10`; `npm run grain -- --observations data/assistments.json --min-practice 10 --seed 1` (to 5) | ~4.5 min; ~2.5 min each |
-| The grain chosen from the answers (section 3.3) | `npm run grouping` | ~15 min on 6 threads |
+| The grain chosen from the answers (section 3.3) | `npm run grouping` | ~13 min on 6 threads |
 | The figures, with Figures 3.1 and 3.2 | `npm run build`, then `npm run figures` | ~10 min |
 | Proposition 1 and 2 checks | `npm test` (`tests/mastery.test.ts`) | ~4 min for the whole suite |
 | The thesis as a PDF | `npm run thesis-pdf` | ~1 min |
