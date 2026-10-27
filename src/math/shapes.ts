@@ -1126,6 +1126,17 @@ function connectTownsPreview(): Piece[] {
   ];
 }
 
+function beSortPreview(): Piece[] {
+  // A row of cells mid-way through bubble sort: 5 and 2 about to swap (orange, ⇄ beneath), 8 and 9 settled in green.
+  const vals = ["3", "5", "2", "8", "9"];
+  const fills = ["#ffffff", "#ffe8cc", "#ffe8cc", FILL.green, FILL.green];
+  return [
+    ...vals.flatMap((v, i) => [rect(i * 44, 0, 38, 38, { fill: fills[i], width: 2 }), text(i * 44 + 19, 19, v, 20)]),
+    ellipse(85, 66, 15, 12, { fill: "#e7f5ff", color: BLUE, width: 2 }),
+    text(85, 66, "⇄", 16),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1423,6 +1434,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveColourMap", group: "games", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", group: "games", build: shortestPathPreview, live: "shortestPath" },
   { id: "liveConnectTowns", group: "games", build: connectTownsPreview, live: "connectTowns" },
+  { id: "liveBeSort", group: "games", build: beSortPreview, live: "beSort" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },

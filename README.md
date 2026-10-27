@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -991,6 +991,16 @@ UI in English, Russian and Georgian.
   - *Connect the towns*: tap roads to build them until every town is joined as cheaply as can be; a town left out, a
     loop (its roads turn red) or a dearer network is told so. Right at the first check earns three stars. Four
     discoveries (a cheap road left out for making a loop, a town with one road, twelve towns, ten in a row)
+  - *Be the sort*: the player is the algorithm, making each of its decisions in turn: bubble sort's next swap (tap ⇄
+    between two neighbours; the compares that swap nothing play themselves from the ▲, and a pass with no swap ends
+    the sort), the gap insertion sort's key drops into, the smallest of the rest for selection sort (the first of two
+    alike), the run head a merge takes next (a tie from the top run), and the next item smaller than the pivot for a
+    partition (it swaps behind the red wall, and the pivot lands by itself). A tap that is not the algorithm's next
+    move is not made, and says the rule it broke ("16 and 19 are in order already: bubble sort leaves them"). No miss
+    earns three stars, one two. Nine puzzles open in turn, from bubble sort on five items to a merge of two runs of
+    four; the endless run mixes them, from the three simple sorts on five or six items to all five on eight or nine.
+    Six discoveries (a pass with no swap, a key that stays, the smallest already in place, a run emptied first, the
+    pivot landed, ten in a row)
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

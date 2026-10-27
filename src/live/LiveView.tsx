@@ -38,6 +38,7 @@ import { SlopeLine } from "./SlopeLine";
 import { OneStroke } from "./OneStroke";
 import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
+import { BeSort } from "./BeSort";
 import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
 import { PcaLab } from "./PcaLab";
@@ -112,6 +113,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   colourMap: ColourMap,
   shortestPath: ShortestPath,
   connectTowns: ConnectTowns,
+  beSort: BeSort,
   descentLab: DescentLab,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,
