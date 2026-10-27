@@ -1,20 +1,68 @@
 ```{=latex}
 \begin{titlepage}
+\thispagestyle{fancy}
 \centering
-\vspace*{5cm}
+\vspace*{1cm}
+\includegraphics[width=3.5cm]{docs/thesis/figures/ug-logo.jpeg}\par
+\vspace{1.2cm}
 {\LARGE The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems\par}
-\vspace{1cm}
+\vspace{0.6cm}
 {\large Concept Paper\par}
-\vspace{2.5cm}
-{\large David Chincharashvili\par}
-\vspace{0.4cm}
-University of Georgia\par
-Bachelor's thesis\par
-\vspace{0.4cm}
-Supervisor: Mikheil Gigauri\par
+\vspace{2cm}
+Author:\par
+Davit Tchintcharashvili\par
+\vspace{1.5cm}
+This is proved by the Bachelor Thesis Committee of the School of IT, Engineering and Mathematics of the University of
+Georgia\par
+\vspace{1.5cm}
+Supervisor:\par
+Mikheil Gigauri\par
 \vfill
 26 October 2026\par
 \end{titlepage}
+```
+
+::: {.docx custom-style="Title Page"}
+![](figures/ug-logo.jpeg){width=3.3cm}
+
+&nbsp;
+
+The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems
+
+Concept Paper
+
+&nbsp;
+
+&nbsp;
+
+Author: Davit Tchintcharashvili
+
+&nbsp;
+
+&nbsp;
+
+This is proved by the Bachelor Thesis Committee of the School of IT, Engineering and Mathematics of the University of
+Georgia
+
+&nbsp;
+
+&nbsp;
+
+Supervisor:
+
+Mikheil Gigauri
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+26 October 2026
+:::
+
+```{=openxml}
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
 ```
 
 # Abstract {.unnumbered .unlisted}
@@ -37,6 +85,10 @@ work grew out of, on which rule should decide mastery and at what grain.
 
 ```{=latex}
 \newpage
+```
+
+```{=openxml}
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
 ```
 
 # რეზიუმე {.unnumbered .unlisted}
@@ -65,7 +117,19 @@ work grew out of, on which rule should decide mastery and at what grain.
 \newpage
 ```
 
-# 1 Introduction
+```{=openxml}
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
+```
+
+<!-- docx-contents -->
+
+```{=openxml}
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
+```
+
+# Introduction
+
+## The problem and its relevance
 
 Practice is where most mathematics is learnt, and a practice system has to decide, again and again, when a student
 has practised a skill enough to move on. Mastery learning, the idea that a student should master one unit before the
@@ -98,7 +162,7 @@ decides which skills a student has mastered and can leave behind. Its present ma
 measured. Before choosing how Zeno should make that decision, it is worth knowing both which rule decides best and at
 what grain the rule should be applied.
 
-# 2 Aim, research question and hypotheses
+## Aim, research question and hypotheses
 
 The aim of the thesis is to find out how the grain at which skills are defined affects the accuracy and the
 reliability of mastery estimation, using evidence that does not require a classroom. The research question is:
@@ -124,7 +188,7 @@ one thing learnt; or too fine, when one thing learnt is modelled as several comp
 than the practice can support. Table 1 lists the hypotheses of both parts.
 
 | Hypothesis | Statement | Evidence | Kind |
-|------|------------------------|------|------|
+|-------|------------------|--------|---------|
 | H1 | BKT predicts held-out students' next answers better than the EMA, by log-loss | ASSISTments | Confirmatory |
 | H2 | Where students do not learn as BKT assumes, BKT needs fewer answers than the EMA and the streak rule before its declarations are right nine times in ten | Simulation | Pre-specified estimate |
 | H3 | How often the three methods agree, and how students answer after each declares mastery | ASSISTments | Exploratory |
@@ -146,7 +210,7 @@ reported for every simulated world and learning rate separately and never pooled
 ASSISTments data were collected under the streak rule itself, so the data cannot show what would have happened had a
 student been kept practising longer.
 
-# 3 Background and related work
+# 1 Background and related work
 
 Mastery learning holds that most students can reach a high level in a subject if each unit is learnt to a set standard
 before the next one starts, and if the time each student spends varies to make that possible [@bloom1984]. Reviews of
@@ -197,7 +261,7 @@ area under the ROC curve and calibration reported beside it. The fair test for a
 holds out whole students: the model is fitted on the rest and predicts each held-out student's answers in order,
 learning from each answer only after predicting it [@pelanek2015metrics].
 
-# 4 Planned method
+# 2 Planned method
 
 The three methods compared all read one student's answers on one skill, in order, and after each answer say whether
 the skill is now mastered; each declares mastery the first time its condition holds. BKT on the skill has four
@@ -261,7 +325,7 @@ behind one command, so that every number in the thesis can be reproduced. The hy
 rules are recorded in the repository's history before the results they concern, so the order in which they were fixed
 can be checked by anyone.
 
-# 5 Expected contribution, scope and limitations
+# 3 Expected contribution, scope and limitations
 
 The thesis does not propose a new model. BKT, moving averages and the conjunctive form of BKT are well known, mastery
 criteria have been compared before, and the grain of a skill model has been studied for prediction. What it adds is a
@@ -285,7 +349,7 @@ practising longer, and H3 is exploratory for that reason. Third, answers within 
 teacher and lessons, so resampling students as if they were independent makes the intervals too narrow; the intervals
 of H1 and G4 are therefore also computed by resampling whole classes, as a robustness check.
 
-# 6 Work plan and current status
+# 4 Work plan and current status
 
 The thesis follows the department's three stages: this concept, which covers the introduction, research question,
 hypotheses, background and planned method; a preliminary draft with the method in full and the simulation results; and
