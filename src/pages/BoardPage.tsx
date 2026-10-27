@@ -103,7 +103,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
 };
 
 // The games, apart from the tools in a menu of their own, by the sense each one builds.
-const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart" | "senseGraph"; games: LiveEntry[] }[] = [
+const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart" | "senseGraph" | "senseAlgo"; games: LiveEntry[] }[] = [
   {
     sense: "senseNumber", games: [
       { kind: "estimate", icon: "📍", name: "liveEstimate" },
@@ -154,6 +154,11 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "colourMap", icon: "🎨", name: "liveColourMap" },
       { kind: "shortestPath", icon: "🧭", name: "liveShortestPath" },
       { kind: "connectTowns", icon: "🛤️", name: "liveConnectTowns" },
+    ],
+  },
+  {
+    sense: "senseAlgo", games: [
+      { kind: "beSort", icon: "🔀", name: "liveBeSort" },
     ],
   },
 ];
