@@ -19,6 +19,7 @@ import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
 import { ToolMenu } from "../components/ToolMenu";
+import { useCompact } from "../components/useCompact";
 import { ShareBox } from "../components/ShareBox";
 import { CommandPalette } from "../components/CommandPalette";
 import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
@@ -189,6 +190,9 @@ export function BoardPage({ id }: { id: string }) {
   const paletteOpener = useRef<HTMLElement | null>(null);
   const [selectedMath, setSelectedMath] = useState<ExcalidrawImageElement | undefined>();
   const excalidraw = useRef<ExcalidrawImperativeAPI | null>(null);
+  // When the bar doesn't fit it drops the labels its icons already say (1), then every label (2), then tightens its
+  // spacing and the title (3), then wraps onto a second row (4) rather than hide buttons past the edge.
+  const [barRef, fit] = useCompact<HTMLElement>(4);
   // The same API as state, for the library hook, which waits for it.
   const [excalidrawApi, setExcalidrawApi] = useState<ExcalidrawImperativeAPI | null>(null);
   // The theme for the shape thumbnails.
@@ -585,8 +589,8 @@ export function BoardPage({ id }: { id: string }) {
   };
   return (
     <div className="board-page">
-      <header className="board-bar">
-        <a className="btn ghost" href="#/" title={t.back}>← <span className="btn-label">{t.back}</span></a>
+      <header ref={barRef} data-fit={fit} className="board-bar">
+        <a className="btn ghost" href="#/" title={t.back}>← <span className="btn-label minor">{t.back}</span></a>
         <input
           className="title-input"
           value={title}
@@ -606,7 +610,7 @@ export function BoardPage({ id }: { id: string }) {
         )}
         <button className="btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}>🔍</button>
         <button className="btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
-          📐 <span className="btn-label">{t.shapes.button}</span>
+          📐 <span className="btn-label minor">{t.shapes.button}</span>
         </button>
         {MENUS.map((m) => (
           <ToolMenu key={m.label} icon={m.icon} label={t[m.label]} title={m.title && t[m.title]} items={[

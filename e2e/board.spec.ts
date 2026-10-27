@@ -1,5 +1,6 @@
 // A teacher's board: make it, put a shape and a live piece on it, use the piece, and find everything again after a
-// reload (and on the server); a piece changed in the moment after the click that starts it still answers clicks.
+// reload (and on the server); a piece changed in the moment after the click that starts it still answers clicks; the
+// bar and its menus fit the window.
 import { expect, test } from "@playwright/test";
 import { boardWith } from "./helpers.ts";
 
@@ -51,3 +52,27 @@ test("a piece changed in the 100 ms before Excalidraw starts it still answers cl
   await game.getByRole("button", { name: "Line 1", exact: true }).dispatchEvent("click");
   await game.getByRole("button", { name: "Check" }).click({ timeout: 5000 });
 });
+
+// The bar and its menus fit the window, from a phone to a wide screen and in the longest language: the bar gives up
+// labels, then spacing, then wraps; a menu in sections lays them out in columns and is never taller than the window.
+for (const [w, h] of [[1366, 768], [1024, 700], [390, 760]])
+  test(`the board's bar and every menu fit on a ${w} × ${h} window, in English and Georgian`, async ({ page }) => {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto("/");
+    await page.getByRole("button", { name: /New board/ }).first().click();
+    await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
+    await page.locator(".excalidraw").waitFor();
+    for (const lang of ["en", "ka"]) {
+      if (lang === "ka") await page.locator(".board-bar .lang-select").selectOption("ka");
+      const bar = page.locator(".board-bar");
+      await expect.poll(() => bar.evaluate((e) => e.scrollWidth - e.clientWidth)).toBe(0);
+      for (const button of await bar.locator(".tool-menu-btn").all()) {
+        await button.click();
+        const box = (await page.locator(".tool-menu").boundingBox())!;
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(w);
+        expect(box.y + box.height).toBeLessThanOrEqual(h);
+        await page.keyboard.press("Escape");
+      }
+    }
+  });

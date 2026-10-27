@@ -1,13 +1,15 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /** A menu item; items with a `section` are listed under its heading, in the order given. */
 export type ToolItem = { icon: string; label: string; section?: string; onPick: () => void };
 
-/** A toolbar button that opens a dropdown of tools. The list is position:fixed so the bar's overflow can't clip it.
+/** A toolbar button that opens a dropdown of tools. The list is position:fixed so the bar's overflow can't clip it, and
+ *  never taller than the room below the button (it scrolls if it must). A list in sections lays them out side by side
+ *  in columns, as many as the window has room for, so a long one such as the games still fits on the screen.
  *  `label` is shown on the button; `title` (the full group name) is the tooltip and the menu's accessible name. */
 export function ToolMenu({ icon, label, title = label, items }: { icon: string; label: string; title?: string; items: ToolItem[] }) {
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ left: 0, top: 0 });
+  const [pos, setPos] = useState({ left: 0, top: 0, maxHeight: 0 });
   const btn = useRef<HTMLButtonElement>(null);
   const list = useRef<HTMLDivElement>(null);
 
@@ -15,8 +17,9 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
     if (!open || !btn.current || !list.current) return;
     const r = btn.current.getBoundingClientRect();
     const w = list.current.offsetWidth;
-    setPos({ left: Math.max(8, Math.min(r.left, window.innerWidth - w - 8)), top: r.bottom + 4 });
-    list.current.querySelector<HTMLButtonElement>("button")?.focus();
+    const top = r.bottom + 4;
+    setPos({ left: Math.max(8, Math.min(r.left, window.innerWidth - w - 8)), top, maxHeight: window.innerHeight - top - 8 });
+    list.current.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
   }, [open]);
 
   useEffect(() => {
@@ -50,6 +53,30 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
     buttons[(i + (e.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length]?.focus();
   };
 
+  // Items in runs of the same section, each run kept together in one column.
+  const runs: { section?: string; items: ToolItem[] }[] = [];
+  for (const it of items) {
+    const last = runs[runs.length - 1];
+    if (last && last.section === it.section) last.items.push(it);
+    else runs.push({ section: it.section, items: [it] });
+  }
+  const item = (it: ToolItem) => (
+    <button
+      key={it.label}
+      role="menuitem"
+      className="tool-menu-item"
+      onClick={() => {
+        setOpen(false);
+        // The dialog returns focus to whatever had it when it opened: the menu button, not this vanishing item.
+        btn.current?.focus();
+        it.onPick();
+      }}
+    >
+      <span className="tool-menu-icon">{it.icon}</span>
+      {it.label}
+    </button>
+  );
+
   return (
     <>
       <button
@@ -63,26 +90,17 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
         {icon} <span className="btn-label">{label}</span> <span className="caret">▾</span>
       </button>
       {open && (
-        <div ref={list} className="tool-menu" role="menu" aria-label={title} style={pos} onKeyDown={onListKey}>
-          {items.map((it, i) => [
-            it.section && it.section !== items[i - 1]?.section && (
-              <div key={`§${it.section}`} className="tool-menu-heading" role="presentation">{it.section}</div>
+        <div ref={list} className={`tool-menu${runs.some((r) => r.section) ? " cols" : ""}`} role="menu" aria-label={title} style={pos} onKeyDown={onListKey}>
+          {runs.map((r, i) =>
+            r.section ? (
+              <div key={`§${r.section}`} className="tool-menu-section" role="group" aria-label={r.section}>
+                <div className="tool-menu-heading" role="presentation">{r.section}</div>
+                {r.items.map(item)}
+              </div>
+            ) : (
+              <Fragment key={i}>{r.items.map(item)}</Fragment>
             ),
-            <button
-              key={it.label}
-              role="menuitem"
-              className="tool-menu-item"
-              onClick={() => {
-                setOpen(false);
-                // The dialog returns focus to whatever had it when it opened: the menu button, not this vanishing item.
-                btn.current?.focus();
-                it.onPick();
-              }}
-            >
-              <span className="tool-menu-icon">{it.icon}</span>
-              {it.label}
-            </button>,
-          ])}
+          )}
         </div>
       )}
     </>

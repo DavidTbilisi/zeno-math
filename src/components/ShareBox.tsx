@@ -51,7 +51,7 @@ export function ShareBox({ id, token, onChange }: { id: string; token: string | 
   return (
     <div className="share" ref={box}>
       <button className={`btn${token ? " shared" : ""}`} aria-expanded={open} aria-haspopup="dialog" onClick={toggle} title={t.shareTitle}>
-        🔗 <span className="btn-label">{t.share}</span>
+        🔗 <span className="btn-label minor">{t.share}</span>
       </button>
       {open && (
         <div className="share-box" role="dialog" aria-label={t.shareTitle} style={pos}>
