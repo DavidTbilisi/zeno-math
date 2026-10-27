@@ -1,11 +1,13 @@
 // Prime slice: numbers are thrown up across the stage and fall back down; cut every one that is not prime, with a
 // swipe across it or a tap, and leave the primes alone, for they are bombs. A number cut splits at its smallest prime
 // factor into two pieces that fly apart: a prime piece is done with (green), and a piece that is not prime yet is
-// thrown up again to be cut in its turn, so 12 goes 2 × 6 and then 6 goes 2 × 3, down to the primes. Three things are
+// thrown high and floats down slowly, to be cut in its turn, so 12 goes 2 × 6 and then 6 goes 2 × 3, down to the
+// primes; the sides of the stage turn a piece back, so none flies out of reach. Three things are
 // slips: cutting a prime, letting a number that is not prime fall, and letting a piece that is not prime fall. A wave is
 // a fixed run of throws from a seed: nine puzzles go from 2–20, one at a time and slowly, to 2–200 three at once and
 // fast, and more and more of the numbers that are not prime look as if they were (odd, and not a multiple of 5: 49,
 // 51, 91). Three stars for a wave without a slip, two for one, else one; the endless run keeps a streak of clean waves.
+// At the end every number thrown is marked right or wrong, with what went wrong.
 // The flight of a number, the hit of a stroke and the run of a wave are worked out here, so the board's piece only
 // draws them and passes on what happened.
 import { isPrime } from "./numtheory";
@@ -17,9 +19,14 @@ export const SLICE_W = 600;
 export const SLICE_H = 380;
 export const BALL_R = 30;
 export const PIECE_R = 24;
-/** How high a piece is thrown up again when its number is cut, and how fast the two fly apart (units a second). */
+/** How high a prime piece is thrown up when its number is cut, and how fast it flies off (units a second). */
 const PIECE_RISE = 70;
 const PIECE_SPREAD = 90;
+/** A piece not prime yet goes up to the top third of the stage at least, drifts slowly toward the middle, and falls
+ * under a lighter gravity, so there is time to see it and cut it again. */
+const AGAIN_TOP = SLICE_H / 3;
+const AGAIN_SPREAD = 50;
+const AGAIN_FLOAT = 0.6;
 /** The first throw leaves a moment after the wave starts, so the player sees it come. */
 const LEAD = 600;
 
@@ -37,6 +44,13 @@ export function splitOf(n: number): [number, number] {
 export const looksPrime = (n: number) => n > 1 && !isPrime(n) && n % 2 !== 0 && n % 5 !== 0;
 /** Not prime, and not a multiple of 2, 3 or 5 either: only 7 or more divides it (49, 77, 91, 119). */
 export const fake = (n: number) => looksPrime(n) && splitOf(n)[0] >= 7;
+const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+/** n as a product of prime powers: 12 → "2² × 3", 97 → "97". */
+export function factorText(n: number): string {
+  const counts = new Map<number, number>();
+  for (const p of primeFactors(n)) counts.set(p, (counts.get(p) ?? 0) + 1);
+  return [...counts].map(([p, k]) => (k > 1 ? `${p}${[...String(k)].map((c) => SUP[+c]).join("")}` : String(p))).join(" × ");
+}
 /** Every prime factor of n, smallest first, with repeats: 12 → [2, 2, 3]. */
 export function primeFactors(n: number): number[] {
   const out: number[] = [];
@@ -81,21 +95,33 @@ export function wave(spec: WaveSpec, next: () => number): Throw[] {
   });
 }
 
-/** A flight under gravity from a point at a time: where it is t ms into the wave. */
+/** A flight under gravity from a point at a time: where it is t ms into the wave. The sides of the stage turn it back
+ * (a throw never reaches them; a piece may). */
 export type Flight = { x0: number; y0: number; vx: number; vy: number; g: number; t0: number };
 export function posAt(f: Flight, t: number): [number, number] {
   const s = (t - f.t0) / 1000;
-  return [f.x0 + f.vx * s, f.y0 - f.vy * s + (f.g * s * s) / 2];
+  return [wall(f.x0 + f.vx * s), f.y0 - f.vy * s + (f.g * s * s) / 2];
 }
+const wall = (x: number) => {
+  const [lo, span] = [PIECE_R, SLICE_W - 2 * PIECE_R];
+  const u = (((x - lo) % (2 * span)) + 2 * span) % (2 * span);
+  return lo + (u > span ? 2 * span - u : u);
+};
 /** A throw's flight: up from below the stage to its peak half way through `flight` ms and down again where it lands. */
 export function throwFlight(th: Throw, flight: number): Flight {
   const T = flight / 1000;
   return { x0: th.x0, y0: SLICE_H + BALL_R, vx: (th.x1 - th.x0) / T, vy: (4 * th.peak) / T, g: (8 * th.peak) / (T * T), t0: th.at };
 }
-/** The two pieces of a number cut at (x, y) at time t: thrown up a little and apart, under the same gravity. */
-export function pieceFlights(x: number, y: number, t: number, g: number): [Flight, Flight] {
-  const vy = Math.sqrt(2 * g * PIECE_RISE);
-  return [-1, 1].map((side) => ({ x0: x, y0: y, vx: side * PIECE_SPREAD, vy, g, t0: t })) as [Flight, Flight];
+/** The two pieces of n cut at (x, y) at time t, its smallest prime and what is left: the prime thrown up a little and
+ * away from the middle under the same gravity; what is left, if it is not prime yet, thrown high toward the middle to
+ * float down (if prime, it goes the other way like the first). */
+export function pieceFlights(n: number, x: number, y: number, t: number, g: number): [Flight, Flight] {
+  const side = x < SLICE_W / 2 ? -1 : 1;
+  const prime = (s: number): Flight => ({ x0: x, y0: y, vx: s * PIECE_SPREAD, vy: Math.sqrt(2 * g * PIECE_RISE), g, t0: t });
+  const q = splitOf(n)[1];
+  if (isPrime(q)) return [prime(side), prime(-side)];
+  const ga = g * AGAIN_FLOAT;
+  return [prime(side), { x0: x, y0: y, vx: -side * AGAIN_SPREAD, vy: Math.sqrt(2 * ga * Math.max(PIECE_RISE, y - AGAIN_TOP)), g: ga, t0: t }];
 }
 
 /** Whether a stroke from a to b passes within r of the point c (a tap is a stroke with a = b). */
@@ -126,8 +152,8 @@ export const startSim = (): Sim => ({ t: 0, thrown: 0, balls: [], ids: 0 });
 
 export type SliceEvent =
   | { kind: "cut"; n: number; p: number; q: number; piece: boolean; root: number }
-  | { kind: "boom"; n: number }
-  | { kind: "dropped"; n: number; p: number; q: number; piece: boolean }
+  | { kind: "boom"; n: number; root: number }
+  | { kind: "dropped"; n: number; p: number; q: number; piece: boolean; root: number }
   | { kind: "spared"; n: number };
 /** How long what has ended stays on the stage, to be seen going. */
 export const FADE = 900;
@@ -150,7 +176,7 @@ export function advance(sim: Sim, throws: Throw[], flight: number, t: number): {
       const prime = isPrime(b.n);
       if (!live(b)) return { ...b, end: { kind: "fell", t, at: [x, SLICE_H] } };
       if (prime) events.push({ kind: "spared", n: b.n });
-      else events.push({ kind: "dropped", n: b.n, ...pq(b.n), piece: b.piece });
+      else events.push({ kind: "dropped", n: b.n, ...pq(b.n), piece: b.piece, root: b.root });
       return { ...b, end: { kind: prime ? "spared" : "dropped", t, at: [Math.max(40, Math.min(SLICE_W - 40, x)), SLICE_H - 24] } };
     })
     .filter((b) => !b.end || t - b.end.t < FADE);
@@ -171,16 +197,27 @@ export function cut(sim: Sim, a: [number, number], b: [number, number], stroke: 
     const at = posAt(ball.f, sim.t);
     if (!hits(at, a, b, ball.piece ? PIECE_R : BALL_R)) return ball;
     if (isPrime(ball.n)) {
-      events.push({ kind: "boom", n: ball.n });
+      events.push({ kind: "boom", n: ball.n, root: ball.root });
       return { ...ball, end: { kind: "boom", t: sim.t, at } };
     }
     const { p, q } = pq(ball.n);
     events.push({ kind: "cut", n: ball.n, p, q, piece: ball.piece, root: ball.root });
-    const [left, right] = pieceFlights(at[0], at[1], sim.t, ball.f.g);
+    const [left, right] = pieceFlights(ball.n, at[0], at[1], sim.t, ball.f.g);
     born.push({ id: ids++, n: p, f: left, piece: true, stroke, root: ball.root, end: null }, { id: ids++, n: q, f: right, piece: true, stroke, root: ball.root, end: null });
     return { ...ball, end: { kind: "cut", t: sim.t, at } };
   });
   return { sim: { ...sim, ids, balls: [...balls, ...born] }, events };
+}
+
+/** How a number thrown came out: right, or wrong with the number that slipped (itself, a prime cut or let fall, or a
+ * piece of it let fall: 12 cut to 2 × 6 and the 6 let fall). */
+export type SliceMark = { n: number; ok: boolean; slip?: number };
+/** Every number thrown, in turn, marked by the slips of the wave (a slip names the number thrown it came from). */
+export function markWave(throws: Throw[], slips: { n: number; root: number }[]): SliceMark[] {
+  return throws.map(({ n }) => {
+    const slip = slips.find((s) => s.root === n);
+    return slip ? { n, ok: false, slip: slip.n } : { n, ok: true };
+  });
 }
 
 /** Every number has been thrown, and none still to be judged is in the air. */
@@ -231,6 +268,8 @@ export type LivePrimeSlice = EndlessGame<SliceNotice, GameLevel, SliceSaid> & {
   cuts: number;
   spared: number;
   slips: number;
+  /** Once the wave is over, every number thrown, right or wrong. */
+  marks?: SliceMark[];
 };
 /** The wave of a puzzle or of the endless run, and how long each number is in the air. */
 export function sliceNow(d: Pick<LivePrimeSlice, "mode" | "stage" | "level" | "seed" | "timed">): { spec: WaveSpec; throws: Throw[] } {

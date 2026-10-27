@@ -514,7 +514,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     target: { mode: "puzzle", stage: 0, level: 1, seed: 1, sum: [], ways: [], hinted: false, streak: 0, said: null },
     closerTo: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], picked: null, streak: 0, said: null },
     divisible: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], wrong: [], misses: 0, hint: null, done: false, streak: 0, said: null },
-    primeSlice: { mode: "puzzle", stage: 0, level: 1, seed: 1, done: false, cuts: 0, spared: 0, slips: 0, streak: 0, said: null },
+    primeSlice: { mode: "puzzle", stage: 0, level: 1, seed: 1, done: false, cuts: 0, spared: 0, slips: 0, marks: [], streak: 0, said: null },
     kakooma: { mode: "puzzle", stage: 0, level: 1, seed: 1, solved: [], wrong: null, misses: 0, hinted: false, streak: 0, said: null },
     fractionWall: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], best: 0, streak: 0, said: null },
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
