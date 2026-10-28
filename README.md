@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1063,6 +1063,20 @@ UI in English, Russian and Georgian.
     from seven cells to twelve; the endless run goes from the two sums on seven or eight to all three on up to
     twelve. Three discoveries (a slide is one add and one take-away, several shrinks in a row, under 2n moves) and
     ten in a row
+  - *Be the backtracking*: the player is the computer running a recursive search with its call stack in view, by
+    dragging (or a tap on what to move, then on where it goes): the next choice from a[] into path's next slot (for
+    the queens, the queen onto a square of the row the call is on), which calls one level deeper; path's top into the
+    pop bin once a call's loop is done; path into res when it is a whole answer; and at the end res into return. Five
+    patterns on one loop: every subset (every path is one), the ways to choose k of n, every order (used[] says which
+    letters are taken), the sets of sorted numbers adding up to T (the loop breaks at the first one too big) and the
+    four queens (path[r] is the column of row r's queen). a[] and path[] show their indexes, the running call's loop
+    variable sits under a[], each frame on the stack shows its own, the code runs beside it with the lines just run
+    lit, and a log says what each operation did ("path.append(3) → [2, 3]; s = 5"; "res.append([A, B, C]); 1
+    found"). An operation the code would not make is not made, and says the rule it broke ("s + 5 = 10 > T = 8: the
+    loop breaks, and the bigger ones after it can't fit either"; "The queen in row 0 attacks column 1 on a
+    diagonal"). No miss earns three stars, one two. Nine puzzles open in turn, from the subsets of three letters to
+    the four queens; the endless run goes from subsets, two of four and short sums to the queens, two of five and
+    sums of six. Four discoveries (pruning, a dead end, 2ⁿ subsets, n! orders) and ten in a row.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

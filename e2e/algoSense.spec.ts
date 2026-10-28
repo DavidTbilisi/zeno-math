@@ -1,12 +1,13 @@
-// Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers and be the
-// sliding window, each one's first puzzle played move by move as the algorithm makes them, and a wrong tap refused with
-// the rule it broke.
+// Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers, be the
+// sliding window and be the backtracking, each one's first puzzle played move by move as the algorithm makes them, and a
+// wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { checkOp, expect as next, replay, SEARCH_LADDER, searchNow, searchRun, type Machine } from "../src/math/beSearch.ts";
 import { SORT_LADDER, sortNow, sortRun } from "../src/math/beSort.ts";
 import { binNow, binRun, checkOp as binCheck, expect as binNext, replay as binReplay } from "../src/math/beBinary.ts";
 import { checkOp as ptrCheck, expect as ptrNext, ptrNow, ptrRun, replay as ptrReplay } from "../src/math/bePointers.ts";
+import { btNow, btRun, checkOp as btCheck, expect as btNext, nextChoice, pathText, replay as btReplay, shown as btShown } from "../src/math/beBacktrack.ts";
 import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
@@ -290,4 +291,61 @@ test("be the sliding window: l dragged before the window has grown is refused, t
     await expect(game.getByText(`r = 0; s = 0 + ${winTask.a[0]} = ${winTask.a[0]}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
   await expect(game.getByText(`Operations: 1 of ${win.ops.length}`)).toBeVisible();
+});
+
+const btTask = btNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const bt = btRun(btTask);
+const choiceOf = (i: number) => `a[${i}] = ${btShown(btTask, btTask.a[i])}`;
+
+test("be the backtracking: every subset pushed, recorded and popped as the code does, then res into return, earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeBacktrack, ".live-beBacktrack");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const m = btReplay(btTask, bt.ops.slice(0, k));
+    const e = btNext(m);
+    const d = m.path.length;
+    const res = `res, ${m.res.length} found`;
+    if (e === "push") await tap(choiceOf(nextChoice(m)!)).then(() => tap(`path[${d}]`));
+    else if (e === "pop") await tap(`path[${d - 1}] = ${btShown(btTask, btTask.a[m.path[d - 1]])}`).then(() => tap("pop"));
+    else if (e === "record") await tap(`path = ${pathText(btTask, m.path)}`).then(() => tap(res));
+    else await tap(res).then(() => tap("return"));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${bt.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < bt.ops.length; k++) await op(k);
+  await expect(game.getByText(new RegExp(`All ${bt.end.ret} subsets of ${btTask.a.length} letters, 2ⁿ: each letter in or out! ★★★`))).toBeVisible();
+  await expect(game.getByText(`return len(res) = ${bt.end.ret}`)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the backtracking: a choice dragged before the empty path is recorded is refused; recorded, it is pushed", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeBacktrack, ".live-beBacktrack");
+  const c = btCheck(btReplay(btTask, []), { kind: "push", i: 0 });
+  if (c.ok) throw new Error("the empty path is recorded first");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: choiceOf(0), exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(choiceOf(0), "path[0]");
+    await expect(game.getByText(fill(en.live.beBacktrack.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the moves are retried until they land.
+  await expect(async () => {
+    await game.getByRole("button", { name: "path = []", exact: true }).dispatchEvent("click");
+    await game.getByRole("button", { name: "res, 0 found", exact: true }).dispatchEvent("click");
+    await expect(game.getByText("res.append([]); 1 found")).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  const a0 = btShown(btTask, btTask.a[0]);
+  await expect(async () => {
+    await drag(choiceOf(0), "path[0]");
+    await expect(game.getByText(`path.append(${a0}) → [${a0}]`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await expect(game.getByText(`Operations: 2 of ${bt.ops.length}`)).toBeVisible();
 });

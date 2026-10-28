@@ -1198,6 +1198,17 @@ function beWindowPreview(): Piece[] {
   ];
 }
 
+function beBacktrackPreview(): Piece[] {
+  // A 4 × 4 board with a queen in each row, none attacking another, and path[] under it with each queen's column.
+  const cols = [1, 3, 0, 2];
+  return [
+    ...[0, 1, 2, 3].flatMap((r) => [0, 1, 2, 3].map((c) => rect(c * 26, r * 26, 26, 26, { fill: (r + c) % 2 ? FILL.gray : "#ffffff", width: 1 }))),
+    ...cols.map((c, r) => text(c * 26 + 13, r * 26 + 14, "♛", 18)),
+    ...cols.flatMap((c, r) => [rect(r * 30 + 120, 30, 26, 26, { fill: "#e7f5ff", color: BLUE, width: 2 }), text(r * 30 + 133, 43, String(c), 14)]),
+    text(160, 14, "path[]", 13),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1501,6 +1512,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeBinary", group: "games", build: beBinaryPreview, live: "beBinary" },
   { id: "liveBePointers", group: "games", build: bePointersPreview, live: "bePointers" },
   { id: "liveBeWindow", group: "games", build: beWindowPreview, live: "beWindow" },
+  { id: "liveBeBacktrack", group: "games", build: beBacktrackPreview, live: "beBacktrack" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
