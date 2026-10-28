@@ -44,6 +44,7 @@ import { BeDp } from "./BeDp";
 import { BeBinary } from "./BeBinary";
 import { BePointers } from "./BePointers";
 import { BeWindow } from "./BeWindow";
+import { BeBacktrack } from "./BeBacktrack";
 import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
 import { PcaLab } from "./PcaLab";
@@ -124,6 +125,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   beBinary: BeBinary,
   bePointers: BePointers,
   beWindow: BeWindow,
+  beBacktrack: BeBacktrack,
   descentLab: DescentLab,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,
