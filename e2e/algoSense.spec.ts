@@ -1,5 +1,5 @@
 // Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers, be the
-// sliding window, be the backtracking and be the heap, each one's first puzzle played move by move as the algorithm makes them, and a
+// sliding window, be the backtracking, be the heap and be the tree, each one's first puzzle played move by move as the algorithm makes them, and a
 // wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -9,6 +9,7 @@ import { binNow, binRun, checkOp as binCheck, expect as binNext, replay as binRe
 import { checkOp as ptrCheck, expect as ptrNext, ptrNow, ptrRun, replay as ptrReplay } from "../src/math/bePointers.ts";
 import { btNow, btRun, checkOp as btCheck, expect as btNext, nextChoice, pathText, replay as btReplay, shown as btShown } from "../src/math/beBacktrack.ts";
 import { checkOp as heapCheck, expect as heapNext, heapNow, heapRun, partner, replay as heapReplay } from "../src/math/beHeap.ts";
+import { checkOp as treeCheck, expect as treeNext, replay as treeReplay, step as treeStep, treeNow, treeRun } from "../src/math/beTree.ts";
 import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
@@ -395,4 +396,53 @@ test("be the heap: a value dropped past the end of heap[] is refused, then dropp
     await expect(game.getByText(`heap.append(${heapTask.a[0]}) → heap[0] = ${heapTask.a[0]}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
   await expect(game.getByText(`Operations: 1 of ${heap.ops.length}`)).toBeVisible();
+});
+
+const treeTask = treeNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const tree = treeRun(treeTask);
+
+test("be the tree: each value walked down and dropped into its empty place as the code does earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeTree, ".live-beTree");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const m = treeReplay(treeTask, tree.ops.slice(0, k));
+    const { side, to } = treeStep(m);
+    const x = treeTask.q[m.qi];
+    await tap(`x = ${x}`);
+    await tap(treeNext(m) === "down" ? `node ${m.nodes[to].v}` : `empty, ${side === "l" ? "left" : "right"} of ${m.nodes[m.cur].v}`);
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${tree.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < tree.ops.length; k++) await op(k);
+  await expect(game.getByText(new RegExp(`All ${treeTask.q.length} values are in, each a new leaf where its walk ended! ★★★`))).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the tree: x dropped on the root is refused, then dragged onto the child it goes to", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeTree, ".live-beTree");
+  const m = treeReplay(treeTask, []);
+  const c = treeCheck(m, { kind: "drop", node: m.root });
+  if (c.ok) throw new Error("x moves on from the root");
+  const x = `x = ${treeTask.q[0]}`;
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: x, exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(x, `node ${m.nodes[m.root].v}`);
+    await expect(game.getByText(fill(en.live.beTree.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  const to = m.nodes[treeStep(m).to].v;
+  await expect(async () => {
+    await drag(x, `node ${to}`);
+    await expect(game.getByText(`Operations: 1 of ${tree.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await expect(game.getByText(new RegExp(`cur = cur\\.(left|right) = ${to}`))).toBeVisible();
 });
