@@ -1,10 +1,11 @@
-// Algorithm-sense games: be the sort, be the search, be the DP and be the binary search, each one's first puzzle played
-// move by move as the algorithm makes them, and a wrong tap refused with the rule it broke.
+// Algorithm-sense games: be the sort, be the search, be the DP, be the binary search and be the two pointers, each one's
+// first puzzle played move by move as the algorithm makes them, and a wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { checkOp, expect as next, replay, SEARCH_LADDER, searchNow, searchRun, type Machine } from "../src/math/beSearch.ts";
 import { SORT_LADDER, sortNow, sortRun } from "../src/math/beSort.ts";
 import { binNow, binRun, checkOp as binCheck, expect as binNext, replay as binReplay } from "../src/math/beBinary.ts";
+import { checkOp as ptrCheck, expect as ptrNext, ptrNow, ptrRun, replay as ptrReplay } from "../src/math/bePointers.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
 import { fill } from "../src/math/text.ts";
@@ -176,7 +177,64 @@ test("be the binary search: mid dragged to (lo + hi) // 2 rounded up is refused,
     await drag(column(4));
     await expect(game.getByText(fill(en.live.beBinary.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
   }).toPass();
-  await drag(column(3));
-  await expect(game.getByText(`mid = (0 + 6) // 2 = 3; a[3] = ${binTask.a[3]}`, { exact: false })).toBeVisible();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag(column(3));
+    await expect(game.getByText(`mid = (0 + 6) // 2 = 3; a[3] = ${binTask.a[3]}`, { exact: false })).toBeVisible({ timeout: 1000 });
+  }).toPass();
   await expect(game.getByText(`Operations: 1 of ${bin.ops.length}`)).toBeVisible();
+});
+
+const ptrTask = ptrNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const ptr = ptrRun(ptrTask);
+const slot = (x: number) => `a[${x}] = ${ptrTask.a[x]}`;
+
+test("be the two pointers: i and j moved in step by step to the pair, then into return, earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBePointers, ".live-bePointers");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const m = ptrReplay(ptrTask, ptr.ops.slice(0, k));
+    const e = ptrNext(m);
+    if (e === "return") await tap("i").then(() => tap("return"));
+    else await tap(e!).then(() => tap(slot(e === "i" ? m.i + 1 : m.j - 1)));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${ptr.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < ptr.ops.length; k++) await op(k);
+  const { i, j } = ptr.end;
+  await expect(game.getByText(new RegExp(`a\\[${i}\\] \\+ a\\[${j}\\] = ${ptrTask.a[i]} \\+ ${ptrTask.a[j]} = ${ptrTask.t}, found in ${ptr.ops.length - 1} moves! ★★★`))).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the two pointers: the pointer the sum doesn't move is refused, then the right one dragged a step in", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBePointers, ".live-bePointers");
+  const m = ptrReplay(ptrTask, []);
+  const n = ptrTask.a.length;
+  const right = ptrNext(m);
+  if (right !== "i" && right !== "j") throw new Error("the first move is i or j");
+  const wrong = right === "i" ? "j" : "i";
+  const step = (p: "i" | "j") => (p === "i" ? 1 : n - 2);
+  const c = ptrCheck(m, { kind: "move", p: wrong, to: step(wrong) });
+  if (c.ok) throw new Error(`${wrong} doesn't move first`);
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: wrong, exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(wrong, slot(step(wrong)));
+    await expect(game.getByText(fill(en.live.bePointers.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  const s = ptrTask.a[0] + ptrTask.a[n - 1];
+  await expect(async () => {
+    await drag(right, slot(step(right)));
+    await expect(game.getByText(`s = ${ptrTask.a[0]} + ${ptrTask.a[n - 1]} = ${s} ${right === "i" ? "<" : ">"} ${ptrTask.t}; ${right} = ${step(right)}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await expect(game.getByText(`Operations: 1 of ${ptr.ops.length}`)).toBeVisible();
 });
