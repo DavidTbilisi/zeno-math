@@ -1137,6 +1137,19 @@ function beSortPreview(): Piece[] {
   ];
 }
 
+function beSearchPreview(): Piece[] {
+  // Six places mid-way through a breadth-first search: the start and the next visited blue with their turns, the
+  // roads they were reached by thick, and the places found waiting ringed orange.
+  const P: Pt[] = [[0, 0], [90, 6], [180, 0], [4, 76], [92, 80], [176, 72]];
+  const E: [number, number][] = [[0, 1], [1, 2], [0, 3], [1, 4], [3, 4], [4, 5], [2, 5]];
+  const tree = [0, 2, 3];
+  return [
+    ...E.map(([a, b], i) => seg(P[a], P[b], tree.includes(i) ? { color: BLUE, width: 5 } : { color: MUTED, width: 2 })),
+    ...P.map((p, v) => ellipse(p[0], p[1], 13, 13, v === 0 ? { fill: FILL.green, width: 2 } : v === 1 || v === 3 ? { fill: FILL.blue, width: 2 } : v === 2 || v === 4 ? { fill: "#ffffff", color: "#f08c00", width: 3 } : { fill: "#ffffff", width: 2 })),
+    ...P.map((p, v) => text(p[0], p[1], "ABCDEF"[v], 14)),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1435,6 +1448,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveShortestPath", group: "games", build: shortestPathPreview, live: "shortestPath" },
   { id: "liveConnectTowns", group: "games", build: connectTownsPreview, live: "connectTowns" },
   { id: "liveBeSort", group: "games", build: beSortPreview, live: "beSort" },
+  { id: "liveBeSearch", group: "games", build: beSearchPreview, live: "beSearch" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
