@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1182,6 +1182,14 @@ UI in English, Russian and Georgian.
     server leaving (its keys go to the next one clockwise) and virtual nodes (each server at two points, A1 and A2).
     Nine puzzles and the endless run; discoveries: fewer keys moved than hash mod n would move, a leaving server's
     keys all going to its successor, a server taking keys at two points, a key wrapping round past 99.
+  - *Be the rate limiter*: the player decides each request on a timeline of seconds (each request a dot: grey to
+    come, green let through, red rejected), first doing the clean-up the code does: drag the clock onto the token
+    bucket to add the whole tokens earned, or onto the counter when a new fixed window starts (the windows shaded on
+    the timeline), drag sliding-log times W seconds old into drop (the last W seconds bracketed), or let the leaky
+    bucket's queued requests out as their leave times pass; then drag the request onto allow or reject. A wrong move
+    names the rule ("(4 − 0) // 3 = 1: refill the bucket first"; "log[0] = 1 > 3 − 4: it's still inside the window").
+    Nine puzzles and the endless run; discoveries: a burst through a full bucket, twice the limit across a fixed
+    window's edge, the sliding log rejecting what a fixed window lets through, a burst queued and let out steadily.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

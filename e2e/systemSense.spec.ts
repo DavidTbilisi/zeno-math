@@ -1,10 +1,11 @@
-// System-design-sense games: be the cache, be the load balancer and be the hash ring, each one's first puzzle played
-// operation by operation as the code makes them, and a wrong one refused with the rule it broke.
+// System-design-sense games: be the cache, be the load balancer, be the hash ring and be the rate limiter, each one's
+// first puzzle played operation by operation as the code makes them, and a wrong one refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { cacheNow, cacheRun, cacheSvg, checkOp as cacheCheck, expect as cacheNext, replay as cacheReplay, victimAt, type CacheMachine } from "../src/math/beCache.ts";
 import { checkOp as lbCheck, choose, expect as lbNext, lbNow, lbRun, replay as lbReplay, serverName } from "../src/math/beBalance.ts";
 import { checkOp as ringCheck, ownerOf, replay as ringReplay, ringNow, ringRun } from "../src/math/beRing.ts";
+import { checkOp as limitCheck, expect as limitNext, limitNow, limitRun, replay as limitReplay } from "../src/math/beLimit.ts";
 import { fill } from "../src/math/text.ts";
 import { boardWith } from "./helpers.ts";
 
@@ -174,5 +175,65 @@ test("be the hash ring: a key put on a server it doesn't meet first is refused, 
   await expect(async () => {
     await tap(key).then(() => tap(server));
     await expect(game.getByText(`Operations: 1 of ${ring.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const limitTask = limitNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const limit = limitRun(limitTask);
+/** What the code's next operation drags, and where to: the clock onto the bucket, or the request onto allow or reject. */
+const limitMove = (k: number): [string, string] => {
+  const m = limitReplay(limitTask, limit.ops.slice(0, k));
+  const e = limitNext(m)!;
+  return e === "clean" ? ["refill", "bucket"] : [`request at t = ${limitTask.times[m.r]}`, e];
+};
+
+test("be the rate limiter: the token bucket refilled and each request let through or rejected earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeLimit, ".live-beLimit");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const [from, to] = limitMove(k);
+    await tap(from).then(() => tap(to));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${limit.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < limit.ops.length; k++) await op(k);
+  await expect(game.getByText(/let through, .* rejected, a token each! ★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the rate limiter: a request let through with no token left is refused, then rejected", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeLimit, ".live-beLimit");
+  const k = limit.ops.findIndex((_, i) => limitNext(limitReplay(limitTask, limit.ops.slice(0, i))) === "reject");
+  const m = limitReplay(limitTask, limit.ops.slice(0, k));
+  const c = limitCheck(m, { kind: "allow" });
+  if (c.ok) throw new Error("no token is left");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(async () => {
+    const [from, to] = limitMove(0);
+    await tap(from).then(() => tap(to));
+    await expect(game.getByText("Operations: 1 of", { exact: false })).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let i = 1; i < k; i++) {
+    const [from, to] = limitMove(i);
+    await tap(from).then(() => tap(to));
+  }
+  const req = `request at t = ${limitTask.times[m.r]}`;
+  await expect(async () => {
+    await drag(req, "allow");
+    await expect(game.getByText(fill(en.live.beLimit.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag(req, "reject");
+    await expect(game.getByText(`t = ${limitTask.times[m.r]}: reject (no token)`).first()).toBeVisible({ timeout: 1000 });
   }).toPass();
 });
