@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1090,6 +1090,18 @@ UI in English, Russian and Georgian.
     three stars, one two. Nine puzzles open in turn; the endless run goes from pushes and pops of five or six to all
     four on up to eleven. Four discoveries (a new smallest climbs to the root, heap sort, linear heapify, a heap that
     never grows past k) and ten in a row.
+  - *Be the tree*: the player is the computer working a binary search tree, laid out with each node above its place
+    among the sorted values, so nothing moves as values come in. Every operation is a drag (or a tap on what to move,
+    then on where it goes). Insert and search walk x down from the root, onto the left child when it is smaller and
+    the right when bigger; insert drops it into the empty place where the walk ends, search onto the node that holds it
+    or into the empty place where it would be (None). The traversals keep an explicit stack: inorder pushes cur and
+    goes left until cur is None, then pops the top into out[] and goes right; preorder pops the top into out[] and
+    pushes its right child, then its left. The code runs beside it with the lines just run lit, and a log says what
+    each operation did ("4 < 8: cur = cur.left = 3"; "stack.pop() = 1; out = [1]"). An operation the code would not
+    make is not made, and says the rule it broke ("Push the right child 12 first, so the left one, 3, comes off the
+    stack first"). No miss earns three stars, one two. Nine puzzles open in turn; the endless run goes from inserts
+    and searches in small trees to all four on eight or nine nodes. Four discoveries (every insert is a leaf, a missing
+    value falls off where it would go, inorder is sorted, preorder rebuilds the tree) and ten in a row.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
