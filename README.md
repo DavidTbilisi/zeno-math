@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1051,6 +1051,18 @@ UI in English, Russian and Georgian.
     open in turn, from six numbers to twelve; the endless run goes from the pair sum and repeats on six to eight to
     all three on up to twelve. Four discoveries (no pair at all, a few moves instead of every pair, a tie moves j,
     in place with leftovers) and ten in a row
+  - *Be the sliding window*: the player is the computer sliding a window a[l..r] along an array, by dragging its two
+    edges (or a tap on what to move, then on where it goes): r a step right grows it, l a step right shrinks it, the
+    window's value goes into best when it is better, and at the end best goes into return. Three patterns on one
+    loop: the largest sum of k in a row (shrink once it is wider than k, take s once it is k wide), the longest run
+    with a sum at most S (shrink while s > S) and the longest stretch of letters without a repeat (shrink while the
+    next letter is in it). The window is framed over the array with the cells it has passed grey, the code runs
+    beside it with the lines just run lit, and a log says what each operation did ("r = 3; s = 8 + 1 = 9"; "s = 9 −
+    2 = 7; l = 1"). An operation the code would not make is not made, and says the rule it broke ("The window is 4
+    wide, more than k = 3: a[l] = 2 leaves first"). No miss earns three stars, one two. Nine puzzles open in turn,
+    from seven cells to twelve; the endless run goes from the two sums on seven or eight to all three on up to
+    twelve. Three discoveries (a slide is one add and one take-away, several shrinks in a row, under 2n moves) and
+    ten in a row
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

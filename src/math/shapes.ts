@@ -1186,6 +1186,18 @@ function bePointersPreview(): Piece[] {
   ];
 }
 
+function beWindowPreview(): Piece[] {
+  // A row with a window framed over three of its cells, the cells it has passed grey, and l and r under its ends.
+  const vals = ["4", "9", "7", "6", "5", "8"];
+  const chip = (i: number, s: string) => [rect(i * 44 + 4, 52, 30, 22, { fill: "#ffffff", color: BLUE, width: 2 }, true), text(i * 44 + 19, 63, s, 13)];
+  return [
+    ...vals.flatMap((v, i) => [rect(i * 44, 0, 38, 38, { fill: i < 2 ? FILL.gray : i < 5 ? "#e7f5ff" : "#ffffff", width: 2 }), text(i * 44 + 19, 19, v, 18)]),
+    rect(83, -5, 130, 48, { color: BLUE, width: 3 }, true),
+    ...chip(2, "l"),
+    ...chip(4, "r"),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1488,6 +1500,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeDp", group: "games", build: beDpPreview, live: "beDp" },
   { id: "liveBeBinary", group: "games", build: beBinaryPreview, live: "beBinary" },
   { id: "liveBePointers", group: "games", build: bePointersPreview, live: "bePointers" },
+  { id: "liveBeWindow", group: "games", build: beWindowPreview, live: "beWindow" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
