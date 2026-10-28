@@ -40,6 +40,7 @@ import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
 import { BeSort } from "./BeSort";
 import { BeSearch } from "./BeSearch";
+import { BeDp } from "./BeDp";
 import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
 import { PcaLab } from "./PcaLab";
@@ -116,6 +117,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   connectTowns: ConnectTowns,
   beSort: BeSort,
   beSearch: BeSearch,
+  beDp: BeDp,
   descentLab: DescentLab,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,

@@ -161,6 +161,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
     sense: "senseAlgo", games: [
       { kind: "beSort", icon: "🔀", name: "liveBeSort" },
       { kind: "beSearch", icon: "🔦", name: "liveBeSearch" },
+      { kind: "beDp", icon: "▦", name: "liveBeDp" },
     ],
   },
 ];
