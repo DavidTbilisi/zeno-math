@@ -1,8 +1,9 @@
-// System-design-sense games: be the cache, its first puzzle played operation by operation as the code makes them, and
-// a wrong one refused with the rule it broke.
+// System-design-sense games: be the cache and be the load balancer, each one's first puzzle played operation by
+// operation as the code makes them, and a wrong one refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { cacheNow, cacheRun, cacheSvg, checkOp as cacheCheck, expect as cacheNext, replay as cacheReplay, victimAt, type CacheMachine } from "../src/math/beCache.ts";
+import { checkOp as lbCheck, choose, expect as lbNext, lbNow, lbRun, replay as lbReplay, serverName } from "../src/math/beBalance.ts";
 import { fill } from "../src/math/text.ts";
 import { boardWith } from "./helpers.ts";
 
@@ -81,5 +82,53 @@ test("be the cache: a node that isn't the tail dragged into evict is refused, th
   await expect(async () => {
     await drag(cacheLabel(m, `n${tail.k}`), "evict");
     await expect(game.getByText(`evict ${tail.k} (tail)`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const lbTask = lbNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const lb = lbRun(lbTask);
+const clientOf = (k: number) => {
+  const m = lbReplay(lbTask, lb.ops.slice(0, k));
+  return { m, req: `request from client ${(lbTask.events[m.e] as { c: number }).c}` };
+};
+
+test("be the load balancer: round robin requests sent server by server in turn earn three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeBalance, ".live-beBalance");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const { m, req } = clientOf(k);
+    if (lbNext(m) === "raise") await tap("+w").then(() => tap("cw[]"));
+    else await tap(req).then(() => tap(`server ${serverName(choose(m))}`));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${lb.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < lb.ops.length; k++) await op(k);
+  await expect(game.getByText(/requests sent in turn: .* ★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the load balancer: a request dragged to a server out of turn is refused, then to the server under i", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeBalance, ".live-beBalance");
+  const { m, req } = clientOf(0);
+  const c = lbCheck(m, { kind: "send", s: 1 });
+  if (c.ok) throw new Error("round robin starts at A");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: req, exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(req, "server B");
+    await expect(game.getByText(fill(en.live.beBalance.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag(req, "server A");
+    await expect(game.getByText(`${req.replace("request from ", "")} → A; i = 1`)).toBeVisible({ timeout: 1000 });
   }).toPass();
 });

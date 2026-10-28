@@ -50,6 +50,7 @@ import { BeTree } from "./BeTree";
 import { BeStack } from "./BeStack";
 import { BeUnion } from "./BeUnion";
 import { BeCache } from "./BeCache";
+import { BeBalance } from "./BeBalance";
 import { BeTopo } from "./BeTopo";
 import { BeName } from "./BeName";
 import { ConnectTowns } from "./ConnectTowns";
@@ -140,6 +141,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   beStack: BeStack,
   beUnion: BeUnion,
   beCache: BeCache,
+  beBalance: BeBalance,
   beTopo: BeTopo,
   beName: BeName,
   descentLab: DescentLab,

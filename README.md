@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1163,6 +1163,16 @@ UI in English, Russian and Georgian.
     says what each operation did; a wrong one names the rule (LRU evicts the tail; key 3 is dirty, write it back
     first). Nine puzzles and the endless run; discoveries: LFU sparing the oldest, a dirty node written back, fewer
     database writes than puts, write-through writing every put, a hit moving to the head.
+  - *Be the load balancer*: the player is the balancer, dragging each request onto the server the code picks, with
+    the servers side by side (their index, what each was sent) and the events to come. Four kinds: round robin (a
+    pointer i under the servers, skipping one that goes down), least connections (each request stays open for a
+    number of requests, shown as blocks on its server; the fewest open wins, the first on a tie), nginx's smooth
+    weighted round robin (drag +w onto cw[] so every cw gains its weight, then send to the largest cw, which gives
+    back the total) and IP hash (hash mod the number of live servers indexes live[], so a client comes back to the
+    same server). Servers going down and connections ending happen by themselves and are logged. A wrong server
+    names the rule (i = 2: round robin sends to C; 13 mod 2 = 1: live[1] is C). Nine puzzles and the endless run;
+    discoveries: skipping a down server, a full smooth cycle bringing every cw back to 0, least connections evening
+    open work rather than counts, a client remapped when a server goes down, sticky sessions, wrapping round.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
