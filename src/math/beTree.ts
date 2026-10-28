@@ -315,7 +315,7 @@ export function treeNow(d: Pick<LiveBeTree, "mode" | "stage" | "level" | "seed">
 // ---------- the code and the log ----------
 
 export const CODE: Record<TreeAlgo, string[]> = {
-  insert: ["for x in q:", "  cur = root", "  while True:", "    side = left if x < cur.val else right", "    if cur.side is None: cur.side = Node(x); break", "    cur = cur.side"],
+  insert: ["for x in q:", "  cur = root", "  while True:", "    side = left if x < cur.val else right", "    if not cur.side: cur.side = Node(x); break", "    cur = cur.side"],
   search: ["for x in q:", "  cur = root", "  while cur and cur.val != x:", "    cur = cur.left if x < cur.val else cur.right", "  res.append(cur.val if cur else None)"],
   inorder: ["out = []; stack = []; cur = root", "while cur or stack:", "  while cur:", "    stack.append(cur); cur = cur.left", "  cur = stack.pop(); out.append(cur.val)", "  cur = cur.right"],
   preorder: ["out = []; stack = [root]", "while stack:", "  node = stack.pop(); out.append(node.val)", "  if node.right: stack.append(node.right)", "  if node.left: stack.append(node.left)"],
