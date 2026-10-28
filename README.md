@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1173,6 +1173,15 @@ UI in English, Russian and Georgian.
     names the rule (i = 2: round robin sends to C; 13 mod 2 = 1: live[1] is C). Nine puzzles and the endless run;
     discoveries: skipping a down server, a full smooth cycle bringing every cw back to 0, least connections evening
     open work rather than counts, a client remapped when a server goes down, sticky sessions, wrapping round.
+  - *Be the hash ring*: consistent hashing on a ring of positions 0 to 99, drawn as a circle with the servers on it in
+    their colours and each key as a tag inside it at its hash, beside a sorted ring[]. Every operation is a drag: a
+    new key onto the first server clockwise from its hash (round past 99 to the first if none is after it), or, when a
+    server joins or leaves (that happens by itself), each key that has to move onto its new server; the keys to move
+    can go in any order, and a key that doesn't move is refused ("bee stays on B: walking clockwise it still meets B
+    before D"). Four kinds: lookups, a server joining (only the keys between it and the server before it move), a
+    server leaving (its keys go to the next one clockwise) and virtual nodes (each server at two points, A1 and A2).
+    Nine puzzles and the endless run; discoveries: fewer keys moved than hash mod n would move, a leaving server's
+    keys all going to its successor, a server taking keys at two points, a key wrapping round past 99.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

@@ -1300,6 +1300,19 @@ function beBalancePreview(): Piece[] {
   ];
 }
 
+function beRingPreview(): Piece[] {
+  // A ring with three servers on it and a key inside it, on its way clockwise to the first of them.
+  const server = (x: number, y: number, name: string, color: string) => [ellipse(x, y, 15, 15, { fill: "#ffffff", color, width: 3 }), text(x, y, name, 15)];
+  return [
+    ellipse(80, 80, 75, 75, { color: "#ced4da", width: 3 }),
+    ...server(80, 5, "A", "#1971c2"),
+    ...server(145, 118, "B", "#2f9e44"),
+    ...server(15, 118, "C", "#7048e8"),
+    rect(84, 50, 52, 22, { fill: "#fff4e6", color: "#f08c00", width: 2 }),
+    text(110, 61, "dog 31", 11),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1610,6 +1623,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeUnion", group: "games", build: beUnionPreview, live: "beUnion" },
   { id: "liveBeCache", group: "games", build: beCachePreview, live: "beCache" },
   { id: "liveBeBalance", group: "games", build: beBalancePreview, live: "beBalance" },
+  { id: "liveBeRing", group: "games", build: beRingPreview, live: "beRing" },
   { id: "liveBeTopo", group: "games", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", group: "games", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
