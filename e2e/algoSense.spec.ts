@@ -1,6 +1,7 @@
 // Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers, be the
-// sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find and be the topological sort, each one's first puzzle played move by move as the algorithm makes them, and a
-// wrong tap refused with the rule it broke.
+// sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find and be the
+// topological sort, each one's first puzzle played move by move as the algorithm makes them, and a wrong tap refused
+// with the rule it broke; and name the pattern, its first round answered tile by tile.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { checkOp, expect as next, replay, SEARCH_LADDER, searchNow, searchRun, type Machine } from "../src/math/beSearch.ts";
@@ -13,6 +14,7 @@ import { checkOp as treeCheck, expect as treeNext, replay as treeReplay, step as
 import { checkOp as stackCheck, expect as stackNext, replay as stackReplay, stackNow, stackRun } from "../src/math/beStack.ts";
 import { checkOp as ufCheck, expect as ufNext, linkOrder, replay as ufReplay, ufNow, ufRun } from "../src/math/beUnion.ts";
 import { checkOp as topoCheck, edgeTarget, expect as topoNext, putNode, replay as topoReplay, topoNow, topoRun } from "../src/math/beTopo.ts";
+import { nameNow, PATTERNS, PROBLEMS } from "../src/math/beName.ts";
 import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
@@ -601,5 +603,44 @@ test("be the topological sort: a node with an edge into it dragged into the queu
   await expect(async () => {
     await drag(`node ${v}`, "queue");
     await expect(game.getByText(`q.append(${v}) → q = [${v}]`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const nameTask = nameNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const tileOf = (k: number) => en.live.beName.tiles[PROBLEMS[nameTask.items[k].id]];
+
+test("name the pattern: each problem dropped on its pattern earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeName, ".live-beName");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  await expect(async () => {
+    await tap("problem").then(() => tap(tileOf(0)));
+    await expect(game.getByText(`Named: 1 of ${nameTask.items.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < nameTask.items.length; k++) await tap("problem").then(() => tap(tileOf(k)));
+  await expect(game.getByText(new RegExp(`All ${nameTask.items.length} named! ★★★`))).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("name the pattern: a problem dropped on the wrong pattern says what that pattern needs, then on the right one", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeName, ".live-beName");
+  const right = PROBLEMS[nameTask.items[0].id];
+  const wrong = PATTERNS.find((p, i) => p !== right && i % 4 !== 0)!;
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  const W = en.live.beName;
+  await expect(game.getByRole("button", { name: "problem", exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag("problem", W.tiles[wrong]);
+    await expect(game.getByText(fill(W.wrong, { name: W.tiles[wrong], needs: W.needs[wrong] }))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag("problem", W.tiles[right]);
+    await expect(game.getByText(`Named: 1 of ${nameTask.items.length}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
 });

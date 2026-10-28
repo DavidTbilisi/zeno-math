@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find, be the topological sort). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find, be the topological sort, name the pattern). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1140,6 +1140,17 @@ UI in English, Russian and Georgian.
     turn; the endless run goes from Kahn and depth first on five nodes to all three on seven or eight. Three
     discoveries (more than one right order, a cycle, the depth-first order is the finishing order backwards) and ten
     in a row.
+  - *Name the pattern*: the twelve algorithm-sense games in one: the player reads a problem ("Count the number of
+    ways to climb 9 stairs taking 1 or 2 steps at a time") and drags its card onto the pattern that solves it, one of
+    twelve tiles (sort, graph search, DP, binary search, two pointers, sliding window, backtracking, heap, search tree,
+    monotonic stack, union-find, topological sort). A wrong tile is not taken and says what that pattern needs ("Binary
+    search needs a sorted list … and one thing to find in about log n looks. Is that what this problem asks?"); a right
+    one moves on, shows the clue that gave it away ("number of ways to climb"), and adds what the pattern needs to a
+    cheat sheet beside the board. Thirty-six problems, three for each pattern, their numbers drawn fresh. No miss earns
+    three stars, one two. Nine rounds open in turn, from six of the first six patterns to all twelve, the later ones
+    with look-alikes (two problems with a sorted list, or graphs that want a route, a group and an order); the endless
+    run goes from four problems to eight with look-alikes. Two discoveries (a sorted list isn't always binary search;
+    graphs want different machines) and ten in a row.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
