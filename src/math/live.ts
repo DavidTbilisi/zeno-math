@@ -36,6 +36,7 @@ import type { LiveBeSort } from "./beSort";
 import type { LiveBeSearch } from "./beSearch";
 import type { LiveBeDp } from "./beDp";
 import type { LiveBeBinary } from "./beBinary";
+import type { LiveBePointers } from "./bePointers";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
 import { PCA_START, type LivePca } from "./pcaLab";
@@ -426,6 +427,7 @@ export type LiveStates = {
   beSearch: LiveBeSearch;
   beDp: LiveBeDp;
   beBinary: LiveBeBinary;
+  bePointers: LiveBePointers;
   descentLab: LiveDescent;
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
@@ -488,6 +490,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   beSearch: [1060, 640],
   beDp: [960, 600],
   beBinary: [1060, 520],
+  bePointers: [1060, 640],
   descentLab: [660, 610],
   pcaLab: [660, 640],
   softmaxLab: [660, 640],
@@ -552,6 +555,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     beSearch: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beDp: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beBinary: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
+    bePointers: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     descentLab: DESCENT_START,
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,

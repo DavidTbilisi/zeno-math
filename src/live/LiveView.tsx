@@ -42,6 +42,7 @@ import { BeSort } from "./BeSort";
 import { BeSearch } from "./BeSearch";
 import { BeDp } from "./BeDp";
 import { BeBinary } from "./BeBinary";
+import { BePointers } from "./BePointers";
 import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
 import { PcaLab } from "./PcaLab";
@@ -120,6 +121,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   beSearch: BeSearch,
   beDp: BeDp,
   beBinary: BeBinary,
+  bePointers: BePointers,
   descentLab: DescentLab,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,
