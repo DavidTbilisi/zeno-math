@@ -234,9 +234,9 @@ export function stackNow(d: Pick<LiveBeStack, "mode" | "stage" | "level" | "seed
 // ---------- the code and the log ----------
 
 export const CODE: Record<StackAlgo, string[]> = {
-  nextGreater: ["ans = [−1] * n; stack = []   # indexes, a[] falling", "for i in range(n):", "  while stack and a[stack[−1]] < a[i]:", "    ans[stack.pop()] = a[i]", "  stack.append(i)"],
-  temps: ["ans = [0] * n; stack = []   # indexes, a[] falling", "for i in range(n):", "  while stack and a[stack[−1]] < a[i]:", "    j = stack.pop(); ans[j] = i − j", "  stack.append(i)"],
-  prevSmaller: ["ans = [−1] * n; stack = []   # indexes, a[] rising", "for i in range(n):", "  while stack and a[stack[−1]] >= a[i]: stack.pop()", "  ans[i] = a[stack[−1]] if stack else −1", "  stack.append(i)"],
+  nextGreater: ["ans = [−1] * n; stack = []  # indexes, falling", "for i in range(n):", "  while stack and a[stack[−1]] < a[i]:", "    ans[stack.pop()] = a[i]", "  stack.append(i)"],
+  temps: ["ans = [0] * n; stack = []  # indexes, falling", "for i in range(n):", "  while stack and a[stack[−1]] < a[i]:", "    j = stack.pop(); ans[j] = i − j", "  stack.append(i)"],
+  prevSmaller: ["ans = [−1] * n; stack = []  # indexes, rising", "for i in range(n):", "  while stack and a[stack[−1]] >= a[i]: pop()", "  ans[i] = a[stack[−1]] if stack else −1", "  stack.append(i)"],
   removeK: ["stack = []   # digits, rising", "for d in digits:", "  while k > 0 and stack and stack[−1] > d:", "    stack.pop(); k −= 1", "  stack.append(d)", "while k > 0: stack.pop(); k −= 1"],
 };
 

@@ -321,9 +321,9 @@ export function heapNow(d: Pick<LiveBeHeap, "mode" | "stage" | "level" | "seed">
 
 export const CODE: Record<HeapAlgo, string[]> = {
   push: ["heap = []", "for x in a:", "  heap.append(x); i = len(heap) − 1", "  while i > 0 and heap[(i − 1) // 2] > heap[i]:", "    swap(i, (i − 1) // 2); i = (i − 1) // 2"],
-  pop: ["out = []   # heap is a min-heap", "while heap:", "  out.append(heap[0])", "  heap[0] = heap.pop(); i = 0   # if any are left", "  while heap[c] < heap[i], c the smaller child of i:", "    swap(i, c); i = c"],
-  heapify: ["# make heap[] a min-heap in place", "for s in range(n // 2 − 1, −1, −1):", "  i = s", "  while heap[c] < heap[i], c the smaller child of i:", "    swap(i, c); i = c"],
-  topK: ["heap = []   # the k largest so far, the smallest on top", "for x in a:", "  if len(heap) < k: heap.append(x); sift up", "  elif x > heap[0]: heap[0] = x; sift down", "  else: skip x", "return heap[0]"],
+  pop: ["out = []   # heap is a min-heap", "while heap:", "  out.append(heap[0])", "  heap[0] = heap.pop(); i = 0   # if any left", "  while heap[c] < heap[i], c = smaller child:", "    swap(i, c); i = c"],
+  heapify: ["# make heap[] a min-heap in place", "for s in range(n // 2 − 1, −1, −1):", "  i = s", "  while heap[c] < heap[i], c = smaller child:", "    swap(i, c); i = c"],
+  topK: ["heap = []   # k largest so far, smallest on top", "for x in a:", "  if len(heap) < k: heap.append(x); sift up", "  elif x > heap[0]: heap[0] = x; sift down", "  else: skip x", "return heap[0]"],
 };
 
 export function logText(l: HeapLog, t: HeapTask): string {

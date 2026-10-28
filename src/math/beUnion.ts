@@ -307,7 +307,7 @@ export function ufNow(d: Pick<LiveBeUnion, "mode" | "stage" | "level" | "seed">)
 
 // ---------- the code and the log ----------
 
-const FIND = ["parent = list(range(n)); size = [1] * n", "def find(x):", "  while parent[x] != x: x = parent[x]", "  point each node passed straight at x   # compress", "  return x"];
+const FIND = ["parent = list(range(n)); size = [1] * n", "def find(x):", "  while parent[x] != x: x = parent[x]", "  point each node passed at x   # compress", "  return x"];
 export const CODE: Record<UfAlgo, string[]> = {
   unions: [...FIND, "for a, b in unions:", "  ra, rb = find(a), find(b)", "  if ra == rb: continue", "  if size[ra] < size[rb]: ra, rb = rb, ra", "  parent[rb] = ra; size[ra] += size[rb]"],
   connected: [...FIND, "for cmd, a, b in script:", "  ra, rb = find(a), find(b)", "  if cmd == '?': answer(ra == rb); continue", "  if ra == rb: continue", "  smaller root under bigger: parent[rb] = ra"],

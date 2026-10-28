@@ -316,7 +316,7 @@ const KAHN = ["indeg = in-degrees; q = deque(); order = []", "for v in range(n):
 export const CODE: Record<TopoAlgo, string[]> = {
   kahn: KAHN,
   cycle: KAHN,
-  dfs: ["state = [unvisited] * n; stack = []; order = []", "for s in range(n): if s is unvisited: push s (open)", "  while stack:", "    u = stack[−1]; v = u's next unvisited neighbour", "    if v: push v (open)", "    else: stack.pop(); u finished; order.insert(0, u)", "return order"],
+  dfs: ["state = [unvisited] * n; stack = []; order = []", "for s in range(n): if unvisited: push s (open)", "  while stack:", "    u = stack[−1]; v = next unvisited of u", "    if v: push v (open)", "    else: pop(); u done; order.insert(0, u)", "return order"],
 };
 
 const list = (xs: number[]) => `[${xs.join(", ")}]`;

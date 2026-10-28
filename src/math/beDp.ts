@@ -395,11 +395,11 @@ export function dpNow(d: Pick<LiveBeDp, "mode" | "stage" | "level" | "seed">): D
 /** The code each problem runs, line by line; `DpMachine.lines` lights the lines the last operation ran. */
 export const CODE: Record<DpProblem, string[]> = {
   stairs: ["dp[0] = 1", "for i in 1..n:", "  dp[i] = sum(dp[i−s] for s in steps if s ≤ i)", "return dp[n]"],
-  robber: ["dp[0] = a[0]; dp[1] = max(a[0], a[1])", "for i in 2..n−1:", "  dp[i] = max(dp[i−1], dp[i−2] + a[i])  # skip, take", "return dp[n−1]"],
-  kadane: ["dp[0] = a[0]", "for i in 1..n−1:", "  dp[i] = a[i] + max(0, dp[i−1])  # afresh, extend", "return max(dp)"],
-  coins: ["dp[0] = 0", "for i in 1..k:", "  dp[i] = 1 + min(dp[i−c] for c in coins if c ≤ i)", "return dp[k]"],
+  robber: ["dp[0] = a[0]; dp[1] = max(a[0], a[1])", "for i in 2..n−1:", "  dp[i] = max(dp[i−1], dp[i−2]+a[i]) # skip|take", "return dp[n−1]"],
+  kadane: ["dp[0] = a[0]", "for i in 1..n−1:", "  dp[i] = a[i] + max(0, dp[i−1])  # new|extend", "return max(dp)"],
+  coins: ["dp[0] = 0", "for i in 1..k:", "  dp[i] = 1 + min(dp[i−c] for c ≤ i in coins)", "return dp[k]"],
   paths: ["dp[0][j] = 1; dp[i][0] = 1", "for i in 1..R−1: for j in 1..C−1:", "  dp[i][j] = dp[i−1][j] + dp[i][j−1]", "return dp[R−1][C−1]"],
-  minPath: ["dp[0][0] = g[0][0]", "for i in 0..R−1: for j in 0..C−1, not (0, 0):", "  dp[i][j] = g[i][j] + min(dp[i−1][j], dp[i][j−1])  # those there are", "return dp[R−1][C−1]"],
+  minPath: ["dp[0][0] = g[0][0]", "for i in 0..R−1: for j in 0..C−1, not (0, 0):", "  dp[i][j] = g[i][j] + min(dp above, dp left)", "return dp[R−1][C−1]"],
   lcs: ["dp[i][0] = 0; dp[0][j] = 0", "for i in 1..n: for j in 1..m:", "  if a[i−1] == b[j−1]:", "    dp[i][j] = dp[i−1][j−1] + 1", "  else: dp[i][j] = max(dp[i−1][j], dp[i][j−1])", "return dp[n][m]"],
 };
 /** What each problem's code returns, as the return line names it. */
