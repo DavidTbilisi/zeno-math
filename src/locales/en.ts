@@ -14,6 +14,7 @@ export const en = {
   confirmDelete: "Delete this board? This cannot be undone.",
   actionFailed: "That didn't work: the server could not be reached. Try again.",
   backupAll: "Download a backup of all boards",
+  sourceCode: "Source code (AGPL-3.0)",
   updated: "Updated",
   back: "Boards",
   saving: "Saving…",
