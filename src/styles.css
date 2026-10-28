@@ -434,16 +434,7 @@ input.invalid { border-color: var(--danger); }
 .palette-none { padding: 10px 16px 14px; }
 
 /* Practice */
-/* The practice page (#/practice) and its card on the home page */
-.practice-card {
-  display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding: 18px 20px;
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 14px;
-  background: color-mix(in srgb, var(--accent) 7%, var(--surface)); color: var(--text); text-decoration: none;
-}
-.practice-card:hover, .practice-card:focus-visible { border-color: var(--accent); }
-.practice-card-icon { font-size: 32px; }
-.practice-card-text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.practice-card-text strong { font-size: 18px; }
+/* The practice page (#/practice) */
 .practice-page { max-width: 1180px; }
 /* The page: the practice, and beside it the session, the missed questions coming back and the class panel. */
 .practice-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
@@ -481,8 +472,6 @@ input.invalid { border-color: var(--danger); }
 .practice-prompt { margin: 0; font-size: 20px; line-height: 1.45; }
 .practice-page .practice-input { font-size: 20px; padding: 10px 12px; }
 @media (max-width: 640px) {
-  .practice-card { flex-wrap: wrap; }
-  .practice-card .btn { width: 100%; justify-content: center; }
   .practice-body { padding: 14px; }
   .practice-prompt { font-size: 18px; }
 }
@@ -911,3 +900,193 @@ input.invalid { border-color: var(--danger); }
 .live-solve-rungs .live-btn.passed { background: #ebfbee; border-color: #2f9e44; }
 .live-solve-options { flex-direction: column; align-items: stretch; max-width: 640px; }
 .live-solve-options .live-btn { text-align: left; white-space: normal; }
+
+/* Brand: the front page (#/about) and the boards home. Ink on graph paper; marker yellow is only ever the part of
+   the way already covered, never text. FiraGO covers Georgian, Cyrillic and Latin in one family. */
+@font-face { font-family: "FiraGO"; src: url("/brand/FiraGO-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "FiraGO"; src: url("/brand/FiraGO-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "FiraGO"; src: url("/brand/FiraGO-ExtraBold.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+.z {
+  --z-paper: #f6f8fc;
+  --z-grid: #e1e7f2;
+  --z-ink: #172350;
+  --z-graphite: #56627f;
+  --z-marker: #ffcf33;
+  --z-right: #13795b;
+  /* the app's own tokens, so the buttons and inputs inside take the brand */
+  --bg: var(--z-paper);
+  --surface: #ffffff;
+  --text: var(--z-ink);
+  --muted: var(--z-graphite);
+  --border: #d5dcea;
+  --accent: var(--z-ink);
+  --accent-hover: #24336d;
+  --accent-text: #ffffff;
+  --chip: #e9eef7;
+  min-height: 100%;
+  background: var(--z-paper);
+  color: var(--z-ink);
+  font-family: "FiraGO", system-ui, "Noto Sans Georgian", sans-serif;
+  font-size: 16px; line-height: 1.55;
+  font-variant-numeric: lining-nums;
+}
+@media (prefers-color-scheme: dark) {
+  .z {
+    --z-paper: #0e1430;
+    --z-grid: #1d2750;
+    --z-ink: #e8ecf8;
+    --z-graphite: #a2acc8;
+    --z-marker: #ffd84d;
+    --z-right: #5ad1a2;
+    --surface: #151d40;
+    --border: #2b3766;
+    --accent: #e8ecf8;
+    --accent-hover: #ffffff;
+    --accent-text: #0e1430;
+    --chip: #1f2950;
+  }
+}
+.z a:focus-visible, .z button:focus-visible { outline: 3px solid var(--z-marker); outline-offset: 2px; box-shadow: 0 0 0 5px var(--z-ink); }
+.z main { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+.z-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: 1120px; margin: 0 auto; padding: 20px 24px; }
+.z-brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 800; font-size: 22px; letter-spacing: -0.01em; color: var(--z-ink); }
+.z-mark { color: var(--z-ink); flex: none; }
+.z-nav { display: flex; align-items: center; gap: 20px; }
+.z-nav a { color: var(--z-graphite); font-weight: 600; }
+.z-nav a:hover { color: var(--z-ink); }
+
+.z-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px;
+  border: 2px solid var(--z-ink); border-radius: 6px; font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer;
+}
+.z-btn:disabled { opacity: 0.4; cursor: default; }
+.z-btn-ink { background: var(--z-ink); color: var(--z-paper); }
+.z-btn-ink:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+.z-btn-line { background: transparent; color: var(--z-ink); }
+.z-btn-line:hover { background: var(--chip); }
+.z-btn-marker { background: var(--z-marker); border-color: var(--z-marker); color: #172350; }
+
+/* Hero: words left, the question right, Zeno's line across the whole width below */
+.z-hero {
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); grid-template-areas: "text ask" "line line";
+  column-gap: 56px; row-gap: 56px; align-items: center; padding: 48px 0 72px;
+}
+.z-hero-text { grid-area: text; }
+.z-hero h1 { margin: 0; font-size: clamp(2.5rem, 2rem + 3vw, 4.25rem); font-weight: 800; line-height: 1.04; letter-spacing: -0.025em; text-wrap: balance; }
+.z-lede { margin: 24px 0 32px; max-width: 34em; font-size: 1.1875rem; color: var(--z-graphite); }
+.z-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.z-ask {
+  grid-area: ask; display: flex; flex-direction: column; gap: 14px; padding: 28px;
+  background: var(--surface); border: 2px solid var(--z-ink); border-radius: 10px;
+}
+.z-ask-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--z-graphite); }
+.z-ask-q { display: flex; align-items: center; gap: 14px; margin: 0; font-size: 2.25rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.z .z-ask-q input {
+  width: 3.4em; padding: 2px 10px; font: inherit; color: var(--z-ink); background: var(--z-paper);
+  border: 2px solid var(--z-grid); border-radius: 6px;
+}
+.z .z-ask-q input:focus { outline: none; border-color: var(--z-ink); }
+.z-ask-said { margin: 0; min-height: 3.1em; color: var(--z-graphite); }
+.z-ask-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.z-ask-covered { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.z-frac { display: inline-flex; flex-direction: column; align-items: center; font-size: 0.8125rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.z-frac > span:first-child { border-bottom: 1.5px solid currentColor; padding: 0 2px; }
+.z-frac-zero { font-variant-numeric: tabular-nums; }
+
+/* Zeno's line: 0 to 1 on graph paper, the covered part in marker, ticks where right answers land, the gate at 0.95 */
+.z-line {
+  grid-area: line; position: relative; padding: 56px 36px 64px;
+  background-color: var(--surface);
+  background-image: linear-gradient(var(--z-grid) 1px, transparent 1px), linear-gradient(90deg, var(--z-grid) 1px, transparent 1px);
+  background-size: 16px 16px; border-radius: 10px;
+}
+.z-line-track { position: relative; height: 32px; background: color-mix(in srgb, var(--z-ink) 12%, transparent); border-radius: 2px; }
+.z-line-fill { position: absolute; inset: 0; background: var(--z-marker); transform-origin: left; transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.z-tick { position: absolute; top: -8px; bottom: -8px; width: 2px; margin-left: -1px; background: color-mix(in srgb, var(--z-ink) 35%, transparent); }
+.z-tick.passed { background: var(--z-ink); }
+.z-tick-label { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); font-size: 1.75rem; font-weight: 800; line-height: 1; color: var(--z-graphite); }
+.z-tick.passed .z-tick-label { color: var(--z-ink); }
+.z-gate { position: absolute; top: -14px; bottom: -14px; border-left: 2px dashed var(--z-right); }
+.z-gate-label { position: absolute; bottom: 100%; right: 6px; font-size: 0.8125rem; font-weight: 600; color: var(--z-right); white-space: nowrap; }
+.z-runner {
+  position: absolute; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%;
+  background: var(--z-ink); border: 3px solid var(--surface); transition: left 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.z-line-end { position: absolute; bottom: 18px; font-weight: 800; font-size: 1.75rem; line-height: 1; }
+.z-line-zero { left: 28px; }
+.z-line-one { right: 28px; }
+@media (prefers-reduced-motion: reduce) {
+  .z-line-fill, .z-runner { transition: none; }
+}
+
+/* What a class gets: a definition list, the fact's name on the left */
+.z-section { padding: 64px 0; border-top: 2px solid var(--z-ink); }
+.z-section h2, .z-own h2 { margin: 0 0 32px; font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.375rem); font-weight: 800; letter-spacing: -0.015em; }
+.z-facts { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 56px; }
+.z-facts > div { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 16px; padding: 20px 0; border-top: 1px solid var(--border); }
+.z-facts dt { font-weight: 800; font-size: 1.0625rem; }
+.z-facts dd { margin: 0; color: var(--z-graphite); max-width: 36em; }
+
+/* How a class starts: a real sequence, so numbered */
+.z-steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
+.z-steps li { counter-increment: step; color: var(--z-graphite); }
+.z-steps li::before {
+  content: counter(step); display: block; margin-bottom: 12px; font-size: 3rem; font-weight: 800; line-height: 1; color: var(--z-ink);
+}
+
+/* Where the data lives: the one dark band */
+.z-own { margin: 0 -24px; padding: 64px 24px; background: #172350; color: #e8ecf8; border-radius: 12px; }
+.z-own > div { max-width: 44em; }
+.z-own p { margin: 0 0 16px; font-size: 1.125rem; color: #c6cde3; }
+.z-own a { color: #ffcf33; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+@media (prefers-color-scheme: dark) {
+  .z-own { background: #18224a; }
+}
+
+.z-end { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; padding: 64px 0 80px; }
+.z-end p { margin: 0; font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); font-weight: 800; }
+
+/* The boards home in the same dress */
+.z .home { max-width: 1120px; padding: 0 0 64px; }
+.z .home-main { padding: 8px 24px 0; }
+.z-practice {
+  display: flex; align-items: center; gap: 24px; margin-bottom: 48px; padding: 28px 32px;
+  background: #172350; color: #e8ecf8; border-radius: 12px;
+}
+.z-practice-text { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.z-practice-text strong { font-size: 1.5rem; font-weight: 800; color: #ffffff; }
+.z-practice-text span { color: #c6cde3; }
+.z-practice:hover .z-btn-marker { box-shadow: 0 0 0 3px #172350, 0 0 0 5px var(--z-marker); }
+@media (prefers-color-scheme: dark) {
+  .z-practice { background: #18224a; }
+}
+.z .section-head h1 { font-size: 1.5rem; font-weight: 800; }
+.z .board-card { border-radius: 8px; }
+.z .board-card:hover { border-color: var(--z-ink); }
+.z .board-title { font-weight: 600; }
+.z .empty { border: 2px dashed var(--border); }
+
+@media (max-width: 860px) {
+  .z-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "ask" "line"; row-gap: 40px; padding: 24px 0 56px; }
+  .z-facts { grid-template-columns: minmax(0, 1fr); }
+  .z-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .z-bar, .z main, .z .home-main { padding-left: 16px; padding-right: 16px; }
+  .z-nav { gap: 12px; }
+  .z-ask { padding: 20px; }
+  .z-ask-q { font-size: 1.875rem; }
+  .z-line { padding: 48px 20px 56px; }
+  .z-line-track { height: 24px; }
+  .z-tick-label { top: 38px; font-size: 1.25rem; }
+  .z-line-end { font-size: 1.25rem; }
+  .z-line-zero { left: 14px; }
+  .z-line-one { right: 14px; }
+  .z-facts > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .z-steps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .z-own { margin: 0 -16px; padding: 48px 16px; border-radius: 0; }
+  .z-practice { flex-wrap: wrap; padding: 24px 20px; }
+  .z-practice .z-btn { width: 100%; }
+}

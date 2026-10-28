@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, type BoardSummary } from "../api";
+import { ZenoMark } from "../components/ZenoMark";
 import { LangSelect, useI18n } from "../i18n";
 
 export function HomePage() {
@@ -47,68 +48,66 @@ export function HomePage() {
   const date = new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeStyle: "short" });
 
   return (
-    <div className="home">
-      <header className="home-header">
-        <div className="brand">
-          <img src="/favicon.svg" alt="" width={36} height={36} />
-          <div>
-            <h1>{t.appName}</h1>
-            <p>{t.tagline}</p>
-          </div>
-        </div>
-        <LangSelect />
-      </header>
+    <div className="z">
+      <div className="home">
+        <header className="z-bar">
+          <a className="z-brand" href="#/about"><ZenoMark size={18} /><span>{t.appName}</span></a>
+          <nav className="z-nav">
+            <a href="#/about">{t.aboutLink}</a>
+            <LangSelect />
+          </nav>
+        </header>
 
-      <main className="home-main">
-        <a className="practice-card" href="#/practice">
-          <span className="practice-card-icon" aria-hidden="true">🎯</span>
-          <span className="practice-card-text">
-            <strong>{t.practice}</strong>
-            <span className="muted">{t.practiceIntro}</span>
-          </span>
-          <span className="btn primary">{t.practiceStart} →</span>
-        </a>
+        <main className="home-main">
+          <a className="z-practice" href="#/practice">
+            <span className="z-practice-text">
+              <strong>{t.practice}</strong>
+              <span>{t.practiceIntro}</span>
+            </span>
+            <span className="z-btn z-btn-marker">{t.practiceStart}</span>
+          </a>
 
-        <div className="section-head">
-          <h2>{t.myBoards}</h2>
-          <button className="btn primary" onClick={create}>+ {t.newBoard}</button>
-        </div>
-        {failed && <p className="error" role="alert">{t.actionFailed}</p>}
-
-        {boards === null ? (
-          <p className="muted">{t.loading}</p>
-        ) : boards.length === 0 ? (
-          <div className="empty">
-            <p>{t.noBoards}</p>
+          <div className="section-head">
+            <h1>{t.myBoards}</h1>
             <button className="btn primary" onClick={create}>+ {t.newBoard}</button>
           </div>
-        ) : (
-          <ul className="board-grid">
-            {boards.map((b) => (
-              <li key={b.id} className="board-card">
-                <a href={`#/b/${b.id}`} className="board-link">
-                  <span className="board-title">{b.title}</span>
-                  <span className="muted small">
-                    {t.updated}: {date.format(b.updatedAt)}
-                  </span>
-                </a>
-                <div className="board-actions">
-                  <button className="btn small ghost" onClick={() => rename(b)}>{t.rename}</button>
-                  <button className="btn small ghost danger" onClick={() => remove(b)}>{t.delete}</button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        {!!boards?.length && (
+          {failed && <p className="error" role="alert">{t.actionFailed}</p>}
+
+          {boards === null ? (
+            <p className="muted">{t.loading}</p>
+          ) : boards.length === 0 ? (
+            <div className="empty">
+              <p>{t.noBoards}</p>
+              <button className="btn primary" onClick={create}>+ {t.newBoard}</button>
+            </div>
+          ) : (
+            <ul className="board-grid">
+              {boards.map((b) => (
+                <li key={b.id} className="board-card">
+                  <a href={`#/b/${b.id}`} className="board-link">
+                    <span className="board-title">{b.title}</span>
+                    <span className="muted small">
+                      {t.updated}: {date.format(b.updatedAt)}
+                    </span>
+                  </a>
+                  <div className="board-actions">
+                    <button className="btn small ghost" onClick={() => rename(b)}>{t.rename}</button>
+                    <button className="btn small ghost danger" onClick={() => remove(b)}>{t.delete}</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          {!!boards?.length && (
+            <p className="muted small">
+              <a href="/api/export" download>⤓ {t.backupAll}</a>
+            </p>
+          )}
           <p className="muted small">
-            <a href="/api/export" download>⤓ {t.backupAll}</a>
+            <a href="#/teacher">{t.teacher.link}</a>
           </p>
-        )}
-        <p className="muted small">
-          <a href="#/teacher">{t.teacher.link}</a>
-        </p>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
