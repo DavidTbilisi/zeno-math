@@ -1,11 +1,13 @@
-// Algorithm-sense games: be the sort, be the search, be the DP, be the binary search and be the two pointers, each one's
-// first puzzle played move by move as the algorithm makes them, and a wrong tap refused with the rule it broke.
+// Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers and be the
+// sliding window, each one's first puzzle played move by move as the algorithm makes them, and a wrong tap refused with
+// the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { checkOp, expect as next, replay, SEARCH_LADDER, searchNow, searchRun, type Machine } from "../src/math/beSearch.ts";
 import { SORT_LADDER, sortNow, sortRun } from "../src/math/beSort.ts";
 import { binNow, binRun, checkOp as binCheck, expect as binNext, replay as binReplay } from "../src/math/beBinary.ts";
 import { checkOp as ptrCheck, expect as ptrNext, ptrNow, ptrRun, replay as ptrReplay } from "../src/math/bePointers.ts";
+import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
 import { fill } from "../src/math/text.ts";
@@ -237,4 +239,55 @@ test("be the two pointers: the pointer the sum doesn't move is refused, then the
     await expect(game.getByText(`s = ${ptrTask.a[0]} + ${ptrTask.a[n - 1]} = ${s} ${right === "i" ? "<" : ">"} ${ptrTask.t}; ${right} = ${step(right)}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
   await expect(game.getByText(`Operations: 1 of ${ptr.ops.length}`)).toBeVisible();
+});
+
+const winTask = winNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const win = winRun(winTask);
+const cellOf = (x: number) => `a[${x}] = ${winTask.a[x]}`;
+const bestOf = (b: number) => `best = ${b === -Infinity ? "−∞" : b}`;
+
+test("be the sliding window: the window grown, shrunk and its sum taken into best, then best into return, earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeWindow, ".live-beWindow");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const m = winReplay(winTask, win.ops.slice(0, k));
+    const e = winNext(m);
+    if (e === "R") await tap("r").then(() => tap(cellOf(m.r + 1)));
+    else if (e === "L") await tap("l").then(() => tap(cellOf(m.l + 1)));
+    else if (e === "best") await tap(`s = ${winValue(m)}`).then(() => tap(bestOf(m.best)));
+    else await tap(bestOf(m.best)).then(() => tap("return"));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${win.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < win.ops.length; k++) await op(k);
+  await expect(game.getByText(new RegExp(`The largest sum of ${winTask.k} in a row is ${win.end.ret}, found by sliding once along ${winTask.a.length}! ★★★`))).toBeVisible();
+  await expect(game.getByText(`return best = ${win.end.ret}`)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the sliding window: l dragged before the window has grown is refused, then r dragged onto a[0]", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeWindow, ".live-beWindow");
+  const m = winReplay(winTask, []);
+  const c = winCheck(m, { kind: "move", p: "l", to: 1 });
+  if (c.ok) throw new Error("r moves first");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: "l", exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag("l", cellOf(1));
+    await expect(game.getByText(fill(en.live.beWindow.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag("r", cellOf(0));
+    await expect(game.getByText(`r = 0; s = 0 + ${winTask.a[0]} = ${winTask.a[0]}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await expect(game.getByText(`Operations: 1 of ${win.ops.length}`)).toBeVisible();
 });

@@ -164,6 +164,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "beDp", icon: "▦", name: "liveBeDp" },
       { kind: "beBinary", icon: "🔍", name: "liveBeBinary" },
       { kind: "bePointers", icon: "👉", name: "liveBePointers" },
+      { kind: "beWindow", icon: "🪟", name: "liveBeWindow" },
     ],
   },
 ];
