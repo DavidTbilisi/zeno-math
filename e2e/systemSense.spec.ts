@@ -1,9 +1,10 @@
-// System-design-sense games: be the cache and be the load balancer, each one's first puzzle played operation by
-// operation as the code makes them, and a wrong one refused with the rule it broke.
+// System-design-sense games: be the cache, be the load balancer and be the hash ring, each one's first puzzle played
+// operation by operation as the code makes them, and a wrong one refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { cacheNow, cacheRun, cacheSvg, checkOp as cacheCheck, expect as cacheNext, replay as cacheReplay, victimAt, type CacheMachine } from "../src/math/beCache.ts";
 import { checkOp as lbCheck, choose, expect as lbNext, lbNow, lbRun, replay as lbReplay, serverName } from "../src/math/beBalance.ts";
+import { checkOp as ringCheck, ownerOf, replay as ringReplay, ringNow, ringRun } from "../src/math/beRing.ts";
 import { fill } from "../src/math/text.ts";
 import { boardWith } from "./helpers.ts";
 
@@ -130,5 +131,48 @@ test("be the load balancer: a request dragged to a server out of turn is refused
   await expect(async () => {
     await drag(req, "server A");
     await expect(game.getByText(`${req.replace("request from ", "")} → A; i = 1`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const ringTask = ringNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const ring = ringRun(ringTask);
+/** The new key's button and the button of the server it belongs to, after k operations. */
+const ringMove = (k: number) => {
+  const m = ringReplay(ringTask, ring.ops.slice(0, k));
+  const ev = ringTask.events[m.e] as { k: string; h: number };
+  const to = ownerOf(m.nodes, ev.h);
+  return { m, ev, key: `new key ${ev.k}, hash ${ev.h}`, server: `server ${to.id} at ${to.h}` };
+};
+
+test("be the hash ring: each key placed on the first server clockwise earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeRing, ".live-beRing");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const { key, server } = ringMove(k);
+    await tap(key).then(() => tap(server));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${ring.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < ring.ops.length; k++) await op(k);
+  await expect(game.getByText(/keys placed on the first server clockwise! ★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the hash ring: a key put on a server it doesn't meet first is refused, then on the right one", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeRing, ".live-beRing");
+  const { m, ev, key, server } = ringMove(0);
+  const wrong = m.nodes.find((n) => n.id !== ownerOf(m.nodes, ev.h).id)!;
+  const c = ringCheck(m, { key: "new", to: wrong.id });
+  if (c.ok) throw new Error("only one server is first");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  await expect(async () => {
+    await tap(key).then(() => tap(`server ${wrong.id} at ${wrong.h}`));
+    await expect(game.getByText(fill(en.live.beRing.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await expect(async () => {
+    await tap(key).then(() => tap(server));
+    await expect(game.getByText(`Operations: 1 of ${ring.ops.length}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
 });

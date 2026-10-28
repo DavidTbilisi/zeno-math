@@ -182,6 +182,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
     sense: "senseSystem", games: [
       { kind: "beCache", icon: "🗄️", name: "liveBeCache" },
       { kind: "beBalance", icon: "⚖️", name: "liveBeBalance" },
+      { kind: "beRing", icon: "⭕", name: "liveBeRing" },
     ],
   },
 ];
