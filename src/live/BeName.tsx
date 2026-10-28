@@ -3,10 +3,11 @@
 // the line says what that pattern needs, to check the problem against. A right one moves on, shows the clue that gave
 // the pattern away, and adds what the pattern needs to a cheat sheet beside the board. No miss earns three stars, one
 // two. Nine rounds open in turn, the later ones with look-alikes (two problems with a sorted list, or two graphs), and
-// the endless run keeps a streak of rounds named without a miss. Built on the game shell (useGame), which does the
+// the endless run keeps a streak of rounds named without a miss. The problem named last can be played by hand: a button
+// opens its pattern's game beside this one, at the puzzle of its kind. Built on the game shell (useGame), which does the
 // ladder, the sounds and the cheer.
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { apply, checkOp, expect, NAME_LADDER, NAME_NOTICES, nameNotice, nameNow, nameStars, nameSvg, PATTERNS, replay, type LiveBeName } from "../math/beName";
+import { apply, checkOp, expect, GAMES, NAME_LADDER, NAME_NOTICES, nameNotice, nameNow, nameStars, nameSvg, PATTERNS, PLAY, PROBLEMS, replay, type LiveBeName } from "../math/beName";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
@@ -14,7 +15,7 @@ import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from ".
 const FRESH: Partial<LiveBeName> = { ops: [], misses: 0, done: false, said: null };
 type Drag = { src: string; x: number; y: number; x0: number; y0: number; moved: boolean };
 
-export function BeName({ state: d, set, w: words, svgRef }: PieceProps<"beName">) {
+export function BeName({ state: d, set, w: words, svgRef, open }: PieceProps<"beName">) {
   const [w, g] = [words.beName, words.game];
   const game = useGame({ key: "zeno.bename.v1", size: NAME_LADDER.length, notices: NAME_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const task = nameNow(d);
@@ -98,6 +99,13 @@ export function BeName({ state: d, set, w: words, svgRef }: PieceProps<"beName">
     : { tone: "hint", text: w.hint };
   const sheet = PATTERNS.filter((p) => m.answered.includes(p));
   const log = m.answered.map((p, k) => `“${clueOf(k)}” → ${w.tiles[p]}`).slice(-7);
+  // The problem named last, played by hand: its pattern's game opens beside this one, at the puzzle of its kind.
+  const named = last >= 0 ? items[last].id : null;
+  const play = named && open && (
+    <button className="live-btn" title={fill(w.playTip, { name: w.tiles[PROBLEMS[named]] })} onClick={() => open(GAMES[PROBLEMS[named]], { stage: PLAY[named] })}>
+      {fill(w.play, { name: w.tiles[PROBLEMS[named]] })}
+    </button>
+  );
   return (
     <>
       <GameHead game={game} g={g}>
@@ -165,7 +173,9 @@ export function BeName({ state: d, set, w: words, svgRef }: PieceProps<"beName">
         </div>
       </Stage>
       <p className="live-said info">{fill(w.moves, { k: d.ops.length, n: items.length })}</p>
-      <GameActions game={game} g={g} done={d.done} />
+      <GameActions game={game} g={g} done={d.done} always>
+        {play}
+      </GameActions>
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

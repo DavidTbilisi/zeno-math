@@ -286,6 +286,7 @@ export const en = {
   senseChart: "Graphs & charts",
   senseGraph: "Graph sense",
   senseAlgo: "Algorithm sense",
+  senseData: "Data structure sense",
   placeValue: "Place value",
   thousands: "Thousands",
   hundreds: "Hundreds",
@@ -5953,6 +5954,8 @@ export const en = {
       moves: "Named: {k} of {n}",
       sheet: "What each pattern needs",
       log: "Clues found",
+      play: "▶ Play it: {name}",
+      playTip: "Opens the {name} game beside this one, at a puzzle of the kind this problem is.",
       notices: {
         sorted: "A sorted list doesn't always mean binary search: two pointers and merging use one too!",
         graph: "Graphs everywhere: a route, a group and an order each want a different machine!",

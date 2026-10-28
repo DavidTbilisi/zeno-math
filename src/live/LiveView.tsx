@@ -68,6 +68,8 @@ export type LiveHost = {
   snapshot: (id: string, svg: SVGSVGElement) => void;
   /** Puts an ordinary graph (the graph tool's, editable there) beside a live graph, with the sliders' values put in. */
   freezeGraph: (id: string, state: LiveGraphState) => void;
+  /** Puts a new piece of the kind beside the piece, its starting state changed by the patch (not where the board is only read). */
+  open?: (id: string, kind: LiveKind, patch?: object) => void;
 };
 
 // The graph needs mathjs, so it loads the first time a board has one.
@@ -164,7 +166,7 @@ export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbe
         style={{ width: W, height: H, transform: `translate(${(w - W * s) / 2}px, ${(h - H * s) / 2}px) scale(${s})` }}
       >
         <Suspense fallback={null}>
-          <Piece state={data.state} set={(state) => host.update(element.id, { live: kind, state })} w={t.live} svgRef={svgRef} />
+          <Piece state={data.state} set={(state) => host.update(element.id, { live: kind, state })} w={t.live} svgRef={svgRef} open={host.open && ((k, patch) => host.open?.(element.id, k, patch))} />
         </Suspense>
         <button
           className="live-snap"
