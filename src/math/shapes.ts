@@ -1209,6 +1209,16 @@ function beBacktrackPreview(): Piece[] {
   ];
 }
 
+function beHeapPreview(): Piece[] {
+  // A small min-heap as a tree over heap[], each parent smaller than its children.
+  const vals = ["2", "5", "3", "9", "7"];
+  const at: [number, number][] = [[110, 14], [60, 54], [160, 54], [30, 94], [90, 94]];
+  return [
+    ...[1, 2, 3, 4].map((i) => seg(at[(i - 1) >> 1], at[i], { width: 1.5 })),
+    ...vals.flatMap((v, i) => [ellipse(at[i][0], at[i][1], 14, 14, { fill: "#e7f5ff", color: BLUE, width: 2 }), text(at[i][0], at[i][1], v, 15)]),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1513,6 +1523,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBePointers", group: "games", build: bePointersPreview, live: "bePointers" },
   { id: "liveBeWindow", group: "games", build: beWindowPreview, live: "beWindow" },
   { id: "liveBeBacktrack", group: "games", build: beBacktrackPreview, live: "beBacktrack" },
+  { id: "liveBeHeap", group: "games", build: beHeapPreview, live: "beHeap" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
