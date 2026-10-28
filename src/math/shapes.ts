@@ -1344,6 +1344,19 @@ function beQuorumPreview(): Piece[] {
   ];
 }
 
+function beQueuePreview(): Piece[] {
+  // Two partitions as rows of messages by offset, the committed offset marked, and a consumer reading from one.
+  const msg = (i: number, y: number, k: string, read: boolean) => [rect(i * 44, y, 40, 30, { fill: read ? "#f1f3f5" : "#ffffff", color: read ? "#ced4da" : "#7048e8", width: 2 }), text(i * 44 + 20, y + 15, k, 12)];
+  return [
+    ...["ann", "bob", "ann"].flatMap((k, i) => msg(i, 0, k, i < 2)),
+    ...["cat", "dan"].flatMap((k, i) => msg(i, 40, k, i < 1)),
+    seg([86, -4], [86, 34], { color: "#2f9e44", width: 3 }),
+    seg([42, 36], [42, 74], { color: "#2f9e44", width: 3 }),
+    rect(40, 90, 110, 34, { fill: "#ffffff", color: "#1971c2", width: 2 }),
+    text(95, 107, "c1 ← ann#3", 12),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1657,6 +1670,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeRing", group: "games", build: beRingPreview, live: "beRing" },
   { id: "liveBeLimit", group: "games", build: beLimitPreview, live: "beLimit" },
   { id: "liveBeQuorum", group: "games", build: beQuorumPreview, live: "beQuorum" },
+  { id: "liveBeQueue", group: "games", build: beQueuePreview, live: "beQueue" },
   { id: "liveBeTopo", group: "games", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", group: "games", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },

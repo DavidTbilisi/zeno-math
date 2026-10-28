@@ -54,6 +54,7 @@ import { BeBalance } from "./BeBalance";
 import { BeRing } from "./BeRing";
 import { BeLimit } from "./BeLimit";
 import { BeQuorum } from "./BeQuorum";
+import { BeQueue } from "./BeQueue";
 import { BeTopo } from "./BeTopo";
 import { BeName } from "./BeName";
 import { ConnectTowns } from "./ConnectTowns";
@@ -148,6 +149,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   beRing: BeRing,
   beLimit: BeLimit,
   beQuorum: BeQuorum,
+  beQueue: BeQueue,
   beTopo: BeTopo,
   beName: BeName,
   descentLab: DescentLab,

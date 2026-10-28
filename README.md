@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas, be the message queue). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1198,6 +1198,15 @@ UI in English, Russian and Georgian.
     come back stale: R + W ≤ N), W = 1 with R = 3, and N = 5 with W = 4, R = 2 while replicas go down and come back.
     Nine puzzles and the endless run; discoveries: a stale read, a read meeting an old reply and the newest, a request
     failing for want of replicas, a read repair.
+  - *Be the message queue*: a partitioned log with a consumer group, as Kafka keeps one: each partition a row of
+    messages by offset, with its committed offset (a green bar), its owner's next read (an arrow) and its owner named.
+    The player drags a sent message onto partition hash(key) mod P (shown on the card), a polling consumer's next
+    message (from its first partition with one unread) onto the consumer or the poll onto empty, and a commit onto
+    each partition the consumer has read past its bar. Crashes and joins happen by themselves: the partitions are
+    shared out again by range and each new owner starts at the committed offset, so what was read but not committed is
+    read again. Four kinds: keys only, a group of two, commits with a crash, a consumer joining. Nine puzzles and the
+    endless run; discoveries: a message delivered twice (at least once), a partition moving, an empty poll, two
+    consumers reading at once, one key's messages kept in order.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
