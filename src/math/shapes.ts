@@ -1272,6 +1272,20 @@ function beNamePreview(): Piece[] {
   ];
 }
 
+function beCachePreview(): Piece[] {
+  // A request over a cache list from the head to the tail, the tail on its way to the evict bin.
+  const node = (i: number, k: string, v: string, color: string) => [rect(i * 70, 52, 58, 44, { fill: "#f3f0ff", color, width: 2 }), text(i * 70 + 29, 66, k, 16), text(i * 70 + 29, 86, v, 13)];
+  return [
+    rect(0, 0, 90, 32, { fill: "#fff4e6", color: "#f08c00", width: 2 }),
+    text(45, 16, "put(4, d)", 13),
+    ...node(0, "3", "= c", "#7048e8"),
+    ...node(1, "1", "= a", "#7048e8"),
+    ...node(2, "2", "= b", "#e03131"),
+    rect(140, 112, 80, 32, { fill: "#ffffff", color: "#adb5bd", width: 2 }),
+    text(180, 128, "evict ✕", 13),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1580,6 +1594,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeTree", group: "games", build: beTreePreview, live: "beTree" },
   { id: "liveBeStack", group: "games", build: beStackPreview, live: "beStack" },
   { id: "liveBeUnion", group: "games", build: beUnionPreview, live: "beUnion" },
+  { id: "liveBeCache", group: "games", build: beCachePreview, live: "beCache" },
   { id: "liveBeTopo", group: "games", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", group: "games", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },

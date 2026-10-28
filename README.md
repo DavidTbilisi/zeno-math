@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1153,6 +1153,16 @@ UI in English, Russian and Georgian.
     graphs want different machines) and ten in a row. The problem named last can be played by hand: a button ("▶ Play
     it: Two pointers") opens its pattern's game beside it on the board, at the first puzzle of its kind (two ordered
     piles at merge sort, the quickest trip at Dijkstra, a sorted list's repeats at the in-place dedupe).
+  - *Be the cache*: the player serves get and put requests through a cache of two to four slots, the way the code
+    does: a hash map from key to node and a list from the head (used last) to the tail. Every operation is a drag: the
+    request onto its node (a hit moves it to the head), onto "return −1" (a get that misses), onto head (a new key) or
+    onto the database; a node into the evict bin or onto the database; a database row onto head. Four kinds: LRU (a
+    full cache evicts the tail), LFU (the fewest uses, nearest the tail on a tie, each node showing its uses),
+    write-through (a miss reads the database, every put is written at once) and write-back (a put marks the node dirty,
+    ●, and a dirty node is written back only as it is evicted). The code runs beside it with its lines lit, and a log
+    says what each operation did; a wrong one names the rule (LRU evicts the tail; key 3 is dirty, write it back
+    first). Nine puzzles and the endless run; discoveries: LFU sparing the oldest, a dirty node written back, fewer
+    database writes than puts, write-through writing every put, a hit moving to the head.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
