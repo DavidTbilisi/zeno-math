@@ -1,5 +1,5 @@
 // Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers, be the
-// sliding window, be the backtracking, be the heap, be the tree and be the monotonic stack, each one's first puzzle played move by move as the algorithm makes them, and a
+// sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack and be the union-find, each one's first puzzle played move by move as the algorithm makes them, and a
 // wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -11,6 +11,7 @@ import { btNow, btRun, checkOp as btCheck, expect as btNext, nextChoice, pathTex
 import { checkOp as heapCheck, expect as heapNext, heapNow, heapRun, partner, replay as heapReplay } from "../src/math/beHeap.ts";
 import { checkOp as treeCheck, expect as treeNext, replay as treeReplay, step as treeStep, treeNow, treeRun } from "../src/math/beTree.ts";
 import { checkOp as stackCheck, expect as stackNext, replay as stackReplay, stackNow, stackRun } from "../src/math/beStack.ts";
+import { checkOp as ufCheck, expect as ufNext, linkOrder, replay as ufReplay, ufNow, ufRun } from "../src/math/beUnion.ts";
 import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
@@ -498,5 +499,56 @@ test("be the monotonic stack: a bigger a[i] pushed over a smaller top is refused
   await expect(async () => {
     await drag(`stack top = ${stackTask.a[j]}`, `ans[${j}]`);
     await expect(game.getByText(`a[${j}] = ${stackTask.a[j]} < ${stackTask.a[m.i]}: ans[${j}] = ${stackTask.a[m.i]}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const ufTask = ufNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const uf = ufRun(ufTask);
+
+test("be the union-find: each find climbed and compressed, each union by size, earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeUnion, ".live-beUnion");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const m = ufReplay(ufTask, uf.ops.slice(0, k));
+    const e = ufNext(m);
+    const [from, to] =
+      e === "up" ? [`cur = ${m.cur}`, `node ${m.parent[m.cur]}`]
+      : e === "compress" ? [`node ${m.comp![0]}`, `node ${m.cur}`]
+      : e === "join" ? linkOrder(m).map((i) => `node ${i}`)
+      : ["node 0", "skip"];
+    await tap(from).then(() => tap(to));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${uf.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < uf.ops.length; k++) await op(k);
+  await expect(game.getByText(new RegExp(`sets left among ${ufTask.n} nodes, every tree kept short by union by size and compression! ★★★`))).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the union-find: the bigger root dragged under the smaller is refused, then the right way round", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeUnion, ".live-beUnion");
+  const m = ufReplay(ufTask, []);
+  if (ufNext(m) !== "join") throw new Error("the first command joins two lone nodes");
+  const [child, root] = linkOrder(m);
+  const c = ufCheck(m, { kind: "link", from: root, to: child });
+  if (c.ok) throw new Error("the smaller goes under");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: `node ${root}`, exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(`node ${root}`, `node ${child}`);
+    await expect(game.getByText(fill(en.live.beUnion.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag(`node ${child}`, `node ${root}`);
+    await expect(game.getByText(`parent[${child}] = ${root}; size[${root}] = 2`)).toBeVisible({ timeout: 1000 });
   }).toPass();
 });

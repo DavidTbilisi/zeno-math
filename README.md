@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1114,6 +1114,19 @@ UI in English, Russian and Georgian.
     can't be a smaller one before i; pop it first"). No miss earns three stars, one two. Nine puzzles open in turn;
     the endless run goes from the next greater and the warmer day on six or seven to all four on up to twelve. Four
     discoveries (several pops in a row, indexes left on the stack, trimming the end, under 2n moves) and ten in a row.
+  - *Be the union-find*: the player is the computer keeping sets as a forest in parent[], drawn as nodes on a circle
+    with an arrow from each to its parent, beside parent[] and size[] with their indexes and the script of commands.
+    Every operation is a drag (or a tap on what to move, then on where it goes): cur onto parent[cur] while a find
+    climbs to its root, each node it passed onto the root (path compression), the smaller tree's root onto the
+    bigger's to join two sets (union by size, the second root under the first on a tie), a node into skip when both
+    finds gave the same root, and into yes or no for a question. Three patterns: a list of unions, unions with "are
+    these connected?" questions between them, and Kruskal's cheapest spanning tree (the edges by weight over the graph,
+    the tree's edges green, a same-root edge skipped as a cycle, stopping at n − 1 edges). The code runs beside it with
+    the lines just run lit, and a log says what each operation did ("parent[1] = 0: x = 0"; "find(3) = 0"). An
+    operation the code would not make is not made, and says the rule it broke ("Hang root 1 (size 1) under root 0
+    (size 1): the smaller tree goes under, the second on a tie"). No miss earns three stars, one two. Nine puzzles open
+    in turn; the endless run goes from unions on five or six to all three on eight. Three discoveries (path
+    compression, a skipped cycle, Kruskal stopping early) and ten in a row.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
