@@ -7118,7 +7118,6 @@ export const ka: Dict = {
   teacher: {
     link: "კლასის კვლევა (მასწავლებლებისთვის)",
     title: "კლასის კვლევა",
-    back: "დაფები",
     password: "მასწავლებლის პაროლი",
     open: "გახსნა",
     wrongPassword: "პაროლი არასწორია.",

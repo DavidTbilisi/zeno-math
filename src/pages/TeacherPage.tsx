@@ -6,7 +6,8 @@ import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "re
 import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
-import { LangSelect, useI18n } from "../i18n";
+import { BrandBar } from "../components/BrandBar";
+import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 import type { Phase } from "../learner";
 import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
@@ -160,41 +161,41 @@ export function TeacherPage() {
   // A running session's clock.
   const sessionEnds = classes.find((c) => c.code === selected && c.phase === "session")?.sessionEnds ?? null;
 
-  const header = (
-    <header className="home-header">
-      <div className="brand">
-        <a href="#/" className="muted small">← {w.back}</a>
-        <h1>{w.title}</h1>
-      </div>
-      <LangSelect />
-    </header>
+  const bar = (
+    <BrandBar>
+      <a href="#/">{t.myBoards}</a>
+    </BrandBar>
   );
+  const header = <h1 className="z-page-title">{w.title}</h1>;
 
   if (access !== "open")
     return (
-      <div className="home teacher">
-        {header}
-        {access === "checking" ? (
-          <p className="muted">{t.loading}</p>
-        ) : access === "offline" ? (
-          <p className="error" role="alert">{w.loadFailed}</p>
-        ) : (
-          <form
-            className="teacher-login"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void unlock(typed, true);
-            }}
-          >
-            <label className="field">
-              <span>{w.password}</span>
-              <input type="password" autoComplete="current-password" value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus />
-            </label>
-            <button className="btn primary" type="submit">{w.open}</button>
-            {access === "wrong" && <p className="error" role="alert">{w.wrongPassword}</p>}
-            {access === "waiting" && <p className="error" role="alert">{w.tooManyTries}</p>}
-          </form>
-        )}
+      <div className="z z-wide">
+        {bar}
+        <div className="z-page teacher">
+          {header}
+          {access === "checking" ? (
+            <p className="muted">{t.loading}</p>
+          ) : access === "offline" ? (
+            <p className="error" role="alert">{w.loadFailed}</p>
+          ) : (
+            <form
+              className="teacher-login"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void unlock(typed, true);
+              }}
+            >
+              <label className="field">
+                <span>{w.password}</span>
+                <input type="password" autoComplete="current-password" value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus />
+              </label>
+              <button className="btn primary" type="submit">{w.open}</button>
+              {access === "wrong" && <p className="error" role="alert">{w.wrongPassword}</p>}
+              {access === "waiting" && <p className="error" role="alert">{w.tooManyTries}</p>}
+            </form>
+          )}
+        </div>
       </div>
     );
 
@@ -216,249 +217,252 @@ export function TeacherPage() {
   ];
 
   return (
-    <div className="home teacher">
-      {header}
-      {failed && <p className="error" role="alert">{w.loadFailed}</p>}
-      <div className="teacher-grid">
-        <aside className="teacher-side">
-          <h2>{w.classes}</h2>
-          {classes.length ? (
-            <ul className="class-list">
-              {classes.map((c) => (
-                <li key={c.code}>
-                  <button className={`class-item${c.code === selected ? " selected" : ""}`} aria-pressed={c.code === selected} onClick={() => setSelected(c.code)}>
-                    <strong>{c.name}</strong>
-                    <span className="mono small">{c.code}</span>
-                    <span className="muted small">{fill(w.studentsCount, { n: c.students, a: c.adaptive, f: c.fixed })}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="muted">{w.noClasses}</p>
-          )}
-          <form
-            className="new-class"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void create();
-            }}
-          >
-            <h3>{w.newClass}</h3>
-            <label className="field">
-              <span>{w.className}</span>
-              <input value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
-            </label>
-            <label className="field">
-              <span>{w.testLength}</span>
-              <input type="number" min={MIN_TEST_LENGTH} max={MAX_TEST_LENGTH} value={testLength}
-                onChange={(e) => setTestLength(Math.min(MAX_TEST_LENGTH, Math.max(MIN_TEST_LENGTH, Math.round(Number(e.target.value) || DEFAULT_TEST_LENGTH))))} />
-            </label>
-            <span className="hint">{w.skillsHint}</span>
-            <div className="snippets">
-              {AREAS.map((a) => (
-                <PickChip key={a} pick={a} picks={picks} setPicks={setPicks}>
-                  {areaLabel(a)}
-                </PickChip>
-              ))}
-            </div>
-            <span className="hint">{w.yearsHint}</span>
-            <div className="snippets">
-              {YEARS.map((y) => (
-                <PickChip key={y} pick={`P${y}`} picks={picks} setPicks={setPicks} title={skillsOfYear(y).map(skillName).join(", ")}>
-                  {fill(w.year, { n: y })}
-                </PickChip>
-              ))}
-            </div>
-            <button className="btn primary" type="submit">{w.create}</button>
-          </form>
-        </aside>
-
-        <main className={`teacher-main${loading ? " refreshing" : ""}`}>
-          {current && (
-            <section className="class-head">
-              <div>
-                <h2>{current.name}</h2>
-                <p className="class-code">
-                  <span className="muted">{w.code}</span> <strong className="mono">{current.code}</strong>
-                </p>
-                <p className="hint">{w.codeHint}</p>
-              </div>
-              <div className="field-row wrap">
-                <button className="btn" onClick={() => selected && void load(selected)}>{w.refresh}</button>
-                <button className="btn" onClick={() => void download("attempts")}>⤓ {w.download}</button>
-                <button className="btn" onClick={() => void download("tests")}>⤓ {w.downloadTests}</button>
-                <button className="btn" onClick={() => setPrinting(true)}>🖨 {w.printTests}</button>
-              </div>
-            </section>
-          )}
-          {printing && current && (
-            <Suspense fallback={null}>
-              <PrintableTests klass={current} w={w} pw={t.pracWords} onClose={() => setPrinting(false)} />
-            </Suspense>
-          )}
-
-          {current && (
-            <section className="card">
-              <h3>{w.phase}</h3>
-              <div className="phase-buttons" role="group" aria-label={w.phase}>
-                {PHASES.map((p) => (
-                  <button
-                    key={p}
-                    className={`btn small${current.phase === p ? " primary" : ""}`}
-                    aria-pressed={current.phase === p}
-                    onClick={() => (p === "session" ? setAskMinutes(true) : void moveTo(p))}
-                  >
-                    {w.phases[p]}
-                  </button>
+    <div className="z z-wide">
+      {bar}
+      <div className="z-page teacher">
+        {header}
+        {failed && <p className="error" role="alert">{w.loadFailed}</p>}
+        <div className="teacher-grid">
+          <aside className="teacher-side">
+            <h2>{w.classes}</h2>
+            {classes.length ? (
+              <ul className="class-list">
+                {classes.map((c) => (
+                  <li key={c.code}>
+                    <button className={`class-item${c.code === selected ? " selected" : ""}`} aria-pressed={c.code === selected} onClick={() => setSelected(c.code)}>
+                      <strong>{c.name}</strong>
+                      <span className="mono small">{c.code}</span>
+                      <span className="muted small">{fill(w.studentsCount, { n: c.students, a: c.adaptive, f: c.fixed })}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">{w.noClasses}</p>
+            )}
+            <form
+              className="new-class"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void create();
+              }}
+            >
+              <h3>{w.newClass}</h3>
+              <label className="field">
+                <span>{w.className}</span>
+                <input value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
+              </label>
+              <label className="field">
+                <span>{w.testLength}</span>
+                <input type="number" min={MIN_TEST_LENGTH} max={MAX_TEST_LENGTH} value={testLength}
+                  onChange={(e) => setTestLength(Math.min(MAX_TEST_LENGTH, Math.max(MIN_TEST_LENGTH, Math.round(Number(e.target.value) || DEFAULT_TEST_LENGTH))))} />
+              </label>
+              <span className="hint">{w.skillsHint}</span>
+              <div className="snippets">
+                {AREAS.map((a) => (
+                  <PickChip key={a} pick={a} picks={picks} setPicks={setPicks}>
+                    {areaLabel(a)}
+                  </PickChip>
                 ))}
               </div>
-              {askMinutes && (
-                <div className="field-row">
-                  <label className="field-row">
-                    <span>{w.minutes}</span>
-                    <input type="number" min={1} max={240} value={minutes} style={{ width: 80 }}
-                      onChange={(e) => setMinutes(Math.min(240, Math.max(1, Math.round(Number(e.target.value) || 20))))} />
-                  </label>
-                  <button className="btn primary small" onClick={() => void moveTo("session")}>{w.start}</button>
+              <span className="hint">{w.yearsHint}</span>
+              <div className="snippets">
+                {YEARS.map((y) => (
+                  <PickChip key={y} pick={`P${y}`} picks={picks} setPicks={setPicks} title={skillsOfYear(y).map(skillName).join(", ")}>
+                    {fill(w.year, { n: y })}
+                  </PickChip>
+                ))}
+              </div>
+              <button className="btn primary" type="submit">{w.create}</button>
+            </form>
+          </aside>
+
+          <main className={`teacher-main${loading ? " refreshing" : ""}`}>
+            {current && (
+              <section className="class-head">
+                <div>
+                  <h2>{current.name}</h2>
+                  <p className="class-code">
+                    <span className="muted">{w.code}</span> <strong className="mono">{current.code}</strong>
+                  </p>
+                  <p className="hint">{w.codeHint}</p>
                 </div>
-              )}
-              {sessionEnds !== null && <Countdown until={sessionEnds} left={(time) => fill(w.sessionLeft, { time })} ended={w.sessionEnded} />}
-              <p className="hint">{w.phaseHint}</p>
-            </section>
-          )}
-
-          {data && data.class.code === selected && (
-            <>
-              {!data.students.length && <p className="muted">{w.noStudents}</p>}
-
-              <section className="card">
-                <h3>{w.groups}</h3>
-                <p className="hint">{w.groupsHint}</p>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th />
-                      {groups!.map(([c]) => <th key={c} scope="col">{c === "adaptive" ? w.adaptive : w.fixed}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map(([label, value]) => (
-                      <tr key={label}>
-                        <th scope="row">{label}</th>
-                        {groups!.map(([c, g]) => <td key={c}>{value(g)}</td>)}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="field-row wrap">
+                  <button className="btn" onClick={() => selected && void load(selected)}>{w.refresh}</button>
+                  <button className="btn" onClick={() => void download("attempts")}>⤓ {w.download}</button>
+                  <button className="btn" onClick={() => void download("tests")}>⤓ {w.downloadTests}</button>
+                  <button className="btn" onClick={() => setPrinting(true)}>{w.printTests}</button>
+                </div>
               </section>
+            )}
+            {printing && current && (
+              <Suspense fallback={null}>
+                <PrintableTests klass={current} w={w} pw={t.pracWords} onClose={() => setPrinting(false)} />
+              </Suspense>
+            )}
 
+            {current && (
               <section className="card">
-                <h3>{w.tests}</h3>
-                <p className="hint">{w.testsHint}</p>
-                {groups!.some(([, g]) => g.pre.n || g.post.n) ? (
-                  <>
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th />
-                          {groups!.map(([c]) => <th key={c} scope="col">{c === "adaptive" ? w.adaptive : w.fixed}</th>)}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {([[w.pre, "pre"], [w.post, "post"], [w.gain, "gain"]] as const).map(([label, key]) => (
-                          <tr key={key}>
-                            <th scope="row">{label}</th>
-                            {groups!.map(([c, g]) => <td key={c}>{describe(g[key])}</td>)}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    <dl className="stat-tiles">
-                      <div><dt>{w.effect}</dt><dd>{num(data.tests.effect, 2)}</dd></div>
-                    </dl>
-                    <p className="hint">{w.effectHint}</p>
-                    <h3>{w.formCheck}</h3>
-                    <table className="data-table">
-                      <tbody>
-                        <tr><th scope="row">{w.formA}</th><td>{describe(data.tests.forms.A)}</td></tr>
-                        <tr><th scope="row">{w.formB}</th><td>{describe(data.tests.forms.B)}</td></tr>
-                      </tbody>
-                    </table>
-                  </>
-                ) : (
-                  <p className="muted">{w.noTests}</p>
+                <h3>{w.phase}</h3>
+                <div className="phase-buttons" role="group" aria-label={w.phase}>
+                  {PHASES.map((p) => (
+                    <button
+                      key={p}
+                      className={`btn small${current.phase === p ? " primary" : ""}`}
+                      aria-pressed={current.phase === p}
+                      onClick={() => (p === "session" ? setAskMinutes(true) : void moveTo(p))}
+                    >
+                      {w.phases[p]}
+                    </button>
+                  ))}
+                </div>
+                {askMinutes && (
+                  <div className="field-row">
+                    <label className="field-row">
+                      <span>{w.minutes}</span>
+                      <input type="number" min={1} max={240} value={minutes} style={{ width: 80 }}
+                        onChange={(e) => setMinutes(Math.min(240, Math.max(1, Math.round(Number(e.target.value) || 20))))} />
+                    </label>
+                    <button className="btn primary small" onClick={() => void moveTo("session")}>{w.start}</button>
+                  </div>
                 )}
+                {sessionEnds !== null && <Countdown until={sessionEnds} left={(time) => fill(w.sessionLeft, { time })} ended={w.sessionEnded} />}
+                <p className="hint">{w.phaseHint}</p>
               </section>
+            )}
 
-              {!!data.students.length && (
+            {data && data.class.code === selected && (
+              <>
+                {!data.students.length && <p className="muted">{w.noStudents}</p>}
+
                 <section className="card">
-                  <h3>{w.mastery}</h3>
-                  <p className="hint">{w.masteryHint}</p>
-                  <div className="field-row wrap">
-                    <HeatLegend pct={pct} noAnswers={w.noAnswers} />
-                    <label className="check inline">
-                      <input type="checkbox" checked={showNumbers} onChange={(e) => setShowNumbers(e.target.checked)} />
-                      <span>{w.showNumbers}</span>
-                    </label>
-                    <label className="check inline">
-                      <input type="checkbox" checked={showCodes} onChange={(e) => setShowCodes(e.target.checked)} />
-                      <span>{w.showCodes}</span>
-                    </label>
-                  </div>
-                  <MasteryHeatmap data={data} words={w} skillName={skillName} pct={pct} showNumbers={showNumbers} showCodes={showCodes} />
+                  <h3>{w.groups}</h3>
+                  <p className="hint">{w.groupsHint}</p>
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th />
+                        {groups!.map(([c]) => <th key={c} scope="col">{c === "adaptive" ? w.adaptive : w.fixed}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map(([label, value]) => (
+                        <tr key={label}>
+                          <th scope="row">{label}</th>
+                          {groups!.map(([c, g]) => <td key={c}>{value(g)}</td>)}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </section>
-              )}
 
-              <section className="card">
-                <h3>{w.calibration}</h3>
-                <p className="hint">{w.calibrationHint}</p>
-                {data.calibration.n ? (
-                  <div className="calib-row">
-                    <Suspense fallback={<div className="calib-chart" />}>
-                      <CalibrationChart bins={data.calibration.bins} words={w} pct={pct} />
-                    </Suspense>
-                    <div className="calib-side">
-                      <dl className="stat-tiles">
-                        <div><dt>{w.answers}</dt><dd>{num(data.calibration.n)}</dd></div>
-                        <div><dt>{w.logLoss}</dt><dd>{num(data.calibration.logLoss, 3)}</dd></div>
-                        <div><dt>{w.auc}</dt><dd>{num(data.calibration.auc, 3)}</dd></div>
-                      </dl>
-                      <label className="check inline">
-                        <input type="checkbox" checked={showTable} onChange={(e) => setShowTable(e.target.checked)} />
-                        <span>{w.showTable}</span>
-                      </label>
-                      {showTable && (
-                        <table className="data-table">
-                          <thead>
-                            <tr>
-                              <th scope="col">{w.bin}</th>
-                              <th scope="col">{w.predictedAxis}</th>
-                              <th scope="col">{w.observedAxis}</th>
-                              <th scope="col">{w.answers}</th>
+                <section className="card">
+                  <h3>{w.tests}</h3>
+                  <p className="hint">{w.testsHint}</p>
+                  {groups!.some(([, g]) => g.pre.n || g.post.n) ? (
+                    <>
+                      <table className="data-table">
+                        <thead>
+                          <tr>
+                            <th />
+                            {groups!.map(([c]) => <th key={c} scope="col">{c === "adaptive" ? w.adaptive : w.fixed}</th>)}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {([[w.pre, "pre"], [w.post, "post"], [w.gain, "gain"]] as const).map(([label, key]) => (
+                            <tr key={key}>
+                              <th scope="row">{label}</th>
+                              {groups!.map(([c, g]) => <td key={c}>{describe(g[key])}</td>)}
                             </tr>
-                          </thead>
-                          <tbody>
-                            {data.calibration.bins.filter((b) => b.n).map((b) => (
-                              <tr key={b.from}>
-                                <th scope="row">{pct(b.from)}–{pct(b.to)}</th>
-                                <td>{pct(b.predicted)}</td>
-                                <td>{pct(b.observed)}</td>
-                                <td>{num(b.n)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
+                          ))}
+                        </tbody>
+                      </table>
+                      <dl className="stat-tiles">
+                        <div><dt>{w.effect}</dt><dd>{num(data.tests.effect, 2)}</dd></div>
+                      </dl>
+                      <p className="hint">{w.effectHint}</p>
+                      <h3>{w.formCheck}</h3>
+                      <table className="data-table">
+                        <tbody>
+                          <tr><th scope="row">{w.formA}</th><td>{describe(data.tests.forms.A)}</td></tr>
+                          <tr><th scope="row">{w.formB}</th><td>{describe(data.tests.forms.B)}</td></tr>
+                        </tbody>
+                      </table>
+                    </>
+                  ) : (
+                    <p className="muted">{w.noTests}</p>
+                  )}
+                </section>
+
+                {!!data.students.length && (
+                  <section className="card">
+                    <h3>{w.mastery}</h3>
+                    <p className="hint">{w.masteryHint}</p>
+                    <div className="field-row wrap">
+                      <HeatLegend pct={pct} noAnswers={w.noAnswers} />
+                      <label className="check inline">
+                        <input type="checkbox" checked={showNumbers} onChange={(e) => setShowNumbers(e.target.checked)} />
+                        <span>{w.showNumbers}</span>
+                      </label>
+                      <label className="check inline">
+                        <input type="checkbox" checked={showCodes} onChange={(e) => setShowCodes(e.target.checked)} />
+                        <span>{w.showCodes}</span>
+                      </label>
                     </div>
-                  </div>
-                ) : (
-                  <p className="muted">{w.noPredictions}</p>
+                    <MasteryHeatmap data={data} words={w} skillName={skillName} pct={pct} showNumbers={showNumbers} showCodes={showCodes} />
+                  </section>
                 )}
-              </section>
-            </>
-          )}
-        </main>
+
+                <section className="card">
+                  <h3>{w.calibration}</h3>
+                  <p className="hint">{w.calibrationHint}</p>
+                  {data.calibration.n ? (
+                    <div className="calib-row">
+                      <Suspense fallback={<div className="calib-chart" />}>
+                        <CalibrationChart bins={data.calibration.bins} words={w} pct={pct} />
+                      </Suspense>
+                      <div className="calib-side">
+                        <dl className="stat-tiles">
+                          <div><dt>{w.answers}</dt><dd>{num(data.calibration.n)}</dd></div>
+                          <div><dt>{w.logLoss}</dt><dd>{num(data.calibration.logLoss, 3)}</dd></div>
+                          <div><dt>{w.auc}</dt><dd>{num(data.calibration.auc, 3)}</dd></div>
+                        </dl>
+                        <label className="check inline">
+                          <input type="checkbox" checked={showTable} onChange={(e) => setShowTable(e.target.checked)} />
+                          <span>{w.showTable}</span>
+                        </label>
+                        {showTable && (
+                          <table className="data-table">
+                            <thead>
+                              <tr>
+                                <th scope="col">{w.bin}</th>
+                                <th scope="col">{w.predictedAxis}</th>
+                                <th scope="col">{w.observedAxis}</th>
+                                <th scope="col">{w.answers}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {data.calibration.bins.filter((b) => b.n).map((b) => (
+                                <tr key={b.from}>
+                                  <th scope="row">{pct(b.from)}–{pct(b.to)}</th>
+                                  <td>{pct(b.predicted)}</td>
+                                  <td>{pct(b.observed)}</td>
+                                  <td>{num(b.n)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="muted">{w.noPredictions}</p>
+                  )}
+                </section>
+              </>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

@@ -7118,7 +7118,6 @@ export const en = {
   teacher: {
     link: "Class study (for teachers)",
     title: "Class study",
-    back: "Boards",
     password: "Teacher password",
     open: "Open",
     wrongPassword: "That password isn't right.",

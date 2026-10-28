@@ -7118,7 +7118,6 @@ export const ru: Dict = {
   teacher: {
     link: "Исследование в классе (для учителей)",
     title: "Исследование в классе",
-    back: "Доски",
     password: "Пароль учителя",
     open: "Открыть",
     wrongPassword: "Неверный пароль.",

@@ -1,8 +1,8 @@
 // The front page for schools (#/about): what Zeno is, what a class gets, how a class starts, and where the data lives.
 // Its centrepiece is Zeno's own paradox played out: each right answer covers half of the gap that is left.
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ZenoMark } from "../components/ZenoMark";
-import { LangSelect, useI18n } from "../i18n";
+import { BrandBar } from "../components/BrandBar";
+import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 
 /** A skill counts as mastered past this, as BKT's usual threshold has it (model/mastery.ts). */
@@ -113,15 +113,11 @@ export function AboutPage() {
   const a = t.about;
   return (
     <div className="z">
-      <header className="z-bar">
-        <a className="z-brand" href="#/"><ZenoMark size={18} /><span>{t.appName}</span></a>
-        <nav className="z-nav">
-          <a href="#/">{t.myBoards}</a>
-          <LangSelect />
-        </nav>
-      </header>
+      <BrandBar>
+        <a href="#/">{t.myBoards}</a>
+      </BrandBar>
 
-      <main>
+      <main className="z-main">
         <section className="z-hero">
           <div className="z-hero-text">
             <h1>{a.title}</h1>

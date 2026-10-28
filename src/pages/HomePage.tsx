@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, type BoardSummary } from "../api";
-import { ZenoMark } from "../components/ZenoMark";
-import { LangSelect, useI18n } from "../i18n";
+import { BrandBar } from "../components/BrandBar";
+import { useI18n } from "../i18n";
 
 export function HomePage() {
   const { t, lang } = useI18n();
@@ -50,13 +50,9 @@ export function HomePage() {
   return (
     <div className="z">
       <div className="home">
-        <header className="z-bar">
-          <a className="z-brand" href="#/about"><ZenoMark size={18} /><span>{t.appName}</span></a>
-          <nav className="z-nav">
-            <a href="#/about">{t.aboutLink}</a>
-            <LangSelect />
-          </nav>
-        </header>
+        <BrandBar home="#/about">
+          <a href="#/about">{t.aboutLink}</a>
+        </BrandBar>
 
         <main className="home-main">
           <a className="z-practice" href="#/practice">
