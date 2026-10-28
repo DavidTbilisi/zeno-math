@@ -1,11 +1,12 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 /** A menu item; items with a `section` are listed under its heading, in the order given. */
 export type ToolItem = { icon: string; label: string; section?: string; onPick: () => void };
 
 /** A toolbar button that opens a dropdown of tools. The list is position:fixed so the bar's overflow can't clip it, and
  *  never taller than the room below the button (it scrolls if it must). A list in sections lays them out side by side
- *  in columns, as many as the window has room for, so a long one such as the games still fits on the screen.
+ *  in columns, as many as the window has room for, so a long one such as the games still fits on the screen; the
+ *  columns sit in a box of their own, so when they are taller than the room they scroll down rather than spill sideways.
  *  `label` is shown on the button; `title` (the full group name) is the tooltip and the menu's accessible name. */
 export function ToolMenu({ icon, label, title = label, items }: { icon: string; label: string; title?: string; items: ToolItem[] }) {
   const [open, setOpen] = useState(false);
@@ -60,6 +61,7 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
     if (last && last.section === it.section) last.items.push(it);
     else runs.push({ section: it.section, items: [it] });
   }
+  const cols = runs.some((r) => r.section);
   const item = (it: ToolItem) => (
     <button
       key={it.label}
@@ -90,19 +92,24 @@ export function ToolMenu({ icon, label, title = label, items }: { icon: string; 
         {icon} <span className="btn-label">{label}</span> <span className="caret">▾</span>
       </button>
       {open && (
-        <div ref={list} className={`tool-menu${runs.some((r) => r.section) ? " cols" : ""}`} role="menu" aria-label={title} style={pos} onKeyDown={onListKey}>
-          {runs.map((r, i) =>
-            r.section ? (
-              <div key={`§${r.section}`} className="tool-menu-section" role="group" aria-label={r.section}>
-                <div className="tool-menu-heading" role="presentation">{r.section}</div>
-                {r.items.map(item)}
-              </div>
-            ) : (
-              <Fragment key={i}>{r.items.map(item)}</Fragment>
-            ),
-          )}
+        <div ref={list} className={`tool-menu${cols ? " cols" : ""}`} role="menu" aria-label={title} style={pos} onKeyDown={onListKey}>
+          <Sections cols={cols}>
+            {runs.map((r, i) =>
+              r.section ? (
+                <div key={`§${r.section}`} className="tool-menu-section" role="group" aria-label={r.section}>
+                  <div className="tool-menu-heading" role="presentation">{r.section}</div>
+                  {r.items.map(item)}
+                </div>
+              ) : (
+                <Fragment key={i}>{r.items.map(item)}</Fragment>
+              ),
+            )}
+          </Sections>
         </div>
       )}
     </>
   );
 }
+
+/** The columns' own box (no height of its own to fill, so they balance and grow downwards), or nothing for a plain list. */
+const Sections = ({ cols, children }: { cols: boolean; children: ReactNode }) => (cols ? <div className="tool-menu-cols">{children}</div> : <>{children}</>);

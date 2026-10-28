@@ -25,7 +25,7 @@ import { CommandPalette } from "../components/CommandPalette";
 import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
 import { isLiveLink, liveDataOf, liveElement } from "../live/element";
 import { LiveView, type LiveHost } from "../live/LiveView";
-import type { LiveKind } from "../math/live";
+import { LIVE_SIZES, type LiveKind } from "../math/live";
 import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { isToolKind, MENUS, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
@@ -104,7 +104,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
 };
 
 // The games, apart from the tools in a menu of their own, by the sense each one builds.
-const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart" | "senseGraph" | "senseAlgo"; games: LiveEntry[] }[] = [
+const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart" | "senseGraph" | "senseAlgo" | "senseData"; games: LiveEntry[] }[] = [
   {
     sense: "senseNumber", games: [
       { kind: "estimate", icon: "📍", name: "liveEstimate" },
@@ -166,12 +166,16 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "bePointers", icon: "👉", name: "liveBePointers" },
       { kind: "beWindow", icon: "🪟", name: "liveBeWindow" },
       { kind: "beBacktrack", icon: "♛", name: "liveBeBacktrack" },
+      { kind: "beTopo", icon: "➡️", name: "liveBeTopo" },
+      { kind: "beName", icon: "🏷️", name: "liveBeName" },
+    ],
+  },
+  {
+    sense: "senseData", games: [
       { kind: "beHeap", icon: "⛰️", name: "liveBeHeap" },
       { kind: "beTree", icon: "🌳", name: "liveBeTree" },
       { kind: "beStack", icon: "📚", name: "liveBeStack" },
       { kind: "beUnion", icon: "🔗", name: "liveBeUnion" },
-      { kind: "beTopo", icon: "➡️", name: "liveBeTopo" },
-      { kind: "beName", icon: "🏷️", name: "liveBeName" },
     ],
   },
 ];
@@ -480,7 +484,8 @@ export function BoardPage({ id }: { id: string }) {
     ex.scrollToContent(withData, { animate: true });
   };
 
-  // What a live piece on the board can ask of it: write its new state into its element, or put a copy beside it.
+  // What a live piece on the board can ask of it: write its new state into its element, put a copy beside it, or
+  // open another piece beside it.
   const besides = (id: string) => {
     const el = excalidraw.current?.getSceneElements().find((e) => e.id === id);
     return el ? { x: el.x + el.width + 32, y: el.y } : undefined;
@@ -527,6 +532,16 @@ export function BoardPage({ id }: { id: string }) {
       } catch {
         /* a function that doesn't draw: nothing to copy */
       }
+    },
+    open: (id, kind, patch) => {
+      const ex = excalidraw.current;
+      const at = besides(id);
+      if (!ex || !at) return;
+      const [w, h] = LIVE_SIZES[kind];
+      const scene = ex.getSceneElementsIncludingDeleted();
+      const el = liveElement(kind, at.x, freeY(scene, at.x, at.y, w, h), patch);
+      ex.updateScene({ elements: [...scene, el], appState: { selectedElementIds: { [el.id]: true } }, captureUpdate: CaptureUpdateAction.IMMEDIATELY });
+      ex.scrollToContent(el, { animate: true });
     },
   };
   const addLive = (kind: LiveKind) => excalidraw.current && placeOnBoard(excalidraw.current, [liveElement(kind)]);

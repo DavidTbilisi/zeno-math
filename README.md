@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find, be the topological sort, name the pattern). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1150,7 +1150,9 @@ UI in English, Russian and Georgian.
     three stars, one two. Nine rounds open in turn, from six of the first six patterns to all twelve, the later ones
     with look-alikes (two problems with a sorted list, or graphs that want a route, a group and an order); the endless
     run goes from four problems to eight with look-alikes. Two discoveries (a sorted list isn't always binary search;
-    graphs want different machines) and ten in a row.
+    graphs want different machines) and ten in a row. The problem named last can be played by hand: a button ("▶ Play
+    it: Two pointers") opens its pattern's game beside it on the board, at the first puzzle of its kind (two ordered
+    piles at merge sort, the quickest trip at Dijkstra, a sorted list's repeats at the in-place dedupe).
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

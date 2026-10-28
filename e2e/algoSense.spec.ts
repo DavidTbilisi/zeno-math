@@ -14,7 +14,7 @@ import { checkOp as treeCheck, expect as treeNext, replay as treeReplay, step as
 import { checkOp as stackCheck, expect as stackNext, replay as stackReplay, stackNow, stackRun } from "../src/math/beStack.ts";
 import { checkOp as ufCheck, expect as ufNext, linkOrder, replay as ufReplay, ufNow, ufRun } from "../src/math/beUnion.ts";
 import { checkOp as topoCheck, edgeTarget, expect as topoNext, putNode, replay as topoReplay, topoNow, topoRun } from "../src/math/beTopo.ts";
-import { nameNow, PATTERNS, PROBLEMS } from "../src/math/beName.ts";
+import { GAMES, nameNow, PATTERNS, PLAY, PROBLEMS } from "../src/math/beName.ts";
 import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
@@ -643,4 +643,18 @@ test("name the pattern: a problem dropped on the wrong pattern says what that pa
     await drag("problem", W.tiles[right]);
     await expect(game.getByText(`Named: 1 of ${nameTask.items.length}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
+});
+
+test("name the pattern: the problem named opens its pattern's game beside it, at the puzzle of its kind", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeName, ".live-beName");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  await expect(async () => {
+    await tap("problem").then(() => tap(tileOf(0)));
+    await expect(game.getByText(`Named: 1 of ${nameTask.items.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  const id = nameTask.items[0].id;
+  await game.getByRole("button", { name: fill(en.live.beName.play, { name: tileOf(0) }) }).dispatchEvent("click");
+  const opened = page.locator(`.live-${GAMES[PROBLEMS[id]]}`);
+  await expect(opened).toBeVisible();
+  await expect(opened.locator(".geo-stage.on")).toHaveText(new RegExp(`^${PLAY[id] + 1}`));
 });

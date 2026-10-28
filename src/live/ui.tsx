@@ -10,6 +10,8 @@ export type PieceProps<K extends LiveKind> = {
   w: Dict["live"];
   /** The piece's picture, for "Copy as a picture". */
   svgRef: RefObject<SVGSVGElement | null>;
+  /** Puts another piece beside this one, its starting state changed by the patch (on the board only). */
+  open?: (kind: LiveKind, patch?: object) => void;
 };
 
 export const FONT = "Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif";

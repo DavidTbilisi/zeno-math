@@ -54,7 +54,8 @@ test("a piece changed in the 100 ms before Excalidraw starts it still answers cl
 });
 
 // The bar and its menus fit the window, from a phone to a wide screen and in the longest language: the bar gives up
-// labels, then spacing, then wraps; a menu in sections lays them out in columns and is never taller than the window.
+// labels, then spacing, then wraps; a menu in sections lays them out in columns, is never taller than the window and
+// never scrolls sideways.
 for (const [w, h] of [[1366, 768], [1024, 700], [390, 760]])
   test(`the board's bar and every menu fit on a ${w} × ${h} window, in English and Georgian`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: h });
@@ -72,6 +73,8 @@ for (const [w, h] of [[1366, 768], [1024, 700], [390, 760]])
         expect(box.x).toBeGreaterThanOrEqual(0);
         expect(box.x + box.width).toBeLessThanOrEqual(w);
         expect(box.y + box.height).toBeLessThanOrEqual(h);
+        // Nothing hides off to the side: a menu too tall for the window scrolls down.
+        expect(await page.locator(".tool-menu").evaluate((e) => e.scrollWidth - e.clientWidth)).toBe(0);
         await page.keyboard.press("Escape");
       }
     }

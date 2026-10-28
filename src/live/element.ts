@@ -17,12 +17,12 @@ export function liveDataOf(el: { link?: string | null; customData?: Record<strin
   return isLiveLink(el.link) && d && isLiveKind(d.live) && d.state && typeof d.state === "object" ? (d as LiveData) : undefined;
 }
 
-/** A new live piece at (x, y), at its design size, in its starting state. */
-export function liveElement(kind: LiveKind, x = 0, y = 0): ExcalidrawElement {
+/** A new live piece at (x, y), at its design size, in its starting state (changed by the patch, if any). */
+export function liveElement(kind: LiveKind, x = 0, y = 0, patch: object = {}): ExcalidrawElement {
   const [width, height] = LIVE_SIZES[kind];
   const [box] = convertToExcalidrawElements([
     { type: "rectangle", x, y, width, height, strokeColor: "#ced4da", backgroundColor: "transparent", strokeWidth: 1, roughness: 0, roundness: { type: 3 } },
   ]);
-  const customData: LiveData = { live: kind, state: initialLive(kind) };
+  const customData: LiveData = { live: kind, state: { ...initialLive(kind), ...patch } };
   return { ...box, type: "embeddable", link: LIVE_LINK + kind, customData } as unknown as ExcalidrawElement;
 }

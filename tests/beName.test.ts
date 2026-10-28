@@ -1,14 +1,27 @@
 // Name the pattern: every problem names one pattern and every pattern has three; a right tile is the problem's
 // pattern and any other is refused with the tile chosen; the rounds draw problems of different patterns, with
 // look-alikes when asked; the notices, stars and picture follow the rules; and each clue stands word for word in its
-// problem in every language.
+// problem in every language; and each problem opens its pattern's game at a puzzle of its own kind.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { ka } from "../src/locales/ka.ts";
 import { ru } from "../src/locales/ru.ts";
 import { fill } from "../src/math/text.ts";
-import { apply, checkOp, expect as next, LOOKALIKE, NAME_LADDER, nameNotice, nameNow, nameRun, nameStars, nameSvg, PATTERNS, PROBLEM_IDS, PROBLEMS, replay, startMachine, wrap, type NameLevel, type NameTask } from "../src/math/beName.ts";
+import { initialLive } from "../src/math/live.ts";
+import { SORT_LADDER } from "../src/math/beSort.ts";
+import { SEARCH_LADDER } from "../src/math/beSearch.ts";
+import { DP_LADDER } from "../src/math/beDp.ts";
+import { BIN_LADDER } from "../src/math/beBinary.ts";
+import { PTR_LADDER } from "../src/math/bePointers.ts";
+import { WIN_LADDER } from "../src/math/beWindow.ts";
+import { BT_LADDER } from "../src/math/beBacktrack.ts";
+import { HEAP_LADDER } from "../src/math/beHeap.ts";
+import { TREE_LADDER } from "../src/math/beTree.ts";
+import { STACK_LADDER } from "../src/math/beStack.ts";
+import { UF_LADDER } from "../src/math/beUnion.ts";
+import { TOPO_LADDER } from "../src/math/beTopo.ts";
+import { apply, checkOp, expect as next, GAMES, LOOKALIKE, NAME_LADDER, nameNotice, nameNow, nameRun, nameStars, nameSvg, PATTERNS, PLAY, PROBLEM_IDS, PROBLEMS, replay, startMachine, wrap, type NameLevel, type NameTask } from "../src/math/beName.ts";
 
 const tasks = (): { t: NameTask; where: string; size: number; looks?: boolean }[] => [
   ...NAME_LADDER.map((s, stage) => ({ t: nameNow({ mode: "puzzle", stage, level: 1, seed: 1 }), where: `round ${stage + 1}`, size: s.size, looks: s.looks })),
@@ -100,5 +113,27 @@ test("the words: every clue stands in its problem in every language, with the sa
     assert.deepEqual(Object.keys(W.tiles).sort(), [...PATTERNS].sort());
     assert.deepEqual(Object.keys(W.needs).sort(), [...PATTERNS].sort());
     assert.ok(dict.shapes.names.liveBeName);
+  }
+});
+
+test("each problem opens its pattern's game at the first puzzle that plays its kind", () => {
+  const ladders: Record<string, readonly { algo?: string | null; p?: string | null }[]> = {
+    sort: SORT_LADDER, search: SEARCH_LADDER, dp: DP_LADDER, binary: BIN_LADDER, pointers: PTR_LADDER, window: WIN_LADDER,
+    backtrack: BT_LADDER, heap: HEAP_LADDER, tree: TREE_LADDER, stack: STACK_LADDER, union: UF_LADDER, topo: TOPO_LADDER,
+  };
+  // What each problem is, worked by hand: alphabetical order is any sort, two ordered piles a merge, a quickest trip Dijkstra…
+  const kind: Record<string, string> = {
+    s1: "bubble", s2: "bubble", s3: "merge", q1: "bfs", q2: "dijkstra", q3: "bfs", d1: "stairs", d2: "robber", d3: "coins",
+    b1: "find", b2: "lower", b3: "find", p1: "pairSum", p2: "water", p3: "dedupe", w1: "fixed", w2: "unique", w3: "atMost",
+    k1: "perms", k2: "queens", k3: "sum", h1: "topK", h2: "pop", h3: "pop", t1: "insert", t2: "insert", t3: "inorder",
+    m1: "temps", m2: "nextGreater", m3: "removeK", u1: "connected", u2: "unions", u3: "kruskal", o1: "kahn", o2: "cycle", o3: "dfs",
+  };
+  assert.deepEqual(Object.keys(PLAY).sort(), [...PROBLEM_IDS].sort());
+  for (const id of PROBLEM_IDS) {
+    const ladder = ladders[PROBLEMS[id]];
+    const of = (s: { algo?: string | null; p?: string | null }) => s.algo ?? s.p;
+    assert.equal(of(ladder[PLAY[id]]), kind[id], id);
+    assert.equal(ladder.findIndex((s) => of(s) === kind[id]), PLAY[id], `${id}: the first puzzle of its kind`);
+    assert.equal((initialLive(GAMES[PROBLEMS[id]]) as { mode?: string }).mode, "puzzle", id);
   }
 });

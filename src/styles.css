@@ -131,8 +131,10 @@ input.invalid { border-color: var(--danger); }
   color: var(--muted);
 }
 .tool-menu-heading:first-child { padding-top: 3px; }
-/* A menu in sections: the sections side by side in columns, each kept whole. */
-.tool-menu.cols { display: block; width: min(1000px, calc(100vw - 16px)); column-width: 230px; column-gap: 6px; }
+/* A menu in sections: the sections side by side in columns, each kept whole. The columns are in a box inside the
+   menu, so the menu's height limit makes them scroll down, never overflow into more columns off to the side. */
+.tool-menu.cols { display: block; width: min(1000px, calc(100vw - 16px)); }
+.tool-menu-cols { column-width: 230px; column-gap: 6px; }
 .tool-menu-section { display: flex; flex-direction: column; break-inside: avoid; padding-bottom: 8px; }
 .tool-menu-icon { flex: none; width: 28px; text-align: center; color: var(--accent); font-weight: 600; }
 .board-body { flex: 1; display: flex; min-height: 0; }

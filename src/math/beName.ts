@@ -6,6 +6,7 @@
 // React and of words: the board keeps only the answers made so far, and the problems' and patterns' words are the
 // locale's.
 import type { EndlessGame, TryGame } from "./ladder";
+import type { LiveKind } from "./live";
 import { rng } from "./random";
 
 export const PATTERNS = ["sort", "search", "dp", "binary", "pointers", "window", "backtrack", "heap", "tree", "stack", "union", "topo"] as const;
@@ -13,6 +14,26 @@ export type Pattern = (typeof PATTERNS)[number];
 /** The game each pattern is played in, for its icon on the tile. */
 export const ICONS: Record<Pattern, string> = {
   sort: "🔀", search: "🔦", dp: "▦", binary: "🔍", pointers: "👉", window: "🪟", backtrack: "♛", heap: "⛰️", tree: "🌳", stack: "📚", union: "🔗", topo: "➡️",
+};
+/** The game each pattern is played in, opened beside the board's piece to play a problem by hand. */
+export const GAMES: Record<Pattern, LiveKind> = {
+  sort: "beSort", search: "beSearch", dp: "beDp", binary: "beBinary", pointers: "bePointers", window: "beWindow", backtrack: "beBacktrack",
+  heap: "beHeap", tree: "beTree", stack: "beStack", union: "beUnion", topo: "beTopo",
+};
+/** The first puzzle of its pattern's game that plays each problem (merging two piles is merge sort's, the quickest trip Dijkstra's…). */
+export const PLAY: Record<string, number> = {
+  s1: 0, s2: 0, s3: 6,
+  q1: 0, q2: 2, q3: 0,
+  d1: 0, d2: 1, d3: 3,
+  b1: 0, b2: 2, b3: 0,
+  p1: 0, p2: 3, p3: 2,
+  w1: 0, w2: 2, w3: 1,
+  k1: 3, k2: 8, k3: 2,
+  h1: 3, h2: 1, h3: 1,
+  t1: 0, t2: 0, t3: 2,
+  m1: 1, m2: 0, m3: 3,
+  u1: 1, u2: 0, u3: 2,
+  o1: 0, o2: 2, o3: 1,
 };
 /** The problems, by id: the first letter names nothing; each lists its pattern. Their words are live.beName.problems[id]. */
 export const PROBLEMS: Record<string, Pattern> = {
