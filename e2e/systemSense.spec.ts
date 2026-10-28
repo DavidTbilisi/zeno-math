@@ -1,6 +1,6 @@
-// System-design-sense games: be the cache, be the load balancer, be the hash ring, be the rate limiter and be the
-// replicas, each one's first puzzle played operation by operation as the code makes them, and a wrong one refused with
-// the rule it broke.
+// System-design-sense games: be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas
+// and be the message queue, each one's first puzzle played operation by operation as the code makes them, and a wrong
+// one refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { cacheNow, cacheRun, cacheSvg, checkOp as cacheCheck, expect as cacheNext, replay as cacheReplay, victimAt, type CacheMachine } from "../src/math/beCache.ts";
@@ -8,6 +8,7 @@ import { checkOp as lbCheck, choose, expect as lbNext, lbNow, lbRun, replay as l
 import { checkOp as ringCheck, ownerOf, replay as ringReplay, ringNow, ringRun } from "../src/math/beRing.ts";
 import { checkOp as limitCheck, expect as limitNext, limitNow, limitRun, replay as limitReplay } from "../src/math/beLimit.ts";
 import { checkOp as qCheck, expect as qNext, nextReplica, quorumNow, quorumRun, quorumSvg, replay as qReplay, staleReplies, type QuorumMachine } from "../src/math/beQuorum.ts";
+import { checkOp as quCheck, eventText as quEvent, partitionOf, queueNow, queueRun, startMachine as quStart } from "../src/math/beQueue.ts";
 import { fill } from "../src/math/text.ts";
 import { boardWith } from "./helpers.ts";
 
@@ -294,5 +295,55 @@ test("be the replicas: a write sent out of preference order is refused, then to 
   await expect(async () => {
     await drag(qLabel(m, "req"), qLabel(m, `r${first}`));
     await expect(game.getByText("Operations: 1 of", { exact: false })).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const quTask = queueNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const queue = queueRun(quTask);
+/** The send card of event k and the partition its key hashes to (the first puzzle only sends). */
+const quMove = (k: number): [string, string] => {
+  const ev = quTask.events[k] as { kind: "send"; k: string };
+  return [quEvent(ev), `partition p${partitionOf(quTask, ev.k)}`];
+};
+
+test("be the message queue: each message sent to the partition its key hashes to earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeQueue, ".live-beQueue");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const [from, to] = quMove(k);
+    await tap(from).then(() => tap(to));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${queue.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < queue.ops.length; k++) await op(k);
+  await expect(game.getByText(/messages on their partitions, each key's in order! ★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the message queue: a message sent to the wrong partition is refused, then to hash mod P", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeQueue, ".live-beQueue");
+  const [card, right] = quMove(0);
+  const p = partitionOf(quTask, (quTask.events[0] as { k: string }).k);
+  const wrong = (p + 1) % quTask.parts;
+  const c = quCheck(quStart(quTask), { kind: "send", p: wrong });
+  if (c.ok) throw new Error("one partition per key");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: card, exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(card, `partition p${wrong}`);
+    await expect(game.getByText(fill(en.live.beQueue.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag(card, right);
+    await expect(game.getByText(`Operations: 1 of ${queue.ops.length}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
 });

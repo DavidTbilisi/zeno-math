@@ -48,6 +48,7 @@ import type { LiveBeBalance } from "./beBalance";
 import type { LiveBeRing } from "./beRing";
 import type { LiveBeLimit } from "./beLimit";
 import type { LiveBeQuorum } from "./beQuorum";
+import type { LiveBeQueue } from "./beQueue";
 import type { LiveBeTopo } from "./beTopo";
 import type { LiveBeName } from "./beName";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
@@ -452,6 +453,7 @@ export type LiveStates = {
   beRing: LiveBeRing;
   beLimit: LiveBeLimit;
   beQuorum: LiveBeQuorum;
+  beQueue: LiveBeQueue;
   beTopo: LiveBeTopo;
   beName: LiveBeName;
   descentLab: LiveDescent;
@@ -528,6 +530,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   beRing: [1060, 700],
   beLimit: [1060, 640],
   beQuorum: [1060, 640],
+  beQueue: [1060, 700],
   beTopo: [1080, 680],
   beName: [1080, 700],
   descentLab: [660, 610],
@@ -606,6 +609,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     beRing: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beLimit: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beQuorum: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
+    beQueue: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beTopo: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beName: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     descentLab: DESCENT_START,
