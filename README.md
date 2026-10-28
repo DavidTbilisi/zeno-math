@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1102,6 +1102,18 @@ UI in English, Russian and Georgian.
     stack first"). No miss earns three stars, one two. Nine puzzles open in turn; the endless run goes from inserts
     and searches in small trees to all four on eight or nine nodes. Four discoveries (every insert is a leaf, a missing
     value falls off where it would go, inorder is sorted, preorder rebuilds the tree) and ten in a row.
+  - *Be the monotonic stack*: the player is the computer sweeping an array left to right with a stack it keeps in
+    order, drawn lying left to right with each cell's index under its value. Every operation is a drag (or a tap on
+    what to move, then on where it goes): a[i] onto the stack, the top onto the ans[] cell of the index it holds
+    (popped and answered), the top into the pop bin, the top or the −1 chip onto ans[i]. Four patterns: the next
+    greater value (a bigger a[i] pops every smaller top and is its answer), the days to wait for a warmer day (the
+    same, i − j), the previous smaller value (pop every top not smaller, then the top is the answer) and the smallest
+    number after removing k digits (a smaller digit pops bigger ones while k lasts; what k is left trims the end). The
+    code runs beside it with the lines just run lit, and a log says what each operation did ("a[1] = 2 < 3: ans[1] =
+    3"). An operation the code would not make is not made, and says the rule it broke ("a[top] = 5 ≥ a[i] = 4: it
+    can't be a smaller one before i; pop it first"). No miss earns three stars, one two. Nine puzzles open in turn;
+    the endless run goes from the next greater and the warmer day on six or seven to all four on up to twelve. Four
+    discoveries (several pops in a row, indexes left on the stack, trimming the end, under 2n moves) and ten in a row.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

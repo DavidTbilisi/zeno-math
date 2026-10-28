@@ -168,6 +168,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "beBacktrack", icon: "♛", name: "liveBeBacktrack" },
       { kind: "beHeap", icon: "⛰️", name: "liveBeHeap" },
       { kind: "beTree", icon: "🌳", name: "liveBeTree" },
+      { kind: "beStack", icon: "📚", name: "liveBeStack" },
     ],
   },
 ];
