@@ -1,5 +1,5 @@
 // Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers, be the
-// sliding window and be the backtracking, each one's first puzzle played move by move as the algorithm makes them, and a
+// sliding window, be the backtracking and be the heap, each one's first puzzle played move by move as the algorithm makes them, and a
 // wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -8,6 +8,7 @@ import { SORT_LADDER, sortNow, sortRun } from "../src/math/beSort.ts";
 import { binNow, binRun, checkOp as binCheck, expect as binNext, replay as binReplay } from "../src/math/beBinary.ts";
 import { checkOp as ptrCheck, expect as ptrNext, ptrNow, ptrRun, replay as ptrReplay } from "../src/math/bePointers.ts";
 import { btNow, btRun, checkOp as btCheck, expect as btNext, nextChoice, pathText, replay as btReplay, shown as btShown } from "../src/math/beBacktrack.ts";
+import { checkOp as heapCheck, expect as heapNext, heapNow, heapRun, partner, replay as heapReplay } from "../src/math/beHeap.ts";
 import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
@@ -348,4 +349,50 @@ test("be the backtracking: a choice dragged before the empty path is recorded is
     await expect(game.getByText(`path.append(${a0}) → [${a0}]`)).toBeVisible({ timeout: 1000 });
   }).toPass();
   await expect(game.getByText(`Operations: 2 of ${bt.ops.length}`)).toBeVisible();
+});
+
+const heapTask = heapNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const heap = heapRun(heapTask);
+
+test("be the heap: each value put on the end and swapped up as the code does earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeHeap, ".live-beHeap");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const m = heapReplay(heapTask, heap.ops.slice(0, k));
+    const h = m.heap;
+    if (heapNext(m) === "append") await tap(`x = a[${m.j}] = ${heapTask.a[m.j]}`).then(() => tap(`heap[${h.length}], empty`));
+    else await tap(`heap[${m.cur}] = ${h[m.cur!]}`).then(() => tap(`node ${partner(m)} = ${h[partner(m)!]}`));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${heap.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < heap.ops.length; k++) await op(k);
+  await expect(game.getByText(new RegExp(`All ${heapTask.a.length} values are in, every parent ≤ its children! ★★★`))).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the heap: a value dropped past the end of heap[] is refused, then dropped on heap[0]", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeHeap, ".live-beHeap");
+  const c = heapCheck(heapReplay(heapTask, []), { kind: "put", to: 1 });
+  if (c.ok) throw new Error("a value goes on the end");
+  const x = `x = a[0] = ${heapTask.a[0]}`;
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: x, exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(x, "heap[1], empty");
+    await expect(game.getByText(fill(en.live.beHeap.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag(x, "heap[0], empty");
+    await expect(game.getByText(`heap.append(${heapTask.a[0]}) → heap[0] = ${heapTask.a[0]}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await expect(game.getByText(`Operations: 1 of ${heap.ops.length}`)).toBeVisible();
 });

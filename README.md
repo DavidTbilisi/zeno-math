@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1077,6 +1077,19 @@ UI in English, Russian and Georgian.
     diagonal"). No miss earns three stars, one two. Nine puzzles open in turn, from the subsets of three letters to
     the four queens; the endless run goes from subsets, two of four and short sums to the queens, two of five and
     sums of six. Four discoveries (pruning, a dead end, 2ⁿ subsets, n! orders) and ten in a row.
+  - *Be the heap*: the player is the computer keeping a min-heap in an array, drawn both as heap[] with its indexes and
+    as the tree it stands for (the children of i at 2i + 1 and 2i + 2). Every change is a drag (or a tap on what to
+    move, then on where it goes): the next value onto the end of heap[], a value onto its parent or child to swap them
+    as it sifts, the root into out[] or into return, the last leaf into the hole at the root, s onto the index heapify
+    sinks next, a small value into the skip bin. Four patterns: push values in turn (each climbs while its parent is
+    bigger), pop the smallest until the heap is empty (out[] comes out sorted: heap sort), heapify an array in place (s
+    walks back from the last parent, n // 2 − 1), and the k-th largest with a heap that keeps only the k largest so far.
+    The code runs beside it with the lines just run lit, and a log says what each operation did ("swap(3, 1): heap[3]
+    = 9, heap[1] = 2"; "heap[0] = heap.pop() = 4"). An operation the code would not make is not made, and says the
+    rule it broke ("Swap with the smaller child, 2, not 3: then the new parent is smaller than both"). No miss earns
+    three stars, one two. Nine puzzles open in turn; the endless run goes from pushes and pops of five or six to all
+    four on up to eleven. Four discoveries (a new smallest climbs to the root, heap sort, linear heapify, a heap that
+    never grows past k) and ten in a row.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
