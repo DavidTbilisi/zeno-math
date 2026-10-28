@@ -186,6 +186,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "beLimit", icon: "🚦", name: "liveBeLimit" },
       { kind: "beQuorum", icon: "🗃️", name: "liveBeQuorum" },
       { kind: "beQueue", icon: "📨", name: "liveBeQueue" },
+      { kind: "beComp", icon: "🧱", name: "liveBeComp" },
     ],
   },
 ];
