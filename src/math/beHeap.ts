@@ -358,7 +358,6 @@ export type HeapPic = { w: number; h: number; body: string; spots: Spot[] };
 const BLUE = "#1971c2";
 const GREEN = "#2f9e44";
 const ORANGE = "#f08c00";
-const VIOLET = "#7048e8";
 const INK = "#1e1e1e";
 const MUTED = "#868e96";
 const CELL = 38;
