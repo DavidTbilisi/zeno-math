@@ -1,5 +1,5 @@
 // Algorithm-sense games: be the sort, be the search, be the DP, be the binary search, be the two pointers, be the
-// sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack and be the union-find, each one's first puzzle played move by move as the algorithm makes them, and a
+// sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find and be the topological sort, each one's first puzzle played move by move as the algorithm makes them, and a
 // wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -12,6 +12,7 @@ import { checkOp as heapCheck, expect as heapNext, heapNow, heapRun, partner, re
 import { checkOp as treeCheck, expect as treeNext, replay as treeReplay, step as treeStep, treeNow, treeRun } from "../src/math/beTree.ts";
 import { checkOp as stackCheck, expect as stackNext, replay as stackReplay, stackNow, stackRun } from "../src/math/beStack.ts";
 import { checkOp as ufCheck, expect as ufNext, linkOrder, replay as ufReplay, ufNow, ufRun } from "../src/math/beUnion.ts";
+import { checkOp as topoCheck, edgeTarget, expect as topoNext, putNode, replay as topoReplay, topoNow, topoRun } from "../src/math/beTopo.ts";
 import { checkOp as winCheck, expect as winNext, replay as winReplay, value as winValue, winNow, winRun } from "../src/math/beWindow.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
@@ -550,5 +551,55 @@ test("be the union-find: the bigger root dragged under the smaller is refused, t
   await expect(async () => {
     await drag(`node ${child}`, `node ${root}`);
     await expect(game.getByText(`parent[${child}] = ${root}; size[${root}] = 2`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const topoTask = topoNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const topo = topoRun(topoTask);
+
+test("be the topological sort: Kahn's queue, head and edges played as the code does earn three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeTopo, ".live-beTopo");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const m = topoReplay(topoTask, topo.ops.slice(0, k));
+    const e = topoNext(m);
+    const [from, to] =
+      e === "put" ? [`node ${putNode(m)}`, "queue"]
+      : e === "take" ? [`head = ${m.queue[m.head]}`, "order"]
+      : [`u = ${m.u}`, `node ${edgeTarget(m)}`];
+    await tap(from).then(() => tap(to));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${topo.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < topo.ops.length; k++) await op(k);
+  await expect(game.getByText(/every edge points forward! ★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the topological sort: a node with an edge into it dragged into the queue is refused, then the scan's first", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeTopo, ".live-beTopo");
+  const m = topoReplay(topoTask, []);
+  const waits = m.indeg.findIndex((d) => d > 0);
+  const c = topoCheck(m, { kind: "put", v: waits });
+  if (c.ok) throw new Error("a node with an edge into it waits");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: `node ${waits}`, exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(`node ${waits}`, "queue");
+    await expect(game.getByText(fill(en.live.beTopo.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  const v = putNode(m);
+  await expect(async () => {
+    await drag(`node ${v}`, "queue");
+    await expect(game.getByText(`q.append(${v}) → q = [${v}]`)).toBeVisible({ timeout: 1000 });
   }).toPass();
 });

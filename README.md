@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the heap, be the tree, be the monotonic stack, be the union-find, be the topological sort). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1127,6 +1127,19 @@ UI in English, Russian and Georgian.
     (size 1): the smaller tree goes under, the second on a tie"). No miss earns three stars, one two. Nine puzzles open
     in turn; the endless run goes from unions on five or six to all three on eight. Three discoveries (path
     compression, a skipped cycle, Kruskal stopping early) and ten in a row.
+  - *Be the topological sort*: the player is the computer ordering the nodes of a directed graph so every edge
+    points forward, the graph drawn as nodes on a circle with an arrow for each edge. Every operation is a drag (or a
+    tap on what to move, then on where it goes). Kahn's way keeps indeg[] and a queue: a node into the queue (first a
+    scan by index of the nodes with indeg 0), the queue's head into order[], u along each of its edges in turn
+    (indeg[v] − 1, the edge walked fading), a node into the queue the moment its indeg reaches 0; on a graph with a
+    cycle the queue runs dry with nodes left, and one of them goes into "cycle!". The depth-first way keeps a stack of
+    open nodes: the top's first unvisited neighbour onto the stack, and a node with none left into order[], at the
+    front. The code runs beside it with the lines just run lit, and a log says what each operation did ("0 → 2:
+    indeg[2] = 1"; "1 finished; order = [1, 2]"). An operation the code would not make is not made, and says the rule
+    it broke ("indeg[2] = 2: something must come before 2"). No miss earns three stars, one two. Nine puzzles open in
+    turn; the endless run goes from Kahn and depth first on five nodes to all three on seven or eight. Three
+    discoveries (more than one right order, a cycle, the depth-first order is the finishing order backwards) and ten
+    in a row.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
