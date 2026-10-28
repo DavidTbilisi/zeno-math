@@ -896,6 +896,15 @@ input.invalid { border-color: var(--danger); }
 .colour-pen { width: 2.6em; height: 2em; border: 2px solid #ced4da; }
 .colour-pen.on { border-color: #1e1e1e; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1e1e1e; }
 .route-sum { min-height: 1.3em; font-weight: 600; }
+/* Be the search: the machine (graph and arrays) beside its code, the lines just run lit, and the log of operations. */
+.search-row { display: flex; align-items: flex-start; gap: 12px; }
+.search-side { display: flex; flex-direction: column; gap: 8px; width: 372px; }
+.search-code, .search-log { margin: 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; }
+.search-code { padding: 6px 0; white-space: pre; overflow: hidden; }
+.search-code div { padding: 0 8px; }
+.search-code .lit { background: #fff3bf; font-weight: 700; }
+.search-log { padding: 6px 8px 6px 34px; min-height: 9em; color: #495057; }
+.search-log li:last-child { color: #1e1e1e; font-weight: 700; }
 /* The solve ladder: its rungs, the passed ones ticked off in green, and options that may be whole sentences. */
 .live-solve-rungs .live-btn.passed { background: #ebfbee; border-color: #2f9e44; }
 .live-solve-options { flex-direction: column; align-items: stretch; max-width: 640px; }

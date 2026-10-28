@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1001,6 +1001,19 @@ UI in English, Russian and Georgian.
     four; the endless run mixes them, from the three simple sorts on five or six items to all five on eight or nine.
     Six discoveries (a pass with no swap, a key that stays, the smallest already in place, a run emptied first, the
     pivot landed, ten in a row)
+  - *Be the search*: the player is the computer running a graph search on the memory the code keeps, one operation at
+    a time, by drag and drop (or a tap on what to move, then on where it goes). Breadth-first search keeps a queue in
+    an array (FIFO): drag queue[head] into v, then each new neighbour of v, in alphabetical order, into queue[tail],
+    with head, tail and visited[] beneath. Depth-first search keeps a stack (LIFO): drag stack[top] into v, then v's
+    unvisited neighbours onto the stack in reverse alphabetical order, so A comes off first; a place popped a second
+    time is skipped (continue). Dijkstra's algorithm keeps dist[], prev[] and done[] by place: drag the smallest
+    dist[] not done into v, then each neighbour it brings nearer onto its own dist[]. The code runs beside the arrays
+    with the lines just run lit, and a log says what each operation did to memory ("queue[4] = E; tail = 5;
+    visited[4] = true"). An operation the code would not make is not made, and says the rule it broke ("A queue is
+    first in, first out: dequeue takes the front, queue[1] = B, not queue[2] = C"). No miss earns three stars, one
+    two. Nine puzzles open in turn, each search on six places, then nine, then bigger; the endless run goes from BFS
+    or DFS on six places to all three on twelve. Four discoveries (FIFO gives layers, a place on the stack twice, a
+    dist going down, ten in a row)
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
