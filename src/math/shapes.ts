@@ -1262,6 +1262,16 @@ function beTopoPreview(): Piece[] {
   ];
 }
 
+function beNamePreview(): Piece[] {
+  // A problem card over a grid of pattern tiles, one lit as the answer.
+  return [
+    rect(0, 0, 200, 34, { fill: "#fff4e6", color: "#f08c00", width: 2 }, true),
+    text(100, 17, "climb n stairs: how many ways?", 12),
+    ...[0, 1, 2, 3, 4, 5].map((i) => rect((i % 3) * 68, 46 + Math.floor(i / 3) * 34, 62, 28, { fill: i === 2 ? "#ebfbee" : "#f8f9fa", color: i === 2 ? "#2f9e44" : "#ced4da", width: 1.5 }, true)),
+    text(170, 60, "DP", 13),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1571,6 +1581,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeStack", group: "games", build: beStackPreview, live: "beStack" },
   { id: "liveBeUnion", group: "games", build: beUnionPreview, live: "beUnion" },
   { id: "liveBeTopo", group: "games", build: beTopoPreview, live: "beTopo" },
+  { id: "liveBeName", group: "games", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
