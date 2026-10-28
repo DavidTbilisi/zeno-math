@@ -1357,6 +1357,19 @@ function beQueuePreview(): Piece[] {
   ];
 }
 
+function beCompPreview(): Piece[] {
+  // A requirement's card over four of the component tiles, one of them lit.
+  const tile = (i: number, j: number, name: string, lit = false) => [rect(i * 104, 56 + j * 42, 96, 34, { fill: lit ? "#ebfbee" : "#f8f9fa", color: lit ? "#2f9e44" : "#ced4da", width: 2 }), text(i * 104 + 48, 73 + j * 42, name, 12)];
+  return [
+    rect(0, 0, 200, 40, { fill: "#fff4e6", color: "#f08c00", width: 2 }),
+    text(100, 20, "the same price, again and again", 11),
+    ...tile(0, 0, "Cache", true),
+    ...tile(1, 0, "CDN"),
+    ...tile(0, 1, "Load balancer"),
+    ...tile(1, 1, "Message queue"),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1671,6 +1684,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeLimit", group: "games", build: beLimitPreview, live: "beLimit" },
   { id: "liveBeQuorum", group: "games", build: beQuorumPreview, live: "beQuorum" },
   { id: "liveBeQueue", group: "games", build: beQueuePreview, live: "beQueue" },
+  { id: "liveBeComp", group: "games", build: beCompPreview, live: "beComp" },
   { id: "liveBeTopo", group: "games", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", group: "games", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },

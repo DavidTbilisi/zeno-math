@@ -1,6 +1,7 @@
 // System-design-sense games: be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas
 // and be the message queue, each one's first puzzle played operation by operation as the code makes them, and a wrong
-// one refused with the rule it broke.
+// one refused with the rule it broke; and name the component, its first round answered tile by tile, a wrong tile
+// refused, and a requirement's game opened beside it.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { cacheNow, cacheRun, cacheSvg, checkOp as cacheCheck, expect as cacheNext, replay as cacheReplay, victimAt, type CacheMachine } from "../src/math/beCache.ts";
@@ -9,6 +10,7 @@ import { checkOp as ringCheck, ownerOf, replay as ringReplay, ringNow, ringRun }
 import { checkOp as limitCheck, expect as limitNext, limitNow, limitRun, replay as limitReplay } from "../src/math/beLimit.ts";
 import { checkOp as qCheck, expect as qNext, nextReplica, quorumNow, quorumRun, quorumSvg, replay as qReplay, staleReplies, type QuorumMachine } from "../src/math/beQuorum.ts";
 import { checkOp as quCheck, eventText as quEvent, partitionOf, queueNow, queueRun, startMachine as quStart } from "../src/math/beQueue.ts";
+import { checkOp as compCheck, COMPONENTS, compNow, GAMES as COMP_GAMES, PLAY as COMP_PLAY, REQS, startMachine as compStart } from "../src/math/beComp.ts";
 import { fill } from "../src/math/text.ts";
 import { boardWith } from "./helpers.ts";
 
@@ -346,4 +348,61 @@ test("be the message queue: a message sent to the wrong partition is refused, th
     await drag(card, right);
     await expect(game.getByText(`Operations: 1 of ${queue.ops.length}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
+});
+
+const compTask = compNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const compTile = (k: number) => en.live.beComp.tiles[REQS[compTask.items[k].id]];
+
+test("name the component: each requirement dropped on its component earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeComp, ".live-beComp");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  await expect(async () => {
+    await tap("requirement").then(() => tap(compTile(0)));
+    await expect(game.getByText(`Named: 1 of ${compTask.items.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < compTask.items.length; k++) await tap("requirement").then(() => tap(compTile(k)));
+  await expect(game.getByText(new RegExp(`All ${compTask.items.length} named! ★★★`))).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("name the component: a requirement dropped on the wrong component says what that one is for, then on the right one", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeComp, ".live-beComp");
+  const right = REQS[compTask.items[0].id];
+  const wrong = COMPONENTS.find((p, i) => p !== right && i % 4 !== 0)!;
+  const c = compCheck(compStart(compTask), COMPONENTS.indexOf(wrong));
+  if (c.ok) throw new Error("one component per requirement");
+  const W = en.live.beComp;
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: "requirement", exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag("requirement", W.tiles[wrong]);
+    await expect(game.getByText(fill(W.wrong, { name: W.tiles[wrong], needs: W.needs[wrong] }))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag("requirement", W.tiles[right]);
+    await expect(game.getByText(`Named: 1 of ${compTask.items.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+test("name the component: a requirement whose component has a game opens it beside, at the puzzle of its kind", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeComp, ".live-beComp");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const k = compTask.items.findIndex((it) => COMP_GAMES[REQS[it.id]]);
+  await expect(async () => {
+    await tap("requirement").then(() => tap(compTile(0)));
+    await expect(game.getByText(`Named: 1 of ${compTask.items.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let i = 1; i <= k; i++) await tap("requirement").then(() => tap(compTile(i)));
+  const id = compTask.items[k].id;
+  await game.getByRole("button", { name: fill(en.live.beComp.play, { name: compTile(k) }) }).dispatchEvent("click");
+  const opened = page.locator(`.live-${COMP_GAMES[REQS[id]]}`);
+  await expect(opened).toBeVisible();
+  await expect(opened.locator(".geo-stage.on")).toHaveText(new RegExp(`^${COMP_PLAY[id] + 1}`));
 });
