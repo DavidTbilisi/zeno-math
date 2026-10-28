@@ -12,6 +12,7 @@ import {
 } from "../src/learner.ts";
 import { priorState } from "../src/model/classModel.ts";
 import { IDEA_PRIOR, usesOf, type IdeaState } from "../src/model/ideaState.ts";
+import { EMA } from "../src/model/policy.ts";
 
 const w = en.pracWords;
 const student = { code: "ABCD-EFGH", class: "7BXYZ2", condition: "fixed" as const };
@@ -101,7 +102,7 @@ test("the outbox survives a failing network and keeps attempts added mid-send", 
 });
 
 test("leaving a question moves the class plan on the way the server will", () => {
-  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: priorState(), ideas: {} });
+  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: priorState(), ideas: {}, ema: {} });
   const base = { clientId: "x", student: student.code, level: 2 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, shownAt: 0, predicted: 0.5 };
   const right: Attempt = { ...base, skill: "linear", outcome: "solved", policy: "fixed", answers: [{ input: "3", verdict: "correct", ms: 1 }] };
   const before = plan.model.predict({ student: ME, skill: "linear", level: 2 });
@@ -109,12 +110,14 @@ test("leaving a question moves the class plan on the way the server will", () =>
   assert.equal(plan.position, 5);
   assert.deepEqual(plan.recent, ["linear", "expand", "linear"]);
   assert.ok(plan.model.predict({ student: ME, skill: "linear", level: 2 }) > before);
+  assert.ok(plan.ema.linear! > EMA.start, "the moving average on the skill rises with it");
   // A free question teaches the model but doesn't move the fixed sequence; form messages alone teach nothing.
   const formOnly: Attempt = { ...base, skill: "expand", outcome: "skipped", policy: "free", answers: [{ input: "6/2", verdict: "form", ms: 1 }] };
   const state = JSON.stringify(plan.model.state());
   applyAttempt(plan, formOnly);
   assert.equal(plan.position, 5);
   assert.equal(JSON.stringify(plan.model.state()), state);
+  assert.equal(plan.ema.expand, undefined);
   assert.equal(attemptEvidence(formOnly), null);
   assert.equal(attemptEvidence({ ...formOnly, outcome: "revealed", answers: [] }), false);
   assert.equal(attemptEvidence({ ...right, answers: [{ input: "6/2", verdict: "form", ms: 1 }, ...right.answers] }), true);
@@ -132,6 +135,7 @@ test("leaving a question moves the class plan on the way the server will", () =>
   assert.deepEqual([moved.phase, moved.sessionEnds, moved.tests.pre.answered, moved.position], ["session", 123, [0, 1], 5]);
   assert.equal(moved.model, plan.model);
   assert.equal(moved.ideas, plan.ideas);
+  assert.equal(moved.ema, plan.ema);
 });
 
 test("an attempt teaches the ideas as the server will: the question rebuilt from its seed, the mistake read off the first counted answer", () => {

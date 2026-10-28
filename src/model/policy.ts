@@ -11,10 +11,17 @@
 // ideas (times, hcf, fractions), given what the student knows of each, it also names the idea they are least likely
 // to know, and the question asked is the one bearing most on it (exerciseFor in src/learner.ts): on fractions, the
 // form asking for that idea alone.
+//
+// A skill counts as mastered once the model gives a hard question on it a good chance. Given the student's evidence on
+// the skill itself, as the app gives it, the thesis's rule must hold as well (docs/thesis, section 3.3): the moving
+// average of their answers on the skill has reached the threshold fitted on ASSISTments, and on a skill made of ideas
+// they are likely to know every one of them, since a skill whose questions each leave ideas untested looks mastered
+// before it is (G1). The gates only hold a skill open longer; the simulations, which give neither, are as they were.
 import type { SkillId } from "../math/practiceSkills.ts";
 import { PREREQUISITES } from "./curriculum.ts";
 import type { Level } from "./elo.ts";
-import { hasIdeas, weakestIdea, type IdeaState } from "./ideaState.ts";
+import { emaStep, type EmaParams } from "./evaluate.ts";
+import { allKnown, hasIdeas, weakestIdea, type IdeaState } from "./ideaState.ts";
 
 export type Policy = "adaptive" | "fixed";
 /** A skill and level, and on a skill made of ideas, with the student's ideas given, the idea to aim the question at. */
@@ -31,6 +38,18 @@ export const TARGET = 0.75;
 export const UNLOCK_AT = 0.5;
 /** A skill is mastered when a hard question on it would be answered right this often. */
 export const MASTERED_AT = 0.8;
+/** The moving average fitted on the ASSISTments training students (thesis section 3.1), until a class has answered. */
+export const EMA: EmaParams = { alpha: 0.15, start: 0.594 };
+/** The moving average's threshold that costs on those students what three right in a row costs (thesis Table 3.9). */
+export const EMA_MASTERED_AT = 0.6962;
+/** On a skill made of ideas, the chance of knowing every one of them that mastery needs (BKT's usual threshold). */
+export const IDEAS_MASTERED_AT = 0.95;
+
+/** The student's moving average of right first answers on each skill they have answered; a skill not here stands at EMA.start. */
+export type EmaState = Partial<Record<SkillId, number>>;
+export function learnEma(state: EmaState, skill: SkillId, correct: boolean): void {
+  state[skill] = emaStep(state[skill] ?? EMA.start, EMA.alpha, correct);
+}
 /** Added to the distance from the target for each of the last RECENT questions that were on the same skill. */
 export const RECENCY_PENALTY = 0.1;
 export const RECENT = 3;
@@ -59,29 +78,42 @@ export type AdaptiveOptions = {
   random?: () => number;
   /** The chance of a right first answer to aim at: TARGET in the app; simulations try others. */
   target?: number;
-  /** What the student knows of each idea (ideaState.ts): with it, a question on a skill made of ideas aims at the weakest. */
+  /**
+   * What the student knows of each idea (ideaState.ts): with it, a question on a skill made of ideas aims at the
+   * weakest, and such a skill is mastered only once every idea is likely known.
+   */
   ideas?: IdeaState;
+  /** The student's moving average on each skill: with it, a skill is mastered only once that has reached EMA_MASTERED_AT. */
+  ema?: EmaState;
 };
 
+/** Whether a skill counts as mastered, given the chance the model gives a hard question on it and the student's evidence on the skill. */
+export function isMastered(skill: SkillId, hard: number, options: Pick<AdaptiveOptions, "ideas" | "ema"> = {}): boolean {
+  if (hard < MASTERED_AT) return false;
+  if (options.ema && (options.ema[skill] ?? EMA.start) < EMA_MASTERED_AT) return false;
+  return !options.ideas || !hasIdeas(skill) || allKnown(options.ideas, skill) >= IDEAS_MASTERED_AT;
+}
+
 /** The open skills, and the hard-question predictions they were judged by (adaptiveChoice needs those again). */
-function open(model: ChanceModel, student: string, skills: readonly SkillId[], floor?: (skill: SkillId) => number): { open: SkillId[]; hard: Map<SkillId, number> } {
+function open(model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor" | "ideas" | "ema">): { open: SkillId[]; hard: Map<SkillId, number> } {
   const hard = new Map(skills.map((k) => [k, model.predictAt(student, k, 3)] as const));
-  const unmastered = skills.filter((k) => hard.get(k)! < MASTERED_AT);
+  const unmastered = skills.filter((k) => !isMastered(k, hard.get(k)!, options));
+  const floor = options.unlockFloor;
   const bar = (pre: SkillId) => (floor ? Math.min(UNLOCK_AT, floor(pre)) : UNLOCK_AT);
   const ready = unmastered.filter((k) => (PREREQUISITES[k] ?? []).every((pre) => !skills.includes(pre) || model.predictAt(student, pre, 2) >= bar(pre)));
   return { open: ready.length ? ready : unmastered.length ? unmastered : [...skills], hard };
 }
 
 /** The skills the student may practise now: prerequisites met and not mastered (all of them once everything is). */
-export const openSkills = (model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor"> = {}): SkillId[] =>
-  open(model, student, skills, options.unlockFloor).open;
+export const openSkills = (model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor" | "ideas" | "ema"> = {}): SkillId[] =>
+  open(model, student, skills, options).open;
 
 export function adaptiveChoice(model: ChanceModel, student: string, skills: readonly SkillId[], options: AdaptiveOptions = {}): Choice {
   const recent = (options.recent ?? []).slice(-RECENT);
   const random = options.random ?? Math.random;
   const target = options.target ?? TARGET;
   let best: (Choice & { score: number; tie: number }) | null = null;
-  const { open: candidates, hard } = open(model, student, skills, options.unlockFloor);
+  const { open: candidates, hard } = open(model, student, skills, options);
   for (const skill of candidates) {
     let penalty = 0;
     for (const k of recent) if (k === skill) penalty += RECENCY_PENALTY;

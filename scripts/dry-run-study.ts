@@ -122,7 +122,7 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
     for (const [i, s] of students.entries()) {
       if (q % refreshEvery === 0) plans.set(s.code, toClassPlan(await plan(s.code)));
       const cp = plans.get(s.code)!;
-      const choice = choose(cp.condition, cp.model, ME, cp.skills, cp.position, { recent: cp.recent, ideas: cp.ideas });
+      const choice = choose(cp.condition, cp.model, ME, cp.skills, cp.position, { recent: cp.recent, ideas: cp.ideas, ema: cp.ema });
       const ex = exerciseFor(choice, w, r.next);
       const predicted = cp.model.predict({ student: ME, skill: choice.skill, level: choice.level });
       const right = world.answer(world.learners[i], choice.skill, choice.level);

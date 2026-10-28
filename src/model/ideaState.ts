@@ -76,6 +76,9 @@ export const IDEA_PRIOR: BktParams = { init: 0.5, learn: 0.05, guess: 0.2, slip:
 
 export const knownOf = (state: IdeaState, idea: string, params: BktParams = IDEA_PRIOR) => state[idea] ?? params.init;
 
+/** The chance the student knows every idea of the skill: the product of their P(known), the ideas being independent given what is known of each. */
+export const allKnown = (state: IdeaState, skill: IdeaSkill, params: BktParams = IDEA_PRIOR) => SKILL_IDEAS[skill].reduce((all, id) => all * knownOf(state, id, params), 1);
+
 /** How a student's ticks on "what exactly was hard?" follow what they know: the chance of ticking an idea they don't know (hit) and one they do (falseAlarm). */
 export type TickRates = { hit: number; falseAlarm: number };
 /**

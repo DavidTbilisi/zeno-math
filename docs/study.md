@@ -23,8 +23,13 @@ A signed-in student practises in one of two ways:
   how (`src/model/policy.ts`):
   - *fixed*: the skills in curriculum order, each at levels 1, 2 and 3 with two questions per level, then round again.
   - *adaptive*: the skill and level where the learner model gives the student about a 75 % chance of a right first
-    answer, as in Math Garden. It skips skills the student has mastered (80 % at level 3) and skills whose
-    prerequisites they've shown weakness in (under 50 % at level 2). A skill from the last three questions counts as
+    answer, as in Math Garden. It skips skills the student has mastered and skills whose prerequisites they've shown
+    weakness in (under 50 % at level 2). A skill counts as mastered when every gate holds (`isMastered`): the model gives
+    a hard question 80 % or more; the moving average of the student's answers on the skill (α 0.15 from a start of
+    0.594, fitted on ASSISTments) has reached 0.6962, the threshold that costs there what three right in a row costs
+    (thesis Table 3.9), so no skill is left behind without answers on it; and on a skill made of ideas the chance of
+    knowing every idea together is at least 0.95, since a question that leaves ideas untested makes a skill look
+    mastered too soon (thesis G1). The server replays the moving averages with the ideas and sends them under `ema`. A skill from the last three questions counts as
     further from the target, so practice interleaves. On a skill made of ideas (times, hcf and fractions have a concept
     graph, `src/model/conceptGraph.ts`), the question is then the one bearing most on the idea the student is least
     likely to know: the server replays every stored answer into one probability per idea (`src/model/ideaState.ts`,

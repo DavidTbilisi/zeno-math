@@ -19,6 +19,7 @@ import { skillsOfYear } from "../src/model/curriculum.ts";
 import { EloModel } from "../src/model/elo.ts";
 import { observationsFromCsv, parseCsv, replay } from "../src/model/evaluate.ts";
 import { usesOf } from "../src/model/ideaState.ts";
+import { learnEma, type EmaState } from "../src/model/policy.ts";
 import { analyseStudy, scoresFromTests } from "../src/model/analysis.ts";
 import { testItems } from "../src/model/testForms.ts";
 import { verdictOf } from "../src/learner.ts";
@@ -258,6 +259,7 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   assert.deepEqual({ condition, skills, position, recent }, { condition: joined.condition, skills: ["volume", "circles"], position: 0, recent: [] });
   assert.deepEqual(fresh.state.students, {});
   assert.deepEqual(fresh.ideas, {});
+  assert.deepEqual(fresh.ema, {});
 
   const mine = { policy: joined.condition, predicted: 0.71, skill: "volume" };
   assert.equal((await call("POST", "/api/attempts", attempt(joined.code, mine))).status, 201);
@@ -278,6 +280,10 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   assert.equal(after.state.students.me.answers, 2);
   assert.ok(typeof after.state.weights["e:volume:2"] === "number", "volume's weights, from the simulated class");
   assert.deepEqual(after.ideas, {}, "no question on a skill made of ideas yet");
+  // Both first answers were wrong: the moving average on each skill falls from its start, as the browser's does.
+  const missedOnce: EmaState = {};
+  learnEma(missedOnce, "volume", false), learnEma(missedOnce, "circles", false);
+  assert.deepEqual(after.ema, missedOnce);
   // A fractions question, right first time, raises the ideas it needed; the plan carries them for the policy to aim at.
   const sum = exercise("fractions", 1, 5, en.pracWords);
   assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: "free", skill: "fractions", level: 1, seed: 5, answers: [{ verdict: "correct", ms: 9000 }] }))).status, 201);
