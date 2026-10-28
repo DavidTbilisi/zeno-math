@@ -262,7 +262,7 @@ export function treeTask(spec: Spec, next: () => number): TreeTask {
     const a = xs.slice(0, spec.n);
     const q = algo === "search" ? [...xs.slice(spec.n, spec.n + 1), ...a.slice(1).filter(() => next() < 0.5).slice(0, nq - 1)] : xs.slice(spec.n);
     if (q.length < nq) continue;
-    const t: TreeTask = { algo, a, q: algo === "search" ? q.sort(() => next() - 0.5) : q };
+    const t: TreeTask = { algo, a, q: algo === "search" ? q.map((x) => [next(), x] as const).sort((x, y) => x[0] - y[0]).map(([, x]) => x) : q };
     const { nodes, root } = build(algo === "insert" ? [...a, ...q] : a);
     const h = height(nodes, root);
     if (h < 3 || h > 5 || !nodes.some((n) => n.l >= 0) || !nodes.some((n) => n.r >= 0)) continue;
