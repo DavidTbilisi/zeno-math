@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1014,6 +1014,19 @@ UI in English, Russian and Georgian.
     two. Nine puzzles open in turn, each search on six places, then nine, then bigger; the endless run goes from BFS
     or DFS on six places to all three on twelve. Four discoveries (FIFO gives layers, a place on the stack twice, a
     dist going down, ten in a row)
+  - *Be the DP*: the player is the computer filling a dynamic-programming table, one operation at a time, by drag
+    and drop (or a tap on what to move, then on where it goes). Seven problems: climbing stairs, the house robber,
+    the largest run sum (Kadane), the fewest coins, paths across a grid, the cheapest path, and the longest common
+    subsequence. The table and the input arrays show their indexes, the base cases are in, and i (and j) point at
+    the cell being filled. Its formula has a slot for each value it reads: drag the cell each slot names (dp[i−1],
+    a[i], dp[i−1][j−1]…) into it, left to right, then the result max or min keeps (skip or take, extend or start
+    afresh, coin by coin, from above or from the left) into dp[i]; at the end, drag the cell the code returns into
+    return (max(dp) for Kadane). The code runs beside it with the line just run lit, and a log says what each
+    operation read or wrote ("dp[4] = max(11, 11 + 9) = 20; i = 5"). An operation the code would not make is not
+    made, and says the rule it broke ("With i = 4, dp[i−2] is dp[2], not dp[1]"). No miss earns three stars, one
+    two. Nine puzzles open in turn; the endless run goes from the 1-D tables on five or six cells to the 2-D ones.
+    Four discoveries (the Fibonacci numbers, greedy coins beaten, an answer not in the last cell, the diagonal plus
+    one) and ten in a row
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

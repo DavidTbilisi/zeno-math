@@ -1,9 +1,10 @@
-// Algorithm-sense games: be the sort and be the search, each one's first puzzle played move by move as the algorithm
-// makes them, and a wrong tap refused with the rule it broke.
+// Algorithm-sense games: be the sort, be the search and be the DP, each one's first puzzle played move by move as the
+// algorithm makes them, and a wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { checkOp, expect as next, replay, SEARCH_LADDER, searchNow, searchRun, type Machine } from "../src/math/beSearch.ts";
 import { SORT_LADDER, sortNow, sortRun } from "../src/math/beSort.ts";
+import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
 import { fill } from "../src/math/text.ts";
 import { boardWith } from "./helpers.ts";
@@ -83,4 +84,53 @@ test("be the search: the front of the queue dragged into v, then a neighbour out
   await game.getByRole("button", { name: cell(m, m.tail), exact: true }).dispatchEvent("click");
   await expect(game.getByText(fill(en.live.beSearch.why[c.why], c.vars))).toBeVisible();
   await expect(game.getByText(`Operations: 1 of ${search.ops.length}`)).toBeVisible();
+});
+
+const dpTask = dpNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const dp = dpRun(dpTask);
+
+test("be the DP: the stairs table filled operation by operation, each slot read and the sum written, earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeDp, ".live-beDp");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  /** A filled cell's spot is named with what it holds, an empty one by its name alone. */
+  const spot = (m: ReturnType<typeof dpReplay>, at: number) => `${cellName(m, "dp", at)}${m.dp[at] === null ? "" : ` = ${valueAt(m, "dp", at)}`}`;
+  const op = async (k: number) => {
+    const m = dpReplay(dpTask, dp.ops.slice(0, k));
+    const e = dpNext(m)!;
+    if (e.kind === "read") await tap(spot(m, e.slot.at)).then(() => tap(e.slot.text));
+    else if (e.kind === "write") {
+      const c = e.plan.cands[dp.ops[k]];
+      await tap(`${c.expr} = ${fmt(c.v)}`).then(() => tap(spot(m, e.at)));
+    } else await tap(spot(m, dp.ops[k])).then(() => tap(`return ${RETURNS[dpTask.p]}`));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${dp.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < dp.ops.length; k++) await op(k);
+  await expect(game.getByText(new RegExp(`8 ways up 5 stairs, each counted from the stairs below! ★★★`))).toBeVisible();
+  await expect(game.getByText("return dp[5]  # 8")).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the DP: dp[0] dragged into its slot, then the result dropped on the wrong cell refused with why", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeDp, ".live-beDp");
+  const from = game.getByRole("button", { name: "dp[0] = 1", exact: true });
+  const to = game.getByRole("button", { name: "dp[i−1]", exact: true });
+  await expect(from).toBeVisible();
+  await expect(async () => {
+    const [a, b] = [(await from.boundingBox())!, (await to.boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+    await expect(game.getByText("dp[i−1] → dp[0] = 1")).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  const m = dpReplay(dpTask, [0]);
+  const c = dpCheck(m, { kind: "write", k: 0, at: 2 });
+  if (c.ok) throw new Error("dp[1] is the cell being filled");
+  await game.getByRole("button", { name: "1 = 1", exact: true }).dispatchEvent("click");
+  await game.getByRole("button", { name: "dp[2]", exact: true }).dispatchEvent("click");
+  await expect(game.getByText(fill(en.live.beDp.why[c.why], c.vars))).toBeVisible();
+  await expect(game.getByText(`Operations: 1 of ${dp.ops.length}`)).toBeVisible();
 });

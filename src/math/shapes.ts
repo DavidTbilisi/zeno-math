@@ -1150,6 +1150,17 @@ function beSearchPreview(): Piece[] {
   ];
 }
 
+function beDpPreview(): Piece[] {
+  // A dp row filled from the left, its indexes beneath: the two cells the formula reads blue, the cell being filled
+  // orange with their sum, and i pointing at it.
+  const vals = ["1", "1", "2", "3", "5"];
+  const fills = ["#ffffff", "#ffffff", FILL.blue, FILL.blue, "#ffe8cc"];
+  return [
+    ...vals.flatMap((v, i) => [rect(i * 44, 0, 38, 38, i === 4 ? { fill: fills[i], color: "#f08c00", width: 2 } : { fill: fills[i], width: 2 }), text(i * 44 + 19, 19, v, 20), text(i * 44 + 19, 50, String(i), 11)]),
+    text(195, 72, "▲ i", 14),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1449,6 +1460,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveConnectTowns", group: "games", build: connectTownsPreview, live: "connectTowns" },
   { id: "liveBeSort", group: "games", build: beSortPreview, live: "beSort" },
   { id: "liveBeSearch", group: "games", build: beSearchPreview, live: "beSearch" },
+  { id: "liveBeDp", group: "games", build: beDpPreview, live: "beDp" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
