@@ -1161,6 +1161,19 @@ function beDpPreview(): Piece[] {
   ];
 }
 
+function beBinaryPreview(): Piece[] {
+  // A sorted row mid-way through a binary search: the left half ruled out grey, mid's cell orange, and the lo, mid and
+  // hi chips under their cells.
+  const vals = ["2", "5", "8", "12", "15", "19", "23"];
+  const chip = (i: number, y: number, s: string, color: string) => [rect(i * 44 + 2, y, 34, 22, { fill: "#ffffff", color, width: 2 }, true), text(i * 44 + 19, y + 11, s, 13)];
+  return [
+    ...vals.flatMap((v, i) => [rect(i * 44, 0, 38, 38, { fill: i < 4 ? FILL.gray : i === 5 ? "#ffe8cc" : "#ffffff", width: 2 }), text(i * 44 + 19, 19, v, 18)]),
+    ...chip(4, 48, "lo", BLUE),
+    ...chip(5, 76, "mid", "#f08c00"),
+    ...chip(6, 104, "hi", BLUE),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1461,6 +1474,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeSort", group: "games", build: beSortPreview, live: "beSort" },
   { id: "liveBeSearch", group: "games", build: beSearchPreview, live: "beSearch" },
   { id: "liveBeDp", group: "games", build: beDpPreview, live: "beDp" },
+  { id: "liveBeBinary", group: "games", build: beBinaryPreview, live: "beBinary" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },

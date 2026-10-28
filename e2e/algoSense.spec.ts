@@ -1,9 +1,10 @@
-// Algorithm-sense games: be the sort, be the search and be the DP, each one's first puzzle played move by move as the
-// algorithm makes them, and a wrong tap refused with the rule it broke.
+// Algorithm-sense games: be the sort, be the search, be the DP and be the binary search, each one's first puzzle played
+// move by move as the algorithm makes them, and a wrong tap refused with the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { checkOp, expect as next, replay, SEARCH_LADDER, searchNow, searchRun, type Machine } from "../src/math/beSearch.ts";
 import { SORT_LADDER, sortNow, sortRun } from "../src/math/beSort.ts";
+import { binNow, binRun, checkOp as binCheck, expect as binNext, replay as binReplay } from "../src/math/beBinary.ts";
 import { cellName, checkOp as dpCheck, dpNow, dpRun, expect as dpNext, fmt, RETURNS, replay as dpReplay, valueAt } from "../src/math/beDp.ts";
 import { name } from "../src/math/graphPlay.ts";
 import { fill } from "../src/math/text.ts";
@@ -133,4 +134,49 @@ test("be the DP: dp[0] dragged into its slot, then the result dropped on the wro
   await game.getByRole("button", { name: "dp[2]", exact: true }).dispatchEvent("click");
   await expect(game.getByText(fill(en.live.beDp.why[c.why], c.vars))).toBeVisible();
   await expect(game.getByText(`Operations: 1 of ${dp.ops.length}`)).toBeVisible();
+});
+
+const binTask = binNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const bin = binRun(binTask);
+/** A column's spot is named by the value in it. */
+const column = (i: number) => `a[${i}] = ${binTask.a[i]}`;
+
+test("be the binary search: mid placed and lo or hi moved round by round, then mid into return, earns three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeBinary, ".live-beBinary");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const e = binNext(binReplay(binTask, bin.ops.slice(0, k)))!;
+    if (e.kind === "return") await tap("mid").then(() => tap("return"));
+    else await tap(e.kind).then(() => tap(column(e.at)));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${bin.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < bin.ops.length; k++) await op(k);
+  await expect(game.getByText(new RegExp(`x = ${binTask.x} is at index ${bin.end.ret}, found in ${bin.end.looks} looks among 7! ★★★`))).toBeVisible();
+  await expect(game.getByText(`return mid = ${bin.end.ret}`)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the binary search: mid dragged to (lo + hi) // 2 rounded up is refused, then dragged to the right place", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeBinary, ".live-beBinary");
+  const m = binReplay(binTask, []);
+  const c = binCheck(m, { kind: "mid", at: 4 });
+  if (c.ok) throw new Error("(0 + 6) // 2 is 3");
+  const drag = async (to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: "mid", exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: "mid", exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(column(4));
+    await expect(game.getByText(fill(en.live.beBinary.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await drag(column(3));
+  await expect(game.getByText(`mid = (0 + 6) // 2 = 3; a[3] = ${binTask.a[3]}`, { exact: false })).toBeVisible();
+  await expect(game.getByText(`Operations: 1 of ${bin.ops.length}`)).toBeVisible();
 });

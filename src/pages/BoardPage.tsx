@@ -162,6 +162,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "beSort", icon: "🔀", name: "liveBeSort" },
       { kind: "beSearch", icon: "🔦", name: "liveBeSearch" },
       { kind: "beDp", icon: "▦", name: "liveBeDp" },
+      { kind: "beBinary", icon: "🔍", name: "liveBeBinary" },
     ],
   },
 ];
