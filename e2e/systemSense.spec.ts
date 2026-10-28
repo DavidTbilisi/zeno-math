@@ -1,11 +1,13 @@
-// System-design-sense games: be the cache, be the load balancer, be the hash ring and be the rate limiter, each one's
-// first puzzle played operation by operation as the code makes them, and a wrong one refused with the rule it broke.
+// System-design-sense games: be the cache, be the load balancer, be the hash ring, be the rate limiter and be the
+// replicas, each one's first puzzle played operation by operation as the code makes them, and a wrong one refused with
+// the rule it broke.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { cacheNow, cacheRun, cacheSvg, checkOp as cacheCheck, expect as cacheNext, replay as cacheReplay, victimAt, type CacheMachine } from "../src/math/beCache.ts";
 import { checkOp as lbCheck, choose, expect as lbNext, lbNow, lbRun, replay as lbReplay, serverName } from "../src/math/beBalance.ts";
 import { checkOp as ringCheck, ownerOf, replay as ringReplay, ringNow, ringRun } from "../src/math/beRing.ts";
 import { checkOp as limitCheck, expect as limitNext, limitNow, limitRun, replay as limitReplay } from "../src/math/beLimit.ts";
+import { checkOp as qCheck, expect as qNext, nextReplica, quorumNow, quorumRun, quorumSvg, replay as qReplay, staleReplies, type QuorumMachine } from "../src/math/beQuorum.ts";
 import { fill } from "../src/math/text.ts";
 import { boardWith } from "./helpers.ts";
 
@@ -235,5 +237,62 @@ test("be the rate limiter: a request let through with no token left is refused, 
   await expect(async () => {
     await drag(req, "reject");
     await expect(game.getByText(`t = ${limitTask.times[m.r]}: reject (no token)`).first()).toBeVisible({ timeout: 1000 });
+  }).toPass();
+});
+
+const qTask = quorumNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
+const quorum = quorumRun(qTask);
+const qLabel = (m: QuorumMachine, id: string) => quorumSvg(m).spots.find((s) => s.id === id)!.label;
+/** What the code's next operation drags, and where to. */
+function qMove(m: QuorumMachine): [string, string] {
+  const e = qNext(m)!;
+  if (e === "send") return [qLabel(m, "req"), qLabel(m, `r${nextReplica(m)}`)];
+  if (e === "fail") return [qLabel(m, "req"), "fail"];
+  if (e === "pick") {
+    const top = Math.max(...m.reached.map((i) => m.reps[i].ver));
+    return [qLabel(m, `p${m.reached.find((i) => m.reps[i].ver === top)}`), "return"];
+  }
+  return [qLabel(m, "val"), qLabel(m, `r${staleReplies(m)[0]}`)];
+}
+
+test("be the replicas: writes and reads on a majority quorum, with the read repairs, earn three stars", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeQuorum, ".live-beQuorum");
+  const tap = (label: string) => game.getByRole("button", { name: label, exact: true }).dispatchEvent("click");
+  const op = async (k: number) => {
+    const [from, to] = qMove(qReplay(qTask, quorum.ops.slice(0, k)));
+    await tap(from).then(() => tap(to));
+  };
+  await expect(async () => {
+    await op(0);
+    await expect(game.getByText(`Operations: 1 of ${quorum.ops.length}`)).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  for (let k = 1; k < quorum.ops.length; k++) await op(k);
+  await expect(game.getByText(/every read met the newest write! ★★★/)).toBeVisible();
+  await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("be the replicas: a write sent out of preference order is refused, then to the replica marked #1", async ({ page }) => {
+  const game = await boardWith(page, en.shapes.names.liveBeQuorum, ".live-beQuorum");
+  const m = qReplay(qTask, []);
+  const first = nextReplica(m);
+  const wrong = (first + 1) % m.reps.length;
+  const c = qCheck(m, { kind: "send", i: wrong });
+  if (c.ok) throw new Error("the list starts at the request's replica");
+  const drag = async (from: string, to: string) => {
+    const [a, b] = [(await game.getByRole("button", { name: from, exact: true }).boundingBox())!, (await game.getByRole("button", { name: to, exact: true }).boundingBox())!];
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  await expect(game.getByRole("button", { name: qLabel(m, "req"), exact: true })).toBeVisible();
+  await expect(async () => {
+    await drag(qLabel(m, "req"), qLabel(m, `r${wrong}`));
+    await expect(game.getByText(fill(en.live.beQuorum.why[c.why], c.vars))).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  // The stage shakes after a miss, so the drag is retried until it lands.
+  await expect(async () => {
+    await drag(qLabel(m, "req"), qLabel(m, `r${first}`));
+    await expect(game.getByText("Operations: 1 of", { exact: false })).toBeVisible({ timeout: 1000 });
   }).toPass();
 });

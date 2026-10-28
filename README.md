@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1190,6 +1190,14 @@ UI in English, Russian and Georgian.
     names the rule ("(4 − 0) // 3 = 1: refill the bucket first"; "log[0] = 1 > 3 − 4: it's still inside the window").
     Nine puzzles and the endless run; discoveries: a burst through a full bucket, twice the limit across a fixed
     window's edge, the sliding log rejecting what a fixed window lets through, a burst queued and let out steadily.
+  - *Be the replicas*: the player is the coordinator of a store kept on N replicas, each showing its value and version
+    (the newest marked) and the order a request reaches them in. A write goes down its preference list (skipping a
+    replica that is down) until W have it; a read asks R the same way, then the player drags the newest reply onto
+    return and the value returned onto each replica that replied with an older one (read repair). With fewer than W
+    (or R) replicas up the request goes onto fail. Four set-ups: N = 3 with W = R = 2, W = R = 1 (fast, but a read can
+    come back stale: R + W ≤ N), W = 1 with R = 3, and N = 5 with W = 4, R = 2 while replicas go down and come back.
+    Nine puzzles and the endless run; discoveries: a stale read, a read meeting an old reply and the newest, a request
+    failing for want of replicas, a read repair.
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
