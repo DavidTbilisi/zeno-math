@@ -1313,6 +1313,23 @@ function beRingPreview(): Piece[] {
   ];
 }
 
+function beLimitPreview(): Piece[] {
+  // A timeline of requests, some let through and some rejected, over a bucket of tokens.
+  const req = (x: number, y: number, color: string) => ellipse(x, y, 6, 6, { fill: color, color, width: 1 });
+  return [
+    seg([0, 30], [200, 30], { color: "#adb5bd", width: 2 }),
+    req(20, 20, "#2f9e44"),
+    req(60, 20, "#2f9e44"),
+    req(60, 8, "#e03131"),
+    req(110, 20, "#2f9e44"),
+    req(160, 20, "#f08c00"),
+    rect(40, 50, 120, 40, { fill: "#ffffff", color: "#7048e8", width: 2 }),
+    ellipse(66, 70, 11, 11, { fill: "#f59f00", color: "#f59f00", width: 2 }),
+    ellipse(100, 70, 11, 11, { fill: "#f59f00", color: "#f59f00", width: 2 }),
+    ellipse(134, 70, 11, 11, { color: "#f59f00", width: 2 }),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1624,6 +1641,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeCache", group: "games", build: beCachePreview, live: "beCache" },
   { id: "liveBeBalance", group: "games", build: beBalancePreview, live: "beBalance" },
   { id: "liveBeRing", group: "games", build: beRingPreview, live: "beRing" },
+  { id: "liveBeLimit", group: "games", build: beLimitPreview, live: "beLimit" },
   { id: "liveBeTopo", group: "games", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", group: "games", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
