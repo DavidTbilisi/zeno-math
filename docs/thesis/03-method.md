@@ -134,11 +134,13 @@ BKT process whose starting probability is the average over students.
 
 In Zeno, the system this thesis grew out of, the question takes a concrete form. Zeno's practice engine (Appendix A)
 chooses each student's next question from a learner model of the Elo kind, which keeps an ability for every student on
-every skill and a difficulty for every question. Its adaptive policy skips a skill once it counts as mastered, which it
-does when the model gives a hard question on that skill at least an 80 % chance of a right answer (`MASTERED_AT` in
-`src/model/policy.ts`). That rule was set by judgement, not measured. On the three skills with a concept graph the
-policy also keeps one probability per idea for each student, moved by every stored answer with the conjunctive step of
-section 2.1, and on fractions it asks the form for the idea the student is least likely to know
+every skill and a difficulty for every question. Its adaptive policy skips a skill once it counts as mastered. Until 28
+October 2026 that meant only that the model gives a hard question on the skill at least an 80 % chance of a right answer
+(`MASTERED_AT` in `src/model/policy.ts`), a rule set by judgement, not measured; since then, following section 3.3, the
+moving average of the student's answers on the skill must also have reached its threshold, and on a skill with a concept
+graph the chance of knowing every idea together must be at least 0.95 (`isMastered`). On the three skills with a concept
+graph the policy also keeps one probability per idea for each student, moved by every stored answer with the conjunctive
+step of section 2.1, and on fractions it asks the form for the idea the student is least likely to know
 (`src/model/ideaState.ts`). Zeno therefore already holds a state at two grains, the skill and the idea. The question
 this thesis asks is the one that design raised: which rule should decide mastery, and at which of the two grains. Zeno's
 own Elo-based rule is not one of the methods compared, because it depends on question levels that the ASSISTments data

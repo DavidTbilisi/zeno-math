@@ -37,13 +37,18 @@ outcome minus the prediction, scaled by a step that shrinks with the evidence th
 learns from each question's first counted answer only, and the same code runs in the student's browser and on the
 server.
 
-The adaptive policy (`src/model/policy.ts`) chooses the skill and level at which the model gives the student a chance
-of a right first answer closest to a target, three in four by default. It holds a skill back while the skills it builds
-on are weak, and it leaves a skill behind once the student has mastered it. Mastery is decided by a fixed rule: the
+The adaptive policy (`src/model/policy.ts`) chooses the skill and level at which the model gives the student a chance of
+a right first answer closest to a target, three in four by default. It holds a skill back while the skills it builds on
+are weak, and it leaves a skill behind once the student has mastered it. Mastery was first decided by a fixed rule: the
 model must give a hard question on the skill at least an 80 % chance of a right answer. That rule is the decision this
-thesis's question is about, and section 3.3 recommends how to replace it. On the three skills with a concept graph
-(section 2.2), the policy also keeps one probability per idea from the student's answers and, on fractions, asks the
-form for the idea they are least likely to know, as the future work in section 3.3 describes.
+thesis's question is about, and since 28 October 2026 Zeno follows the recommendation of section 3.3 by adding two
+conditions to it: the moving average of the student's answers on the skill must have reached 0.6962, the threshold that
+costs on the ASSISTments training students what three right answers in a row cost (Table 3.9), until Zeno's own classes
+give one, and on a skill with a concept graph the student must be likely, at 0.95, to know every idea together. Neither
+condition can close a skill sooner than the first rule alone, and no simulation in this thesis uses them. On the three
+skills with a concept graph (section 2.2), the policy also keeps one probability per idea from the student's answers
+and, on fractions, asks the form for the idea they are least likely to know, as the future work in section 3.3
+describes.
 
 ![Zeno's building blocks: the board and the practice dialog in the browser, the shared code for questions, marking
 and the learner model, and the server with its single SQLite file (`docs/architecture.md`, "Building
