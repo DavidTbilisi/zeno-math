@@ -269,9 +269,9 @@ export const CODE: Record<LimitAlgo, string[]> = {
     "  if tokens ≥ 1: tokens −= 1; allow",
     "  else: reject",
   ],
-  fixed: ["count = 0; window = 0", "on request at t:", "  if t // W != window: window = t // W; count = 0", "  if count < L: count += 1; allow", "  else: reject"],
+  fixed: ["count = 0; window = 0", "on request at t:", "  if t // W != window: window, count = t // W, 0", "  if count < L: count += 1; allow", "  else: reject"],
   sliding: ["log = []      # times let through", "on request at t:", "  while log and log[0] ≤ t − W: log.pop(0)", "  if len(log) < L: log.append(t); allow", "  else: reject"],
-  leaky: ["queue = []    # one leaves every D s", "on request at t:", "  while queue and its leave time ≤ t: queue.pop(0)", "  if len(queue) < cap: queue.append(t)   # waits", "  else: reject"],
+  leaky: ["queue = []    # one leaves every D s", "on request at t:", "  while queue and leave time ≤ t: queue.pop(0)", "  if len(queue) < cap: queue.append(t)   # waits", "  else: reject"],
 };
 
 export function logText(l: LimitLog, t: LimitTask): string {

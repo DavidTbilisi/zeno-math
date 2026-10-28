@@ -1330,6 +1330,20 @@ function beLimitPreview(): Piece[] {
   ];
 }
 
+function beQuorumPreview(): Piece[] {
+  // Three replicas, two holding the newest version and one behind, and a read returning the newest.
+  const replica = (i: number, v: string, color: string) => [rect(i * 70, 40, 60, 48, { fill: "#f3f0ff", color: "#7048e8", width: 2 }), text(i * 70 + 30, 54, `r${i}`, 13), text(i * 70 + 30, 74, v, 14, "center", color)];
+  return [
+    rect(65, 0, 70, 28, { fill: "#fff4e6", color: "#f08c00", width: 2 }),
+    text(100, 14, "read", 13),
+    ...replica(0, "c v2", "#2f9e44"),
+    ...replica(1, "c v2", "#2f9e44"),
+    ...replica(2, "a v1", "#e03131"),
+    rect(40, 100, 120, 30, { fill: "#ebfbee", color: "#2f9e44", width: 2 }),
+    text(100, 115, "return c v2", 13),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1642,6 +1656,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeBalance", group: "games", build: beBalancePreview, live: "beBalance" },
   { id: "liveBeRing", group: "games", build: beRingPreview, live: "beRing" },
   { id: "liveBeLimit", group: "games", build: beLimitPreview, live: "beLimit" },
+  { id: "liveBeQuorum", group: "games", build: beQuorumPreview, live: "beQuorum" },
   { id: "liveBeTopo", group: "games", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", group: "games", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },

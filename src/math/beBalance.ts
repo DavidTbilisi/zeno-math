@@ -292,7 +292,7 @@ export function lbNow(d: Pick<LiveBeBalance, "mode" | "stage" | "level" | "seed"
 
 export const CODE: Record<LbAlgo, string[]> = {
   rr: ["i = 0", "for req in requests:", "  while down[i]: i = (i + 1) % n", "  send(req, servers[i])", "  i = (i + 1) % n"],
-  least: ["for req in requests:", "  close the connections that ended", "  s = up server with fewest open (first on a tie)", "  send(req, s); open[s] += 1"],
+  least: ["for req in requests:", "  close the connections that ended", "  s = up server, fewest open (first on a tie)", "  send(req, s); open[s] += 1"],
   weighted: ["cw = [0] * n; total = sum(w)", "for req in requests:", "  for s in servers: cw[s] += w[s]", "  best = argmax(cw)   # first on a tie", "  cw[best] −= total", "  send(req, best)"],
   hash: ["for req in requests:", "  live = [s for s in servers if up(s)]", "  i = hash(req.client) % len(live)", "  send(req, live[i])"],
 };

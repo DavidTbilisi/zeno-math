@@ -307,7 +307,7 @@ export const CODE: Record<RingAlgo, string[]> = {
     "for key in keys:",
     "  p = hash(key)",
     "  s = first server at or after p   # clockwise",
-    "  if none: s = ring[0]             # round past 99",
+    "  if none: s = ring[0]   # round past 99",
     "  put key on s",
   ],
   add: [
@@ -319,7 +319,7 @@ export const CODE: Record<RingAlgo, string[]> = {
   ],
   remove: ["remove(X):", "  s = next server clockwise after X", "  for key on X: move key from X to s", "  delete X from the ring"],
   vnodes: [
-    "for s in servers: put copies at hash(s#1), hash(s#2)",
+    "for s in servers: copies at hash(s#1), hash(s#2)",
     "for key in keys:",
     "  p = hash(key)",
     "  v = first copy at or after p (round past 99)",
