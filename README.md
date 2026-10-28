@@ -822,7 +822,7 @@ UI in English, Russian and Georgian.
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
-  connect the towns) and algorithm sense (be the sort, be the search, be the DP). In the Shapes tab the games are a group of their own, before the live
+  connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search). In the Shapes tab the games are a group of their own, before the live
   pieces
 - **🔍 Find a tool**: Ctrl+K (when nothing is selected) or `/` searches every tool, every tab and names inside them
   ("Dijkstra", "Дейкстра", "quadratic") in the current language, and opens the tool on that tab
@@ -1027,6 +1027,17 @@ UI in English, Russian and Georgian.
     two. Nine puzzles open in turn; the endless run goes from the 1-D tables on five or six cells to the 2-D ones.
     Four discoveries (the Fibonacci numbers, greedy coins beaten, an answer not in the last cell, the diagonal plus
     one) and ten in a row
+  - *Be the binary search*: the player is the computer searching a sorted array, by dragging the pointers the code
+    keeps (or a tap on a pointer, then on where it goes). Each round mid goes to (lo + hi) // 2 (rounded down), the
+    code compares a[mid] with x, and the player moves lo past mid or hi below it; at the end, mid (found) or −1 (not
+    there) goes into return. The lower bound (the first a[i] ≥ x) and the upper bound (the first a[i] > x) run on
+    arrays with repeats, with hi = n and hi = mid, and return lo, which may be n, one past the end. The array shows
+    its indexes and greys what is ruled out, the code runs beside it with the lines just run lit, and a log says
+    what each operation did ("mid = (0 + 7) // 2 = 3; a[3] = 11 < x = 17"). An operation the code would not make is
+    not made, and says the rule it broke ("// rounds down: (0 + 7) // 2 = 3, not 4"; "a[3] = 11 is ruled out too:
+    lo = mid + 1 = 4"). No miss earns three stars, one two. Nine puzzles open in turn, from seven numbers to fifteen;
+    the endless run goes from find on seven to nine numbers to all three searches on up to fifteen. Four
+    discoveries (x not there, the edge of a run of repeats, past the end, four looks for fifteen) and ten in a row
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
