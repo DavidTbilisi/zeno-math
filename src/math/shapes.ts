@@ -1231,6 +1231,17 @@ function beTreePreview(): Piece[] {
   ];
 }
 
+function beStackPreview(): Piece[] {
+  // An array with a stack under it whose values fall from bottom to top, and the next greater written into ans.
+  const vals = ["2", "7", "4", "3", "5"];
+  const cell = (i: number, y: number, v: string, fill: string, color = BLUE) => [rect(i * 44, y, 38, 34, { fill, color, width: 2 }), ...(v ? [text(i * 44 + 19, y + 17, v, 16)] : [])];
+  return [
+    ...vals.flatMap((v, i) => cell(i, 0, v, i === 4 ? "#fff4e6" : "#ffffff", i === 4 ? "#f08c00" : "#868e96")),
+    ...["7", "4", "3"].flatMap((v, i) => cell(i, 48, v, "#f3f0ff", "#7048e8")),
+    ...["7", "", "5", "5", ""].flatMap((v, i) => cell(i, 96, v, v ? "#d3f9d8" : "#ffffff", v ? "#2f9e44" : "#ced4da")),
+  ];
+}
+
 function fracOrderPreview(): Piece[] {
   // A line from 0 to 1 with three fraction cards standing on it.
   const at = (v: number) => v * 220;
@@ -1537,6 +1548,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeBacktrack", group: "games", build: beBacktrackPreview, live: "beBacktrack" },
   { id: "liveBeHeap", group: "games", build: beHeapPreview, live: "beHeap" },
   { id: "liveBeTree", group: "games", build: beTreePreview, live: "beTree" },
+  { id: "liveBeStack", group: "games", build: beStackPreview, live: "beStack" },
   { id: "liveDescentLab", group: "games", build: descentLabPreview, live: "descentLab" },
   { id: "livePcaLab", group: "games", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", group: "games", build: softmaxLabPreview, live: "softmaxLab" },
