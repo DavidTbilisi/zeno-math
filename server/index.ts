@@ -98,11 +98,11 @@ function authorized(req: IncomingMessage): boolean {
 
 /**
  * What anyone may load without the password: the front page for schools (/about, the app's index.html, which shows
- * the landing at that address) and the files it is built from. The scripts are the open-source app's own code; boards,
- * classes and every other /api route stay behind the password, and so does / itself. One flat file name per directory
- * (no %-escapes, no deeper paths), so nothing reaches past those directories.
+ * the landing at that address) and the files it is built from, its fonts among the hashed /assets. The scripts are the
+ * open-source app's own code; boards, classes and every other /api route stay behind the password, and so does /
+ * itself. Under /assets, one flat file name (no %-escapes, no deeper paths), so nothing reaches past that directory.
  */
-const PUBLIC_FILE = /^\/(?:assets|brand)\/[\w.-]+$/;
+const PUBLIC_FILE = /^\/assets\/[\w.-]+$/;
 const isPublic = (path: string) =>
   path === "/about" || path === "/favicon.svg" || path === "/asset-path.js" || (PUBLIC_FILE.test(path) && !path.includes(".."));
 

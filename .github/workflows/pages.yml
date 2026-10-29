@@ -1,0 +1,57 @@
+name: Pages
+
+# The front page for schools on its own (npm run build:landing), published at https://davidtbilisi.github.io/zeno-math/
+# whenever main changes what it is built from.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "landing.html"
+      - "landing-public/**"
+      - "vite.landing.config.ts"
+      - "src/landing.tsx"
+      - "src/langs.ts"
+      - "src/styles.css"
+      - "src/brand/**"
+      - "src/components/Landing.tsx"
+      - "src/components/ZenoMark.tsx"
+      - "src/locales/about/**"
+      - "src/math/text.ts"
+      - "package-lock.json"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push waits rather than cancelling one half done.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build:landing
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist-landing
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,14 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { detectLang, LANGS, type Lang } from "./langs";
 import type { Dict } from "./locales/en";
 
-export type Lang = "en" | "ru" | "ka";
-
-export const LANGS: { code: Lang; label: string; excalidraw: string }[] = [
-  { code: "en", label: "English", excalidraw: "en" },
-  { code: "ru", label: "Русский", excalidraw: "ru-RU" },
-  // Excalidraw has no Georgian locale yet; its toolbar falls back to English.
-  { code: "ka", label: "ქართული", excalidraw: "en" },
-];
+export { LANGS, type Lang };
 
 // Each language is its own chunk; only the one in use is downloaded.
 const LOADERS: Record<Lang, () => Promise<Dict>> = {
@@ -20,16 +14,6 @@ const loaded: Partial<Record<Lang, Dict>> = {};
 const loading: Partial<Record<Lang, Promise<Dict>>> = {};
 const load = (l: Lang) => (loading[l] ??= LOADERS[l]().then((t) => (loaded[l] = t)));
 
-function detectLang(): Lang {
-  try {
-    const saved = localStorage.getItem("lang");
-    if (saved === "en" || saved === "ru" || saved === "ka") return saved;
-  } catch {
-    /* storage unavailable */
-  }
-  const nav = navigator.language.slice(0, 2);
-  return nav === "ru" || nav === "ka" ? nav : "en";
-}
 // The page shows nothing until its words are here, so they are asked for as soon as this module runs, not once React
 // has mounted and run its effects: one round trip less before the first paint.
 void load(detectLang());
