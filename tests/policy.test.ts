@@ -22,6 +22,24 @@ test("the curriculum has every skill once, each after what it builds on", () => 
   assert.deepEqual(inCurriculumOrder(["factor", "times", "nonsense", "times"]), ["times", "factor"]);
 });
 
+test("the adaptive choice reaches every skill, each once what it builds on is mastered", () => {
+  // A learner who masters whatever is open: each round opens the skills whose prerequisites are all mastered.
+  const known = new Set<SkillId>();
+  const model: ChanceModel = { predictAt: (_student, skill) => (known.has(skill as SkillId) ? 0.99 : 0.1) };
+  const rounds: SkillId[][] = [];
+  while (known.size < CURRICULUM.length) {
+    const open = openSkills(model, "s", CURRICULUM);
+    for (const k of open) assert.ok((PREREQUISITES[k] ?? []).every((pre) => known.has(pre)), `${k} opened before what it builds on`);
+    open.forEach((k) => known.add(k));
+    rounds.push(open);
+  }
+  // The longest chain runs from comparing numbers to eigenvalues, through vectors, matrices and elimination;
+  // backpropagation, on descent, is one round before.
+  assert.equal(rounds.length, 11);
+  assert.deepEqual(rounds.at(-1), ["eigen"]);
+  assert.ok(rounds.at(-2)!.includes("backprop"));
+});
+
 test("skills are tagged with the years of the primary syllabus their levels belong to", () => {
   for (const [skill, years] of Object.entries(SYLLABUS)) {
     assert.ok(ALL_SKILLS.includes(skill as SkillId), skill);
