@@ -1,6 +1,8 @@
 // The order of the practice skills for the fixed sequence, and what each one builds on for the adaptive one. Both
 // follow the usual school order: number, then algebra and geometry side by side, calculus last; data where its maths
-// is ready. A class can practise any subset; prerequisites outside the subset are ignored.
+// is ready. University maths for machine learning follows (probability, then linear algebra), and machine learning
+// itself comes last, each piece on the school maths it uses: descent on finding a minimum, softmax on logs and
+// probability, k-means on distance. A class can practise any subset; prerequisites outside the subset are ignored.
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
@@ -93,17 +95,17 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   expectation: ["probability", "average"],
   conditional: ["probability"],
   distributions: ["expectation", "counting"],
-  correlation: ["average"],
+  correlation: ["expectation"],
   hypothesis: ["distributions", "ci"],
   projection: ["dotangle"],
   matrices: ["dotangle"],
   determinant: ["matrices"],
   elimination: ["simultaneous", "determinant"],
   eigen: ["elimination", "quadratic"],
-  descent: ["differentiate"],
-  backprop: ["differentiate"],
+  descent: ["stationary"],
+  backprop: ["descent"],
   softmax: ["logs", "probability"],
-  overfitting: ["average"],
+  overfitting: ["polynomials", "average"],
   precision: ["conditional"],
   clustering: ["distance", "average"],
 };
