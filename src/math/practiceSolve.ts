@@ -152,6 +152,13 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
     case "rules":
       // The Divisibility tab's table: each divisor's test applied to the number, with the verdict.
       return (await import("./mental")).renderMental(s, t.mentalWords);
+    case "matrix": {
+      // The Matrices tool: a calculation's working, or the Vector spaces tab (rank, eigenvalues).
+      const spec = s as import("./matrix").MatrixCalcSpec | import("./vectorspace").SpaceSpec;
+      if (spec.type === "space") return (await import("./vectorspace")).renderSpace(spec, t.spaceWords);
+      const { latexToSvg } = await import("./latex");
+      return latexToSvg((await import("./matrix")).matrixLatex(spec));
+    }
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }

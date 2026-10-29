@@ -55,7 +55,7 @@ test("every level has a grade, from grade 1 to university, agreeing with the pri
   assert.deepEqual(CURRICULUM.filter((k) => levels.every((L) => gradeOf(k, L) === null)), ["oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "inversions"]);
   assert.deepEqual(CURRICULUM.flatMap((k) => levels.filter((L) => gradeOf(k, L) === null && levels.some((M) => gradeOf(k, M) !== null)).map((L) => `${k}${L}`)), ["rounding3"]);
   for (const g of GRADES) assert.ok(skillsOfGrade(g).length >= 3, `grade ${g}`);
-  assert.deepEqual(skillsOfGrade(13), ["numroots", "numint", "ci"]);
+  assert.deepEqual(skillsOfGrade(13), ["numroots", "numint", "ci", "matrices", "determinant", "elimination", "eigen"]);
   assert.deepEqual([gradeOf("quadratic", 1), gradeOf("quadratic", 3), gradeOf("vectors", 1), gradeOf("vectors", 2)], [8, 10, 10, 12]);
 });
 

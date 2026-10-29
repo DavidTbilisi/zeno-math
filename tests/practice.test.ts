@@ -5,7 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { ru } from "../src/locales/ru.ts";
-import { ALL_SKILLS, check, exercise, LEVELS, readSign, renderPractice, renderSteps, type Exercise } from "../src/math/practice.ts";
+import { ALL_SKILLS, check, exercise, LEVELS, preview, readSign, renderPractice, renderSteps, type Exercise } from "../src/math/practice.ts";
 import { renderSolution } from "../src/math/practiceSolve.ts";
 import { parseE, tex } from "../src/math/expr.ts";
 import { latexToMathML } from "../src/math/latex.ts";
@@ -22,6 +22,14 @@ function wrong(ex: Exercise): string {
       return [a.vs[0] + 1, ...a.vs.slice(1)].join("; ");
     case "tuple":
       return [a.vs[0] + 1, a.vs[1]].join("; ");
+    case "matrix":
+      // The first entry one more.
+      return a.rows.map((r, i) => r.map((v, j) => (i === 0 && j === 0 ? v + 1 : v)).join(", ")).join("; ");
+    case "dir": {
+      // One component one more: a zero one if there is one, else the first (never a multiple of the answer).
+      const at = Math.max(0, a.vs.indexOf(0));
+      return `(${a.vs.map((v, i) => (i === at ? v + 1 : v)).join("; ")})`;
+    }
     case "ratio":
       // The first term one more: never the same ratio.
       return [a.vs[0] + 1, ...a.vs.slice(1)].join(" : ");
@@ -277,4 +285,27 @@ test("comparing fractions: every question's sign is true, and its bars and steps
       if (spec.cut) assert.ok(spec.cut % a.d === 0 && spec.cut % b.d === 0, q.q);
       assert.ok(spec.steps.at(-1)!.includes(sign), spec.steps.at(-1));
     }
+});
+
+test("matrices are typed row by row, eigenvectors as any multiple, named values in any order", () => {
+  const m = exercise("matrices", 1, 7, w);
+  const rows = m.plain.split("; ").map((r) => r.split(", "));
+  assert.deepEqual(check(m, `[${rows.map((r) => `[${r.join(", ")}]`).join(", ")}]`, w), { ok: true });
+  assert.deepEqual(check(m, rows.map((r) => r.join(" ")).join(" | "), w), { ok: true });
+  assert.equal(check(m, rows.flat().join(", "), w).why, "The answer is a 2 × 2 matrix: 2 rows of 2 numbers, with ; between the rows.");
+  assert.match(check(m, "1, 2; x, 4", w).why!, /Couldn't read/);
+  assert.match(preview(m, m.plain)!, /^\\begin\{pmatrix\}/);
+  const v = exercise("eigen", 2, 7, w);
+  const u = (v.answer as { vs: number[] }).vs;
+  assert.deepEqual(check(v, `(${u.map((x) => -3 * x).join("; ")})`, w), { ok: true });
+  assert.equal(check(v, "(0; 0)", w).why, w.reasons.zeroVector);
+  assert.match(check(v, "(1; 2; 3)", w).why!, /2 values/);
+  assert.match(check(v, "(1; y)", w).why!, /Couldn't read/);
+  assert.match(preview(v, "(1; -1)")!, /pmatrix/);
+  const s = exercise("elimination", 1, 7, w);
+  const [x, y, z] = (s.answer as { vs: number[] }).vs;
+  assert.deepEqual(check(s, `z = ${z}; x = ${x}; y = ${y}`, w), { ok: true });
+  const ab = exercise("matrices", 3, 7, w);
+  const [a, b] = (ab.answer as { vs: number[] }).vs;
+  assert.deepEqual(check(ab, `b = ${b}; a = ${a}`, w), { ok: true });
 });

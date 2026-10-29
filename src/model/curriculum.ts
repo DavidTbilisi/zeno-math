@@ -8,6 +8,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
+  "projection", "matrices", "determinant", "elimination", "eigen",
 ];
 
 /** The skills each skill builds on directly. */
@@ -87,6 +88,11 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   numroots: ["functions"],
   numint: ["definite"],
   ci: ["average"],
+  projection: ["dotangle"],
+  matrices: ["dotangle"],
+  determinant: ["matrices"],
+  elimination: ["simultaneous", "determinant"],
+  eigen: ["elimination", "quadratic"],
 };
 
 /** A class's skills in curriculum order, without repeats or unknown ones. */
@@ -210,6 +216,11 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   numroots: [13, 13, 13],
   numint: [13, 13, 13],
   ci: [13, 13, 13],
+  projection: [12, 12, 12], // the length of a projection |a · n̂|, the foot of the perpendicular from a point to a line (H2)
+  matrices: [10, 13, 13], // multiplying matrices (Sec 3/4); the transpose and A² = aA + bI are past school
+  determinant: [13, 13, 13],
+  elimination: [13, 13, 13],
+  eigen: [13, 13, 13],
 };
 
 /** The grade a level belongs to, or null when no syllabus here teaches it. */
