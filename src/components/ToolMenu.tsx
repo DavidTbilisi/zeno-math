@@ -8,7 +8,7 @@ export type ToolItem = { icon: string; label: string; section?: string; onPick: 
  *  in columns, as many as the window has room for, so a long one such as the games still fits on the screen; the
  *  columns sit in a box of their own, so when they are taller than the room they scroll down rather than spill sideways.
  *  `label` is shown on the button; `title` (the full group name) is the tooltip and the menu's accessible name. */
-export function ToolMenu({ icon, label, title = label, items }: { icon: string; label: string; title?: string; items: ToolItem[] }) {
+export function ToolMenu({ icon, label, title = label, items }: { icon: ReactNode; label: string; title?: string; items: ToolItem[] }) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ left: 0, top: 0, maxHeight: 0 });
   const btn = useRef<HTMLButtonElement>(null);

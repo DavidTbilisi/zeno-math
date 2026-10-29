@@ -28,6 +28,8 @@ import { LiveView, type LiveHost } from "../live/LiveView";
 import { LIVE_SIZES, type LiveKind } from "../math/live";
 import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
+import { BarIcon } from "../components/BarIcon";
+import { ZenoMark } from "../components/ZenoMark";
 import { isToolKind, MENUS, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 
 /** Stored on the image element so a formula/graph can be re-opened and edited. */
@@ -608,13 +610,13 @@ export function BoardPage({ id }: { id: string }) {
 
   if (missing) {
     return (
-      <div className="center-msg">
+      <div className="z center-msg">
         <p>{t.notFound}</p>
         <a className="btn" href="#/">← {t.back}</a>
       </div>
     );
   }
-  if (!board || !initialData) return <div className="center-msg">{t.loading}</div>;
+  if (!board || !initialData) return <div className="z center-msg">{t.loading}</div>;
 
   const openTool = dialog && TOOLS[dialog.kind];
   const dockTool = dock && TOOLS[dock.kind];
@@ -626,9 +628,9 @@ export function BoardPage({ id }: { id: string }) {
     placeImage(placed, { kind: d.kind, data, w: image.width, h: image.height }, d.editing);
   };
   return (
-    <div className="board-page">
+    <div className="z board-page">
       <header ref={barRef} data-fit={fit} className="board-bar">
-        <a className="btn ghost" href="#/" title={t.back}>← <span className="btn-label minor">{t.back}</span></a>
+        <a className="board-home" href="#/" title={t.back} aria-label={t.back}><ZenoMark size={14} /></a>
         <input
           className="title-input"
           value={title}
@@ -643,15 +645,15 @@ export function BoardPage({ id }: { id: string }) {
         <div className="spacer" />
         {selectedMath && (
           <button className="btn" onClick={() => openEditor(selectedMath)}>
-            ✎ <span className="btn-label">{t[TOOLS[mathOf(selectedMath)!.kind].edit]}</span>
+            <BarIcon name="edit" /> <span className="btn-label">{t[TOOLS[mathOf(selectedMath)!.kind].edit]}</span>
           </button>
         )}
-        <button className="btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}>🔍</button>
+        <button className="btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}><BarIcon name="search" /></button>
         <button className="btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
-          📐 <span className="btn-label minor">{t.shapes.button}</span>
+          <BarIcon name="shapes" /> <span className="btn-label minor">{t.shapes.button}</span>
         </button>
         {MENUS.map((m) => (
-          <ToolMenu key={m.label} icon={m.icon} label={t[m.label]} title={m.title && t[m.title]} items={[
+          <ToolMenu key={m.label} icon={<BarIcon name={m.icon} />} label={t[m.label]} title={m.title && t[m.title]} items={[
             ...m.items.map((it) => ({
               icon: it.icon,
               label: t[it.label],
@@ -660,7 +662,7 @@ export function BoardPage({ id }: { id: string }) {
             ...(LIVE_IN_MENUS[m.label] ?? []).map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], onPick: () => addLive(it.kind) })),
           ]} />
         ))}
-        <ToolMenu icon="🎮" label={t.gamesMenu} items={GAME_MENU.flatMap((s) =>
+        <ToolMenu icon={<BarIcon name="games" />} label={t.gamesMenu} items={GAME_MENU.flatMap((s) =>
           s.games.map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], section: t[s.sense], onPick: () => addLive(it.kind) })),
         )} />
         <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })} />

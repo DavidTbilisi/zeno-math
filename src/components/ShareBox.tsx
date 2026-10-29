@@ -2,6 +2,7 @@
 // it as it is saved (src/pages/SharedBoardPage.tsx).
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
+import { BarIcon } from "./BarIcon";
 import { useI18n } from "../i18n";
 
 export const shareLink = (token: string) => `${location.origin}${location.pathname}#/s/${token}`;
@@ -51,7 +52,7 @@ export function ShareBox({ id, token, onChange }: { id: string; token: string | 
   return (
     <div className="share" ref={box}>
       <button className={`btn${token ? " shared" : ""}`} aria-expanded={open} aria-haspopup="dialog" onClick={toggle} title={t.shareTitle}>
-        🔗 <span className="btn-label minor">{t.share}</span>
+        <BarIcon name="share" /> <span className="btn-label minor">{t.share}</span>
       </button>
       {open && (
         <div className="share-box" role="dialog" aria-label={t.shareTitle} style={pos}>

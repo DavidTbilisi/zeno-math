@@ -947,7 +947,8 @@ input.invalid { border-color: var(--danger); }
   }
 }
 .z-wide { --z-width: 1240px; }
-.z a:focus-visible, .z button:focus-visible { outline: 3px solid var(--z-marker); outline-offset: 2px; box-shadow: 0 0 0 5px var(--z-ink); }
+/* Excalidraw keeps its own focus rings inside the board. */
+.z :is(a, button):focus-visible:not(.excalidraw *) { outline: 3px solid var(--z-marker); outline-offset: 2px; box-shadow: 0 0 0 5px var(--z-ink); }
 .z-main { max-width: var(--z-width); margin: 0 auto; padding: 0 24px; }
 
 .z-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: var(--z-width); margin: 0 auto; padding: 20px 24px; }
@@ -1091,6 +1092,38 @@ input.invalid { border-color: var(--danger); }
 .z .class-item.selected { border-color: var(--z-ink); box-shadow: inset 4px 0 0 var(--z-ink); }
 .z .new-class, .z .card { border-radius: 10px; }
 .z .class-code strong { font-size: 2.25rem; font-weight: 800; letter-spacing: 0.06em; }
+
+/* The board in the same dress: the mark is the way home, the bar is ruled off in ink, the tool groups have drawn
+   icons, and Excalidraw's own violet gives way to the ink so its tools, dialogs and selection match the page. */
+.z .board-bar { border-bottom: 2px solid var(--z-ink); }
+.board-home { display: inline-flex; align-items: center; flex: none; padding: 6px 8px; border-radius: 6px; color: var(--z-ink); }
+.board-home:hover { background: var(--chip); }
+.z .title-input, .z .shared-title { font-size: 1.0625rem; font-weight: 800; }
+span.board-home:hover { background: none; }
+.bar-icon { flex: none; }
+.z .tool-menu { border-radius: 10px; }
+.z .tool-menu-heading { padding: 10px 10px 4px; font-size: 0.8125rem; font-weight: 800; letter-spacing: 0; text-transform: none; color: var(--z-ink); }
+.z .tool-menu-icon { color: var(--z-ink); }
+.z .dock { border-left: 2px solid var(--z-ink); }
+.z .modal-backdrop { background: rgba(14, 20, 48, 0.5); }
+.z .modal { border-radius: 10px; }
+.z .modal-header h2 { font-weight: 800; }
+.z .excalidraw {
+  --color-primary: #24336d; --color-primary-darker: #172350; --color-primary-darkest: #0e1430; --color-primary-hover: #2d3e80;
+  --color-primary-light: #e1e7f5; --color-primary-light-darker: #cdd6ee;
+  --color-brand-hover: #2d3e80; --color-brand-active: #0e1430;
+  --color-surface-primary-container: #dfe5f4; --color-on-primary-container: #172350; --color-selection: #3049b0;
+}
+.z .excalidraw.theme--dark {
+  --color-primary: #b3c0f0; --color-primary-darker: #c3cef4; --color-primary-darkest: #d3dbf7; --color-primary-hover: #c3cef4;
+  --color-primary-light: #2b3766; --color-primary-light-darker: #36437a;
+  --color-brand-hover: #c3cef4; --color-brand-active: #dfe5fb;
+  --color-surface-primary-container: #2b3766; --color-on-primary-container: #e8ecf8; --color-selection: #8fa3ec;
+}
+@media (prefers-color-scheme: dark) {
+  .z .board-bar { border-bottom-color: var(--border); }
+  .z .dock { border-left-color: var(--border); }
+}
 
 @media (max-width: 860px) {
   .z-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "ask" "line"; row-gap: 40px; padding: 24px 0 56px; }
