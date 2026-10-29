@@ -10,7 +10,7 @@
     "build": "node scripts/copy-assets.mjs && vite build && node scripts/compress.mjs",
     "start": "node server/index.ts",
     "build:checker": "vite build -c vite.checker.config.ts",
-    "build:landing": "vite build -c vite.landing.config.ts && node -e \"require('fs').renameSync('dist-landing/landing.html', 'dist-landing/index.html')\"",
+    "build:landing": "vite build -c vite.landing.config.ts && node scripts/landing-layout.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "coverage": "node --import ./scripts/ts-register.mjs --test --experimental-test-coverage --test-coverage-include=\"src/math/**\" --test-coverage-include=\"src/model/**\" --test-coverage-exclude=\"tests/**\" --test-coverage-lines=95 --test-coverage-branches=88 --test-coverage-functions=95 \"tests/*.test.ts\"",

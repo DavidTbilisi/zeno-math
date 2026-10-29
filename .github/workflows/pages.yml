@@ -1,22 +1,18 @@
 name: Pages
 
-# The front page for schools on its own (npm run build:landing), published at https://davidtbilisi.github.io/zeno-math/
-# whenever main changes what it is built from.
+# The front page for schools and the practice page on their own (npm run build:landing), published at
+# https://davidtbilisi.github.io/zeno-math/ whenever main changes what they are built from.
 on:
   push:
     branches: [main]
     paths:
       - "landing.html"
+      - "practice.html"
       - "landing-public/**"
       - "vite.landing.config.ts"
-      - "src/landing.tsx"
-      - "src/langs.ts"
-      - "src/styles.css"
-      - "src/brand/**"
-      - "src/components/Landing.tsx"
-      - "src/components/ZenoMark.tsx"
-      - "src/locales/about/**"
-      - "src/math/text.ts"
+      - "scripts/landing-layout.mjs"
+      # The practice page is built from most of the app's code.
+      - "src/**"
       - "package-lock.json"
       - ".github/workflows/pages.yml"
   workflow_dispatch:

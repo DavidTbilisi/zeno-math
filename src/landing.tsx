@@ -1,5 +1,6 @@
 // The front page for schools published on its own (GitHub Pages, vite.landing.config.ts): the landing with only its
-// own words in three languages, no server and no app. Its buttons lead to installing Zeno rather than into an app.
+// own words in three languages, no server and no app. Its buttons lead to the practice published beside it
+// (practice-site.tsx) and to installing Zeno.
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Landing } from "./components/Landing";
@@ -30,7 +31,7 @@ function Page() {
     }
   };
   const a = WORDS[lang];
-  const getZeno = <a className="z-btn z-btn-ink" href={INSTALL}>{a.getZeno}</a>;
+  const tryPractice = <a className="z-btn z-btn-ink" href="practice/">{a.tryPractice}</a>;
   return (
     <Landing
       a={a}
@@ -45,8 +46,13 @@ function Page() {
           </nav>
         </header>
       }
-      ctas={getZeno}
-      endCta={getZeno}
+      ctas={
+        <>
+          {tryPractice}
+          <a className="z-btn z-btn-line" href={INSTALL}>{a.getZeno}</a>
+        </>
+      }
+      endCta={tryPractice}
     />
   );
 }
