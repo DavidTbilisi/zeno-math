@@ -111,10 +111,9 @@ test("wrong passwords: the eleventh in ten minutes gets 429, even with the right
 
 test("with a password, the front page at /about and the files it is built from are open; nothing else is", async () => {
   const web = join(dir, "web");
-  for (const sub of ["assets", "brand", "fonts"]) mkdirSync(join(web, sub), { recursive: true });
+  for (const sub of ["assets", "fonts"]) mkdirSync(join(web, sub), { recursive: true });
   writeFileSync(join(web, "index.html"), "<!doctype html><title>Zeno</title>");
   writeFileSync(join(web, "assets", "index-abc.js"), "console.log(1)");
-  writeFileSync(join(web, "brand", "FiraGO-Regular.woff2"), "font");
   writeFileSync(join(web, "fonts", "Virgil.woff2"), "font");
   writeFileSync(join(web, "favicon.svg"), "<svg/>");
   writeFileSync(join(web, "asset-path.js"), "");
@@ -124,7 +123,7 @@ test("with a password, the front page at /about and the files it is built from a
     const about = await fetch(server.base + "/about");
     assert.equal(about.status, 200);
     assert.match(await about.text(), /<title>Zeno<\/title>/, "the app's page, which shows the landing at /about");
-    for (const path of ["/assets/index-abc.js", "/brand/FiraGO-Regular.woff2", "/favicon.svg", "/asset-path.js"]) assert.equal(await status(path), 200, path);
+    for (const path of ["/assets/index-abc.js", "/favicon.svg", "/asset-path.js"]) assert.equal(await status(path), 200, path);
     assert.equal(await status("/assets/index-gone.js"), 404, "a missing chunk is still a 404, not a password prompt");
     for (const path of ["/", "/index.html", "/about/more", "/fonts/Virgil.woff2", "/api/boards", "/api/classes", "/assets/..%2Findex.html", "/assets/x/..%2F..%2Findex.html"])
       assert.equal(await status(path), 401, path);
