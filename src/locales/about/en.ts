@@ -36,7 +36,7 @@ export const about = {
   ],
   ownTitle: "Your school keeps the data",
   own: "Zeno runs on your school's own computer, so students' answers stay there. There are no adverts, no trackers and no student accounts: names and emails are never asked for, and a student can delete everything saved under their code.",
-  own2: "Zeno is free and open source under the MIT licence.",
+  own2: "Zeno is free and open source under the AGPL-3.0 licence.",
   source: "Source code on GitHub",
   endTitle: "Start with one question.",
 };

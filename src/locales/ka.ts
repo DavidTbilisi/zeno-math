@@ -18,6 +18,7 @@ export const ka: Dict = {
   backupAll: "ყველა დაფის სარეზერვო ასლის ჩამოტვირთვა",
   aboutLink: "Zeno-ს შესახებ",
   about,
+  sourceCode: "საწყისი კოდი (AGPL-3.0)",
   updated: "განახლდა",
   back: "დაფები",
   saving: "ინახება…",

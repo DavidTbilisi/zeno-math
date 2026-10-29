@@ -18,6 +18,7 @@ export const ru: Dict = {
   backupAll: "Скачать резервную копию всех досок",
   aboutLink: "О Zeno",
   about,
+  sourceCode: "Исходный код (AGPL-3.0)",
   updated: "Изменено",
   back: "Доски",
   saving: "Сохранение…",

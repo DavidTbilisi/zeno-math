@@ -1695,3 +1695,15 @@ tests/                    npm test (node:test); scripts/ts-register.mjs lets Nod
 - Spaced repetition of key formulas
 - Real-time collaboration (Yjs), teacher-written questions
 - Parametric & implicit plots, points and tangent lines, geometry tools
+
+## License
+
+Copyright © 2026 David Chincharashvili.
+
+Zeno is free software under the [GNU Affero General Public License v3.0 or later](LICENSE) (AGPL-3.0-or-later): use
+it, change it and share it, self-hosted or not. If you run a modified Zeno for other people over a network, the AGPL
+asks you to offer them your modified source. The **Source code** link on the home page does that; point
+`SOURCE_URL` in `src/pages/HomePage.tsx` at your own copy.
+
+Versions up to the tag `mit-final` were released under the MIT License, and those versions stay MIT. The bundled
+libraries keep their own licenses (Excalidraw, React and three.js MIT; MathJax and math.js Apache-2.0).
