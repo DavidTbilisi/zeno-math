@@ -55,6 +55,7 @@ import type { LiveBeName } from "./beName";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
 import { PCA_START, type LivePca } from "./pcaLab";
+import { FIT_START, type LiveFit } from "./fitLab";
 import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
 import { BP_START, type LiveBackprop } from "./backpropLab";
@@ -464,6 +465,7 @@ export type LiveStates = {
   embedLab: LiveEmbed;
   backpropLab: LiveBackprop;
   tensorLab: LiveTensor;
+  fitLab: LiveFit;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -542,6 +544,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   embedLab: [660, 600],
   backpropLab: [660, 560],
   tensorLab: [660, 640],
+  fitLab: [660, 740],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -622,6 +625,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     embedLab: EMBED_START,
     backpropLab: BP_START,
     tensorLab: TN_START,
+    fitLab: FIT_START,
   };
   return structuredClone(start[kind]);
 }

@@ -566,6 +566,20 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     read as if laid out on its own, column-major order, one place off). Stars go to a puzzle done at the first try, and
     eight discoveries are kept. Free play takes any of ten shapes and views (a transpose, reshapes, a permute): a tap on
     an entry or a place lights the other with the sum that links them, and Next entry walks the view in its own order
+  - *Overfitting lab* (a live piece on the board, from the AI menu or the Shapes panel): noisy points from a hidden
+    curve and a polynomial fitted to them by least squares, with a ridge penalty λ on its coefficients. The training
+    points (black) are what the fit sees, each with its distance from the curve; the test points (orange) come from the
+    same curve and are what it is judged on. A chart beside plots the errors on a log scale with a dot for each setting
+    tried, and bars show the coefficients. Eight puzzles, each with a Check: a degree that goes through all ten
+    training points (training error 0, a wild curve), the degree with the least test error (it falls and then climbs:
+    overfitting), the simplest degree nearly as good on a straight line's data, the degree with the least bias² +
+    variance (curves fitted to 20 fresh samples drawn faintly), enough points to tame degree 9 (more data), a penalty
+    that tames it instead (ridge), the degree 5-fold cross-validation picks with the test points hidden (the same one
+    they would), and a penalty that keeps every coefficient at most 3 while the training error stays low (small
+    weights, smooth curve). A wrong check says why (too stiff or too wiggly, bias or variance, a simpler model as
+    good, the penalty too strong), stars go to a puzzle done at the first try, and eight discoveries are kept. Free
+    play takes any points (click to add, drag, tap to take away), three hidden curves, the degree, λ, the number of
+    points and the noise, with the test points, fresh samples and the hidden curve on request
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1612,6 +1626,8 @@ src/math/backpropLab.ts   the backprop lab: the graphs' forward and backward pas
                           check is judged, free play's nudge, the hints, and the picture
 src/math/tensorLab.ts     the tensors lab: shapes, views and their strides, places and indices, the eight puzzles and
                           how a check is judged, free play's walk, and the picture
+src/math/fitLab.ts        the overfitting lab: points from a hidden curve, ridge fits, test, cross-validation, bias and
+                          variance errors, the eight puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)

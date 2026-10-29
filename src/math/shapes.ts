@@ -1029,6 +1029,18 @@ function pcaLabPreview(): Piece[] {
   ];
 }
 
+function fitLabPreview(): Piece[] {
+  // Points along a wave, and a wiggly curve forced through every one of them.
+  const pts: Pt[] = [[0, 98], [22, 52], [44, 30], [66, 44], [88, 86], [110, 118], [132, 136], [154, 112], [176, 80], [198, 62]];
+  const wiggle: Pt[] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [[x0, y0], [x1, y1]] = [pts[i], pts[i + 1]];
+    wiggle.push([x0, y0], [(x0 + x1) / 2, (y0 + y1) / 2 + (i % 2 ? -22 : 22)]);
+  }
+  wiggle.push(pts[pts.length - 1]);
+  return [path(wiggle, { color: BLUE, width: 3 }), ...pts.map((p) => dot(p, 4))];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1693,6 +1705,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveEmbedLab", group: "games", build: embedLabPreview, live: "embedLab" },
   { id: "liveBackpropLab", group: "games", build: backpropLabPreview, live: "backpropLab" },
   { id: "liveTensorLab", group: "games", build: tensorLabPreview, live: "tensorLab" },
+  { id: "liveFitLab", group: "games", build: fitLabPreview, live: "fitLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

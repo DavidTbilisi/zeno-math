@@ -9,6 +9,7 @@
 // draws PCA of points onto the board. The gradient descent lab goes on the board from the AI menu: a rate too small
 // runs out of steps and says so, the slider sets a better one, and the ball rolls to the bottom for two stars. The PCA
 // lab goes on the board too: a line across the cloud is not the best, and turned along it, it is PC1, for two stars.
+// The overfitting lab: degree 1 is far from every training point, and degree 9 goes through all ten, for two stars.
 // So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
 // The embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
 // And the backprop lab: a Check with the boxes empty says which one, and q's box tapped and both boxes filled in are
@@ -262,6 +263,32 @@ test("the PCA lab: a line across the cloud is not the best, turned along it is P
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/PC1, the first principal component.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("pca-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the overfitting lab: degree 1 misses the points, degree 9 goes through them all", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Overfitting lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Overfitting lab/ }).click();
+  const lab = page.locator(".live-fitLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Raise the degree d of the curve until it goes through every training point/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/The training error is 0\.26, more than 0\.001/)).toBeVisible();
+
+  const degree = lab.getByRole("slider", { name: "Degree of the curve" });
+  await degree.fill("9");
+  await degree.dispatchEvent("pointerup");
+  await expect(lab.getByText("d = 9")).toBeVisible();
+  await expect(lab.getByText(/^training error 0$/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/it has memorised the points, noise and all!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("fit-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
 
