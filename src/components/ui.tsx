@@ -90,8 +90,10 @@ export const startOr = <K extends string>(start: string | undefined, items: read
 /** The three signs as buttons, for an answer that is a sign between two numbers (no hunting for < on a keyboard). */
 /** Buttons that each type one of a few answers (the benchmarks a number could be nearest). */
 export function ChoicePicks({ choices, onPick, disabled }: { choices: { label: string; value: string }[]; onPick: (value: string) => void; disabled?: boolean }) {
+  // Choices in words (a decision, what a step does) are set smaller and may wrap; signs and numbers stay large.
+  const words = choices.some((c) => c.label.length > 8);
   return (
-    <div className="field-row sign-picks">
+    <div className={`field-row sign-picks${words ? " words" : ""}`}>
       {choices.map((c) => (
         <button key={c.value} className="btn" disabled={disabled} onClick={() => onPick(c.value)}>{c.label}</button>
       ))}

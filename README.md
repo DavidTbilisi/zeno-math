@@ -631,7 +631,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 87 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 93 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), fractions, mixed
     numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
@@ -763,6 +763,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     eigenvalues of a 3 × 3 from its trace and determinant). Matrices are built so every answer is a whole number or a
     small fraction; the worked solution is the Matrices tool's (elimination, cofactors, the eigenspaces) or the Vectors
     tool's
+  - Machine learning (university): gradient descent (one step and two steps on a quadratic, and what a learning
+    rate does on ax², picked: close in steadily, zig-zag in or zig-zag away), backpropagation (one node of a graph,
+    the squared error (wx + b − y)², and a ReLU that can be off), softmax (a class's probability, the cross-entropy
+    loss and its gradient p − y), overfitting (which of three models over- or underfits, the polynomial degree to
+    choose, when early stopping stops), precision and recall (from a confusion matrix, F1, and at a threshold) and
+    clustering (a k-nearest-neighbours vote and a k-means step and its sum of squares, on a drawn grid). Stepping up
+    the slope, the missing 2 of u², a gradient through an off ReLU, p for p − 1, the degree with the lowest training
+    error, the best epoch for the stopping one and precision for recall are named
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
@@ -1575,7 +1583,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (87 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (93 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that

@@ -10,6 +10,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen",
+  "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
 /** The skills each skill builds on directly. */
@@ -99,6 +100,12 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   determinant: ["matrices"],
   elimination: ["simultaneous", "determinant"],
   eigen: ["elimination", "quadratic"],
+  descent: ["differentiate"],
+  backprop: ["differentiate"],
+  softmax: ["logs", "probability"],
+  overfitting: ["average"],
+  precision: ["conditional"],
+  clustering: ["distance", "average"],
 };
 
 /** A class's skills in curriculum order, without repeats or unknown ones. */
@@ -232,6 +239,12 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   determinant: [13, 13, 13],
   elimination: [13, 13, 13],
   eigen: [13, 13, 13],
+  descent: [13, 13, 13], // gradient descent: one step, two steps, what the learning rate does
+  backprop: [13, 13, 13], // the chain rule through a computational graph, a squared error, a ReLU
+  softmax: [13, 13, 13], // softmax probabilities, the cross-entropy loss and its gradient
+  overfitting: [13, 13, 13], // training against test error, choosing a degree, early stopping
+  precision: [13, 13, 13], // precision, recall and F1 from a confusion matrix or a threshold
+  clustering: [13, 13, 13], // a k-nearest-neighbours vote, a k-means step and its sum of squares
 };
 
 /** The grade a level belongs to, or null when no syllabus here teaches it. */

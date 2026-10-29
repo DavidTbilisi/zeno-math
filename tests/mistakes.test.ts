@@ -90,6 +90,13 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   beyondReach: ["parity", [2, 3]],
   neighboursOnly: ["inversions", [1, 2, 3]],
   outOfPlace: ["inversions", [1, 2, 3]],
+  uphill: ["descent", [1, 2]],
+  noTwo: ["backprop", [2, 3]],
+  reluOff: ["backprop", [3]],
+  noMinusOne: ["softmax", [3]],
+  trainError: ["overfitting", [2]],
+  bestEpoch: ["overfitting", [3]],
+  swappedPR: ["precision", [1, 3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -133,7 +140,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "decimals", "ratio", "rate"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

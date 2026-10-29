@@ -80,5 +80,12 @@ export const MISTAKES = [
   "beyondReach",
   "neighboursOnly",
   "outOfPlace",
+  "uphill",
+  "noTwo",
+  "reluOff",
+  "noMinusOne",
+  "trainError",
+  "bestEpoch",
+  "swappedPR",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

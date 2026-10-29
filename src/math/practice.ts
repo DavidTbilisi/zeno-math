@@ -217,6 +217,27 @@ export type PracticeWords = {
     hypDecide: string;
     hypZ: string;
     hypP: string;
+    gdStep: string;
+    gdTwo: string;
+    gdRate: string;
+    bpNode: string;
+    bpLoss: string;
+    bpRelu: string;
+    smProb: string;
+    smLoss: string;
+    smGrad: string;
+    fitOver: string;
+    fitUnder: string;
+    fitDegree: string;
+    fitStop: string;
+    prPrecision: string;
+    prRecall: string;
+    prF1: string;
+    prThreshP: string;
+    prThreshR: string;
+    knnVote: string;
+    kmCentroid: string;
+    kmInertia: string;
     seqTerm: string;
     seqTwo: string;
     serSum: string;
@@ -344,6 +365,8 @@ export type PracticeWords = {
   };
   /** A hypothesis test's two decisions: on a button (text) and typed (plain). */
   decisions: Record<"reject" | "keep", { text: string; plain: string }>;
+  /** Where gradient descent goes with a learning rate: on a button (text) and typed (plain). */
+  fates: Record<"steady" | "zigzag" | "diverge", { text: string; plain: string }>;
   /** A walk from home told part by part (graph stories): each part, and what joins them. */
   story: { parts: Record<StoryWord, string>; then: string };
   events: { even: string; greater: string; prime: string; mult3: string };
@@ -888,6 +911,48 @@ const choose = (n: number, k: number) => {
 const zTest = (mean: number, sigma: number, n: number, mu0: number, alt: Alt): InfSpec => ({
   topic: "test", kind: "z", a: String(mean), b: String(sigma), c: String(n), d: String(mu0), e: "", f: "", data: "", data2: "", level: "0.05", alt, seed: 1,
 });
+
+// ---------- machine learning ----------
+
+/** A decimal as written: to 6 places at most, so no float noise shows. */
+const dec6 = (v: number) => String(Math.round(v * 1e6) / 1e6);
+/** A factor in a product, bracketed when negative. */
+const par = (v: number | string) => (String(v).startsWith("-") ? `(${v})` : String(v));
+/** One step of gradient descent on ax² + bx + c from x (uphill: the step taken up the slope instead). */
+const gdStep = (x: Frac, a: number, b: number, eta: Frac, uphill = false) => {
+  const s = eta.mul(x.mul(fr(2 * a)).add(fr(b)));
+  return uphill ? x.add(s) : x.sub(s);
+};
+/** Two different classes' points, both on the 0–8 grid. */
+type Dot = { x: number; y: number; c: 0 | 1 };
+const sq = (p: { x: number; y: number }, q: { x: number; y: number }) => (p.x - q.x) ** 2 + (p.y - q.y) ** 2;
+/** Points on a 0–8 grid: class A as blue dots, B as orange triangles (with a key when there are both), and the marked points as crosses with names. */
+function dotsPic(dots: Dot[], marks: { x: number; y: number; name: string }[]): Exercise["pic"] {
+  const [S, P, N] = [22, 26, 8];
+  const X = (x: number) => P + x * S;
+  const Y = (y: number) => 10 + (N - y) * S;
+  const dot = (x: number, y: number, c: 0 | 1) => (c === 0 ? `<circle cx="${x}" cy="${y}" r="5.5" fill="${C.blue}"/>` : `<path d="M${x} ${y - 6.5} l6 10.5 h-12 z" fill="${C.orange}"/>`);
+  let body = "";
+  for (let i = 0; i <= N; i++)
+    body += `<line x1="${X(i)}" y1="${Y(0)}" x2="${X(i)}" y2="${Y(N)}" stroke="#dee2e6"/><line x1="${X(0)}" y1="${Y(i)}" x2="${X(N)}" y2="${Y(i)}" stroke="#dee2e6"/>`;
+  for (let i = 0; i <= N; i += 2)
+    body += `<text x="${X(i)}" y="${Y(0) + 20}" font-size="11" text-anchor="middle" fill="${C.grey}" ${FONT}>${i}</text><text x="${X(0) - 12}" y="${Y(i) + 4}" font-size="11" text-anchor="end" fill="${C.grey}" ${FONT}>${i}</text>`;
+  for (const d of dots) body += dot(X(d.x), Y(d.y), d.c);
+  for (const m of marks)
+    body += `<path d="M${X(m.x) - 5} ${Y(m.y) - 5} l10 10 m0 -10 l-10 10" stroke="${C.ink}" stroke-width="2.4"/><text x="${X(m.x) + 7}" y="${Y(m.y) - 6}" font-size="13" font-style="italic" fill="${C.ink}" ${FONT}>${m.name}</text>`;
+  const key = dots.some((d) => d.c === 1);
+  if (key)
+    ([0, 1] as const).forEach((c) => {
+      body += `${dot(X(N) + 26, Y(N) + 4 + c * 24, c)}<text x="${X(N) + 38}" y="${Y(N) + 9 + c * 24}" font-size="13" fill="${C.ink}" ${FONT}>${"AB"[c]}</text>`;
+    });
+  const [w, h] = [X(N) + (key ? 56 : 16), Y(0) + 26];
+  return { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${body}</g>`, h, w };
+}
+/** Points with their coordinates, in LaTeX. */
+const ptsTex = (ps: { x: number; y: number }[]) => ps.map((p) => `(${p.x}, ${p.y})`).join(",\\ ");
+/** Errors in a table: one column for each of `heads`, one row for each named list. */
+const errTable = (head: string, heads: (string | number)[], rows: [string, number[]][]) =>
+  `\\begin{array}{c|${"c".repeat(heads.length)}} ${head} & ${heads.join(" & ")} \\\\ \\hline ${rows.map(([k, vs]) => `${k} & ${vs.join(" & ")}`).join(" \\\\ ")} \\end{array}`;
 
 const GENS: Record<SkillId, Gen> = {
   times(r, L, w) {
@@ -3705,6 +3770,337 @@ const GENS: Record<SkillId, Gen> = {
       format: "dp3",
       solution: { kind: "inference", spec: zTest(mean, sigma, n, mu0, alt) },
     };
+  },
+
+  descent(r, L, w) {
+    if (L === 3) {
+      // f = ax²: every step multiplies x by q = 1 − 2aη, so 0 < q < 1 settles, −1 < q < 0 zig-zags in, q < −1 out.
+      const a = r.pick([1, 2, 4, 5] as const);
+      const fate = r.pick(["steady", "zigzag", "diverge"] as const);
+      const qOf = (eta: number) => Math.round((1 - 2 * a * eta) * 1000) / 1000;
+      const eta = r.pick([0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.6, 0.75, 1.25, 1.5].filter((e) => {
+        const q = qOf(e);
+        return fate === "steady" ? q > 0 && q < 1 : fate === "zigzag" ? q < 0 && q > -1 : q < -1;
+      }));
+      const q = qOf(eta);
+      const fates = ["steady", "zigzag", "diverge"] as const;
+      const options = fates.map((k) => ({ text: w.fates[k].text, plain: w.fates[k].plain, tex: "" }));
+      const show = `x_{n+1} = x_n - ${eta} \\cdot ${2 * a} x_n = ${q}\\, x_n`;
+      return {
+        prompt: fill(w.prompts.gdRate, { eta }),
+        q: `f(x) = ${polyStr([0, 0, a])}`,
+        answer: { k: "pick", options, right: fates.indexOf(fate) },
+        show,
+        plain: options[fates.indexOf(fate)].plain,
+        format: "pick",
+        steps: [`f'(x) = ${polyStr([0, 2 * a])}`, show, `|${q}| ${Math.abs(q) < 1 ? "<" : ">"} 1`],
+      };
+    }
+    // f = ax² + bx + c from a whole x₀ ≠ 0, η a simple fraction, so every step is an exact decimal.
+    const [a, b, c] = [r.int(1, 3), r.nz(-8, 8), r.int(0, 9)];
+    const eta = r.pick(L === 1 ? [fr(1, 10), fr(1, 5), fr(1, 4), fr(1, 20)] : [fr(1, 10), fr(1, 5), fr(1, 4)]);
+    let x0: number;
+    do x0 = r.nz(-5, 5);
+    while (2 * a * x0 + b === 0);
+    const xs = [fr(x0)];
+    const ups = [fr(x0)];
+    for (let i = 0; i < L; i++) (xs.push(gdStep(xs[i], a, b, eta)), ups.push(gdStep(ups[i], a, b, eta, true)));
+    const v = xs[L].toNumber();
+    const up = ups[L].toNumber();
+    const traps: Trap[] = Math.abs(up - v) > 1e-9 && Math.abs(up + v) > 1e-9 ? [{ id: "uphill", a: num(up) }] : [];
+    const e = dec6(eta.toNumber());
+    const steps = [`f'(x) = ${polyStr([b, 2 * a])}`];
+    for (let i = 0; i < L; i++) {
+      const g = xs[i].mul(fr(2 * a)).add(fr(b));
+      steps.push(`x_${i + 1} = x_${i} - \\eta f'(x_${i}) = ${dec6(xs[i].toNumber())} - ${e} \\cdot ${par(dec6(g.toNumber()))} = ${dec6(xs[i + 1].toNumber())}`);
+    }
+    return {
+      prompt: fill(L === 1 ? w.prompts.gdStep : w.prompts.gdTwo, { x: x0, eta: e }),
+      q: `f(x) = ${polyStr([c, b, a])}`,
+      answer: { ...num(v), traps },
+      show: `x_${L} = ${dec6(v)}`,
+      plain: dec6(v),
+      format: "number",
+      steps,
+    };
+  },
+
+  backprop(r, L, w) {
+    const d = (top: string, by: string) => `\\frac{\\partial ${top}}{\\partial ${by}}`;
+    const given = (vs: [string, number][]) => vs.map(([k, v]) => `${k} = ${v}`).join(", \\ ");
+    const out = (prompt: string, q: string, v: number, steps: string[], traps: Trap[] = []) => ({
+      prompt, q, answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number" as const, steps,
+    });
+    if (L === 1) {
+      // One node in the middle: f = (x ± y)z goes back through q = x ± y, f = xy + z through p = xy.
+      const [x, y, z] = [r.nz(-5, 5), r.nz(-5, 5), r.nz(-5, 5)];
+      const form = r.int(0, 2);
+      if (form < 2) {
+        const s = form === 0 ? 1 : -1;
+        const qv = x + s * y;
+        const by = r.pick(qv === 0 ? (["x", "y"] as const) : (["x", "y", "z"] as const));
+        const v = by === "z" ? qv : by === "x" ? z : s * z;
+        const head = [`q = x ${s > 0 ? "+" : "-"} y = ${qv}`, `f = q z`];
+        const last = by === "z" ? `${d("f", "z")} = q = ${qv}` : `${d("f", by)} = ${d("f", "q")} \\cdot ${d("q", by)} = z \\cdot ${par(by === "x" ? 1 : s)} = ${v}`;
+        return out(fill(w.prompts.bpNode, { v: by }), `f = (x ${s > 0 ? "+" : "-"} y)\\, z, \\quad ${given([["x", x], ["y", y], ["z", z]])}`, v, [...head, last]);
+      }
+      const by = r.pick(["x", "y", "z"] as const);
+      const v = by === "x" ? y : by === "y" ? x : 2 * z;
+      const last = by === "z" ? `${d("f", "z")} = 2z = ${v}` : `${d("f", by)} = ${d("f", "p")} \\cdot ${d("p", by)} = 1 \\cdot ${by === "x" ? "y" : "x"} = ${v}`;
+      return out(fill(w.prompts.bpNode, { v: by }), `f = x y + z^2, \\quad ${given([["x", x], ["y", y], ["z", z]])}`, v, [`p = x y = ${x * y}`, `f = p + z^2`, last]);
+    }
+    if (L === 2) {
+      // A squared error L = (wx + b − y)²: ∂L/∂w = 2e·x, ∂L/∂b = 2e for the error e.
+      let w0: number, x: number, b: number, y: number, e: number;
+      do (w0 = r.nz(-4, 4)), (x = r.nz(-4, 4)), (b = r.int(-4, 4)), (y = r.int(-6, 6)), (e = w0 * x + b - y);
+      while (e === 0);
+      const by = r.pick(["w", "b"] as const);
+      const v = by === "w" ? 2 * e * x : 2 * e;
+      const steps = [`\\hat y = w x + b = ${w0 * x + b}`, `e = \\hat y - y = ${e}`, `${d("L", "e")} = 2e = ${2 * e}`, by === "w" ? `${d("L", "w")} = 2e \\cdot x = ${2 * e} \\cdot ${par(x)} = ${v}` : `${d("L", "b")} = 2e \\cdot 1 = ${v}`];
+      return out(fill(w.prompts.bpLoss, { v: by }), `L = (w x + b - y)^2, \\quad ${given([["w", w0], ["x", x], ["b", b], ["y", y]])}`, v, steps, [{ id: "noTwo", a: num(v / 2) }]);
+    }
+    // h = ReLU(w₁x), ŷ = w₂h: the gradient reaches w₁ only when the ReLU is on (mostly it is).
+    let w1: number, x: number, w2: number, y: number, e: number;
+    do {
+      (w1 = r.nz(-3, 3)), (x = r.nz(-3, 3)), (w2 = r.nz(-3, 3)), (y = r.int(-6, 6));
+      if (w1 * x < 0 && r.next() < 0.5) w1 = -w1;
+      e = w2 * Math.max(0, w1 * x) - y;
+    } while (e === 0);
+    const on = w1 * x > 0;
+    const v = on ? 2 * e * w2 * x : 0;
+    const steps = [
+      `w_1 x = ${w1 * x}, \\quad h = \\operatorname{ReLU}(${w1 * x}) = ${Math.max(0, w1 * x)}`,
+      `\\hat y = w_2 h = ${w2 * Math.max(0, w1 * x)}, \\quad ${d("L", "\\hat y")} = 2(\\hat y - y) = ${2 * e}`,
+      `${d("L", "h")} = ${2 * e} \\cdot w_2 = ${2 * e * w2}`,
+      on ? `${d("L", "w_1")} = ${d("L", "h")} \\cdot 1 \\cdot x = ${2 * e * w2} \\cdot ${par(x)} = ${v}` : `w_1 x < 0: \\ ${d("L", "w_1")} = ${d("L", "h")} \\cdot 0 \\cdot x = 0`,
+    ];
+    const traps: Trap[] = on ? [{ id: "noTwo", a: num(v / 2) }] : [{ id: "reluOff", a: num(2 * e * w2 * x) }];
+    return out(w.prompts.bpRelu, given([["w_1", w1], ["x", x], ["w_2", w2], ["y", y]]), v, steps, traps);
+  },
+
+  softmax(r, L, w) {
+    // Three classes' scores, whole numbers from −2 to 4 and at most 4 apart; p_k = e^{z_k} / Σ e^{z_j}.
+    let zs: number[];
+    do zs = [r.int(-2, 4), r.int(-2, 4), r.int(-2, 4)];
+    while (Math.max(...zs) - Math.min(...zs) > 4);
+    const S = zs.reduce((s, z) => s + Math.exp(z), 0);
+    const p = zs.map((z) => Math.exp(z) / S);
+    const q = `z = (${zs.join(", ")})`;
+    const sum = zs.map((z) => `e^{${z}}`).join(" + ");
+    const pTex = (k: number) => `p_${k + 1} = \\frac{e^{${zs[k]}}}{${sum}} \\approx ${dp(p[k], 4)}`;
+    const at3 = (v: number) => ({ answer: num(v, 0.00051), show: dp(v, 3), plain: dp(v, 3), format: "dp3" as const });
+    let k: number;
+    do k = r.int(0, 2);
+    while (p[k] < 0.01);
+    if (L === 1) return { prompt: fill(w.prompts.smProb, { k: k + 1 }), q, ...at3(p[k]), steps: [pTex(k)] };
+    if (L === 2) return { prompt: fill(w.prompts.smLoss, { k: k + 1 }), q, ...at3(-Math.log(p[k])), steps: [pTex(k), `L = -\\ln p_${k + 1} \\approx ${dp(-Math.log(p[k]), 3)}`] };
+    // ∂L/∂z_i = p_i − [i is the right class].
+    const i = r.next() < 0.5 ? k : (k + r.int(1, 2)) % 3;
+    const v = p[i] - (i === k ? 1 : 0);
+    const traps: Trap[] = i === k && Math.abs(p[i] - 0.5) > 0.002 ? [{ id: "noMinusOne", a: num(p[i], 0.00051) }] : [];
+    return {
+      prompt: fill(w.prompts.smGrad, { k: k + 1, i: i + 1 }),
+      q,
+      ...at3(v),
+      answer: { ...num(v, 0.00051), traps },
+      steps: [pTex(i), `\\frac{\\partial L}{\\partial z_${i + 1}} = p_${i + 1} - ${i === k ? 1 : 0} \\approx ${dp(v, 3)}`],
+    };
+  },
+
+  overfitting(r, L, w) {
+    const r1 = (v: number) => Math.round(v * 10) / 10;
+    if (L === 1) {
+      // Three models: one fits (both errors low, close), one overfits (train lowest, test high), one underfits (both high).
+      const good = r1(r.int(30, 60) / 10);
+      const goodTest = r1(good + r.int(5, 15) / 10);
+      const overTrain = r1(r.int(2, 15) / 10);
+      const overTest = r1(goodTest + r.int(20, 60) / 10);
+      const underTrain = r1(goodTest + r.int(30, 60) / 10);
+      const underTest = r1(underTrain + r.int(0, 15) / 10);
+      const models = [[good, goodTest], [overTrain, overTest], [underTrain, underTest]];
+      const order = [0, 1, 2];
+      for (let i = 2; i > 0; i--) {
+        const j = r.int(0, i);
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      const ask = r.pick(["over", "under"] as const);
+      const names = ["A", "B", "C"];
+      const right = order.indexOf(ask === "over" ? 1 : 2);
+      const cols = order.map((m) => models[m]);
+      const options = names.map((n) => ({ text: n, plain: n, tex: "" }));
+      return {
+        prompt: ask === "over" ? w.prompts.fitOver : w.prompts.fitUnder,
+        q: errTable("", names.map((n) => `\\mathrm{${n}}`), [["E_{\\mathrm{train}}", cols.map((c) => c[0])], ["E_{\\mathrm{test}}", cols.map((c) => c[1])]]),
+        answer: { k: "pick", options, right },
+        show: `\\mathrm{${names[right]}}: \\ E_{\\mathrm{train}} = ${cols[right][0]}, \\ E_{\\mathrm{test}} = ${cols[right][1]}`,
+        plain: names[right],
+        format: "pick",
+        steps: cols.map((c, j) => `\\mathrm{${names[j]}}: \\ ${c[1]} - ${c[0]} = ${r1(c[1] - c[0])}`),
+      };
+    }
+    if (L === 2) {
+      // Validation error is lowest at d*, training error keeps falling: choose d*, not the last degree.
+      const n = r.pick([6, 7] as const);
+      const best = r.int(2, n - 2);
+      const m = r.int(20, 40) / 10;
+      const s = r.pick([0.6, 0.8, 1, 1.2] as const);
+      const degrees = Array.from({ length: n }, (_, i) => i + 1);
+      const val = degrees.map((dg) => r1(m + (dg - best) ** 2 * s + r.int(0, 3) / 10));
+      const train = degrees.map((dg) => Math.round(m * 1.05 * 0.62 ** (dg - 1) * 100) / 100);
+      return {
+        prompt: fill(w.prompts.fitDegree, { n }),
+        q: errTable("d", degrees, [["E_{\\mathrm{train}}", train], ["E_{\\mathrm{val}}", val]]),
+        answer: { ...num(best), traps: [{ id: "trainError", a: num(n), vars: { d: n } }] },
+        show: `d = ${best}`,
+        plain: String(best),
+        format: "number",
+        steps: [`E_{\\mathrm{val}}(${best}) = ${val[best - 1]} = \\min E_{\\mathrm{val}}`],
+      };
+    }
+    // Early stopping: training stops after `pat` epochs in a row without a new lowest validation loss.
+    const pat = r.pick([2, 3] as const);
+    const best = r.int(4, 10 - pat - 1);
+    const vals: number[] = [];
+    let low = r.int(150, 250) / 100;
+    vals.push(low);
+    // A bump shorter than the patience before the best, so it doesn't stop there.
+    const bumpAt = r.int(2, best - 2);
+    const bumpLen = r.int(1, pat - 1);
+    for (let ep = 2; ep <= best; ep++) {
+      if (ep >= bumpAt && ep < bumpAt + bumpLen && ep < best) vals.push(Math.round((low + r.int(1, 8) / 100) * 100) / 100);
+      else vals.push((low = Math.round((low - r.int(3, 15) / 100) * 100) / 100));
+    }
+    for (let ep = best + 1; ep <= 10; ep++) vals.push(Math.round((low + r.int(1, 9) / 100) * 100) / 100);
+    // Lower again after it stopped: what it never sees.
+    vals[9] = Math.round((low - r.int(1, 5) / 100) * 100) / 100;
+    let stop = 0;
+    let since = 0;
+    let min = Infinity;
+    for (let ep = 1; ep <= 10 && !stop; ep++) {
+      if (vals[ep - 1] < min) (min = vals[ep - 1]), (since = 0);
+      else if (++since === pat) stop = ep;
+    }
+    const at = vals.indexOf(min) + 1;
+    return {
+      prompt: fill(w.prompts.fitStop, { p: pat }),
+      q: errTable("t", vals.map((_, i) => i + 1), [["E_{\\mathrm{val}}", vals]]),
+      answer: { ...num(stop), traps: [{ id: "bestEpoch", a: num(at), vars: { b: at, p: pat } }] },
+      show: `t = ${stop}`,
+      plain: String(stop),
+      format: "number",
+      steps: [`\\min E_{\\mathrm{val}} = ${min} \\ (t = ${at})`, `t = ${at} + ${pat} = ${stop}`],
+    };
+  },
+
+  precision(r, L, w) {
+    const T = (k: string) => `\\mathrm{${k}}`;
+    const cm = (tp: number, fn: number, fp: number, tn: number) =>
+      `\\begin{array}{c|cc} & \\hat y = 1 & \\hat y = 0 \\\\ \\hline y = 1 & ${tp} & ${fn} \\\\ y = 0 & ${fp} & ${tn} \\end{array}`;
+    const asked = (ask: "P" | "R", tp: number, fp: number, fn: number, prompt: string, q: string, more: string[] = []) => {
+      const v = fr(tp, tp + (ask === "P" ? fp : fn));
+      const other = fr(tp, tp + (ask === "P" ? fn : fp));
+      const traps: Trap[] = fp !== fn ? [{ id: "swappedPR", a: num(other.toNumber()) }] : [];
+      const formula = ask === "P" ? `P = \\frac{${T("TP")}}{${T("TP")} + ${T("FP")}} = \\frac{${tp}}{${tp} + ${fp}}` : `R = \\frac{${T("TP")}}{${T("TP")} + ${T("FN")}} = \\frac{${tp}}{${tp} + ${fn}}`;
+      return { prompt, q, answer: { ...num(v.toNumber(), 1e-9, { lowest: true }), traps }, show: v.tex(), plain: plainFrac(v), format: "fraction" as const, steps: [...more, `${formula} = ${v.tex()}`] };
+    };
+    if (L < 3) {
+      const [tp, fn, fp, tn] = [r.int(10, 60), r.int(2, 30), r.int(2, 30), r.int(20, 150)];
+      const q = cm(tp, fn, fp, tn);
+      const ask = r.pick(["P", "R"] as const);
+      if (L === 1) return asked(ask, tp, fp, fn, ask === "P" ? w.prompts.prPrecision : w.prompts.prRecall, q);
+      // F1, the harmonic mean of P and R: 2TP / (2TP + FP + FN).
+      const v = fr(2 * tp, 2 * tp + fp + fn);
+      return {
+        prompt: w.prompts.prF1,
+        q,
+        answer: num(v.toNumber(), 1e-9, { lowest: true }),
+        show: v.tex(),
+        plain: plainFrac(v),
+        format: "fraction",
+        steps: [`P = ${fr(tp, tp + fp).tex()}, \\quad R = ${fr(tp, tp + fn).tex()}`, `F_1 = \\frac{2PR}{P + R} = \\frac{2 \\cdot ${tp}}{2 \\cdot ${tp} + ${fp} + ${fn}} = ${v.tex()}`],
+      };
+    }
+    // Eight examples' scores and classes; predict 1 when the score is at least t.
+    const t = r.pick([0.3, 0.4, 0.5, 0.6, 0.7] as const);
+    let ex: { s: number; y: number }[], tp: number, fp: number, fn: number;
+    do {
+      const scores = new Set<number>();
+      while (scores.size < 8) {
+        const s = r.int(1, 19) * 5;
+        if (s !== t * 100) scores.add(s);
+      }
+      // Higher scores are more often class 1, as from a classifier that is better than chance.
+      ex = [...scores].sort((a, b) => b - a).map((s) => ({ s: s / 100, y: r.next() < 0.15 + 0.7 * (s / 100) ? 1 : 0 }));
+      tp = ex.filter((e) => e.s >= t && e.y === 1).length;
+      fp = ex.filter((e) => e.s >= t && e.y === 0).length;
+      fn = ex.filter((e) => e.s < t && e.y === 1).length;
+    } while (tp === 0 || fp === 0 || fn === 0 || fp === fn);
+    const ask = r.pick(["P", "R"] as const);
+    const q = errTable("s", ex.map((e) => e.s), [["y", ex.map((e) => e.y)]]);
+    return asked(ask, tp, fp, fn, fill(ask === "P" ? w.prompts.prThreshP : w.prompts.prThreshR, { t }), q, [`s \\ge ${t}: \\ ${T("TP")} = ${tp}, \\ ${T("FP")} = ${fp}; \\quad s < ${t}: \\ ${T("FN")} = ${fn}`]);
+  },
+
+  clustering(r, L, w) {
+    const cell = () => ({ x: r.int(0, 8), y: r.int(0, 8) });
+    if (L === 1) {
+      // k-NN: four points of each class, P somewhere among them, every squared distance from P different.
+      const k = r.pick([3, 5] as const);
+      let P: { x: number; y: number }, dots: Dot[];
+      do {
+        P = { x: r.int(2, 6), y: r.int(2, 6) };
+        dots = [];
+        while (dots.length < 8) {
+          const p = cell();
+          if ((p.x !== P.x || p.y !== P.y) && !dots.some((d) => d.x === p.x && d.y === p.y)) dots.push({ ...p, c: dots.length < 4 ? 0 : 1 });
+        }
+      } while (new Set(dots.map((d) => sq(d, P))).size < 8);
+      const near = [...dots].sort((a, b) => sq(a, P) - sq(b, P)).slice(0, k);
+      const votesA = near.filter((d) => d.c === 0).length;
+      const right = votesA * 2 > k ? 0 : 1;
+      const options = ["A", "B"].map((n) => ({ text: n, plain: n, tex: "" }));
+      return {
+        prompt: fill(w.prompts.knnVote, { k }),
+        q: `\\begin{array}{l} \\mathrm{A}: ${ptsTex(dots.slice(0, 4))} \\\\ \\mathrm{B}: ${ptsTex(dots.slice(4))} \\\\ P = (${P.x}, ${P.y}) \\end{array}`,
+        pic: dotsPic(dots, [{ ...P, name: "P" }]),
+        answer: { k: "pick", options, right },
+        show: `${votesA} \\times \\mathrm{A}, \\ ${k - votesA} \\times \\mathrm{B}`,
+        plain: options[right].plain,
+        format: "pick",
+        steps: near.map((d) => `d^2(P, (${d.x}, ${d.y})) = ${sq(d, P)} \\ \\ \\mathrm{${d.c === 0 ? "A" : "B"}}`),
+      };
+    }
+    // k-means with two centres: each point joins the nearer, no point halfway, at least two points for each.
+    let pts: { x: number; y: number }[], c1: { x: number; y: number }, c2: { x: number; y: number }, joins: number[];
+    do {
+      c1 = cell();
+      c2 = cell();
+      pts = [];
+      while (pts.length < 6) {
+        const p = cell();
+        if (!pts.some((q) => q.x === p.x && q.y === p.y) && sq(p, c1) > 0 && sq(p, c2) > 0) pts.push(p);
+      }
+      joins = pts.map((p) => (sq(p, c1) < sq(p, c2) ? 1 : sq(p, c1) > sq(p, c2) ? 2 : 0));
+    } while (joins.includes(0) || joins.filter((j) => j === 1).length < 2 || joins.filter((j) => j === 2).length < 2);
+    const q = `\\begin{array}{l} ${ptsTex(pts)} \\\\ c_1 = (${c1.x}, ${c1.y}), \\ c_2 = (${c2.x}, ${c2.y}) \\end{array}`;
+    const pic = dotsPic(pts.map((p) => ({ ...p, c: 0 })), [{ ...c1, name: "c₁" }, { ...c2, name: "c₂" }]);
+    const assign = pts.map((p, i) => `(${p.x}, ${p.y}): \\ ${sq(p, c1)} ${joins[i] === 1 ? "<" : ">"} ${sq(p, c2)} \\to c_${joins[i]}`);
+    if (L === 2) {
+      const mine = pts.filter((_, i) => joins[i] === 1);
+      const [mx, my] = [fr(mine.reduce((s, p) => s + p.x, 0), mine.length), fr(mine.reduce((s, p) => s + p.y, 0), mine.length)];
+      return {
+        prompt: w.prompts.kmCentroid,
+        q,
+        pic,
+        answer: { k: "tuple", vs: [mx.toNumber(), my.toNumber()], tol: 1e-9 },
+        show: `\\left(${mx.tex()}, ${my.tex()}\\right)`,
+        plain: `(${plainFrac(mx)}; ${plainFrac(my)})`,
+        format: "point",
+        steps: [...assign, `c_1' = \\left(\\frac{${mine.map((p) => p.x).join(" + ")}}{${mine.length}}, \\frac{${mine.map((p) => p.y).join(" + ")}}{${mine.length}}\\right) = \\left(${mx.tex()}, ${my.tex()}\\right)`],
+      };
+    }
+    const ds = pts.map((p) => Math.min(sq(p, c1), sq(p, c2)));
+    const v = ds.reduce((s, x) => s + x, 0);
+    return { prompt: w.prompts.kmInertia, q, pic, answer: num(v), show: String(v), plain: String(v), format: "number", steps: [...assign, `${ds.join(" + ")} = ${v}`] };
   },
 
   integers(r, L, w) {
