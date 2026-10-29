@@ -25,7 +25,7 @@ import { CommandPalette } from "../components/CommandPalette";
 import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
 import { isLiveLink, liveDataOf, liveElement } from "../live/element";
 import { LiveView, type LiveHost } from "../live/LiveView";
-import { LIVE_SIZES, type LiveKind } from "../math/live";
+import { isLiveKind, LIVE_SIZES, type LiveKind } from "../math/live";
 import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { BarIcon } from "../components/BarIcon";
@@ -603,6 +603,23 @@ export function BoardPage({ id }: { id: string }) {
     excalidraw.current = a;
     setExcalidrawApi(a);
   }, []);
+  // The course map opens a tool or a lab on a board: #/b/<id>/tool/<kind>[/<topic>] or #/b/<id>/live/<kind>. Once the
+  // board has loaded it is opened, and the address goes back to the board's own (so a reload doesn't add another).
+  useEffect(() => {
+    const m = location.hash.match(/^#\/b\/[\w-]+\/(tool|live)\/(\w+)(?:\/(\w+))?$/);
+    if (!excalidrawApi || !m) return;
+    const [, what, kind, start] = m;
+    const done = () => history.replaceState(null, "", `#/b/${id}`);
+    if (what === "tool" && isToolKind(kind)) (open({ kind, start }), done());
+    if (what !== "live" || !isLiveKind(kind)) return done();
+    // The scene arrives a moment after the API: a piece placed before would be lost under it.
+    let frame = 0;
+    const place = () => (excalidrawApi.getAppState().isLoading ? (frame = requestAnimationFrame(place)) : (addLive(kind), done()));
+    frame = requestAnimationFrame(place);
+    return () => cancelAnimationFrame(frame);
+    // Only when the board is first ready: the address is the board's own afterwards.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [excalidrawApi]);
   // (One whose data is missing or damaged shows nothing, rather than Excalidraw trying to load its address.)
   const renderEmbeddable = useCallback(
     (el: NonDeleted<ExcalidrawEmbeddableElement>) => (isLiveLink(el.link) ? liveDataOf(el) ? <LiveView element={el} host={liveHost.current} /> : <div /> : null),

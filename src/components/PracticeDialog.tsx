@@ -12,7 +12,7 @@ import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
 import {
-  AREAS, areaOf, check, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, stepsOf, type Area, type Exercise, type Level, type PracticeSpec,
+  ALL_SKILLS, AREAS, areaOf, check, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, stepsOf, type Area, type Exercise, type Level, type PracticeSpec,
   type SkillId, type Verdict,
 } from "../math/practice";
 import { renderSolution } from "../math/practiceSolve";
@@ -81,9 +81,12 @@ export function PracticeDialog(props: Props) {
   const { initial, start, onSubmit, onClose, docked } = props;
   const { t } = useI18n();
   const w = t.pracWords;
-  const [area, setArea] = useState<Area>(initial?.area ?? startOr(start, AREAS, "number"));
-  const [pick, setPick] = useState<Pick>(initial?.skill ?? "mixed");
-  const [level, setLevel] = useState<Level>(initial?.level ?? 1);
+  // `start` is an area, or a skill and level ("fractions.2", from the course map).
+  const [startSkill, startLevel] = (start ?? "").split(".");
+  const opening = (ALL_SKILLS as string[]).includes(startSkill) ? (startSkill as SkillId) : null;
+  const [area, setArea] = useState<Area>(initial?.area ?? (opening ? areaOf(opening) : startOr(start, AREAS, "number")));
+  const [pick, setPick] = useState<Pick>(initial?.skill ?? opening ?? "mixed");
+  const [level, setLevel] = useState<Level>(initial?.level ?? (LEVELS.find((L) => opening && String(L) === startLevel) ?? 1));
   const [mode, setMode] = useState<Mode>(initial && initial.count === 1 ? "practise" : initial ? "sheet" : "practise");
   const [count, setCount] = useState(initial && initial.count > 1 ? initial.count : 8);
   const [withAnswers, setWithAnswers] = useState(initial?.answers ?? true);

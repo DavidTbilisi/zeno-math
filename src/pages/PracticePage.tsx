@@ -11,7 +11,7 @@ export function PracticePage({ start, standalone }: { start?: string; standalone
   return (
     <div className="z z-wide">
       <BrandBar home={standalone ? "../" : undefined}>
-        {standalone ? <a href="../">{t.aboutLink}</a> : <a href="#/">{t.myBoards}</a>}
+        {standalone ? <a href="../">{t.aboutLink}</a> : <><a href="#/course">{t.course.link}</a><a href="#/">{t.myBoards}</a></>}
       </BrandBar>
       <div className="z-page practice-page">
         <h1 className="z-page-title">{t.practice}</h1>

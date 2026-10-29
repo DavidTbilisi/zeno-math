@@ -814,6 +814,11 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     most 8 questions place a learner. The page then shows the ladder with their grade marked and practises that grade's
     levels until 80 % of them are secure (3 right in a row at the first try), when the next grade begins; the front page
     says which grade they are working on
+  - *Course map* (`#/course`): the way from counting to machine learning in eight stages (number; algebra and
+    geometry; calculus; linear algebra; probability and statistics; optimisation; classical machine learning; deep
+    learning), each with its skills, every level marked secure, behind the learner's grade or still to do, and a bar
+    that fills as they are secured. *Next for you* is the lowest-grade level whose prerequisites are met, one click from
+    practice; each stage also has a board tool to explore and a live lab to try, opened on that stage's own board
   - Screen readers hear each question: its words, and its maths as MathML (the picture is hidden from them)
   - *Class study*: a student joins a class with its code and gets a student code of their own (no name or email);
     each question they work on is then saved on the server for research — see [Class study](#class-study) and [docs/study.md](docs/study.md)

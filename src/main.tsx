@@ -10,6 +10,7 @@ const TeacherPage = lazy(() => import("./pages/TeacherPage").then((m) => ({ defa
 const SharedBoardPage = lazy(() => import("./pages/SharedBoardPage").then((m) => ({ default: m.SharedBoardPage })));
 const AboutPage = lazy(() => import("./pages/AboutPage").then((m) => ({ default: m.AboutPage })));
 const PracticePage = lazy(() => import("./pages/PracticePage").then((m) => ({ default: m.PracticePage })));
+const CoursePage = lazy(() => import("./pages/CoursePage").then((m) => ({ default: m.CoursePage })));
 
 function useHashRoute(): string {
   const [hash, setHash] = useState(location.hash);
@@ -33,11 +34,17 @@ function App() {
         <SharedBoardPage key={shareToken} token={shareToken} />
       </Suspense>
     );
-  const practice = hash.match(/^#\/practice(?:\/(\w+))?$/);
+  const practice = hash.match(/^#\/practice(?:\/([\w.]+))?$/);
   if (practice)
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>
         <PracticePage key={practice[1]} start={practice[1]} />
+      </Suspense>
+    );
+  if (hash === "#/course")
+    return (
+      <Suspense fallback={<div className="center-msg">…</div>}>
+        <CoursePage />
       </Suspense>
     );
   // /about is the same front page at an address the server lets anyone open (#/about needs the password).

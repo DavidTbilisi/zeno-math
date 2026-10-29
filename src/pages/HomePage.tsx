@@ -61,6 +61,7 @@ export function HomePage() {
     <div className="z">
       <div className="home">
         <BrandBar home="#/about">
+          <a href="#/course">{t.course.link}</a>
           <a href="#/about">{t.aboutLink}</a>
         </BrandBar>
 
