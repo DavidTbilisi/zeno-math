@@ -631,7 +631,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 82 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 87 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), fractions, mixed
     numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
@@ -749,6 +749,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - Swaps to sort (a monovariant): how many swaps of neighbours that are out of order put 4, 5 or 7 numbers in order?
     Exactly the pairs out of order. Counting only the neighbours out of order at the start, or the numbers out of
     place, is named; the working counts, for each number, the smaller ones after it
+  - Probability and statistics, past school (H2 Mathematics, grades 11–12): the expected value and variance of a small
+    distribution and Var(aX + b); conditional probability from a table of counts, the total probability of a positive
+    test and Bayes' rule for P(D | +); binomial probabilities, P(X = k) and P(X ≤ k), and normal ones; the covariance
+    and the correlation coefficient of a few pairs, and the covariance from a joint table (university); and a
+    hypothesis test, the decision from a p-value (picked: reject H₀ or not), the z statistic and the p-value. Worked by
+    the Random variables, Statistics (tree, distributions) and Inference tools
   - Linear algebra, past school (university, except where noted): projections (the scalar and vector projection of
     a on b, and the foot of the perpendicular from a point to a line in 3D, as in H2 Mathematics), matrix products (2 × 2
     by 2 × 2, as in O-Level; AᵀB; a and b with A² = aA + bI), determinants (2 × 2, 3 × 3) and the inverse of a 2 × 2,
@@ -1569,7 +1575,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (82 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (87 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that

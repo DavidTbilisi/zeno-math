@@ -8,7 +8,8 @@ import { derive } from "./derive";
 import { circleFigure, solidFigure } from "./euclid";
 import { evalE, exprMessages, fromPoly, parseE, simp, sqrtSplit, tex, toPoly, type E } from "./expr";
 import { Frac } from "./fraction";
-import { tUpper, zUpper } from "./inference";
+import { normCdf, normSf, tUpper, zUpper, type Alt, type InfSpec } from "./inference";
+import { covariance } from "./randvar";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type MatrixOp } from "./matrix";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
@@ -51,7 +52,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec";
@@ -202,6 +203,20 @@ export type PracticeWords = {
     eigValues: string;
     eigVector: string;
     eigRest: string;
+    expMean: string;
+    expVar: string;
+    expRule: string;
+    condTable: string;
+    condTotal: string;
+    condBayes: string;
+    binomEq: string;
+    normalP: string;
+    covData: string;
+    corrData: string;
+    covJoint: string;
+    hypDecide: string;
+    hypZ: string;
+    hypP: string;
     seqTerm: string;
     seqTwo: string;
     serSum: string;
@@ -327,6 +342,8 @@ export type PracticeWords = {
     rateTapUnits: string;
     rateTapTwo: string;
   };
+  /** A hypothesis test's two decisions: on a button (text) and typed (plain). */
+  decisions: Record<"reject" | "keep", { text: string; plain: string }>;
   /** A walk from home told part by part (graph stories): each part, and what joins them. */
   story: { parts: Record<StoryWord, string>; then: string };
   events: { even: string; greater: string; prime: string; mult3: string };
@@ -840,6 +857,37 @@ const matCalc = (op: MatrixOp, A: number[][], B: number[][] = []): Exercise["sol
   const spec: MatrixCalcSpec = { type: "calc", op, A: A.map((row) => row.map(String)), B: B.map((row) => row.map(String)), k: "1", steps: true };
   return { kind: "matrix", spec };
 };
+
+// ---------- probability and statistics ----------
+
+/** Three or four values from −3 to 8, their probabilities a random split of 5, 8, 10 or 12. */
+function smallDist(r: Rng): { xs: number[]; ps: Frac[] } {
+  const k = r.pick([3, 4] as const);
+  const xs: number[] = [];
+  while (xs.length < k) {
+    const x = r.int(-3, 8);
+    if (!xs.includes(x)) xs.push(x);
+  }
+  xs.sort((a, b) => a - b);
+  const d = r.pick([5, 8, 10, 12] as const);
+  const cuts = new Set<number>();
+  while (cuts.size < k - 1) cuts.add(r.int(1, d - 1));
+  const cs = [0, ...[...cuts].sort((a, b) => a - b), d];
+  return { xs, ps: cs.slice(1).map((c, i) => fr(c - cs[i], d)) };
+}
+/** A distribution as a table: x on top, P(X = x) beneath. */
+const distTable = (xs: number[], ps: Frac[]) =>
+  `\\begin{array}{c|${"c".repeat(xs.length)}} x & ${xs.join(" & ")} \\\\ \\hline P(X = x) & ${ps.map((p) => p.tex()).join(" & ")} \\end{array}`;
+/** n choose k. */
+const choose = (n: number, k: number) => {
+  let c = 1;
+  for (let i = 1; i <= k; i++) c = (c * (n - k + i)) / i;
+  return c;
+};
+/** The Inference tool's one-sample z test. */
+const zTest = (mean: number, sigma: number, n: number, mu0: number, alt: Alt): InfSpec => ({
+  topic: "test", kind: "z", a: String(mean), b: String(sigma), c: String(n), d: String(mu0), e: "", f: "", data: "", data2: "", level: "0.05", alt, seed: 1,
+});
 
 const GENS: Record<SkillId, Gen> = {
   times(r, L, w) {
@@ -3448,6 +3496,214 @@ const GENS: Record<SkillId, Gen> = {
       plain: `(${dp(m - E, 2)}; ${dp(m + E, 2)})`,
       format: "interval",
       solution: { kind: "inference", spec: { ...base, kind: L === 1 ? "z" : "t", a: String(m), b: String(s), c: String(n) } },
+    };
+  },
+
+  expectation(r, L, w) {
+    // Three or four values, their probabilities a split of a small denominator.
+    const { xs, ps } = smallDist(r);
+    const E = xs.reduce((s, x, i) => s.add(ps[i].mul(fr(x))), fr(0));
+    const V = xs.reduce((s, x, i) => s.add(ps[i].mul(fr(x * x))), fr(0)).sub(E.mul(E));
+    const src = [xs.join(", "), ps.map(plainFrac).join(", ")];
+    const out = (prompt: string, v: Frac, solution: Exercise["solution"]) => ({
+      prompt, q: distTable(xs, ps), answer: num(v.toNumber(), 1e-9, { lowest: true }), show: v.tex(), plain: plainFrac(v), format: "fraction" as const, solution,
+    });
+    if (L === 1) return out(w.prompts.expMean, E, { kind: "randvar", spec: { topic: "discrete", src } });
+    if (L === 2) return out(w.prompts.expVar, V, { kind: "randvar", spec: { topic: "discrete", src } });
+    // Var(aX + b) = a² Var(X): b moves the values, a stretches them.
+    const [a, b] = [r.pick([-3, -2, 2, 3, 4] as const), r.nz(-6, 6)];
+    return out(fill(w.prompts.expRule, { e: `Var(${a < 0 ? `−${-a}` : a}X ${b < 0 ? "−" : "+"} ${Math.abs(b)})` }), V.mul(fr(a * a)), { kind: "randvar", spec: { topic: "rules", src: [...src, String(a), String(b)] } });
+  },
+
+  conditional(r, L, w) {
+    if (L === 1) {
+      // Counts by A and B; the condition picks the row or column, the event the cell in it.
+      const [a, b, c, d] = [r.int(3, 30), r.int(3, 30), r.int(3, 30), r.int(3, 30)];
+      const [ask, top, bottom] = r.pick([
+        ["P(A \\mid B)", a, a + c],
+        ["P(B \\mid A)", a, a + b],
+        ["P(A \\mid B')", b, b + d],
+        ["P(B' \\mid A')", d, c + d],
+        ["P(A' \\mid B)", c, a + c],
+      ] as const);
+      const v = fr(top, bottom);
+      return {
+        prompt: fill(w.prompts.condTable, { e: ask.replace(/\\mid/g, "|").replace(/'/g, "′") }),
+        q: `\\begin{array}{c|cc} & B & B' \\\\ \\hline A & ${a} & ${b} \\\\ A' & ${c} & ${d} \\end{array}`,
+        answer: num(v.toNumber(), 1e-9, { lowest: true }),
+        show: v.tex(),
+        plain: plainFrac(v),
+        format: "fraction",
+        steps: [`${ask} = \\frac{${top}}{${bottom}} = ${v.tex()}`],
+      };
+    }
+    // A condition D and a test: P(D), P(+ | D), P(+ | D′) in hundredths, so every answer is exact.
+    const pD = fr(r.int(1, 5), 10);
+    const pPos = fr(r.pick([70, 75, 80, 85, 90, 95] as const), 100);
+    const pFalse = fr(r.pick([5, 10, 15, 20] as const), 100);
+    const both = pD.mul(pPos);
+    const plus = both.add(fr(1).sub(pD).mul(pFalse));
+    const dec = (f: Frac) => String(Math.round(f.toNumber() * 1e6) / 1e6);
+    const q = `P(D) = ${dec(pD)}, \\quad P(+ \\mid D) = ${dec(pPos)}, \\quad P(+ \\mid D') = ${dec(pFalse)}`;
+    const solution = { kind: "statistics" as const, spec: { topic: "tree", pA: dec(pD), pBA: dec(pPos), pBnotA: dec(pFalse), nameA: "D", nameB: "+" } };
+    const total = `P(+) = ${dec(pD)} \\cdot ${dec(pPos)} + ${dec(fr(1).sub(pD))} \\cdot ${dec(pFalse)} = ${dec(plus)}`;
+    if (L === 2) return { prompt: w.prompts.condTotal, q, answer: num(plus.toNumber()), show: dec(plus), plain: dec(plus), format: "number", steps: [total], solution };
+    const v = both.div(plus);
+    return {
+      prompt: w.prompts.condBayes,
+      q,
+      answer: num(v.toNumber(), 0.00051),
+      show: `${v.tex()} \\approx ${dp(v.toNumber(), 3)}`,
+      plain: dp(v.toNumber(), 3),
+      format: "dp3",
+      steps: [total, `P(D \\mid +) = \\frac{P(D)\\,P(+ \\mid D)}{P(+)} = \\frac{${dec(both)}}{${dec(plus)}} = ${v.tex()} \\approx ${dp(v.toNumber(), 3)}`],
+      solution,
+    };
+  },
+
+  distributions(r, L, w) {
+    const at3 = (v: number) => ({ answer: num(v, 0.00051), show: `${dp(v, 3)}`, plain: dp(v, 3), format: "dp3" as const });
+    if (L < 3) {
+      const n = r.int(4, 10);
+      const p = r.pick([0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9] as const);
+      const pmf = (k: number) => choose(n, k) * p ** k * (1 - p) ** (n - k);
+      const dist = (lo: number, hi: number) => ({ kind: "statistics" as const, spec: { topic: "dist", kind: "binomial", n, p: String(p), lambda: "", mu: "", sigma: "", lo: String(lo), hi: String(hi) } });
+      if (L === 1) {
+        let k: number;
+        do k = r.int(0, n);
+        while (pmf(k) < 0.01);
+        return { prompt: fill(w.prompts.binomEq, { n, p, e: `X = ${k}` }), q: "", ...at3(pmf(k)), solution: dist(k, k) };
+      }
+      let lo: number, hi: number, v: number;
+      do {
+        const k = r.int(1, n - 1);
+        [lo, hi] = r.next() < 0.5 ? [0, k] : [k, n];
+        v = Array.from({ length: hi - lo + 1 }, (_, i) => pmf(lo + i)).reduce((s, x) => s + x, 0);
+      } while (v < 0.02 || v > 0.98);
+      return { prompt: fill(w.prompts.binomEq, { n, p, e: lo === 0 ? `X ≤ ${hi}` : `X ≥ ${lo}` }), q: "", ...at3(v), solution: dist(lo, hi) };
+    }
+    // X ~ N(μ, σ²) with whole-number ends within two standard deviations.
+    const mu = r.int(20, 80);
+    const s = r.pick([2, 3, 4, 5, 8, 10] as const);
+    const a = mu - r.int(0, 2 * s);
+    const b = mu + r.int(1, 2 * s);
+    const shape = r.int(0, 2);
+    const [lo, hi] = shape === 0 ? [a, null] : shape === 1 ? [null, b] : [a, b];
+    const v = (hi === null ? 1 : normCdf((hi - mu) / s)) - (lo === null ? 0 : normCdf((lo - mu) / s));
+    const e = lo !== null && hi !== null ? `${lo} < X < ${hi}` : lo !== null ? `X > ${lo}` : `X < ${hi}`;
+    return {
+      prompt: fill(w.prompts.normalP, { mu, v: s * s, e }),
+      q: "",
+      ...at3(v),
+      solution: { kind: "statistics", spec: { topic: "dist", kind: "normal", n: 10, p: "", lambda: "", mu: String(mu), sigma: String(s), lo: lo === null ? "" : String(lo), hi: hi === null ? "" : String(hi) } },
+    };
+  },
+
+  correlation(r, L, w) {
+    if (L === 3) {
+      // A joint table over x ∈ {0, 1}, y ∈ {0, 1, 2} in twentieths: Cov(X, Y) = E(XY) − E(X)E(Y).
+      let P: number[][], cov: Frac;
+      do {
+        const cuts = new Set<number>();
+        while (cuts.size < 5) cuts.add(r.int(1, 19));
+        const cs = [0, ...[...cuts].sort((x, y) => x - y), 20];
+        const ws = cs.slice(1).map((c, i) => c - cs[i]);
+        P = [ws.slice(0, 3), ws.slice(3)];
+        const pX1 = fr(P[1][0] + P[1][1] + P[1][2], 20);
+        const eY = fr(P[0][1] + P[1][1] + 2 * (P[0][2] + P[1][2]), 20);
+        const eXY = fr(P[1][1] + 2 * P[1][2], 20);
+        cov = eXY.sub(pX1.mul(eY));
+      } while (cov.isZero());
+      const dec = (k: number) => String(k / 20);
+      const v = cov.toNumber();
+      return {
+        prompt: w.prompts.covJoint,
+        q: `\\begin{array}{c|ccc} & y = 0 & y = 1 & y = 2 \\\\ \\hline x = 0 & ${P[0].map(dec).join(" & ")} \\\\ x = 1 & ${P[1].map(dec).join(" & ")} \\end{array}`,
+        answer: num(v),
+        show: String(Math.round(v * 1e6) / 1e6),
+        plain: String(Math.round(v * 1e6) / 1e6),
+        format: "number",
+        solution: { kind: "randvar", spec: { topic: "joint", src: ["0, 1", "0, 1, 2", P.map((row) => row.map(dec).join(" ")).join(" | "), "1"] } },
+      };
+    }
+    // Pairs with a trend and some scatter, so neither the covariance nor r is 0 and r is not ±1.
+    const n = L === 1 ? r.pick([4, 5] as const) : r.pick([5, 6] as const);
+    const slope = r.pick([-2, -1, 1, 2] as const);
+    let xs: number[], ys: number[], c: ReturnType<typeof covariance>;
+    do {
+      xs = [];
+      while (xs.length < n) {
+        const x = r.int(1, 10);
+        if (!xs.includes(x)) xs.push(x);
+      }
+      xs.sort((a, b) => a - b);
+      const y0 = r.int(-2, 8);
+      ys = xs.map((x) => y0 + slope * x + r.int(-3, 3));
+      c = covariance(xs.map((x, i) => [x, ys[i]]));
+    } while (Math.abs(c.corr) > 0.98 || Math.abs(c.corr) < 0.3);
+    const q = `\\begin{array}{c|${"c".repeat(n)}} x & ${xs.join(" & ")} \\\\ \\hline y & ${ys.join(" & ")} \\end{array}`;
+    const solution = { kind: "randvar" as const, spec: { topic: "cov", src: [xs.map((x, i) => `${x}, ${ys[i]}`).join("; ")] } };
+    if (L === 1) {
+      const sum = (f: (i: number) => number) => xs.reduce((s, _, i) => s + f(i), 0);
+      const v = fr(sum((i) => xs[i] * ys[i]), n).sub(fr(sum((i) => xs[i]), n).mul(fr(sum((i) => ys[i]), n)));
+      return { prompt: w.prompts.covData, q, answer: num(v.toNumber(), 1e-9, { lowest: true }), show: v.tex(), plain: plainFrac(v), format: "fraction", solution };
+    }
+    return { prompt: w.prompts.corrData, q, answer: num(c.corr, 0.00051), show: dp(c.corr, 3), plain: dp(c.corr, 3), format: "dp3", solution };
+  },
+
+  hypothesis(r, L, w) {
+    if (L === 1) {
+      // Reject H₀ exactly when p ≤ α.
+      const alpha = r.pick([1, 5, 10] as const);
+      const reject = r.next() < 0.5;
+      let p: number;
+      do p = reject ? r.int(1, alpha * 10) / 1000 : r.int(alpha * 10 + 1, 250) / 1000;
+      while (p * 100 === alpha);
+      const options = (["reject", "keep"] as const).map((k) => ({ text: w.decisions[k].text, plain: w.decisions[k].plain, tex: "" }));
+      const cmp = `p = ${p} ${reject ? "\\le" : ">"} ${alpha / 100}`;
+      return {
+        prompt: fill(w.prompts.hypDecide, { a: alpha, p }),
+        q: "",
+        answer: { k: "pick", options, right: reject ? 0 : 1 },
+        show: cmp,
+        plain: options[reject ? 0 : 1].plain,
+        format: "pick",
+        steps: [cmp],
+      };
+    }
+    // A z test of a mean: σ known, n a square so the standard error is plain.
+    const n = r.pick([16, 25, 36, 49, 64, 100] as const);
+    const sigma = r.int(2, 15);
+    const mu0 = r.int(20, 90);
+    const se = sigma / Math.sqrt(n);
+    let mean: number, z: number;
+    do (mean = Math.round((mu0 + r.int(-30, 30) / 10 * se) * 10) / 10), (z = (mean - mu0) / se);
+    while (Math.abs(z) < 0.3 || Math.abs(z) > 3);
+    if (L === 2) {
+      return {
+        prompt: fill(w.prompts.hypZ, { n, m: mean, s: sigma, mu: mu0 }),
+        q: "",
+        answer: num(z, 0.0051),
+        show: dp(z, 2),
+        plain: dp(z, 2),
+        format: "dp2",
+        solution: { kind: "inference", spec: zTest(mean, sigma, n, mu0, "ne") },
+      };
+    }
+    // One-sided in the direction the sample went, or two-sided.
+    const alt = r.pick(["ne", z > 0 ? "gt" : "lt"] as const);
+    const pOf = (zz: number) => (alt === "ne" ? 2 * normSf(Math.abs(zz)) : alt === "gt" ? normSf(zz) : normCdf(zz));
+    const p = pOf(z);
+    // z rounded to 2 places first, as from a table, is right too.
+    const tol = Math.abs(pOf(Number(dp(z, 2))) - p) + 0.00051;
+    return {
+      prompt: fill(w.prompts.hypP, { n, m: mean, s: sigma, mu: mu0, rel: alt === "ne" ? "≠" : alt === "gt" ? ">" : "<" }),
+      q: "",
+      answer: num(p, tol),
+      show: `z = ${dp(z, 2)}, \\quad p \\approx ${dp(p, 3)}`,
+      plain: dp(p, 3),
+      format: "dp3",
+      solution: { kind: "inference", spec: zTest(mean, sigma, n, mu0, alt) },
     };
   },
 
