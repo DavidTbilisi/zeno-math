@@ -5,7 +5,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import { randomInt, timingSafeEqual } from "node:crypto";
 import { ALL_SKILLS, AREAS, FIRST_SKILLS, SKILLS, areaOf, type Area, type SkillId } from "../src/math/practiceSkills.ts";
-import { CURRICULUM, inCurriculumOrder, skillsOfYear, type Year } from "../src/model/curriculum.ts";
+import { CURRICULUM, GRADES, inCurriculumOrder, skillsOfGrade, YEARS, type Grade } from "../src/model/curriculum.ts";
 import { ClassModel } from "../src/model/classModel.ts";
 import type { Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
@@ -117,19 +117,20 @@ export function initResearch(db: DatabaseSync) {
 }
 
 /**
- * A class's skills from what a teacher sent: skill ids, area names (all of that area) and years of the primary syllabus
- * ("P4": every skill with a level in it), in curriculum order.
+ * A class's skills from what a teacher sent: skill ids, area names (all of that area), grades of the course ("G7":
+ * every skill with a level in it; G10 is grades 9–10, G12 grades 11–12, G13 university) and, as before grades, years
+ * of the primary syllabus ("P4", the same as "G4"), in curriculum order.
  */
 export function parseSkills(value: unknown): SkillId[] | null {
   if (value === undefined || value === null) return null;
-  if (!Array.isArray(value) || !value.length) throw new HttpError(400, "skills must be a list of skills, areas or years");
+  if (!Array.isArray(value) || !value.length) throw new HttpError(400, "skills must be a list of skills, areas or grades");
   const out = new Set<string>();
   for (const v of value) {
-    const year = typeof v === "string" && /^P[1-6]$/.test(v) ? (Number(v[1]) as Year) : null;
+    const grade = typeof v === "string" && /^[PG]\d+$/.test(v) ? Number(v.slice(1)) : null;
     if (AREAS.includes(v as Area)) SKILLS[v as Area].forEach((k) => out.add(k));
-    else if (year) skillsOfYear(year).forEach((k) => out.add(k));
+    else if (grade && (v[0] === "P" ? YEARS : GRADES).includes(grade as Grade)) skillsOfGrade(grade as Grade).forEach((k) => out.add(k));
     else if (ALL_SKILLS.includes(v as SkillId)) out.add(v);
-    else throw new HttpError(400, `unknown skill, area or year: ${String(v).slice(0, 40)}`);
+    else throw new HttpError(400, `unknown skill, area or grade: ${String(v).slice(0, 40)}`);
   }
   return inCurriculumOrder([...out]);
 }

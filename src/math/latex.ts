@@ -23,7 +23,23 @@ const PX_PER_EX = 9;
 
 export type RenderedSvg = { svg: string; width: number; height: number };
 
+// MathJax turns the same TeX into the same SVG (no ids or counters), and pictures render the same lines again and
+// again (each step's maths, every language, every redraw), so recent results are kept. A Map keeps insertion order:
+// the oldest entry goes first once it is full.
+const CACHE_SIZE = 2000;
+const cache = new Map<string, RenderedSvg>();
+
 export function latexToSvg(tex: string, color = "#1e1e1e"): RenderedSvg {
+  const key = `${color}\u0000${tex}`;
+  const hit = cache.get(key);
+  if (hit) return { ...hit };
+  const out = render(tex, color);
+  if (cache.size >= CACHE_SIZE) cache.delete(cache.keys().next().value!);
+  cache.set(key, out);
+  return { ...out };
+}
+
+function render(tex: string, color: string): RenderedSvg {
   const node = doc.convert(tex, { display: true });
   let svg = adaptor.innerHTML(node);
 

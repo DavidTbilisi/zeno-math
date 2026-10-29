@@ -143,27 +143,35 @@ export function contours(fr: Frame, g: (x: number, y: number) => number, levels:
     for (let i = 0; i <= nx; i++) z[j].push(g(X_(i) + 1e-9, Y_(j) + 1e-9));
   }
   let d = "";
+  // The corners of a cell in order round it, and the crossing on edge e from corner e to the next; most cells have
+  // all four corners on one side, so they are passed over before anything is worked out.
+  const DI = [0, 1, 1, 0];
+  const DJ = [0, 0, 1, 1];
+  const c = [0, 0, 0, 0];
+  const px = [0, 0, 0, 0];
+  const py = [0, 0, 0, 0];
   for (const level of levels) {
-    const v = z.map((row) => row.map((w) => (w === level ? 1e-12 : w - level)));
+    const at = (j: number, i: number) => (z[j][i] === level ? 1e-12 : z[j][i] - level);
     for (let j = 0; j < ny; j++)
       for (let i = 0; i < nx; i++) {
-        const c = [v[j][i], v[j][i + 1], v[j + 1][i + 1], v[j + 1][i]];
-        const pts: [number, number][] = [];
-        const corner = [
-          [i, j],
-          [i + 1, j],
-          [i + 1, j + 1],
-          [i, j + 1],
-        ];
+        c[0] = at(j, i);
+        c[1] = at(j, i + 1);
+        c[2] = at(j + 1, i + 1);
+        c[3] = at(j + 1, i);
+        const up = c[0] > 0;
+        if (c[1] > 0 === up && c[2] > 0 === up && c[3] > 0 === up) continue;
+        let n = 0;
         for (let e = 0; e < 4; e++) {
           const [a, b] = [c[e], c[(e + 1) % 4]];
           if (a > 0 !== b > 0 && Number.isFinite(a) && Number.isFinite(b)) {
             const t = a / (a - b);
-            const [p, q] = [corner[e], corner[(e + 1) % 4]];
-            pts.push([X_(p[0] + (q[0] - p[0]) * t), Y_(p[1] + (q[1] - p[1]) * t)]);
+            const f = (e + 1) % 4;
+            px[n] = X_(i + DI[e] + (DI[f] - DI[e]) * t);
+            py[n] = Y_(j + DJ[e] + (DJ[f] - DJ[e]) * t);
+            n++;
           }
         }
-        for (let s = 0; s + 1 < pts.length; s += 2) d += `M${r2(fr.sx(pts[s][0]))} ${r2(fr.sy(pts[s][1]))}L${r2(fr.sx(pts[s + 1][0]))} ${r2(fr.sy(pts[s + 1][1]))}`;
+        for (let s = 0; s + 1 < n; s += 2) d += `M${r2(fr.sx(px[s]))} ${r2(fr.sy(py[s]))}L${r2(fr.sx(px[s + 1]))} ${r2(fr.sy(py[s + 1]))}`;
       }
   }
   return `<path clip-path="url(#${fr.id})" d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;

@@ -693,6 +693,12 @@ Rebuilds the three maps. For `levels`, the key is cut at its **last** colon: "Th
 
 `SYLLABUS` tags each skill's three levels with a year of Singapore's 2021 primary syllabus (`Year`, 1 to 6, the Standard track): the first year by which the syllabus has taught every kind of question the level asks, or `null` when some of them go past P6. `money: [2, 3, 4]` reads: decimal notation and cents in P2, adding and subtracting in P3, an amount times a digit in P4; `average: [6, null, null]` has the mean in P6 and the median and standard deviation beyond it. A comment on each line names the syllabus items. Skills with no primary level (graph theory, which the syllabus doesn't teach, and the secondary topics) are left out. `skillsOfYear(year)` lists, in curriculum order, the skills with a level in that year; it is what a teacher's year chip and a `"P4"` in a class's skill list expand to. `tests/policy.test.ts` pins that every tagged skill exists and has a primary level, that every year has skills, and the P1 list.
 
+`GRADES` carries that on through the whole course: grades 1 to 8, then 10 for grades 9–10 and 12 for grades 11–12 (Singapore teaches Secondary 3/4 and the two junior-college years of H2 Mathematics as blocks) and 13 for university. `LATER` tags the levels past P6 by the same rule, from O-Level Mathematics (2020, Sec 1 = grade 7, Sec 2 = grade 8, Sec 3/4), O-Level Additional Mathematics (2020) and H2 Mathematics 9758, a comment on each line naming the items; numerical methods and confidence intervals are past all of them (13), and bounds (rounding, level 3) and the graph-theory puzzles are in none. `gradeOf(skill, level)` reads `SYLLABUS` first and `LATER` after; `skillsOfGrade(g)` is what a teacher's grade chip and a `"G7"` in a class's skill list expand to (for grades 1 to 6 the same as `skillsOfYear`). `tests/policy.test.ts` pins that the two tables never both place a level, that harder levels never fall to an earlier grade except shapeArea and hcf (the syllabus orders those topics so), and which levels have no grade.
+
+### src/model/placement.ts — where a learner stands
+
+A level (`Cell`) is secure after `SECURE_RUN` (3) right at the first try in a row (`recordCell`); `currentGrade(placed, cells)` starts at the placed grade (or grade 1) and moves past each grade with at least `GRADE_DONE` (80 %) of its levels secure. The placement keeps the grades still possible as indices into `GRADES`: `probe` is their middle rounded up, `PER_PROBE` (2) right at the first try move the bottom up to it, one wrong moves the top below it, and `placedGrade` is the grade once one is left — at most `MAX_PLACEMENT` (8) questions. The practice dialog keeps the cells and the placed grade in the browser's progress (`src/practiceProgress.ts`), asks the placement's questions and a grade's practice (an unsecured level of the current grade) as the picks `"place"` and `"grade"`, and shows `GradeCard` beside the page's practice; the front page reads the same progress to say which grade the learner is working on.
+
 ### src/model/policy.ts — choosing the next question
 
 The header (`:1-10`): the two conditions "differ only here: feedback, worked solutions and the review of missed questions are the same for both". Constants (`:18-32`):
@@ -1699,7 +1705,7 @@ The password is kept in `sessionStorage["zeno.teacher"]` ("for this tab only", `
 
 #### Layout
 
-Sidebar (`:210-260`): the class list (name, code, "{n} students · {a} adaptive, {f} fixed"), and the New class form: name (max 100), questions per test (clamped to `MIN_TEST_LENGTH..MAX_TEST_LENGTH`, 4..30, default 12), area chips and P1–P6 year chips (`PickChip`, each year chip titled with its skills; none chosen = all), Create.
+Sidebar (`:210-260`): the class list (name, code, "{n} students · {a} adaptive, {f} fixed"), and the New class form: name (max 100), questions per test (clamped to `MIN_TEST_LENGTH..MAX_TEST_LENGTH`, 4..30, default 12), area chips and grade chips, 1 to 8, 9–10, 11–12 and university (`PickChip`, each grade chip titled with its skills; none chosen = all), Create.
 
 Main (`:262-446`):
 - Class head: name, the code in large monospace, hint, and Refresh / Download answers / Download tests / Print the tests.

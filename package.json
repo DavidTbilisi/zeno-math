@@ -36,7 +36,8 @@
     "talk-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts --talk",
     "concept-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts --concept",
     "concept-docx": "node --disable-warning=ExperimentalWarning scripts/concept-docx.ts",
-    "test": "node --import ./scripts/ts-register.mjs --test \"tests/*.test.ts\""
+    "test": "node --import ./scripts/ts-register.mjs --test \"tests/*.test.ts\"",
+    "test:changed": "node scripts/test-changed.mjs"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.1",

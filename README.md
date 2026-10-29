@@ -784,6 +784,13 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
     the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
   - Progress per skill is kept in the browser, and a missed question comes back three questions later
+  - *Your grade*: every level of every skill belongs to a grade, 1 to 12 or university, by the grade in which
+    Singapore's syllabuses teach it (primary, Secondary 1–4 with Additional Mathematics, H2 Mathematics; they teach
+    grades 9–10 and 11–12 as blocks, so those are one rung each). *Find my grade* asks questions from the middle of
+    the grades still possible: two right at the first try rule out the grades below, one wrong those from it up, so at
+    most 8 questions place a learner. The page then shows the ladder with their grade marked and practises that grade's
+    levels until 80 % of them are secure (3 right in a row at the first try), when the next grade begins; the front page
+    says which grade they are working on
   - Screen readers hear each question: its words, and its maths as MathML (the picture is hidden from them)
   - *Class study*: a student joins a class with its code and gets a student code of their own (no name or email);
     each question they work on is then saved on the server for research — see [Class study](#class-study) and [docs/study.md](docs/study.md)
@@ -1483,8 +1490,9 @@ couldn't load back.
 
 Zeno can run a study that compares two ways of choosing practice questions: an adaptive learner model (aiming at a
 target chance of a right answer, as in Math Garden) against a fixed curriculum sequence. A teacher makes a class at
-**`#/teacher`**, choosing the areas it practises or the years of Singapore's primary syllabus (P1 to P6; every skill
-has each of its three levels tagged with the year that teaches it, in `src/model/curriculum.ts`). Students join with its code, are randomised to a condition in balanced blocks and get a code of
+**`#/teacher`**, choosing the areas it practises or grades of the course (grades 1 to 8, 9–10, 11–12 and university;
+every skill has each of its three levels tagged with the grade that teaches it, from Singapore's syllabuses, in
+`src/model/curriculum.ts`). Students join with its code, are randomised to a condition in balanced blocks and get a code of
 their own (no names or emails), see what taking part means and agree before they join. The teacher then moves the
 class through a pre-test, timed practice and a post-test, with parallel forms counterbalanced within each condition.
 The dashboard shows the two groups, mastery by skill, the tests and how well the model predicts; both data sets
@@ -1509,6 +1517,7 @@ More for a thesis: [docs/architecture.md](docs/architecture.md) (design, diagram
 
 ```bash
 npm test           # node:test, no extra dependencies
+npm run test:changed   # only the test files that import (or read) something changed since main; -- --list to see them
 npm run typecheck
 npm run lint       # ESLint: recommended, typescript-eslint, React's rules of hooks
 npm run coverage   # the tests, failing below 95 % of lines / 88 % of branches / 95 % of functions in src/math and src/model

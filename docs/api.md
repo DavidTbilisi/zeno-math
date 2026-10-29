@@ -77,8 +77,9 @@ like everyone else, and with it could open any board for editing. Without one, t
 `POST /api/classes` (teacher) takes:
 
 - **`name`**: up to 100 characters; "Class" if empty.
-- **`skills`**: skill ids, area names and/or years of the primary syllabus (`"P1"` to `"P6"`). An area means all its
-  skills; a year every skill with a level taught in it (`SYLLABUS` in `src/model/curriculum.ts`). Anything unknown gives 400. The list is
+- **`skills`**: skill ids, area names and/or grades of the course (`"G1"` to `"G8"`, `"G10"` for grades 9–10, `"G12"`
+  for grades 11–12, `"G13"` for university; `"P1"` to `"P6"` still mean grades 1 to 6). An area means all its skills; a
+  grade every skill with a level taught in it (`gradeOf` in `src/model/curriculum.ts`). Anything unknown gives 400. The list is
   kept in curriculum order; leaving it out means every skill there is when the class is made. The list is stored, so
   skills added to Zeno later don't join a class that has started.
 - **`testLength`**: 4–30 questions; 12 if left out.

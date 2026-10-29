@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { api, type BoardSummary } from "../api";
 import { BrandBar } from "../components/BrandBar";
+import { gradeName } from "../components/GradeCard";
 import { useI18n } from "../i18n";
+import { fill } from "../math/text";
+import { currentGrade } from "../model/placement";
+import { loadProgress } from "../practiceProgress";
 
 // AGPL-3.0 §13: whoever runs Zeno for others must offer them its source. A modified copy points this at its own code.
 const SOURCE_URL = "https://github.com/DavidTbilisi/zeno-math";
@@ -10,6 +14,9 @@ export function HomePage() {
   const { t, lang } = useI18n();
   const [boards, setBoards] = useState<BoardSummary[] | null>(null);
   const [failed, setFailed] = useState(false);
+  // Where the learner is in the course, once they have practised or found their grade in this browser.
+  const [progress] = useState(loadProgress);
+  const grade = progress.placed || progress.cells ? currentGrade(progress.placed ?? null, progress.cells ?? {}) : null;
 
   const load = () => api.list().then(setBoards, () => setBoards([]));
   useEffect(() => {
@@ -62,6 +69,7 @@ export function HomePage() {
             <span className="z-practice-text">
               <strong>{t.practice}</strong>
               <span>{t.practiceIntro}</span>
+              {grade && <span className="z-practice-grade">{fill(t.pracWords.grades.here, { grade: gradeName(grade, t.pracWords.grades) })}</span>}
             </span>
             <span className="z-btn z-btn-marker">{t.practiceStart}</span>
           </a>
