@@ -88,10 +88,12 @@ function markQueuedTests(plan: ClassPlan, studentCode: string) {
  */
 type Props = { initial?: PracticeSpec; start?: string } & (
   | { onSubmit: (spec: PracticeSpec, rendered: RenderedSvg) => void; onClose: () => void; docked?: boolean }
-  | { onSubmit?: undefined; onClose?: undefined; docked?: undefined }
+  // The page; noClass where there is no server to join a class on (the copy published on GitHub Pages).
+  | { onSubmit?: undefined; onClose?: undefined; docked?: undefined; noClass?: boolean }
 );
 
-export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Props) {
+export function PracticeDialog(props: Props) {
+  const { initial, start, onSubmit, onClose, docked } = props;
   const { t } = useI18n();
   const w = t.pracWords;
   const [area, setArea] = useState<Area>(initial?.area ?? startOr(start, AREAS, "number"));
@@ -758,7 +760,7 @@ export function PracticeDialog({ initial, start, onSubmit, onClose, docked }: Pr
         <aside className="practice-side">
           {sessionOn && !summary && <SessionCard results={session} streak={score.streak} w={w} />}
           <ComingBack mistakes={progress.mistakes} answered={progress.answered} w={w} />
-          {studentPanel}
+          {!props.noClass && studentPanel}
           {resetButton}
         </aside>
       </div>
