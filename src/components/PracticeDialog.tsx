@@ -28,33 +28,17 @@ import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPick
 import { WorkInSteps } from "./WorkInSteps";
 import { ComingBack, SESSION, SessionCard, SessionSummary, type SessionResult } from "./PracticeSession";
 import { addPiece, dropPiece } from "../math/target";
+import { emptyProgress, loadProgress, saveProgress, type Mistake, type Progress } from "../practiceProgress";
+import { gradeOf } from "../model/curriculum";
+import {
+  cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
+} from "../model/placement";
+import { GradeCard, gradeName } from "./GradeCard";
 
 type Mode = "practise" | "sheet";
-type Pick = SkillId | "mixed";
+/** A skill, a mix of the area's skills, the learner's grade, or the placement that finds it. */
+type Pick = SkillId | "mixed" | "grade" | "place";
 
-// ---------- progress, kept in this browser ----------
-
-type Stat = { seen: number; right: number };
-/** A missed question comes back once `due` more questions have been answered. */
-type Mistake = { skill: SkillId; level: Level; seed: number; due: number };
-type Progress = { stats: Partial<Record<SkillId, Stat>>; mistakes: Mistake[]; answered: number };
-const KEY = "zeno.practice.v1";
-const empty = (): Progress => ({ stats: {}, mistakes: [], answered: 0 });
-function load(): Progress {
-  try {
-    const p = JSON.parse(localStorage.getItem(KEY) ?? "null") as Progress | null;
-    return p && typeof p.answered === "number" && Array.isArray(p.mistakes) ? p : empty();
-  } catch {
-    return empty();
-  }
-}
-function save(p: Progress) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(p));
-  } catch {
-    // private mode or full storage: progress just isn't kept
-  }
-}
 /** How much larger the page draws the question's maths and picture than their own size, to sit with its larger text. */
 const MATH_SCALE = 1.4;
 /** Questions answered before a missed one comes back. */
@@ -63,6 +47,7 @@ const REVIEW_AFTER = 3;
 const CHEER_AT = [3, 5, 10, 15, 20];
 
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
+const randomOf = <T,>(xs: readonly T[]): T => xs[Math.floor(Math.random() * xs.length)];
 const areaLabel = (t: Dict, a: Area) =>
   ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData })[a];
 
@@ -103,7 +88,10 @@ export function PracticeDialog(props: Props) {
   const [count, setCount] = useState(initial && initial.count > 1 ? initial.count : 8);
   const [withAnswers, setWithAnswers] = useState(initial?.answers ?? true);
   const [sheetSeed, setSheetSeed] = useState(initial?.seed ?? newSeed());
-  const [progress, setProgress] = useState<Progress>(load);
+  const [progress, setProgress] = useState<Progress>(loadProgress);
+  /** The placement under way (pick "place"), and whether the grade being practised was just found by one. */
+  const [placing, setPlacing] = useState<Placement | null>(null);
+  const [justPlaced, setJustPlaced] = useState(false);
   const [score, setScore] = useState({ right: 0, total: 0, streak: 0 });
   // The page's free practice comes in sessions of SESSION questions, with a summary at the end.
   const page = !onSubmit;
@@ -123,12 +111,24 @@ export function PracticeDialog(props: Props) {
    * picked above.
    */
   const nextExercise = (a: Area, p: Pick, L: Level, prog: Progress, plan: ClassPlan | null): Current => {
-    const fits = (m: Mistake) => (plan ? plan.skills.includes(m.skill) : p === "mixed" ? areaOf(m.skill) === a : m.skill === p);
+    const grade = currentGrade(prog.placed ?? null, prog.cells ?? {});
+    const fits = (m: Mistake) =>
+      plan ? plan.skills.includes(m.skill)
+      : p === "place" ? false // a placement asks only fresh questions
+      : p === "grade" ? gradeOf(m.skill, m.level) === grade
+      : p === "mixed" ? areaOf(m.skill) === a : m.skill === p;
     const due = prog.mistakes.find((m) => fits(m) && m.due <= prog.answered);
     if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
     if (plan) {
       const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent, ideas: plan.ideas, ema: plan.ema, unlockFloor: newcomerChance(plan.model) });
       return { ex: exerciseFor(c, w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
+    }
+    if (p === "place" || p === "grade") {
+      // A placement asks a level of the grade in the middle of those left; a grade's practice, a level not yet secure.
+      const all = cellsOf(p === "place" ? probe(live.current.placing ?? startPlacement()) : grade);
+      const open = all.filter((c) => !isSecure(prog.cells?.[cellKey(c)]));
+      const c: Cell = randomOf(p === "grade" && open.length ? open : all);
+      return { ex: exercise(c.skill, c.level, newSeed(), w), ...freeOrigin, predicted: predicted(c.skill, c.level) };
     }
     const skills = SKILLS[a] as readonly SkillId[];
     const skill = p === "mixed" ? skills[Math.floor(Math.random() * skills.length)] : p;
@@ -162,8 +162,8 @@ export function PracticeDialog(props: Props) {
   const [planStatus, setPlanStatus] = useState<"none" | "loading" | "ready" | "error" | "gone">("none");
   const log = useRef<QuestionLog>(startLog());
   // State as of the last render, for listeners, the plan arriving, and closing.
-  const live = useRef({ cur, student, inClass, progress, area, pick, level });
-  live.current = { cur, student, inClass, progress, area, pick, level };
+  const live = useRef({ cur, student, inClass, progress, area, pick, level, placing });
+  live.current = { cur, student, inClass, progress, area, pick, level, placing };
   const classPlan = () => (live.current.student && live.current.inClass ? planRef.current : null);
   const sendQueued = (keepalive = false) => {
     setPending(queued());
@@ -265,7 +265,7 @@ export function PracticeDialog(props: Props) {
 
   const record = (p: Progress) => {
     setProgress(p);
-    save(p);
+    saveProgress(p);
   };
   /** The first final outcome of a question goes into the stats; a miss is queued for review. */
   const settle = (ok: boolean) => {
@@ -274,7 +274,24 @@ export function PracticeDialog(props: Props) {
     const s = progress.stats[ex.skill] ?? { seen: 0, right: 0 };
     const mistakes = progress.mistakes.filter((m) => !(m.skill === ex.skill && m.level === ex.level && m.seed === ex.seed));
     if (!ok) mistakes.push({ skill: ex.skill, level: ex.level, seed: ex.seed, due: progress.answered + 1 + REVIEW_AFTER });
-    record({ stats: { ...progress.stats, [ex.skill]: { seen: s.seen + 1, right: s.right + (ok ? 1 : 0) } }, mistakes, answered: progress.answered + 1 });
+    // Where the learner is in the course counts only right answers at the first try.
+    const firstTry = ok && wrongs === 0;
+    const key = cellKey(ex);
+    let placed = progress.placed;
+    if (pick === "place" && placing) {
+      const p = placementStep(placing, firstTry);
+      setPlacing(p);
+      live.current.placing = p;
+      placed = placedGrade(p) ?? placed;
+    }
+    record({
+      ...progress,
+      stats: { ...progress.stats, [ex.skill]: { seen: s.seen + 1, right: s.right + (ok ? 1 : 0) } },
+      mistakes,
+      answered: progress.answered + 1,
+      cells: { ...progress.cells, [key]: recordCell(progress.cells?.[key], firstTry) },
+      placed,
+    });
     setScore((sc) => ({ right: sc.right + (ok ? 1 : 0), total: sc.total + 1, streak: ok ? sc.streak + 1 : 0 }));
     if (sessionOn) setSession((r) => [...r, { skill: ex.skill, right: ok }]);
   };
@@ -329,6 +346,12 @@ export function PracticeDialog(props: Props) {
     setStepping("no");
   }
   const next = () => {
+    // Once the placement has found the grade, practising it comes next.
+    if (pick === "place" && placing && placedGrade(placing)) {
+      choose(area, "grade", level);
+      setJustPlaced(true);
+      return;
+    }
     leaveQuestion();
     show(nextExercise(area, pick, level, progress, classPlan()));
     inputRef.current?.focus();
@@ -351,9 +374,21 @@ export function PracticeDialog(props: Props) {
     setArea(a);
     setPick(p);
     setLevel(L);
+    setJustPlaced(false);
+    if (p !== "place") {
+      setPlacing(null);
+      live.current.placing = null;
+    }
     leaveQuestion();
     show(nextExercise(a, p, L, progress, null));
     setSheetSeed(newSeed());
+  };
+
+  const startPlace = () => {
+    const p = startPlacement();
+    setPlacing(p);
+    live.current.placing = p;
+    choose(area, "place", level);
   };
 
   const card = useMemo(() => {
@@ -407,7 +442,7 @@ export function PracticeDialog(props: Props) {
 
   // ---------- worksheet ----------
 
-  const sheetSpec: PracticeSpec = { area, skill: pick, level, seed: sheetSeed, count, answers: withAnswers };
+  const sheetSpec: PracticeSpec = { area, skill: pick === "grade" || pick === "place" ? "mixed" : pick, level, seed: sheetSeed, count, answers: withAnswers };
   const sheet = useMemo(() => {
     if (mode !== "sheet") return null;
     try {
@@ -432,14 +467,14 @@ export function PracticeDialog(props: Props) {
   };
 
   const classOn = !!student && inClass;
-  const sessionOn = page && !classOn && mode === "practise";
+  const sessionOn = page && !classOn && mode === "practise" && pick !== "place";
   const sessionOver = sessionOn && session.length >= SESSION;
   const studentPanel = <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />;
   const resetButton = progress.answered > 0 && (
     <button
       className="btn small add-fn"
       onClick={() => {
-        record(empty());
+        record(emptyProgress());
         setScore({ right: 0, total: 0, streak: 0 });
       }}
     >
@@ -469,13 +504,19 @@ export function PracticeDialog(props: Props) {
       {student && (
         <Segmented items={[true, false]} value={inClass} onChange={switchPractice} label={(c) => (c ? w.ui.classPractice : w.ui.freePractice)} />
       )}
-      {!classOn && (
+      {!classOn && (pick === "place" || pick === "grade") ? (
+        // The placement and a grade's practice choose the questions themselves: no topics or levels to pick.
+        <div className="field-row wrap">
+          <strong>{pick === "place" ? w.grades.place : fill(w.grades.practise, { grade: gradeName(currentGrade(progress.placed ?? null, progress.cells ?? {}), w.grades) })}</strong>
+          <button className="btn small" onClick={() => choose(area, "mixed", level)}>{w.grades.topics}</button>
+        </div>
+      ) : !classOn && (
         <>
           <Tabs items={AREAS} value={area} onChange={(a) => choose(a, "mixed", level)} label={(a) => areaLabel(t, a)} />
           <small className="hint">{t.practiceHints[area]}</small>
 
           <div className="snippets">
-            {(["mixed", ...skills] as Pick[]).map((s) => {
+            {(["mixed", ...skills] as (SkillId | "mixed")[]).map((s) => {
               const st = s === "mixed" ? undefined : stat(s);
               return (
                 <button key={s} className={`chip text${pick === s ? " selected" : ""}`} aria-pressed={pick === s} onClick={() => choose(area, s, level)}>
@@ -758,6 +799,17 @@ export function PracticeDialog(props: Props) {
       <div className="practice-layout">
         <div className="practice-body">{body}</div>
         <aside className="practice-side">
+          {!classOn && (
+            <GradeCard
+              progress={progress}
+              placing={pick === "place" ? placing : null}
+              practising={pick === "grade"}
+              justPlaced={justPlaced}
+              onPractise={() => choose(area, "grade", level)}
+              onPlace={startPlace}
+              w={w.grades}
+            />
+          )}
           {sessionOn && !summary && <SessionCard results={session} streak={score.streak} w={w} />}
           <ComingBack mistakes={progress.mistakes} answered={progress.answered} w={w} />
           {!props.noClass && studentPanel}

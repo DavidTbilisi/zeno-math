@@ -139,3 +139,28 @@ test("on a board, practice opens beside it and stays while other tools are used"
   await dock.getByRole("button", { name: "Close" }).click();
   await expect(dock).toHaveCount(0);
 });
+
+test("the practice page finds the learner's grade by halving, then practises it, and the home page says where they are", async ({ page }) => {
+  const g = w.grades;
+  await page.goto("/#/practice");
+  const card = page.getByRole("region", { name: g.title });
+  await expect(card).toContainText(g.intro);
+  await card.getByRole("button", { name: g.place }).click();
+  // Every question missed: each rules out the grades from its own up, so three questions leave grade 1.
+  for (const left of ["grade 1 to university", "grade 1 to grade 5", "grade 1 to grade 2"]) {
+    await expect(card).toContainText(`Still possible: ${left}.`);
+    await page.getByRole("button", { name: "Show solution" }).click();
+    await page.getByRole("button", { name: "Next →" }).click();
+  }
+  await expect(card).toContainText("You are in grade 1");
+  await expect(card).toContainText("0 of 9 levels secure");
+  await expect(card.locator(".grade-ladder li.here")).toHaveText("1");
+  // The grade's own practice: no topics to pick, and a way back to them.
+  await expect(page.getByText("Practise grade 1")).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Algebra" })).toHaveCount(0);
+  await page.getByRole("button", { name: g.topics }).click();
+  await expect(page.getByRole("tab", { name: "Algebra" })).toBeVisible();
+  await expect(card.getByRole("button", { name: "Practise grade 1" })).toBeVisible();
+  await page.goto("/");
+  await expect(page.getByText("You are working on grade 1")).toBeVisible();
+});

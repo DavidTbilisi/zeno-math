@@ -140,3 +140,79 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
 
 /** The skills with a level in the given year of the syllabus, in curriculum order. */
 export const skillsOfYear = (year: Year): SkillId[] => CURRICULUM.filter((k) => SYLLABUS[k]?.includes(year));
+
+// ---------- grades: where each level sits in the course, from grade 1 to university ----------
+
+/**
+ * A stage of the course, named by the school grade that finishes it: grades 1 to 8 one by one, then 10 for grades 9–10
+ * and 12 for grades 11–12, which Singapore's syllabuses teach as two-year blocks (Secondary 3/4, and the two years of
+ * junior college for H2 Mathematics), and 13 for university. Grades 1 to 6 are P1 to P6, 7 and 8 are Secondary 1 and 2.
+ */
+export type Grade = Year | 7 | 8 | 10 | 12 | 13;
+export const GRADES: readonly Grade[] = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 13];
+type G = Grade | null;
+
+/**
+ * The grade of each level past the primary syllabus, by the same rule as SYLLABUS (the first grade by which every kind
+ * of question the level asks has been taught), from Singapore's syllabuses: O-Level Mathematics, Secondary 1 to 4
+ * (2020; Sec 1 is grade 7, Sec 2 grade 8, Sec 3/4 grades 9–10), O-Level Additional Mathematics (2020, Sec 3/4) and
+ * H2 Mathematics 9758 (junior college, grades 11–12); 13 is past all of them (numerical methods, confidence
+ * intervals). A null is a level SYLLABUS already places, or one no syllabus here teaches (bounds); skills left out of
+ * both are graph theory and other puzzles that no school syllabus here teaches.
+ */
+export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
+  compare: [null, null, 7], // negative numbers and their order (Sec 1)
+  estimateLine: [null, null, 7], // −10 to 10
+  fractions: [null, null, 7], // a mixed number ÷ a mixed number: the four operations on rational numbers
+  rounding: [null, 10, null], // significant figures (Sec 1) and standard form (Sec 3/4); bounds aren't in the syllabus
+  hcf: [null, 7, null], // the LCM by prime factorisation
+  balance: [null, null, 8], // two unknowns: simultaneous equations
+  findRule: [null, 7, 7], // two steps with negative numbers; backwards, a linear equation
+  sameExpression: [null, 7, 7], // brackets, a² as a × a
+  missingAngle: [null, null, 7], // the angle sum of any polygon
+  average: [null, 8, 10], // median and mode (Sec 2); standard deviation (Sec 3/4)
+  integers: [7, 7, 7],
+  primes: [7, 7, 7], // primes and prime factorisation
+  order: [7, 7, 7], // the four operations with negative results, squares
+  coordinates: [7, 7, 7],
+  slope: [7, 7, 7], // the gradient of a linear graph, positive and negative
+  graphStory: [7, 7, 7], // a graph as a relationship between two variables
+  linear: [7, 7, 7], // including fractional answers
+  inequalities: [8, 8, 10], // ax + b < c (Sec 2); simultaneous inequalities (Sec 3/4)
+  expand: [8, 8, 8],
+  factor: [8, 8, 8],
+  quadratic: [8, 8, 10], // by factorisation (Sec 2); by the formula (Sec 3/4)
+  simultaneous: [8, 8, 8],
+  righttri: [8, 8, 8], // sine, cosine and tangent of acute angles
+  similarity: [8, 8, 10], // similar figures (Sec 2); ratios of areas and volumes (Sec 3/4)
+  volume: [7, 8, 8], // prisms and cylinders (Sec 1); pyramids, cones and spheres (Sec 2)
+  probability: [8, 10, 10], // single events (Sec 2); combined events and tree diagrams (Sec 3/4)
+  indices: [10, 10, 10], // zero, negative and fractional indices
+  line: [10, 10, 10], // y = mx + c from two points; perpendicular lines (Additional Mathematics)
+  distance: [10, 10, 10], // midpoint (Additional Mathematics) and length
+  circles: [10, 10, 10], // angle and symmetry properties; the alternate segment theorem (Additional Mathematics)
+  trigexact: [10, 10, 10], // exact values, any angle, radians (Additional Mathematics)
+  polynomials: [10, 10, 10], // remainder and factor theorems, the binomial theorem (Additional Mathematics)
+  logs: [10, 10, 10],
+  surds: [10, 10, 10],
+  identities: [10, 10, 10], // compound and double angles, R cos(θ − α)
+  differentiate: [10, 10, 10], // powers, eˣ, sin, ln; chain, product and quotient rules
+  tangent: [10, 10, 10],
+  stationary: [10, 10, 10],
+  integrate: [10, 12, 12], // 1/x and 1/(ax + b) come with H2
+  definite: [10, 10, 12], // ∫ 1/x is H2
+  vectors: [10, 12, 12], // in two dimensions (Sec 3/4); in three, and the scalar product (H2)
+  sequences: [7, 12, 12], // the nth term of a linear pattern (Sec 1); geometric and quadratic rules (H2)
+  series: [12, 12, 12],
+  functions: [12, 12, 12], // composite and inverse functions
+  dotangle: [12, 12, 12],
+  counting: [12, 12, 12], // permutations and combinations
+  numroots: [13, 13, 13],
+  numint: [13, 13, 13],
+  ci: [13, 13, 13],
+};
+
+/** The grade a level belongs to, or null when no syllabus here teaches it. */
+export const gradeOf = (skill: SkillId, level: 1 | 2 | 3): Grade | null => SYLLABUS[skill]?.[level - 1] ?? LATER[skill]?.[level - 1] ?? null;
+/** The skills with a level in the given grade, in curriculum order (for grades 1 to 6, the same as skillsOfYear). */
+export const skillsOfGrade = (grade: Grade): SkillId[] => CURRICULUM.filter((k) => ([1, 2, 3] as const).some((L) => gradeOf(k, L) === grade));

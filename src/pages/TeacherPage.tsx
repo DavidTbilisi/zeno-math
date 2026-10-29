@@ -11,7 +11,7 @@ import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 import type { Phase } from "../learner";
 import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
-import { skillsOfYear, YEARS } from "../model/curriculum";
+import { GRADES, skillsOfGrade } from "../model/curriculum";
 import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH } from "../model/testForms";
 
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
@@ -267,9 +267,9 @@ export function TeacherPage() {
               </div>
               <span className="hint">{w.yearsHint}</span>
               <div className="snippets">
-                {YEARS.map((y) => (
-                  <PickChip key={y} pick={`P${y}`} picks={picks} setPicks={setPicks} title={skillsOfYear(y).map(skillName).join(", ")}>
-                    {fill(w.year, { n: y })}
+                {GRADES.map((g) => (
+                  <PickChip key={g} pick={`G${g}`} picks={picks} setPicks={setPicks} title={skillsOfGrade(g).map(skillName).join(", ")}>
+                    {g === 13 ? w.university : g === 10 || g === 12 ? fill(w.years, { a: g - 1, b: g }) : fill(w.year, { n: g })}
                   </PickChip>
                 ))}
               </div>

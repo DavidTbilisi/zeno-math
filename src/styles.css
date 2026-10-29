@@ -458,8 +458,22 @@ input.invalid { border-color: var(--danger); }
 @media (max-width: 960px) {
   .practice-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .practice-side { display: contents; }
-  .practice-session { order: -1; }
+  .practice-session, .grade-card { order: -1; }
 }
+/* Where the learner is in the course: the grades as a ladder, the way covered filled, theirs marked; during a
+   placement the grades ruled out fade, so each answer visibly takes away half. */
+.grade-card p { margin: 0; }
+.grade-ladder { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.grade-ladder li {
+  min-width: 28px; height: 28px; padding: 0 5px; display: grid; place-items: center;
+  border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.grade-ladder li.past { background: var(--ok); border-color: var(--ok); color: #fff; }
+.grade-ladder li.here { border: 2px solid var(--accent); font-weight: 800; }
+.grade-ladder li.open { border-color: var(--text); }
+.grade-ladder li.out { opacity: 0.3; }
+.grade-meter { height: 8px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.grade-meter span { display: block; height: 100%; background: var(--ok); }
 .practice-body {
   display: flex; flex-direction: column; gap: 16px; padding: 20px;
   background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
@@ -1060,6 +1074,7 @@ input.invalid { border-color: var(--danger); }
 .z-practice-text { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .z-practice-text strong { font-size: 1.5rem; font-weight: 800; color: #ffffff; }
 .z-practice-text span { color: #c6cde3; }
+.z-practice-text .z-practice-grade { color: var(--z-marker); font-weight: 700; }
 .z-practice:hover .z-btn-marker { box-shadow: 0 0 0 3px #172350, 0 0 0 5px var(--z-marker); }
 @media (prefers-color-scheme: dark) {
   .z-practice { background: #18224a; }
@@ -1084,6 +1099,11 @@ input.invalid { border-color: var(--danger); }
 .z .chip.selected { background: var(--z-ink); border-color: var(--z-ink); color: var(--z-paper); }
 .z .session-dots span.right { background: var(--z-marker); border-color: var(--z-ink); }
 .z .session-dots span.now { border-color: var(--z-ink); border-width: 3px; }
+.z .grade-ladder li { border-color: var(--z-ink); }
+.z .grade-ladder li.past { background: var(--z-marker); border-color: var(--z-ink); color: #172350; }
+.z .grade-ladder li.here { background: var(--z-ink); color: var(--z-paper); }
+.z .grade-meter { border-color: var(--z-ink); }
+.z .grade-meter span { background: var(--z-marker); }
 .z .teacher h2 { font-size: 1.375rem; font-weight: 800; }
 .z .teacher h3 { font-size: 1.0625rem; font-weight: 800; }
 .z .teacher-login { max-width: 380px; padding: 24px; background: var(--surface); border: 2px solid var(--z-ink); border-radius: 10px; }

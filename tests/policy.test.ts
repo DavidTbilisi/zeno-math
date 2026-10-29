@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ALL_SKILLS, type SkillId } from "../src/math/practiceSkills.ts";
-import { CURRICULUM, inCurriculumOrder, PREREQUISITES, skillsOfYear, SYLLABUS, YEARS } from "../src/model/curriculum.ts";
+import { CURRICULUM, gradeOf, GRADES, inCurriculumOrder, LATER, PREREQUISITES, skillsOfGrade, skillsOfYear, SYLLABUS, YEARS } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
 import { SKILL_IDEAS } from "../src/model/ideaState.ts";
 import {
@@ -32,6 +32,31 @@ test("skills are tagged with the years of the primary syllabus their levels belo
   assert.deepEqual(skillsOfYear(6).filter((k) => ["ratio", "percent", "balance", "average", "rate"].includes(k)), ["percent", "ratio", "average", "balance"]);
   // The secondary topics and graph theory are not on it.
   for (const k of ["integers", "primes", "linear", "oneStroke", "probability"] as const) assert.equal(SYLLABUS[k], undefined);
+});
+
+test("every level has a grade, from grade 1 to university, agreeing with the primary syllabus", () => {
+  const levels = [1, 2, 3] as const;
+  // The primary years are the first six grades, unchanged.
+  for (const y of YEARS) assert.deepEqual(skillsOfGrade(y), skillsOfYear(y), `grade ${y}`);
+  for (const [skill, grades] of Object.entries(LATER)) {
+    const k = skill as SkillId;
+    assert.ok(ALL_SKILLS.includes(k), skill);
+    // A later grade only where the primary syllabus has none.
+    levels.forEach((L, i) => grades![i] !== null && assert.equal(SYLLABUS[k]?.[i] ?? null, null, `${skill} level ${L}`));
+  }
+  for (const k of CURRICULUM) {
+    const gs = levels.map((L) => gradeOf(k, L));
+    // A harder level never belongs to an earlier grade, except where the syllabus orders its topics otherwise: the
+    // area of a triangle (P5) before that of a rectilinear figure (P4), the LCM (grade 7) before common factors (P4).
+    const ordered = gs.filter((g) => g !== null).every((g, i, a) => i === 0 || a[i - 1]! <= g!);
+    assert.equal(ordered, !["shapeArea", "hcf"].includes(k), `${k}: ${gs.join(", ")}`);
+  }
+  // Only the puzzles no syllabus here teaches have no grade at all; bounds is the one level left out.
+  assert.deepEqual(CURRICULUM.filter((k) => levels.every((L) => gradeOf(k, L) === null)), ["oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "inversions"]);
+  assert.deepEqual(CURRICULUM.flatMap((k) => levels.filter((L) => gradeOf(k, L) === null && levels.some((M) => gradeOf(k, M) !== null)).map((L) => `${k}${L}`)), ["rounding3"]);
+  for (const g of GRADES) assert.ok(skillsOfGrade(g).length >= 3, `grade ${g}`);
+  assert.deepEqual(skillsOfGrade(13), ["numroots", "numint", "ci"]);
+  assert.deepEqual([gradeOf("quadratic", 1), gradeOf("quadratic", 3), gradeOf("vectors", 1), gradeOf("vectors", 2)], [8, 10, 10, 12]);
 });
 
 test("the fixed sequence walks each skill level by level, then comes round again", () => {

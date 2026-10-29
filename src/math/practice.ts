@@ -419,6 +419,8 @@ export type PracticeWords = {
     backNext: string;
     backIn: string;
   };
+  /** Where the learner is in the course (GradeCard). */
+  grades: Record<"title" | "intro" | "place" | "placeAgain" | "placing" | "between" | "found" | "here" | "secure" | "practise" | "grade" | "pair" | "uni" | "uniShort" | "topics", string>;
 };
 
 // ---------- random numbers ----------
