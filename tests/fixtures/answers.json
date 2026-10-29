@@ -5211,6 +5211,371 @@
    "input": "4",
    "label": "wrong",
    "mistake": "outOfPlace"
+  },
+  {
+   "skill": "projection",
+   "level": 1,
+   "seed": 7,
+   "input": "-3/5",
+   "label": "correct"
+  },
+  {
+   "skill": "projection",
+   "level": 1,
+   "seed": 7,
+   "input": "-0.6",
+   "label": "correct"
+  },
+  {
+   "skill": "projection",
+   "level": 1,
+   "seed": 7,
+   "input": "-6/10",
+   "label": "form"
+  },
+  {
+   "skill": "projection",
+   "level": 1,
+   "seed": 7,
+   "input": "3/5",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "projection",
+   "level": 1,
+   "seed": 7,
+   "input": "-3",
+   "label": "wrong",
+   "note": "a · b, not divided by |b|"
+  },
+  {
+   "skill": "projection",
+   "level": 2,
+   "seed": 7,
+   "input": "(2/5; 4/5)",
+   "label": "correct"
+  },
+  {
+   "skill": "projection",
+   "level": 2,
+   "seed": 7,
+   "input": "(0.4, 0.8)",
+   "label": "correct"
+  },
+  {
+   "skill": "projection",
+   "level": 2,
+   "seed": 7,
+   "input": "(-2/5; -4/5)",
+   "label": "wrong"
+  },
+  {
+   "skill": "projection",
+   "level": 3,
+   "seed": 7,
+   "input": "(3; 1; -4)",
+   "label": "correct"
+  },
+  {
+   "skill": "projection",
+   "level": 3,
+   "seed": 7,
+   "input": "z = -4; x = 3; y = 1",
+   "label": "correct"
+  },
+  {
+   "skill": "projection",
+   "level": 3,
+   "seed": 7,
+   "input": "(6; 0; -2)",
+   "label": "wrong",
+   "note": "the point P itself"
+  },
+  {
+   "skill": "matrices",
+   "level": 1,
+   "seed": 7,
+   "input": "-5, 20; 6, -15",
+   "label": "correct"
+  },
+  {
+   "skill": "matrices",
+   "level": 1,
+   "seed": 7,
+   "input": "[[-5, 20], [6, -15]]",
+   "label": "correct"
+  },
+  {
+   "skill": "matrices",
+   "level": 1,
+   "seed": 7,
+   "input": "-5 20; 6 -15",
+   "label": "correct"
+  },
+  {
+   "skill": "matrices",
+   "level": 1,
+   "seed": 7,
+   "input": "-11, -8; -18, -9",
+   "label": "wrong",
+   "note": "BA, not AB"
+  },
+  {
+   "skill": "matrices",
+   "level": 1,
+   "seed": 7,
+   "input": "-5, 5; 0, -9",
+   "label": "wrong",
+   "note": "entry by entry"
+  },
+  {
+   "skill": "matrices",
+   "level": 1,
+   "seed": 7,
+   "input": "-5, 20, 6, -15",
+   "label": "form",
+   "note": "no rows"
+  },
+  {
+   "skill": "matrices",
+   "level": 2,
+   "seed": 7,
+   "input": "3, 20; 2, 14",
+   "label": "correct"
+  },
+  {
+   "skill": "matrices",
+   "level": 2,
+   "seed": 7,
+   "input": "3, 2; 20, 14",
+   "label": "wrong",
+   "note": "BᵀA"
+  },
+  {
+   "skill": "matrices",
+   "level": 3,
+   "seed": 7,
+   "input": "a = -3; b = -15",
+   "label": "correct"
+  },
+  {
+   "skill": "matrices",
+   "level": 3,
+   "seed": 7,
+   "input": "-3; -15",
+   "label": "correct"
+  },
+  {
+   "skill": "matrices",
+   "level": 3,
+   "seed": 7,
+   "input": "b = -15; a = -3",
+   "label": "correct"
+  },
+  {
+   "skill": "matrices",
+   "level": 3,
+   "seed": 7,
+   "input": "a = -3; b = 15",
+   "label": "wrong"
+  },
+  {
+   "skill": "determinant",
+   "level": 1,
+   "seed": 7,
+   "input": "36",
+   "label": "correct"
+  },
+  {
+   "skill": "determinant",
+   "level": 1,
+   "seed": 7,
+   "input": "-108",
+   "label": "wrong",
+   "note": "ad + bc"
+  },
+  {
+   "skill": "determinant",
+   "level": 2,
+   "seed": 7,
+   "input": "-16",
+   "label": "correct"
+  },
+  {
+   "skill": "determinant",
+   "level": 2,
+   "seed": 7,
+   "input": "16",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "determinant",
+   "level": 3,
+   "seed": 7,
+   "input": "1, -1/3; 0, -1/3",
+   "label": "correct"
+  },
+  {
+   "skill": "determinant",
+   "level": 3,
+   "seed": 7,
+   "input": "(1, 1/3; 0, -1/3)",
+   "label": "wrong"
+  },
+  {
+   "skill": "determinant",
+   "level": 3,
+   "seed": 7,
+   "input": "-3, 1; 0, 1",
+   "label": "wrong",
+   "note": "not divided by det A"
+  },
+  {
+   "skill": "elimination",
+   "level": 1,
+   "seed": 7,
+   "input": "x = 3; y = -2; z = -3",
+   "label": "correct"
+  },
+  {
+   "skill": "elimination",
+   "level": 1,
+   "seed": 7,
+   "input": "(3; -2; -3)",
+   "label": "correct"
+  },
+  {
+   "skill": "elimination",
+   "level": 1,
+   "seed": 7,
+   "input": "3, -2, -3",
+   "label": "correct"
+  },
+  {
+   "skill": "elimination",
+   "level": 1,
+   "seed": 7,
+   "input": "(3; -2; 3)",
+   "label": "wrong"
+  },
+  {
+   "skill": "elimination",
+   "level": 2,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "elimination",
+   "level": 2,
+   "seed": 7,
+   "input": "3",
+   "label": "wrong",
+   "note": "the number of rows"
+  },
+  {
+   "skill": "elimination",
+   "level": 3,
+   "seed": 7,
+   "input": "1",
+   "label": "correct"
+  },
+  {
+   "skill": "elimination",
+   "level": 3,
+   "seed": 7,
+   "input": "k = 1",
+   "label": "correct"
+  },
+  {
+   "skill": "elimination",
+   "level": 3,
+   "seed": 7,
+   "input": "-1",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "eigen",
+   "level": 1,
+   "seed": 7,
+   "input": "-1; -3",
+   "label": "correct"
+  },
+  {
+   "skill": "eigen",
+   "level": 1,
+   "seed": 7,
+   "input": "-3, -1",
+   "label": "correct"
+  },
+  {
+   "skill": "eigen",
+   "level": 1,
+   "seed": 7,
+   "input": "-3",
+   "label": "form",
+   "note": "one eigenvalue missing"
+  },
+  {
+   "skill": "eigen",
+   "level": 1,
+   "seed": 7,
+   "input": "3; 1",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "eigen",
+   "level": 2,
+   "seed": 7,
+   "input": "(1; -1)",
+   "label": "correct"
+  },
+  {
+   "skill": "eigen",
+   "level": 2,
+   "seed": 7,
+   "input": "(-2; 2)",
+   "label": "correct"
+  },
+  {
+   "skill": "eigen",
+   "level": 2,
+   "seed": 7,
+   "input": "(0; 0)",
+   "label": "form"
+  },
+  {
+   "skill": "eigen",
+   "level": 2,
+   "seed": 7,
+   "input": "(1; -2)",
+   "label": "wrong",
+   "note": "the other eigenvalue's"
+  },
+  {
+   "skill": "eigen",
+   "level": 3,
+   "seed": 7,
+   "input": "-3; 3",
+   "label": "correct"
+  },
+  {
+   "skill": "eigen",
+   "level": 3,
+   "seed": 7,
+   "input": "3, -3",
+   "label": "correct"
+  },
+  {
+   "skill": "eigen",
+   "level": 3,
+   "seed": 7,
+   "input": "-3; -3",
+   "label": "wrong"
   }
  ]
 }

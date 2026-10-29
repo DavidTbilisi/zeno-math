@@ -10,6 +10,7 @@ import { evalE, exprMessages, fromPoly, parseE, simp, sqrtSplit, tex, toPoly, ty
 import { Frac } from "./fraction";
 import { tUpper, zUpper } from "./inference";
 import { latexToSvg, type RenderedSvg } from "./latex";
+import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type MatrixOp } from "./matrix";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
@@ -42,6 +43,7 @@ import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./qu
 import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
 import { compareSign, fracSign, samePieces, type CompareSign, type Frac as Fraction } from "./live";
 import type { MistakeId } from "./mistakes";
+import type { SpaceSpec } from "./vectorspace";
 import { AREAS, SKILLS, type Area, type SkillId } from "./practiceSkills";
 
 export { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "./practiceSkills";
@@ -49,10 +51,10 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio";
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec";
 
 /** The units a measurement is converted between (decimals). */
 export type MeasureUnit = "km" | "m" | "cm" | "kg" | "g" | "l" | "ml";
@@ -64,7 +66,12 @@ type Answer = (
   /** std: the answer is asked for in standard form, a × 10ⁿ; form: as an improper fraction or a mixed number. */
   | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed" }
   | { k: "set"; vs: number[]; tol: number }
-  | { k: "tuple"; vs: number[]; tol: number }
+  /** Values in order; they may be typed named ("y = 3; x = 2"), by `names` (x, y, z when not given). */
+  | { k: "tuple"; vs: number[]; tol: number; names?: string[] }
+  /** A matrix, row by row. */
+  | { k: "matrix"; rows: number[][]; tol: number }
+  /** A direction: any non-zero multiple of vs (an eigenvector). */
+  | { k: "dir"; vs: number[] }
   | { k: "expr"; e: E; mode?: "factor" | "expand" | "plusC" | "line" }
   | { k: "primes"; n: number }
   /** x between lo and hi; a missing end is unbounded. */
@@ -181,6 +188,20 @@ export type PracticeWords = {
     vecDot: string;
     vecAngle: string;
     vecAngleExact: string;
+    projScalar: string;
+    projVector: string;
+    projFoot: string;
+    matProduct: string;
+    matTranspose: string;
+    matIdentity: string;
+    matDet: string;
+    matInverse: string;
+    elimSolve: string;
+    elimRank: string;
+    elimK: string;
+    eigValues: string;
+    eigVector: string;
+    eigRest: string;
     seqTerm: string;
     seqTwo: string;
     serSum: string;
@@ -342,6 +363,8 @@ export type PracticeWords = {
     pick: { notOption: string };
     divisors: { unreadable: string; notOffered: string; more: string };
     ratio: { unreadable: string; notSimplest: string };
+    matrixSize: string;
+    zeroVector: string;
   };
   answer: string;
   answers: string;
@@ -801,6 +824,22 @@ function signExercise(w: PracticeWords, a: string, b: string, sign: CompareSign,
   const traps: Trap[] = trap ? [trap] : sign === "=" ? [] : [{ id: "compareFlip", a: { k: "sign", v: FLIP_SIGN[sign] }, vars: { big: minusSign(big.replace(/\\frac\{(\d+)\}\{(\d+)\}/, "$1/$2")) } }];
   return { prompt: w.prompts.compare, q: `${a} \\;\\square\\; ${b}`, answer: { k: "sign" as const, v: sign, traps }, show: `${a} ${sign} ${b}`, plain: sign, format: "sign" as const, ...more };
 }
+
+// ---------- linear algebra ----------
+
+/** An m × n matrix of whole numbers from lo to hi. */
+const ints = (r: Rng, m: number, n: number, lo: number, hi: number) => Array.from({ length: m }, () => Array.from({ length: n }, () => r.int(lo, hi)));
+const M = (rows: number[][]): Mat => rows.map((row) => row.map((x) => fr(x)));
+const matAnswer = (m: Mat): Answer => ({ k: "matrix", rows: m.map((row) => row.map((x) => x.toNumber())), tol: 1e-9 });
+/** A matrix as typed: rows split by ;, numbers by commas. */
+const matPlain = (m: Mat) => m.map((row) => row.map(plainFrac).join(", ")).join("; ");
+/** A column of entries already in LaTeX. */
+const colTex = (v: string[]) => env(v.map((x) => [x]));
+/** The Matrices tool's working for an operation on A (and B). */
+const matCalc = (op: MatrixOp, A: number[][], B: number[][] = []): Exercise["solution"] => {
+  const spec: MatrixCalcSpec = { type: "calc", op, A: A.map((row) => row.map(String)), B: B.map((row) => row.map(String)), k: "1", steps: true };
+  return { kind: "matrix", spec };
+};
 
 const GENS: Record<SkillId, Gen> = {
   times(r, L, w) {
@@ -2748,6 +2787,283 @@ const GENS: Record<SkillId, Gen> = {
     const [a, b] = [turn(a0, r.int(1, 3)), turn(b0, r.int(1, 2))];
     return { prompt: fill(w.prompts.vecAngleExact, { a: vs(a), b: vs(b) }), q: "", answer: num(deg), show: `${deg}^\\circ`, plain: String(deg), format: "number", solution: sol(a, b) };
   },
+  projection(r, L, w) {
+    const vs = (v: number[]) => `(${v.join(", ")})`;
+    const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0);
+    const nonzero = (n: number, lo: number, hi: number) => {
+      for (;;) {
+        const v = Array.from({ length: n }, () => r.int(lo, hi));
+        if (v.filter(Boolean).length >= 2) return v;
+      }
+    };
+    if (L === 1) {
+      // b of whole length, so a·b / |b| is a fraction; turned and signed so it looks different every time.
+      const [b0, len] = r.pick([[[3, 4, 0], 5], [[1, 2, 2], 3], [[2, 3, 6], 7], [[2, 6, 9], 11], [[4, 4, 7], 9], [[1, 4, 8], 9], [[2, 1, 2], 3], [[6, 8, 0], 10]] as const);
+      const perm = r.pick([[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]] as const);
+      const b = perm.map((j) => r.sign() * b0[j] || 0);
+      let a: number[];
+      do a = nonzero(3, -6, 6);
+      while (dot(a, b) === 0);
+      const v = fr(dot(a, b), len);
+      return {
+        prompt: fill(w.prompts.projScalar, { a: vs(a), b: vs(b) }),
+        q: "",
+        answer: num(v.toNumber(), 1e-9, { lowest: true }),
+        show: v.tex(),
+        plain: plainFrac(v),
+        format: "fraction",
+        solution: { kind: "vectors", spec: { topic: "dot", src: `a = ${vs(a)}; b = ${vs(b)}` } },
+      };
+    }
+    if (L === 2) {
+      const n = r.pick([2, 3] as const);
+      let a: number[], b: number[];
+      do [a, b] = [nonzero(n, -6, 6), nonzero(n, -4, 4)];
+      while (dot(a, b) === 0 || a.every((x, i) => x * b[0] === b[i] * a[0]));
+      const k = fr(dot(a, b), dot(b, b));
+      const p = b.map((x) => k.mul(fr(x)));
+      return {
+        prompt: fill(w.prompts.projVector, { a: vs(a), b: vs(b) }),
+        q: "",
+        answer: { k: "tuple", vs: p.map((x) => x.toNumber()), tol: 1e-9 },
+        show: colTex(p.map((x) => x.tex())),
+        plain: `(${p.map(plainFrac).join("; ")})`,
+        format: "vector",
+        solution: { kind: "vectors", spec: { topic: "dot", src: `a = ${vs(a)}; b = ${vs(b)}` } },
+      };
+    }
+    // The foot F = A + t₀d, and P = F + m with m ⟂ d (d × e, made as short as it can be).
+    let d: number[], m: number[];
+    do {
+      d = nonzero(3, -3, 3);
+      const gd = d.reduce((s, x) => gcd(s, x), 0);
+      d = d.map((x) => x / gd);
+      const e = nonzero(3, -2, 2);
+      m = [d[1] * e[2] - d[2] * e[1], d[2] * e[0] - d[0] * e[2], d[0] * e[1] - d[1] * e[0]];
+      const g = m.reduce((s, x) => gcd(s, x), 0);
+      if (g) m = m.map((x) => x / g);
+    } while (m.every((x) => x === 0));
+    const A = Array.from({ length: 3 }, () => r.int(-4, 4));
+    const t0 = r.nz(-2, 2);
+    const F = A.map((x, i) => x + t0 * d[i]);
+    const s = r.pick([1, 2] as const);
+    const P = F.map((x, i) => x + s * m[i]);
+    return {
+      prompt: fill(w.prompts.projFoot, { p: `P${vs(P)}` }),
+      q: `\\mathbf{r} = ${colTex(A.map(String))} + t ${colTex(d.map(String))}`,
+      answer: { k: "tuple", vs: F, tol: 1e-9 },
+      show: `\\left(${F.join(", ")}\\right)`,
+      plain: `(${F.join("; ")})`,
+      format: "xyz",
+      solution: { kind: "vectors", spec: { topic: "lines", src: `r = ${vs(A)} + t${vs(d)}; P${vs(P)}` } },
+    };
+  },
+
+  matrices(r, L, w) {
+    if (L === 1) {
+      const [A, B] = [ints(r, 2, 2, -5, 6), ints(r, 2, 2, -5, 6)];
+      const P = mul(M(A), M(B));
+      return { prompt: w.prompts.matProduct, q: `${texM(M(A))} ${texM(M(B))}`, answer: matAnswer(P), show: texM(P), plain: matPlain(P), format: "matrix", solution: matCalc("mul", A, B) };
+    }
+    if (L === 2) {
+      // AᵀB with A and B both 3 × 2: the product is only defined once A is turned.
+      const [A, B] = [ints(r, 3, 2, -4, 5), ints(r, 3, 2, -4, 5)];
+      const At = M(A[0].map((_, j) => A.map((row) => row[j])));
+      const P = mul(At, M(B));
+      return {
+        prompt: w.prompts.matTranspose,
+        q: `A = ${texM(M(A))}, \\quad B = ${texM(M(B))}`,
+        answer: matAnswer(P),
+        show: texM(P),
+        plain: matPlain(P),
+        format: "matrix",
+        steps: [`A^{T} = ${texM(At)}`, `A^{T}B = ${texM(At)} ${texM(M(B))} = ${texM(P)}`],
+      };
+    }
+    // A² = aA + bI: off the diagonal only a counts, so a comes from there and b from the diagonal (a = tr A, b = −det A).
+    let A: number[][];
+    do A = ints(r, 2, 2, -5, 5);
+    while (A[0][1] === 0);
+    const A2 = mul(M(A), M(A));
+    const [a, b] = [A[0][0] + A[1][1], A[0][1] * A[1][0] - A[0][0] * A[1][1]];
+    /** c·a, with + b on the diagonal: 3a + b, -a, b. */
+    const lin = (c: number, diag: boolean) => {
+      const t = c === 0 ? "" : c === 1 ? "a" : c === -1 ? "-a" : `${c}a`;
+      return diag ? (t ? `${t} + b` : "b") : t || "0";
+    };
+    return {
+      prompt: w.prompts.matIdentity,
+      q: `A = ${texM(M(A))}`,
+      answer: { k: "tuple", vs: [a, b], tol: 1e-9, names: ["a", "b"] },
+      show: `a = ${a}, \\; b = ${b}`,
+      plain: `a = ${a}; b = ${b}`,
+      format: "pair",
+      steps: [
+        `A^{2} = ${texM(M(A))} ${texM(M(A))} = ${texM(A2)}`,
+        `aA + bI = ${env([[lin(A[0][0], true), lin(A[0][1], false)], [lin(A[1][0], false), lin(A[1][1], true)]])}`,
+        A[0][1] === 1 ? `a = ${a}` : `${lin(A[0][1], false)} = ${A2[0][1].tex()} \\;\\Rightarrow\\; a = ${a}`,
+        `${lin(A[0][0], true)} = ${A2[0][0].tex()} \\;\\Rightarrow\\; b = ${b}`,
+        `a = \\operatorname{tr} A, \\quad b = -\\det A`,
+      ],
+    };
+  },
+
+  determinant(r, L, w) {
+    if (L < 3) {
+      const A = L === 1 ? ints(r, 2, 2, -9, 9) : ints(r, 3, 3, -4, 5);
+      const d = det(M(A));
+      return { prompt: w.prompts.matDet, q: texM(M(A), "vmatrix"), answer: num(d.toNumber()), show: d.tex(), plain: plainFrac(d), format: "number", solution: matCalc("det", A) };
+    }
+    let A: number[][], d: number;
+    do (A = ints(r, 2, 2, -6, 7)), (d = det(M(A)).n);
+    while (d === 0 || Math.abs(d) > 12);
+    const inv = M([[A[1][1], -A[0][1]], [-A[1][0], A[0][0]]]).map((row) => row.map((x) => x.div(fr(d))));
+    return { prompt: w.prompts.matInverse, q: `A = ${texM(M(A))}`, answer: matAnswer(inv), show: `A^{-1} = ${texM(inv)}`, plain: matPlain(inv), format: "matrix", solution: matCalc("inverse", A) };
+  },
+
+  elimination(r, L, w) {
+    const V = ["x", "y", "z"];
+    /** 2x - y + 3z, with a coefficient written k where it is k. */
+    const lhs = (row: (number | "k")[]) => {
+      let out = "";
+      row.forEach((c, j) => {
+        if (c === 0) return;
+        const neg = c !== "k" && c < 0;
+        const body = c === "k" ? `k${V[j]}` : `${Math.abs(c) === 1 ? "" : Math.abs(c)}${V[j]}`;
+        out += out ? (neg ? ` - ${body}` : ` + ${body}`) : neg ? `-${body}` : body;
+      });
+      return out || "0";
+    };
+    const system = (A: (number | "k")[][], b: number[]) => `\\begin{aligned} ${A.map((row, i) => `${lhs(row)} &= ${b[i]}`).join(" \\\\ ")} \\end{aligned}`;
+    if (L === 1) {
+      let A: number[][];
+      do A = ints(r, 3, 3, -3, 4);
+      while (det(M(A)).isZero() || A.some((row) => row.filter(Boolean).length < 2));
+      const x = Array.from({ length: 3 }, () => r.int(-4, 5));
+      const b = A.map((row) => row.reduce((s, c, j) => s + c * x[j], 0));
+      return {
+        prompt: w.prompts.elimSolve,
+        q: system(A, b),
+        answer: { k: "tuple", vs: x, tol: 1e-9 },
+        show: `x = ${x[0]}, \\; y = ${x[1]}, \\; z = ${x[2]}`,
+        plain: `x = ${x[0]}; y = ${x[1]}; z = ${x[2]}`,
+        format: "xyz",
+        solution: matCalc("solve", A.map((row, i) => [...row, b[i]])),
+      };
+    }
+    if (L === 2) {
+      // Rank k: a 3 × k matrix times a k × 4 one, kept only when the rank really is k.
+      const k = r.pick([1, 2, 2, 3] as const);
+      let A: number[][];
+      do {
+        const [P, Q] = [ints(r, 3, k, -3, 3), ints(r, k, 4, -2, 3)];
+        A = P.map((row) => Q[0].map((_, j) => row.reduce((s, x, i) => s + x * Q[i][j], 0)));
+      } while (
+        gaussJordan(M(A), 4).pivots.length !== k ||
+        // No row or column of zeros, and few zeros at all: the rank has to be worked out, not seen.
+        A.some((row) => row.every((x) => x === 0)) ||
+        A[0].some((_, j) => A.every((row) => row[j] === 0)) ||
+        A.flat().filter((x) => x === 0).length > 2 ||
+        A.some((row, i) => A.some((other, j) => j > i && (row.every((x, c) => x === other[c]) || row.every((x, c) => x === -other[c])))) ||
+        A.flat().some((x) => Math.abs(x) > 12)
+      );
+      const spec: SpaceSpec = { type: "space", op: "subspaces", A: A.map((row) => row.map(String)), w: ["0", "0", "0"], steps: true };
+      return { prompt: w.prompts.elimRank, q: texM(M(A)), answer: num(k), show: String(k), plain: String(k), format: "number", solution: { kind: "matrix", spec } };
+    }
+    // One coefficient is k: det A = αk + β (α its cofactor), so the solution stops being unique only at k = −β/α.
+    let A: number[][], at: [number, number], alpha: number, beta: number;
+    do {
+      A = ints(r, 3, 3, -3, 4);
+      at = [r.int(0, 2), r.int(0, 2)];
+      A[at[0]][at[1]] = 0;
+      beta = det(M(A)).n;
+      A[at[0]][at[1]] = 1;
+      alpha = det(M(A)).n - beta;
+    } while (alpha === 0 || beta === 0 || beta % alpha !== 0 || A.some((row) => row.filter(Boolean).length < 2));
+    const kv = -beta / alpha;
+    const shown: (number | "k")[][] = A.map((row, i) => row.map((c, j) => (i === at[0] && j === at[1] ? "k" : c)));
+    const b = Array.from({ length: 3 }, () => r.int(-6, 9));
+    return {
+      prompt: w.prompts.elimK,
+      q: system(shown, b),
+      answer: num(kv),
+      show: `k = ${kv}`,
+      plain: String(kv),
+      format: "number",
+      steps: [
+        `\\det A = ${env(shown.map((row) => row.map(String)), "vmatrix")} = ${polyStr([beta, alpha], "k")}`,
+        `\\det A = 0 \\;\\Rightarrow\\; k = ${kv}`,
+      ],
+    };
+  },
+
+  eigen(r, L, w) {
+    // A = PDP⁻¹ with P made of shears (det 1), so A, P⁻¹ and the eigenvalues are whole numbers.
+    const unit = (n: number) => M(Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))));
+    const shears = (n: number) => {
+      for (;;) {
+        let P = unit(n);
+        for (let s = 0; s <= n; s++) {
+          const [i, j] = [r.int(0, n - 1), r.int(0, n - 1)];
+          if (i === j) continue;
+          const E = unit(n);
+          E[i][j] = fr(r.nz(-2, 2));
+          P = mul(P, E);
+        }
+        if (P.flat().filter((x) => !x.isZero()).length > n && P.flat().every((x) => Math.abs(x.n) <= 4)) return P;
+      }
+    };
+    const inverse = (P: Mat) => gaussJordan(P.map((row, i) => [...row, ...unit(P.length)[i]]), P.length).result.map((row) => row.slice(P.length));
+    const make = (n: number) => {
+      for (;;) {
+        const P = shears(n);
+        const ls: number[] = [];
+        while (ls.length < n) {
+          const l = r.int(-4, 6);
+          if (!ls.includes(l) && (n === 2 || l !== 0)) ls.push(l);
+        }
+        const D = M(ls.map((l, i) => ls.map((_, j) => (i === j ? l : 0))));
+        const A = mul(mul(P, D), inverse(P));
+        // Not triangular, so the eigenvalues can't be read off the diagonal; in 2D neither corner is 0.
+        const above = A.some((row, i) => row.some((x, j) => j > i && !x.isZero()));
+        const below = A.some((row, i) => row.some((x, j) => j < i && !x.isZero()));
+        const corners = n === 3 ? A.flat().filter((x) => x.isZero()).length <= 2 : !A[0][1].isZero() && !A[1][0].isZero();
+        if (above && below && corners && A.flat().every((x) => Math.abs(x.n) <= (n === 2 ? 12 : 15))) return { A, P, ls };
+      }
+    };
+    const eigenOf = (A: Mat): Exercise["solution"] => ({ kind: "matrix", spec: { type: "space", op: "eigen", A: A.map((row) => row.map(plainFrac)), w: A.map(() => "0"), steps: true } satisfies SpaceSpec });
+    if (L === 1) {
+      const { A, ls } = make(2);
+      return { prompt: w.prompts.eigValues, q: `A = ${texM(A)}`, answer: { k: "set", vs: ls, tol: 1e-9 }, show: `\\lambda = ${ls.join(", \\; ")}`, plain: ls.join("; "), format: "roots", solution: eigenOf(A) };
+    }
+    if (L === 2) {
+      const { A, P, ls } = make(2);
+      const i = r.int(0, 1);
+      // P's column i, as short as it goes and with its first non-zero component positive.
+      const v = P.map((row) => row[i].n);
+      const g = gcd(v[0], v[1]) * Math.sign(v.find((x) => x !== 0)!);
+      const u = v.map((x) => x / g || 0);
+      return { prompt: fill(w.prompts.eigVector, { l: ls[i] }), q: `A = ${texM(A)}`, answer: { k: "dir", vs: u }, show: colTex(u.map(String)), plain: `(${u.join("; ")})`, format: "eigvec", solution: eigenOf(A) };
+    }
+    // Given one eigenvalue, the other two from the trace (their sum) and the determinant (their product).
+    const { A, ls } = make(3);
+    const tr = A.reduce((s, row, i) => s + row[i].n, 0);
+    const [l1, rest] = [ls[0], ls.slice(1).sort((a, b) => a - b)];
+    const [sum, prod] = [tr - l1, det(A).n / l1];
+    return {
+      prompt: fill(w.prompts.eigRest, { l: l1 }),
+      q: `A = ${texM(A)}`,
+      answer: { k: "set", vs: rest, tol: 1e-9 },
+      show: `\\lambda = ${rest.join(", \\; ")}`,
+      plain: rest.join("; "),
+      format: "roots",
+      steps: [
+        `\\operatorname{tr} A = ${tr} = ${l1} + \\lambda_2 + \\lambda_3 \\;\\Rightarrow\\; \\lambda_2 + \\lambda_3 = ${sum}`,
+        `\\det A = ${det(A).n} = ${l1 < 0 ? `(${l1})` : l1}\\,\\lambda_2 \\lambda_3 \\;\\Rightarrow\\; \\lambda_2 \\lambda_3 = ${prod}`,
+        `${polyStr([prod, -sum, 1], "t")} = 0 \\;\\Rightarrow\\; t = ${rest.join(", \\; ")}`,
+      ],
+    };
+  },
   differentiate(r, L, w) {
     let src: string;
     if (L === 1) {
@@ -3701,6 +4017,21 @@ function parts(s: string): string[] {
   });
 }
 const near = (a: number, b: number, tol: number) => Math.abs(a - b) <= tol + 1e-9 * Math.max(1, Math.abs(b));
+/**
+ * A matrix typed row by row: "1, 2; 3, 4" (rows split by ; or |, numbers by commas or spaces), or "[[1, 2], [3, 4]]".
+ * Null when the rows can't be told apart.
+ */
+function matrixCells(s: string): string[][] | null {
+  const t = unwrap(s);
+  const rows = /^[[(]/.test(t) ? t.split(/[\])]\s*[,;]?\s*[[(]/).map((r) => r.replace(/^[[(]|[\])]$/g, "")) : t.split(/[;|\n]/);
+  const cells = rows.map((r) => r.trim().split(/\s*,\s*|\s+/).filter(Boolean));
+  return cells.length && cells.every((r) => r.length) ? cells : null;
+}
+function readMatrix(s: string): number[][] | null {
+  const cells = matrixCells(s);
+  const m = cells?.map((r) => r.map(value));
+  return m && m.every((r) => r.every(Number.isFinite)) ? m : null;
+}
 
 /** The factors of a product, with nested products opened: 2·(3·5) → 2, 3, 5. */
 const factorsOf = (e: E): E[] => (e.k === "mul" ? e.fs.flatMap(factorsOf) : [e]);
@@ -3886,8 +4217,9 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         let ps = parts(src);
         if (a.k === "tuple") {
           // "y = 3; x = 2" in any order.
+          const names = a.names ?? ["x", "y", "z"].slice(0, a.vs.length);
           const named: (string | undefined)[] = ps.map((p) => p.match(/^\s*([a-z])\s*=/i)?.[1].toLowerCase());
-          if (named.every((n) => n === "x" || n === "y") && new Set(named).size === ps.length) ps = (["x", "y"] as const).map((n) => ps[named.indexOf(n)] ?? "");
+          if (named.every((n) => n !== undefined && names.includes(n)) && new Set(named).size === ps.length) ps = names.map((n) => ps[named.indexOf(n)] ?? "");
         }
         const vs = ps.map(value);
         if (vs.some((v) => !Number.isFinite(v))) return { ok: false, why: fill(w.reasons.unreadable, { s: src }) };
@@ -3975,6 +4307,23 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         // Every one listed divides it, but some are missing: said, as the board does.
         return v.more ? { ok: false, hint: fill(w.reasons.divisors.more, { n: a.n }) } : { ok: false };
       }
+      case "matrix": {
+        const m = readMatrix(src);
+        if (!m) return { ok: false, why: fill(w.reasons.unreadable, { s: input }) };
+        const [rs, cs] = [a.rows.length, a.rows[0].length];
+        if (m.length !== rs || m.some((row) => row.length !== cs)) return { ok: false, why: fill(w.reasons.matrixSize, { r: rs, c: cs }) };
+        return { ok: m.every((row, i) => row.every((v, j) => near(v, a.rows[i][j], a.tol))) };
+      }
+      case "dir": {
+        const vs = parts(src).map(value);
+        if (vs.some((v) => !Number.isFinite(v))) return { ok: false, why: fill(w.reasons.unreadable, { s: src }) };
+        if (vs.length !== a.vs.length) return { ok: false, why: fill(w.reasons.count, { n: a.vs.length }) };
+        if (vs.every((v) => near(v, 0, 1e-12))) return { ok: false, why: w.reasons.zeroVector };
+        // Parallel: the multiple that matches the largest component matches every one.
+        const i = a.vs.reduce((b, v, j) => (Math.abs(v) > Math.abs(a.vs[b]) ? j : b), 0);
+        const k = vs[i] / a.vs[i];
+        return { ok: vs.every((v, j) => near(v, k * a.vs[j], 1e-9 * Math.max(1, Math.abs(v)))) };
+      }
       case "ratio": {
         // The same ratio is each term the same multiple of the one asked for; a multiple other than 1 is not simplest.
         const ps = src.split(/[:∶]/);
@@ -4036,6 +4385,11 @@ export function preview(ex: Exercise, input: string): string | null {
   }
   try {
     if (ex.answer.k === "set" || ex.answer.k === "tuple") return parts(s).map((p) => tex(parseE(bare(p)))).join(", \\; ");
+    if (ex.answer.k === "dir") return `\\begin{pmatrix} ${parts(s).map((p) => tex(parseE(bare(p)))).join(" \\\\ ")} \\end{pmatrix}`;
+    if (ex.answer.k === "matrix") {
+      const rows = matrixCells(s);
+      return rows && env(rows.map((r) => r.map((c) => tex(parseE(c)))));
+    }
     if (ex.answer.k === "ratio") return s.split(/[:∶]/).map((p) => tex(parseE(bare(p)))).join(" : ");
     if (ex.answer.k === "sign") {
       const got = readSign(s);
