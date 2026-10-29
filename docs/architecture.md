@@ -229,7 +229,7 @@ model, so the outcome measure is independent of what the adaptive condition lear
 
 ## Quality
 
-**Tests.** `npm test` uses Node's built-in test runner, with no test framework. It covers:
+**Tests.** `npm test` uses Node's built-in test runner, with no test framework. `npm run test:changed` runs only the test files whose imports, or the files they read by name, reach a file changed since main (`scripts/test-changed.mjs`); a change to `package.json`, `tsconfig.json` or the TypeScript hooks runs them all. It covers:
 
 - the maths engine against independent computations;
 - every tool example in three languages;

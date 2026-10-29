@@ -1517,6 +1517,7 @@ More for a thesis: [docs/architecture.md](docs/architecture.md) (design, diagram
 
 ```bash
 npm test           # node:test, no extra dependencies
+npm run test:changed   # only the test files that import (or read) something changed since main; -- --list to see them
 npm run typecheck
 npm run lint       # ESLint: recommended, typescript-eslint, React's rules of hooks
 npm run coverage   # the tests, failing below 95 % of lines / 88 % of branches / 95 % of functions in src/math and src/model
