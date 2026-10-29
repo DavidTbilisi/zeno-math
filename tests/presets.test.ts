@@ -27,6 +27,7 @@ import { ALGEBRA_PRESETS, renderAlgebra } from "../src/math/algebra.ts";
 import { POWERS_PRESETS, renderPowers } from "../src/math/powers.ts";
 import { COORD_PRESETS, renderCoord } from "../src/math/coordgeom.ts";
 import { DERIV_PRESETS, renderDeriv } from "../src/math/derive.ts";
+import { MV_PRESETS, renderMultivar } from "../src/math/multivar.ts";
 import { APP_PRESETS, renderApplied } from "../src/math/applied.ts";
 import { INF_PRESETS, renderInference } from "../src/math/inference.ts";
 import { PRACTICE_PRESETS, renderPractice } from "../src/math/practice.ts";
@@ -66,6 +67,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["powers", specs(POWERS_PRESETS), (s, t) => renderPowers(s, t.powersWords)],
   ["coordinate geometry", specs(COORD_PRESETS), (s, t) => renderCoord(s, t.coordWords)],
   ["derivatives", specs(DERIV_PRESETS), (s, t) => renderDeriv(s, t.derivWords)],
+  ["several variables", specs(MV_PRESETS), (s, t) => renderMultivar(s, t.multivarWords)],
   ["applied calculus", specs(APP_PRESETS), (s, t) => renderApplied(s, t.appWords)],
   ["inference", specs(INF_PRESETS), (s, t) => renderInference(s, t.infWords)],
   ["practice", specs(PRACTICE_PRESETS), (s, t) => renderPractice(s, t.pracWords)],

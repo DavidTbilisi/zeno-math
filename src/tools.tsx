@@ -20,7 +20,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "multivar" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -70,6 +70,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   coord: { Dialog: load(() => import("./components/CoordDialog"), "CoordDialog"), edit: "editCoord", topics: (t) => t.coordTopics, hints: (t) => t.coordHints },
   vectors: { Dialog: load(() => import("./components/VecDialog"), "VecDialog"), edit: "editVectors", topics: (t) => t.vecTopics, hints: (t) => t.vecHints },
   deriv: { Dialog: load(() => import("./components/DerivDialog"), "DerivDialog"), edit: "editDeriv", topics: (t) => t.derivTopics, hints: (t) => t.derivHints },
+  multivar: { Dialog: load(() => import("./components/MultivarDialog"), "MultivarDialog"), edit: "editMultivar", topics: (t) => t.multivarTopics, hints: (t) => t.multivarHints },
   applied: { Dialog: load(() => import("./components/AppDialog"), "AppDialog"), edit: "editApplied", topics: (t) => t.appTopics, hints: (t) => t.appHints },
   inference: { Dialog: load(() => import("./components/InfDialog"), "InfDialog"), edit: "editInference", topics: (t) => t.infTopics, hints: (t) => t.infHints },
   practice: {
@@ -127,6 +128,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "complex", icon: "ℂ", label: "complex" },
       { kind: "analysis", icon: "ε", label: "analysis" },
       { kind: "deriv", icon: "f′", label: "deriv" },
+      { kind: "multivar", icon: "∇", label: "multivar" },
       { kind: "integral", icon: "∫", label: "integrals" },
       { kind: "applied", icon: "∫⌒", label: "applied" },
       { kind: "ode", icon: "y′", label: "odes" },

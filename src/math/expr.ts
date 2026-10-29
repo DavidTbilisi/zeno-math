@@ -376,9 +376,14 @@ export function tex(e: E): string {
     case "log":
       return `\\log_{${e.base.tex()}} ${argTex(e.a)}`;
     case "d":
-      return `\\left(${tex(e.a)}\\right)'`;
+      return partialIn ? `\\frac{\\partial}{\\partial ${partialIn}}\\left(${tex(e.a)}\\right)` : `\\left(${tex(e.a)}\\right)'`;
   }
 }
+/** While a partial derivative is taken, a pending derivative is written ∂/∂v (u) rather than (u)′. */
+let partialIn: string | null = null;
+export const writePartialIn = (v: string | null) => {
+  partialIn = v;
+};
 export const argTex = (a: E) => (a.k === "var" || (isNum(a) && !a.v.isNeg() && a.v.isInt()) ? a.k === "var" ? a.name : tex(a) : `\\left(${tex(a)}\\right)`);
 export function factorTex(f: E): string {
   if (f.k === "add") return `\\left(${tex(f)}\\right)`;
