@@ -11,7 +11,7 @@ import type { Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
 import { FRACTIONS } from "../src/model/conceptGraph.ts";
 import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
-import { RECENT } from "../src/model/policy.ts";
+import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
 import { dashboard } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
@@ -135,14 +135,14 @@ export function parseSkills(value: unknown): SkillId[] | null {
 }
 const classSkills = (json: string | null): SkillId[] => (json ? JSON.parse(json) : [...CURRICULUM]);
 
-// ---------- the learner model and each student's ideas, kept up to date with every stored attempt ----------
+// ---------- the learner model and each student's ideas and moving averages, kept up to date with every stored attempt ----------
 
-type Replay = { model: ClassModel; ideas: Map<number, IdeaState>; lastId: number };
+type Replay = { model: ClassModel; ideas: Map<number, IdeaState>; ema: Map<number, EmaState>; lastId: number };
 const replays = new WeakMap<DatabaseSync, Replay>();
-/** Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas. */
+/** Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas and moving averages. */
 function replay(db: DatabaseSync): Replay {
   let cache = replays.get(db);
-  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), lastId: 0 }));
+  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), ema: new Map(), lastId: 0 }));
   const rows = stmt(db, `
     SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, steps, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
   `).all(cache.lastId) as {
@@ -152,7 +152,10 @@ function replay(db: DatabaseSync): Replay {
   for (const r of rows) {
     // Counted answers are those not sent back for their form, as the export reads them (evaluate.ts, observation).
     const correct = evidence(r.counted, r.outcome, r.first_correct === 1);
-    if (correct !== null) cache.model.update({ student: `s${r.student_id}`, skill: r.skill, level: r.level, correct });
+    if (correct !== null) {
+      cache.model.update({ student: `s${r.student_id}`, skill: r.skill, level: r.level, correct });
+      learnEma(cache.ema.get(r.student_id) ?? cache.ema.set(r.student_id, {}).get(r.student_id)!, r.skill, correct);
+    }
     // On a skill made of ideas, the question is rebuilt and the student's ideas move as the browser's did (learner.ts).
     if (hasIdeas(r.skill)) {
       const ideas = cache.ideas.get(r.student_id) ?? cache.ideas.set(r.student_id, {}).get(r.student_id)!;
@@ -166,6 +169,8 @@ function replay(db: DatabaseSync): Replay {
 export const currentModel = (db: DatabaseSync): ClassModel => replay(db).model;
 /** What a student knows of each idea they have met (ideaState.ts), for the adaptive policy to aim at the weakest. */
 export const currentIdeas = (db: DatabaseSync, studentId: number): IdeaState => replay(db).ideas.get(studentId) ?? {};
+/** A student's moving average on each skill they have answered, for the adaptive policy's mastery rule (policy.ts). */
+export const currentEma = (db: DatabaseSync, studentId: number): EmaState => replay(db).ema.get(studentId) ?? {};
 /** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
 const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
@@ -392,7 +397,8 @@ export async function handleResearch(
     const student = findStudent(decodeURIComponent(id));
     if (!student) return send(res, 404, { error: "no such student" });
     // What the student's browser needs to choose questions: their condition and skills, where they are in the fixed
-    // sequence, their last skills, the model (the class-wide weights and their own records, under "me") and their ideas.
+    // sequence, their last skills, the model (the class-wide weights and their own records, under "me"), their ideas and
+    // their moving average on each skill.
     if (sub === "plan" && req.method === "GET") {
       const { skills } = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
       const { position } = stmt(db, "SELECT COUNT(*) AS position FROM attempts WHERE student_id = ? AND policy = 'fixed'").get(student.id) as { position: number };
@@ -408,6 +414,7 @@ export async function handleResearch(
         recent,
         state: { ...state, students: me ? { me } : {} },
         ideas: currentIdeas(db, student.id),
+        ema: currentEma(db, student.id),
         ...classProtocol(db, student.class),
         tests: studentTests(db, student),
       });

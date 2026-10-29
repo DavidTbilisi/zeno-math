@@ -7,7 +7,10 @@ import assert from "node:assert/strict";
 import { ALL_SKILLS, type SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM, inCurriculumOrder, PREREQUISITES, skillsOfYear, SYLLABUS, YEARS } from "../src/model/curriculum.ts";
 import { EloModel, type Level } from "../src/model/elo.ts";
-import { adaptiveChoice, choose, fixedChoice, MASTERED_AT, openSkills, PER_LEVEL, TARGET } from "../src/model/policy.ts";
+import { SKILL_IDEAS } from "../src/model/ideaState.ts";
+import {
+  adaptiveChoice, choose, EMA, EMA_MASTERED_AT, fixedChoice, IDEAS_MASTERED_AT, isMastered, learnEma, MASTERED_AT, openSkills, PER_LEVEL, TARGET, type ChanceModel, type EmaState,
+} from "../src/model/policy.ts";
 
 test("the curriculum has every skill once, each after what it builds on", () => {
   assert.deepEqual([...CURRICULUM].sort(), [...ALL_SKILLS].sort());
@@ -97,6 +100,39 @@ test("recent skills count against a choice, so practice interleaves", () => {
   // Once everything is mastered the choice still comes from the class's skills.
   for (let i = 0; i < 40; i++) answer(m, "linear", 3, true), answer(m, "average", 3, true);
   assert.ok(["linear", "average"].includes(pick([])));
+});
+
+test("given the student's evidence on a skill, mastery also needs its moving average and, on a skill of ideas, every idea", () => {
+  // Without that evidence (the simulations) the model's chance on a hard question decides alone, as before.
+  assert.equal(isMastered("linear", MASTERED_AT), true);
+  assert.equal(isMastered("linear", MASTERED_AT - 0.01, { ema: { linear: 1 } }), false, "the gates never close a skill sooner");
+  // The moving average starts below its threshold: no skill is mastered without answers on it, however strong the
+  // student is elsewhere. On ASSISTments' fit two right in a row reach it, and a miss drops it back.
+  const ema: EmaState = {};
+  assert.ok(EMA.start < EMA_MASTERED_AT);
+  assert.equal(isMastered("linear", 0.99, { ema }), false);
+  learnEma(ema, "linear", true);
+  assert.equal(isMastered("linear", 0.99, { ema }), false);
+  learnEma(ema, "linear", true);
+  assert.equal(isMastered("linear", 0.99, { ema }), true);
+  learnEma(ema, "linear", false);
+  assert.equal(isMastered("linear", 0.99, { ema }), false);
+
+  // On a skill made of ideas every idea must be likely known together: sixteen at 0.9 each are not (0.9^16 ≈ 0.19).
+  const sure = { fractions: 1, linear: 1 };
+  const all = (p: number) => Object.fromEntries(SKILL_IDEAS.fractions.map((id) => [id, p]));
+  assert.equal(isMastered("fractions", 0.99, { ema: sure }), true, "without the ideas, no idea gate");
+  assert.equal(isMastered("fractions", 0.99, { ema: sure, ideas: {} }), false);
+  assert.equal(isMastered("fractions", 0.99, { ema: sure, ideas: all(0.9) }), false);
+  assert.ok(0.999 ** SKILL_IDEAS.fractions.length >= IDEAS_MASTERED_AT);
+  assert.equal(isMastered("fractions", 0.99, { ema: sure, ideas: all(0.999) }), true);
+  assert.equal(isMastered("fractions", 0.99, { ema: sure, ideas: { ...all(0.999), equivalent: 0.5 } }), false, "one weak idea holds it open");
+  assert.equal(isMastered("linear", 0.99, { ema: sure, ideas: {} }), true, "a skill without ideas has no idea gate");
+
+  // The policy leaves behind only what passes every gate.
+  const strong: ChanceModel = { predictAt: () => 0.99 };
+  assert.deepEqual(openSkills(strong, "s", ["linear", "fractions"], { ema: sure, ideas: {} }), ["fractions"]);
+  assert.equal(adaptiveChoice(strong, "s", ["linear", "fractions"], { ema: sure, ideas: {}, random: () => 0 }).skill, "fractions");
 });
 
 test("given the student's ideas, a skill made of ideas is aimed at the one they are least likely to know", () => {

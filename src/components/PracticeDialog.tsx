@@ -127,7 +127,7 @@ export function PracticeDialog(props: Props) {
     const due = prog.mistakes.find((m) => fits(m) && m.due <= prog.answered);
     if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
     if (plan) {
-      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent, ideas: plan.ideas, unlockFloor: newcomerChance(plan.model) });
+      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent, ideas: plan.ideas, ema: plan.ema, unlockFloor: newcomerChance(plan.model) });
       return { ex: exerciseFor(c, w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
     }
     const skills = SKILLS[a] as readonly SkillId[];

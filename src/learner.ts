@@ -7,7 +7,7 @@ import { LogisticModel, type LogisticState } from "./model/logistic";
 import { evidence } from "./model/evaluate";
 import type { FractionsNode } from "./model/conceptGraph";
 import { asksWhatWasHard, bearing, hasIdeas, learnIdeas, usesOf, type IdeaState } from "./model/ideaState";
-import { RECENT, type Choice } from "./model/policy";
+import { learnEma, RECENT, type Choice, type EmaState } from "./model/policy";
 import type { Form, TestPhase } from "./model/testForms";
 
 export type Condition = "adaptive" | "fixed";
@@ -29,8 +29,11 @@ export type Protocol = {
   testLength: number;
   tests: Record<TestPhase, { form: Form; answered: number[] }>;
 };
-/** What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me", their ideas under "ideas". */
-export type Plan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: LogisticState; ideas: IdeaState };
+/**
+ * What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me", their
+ * ideas under "ideas", their moving average on each skill under "ema".
+ */
+export type Plan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: LogisticState; ideas: IdeaState; ema: EmaState };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 /** One step of a question worked in steps (stepsOf in practice.ts), in the steps' order: the answers to it, and whether its answer was shown. */
 export type StepLog = { answers: LoggedAnswer[]; shown: boolean };
@@ -119,7 +122,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
 /** The student's own name in the model the browser keeps (the server sends their records under it). */
 export const ME = "me";
 /** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
-export type ClassPlan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: LogisticModel; ideas: IdeaState };
+export type ClassPlan = Protocol & { condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: LogisticModel; ideas: IdeaState; ema: EmaState };
 export const toClassPlan = ({ state, ...rest }: Plan): ClassPlan => ({ ...rest, model: LogisticModel.fromState(state) });
 /** A newer plan's protocol (the teacher may have moved the class on) over the plan the browser has been carrying forward. */
 export const withProtocol = (plan: ClassPlan, p: Protocol): ClassPlan =>
@@ -137,10 +140,13 @@ export type TestAnswer = {
   retries: number;
   ms: number;
 };
-/** What the server will do once it has the attempt: the model and the ideas learn from it, the fixed sequence moves on. */
+/** What the server will do once it has the attempt: the model, the moving average and the ideas learn from it, the fixed sequence moves on. */
 export function applyAttempt(plan: ClassPlan, a: Attempt) {
   const correct = attemptEvidence(a);
-  if (correct !== null) plan.model.update({ student: ME, skill: a.skill, level: a.level, correct });
+  if (correct !== null) {
+    plan.model.update({ student: ME, skill: a.skill, level: a.level, correct });
+    learnEma(plan.ema, a.skill, correct);
+  }
   learnFromAttempt(plan.ideas, a);
   if (a.policy === "fixed") plan.position++;
   plan.recent = [...plan.recent, a.skill].slice(-RECENT);
