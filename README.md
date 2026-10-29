@@ -593,6 +593,20 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     good, the penalty too strong), stars go to a puzzle done at the first try, and eight discoveries are kept. Free
     play takes any points (click to add, drag, tap to take away), three hidden curves, the degree, λ, the number of
     points and the noise, with the test points, fresh samples and the hidden curve on request
+- **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
+  numbers allow
+  - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
+    E[X]² and σ; the bars with the mean as their balance point and a band of ±σ, and the cdf as steps
+  - *Continuous*: a density f(x) on an interval (∞ allowed), checked to have area 1; E[X], E[X²], Var(X) and σ by
+    integrals, and the median where F reaches ½; the density shaded beside its cdf, and a note when a long tail pulls
+    the mean away from the median
+  - *aX + b*: every value moved, E[Y] from Y's own table and again by aE[X] + b, Var(Y) = a²Var(X) and σ scaled by
+    |a|; X's and Y's bars on one scale
+  - *Joint table*: P(X = x, Y = y) with its margins, the conditional row given X = x₀, independence checked cell by
+    cell (the first cell that fails is shown), E[XY], covariance, correlation, E[X + Y] and Var(X + Y) with 2 Cov;
+    the table tinted by probability beside Y given x₀ against Y on its own
+  - *Covariance matrix*: points' means, spreads and Σ, the correlation, Σ's eigenvalues and PC1's share; the points
+    with the 1σ and 2σ ellipses, whose long axis is the PCA lab's PC1
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1706,6 +1720,7 @@ src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products
 src/math/expr.ts          expressions in x: parser, LaTeX, tidy-up and simplifier, exact a + b√s, real roots of polynomials
 src/math/derive.ts        derivatives: rules one level at a time, first principles, chain, tangents, stationary points
 src/math/multivar.ts      several variables: partial derivatives, gradient, chain rule as a graph, Jacobian, Hessian
+src/math/randvar.ts       random variables: tables and densities, E and Var, aX + b, joint tables, covariance matrix
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
 src/math/mental.ts        mental math: base multiplication, division (base, flag, Trachtenberg), divisibility,
                           reciprocals, digit-sum check, roots, cubing, magic squares, Major System

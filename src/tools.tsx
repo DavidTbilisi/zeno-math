@@ -20,7 +20,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "multivar" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "multivar" | "randvar" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -71,6 +71,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   vectors: { Dialog: load(() => import("./components/VecDialog"), "VecDialog"), edit: "editVectors", topics: (t) => t.vecTopics, hints: (t) => t.vecHints },
   deriv: { Dialog: load(() => import("./components/DerivDialog"), "DerivDialog"), edit: "editDeriv", topics: (t) => t.derivTopics, hints: (t) => t.derivHints },
   multivar: { Dialog: load(() => import("./components/MultivarDialog"), "MultivarDialog"), edit: "editMultivar", topics: (t) => t.multivarTopics, hints: (t) => t.multivarHints },
+  randvar: { Dialog: load(() => import("./components/RandvarDialog"), "RandvarDialog"), edit: "editRandvar", topics: (t) => t.randvarTopics, hints: (t) => t.randvarHints },
   applied: { Dialog: load(() => import("./components/AppDialog"), "AppDialog"), edit: "editApplied", topics: (t) => t.appTopics, hints: (t) => t.appHints },
   inference: { Dialog: load(() => import("./components/InfDialog"), "InfDialog"), edit: "editInference", topics: (t) => t.infTopics, hints: (t) => t.infHints },
   practice: {
@@ -145,6 +146,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "strategies", icon: "♞", label: "strategies" },
       { kind: "algo", icon: "⇅", label: "algo" },
       { kind: "statistics", icon: "📊", label: "statistics" },
+      { kind: "randvar", icon: "E[X]", label: "randvar" },
       { kind: "inference", icon: "H₀", label: "inference" },
     ],
   },
