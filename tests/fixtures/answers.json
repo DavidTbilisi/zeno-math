@@ -5576,6 +5576,372 @@
    "seed": 7,
    "input": "-3; -3",
    "label": "wrong"
+  },
+  {
+   "skill": "expectation",
+   "level": 1,
+   "seed": 7,
+   "input": "33/10",
+   "label": "correct"
+  },
+  {
+   "skill": "expectation",
+   "level": 1,
+   "seed": 7,
+   "input": "3.3",
+   "label": "correct"
+  },
+  {
+   "skill": "expectation",
+   "level": 1,
+   "seed": 7,
+   "input": "66/20",
+   "label": "form"
+  },
+  {
+   "skill": "expectation",
+   "level": 1,
+   "seed": 7,
+   "input": "10/3",
+   "label": "wrong",
+   "note": "the mean of the values, unweighted"
+  },
+  {
+   "skill": "expectation",
+   "level": 2,
+   "seed": 7,
+   "input": "2721/100",
+   "label": "correct"
+  },
+  {
+   "skill": "expectation",
+   "level": 2,
+   "seed": 7,
+   "input": "27.21",
+   "label": "correct"
+  },
+  {
+   "skill": "expectation",
+   "level": 2,
+   "seed": 7,
+   "input": "381/10",
+   "label": "wrong",
+   "note": "E(X²) without taking E(X)² away"
+  },
+  {
+   "skill": "expectation",
+   "level": 3,
+   "seed": 7,
+   "input": "2721/25",
+   "label": "correct"
+  },
+  {
+   "skill": "expectation",
+   "level": 3,
+   "seed": 7,
+   "input": "108.84",
+   "label": "correct"
+  },
+  {
+   "skill": "expectation",
+   "level": 3,
+   "seed": 7,
+   "input": "-2721/50",
+   "label": "wrong",
+   "note": "a · Var(X)"
+  },
+  {
+   "skill": "conditional",
+   "level": 1,
+   "seed": 7,
+   "input": "2/13",
+   "label": "correct"
+  },
+  {
+   "skill": "conditional",
+   "level": 1,
+   "seed": 7,
+   "input": "4/26",
+   "label": "form"
+  },
+  {
+   "skill": "conditional",
+   "level": 1,
+   "seed": 7,
+   "input": "4/59",
+   "label": "wrong",
+   "note": "out of everyone"
+  },
+  {
+   "skill": "conditional",
+   "level": 1,
+   "seed": 7,
+   "input": "4/7",
+   "label": "wrong",
+   "note": "P(B′ | A)"
+  },
+  {
+   "skill": "conditional",
+   "level": 2,
+   "seed": 7,
+   "input": "0.25",
+   "label": "correct"
+  },
+  {
+   "skill": "conditional",
+   "level": 2,
+   "seed": 7,
+   "input": "1/4",
+   "label": "correct"
+  },
+  {
+   "skill": "conditional",
+   "level": 2,
+   "seed": 7,
+   "input": "0.07",
+   "label": "wrong",
+   "note": "only the D branch"
+  },
+  {
+   "skill": "conditional",
+   "level": 3,
+   "seed": 7,
+   "input": "0.28",
+   "label": "correct"
+  },
+  {
+   "skill": "conditional",
+   "level": 3,
+   "seed": 7,
+   "input": "7/25",
+   "label": "correct"
+  },
+  {
+   "skill": "conditional",
+   "level": 3,
+   "seed": 7,
+   "input": "0.281",
+   "label": "close"
+  },
+  {
+   "skill": "conditional",
+   "level": 3,
+   "seed": 7,
+   "input": "0.7",
+   "label": "wrong",
+   "note": "P(+ | D)"
+  },
+  {
+   "skill": "distributions",
+   "level": 1,
+   "seed": 7,
+   "input": "0.049",
+   "label": "correct"
+  },
+  {
+   "skill": "distributions",
+   "level": 1,
+   "seed": 7,
+   "input": "0.0486",
+   "label": "correct"
+  },
+  {
+   "skill": "distributions",
+   "level": 1,
+   "seed": 7,
+   "input": "0.05",
+   "label": "close"
+  },
+  {
+   "skill": "distributions",
+   "level": 1,
+   "seed": 7,
+   "input": "0.0081",
+   "label": "wrong",
+   "note": "without the binomial coefficient"
+  },
+  {
+   "skill": "distributions",
+   "level": 2,
+   "seed": 7,
+   "input": "0.052",
+   "label": "correct"
+  },
+  {
+   "skill": "distributions",
+   "level": 2,
+   "seed": 7,
+   "input": "0.948",
+   "label": "wrong",
+   "note": "the complement"
+  },
+  {
+   "skill": "distributions",
+   "level": 2,
+   "seed": 7,
+   "input": "0.0037",
+   "label": "wrong",
+   "note": "≥ taken as >"
+  },
+  {
+   "skill": "distributions",
+   "level": 3,
+   "seed": 7,
+   "input": "0.933",
+   "label": "correct"
+  },
+  {
+   "skill": "distributions",
+   "level": 3,
+   "seed": 7,
+   "input": "0.773",
+   "label": "wrong",
+   "note": "the variance used as the standard deviation"
+  },
+  {
+   "skill": "distributions",
+   "level": 3,
+   "seed": 7,
+   "input": "0.067",
+   "label": "wrong"
+  },
+  {
+   "skill": "correlation",
+   "level": 1,
+   "seed": 7,
+   "input": "-15/2",
+   "label": "correct"
+  },
+  {
+   "skill": "correlation",
+   "level": 1,
+   "seed": 7,
+   "input": "-7.5",
+   "label": "correct"
+  },
+  {
+   "skill": "correlation",
+   "level": 1,
+   "seed": 7,
+   "input": "-10",
+   "label": "wrong",
+   "note": "divided by n − 1"
+  },
+  {
+   "skill": "correlation",
+   "level": 2,
+   "seed": 7,
+   "input": "-0.938",
+   "label": "correct"
+  },
+  {
+   "skill": "correlation",
+   "level": 2,
+   "seed": 7,
+   "input": "-0.94",
+   "label": "close"
+  },
+  {
+   "skill": "correlation",
+   "level": 2,
+   "seed": 7,
+   "input": "0.938",
+   "label": "wrong",
+   "mistake": "sign"
+  },
+  {
+   "skill": "correlation",
+   "level": 3,
+   "seed": 7,
+   "input": "-0.25",
+   "label": "correct"
+  },
+  {
+   "skill": "correlation",
+   "level": 3,
+   "seed": 7,
+   "input": "-1/4",
+   "label": "correct"
+  },
+  {
+   "skill": "correlation",
+   "level": 3,
+   "seed": 7,
+   "input": "0.35",
+   "label": "wrong",
+   "note": "E(XY) alone"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 1,
+   "seed": 7,
+   "input": "reject",
+   "label": "correct"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 1,
+   "seed": 7,
+   "input": "Reject",
+   "label": "correct"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 1,
+   "seed": 7,
+   "input": "do not reject",
+   "label": "wrong"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 1,
+   "seed": 7,
+   "input": "maybe",
+   "label": "form"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 2,
+   "seed": 7,
+   "input": "1.2",
+   "label": "correct"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 2,
+   "seed": 7,
+   "input": "1.20",
+   "label": "correct"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 2,
+   "seed": 7,
+   "input": "0.3",
+   "label": "wrong",
+   "note": "divided by σ, not σ/√n"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 3,
+   "seed": 7,
+   "input": "0.115",
+   "label": "correct"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 3,
+   "seed": 7,
+   "input": "0.230",
+   "label": "wrong",
+   "note": "two-tailed"
+  },
+  {
+   "skill": "hypothesis",
+   "level": 3,
+   "seed": 7,
+   "input": "0.885",
+   "label": "wrong"
   }
  ]
 }

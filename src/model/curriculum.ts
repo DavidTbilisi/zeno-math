@@ -8,6 +8,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
+  "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen",
 ];
 
@@ -88,6 +89,11 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   numroots: ["functions"],
   numint: ["definite"],
   ci: ["average"],
+  expectation: ["probability", "average"],
+  conditional: ["probability"],
+  distributions: ["expectation", "counting"],
+  correlation: ["average"],
+  hypothesis: ["distributions", "ci"],
   projection: ["dotangle"],
   matrices: ["dotangle"],
   determinant: ["matrices"],
@@ -216,6 +222,11 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   numroots: [13, 13, 13],
   numint: [13, 13, 13],
   ci: [13, 13, 13],
+  expectation: [12, 12, 12], // discrete random variables, E(X) and Var(X) (H2)
+  conditional: [12, 12, 12], // conditional probability (H2)
+  distributions: [12, 12, 12], // the binomial and normal distributions (H2)
+  correlation: [12, 12, 13], // the product-moment correlation coefficient (H2); covariance from a joint distribution is past it
+  hypothesis: [12, 12, 12], // p-values and z tests of a mean (H2)
   projection: [12, 12, 12], // the length of a projection |a · n̂|, the foot of the perpendicular from a point to a line (H2)
   matrices: [10, 13, 13], // multiplying matrices (Sec 3/4); the transpose and A² = aA + bI are past school
   determinant: [13, 13, 13],

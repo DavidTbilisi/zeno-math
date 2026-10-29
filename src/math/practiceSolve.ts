@@ -159,6 +159,8 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const { latexToSvg } = await import("./latex");
       return latexToSvg((await import("./matrix")).matrixLatex(spec));
     }
+    case "randvar":
+      return (await import("./randvar")).renderRandvar(s, t.randvarWords);
     case "numerical":
       return (await import("./numerical")).renderNumerical(s, t.numWords);
   }
