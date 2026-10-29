@@ -7,7 +7,7 @@
 import { axes, C, compose, curve, dot, esc, fill, FONT, lbl, makeFrame, r2, texLines, W, yRange, type Caption, type Frame, type TexLine } from "./chart";
 import {
   add, D, div, E_, exprMessages, F, fn, fromPoly, has, isNum, key, mul, N, neg, pdeg, peval, pow, qsNum, qsPlain, qsTex, realRoots,
-  simp, sub, substitute, tex, tidy, toPoly, V, X, approx, evalE, parseE, type E, type Fn, type QS,
+  simp, sub, substitute, tex, tidy, toPoly, V, X, approx, evalE, parseE, writePartialIn, type E, type Fn, type QS,
 } from "./expr";
 import { Frac } from "./fraction";
 import { latexToSvg, type RenderedSvg } from "./latex";
@@ -92,9 +92,12 @@ function outerDerivative(f: Fn, a: E): E {
   }
 }
 
-/** A pending derivative — except that constants and x itself are done on the spot. */
+/** The variable being differentiated in: x, or another letter for a partial derivative (the rest held constant). */
+let wrt = "x";
+
+/** A pending derivative — except that constants and the variable itself are done on the spot. */
 function Dq(a: E, rules: Set<RuleKey>): E {
-  if (!has(a)) return rules.add("const"), N(0);
+  if (!has(a, wrt)) return rules.add("const"), N(0);
   if (a.k === "var") return rules.add("power"), N(1);
   return D(a);
 }
@@ -102,7 +105,7 @@ function Dq(a: E, rules: Set<RuleKey>): E {
 /** One level of d/dx of u: the rule's result, with new pending derivatives (v)′ inside it. */
 function rule(u: E, rules: Set<RuleKey>): E {
   const D = (a: E) => Dq(a, rules);
-  if (!has(u)) {
+  if (!has(u, wrt)) {
     rules.add("const");
     return N(0);
   }
@@ -115,8 +118,8 @@ function rule(u: E, rules: Set<RuleKey>): E {
       rules.add("sum");
       return add(...u.ts.map(D));
     case "mul": {
-      const cs = u.fs.filter((f) => !has(f));
-      const vs = u.fs.filter((f) => has(f));
+      const cs = u.fs.filter((f) => !has(f, wrt));
+      const vs = u.fs.filter((f) => has(f, wrt));
       const one = (fs: E[]) => (fs.length === 1 ? fs[0] : mul(...fs));
       if (cs.length) {
         rules.add("constMul");
@@ -136,12 +139,12 @@ function rule(u: E, rules: Set<RuleKey>): E {
       return add(mul(D(first), r), mul(first, D(r)));
     }
     case "pow": {
-      if (!has(u.e)) {
+      if (!has(u.e, wrt)) {
         rules.add("power");
         const n1 = isNum(u.e) ? N(u.e.v.sub(F(1))) : add(u.e, N(-1));
         return chain(mul(u.e, pow(u.b, n1)), u.b);
       }
-      if (!has(u.b)) {
+      if (!has(u.b, wrt)) {
         if (u.b.k === "e") {
           rules.add("exp");
           return chain(pow(E_, u.e), u.e);
@@ -201,8 +204,21 @@ export function differentiate(f: E): { rows: TexLine[]; result: E; used: RuleKey
   return { rows, result, used: RULE_ORDER.filter((r) => used.has(r) && r !== "const") };
 }
 /** Just the simplified derivative. */
-/** Just the simplified derivative. */
 export const derive = (f: E) => differentiate(f).result;
+
+/** The partial derivative in `v`, one rule at a time, every other letter held constant. */
+export function partial(f: E, v: string): { rows: TexLine[]; result: E; used: RuleKey[] } {
+  wrt = v;
+  writePartialIn(v);
+  try {
+    return differentiate(f);
+  } finally {
+    wrt = "x";
+    writePartialIn(null);
+  }
+}
+/** Just the simplified partial derivative. */
+export const partialOf = (f: E, v: string) => partial(f, v).result;
 
 /** Points where f is defined, for the numerical check. */
 function checkPoints(f: E, d: E): number[] {

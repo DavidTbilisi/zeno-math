@@ -388,6 +388,19 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - *Stationary points*: f′(x) = 0 solved exactly (rational roots, then the formula with surds such as 1 ± √2),
     maximum / minimum / point of inflection by the second derivative (or the sign of f′ when f″ = 0), a sign chart
     with ↗ ↘, and where f is increasing or decreasing
+- **∇ Several variables** — calculus in x and y, the derivatives taken by the same rule-by-rule engine with the other
+  letter held constant (each pending one written ∂/∂x (u)), every value checked by small steps
+  - *Partial derivatives*: ∂f/∂x and ∂f/∂y step by step, their values at a point, and the two slices of the surface
+    through it, f(x, b) and f(a, y), each with its tangent: a partial derivative is the slope of a slice
+  - *Gradient*: ∇f = (∂f/∂x, ∂f/∂y), its value and length at the point, on a contour map with equal units: the arrow
+    points uphill at right angles to the contour through the point, with the field of gradients around it
+  - *Chain rule*: f(x, y) with x(t) and y(t), df/dt = ∂f/∂x · dx/dt + ∂f/∂y · dy/dt, drawn as a computation graph
+    t → x, y → f with each edge's local derivative; the two paths multiplied along and added, as backprop does
+  - *Jacobian*: a map (x, y) ↦ (u, v), its matrix of partial derivatives and det J; a small square of grid lines and
+    where the map sends it, beside where J sends it (a parallelogram |det J| times the area, flipped when det J < 0)
+  - *Hessian*: the second partial derivatives (the mixed ones agree), H at the point, its eigenvalues as curvatures
+    along their eigenvectors on a contour map, minimum / maximum / saddle / undecided, and at a minimum the largest
+    rate gradient descent can use, η < 2/λ₁
 - **∫ Integrals** — integration techniques, every step shown and every answer checked
   (differentiating F must give back f; definite values are compared with Simpson's rule)
   - *Substitution*: ∫ c·x^(m−1)·g(a·xᵐ + b) dx with g = uⁿ, eᵘ, sin, cos or 1/u — du, the integral in u,
@@ -1692,6 +1705,7 @@ src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendic
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures
 src/math/expr.ts          expressions in x: parser, LaTeX, tidy-up and simplifier, exact a + b√s, real roots of polynomials
 src/math/derive.ts        derivatives: rules one level at a time, first principles, chain, tangents, stationary points
+src/math/multivar.ts      several variables: partial derivatives, gradient, chain rule as a graph, Jacobian, Hessian
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
 src/math/mental.ts        mental math: base multiplication, division (base, flag, Trachtenberg), divisibility,
                           reciprocals, digit-sum check, roots, cubing, magic squares, Major System
