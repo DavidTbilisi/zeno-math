@@ -3,6 +3,9 @@ import { api, type BoardSummary } from "../api";
 import { BrandBar } from "../components/BrandBar";
 import { useI18n } from "../i18n";
 
+// AGPL-3.0 §13: whoever runs Zeno for others must offer them its source. A modified copy points this at its own code.
+const SOURCE_URL = "https://github.com/DavidTbilisi/zeno-math";
+
 export function HomePage() {
   const { t, lang } = useI18n();
   const [boards, setBoards] = useState<BoardSummary[] | null>(null);
@@ -101,6 +104,9 @@ export function HomePage() {
           )}
           <p className="muted small">
             <a href="#/teacher">{t.teacher.link}</a>
+          </p>
+          <p className="muted small">
+            <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">{t.sourceCode}</a>
           </p>
         </main>
       </div>

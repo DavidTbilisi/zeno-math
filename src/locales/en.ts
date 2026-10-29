@@ -17,6 +17,7 @@ export const en = {
   backupAll: "Download a backup of all boards",
   aboutLink: "About Zeno",
   about,
+  sourceCode: "Source code (AGPL-3.0)",
   updated: "Updated",
   back: "Boards",
   saving: "Saving…",
