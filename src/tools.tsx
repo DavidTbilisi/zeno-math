@@ -1,6 +1,7 @@
 // Every tool in one table: its dialog (loaded the first time it opens), its menu entry and its edit label.
 // The board page, the menus and the tool search are all built from this list.
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
+import type { BarIconName } from "./components/BarIcon";
 import type { Dict } from "./locales/en";
 import { AREAS, SKILLS } from "./math/practiceSkills";
 
@@ -93,17 +94,17 @@ export const isToolKind = (k: unknown): k is ToolKind => typeof k === "string" &
 
 /** A menu entry: a tool, optionally opened on a given topic. */
 export type MenuEntry = { kind: ToolKind; icon: string; label: Word; start?: string };
-export type MenuGroup = { icon: string; label: Word; title?: Word; items: MenuEntry[] };
+export type MenuGroup = { icon: BarIconName; label: Word; title?: Word; items: MenuEntry[] };
 
 export const MENUS: MenuGroup[] = [
   {
-    icon: "🧮", label: "groupArithmetic", items: [
+    icon: "arithmetic", label: "groupArithmetic", items: [
       { kind: "model", icon: "▦", label: "models" },
       { kind: "mental", icon: "🧠", label: "mental" },
     ],
   },
   {
-    icon: "📐", label: "groupGeometryShort", title: "groupGeometry", items: [
+    icon: "geometry", label: "groupGeometryShort", title: "groupGeometry", items: [
       { kind: "geometry", icon: "📐", label: "geometry" },
       { kind: "euclid", icon: "⊙", label: "euclidTool" },
       { kind: "coord", icon: "xy", label: "coord" },
@@ -114,7 +115,7 @@ export const MENUS: MenuGroup[] = [
     ],
   },
   {
-    icon: "∑", label: "groupAlgebraShort", title: "groupAlgebra", items: [
+    icon: "algebra", label: "groupAlgebraShort", title: "groupAlgebra", items: [
       { kind: "formula", icon: "∑", label: "formula" },
       { kind: "graph", icon: "📈", label: "graph" },
       { kind: "functions", icon: "f(x)", label: "functionsTool" },
@@ -133,7 +134,7 @@ export const MENUS: MenuGroup[] = [
     ],
   },
   {
-    icon: "ℤ", label: "groupDiscreteShort", title: "groupDiscrete", items: [
+    icon: "discrete", label: "groupDiscreteShort", title: "groupDiscrete", items: [
       { kind: "nt", icon: "ℤ", label: "nt" },
       { kind: "comb", icon: "ⁿCₖ", label: "comb" },
       { kind: "gt", icon: "⬡", label: "gt" },
@@ -146,7 +147,7 @@ export const MENUS: MenuGroup[] = [
     ],
   },
   {
-    icon: "🤖", label: "groupAi", title: "groupAiTitle", items: [
+    icon: "ai", label: "groupAi", title: "groupAiTitle", items: [
       { kind: "ai", icon: "⊞", label: "aiTensors", start: "tensor" },
       { kind: "ai", icon: "⇄", label: "aiOps", start: "ops" },
       { kind: "ai", icon: "↘", label: "aiDescent", start: "descent" },
@@ -157,7 +158,7 @@ export const MENUS: MenuGroup[] = [
     ],
   },
   {
-    icon: "🎯", label: "practice", items: [
+    icon: "practice", label: "practice", items: [
       { kind: "practice", icon: "🔢", label: "practiceNumber", start: "number" },
       { kind: "practice", icon: "⚖", label: "practiceAlgebra", start: "algebra" },
       { kind: "practice", icon: "📐", label: "practiceGeometry", start: "geometry" },

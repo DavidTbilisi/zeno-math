@@ -6,6 +6,7 @@ import type { AppState, BinaryFileData, BinaryFiles, ExcalidrawImperativeAPI } f
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 import { api, ApiError, type SharedBoard } from "../api";
+import { ZenoMark } from "../components/ZenoMark";
 import { LangSelect, useI18n } from "../i18n";
 import { isLiveLink, liveDataOf } from "../live/element";
 import { LiveView, type LiveHost } from "../live/LiveView";
@@ -52,14 +53,15 @@ export function SharedBoardPage({ token }: { token: string }) {
     };
   }, [token]);
 
-  if (gone) return <div className="center-msg"><p>{t.sharedGone}</p></div>;
-  if (!board) return <div className="center-msg">{t.loading}</div>;
+  if (gone) return <div className="z center-msg"><p>{t.sharedGone}</p></div>;
+  if (!board) return <div className="z center-msg">{t.loading}</div>;
   const scene = board.scene;
   return (
-    <div className="board-page shared-board">
+    <div className="z board-page shared-board">
       <header className="board-bar">
+        <span className="board-home"><ZenoMark size={14} /></span>
         <strong className="shared-title">{board.title}</strong>
-        <span className="save-state saved">👁 {t.readOnly}</span>
+        <span className="save-state saved">{t.readOnly}</span>
         <div className="spacer" />
         <LangSelect />
       </header>
