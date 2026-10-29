@@ -1,4 +1,4 @@
-// The front page for schools (#/about): what Zeno is, what a class gets, how a class starts, and where the data lives.
+// The front page for schools (/about, open to anyone, or #/about inside the app): what Zeno is, what a class gets, how a class starts, and where the data lives.
 // Its centrepiece is Zeno's own paradox played out: each right answer covers half of the gap that is left.
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { BrandBar } from "../components/BrandBar";
@@ -113,8 +113,9 @@ export function AboutPage() {
   const a = t.about;
   return (
     <div className="z">
-      <BrandBar>
-        <a href="#/">{t.myBoards}</a>
+      {/* Links go to the app at /, so from the open /about they lead to the password rather than past it. */}
+      <BrandBar home="/#/">
+        <a href="/#/">{t.myBoards}</a>
       </BrandBar>
 
       <main className="z-main">
@@ -123,8 +124,8 @@ export function AboutPage() {
             <h1>{a.title}</h1>
             <p className="z-lede">{a.lede}</p>
             <div className="z-ctas">
-              <a className="z-btn z-btn-ink" href="#/practice">{a.tryPractice}</a>
-              <a className="z-btn z-btn-line" href="#/teacher">{a.forTeachers}</a>
+              <a className="z-btn z-btn-ink" href="/#/practice">{a.tryPractice}</a>
+              <a className="z-btn z-btn-line" href="/#/teacher">{a.forTeachers}</a>
             </div>
           </div>
           <ZenoDemo />
@@ -159,7 +160,7 @@ export function AboutPage() {
 
         <footer className="z-end">
           <p>{a.endTitle}</p>
-          <a className="z-btn z-btn-ink" href="#/practice">{a.tryPractice}</a>
+          <a className="z-btn z-btn-ink" href="/#/practice">{a.tryPractice}</a>
         </footer>
       </main>
     </div>
