@@ -96,6 +96,16 @@ function authorized(req: IncomingMessage): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+/**
+ * What anyone may load without the password: the front page for schools (/about, the app's index.html, which shows
+ * the landing at that address) and the files it is built from. The scripts are the open-source app's own code; boards,
+ * classes and every other /api route stay behind the password, and so does / itself. One flat file name per directory
+ * (no %-escapes, no deeper paths), so nothing reaches past those directories.
+ */
+const PUBLIC_FILE = /^\/(?:assets|brand)\/[\w.-]+$/;
+const isPublic = (path: string) =>
+  path === "/about" || path === "/favicon.svg" || path === "/asset-path.js" || (PUBLIC_FILE.test(path) && !path.includes(".."));
+
 function cleanTitle(value: unknown): string {
   return String(value ?? "").trim().slice(0, 200) || "Untitled";
 }
@@ -252,8 +262,8 @@ const server = createServer(async (req, res) => {
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
-  // The health check reveals nothing, so Docker can probe it without the password.
-  if (path !== "/api/health" && APP_PASSWORD) {
+  // The health check reveals nothing, so Docker can probe it without the password; the front page is meant for anyone.
+  if (path !== "/api/health" && !isPublic(path) && APP_PASSWORD) {
     const client = clientOf(req);
     const wait = passwords.retryAfter(client);
     if (wait) return send(res, 429, { error: "too many wrong passwords; try again later" }, { "Retry-After": String(wait) });

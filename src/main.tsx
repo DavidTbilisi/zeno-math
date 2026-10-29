@@ -40,7 +40,8 @@ function App() {
         <PracticePage key={practice[1]} start={practice[1]} />
       </Suspense>
     );
-  if (hash === "#/about")
+  // /about is the same front page at an address the server lets anyone open (#/about needs the password).
+  if (hash === "#/about" || location.pathname === "/about")
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>
         <AboutPage />

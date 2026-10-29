@@ -1,4 +1,4 @@
-// The front page for schools: reached from the home page, its question closes half of the gap on each right answer,
+// The front page for schools: at /about of its own, reached from the home page, its question closes half of the gap on each right answer,
 // leaves the gap where it was on a wrong one, and calls the skill mastered past 0.95.
 import { expect, test, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
@@ -36,4 +36,12 @@ test("each right answer covers half of what's left, and past 0.95 the skill is m
   await page.getByRole("button", { name: a.again }).click();
   await expect(line).toHaveAccessibleName("0/1 of the way to 1");
   await expect(page.getByLabel(a.answer)).toBeFocused();
+});
+
+test("the front page has an address of its own, and its links lead into the app", async ({ page }) => {
+  await page.goto("/about");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(a.title);
+  await page.getByRole("link", { name: a.tryPractice }).first().click();
+  await expect(page).toHaveURL(/\/#\/practice$/);
+  await expect(page.getByRole("heading", { name: en.practice, level: 1 })).toBeVisible();
 });
