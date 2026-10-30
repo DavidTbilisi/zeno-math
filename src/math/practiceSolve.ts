@@ -164,6 +164,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./decimalPics").DecimalSolution & { steps: string[] };
       return (await import("./decimalPics")).renderDecimal(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "percent": {
+      // Bars cut into equal chunks, each with its amount in it, with the working through one chunk beneath.
+      const spec = s as import("./percentPics").PercentSolution & { steps: string[] };
+      return (await import("./percentPics")).renderPercent(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "randvar":
       return (await import("./randvar")).renderRandvar(s, t.randvarWords);
     case "numerical":
