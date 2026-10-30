@@ -1107,6 +1107,18 @@ function nnLabPreview(): Piece[] {
   ];
 }
 
+function convLabPreview(): Piece[] {
+  // A grid of pixels with a 3 × 3 window framed on it, and an arrow to one cell of a smaller output grid.
+  return [
+    ...grid(0, 20, 5, 5, 24, { color: "#adb5bd", width: 1 }),
+    rect(24, 44, 72, 72, { color: "#e03131", width: 3 }),
+    rect(48, 68, 24, 24, { fill: "#1e1e1e", color: "#1e1e1e", width: 1 }),
+    arrow([130, 80], [150, 80], false, { color: "#868e96", width: 2.5 }),
+    ...grid(156, 44, 3, 3, 16, { color: "#adb5bd", width: 1 }),
+    rect(156, 44, 16, 16, { fill: "#ffc078", color: "#e03131", width: 2.5 }),
+  ];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1778,6 +1790,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTreeLab", group: "games", build: treeLabPreview, live: "treeLab" },
   { id: "liveKmeansLab", group: "games", build: kmeansLabPreview, live: "kmeansLab" },
   { id: "liveNnLab", group: "games", build: nnLabPreview, live: "nnLab" },
+  { id: "liveConvLab", group: "games", build: convLabPreview, live: "convLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

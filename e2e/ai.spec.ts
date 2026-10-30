@@ -21,12 +21,14 @@
 // right, for two stars. The tensors lab: a Check with nothing tapped says so, T[2, 1] for T[1, 2] has the indices the
 // wrong way round, and T[1, 2] is right after those two tries for one star; then T[2, 1]'s place in memory at the first try, linked to it.
 // The network lab: a Check counts the perceptron's mistakes, and twenty updates turn its line until none is left, for two stars.
+// The convolution lab: a Check with no cell picked says so, and the cell where the signal steps up is right, for two stars.
 import { expect, test } from "@playwright/test";
 import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
 import { ETAS } from "../src/math/batchLab.ts";
+import { CONV_PLOT, OUTPUT as CONV_OUT } from "../src/math/convLab.ts";
 import { etaIndex } from "../src/math/descentLab.ts";
-import { KNN_PLOT, toPx as knnPx } from "../src/math/knnLab.ts";
 import { EMBED_PLOT, toPage as embedPage } from "../src/math/embedLab.ts";
+import { KNN_PLOT, toPx as knnPx } from "../src/math/knnLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
 import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 import { TN_PLOT, tnLayout, tnSetup, viewOf } from "../src/math/tensorLab.ts";
@@ -602,5 +604,32 @@ test("the network lab: the perceptron's mistakes are counted, and updates turn i
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/the perceptron always finds one!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("nn-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the convolution lab: no cell picked says so, the cell where the signal steps up is right", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Convolution lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Convolution lab/ }).click();
+  const lab = page.locator(".live-convLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Tap the output cell where the signal steps up/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText("Tap a cell of the output first.")).toBeVisible();
+
+  // The output is 1 × 9; its third cell is where 0, 0, 0 steps up to 1.
+  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const k = svg.width / CONV_PLOT.w;
+  const c = 220 / 9;
+  await page.mouse.click(svg.x + (CONV_OUT.left + 2.5 * c) * k, svg.y + (CONV_OUT.top + c / 2) * k);
+  await expect(lab.locator("svg[role=img]")).toContainText("sum: 1·1 = 1");
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/the output is large only where the signal changes!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("conv-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
