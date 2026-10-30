@@ -169,6 +169,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./percentPics").PercentSolution & { steps: string[] };
       return (await import("./percentPics")).renderPercent(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "ratio": {
+      // The bar model: a row of equal parts for each share, what is asked green, with the working beneath.
+      const spec = s as import("./ratioPics").RatioSolution & { steps: string[] };
+      return (await import("./ratioPics")).renderRatio(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "randvar":
       return (await import("./randvar")).renderRandvar(s, t.randvarWords);
     case "numerical":
