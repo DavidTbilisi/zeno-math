@@ -24,6 +24,7 @@
 // The convolution lab: a Check with no cell picked says so, and the cell where the signal steps up is right, for two stars.
 // The attention lab: a query pointed away from cat gives it little weight, and pointed along cat's key most, for two stars.
 // The recurrent-network lab: w = 0.5 forgets the pulse, and w = 1.3 on the slider keeps it, for two stars.
+// The reinforcement-learning lab: the weather's shares still move at first, and after eight days they have settled, for two stars.
 import { expect, test } from "@playwright/test";
 import { ATTN_PLOT, toPage as attnPage } from "../src/math/attnLab.ts";
 import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
@@ -688,5 +689,28 @@ test("the recurrent-network lab: w = 0.5 forgets the pulse, w = 1.3 keeps it", a
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/the state is the network's memory!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("rnn-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the reinforcement-learning lab: the weather's shares settle after enough days", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "RL lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Reinforcement learning lab/ }).click();
+  const lab = page.locator(".live-rlLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Step the days until the shares stop moving/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/The shares still move/)).toBeVisible();
+
+  for (let i = 0; i < 8; i++) await lab.getByRole("button", { name: "Next day" }).click();
+  await expect(lab.locator(".descent-read")).toHaveText(/sunny: 0\.4\d after 8 days/);
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/the same long run.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("rl-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });

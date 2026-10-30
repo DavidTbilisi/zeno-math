@@ -1143,6 +1143,18 @@ function rnnLabPreview(): Piece[] {
   });
 }
 
+function rlLabPreview(): Piece[] {
+  // A 4 × 3 grid world: a goal in the corner, a wall, and arrows leading from the start to the goal.
+  return [
+    ...grid(0, 10, 4, 3, 46, { color: "#adb5bd", width: 1 }),
+    rect(138, 10, 46, 46, { fill: "#b2f2bb", color: "#2f9e44", width: 2 }),
+    rect(46, 56, 46, 46, { fill: "#495057", color: "#495057", width: 1 }),
+    ellipse(23, 125, 8, 8, { fill: "#1971c2", color: "#1971c2", width: 1 }),
+    arrow([23, 112], [23, 44], false, { color: "#1971c2", width: 3 }),
+    arrow([30, 33], [128, 33], false, { color: "#1971c2", width: 3 }),
+  ];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1817,6 +1829,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveConvLab", group: "games", build: convLabPreview, live: "convLab" },
   { id: "liveAttnLab", group: "games", build: attnLabPreview, live: "attnLab" },
   { id: "liveRnnLab", group: "games", build: rnnLabPreview, live: "rnnLab" },
+  { id: "liveRlLab", group: "games", build: rlLabPreview, live: "rlLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

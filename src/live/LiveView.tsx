@@ -71,6 +71,7 @@ import { NnLab } from "./NnLab";
 import { ConvLab } from "./ConvLab";
 import { AttnLab } from "./AttnLab";
 import { RnnLab } from "./RnnLab";
+import { RlLab } from "./RlLab";
 import { SoftmaxLab } from "./SoftmaxLab";
 import { EmbedLab } from "./EmbedLab";
 import { BackpropLab } from "./BackpropLab";
@@ -180,6 +181,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   convLab: ConvLab,
   attnLab: AttnLab,
   rnnLab: RnnLab,
+  rlLab: RlLab,
 };
 
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {
