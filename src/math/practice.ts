@@ -52,7 +52,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec";
@@ -1098,7 +1098,8 @@ const GENS: Record<SkillId, Gen> = {
       const traps: Trap[] = a.p !== b.p && slip > 0 && slip !== res ? [{ id: "alignedRight", a: num(slip / 10 ** P), vars: { a: a.p < P ? fa : fb, pa: a.p < P ? fmtM(at(a), P) : fmtM(at(b), P) } }] : [];
       const op = plus ? "+" : "-";
       const steps = a.p === b.p ? [`${fa} ${op} ${fb} = ${tidy(v)}`] : [`${fa} ${op} ${fb} = ${fmtM(at(a), P)} ${op} ${fmtM(at(b), P)}`, `= ${fmtM(res, P)}`];
-      return { prompt: w.prompts.times, q: `${fa} ${op} ${fb}`, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", steps };
+      const solution = { kind: "decimal" as const, spec: { pic: "columns", op, a: at(a), b: at(b), pa: a.p, pb: b.p, P, steps } };
+      return { prompt: w.prompts.times, q: `${fa} ${op} ${fb}`, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution };
     }
     /** x × f or x ÷ f (f a power of ten), with the other one as the trap: the digits moved the wrong way. */
     const shifted = (m: number, p: number, f: number, times: boolean) => {
@@ -1113,7 +1114,8 @@ const GENS: Record<SkillId, Gen> = {
         const m = noZeroEnd(r, 11, 9999);
         const { v, traps } = shifted(m, p, f, times);
         const q = `${fmtM(m, p)} ${times ? "\\times" : "\\div"} ${f}`;
-        return { prompt: w.prompts.times, q, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", steps: [`${q} = ${tidy(v)}`] };
+        const solution = { kind: "decimal" as const, spec: { pic: "shift", m, p, e: Math.log10(f), times, steps: [`${q} = ${tidy(v)}`] } };
+        return { prompt: w.prompts.times, q, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution };
       }
       // A decimal times or divided by a one-digit number (P4), worked in tenths or hundredths as whole numbers. For a
       // division the answer is drawn first, so it comes out exactly.
@@ -1122,13 +1124,15 @@ const GENS: Record<SkillId, Gen> = {
       if (r.next() < 0.5) {
         const m = noZeroEnd(r, f + 1, 30 * f);
         const v = (m * d) / f;
-        return { prompt: w.prompts.times, q: `${fmtM(m, p)} \\times ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", steps: [`${fmtM(m, p)} \\times ${d} = \\frac{${m} \\times ${d}}{${f}} = \\frac{${m * d}}{${f}} = ${tidy(v)}`] };
+        const steps = [`${fmtM(m, p)} \\times ${d} = \\frac{${m} \\times ${d}}{${f}} = \\frac{${m * d}}{${f}} = ${tidy(v)}`];
+        return { prompt: w.prompts.times, q: `${fmtM(m, p)} \\times ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec: { pic: "jumps", m, p, d, times: true, steps } } };
       }
       let m: number;
       do m = noZeroEnd(r, f + 1, 20 * f);
       while ((m * d) % 10 === 0);
       const v = m / f;
-      return { prompt: w.prompts.times, q: `${fmtM(m * d, p)} \\div ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", steps: [`${fmtM(m * d, p)} \\div ${d} = \\frac{${m * d} \\div ${d}}{${f}} = \\frac{${m}}{${f}} = ${tidy(v)}`] };
+      const steps = [`${fmtM(m * d, p)} \\div ${d} = \\frac{${m * d} \\div ${d}}{${f}} = \\frac{${m}}{${f}} = ${tidy(v)}`];
+      return { prompt: w.prompts.times, q: `${fmtM(m * d, p)} \\div ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec: { pic: "jumps", m, p, d, times: false, steps } } };
     }
     if (r.next() < 0.5) {
       // A measurement from one unit to the other in decimal form (P5): km and m, m and cm, kg and g, litres and ml.
@@ -1140,7 +1144,9 @@ const GENS: Record<SkillId, Gen> = {
       while (!down && m % f === 0);
       const { v, traps } = shifted(m, p, f, down);
       const a = `${fmtM(m, p)} ${w.units[down ? big : small]}`;
-      return { prompt: fill(w.prompts.convertUnit, { a, u: w.units[down ? small : big] }), q: "", answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", steps: [`${fmtM(m, p)} ${down ? "\\times" : "\\div"} ${f} = ${tidy(v)}`] };
+      const units = [w.units[down ? big : small], w.units[down ? small : big]];
+      const spec = { pic: "shift", m, p, e: Math.log10(f), times: down, units, steps: [`${fmtM(m, p)} ${down ? "\\times" : "\\div"} ${f} = ${tidy(v)}`] };
+      return { prompt: fill(w.prompts.convertUnit, { a, u: w.units[down ? small : big] }), q: "", answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec } };
     }
     // A whole number divided by a whole number, the answer as a decimal (P4): exact when the divisor goes into a power of
     // ten, else rounded to 2 places. The worked solution is the long division, carried past the point.
