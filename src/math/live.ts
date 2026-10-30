@@ -64,6 +64,7 @@ import { KM_START, type LiveKmeans } from "./kmeansLab";
 import { NN_START, type LiveNn } from "./nnLab";
 import { CONV_START, type LiveConv } from "./convLab";
 import { ATTN_START, type LiveAttn } from "./attnLab";
+import { RNN_START, type LiveRnn } from "./rnnLab";
 import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
 import { BP_START, type LiveBackprop } from "./backpropLab";
@@ -482,6 +483,7 @@ export type LiveStates = {
   nnLab: LiveNn;
   convLab: LiveConv;
   attnLab: LiveAttn;
+  rnnLab: LiveRnn;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -569,6 +571,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   nnLab: [660, 740],
   convLab: [660, 700],
   attnLab: [660, 720],
+  rnnLab: [660, 700],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -658,6 +661,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     nnLab: NN_START,
     convLab: CONV_START,
     attnLab: ATTN_START,
+    rnnLab: RNN_START,
   };
   return structuredClone(start[kind]);
 }
