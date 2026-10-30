@@ -30,6 +30,7 @@ import { DERIV_PRESETS, renderDeriv } from "../src/math/derive.ts";
 import { MV_PRESETS, renderMultivar } from "../src/math/multivar.ts";
 import { RV_PRESETS, renderRandvar } from "../src/math/randvar.ts";
 import { LK_PRESETS, renderLikelihood } from "../src/math/likelihood.ts";
+import { INFO_PRESETS, renderInformation } from "../src/math/information.ts";
 import { APP_PRESETS, renderApplied } from "../src/math/applied.ts";
 import { INF_PRESETS, renderInference } from "../src/math/inference.ts";
 import { PRACTICE_PRESETS, renderPractice } from "../src/math/practice.ts";
@@ -72,6 +73,7 @@ const TOOLS: [string, any[], (spec: any, t: Dict) => RenderedSvg][] = [
   ["several variables", specs(MV_PRESETS), (s, t) => renderMultivar(s, t.multivarWords)],
   ["random variables", specs(RV_PRESETS), (s, t) => renderRandvar(s, t.randvarWords)],
   ["likelihood", specs(LK_PRESETS), (s, t) => renderLikelihood(s, t.likelihoodWords)],
+  ["information", specs(INFO_PRESETS), (s, t) => renderInformation(s, t.informationWords)],
   ["applied calculus", specs(APP_PRESETS), (s, t) => renderApplied(s, t.appWords)],
   ["inference", specs(INF_PRESETS), (s, t) => renderInference(s, t.infWords)],
   ["practice", specs(PRACTICE_PRESETS), (s, t) => renderPractice(s, t.pracWords)],
