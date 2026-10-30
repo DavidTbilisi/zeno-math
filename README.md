@@ -653,6 +653,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     horizontal edges, diagonal, sharpen), the stride and the padding, and 2 × 2 max pooling. Five puzzles with a
     Check: where a 1-D signal steps up, the kernel that finds a bar's sides, stride and padding for a 4 × 4 output,
     paint what a diagonal kernel looks for, and paint it twice (the same 9 weights find it anywhere)
+  - *Attention lab* (a live piece on the board, from the AI menu or the Shapes panel): words as key arrows on a plane
+    and a query dragged among them; each word's score is q · k divided by √d, softmax makes the weights, and the
+    output is their weighted mix. Five puzzles with a Check: point the query so cat gets 60 % of the attention, divide
+    by √d so d = 64 does not put all the weight on one word, read the self-attention matrix (what it attends to),
+    add positions so "dog bites man" and "man bites dog" differ, and steer the last word's query so the next word is
+    mat. Free play takes every view, d and the scaling
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1790,6 +1796,8 @@ src/math/nnLab.ts         the network lab: the perceptron's update, a 2 → h �
                           training, the four puzzles and how a check is judged, and the picture
 src/math/convLab.ts       the convolution lab: padding, output size, sliding sums, max pooling, where a kernel fires,
                           the five puzzles and how a check is judged, and the picture
+src/math/attnLab.ts       the attention lab: softmax, scaled scores, the weighted output, self-attention, positions,
+                          the next word, the five puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)

@@ -1119,6 +1119,18 @@ function convLabPreview(): Piece[] {
   ];
 }
 
+function attnLabPreview(): Piece[] {
+  // A query arrow among three key arrows, the nearest drawn thick, and three weight bars beside them.
+  const o: Pt = [70, 100];
+  return [
+    arrow(o, [130, 40], false, { color: "#1e1e1e", width: 5 }),
+    arrow(o, [20, 50], false, { color: "#adb5bd", width: 2 }),
+    arrow(o, [40, 150], false, { color: "#adb5bd", width: 2 }),
+    arrow(o, [140, 60], false, { color: "#e03131", width: 3 }),
+    ...[60, 14, 8].map((h, i): Piece => path([[156 + i * 16, 140], [156 + i * 16, 140 - h]], { color: "#1971c2", width: 10 })),
+  ];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1791,6 +1803,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveKmeansLab", group: "games", build: kmeansLabPreview, live: "kmeansLab" },
   { id: "liveNnLab", group: "games", build: nnLabPreview, live: "nnLab" },
   { id: "liveConvLab", group: "games", build: convLabPreview, live: "convLab" },
+  { id: "liveAttnLab", group: "games", build: attnLabPreview, live: "attnLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
