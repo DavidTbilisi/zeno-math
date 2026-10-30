@@ -1,6 +1,6 @@
 ---
-# Settings for npm run talk-pdf (scripts/thesis-pdf.ts --talk): the title-defense talk, in a larger type to read
-# aloud from. The fonts are those of pdf.yaml.
+# Settings for npm run talk-pdf and npm run final-talk-pdf (scripts/thesis-pdf.ts --talk, --final): the title-defense
+# and final-defence talks, in a larger type to read aloud from. The fonts are those of pdf.yaml.
 documentclass: article
 papersize: a4
 fontsize: 12pt
@@ -15,6 +15,7 @@ urlcolor: blue
 header-includes: |
   \usepackage{etoolbox}
   \AtBeginEnvironment{longtable}{\small}
+  \usepackage{longtable}
   \setlength\LTcapwidth{\linewidth}
   \linespread{1.15}
 ---
