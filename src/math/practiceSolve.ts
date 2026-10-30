@@ -149,9 +149,9 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./connectTowns").TownSolution & { steps: string[] };
       return (await import("./connectTowns")).renderTowns(spec, (await import("./practice")).renderSteps(spec.steps));
     }
-    case "rules":
-      // The Divisibility tab's table: each divisor's test applied to the number, with the verdict.
-      return (await import("./mental")).renderMental(s, t.mentalWords);
+    case "divisible":
+      // A row for each divisor: the digits its test looks at, the check beside them, a ✓ or ✗; the divisors that work beneath.
+      return (await import("./divisiblePics")).renderDivisible(s as import("./divisiblePics").DivSolution);
     case "matrix": {
       // The Matrices tool: a calculation's working, or the Vector spaces tab (rank, eigenvalues).
       const spec = s as import("./matrix").MatrixCalcSpec | import("./vectorspace").SpaceSpec;

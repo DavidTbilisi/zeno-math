@@ -19,7 +19,7 @@ import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type M
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
 import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
-import { divSlips, divTask, judgeDivisors, rulesSpec } from "./divisible";
+import { divSlips, divTask, judgeDivisors } from "./divisible";
 import { kakSet, kakSum, kakTraps } from "./kakooma";
 import { inversions as countInversions } from "./tactics";
 import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
@@ -56,7 +56,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round" | "divisible";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec";
@@ -1278,8 +1278,8 @@ const GENS: Record<SkillId, Gen> = {
 
   divisibility(r, L, w) {
     // Which of the divisors offered divide a number (src/math/divisible.ts): 2, 5 and 10; then 3 and 9; then 4, 6 and
-    // 8. The answer lists them, typed or tapped, in any order; the worked solution is the Divisibility tab's table of
-    // tests for those divisors.
+    // 8. The answer lists them, typed or tapped, in any order; the worked solution is a picture of each divisor's test
+    // (src/math/divisiblePics.ts).
     const t = divTask(L, r.next);
     const traps: Trap[] = divSlips(t).map((s) => ({ id: s.id, a: { k: "divisors", n: t.n, offered: t.offered, right: s.right }, vars: s.vars }));
     return {
@@ -1289,7 +1289,7 @@ const GENS: Record<SkillId, Gen> = {
       show: t.right.join(", "),
       plain: t.right.join(", "),
       format: "divisors",
-      solution: { kind: "rules", spec: rulesSpec(t) },
+      solution: { kind: "divisible", spec: { n: t.n, offered: t.offered } },
     };
   },
 

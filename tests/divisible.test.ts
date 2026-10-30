@@ -66,7 +66,7 @@ test("the slips each number invites, never its right answer", () => {
     }
 });
 
-test("in practice: typed or tapped in any order, the slips named, the table of tests drawn; the server agrees", async () => {
+test("in practice: typed or tapped in any order, the slips named, each test drawn; the server agrees", async () => {
   let named = 0;
   for (const level of LEVELS)
     for (let seed = 1; seed <= 80; seed++) {
@@ -87,7 +87,7 @@ test("in practice: typed or tapped in any order, the slips named, the table of t
   const r = await renderSolution(ex.solution!, en);
   assert.ok(!r.svg.includes("NaN"));
   // One row for each divisor offered: 7, 11 and 13 aren't there.
-  assert.ok(r.svg.includes("last two digits divisible by 4") && !r.svg.includes("alternating digit sum"));
+  assert.ok(r.svg.includes(">÷ 4<") && !r.svg.includes(">÷ 7<"));
   const q = { skill: "divisibility" as const, level: 1, seed: 7 };
   const easy = exercise("divisibility", 1, 7, w).plain;
   assert.deepEqual([mark(q, easy), mark(q, "3"), mark(q, "two")], ["correct", "form", "form"]);
