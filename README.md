@@ -647,6 +647,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     training and test loss drawn. Four puzzles with a Check: the perceptron until no point is wrong, XOR (which needs
     a hidden layer), a circle (enough hidden units), and noisy points where a big network overfits unless stopped
     early. Free play takes every dataset and setting
+  - *Convolution lab* (a live piece on the board, from the AI menu or the Shapes panel): a kernel of weights slid over
+    a signal or a small picture of pixels, the sums it makes drawn as the feature map; tap an output cell to see its
+    window over the input and its sum written out, paint pixels, pick the kernel (identity, blur, vertical and
+    horizontal edges, diagonal, sharpen), the stride and the padding, and 2 × 2 max pooling. Five puzzles with a
+    Check: where a 1-D signal steps up, the kernel that finds a bar's sides, stride and padding for a 4 × 4 output,
+    paint what a diagonal kernel looks for, and paint it twice (the same 9 weights find it anywhere)
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1782,6 +1788,8 @@ src/math/kmeansLab.ts     the k-means lab: assign and move, runs, random and k-m
                           each k, the disc's own cluster, the five puzzles and how a check is judged, and the picture
 src/math/nnLab.ts         the network lab: the perceptron's update, a 2 → h → 1 network, its forward pass, backprop and
                           training, the four puzzles and how a check is judged, and the picture
+src/math/convLab.ts       the convolution lab: padding, output size, sliding sums, max pooling, where a kernel fires,
+                          the five puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
