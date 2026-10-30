@@ -58,6 +58,7 @@ import { PCA_START, type LivePca } from "./pcaLab";
 import { FIT_START, type LiveFit } from "./fitLab";
 import { BATCH_START, type LiveBatch } from "./batchLab";
 import { ROC_START, type LiveRoc } from "./rocLab";
+import { KNN_START, type LiveKnn } from "./knnLab";
 import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
 import { BP_START, type LiveBackprop } from "./backpropLab";
@@ -470,6 +471,7 @@ export type LiveStates = {
   fitLab: LiveFit;
   batchLab: LiveBatch;
   rocLab: LiveRoc;
+  knnLab: LiveKnn;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -551,6 +553,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   fitLab: [660, 740],
   batchLab: [660, 800],
   rocLab: [660, 800],
+  knnLab: [660, 720],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -634,6 +637,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     fitLab: FIT_START,
     batchLab: BATCH_START,
     rocLab: ROC_START,
+    knnLab: KNN_START,
   };
   return structuredClone(start[kind]);
 }

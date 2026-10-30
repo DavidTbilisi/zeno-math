@@ -1054,6 +1054,21 @@ function rocLabPreview(): Piece[] {
   return [path([[0, 140], [140, 0]], { color: "#adb5bd", width: 2, dashed: true }), path(roc, { color: "#1971c2", width: 3 }), ellipse(20, 46, 6, 6, { fill: "#e03131", color: "#e03131", width: 1 })];
 }
 
+function knnLabPreview(): Piece[] {
+  // Orange and blue points, and a new point with a line to each of its three nearest inside a dashed circle.
+  const orange: Pt[] = [[118, 44], [128, 92], [150, 60], [176, 30], [170, 100]];
+  const blue: Pt[] = [[30, 110], [56, 132], [40, 70], [74, 120], [20, 30]];
+  const q: Pt = [100, 76];
+  const near: Pt[] = [[118, 44], [128, 92], [74, 120]];
+  return [
+    ellipse(q[0], q[1], 52, 52, { color: "#e8590c", width: 2, dashed: true }),
+    ...near.map((p) => seg(q, p, { color: "#868e96", width: 2 })),
+    ...orange.map(([x, y]) => ellipse(x, y, 7, 7, { fill: "#e8590c", color: "#e8590c", width: 1 })),
+    ...blue.map(([x, y]) => ellipse(x, y, 7, 7, { color: "#1971c2", width: 2.5 })),
+    ellipse(q[0], q[1], 10, 10, { fill: "#e8590c", color: "#1e1e1e", width: 3 }),
+  ];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1721,6 +1736,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFitLab", group: "games", build: fitLabPreview, live: "fitLab" },
   { id: "liveBatchLab", group: "games", build: batchLabPreview, live: "batchLab" },
   { id: "liveRocLab", group: "games", build: rocLabPreview, live: "rocLab" },
+  { id: "liveKnnLab", group: "games", build: knnLabPreview, live: "knnLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
