@@ -13,6 +13,7 @@
 // The batch training lab: η = 0.05 is too slow over 20 full-batch epochs, and 0.2 settles at the best line, for two stars.
 // The threshold lab: at t = 0.8 recall is too low, and the slider down to 0.3 catches 90 % of the positives, for two stars.
 // The k-NN lab: the new point among the blue ones is called blue, and dragged into the orange blob it is orange, for two stars.
+// The decision-tree lab: a Check before any split says so, and a cut at x < 0.6 makes both sides pure, for two stars.
 // So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
 // The embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
 // And the backprop lab: a Check with the boxes empty says which one, and q's box tapped and both boxes filled in are
@@ -520,5 +521,33 @@ test("the k-NN lab: the point among the blue is called blue, dragged into the or
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/every other point says nothing at all!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("knn-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the decision-tree lab: no split yet says so, a cut at x < 0.6 makes both sides pure", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Decision-tree lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Decision-tree lab/ }).click();
+  const lab = page.locator(".live-treeLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/slide the cut so that both sides are pure/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/There is no split yet/)).toBeVisible();
+
+  await lab.getByRole("button", { name: "cut on x" }).click();
+  const cut = lab.getByRole("slider", { name: "Cut t" });
+  await cut.fill("120");
+  await cut.dispatchEvent("pointerup");
+  await expect(lab.getByText("x < 0.600")).toBeVisible();
+  await lab.getByRole("button", { name: "Split", exact: true }).click();
+  await expect(lab.locator(".descent-read")).toHaveText(/2 boxes · training accuracy 1/);
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/a tree is a chain of such questions!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("tree-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
