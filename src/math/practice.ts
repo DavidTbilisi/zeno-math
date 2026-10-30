@@ -13,6 +13,7 @@ import { covariance } from "./randvar";
 import { percentSteps, type PercentSolution } from "./percentPics";
 import { ratioSteps, type RatioSolution } from "./ratioPics";
 import type { RateSolution } from "./ratePics";
+import type { RoundSolution } from "./roundPics";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type MatrixOp } from "./matrix";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
@@ -55,7 +56,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec";
@@ -4422,6 +4423,8 @@ const GENS: Record<SkillId, Gen> = {
   },
 
   rounding(r, L, w) {
+    /** The picture (digits and a zoom on the number line, bounds as a band, the point hopping), the working beneath. */
+    const pic = (spec: RoundSolution, steps: string[]) => ({ kind: "round" as const, spec: { ...spec, steps } });
     /** Rounding m/10^p to k places, with the traps the numbers allow; placeLost when the zeros hold places. */
     const rounded = (m: number, p: number, k: number, prompt: string) => {
       const want = roundM(m, p, k);
@@ -4433,7 +4436,7 @@ const GENS: Record<SkillId, Gen> = {
       add("doubleRound", stagesM(m, p, k) / 10 ** p);
       if (k < 0) add("placeLost", want / 10 ** (p - k));
       const shown = fmtM(want, p, k);
-      return { prompt, q: "", answer: { ...num(want / 10 ** p), traps }, show: shown, plain: shown, format: "number" as const, steps: [`${fmtM(m, p)} \\approx ${shown}`] };
+      return { prompt, q: "", answer: { ...num(want / 10 ** p), traps }, show: shown, plain: shown, format: "number" as const, solution: pic({ pic: "round", m, p, k }, [`${fmtM(m, p)} \\approx ${shown}`]) };
     };
     /** A mantissa whose dropped digits aren't exactly a half (where people disagree on which way to go). */
     const noTie = (lo: number, hi: number, p: number, k: number) => {
@@ -4479,7 +4482,7 @@ const GENS: Record<SkillId, Gen> = {
           show: `${m} \\times 10^{${e}}`,
           plain: `${m}*10^${e}`,
           format: "standard",
-          steps: [`${text} = ${m} \\times 10^{${e}}`],
+          solution: pic({ pic: "std", text, e }, [`${text} = ${m} \\times 10^{${e}}`]),
         };
       }
       if (kind === 2) {
@@ -4495,7 +4498,11 @@ const GENS: Record<SkillId, Gen> = {
           show: `${m} \\times 10^{${e}}`,
           plain: `${m}*10^${e}`,
           format: "standard",
-          steps: [`${tidy(A / 10)} \\times ${tidy(B / 10)} = ${tidy((A * B) / 100)}`, `10^{${m1}} \\times 10^{${m2}} = 10^{${m1 + m2}}`, `= ${m} \\times 10^{${e}}`],
+          solution: pic({ pic: "stdMul", a: tidy(A / 10), m1, b: tidy(B / 10), m2, prod: tidy((A * B) / 100), mant: m, e }, [
+            `${tidy(A / 10)} \\times ${tidy(B / 10)} = ${tidy((A * B) / 100)}`,
+            `10^{${m1}} \\times 10^{${m2}} = 10^{${m1 + m2}}`,
+            `= ${m} \\times 10^{${e}}`,
+          ]),
         };
       }
       // Estimating: each number to 1 significant figure, then multiply.
@@ -4516,7 +4523,7 @@ const GENS: Record<SkillId, Gen> = {
         show: tidy(v),
         plain: tidy(v),
         format: "number",
-        steps: [`${tidy(x)} \\times ${tidy(y)} \\approx ${tidy(x1)} \\times ${tidy(y1)} = ${tidy(v)}`],
+        solution: pic({ pic: "estimate", x, y, x1, y1 }, [`${tidy(x)} \\times ${tidy(y)} \\approx ${tidy(x1)} \\times ${tidy(y1)} = ${tidy(v)}`]),
       };
     }
     if (r.next() < 0.7) {
@@ -4534,7 +4541,7 @@ const GENS: Record<SkillId, Gen> = {
         show: tidy(v),
         plain: tidy(v),
         format: "number",
-        steps: [`${tidy(x)} ${low ? "-" : "+"} \\frac{${tidy(unit)}}{2} = ${tidy(v)}`],
+        solution: pic({ pic: "bound", x, unit, low }, [`${tidy(x)} ${low ? "-" : "+"} \\frac{${tidy(unit)}}{2} = ${tidy(v)}`]),
       };
     }
     const [n, x] = [r.int(3, 12), r.int(5, 40)];
@@ -4546,7 +4553,7 @@ const GENS: Record<SkillId, Gen> = {
       show: tidy(v),
       plain: tidy(v),
       format: "number",
-      steps: [`${x} + 0.5 = ${x + 0.5}`, `${n} \\times ${x + 0.5} = ${tidy(v)}`],
+      solution: pic({ pic: "boundTotal", n, x }, [`${x} + 0.5 = ${x + 0.5}`, `${n} \\times ${x + 0.5} = ${tidy(v)}`]),
     };
   },
 
