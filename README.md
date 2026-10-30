@@ -401,6 +401,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - *Hessian*: the second partial derivatives (the mixed ones agree), H at the point, its eigenvalues as curvatures
     along their eigenvectors on a contour map, minimum / maximum / saddle / undecided, and at a minimum the largest
     rate gradient descent can use, η < 2/λ₁
+  - *Convexity*: f is convex where H is positive semidefinite; the smaller curvature checked over the map, where it is
+    negative shaded, every stationary point found and named (the global minimum, local minima, saddles, maxima), the
+    dashed chord between two minima with how far f rises above it, and a note when f goes lower than its one minimum
+  - *Lagrange multipliers*: f on a constraint g(x, y) = c; ∇f = λ∇g written out and solved (Newton's method on x, y
+    and λ), the largest and smallest values with λ, and on the map the constraint, the level curves of f that just
+    touch it, and ∇f beside ∇g; λ as how fast the best value grows with c
 - **∫ Integrals** — integration techniques, every step shown and every answer checked
   (differentiating F must give back f; definite values are compared with Simpson's rule)
   - *Substitution*: ∫ c·x^(m−1)·g(a·xᵐ + b) dx with g = uⁿ, eᵘ, sin, cos or 1/u — du, the integral in u,
@@ -593,6 +599,16 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     good, the penalty too strong), stars go to a puzzle done at the first try, and eight discoveries are kept. Free
     play takes any points (click to add, drag, tap to take away), three hidden curves, the degree, λ, the number of
     points and the noise, with the test points, fresh samples and the hidden curve on request
+  - *Batch training lab* (a live piece on the board, from the AI menu or the Shapes panel): a line y = wx + b fitted to
+    24 points by gradient descent on the mean squared error, a batch of the points at a time. Dials set the batch size
+    (1, 2, 4, 8 or all 24), the learning rate η, its schedule over the epochs (constant, halved every 5, η/(1 + epoch))
+    and the step (plain, momentum, Adam); Step, Epoch and Run play it. The path of (w, b) is drawn on the loss's
+    contours, the line on the points beside the best one, and the loss above the best after every step on a log chart
+    with the goal. Six puzzles, each with one dial: the rate for full-batch descent (0.2; 0.5 blows up), the rate for
+    one point a step (noisy but 72 cheap steps beat 3), a schedule that lets single-point steps settle, the batch size
+    between too few steps and too noisy ones, momentum and then Adam in the long, narrow valley of points spread from 0
+    to 10. A miss says why (too slow, still jittering, blew up), stars go to a puzzle done at the first try, and six
+    discoveries are kept. Free play turns every dial on either dataset, with new samples
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1704,6 +1720,8 @@ src/math/tensorLab.ts     the tensors lab: shapes, views and their strides, plac
                           how a check is judged, free play's walk, and the picture
 src/math/fitLab.ts        the overfitting lab: points from a hidden curve, ridge fits, test, cross-validation, bias and
                           variance errors, the eight puzzles and how a check is judged, and the picture
+src/math/batchLab.ts      the batch training lab: data, the mean squared error and its gradient, training in batches
+                          with schedules, momentum and Adam, the six puzzles and how a run is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
@@ -1768,7 +1786,8 @@ src/math/coordgeom.ts     coordinate geometry: points, lines, parallel/perpendic
 src/math/vectors.ts       vectors in 2D/3D: combinations, dot and cross products, lines, planes (exact) + pictures
 src/math/expr.ts          expressions in x: parser, LaTeX, tidy-up and simplifier, exact a + b√s, real roots of polynomials
 src/math/derive.ts        derivatives: rules one level at a time, first principles, chain, tangents, stationary points
-src/math/multivar.ts      several variables: partial derivatives, gradient, chain rule as a graph, Jacobian, Hessian
+src/math/multivar.ts      several variables: partial derivatives, gradient, chain rule as a graph, Jacobian, Hessian,
+                          convexity and stationary points, Lagrange multipliers
 src/math/randvar.ts       random variables: tables and densities, E and Var, aX + b, joint tables, covariance matrix
 src/math/likelihood.ts    maximum likelihood: a coin, a normal, Poisson counts, least squares and log loss as MLE
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
