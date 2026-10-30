@@ -1131,6 +1131,18 @@ function attnLabPreview(): Piece[] {
   ];
 }
 
+function rnnLabPreview(): Piece[] {
+  // A chain of four state circles, each passing an arrow to the next, with an input arrow into each from below.
+  return [0, 1, 2, 3].flatMap((i): Piece[] => {
+    const x = 26 + i * 50;
+    return [
+      ellipse(x, 70, 15, 15, { fill: ["#e8590c", "#f08c4b", "#f5ad7f", "#fad1b5"][i], color: "#1e1e1e", width: 2 }),
+      arrow([x, 130], [x, 90], false, { color: "#868e96", width: 2 }),
+      ...(i < 3 ? [arrow([x + 17, 70], [x + 33, 70], false, { color: "#868e96", width: 2.5 })] : []),
+    ];
+  });
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1804,6 +1816,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveNnLab", group: "games", build: nnLabPreview, live: "nnLab" },
   { id: "liveConvLab", group: "games", build: convLabPreview, live: "convLab" },
   { id: "liveAttnLab", group: "games", build: attnLabPreview, live: "attnLab" },
+  { id: "liveRnnLab", group: "games", build: rnnLabPreview, live: "rnnLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

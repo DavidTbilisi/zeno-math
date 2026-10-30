@@ -23,6 +23,7 @@
 // The network lab: a Check counts the perceptron's mistakes, and twenty updates turn its line until none is left, for two stars.
 // The convolution lab: a Check with no cell picked says so, and the cell where the signal steps up is right, for two stars.
 // The attention lab: a query pointed away from cat gives it little weight, and pointed along cat's key most, for two stars.
+// The recurrent-network lab: w = 0.5 forgets the pulse, and w = 1.3 on the slider keeps it, for two stars.
 import { expect, test } from "@playwright/test";
 import { ATTN_PLOT, toPage as attnPage } from "../src/math/attnLab.ts";
 import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
@@ -662,5 +663,30 @@ test("the attention lab: the query away from cat gives it little weight, pointed
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/attending less to the others!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("attn-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the recurrent-network lab: w = 0.5 forgets the pulse, w = 1.3 keeps it", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Recurrent lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Recurrent network lab/ }).click();
+  const lab = page.locator(".live-rnnLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/still holds at least 0\.5 after 12 steps/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/The state ends at .*; you want at least 0\.5\./)).toBeVisible();
+
+  const w = lab.getByRole("slider", { name: "Recurrent weight w" });
+  await w.fill("13");
+  await w.dispatchEvent("pointerup");
+  await expect(lab.getByText("w = 1.3")).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/the state is the network's memory!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("rnn-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });

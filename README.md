@@ -659,6 +659,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     by √d so d = 64 does not put all the weight on one word, read the self-attention matrix (what it attends to),
     add positions so "dog bites man" and "man bites dog" differ, and steer the last word's query so the next word is
     mat. Free play takes every view, d and the scaling
+  - *Recurrent network lab* (a live piece on the board, from the AI menu or the Shapes panel): one unit whose state is
+    carried from step to step, h_t = tanh(w·h_{t−1} + u·x_t), drawn unrolled with its state over the steps and the
+    gradient back to each step on a log scale. Five puzzles with a Check: a w that keeps a pulse 12 steps, an input
+    weight that overwrites the memory, keep the gradient between 0.1 and 10 (it vanishes for w below 1 or a
+    saturated tanh), the same for a linear cell (it explodes for w above 1), and a gated cell whose forget gate keeps
+    both the pulse and the gradient over 30 steps
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1798,6 +1804,8 @@ src/math/convLab.ts       the convolution lab: padding, output size, sliding sum
                           the five puzzles and how a check is judged, and the picture
 src/math/attnLab.ts       the attention lab: softmax, scaled scores, the weighted output, self-attention, positions,
                           the next word, the five puzzles and how a check is judged, and the picture
+src/math/rnnLab.ts        the recurrent-network lab: tanh, linear and gated cells unrolled, the gradient back through
+                          time, the five puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
