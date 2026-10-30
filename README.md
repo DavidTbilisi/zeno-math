@@ -609,6 +609,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     between too few steps and too noisy ones, momentum and then Adam in the long, narrow valley of points spread from 0
     to 10. A miss says why (too slow, still jittering, blew up), stars go to a puzzle done at the first try, and six
     discoveries are kept. Free play turns every dial on either dataset, with new samples
+  - *Threshold lab* (a live piece on the board, from the AI menu or the Shapes panel): examples with a model's score on
+    a strip, positives above and negatives below, and a threshold dragged across it; at or above it is called
+    positive. The confusion matrix, accuracy, precision, recall and F1 as bars, the ROC curve with its area (the AUC,
+    the chance a positive outscores a negative) and the precision–recall curve, each with the threshold's point. Six
+    puzzles with a Check: recall at least 0.9 (lower the threshold), precision at least 0.9 (raise it), the best F1, rare
+    positives where calling nothing positive is 90 % accurate yet catches nothing, the most recall with a false
+    positive rate at most 0.1, and high precision on rare positives read off the precision–recall curve. Free play
+    takes either dataset, new samples and how far apart the classes' scores are
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1732,6 +1740,8 @@ src/math/fitLab.ts        the overfitting lab: points from a hidden curve, ridge
                           variance errors, the eight puzzles and how a check is judged, and the picture
 src/math/batchLab.ts      the batch training lab: data, the mean squared error and its gradient, training in batches
                           with schedules, momentum and Adam, the six puzzles and how a run is judged, and the picture
+src/math/rocLab.ts        the threshold lab: scores, the confusion matrix and its measures, ROC with AUC and the
+                          precision–recall curve, the six puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)

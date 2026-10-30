@@ -1048,6 +1048,12 @@ function batchLabPreview(): Piece[] {
   return [...rings, path(zig, { color: "#e8590c", width: 3 }), dot([112, 70], 6)];
 }
 
+function rocLabPreview(): Piece[] {
+  // A ROC curve bowing up towards the top left over the dashed diagonal, with the threshold's point on it.
+  const roc: Pt[] = [[0, 140], [6, 80], [20, 46], [46, 24], [90, 10], [140, 0]];
+  return [path([[0, 140], [140, 0]], { color: "#adb5bd", width: 2, dashed: true }), path(roc, { color: "#1971c2", width: 3 }), ellipse(20, 46, 6, 6, { fill: "#e03131", color: "#e03131", width: 1 })];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1714,6 +1720,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTensorLab", group: "games", build: tensorLabPreview, live: "tensorLab" },
   { id: "liveFitLab", group: "games", build: fitLabPreview, live: "fitLab" },
   { id: "liveBatchLab", group: "games", build: batchLabPreview, live: "batchLab" },
+  { id: "liveRocLab", group: "games", build: rocLabPreview, live: "rocLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
