@@ -20,6 +20,7 @@
 // And the backprop lab: a Check with the boxes empty says which one, and q's box tapped and both boxes filled in are
 // right, for two stars. The tensors lab: a Check with nothing tapped says so, T[2, 1] for T[1, 2] has the indices the
 // wrong way round, and T[1, 2] is right after those two tries for one star; then T[2, 1]'s place in memory at the first try, linked to it.
+// The network lab: a Check counts the perceptron's mistakes, and twenty updates turn its line until none is left, for two stars.
 import { expect, test } from "@playwright/test";
 import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
 import { ETAS } from "../src/math/batchLab.ts";
@@ -576,5 +577,30 @@ test("the k-means lab: unfinished says so, assign and move until nothing changes
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/k-means has converged!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("kmeans-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the network lab: the perceptron's mistakes are counted, and updates turn its line until none is left", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Network lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Network lab/ }).click();
+  const lab = page.locator(".live-nnLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Update until no point is wrong/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/points are still called wrong/)).toBeVisible();
+
+  await lab.getByRole("button", { name: "Ten updates" }).click();
+  await lab.getByRole("button", { name: "Ten updates" }).click();
+  await expect(lab.locator(".descent-read")).toHaveText("training accuracy 1");
+  await expect(lab.getByRole("button", { name: "One update" })).toBeDisabled();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/the perceptron always finds one!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("nn-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });

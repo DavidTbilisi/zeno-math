@@ -1093,6 +1093,20 @@ function kmeansLabPreview(): Piece[] {
   ]);
 }
 
+function nnLabPreview(): Piece[] {
+  // A small network: two inputs, three hidden units and one output, every layer joined to the next.
+  const ins: Pt[] = [[30, 50], [30, 110]];
+  const hid: Pt[] = [[100, 30], [100, 80], [100, 130]];
+  const out: Pt = [170, 80];
+  return [
+    ...ins.flatMap((a) => hid.map((b) => seg(a, b, { color: "#adb5bd", width: 2 }))),
+    ...hid.map((b) => seg(b, out, { color: "#adb5bd", width: 2 })),
+    ...ins.map(([x, y]) => ellipse(x, y, 12, 12, { fill: "#ffffff", color: "#1e1e1e", width: 2.5 })),
+    ...hid.map(([x, y]) => ellipse(x, y, 12, 12, { fill: "#d0ebff", color: "#1971c2", width: 2.5 })),
+    ellipse(out[0], out[1], 13, 13, { fill: "#ffe8cc", color: "#e8590c", width: 2.5 }),
+  ];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1763,6 +1777,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveKnnLab", group: "games", build: knnLabPreview, live: "knnLab" },
   { id: "liveTreeLab", group: "games", build: treeLabPreview, live: "treeLab" },
   { id: "liveKmeansLab", group: "games", build: kmeansLabPreview, live: "kmeansLab" },
+  { id: "liveNnLab", group: "games", build: nnLabPreview, live: "nnLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },
