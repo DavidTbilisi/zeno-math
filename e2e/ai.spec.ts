@@ -11,6 +11,7 @@
 // lab goes on the board too: a line across the cloud is not the best, and turned along it, it is PC1, for two stars.
 // The overfitting lab: degree 1 is far from every training point, and degree 9 goes through all ten, for two stars.
 // The batch training lab: η = 0.05 is too slow over 20 full-batch epochs, and 0.2 settles at the best line, for two stars.
+// The threshold lab: at t = 0.8 recall is too low, and the slider down to 0.3 catches 90 % of the positives, for two stars.
 // So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
 // The embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
 // And the backprop lab: a Check with the boxes empty says which one, and q's box tapped and both boxes filled in are
@@ -318,6 +319,31 @@ test("the batch training lab: too small a rate is slow, 0.2 settles at the best 
   await expect(lab.getByText(/0\.5 already blows up!.*Done! ★★☆/)).toBeVisible();
   await expect(lab.getByText(/Epoch 20 of 20 · step 20 of 20/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("batch-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the threshold lab: a high threshold misses positives, a lower one catches 90 %", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Threshold lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Threshold lab/ }).click();
+  const lab = page.locator(".live-rocLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Drag t so that at least 90 % of the positives are caught/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/Recall is 0\.\d+: the positives left of the threshold are missed/)).toBeVisible();
+
+  const t = lab.getByRole("slider", { name: "Threshold t" });
+  await t.fill("30");
+  await t.dispatchEvent("pointerup");
+  await expect(lab.getByText("t = 0.30")).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/recall rises, but so do the false alarms!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("roc-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
 
