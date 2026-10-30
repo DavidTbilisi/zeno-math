@@ -1081,6 +1081,18 @@ function treeLabPreview(): Piece[] {
   ];
 }
 
+function kmeansLabPreview(): Piece[] {
+  // Three groups of dots in three colours, each around its centre drawn as a ringed cross.
+  const groups: [Pt, string][] = [[[50, 44], "#1971c2"], [[150, 40], "#e8590c"], [[100, 116], "#2f9e44"]];
+  const around: Pt[] = [[-20, -8], [14, -16], [18, 12], [-12, 18], [-24, 10], [4, 22]];
+  return groups.flatMap(([[cx, cy], c]): Piece[] => [
+    ...around.map(([dx, dy]) => ellipse(cx + dx, cy + dy, 5, 5, { fill: c, color: c, width: 1 })),
+    ellipse(cx, cy, 11, 11, { color: c, width: 3 }),
+    seg([cx - 6, cy - 6], [cx + 6, cy + 6], { color: "#1e1e1e", width: 3 }),
+    seg([cx - 6, cy + 6], [cx + 6, cy - 6], { color: "#1e1e1e", width: 3 }),
+  ]);
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1750,6 +1762,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveRocLab", group: "games", build: rocLabPreview, live: "rocLab" },
   { id: "liveKnnLab", group: "games", build: knnLabPreview, live: "knnLab" },
   { id: "liveTreeLab", group: "games", build: treeLabPreview, live: "treeLab" },
+  { id: "liveKmeansLab", group: "games", build: kmeansLabPreview, live: "kmeansLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

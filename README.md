@@ -633,6 +633,13 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     the first cut barely helps), the depth of a greedily grown tree that does best on test points (deep trees
     overfit), and a forest of trees on resampled points voting better than one tree. Free play adds entropy, the best
     cut, every dataset and the forest
+  - *k-means lab* (a live piece on the board, from the AI menu or the Shapes panel): points without labels and k
+    centres. Assign every point to its nearest centre, move every centre to its points' mean, step by step or run to
+    the end, with the error (the sum of squared distances to the centres) after every step and the lowest error for
+    each k from 1 to 8 beside it. Five puzzles with a Check: step until nothing changes, drag the centres to within
+    10 % of the lowest error, climb out of a bad start stuck in a local minimum (k-means++ or random starts), find the
+    elbow at four blobs, and the smallest k that gives a disc inside a ring a cluster of its own. Free play adds no-group
+    points, new samples and every control
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1763,6 +1770,8 @@ src/math/knnLab.ts        the nearest-neighbours lab: the datasets, distances, t
                           distances in many dimensions, the six puzzles and how a check is judged, and the picture
 src/math/treeLab.ts       the decision-tree lab: impurity, cuts and the best cut, trees by hand and grown greedily,
                           forests, the six puzzles and how a check is judged, and the picture
+src/math/kmeansLab.ts     the k-means lab: assign and move, runs, random and k-means++ starts, the lowest error for
+                          each k, the disc's own cluster, the five puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
