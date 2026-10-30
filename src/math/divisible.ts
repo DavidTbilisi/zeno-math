@@ -1,11 +1,11 @@
 // Divisible by? A number and a row of divisors: which of them divide it exactly? Easy: 2, 5 and 10, read from the last
 // digit; medium: 3 and 9 as well, from the digit sum; hard: 4, 6 and 8 too, from the last two or three digits, and 6 as
 // 2 and 3 together. Every number divides by at least one of them, fewer by only one, and now and then by all. The tests
-// are the mental-maths tool's (src/math/mental.ts), so the board's hint and the practice question's worked solution
-// say what the Divisibility tab says. The answer is the divisors that work, typed or tapped, in any order. Four slips
-// are named: an even number taken for a multiple of 4, a multiple of 3 for one of 9, an odd multiple of 3 for one of
-// 6, and a multiple of 10 given without 2 and 5.
-import { divisibility, type MentalSpec } from "./mental";
+// are the mental-maths tool's (src/math/mental.ts), so the board's hint says what the Divisibility tab says; the
+// practice question's worked solution draws them (src/math/divisiblePics.ts). The answer is the divisors that work,
+// typed or tapped, in any order. Four slips are named: an even number taken for a multiple of 4, a multiple of 3 for
+// one of 9, an odd multiple of 3 for one of 6, and a multiple of 10 given without 2 and 5.
+import { divisibility } from "./mental";
 import { rng } from "./random";
 import type { EndlessGame, TryGame } from "./ladder";
 
@@ -36,8 +36,6 @@ export function divTask(level: DivLevel, next: () => number): DivTask {
 
 /** The digits the test for d looks at in n, as the Divisibility tab shows them (…34, 12 → 3, 2 ✓ · 3 ✗). */
 export const ruleTest = (n: number, d: number) => divisibility(n).find((x) => x.d === d)!.test;
-/** The worked solution: the Divisibility tab's table, with only the tests for the divisors offered. */
-export const rulesSpec = (t: Pick<DivTask, "n" | "offered">): MentalSpec => ({ topic: "rules", a: String(t.n), b: "", c: "", base: "", op: "*", sys: "en", words: "", divisors: t.offered });
 const digitSum = (n: number) => String(n).split("").reduce((s, c) => s + Number(c), 0);
 
 export type DivSlip = "evenForFour" | "threeForNine" | "oddSix" | "tenOnly";
