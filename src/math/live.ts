@@ -60,6 +60,7 @@ import { BATCH_START, type LiveBatch } from "./batchLab";
 import { ROC_START, type LiveRoc } from "./rocLab";
 import { KNN_START, type LiveKnn } from "./knnLab";
 import { TREE_START, type LiveTree } from "./treeLab";
+import { KM_START, type LiveKmeans } from "./kmeansLab";
 import { SOFTMAX_START, type LiveSoftmax } from "./softmaxLab";
 import { EMBED_START, type LiveEmbed } from "./embedLab";
 import { BP_START, type LiveBackprop } from "./backpropLab";
@@ -474,6 +475,7 @@ export type LiveStates = {
   rocLab: LiveRoc;
   knnLab: LiveKnn;
   treeLab: LiveTree;
+  kmeansLab: LiveKmeans;
 };
 export type LiveKind = keyof LiveStates;
 
@@ -557,6 +559,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   rocLab: [660, 800],
   knnLab: [660, 720],
   treeLab: [660, 740],
+  kmeansLab: [660, 720],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];
@@ -642,6 +645,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     rocLab: ROC_START,
     knnLab: KNN_START,
     treeLab: TREE_START,
+    kmeansLab: KM_START,
   };
   return structuredClone(start[kind]);
 }

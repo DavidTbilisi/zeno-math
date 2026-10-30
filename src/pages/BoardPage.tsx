@@ -100,6 +100,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
     { kind: "rocLab", icon: "⚖", name: "liveRocLab" },
     { kind: "knnLab", icon: "📍", name: "liveKnnLab" },
     { kind: "treeLab", icon: "🌳", name: "liveTreeLab" },
+    { kind: "kmeansLab", icon: "✳", name: "liveKmeansLab" },
   ],
   groupDiscreteShort: [
     { kind: "chance", icon: "🎲", name: "liveChance" },
