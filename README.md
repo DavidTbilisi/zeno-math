@@ -635,6 +635,16 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     residuals beside the mean squared error as the slope changes
   - *Log loss*: 0/1 labels and a model's chances; L as a product of each label's chance, −ℓ, and the log loss −ℓ / n;
     each label's cost −ln P(y | q) beside the curves −ln q and −ln(1 − q), where a confident mistake costs most
+- **H(p) Information** — surprise, entropy, cross-entropy and KL divergence, in bits
+  - *Entropy*: chances (and names) of outcomes; each surprise −log₂ p, H(p) as their average and log₂ n as its most;
+    the chances beside the surprises with H marked
+  - *A coin*: H(p) = −p log₂ p − (1 − p) log₂(1 − p) at the chosen p, on the curve from 0 to 1 with its peak of 1 bit
+  - *Cross-entropy*: p and the q a code was built for; code lengths −log₂ q, H(p, q), H(p) and the bits wasted,
+    D_KL = H(p, q) − H(p); p beside q, and each outcome's best code length beside the one used
+  - *KL divergence*: both ways round, term by term (a term can be negative, the sum never is), to show it is not a
+    distance
+  - *Log loss*: a model's chances and the true class; the one-hot target leaves −ln q of the true class, the softmax
+    lab's loss, in nats and in bits
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1790,6 +1800,7 @@ src/math/multivar.ts      several variables: partial derivatives, gradient, chai
                           convexity and stationary points, Lagrange multipliers
 src/math/randvar.ts       random variables: tables and densities, E and Var, aX + b, joint tables, covariance matrix
 src/math/likelihood.ts    maximum likelihood: a coin, a normal, Poisson counts, least squares and log loss as MLE
+src/math/information.ts   information: surprise and entropy, a coin, cross-entropy, KL divergence, log loss
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
 src/math/mental.ts        mental math: base multiplication, division (base, flag, Trachtenberg), divisibility,
                           reciprocals, digit-sum check, roots, cubing, magic squares, Major System
