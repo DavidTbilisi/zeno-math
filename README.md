@@ -607,6 +607,18 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     the table tinted by probability beside Y given x₀ against Y on its own
   - *Covariance matrix*: points' means, spreads and Σ, the correlation, Σ's eigenvalues and PC1's share; the points
     with the 1σ and 2σ ellipses, whose long axis is the PCA lab's PC1
+- **L(θ) Likelihood** — maximum likelihood, the step from probability to learning: the parameters that make the data
+  most likely, each found by taking the log (a product becomes a sum) and setting the slope to 0
+  - *A coin's p*: flips as 1s and 0s; L(p) = pᵏ(1 − p)ⁿ⁻ᵏ, ℓ(p), ℓ′(p) = 0 and p̂ = k/n, drawn as L(p) (in units of
+    a power of ten when it is tiny, as it soon is) beside ℓ(p), both peaking at p̂; an all-1s run peaks at the end
+  - *Normal μ, σ*: a sample; ℓ(μ, σ), the two slopes, μ̂ the mean and σ̂² dividing by n, set beside s² dividing by
+    n − 1; ℓ(μ) as a parabola and the fitted bell over the sample
+  - *Poisson λ*: counts; ℓ(λ) and λ̂ the mean count, with how often each count came up against what Poisson(λ̂) expects
+  - *Least squares*: points; a line plus normal noise, whose log-likelihood depends on a and b only through the sum of
+    squared errors, so the most likely line is the least-squares one and σ̂² the mean squared error; the line with its
+    residuals beside the mean squared error as the slope changes
+  - *Log loss*: 0/1 labels and a model's chances; L as a product of each label's chance, −ℓ, and the log loss −ℓ / n;
+    each label's cost −ln P(y | q) beside the curves −ln q and −ln(1 − q), where a confident mistake costs most
 - **📊 Statistics** — probability and statistics, with every number worked out
   - *Data*: dot plot or histogram plus a box plot on the same scale; mean (x̄ = Σx / n), median, mode,
     range, quartiles, IQR, σ and s, and outliers by the 1.5 · IQR rule
@@ -1758,6 +1770,7 @@ src/math/expr.ts          expressions in x: parser, LaTeX, tidy-up and simplifie
 src/math/derive.ts        derivatives: rules one level at a time, first principles, chain, tangents, stationary points
 src/math/multivar.ts      several variables: partial derivatives, gradient, chain rule as a graph, Jacobian, Hessian
 src/math/randvar.ts       random variables: tables and densities, E and Var, aX + b, joint tables, covariance matrix
+src/math/likelihood.ts    maximum likelihood: a coin, a normal, Poisson counts, least squares and log loss as MLE
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
 src/math/mental.ts        mental math: base multiplication, division (base, flag, Trachtenberg), divisibility,
                           reciprocals, digit-sum check, roots, cubing, magic squares, Major System
