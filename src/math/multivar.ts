@@ -10,10 +10,11 @@ import { partial } from "./derive";
 import { add, approx, evalE, exprMessages, has, isNum, mul, parseE, simp, substitute, tex, tidy, type E } from "./expr";
 import type { RenderedSvg } from "./latex";
 
-export type MvTopic = "partial" | "gradient" | "chain" | "jacobian" | "hessian";
-export const MV_TOPICS: MvTopic[] = ["partial", "gradient", "chain", "jacobian", "hessian"];
-/** What a picture is made from: the function (for the chain rule also x(t) and y(t); for the Jacobian u and v), and
- * the point (for the chain rule, the value of t). */
+export type MvTopic = "partial" | "gradient" | "chain" | "jacobian" | "hessian" | "convex" | "lagrange";
+export const MV_TOPICS: MvTopic[] = ["partial", "gradient", "chain", "jacobian", "hessian", "convex", "lagrange"];
+/** What a picture is made from: the function (for the chain rule also x(t) and y(t); for the Jacobian u and v; for
+ * Lagrange the constraint's g), and the point (for the chain rule, the value of t; for convexity the middle of the map;
+ * for Lagrange the constraint's c). */
 export type MvSpec = { topic: MvTopic; src: string[]; at: string };
 
 export type MvWords = {
@@ -46,6 +47,36 @@ export type MvWords = {
     notStationary: string;
     descent: string;
     legend: string;
+  };
+  convex: {
+    second: string;
+    test: string;
+    everywhere: string;
+    fails: string;
+    stationary: string;
+    none: string;
+    convex: string;
+    notConvex: string;
+    minima: string;
+    oneMin: string;
+    lower: string;
+    saddles: string;
+    chord: string;
+    kinds: { min: string; max: string; saddle: string; flat: string; global: string };
+    legend: { shade: string; chord: string };
+  };
+  lagrange: {
+    grads: string;
+    system: string;
+    found: string;
+    none: string;
+    needC: string;
+    summary: string;
+    one: string;
+    lambda: string;
+    max: string;
+    min: string;
+    legend: { gradF: string; gradG: string; constraint: string; level: string };
   };
 };
 
@@ -475,6 +506,236 @@ function renderHessian(s: MvSpec, w: MvWords): RenderedSvg {
   return compose(`f(x, y) = ${tex(f)}`, body.join(""), y, caps);
 }
 
+// ---------- convexity, local and global minima, saddles ----------
+
+/** The points of a map where ∇f = 0, by Newton's method from a grid of starts, each with its kind and value. */
+function stationaryPoints(f: E, fr: Frame) {
+  const fx = partial(f, "x").result;
+  const fy = partial(f, "y").result;
+  const [fxx, fxy, fyy] = [partial(fx, "x").result, partial(fx, "y").result, partial(fy, "y").result];
+  const found: { x: number; y: number; v: number; kind: HessianKind; l2: number }[] = [];
+  const span = fr.x1 - fr.x0;
+  for (let i = 0; i <= 8; i++)
+    for (let j = 0; j <= 8; j++) {
+      let [x, y] = [fr.x0 + (span * (i + 0.5)) / 9, fr.y0 + ((fr.y1 - fr.y0) * (j + 0.5)) / 9];
+      for (let it = 0; it < 60; it++) {
+        const [g1, g2] = [value(fx, x, y), value(fy, x, y)];
+        const [a, b, c] = [value(fxx, x, y), value(fxy, x, y), value(fyy, x, y)];
+        const det = a * c - b * b;
+        if (![g1, g2, a, b, c].every(Number.isFinite) || Math.abs(det) < 1e-14) break;
+        const [dx, dy] = [(c * g1 - b * g2) / det, (a * g2 - b * g1) / det];
+        [x, y] = [x - dx, y - dy];
+        if (Math.hypot(dx, dy) < 1e-12) break;
+      }
+      const inside = x >= fr.x0 && x <= fr.x1 && y >= fr.y0 && y <= fr.y1;
+      if (!inside || Math.hypot(value(fx, x, y), value(fy, x, y)) > 1e-7) continue;
+      if (found.some((q) => Math.hypot(q.x - x, q.y - y) < 1e-4 * span)) continue;
+      const { l1, l2 } = eigenSym(value(fxx, x, y), value(fxy, x, y), value(fyy, x, y));
+      found.push({ x: clean(Math.round(x * 1e9) / 1e9), y: clean(Math.round(y * 1e9) / 1e9), v: value(f, x, y), kind: hessianKind(l1, l2, 1e-7), l2 });
+    }
+  return found.sort((p, q) => p.v - q.v);
+}
+
+function renderConvex(s: MvSpec, w: MvWords): RenderedSvg {
+  const Cw = w.convex;
+  const f = readF(s.src[0] ?? "", w);
+  const [aE, bE] = readPoint(s.at, w);
+  const [a, b] = [evalE(aE, 0), evalE(bE, 0)];
+  const fx = partial(f, "x").result;
+  const fy = partial(f, "y").result;
+  const [fxx, fxy, fyy] = [partial(fx, "x").result, partial(fx, "y").result, partial(fy, "y").result];
+  const size = 380;
+  const half = 2.5;
+  const n = (v: number) => approx(clean(v)).replace("−", "-");
+  // The smaller curvature over a grid of the map: where it is below 0, f is not convex.
+  const G = 60;
+  const bad: [number, number][] = [];
+  let worst = { l: Infinity, x: a, y: b };
+  for (let i = 0; i <= G; i++)
+    for (let j = 0; j <= G; j++) {
+      const [x, y] = [a - half + (2 * half * i) / G, b - half + (2 * half * j) / G];
+      const { l2 } = eigenSym(value(fxx, x, y), value(fxy, x, y), value(fyy, x, y));
+      if (!Number.isFinite(l2)) continue;
+      if (l2 < worst.l) worst = { l: l2, x, y };
+      if (l2 < -1e-9) bad.push([x, y]);
+    }
+  if (!Number.isFinite(worst.l)) throw new Error(fill(w.notDefined, { p: ptText(a, b) }));
+  const convex = bad.length === 0;
+  const body: string[] = [];
+  let y0 = 4;
+  const fr0 = mapFrame("mv-cvx", a, b, half, (W - size) / 2, 0, size);
+  const pts = stationaryPoints(f, fr0);
+  const mins = pts.filter((p) => p.kind === "min");
+  const saddles = pts.filter((p) => p.kind === "saddle");
+  const kindText = (k: HessianKind, i: number) => (k === "min" && i === 0 && mins.length > 1 ? Cw.kinds.global : Cw.kinds[k]);
+  const listed = pts.slice(0, 5).map((p) => `(${n(p.x)}, ${n(p.y)})`);
+  const rows: TexLine[] = [
+    { tex: `f_{xx} = ${tex(fxx)}, \\quad f_{xy} = ${tex(fxy)}, \\quad f_{yy} = ${tex(fyy)}`, op: Cw.second },
+    { tex: `H \\succeq 0 \\iff f_{xx} \\ge 0,\\ f_{yy} \\ge 0,\\ f_{xx}f_{yy} - f_{xy}^2 \\ge 0`, op: Cw.test },
+    convex
+      ? { tex: `\\min \\lambda_2 = ${n(worst.l)} \\ge 0`, op: Cw.everywhere, color: C.green }
+      : { tex: `\\lambda_2\\left(${n(worst.x)}, ${n(worst.y)}\\right) = ${n(worst.l)} < 0`, op: Cw.fails, color: C.red },
+    pts.length ? { tex: `\\nabla f = 0: \\ ${listed.join(", \\ ")}`, op: Cw.stationary, color: C.purple } : { tex: `\\nabla f \\ne 0`, op: Cw.none },
+  ];
+  const ln = texLines(rows, y0);
+  body.push(ln.svg);
+  y0 += ln.h + 10;
+  const fr = mapFrame("mv-cvx", a, b, half, (W - size) / 2, y0, size);
+  const g = (x: number, yy: number) => value(f, x, yy);
+  const cell = (2 * half) / G;
+  const shade = bad
+    .map(([x, yy]) => `<rect x="${r2(fr.sx(x - cell / 2))}" y="${r2(fr.sy(yy + cell / 2))}" width="${r2(fr.sx(x + cell / 2) - fr.sx(x - cell / 2) + 0.4)}" height="${r2(fr.sy(yy - cell / 2) - fr.sy(yy + cell / 2) + 0.4)}" fill="${C.red}"/>`)
+    .join("");
+  // One opacity for the whole shading, so that the cells' overlaps do not show as a grid.
+  const parts = [`<g opacity="0.13">${shade}</g>`, axes(fr), contours(fr, g, levelsOf(fr, g, mins[0]?.v ?? g(a, b), 12), C.blue, 1.3)];
+  const caps: Caption[] = [];
+  // With two minima, the chord between them: f rises above it on the way, which a convex function never does.
+  if (mins.length >= 2) {
+    const [p, q] = [mins[0], mins[1]];
+    let top = { t: 0, gap: -Infinity };
+    for (let i = 1; i < 100; i++) {
+      const t = i / 100;
+      const gap = g(p.x + t * (q.x - p.x), p.y + t * (q.y - p.y)) - (p.v + t * (q.v - p.v));
+      if (gap > top.gap) top = { t, gap };
+    }
+    parts.push(`<line x1="${r2(fr.sx(p.x))}" y1="${r2(fr.sy(p.y))}" x2="${r2(fr.sx(q.x))}" y2="${r2(fr.sy(q.y))}" stroke="${C.orange}" stroke-width="2.4" stroke-dasharray="7 5"/>`);
+    if (top.gap > 1e-9) caps.push({ text: fill(Cw.chord, { d: nt(top.gap, 3) }), color: C.orange });
+  }
+  pts.forEach((p) => {
+    const [px, py] = [fr.sx(p.x), fr.sy(p.y)];
+    if (p.kind === "saddle") parts.push(`<path d="M${r2(px - 6)},${r2(py - 6)}l12,12m0,-12l-12,12" stroke="${C.purple}" stroke-width="2.8"/>`);
+    else if (p.kind === "min") parts.push(dot(px, py, C.green, p === mins[0] ? 7 : 5, p !== mins[0] && mins.length > 1));
+    else parts.push(dot(px, py, p.kind === "max" ? C.red : C.grey, 5));
+    const color = p.kind === "min" ? C.green : p.kind === "saddle" ? C.purple : p.kind === "max" ? C.red : C.grey;
+    // A saddle's name goes under it, the others' over them, so that neighbours on one line do not run together.
+    parts.push(lbl(px, p.kind === "saddle" ? py + 22 : py - 12, kindText(p.kind, mins.indexOf(p)), color, "middle", 12.5, false));
+  });
+  body.push(`<g>${parts.join("")}</g>`);
+  const legend = [...(convex ? [] : [{ text: Cw.legend.shade, color: "#f5b7b7" }]), ...(mins.length >= 2 ? [{ text: Cw.legend.chord, color: C.orange }] : [])];
+  if (legend.length) body.push(legendRow(fr.left, fr.bottom + 22, legend));
+  const y = fr.bottom + 34;
+  const g0 = mins[0];
+  caps.unshift(
+    convex
+      ? { text: Cw.convex, color: "#495057" }
+      : { text: mins.length > 1 ? fill(Cw.minima, { n: mins.length, v: nt(g0.v, 4), p: ptText(g0.x, g0.y) }) : mins.length === 1 ? fill(Cw.oneMin, { v: nt(g0.v, 4), p: ptText(g0.x, g0.y) }) : Cw.notConvex, color: "#495057" },
+  );
+  // A minimum need not be the lowest point: f may go lower towards the map's edge.
+  let low = Infinity;
+  for (let i = 0; i <= 40; i++) for (let j = 0; j <= 40; j++) low = Math.min(low, g(fr.x0 + (fr.x1 - fr.x0) * (i / 40), fr.y0 + (fr.y1 - fr.y0) * (j / 40)));
+  if (g0 && low < g0.v - 1e-6 * Math.max(1, Math.abs(g0.v))) caps.push({ text: fill(Cw.lower, { v: nt(low, 4) }), color: C.orange });
+  if (saddles.length) caps.push({ text: Cw.saddles, color: C.purple });
+  return compose(`f(x, y) = ${tex(f)}`, body.join(""), y, caps);
+}
+
+// ---------- Lagrange multipliers ----------
+
+/** The points of g(x, y) = c where ∇f = λ∇g, by Newton's method on (x, y, λ) from a grid of starts. */
+export function lagrangePoints(f: E, gE: E, c: number) {
+  const d1 = (e: E) => [partial(e, "x").result, partial(e, "y").result] as const;
+  const [fx, fy] = d1(f);
+  const [gx, gy] = d1(gE);
+  const [fxx, fxy] = d1(fx);
+  const fyy = partial(fy, "y").result;
+  const [gxx, gxy] = d1(gx);
+  const gyy = partial(gy, "y").result;
+  const out: { x: number; y: number; l: number; v: number }[] = [];
+  for (let i = 0; i <= 10; i++)
+    for (let j = 0; j <= 10; j++) {
+      let [x, y] = [-4 + 0.8 * i + 0.013, -4 + 0.8 * j + 0.017];
+      const [a0, b0] = [value(gx, x, y), value(gy, x, y)];
+      let l = (value(fx, x, y) * a0 + value(fy, x, y) * b0) / (a0 * a0 + b0 * b0 || 1);
+      let okRun = false;
+      for (let it = 0; it < 80; it++) {
+        const [Gx, Gy] = [value(gx, x, y), value(gy, x, y)];
+        const F = [value(fx, x, y) - l * Gx, value(fy, x, y) - l * Gy, value(gE, x, y) - c];
+        const J = [
+          [value(fxx, x, y) - l * value(gxx, x, y), value(fxy, x, y) - l * value(gxy, x, y), -Gx],
+          [value(fxy, x, y) - l * value(gxy, x, y), value(fyy, x, y) - l * value(gyy, x, y), -Gy],
+          [Gx, Gy, 0],
+        ];
+        if (![...F, ...J.flat()].every(Number.isFinite)) break;
+        const det3 = (m: number[][]) => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+        const D = det3(J);
+        if (Math.abs(D) < 1e-14) break;
+        const col = (k: number) => J.map((row, r) => row.map((v, q) => (q === k ? F[r] : v)));
+        const [dx, dy, dl] = [det3(col(0)) / D, det3(col(1)) / D, det3(col(2)) / D];
+        [x, y, l] = [x - dx, y - dy, l - dl];
+        if (Math.abs(x) > 1e3 || Math.abs(y) > 1e3) break;
+        if (Math.hypot(dx, dy, dl) < 1e-12) {
+          okRun = true;
+          break;
+        }
+      }
+      if (!okRun) continue;
+      const res = Math.hypot(value(fx, x, y) - l * value(gx, x, y), value(fy, x, y) - l * value(gy, x, y), value(gE, x, y) - c);
+      if (!(res < 1e-8) || out.some((q) => Math.hypot(q.x - x, q.y - y) < 1e-5)) continue;
+      out.push({ x: clean(Math.round(x * 1e9) / 1e9), y: clean(Math.round(y * 1e9) / 1e9), l: clean(Math.round(l * 1e9) / 1e9), v: value(f, x, y) });
+    }
+  return out.sort((p, q) => q.v - p.v);
+}
+
+function renderLagrange(s: MvSpec, w: MvWords): RenderedSvg {
+  const Lw = w.lagrange;
+  const f = readF(s.src[0] ?? "", w);
+  const gE = readF(s.src[1] ?? "", w);
+  const c = evalE(readNumber(s.at, Lw.needC), 0);
+  const [fx, fy] = [partial(f, "x").result, partial(f, "y").result];
+  const [gx, gy] = [partial(gE, "x").result, partial(gE, "y").result];
+  const sols = lagrangePoints(f, gE, c);
+  const n = (v: number) => approx(clean(v)).replace("−", "-");
+  const ct = n(c);
+  const rows: TexLine[] = [
+    { tex: `\\nabla f = \\left(${tex(fx)}, ${tex(fy)}\\right), \\quad \\nabla g = \\left(${tex(gx)}, ${tex(gy)}\\right)`, op: Lw.grads },
+    { tex: `${tex(fx)} = \\lambda \\left(${tex(gx)}\\right), \\quad ${tex(fy)} = \\lambda \\left(${tex(gy)}\\right), \\quad ${tex(gE)} = ${ct}`, op: Lw.system, color: C.purple },
+  ];
+  if (!sols.length) rows.push({ tex: `\\nabla f \\ne \\lambda \\nabla g`, op: Lw.none, color: C.red });
+  sols.slice(0, 4).forEach((p, i) => rows.push({ tex: `(x, y) = (${n(p.x)}, ${n(p.y)}), \\quad \\lambda = ${n(p.l)}, \\quad f = ${n(p.v)}`, op: i === 0 ? Lw.found : undefined, color: sols.length > 1 && i === 0 ? C.red : sols.length > 1 && i === sols.length - 1 ? C.green : C.ink }));
+  const body: string[] = [];
+  let y = 4;
+  const ln = texLines(rows, y);
+  body.push(ln.svg);
+  y += ln.h + 10;
+  const size = 380;
+  const reach = Math.max(2.5, ...sols.map((p) => 1.35 * Math.max(Math.abs(p.x), Math.abs(p.y))));
+  const half = Math.min(10, reach);
+  const fr = mapFrame("mv-lag", 0, 0, half, (W - size) / 2, y, size);
+  const g = (x: number, yy: number) => value(f, x, yy);
+  const gg = (x: number, yy: number) => value(gE, x, yy);
+  const parts = [axes(fr), contours(fr, g, levelsOf(fr, g, sols[0]?.v ?? 0, 12), "#ced4da", 1.1), contours(fr, gg, [c], C.blue, 3)];
+  const big = sols.length > 1 ? [sols[0], sols[sols.length - 1]] : sols;
+  for (const p of sols.slice(0, 6)) {
+    const at = big.includes(p);
+    if (at) parts.push(contours(fr, g, [p.v], C.green, 2));
+    const [g1, g2] = [value(fx, p.x, p.y), value(fy, p.x, p.y)];
+    const [h1, h2] = [value(gx, p.x, p.y), value(gy, p.x, p.y)];
+    const unit = (u: number, v: number): [number, number] => {
+      const L = Math.hypot(u, v) || 1;
+      return [(u / L) * half * 0.22, (v / L) * half * 0.22];
+    };
+    const [ux, uy] = unit(g1, g2);
+    const [vx, vy] = unit(h1, h2);
+    if (Math.hypot(g1, g2) > 1e-9) parts.push(arrow(fr.sx(p.x), fr.sy(p.y), fr.sx(p.x + ux), fr.sy(p.y + uy), C.red, 2.6));
+    if (Math.hypot(h1, h2) > 1e-9) parts.push(arrow(fr.sx(p.x), fr.sy(p.y), fr.sx(p.x + 0.7 * vx), fr.sy(p.y + 0.7 * vy), C.blue, 2.6, true));
+    parts.push(dot(fr.sx(p.x), fr.sy(p.y), C.ink, 4.5));
+    if (sols.length > 1 && (p === sols[0] || p === sols[sols.length - 1])) parts.push(lbl(fr.sx(p.x) + 8, fr.sy(p.y) + 16, p === sols[0] ? Lw.max : Lw.min, p === sols[0] ? C.red : C.green, "start", 13, false));
+  }
+  body.push(`<g>${parts.join("")}</g>`);
+  body.push(legendRow(fr.left, fr.bottom + 22, [
+    { text: Lw.legend.constraint, color: C.blue },
+    { text: Lw.legend.level, color: C.green },
+    { text: Lw.legend.gradF, color: C.red },
+  ]));
+  y = fr.bottom + 34;
+  const caps: Caption[] = [];
+  if (sols.length > 1) {
+    const [hi, lo] = [sols[0], sols[sols.length - 1]];
+    caps.push({ text: fill(Lw.summary, { hi: nt(hi.v, 4), ph: ptText(hi.x, hi.y), lo: nt(lo.v, 4), pl: ptText(lo.x, lo.y) }), color: "#495057" });
+    caps.push({ text: fill(Lw.lambda, { l: nt(hi.l, 3) }), color: C.purple });
+  } else if (sols.length === 1) caps.push({ text: fill(Lw.one, { v: nt(sols[0].v, 4), p: ptText(sols[0].x, sols[0].y), l: nt(sols[0].l, 3) }), color: "#495057" });
+  return compose(`f(x, y) = ${tex(f)}, \\quad ${tex(gE)} = ${ct}`, body.join(""), y, caps);
+}
+
 // ---------- entry ----------
 
 export function renderMultivar(spec: MvSpec, w: MvWords): RenderedSvg {
@@ -490,6 +751,10 @@ export function renderMultivar(spec: MvSpec, w: MvWords): RenderedSvg {
       return renderJacobian(spec, w);
     case "hessian":
       return renderHessian(spec, w);
+    case "convex":
+      return renderConvex(spec, w);
+    case "lagrange":
+      return renderLagrange(spec, w);
   }
 }
 
@@ -535,5 +800,20 @@ export const MV_PRESETS: { [K in MvTopic]: { label: string; spec: MvSpec }[] } =
     { label: "x⁴ + y⁴, (0, 0)", spec: P("hessian", ["x^4 + y^4"], "0, 0") },
     { label: "(1 − x)² + 10(y − x²)², (1, 1)", spec: P("hessian", ["(1 - x)^2 + 10(y - x^2)^2"], "1, 1") },
     { label: "x² + xy + y², (1, 1)", spec: P("hessian", ["x^2 + x y + y^2"], "1, 1") },
+  ],
+  convex: [
+    { label: "x² + xy + y²: convex", spec: P("convex", ["x^2 + x y + y^2"], "0, 0") },
+    { label: "x⁴ − 3x² + y²: two valleys", spec: P("convex", ["x^4 - 3x^2 + y^2"], "0, 0") },
+    { label: "x⁴ − 2x² + x + y²: a deeper valley", spec: P("convex", ["x^4 - 2x^2 + x + y^2"], "0, 0") },
+    { label: "x² − y²: a saddle", spec: P("convex", ["x^2 - y^2"], "0, 0") },
+    { label: "eˣ + y²: convex, no minimum", spec: P("convex", ["e^x + y^2"], "0, 0") },
+    { label: "x³ − 3x + y²", spec: P("convex", ["x^3 - 3x + y^2"], "0, 0") },
+  ],
+  lagrange: [
+    { label: "xy on x² + y² = 2", spec: P("lagrange", ["x y", "x^2 + y^2"], "2") },
+    { label: "x + y on x² + y² = 1", spec: P("lagrange", ["x + y", "x^2 + y^2"], "1") },
+    { label: "x² + y² on x + 2y = 5", spec: P("lagrange", ["x^2 + y^2", "x + 2y"], "5") },
+    { label: "xy on x + y = 4: a fence", spec: P("lagrange", ["x y", "x + y"], "4") },
+    { label: "x² + 2y² on x² + y² = 4", spec: P("lagrange", ["x^2 + 2y^2", "x^2 + y^2"], "4") },
   ],
 };

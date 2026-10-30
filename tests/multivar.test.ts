@@ -1,13 +1,14 @@
 // Several variables: partial derivatives taken one rule at a time agree with small steps and leave the one-variable
 // engine as it was; the Hessian's eigenvalues and what they say; every topic's picture, its checks and its captions
 // (the gradient flat at a stationary point, the chain rule against f(x(t), y(t)), a map that flips, each kind of
-// stationary point); and what is refused, with why.
+// stationary point); convexity (a convex bowl, two valleys with the chord between them, a saddle, a minimum that is
+// only local); Lagrange multipliers against the answers worked by hand; and what is refused, with why.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { derive, partial, partialOf } from "../src/math/derive.ts";
 import { D, evalE, parseE, tex, X } from "../src/math/expr.ts";
-import { eigenSym, hessianKind, MV_PRESETS, readPoint, renderMultivar, squared, type MvSpec } from "../src/math/multivar.ts";
+import { eigenSym, hessianKind, lagrangePoints, MV_PRESETS, readPoint, renderMultivar, squared, type MvSpec } from "../src/math/multivar.ts";
 
 const w = en.multivarWords;
 /** The picture's words, its wrapped lines joined again. */
@@ -81,6 +82,45 @@ test("the gradient is flat at a stationary point, the chain rule agrees with f(x
   assert.ok(render(MV_PRESETS.jacobian[0].spec).includes("= 8 times its area"));
 });
 
+test("convexity: a bowl, two valleys and the chord between them, a saddle, a minimum that is only local", () => {
+  const C = w.convex;
+  assert.ok(render(MV_PRESETS.convex[0].spec).includes(C.convex));
+  assert.ok(render(MV_PRESETS.convex[4].spec).includes(C.convex), "eˣ + y² is convex with no minimum on the map");
+  const two = render(MV_PRESETS.convex[1].spec);
+  // x⁴ − 3x² + y²: minima at x = ±√1.5 with f = −2.25, a saddle at the origin, the chord 2.25 under it there.
+  assert.ok(two.includes("It has 2 minima: the lowest, f = −2.25") && two.includes("rises up to 2.25 above it") && two.includes(C.saddles));
+  assert.ok(two.includes(C.kinds.global) && two.includes(C.kinds.saddle));
+  const deeper = render(MV_PRESETS.convex[2].spec);
+  assert.ok(/the lowest, f = −2\.0\d+ at \(−1\.10\d, 0\)/.test(deeper), "the deeper valley of x⁴ − 2x² + x is the left one");
+  const saddle = render(MV_PRESETS.convex[3].spec);
+  assert.ok(saddle.includes(C.notConvex) && saddle.includes(C.saddles));
+  const local = render(MV_PRESETS.convex[5].spec);
+  assert.ok(local.includes("Its minimum is at (1, 0), f = −2.") && local.includes("down to −8.125 at its edge"));
+});
+
+test("Lagrange multipliers: the points where ∇f = λ∇g on the constraint", () => {
+  const on = (f: string, g: string, c: number) => lagrangePoints(parseE(f, ["y"]), parseE(g, ["y"]), c);
+  // x + y on the unit circle: largest √2 at (1/√2, 1/√2) with λ = 1/√2, smallest −√2.
+  const circle = on("x + y", "x^2 + y^2", 1);
+  assert.equal(circle.length, 2);
+  const r = Math.SQRT1_2;
+  assert.ok(close(circle[0].x, r) && close(circle[0].y, r) && close(circle[0].l, r) && close(circle[0].v, Math.SQRT2));
+  assert.ok(close(circle[1].v, -Math.SQRT2));
+  // x² + y² on x + 2y = 5: the nearest point (1, 2), f = 5, λ = 2.
+  const line = on("x^2 + y^2", "x + 2y", 5);
+  assert.equal(line.length, 1);
+  assert.ok(close(line[0].x, 1) && close(line[0].y, 2) && close(line[0].l, 2));
+  // xy on x² + y² = 2: four points, largest 1 and smallest −1.
+  const xy = on("x y", "x^2 + y^2", 2);
+  assert.equal(xy.length, 4);
+  assert.ok(close(xy[0].v, 1) && close(xy[3].v, -1));
+  const text = render(MV_PRESETS.lagrange[4].spec);
+  assert.ok(text.includes("f is largest, 8, at (0, 2), and smallest, 4, at (2, 0)") && text.includes("λ = 2 at the largest"));
+  assert.ok(render(MV_PRESETS.lagrange[3].spec).includes("The one point found is (2, 2), f = 4, λ = 2"));
+  // None: on the line y = 0, ∇f = (1, 1) of x + y is never a multiple of ∇g = (0, 1).
+  assert.ok(render({ topic: "lagrange", src: ["x + y", "y"], at: "0" }).includes(w.lagrange.none));
+});
+
 test("what is refused, and why", () => {
   const why = (spec: MvSpec) => {
     try {
@@ -96,6 +136,8 @@ test("what is refused, and why", () => {
   assert.equal(why({ topic: "chain", src: ["x y", "x + t", "t"], at: "1" }), w.onlyT);
   assert.equal(why({ topic: "chain", src: ["x y", "t", "t"], at: "" }), w.needT);
   assert.ok(why({ topic: "gradient", src: ["ln x + y"], at: "-1, 0" }).startsWith("f or one of its derivatives is not defined"));
+  assert.equal(why({ topic: "lagrange", src: ["x y", "x + y"], at: "" }), w.lagrange.needC);
+  assert.equal(why({ topic: "convex", src: ["x^2 + y^2"], at: "0" }), w.needPoint);
   const [a, b] = readPoint("(−1/2, pi/4)", w);
   assert.ok(close(evalE(a, 0), -0.5) && close(evalE(b, 0), Math.PI / 4));
 });

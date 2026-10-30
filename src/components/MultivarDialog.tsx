@@ -34,8 +34,9 @@ export function MultivarDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, w]);
 
-  // What each line of input is called: the function, or for the chain rule x(t) and y(t) too, or u and v of a map.
-  const names = topic === "chain" ? [f.f, f.x, f.y] : topic === "jacobian" ? [f.u, f.v] : [f.f];
+  // What each line of input is called: the function, or for the chain rule x(t) and y(t) too, u and v of a map, or
+  // the constraint's g.
+  const names = topic === "chain" ? [f.f, f.x, f.y] : topic === "jacobian" ? [f.u, f.v] : topic === "lagrange" ? [f.f, f.g] : [f.f];
   const row = (label: string, value: string, onChange: (v: string) => void) => (
     <div className="fn-row" key={label}>
       <span className="fn-prefix" style={{ fontStyle: "normal" }}>{label}</span>
@@ -71,7 +72,7 @@ export function MultivarDialog({ initial, start, onSubmit, onClose }: {
       </div>
 
       {names.map((n, i) => row(n, spec.src[i] ?? "", (v) => setSrc(i, v)))}
-      {row(topic === "chain" ? f.atT : f.at, spec.at, (v) => set({ at: v }))}
+      {row(topic === "chain" ? f.atT : topic === "convex" ? f.around : topic === "lagrange" ? f.c : f.at, spec.at, (v) => set({ at: v }))}
 
       <div className="field">
         <span>{t.preview}</span>

@@ -1041,6 +1041,13 @@ function fitLabPreview(): Piece[] {
   return [path(wiggle, { color: BLUE, width: 3 }), ...pts.map((p) => dot(p, 4))];
 }
 
+function batchLabPreview(): Piece[] {
+  // Nested loss contours, and a path that zigzags in towards their middle as batches pull it this way and that.
+  const rings: Piece[] = [80, 56, 32].map((r, i) => path(Array.from({ length: 41 }, (_, k): Pt => [110 + r * 1.3 * Math.cos((k / 40) * 2 * Math.PI), 70 + r * 0.7 * Math.sin((k / 40) * 2 * Math.PI)]), { color: i === 2 ? "#adb5bd" : "#ced4da", width: 2 }));
+  const zig: Pt[] = [[8, 130], [40, 96], [36, 118], [70, 84], [62, 98], [92, 76], [100, 86], [112, 70]];
+  return [...rings, path(zig, { color: "#e8590c", width: 3 }), dot([112, 70], 6)];
+}
+
 function softmaxLabPreview(): Piece[] {
   // Three score bars, an arrow, and the three probabilities they make.
   const colours = ["#1971c2", "#e8590c", "#2f9e44"];
@@ -1706,6 +1713,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBackpropLab", group: "games", build: backpropLabPreview, live: "backpropLab" },
   { id: "liveTensorLab", group: "games", build: tensorLabPreview, live: "tensorLab" },
   { id: "liveFitLab", group: "games", build: fitLabPreview, live: "fitLab" },
+  { id: "liveBatchLab", group: "games", build: batchLabPreview, live: "batchLab" },
   { id: "liveClock", group: "live", build: clock, live: "clock" },
   { id: "liveDice", group: "live", build: diePreview, live: "dice" },
   { id: "liveSpinner", group: "live", build: spinner, live: "spinner" },

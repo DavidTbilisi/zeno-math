@@ -819,6 +819,9 @@ input.invalid { border-color: var(--danger); }
 .descent-next { color: #9c36b5; font-weight: 600; }
 .descent-dials { align-self: stretch; }
 .descent-dials .live-slider { flex: 1; min-width: 240px; }
+/* Batch lab (live/BatchLab.tsx): a row of choices after its name. */
+.batch-dials { align-self: stretch; align-items: center; font-size: 13px; color: #495057; }
+.batch-dials > span { font-weight: 700; }
 .live .descent-fn { width: 16em; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .live-pattern-idea { max-width: 760px; font-size: 13px; color: #495057; }
 .live-pattern-stage { position: relative; flex: none; }
