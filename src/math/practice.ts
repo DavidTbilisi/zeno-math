@@ -12,6 +12,7 @@ import { normCdf, normSf, tUpper, zUpper, type Alt, type InfSpec } from "./infer
 import { covariance } from "./randvar";
 import { percentSteps, type PercentSolution } from "./percentPics";
 import { ratioSteps, type RatioSolution } from "./ratioPics";
+import type { RateSolution } from "./ratePics";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type MatrixOp } from "./matrix";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
@@ -54,7 +55,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal" | "percent" | "ratio";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec";
@@ -1231,29 +1232,35 @@ const GENS: Record<SkillId, Gen> = {
     const said = (v: number) => (cost ? money(w, v) : tidy(v));
     /** In the working and the answer: money with both places when it has cents. */
     const shown = (v: number) => (cost && !Number.isInteger(v) ? v.toFixed(2) : tidy(v));
-    const one = (v: number, steps: string[], traps: Trap[] = []) => ({ q: "", answer: { ...num(v), traps }, show: shown(v), plain: shown(v), format: "number" as const, steps });
+    /** The picture: a double number line, units on top and the amount underneath; the working beneath it. */
+    const line = (ask: RateSolution["ask"], u: number, n: number, t: number, more: { m?: number; v?: number } = {}) => ({
+      ask, u, n, t, ...more, cost, top: cost ? w.units.kg : "", bottom: cost ? fill(w.money, { v: "" }).trim() : w.units.l,
+    });
+    const one = (v: number, steps: string[], spec: RateSolution, traps: Trap[] = []) => ({
+      q: "", answer: { ...num(v), traps }, show: shown(v), plain: shown(v), format: "number" as const, solution: { kind: "rate" as const, spec: { ...spec, steps } },
+    });
     /** The rate from the total: dividing the other way round is the trap. */
     const inverted = (t: number, n: number): Trap[] => [{ id: "rateInverted", a: num(n / t), vars: { t: shown(t), n } }];
     if (L === 1) {
       const [u, n] = [r.int(2, 12), r.int(2, 9)];
       const t = u * n;
-      if (r.next() < 0.5) return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${t} \\div ${n} = ${u}`], inverted(t, n)) };
-      return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${u} \\times ${n} = ${t}`]) };
+      if (r.next() < 0.5) return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${t} \\div ${n} = ${u}`], line("rate", u, n, t), inverted(t, n)) };
+      return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${u} \\times ${n} = ${t}`], line("total", u, n, t)) };
     }
     if (L === 2) {
       const kind = r.int(0, 2);
       if (kind === 0) {
         // How many units: the total divided by the rate.
         const [u, n] = [r.int(2, 12), r.int(3, 15)];
-        return { prompt: fill(cost ? P.rateCostUnits : P.rateTapUnits, { r: said(u), t: said(u * n) }), ...one(n, [`${u * n} \\div ${u} = ${n}`]) };
+        return { prompt: fill(cost ? P.rateCostUnits : P.rateTapUnits, { r: said(u), t: said(u * n) }), ...one(n, [`${u * n} \\div ${u} = ${n}`], line("units", u, n, u * n)) };
       }
       // A rate with cents (1.05 to 4.95 a kilogram) or tenths of a litre, worked in cents or tenths.
       const f = cost ? 100 : 10;
       const uf = cost ? 5 * r.int(21, 99) : noZeroEnd(r, 11, 99);
       const n = r.int(3, 9);
       const [u, t] = [uf / f, (uf * n) / f];
-      if (kind === 1) return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${shown(u)} \\times ${n} = ${shown(t)}`]) };
-      return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${shown(t)} \\div ${n} = ${shown(u)}`], inverted(t, n)) };
+      if (kind === 1) return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${shown(u)} \\times ${n} = ${shown(t)}`], line("total", u, n, t)) };
+      return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${shown(t)} \\div ${n} = ${shown(u)}`], line("rate", u, n, t), inverted(t, n)) };
     }
     // Two steps, the rate first (the unitary method): n units for t, so m units for? Adding the difference in units to
     // the total, as if each unit added one, is the trap.
@@ -1265,7 +1272,7 @@ const GENS: Record<SkillId, Gen> = {
     const [t, v] = [Number(tidy(u * n)), Number(tidy(u * m))];
     // At 1 a unit, adding and multiplying agree.
     const traps: Trap[] = t + m - n > 0 && u !== 1 ? [{ id: "addedNotScaled", a: num(Number(tidy(t + m - n))), vars: { a: n, b: m, k: plainFrac(fr(m, n)) } }] : [];
-    return { prompt: fill(cost ? P.rateCostTwo : P.rateTapTwo, { n, t: said(t), m }), ...one(v, [`${shown(t)} \\div ${n} = ${shown(u)}`, `${shown(u)} \\times ${m} = ${shown(v)}`], traps) };
+    return { prompt: fill(cost ? P.rateCostTwo : P.rateTapTwo, { n, t: said(t), m }), ...one(v, [`${shown(t)} \\div ${n} = ${shown(u)}`, `${shown(u)} \\times ${m} = ${shown(v)}`], line("two", u, n, t, { m, v }), traps) };
   },
 
   divisibility(r, L, w) {
