@@ -174,6 +174,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./ratioPics").RatioSolution & { steps: string[] };
       return (await import("./ratioPics")).renderRatio(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "rate": {
+      // The double number line, units on top and the amount underneath, with the working beneath.
+      const spec = s as import("./ratePics").RateSolution & { steps: string[] };
+      return (await import("./ratePics")).renderRate(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "randvar":
       return (await import("./randvar")).renderRandvar(s, t.randvarWords);
     case "numerical":
