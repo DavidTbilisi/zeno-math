@@ -10,6 +10,7 @@ import { evalE, exprMessages, fromPoly, parseE, simp, sqrtSplit, tex, toPoly, ty
 import { Frac } from "./fraction";
 import { normCdf, normSf, tUpper, zUpper, type Alt, type InfSpec } from "./inference";
 import { covariance } from "./randvar";
+import { percentSteps, type PercentSolution } from "./percentPics";
 import { latexToSvg, type RenderedSvg } from "./latex";
 import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type MatrixOp } from "./matrix";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
@@ -52,7 +53,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "rules" | "matrix" | "randvar" | "decimal" | "percent";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec";
@@ -1057,12 +1058,13 @@ const GENS: Record<SkillId, Gen> = {
   },
 
   percent(r, L, w) {
-    const P = (kind: string, p: number, a: number, b: number, up = true) => ({ type: "percratio", kind, p: String(p), a: String(a), b: String(b), ratio: "2:3", up, step: 999 });
+    // The picture: bars cut into chunks of 10 % (or 5 %, 20 %, 25 %) with each chunk's amount in it, and the working through one chunk.
+    const P = (spec: PercentSolution) => ({ kind: "percent" as const, spec: { ...spec, steps: percentSteps(spec) } });
     if (L === 1) {
       const p = r.pick([5, 10, 15, 20, 25, 30, 40, 60, 75]);
       const a = 20 * r.int(2, 30);
       const v = (p * a) / 100;
-      return { prompt: fill(w.prompts.percentOf, { p, a }), q: "", answer: num(v), show: String(v), plain: String(v), format: "number", solution: { kind: "model", spec: P("of", p, a, 1) } };
+      return { prompt: fill(w.prompts.percentOf, { p, a }), q: "", answer: num(v), show: String(v), plain: String(v), format: "number", solution: P({ pic: "of", p, a }) };
     }
     const p = r.pick([5, 10, 15, 20, 25, 30, 40, 50]);
     const a = 20 * r.int(2, 30);
@@ -1070,10 +1072,10 @@ const GENS: Record<SkillId, Gen> = {
       const up = r.next() < 0.5;
       const b = (a * (100 + (up ? p : -p))) / 100;
       const v = up ? p : -p;
-      return { prompt: fill(w.prompts.percentChange, { a, b }), q: "", answer: num(v), show: `${v}\\%`, plain: `${v}%`, format: "number", solution: { kind: "model", spec: P("percentChange", p, a, b) } };
+      return { prompt: fill(w.prompts.percentChange, { a, b }), q: "", answer: num(v), show: `${v}\\%`, plain: `${v}%`, format: "number", solution: P({ pic: "change", a, b }) };
     }
     const now = (a * (100 + p)) / 100;
-    return { prompt: fill(w.prompts.percentReverse, { p, a: now }), q: "", answer: num(a), show: String(a), plain: String(a), format: "number", solution: { kind: "model", spec: P("reverseChange", p, now, 1, true) } };
+    return { prompt: fill(w.prompts.percentReverse, { p, a: now }), q: "", answer: num(a), show: String(a), plain: String(a), format: "number", solution: P({ pic: "reverse", p, now, up: true }) };
   },
 
   decimals(r, L, w) {
