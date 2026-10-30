@@ -1,3 +1,30 @@
+```{=latex}
+\begin{titlepage}
+\thispagestyle{fancy}
+\centering
+\vspace*{1cm}
+\includegraphics[width=3.5cm]{docs/thesis/figures/ug-logo.jpeg}\par
+\vspace{1.2cm}
+{\LARGE The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems\par}
+\vspace{0.6cm}
+{\large Bayesian Knowledge Tracing and simple mastery rules on real and simulated students' answers, at the grain of
+the skill and of its parts\par}
+\vspace{0.6cm}
+{\large Bachelor's Thesis\par}
+\vspace{2cm}
+Author:\par
+Davit Tchintcharashvili\par
+\vspace{1.5cm}
+This is proved by the Bachelor Thesis Committee of the School of IT, Engineering and Mathematics of the University of
+Georgia\par
+\vspace{1.5cm}
+Supervisor:\par
+Mikheil Gigauri\par
+\vfill
+\makeatletter\@date\makeatother\par
+\end{titlepage}
+```
+
 # Abstract {.unnumbered .unlisted}
 
 Every adaptive practice system decides, after each answer, whether a student has mastered a skill, and every method

@@ -34,7 +34,7 @@ const pandoc = talk
   ? [`${DIR}/concept-pdf.yaml`, `${DIR}/concept-paper.md`, `--lua-filter=${DIR}/format-only.lua`, ...citations]
   : [
       `${DIR}/pdf.yaml`, ...chapters,
-      "--metadata", `date=Draft, ${date}`,
+      "--metadata", `date=${date}`,
       `--resource-path=${DIR}`,
       `--lua-filter=${DIR}/chapter-numbers.lua`,
       ...citations,
