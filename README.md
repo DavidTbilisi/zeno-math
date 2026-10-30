@@ -625,6 +625,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     mislabelled neighbour, the k that does best on the test points (k = 1 overfits), scaling features in different
     units, choosing the distance, and the dimensions where the nearest point is almost as far as the farthest. Free
     play takes two blobs, a disc in a ring or different units, and every control
+  - *Decision-tree lab* (a live piece on the board, from the AI menu or the Shapes panel): points of two classes cut
+    into boxes by straight cuts, each across one feature (x < t or y < t) inside one box; every box calls its points by
+    their majority. Tap a box, pick the feature, slide the cut and see how much the Gini impurity (or entropy) falls
+    before splitting; the tree is drawn small beside the plane. Six puzzles with a Check: one cut that makes both sides
+    pure, the cut that lowers Gini most on overlapping classes, a corner in 3 boxes, crossed classes in 4 boxes (where
+    the first cut barely helps), the depth of a greedily grown tree that does best on test points (deep trees
+    overfit), and a forest of trees on resampled points voting better than one tree. Free play adds entropy, the best
+    cut, every dataset and the forest
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1753,6 +1761,8 @@ src/math/rocLab.ts        the threshold lab: scores, the confusion matrix and it
                           precision–recall curve, the six puzzles and how a check is judged, and the picture
 src/math/knnLab.ts        the nearest-neighbours lab: the datasets, distances, the vote, accuracy on test points,
                           distances in many dimensions, the six puzzles and how a check is judged, and the picture
+src/math/treeLab.ts       the decision-tree lab: impurity, cuts and the best cut, trees by hand and grown greedily,
+                          forests, the six puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
