@@ -20,7 +20,7 @@ export type ToolDialogProps = {
 
 export type ToolKind =
   | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
-  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "multivar" | "randvar" | "likelihood" | "information" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
+  | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "multivar" | "randvar" | "likelihood" | "information" | "regression" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
@@ -74,6 +74,7 @@ export const TOOLS: Record<ToolKind, Tool> = {
   randvar: { Dialog: load(() => import("./components/RandvarDialog"), "RandvarDialog"), edit: "editRandvar", topics: (t) => t.randvarTopics, hints: (t) => t.randvarHints },
   likelihood: { Dialog: load(() => import("./components/LikelihoodDialog"), "LikelihoodDialog"), edit: "editLikelihood", topics: (t) => t.likelihoodTopics, hints: (t) => t.likelihoodHints },
   information: { Dialog: load(() => import("./components/InformationDialog"), "InformationDialog"), edit: "editInformation", topics: (t) => t.informationTopics, hints: (t) => t.informationHints },
+  regression: { Dialog: load(() => import("./components/RegressionDialog"), "RegressionDialog"), edit: "editRegression", topics: (t) => t.regressionTopics, hints: (t) => t.regressionHints },
   applied: { Dialog: load(() => import("./components/AppDialog"), "AppDialog"), edit: "editApplied", topics: (t) => t.appTopics, hints: (t) => t.appHints },
   inference: { Dialog: load(() => import("./components/InfDialog"), "InfDialog"), edit: "editInference", topics: (t) => t.infTopics, hints: (t) => t.infHints },
   practice: {
@@ -151,6 +152,7 @@ export const MENUS: MenuGroup[] = [
       { kind: "randvar", icon: "E[X]", label: "randvar" },
       { kind: "likelihood", icon: "L(θ)", label: "likelihood" },
       { kind: "information", icon: "H(p)", label: "information" },
+      { kind: "regression", icon: "ŷ", label: "regression" },
       { kind: "inference", icon: "H₀", label: "inference" },
     ],
   },
