@@ -617,6 +617,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     positives where calling nothing positive is 90 % accurate yet catches nothing, the most recall with a false
     positive rate at most 0.1, and high precision on rare positives read off the precision–recall curve. Free play
     takes either dataset, new samples and how far apart the classes' scores are
+  - *Nearest neighbours lab* (a live piece on the board, from the AI menu or the Shapes panel): points of two classes
+    on a plane and a new point dragged among them; its k nearest vote, with lines to them inside the neighbourhood
+    (a circle, or a diamond for distance along the axes). The regions each point would be called can be shaded, test
+    points kept out of the vote are framed red when called wrong, and a side panel shows distances among 100 random
+    points in 1 to 1000 dimensions. Six puzzles with a Check: drag the point into the other class, a k that outvotes a
+    mislabelled neighbour, the k that does best on the test points (k = 1 overfits), scaling features in different
+    units, choosing the distance, and the dimensions where the nearest point is almost as far as the farthest. Free
+    play takes two blobs, a disc in a ring or different units, and every control
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1743,6 +1751,8 @@ src/math/batchLab.ts      the batch training lab: data, the mean squared error a
                           with schedules, momentum and Adam, the six puzzles and how a run is judged, and the picture
 src/math/rocLab.ts        the threshold lab: scores, the confusion matrix and its measures, ROC with AUC and the
                           precision–recall curve, the six puzzles and how a check is judged, and the picture
+src/math/knnLab.ts        the nearest-neighbours lab: the datasets, distances, the vote, accuracy on test points,
+                          distances in many dimensions, the six puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)

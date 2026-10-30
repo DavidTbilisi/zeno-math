@@ -12,6 +12,7 @@
 // The overfitting lab: degree 1 is far from every training point, and degree 9 goes through all ten, for two stars.
 // The batch training lab: η = 0.05 is too slow over 20 full-batch epochs, and 0.2 settles at the best line, for two stars.
 // The threshold lab: at t = 0.8 recall is too low, and the slider down to 0.3 catches 90 % of the positives, for two stars.
+// The k-NN lab: the new point among the blue ones is called blue, and dragged into the orange blob it is orange, for two stars.
 // So does the softmax lab: cat's probability is short, and its bar dragged up to 4 gets it over 0.8, for two stars.
 // The embeddings lab: dog at right angles to cat is not alike, and its tip dragged beside cat's is, for two stars.
 // And the backprop lab: a Check with the boxes empty says which one, and q's box tapped and both boxes filled in are
@@ -21,6 +22,7 @@ import { expect, test } from "@playwright/test";
 import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
 import { ETAS } from "../src/math/batchLab.ts";
 import { etaIndex } from "../src/math/descentLab.ts";
+import { KNN_PLOT, toPx as knnPx } from "../src/math/knnLab.ts";
 import { EMBED_PLOT, toPage as embedPage } from "../src/math/embedLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
 import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
@@ -488,4 +490,35 @@ test("the tensors lab goes on the board from the AI menu, and its entries and pl
   await expect(lab.getByText(/Row-major.*Done! ★★★/)).toBeVisible();
   await expect(lab.getByText("T[2, 1] = 62 sits at place 2·4 + 1·1 = 9.")).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("tensor-lab.png") });
+});
+
+test("the k-NN lab: the point among the blue is called blue, dragged into the orange blob it is orange", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "k-NN lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Nearest neighbours lab/ }).click();
+  const lab = page.locator(".live-knnLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/Drag it until it is called orange/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText("The point is called blue, and you want orange.")).toBeVisible();
+
+  // Drag the new point from (0.3, 0.42) to (0.75, 0.75).
+  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const k = svg.width / KNN_PLOT.w;
+  const [x0, y0] = knnPx(0.3, 0.42);
+  const [x1, y1] = knnPx(0.75, 0.75);
+  await page.mouse.move(svg.x + x0 * k, svg.y + y0 * k);
+  await page.mouse.down();
+  await page.mouse.move(svg.x + x1 * k, svg.y + y1 * k, { steps: 6 });
+  await page.mouse.up();
+  await expect(lab.locator(".descent-read")).toHaveText(/called orange/);
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/every other point says nothing at all!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("knn-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
