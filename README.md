@@ -668,6 +668,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     each label's cost −ln P(y | q) beside the curves −ln q and −ln(1 − q), where a confident mistake costs most
 - **H(p) Information** — surprise, entropy, cross-entropy and KL divergence, in bits
 - **ŷ Regression** — several features by the normal equations (and gradient descent to the same weights), polynomial and one-hot features, logistic regression, and reading the weights
+- **P(c|w) Naive Bayes** — Bayes' rule as a classifier counted by hand on short messages, add-α smoothing, what counting the same evidence again does, and Gaussian naive Bayes
   - *Entropy*: chances (and names) of outcomes; each surprise −log₂ p, H(p) as their average and log₂ n as its most;
     the chances beside the surprises with H marked
   - *A coin*: H(p) = −p log₂ p − (1 − p) log₂(1 − p) at the chosen p, on the curve from 0 to 1 with its peak of 1 bit
@@ -1842,6 +1843,7 @@ src/math/randvar.ts       random variables: tables and densities, E and Var, aX 
 src/math/likelihood.ts    maximum likelihood: a coin, a normal, Poisson counts, least squares and log loss as MLE
 src/math/information.ts   information: surprise and entropy, a coin, cross-entropy, KL divergence, log loss
 src/math/regression.ts    regression: several features, polynomial and one-hot features, logistic regression, reading weights
+src/math/naiveBayes.ts    naive Bayes: words counted by hand, smoothing, the same evidence counted again, Gaussian
 src/math/applied.ts       applied calculus: areas, volumes of revolution, motion, optimisation, related rates
 src/math/mental.ts        mental math: base multiplication, division (base, flag, Trachtenberg), divisibility,
                           reciprocals, digit-sum check, roots, cubing, magic squares, Major System
