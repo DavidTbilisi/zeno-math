@@ -159,6 +159,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const { latexToSvg } = await import("./latex");
       return latexToSvg((await import("./matrix")).matrixLatex(spec));
     }
+    case "decimal": {
+      // The digits in place-value columns (lined up at the point, or moving past it) or equal jumps on a number line, with the working beneath.
+      const spec = s as import("./decimalPics").DecimalSolution & { steps: string[] };
+      return (await import("./decimalPics")).renderDecimal(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "randvar":
       return (await import("./randvar")).renderRandvar(s, t.randvarWords);
     case "numerical":
