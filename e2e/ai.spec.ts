@@ -22,7 +22,9 @@
 // wrong way round, and T[1, 2] is right after those two tries for one star; then T[2, 1]'s place in memory at the first try, linked to it.
 // The network lab: a Check counts the perceptron's mistakes, and twenty updates turn its line until none is left, for two stars.
 // The convolution lab: a Check with no cell picked says so, and the cell where the signal steps up is right, for two stars.
+// The attention lab: a query pointed away from cat gives it little weight, and pointed along cat's key most, for two stars.
 import { expect, test } from "@playwright/test";
+import { ATTN_PLOT, toPage as attnPage } from "../src/math/attnLab.ts";
 import { BP_PLOT, bpGraph, bpPos } from "../src/math/backpropLab.ts";
 import { ETAS } from "../src/math/batchLab.ts";
 import { CONV_PLOT, OUTPUT as CONV_OUT } from "../src/math/convLab.ts";
@@ -631,5 +633,34 @@ test("the convolution lab: no cell picked says so, the cell where the signal ste
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/the output is large only where the signal changes!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("conv-lab.png") });
+  await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
+});
+
+test("the attention lab: the query away from cat gives it little weight, pointed along cat it gets most", async ({ page, request }) => {
+  const made = await (await request.post("/api/boards", { data: { title: "Attention lab" } })).json();
+  await page.goto(`/#/b/${made.id}`);
+  await page.locator(".excalidraw").waitFor();
+  await page.getByRole("button", { name: /\bAI\b/ }).click();
+  await page.getByRole("menuitem", { name: /Attention lab/ }).click();
+  const lab = page.locator(".live-attnLab");
+  await lab.waitFor();
+  const box = (await lab.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+  await expect(lab.getByText(/so that cat gets at least 60 % of the attention/)).toBeVisible();
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/cat gets .* of the attention; you want at least 0\.6/)).toBeVisible();
+
+  // Put the query's tip at (2.4, 2), along cat's key.
+  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const k = svg.width / ATTN_PLOT.w;
+  const [x, y] = attnPage([2.4, 2]);
+  await page.mouse.move(svg.x + x * k, svg.y + y * k);
+  await page.mouse.down();
+  await page.mouse.up();
+  await expect(lab.locator(".descent-read")).toHaveText(/largest weight 0\.[6-9]\d* on cat/);
+  await lab.getByRole("button", { name: /Check/ }).click();
+  await expect(lab.getByText(/attending less to the others!.*Done! ★★☆/)).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("attn-lab.png") });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
