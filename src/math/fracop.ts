@@ -1,8 +1,8 @@
 // Fraction arithmetic, step by step: + and − on a common denominator (the lcm), × with
 // cross-cancelling, ÷ as "keep, change, flip". Mixed numbers and decimals are turned into
 // improper fractions first; the answer is simplified by the gcd and written as a mixed number.
-// A picture goes with each operation: bars on the common denominator for + and −, the area model
-// for ×, and "how many times does it fit" for ÷.
+// A picture comes first: bars on the common denominator for + and − (each fraction's own pieces bold, the common ones
+// inside them), the area model on squares of 1 for ×, and "how many times does b fit into a" for ÷.
 import { C, compose, r2, texAt, W } from "./chart";
 import type { RenderedSvg } from "./latex";
 
@@ -151,28 +151,40 @@ const BLUE = { f: "#a5d8ff", s: C.blue };
 const ORANGE = { f: "#ffd8a8", s: C.orange };
 const GREEN = { f: "#b2f2bb", s: C.green };
 
-/** Bars of `parts` equal parts per whole with `count` of them shaded (split into colour runs). */
-function bars(x: number, y: number, w: number, h: number, parts: number, runs: { count: number; c: { f: string; s: string }; hatch?: boolean }[], scaleWholes = 1) {
+/**
+ * Bars of `parts` equal parts per whole with `count` of them shaded (split into colour runs), at least `minWholes`
+ * wholes, the same size of whole as `scaleWholes` wholes would have. With `group`, every group-th line is drawn bold:
+ * the fraction's own pieces, with the common pieces they were cut into inside them.
+ */
+function bars(x: number, y: number, w: number, h: number, parts: number, runs: { count: number; c: { f: string; s: string }; hatch?: boolean }[], scaleWholes = 1, group = 0, minWholes = 1) {
   const total = runs.reduce((s, r) => s + r.count, 0);
-  const wholes = Math.max(1, Math.ceil(total / parts));
+  const wholes = Math.max(minWholes, Math.ceil(total / parts));
   const out: string[] = [];
   const sw = Math.max(wholes, scaleWholes); // every row uses the same size of whole
-  const bw = (w - (sw - 1) * 12) / sw;
+  const gap = sw > 4 ? 8 : 12;
+  const bw = (w - (sw - 1) * gap) / sw;
   const cell = bw / parts;
   let k = 0;
   for (const run of runs)
     for (let i = 0; i < run.count; i++, k++) {
       const whole = Math.floor(k / parts);
-      const px = x + whole * (bw + 12) + (k % parts) * cell;
+      const px = x + whole * (bw + gap) + (k % parts) * cell;
       out.push(`<rect x="${r2(px)}" y="${y}" width="${r2(cell)}" height="${h}" fill="${run.hatch ? "url(#fo-hatch)" : run.c.f}"/>`);
     }
   for (let wi = 0; wi < wholes; wi++) {
-    const bx = x + wi * (bw + 12);
-    if (parts <= 60) for (let i = 1; i < parts; i++) out.push(`<line x1="${r2(bx + i * cell)}" y1="${y}" x2="${r2(bx + i * cell)}" y2="${y + h}" stroke="#868e96" stroke-width="0.8"/>`);
+    const bx = x + wi * (bw + gap);
+    for (let i = 1; i < parts; i++) {
+      const bold = group > 1 && i % group === 0 && parts / group <= 60;
+      if (bold) out.push(`<line x1="${r2(bx + i * cell)}" y1="${y}" x2="${r2(bx + i * cell)}" y2="${y + h}" stroke="#1e1e1e" stroke-width="1.6"/>`);
+      else if (cell >= 3) out.push(`<line x1="${r2(bx + i * cell)}" y1="${y}" x2="${r2(bx + i * cell)}" y2="${y + h}" stroke="#868e96" stroke-width="0.8"/>`);
+    }
     out.push(`<rect x="${r2(bx)}" y="${y}" width="${r2(bw)}" height="${h}" fill="none" stroke="#1e1e1e" stroke-width="1.6"/>`);
   }
-  return out.join("");
+  return { svg: out.join(""), xAt: (k: number) => x + Math.floor(Math.min(k, wholes * parts - 1e-9) / parts) * (bw + gap) + (k - Math.floor(Math.min(k, wholes * parts - 1e-9) / parts) * parts) * cell };
 }
+
+/** The most wholes a row of bars may take up before the picture is left out. */
+const MAX_WHOLES = 8;
 
 function picture(spec: FracOpSpec, plan: ReturnType<typeof planFracOp>): { svg: string; h: number } {
   const { A, B, res } = plan;
@@ -180,79 +192,80 @@ function picture(spec: FracOpSpec, plan: ReturnType<typeof planFracOp>): { svg: 
   const pos = a.n >= 0 && b.n >= 0;
   const defs = `<defs><pattern id="fo-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#f1f3f5"/><line x1="0" y1="0" x2="0" y2="6" stroke="#adb5bd" stroke-width="2"/></pattern></defs>`;
   const out: string[] = [defs];
-  const labelX = 70;
-  const x0 = 110;
+  const x0 = 170;
   const bw = W - x0 - 24;
+  /** A row's label, right-aligned before the bars: the fraction as written, and on the common pieces when that differs. */
+  const label = (y: number, tex: string, color?: string) => out.push(texAt(tex, x0 - 12, y + 19, "end", 0.85, color).svg);
+  const recut = (p: Parsed, top: number, L: number) => (p.q.d === L && !p.convert ? fr(top, L) : `${p.tex} = ${fr(top, L)}`);
   if ((spec.op === "+" || spec.op === "-") && pos) {
+    // Each fraction cut into the common pieces: its own pieces bold, the common ones inside them. Then put together
+    // (+), or the second taken away from the first (−, the part taken away hatched).
     const L = plan.L;
     const a1 = (a.n * L) / a.d;
     const b1 = (b.n * L) / b.d;
-    const total = spec.op === "+" ? a1 + b1 : a1;
-    if (L > 60 || total / L > 4) return { svg: "", h: 0 };
-    const rows: [string, { count: number; c: { f: string; s: string }; hatch?: boolean }[]][] = [
-      [fr(a1, L), [{ count: a1, c: BLUE }]],
-      [fr(b1, L), [{ count: b1, c: ORANGE }]],
-      spec.op === "+"
-        ? [fr(a1 + b1, L), [{ count: a1, c: BLUE }, { count: b1, c: ORANGE }]]
-        : [fr(a1 - b1, L), a1 >= b1 ? [{ count: a1 - b1, c: GREEN }, { count: b1, c: GREEN, hatch: true }] : []],
-    ];
+    const sum = spec.op === "+" ? a1 + b1 : a1 - b1;
+    const maxW = Math.max(1, Math.ceil(Math.max(a1, b1, sum) / L));
+    if (maxW > MAX_WHOLES || sum < 0) return { svg: "", h: 0 };
     let y = 8;
-    const maxW = Math.max(1, ...rows.map(([, runs]) => Math.ceil(runs.reduce((s, r) => s + r.count, 0) / L)));
-    rows.forEach(([tex, runs], i) => {
-      if (!runs.length) return;
-      out.push(texAt(`${i === 2 ? "=" : i === 1 ? (spec.op === "+" ? "+" : "-") : ""}\\ ${tex}`, labelX, y + 19, "middle", 0.9).svg);
-      out.push(bars(x0, y, bw, 38, L, runs, maxW));
-      y += 58;
-    });
-    return { svg: out.join(""), h: y };
+    label(y, recut(A, a1, L));
+    out.push(bars(x0, y, bw, 38, L, [{ count: a1, c: BLUE }], maxW, L / a.d).svg);
+    y += 58;
+    label(y, `${spec.op === "+" ? "+" : "-"}\\ ${recut(B, b1, L)}`);
+    out.push(bars(x0, y, bw, 38, L, [{ count: b1, c: ORANGE }], maxW, L / b.d).svg);
+    y += 58;
+    label(y, `=\\ ${fr(sum, L)}${res.tex !== fr(sum, L) ? ` = ${res.tex}` : ""}`, C.green);
+    const runs = spec.op === "+" ? [{ count: a1, c: BLUE }, { count: b1, c: ORANGE }] : [{ count: sum, c: GREEN }, { count: b1, c: GREEN, hatch: true }];
+    out.push(bars(x0, y, bw, 38, L, runs, maxW).svg);
+    return { svg: out.join(""), h: y + 58 };
   }
-  if (spec.op === "×" && pos && a.n <= a.d && b.n <= b.d && a.d <= 20 && b.d <= 20) {
-    // Area model: a of the width, b of the height; the overlap is the product.
-    const S = 230;
-    const X = (W - S) / 2 + 40;
+  const [wu, hu] = [Math.ceil(a.n / a.d), Math.ceil(b.n / b.d)];
+  if (spec.op === "×" && pos && a.n > 0 && b.n > 0 && wu <= 4 && hu <= 4) {
+    // Area model: a of the width, b of the height, on squares of 1 (bold) cut into a.d × b.d pieces; the overlap is
+    // the product, a.n × b.n pieces of 1/(a.d × b.d) each.
+    const U = Math.round(Math.min(230, 300 / Math.max(wu, hu)));
+    const [SW, SH] = [U * wu, U * hu];
+    const X = (W - SW) / 2 + 20;
     const Y = 30;
-    const cw = S / a.d;
-    const chh = S / b.d;
-    for (let i = 0; i < a.d; i++)
-      for (let j = 0; j < b.d; j++) {
-        const inA = i < a.n;
-        const inB = j < b.n;
-        const fill = inA && inB ? GREEN.f : inA ? BLUE.f : inB ? ORANGE.f : "#ffffff";
-        out.push(`<rect x="${r2(X + i * cw)}" y="${r2(Y + S - (j + 1) * chh)}" width="${r2(cw)}" height="${r2(chh)}" fill="${fill}" stroke="#adb5bd" stroke-width="0.8"/>`);
-      }
-    out.push(`<rect x="${X}" y="${Y}" width="${S}" height="${S}" fill="none" stroke="#1e1e1e" stroke-width="2"/>`);
-    out.push(texAt(fr(a.n, a.d), X + (a.n * cw) / 2, Y + S + 22, "middle", 0.85, C.blue).svg);
-    out.push(texAt(fr(b.n, b.d), X - 26, Y + S - (b.n * chh) / 2, "middle", 0.85, C.orange).svg);
-    const g = gcd(a.n * b.n, a.d * b.d);
-    out.push(texAt(`${fr(a.n * b.n, a.d * b.d)}${g > 1 && a.n * b.n ? ` = ${fr((a.n * b.n) / g, (a.d * b.d) / g)}` : ""}`, X + S + 20, Y + S / 2, "start", 1, C.green).svg);
-    return { svg: out.join(""), h: Y + S + 46 };
+    const [aw, bh] = [(U * a.n) / a.d, (U * b.n) / b.d];
+    const rect = (x: number, y: number, w: number, h: number, f: string) => `<rect x="${r2(x)}" y="${r2(y)}" width="${r2(w)}" height="${r2(h)}" fill="${f}"/>`;
+    out.push(rect(X, Y, SW, SH, "#ffffff"), rect(X, Y, aw, SH - bh, BLUE.f), rect(X + aw, Y + SH - bh, SW - aw, bh, ORANGE.f), rect(X, Y + SH - bh, aw, bh, GREEN.f));
+    const line = (x1: number, y1: number, x2: number, y2: number, bold: boolean) =>
+      `<line x1="${r2(x1)}" y1="${r2(y1)}" x2="${r2(x2)}" y2="${r2(y2)}" stroke="${bold ? "#1e1e1e" : "#adb5bd"}" stroke-width="${bold ? 1.6 : 0.8}"/>`;
+    for (let i = 1; i < wu * a.d; i++) if (i % a.d === 0 || U / a.d >= 4) out.push(line(X + (i * U) / a.d, Y, X + (i * U) / a.d, Y + SH, i % a.d === 0));
+    for (let j = 1; j < hu * b.d; j++) if (j % b.d === 0 || U / b.d >= 4) out.push(line(X, Y + SH - (j * U) / b.d, X + SW, Y + SH - (j * U) / b.d, j % b.d === 0));
+    out.push(`<rect x="${X}" y="${Y}" width="${SW}" height="${SH}" fill="none" stroke="#1e1e1e" stroke-width="2"/>`);
+    out.push(texAt(A.tex, X + aw / 2, Y + SH + 22, "middle", 0.85, C.blue).svg);
+    out.push(texAt(B.tex, X - 10, Y + SH - bh / 2, "end", 0.85, C.orange).svg);
+    const prod = fr(a.n * b.n, a.d * b.d);
+    out.push(texAt(`${prod}${res.tex !== prod ? ` = ${res.tex}` : ""}`, X + SW + 16, Y + SH - bh / 2, "start", 1, C.green).svg);
+    return { svg: out.join(""), h: Y + SH + 46 };
   }
   if (spec.op === "÷" && pos && b.n > 0) {
-    // How many times does b fit into a? Both on the common denominator.
+    // How many times does b fit into a? Both cut into the common pieces; each copy of b bracketed along a, and the
+    // last part of one shown against the whole copy (dashed): 2 of its 5 pieces is 2/5 of a b.
     const L = lcm(a.d, b.d);
     const a1 = (a.n * L) / a.d;
     const b1 = (b.n * L) / b.d;
     const times = a1 / b1;
-    if (L > 60 || a1 / L > 4 || times > 16) return { svg: "", h: 0 };
-    out.push(texAt(fr(a1, L), labelX, 27, "middle", 0.9).svg);
-    out.push(bars(x0, 8, bw, 38, L, [{ count: a1, c: BLUE }]));
-    // Brackets for each copy of b.
-    const wholes = Math.max(1, Math.ceil(a1 / L));
-    const barW = Math.min(bw, (bw - (wholes - 1) * 12) / wholes);
-    const cell = barW / L;
-    const xAt = (k: number) => x0 + Math.floor(Math.min(k, a1 - 1e-9) / L) * (barW + 12) + (k - Math.floor(Math.min(k, a1 - 1e-9) / L) * L) * cell;
+    const copies = Math.ceil(times);
+    const maxW = Math.max(1, Math.ceil(Math.max(copies * b1, b1) / L));
+    if (maxW > MAX_WHOLES || copies > 16) return { svg: "", h: 0 };
+    label(8, recut(A, a1, L));
+    const top = bars(x0, 8, bw, 38, L, [{ count: a1, c: BLUE }], maxW, L / a.d, maxW);
+    out.push(top.svg);
     for (let g = 0; g * b1 < a1; g++) {
       const s = g * b1;
       const e = Math.min(a1, (g + 1) * b1);
       const full = e - s === b1;
-      const xs = xAt(s) + 2;
-      const xe = xAt(e) - 2 + (e % L === 0 && e > 0 ? 0 : 0);
-      const y = 56;
-      out.push(`<path d="M${r2(xs)},${y} v8 H${r2(xe)} v-8" fill="none" stroke="${full ? C.orange : C.purple}" stroke-width="2"/>`);
-      out.push(texAt(full ? String(g + 1) : fr(e - s, b1), (xs + xe) / 2, y + 26, "middle", 0.8, full ? C.orange : C.purple).svg);
+      const [xs, xe] = [top.xAt(s) + 2, top.xAt(e) - 2];
+      if (!full) out.push(`<rect x="${r2(top.xAt(s))}" y="6" width="${r2(top.xAt(s + b1) - top.xAt(s))}" height="42" fill="none" stroke="${C.orange}" stroke-width="2" stroke-dasharray="6 4"/>`);
+      out.push(`<path d="M${r2(xs)},56 v8 H${r2(xe)} v-8" fill="none" stroke="${full ? C.orange : C.purple}" stroke-width="2"/>`);
+      out.push(texAt(full ? String(g + 1) : fr(e - s, b1), (xs + xe) / 2, 82, "middle", 0.8, full ? C.orange : C.purple).svg);
     }
-    out.push(texAt(`${fr(a1, L)} = ${res.tex} \\times ${fr(b1, L)}`, W / 2, 128, "middle", 0.95, C.green).svg);
-    return { svg: out.join(""), h: 150 };
+    label(104, recut(B, b1, L));
+    out.push(bars(x0, 104, bw, 38, L, [{ count: b1, c: ORANGE }], maxW, L / b.d).svg);
+    out.push(texAt(`${fr(a1, L)} \\div ${fr(b1, L)} = ${a1} \\div ${b1} = ${res.tex}`, W / 2, 174, "middle", 0.95, C.green).svg);
+    return { svg: out.join(""), h: 200 };
   }
   return { svg: "", h: 0 };
 }
@@ -262,6 +275,12 @@ export function renderFracOp(spec: FracOpSpec): RenderedSvg {
   const k = Math.max(0, Math.min(spec.step, plan.lines.length));
   const parts: string[] = [];
   let y = 18;
+  // The picture first, then the working under it.
+  const pic = picture(spec, plan);
+  if (pic.h) {
+    parts.push(`<g transform="translate(0 ${y})">${pic.svg}</g>`);
+    y += pic.h + 10;
+  }
   plan.lines.slice(0, k).forEach((l, i) => {
     const cancel = l.tex.includes("\\cancel");
     if (cancel) y += 12;
@@ -275,10 +294,5 @@ export function renderFracOp(spec: FracOpSpec): RenderedSvg {
     }
     y += cancel ? 76 : 62;
   });
-  const pic = picture(spec, plan);
-  if (pic.h) {
-    parts.push(`<g transform="translate(0 ${y})">${pic.svg}</g>`);
-    y += pic.h;
-  }
   return compose(`${plan.problem} = \\,?`, parts.join(""), y, []);
 }
