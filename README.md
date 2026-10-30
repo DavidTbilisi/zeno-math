@@ -640,6 +640,13 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     10 % of the lowest error, climb out of a bad start stuck in a local minimum (k-means++ or random starts), find the
     elbow at four blobs, and the smallest k that gives a disc inside a ring a cluster of its own. Free play adds no-group
     points, new samples and every control
+  - *Network lab* (a live piece on the board, from the AI menu or the Shapes panel): a neural network trained on points
+    of two classes. With no hidden units it is the perceptron, updated point by point: each update adds a point it
+    calls wrong to its weights, turning its line; with a hidden layer (1 to 32 units; sigmoid, tanh or ReLU) it is
+    trained by gradient descent on the log loss, 100 steps a press, the plane shaded by its chance of orange and the
+    training and test loss drawn. Four puzzles with a Check: the perceptron until no point is wrong, XOR (which needs
+    a hidden layer), a circle (enough hidden units), and noisy points where a big network overfits unless stopped
+    early. Free play takes every dataset and setting
 - **E[X] Random variables** — probability as a model, every step written out and kept exact as fractions where the
   numbers allow
   - *Discrete*: values and their probabilities (checked to add up to 1); E[X] term by term, E[X²], Var(X) = E[X²] −
@@ -1773,6 +1780,8 @@ src/math/treeLab.ts       the decision-tree lab: impurity, cuts and the best cut
                           forests, the six puzzles and how a check is judged, and the picture
 src/math/kmeansLab.ts     the k-means lab: assign and move, runs, random and k-means++ starts, the lowest error for
                           each k, the disc's own cluster, the five puzzles and how a check is judged, and the picture
+src/math/nnLab.ts         the network lab: the perceptron's update, a 2 → h → 1 network, its forward pass, backprop and
+                          training, the four puzzles and how a check is judged, and the picture
 src/live/                 live pieces on the board: Excalidraw embeddables drawn in React, state in customData
 src/math/latex.ts         LaTeX → SVG (MathJax)
 src/math/plot.ts          functions → SVG plot (mathjs)
