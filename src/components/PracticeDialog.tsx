@@ -26,6 +26,7 @@ import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
 import { WorkInSteps } from "./WorkInSteps";
+import { ScratchPad } from "./ScratchPad";
 import { ComingBack, SESSION, SessionCard, SessionSummary, type SessionResult } from "./PracticeSession";
 import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Mistake, type Progress } from "../practiceProgress";
@@ -58,6 +59,23 @@ const freeOrigin: Origin = { policy: "free", review: false, predicted: null };
 const outbox = new Outbox(localSlot("zeno.outbox.v1"), study.send);
 /** Their test answers, the same way. */
 const testOutbox = new Outbox<TestAnswer>(localSlot("zeno.testbox.v1"), study.sendTest);
+/** Whether the student keeps scratch paper open under the questions, remembered on this device. */
+const SCRATCH_KEY = "zeno.scratch.v1";
+const scratchWanted = () => {
+  try {
+    return localStorage.getItem(SCRATCH_KEY) === "on";
+  } catch {
+    return false;
+  }
+};
+const wantScratch = (on: boolean) => {
+  try {
+    if (on) localStorage.setItem(SCRATCH_KEY, "on");
+    else localStorage.removeItem(SCRATCH_KEY);
+  } catch {
+    // Without storage the choice lasts until the page is left.
+  }
+};
 const queued = () => outbox.items().length + testOutbox.items().length;
 /** How often the dialog asks whether the teacher has moved the class on (a new phase, a session starting). */
 const PROTOCOL_POLL_MS = 30_000;
@@ -102,6 +120,7 @@ export function PracticeDialog(props: Props) {
   const [summary, setSummary] = useState(false);
   const [cheer, setCheer] = useState(0);
   const [quiet, setQuiet] = useState(muted);
+  const [scratch, setScratch] = useState(scratchWanted);
 
   // ---------- practise ----------
 
@@ -720,6 +739,12 @@ export function PracticeDialog(props: Props) {
             >
               {quiet ? "🔇" : "🔊"}
             </button>
+            {/* On a board the board itself is the paper. */}
+            {page && (
+              <button className="btn small practice-scratch" aria-pressed={scratch} onClick={() => (wantScratch(!scratch), setScratch(!scratch))}>
+                ✏️ {w.ui.scratch.title}
+              </button>
+            )}
             {cheer > 0 && done === "solved" && CHEER_AT.includes(score.streak) && (
               <Cheer key={cheer} text={`🔥 ${score.streak}`} small />
             )}
@@ -730,6 +755,7 @@ export function PracticeDialog(props: Props) {
               {verdict.hint && <div className="practice-hint">{verdict.hint}</div>}
             </div>
           )}
+          {page && scratch && <ScratchPad key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`} w={w.ui.scratch} />}
           {stepping !== "no" && !done && (
             <WorkInSteps
               key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}

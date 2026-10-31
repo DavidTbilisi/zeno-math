@@ -164,3 +164,49 @@ test("the practice page finds the learner's grade by halving, then practises it,
   await page.goto("/");
   await expect(page.getByText("You are working on grade 1")).toBeVisible();
 });
+
+test("scratch paper on the practice page draws, rubs out, lifts whole lines, undoes, and is clean for the next question", async ({ page }) => {
+  const s = w.ui.scratch;
+  await page.goto("/#/practice");
+  await page.getByRole("button", { name: s.title }).click();
+  const sheet = page.locator(".scratch-sheet canvas");
+  const undo = page.getByRole("button", { name: s.undo });
+  await expect(undo).toBeDisabled();
+  await sheet.scrollIntoViewIfNeeded();
+  const box = (await sheet.boundingBox())!;
+  const line = async (x0: number, y0: number, x1: number, y1: number) => {
+    await page.mouse.move(box.x + x0, box.y + y0);
+    await page.mouse.down();
+    await page.mouse.move(box.x + x1, box.y + y1, { steps: 8 });
+    await page.mouse.up();
+  };
+  const inked = () =>
+    sheet.evaluate((c: HTMLCanvasElement) => c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data.filter((a, i) => i % 4 === 3 && a > 0).length);
+  // Two lines, far apart.
+  await line(20, 40, 200, 40);
+  const one = await inked();
+  expect(one).toBeGreaterThan(100);
+  await line(20, 140, 200, 140);
+  const two = await inked();
+  expect(two).toBeGreaterThan(one);
+  // The eraser rubs out only what it passes over.
+  await page.getByRole("button", { name: `🧽 ${s.rub}`, exact: true }).click();
+  await line(110, 20, 110, 60);
+  const rubbed = await inked();
+  expect(rubbed).toBeLessThan(two);
+  expect(rubbed).toBeGreaterThan(two - one);
+  // The line eraser takes the whole of a line it touches, and leaves the other.
+  await page.getByRole("button", { name: s.lift }).click();
+  await line(60, 130, 60, 150);
+  expect(await inked()).toBe(rubbed - (two - one));
+  // Undo puts the lifted line back, then the rubbed-out piece.
+  await undo.click();
+  expect(await inked()).toBe(rubbed);
+  await undo.click();
+  expect(await inked()).toBe(two);
+  await page.getByRole("button", { name: "Show solution" }).click();
+  await page.getByRole("button", { name: "Next →" }).click();
+  await expect(page.getByRole("button", { name: s.title })).toHaveAttribute("aria-pressed", "true");
+  await expect(undo).toBeDisabled();
+  expect(await inked()).toBe(0);
+});
