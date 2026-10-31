@@ -8885,6 +8885,7 @@ export const ru: Dict = {
       review: "Из ваших ошибок: попробуйте ещё раз.",
       score: "Верно {right} из {total} · серия {streak}",
       sound: "Включить или выключить звук",
+      scratch: { title: "Черновик", pen: "Ручка", rub: "Ластик", lift: "Ластик для линий", undo: "Отменить", clear: "Очистить", black: "Чёрные чернила", blue: "Синие чернила", red: "Красные чернила" },
       progress: "{right}/{seen}",
       count: "Заданий",
       withAnswers: "С ответами",

@@ -8885,6 +8885,7 @@ export const ka: Dict = {
       review: "თქვენი შეცდომებიდან: სცადეთ ხელახლა.",
       score: "სწორია {right} / {total} · სერია {streak}",
       sound: "ხმის ჩართვა ან გამორთვა",
+      scratch: { title: "მონახაზი", pen: "კალამი", rub: "საშლელი", lift: "ხაზის საშლელი", undo: "დაბრუნება", clear: "გასუფთავება", black: "შავი მელანი", blue: "ლურჯი მელანი", red: "წითელი მელანი" },
       progress: "{right}/{seen}",
       count: "დავალებები",
       withAnswers: "პასუხებით",

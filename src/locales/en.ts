@@ -8887,6 +8887,7 @@ export const en = {
       review: "From your mistakes: try this one again.",
       score: "{right} of {total} right · streak {streak}",
       sound: "Sound on or off",
+      scratch: { title: "Scratch paper", pen: "Pen", rub: "Eraser", lift: "Line eraser", undo: "Undo", clear: "Clear", black: "Black ink", blue: "Blue ink", red: "Red ink" },
       progress: "{right}/{seen}",
       count: "Questions",
       withAnswers: "With answers",
