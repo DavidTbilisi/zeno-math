@@ -21,12 +21,14 @@ or emails.
 - *Asking what was hard:* after a miss on fractions, the student ticks the idea that was hard.
 - *Worked examples that fade:* after a miss on a skill worked in steps, a worked example, then fewer steps given each
   time, below.
+- *Targeted step-down:* after an early failure on a skill made of ideas, a few questions on its weakest idea, then
+  back to the skill, below. It is on trial: nobody has it but the arm with it.
 
 In a class testing anything but the choice of question, both arms practise adaptively, and only the feature under
-test differs: the arm without it goes without it, and every other feature stays on for both. The server refuses an
-answer that shows a feature the student's arm hasn't got, so the arms can't mix. A new feature joins the list at the
-end, with its switch in the browser and its check on the server. Faded examples (#266) and targeted step-down (#269)
-are meant to join it this way.
+test differs: the arm without it goes without it, and every other feature stays on for both, but for a feature on
+trial (targeted step-down), which nobody else has. The server refuses an answer that shows a feature the student's
+arm hasn't got, so the arms can't mix. A new feature joins the list at the end, with its switch in the browser and
+its check on the server.
 
 From then on, every question a student tries is saved: the skill, level and seed (so the exact question can be
 rebuilt), each answer typed with its verdict (correct, close, wrong, or sent back for its form) and the time it took,
@@ -76,6 +78,18 @@ A signed-in student practises in one of two ways:
     attempts and sends it with the plan; with nobody signed in it is kept with the practice progress. A faded example
     counts in the session but not in the learner model, the moving average or the course: part of it was done for
     the student.
+  - **Targeted step-down** (issue #269, `src/model/stepDown.ts`), only in the arm with it of a class testing it.
+    Sending students who failed early back through every prerequisite cost about ten problems and ten points of
+    completion for no gain on the post-test in an ASSISTments experiment (PSAYN42): they already got 81 % of the
+    prerequisite problems right. Here the step-down goes only to the one idea the estimate says is missing. On times,
+    hcf or fractions, two wrong of the first three class-practice answers bring three questions on the skill's
+    weakest idea (ties to the first in the graph's order), each the question that asks for the idea most nearly
+    alone, on the easiest skill and level that can (`stepDownExercise` in `src/learner.ts`); then the next question
+    is on the skill again. A skill steps down once at most, and one step-down runs at a time. The questions are
+    recorded with policy `stepdown`, count as class practice time, and teach the model and the ideas like any other.
+    The server replays the step-down from the attempts and sends it with the plan. The teacher page counts the
+    step-down questions of each arm; the outcomes that judge it are the post-test, the delayed post-test and
+    completion, not right answers during practice. Until a class has run it, it is not a win.
 
   Everything else is the same for both groups: the feedback, the worked solutions, the steps after a wrong answer on
   a fractions operation, the list of what was hard (asked of both, though only the adaptive policy reads them), and
@@ -407,7 +421,8 @@ The CSVs behind these tables are in [`docs/results/`](results/).
 2. It runs the pre-test, a practice session, the post-test and the delayed post-test. The simulated students don't
    forget, so the delayed post-test checks the plumbing, not forgetting. Each student answers like a browser would:
    - test questions are rebuilt from the class code;
-   - practice is chosen by the student's condition from the plan the server sends, carried forward between refreshes;
+   - practice is chosen as the browser chooses it (a step-down under way for the arm with it, else the student's
+     condition) from the plan the server sends, carried forward between refreshes;
    - answers are typed and marked by the real checker.
 3. It downloads both exports and runs the analysis on them.
 
@@ -419,6 +434,7 @@ It checks the study's guarantees and fails if one breaks:
 - every test is complete;
 - every practice question is stored, and a retried upload is stored once;
 - class practice follows each student's condition;
+- step-down questions come only from the arm with it, in a class testing it;
 - the model's prediction is logged with each question;
 - the planned analysis runs on the export;
 - every wrong test answer could be typed;
@@ -431,6 +447,7 @@ It checks the study's guarantees and fails if one breaks:
 npm run dry-run                                         # 40 students, 30 questions, 12-question tests (~10 s)
 npm run dry-run -- --students 60 --world bkt --out dry-run
 npm run dry-run -- --feature spaced                      # a class testing spaced review
+npm run dry-run -- --feature stepdown                    # targeted step-down, on number (times, hcf, fractions)
 npm run analyse -- dry-run/tests.csv
 npm run model -- dry-run/attempts.csv
 ```

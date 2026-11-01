@@ -14,6 +14,7 @@ import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
 import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
 import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
 import type { Fading } from "../src/model/fading.ts";
+import { learnStepDown, noStepDown, type StepDown } from "../src/model/stepDown.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
 import { dashboard, markSeen } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";
@@ -33,8 +34,11 @@ export const CONDITIONS = ["adaptive", "fixed"] as const;
 export type Condition = (typeof CONDITIONS)[number];
 
 export const OUTCOMES = ["solved", "revealed", "skipped"] as const;
-/** Who chose the question: the student's condition (class practice), the student (free practice), the review of misses, or the spaced review. */
-export const POLICIES = ["adaptive", "fixed", "free", "review", "spaced"] as const;
+/**
+ * Who chose the question: the student's condition (class practice), the student (free practice), the review of misses,
+ * the spaced review, or a step-down to one idea after an early failure (stepDown.ts).
+ */
+export const POLICIES = ["adaptive", "fixed", "free", "review", "spaced", "stepdown"] as const;
 /** correct; close (nearly); wrong (a named mistake too); form (right idea, wrong form: sent back, not counted). */
 export const VERDICTS = ["correct", "close", "wrong", "form"] as const;
 const MAX_ANSWERS = 50;
@@ -157,21 +161,25 @@ const classSkills = (json: string | null): SkillId[] => (json ? JSON.parse(json)
 
 // ---------- the learner model and each student's ideas and moving averages, kept up to date with every stored attempt ----------
 
-type Replay = { model: ClassModel; ideas: Map<number, IdeaState>; ema: Map<number, EmaState>; spacing: Map<number, Spacing>; fading: Map<number, Fading>; lastId: number };
+type Replay = {
+  model: ClassModel; ideas: Map<number, IdeaState>; ema: Map<number, EmaState>; spacing: Map<number, Spacing>; fading: Map<number, Fading>;
+  stepDown: Map<number, StepDown>; lastId: number;
+};
 const replays = new WeakMap<DatabaseSync, Replay>();
 /**
  * Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas,
- * moving averages, spaced reviews and fading.
+ * moving averages, spaced reviews, fading and step-downs.
  */
 function replay(db: DatabaseSync): Replay {
   let cache = replays.get(db);
-  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), ema: new Map(), spacing: new Map(), fading: new Map(), lastId: 0 }));
+  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), ema: new Map(), spacing: new Map(), fading: new Map(), stepDown: new Map(), lastId: 0 }));
   const rows = stmt(db, `
-    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, steps, faded, shown_at, json_array_length(answers) - retries AS counted
-    FROM attempts WHERE id > ? ORDER BY id
+    SELECT a.id, a.student_id, a.skill, a.level, a.seed, a.outcome, a.first_correct, a.answers, a.hard, a.steps, a.faded, a.shown_at, a.policy, s.arm, c.feature,
+      json_array_length(a.answers) - a.retries AS counted
+    FROM attempts a JOIN students s ON s.id = a.student_id JOIN classes c ON c.code = s.class_code WHERE a.id > ? ORDER BY a.id
   `).all(cache.lastId) as {
     id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; hard: string | null; steps: string | null;
-    faded: number | null; shown_at: number; counted: number;
+    faded: number | null; shown_at: number; policy: string; arm: Arm; feature: Feature; counted: number;
   }[];
   const json = <T>(v: string | null) => (v ? (JSON.parse(v) as T) : undefined);
   for (const r of rows) {
@@ -197,6 +205,11 @@ function replay(db: DatabaseSync): Replay {
     }
     // And the fading of worked examples, on the skills worked in steps.
     trackFading(cache.fading.get(r.student_id) ?? cache.fading.set(r.student_id, {}).get(r.student_id)!, q, r.outcome, answers, steps, r.faded ?? undefined);
+    // And, for the arm with it, the step-down, with the ideas as they stand after this answer.
+    if (hasFeature(r, "stepdown")) {
+      const stepDown = cache.stepDown.get(r.student_id) ?? cache.stepDown.set(r.student_id, noStepDown()).get(r.student_id)!;
+      learnStepDown(stepDown, { skill: r.skill, policy: r.policy, correct }, cache.ideas.get(r.student_id) ?? {});
+    }
     cache.lastId = r.id;
   }
   return cache;
@@ -210,6 +223,8 @@ export const currentEma = (db: DatabaseSync, studentId: number): EmaState => rep
 export const currentSpacing = (db: DatabaseSync, studentId: number): Spacing => replay(db).spacing.get(studentId) ?? {};
 /** A student's fading worked examples (fading.ts): how many steps they work on each skill being faded. */
 export const currentFading = (db: DatabaseSync, studentId: number): Fading => replay(db).fading.get(studentId) ?? {};
+/** A student's step-down (stepDown.ts): their early answers on each skill made of ideas, and the step-down under way. */
+export const currentStepDown = (db: DatabaseSync, studentId: number): StepDown => replay(db).stepDown.get(studentId) ?? noStepDown();
 /** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
 const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
@@ -486,6 +501,7 @@ export async function handleResearch(
         ema: currentEma(db, student.id),
         spacing: currentSpacing(db, student.id),
         fading: currentFading(db, student.id),
+        stepDown: currentStepDown(db, student.id),
         ...classProtocol(db, student.class),
         tests: studentTests(db, student),
       });
@@ -517,12 +533,13 @@ export async function handleResearch(
     const classPractice = a.policy === "adaptive" || a.policy === "fixed";
     if (classPractice && a.policy !== student.condition) throw new HttpError(400, "invalid policy");
     if (a.policy === "spaced" && !hasFeature(student, "spaced")) throw new HttpError(400, "invalid policy");
+    if (a.policy === "stepdown" && !hasFeature(student, "stepdown")) throw new HttpError(400, "invalid policy");
     if (a.steps && !hasFeature(student, "steps")) throw new HttpError(400, "invalid steps");
     if (a.hard && !hasFeature(student, "hard")) throw new HttpError(400, "invalid hard");
     if (a.faded && !hasFeature(student, "faded")) throw new HttpError(400, "invalid faded");
     const now = Date.now();
     // Class practice belongs in practice time; arriving long after it ended, it is kept and marked late.
-    const late = classPractice && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
+    const late = (classPractice || a.policy === "stepdown") && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
     const result = stmt(db, `
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
         retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, faded, created_at)

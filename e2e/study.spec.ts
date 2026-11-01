@@ -329,3 +329,35 @@ test("in a class testing what was hard, a student in the arm without it isn't as
   const [head, row] = (await rows()).map((r) => r.split(","));
   expect([row[head.indexOf("feature")], row[head.indexOf("arm")]]).toEqual(["hard", "off"]);
 });
+
+test("in a class testing step-down, two early misses bring a question on the weakest idea, labelled, and it reaches the server as one", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const { code } = await (await request.post("/api/classes", { data: { name: "Step down", skills: ["fractions"], feature: "stepdown" }, headers })).json();
+  const joined = [];
+  for (let i = 0; i < 4; i++) joined.push(await (await request.post("/api/students", { data: { class: code } })).json());
+  const withIt = joined.find((j) => j.arm === "on");
+  // Two fractions questions missed in class practice, from another device.
+  for (const seed of [1, 2]) {
+    const data = {
+      clientId: `e2e-step-${seed}-${Date.now()}`, student: withIt.code, skill: "fractions", level: 1, seed, review: false, outcome: "revealed", policy: "adaptive",
+      predicted: 0.7, solutionViewed: true, msTotal: 20000, shownAt: Date.now() - 20000, answers: [{ input: "12345", verdict: "wrong", ms: 9000 }],
+    };
+    expect((await request.post("/api/attempts", { data })).status()).toBe(201);
+  }
+  const plan = await (await request.get(`/api/students/${withIt.code}/plan`)).json();
+  expect(plan.stepDown.now.left).toBe(3);
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.addInitScript((s) => localStorage.setItem("zeno.student.v1", s), JSON.stringify(withIt));
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  const idea = en.pracWords.ideas[plan.stepDown.now.idea as keyof typeof en.pracWords.ideas];
+  await expect(student.getByText(`A step back to one idea: ${idea}`)).toBeVisible();
+  await student.getByRole("button", { name: "Show solution" }).click();
+  await student.getByRole("button", { name: "Next" }).click();
+  const rows = async () => (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers })).text()).trim().split("\n");
+  await expect.poll(async () => (await rows()).length).toBe(4);
+  const [head, , , row] = (await rows()).map((r) => r.split(","));
+  expect([row[head.indexOf("policy")], row[head.indexOf("arm")]]).toEqual(["stepdown", "on"]);
+  expect((await (await request.get(`/api/students/${withIt.code}/plan`)).json()).stepDown.now.left).toBe(2);
+});

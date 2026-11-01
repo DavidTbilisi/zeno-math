@@ -1620,7 +1620,7 @@ couldn't load back.
 
 Zeno can run a study that compares two ways of choosing practice questions: an adaptive learner model (aiming at a
 target chance of a right answer, as in Math Garden) against a fixed curriculum sequence. A class can test another
-feature instead (spaced review, steps after a miss, asking what was hard, worked examples that fade), with half the class going without it. A teacher makes a class at
+feature instead (spaced review, steps after a miss, asking what was hard, worked examples that fade, or a targeted step-down still on trial), with half the class going without it. A teacher makes a class at
 **`#/teacher`**, choosing the areas it practises or grades of the course (grades 1 to 8, 9–10, 11–12 and university;
 every skill has each of its three levels tagged with the grade that teaches it, from Singapore's syllabuses, in
 `src/model/curriculum.ts`). Students join with its code, are randomised to an arm in balanced blocks and get a code of
@@ -1740,6 +1740,7 @@ src/components/StudentPanel.tsx  joining a class, signing back in, deleting your
 server/dashboard.ts       the teacher's dashboard data: who is stuck, mastery per student and skill, the two arms, tests by intention to treat, calibration
 src/model/fading.ts       worked examples that fade: after a miss, then one step fewer given each time, until solved alone
 src/math/calcSteps.ts     how a calculus question comes apart into steps (terms, u and v, the inside)
+src/model/stepDown.ts     targeted step-down: two early misses on a skill made of ideas, three questions on its weakest idea, back
 src/model/arms.ts         what a class tests: the features, the two arms, the condition each arm practises in
 src/model/stuckList.ts    the stuck list: ten questions without three right in a row, the reason (mistake, ticked idea, weakest idea), groups
 server/protocol.ts        the study protocol: class phases (logged), timed sessions, counterbalanced test forms, the delayed post-test, test answers

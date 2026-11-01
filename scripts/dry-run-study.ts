@@ -18,11 +18,10 @@ import { join } from "node:path";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, trapInputs, type Exercise } from "../src/math/practice.ts";
 import type { SkillId } from "../src/math/practiceSkills.ts";
-import { applyAttempt, exerciseFor, finish, logAnswer, ME, startLog, toAttempt, toClassPlan, verdictOf, type ClassPlan, type Plan } from "../src/learner.ts";
+import { applyAttempt, classQuestion, finish, logAnswer, ME, startLog, toAttempt, toClassPlan, verdictOf, type ClassPlan, type Plan } from "../src/learner.ts";
 import { analyseStudy, scoresFromTests, type StudyAnalysis } from "../src/model/analysis.ts";
 import { inCurriculumOrder } from "../src/model/curriculum.ts";
 import { evidence, logLoss, parseCsv } from "../src/model/evaluate.ts";
-import { choose } from "../src/model/policy.ts";
 import { makeWorld, rng, SIM_SKILLS, type SimParams } from "../src/model/simulate.ts";
 import { isStuckNow, sinceLastStreak, type Try } from "../src/model/stuckList.ts";
 import { formFor, TEST_PHASES, testItems, type TestOrder, type TestPhase } from "../src/model/testForms.ts";
@@ -74,7 +73,8 @@ function wrongInput(ex: Exercise): string | null {
 }
 
 export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
-  const skills = o.skills ?? inCurriculumOrder(SIM_SKILLS.algebra);
+  // Step-down needs skills made of ideas (times, hcf, fractions), which are number's; the rest is tried on algebra.
+  const skills = o.skills ?? inCurriculumOrder(SIM_SKILLS[o.feature === "stepdown" ? "number" : "algebra"]);
   const teacher = { "X-Teacher-Password": o.teacher };
   const call = async (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) => {
     const res = await fetch(o.base + path, { method, headers: { "Content-Type": "application/json", ...headers }, body: body === undefined ? undefined : JSON.stringify(body) });
@@ -128,10 +128,10 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
     for (const [i, s] of students.entries()) {
       if (q % refreshEvery === 0) plans.set(s.code, toClassPlan(await plan(s.code)));
       const cp = plans.get(s.code)!;
-      const choice = choose(cp.condition, cp.model, ME, cp.skills, cp.position, { recent: cp.recent, ideas: cp.ideas, ema: cp.ema });
-      const ex = exerciseFor(choice, w, r.next);
-      const predicted = cp.model.predict({ student: ME, skill: choice.skill, level: choice.level });
-      const right = world.answer(world.learners[i], choice.skill, choice.level);
+      // As the browser chooses: a step-down under way for the arm with it, else the student's condition.
+      const { ex, policy } = classQuestion(cp, w, {}, r.next);
+      const predicted = cp.model.predict({ student: ME, skill: ex.skill, level: ex.level });
+      const right = world.answer(world.learners[i], ex.skill, ex.level);
       const log = startLog(Date.now(), 0);
       const ms = 15_000 + Math.floor(r.next() * 60_000);
       const typed = right ? ex.plain : wrongInput(ex);
@@ -139,7 +139,7 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
       // Right: solved. Wrong: the student opens the answer, as many do after a miss.
       finish(log, right ? "solved" : "revealed", ms);
       if (!right) log.solutionViewed = true;
-      const a = toAttempt(log, ex, { policy: cp.condition, review: false, predicted }, { code: s.code, class: klass, condition: cp.condition }, ms, clientId())!;
+      const a = toAttempt(log, ex, { policy, review: false, predicted }, { code: s.code, class: klass, condition: cp.condition }, ms, clientId())!;
       const res = await call("POST", "/api/attempts", a);
       if (res.status === 201) attempts++;
       if (q === 0 && i === 0 && (await call("POST", "/api/attempts", a)).body.stored) repeatsStored++;
@@ -169,6 +169,7 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
   const complete = Object.values(analysis.students).reduce((s, n) => s + n.complete, 0);
   const delayedDone = new Set(testRows.filter((t) => t.phase === "delayed").map((t) => t.student)).size;
   const classPractice = attemptRows.filter((a) => a.policy === "adaptive" || a.policy === "fixed");
+  const stepDowns = (arm: string) => attemptRows.filter((a) => a.policy === "stepdown" && a.arm === arm).length;
   const checks: Check[] = [
     { name: "randomised in balanced blocks", ok: Math.abs(count("on") - count("off")) <= 2, detail: `with ${o.feature ?? "policy"} ${count("on")}, without ${count("off")}` },
     { name: "test forms counterbalanced within each arm", ok: balancedOrders, detail: ARMS.map((a) => `${a}: ${orders(a).join(" ")}`).join("; ") },
@@ -177,6 +178,11 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
     { name: "every practice question stored", ok: attempts === o.students * o.questions && attemptRows.length === attempts, detail: `${attemptRows.length} of ${o.students * o.questions}` },
     { name: "retried uploads stored once", ok: repeatsStored === 0, detail: repeatsStored ? `${repeatsStored} stored twice` : "a repeated test answer and attempt were each kept once" },
     { name: "class practice follows each student's condition", ok: classPractice.every((a) => a.policy === a.condition), detail: `${classPractice.length} class-practice questions` },
+    {
+      name: "step-down only for the arm with it, in a class testing it",
+      ok: stepDowns("off") === 0 && (o.feature === "stepdown" ? stepDowns("on") > 0 : stepDowns("on") === 0),
+      detail: `${stepDowns("on")} step-down questions with it, ${stepDowns("off")} without`,
+    },
     { name: "the model's prediction logged with each question", ok: classPractice.every((a) => a.predicted !== ""), detail: "" },
     { name: "the planned analysis runs on the export", ok: analysis.ancova !== null, detail: analysis.ancova ? `effect ${(analysis.ancova.estimate * 100).toFixed(1)} points, p = ${analysis.ancova.p.toFixed(3)}` : "too few students" },
     { name: "every wrong test answer could be typed", ok: unanswerable === 0, detail: unanswerable ? `${unanswerable} passed instead` : "" },

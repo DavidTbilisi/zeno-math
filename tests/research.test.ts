@@ -23,7 +23,7 @@ import { learnEma, type EmaState } from "../src/model/policy.ts";
 import { DAY } from "../src/model/spacing.ts";
 import { analyseStudy, scoresFromTests } from "../src/model/analysis.ts";
 import { testItems } from "../src/model/testForms.ts";
-import { verdictOf } from "../src/learner.ts";
+import { applyAttempt, toClassPlan, verdictOf, type Attempt } from "../src/learner.ts";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs, type SkillId } from "../src/math/practice.ts";
 
@@ -738,6 +738,56 @@ test("faded worked examples: checked, stored, replayed into the plan's fading, k
   const withIt = joined.find((j) => j.arm === "on").code;
   assert.deepEqual((await call("POST", "/api/attempts", attempt(without, example))).body, { error: "invalid faded" });
   assert.equal((await call("POST", "/api/attempts", attempt(withIt, example))).status, 201);
+});
+
+test("targeted step-down: only the arm with it, two early misses step down to the weakest idea, three questions, then back, as the browser has it", async () => {
+  const code = (await call("POST", "/api/classes", { name: "Step down", skills: ["fractions"], feature: "stepdown" }, TEACHER)).body.code;
+  const joined = [];
+  for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: code })).body);
+  const on = joined.find((j) => j.arm === "on").code, off = joined.find((j) => j.arm === "off").code;
+  const plan = async (s: string) => (await call("GET", `/api/students/${s}/plan`)).body;
+  const browser = toClassPlan(await plan(on));
+  assert.deepEqual(browser.stepDown, { early: {} });
+  const send = async (s: string, extra: Record<string, unknown>) => {
+    const a = attempt(s, { skill: "fractions", level: 1, policy: "adaptive", predicted: 0.7, ...extra });
+    const res = await call("POST", "/api/attempts", a);
+    if (s === on && res.status === 201) applyAttempt(browser, a as unknown as Attempt);
+    return res;
+  };
+  const wrong = { outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] };
+  const right = { answers: [{ verdict: "correct", ms: 9000 }] };
+
+  // Right, then two wrong: an early failure, stepped down to the weakest idea, the browser and the server alike.
+  await send(on, { seed: 1, ...right });
+  await send(on, { seed: 2, ...wrong });
+  assert.equal((await plan(on)).stepDown.now, undefined, "one miss is not yet a failure");
+  await send(on, { seed: 3, ...wrong });
+  const now = (await plan(on)).stepDown.now;
+  assert.equal(now.skill, "fractions");
+  assert.equal(now.left, 3);
+  assert.deepEqual((await plan(on)).stepDown, browser.stepDown);
+
+  // A step-down question only in the arm with it, and only in a class testing it.
+  const step = { policy: "stepdown", seed: 4, ...right };
+  assert.deepEqual((await send(off, step)).body, { error: "invalid policy" });
+  assert.equal((await plan(off)).stepDown.now, undefined, "the arm without it has none under way");
+  const other = (await call("POST", "/api/classes", { name: "Spaced", skills: ["fractions"], feature: "spaced" }, TEACHER)).body.code;
+  const elsewhere = (await call("POST", "/api/students", { class: other })).body.code;
+  assert.deepEqual((await send(elsewhere, step)).body, { error: "invalid policy" });
+
+  // Three questions on the idea, then back to the skill; it steps down once.
+  for (const seed of [4, 5, 6]) assert.equal((await send(on, { ...step, seed })).status, 201);
+  assert.deepEqual((await plan(on)).stepDown, { early: { fractions: { answered: 3, wrong: 2 } }, back: "fractions" });
+  await send(on, { seed: 7, ...wrong });
+  await send(on, { seed: 8, ...wrong });
+  assert.deepEqual((await plan(on)).stepDown, { early: { fractions: { answered: 3, wrong: 2 } } });
+  assert.deepEqual((await plan(on)).stepDown, browser.stepDown);
+
+  // The teacher sees both arms, and how many step-down questions each had.
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.deepEqual([d.class.feature, d.arms.on.stepDown, d.arms.off.stepDown], ["stepdown", 3, 0]);
+  const mine = d.students.find((r: { code: string }) => r.code === on);
+  assert.equal(mine.practiceMinutes, (8 * 41000) / 60_000, "step-down questions are class practice time");
 });
 
 test("the server marks every answer itself, and keeps the browser's verdict where they differ", async () => {

@@ -3,11 +3,10 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, attemptEvidence, exerciseFor, fadedOf, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
+  applyAttempt, attemptEvidence, classQuestion, fadedOf, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { newcomerChance } from "../model/logistic";
-import { choose as choosePolicy } from "../model/policy";
 import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
@@ -140,7 +139,8 @@ export function PracticeDialog(props: Props) {
   /**
    * The next question. Missed ones come back first; then what was mastered days ago and is due for its spaced review
    * (spacing.ts: in class practice a skill, asked hard; in free practice a skill at a level); then, in class practice,
-   * the student's condition chooses (fixed sequence, or adaptive, which on a skill made of ideas aims at the weakest),
+   * a step-down to one idea after an early failure (for the arm with it), or the student's condition chooses (fixed
+   * sequence, or adaptive, which on a skill made of ideas aims at the weakest),
    * otherwise the topic and level picked above.
    */
   const nextExercise = (a: Area, p: Pick, L: Level, prog: Progress, plan: ClassPlan | null): Current => {
@@ -165,10 +165,8 @@ export function PracticeDialog(props: Props) {
       if (k) return spaced(cellOf(k).skill, cellOf(k).level);
     }
     if (plan) {
-      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, {
-        recent: plan.recent, ideas: plan.ideas, ema: plan.ema, unlockFloor: newcomerChance(plan.model), again: reviews ? (openAgain(plan.spacing) as SkillId[]) : [],
-      });
-      return { ex: exerciseFor(c, w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
+      const { ex, policy } = classQuestion(plan, w, { unlockFloor: newcomerChance(plan.model), again: reviews ? (openAgain(plan.spacing) as SkillId[]) : [] });
+      return { ex, policy, review: false, predicted: predicted(ex.skill, ex.level) };
     }
     if (p === "place" || p === "grade") {
       // A placement asks a level of the grade in the middle of those left; a grade's practice, a level not yet secure.
@@ -666,6 +664,8 @@ export function PracticeDialog(props: Props) {
           )}
           {cur.review || cur.policy === "spaced" ? (
             <small className="hint practice-review">↻ {cur.review ? w.ui.review : w.ui.spaced}</small>
+          ) : cur.policy === "stepdown" && plan?.stepDown.now ? (
+            <small className="hint practice-review">↓ {fill(w.ui.stepDown, { idea: w.ideas[plan.stepDown.now.idea as keyof typeof w.ideas] })}</small>
           ) : (
             classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
           )}
