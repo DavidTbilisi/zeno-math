@@ -1,20 +1,24 @@
 // Scratch paper under a practice question: a pen in three inks, two erasers (one rubs out what it passes over, the
 // other lifts away every whole line it touches), undo and clear, on squared paper, for the working a student would
 // otherwise do on paper beside the screen. With dots on, the squares turn into dot paper and the pen draws straight
-// lines from dot to dot (a tap marks a dot), for shapes, graphs and number lines. It takes a mouse, a finger or a stylus (pointer events), and it is only for
+// lines from dot to dot (a tap marks a dot), for shapes, graphs and number lines; the eraser then runs along those
+// lines too, dot to dot and only as wide as a line, so it takes out one stretch of a line and spares its neighbours. It takes a mouse, a finger or a stylus (pointer events), and it is only for
 // the student: nothing drawn is checked or saved, and the next question starts on a clean sheet.
 import { useEffect, useRef, useState } from "react";
 import type { PracticeWords } from "../math/practice";
 
 type Tool = "pen" | "rub" | "lift";
 type Point = { x: number; y: number };
-type Stroke = { colour: string; width: number; erase: boolean; points: Point[] };
+/** `flat`: square ends, so a stretch rubbed out between two dots stops at those dots. */
+type Stroke = { colour: string; width: number; erase: boolean; flat?: boolean; points: Point[] };
 
 /** The pen's inks: dark, blue and red, as on paper. */
 const INKS = [["black", "#1e1e1e"], ["blue", "#1f5fd1"], ["red", "#d6336c"]] as const;
 const PEN = 2.5;
 /** The rubbing eraser's width, and how near the lifting eraser must come to a line to take it. */
 const ERASER = 22;
+/** The eraser on dots: a little wider than a pen line, so it covers the line's soft edge and nothing beside it. */
+const LINE_ERASER = PEN + 2;
 const REACH = 8;
 /** The squares of the paper, in CSS pixels. */
 const SQUARE = 20;
@@ -44,13 +48,13 @@ function paint(ctx: CanvasRenderingContext2D, strokes: readonly Stroke[]) {
   ctx.clearRect(0, 0, width, height);
   const dpr = window.devicePixelRatio || 1;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.lineCap = "round";
   ctx.lineJoin = "round";
   for (const s of strokes) {
     ctx.globalCompositeOperation = s.erase ? "destination-out" : "source-over";
     ctx.strokeStyle = s.colour;
     ctx.fillStyle = s.colour;
     ctx.lineWidth = s.width;
+    ctx.lineCap = s.flat ? "butt" : "round";
     const [first, ...rest] = s.points;
     if (!rest.length) {
       // A tap leaves a dot.
@@ -203,8 +207,10 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
               return;
             }
             const erase = tool === "rub";
-            straight.current = dots && !erase;
-            drawing.current = { colour: ink, width: erase ? ERASER : PEN, erase, points: [straight.current ? snap(p) : p] };
+            straight.current = dots;
+            drawing.current = dots
+              ? { colour: ink, width: erase ? LINE_ERASER : PEN, erase, flat: erase, points: [snap(p)] }
+              : { colour: ink, width: erase ? ERASER : PEN, erase, points: [p] };
             redraw();
           }}
           onPointerMove={(e) => {
@@ -212,7 +218,8 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
             if (!drawing.current) return;
             const points = drawing.current.points;
             if (straight.current) {
-              // A straight line from the first dot to the dot under the pointer; back on the first dot, just that dot.
+              // A straight line (or rubbed-out stretch) from the first dot to the dot under the pointer; back on the
+              // first dot, just that dot.
               const end = snap(pointsOf(e).at(-1)!);
               points.length = 1;
               if (end.x !== points[0].x || end.y !== points[0].y) points.push(end);
