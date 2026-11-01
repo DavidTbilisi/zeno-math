@@ -36,6 +36,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | GET | `/api/classes` | teacher | every class: code, name, skills, phase, sessionEnds, testLength, students per condition, attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength? }`: 201 with its code |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
+| POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
 | POST | `/api/students` | anyone | join a class: `{ class }` gives 201 `{ code, class, condition }`, randomised in blocks of four |
 | GET | `/api/students/:code` | student | `{ code, class, condition, answered }` |
 | DELETE | `/api/students/:code` | student | delete the student and everything saved under the code: 204 |
@@ -180,6 +181,19 @@ question: a repeat keeps the first, with 200 `{ stored: false }`.
 
 `GET /api/research/dashboard?class=CODE` (teacher) returns:
 
+- **`stuck`**: who is stuck, grouped by why (`src/model/stuckList.ts`). A student is stuck on a skill after ten
+  questions or more since they last had three right in a row (or were marked seen) with first answers judged.
+  Each group is `{ key, rows }`, the biggest first and those with no reason last; each row is `{ student, code,
+  skill, answers, through, because }`. `through` is the last attempt counted, and `because` is one of:
+  - `{ kind: "mistake", mistake, times, example }`: the mistake the checker named on most of those questions, at least
+    two, with the latest wrong answer that gave it (`{ skill, level, seed, input }`, for the page to word in the
+    teacher's language);
+  - `{ kind: "ticked", idea, times }`: the idea ticked as hard most often, at least twice;
+  - `{ kind: "weakest", idea, known }`: on a skill made of ideas, the one the student is least likely to know;
+  - `null`.
+
+  `POST /api/classes/:code/seen` with `{ student: "s3", skill, through }` (an attempt of that student on that skill)
+  takes the row off until ten more questions after `through`; 404 for anything else.
 - **`class`**: the class with its protocol.
 - **`students`**: per student:
   - export name (`s17`), code and condition;

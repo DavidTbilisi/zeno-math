@@ -7,6 +7,7 @@ import { learnFromAttempt, verdictOf, type AnswerVerdict, type Outcome } from ".
 import { check, exercise, stepsOf, type SkillId } from "../src/math/practice.ts";
 import type { Level } from "../src/model/elo.ts";
 import type { IdeaState } from "../src/model/ideaState.ts";
+import type { MistakeId } from "../src/math/mistakes.ts";
 
 export type Question = { skill: SkillId; level: number; seed: number };
 /** An answer as stored: what was typed and the server's verdict. */
@@ -30,3 +31,8 @@ export function mark(q: Question, input: string, step?: number): AnswerVerdict {
 
 /** How many steps the question is worked in after a wrong answer (none for most questions). */
 export const stepCount = (q: Question) => stepsOf(exercise(q.skill, q.level as Level, q.seed, en.pracWords), en.pracWords).length;
+
+/** The mistake the checker recognises in a wrong answer (the answer a known mistake gives), if any. */
+export function mistakeOf(q: Question, input: string): MistakeId | undefined {
+  return check(exercise(q.skill, q.level as Level, q.seed, en.pracWords), input, en.pracWords).mistake;
+}

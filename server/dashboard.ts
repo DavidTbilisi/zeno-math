@@ -1,17 +1,22 @@
 // What the teacher's dashboard shows for a class: each student's mastery of each skill (from the learner model), the
 // two conditions side by side, the pre- and post-test, and how well the model's logged predictions matched what
-// students then did.
+// students then did; and at the top, who is stuck on what and why (src/model/stuckList.ts).
 import type { DatabaseSync } from "node:sqlite";
 import type { SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM } from "../src/model/curriculum.ts";
 import type { Level } from "../src/model/elo.ts";
 import { auc, calibration, evidence, logLoss, type Prediction } from "../src/model/evaluate.ts";
+import { hasIdeas, knownOf, SKILL_IDEAS } from "../src/model/ideaState.ts";
 import { TARGET } from "../src/model/policy.ts";
+import { becauseOf, groupByReason, isStuckNow, sinceLastStreak, type Because, type Example } from "../src/model/stuckList.ts";
+import type { MistakeId } from "../src/math/mistakes.ts";
 import { stmt } from "./db.ts";
+import { mistakeOf } from "./marking.ts";
 import { classProtocol, testScores } from "./protocol.ts";
-import { currentModel } from "./research.ts";
+import { currentIdeas, currentModel } from "./research.ts";
 
 type AttemptRow = {
+  id: number; seed: number; answers: string; hard: string | null;
   student_id: number; condition: string; policy: string; predicted: number | null; skill: SkillId; level: Level;
   outcome: string; first_correct: number; counted: number; solution_viewed: number; ms_total: number; created_at: number;
 };
@@ -40,7 +45,7 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   const students = stmt(db, "SELECT id, code, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
     { id: number; code: string; condition: string }[];
   const attempts = stmt(db, `
-    SELECT a.student_id, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
+    SELECT a.id, a.seed, a.answers, a.hard, a.student_id, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
       json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
     FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
   `).all(classCode) as AttemptRow[];
@@ -122,6 +127,7 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   });
 
   return {
+    stuck: stuckList(db, classCode, students, attempts),
     class: { code: klass.code, name: klass.name, skills, createdAt: klass.createdAt, ...protocol },
     students: rows,
     conditions,
@@ -135,3 +141,68 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   };
 }
 export type Dashboard = NonNullable<ReturnType<typeof dashboard>>;
+
+export type StuckRow = {
+  student: string; code: string; skill: SkillId;
+  /** Questions answered since the student last had three right in a row on the skill (or was marked seen). */
+  answers: number;
+  /** The last of them: marking the row seen takes it off the list until ten more questions after this one. */
+  through: number;
+  because: Because | null;
+};
+
+/**
+ * The stuck students of a class, one row per student and skill, grouped by why: the mistake they repeat, the idea they
+ * ticked as hard, or their weakest idea (stuckList.ts). Only stuck rows are read for mistakes, so the checker rebuilds
+ * a few questions, not the class's every answer.
+ */
+function stuckList(db: DatabaseSync, classCode: string, students: readonly { id: number; code: string }[], attempts: readonly AttemptRow[]) {
+  const seen = new Map((stmt(db, `
+    SELECT x.student_id || ' ' || x.skill AS k, x.through FROM stuck_seen x JOIN students s ON s.id = x.student_id WHERE s.class_code = ?
+  `).all(classCode) as { k: string; through: number }[]).map((r) => [r.k, r.through]));
+  type Tried = Omit<AttemptRow, "hard"> & { correct: boolean; hard?: string[] };
+  const bySkill = new Map<string, Tried[]>();
+  for (const a of attempts) {
+    const correct = verdict(a);
+    if (correct === null) continue;
+    const k = `${a.student_id} ${a.skill}`;
+    const t = { ...a, correct, hard: a.hard ? (JSON.parse(a.hard) as string[]) : undefined };
+    (bySkill.get(k) ?? bySkill.set(k, []).get(k)!).push(t);
+  }
+  const codes = new Map(students.map((s) => [s.id, s.code]));
+  const rows: StuckRow[] = [];
+  for (const [k, tries] of bySkill) {
+    const since = sinceLastStreak(tries, seen.get(k));
+    if (!isStuckNow(since)) continue;
+    const { student_id: id, skill } = tries[0];
+    const mistakes = (t: Tried) => (JSON.parse(t.answers) as { input: string; verdict: string }[]).flatMap((x) => {
+      if (x.verdict !== "wrong") return [];
+      const mistake = mistakeOf({ skill: t.skill, level: t.level, seed: t.seed }, x.input);
+      return mistake ? [{ mistake, example: { skill: t.skill, level: t.level, seed: t.seed, input: x.input } as Example }] : [];
+    }) satisfies { mistake: MistakeId; example: Example }[];
+    let weakest: { idea: string; known: number } | undefined;
+    if (hasIdeas(skill)) {
+      const ideas = currentIdeas(db, id);
+      for (const idea of SKILL_IDEAS[skill]) if (!weakest || knownOf(ideas, idea) < weakest.known) weakest = { idea, known: knownOf(ideas, idea) };
+    }
+    rows.push({ student: `s${id}`, code: codes.get(id)!, skill, answers: since.length, through: since.at(-1)!.id, because: becauseOf(since, mistakes, weakest) });
+  }
+  return groupByReason(rows);
+}
+
+/**
+ * The teacher has seen a stuck student: the row leaves the list, and comes back only after ten more questions on the
+ * skill with no three right in a row. `through` is the last attempt the teacher saw; a later mark never moves it back.
+ */
+export function markSeen(db: DatabaseSync, classCode: string, student: unknown, skill: unknown, through: unknown): boolean {
+  const id = typeof student === "string" && /^s\d+$/.test(student) ? Number(student.slice(1)) : NaN;
+  const ok = Number.isInteger(through) && stmt(db, `
+    SELECT 1 FROM attempts a JOIN students s ON s.id = a.student_id WHERE a.id = ? AND a.student_id = ? AND a.skill = ? AND s.class_code = ?
+  `).get(through as number, id, String(skill), classCode);
+  if (!ok) return false;
+  stmt(db, `
+    INSERT INTO stuck_seen (student_id, skill, through, created_at) VALUES (?, ?, ?, ?)
+    ON CONFLICT (student_id, skill) DO UPDATE SET through = MAX(through, excluded.through), created_at = excluded.created_at
+  `).run(id, String(skill), through as number, Date.now());
+  return true;
+}

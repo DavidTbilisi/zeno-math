@@ -6,6 +6,7 @@ import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "re
 import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
+import { StuckList } from "../components/StuckList";
 import { BrandBar } from "../components/BrandBar";
 import { useI18n } from "../i18n";
 import { fill } from "../math/text";
@@ -141,6 +142,16 @@ export function TeacherPage() {
       await api.setPhase(selected, phase, phase === "session" ? minutes : undefined);
       setAskMinutes(false);
       setClasses(await api.classes());
+    } catch {
+      setFailed(true);
+    }
+  };
+  /** Takes a stuck student off the list, then shows the class as the server now has it. */
+  const seen = async (row: { student: string; skill: string; through: number }) => {
+    if (!selected) return;
+    try {
+      await api.seen(selected, row.student, row.skill, row.through);
+      await load(selected);
     } catch {
       setFailed(true);
     }
@@ -301,6 +312,11 @@ export function TeacherPage() {
               </Suspense>
             )}
 
+            {/* Who needs the teacher now comes first. */}
+            {data && data.class.code === selected && !!data.students.length && (
+              <StuckList stuck={data.stuck} t={t} skillName={skillName} showCodes={showCodes} onSeen={(r) => void seen(r)} />
+            )}
+
             {current && (
               <section className="card">
                 <h3>{w.phase}</h3>
@@ -334,6 +350,7 @@ export function TeacherPage() {
             {data && data.class.code === selected && (
               <>
                 {!data.students.length && <p className="muted">{w.noStudents}</p>}
+
 
                 <section className="card">
                   <h3>{w.groups}</h3>

@@ -99,6 +99,9 @@ export function teacherApi(password: string) {
     setPhase: (code: string, phase: Phase, minutes?: number) =>
       req<{ phase: Phase; sessionEnds: number | null }>("POST", `/api/classes/${encodeURIComponent(code)}/phase`, { phase, minutes }, false, headers),
     dashboard: (code: string) => req<Dashboard>("GET", `/api/research/dashboard?class=${encodeURIComponent(code)}`, undefined, false, headers),
+    /** The teacher has seen a stuck student: off the stuck list until ten more questions after attempt `through`. */
+    seen: (code: string, student: string, skill: string, through: number) =>
+      req<void>("POST", `/api/classes/${encodeURIComponent(code)}/seen`, { student, skill, through }, false, headers),
     /** A CSV export as a file to save (a plain link can't send the password header). */
     async csv(kind: "attempts" | "tests", code?: string): Promise<Blob> {
       const res = await fetch(`/api/research/${kind}.csv${code ? `?class=${encodeURIComponent(code)}` : ""}`, { headers });

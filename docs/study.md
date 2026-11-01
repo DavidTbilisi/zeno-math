@@ -87,6 +87,14 @@ adaptive condition learns from. The test length is set per class (4–30 questio
 Teachers follow a class at **`#/teacher`** (linked from the home page; it asks for `TEACHER_PASSWORD` when one is
 set). There they can make classes and hand out the codes, and see for each class:
 
+- **Who is stuck,** at the top: each student who has had ten questions or more on a skill without three right in a
+  row, the way Beck and Gong (2013) define wheel-spinning. The stopping-ceiling check on ASSISTments found that more
+  hints don't get such a student moving, so the list hands them to the teacher. Each row says why, when the answers
+  show it: the mistake the checker named again and again, in its own words for the question; else the idea the student
+  ticked as hard; else their weakest idea on a skill made of ideas. Students with the same reason are listed
+  together, to be taken as a small group. A student leaves the list after three right in a row, or when the teacher
+  marks them seen, until ten more questions go by. Students appear by number (`s3`), with their code only when
+  "show student codes" is on.
 - **The two groups** side by side: students, questions answered, right first time, the model's expected chance and how
   far class practice was from the 75 % target, the median time per question, how often the worked solution was opened,
   and how often a question was left unfinished.

@@ -16,3 +16,4 @@ export type { Answered, Question, SteppedThrough } from "./checker.ts";
 export const mark = checker.mark;
 export const stepCount = checker.stepCount;
 export const trackIdeas = checker.trackIdeas;
+export const mistakeOf = checker.mistakeOf;
