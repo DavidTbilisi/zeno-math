@@ -1,6 +1,7 @@
 // Scratch paper under a practice question: a pen in three inks, two erasers (one rubs out what it passes over, the
 // other lifts away every whole line it touches), undo and clear, on squared paper, for the working a student would
-// otherwise do on paper beside the screen. It takes a mouse, a finger or a stylus (pointer events), and it is only for
+// otherwise do on paper beside the screen. With dots on, the squares turn into dot paper and the pen draws straight
+// lines from dot to dot (a tap marks a dot), for shapes, graphs and number lines. It takes a mouse, a finger or a stylus (pointer events), and it is only for
 // the student: nothing drawn is checked or saved, and the next question starts on a clean sheet.
 import { useEffect, useRef, useState } from "react";
 import type { PracticeWords } from "../math/practice";
@@ -17,6 +18,25 @@ const ERASER = 22;
 const REACH = 8;
 /** The squares of the paper, in CSS pixels. */
 const SQUARE = 20;
+/** Whether the pen snaps to dots, remembered on this device like the scratch paper itself. */
+const DOTS_KEY = "zeno.scratch.dots.v1";
+const dotsWanted = () => {
+  try {
+    return localStorage.getItem(DOTS_KEY) === "on";
+  } catch {
+    return false;
+  }
+};
+const wantDots = (on: boolean) => {
+  try {
+    if (on) localStorage.setItem(DOTS_KEY, "on");
+    else localStorage.removeItem(DOTS_KEY);
+  } catch {
+    // No storage: the choice lasts for this sheet only.
+  }
+};
+/** The dot nearest p: the corners of the squares. */
+const snap = (p: Point): Point => ({ x: Math.round(p.x / SQUARE) * SQUARE, y: Math.round(p.y / SQUARE) * SQUARE });
 
 function paint(ctx: CanvasRenderingContext2D, strokes: readonly Stroke[]) {
   const { width, height } = ctx.canvas;
@@ -75,6 +95,9 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
   const lifting = useRef<Stroke[] | null>(null);
   const [tool, setTool] = useState<Tool>("pen");
   const [ink, setInk] = useState<string>(INKS[0][1]);
+  const [dots, setDots] = useState(dotsWanted);
+  /** Whether the line being drawn is a straight one between dots. */
+  const straight = useRef(false);
   /** Changes to undo and lines on the sheet, for the buttons. */
   const [steps, setSteps] = useState(0);
   const [lines, setLines] = useState(0);
@@ -150,6 +173,9 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
         ))}
         {toolButton("rub", `🧽 ${w.rub}`)}
         {toolButton("lift", `〰 ${w.lift}`)}
+        <button className="btn small" aria-pressed={dots} onClick={() => (wantDots(!dots), setDots(!dots))}>
+          ⠿ {w.dots}
+        </button>
         <span className="scratch-gap" />
         <button className="btn small" disabled={!steps} onClick={undo}>
           ↶ {w.undo}
@@ -158,7 +184,12 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
           {w.clear}
         </button>
       </div>
-      <div ref={wrap} className={`scratch-sheet ${tool}`} style={{ backgroundSize: `${SQUARE}px ${SQUARE}px` }}>
+      <div
+        ref={wrap}
+        className={`scratch-sheet ${tool}${dots ? " dots" : ""}`}
+        // A dot sits on each corner of the squares: the dot drawn in the middle of a square, moved half a square back.
+        style={{ backgroundSize: `${SQUARE}px ${SQUARE}px`, backgroundPosition: dots ? `${-SQUARE / 2}px ${-SQUARE / 2}px` : undefined }}
+      >
         <canvas
           ref={canvas}
           aria-label={w.title}
@@ -172,13 +203,20 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
               return;
             }
             const erase = tool === "rub";
-            drawing.current = { colour: ink, width: erase ? ERASER : PEN, erase, points: [p] };
+            straight.current = dots && !erase;
+            drawing.current = { colour: ink, width: erase ? ERASER : PEN, erase, points: [straight.current ? snap(p) : p] };
             redraw();
           }}
           onPointerMove={(e) => {
             if (lifting.current) for (const p of pointsOf(e)) lift(p);
             if (!drawing.current) return;
-            drawing.current.points.push(...pointsOf(e));
+            const points = drawing.current.points;
+            if (straight.current) {
+              // A straight line from the first dot to the dot under the pointer; back on the first dot, just that dot.
+              const end = snap(pointsOf(e).at(-1)!);
+              points.length = 1;
+              if (end.x !== points[0].x || end.y !== points[0].y) points.push(end);
+            } else points.push(...pointsOf(e));
             redraw();
           }}
           onPointerUp={() => {
