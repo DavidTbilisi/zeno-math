@@ -12,8 +12,10 @@ COPY --from=build /app/dist ./dist
 # The answer checker, bundled with mathjs and MathJax: the server marks every answer again (server/marking.ts).
 COPY --from=build /app/dist-server ./dist-server
 COPY server ./server
-# The server checks practice attempts against the app's list of skills and runs the learner model.
+# The server checks practice attempts against the app's list of skills and runs the learner model; it reads the ideas
+# an order-of-operations question needs with the order parser (src/model/conceptGraph.ts).
 COPY src/math/practiceSkills.ts ./src/math/practiceSkills.ts
+COPY src/math/orderOps.ts ./src/math/orderOps.ts
 COPY src/model ./src/model
 # The volume starts as a copy of this directory, so it has to belong to the user the server runs as.
 RUN mkdir -p /data && chown node:node /data
