@@ -361,3 +361,45 @@ test("in a class testing step-down, two early misses bring a question on the wea
   expect([row[head.indexOf("policy")], row[head.indexOf("arm")]]).toEqual(["stepdown", "on"]);
   expect((await (await request.get(`/api/students/${withIt.code}/plan`)).json()).stepDown.now.left).toBe(2);
 });
+
+test("a skill mastered, then kept by a right review days later: the student's panel and the teacher's mastery view show both", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const name = `Kept ${Date.now()}`;
+  const { code } = await (await request.post("/api/classes", { data: { name, skills: ["linear", "quadratic"] }, headers })).json();
+  const joined = await (await request.post("/api/students", { data: { class: code } })).json();
+  const plan = async () => (await (await request.get(`/api/students/${joined.code}/plan`)).json()) as { spacing: Record<string, unknown> };
+  const DAY = 86_400_000;
+  let at = Date.now() - 30 * DAY, n = 0;
+  // Right answers until each skill is mastered; then linear's review a day later goes right, and quadratic waits.
+  const right = async (skill: string, shownAt: number, policy = joined.condition) => {
+    const ex = exercise(skill as "linear", 3, 7, en.pracWords);
+    const data = {
+      clientId: `e2e-kept-${n++}-${Date.now()}`, student: joined.code, skill, level: 3, seed: 7, review: false, outcome: "solved", policy,
+      predicted: 0.7, solutionViewed: false, msTotal: 9000, shownAt, answers: [{ input: ex.plain, verdict: "correct", ms: 9000 }],
+    };
+    expect((await request.post("/api/attempts", { data })).status()).toBe(201);
+  };
+  for (const skill of ["linear", "quadratic"])
+    for (let i = 0; i < 80 && !(await plan()).spacing[skill]; i++) await right(skill, (at += 60_000));
+  await right("linear", at + DAY + 5000, "spaced");
+  expect(Object.keys((await plan()).spacing).sort()).toEqual(["linear", "quadratic"]);
+
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.addInitScript((s) => localStorage.setItem("zeno.student.v1", s), JSON.stringify(joined));
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  const holds = student.locator(".practice-holds");
+  await expect(holds).toContainText(`Kept, right days later: ${en.pracWords.skills.linear}`);
+  await expect(holds).toContainText(`Mastered, a review will check it: ${en.pracWords.skills.quadratic}`);
+
+  const teacher = await (await browser.newContext()).newPage();
+  await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
+  await teacher.goto("/#/teacher");
+  await teacher.locator(".class-item", { hasText: name }).click();
+  await expect(teacher.locator(".heat-legend")).toContainText(en.teacher.holds.kept);
+  const row = teacher.locator(".heat tbody tr").nth(1);
+  await expect(row.locator(".heat-kept .heat-hold")).toHaveText("★");
+  await expect(row.locator(".heat-mastered .heat-hold")).toHaveText("✓");
+  await expect(teacher.locator(".teacher").getByText(en.teacher.metrics.kept)).toBeVisible();
+});

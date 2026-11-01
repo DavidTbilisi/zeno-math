@@ -1,7 +1,8 @@
 // What the teacher's dashboard shows for a class: each student's mastery of each skill (from the learner model), the
 // two arms side by side (with the feature the class tests and without it, src/model/arms.ts), the three tests, and how
 // well the model's logged predictions matched what students then did; and at the top, who is stuck on what and why
-// (src/model/stuckList.ts).
+// (src/model/stuckList.ts). A skill a student has mastered is told apart from one they have kept, right on a review
+// days later (issue #264, holdOf in spacing.ts): keeping is the result, mastering is progress.
 //
 // The arms are compared by intention to treat (issue #268): every student counts in the arm they were given, and a
 // question not answered counts as wrong, so a student who never sat a test scores 0 on it. Counting only those who
@@ -14,6 +15,7 @@ import type { Level } from "../src/model/elo.ts";
 import { auc, calibration, evidence, logLoss, type Prediction } from "../src/model/evaluate.ts";
 import { hasIdeas, knownOf, SKILL_IDEAS } from "../src/model/ideaState.ts";
 import { TARGET } from "../src/model/policy.ts";
+import { holdOf, holds, type Hold } from "../src/model/spacing.ts";
 import type { Arm, Feature } from "../src/model/arms.ts";
 import { TEST_PHASES, type TestPhase } from "../src/model/testForms.ts";
 import { becauseOf, groupByReason, isStuckNow, sinceLastStreak, type Because, type Example } from "../src/model/stuckList.ts";
@@ -21,7 +23,7 @@ import type { MistakeId } from "../src/math/mistakes.ts";
 import { stmt } from "./db.ts";
 import { mistakeOf } from "./marking.ts";
 import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protocol.ts";
-import { currentIdeas, currentModel } from "./research.ts";
+import { currentIdeas, currentModel, currentSpacing } from "./research.ts";
 
 type AttemptRow = {
   id: number; seed: number; answers: string; hard: string | null; faded: number | null;
@@ -85,6 +87,7 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   }
   const rows = students.map((s) => {
     const mine = byStudent.get(s.id) ?? [];
+    const spacing = currentSpacing(db, s.id);
     const verdicts = mine.map(verdict).filter((v) => v !== null);
     const test = scores.get(s.id) ?? {};
     return {
@@ -105,6 +108,13 @@ export function dashboard(db: DatabaseSync, classCode: string) {
         const m = model.mastery(`s${s.id}`, k);
         return [k, { p: [m.p[1], m.p[2], m.p[3]], n: m.n }];
       })),
+      /** Each of the class's skills the student has mastered: kept once right on a review days later, again after a wrong one. */
+      holds: Object.fromEntries(skills.flatMap((k) => {
+        const h = holdOf(spacing[k]);
+        return h ? [[k, h]] : [];
+      })) as Partial<Record<SkillId, Hold>>,
+      /** How many of the class's skills the student has kept, mastered (not yet reviewed), and is practising again. */
+      held: Object.fromEntries(Object.entries(holds(spacing, skills)).map(([h, ks]) => [h, ks.length])) as Record<Hold, number>,
     };
   });
 
@@ -128,6 +138,9 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       solutionViewed: share(mine.map((a) => a.solution_viewed === 1)),
       skipped: share(mine.map((a) => a.outcome === "skipped")),
       practiceMinutes: mean(people.map((r) => r.practiceMinutes)),
+      /** Skills per student kept (right on a review days later: the result) and mastered but not yet reviewed (progress). */
+      kept: mean(people.map((r) => r.held.kept)),
+      mastered: mean(people.map((r) => r.held.mastered)),
       // Each test by intention to treat, over every student of the arm, and how many of them finished it.
       ...(Object.fromEntries(TEST_PHASES.map((p) => [p, { ...describe(itt(people, p)), finished: people.filter((r) => r[p]?.complete).length }])) as
         Record<TestPhase, ReturnType<typeof describe> & { finished: number }>),

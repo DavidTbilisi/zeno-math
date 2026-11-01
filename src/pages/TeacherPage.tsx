@@ -231,6 +231,8 @@ export function TeacherPage() {
     [w.metrics.classPractice, (g) => num(g.classPractice)],
     // Only a class testing step-down has any.
     ...(data?.class.feature === "stepdown" ? [[w.metrics.stepDown, (g: Group) => num(g.stepDown)] as const] : []),
+    [w.metrics.kept, (g) => num(g.kept, 1)],
+    [w.metrics.mastered, (g) => num(g.mastered, 1)],
     [w.metrics.rightFirst, (g) => share(g.rightFirst)],
     [w.metrics.predicted, (g) => share(g.predicted)],
     [w.metrics.offTarget, (g) => share(g.offTarget)],
@@ -447,7 +449,7 @@ export function TeacherPage() {
                     <h3>{w.mastery}</h3>
                     <p className="hint">{w.masteryHint}</p>
                     <div className="field-row wrap">
-                      <HeatLegend pct={pct} noAnswers={w.noAnswers} />
+                      <HeatLegend pct={pct} noAnswers={w.noAnswers} holds={w.holds} />
                       <label className="check inline">
                         <input type="checkbox" checked={showNumbers} onChange={(e) => setShowNumbers(e.target.checked)} />
                         <span>{w.showNumbers}</span>

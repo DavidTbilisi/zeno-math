@@ -593,7 +593,8 @@ input.invalid { border-color: var(--danger); }
 .heat-num { text-align: right; padding-right: 8px; color: var(--muted); }
 .heat-skill { vertical-align: bottom; padding: 0 0 4px; }
 .heat-skill span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; display: inline-block; }
-.heat-group th, .heat-group td { padding-top: 10px; color: var(--text); font-weight: 600; }
+.heat-group th, .heat-group td:not(.heat-cell) { padding-top: 10px; color: var(--text); font-weight: 600; }
+.heat-group .heat-cell { font-weight: 600; } /* in its shade's own ink, which reads on it */
 .heat-cell { width: 28px; min-width: 28px; height: 24px; border-radius: 4px; text-align: center; padding: 0; cursor: default; }
 .heat-cell:hover { outline: 2px solid var(--text); outline-offset: -2px; }
 .heat-0 { background: var(--heat-0); color: var(--heat-ink-0); }
@@ -602,6 +603,10 @@ input.invalid { border-color: var(--danger); }
 .heat-3 { background: var(--heat-3); color: var(--heat-ink-3); }
 .heat-4 { background: var(--heat-4); color: var(--heat-ink-4); }
 .heat-none { background: var(--border); }
+/* How a mastered skill holds (#264): a mark in the cell's own ink, so it reads on every shade. */
+.heat-cell .heat-hold { font-size: 11px; font-weight: 700; line-height: 1; }
+.heat-cell .heat-hold.beside { font-size: 9px; vertical-align: super; margin-left: 1px; }
+.heat-legend-item b.heat-hold { font-size: 12px; }
 .heat-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
 .heat-legend-item { display: inline-flex; align-items: center; gap: 4px; }
 .heat-legend-item i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
@@ -1257,3 +1262,7 @@ span.board-home:hover { background: none; }
   .course-stage-head { padding-top: 4px; }
   .course-stage h2 { font-size: 1.25rem; }
 }
+
+/* The student's skills by how they hold (#264): kept, mastered with a review to come, practised again. */
+.practice-holds { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.practice-holds .hold-mastered, .practice-holds .hold-again { color: var(--muted); }

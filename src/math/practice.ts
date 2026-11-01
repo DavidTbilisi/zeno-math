@@ -442,6 +442,7 @@ export type PracticeWords = {
     review: string;
     /** Over a question that is the spaced review of something mastered days ago. */
     spaced: string;
+    stepDown: string;
     score: string;
     progress: string;
     count: string;
@@ -462,6 +463,10 @@ export type PracticeWords = {
     haveCode: string;
     signIn: string;
     joinedAs: string;
+    yourSkills: string;
+    keptList: string;
+    masteredList: string;
+    againList: string;
     keepCode: string;
     signOut: string;
     forget: string;

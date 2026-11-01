@@ -30,7 +30,7 @@ import { ComingBack, SESSION, SessionCard, SessionSummary, type SessionResult } 
 import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
-import { learnSpacing, nextReview, openAgain } from "../model/spacing";
+import { holds, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
 import type { Feature } from "../model/arms";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
 import {
@@ -550,7 +550,10 @@ export function PracticeDialog(props: Props) {
   const classOn = !!student && inClass;
   const sessionOn = page && !classOn && mode === "practise" && pick !== "place";
   const sessionOver = sessionOn && session.length >= SESSION;
-  const studentPanel = <StudentPanel student={student} pending={pending} ui={w.ui} onChange={changeStudent} />;
+  // What the student has kept and mastered of their class's skills, from the plan their answers carry forward.
+  const held = planStatus === "ready" && planRef.current ? holds(planRef.current.spacing, planRef.current.skills) : null;
+  const skillHolds = held && (Object.fromEntries(Object.entries(held).map(([h, ks]) => [h, ks.map((k) => w.skills[k as SkillId])])) as Record<Hold, string[]>);
+  const studentPanel = <StudentPanel student={student} pending={pending} ui={w.ui} skills={skillHolds ?? undefined} onChange={changeStudent} />;
   const resetButton = progress.answered > 0 && (
     <button
       className="btn small add-fn"

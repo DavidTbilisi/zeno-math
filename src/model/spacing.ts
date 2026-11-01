@@ -62,3 +62,20 @@ export function learnClassSpacing(
 ): void {
   learnSpacing(spacing, skill, correct, isMastered(skill, model.predictAt(student, skill, 3), { ema, ideas }), at);
 }
+
+/**
+ * Mastered or kept (issue #264): a key is mastered once practice gets it there, and kept once a review days later has
+ * gone right; a review gone wrong sends it back to practise ("again") until it is mastered anew, then kept anew. So it
+ * is kept only through a right delayed review. Reaching mastery is progress; keeping it is the result.
+ */
+export type Hold = "mastered" | "kept" | "again";
+export const holdOf = (d: Due | undefined): Hold | null => (!d ? null : d.again ? "again" : d.step >= 1 ? "kept" : "mastered");
+/** The keys of a schedule by how they hold, each in the order given. */
+export function holds(s: Spacing, keys: readonly string[] = Object.keys(s)): Record<Hold, string[]> {
+  const out: Record<Hold, string[]> = { mastered: [], kept: [], again: [] };
+  for (const k of keys) {
+    const h = holdOf(s[k]);
+    if (h) out[h].push(k);
+  }
+  return out;
+}

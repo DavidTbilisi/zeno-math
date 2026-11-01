@@ -1,9 +1,10 @@
 // Spaced review: a key mastered comes back a day later, then after 3, 7 and every 21 days while the reviews are right;
 // practice before a review is due moves nothing; a missed review opens the key again until it is relearnt, then it
-// starts over from a day. The next review mixes skills and asks the longest due first.
+// starts over from a day. The next review mixes skills and asks the longest due first. A key is mastered, then kept only
+// through a right delayed review; a wrong one sends it back (issue #264).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DAY, INTERVAL_DAYS, isDue, learnSpacing, nextReview, openAgain, type Spacing } from "../src/model/spacing.ts";
+import { DAY, holdOf, holds, INTERVAL_DAYS, isDue, learnSpacing, nextReview, openAgain, type Spacing } from "../src/model/spacing.ts";
 
 const T = Date.UTC(2026, 10, 1, 9);
 
@@ -62,4 +63,29 @@ test("the next review: the longest due that fits, on another skill than the last
   // Two due at once are taken in a fixed order.
   assert.equal(nextReview({ b: { step: 0, due: T }, a: { step: 0, due: T } }, T, all, (k) => k), "a");
   assert.equal(nextReview({ a: { step: 0, due: T }, b: { step: 0, due: T } }, T, all, (k) => k), "a");
+});
+
+test("mastered, then kept only through a right review days later; a wrong review sends it back to be mastered and kept anew", () => {
+  const s: Spacing = {};
+  const hold = () => holdOf(s.fractions);
+  learnSpacing(s, "fractions", true, false, T);
+  assert.equal(hold(), null, "not mastered yet");
+  learnSpacing(s, "fractions", true, true, T);
+  assert.equal(hold(), "mastered");
+  learnSpacing(s, "fractions", true, true, T + DAY / 2);
+  assert.equal(hold(), "mastered", "right again the same day: not a delayed review");
+  learnSpacing(s, "fractions", true, true, T + DAY);
+  assert.equal(hold(), "kept", "right on its review a day later");
+  learnSpacing(s, "fractions", false, true, s.fractions.due);
+  assert.equal(hold(), "again", "wrong on a later review: back to practise");
+  learnSpacing(s, "fractions", true, true, s.fractions.due);
+  assert.equal(hold(), "mastered", "mastered anew");
+  learnSpacing(s, "fractions", false, true, s.fractions.due);
+  assert.equal(hold(), "again", "and wrong on its first review: back again, never kept on the way");
+  learnSpacing(s, "fractions", true, true, T + 40 * DAY);
+  learnSpacing(s, "fractions", true, true, s.fractions.due);
+  assert.equal(hold(), "kept");
+  const all: Spacing = { a: { step: 0, due: T }, b: { step: 2, due: T }, c: { step: 0, due: T, again: true }, d: { step: 1, due: T } };
+  assert.deepEqual(holds(all), { mastered: ["a"], kept: ["b", "d"], again: ["c"] });
+  assert.deepEqual(holds(all, ["d", "x", "a"]), { mastered: ["a"], kept: ["d"], again: [] }, "the keys asked for, in their order");
 });
