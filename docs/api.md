@@ -12,7 +12,9 @@ the study's routes. Errors come back as `{ "error": "…" }` with the status.
 - *teacher*: also needs the header `X-Teacher-Password` when `TEACHER_PASSWORD` is set; otherwise 403.
 
 After 10 wrong passwords (site or teacher) in 10 minutes, a client gets **429** with `Retry-After`, whatever it
-sends, until the oldest of them leaves the window.
+sends, until the oldest of them leaves the window. A client that gave a right password (site or teacher) in the last
+24 hours is allowed 100 instead: a class shares its school's address, and a lock-out would cut off the students
+already signed in.
 - *student*: anyone holding a student code. The code is the only thing tying answers to a student, so knowing it is
   enough.
 

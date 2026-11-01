@@ -240,6 +240,7 @@ function teacher(req: IncomingMessage) {
     if (sent) passwords.fail(client);
     throw new HttpError(403, "teacher password required");
   }
+  passwords.succeed(client);
 }
 
 function shuffled<T>(items: readonly T[]): T[] {

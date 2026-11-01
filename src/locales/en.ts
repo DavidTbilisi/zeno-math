@@ -8947,7 +8947,7 @@ export const en = {
       joinClass: "Join a class (for a class study)",
       consentTitle: "Before you join",
       consentSaved: "Every question you try in this class is saved: what you typed, whether it was right, how long it took, and what you ticked as hard. Your name and email are never asked for; a code stands for you.",
-      consentGroups: "The class is split at random into two groups that are given practice questions in different orders. Both get the same help and feedback. The study compares how much each group learns.",
+      consentGroups: "The class is split at random into two groups that differ in one part of practice, such as how the next question is chosen, whether skills come back for review days later, or what help follows a mistake. Everything else is the same for both. The study compares how much each group learns.",
       consentStop: "Taking part is up to you. You can stop at any time, and “Delete my answers” removes everything saved under your code.",
       consentAgree: "I understand and want to take part",
       classCode: "Class code",

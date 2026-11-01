@@ -255,7 +255,8 @@ version is recorded in `PRAGMA user_version`, and a database from a newer Zeno i
 **Security.**
 
 - An optional site password, and a teacher password, both compared in constant time.
-- Brute-force protection: 10 wrong passwords in 10 minutes and that client waits, with 429. Behind a proxy
+- Brute-force protection: 10 wrong passwords in 10 minutes and that client waits, with 429. An address that gave a
+  right password in the last day (a school, where a whole class shares one) is allowed 100. Behind a proxy
   (`TRUST_PROXY`), the client is the address the proxy adds last to `X-Forwarded-For`.
 - JSON-only request bodies, so a cross-site form can't post, with size limits.
 - A strict Content-Security-Policy with no inline scripts, plus `nosniff`, `X-Frame-Options` and `Referrer-Policy`.

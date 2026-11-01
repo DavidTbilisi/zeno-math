@@ -273,6 +273,7 @@ const server = createServer(async (req, res) => {
       res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Zeno"' }).end();
       return;
     }
+    passwords.succeed(client);
   }
   try {
     if (path.startsWith("/api/")) await handleApi(req, res, path, url.searchParams);

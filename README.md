@@ -1591,7 +1591,9 @@ Environment variables:
 - `APP_PASSWORD`: empty means no auth.
 - `TEACHER_PASSWORD`: empty means anyone can create classes and download the study data; see below.
 - `TRUST_PROXY`: 1 behind a reverse proxy, as above.
-- `PASSWORD_ATTEMPTS` and `PASSWORD_WINDOW_MINUTES`: 10 and 10 by default.
+- `PASSWORD_ATTEMPTS` and `PASSWORD_WINDOW_MINUTES`: 10 and 10 by default. An address that gave a right password in
+  the last day is allowed ten times `PASSWORD_ATTEMPTS`, so a class sharing a school's address isn't locked out by
+  its typos.
 - `BACKUP_KEEP`: daily backups to keep, 7 by default; 0 turns them off.
 
 The build writes `.br` / `.gz` copies of the assets, and the server sends those to browsers that accept them. Each tool and each
