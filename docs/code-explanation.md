@@ -3645,7 +3645,7 @@ Every request passes through this sequence:
 
 1. Security headers are set on the response object before anything else (`server/index.ts:252`), so even 401/429/500 carry them.
 2. `new URL(req.url ?? "/", "http://localhost")` yields `pathname` and `searchParams`; the host is irrelevant.
-3. Site password gate, skipped for `/api/health` ("The health check reveals nothing, so Docker can probe it without the password") and when `APP_PASSWORD` is unset (`server/index.ts:256-266`). The order inside the gate is: compute `client = clientOf(req)`; ask the shared `passwords` limiter for `retryAfter(client)` and, if non-zero, answer `429 { error: "too many wrong passwords; try again later" }` with `Retry-After` seconds **before checking the password at all** (so a locked-out client gains nothing even with the right password, `tests/hardening.test.ts:94-95`); then `authorized(req)`; on failure, `passwords.fail(client)` only if an `Authorization` header was present ("A browser's first request carries no password: only a wrong one counts"), and `401` with `WWW-Authenticate: Basic realm="Zeno"` and no body.
+3. Site password gate, skipped for `/api/health` ("The health check reveals nothing, so Docker can probe it without the password") and when `APP_PASSWORD` is unset (`server/index.ts:256-266`). The order inside the gate is: compute `client = clientOf(req)`; ask the shared `passwords` limiter for `retryAfter(client)` and, if non-zero, answer `429 { error: "too many wrong passwords; try again later" }` with `Retry-After` seconds **before checking the password at all** (so a locked-out client gains nothing even with the right password, `tests/hardening.test.ts`); then `authorized(req)`; on success, `passwords.succeed(client)`; on failure, `passwords.fail(client)` only if an `Authorization` header was present ("A browser's first request carries no password: only a wrong one counts"), and `401` with `WWW-Authenticate: Basic realm="Zeno"` and no body.
 4. Dispatch: paths starting with `/api/` go to `handleApi`, everything else to `serveStatic`. Body parsing happens inside handlers (`readJson`), so it is after auth and rate limiting: an unauthenticated 25 MB upload is refused at the headers.
 5. Error handling (`server/index.ts:270-279`): an `HttpError` is sent as `{ error: message }` with its status and extra headers, unless headers were already sent. A 413 additionally gets `Connection: close` and, once the response has finished, `req.destroy()`: "An oversized upload is not read to the end: answer, then close the connection so it isn't reused" (the unread remainder would otherwise be parsed as the next request on a keep-alive socket). Any other exception is logged with `console.error` and answered `500 { error: "internal error" }`.
 
@@ -3673,19 +3673,23 @@ Shared HTTP helpers.
 
 ### server/limiter.ts
 
-Brute-force protection shared by the site password and the teacher password. "Only wrong passwords count; a request that sends none (a browser's first visit) doesn't."
+Brute-force protection shared by the site password and the teacher password. "Only wrong passwords count; a request that sends none (a browser's first visit) doesn't." An address that gave a right password in the last day is allowed ten times as many wrong ones: "A school reaches the server from one address, so a class's typos all count against it, and a lock-out would cut off the students already signed in too."
 
-#### `class FailureLimiter` (`server/limiter.ts:6-36`)
+#### `class FailureLimiter` (`server/limiter.ts`)
 
-State: `failures: Map<string, number[]>` (client key → timestamps of wrong passwords). Constructor defaults: `max = 10` wrong passwords per `windowMs = 10 min`, at most `keys = 10_000` remembered clients.
+State: `failures: Map<string, number[]>` (client key → timestamps of wrong passwords) and `rights: Map<string, number>` (client key → when it last gave a right password). Constructor defaults: `max = 10` wrong passwords per `windowMs = 10 min`, at most `keys = 10_000` remembered clients in each map, `trustedMax = max * 10` for a client that gave a right password within `trustMs = 24 h`.
+
+- `limit(key, now)`: `trustedMax` if the client's last right password is within `trustMs`, else `max`.
 
 - `recent(key, now)` (private): filters the client's timestamps to those within the window, writes the pruned list back (or deletes the key when empty), returns it.
-- `retryAfter(key, now = Date.now()): number`: if at least `max` recent failures, the wait is until the `max`-th most recent one leaves the window: `ceil((ts[len - max] + windowMs - now) / 1000)`, floored at 1 second; otherwise 0. `tests/hardening.test.ts:17-25` pins the arithmetic (three failures at 0, 1, 2 s with max 3 and a 60 s window → 58 s at t=2 s, 1 s at t=59 s, 0 at t=60.001 s).
-- `fail(key, now)`: appends `now`, then deletes and re-inserts the key so that `Map` insertion order becomes recency order ("re-inserted last, so the oldest client is first to go when the map is full"), then evicts from the front while `size > keys`. This bounds memory under an attacker rotating source addresses.
+- `retryAfter(key, now = Date.now()): number`: with `max = limit(key, now)`, if at least `max` recent failures, the wait is until the `max`-th most recent one leaves the window: `ceil((ts[len - max] + windowMs - now) / 1000)`, floored at 1 second; otherwise 0. `tests/hardening.test.ts:17-25` pins the arithmetic (three failures at 0, 1, 2 s with max 3 and a 60 s window → 58 s at t=2 s, 1 s at t=59 s, 0 at t=60.001 s).
+- `fail(key, now)`: appends `now` and stores the list with `remember`.
+- `succeed(key, now)`: records `now` in `rights` with `remember`. The site gate calls it on every authorized request (`server/index.ts`), and `teacher()` on a right teacher password (`server/research.ts`). Only someone who knows a password can earn the larger allowance.
+- `remember(map, key, value, keys)` (module function): deletes and re-inserts the key so that `Map` insertion order becomes recency order ("the client seen longest ago is first to go when the map is full"), then evicts from the front while `size > keys`. This bounds memory under an attacker rotating source addresses.
 
-#### `clientKey(req, trustProxy)` and module state (`server/limiter.ts:42-53`)
+#### `clientKey(req, trustProxy)` and module state (`server/limiter.ts`)
 
-With `trustProxy`, the client is the **last** entry of `X-Forwarded-For`: "every connection comes from the proxy, so the client is the last address in X-Forwarded-For: the one the proxy added itself, which a client can't forge" (a client-supplied `6.6.6.6, …` prefix is ignored, `tests/hardening.test.ts:37,97`). Otherwise `req.socket.remoteAddress`. `TRUST_PROXY` is true for `1`/`true`/`yes`. `passwords` is the one `FailureLimiter` instance, sized by `PASSWORD_ATTEMPTS` (10) and `PASSWORD_WINDOW_MINUTES` (10): "wrong site and teacher passwords count together, per client." `clientOf(req)` binds the env flag.
+With `trustProxy`, the client is the **last** entry of `X-Forwarded-For`: "every connection comes from the proxy, so the client is the last address in X-Forwarded-For: the one the proxy added itself, which a client can't forge" (a client-supplied `6.6.6.6, …` prefix is ignored, `tests/hardening.test.ts`). Otherwise `req.socket.remoteAddress`. `TRUST_PROXY` is true for `1`/`true`/`yes`. `passwords` is the one `FailureLimiter` instance, sized by `PASSWORD_ATTEMPTS` (10) and `PASSWORD_WINDOW_MINUTES` (10): "wrong site and teacher passwords count together, per client." `clientOf(req)` binds the env flag.
 
 ### server/backup.ts
 

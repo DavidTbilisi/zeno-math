@@ -30,6 +30,25 @@ test("the limiter refuses a client after too many wrong passwords in the window,
   assert.ok(small.retryAfter("z", 0) > 0);
 });
 
+test("a client that gave a right password in the last day may give ten times as many wrong ones", () => {
+  const day = 24 * 60 * 60_000;
+  const l = new FailureLimiter(3, 60_000);
+  assert.equal(l.limit("school", 0), 3);
+  l.succeed("school", 0);
+  assert.equal(l.limit("school", 0), 30);
+  for (let i = 0; i < 29; i++) l.fail("school", 1000);
+  assert.equal(l.retryAfter("school", 1000), 0, "29 wrong: still allowed");
+  l.fail("school", 1000);
+  assert.ok(l.retryAfter("school", 1000) > 0, "30 wrong: refused");
+  assert.equal(l.limit("other", 1000), 3, "only the address that gave it");
+  assert.equal(l.limit("school", day + 1), 3, "a day later the trust has gone");
+  // Trusted clients are bounded like the others, dropping the one that gave a right password longest ago.
+  const small = new FailureLimiter(1, 60_000, 2);
+  for (const k of ["x", "y", "z"]) small.succeed(k, 0);
+  assert.equal(small.limit("x", 0), 1);
+  assert.equal(small.limit("z", 0), 10);
+});
+
 test("the client is the connection's address, or behind a trusted proxy the address the proxy added last", () => {
   const req = (forwarded?: string) => ({ headers: forwarded ? { "x-forwarded-for": forwarded } : {}, socket: { remoteAddress: "127.0.0.1" } }) as unknown as IncomingMessage;
   assert.equal(clientKey(req("10.0.0.7"), false), "127.0.0.1", "not trusted: the header is ignored");
@@ -89,7 +108,7 @@ test("wrong passwords: the eleventh in ten minutes gets 429, even with the right
     fetch(server.base + path, { headers: { "X-Forwarded-For": from, ...headers } });
   try {
     for (let i = 0; i < 15; i++) assert.equal((await get("/api/boards", "10.0.0.1")).status, 401, "no password: asked for one");
-    assert.equal((await get("/api/boards", "10.0.0.1", { Authorization: basic("open sesame") })).status, 200, "asking without a password doesn't count");
+    // Asking without a password doesn't count: all ten guesses are still checked.
     for (let i = 0; i < 10; i++) assert.equal((await get("/api/boards", "10.0.0.1", { Authorization: basic(`guess ${i}`) })).status, 401);
     const blocked = await get("/api/boards", "10.0.0.1", { Authorization: basic("open sesame") });
     assert.equal(blocked.status, 429, "the right password doesn't get through while blocked");
@@ -97,9 +116,15 @@ test("wrong passwords: the eleventh in ten minutes gets 429, even with the right
     assert.equal((await get("/api/boards", "6.6.6.6, 10.0.0.1", { Authorization: basic("open sesame") })).status, 429, "a forged X-Forwarded-For doesn't help");
     assert.equal((await get("/api/boards", "10.0.0.2", { Authorization: basic("open sesame") })).status, 200, "other clients carry on");
     assert.equal((await get("/api/health", "10.0.0.1")).status, 200, "the health check stays open");
-    // Wrong teacher passwords count the same way.
+    // A school is one address: once anyone there gives the right password, the class's typos get ten times the room.
     const site = { Authorization: basic("open sesame") };
-    for (let i = 0; i < 10; i++) assert.equal((await get("/api/classes", "10.0.0.3", { ...site, "X-Teacher-Password": `guess ${i}` })).status, 403);
+    assert.equal((await get("/api/boards", "10.0.0.5", site)).status, 200);
+    for (let i = 0; i < 99; i++) assert.equal((await get("/api/boards", "10.0.0.5", { Authorization: basic(`typo ${i}`) })).status, 401);
+    assert.equal((await get("/api/boards", "10.0.0.5", site)).status, 200, "99 typos later, students already in carry on");
+    assert.equal((await get("/api/boards", "10.0.0.5", { Authorization: basic("typo 99") })).status, 401);
+    assert.equal((await get("/api/boards", "10.0.0.5", site)).status, 429, "the hundredth locks even that address");
+    // Wrong teacher passwords count the same way; this address is trusted too, since it passed the site password.
+    for (let i = 0; i < 100; i++) assert.equal((await get("/api/classes", "10.0.0.3", { ...site, "X-Teacher-Password": `guess ${i}` })).status, 403);
     const teacher = await get("/api/classes", "10.0.0.3", { ...site, "X-Teacher-Password": "chalk" });
     assert.equal(teacher.status, 429);
     assert.ok(Number(teacher.headers.get("retry-after")) > 0);
