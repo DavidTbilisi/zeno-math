@@ -2,15 +2,18 @@
 // other lifts away every whole line it touches), undo and clear, on squared paper, for the working a student would
 // otherwise do on paper beside the screen. With dots on, the squares turn into dot paper and the pen draws straight
 // lines from dot to dot (a tap marks a dot), for shapes, graphs and number lines; the eraser then runs along those
-// lines too, dot to dot and only as wide as a line, so it takes out one stretch of a line and spares its neighbours. It takes a mouse, a finger or a stylus (pointer events), and it is only for
-// the student: nothing drawn is checked or saved, and the next question starts on a clean sheet.
+// lines too, dot to dot and only as wide as a line, so it takes out one stretch of a line and spares its neighbours,
+// and the line eraser takes from a line drawn on dots only the piece between the two dots either side of where it
+// touches. It takes a mouse, a finger or a stylus (pointer events), and it is only for the student: nothing drawn is
+// checked or saved, and the next question starts on a clean sheet.
 import { useEffect, useRef, useState } from "react";
 import type { PracticeWords } from "../math/practice";
 
 type Tool = "pen" | "rub" | "lift";
 type Point = { x: number; y: number };
-/** `flat`: square ends, so a stretch rubbed out between two dots stops at those dots. */
-type Stroke = { colour: string; width: number; erase: boolean; flat?: boolean; points: Point[] };
+/** `flat`: square ends, so a stretch rubbed out between two dots stops at those dots. `dotted`: a straight line (or a
+ * dot) the pen drew on dots, which the line eraser on dots takes apart piece by piece. */
+type Stroke = { colour: string; width: number; erase: boolean; flat?: boolean; dotted?: boolean; points: Point[] };
 
 /** The pen's inks: dark, blue and red, as on paper. */
 const INKS = [["black", "#1e1e1e"], ["blue", "#1f5fd1"], ["red", "#d6336c"]] as const;
@@ -80,12 +83,39 @@ function distance(p: Point, a: Point, b: Point) {
   return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
 }
 
-/** Whether the lifting eraser at p touches the line: rubbing strokes leave no line of their own, so it never takes them. */
-function touches(s: Stroke, p: Point) {
+/** Whether the lifting eraser at p touches the line: rubbing strokes leave no line of their own, so it never takes them.
+ * `beside`: only from beside the line, not past its ends, so that the line eraser cutting a line on dots does not reach
+ * past the cut it just made and take the next piece too. */
+function touches(s: Stroke, p: Point, beside = false) {
   if (s.erase) return false;
   const near = REACH + s.width / 2;
   if (s.points.length === 1) return Math.hypot(p.x - s.points[0].x, p.y - s.points[0].y) <= near;
+  if (beside) {
+    const [a, b] = s.points;
+    const t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / ((b.x - a.x) ** 2 + (b.y - a.y) ** 2);
+    if (t < 0 || t > 1) return false;
+  }
   return s.points.slice(1).some((b, i) => distance(p, s.points[i], b) <= near);
+}
+
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
+
+/** A line drawn on dots, without the piece the line eraser touched at p: the piece between the dots the line passes
+ * either side of p. What is left (nothing, one line or two) keeps the line's ink and stays a line on dots. */
+function cut(s: Stroke, p: Point): Stroke[] {
+  if (s.points.length < 2) return [];
+  const [a, b] = s.points;
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  // The line passes a dot every 1/n of its length.
+  const n = gcd(Math.abs(Math.round(dx / SQUARE)), Math.abs(Math.round(dy / SQUARE))) || 1;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy)));
+  const k = Math.min(n - 1, Math.floor(t * n));
+  const at = (i: number): Point => ({ x: a.x + (dx * i) / n, y: a.y + (dy * i) / n });
+  const left: Stroke[] = [];
+  if (k > 0) left.push({ ...s, points: [a, at(k)] });
+  if (k + 1 < n) left.push({ ...s, points: [at(k + 1), b] });
+  return left;
 }
 
 export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
@@ -143,9 +173,11 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
     const before = history.current.pop();
     if (before) show(before);
   };
+  /** The line eraser at p: on dots, a line drawn on dots loses the piece it touches; any other line goes whole. */
   const lift = (p: Point) => {
-    const kept = strokes.current.filter((s) => !touches(s, p));
-    if (kept.length < strokes.current.length) show(kept);
+    const piece = (s: Stroke) => dots && !!s.dotted;
+    if (!strokes.current.some((s) => touches(s, p, piece(s)))) return;
+    show(strokes.current.flatMap((s) => (!touches(s, p, piece(s)) ? [s] : piece(s) ? cut(s, p) : [])));
   };
 
   /** The pointer's points since the last event: the moves the browser merged into this one, for a smooth line. */
@@ -209,7 +241,7 @@ export function ScratchPad({ w }: { w: PracticeWords["ui"]["scratch"] }) {
             const erase = tool === "rub";
             straight.current = dots;
             drawing.current = dots
-              ? { colour: ink, width: erase ? LINE_ERASER : PEN, erase, flat: erase, points: [snap(p)] }
+              ? { colour: ink, width: erase ? LINE_ERASER : PEN, erase, flat: erase, dotted: !erase, points: [snap(p)] }
               : { colour: ink, width: erase ? ERASER : PEN, erase, points: [p] };
             redraw();
           }}

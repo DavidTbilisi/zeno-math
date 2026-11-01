@@ -416,7 +416,7 @@ export type PracticeWords = {
     look: string;
     /** The scratch paper under a question on the practice page: its toggle and title, tools (rub rubs out what it passes
      * over, lift takes away whole lines, dots turns the squares into dots the pen draws and the eraser rubs straight
-     * between), and the inks' names. */
+     * between and the line eraser cuts lines at), and the inks' names. */
     scratch: { title: string; pen: string; rub: string; lift: string; dots: string; undo: string; clear: string; black: string; blue: string; red: string };
     practise: string;
     sheet: string;
