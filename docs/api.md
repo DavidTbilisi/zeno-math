@@ -236,13 +236,18 @@ question: a repeat keeps the first, with 200 `{ stored: false }`.
   - questions answered, right first time, and minutes of class practice;
   - each test's form (pre, post, delayed), answers, score (right answers over the test's questions) and whether it
     is complete;
-  - mastery of every skill (the chance of a right first answer at each level, and the answers that rests on).
+  - mastery of every skill (the chance of a right first answer at each level, and the answers that rests on);
+  - `holds`: each of the class's skills the student has mastered, as `mastered` (reached in practice, its review
+    days later still to come), `kept` (right on a review days later) or `again` (wrong on a review, practised again),
+    from their spaced reviews (`holdOf` in `src/model/spacing.ts`), and `held`, how many skills are in each.
 - **`arms`**: `on` and `off`, each:
   - students and questions;
   - right first time;
   - the model's expected chance, and how far practice was from the target;
   - median time per question, solutions opened, questions left unfinished;
   - practice minutes;
+  - `kept` and `mastered`: skills per student kept (the result) and mastered with the review still to come
+    (progress);
   - each test (`pre`, `post`, `delayed`) by intention to treat: mean (SD, n) over every student of the arm, with a
     question not answered counted as wrong (a test not sat scores 0), and `finished`, how many sat all of it.
 - **`tests`**:

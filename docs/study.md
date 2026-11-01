@@ -144,13 +144,20 @@ set). There they can make classes and hand out the codes, and see for each class
   together, to be taken as a small group. A student leaves the list after three right in a row, or when the teacher
   marks them seen, until ten more questions go by. Students appear by number (`s3`), with their code only when
   "show student codes" is on.
-- **The two arms** side by side: students, questions answered, right first time, the model's expected chance and how
-  far class practice was from the 75 % target, the median time per question, how often the worked solution was opened,
-  and how often a question was left unfinished.
+- **The two arms** side by side: students, questions answered, the skills kept and the skills mastered per student,
+  right first time, the model's expected chance and how far class practice was from the 75 % target, the median time
+  per question, how often the worked solution was opened, and how often a question was left unfinished.
 - **Mastery by skill:** one row per student, one column per skill, shaded by the chance of a right first answer at
   medium level. The scale has five bins, validated as an ordinal colour ramp for both light and dark mode, and grey
   means no answers yet. Each arm's average sits on top. Hovering a cell gives all three levels; "show numbers" puts
-  the percentages in the cells.
+  the percentages in the cells. A mark says how a mastered skill holds (issue #264): ✓ mastered in practice, ★ kept,
+  ↺ practised again. Mastery reached on the day is progress, not yet the result: what a student shows on the day does
+  not last to the next assignment (the stopping-ceiling check). A skill is kept only once its first spaced review,
+  a day or more later, goes right, and a wrong review takes it back to practice until it is mastered and kept anew.
+  The student's own panel lists their skills the same way. In a class testing spaced review, the arm without it is
+  asked no reviews and keeps a skill only when practice happens to come back to it a day later, so there the kept
+  counts measure the feature itself, not learning: compare the arms on the tests. The thesis's H2 and H3 rules and
+  the simulations are unchanged.
 - **The tests,** each once the class has reached it, by intention to treat. Every student counts in their arm, and
   a question not answered counts as wrong, so a student who never sat a test scores 0 on it. ASSISTments' published
   outcome credits students for quitting, and its tutoring effect vanishes under the stricter rule. So the page shows

@@ -255,7 +255,7 @@ test("a class practises the skills it was given, in curriculum order", async () 
   assert.deepEqual(listed.find((c) => c.code === made.body.code)!.skills, made.body.skills);
 });
 
-test("the plan carries the student's spaced reviews: a skill mastered comes back a day later, then three days after a right review", async () => {
+test("the plan carries the student's spaced reviews: a skill mastered comes back a day later, then three days after a right review; kept, then not", async () => {
   const { code } = (await call("POST", "/api/classes", { skills: ["linear"] }, TEACHER)).body;
   const joined = (await call("POST", "/api/students", { class: code })).body;
   const plan = async () => (await call("GET", `/api/students/${joined.code}/plan`)).body;
@@ -274,8 +274,18 @@ test("the plan carries the student's spaced reviews: a skill mastered comes back
   const review = at + DAY + 5000;
   assert.equal((await call("POST", "/api/attempts", right(review, "spaced"))).status, 201);
   assert.deepEqual((await plan()).spacing.linear, { step: 1, due: review + 3 * DAY });
+  // The teacher sees the skill kept, and the arm counts it as the result, not as progress still to check.
+  const dash = async () => (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  let d = await dash();
+  assert.deepEqual([d.students[0].holds, d.students[0].held], [{ linear: "kept" }, { mastered: 0, kept: 1, again: 0 }]);
+  assert.deepEqual([d.arms[joined.arm].kept, d.arms[joined.arm].mastered], [1, 0]);
+  // Wrong on the next review: no longer kept, practised again.
+  const wrong = attempt(joined.code, { policy: "spaced", level: 3, shownAt: review + 3 * DAY + 5000, outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] });
+  assert.equal((await call("POST", "/api/attempts", wrong)).status, 201);
+  d = await dash();
+  assert.deepEqual([d.students[0].holds, d.arms[joined.arm].kept], [{ linear: "again" }, 0]);
   const exported = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
-  assert.equal(exported.filter((r) => r.policy === "spaced").length, 1);
+  assert.equal(exported.filter((r) => r.policy === "spaced").length, 2);
 });
 
 test("the plan: condition, skills, place in the fixed sequence, recent skills and the student's own records", async () => {

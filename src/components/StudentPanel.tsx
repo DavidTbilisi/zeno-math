@@ -1,16 +1,21 @@
 // The practice study, for the student: join a class with its code (or come back with your own student code); from then
 // on every question you work on is saved under that code. Joining shows what taking part means first (what is saved,
-// the two groups, how to stop and delete it all), and waits for the student to agree.
+// the two groups, how to stop and delete it all), and waits for the student to agree. Signed in, it lists the skills
+// they have kept (right on a review days later), those mastered whose review is still to come, and those they are
+// practising again after a wrong review (issue #264, holdOf in spacing.ts).
 import { useState, type KeyboardEvent } from "react";
 import { ApiError, study } from "../api";
 import type { Student } from "../learner";
 import type { PracticeWords } from "../math/practice";
 import { fill } from "../math/text";
+import type { Hold } from "../model/spacing";
 
-export function StudentPanel({ student, pending, ui, onChange }: {
+export function StudentPanel({ student, pending, ui, skills, onChange }: {
   student: Student | null;
   pending: number;
   ui: PracticeWords["ui"];
+  /** The names of the class's skills by how they hold, once the plan is here. */
+  skills?: Record<Hold, string[]>;
   /** forgot: the student's records were deleted on the server. */
   onChange: (s: Student | null, forgot?: boolean) => void;
 }) {
@@ -57,6 +62,14 @@ export function StudentPanel({ student, pending, ui, onChange }: {
           </button>
         </div>
         <small className="hint">{ui.keepCode}</small>
+        {skills && (skills.kept.length || skills.mastered.length || skills.again.length) ? (
+          <div className="practice-holds" aria-label={ui.yourSkills}>
+            <strong>{ui.yourSkills}</strong>
+            {skills.kept.length > 0 && <span className="hold-kept">★ {fill(ui.keptList, { list: skills.kept.join(", ") })}</span>}
+            {skills.mastered.length > 0 && <span className="hold-mastered">✓ {fill(ui.masteredList, { list: skills.mastered.join(", ") })}</span>}
+            {skills.again.length > 0 && <span className="hold-again">↺ {fill(ui.againList, { list: skills.again.join(", ") })}</span>}
+          </div>
+        ) : null}
         {unsaved}
         {error && <span className="error">{error}</span>}
       </div>
