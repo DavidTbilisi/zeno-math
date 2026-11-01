@@ -97,12 +97,15 @@ A class tests one feature, `feature` when it is made (`src/model/arms.ts`; 400 f
 - **`steps`**: a fractions operation missed is worked in steps.
 - **`hard`**: after a miss on fractions, "what exactly was hard?".
 - **`faded`**: worked examples that fade (`src/model/fading.ts`), on every skill worked in steps.
+- **`stepdown`**: targeted step-down after an early failure (`src/model/stepDown.ts`). On trial: nobody has it but
+  the arm with it in a class testing it.
 
 Students are given an arm in random blocks of four, two of each. In a class testing anything but the policy both
 arms practise with the adaptive policy. Only the feature under test differs: the arm without it goes without it, in
-class practice and free practice alike, and every other feature stays on for both. An attempt that shows a feature
-the student's arm hasn't got is refused with 400: a `spaced` policy (`invalid policy`), `steps` (`invalid steps`) or
-`hard` (`invalid hard`) or `faded` (`invalid faded`). Classes and students from before arms tested the policy; their arm follows from their
+class practice and free practice alike, and every other feature stays on for both, but for a feature on trial
+(`stepdown`), which nobody else has. An attempt that shows a feature the student's arm hasn't got is refused with
+400: a `spaced` or `stepdown` policy (`invalid policy`), `steps` (`invalid steps`), `hard` (`invalid hard`) or
+`faded` (`invalid faded`). Classes and students from before arms tested the policy; their arm follows from their
 condition.
 
 ### The protocol
@@ -124,7 +127,7 @@ minute, when they next ask for the plan.
 
 ```text
 { class, condition, feature, arm, skills, position, recent, state,   ← class practice
-  ideas, ema, spacing, fading,
+  ideas, ema, spacing, fading, stepDown,
   phase, sessionEnds, testLength,                                     ← the protocol
   tests: { pre: { form, answered }, post: { form, answered }, delayed: { form, answered } } }
 ```
@@ -137,6 +140,9 @@ minute, when they next ask for the plan.
   choose questions offline.
 - **`fading`**: for each skill whose worked examples are fading, how many steps (counted from the end) the student
   works on its next question; the rest are shown done (`src/model/fading.ts`).
+- **`stepDown`**: `{ early: { [skill]: { answered, wrong } }, now?: { skill, idea, left }, back? }` for the arm with
+  step-down (`src/model/stepDown.ts`), else `{ early: {} }`: the early class-practice answers on each skill made of
+  ideas, the step-down under way (the questions left on its idea), and the skill to go back to once it is over.
 - **`tests`**: which form each test uses (A and B counterbalanced within each arm, C for everyone's delayed
   post-test) and which questions are already answered.
 
@@ -151,9 +157,10 @@ minute, when they next ask for the plan.
 
 - **`clientId`**: made by the browser (8–64 of `A-Za-z0-9-`).
 - **`outcome`**: `solved`, `revealed` or `skipped`.
-- **`policy`**: `adaptive`, `fixed`, `free`, `review` or `spaced`. `review` exactly when `review` is true;
-  `adaptive` and `fixed` only for a student in that condition; `spaced` only for a student with spaced review
-  (see *Arms*).
+- **`policy`**: `adaptive`, `fixed`, `free`, `review`, `spaced` or `stepdown`. `review` exactly when `review` is
+  true; `adaptive` and `fixed` only for a student in that condition; `spaced` only for a student with spaced review,
+  `stepdown` only for one with step-down (see *Arms*). A `stepdown` question is class practice: it is marked late
+  like one.
 - **`predicted`**: the model's chance of a right first answer when the question was shown, from 0 to 1.
 - **`answers`**: at most 50. Each `verdict` is `correct`, `close`, `wrong` or `form`; inputs are cut to 200
   characters.

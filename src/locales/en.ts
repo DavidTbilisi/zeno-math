@@ -8259,6 +8259,7 @@ export const en = {
       steps: { name: "Steps after a miss", on: "Steps", off: "No steps", hint: "A fractions question missed is worked in steps before it is tried whole again." },
       hard: { name: "Asking what was hard", on: "Asked", off: "Not asked", hint: "After a miss on fractions, the student ticks the idea that was hard." },
       faded: { name: "Worked examples that fade", on: "Fading examples", off: "No worked examples", hint: "After a miss on a skill worked in steps (calculus, fractions operations), a worked example; then each next question of its kind leaves one more step to the student, until they solve it alone." },
+      stepdown: { name: "Targeted step-down", on: "Step-down", off: "No step-down", hint: "On a skill made of ideas (times, hcf, fractions), 2 wrong of the first 3 bring 3 questions on the one idea the student most likely lacks, then back to the skill. Untested: only this arm of this class gets it." },
     },
     metrics: {
       students: "Students",
@@ -8270,6 +8271,7 @@ export const en = {
       medianTime: "Median time per question",
       solutionViewed: "Worked solution looked at",
       skipped: "Left unfinished",
+      stepDown: "Step-down questions",
     },
     seconds: "{n} s",
     stuck: "Who is stuck",
@@ -8908,6 +8910,7 @@ export const en = {
       revealed: "Here is the answer and how to get it.",
       review: "From your mistakes: try this one again.",
       spaced: "Review: you mastered this a while ago. Still got it?",
+      stepDown: "A step back to one idea: {idea}",
       score: "{right} of {total} right · streak {streak}",
       sound: "Sound on or off",
       scratch: { title: "Scratch paper", pen: "Pen", rub: "Eraser", lift: "Line eraser", dots: "Snap to dots", undo: "Undo", clear: "Clear", black: "Black ink", blue: "Blue ink", red: "Red ink" },

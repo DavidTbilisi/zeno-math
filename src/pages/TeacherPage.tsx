@@ -224,10 +224,13 @@ export function TeacherPage() {
   const reached = data ? TEST_PHASES.filter((p) => data.tests.started[p] !== null) : [];
   const days = (from: number, to: number) => Math.floor((to - from) / DAY);
   const { post: postStart, delayed: delayedStart } = data?.tests.started ?? { post: null, delayed: null };
-  const rows: [string, (g: Dashboard["arms"]["on"]) => string][] = [
+  type Group = Dashboard["arms"]["on"];
+  const rows: (readonly [string, (g: Group) => string])[] = [
     [w.metrics.students, (g) => num(g.students)],
     [w.metrics.answered, (g) => num(g.answered)],
     [w.metrics.classPractice, (g) => num(g.classPractice)],
+    // Only a class testing step-down has any.
+    ...(data?.class.feature === "stepdown" ? [[w.metrics.stepDown, (g: Group) => num(g.stepDown)] as const] : []),
     [w.metrics.rightFirst, (g) => share(g.rightFirst)],
     [w.metrics.predicted, (g) => share(g.predicted)],
     [w.metrics.offTarget, (g) => share(g.offTarget)],

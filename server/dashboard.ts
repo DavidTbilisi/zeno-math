@@ -93,8 +93,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       arm: s.arm,
       condition: s.condition,
       answered: mine.length,
-      /** Minutes spent on questions class practice chose (what timed sessions keep equal). */
-      practiceMinutes: mine.filter((a) => a.policy === s.condition).reduce((sum, a) => sum + a.ms_total, 0) / 60_000,
+      /** Minutes spent on questions class practice chose, its step-downs too (what timed sessions keep equal). */
+      practiceMinutes: mine.filter((a) => a.policy === s.condition || a.policy === "stepdown").reduce((sum, a) => sum + a.ms_total, 0) / 60_000,
       pre: test.pre ? { ...test.pre, complete: complete(test.pre) } : null,
       post: test.post ? { ...test.post, complete: complete(test.post) } : null,
       delayed: test.delayed ? { ...test.delayed, complete: complete(test.delayed) } : null,
@@ -118,6 +118,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       students: people.length,
       answered: mine.length,
       classPractice: chosen.length,
+      /** Questions of a step-down to one idea after an early failure (stepDown.ts): only a class testing it has any. */
+      stepDown: mine.filter((a) => a.policy === "stepdown").length,
       rightFirst: share(mine.map(verdict).filter((v) => v !== null)),
       /** What the model expected of the questions class practice chose, and how far that was from the target. */
       predicted: mean(chosen.flatMap((a) => (a.predicted === null ? [] : [a.predicted]))),

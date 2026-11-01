@@ -1,16 +1,18 @@
 // Class experiments (issue #268): a class tests one feature; the arm without it goes without that feature only, the
-// policy feature alone changes the condition, and a student kept from before arms, or not in a class, has everything.
+// policy feature alone changes the condition, and a student kept from before arms, or not in a class, has everything
+// but the features on trial.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ARMS, armOfCondition, BLOCK, conditionOf, FEATURES, hasFeature } from "../src/model/arms.ts";
+import { ARMS, armOfCondition, BLOCK, conditionOf, FEATURES, hasFeature, ON_TRIAL } from "../src/model/arms.ts";
 import { studentHas } from "../src/learner.ts";
 import { formFor } from "../src/model/testForms.ts";
 
-test("the arm without the feature under test goes without it, and only without it", () => {
+test("the arm without the feature under test goes without it, and only without it; a feature on trial only the arm with it has", () => {
   for (const feature of FEATURES)
     for (const f of FEATURES) {
-      assert.equal(hasFeature({ feature, arm: "on" }, f), true, `${feature} on has ${f}`);
-      assert.equal(hasFeature({ feature, arm: "off" }, f), f !== feature, `${feature} off and ${f}`);
+      const elsewhere = !ON_TRIAL.includes(f);
+      assert.equal(hasFeature({ feature, arm: "on" }, f), f === feature || elsewhere, `${feature} on and ${f}`);
+      assert.equal(hasFeature({ feature, arm: "off" }, f), f !== feature && elsewhere, `${feature} off and ${f}`);
     }
   assert.deepEqual([...BLOCK].sort(), ["off", "off", "on", "on"], "two of each arm in a block");
   assert.deepEqual(ARMS, ["on", "off"]);

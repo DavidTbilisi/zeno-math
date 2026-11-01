@@ -6,30 +6,33 @@ import type { SkillId } from "./math/practiceSkills";
 import { LogisticModel, type LogisticState } from "./model/logistic";
 import { evidence } from "./model/evaluate";
 import type { FractionsNode } from "./model/conceptGraph";
-import { asksWhatWasHard, bearing, hasIdeas, learnIdeas, usesOf, type IdeaState } from "./model/ideaState";
-import { learnEma, RECENT, type Choice, type EmaState } from "./model/policy";
+import { asksWhatWasHard, bearing, hasIdeas, IDEA_SKILLS, learnIdeas, SKILL_IDEAS, usesOf, type IdeaState } from "./model/ideaState";
+import { choose, learnEma, RECENT, type AdaptiveOptions, type Choice, type EmaState } from "./model/policy";
 import { learnClassSpacing, type Spacing } from "./model/spacing";
 import { learnFading, type Faded, type Fading } from "./model/fading";
+import { learnStepDown, noStepDown, type StepDown } from "./model/stepDown";
 import type { Form, TestPhase } from "./model/testForms";
-import { hasFeature, type Arm, type Feature } from "./model/arms";
+import { hasFeature, ON_TRIAL, type Arm, type Feature } from "./model/arms";
 
 export type Condition = "adaptive" | "fixed";
 /** A student signed in: their class and condition, and the feature their class tests with their arm (none kept from before arms). */
 export type Student = { code: string; class: string; condition: Condition; feature?: Feature; arm?: Arm };
 /**
  * Whether a student has a feature of practice (arms.ts): the arm without the feature their class tests goes without it.
- * Anyone else has every feature: nobody signed in, or a student kept from before arms whose plan hasn't come yet.
+ * Anyone else has every feature but those on trial: nobody signed in, or a student kept from before arms whose plan
+ * hasn't come yet.
  */
 export const studentHas = (s: { feature?: Feature; arm?: Arm } | null | undefined, f: Feature): boolean =>
-  !s?.feature || !s.arm || hasFeature({ feature: s.feature, arm: s.arm }, f);
+  s?.feature && s.arm ? hasFeature({ feature: s.feature, arm: s.arm }, f) : !ON_TRIAL.includes(f);
 /** correct; close (nearly); wrong; form (right idea, wrong form: sent back without counting as a miss). */
 export type AnswerVerdict = "correct" | "close" | "wrong" | "form";
 export type Outcome = "solved" | "revealed" | "skipped";
 /**
  * Who chose the question: the student's condition (class practice), the student (free practice), the review of misses,
- * or the spaced review of what was mastered days ago (spacing.ts).
+ * the spaced review of what was mastered days ago (spacing.ts), or a step-down to one idea after an early failure
+ * (stepDown.ts).
  */
-export type ChosenBy = Condition | "free" | "review" | "spaced";
+export type ChosenBy = Condition | "free" | "review" | "spaced" | "stepdown";
 /** How a question came to be asked, recorded with it. */
 export type Origin = { policy: ChosenBy; review: boolean; predicted: number | null };
 /** What the class is doing, set by the teacher (see server/protocol.ts). */
@@ -48,7 +51,7 @@ export type Protocol = {
  */
 export type Plan = Protocol & {
   condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; state: LogisticState; ideas: IdeaState; ema: EmaState;
-  spacing?: Spacing; fading?: Fading;
+  spacing?: Spacing; fading?: Fading; stepDown?: StepDown;
 };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 /** One step of a question worked in steps (stepsOf in practice.ts), in the steps' order: the answers to it, and whether its answer was shown. */
@@ -148,10 +151,10 @@ export const ME = "me";
 /** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
 export type ClassPlan = Protocol & {
   condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; model: LogisticModel; ideas: IdeaState; ema: EmaState;
-  spacing: Spacing; fading: Fading;
+  spacing: Spacing; fading: Fading; stepDown: StepDown;
 };
-export const toClassPlan = ({ state, spacing, fading, ...rest }: Plan): ClassPlan =>
-  ({ ...rest, spacing: spacing ?? {}, fading: fading ?? {}, model: LogisticModel.fromState(state) });
+export const toClassPlan = ({ state, spacing, fading, stepDown, ...rest }: Plan): ClassPlan =>
+  ({ ...rest, spacing: spacing ?? {}, fading: fading ?? {}, stepDown: stepDown ?? noStepDown(), model: LogisticModel.fromState(state) });
 /** A newer plan's protocol (the teacher may have moved the class on) over the plan the browser has been carrying forward. */
 export const withProtocol = (plan: ClassPlan, p: Protocol): ClassPlan =>
   ({ ...plan, class: p.class, phase: p.phase, sessionEnds: p.sessionEnds, testLength: p.testLength, tests: p.tests });
@@ -170,7 +173,7 @@ export type TestAnswer = {
 };
 /**
  * What the server will do once it has the attempt: the model, the moving average and the ideas learn from it, the spaced
- * reviews and the fading move on, the fixed sequence moves on.
+ * reviews, the fading and (for the arm with it) the step-down move on, the fixed sequence moves on.
  */
 export function applyAttempt(plan: ClassPlan, a: Attempt) {
   const correct = attemptEvidence(a);
@@ -181,6 +184,7 @@ export function applyAttempt(plan: ClassPlan, a: Attempt) {
   learnFromAttempt(plan.ideas, a);
   if (correct !== null) learnClassSpacing(plan.spacing, plan.model, ME, plan.ema, plan.ideas, a.skill, correct, a.shownAt);
   learnFading(plan.fading, a.skill, fadedOf(a));
+  if (studentHas(plan, "stepdown")) learnStepDown(plan.stepDown, { skill: a.skill, policy: a.policy, correct }, plan.ideas);
   if (a.policy === "fixed") plan.position++;
   plan.recent = [...plan.recent, a.skill].slice(-RECENT);
 }
@@ -258,6 +262,39 @@ export function exerciseFor(c: Choice, w: PracticeWords, random: () => number = 
     if (b > share) (best = ex), (share = b);
   }
   return best;
+}
+
+/**
+ * A question on one idea, for a step-down (stepDown.ts): of up to AIM_TRIES fresh questions at each level of each skill
+ * that can need the idea, the one bearing most on it; on a tie the easier, so the earlier skill and the lower level.
+ */
+export function stepDownExercise(idea: string, w: PracticeWords, random: () => number = Math.random): Exercise {
+  let best: Exercise | null = null, share = -1;
+  for (const skill of IDEA_SKILLS) {
+    if (!(SKILL_IDEAS[skill] as readonly string[]).includes(idea)) continue;
+    for (const level of [1, 2, 3] as const)
+      for (let i = 0; i < AIM_TRIES && share < ALONE; i++) {
+        const ex = exercise(skill, level, Math.floor(random() * 2 ** 31), w), b = bearing(ex, idea);
+        if (b > share) (best = ex), (share = b);
+      }
+  }
+  if (!best) throw new Error(`no skill needs the idea ${idea}`);
+  return best;
+}
+
+/**
+ * The next class-practice question once the reviews have had their turn: for the arm with step-down, a question of
+ * the step-down under way, or then one straight back on the skill it came from; otherwise the student's condition's
+ * choice.
+ */
+export function classQuestion(
+  plan: ClassPlan, w: PracticeWords, options: AdaptiveOptions = {}, random: () => number = Math.random,
+): { ex: Exercise; policy: Condition | "stepdown" } {
+  const { now, back } = studentHas(plan, "stepdown") ? plan.stepDown : {};
+  if (now) return { ex: stepDownExercise(now.idea, w, random), policy: "stepdown" };
+  const skills = back ? [back as SkillId] : plan.skills;
+  const c = choose(plan.condition, plan.model, ME, skills, plan.position, { ideas: plan.ideas, ema: plan.ema, recent: back ? [] : plan.recent, random, ...options });
+  return { ex: exerciseFor(c, w, random), policy: plan.condition };
 }
 
 // ---------- storage ----------
