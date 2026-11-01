@@ -211,7 +211,7 @@ test("scratch paper on the practice page draws, rubs out, lifts whole lines, und
   expect(await inked()).toBe(0);
 });
 
-test("with dots on, the scratch pen draws and the eraser rubs straight from dot to dot, and the choice is remembered", async ({ page }) => {
+test("with dots on, the scratch pen draws and the eraser rubs straight from dot to dot, the line eraser cuts at dots, and the choice is remembered", async ({ page }) => {
   const s = w.ui.scratch;
   await page.goto("/#/practice");
   await page.getByRole("button", { name: s.title }).click();
@@ -248,6 +248,22 @@ test("with dots on, the scratch pen draws and the eraser rubs straight from dot 
     return { kept: [50, 70, 130, 150].every((x) => at(x, 40)), gone: [85, 100, 115].some((x) => at(x, 40)), below: [70, 100, 130].every((x) => at(x, 60)) };
   });
   expect(left).toEqual({ kept: true, gone: false, below: true });
+  // The line eraser on dots takes from the second line only the piece between the dots either side of where it
+  // touches (40 to 60), even with a shaky press, and undo puts it back.
+  await page.getByRole("button", { name: s.lift }).click();
+  await page.mouse.move(box.x + 52, box.y + 63);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 57, box.y + 58, { steps: 3 });
+  await page.mouse.up();
+  const second = () =>
+    sheet.evaluate((c: HTMLCanvasElement) => {
+      const dpr = window.devicePixelRatio || 1;
+      const at = (x: number, y: number) => c.getContext("2d")!.getImageData(Math.round(x * dpr), Math.round(y * dpr), 1, 1).data[3] > 0;
+      return [45, 55, 65, 100, 155].map((x) => at(x, 60));
+    });
+  expect(await second()).toEqual([false, false, true, true, true]);
+  await page.getByRole("button", { name: s.undo }).click();
+  expect(await second()).toEqual([true, true, true, true, true]);
   await page.reload();
   await expect(page.getByRole("button", { name: s.dots })).toHaveAttribute("aria-pressed", "true");
 });
