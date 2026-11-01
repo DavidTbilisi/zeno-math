@@ -2,7 +2,9 @@
 // question that reaches the server, and when the teacher starts the pre-test the student gets the test.
 import { expect, test, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
-import { exercise, stepsOf } from "../src/math/practice.ts";
+import { ka } from "../src/locales/ka.ts";
+import { ru } from "../src/locales/ru.ts";
+import { check, exercise, stepsOf, trapInputs } from "../src/math/practice.ts";
 
 const TEACHER = "e2e-teacher";
 
@@ -170,4 +172,54 @@ test("a wrong answer on a fractions operation is worked in steps, and the steps 
   const csv = async () => (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers })).text()).trim();
   await expect.poll(async () => (await csv()).includes('""shown"":true')).toBe(true);
   expect((await csv()).split("\n")[0].split(",")).toContain("steps");
+});
+
+test("the teacher sees who is stuck, grouped by the mistake they repeat, in every language, and marks one seen", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const name = `Stuck ${Date.now()}`;
+  const { code } = await (await request.post("/api/classes", { data: { name, skills: ["fractions"] }, headers })).json();
+  const join = async () => (await (await request.post("/api/students", { data: { class: code } })).json()).code as string;
+  const [a, b, c] = [await join(), await join(), await join()];
+  // Two students repeat the same known mistake on a question; a third ticks the same idea as hard each time.
+  const seed = Array.from({ length: 200 }, (_, i) => i + 1).find((s) => trapInputs(exercise("fractions", 1, s, en.pracWords)).length)!;
+  const trap = trapInputs(exercise("fractions", 1, seed, en.pracWords))[0];
+  let n = 0;
+  const wrong = (student: string, input: string, hard?: string[]) => request.post("/api/attempts", {
+    data: {
+      clientId: `stuck-${Date.now()}-${n++}`, student, skill: "fractions", level: 1, seed, review: false, outcome: "revealed", solutionViewed: true,
+      msTotal: 9000, shownAt: Date.now() - 9000, answers: [{ input, verdict: "wrong", ms: 9000 }], policy: "free", ...(hard ? { hard } : {}),
+    },
+  });
+  for (let i = 0; i < 10; i++) {
+    expect((await wrong(a, trap.input)).status()).toBe(201);
+    expect((await wrong(b, trap.input)).status()).toBe(201);
+    expect((await wrong(c, "12345", ["commonDenom"])).status()).toBe(201);
+  }
+
+  for (const L of [en, ru, ka]) {
+    const lang = L === en ? "en" : L === ru ? "ru" : "ka";
+    const page = await (await browser.newContext()).newPage();
+    await page.addInitScript(([l, pw]) => (localStorage.setItem("lang", l), sessionStorage.setItem("zeno.teacher", pw)), [lang, TEACHER]);
+    await page.goto("/#/teacher");
+    await page.locator(".class-item", { hasText: name }).click();
+    const list = page.getByRole("region", { name: L.teacher.stuck });
+    await expect(list).toBeVisible();
+    const groups = list.locator(".stuck-group");
+    await expect(groups).toHaveCount(2);
+    // The two with the same mistake first, said in the checker's own words for the question; then the ticked idea.
+    const hint = check(exercise("fractions", 1, seed, L.pracWords), trap.input, L.pracWords).hint!;
+    await expect(groups.nth(0)).toContainText(hint);
+    await expect(groups.nth(0).locator(".stuck-row")).toHaveCount(2);
+    await expect(groups.nth(1)).toContainText(L.pracWords.ideas.commonDenom);
+    await expect(groups.nth(1).locator(".stuck-row")).toContainText(L.teacher.stuckAnswers.replace("{n}", "10"));
+    if (L === ka) {
+      // Seen: the student leaves the list, and the others stay.
+      const seen = groups.nth(1).getByRole("button", { name: new RegExp(`${L.pracWords.skills.fractions}`) });
+      await expect(seen).toHaveText(L.teacher.seen);
+      await seen.click();
+      await expect(groups).toHaveCount(1);
+      await expect(list.locator(".stuck-row")).toHaveCount(2);
+    }
+    await page.context().close();
+  }
 });

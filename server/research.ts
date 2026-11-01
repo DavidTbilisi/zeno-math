@@ -13,7 +13,7 @@ import { FRACTIONS } from "../src/model/conceptGraph.ts";
 import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
 import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
 import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
-import { dashboard } from "./dashboard.ts";
+import { dashboard, markSeen } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
@@ -91,6 +91,14 @@ export function initResearch(db: DatabaseSync) {
       created_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS attempts_student ON attempts(student_id, id);
+    -- a stuck student the teacher has seen (dashboard.ts): off the list until ten more questions after attempt "through"
+    CREATE TABLE IF NOT EXISTS stuck_seen (
+      student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+      skill TEXT NOT NULL,
+      through INTEGER NOT NULL,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (student_id, skill)
+    );
     -- a class's students (the dashboard, the exports and counterbalancing all start from them)
     CREATE INDEX IF NOT EXISTS students_class ON students(class_code, condition);
   `);
@@ -353,6 +361,14 @@ export async function handleResearch(
   if (resource === "classes" && id && sub === "phase" && req.method === "POST") {
     teacher(req);
     return setPhase(req, res, db, normalizeCode(decodeURIComponent(id)));
+  }
+
+  // The teacher has seen a stuck student ({ student: "s3", skill, through: attempt id }).
+  if (resource === "classes" && id && sub === "seen" && req.method === "POST") {
+    teacher(req);
+    const body = (await readJson(req)) as Record<string, unknown>;
+    return markSeen(db, normalizeCode(decodeURIComponent(id)), body.student, body.skill, body.through)
+      ? send(res, 204) : send(res, 404, { error: "no such stuck student" });
   }
 
   if (resource === "classes" && !id) {

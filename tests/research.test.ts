@@ -25,7 +25,7 @@ import { analyseStudy, scoresFromTests } from "../src/model/analysis.ts";
 import { testItems } from "../src/model/testForms.ts";
 import { verdictOf } from "../src/learner.ts";
 import { en } from "../src/locales/en.ts";
-import { check, exercise, stepsOf, type SkillId } from "../src/math/practice.ts";
+import { check, exercise, stepsOf, trapInputs, type SkillId } from "../src/math/practice.ts";
 
 const PORT = 20000 + Math.floor(Math.random() * 20000);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -418,6 +418,50 @@ test("the dashboard: mastery for every student and skill, the two groups, and th
   assert.equal(d.calibration.auc, 1);
   const bins = d.calibration.bins.filter((b: { n: number }) => b.n);
   assert.deepEqual(bins.map((b: { n: number; observed: number }) => [b.n, b.observed]), [[4, 0], [4, 1]]);
+});
+
+test("the stuck list: ten questions without three right in a row, why, grouped, and off the list when seen or after a streak", async () => {
+  const { code } = (await call("POST", "/api/classes", { skills: ["fractions"] }, TEACHER)).body;
+  const join = async () => (await call("POST", "/api/students", { class: code })).body as { code: string };
+  const [a, b, c] = [await join(), await join(), await join()];
+  // A question whose numbers make a known mistake possible, and that mistake's answer.
+  const seed = Array.from({ length: 200 }, (_, i) => i + 1).find((s) => trapInputs(exercise("fractions", 1, s, en.pracWords)).length)!;
+  const trap = trapInputs(exercise("fractions", 1, seed, en.pracWords))[0];
+  const wrong = (student: string, extra: Record<string, unknown> = {}) =>
+    attempt(student, { skill: "fractions", level: 1, seed, outcome: "revealed", solutionViewed: true, answers: [{ verdict: "wrong", ms: 9000 }], ...extra });
+  const post = async (x: unknown) => assert.equal((await call("POST", "/api/attempts", x)).status, 201);
+  for (let i = 0; i < 10; i++) await post(wrong(a.code, { answers: [{ input: trap.input, verdict: "wrong", ms: 9000 }] }));
+  for (let i = 0; i < 10; i++) await post(wrong(b.code, { hard: ["commonDenom"] }));
+  for (let i = 0; i < 9; i++) await post(wrong(c.code));
+  const stuck = async () => (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body.stuck as
+    { key: string; rows: { student: string; code: string; skill: string; answers: number; through: number; because: { kind: string; mistake?: string; idea?: string; example?: { input: string } } | null }[] }[];
+  let groups = await stuck();
+  assert.deepEqual(groups.map((g) => g.key).sort(), [`mistake:${trap.id}`, "idea:commonDenom"].sort());
+  const rowOf = (who: string) => groups.flatMap((g) => g.rows).find((r) => r.code === who);
+  assert.equal(rowOf(c.code), undefined, "nine questions is not yet stuck");
+  const ra = rowOf(a.code)!;
+  assert.equal(ra.answers, 10);
+  assert.equal(ra.skill, "fractions");
+  assert.deepEqual([ra.because?.kind, ra.because?.mistake, ra.because?.example?.input], ["mistake", trap.id, trap.input]);
+  assert.deepEqual([rowOf(b.code)!.because?.kind, rowOf(b.code)!.because?.idea], ["ticked", "commonDenom"]);
+
+  // Marking seen: the teacher's, for an attempt of that student on that skill only; then off the list until ten more.
+  const seen = (body: unknown, headers: Record<string, string> = TEACHER) => call("POST", `/api/classes/${code}/seen`, body, headers);
+  assert.equal((await seen({ student: ra.student, skill: "fractions", through: ra.through }, {})).status, 403);
+  assert.equal((await seen({ student: ra.student, skill: "fractions", through: rowOf(b.code)!.through })).status, 404);
+  assert.equal((await seen({ student: ra.student, skill: "linear", through: ra.through })).status, 404);
+  assert.equal((await seen({ student: "x1", skill: "fractions", through: ra.through })).status, 404);
+  assert.equal((await seen({ student: ra.student, skill: "fractions", through: ra.through })).status, 204);
+  assert.equal((await seen({ student: ra.student, skill: "fractions", through: ra.through - 3 })).status, 204, "an older mark doesn't bring them back");
+  groups = await stuck();
+  assert.equal(rowOf(a.code), undefined);
+  for (let i = 0; i < 10; i++) await post(wrong(a.code));
+  groups = await stuck();
+  assert.equal(rowOf(a.code)!.answers, 10, "back after ten more");
+  // Three right in a row take a student off the list.
+  for (let i = 0; i < 3; i++) await post(attempt(b.code, { skill: "fractions", level: 1, seed, answers: [{ verdict: "correct", ms: 9000 }] }));
+  groups = await stuck();
+  assert.equal(rowOf(b.code), undefined);
 });
 
 test("the protocol: phases and sessions, counterbalanced forms, one answer per test question, results on the dashboard", async () => {

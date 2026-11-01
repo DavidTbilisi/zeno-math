@@ -19,9 +19,10 @@ import type { SkillId } from "../src/math/practiceSkills.ts";
 import { applyAttempt, exerciseFor, finish, logAnswer, ME, startLog, toAttempt, toClassPlan, verdictOf, type ClassPlan, type Plan } from "../src/learner.ts";
 import { analyseStudy, scoresFromTests, type StudyAnalysis } from "../src/model/analysis.ts";
 import { inCurriculumOrder } from "../src/model/curriculum.ts";
-import { logLoss, parseCsv } from "../src/model/evaluate.ts";
+import { evidence, logLoss, parseCsv } from "../src/model/evaluate.ts";
 import { choose } from "../src/model/policy.ts";
 import { makeWorld, rng, SIM_SKILLS, type SimParams } from "../src/model/simulate.ts";
+import { isStuckNow, sinceLastStreak, type Try } from "../src/model/stuckList.ts";
 import { testItems, type TestPhase } from "../src/model/testForms.ts";
 
 const w = en.pracWords;
@@ -179,6 +180,25 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
     },
     { name: "nothing arrived after its phase", ok: [...testRows, ...attemptRows].every((r) => r.late === "0"), detail: "" },
   ];
+  // The teacher's stuck list, against the export: the same students and skills, each with as many questions.
+  const dash = (await call("GET", `/api/research/dashboard?class=${klass}`, undefined, teacher)).body as
+    { stuck: { rows: { student: string; skill: string; answers: number }[] }[] };
+  const listed = dash.stuck.flatMap((g) => g.rows.map((r) => `${r.student} ${r.skill} ${r.answers}`)).sort();
+  const bySkill = new Map<string, Try[]>();
+  for (const a of attemptRows) {
+    const correct = evidence(Number(a.n_answers) - Number(a.retries), a.outcome, a.first_correct === "1");
+    const k = `${a.student} ${a.skill}`;
+    if (correct !== null) (bySkill.get(k) ?? bySkill.set(k, []).get(k)!).push({ id: Number(a.attempt), correct });
+  }
+  const expected = [...bySkill].flatMap(([k, tries]) => {
+    const since = sinceLastStreak(tries);
+    return isStuckNow(since) ? [`${k} ${since.length}`] : [];
+  }).sort();
+  checks.push({
+    name: "the stuck list matches the export",
+    ok: JSON.stringify(listed) === JSON.stringify(expected),
+    detail: `${listed.length} stuck in ${dash.stuck.length} groups${JSON.stringify(listed) === JSON.stringify(expected) ? "" : `; the export says ${expected.join(", ")}`}`,
+  });
   const predicted = classPractice.map((a) => ({ p: Number(a.predicted), correct: a.first_correct === "1" }));
   return { classCode: klass, testsCsv, attemptsCsv, analysis, checks, predictedLogLoss: logLoss(predicted) };
 }
