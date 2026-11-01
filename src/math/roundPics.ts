@@ -9,8 +9,8 @@
 import { C, FONT, r2, texAt } from "./chart";
 
 export type RoundSolution =
-  /** m/10^p rounded to k decimal places (k < 0: tens, hundreds…). */
-  | { pic: "round"; m: number; p: number; k: number }
+  /** m/10^p rounded to k decimal places (k < 0: tens, hundreds…); sf when the question asked for significant figures. */
+  | { pic: "round"; m: number; p: number; k: number; sf?: number }
   | { pic: "estimate"; x: number; y: number; x1: number; y1: number }
   /** A length x correct to unit: the lower or upper bound. */
   | { pic: "bound"; x: number; unit: number; low: boolean }

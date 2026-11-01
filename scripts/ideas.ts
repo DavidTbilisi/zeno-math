@@ -27,7 +27,7 @@
 //                           needed (the thesis's results before 23 October), not on the conjunctive model's likelihood
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
 //   --json     machine-readable output
-import { compareIdeas, DEFAULT_IDEAS, type IdeaFitting, IDEA_SKILLS, ideasOf, simulateIdeas, TICK_STYLES, type IdeasComparison, type IdeaSkill, type TickStyle } from "../src/model/ideas.ts";
+import { compareIdeas, DEFAULT_IDEAS, type IdeaFitting, ideasOf, simulateIdeas, TICK_STYLES, type IdeasComparison, type IdeaSkill, type TickStyle, WORLD_SKILLS } from "../src/model/ideas.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import { BEYOND_THRESHOLDS, FINE_THRESHOLDS, PRECISION_TARGET, type AtPrecision } from "../src/model/mastery.ts";
 
@@ -53,8 +53,8 @@ const share = (name: string, fallback: number) => {
 
 const rates = opt("--learn-rates", "0.02,0.1").split(",").map(Number);
 if (rates.some((r) => !(r > 0))) fail("--learn-rates must be numbers above 0, separated by commas");
-const skills = opt("--skills", IDEA_SKILLS.join(",")).split(",") as IdeaSkill[];
-if (skills.some((s) => !IDEA_SKILLS.includes(s))) fail(`--skills must be among ${IDEA_SKILLS.join(", ")}`);
+const skills = opt("--skills", WORLD_SKILLS.join(",")).split(",") as IdeaSkill[];
+if (skills.some((s) => !WORLD_SKILLS.includes(s))) fail(`--skills must be among ${WORLD_SKILLS.join(", ")}`);
 const isolates = opt("--isolate", "0").split(",").map(Number);
 if (isolates.some((x) => !(x >= 0 && x <= 1))) fail("--isolate must be shares from 0 to 1, separated by commas");
 const lengths = opt("--length", String(DEFAULT_IDEAS.length)).split(",").map(Number);
@@ -119,7 +119,7 @@ function report() {
     console.log(`  ${label.padEnd(18)}${a.rule!.replace(/^.* θ /, "θ ").padEnd(16)}${answers(j.cost).padStart(8)}  ${span(j.costInterval).padEnd(16)}${pct(j.precision).padStart(10)}${pct(j.declared).padStart(10)}   ${saves}`);
   };
   const chosen = (a: AtPrecision) => (a.rule ? a.rule.replace(/^.* θ /, "") : "never");
-  console.log(`${base.students} simulated learners × ${IDEA_SKILLS.join(", ")} × ${lengths.join(", ")} questions from the generators; ${pct(testShare)} of learners held out, seed ${base.seed}`);
+  console.log(`${base.students} simulated learners × ${WORLD_SKILLS.join(", ")} × ${lengths.join(", ")} questions from the generators; ${pct(testShare)} of learners held out, seed ${base.seed}`);
   console.log(`a wrong answer is a recognised mistake ${pct(base.trapRate)} of the time when the question has one and its idea is missing`);
   if (base.checklist) {
     const assumes = assumed === "fit" ? "; the blamed forms fit them on the training learners' ticks" : assumed && (assumed.hit !== base.checklist.hit || assumed.falseAlarm !== base.checklist.falseAlarm) ? `; the blamed forms take them to be ${pct(assumed.hit)} and ${pct(assumed.falseAlarm)}` : "";

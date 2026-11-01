@@ -16,7 +16,7 @@ export const FEATURES = [
   "spaced",
   // a fractions operation missed is worked in steps before it is tried whole again (stepsOf in practice.ts)
   "steps",
-  // after a miss on fractions, "what exactly was hard?" (whatWasHard in learner.ts)
+  // after a miss on a skill made of ideas, "what exactly was hard?" (whatWasHard in learner.ts)
   "hard",
   // after a miss on a skill worked in steps, a worked example, then fewer steps given each time (fading.ts, #266)
   "faded",

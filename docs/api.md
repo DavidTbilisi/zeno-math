@@ -164,9 +164,10 @@ minute, when they next ask for the plan.
 - **`predicted`**: the model's chance of a right first answer when the question was shown, from 0 to 1.
 - **`answers`**: at most 50. Each `verdict` is `correct`, `close`, `wrong` or `form`; inputs are cut to 200
   characters.
-- **`hard`**: the ideas the student ticked when asked what exactly was hard after a wrong answer, each an idea of the
-  fractions graph (`part`, `commonDenom`, `hcf`, …) once. Only on times, hcf and fractions, and left out when nothing
-  was ticked; it moves the student's ideas in the plan.
+- **`hard`**: the ideas the student ticked when asked what exactly was hard after a wrong answer, each one of the
+  question's own ideas (`part`, `commonDenom`, `minusNeg`, `mulFirst`, …) once. Only on a skill made of ideas
+  (times, hcf, fractions, integers, order, rounding, indices, expand: `IDEA_SKILLS` in `src/model/ideaState.ts`), and
+  left out when nothing was ticked; it moves the student's ideas in the plan.
 - **`steps`**: a fractions operation worked in steps after a wrong first answer, one entry per step reached, in the
   order of the question's steps: the answers to that step (as `answers`, and nothing after a correct one) and
   whether its answer was shown. No more entries than the question has steps, each answered or shown, and none when

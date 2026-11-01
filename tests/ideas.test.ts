@@ -9,7 +9,7 @@ import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
 import { SKILL_IDEAS, TICK_PRIOR } from "../src/model/ideaState.ts";
 import { bktRule, fitRules, judge, streakRule } from "../src/model/mastery.ts";
 import {
-  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitIdeasByLikelihood, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, type IdeaFit, type IdeaParams, type IdeaPractice,
+  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitIdeasByLikelihood, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, WORLD_SKILLS, type IdeaFit, type IdeaParams, type IdeaPractice,
 } from "../src/model/ideas.ts";
 import { rng } from "../src/model/random.ts";
 
@@ -36,7 +36,7 @@ test("each skill's ideas are those its questions can need: with the forms, fract
 test("the ideas world: the skill known when every idea is, ideas kept once learnt, only the needed ones learnt, mistakes only where their idea was missing", () => {
   const ps = simulateIdeas({ students: 20, length: 12, learnRate: 0.1, trapRate: 1 });
   assert.equal(ps.length, 60);
-  assert.deepEqual(ps.slice(0, 3).map((p) => p.skill), [...IDEA_SKILLS]);
+  assert.deepEqual(ps.slice(0, 3).map((p) => p.skill), [...WORLD_SKILLS]);
   let gaps = 0;
   for (const p of ps) {
     assert.deepEqual(p.ids, ideasOf(p.skill as never));

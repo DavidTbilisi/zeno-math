@@ -8,7 +8,7 @@
 // level where the learner model's chance of a right first answer is closest to TARGET (about three in four right, as
 // in Math Garden, Klinkenberg et al. 2011: hard enough to learn from, easy enough to keep going). A skill
 // practised in the last few questions counts as further from the target, so practice interleaves. On a skill made of
-// ideas (times, hcf, fractions), given what the student knows of each, it also names the idea they are least likely
+// ideas (times, hcf, fractions, integers, order, rounding, indices, expand), given what the student knows of each, it also names the idea they are least likely
 // to know, and the question asked is the one bearing most on it (exerciseFor in src/learner.ts): on fractions, the
 // form asking for that idea alone.
 //

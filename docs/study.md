@@ -18,7 +18,7 @@ or emails.
 - *Choosing the next question* (the default): the adaptive condition against the fixed one, below.
 - *Spaced review:* a skill mastered comes back after 1, 3, 7 and 21 days.
 - *Steps after a miss:* a fractions operation answered wrong is worked in steps.
-- *Asking what was hard:* after a miss on fractions, the student ticks the idea that was hard.
+- *Asking what was hard:* after a miss on a skill made of ideas, the student ticks the idea that was hard.
 - *Worked examples that fade:* after a miss on a skill worked in steps, a worked example, then fewer steps given each
   time, below.
 - *Targeted step-down:* after an early failure on a skill made of ideas, a few questions on its weakest idea, then
@@ -49,8 +49,8 @@ A signed-in student practises in one of two ways:
     (thesis Table 3.9), so no skill is left behind without answers on it; and on a skill made of ideas the chance of
     knowing every idea together is at least 0.95, since a question that leaves ideas untested makes a skill look
     mastered too soon (thesis G1). The server replays the moving averages with the ideas and sends them under `ema`. A skill from the last three questions counts as
-    further from the target, so practice interleaves. On a skill made of ideas (times, hcf and fractions have a concept
-    graph, `src/model/conceptGraph.ts`), the question is then the one bearing most on the idea the student is least
+    further from the target, so practice interleaves. On a skill made of ideas (times, hcf, fractions, integers, order,
+    rounding, indices and expand have a concept graph, `src/model/conceptGraph.ts`), the question is then the one bearing most on the idea the student is least
     likely to know: the server replays every stored answer into one probability per idea (`src/model/ideaState.ts`,
     sent with the plan under `ideas`), and of a hundred fresh questions the browser asks the one that needs that idea
     with the fewest others, on fractions the form asking for it alone (`exerciseFor` in `src/learner.ts`). After a

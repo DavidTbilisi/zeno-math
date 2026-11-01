@@ -1,6 +1,7 @@
 // What the practice policy knows of each idea a student has met, so the adaptive condition can ask for the idea they
-// are least likely to know. The skills with a concept graph (src/model/conceptGraph.ts) are times, hcf and fractions;
-// every question on them is read for the ideas it needs, and one BKT step moves those ideas together, as in the world
+// are least likely to know. The skills with a concept graph (src/model/conceptGraph.ts) are times, hcf and fractions,
+// and since issue #265 signed numbers, order of operations, rounding, powers and expanding brackets; every question on
+// them is read for the ideas it needs, and one BKT step moves those ideas together, as in the world
 // of ideas (src/model/ideas.ts): a question is right only when every idea it needs is known, and a wrong answer in
 // the shape of a recognised mistake (3/10 for 1/5 + 2/5) is blamed on the one idea the mistake shows is missing; after
 // any other wrong answer the student is asked what exactly was hard, with the question's ideas to tick, and the ticks
@@ -14,34 +15,54 @@
 import type { MistakeId } from "../math/mistakes.ts";
 import type { Exercise } from "../math/practice.ts";
 import type { SkillId } from "../math/practiceSkills.ts";
-import { ARITHMETIC, arithmeticUses, FRACTIONS, FRACTIONS_GAPS, fractionsUses, type FractionsNode } from "./conceptGraph.ts";
+import {
+  ARITHMETIC, arithmeticUses, BRACKETS, bracketsUses, FRACTIONS, fractionsUses, GAPS, IDEAS, ORDER, orderUses, POWERS, powersUses, ROUNDING, roundingUses, SIGNED, signedUses,
+  type IdeaNode, type Uses,
+} from "./conceptGraph.ts";
 import { bktStep, type BktParams } from "./evaluate.ts";
 
-/** The skills with a concept graph, in curriculum order: what a learner knows of an idea goes from each to the next. */
-export const IDEA_SKILLS = ["times", "hcf", "fractions"] as const satisfies readonly SkillId[];
+/**
+ * The skills with a concept graph, in curriculum order: what a learner knows of an idea goes from each to the next.
+ * The first three are the world of ideas the simulations run (WORLD_SKILLS in ideas.ts).
+ */
+export const IDEA_SKILLS = ["times", "hcf", "fractions", "integers", "order", "rounding", "indices", "expand"] as const satisfies readonly SkillId[];
 export type IdeaSkill = (typeof IDEA_SKILLS)[number];
 export const hasIdeas = (skill: SkillId): skill is IdeaSkill => (IDEA_SKILLS as readonly SkillId[]).includes(skill);
 
-const inGraphOrder = (ids: readonly string[]) => (Object.keys(FRACTIONS.nodes) as FractionsNode[]).filter((n) => ids.includes(n));
+/** Every idea, in the order the app lists them (IDEAS in conceptGraph.ts). */
+const IDEA_ORDER = Object.keys(IDEAS) as IdeaNode[];
+const inGraphOrder = (ids: readonly string[]) => IDEA_ORDER.filter((n) => ids.includes(n));
+const without = (ids: readonly string[], drop: readonly string[]) => ids.filter((n) => !drop.includes(n));
 /**
  * The ideas each skill's questions can need, in the graph's order: the ideas a student must know to have mastered it.
  * Times multiplies two whole numbers; hcf asks for a highest common factor or a lowest common multiple, the whole of
- * arithmetic; fractions, with its forms, asks for every idea of the graph. ideasOf in ideas.ts reads the same lists
- * off the generators' questions, and its test holds these to that.
+ * arithmetic; fractions, with its forms, asks for every idea of the graph. The later skills ask for every idea of
+ * their graphs but the arithmetic their numbers never reach (no long multiplication in a signed product or a bracket,
+ * no factors in rounding), and order of operations never asks for a negative number multiplied. ideasOf in ideas.ts
+ * reads the same lists off the generators' questions, and its test holds these to that.
  */
-export const SKILL_IDEAS: Readonly<Record<IdeaSkill, readonly FractionsNode[]>> = {
+export const SKILL_IDEAS: Readonly<Record<IdeaSkill, readonly IdeaNode[]>> = {
   times: inGraphOrder(["addWhole", "multiplyFacts", "multiplyLong"]),
   hcf: inGraphOrder(Object.keys(ARITHMETIC.nodes)),
   fractions: inGraphOrder(Object.keys(FRACTIONS.nodes)),
+  integers: inGraphOrder(without(Object.keys(SIGNED.nodes), ["multiplyLong", "hcf", "lcm"])),
+  order: inGraphOrder(without(Object.keys(ORDER.nodes), ["hcf", "lcm"])),
+  rounding: inGraphOrder(without(Object.keys(ROUNDING.nodes), ["divideExact", "hcf", "lcm"])),
+  indices: inGraphOrder(without(Object.keys(POWERS.nodes), ["divideExact", "hcf", "lcm"])),
+  expand: inGraphOrder(without(Object.keys(BRACKETS.nodes), ["divideExact", "hcf", "lcm"])),
 };
 
+/** How each skill's questions are read for their ideas. */
+const READERS: Record<IdeaSkill, (ex: Exercise) => Uses> = {
+  times: arithmeticUses, hcf: arithmeticUses, fractions: fractionsUses, integers: signedUses, order: orderUses, rounding: roundingUses, indices: powersUses, expand: bracketsUses,
+};
 /** The ideas a question needs, read from it. */
-export const usesOf = (ex: Exercise) => (ex.skill === "fractions" ? fractionsUses(ex) : arithmeticUses(ex)).nodes as FractionsNode[];
+export const usesOf = (ex: Exercise) => READERS[ex.skill as IdeaSkill](ex).nodes as IdeaNode[];
 
 /** The idea a recognised mistake shows is missing: the idea itself, or the far end of the connection. */
-export function gapIdea(mistake: MistakeId): FractionsNode | undefined {
-  const gap = FRACTIONS_GAPS[mistake];
-  return gap === undefined ? undefined : ((gap.includes("→") ? gap.split("→")[1] : gap) as FractionsNode);
+export function gapIdea(mistake: MistakeId): IdeaNode | undefined {
+  const gap = GAPS[mistake];
+  return gap === undefined ? undefined : ((gap.includes("→") ? gap.split("→")[1] : gap) as IdeaNode);
 }
 
 /**
@@ -134,7 +155,7 @@ export function learnIdeas(
 }
 
 /** The idea of the skill the student is least likely to know; ties (every idea at the start) are broken at random. */
-export function weakestIdea(state: IdeaState, skill: IdeaSkill, random: () => number = Math.random, params: BktParams = IDEA_PRIOR): FractionsNode {
+export function weakestIdea(state: IdeaState, skill: IdeaSkill, random: () => number = Math.random, params: BktParams = IDEA_PRIOR): IdeaNode {
   const ids = SKILL_IDEAS[skill];
   const lowest = Math.min(...ids.map((id) => knownOf(state, id, params)));
   const tied = ids.filter((id) => knownOf(state, id, params) === lowest);

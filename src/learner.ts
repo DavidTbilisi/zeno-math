@@ -5,7 +5,7 @@ import { check, exercise, stepsOf, type Exercise, type PracticeWords, type Verdi
 import type { SkillId } from "./math/practiceSkills";
 import { LogisticModel, type LogisticState } from "./model/logistic";
 import { evidence } from "./model/evaluate";
-import type { FractionsNode } from "./model/conceptGraph";
+import type { IdeaNode } from "./model/conceptGraph";
 import { asksWhatWasHard, bearing, hasIdeas, IDEA_SKILLS, learnIdeas, SKILL_IDEAS, usesOf, type IdeaState } from "./model/ideaState";
 import { choose, learnEma, RECENT, type AdaptiveOptions, type Choice, type EmaState } from "./model/policy";
 import { learnClassSpacing, type Spacing } from "./model/spacing";
@@ -240,15 +240,19 @@ export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "l
  * worked in steps, which said which idea went wrong, or the skill has no ideas. The question's own ideas, in the
  * graph's order.
  */
-export function whatWasHard(ex: Exercise, log: Pick<QuestionLog, "outcome" | "answers" | "steps">): readonly FractionsNode[] | null {
+export function whatWasHard(ex: Exercise, log: Pick<QuestionLog, "outcome" | "answers" | "steps">): readonly IdeaNode[] | null {
   if (!hasIdeas(ex.skill) || log.steps.length || attemptEvidence({ outcome: log.outcome ?? "skipped", answers: log.answers }) !== false) return null;
   return asksWhatWasHard(ex, firstMistake(ex, log.answers)) ? usesOf(ex) : null;
 }
 
 /** Questions tried when aiming at an idea: a form asked in one question of fifteen is missing from all of them once in a thousand. */
 export const AIM_TRIES = 100;
-/** A question bearing this much on an idea needs it and one other at most (on fractions, the idea and "part"): no question does better. */
-const ALONE = 0.5;
+/**
+ * A question bearing this much on an idea asks for it alone ("3 rises by 5" for adding whole numbers): no question does
+ * better, so the search stops. Most ideas have no such question (on fractions every one comes with "part"), and the
+ * search tries all AIM_TRIES; a question costs a tenth of a millisecond.
+ */
+const ALONE = 1;
 /**
  * The question for a choice: a fresh one on its skill and level, or, when the choice names an idea, of up to AIM_TRIES
  * fresh ones the one bearing most on that idea (ideaState.ts): on fractions the form asking for it alone when one exists.

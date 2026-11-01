@@ -16,6 +16,7 @@ import { ratioSteps, type RatioSolution } from "./ratioPics";
 import type { RateSolution } from "./ratePics";
 import type { RoundSolution } from "./roundPics";
 import { latexToSvg, type RenderedSvg } from "./latex";
+import { orderApply, orderTree, orderValue, type OrderNode } from "./orderOps";
 import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type MatrixOp } from "./matrix";
 import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
 import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
@@ -131,6 +132,11 @@ export type Exercise = {
   solution?: { kind: SolutionKind; spec: unknown };
   /** Worked lines when no tool draws the solution. */
   steps?: string[];
+  /**
+   * The question as plain working ("-3 - (-5)", "2 + 3 * 4"), on the skills with no solution spec to read it from
+   * (integers, order): what conceptGraph.ts reads its ideas off.
+   */
+  src?: string;
   /**
    * The steps before the last, each a question of its own, on a skill whose questions are worked in steps (stepsOf):
    * the last step is the question itself. Faded worked examples show some of them done and leave the rest.
@@ -616,45 +622,6 @@ export function plainE(e: E): string {
 }
 
 // ---------- order of operations ----------
-
-/** How an expression is worked out: the right way, or as a known mistake would. */
-type OrderMode = "right" | "leftToRight" | "mulBeforePow" | "grouped";
-type OrderNode = { v: number } | { op: string; l: OrderNode; r: OrderNode; par: boolean };
-const PREC: Record<OrderMode, Record<string, number>> = {
-  right: { "+": 1, "-": 1, "*": 2, "/": 2, "^": 3 },
-  // + − × ÷ all alike, from left to right.
-  leftToRight: { "+": 1, "-": 1, "*": 1, "/": 1, "^": 3 },
-  // multiplying before the power: 3·2² as (3·2)² (only asked where a × stands in front of a power).
-  mulBeforePow: { "+": 1, "-": 1, "*": 3, "/": 2, "^": 2.5 },
-  // the right order, but a chain of the same kind grouped from the right (a − b − c as a − (b − c)): see rightAssoc.
-  grouped: { "+": 1, "-": 1, "*": 2, "/": 2, "^": 3 },
-};
-/** "a + b * (c - d) ^ 2" with numbers for the letters, as a tree. */
-function orderTree(src: string, mode: OrderMode): OrderNode {
-  const toks = src.match(/\d+|[-+*/^()]/g) ?? [];
-  let i = 0;
-  const prec = PREC[mode];
-  const rightAssoc = (op: string) => op === "^" || mode === "grouped";
-  const atom = (): OrderNode => {
-    const t = toks[i++];
-    if (t !== "(") return { v: Number(t) };
-    const inner = expr(0);
-    i++;
-    return "op" in inner ? { ...inner, par: true } : inner;
-  };
-  const expr = (min: number): OrderNode => {
-    let lhs = atom();
-    for (;;) {
-      const op = toks[i];
-      if (op === undefined || op === ")" || prec[op] < min) return lhs;
-      i++;
-      lhs = { op, l: lhs, r: expr(rightAssoc(op) ? prec[op] : prec[op] + 1), par: false };
-    }
-  };
-  return expr(0);
-}
-const orderApply = (a: number, op: string, b: number) => (op === "+" ? a + b : op === "-" ? a - b : op === "*" ? a * b : op === "/" ? a / b : a ** b);
-const orderValue = (n: OrderNode): number => ("v" in n ? n.v : orderApply(orderValue(n.l), n.op, orderValue(n.r)));
 /** One operation done, the leftmost of those that can be: the next line of working. */
 function orderStep(n: OrderNode): OrderNode {
   if ("v" in n) return n;
@@ -4277,8 +4244,9 @@ const GENS: Record<SkillId, Gen> = {
   integers(r, L, w) {
     const par = (n: number) => (n < 0 ? `(${n})` : String(n));
     const minus = (n: number) => (n < 0 ? `−${-n}` : String(n));
-    const out = (prompt: string, q: string, v: number, steps: string[], traps: Trap[] = []) => ({
-      prompt, q, answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number" as const, steps,
+    /** src: the working as plain text, each number and sign apart, a negative number taken away or added in brackets. */
+    const out = (prompt: string, q: string, v: number, steps: string[], src: string, traps: Trap[] = []) => ({
+      prompt, q, answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number" as const, steps, src,
     });
     if (L === 1) {
       const a = r.int(1, 20);
@@ -4288,41 +4256,41 @@ const GENS: Record<SkillId, Gen> = {
         const b = r.int(2, 20);
         const plus = r.next() < 0.5;
         const q = `${-a} ${plus ? "+" : "-"} ${b}`;
-        return out(w.prompts.times, q, plus ? b - a : -a - b, [`${q} = ${plus ? b - a : -a - b}`]);
+        return out(w.prompts.times, q, plus ? b - a : -a - b, [`${q} = ${plus ? b - a : -a - b}`], q);
       }
       if (kind === 1) {
         // Past zero: a − b with b > a.
         const b = a + r.int(1, 12);
-        return out(w.prompts.times, `${a} - ${b}`, a - b, [`${a} - ${b} = -(${b} - ${a}) = ${a - b}`]);
+        return out(w.prompts.times, `${a} - ${b}`, a - b, [`${a} - ${b} = -(${b} - ${a}) = ${a - b}`], `${a} - ${b}`);
       }
       const b = r.int(1, 20);
-      return out(w.prompts.times, `${a} + (${-b})`, a - b, [`${a} + (${-b}) = ${a} - ${b} = ${a - b}`]);
+      return out(w.prompts.times, `${a} + (${-b})`, a - b, [`${a} + (${-b}) = ${a} - ${b} = ${a - b}`], `${a} + (${-b})`);
     }
     if (L === 2) {
       const kind = r.int(0, 2);
       if (kind === 0) {
         const [a, b] = [r.nz(-15, 15), r.int(2, 15)];
         const q = `${a} - (${-b})`;
-        return out(w.prompts.times, q, a + b, [`${q} = ${a} + ${b} = ${a + b}`], [{ id: "subNeg", a: num(a - b), vars: { b } }]);
+        return out(w.prompts.times, q, a + b, [`${q} = ${a} + ${b} = ${a + b}`], q, [{ id: "subNeg", a: num(a - b), vars: { b } }]);
       }
       if (kind === 1) {
         const [a, b] = [r.int(-12, 8), r.int(3, 15)];
         const rise = r.next() < 0.5;
         const v = rise ? a + b : a - b;
-        return out(fill(rise ? w.prompts.intRise : w.prompts.intFall, { a: minus(a), b }), "", v, [`${a} ${rise ? "+" : "-"} ${b} = ${v}`]);
+        return out(fill(rise ? w.prompts.intRise : w.prompts.intFall, { a: minus(a), b }), "", v, [`${a} ${rise ? "+" : "-"} ${b} = ${v}`], `${a} ${rise ? "+" : "-"} ${b}`);
       }
       const [a, b] = [-r.int(2, 15), r.int(1, 20)];
-      return out(fill(w.prompts.intDiff, { a: minus(a), b }), "", b - a, [`${b} - (${a}) = ${b} + ${-a} = ${b - a}`], [{ id: "subNeg", a: num(b + a), vars: { b: -a } }]);
+      return out(fill(w.prompts.intDiff, { a: minus(a), b }), "", b - a, [`${b} - (${a}) = ${b} + ${-a} = ${b - a}`], `${b} - (${a})`, [{ id: "subNeg", a: num(b + a), vars: { b: -a } }]);
     }
     const kind = r.int(0, 2);
     let [a, b] = [r.int(2, 12) * r.sign(), r.int(2, 12) * r.sign()];
     if (a > 0 && b > 0) a = -a;
-    if (kind === 0) return out(w.prompts.times, `${a} \\times ${par(b)}`, a * b, [`${a} \\times ${par(b)} = ${a * b}`]);
-    if (kind === 1) return out(w.prompts.times, `${a * b} \\div ${par(b)}`, a, [`${a * b} \\div ${par(b)} = ${a}`]);
+    if (kind === 0) return out(w.prompts.times, `${a} \\times ${par(b)}`, a * b, [`${a} \\times ${par(b)} = ${a * b}`], `${a} * ${par(b)}`);
+    if (kind === 1) return out(w.prompts.times, `${a * b} \\div ${par(b)}`, a, [`${a * b} \\div ${par(b)} = ${a}`], `${a * b} / ${par(b)}`);
     [a, b] = [r.int(2, 9) * r.sign(), r.int(2, 9) * r.sign()];
     const c = r.int(2, 15);
     const q = `${a} \\times ${par(b)} - (${-c})`;
-    return out(w.prompts.times, q, a * b + c, [`${q} = ${a * b} + ${c} = ${a * b + c}`], [{ id: "subNeg", a: num(a * b - c), vars: { b: c } }]);
+    return out(w.prompts.times, q, a * b + c, [`${q} = ${a * b} + ${c} = ${a * b + c}`], `${a} * ${par(b)} - (${-c})`, [{ id: "subNeg", a: num(a * b - c), vars: { b: c } }]);
   },
 
   compare(r, L, w) {
@@ -4573,6 +4541,7 @@ const GENS: Record<SkillId, Gen> = {
       plain: String(v),
       format: "number",
       steps: lines.map((n, i) => (i === 0 ? orderTex(n) : `= ${orderTex(n)}`)),
+      src,
     };
   },
 
@@ -4580,7 +4549,7 @@ const GENS: Record<SkillId, Gen> = {
     /** The picture (digits and a zoom on the number line, bounds as a band, the point hopping), the working beneath. */
     const pic = (spec: RoundSolution, steps: string[]) => ({ kind: "round" as const, spec: { ...spec, steps } });
     /** Rounding m/10^p to k places, with the traps the numbers allow; placeLost when the zeros hold places. */
-    const rounded = (m: number, p: number, k: number, prompt: string) => {
+    const rounded = (m: number, p: number, k: number, prompt: string, sf?: number) => {
       const want = roundM(m, p, k);
       const traps: Trap[] = [];
       const add = (id: MistakeId, x: number) => {
@@ -4590,7 +4559,7 @@ const GENS: Record<SkillId, Gen> = {
       add("doubleRound", stagesM(m, p, k) / 10 ** p);
       if (k < 0) add("placeLost", want / 10 ** (p - k));
       const shown = fmtM(want, p, k);
-      return { prompt, q: "", answer: { ...num(want / 10 ** p), traps }, show: shown, plain: shown, format: "number" as const, solution: pic({ pic: "round", m, p, k }, [`${fmtM(m, p)} \\approx ${shown}`]) };
+      return { prompt, q: "", answer: { ...num(want / 10 ** p), traps }, show: shown, plain: shown, format: "number" as const, solution: pic({ pic: "round", m, p, k, ...(sf ? { sf } : {}) }, [`${fmtM(m, p)} \\approx ${shown}`]) };
     };
     /** A mantissa whose dropped digits aren't exactly a half (where people disagree on which way to go). */
     const noTie = (lo: number, hi: number, p: number, k: number) => {
@@ -4617,11 +4586,11 @@ const GENS: Record<SkillId, Gen> = {
         if (r.next() < 0.5) {
           const digits = r.int(4, 6);
           const m = noTie(10 ** (digits - 1) + 1, 10 ** digits - 1, 0, s - digits);
-          return rounded(m, 0, s - digits, prompt(String(m)));
+          return rounded(m, 0, s - digits, prompt(String(m)), s);
         }
         // 0.0xxxx: the first significant figure is in the second decimal place.
         const m = noTie(1001, 9999, 5, 1 + s);
-        return rounded(m, 5, 1 + s, prompt(fmtM(m, 5)));
+        return rounded(m, 5, 1 + s, prompt(fmtM(m, 5)), s);
       }
       if (kind === 1) {
         const mant = r.int(101, 999);
