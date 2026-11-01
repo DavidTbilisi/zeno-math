@@ -126,9 +126,9 @@ test("students are randomised in blocks of four, two to each condition", async (
     assert.equal(block.filter((c) => c === "adaptive").length, 2, block.join());
     assert.equal(block.filter((c) => c === "fixed").length, 2, block.join());
   }
-  const list = (await call("GET", "/api/classes", undefined, TEACHER)).body as { code: string; students: number; adaptive: number; fixed: number }[];
+  const list = (await call("GET", "/api/classes", undefined, TEACHER)).body as { code: string; feature: string; students: number; on: number; off: number }[];
   const row = list.find((c) => c.code === code)!;
-  assert.deepEqual([row.students, row.adaptive, row.fixed], [12, 6, 6]);
+  assert.deepEqual([row.feature, row.students, row.on, row.off], ["policy", 12, 6, 6], "a class tests the policy unless it was made to test another feature");
   assert.equal((await call("POST", "/api/students", { class: "NOPE22" })).status, 404);
 });
 
@@ -360,7 +360,7 @@ test("a database from before class practice gets the new columns", async () => {
       skill TEXT NOT NULL, level INTEGER NOT NULL, seed INTEGER NOT NULL, review INTEGER NOT NULL, outcome TEXT NOT NULL, first_correct INTEGER NOT NULL,
       wrongs INTEGER NOT NULL, retries INTEGER NOT NULL, solution_viewed INTEGER NOT NULL, ms_first INTEGER, ms_total INTEGER NOT NULL, answers TEXT NOT NULL,
       shown_at INTEGER NOT NULL, created_at INTEGER NOT NULL);
-    INSERT INTO classes VALUES ('OLDOLD', 'old', '[]', 1);
+    INSERT INTO classes VALUES ('OLDOLD', 'old', '["adaptive","fixed"]', 1);
     INSERT INTO students VALUES (1, 'AAAA-BBBB', 'OLDOLD', 'fixed', 1);
     INSERT INTO attempts VALUES (1, 'old-attempt-1', 1, 'linear', 2, 5, 0, 'solved', 1, 0, 0, 0, 900, 900, '[{"input":"6","verdict":"correct","ms":900}]', 1, 1);
   `);
@@ -376,7 +376,10 @@ test("a database from before class practice gets the new columns", async () => {
   assert.equal(plan.body.position, 0); // the old attempt counts as free practice
   assert.ok(plan.body.state.students.me);
   const csv = (await call("GET", "/api/research/attempts.csv", undefined, TEACHER, base)).body as string;
-  assert.match(csv.split("\n")[1], /^1,s1,OLDOLD,fixed,free,,/);
+  assert.match(csv.split("\n")[1], /^1,s1,OLDOLD,policy,off,fixed,free,,/, "the class tested the policy, and the fixed condition was the arm without it");
+  // The block being handed out when the server stopped goes on, as arms.
+  const joined = [(await call("POST", "/api/students", { class: "OLDOLD" }, {}, base)).body, (await call("POST", "/api/students", { class: "OLDOLD" }, {}, base)).body];
+  assert.deepEqual(joined.map((j) => [j.condition, j.feature, j.arm]), [["adaptive", "policy", "on"], ["fixed", "policy", "off"]]);
 });
 
 test("the dashboard: mastery for every student and skill, the two groups, and the logged predictions", async () => {
@@ -386,7 +389,7 @@ test("the dashboard: mastery for every student and skill, the two groups, and th
   const empty = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
   assert.deepEqual(empty.students, []);
   assert.equal(empty.calibration.n, 0);
-  assert.equal(empty.conditions.adaptive.rightFirst, null);
+  assert.equal(empty.arms.on.rightFirst, null);
 
   const joined = [];
   for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: code })).body);
@@ -406,8 +409,8 @@ test("the dashboard: mastery for every student and skill, the two groups, and th
   assert.deepEqual(Object.keys(s.mastery), ["linear", "expand"]);
   assert.equal(s.mastery.linear.n, 1);
   assert.ok(s.mastery.linear.p[0] > s.mastery.linear.p[1] && s.mastery.linear.p[1] > s.mastery.linear.p[2]);
-  for (const c of ["adaptive", "fixed"]) {
-    const g = d.conditions[c];
+  for (const c of ["on", "off"]) {
+    const g = d.arms[c];
     assert.deepEqual([g.students, g.answered, g.classPractice, g.rightFirst, g.solutionViewed, g.skipped], [2, 4, 2, 0.5, 0.5, 0]);
     close(g.predicted, 0.7);
     close(g.offTarget, 0.05);
@@ -556,19 +559,128 @@ test("the protocol: phases and sessions, counterbalanced forms, one answer per t
   assert.equal(me.practiceMinutes, 2);
   assert.deepEqual([me.pre.complete, me.post.complete], [true, true]);
   const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
-  for (const c of ["adaptive", "fixed"]) {
-    const g = d.conditions[c];
-    assert.deepEqual([g.pre.n, g.post.n, g.gain.n], [4, 4, 4]);
+  for (const [c, arm] of [["adaptive", "on"], ["fixed", "off"]]) {
+    const g = d.arms[arm];
+    assert.deepEqual([g.pre.n, g.post.n, g.pre.finished, g.post.finished, g.delayed.finished], [4, 4, 4, 4, 0]);
     close(g.pre.mean, mean(prePattern) / 6);
     close(g.post.mean, mean(postPattern[c]) / 6);
   }
-  assert.ok(d.tests.effect > 0, `d = ${d.tests.effect}`);
+  assert.ok(d.tests.effect.post > 0, `d = ${d.tests.effect.post}`);
+  assert.ok(d.tests.started.pre && d.tests.started.post && d.tests.started.delayed === null, "the delayed post-test hasn't started");
   assert.equal(d.tests.forms.A.n + d.tests.forms.B.n, 8);
 
   // Deleting a student takes their test answers too.
   await call("DELETE", `/api/students/${s0}`);
   const left = (await call("GET", `/api/research/tests.csv?class=${code}`, undefined, TEACHER)).body as string;
   assert.equal(left.trim().split("\n").length - 1, 7 * 12);
+});
+
+test("a class tests any feature: half get it, at random in blocks, and the arm without it can't send answers that show it", async () => {
+  assert.equal((await call("POST", "/api/classes", { name: "x", feature: "magic" }, TEACHER)).status, 400);
+  /** A class testing the feature, with eight students: two of each arm in each block of four. */
+  const testing = async (feature: string) => {
+    const made = (await call("POST", "/api/classes", { name: feature, skills: ["fractions"], feature }, TEACHER)).body;
+    assert.equal(made.feature, feature);
+    const joined: { code: string; condition: string; feature: string; arm: string }[] = [];
+    for (let i = 0; i < 8; i++) joined.push((await call("POST", "/api/students", { class: made.code })).body);
+    for (let b = 0; b < 8; b += 4) assert.deepEqual(joined.slice(b, b + 4).map((j) => j.arm).sort(), ["off", "off", "on", "on"]);
+    assert.ok(joined.every((j) => j.condition === "adaptive" && j.feature === feature), "the adaptive policy for both arms");
+    return { code: made.code as string, on: joined.find((j) => j.arm === "on")!.code, off: joined.find((j) => j.arm === "off")!.code };
+  };
+  const spaced = await testing("spaced");
+  const plan = (await call("GET", `/api/students/${spaced.off}/plan`)).body;
+  assert.deepEqual([plan.feature, plan.arm, plan.condition], ["spaced", "off", "adaptive"]);
+  const me = (await call("GET", `/api/students/${spaced.off}`)).body;
+  assert.deepEqual([me.feature, me.arm], ["spaced", "off"], "signing back in tells the browser the arm");
+  // A spaced review from the arm without it is refused; class practice is adaptive for both arms.
+  const review = { policy: "spaced", skill: "fractions", level: 1, seed: 7 };
+  assert.equal((await call("POST", "/api/attempts", attempt(spaced.off, review))).status, 400);
+  assert.equal((await call("POST", "/api/attempts", attempt(spaced.on, review))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(spaced.off, { policy: "adaptive" }))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(spaced.off, { policy: "fixed" }))).status, 400);
+
+  // Steps after a miss, and asking what was hard: each refused only from the arm without it, in a class testing it.
+  const seed = (() => {
+    for (let k = 1; ; k++) if (stepsOf(exercise("fractions", 1, k, en.pracWords), en.pracWords).length) return k;
+  })();
+  const missed = { policy: "free", skill: "fractions", level: 1, seed, outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] };
+  const withSteps = { ...missed, steps: [{ answers: [], shown: true }] };
+  const withHard = { ...missed, hard: ["commonDenom"] };
+  const steps = await testing("steps");
+  assert.deepEqual((await call("POST", "/api/attempts", attempt(steps.off, withSteps))).body, { error: "invalid steps" });
+  assert.equal((await call("POST", "/api/attempts", attempt(steps.on, withSteps))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(steps.off, withHard))).status, 201, "what was hard isn't under test here");
+  const hard = await testing("hard");
+  assert.deepEqual((await call("POST", "/api/attempts", attempt(hard.off, withHard))).body, { error: "invalid hard" });
+  assert.equal((await call("POST", "/api/attempts", attempt(hard.on, withHard))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(spaced.off, withSteps))).status, 201, "nor steps in a class testing spaced review");
+
+  // The class list and the dashboard count the arms; the export says each attempt's feature and arm.
+  const row = ((await call("GET", "/api/classes", undefined, TEACHER)).body as { code: string; feature: string; on: number; off: number }[]).find((c) => c.code === spaced.code)!;
+  assert.deepEqual([row.feature, row.on, row.off], ["spaced", 4, 4]);
+  const d = (await call("GET", `/api/research/dashboard?class=${spaced.code}`, undefined, TEACHER)).body;
+  assert.deepEqual([d.class.feature, d.arms.on.students, d.arms.off.students, d.arms.on.answered, d.arms.off.answered], ["spaced", 4, 4, 1, 2]);
+  assert.equal(d.arms.off.classPractice, 1, "class practice is what the student's condition chose");
+  const rows = parseCsv((await call("GET", `/api/research/attempts.csv?class=${spaced.code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual(rows.map((r) => [r.feature, r.arm, r.condition, r.policy]), [["spaced", "on", "adaptive", "spaced"], ["spaced", "off", "adaptive", "adaptive"], ["spaced", "off", "adaptive", "free"]]);
+});
+
+test("the delayed post-test: form C once the class reaches it, and the arms compared by intention to treat", async () => {
+  const skills = ["linear"];
+  const { code } = (await call("POST", "/api/classes", { name: "Kept", skills, testLength: 4, feature: "spaced" }, TEACHER)).body;
+  const joined: { code: string; arm: string }[] = [];
+  for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: code })).body);
+  const [on1] = joined.filter((j) => j.arm === "on").map((j) => j.code);
+  const [off1, off2] = joined.filter((j) => j.arm === "off").map((j) => j.code);
+  let k = 0;
+  /** The student's answers on a test: the first `right` of `answered` questions right, the rest wrong. */
+  const sit = async (student: string, phase: string, answered: number, right: number) => {
+    const form = (await call("GET", `/api/students/${student}/plan`)).body.tests[phase].form;
+    for (const [item, q] of testItems(code, skills as never, form, 4).slice(0, answered).entries()) {
+      const verdict = item < right ? "correct" : "wrong";
+      const sent = await call("POST", "/api/tests", { clientId: `kept-${Date.now()}-${k++}`, student, phase, item, input: typed(q, verdict), verdict, retries: 0, ms: 9000 });
+      assert.equal(sent.status, 201, JSON.stringify(sent.body));
+    }
+    return form;
+  };
+  const move = (phase: string) => call("POST", `/api/classes/${code}/phase`, { phase }, TEACHER);
+  await move("posttest");
+  const early = await call("POST", "/api/tests", { clientId: `kept-early-${Date.now()}`, student: on1, phase: "delayed", item: 0, input: "1", verdict: "wrong", retries: 0, ms: 9000 });
+  assert.deepEqual([early.status, early.body.error], [400, "the delayed post-test hasn't started"]);
+  // The post-test: on1 gets all four, the other student with spaced review never sits it; both off students get two.
+  await sit(on1, "post", 4, 4);
+  await sit(off1, "post", 4, 2);
+  await sit(off2, "post", 4, 2);
+  assert.equal((await move("delayed")).status, 200);
+  const plan = (await call("GET", `/api/students/${on1}/plan`)).body;
+  assert.deepEqual([plan.phase, plan.tests.delayed.form, plan.tests.delayed.answered], ["delayed", "C", []]);
+  // A week on: on1 keeps three, off1 one, off2 answers two questions (one right) and stops.
+  assert.equal(await sit(on1, "delayed", 4, 3), "C");
+  await sit(off1, "delayed", 4, 1);
+  await sit(off2, "delayed", 2, 1);
+  assert.deepEqual((await call("GET", `/api/students/${off2}/plan`)).body.tests.delayed.answered, [0, 1]);
+
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  const { on, off } = d.arms;
+  // Every student counts: the one who sat nothing scores 0; off2's unanswered questions count as wrong.
+  assert.deepEqual([on.post.n, on.post.finished, off.post.n, off.post.finished], [2, 1, 2, 2]);
+  close(on.post.mean, 0.5);
+  close(off.post.mean, 0.5);
+  assert.deepEqual([on.delayed.finished, off.delayed.finished], [1, 1]);
+  close(on.delayed.mean, (3 / 4 + 0) / 2);
+  close(off.delayed.mean, (1 / 4 + 1 / 4) / 2);
+  close(d.tests.effect.delayed, (0.375 - 0.25) / Math.sqrt(((3 / 4 - 0.375) ** 2 * 2) / 2));
+  assert.equal(d.tests.effect.post, 0);
+  assert.equal(d.tests.started.pre, null, "this class skipped the pre-test");
+  assert.ok(d.tests.started.delayed >= d.tests.started.post);
+  const me = d.students.find((x: { code: string }) => x.code === off2);
+  assert.deepEqual([me.delayed.form, me.delayed.answered, me.delayed.complete], ["C", 2, false]);
+  close(me.delayed.score, 1 / 4);
+
+  const tests = parseCsv((await call("GET", `/api/research/tests.csv?class=${code}`, undefined, TEACHER)).body as string);
+  const delayed = tests.filter((t) => t.phase === "delayed");
+  assert.equal(delayed.length, 4 + 4 + 2);
+  assert.ok(delayed.every((t) => t.form === "C" && t.feature === "spaced" && ["on", "off"].includes(t.arm)));
 });
 
 test("the server marks every answer itself, and keeps the browser's verdict where they differ", async () => {

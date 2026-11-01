@@ -10,6 +10,7 @@
 // Only students who finished both tests count (a per-protocol analysis); how many didn't is reported beside it.
 // No library: plain least squares, and Student's t from src/math/distributions.ts, so the server, the browser and the
 // scripts can all use this file.
+import { armOfCondition } from "./arms.ts";
 import { tSf, tUpper } from "../math/distributions.ts";
 
 /** The two-sided p-value of a t statistic. */
@@ -73,7 +74,8 @@ export function welch(a: readonly number[], b: readonly number[]): Estimate {
 }
 
 /**
- * One student's scores (shares right, 0–1); treated = 1 for the adaptive condition, 0 for fixed. class and order
+ * One student's scores (shares right, 0–1); treated = 1 for the arm with the feature the class tests (the adaptive
+ * condition, in a class testing the policy), 0 for the arm without. class and order
  * (which form came first) enter the model as factors when they vary.
  */
 export type StudyRow = { treated: 0 | 1; pre: number; post: number; class?: string; order?: string };
@@ -118,7 +120,10 @@ export function ancova(rows: readonly StudyRow[]): Ancova {
 export type StudentScores = {
   student: string;
   class: string;
+  /** The student's group: their condition in a class testing the policy, else the feature and their arm ("spaced on"). */
   condition: string;
+  /** In the arm with the feature (arms.ts). */
+  treated: boolean;
   order: string;
   /** The questions on each of the class's tests (the export's test_length), or null from an export without it. */
   testLength: number | null;
@@ -126,13 +131,24 @@ export type StudentScores = {
   post: { form: string; answered: number; correct: number } | null;
 };
 
-/** Each student's tests from the export's rows: questions answered and right, and the form, per test. */
+/** A row's arm; an export from before arms has only the condition. */
+const armOf = (r: Record<string, string>) => r.arm || armOfCondition(r.condition);
+/**
+ * An export row's group, by which results are reported: the condition when the class tests the policy (as every class
+ * did before arms), else the feature and the arm ("spaced on").
+ */
+export const groupOf = (r: Record<string, string>) => (!r.feature || r.feature === "policy" ? r.condition : `${r.feature} ${armOf(r)}`);
+
+/**
+ * Each student's pre- and post-test from the export's rows: questions answered and right, and the form, per test. The
+ * delayed post-test is reported on the teacher's page, outside the pre-registered analysis.
+ */
 export function scoresFromTests(rows: readonly Record<string, string>[]): StudentScores[] {
   const students = new Map<string, StudentScores>();
   for (const r of rows) {
     const testLength = Number(r.test_length) || null;
     const s = students.get(r.student) ??
-      students.set(r.student, { student: r.student, class: r.class, condition: r.condition, order: r.test_order, testLength, pre: null, post: null }).get(r.student)!;
+      students.set(r.student, { student: r.student, class: r.class, condition: groupOf(r), treated: armOf(r) === "on", order: r.test_order, testLength, pre: null, post: null }).get(r.student)!;
     const phase = r.phase === "pre" ? "pre" : r.phase === "post" ? "post" : null;
     if (!phase) continue;
     const t = (s[phase] ??= { form: r.form, answered: 0, correct: 0 });
@@ -150,7 +166,7 @@ export function scoresFromTests(rows: readonly Record<string, string>[]): Studen
 export function answerChecks(rows: readonly Record<string, string>[]): Record<string, { answers: number; late: number; remarked: number }> {
   const out: Record<string, { answers: number; late: number; remarked: number }> = {};
   for (const r of rows) {
-    const c = (out[r.condition] ??= { answers: 0, late: 0, remarked: 0 });
+    const c = (out[groupOf(r)] ??= { answers: 0, late: 0, remarked: 0 });
     c.answers++;
     if (r.late === "1") c.late++;
     if (r.client_verdict) c.remarked++;
@@ -159,6 +175,8 @@ export function answerChecks(rows: readonly Record<string, string>[]): Record<st
 }
 
 export type StudyAnalysis = {
+  /** The group with the feature and the one without (the adaptive and fixed conditions when the class tests the policy). */
+  arms: { treated: string | null; control: string | null };
   /** Students in each condition, and how many of them finished both tests. */
   students: Record<string, { all: number; complete: number }>;
   /** The lengths of the tests analysed, shortest first: one for one class, more when classes were given different lengths. */
@@ -183,7 +201,7 @@ export function analyseStudy(scores: readonly StudentScores[]): StudyAnalysis {
   const complete = scores.filter((s) => done(s, s.pre) && done(s, s.post));
   const conditions = [...new Set(scores.map((s) => s.condition))].sort();
   const share = (s: StudentScores, t: NonNullable<StudentScores["pre"]>) => t.correct / lengthOf(s);
-  const rows: StudyRow[] = complete.map((s) => ({ treated: s.condition === "adaptive" ? 1 : 0, pre: share(s, s.pre!), post: share(s, s.post!), class: s.class, order: s.order }));
+  const rows: StudyRow[] = complete.map((s) => ({ treated: s.treated ? 1 : 0, pre: share(s, s.pre!), post: share(s, s.post!), class: s.class, order: s.order }));
   const means = Object.fromEntries(conditions.map((c) => {
     const of = complete.filter((s) => s.condition === c);
     const pre = mean(of.map((s) => share(s, s.pre!)));
@@ -196,7 +214,9 @@ export function analyseStudy(scores: readonly StudentScores[]): StudyAnalysis {
   const finishedPre = scores.filter((s) => done(s, s.pre));
   const preOn = (form: string) => finishedPre.filter((s) => s.pre!.form === form).map((s) => share(s, s.pre!));
   const [onA, onB] = [preOn("A"), preOn("B")];
+  const named = (t: boolean) => scores.find((s) => s.treated === t)?.condition ?? null;
   return {
+    arms: { treated: named(true), control: named(false) },
     students: Object.fromEntries(conditions.map((c) => [c, { all: scores.filter((s) => s.condition === c).length, complete: complete.filter((s) => s.condition === c).length }])),
     testLengths: [...new Set(scores.map(lengthOf))].sort((a, b) => a - b),
     means,

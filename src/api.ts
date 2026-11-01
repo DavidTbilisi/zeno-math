@@ -1,6 +1,7 @@
 import type { Dashboard } from "../server/dashboard";
 import type { Attempt, Phase, Plan, SendResult, Student, TestAnswer } from "./learner";
 import type { SkillId } from "./math/practiceSkills";
+import type { Feature } from "./model/arms";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
@@ -77,10 +78,12 @@ export type ClassSummary = {
   code: string;
   name: string;
   skills: SkillId[];
+  /** The feature the class tests (arms.ts), and how many students are in each arm. */
+  feature: Feature;
   createdAt: number;
   students: number;
-  adaptive: number;
-  fixed: number;
+  on: number;
+  off: number;
   attempts: number;
   phase: Phase;
   sessionEnds: number | null;
@@ -93,8 +96,8 @@ export function teacherApi(password: string) {
   const headers: Record<string, string> = password ? { "X-Teacher-Password": password } : {};
   return {
     classes: () => req<ClassSummary[]>("GET", "/api/classes", undefined, false, headers),
-    create: (name: string, skills?: string[], testLength?: number) =>
-      req<ClassSummary>("POST", "/api/classes", { name, skills, testLength }, false, headers),
+    create: (name: string, skills?: string[], testLength?: number, feature?: Feature) =>
+      req<ClassSummary>("POST", "/api/classes", { name, skills, testLength, feature }, false, headers),
     /** Moves the class on; minutes starts a timed session. */
     setPhase: (code: string, phase: Phase, minutes?: number) =>
       req<{ phase: Phase; sessionEnds: number | null }>("POST", `/api/classes/${encodeURIComponent(code)}/phase`, { phase, minutes }, false, headers),

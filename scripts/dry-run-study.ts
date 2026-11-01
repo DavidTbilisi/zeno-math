@@ -1,13 +1,15 @@
 // A dress rehearsal of the class study with simulated students, through the real server and its HTTP API: a class is
-// made, students join and are randomised, the teacher moves the class through pre-test, a practice session and
-// post-test, and every student answers as a browser would: test questions rebuilt from the class code, practice
+// made to test a feature, students join and are randomised to its arms, the teacher moves the class through pre-test,
+// a practice session, post-test and delayed post-test, and every student answers as a browser would: test questions rebuilt from the class code, practice
 // chosen by their condition from the plan the server sends and carried forward between refreshes, answers typed and
 // judged by the real checker. Whether an answer is right comes from a simulated learner (src/model/simulate.ts), who
 // learns from practice. Then both exports are downloaded, the analysis is run on them, and the study's guarantees are
-// checked: balanced randomisation, counterbalanced forms, complete tests, attempts stored once, the right policy.
+// checked: balanced randomisation, counterbalanced forms, complete tests, attempts stored once, the right policy, and
+// the dashboard's scores by intention to treat against the export. (The simulated learners don't forget, so the
+// delayed post-test here checks the plumbing, not forgetting.)
 //
-//   npm run dry-run                          40 students, 30 practice questions each, 12-question tests
-//   npm run dry-run -- --students 60 --questions 60 --test-length 12 --world bkt --seed 3 --out dry-run
+//   npm run dry-run                          40 students, 30 practice questions each, 12-question tests, testing the policy
+//   npm run dry-run -- --students 60 --questions 60 --test-length 12 --world bkt --seed 3 --feature spaced --out dry-run
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -23,7 +25,8 @@ import { evidence, logLoss, parseCsv } from "../src/model/evaluate.ts";
 import { choose } from "../src/model/policy.ts";
 import { makeWorld, rng, SIM_SKILLS, type SimParams } from "../src/model/simulate.ts";
 import { isStuckNow, sinceLastStreak, type Try } from "../src/model/stuckList.ts";
-import { testItems, type TestPhase } from "../src/model/testForms.ts";
+import { formFor, TEST_PHASES, testItems, type TestOrder, type TestPhase } from "../src/model/testForms.ts";
+import { ARMS, FEATURES, type Feature } from "../src/model/arms.ts";
 
 const w = en.pracWords;
 
@@ -36,6 +39,8 @@ export type DryRunOptions = {
   world: SimParams["world"];
   seed: number;
   skills?: readonly SkillId[];
+  /** The feature the class tests (arms.ts); the policy when not given. */
+  feature?: Feature;
   /** How many questions a browser carries its plan forward before asking the server again. */
   refreshEvery?: number;
 };
@@ -84,16 +89,16 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
   let ids = 0;
   const clientId = () => `dry-${run}-${(ids++).toString().padStart(8, "0")}`;
 
-  const klass: string = (await call("POST", "/api/classes", { name: "Dry run", skills, testLength: o.testLength }, teacher)).body.code;
+  const klass: string = (await call("POST", "/api/classes", { name: "Dry run", skills, testLength: o.testLength, feature: o.feature ?? "policy" }, teacher)).body.code;
   const world = makeWorld({ students: o.students, seed: o.seed, world: o.world });
-  const students: { code: string; condition: string }[] = [];
+  const students: { code: string; condition: string; arm: string }[] = [];
   for (let i = 0; i < o.students; i++) students.push((await call("POST", "/api/students", { class: klass })).body);
   const plan = async (code: string) => (await call("GET", `/api/students/${encodeURIComponent(code)}/plan`)).body as Plan;
 
   let unanswerable = 0;
   let repeatsStored = 0;
   const sitTest = async (testPhase: TestPhase) => {
-    await phase(testPhase === "pre" ? "pretest" : "posttest");
+    await phase({ pre: "pretest", post: "posttest", delayed: "delayed" }[testPhase]);
     for (const [i, s] of students.entries()) {
       const p = await plan(s.code);
       const form = p.tests[testPhase].form;
@@ -141,6 +146,7 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
       applyAttempt(cp, a);
     }
   await sitTest("post");
+  await sitTest("delayed");
   await phase("closed");
 
   const testsCsv = (await call("GET", `/api/research/tests.csv?class=${klass}`, undefined, teacher)).body as string;
@@ -150,23 +156,24 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
   const analysis = analyseStudy(scoresFromTests(testRows));
 
   // ---------- the study's guarantees ----------
-  const count = (c: string) => students.filter((s) => s.condition === c).length;
-  const orders = (c: string) => {
-    const seen = new Map(testRows.filter((t) => t.condition === c).map((t) => [t.student, t.test_order]));
+  const count = (arm: string) => students.filter((s) => s.arm === arm).length;
+  const orders = (arm: string) => {
+    const seen = new Map(testRows.filter((t) => t.arm === arm).map((t) => [t.student, t.test_order]));
     return [...seen.values()];
   };
-  const balancedOrders = ["adaptive", "fixed"].every((c) => {
-    const os = orders(c);
+  const balancedOrders = ARMS.every((arm) => {
+    const os = orders(arm);
     return Math.abs(os.filter((x) => x === "AB").length - os.filter((x) => x === "BA").length) <= 1;
   });
-  const formsFollowOrder = testRows.every((t) => t.form === (t.phase === "pre" ? t.test_order[0] : t.test_order[1]));
+  const formsFollowOrder = testRows.every((t) => t.form === formFor(t.test_order as TestOrder, t.phase as TestPhase));
   const complete = Object.values(analysis.students).reduce((s, n) => s + n.complete, 0);
+  const delayedDone = new Set(testRows.filter((t) => t.phase === "delayed").map((t) => t.student)).size;
   const classPractice = attemptRows.filter((a) => a.policy === "adaptive" || a.policy === "fixed");
   const checks: Check[] = [
-    { name: "randomised in balanced blocks", ok: Math.abs(count("adaptive") - count("fixed")) <= 2, detail: `adaptive ${count("adaptive")}, fixed ${count("fixed")}` },
-    { name: "test forms counterbalanced within each condition", ok: balancedOrders, detail: ["adaptive", "fixed"].map((c) => `${c}: ${orders(c).join(" ")}`).join("; ") },
-    { name: "each test on the form its order says", ok: formsFollowOrder, detail: `${testRows.length} test answers` },
-    { name: "every student finished both tests", ok: complete === o.students, detail: `${complete} of ${o.students}` },
+    { name: "randomised in balanced blocks", ok: Math.abs(count("on") - count("off")) <= 2, detail: `with ${o.feature ?? "policy"} ${count("on")}, without ${count("off")}` },
+    { name: "test forms counterbalanced within each arm", ok: balancedOrders, detail: ARMS.map((a) => `${a}: ${orders(a).join(" ")}`).join("; ") },
+    { name: "each test on the form its order says (C for the delayed post-test)", ok: formsFollowOrder, detail: `${testRows.length} test answers` },
+    { name: "every student finished all three tests", ok: complete === o.students && delayedDone === o.students, detail: `${complete} of ${o.students} both, ${delayedDone} the delayed post-test` },
     { name: "every practice question stored", ok: attempts === o.students * o.questions && attemptRows.length === attempts, detail: `${attemptRows.length} of ${o.students * o.questions}` },
     { name: "retried uploads stored once", ok: repeatsStored === 0, detail: repeatsStored ? `${repeatsStored} stored twice` : "a repeated test answer and attempt were each kept once" },
     { name: "class practice follows each student's condition", ok: classPractice.every((a) => a.policy === a.condition), detail: `${classPractice.length} class-practice questions` },
@@ -181,8 +188,19 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
     { name: "nothing arrived after its phase", ok: [...testRows, ...attemptRows].every((r) => r.late === "0"), detail: "" },
   ];
   // The teacher's stuck list, against the export: the same students and skills, each with as many questions.
-  const dash = (await call("GET", `/api/research/dashboard?class=${klass}`, undefined, teacher)).body as
-    { stuck: { rows: { student: string; skill: string; answers: number }[] }[] };
+  const dash = (await call("GET", `/api/research/dashboard?class=${klass}`, undefined, teacher)).body as {
+    stuck: { rows: { student: string; skill: string; answers: number }[] }[];
+    arms: Record<string, Record<TestPhase, { n: number; mean: number | null; finished: number }>>;
+  };
+  // The dashboard's tests by intention to treat, against the export: every student of an arm, a question unanswered as wrong.
+  const fromExport = (arm: string, p: TestPhase) =>
+    testRows.filter((t) => t.arm === arm && t.phase === p && t.correct === "1").length / o.testLength / count(arm);
+  const ittAgrees = ARMS.every((a) => TEST_PHASES.every((p) => Math.abs((dash.arms[a][p].mean ?? 0) - fromExport(a, p)) < 1e-9 && dash.arms[a][p].n === count(a)));
+  checks.push({
+    name: "the dashboard compares the arms by intention to treat, as the export does",
+    ok: ittAgrees,
+    detail: ARMS.map((a) => `${a}: ${TEST_PHASES.map((p) => `${p} ${((dash.arms[a][p].mean ?? 0) * 100).toFixed(1)} %`).join(", ")}`).join("; "),
+  });
   const listed = dash.stuck.flatMap((g) => g.rows.map((r) => `${r.student} ${r.skill} ${r.answers}`)).sort();
   const bySkill = new Map<string, Try[]>();
   for (const a of attemptRows) {
@@ -228,6 +246,10 @@ if (import.meta.main) {
       testLength: num("--test-length", "12"),
       world: opt("--world", "elo") as SimParams["world"],
       seed: num("--seed", "1"),
+      feature: ((f) => {
+        if (!FEATURES.includes(f as Feature)) throw new Error(`--feature must be one of ${FEATURES.join(", ")}`);
+        return f as Feature;
+      })(opt("--feature", "policy")),
     });
     mkdirSync(out, { recursive: true });
     writeFileSync(join(out, "tests.csv"), result.testsCsv);

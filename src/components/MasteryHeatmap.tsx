@@ -1,16 +1,19 @@
-// Mastery by skill: one row per student, grouped by condition with the group's average on top, one column per skill,
-// after the student's answers so far and their test scores (in brackets while a test is unfinished).
+// Mastery by skill: one row per student, grouped by arm with the arm's average on top, one column per skill, after the
+// student's answers so far and their test scores (in brackets while a test is unfinished). The arm's test average
+// counts every student of it, a test not sat as 0, as the tests card does (intention to treat).
 // A cell's shade is the chance of a right first answer at medium level, in five 20 % bins of one blue (darker = more in
 // light mode, lighter = more in dark mode); grey means no answers on the skill yet. Hovering a cell gives all three
 // levels; "show numbers" puts the percentages in the cells, so nothing depends on colour or hover alone.
 import type { Dashboard } from "../api";
 import { fill } from "../math/text";
 import type { SkillId } from "../math/practiceSkills";
+import { ARMS } from "../model/arms";
 import { useChartTip } from "./ChartTip";
 
 type Words = {
-  student: string; answeredShort: string; groupMean: string; noAnswers: string; cellTip: string; adaptive: string; fixed: string;
-  pre: string; post: string;
+  student: string; answeredShort: string; groupMean: string; noAnswers: string; cellTip: string;
+  pre: string; post: string; delayed: string;
+  features: Record<Dashboard["class"]["feature"], { on: string; off: string }>;
 };
 type Score = { score: number; complete: boolean } | null;
 type Cell = { p: number[]; n: number } | null;
@@ -41,13 +44,11 @@ export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showC
   };
 
   const score = (t: Score) => (!t ? "—" : t.complete ? pct(t.score) : `(${pct(t.score)})`);
-  const meanScore = (ts: Score[]) => {
-    const done = ts.filter((t) => t?.complete).map((t) => t!.score);
-    return done.length ? pct(done.reduce((a, b) => a + b, 0) / done.length) : "—";
-  };
-  const groups = (["adaptive", "fixed"] as const)
-    .map((condition) => ({ condition, students: data.students.filter((s) => s.condition === condition) }))
+  const meanScore = (ts: Score[]) => (ts.some(Boolean) ? pct(ts.reduce((a, t) => a + (t?.score ?? 0), 0) / ts.length) : "—");
+  const groups = ARMS
+    .map((arm) => ({ arm, students: data.students.filter((s) => s.arm === arm) }))
     .filter((g) => g.students.length);
+  const tests = ["pre", "post", "delayed"] as const;
 
   return (
     <div className="heat-wrap">
@@ -56,15 +57,14 @@ export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showC
           <tr>
             <th className="heat-name">{words.student}</th>
             <th className="heat-num">{words.answeredShort}</th>
-            <th className="heat-num">{words.pre}</th>
-            <th className="heat-num">{words.post}</th>
+            {tests.map((t) => <th key={t} className="heat-num">{words[t]}</th>)}
             {skills.map((k) => (
               <th key={k} className="heat-skill" scope="col"><span>{skillName(k)}</span></th>
             ))}
           </tr>
         </thead>
-        {groups.map(({ condition, students }) => {
-          const label = condition === "adaptive" ? words.adaptive : words.fixed;
+        {groups.map(({ arm, students }) => {
+          const label = words.features[data.class.feature][arm];
           // The group's average over the students who have answered on the skill.
           const mean = (k: SkillId): Cell => {
             const seen = students.map((s) => s.mastery[k]).filter((m) => m.n > 0);
@@ -73,12 +73,11 @@ export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showC
             return { p: [avg(0), avg(1), avg(2)], n: seen.reduce((sum, m) => sum + m.n, 0) };
           };
           return (
-            <tbody key={condition}>
+            <tbody key={arm}>
               <tr className="heat-group">
                 <th className="heat-name" scope="rowgroup">{label} ({students.length})</th>
                 <td className="heat-num">{students.reduce((s, x) => s + x.answered, 0)}</td>
-                <td className="heat-num">{meanScore(students.map((x) => x.pre))}</td>
-                <td className="heat-num">{meanScore(students.map((x) => x.post))}</td>
+                {tests.map((t) => <td key={t} className="heat-num">{meanScore(students.map((x) => x[t]))}</td>)}
                 {skills.map((k) => cell(`${label} · ${words.groupMean}`, k, mean(k), k))}
               </tr>
               {students.map((s) => {
@@ -87,8 +86,7 @@ export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showC
                   <tr key={s.id}>
                     <th className="heat-name mono" scope="row">{who}</th>
                     <td className="heat-num">{s.answered}</td>
-                    <td className="heat-num">{score(s.pre)}</td>
-                    <td className="heat-num">{score(s.post)}</td>
+                    {tests.map((t) => <td key={t} className="heat-num">{score(s[t])}</td>)}
                     {skills.map((k) => cell(who, k, s.mastery[k].n > 0 ? s.mastery[k] : null, k))}
                   </tr>
                 );

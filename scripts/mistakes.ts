@@ -1,18 +1,22 @@
 // Which mistakes students made, from the study's exports. Every wrong answer is checked again against its question
 // (skill, level and seed fix the question), so this works on any export, including ones made before the checker
-// named mistakes. A descriptive, secondary outcome: which slips each condition's students made, not how many.
+// named mistakes. A descriptive, secondary outcome: which slips each arm's students made, not how many.
 //
-//   npm run mistakes -- zeno-attempts.csv      practice answers, by condition (/api/research/attempts.csv)
-//   npm run mistakes -- zeno-tests.csv         test answers, by condition and phase (/api/research/tests.csv)
+//   npm run mistakes -- zeno-attempts.csv      practice answers, by arm (/api/research/attempts.csv)
+//   npm run mistakes -- zeno-tests.csv         test answers, by arm and phase (/api/research/tests.csv)
 //   add --json for machine-readable output
 import { readFileSync } from "node:fs";
 import { en } from "../src/locales/en.ts";
 import { MISTAKES, type MistakeId } from "../src/math/mistakes.ts";
 import { ALL_SKILLS, check, exercise, type SkillId } from "../src/math/practice.ts";
+import { groupOf } from "../src/model/analysis.ts";
 import { parseCsv } from "../src/model/evaluate.ts";
 
 export type MistakeTally = {
-  /** Wrong answers looked at, and those a mistake was named in, by group: the condition ("free" outside a class), and the phase for tests. */
+  /**
+   * Wrong answers looked at, and those a mistake was named in, by group: the condition in a class testing the policy,
+   * else the feature and arm (groupOf in analysis.ts; "free" outside a class), and the phase for tests.
+   */
   wrong: Record<string, number>;
   named: Record<string, number>;
   byMistake: Record<MistakeId, Record<string, number>>;
@@ -31,7 +35,7 @@ export function tallyMistakes(rows: readonly Record<string, string>[]): MistakeT
       ? (JSON.parse(row.answers || "[]") as { input: string; verdict: string }[]).filter((a) => a.verdict === "wrong").map((a) => a.input)
       : row.verdict === "wrong" ? [row.input.startsWith('"') ? (JSON.parse(row.input) as string) : row.input] : [];
     if (!inputs.length) continue;
-    const group = [row.condition || "free", row.phase].filter(Boolean).join(" ");
+    const group = [row.condition ? groupOf(row) : "free", row.phase].filter(Boolean).join(" ");
     const ex = exercise(skill, level as 1 | 2 | 3, seed, w);
     const s = (t.bySkill[skill] ??= { wrong: 0, named: 0 });
     for (const input of inputs) {

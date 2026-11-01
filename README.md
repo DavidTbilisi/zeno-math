@@ -1619,13 +1619,15 @@ couldn't load back.
 ## Class study
 
 Zeno can run a study that compares two ways of choosing practice questions: an adaptive learner model (aiming at a
-target chance of a right answer, as in Math Garden) against a fixed curriculum sequence. A teacher makes a class at
+target chance of a right answer, as in Math Garden) against a fixed curriculum sequence. A class can test another
+feature instead (spaced review, steps after a miss, asking what was hard), with half the class going without it. A teacher makes a class at
 **`#/teacher`**, choosing the areas it practises or grades of the course (grades 1 to 8, 9–10, 11–12 and university;
 every skill has each of its three levels tagged with the grade that teaches it, from Singapore's syllabuses, in
-`src/model/curriculum.ts`). Students join with its code, are randomised to a condition in balanced blocks and get a code of
+`src/model/curriculum.ts`). Students join with its code, are randomised to an arm in balanced blocks and get a code of
 their own (no names or emails), see what taking part means and agree before they join. The teacher then moves the
-class through a pre-test, timed practice and a post-test, with parallel forms counterbalanced within each condition.
-The dashboard shows who is stuck and why, the two groups, mastery by skill, the tests and how well the model predicts; both data sets
+class through a pre-test, timed practice, a post-test and a delayed post-test a week or more later, with parallel forms
+counterbalanced within each arm. The dashboard shows who is stuck and why, the two arms, mastery by skill, the tests
+by intention to treat (every student counts, and finishing is a result of its own) and how well the model predicts; both data sets
 download as CSV.
 
 The full description is in **[docs/study.md](docs/study.md)**:
@@ -1735,13 +1737,14 @@ src/model/simulate.ts     synthetic learners with a known truth, for tests and t
 src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
 src/components/StudentPanel.tsx  joining a class, signing back in, deleting your answers
-server/dashboard.ts       the teacher's dashboard data: who is stuck, mastery per student and skill, the two groups, tests, calibration
+server/dashboard.ts       the teacher's dashboard data: who is stuck, mastery per student and skill, the two arms, tests by intention to treat, calibration
+src/model/arms.ts         what a class tests: the features, the two arms, the condition each arm practises in
 src/model/stuckList.ts    the stuck list: ten questions without three right in a row, the reason (mistake, ticked idea, weakest idea), groups
-server/protocol.ts        the study protocol: class phases (logged), timed sessions, counterbalanced test forms, test answers
+server/protocol.ts        the study protocol: class phases (logged), timed sessions, counterbalanced test forms, the delayed post-test, test answers
 server/marking.ts, checker.ts  every answer marked again on the server with the browser's checker (bundled for Docker)
-src/model/testForms.ts    the pre-/post-test forms A and B, built from the class code
+src/model/testForms.ts    the test forms A and B (pre- and post-test) and C (delayed post-test), built from the class code
 src/components/TestRunner.tsx  taking a test: one question at a time, no marks, form messages only
-src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes, codes, who is stuck, groups, mastery heatmap, calibration
+src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes and what they test, codes, who is stuck, arms, tests, mastery heatmap, calibration
 src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashboard's charts and their readouts
 src/model/datasets.ts     public data sets (ASSISTments) as observations, read as a stream
 src/model/analysis.ts     the study's planned analysis: ANCOVA, Welch's test, least squares, scores from the export

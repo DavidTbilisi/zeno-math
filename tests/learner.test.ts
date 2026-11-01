@@ -25,7 +25,7 @@ const memory = (): Slot & { value: string | null } => {
 const fake = (id: string) => ({ clientId: id }) as Attempt;
 const free: Origin = { policy: "free", review: false, predicted: null };
 const protocol: Protocol = {
-  class: "7BXYZ2", phase: "open", sessionEnds: null, testLength: 12, tests: { pre: { form: "A", answered: [] }, post: { form: "B", answered: [] } },
+  class: "7BXYZ2", phase: "open", sessionEnds: null, testLength: 12, tests: { pre: { form: "A", answered: [] }, post: { form: "B", answered: [] }, delayed: { form: "C", answered: [] } },
 };
 
 test("verdicts", () => {
@@ -103,7 +103,7 @@ test("the outbox survives a failing network and keeps attempts added mid-send", 
 });
 
 test("leaving a question moves the class plan on the way the server will", () => {
-  const plan = toClassPlan({ ...protocol, condition: "fixed", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: priorState(), ideas: {}, ema: {} });
+  const plan = toClassPlan({ ...protocol, condition: "fixed", feature: "policy", arm: "off", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: priorState(), ideas: {}, ema: {} });
   const base = { clientId: "x", student: student.code, level: 2 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, shownAt: 0, predicted: 0.5 };
   const right: Attempt = { ...base, skill: "linear", outcome: "solved", policy: "fixed", answers: [{ input: "3", verdict: "correct", ms: 1 }] };
   const before = plan.model.predict({ student: ME, skill: "linear", level: 2 });
@@ -232,7 +232,7 @@ test("a question worked in steps: each step goes with the attempt and moves the 
 });
 
 test("class practice schedules spaced reviews as the server will: mastered a day later, then further apart, open again after a miss", () => {
-  const plan = toClassPlan({ ...protocol, condition: "adaptive", skills: ["linear"], position: 0, recent: [], state: priorState(), ideas: {}, ema: {} });
+  const plan = toClassPlan({ ...protocol, condition: "adaptive", feature: "policy", arm: "on", skills: ["linear"], position: 0, recent: [], state: priorState(), ideas: {}, ema: {} });
   assert.deepEqual(plan.spacing, {}, "a plan from a server without spacing starts with none");
   const T = Date.UTC(2026, 10, 1, 9);
   const base = { clientId: "x", student: student.code, skill: "linear" as const, level: 3 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, predicted: 0.5 };

@@ -67,7 +67,7 @@ export function StudentPanel({ student, pending, ui, onChange }: {
   const signIn = () =>
     run(async () => {
       const s = await study.student(ownCode);
-      onChange({ code: s.code, class: s.class, condition: s.condition });
+      onChange({ code: s.code, class: s.class, condition: s.condition, feature: s.feature, arm: s.arm });
     }, ui.noStudent);
   const onEnter = (go: () => void) => (e: KeyboardEvent) => {
     if (e.key !== "Enter") return;

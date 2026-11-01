@@ -1,6 +1,7 @@
-// The teacher's page for the class study (#/teacher): make classes and hand out their codes, run the protocol (open
-// practice, pre-test, timed sessions, post-test), then follow each class: the two groups side by side, the tests,
-// mastery by skill for every student, and whether the learner model's predictions come true. The teacher password
+// The teacher's page for the class study (#/teacher): make classes, each testing one feature (arms.ts), and hand out
+// their codes, run the protocol (open practice, pre-test, timed sessions, post-test, delayed post-test), then follow
+// each class: the two arms side by side, the tests by intention to treat, mastery by skill for every student, and
+// whether the learner model's predictions come true. The teacher password
 // (TEACHER_PASSWORD on the server) is kept for this tab only.
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
@@ -13,14 +14,16 @@ import { fill } from "../math/text";
 import type { Phase } from "../learner";
 import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
 import { GRADES, skillsOfGrade } from "../model/curriculum";
-import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH } from "../model/testForms";
+import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH, TEST_PHASES } from "../model/testForms";
+import { ARMS, FEATURES, type Feature } from "../model/arms";
 
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
 // first shown, so the dashboard itself doesn't carry them.
 const PrintableTests = lazy(() => import("../components/PrintableTests").then((m) => ({ default: m.PrintableTests })));
 const CalibrationChart = lazy(() => import("../components/CalibrationChart").then((m) => ({ default: m.CalibrationChart })));
 
-const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "closed"];
+const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "delayed", "closed"];
+const DAY = 86_400_000;
 
 const KEY = "zeno.teacher";
 const remembered = () => {
@@ -71,6 +74,7 @@ export function TeacherPage() {
   const [showCodes, setShowCodes] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [testLength, setTestLength] = useState(DEFAULT_TEST_LENGTH);
+  const [feature, setFeature] = useState<Feature>("policy");
   const [minutes, setMinutes] = useState(20);
   const [askMinutes, setAskMinutes] = useState(false);
   const api = useMemo(() => teacherApi(password), [password]);
@@ -125,10 +129,11 @@ export function TeacherPage() {
 
   const create = async () => {
     try {
-      const made = await api.create(name.trim(), picks.length ? picks : undefined, testLength);
+      const made = await api.create(name.trim(), picks.length ? picks : undefined, testLength, feature);
       setName("");
       setPicks([]);
       setTestLength(DEFAULT_TEST_LENGTH);
+      setFeature("policy");
       setClasses(await api.classes());
       setSelected(made.code);
     } catch {
@@ -213,8 +218,13 @@ export function TeacherPage() {
   const current = classes.find((c) => c.code === selected);
   const describe = (g: { n: number; mean: number | null; sd: number | null }) =>
     g.n ? fill(w.meanSd, { mean: share(g.mean), sd: g.sd === null ? "—" : num(g.sd * 100, 1), n: g.n }) : "—";
-  const groups = data && (["adaptive", "fixed"] as const).map((c) => [c, data.conditions[c]] as const);
-  const rows: [string, (g: Dashboard["conditions"]["fixed"]) => string][] = [
+  const groups = data && ARMS.map((a) => [a, data.arms[a]] as const);
+  const armName = data ? w.features[data.class.feature] : null;
+  // The tests the class has reached, and how long after the post-test the delayed one came (or how long it has been).
+  const reached = data ? TEST_PHASES.filter((p) => data.tests.started[p] !== null) : [];
+  const days = (from: number, to: number) => Math.floor((to - from) / DAY);
+  const { post: postStart, delayed: delayedStart } = data?.tests.started ?? { post: null, delayed: null };
+  const rows: [string, (g: Dashboard["arms"]["on"]) => string][] = [
     [w.metrics.students, (g) => num(g.students)],
     [w.metrics.answered, (g) => num(g.answered)],
     [w.metrics.classPractice, (g) => num(g.classPractice)],
@@ -243,7 +253,8 @@ export function TeacherPage() {
                     <button className={`class-item${c.code === selected ? " selected" : ""}`} aria-pressed={c.code === selected} onClick={() => setSelected(c.code)}>
                       <strong>{c.name}</strong>
                       <span className="mono small">{c.code}</span>
-                      <span className="muted small">{fill(w.studentsCount, { n: c.students, a: c.adaptive, f: c.fixed })}</span>
+                      <span className="muted small">{w.features[c.feature].name}</span>
+                      <span className="muted small">{fill(w.studentsCount, { n: c.students, a: c.on, f: c.off })}</span>
                     </button>
                   </li>
                 ))}
@@ -268,6 +279,13 @@ export function TeacherPage() {
                 <input type="number" min={MIN_TEST_LENGTH} max={MAX_TEST_LENGTH} value={testLength}
                   onChange={(e) => setTestLength(Math.min(MAX_TEST_LENGTH, Math.max(MIN_TEST_LENGTH, Math.round(Number(e.target.value) || DEFAULT_TEST_LENGTH))))} />
               </label>
+              <label className="field">
+                <span>{w.feature}</span>
+                <select value={feature} onChange={(e) => setFeature(e.target.value as Feature)}>
+                  {FEATURES.map((f) => <option key={f} value={f}>{w.features[f].name}</option>)}
+                </select>
+              </label>
+              <span className="hint">{w.features[feature].hint} {w.featureHint}</span>
               <span className="hint">{w.skillsHint}</span>
               <div className="snippets">
                 {AREAS.map((a) => (
@@ -343,6 +361,11 @@ export function TeacherPage() {
                   </div>
                 )}
                 {sessionEnds !== null && <Countdown until={sessionEnds} left={(time) => fill(w.sessionLeft, { time })} ended={w.sessionEnded} />}
+                {data?.class.code === selected && postStart !== null && (
+                  <p className="hint delayed-when">
+                    {delayedStart !== null ? fill(w.delayedAfter, { n: days(postStart, delayedStart) }) : fill(w.delayedWhen, { n: days(postStart, Date.now()) })}
+                  </p>
+                )}
                 <p className="hint">{w.phaseHint}</p>
               </section>
             )}
@@ -354,12 +377,12 @@ export function TeacherPage() {
 
                 <section className="card">
                   <h3>{w.groups}</h3>
-                  <p className="hint">{w.groupsHint}</p>
+                  <p className="hint">{fill(w.groupsHint, { feature: armName!.name })}</p>
                   <table className="data-table">
                     <thead>
                       <tr>
                         <th />
-                        {groups!.map(([c]) => <th key={c} scope="col">{c === "adaptive" ? w.adaptive : w.fixed}</th>)}
+                        {groups!.map(([a]) => <th key={a} scope="col">{armName![a]}</th>)}
                       </tr>
                     </thead>
                     <tbody>
@@ -373,31 +396,36 @@ export function TeacherPage() {
                   </table>
                 </section>
 
-                <section className="card">
+                <section className="card tests-card">
                   <h3>{w.tests}</h3>
                   <p className="hint">{w.testsHint}</p>
-                  {groups!.some(([, g]) => g.pre.n || g.post.n) ? (
+                  {reached.length ? (
                     <>
                       <table className="data-table">
                         <thead>
                           <tr>
                             <th />
-                            {groups!.map(([c]) => <th key={c} scope="col">{c === "adaptive" ? w.adaptive : w.fixed}</th>)}
+                            {groups!.map(([a]) => <th key={a} scope="col">{armName![a]}</th>)}
+                            <th scope="col" title={w.effect}>d</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {([[w.pre, "pre"], [w.post, "post"], [w.gain, "gain"]] as const).map(([label, key]) => (
-                            <tr key={key}>
-                              <th scope="row">{label}</th>
-                              {groups!.map(([c, g]) => <td key={c}>{describe(g[key])}</td>)}
+                          {reached.map((p) => (
+                            <tr key={p} data-test={p}>
+                              <th scope="row">{w[p]}</th>
+                              {groups!.map(([a, g]) => (
+                                <td key={a}>
+                                  {describe(g[p])}
+                                  <br />
+                                  <span className="muted small">{fill(w.finished, { k: g[p].finished, n: g[p].n })}</span>
+                                </td>
+                              ))}
+                              <td>{num(data.tests.effect[p], 2)}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                      <dl className="stat-tiles">
-                        <div><dt>{w.effect}</dt><dd>{num(data.tests.effect, 2)}</dd></div>
-                      </dl>
-                      <p className="hint">{w.effectHint}</p>
+                      <p className="hint">d: {w.effect}. {w.effectHint}</p>
                       <h3>{w.formCheck}</h3>
                       <table className="data-table">
                         <tbody>

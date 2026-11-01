@@ -5,6 +5,7 @@ import { en } from "../src/locales/en.ts";
 import { ka } from "../src/locales/ka.ts";
 import { ru } from "../src/locales/ru.ts";
 import { check, exercise, stepsOf, trapInputs } from "../src/math/practice.ts";
+import { testItems } from "../src/model/testForms.ts";
 
 const TEACHER = "e2e-teacher";
 
@@ -222,4 +223,109 @@ test("the teacher sees who is stuck, grouped by the mistake they repeat, in ever
     }
     await page.context().close();
   }
+});
+
+test("a teacher tests spaced review in a class: two arms, the delayed post-test reaches the students, and every student counts", async ({ browser, request }) => {
+  const name = `Kept ${Date.now()}`;
+  const teacher = await browser.newPage();
+  await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
+  await teacher.goto("/#/teacher");
+  const form = teacher.locator(".new-class");
+  await form.getByLabel("Name").fill(name);
+  await form.getByLabel("Questions per test").fill("4");
+  await form.getByLabel("What to test").selectOption("spaced");
+  await expect(form).toContainText(en.teacher.features.spaced.hint);
+  await form.getByRole("button", { name: "Algebra" }).click();
+  await teacher.getByRole("button", { name: "Create class" }).click();
+  await expect(teacher.locator(".class-head h2")).toHaveText(name);
+  const code = (await teacher.locator(".class-code strong").textContent())!.trim();
+
+  // Four students join: two with spaced review, two without, all practising adaptively.
+  type Joined = { code: string; class: string; condition: string; feature: string; arm: string };
+  const joined: Joined[] = [];
+  for (let i = 0; i < 4; i++) joined.push(await (await request.post("/api/students", { data: { class: code } })).json());
+  expect(joined.map((j) => j.arm).sort()).toEqual(["off", "off", "on", "on"]);
+  expect(joined.every((j) => j.condition === "adaptive")).toBe(true);
+  const [on, off] = [joined.filter((j) => j.arm === "on"), joined.filter((j) => j.arm === "off")];
+  let k = 0;
+  /** A student's answers on a test, through the API: the first `right` of `answered` right. */
+  const sit = async (student: string, phase: string, answered: number, right: number) => {
+    const plan = await (await request.get(`/api/students/${student}/plan`)).json();
+    const items = testItems(code, plan.skills, plan.tests[phase].form, 4).slice(0, answered);
+    for (const [item, q] of items.entries()) {
+      const input = item < right ? exercise(q.skill, q.level, q.seed, en.pracWords).plain : "12345";
+      const res = await request.post("/api/tests", { data: { clientId: `kept-${Date.now()}-${k++}`, student, phase, item, input, verdict: item < right ? "correct" : "wrong", retries: 0, ms: 9000 } });
+      expect(res.status()).toBe(201);
+    }
+  };
+
+  const phases = teacher.getByRole("group", { name: "Now" });
+  await phases.getByRole("button", { name: "Post-test", exact: true }).click();
+  const item = teacher.locator(".class-item", { hasText: name });
+  await expect(item).toContainText(en.teacher.features.spaced.name);
+  await expect(item).toContainText("4 students · 2 with, 2 without");
+  // One student with spaced review gets all four; the other never sits it. Both without get two.
+  await sit(on[0].code, "post", 4, 4);
+  await sit(off[0].code, "post", 4, 2);
+  await sit(off[1].code, "post", 4, 2);
+  await teacher.getByRole("button", { name: "Refresh" }).click();
+  await expect(teacher.locator(".delayed-when")).toHaveText("Best a week or more after the post-test. Days since: 0.");
+  await phases.getByRole("button", { name: "Delayed post-test" }).click();
+  await expect(phases.getByRole("button", { name: "Delayed post-test" })).toHaveAttribute("aria-pressed", "true");
+
+  // A student signed in on a board gets the delayed post-test.
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.addInitScript((s) => localStorage.setItem("zeno.student.v1", s), JSON.stringify(on[0]));
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  await expect(student.getByText("Delayed post-test", { exact: true })).toBeVisible();
+  await expect(student.getByText("Question 1 of 4")).toBeVisible();
+  await student.context().close();
+
+  await sit(on[0].code, "delayed", 4, 3);
+  await sit(off[0].code, "delayed", 4, 1);
+  await teacher.getByRole("button", { name: "Refresh" }).click();
+  await expect(teacher.locator(".delayed-when")).toHaveText("Taken 0 days after the post-test.");
+  const card = teacher.locator(".tests-card");
+  await expect(card.locator("thead th")).toHaveText(["", "Spaced review", "No spaced review", "d"]);
+  await expect(card.locator("tr[data-test]")).toHaveCount(2); // no pre-test in this class
+  // By intention to treat: the student who sat nothing counts as 0 in their arm.
+  const post = card.locator('tr[data-test="post"] td');
+  await expect(post.nth(0)).toContainText("50% (SD 70.7, n = 2)");
+  await expect(post.nth(0)).toContainText("1 of 2 finished");
+  await expect(post.nth(1)).toContainText("50% (SD 0, n = 2)");
+  await expect(post.nth(1)).toContainText("2 of 2 finished");
+  const delayed = card.locator('tr[data-test="delayed"] td');
+  await expect(delayed.nth(0)).toContainText("38% (SD 53, n = 2)");
+  await expect(delayed.nth(1)).toContainText("13% (SD 17.7, n = 2)");
+  await expect(delayed.nth(1)).toContainText("1 of 2 finished");
+  await expect(teacher.locator(".heat thead")).toContainText("Delayed post-test");
+  await expect(teacher.locator(".heat .heat-group").first()).toContainText("Spaced review (2)");
+  await teacher.close();
+});
+
+test("in a class testing what was hard, a student in the arm without it isn't asked, and their answers still reach the server", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const { code } = await (await request.post("/api/classes", { data: { name: "Hard or not", skills: ["fractions"], feature: "hard" }, headers })).json();
+  const joined = [];
+  for (let i = 0; i < 4; i++) joined.push(await (await request.post("/api/students", { data: { class: code } })).json());
+  const without = joined.find((j) => j.arm === "off");
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.addInitScript((s) => localStorage.setItem("zeno.student.v1", s), JSON.stringify(without));
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();
+  await student.getByLabel("Your answer").fill("12345");
+  await student.getByRole("button", { name: "Check" }).click();
+  await expect(student.locator(".practice-verdict.bad")).toBeVisible();
+  await student.getByRole("button", { name: "Show solution" }).click();
+  await expect(student.getByRole("button", { name: "Next" })).toBeVisible();
+  await expect(student.getByRole("group", { name: "What exactly was hard? Tick everything that was." })).toHaveCount(0);
+  await student.getByRole("button", { name: "Next" }).click();
+  const rows = async () => (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers })).text()).trim().split("\n");
+  await expect.poll(async () => (await rows()).length).toBe(2);
+  const [head, row] = (await rows()).map((r) => r.split(","));
+  expect([row[head.indexOf("feature")], row[head.indexOf("arm")]]).toEqual(["hard", "off"]);
 });

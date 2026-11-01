@@ -1,5 +1,5 @@
 // The study protocol: what a class is doing now (its phase, set by the teacher), timed practice sessions, and the pre-
-// and post-test. A test answer is stored once per student, test and question, with what was typed and how the server
+// test, the post-test and the delayed post-test (a week or more after the last session, issue #268). A test answer is stored once per student, test and question, with what was typed and how the server
 // marked it; nothing is shown to the student, and the learner model never sees it, so the outcome measure stays apart
 // from what the adaptive condition learns from.
 //
@@ -10,17 +10,19 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import { CURRICULUM } from "../src/model/curriculum.ts";
-import { DEFAULT_TEST_LENGTH, formFor, MAX_TEST_LENGTH, MIN_TEST_LENGTH, testItems, type TestOrder, type TestPhase } from "../src/model/testForms.ts";
+import { DEFAULT_TEST_LENGTH, formFor, MAX_TEST_LENGTH, MIN_TEST_LENGTH, TEST_PHASES, testItems, type TestOrder, type TestPhase } from "../src/model/testForms.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { mark } from "./marking.ts";
 
 /**
- * open: class practice any time (no timer); pretest / posttest: the test, for students who haven't finished it;
- * session: class practice until sessionEnds, the same window for everyone; closed: no class practice.
+ * open: class practice any time (no timer); pretest / posttest / delayed: the test, for students who haven't finished
+ * it; session: class practice until sessionEnds, the same window for everyone; closed: no class practice.
  */
-export const PHASES = ["open", "pretest", "session", "posttest", "closed"] as const;
+export const PHASES = ["open", "pretest", "session", "posttest", "delayed", "closed"] as const;
 export type Phase = (typeof PHASES)[number];
+/** The class's phase in which each test is taken. */
+export const TEST_PHASE_OF: Record<TestPhase, Phase> = { pre: "pretest", post: "posttest", delayed: "delayed" };
 /** A test answer: right, nearly right, wrong, or passed over. Form messages ("lowest terms") are retried, not stored. */
 export const TEST_VERDICTS = ["correct", "close", "wrong", "skipped"] as const;
 const MAX_SESSION_MINUTES = 240;
@@ -82,7 +84,7 @@ export function initProtocol(db: DatabaseSync) {
   if (unlogged.length) transaction(db, () => {
     for (const c of unlogged) {
       logPhase(db, c.code, "open", null, c.createdAt);
-      for (const t of firstAnswers.all(c.code) as { phase: TestPhase; at: number }[]) logPhase(db, c.code, t.phase === "pre" ? "pretest" : "posttest", null, t.at);
+      for (const t of firstAnswers.all(c.code) as { phase: TestPhase; at: number }[]) logPhase(db, c.code, TEST_PHASE_OF[t.phase], null, t.at);
       logPhase(db, c.code, c.phase, c.sessionEnds, now);
     }
   });
@@ -109,9 +111,9 @@ export const onTime = (windows: readonly PhaseWindow[], phases: readonly Phase[]
 /** The phases class practice happens in (a session only until its time is up). */
 export const PRACTICE_PHASES: readonly Phase[] = ["open", "session"];
 
-/** Counterbalancing: within a class and condition, students alternate between taking form A first and form B first. */
-export function nextTestOrder(db: DatabaseSync, classCode: string, condition: string): TestOrder {
-  const { n } = stmt(db, "SELECT COUNT(*) AS n FROM students WHERE class_code = ? AND condition = ?").get(classCode, condition) as { n: number };
+/** Counterbalancing: within a class and arm, students alternate between taking form A first and form B first. */
+export function nextTestOrder(db: DatabaseSync, classCode: string, arm: string): TestOrder {
+  const { n } = stmt(db, "SELECT COUNT(*) AS n FROM students WHERE class_code = ? AND arm = ?").get(classCode, arm) as { n: number };
   return n % 2 ? "BA" : "AB";
 }
 /** A student from before tests existed gets an order from their number. */
@@ -133,7 +135,7 @@ export function studentTests(db: DatabaseSync, student: { id: number; test_order
   const done = stmt(db, "SELECT phase, item FROM test_responses WHERE student_id = ? ORDER BY item").all(student.id) as { phase: TestPhase; item: number }[];
   const order = testOrderOf(student);
   const of = (phase: TestPhase) => ({ form: formFor(order, phase), answered: done.filter((d) => d.phase === phase).map((d) => d.item) });
-  return { pre: of("pre"), post: of("post") };
+  return Object.fromEntries(TEST_PHASES.map((p) => [p, of(p)])) as Record<TestPhase, ReturnType<typeof of>>;
 }
 
 const MAX_BODY = 64 * 1024;
@@ -170,7 +172,7 @@ export async function recordTestAnswer(
   const bad = (what: string) => new HttpError(400, `invalid ${what}`);
   const { clientId, phase, item, input, verdict, retries, ms } = body;
   if (typeof clientId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(clientId)) throw bad("clientId");
-  if (phase !== "pre" && phase !== "post") throw bad("phase");
+  if (!TEST_PHASES.includes(phase)) throw bad("phase");
   const { testLength } = classProtocol(db, student.class);
   if (!Number.isInteger(item) || item < 0 || item >= testLength) throw bad("item");
   if (typeof input !== "string") throw bad("input");
@@ -179,11 +181,11 @@ export async function recordTestAnswer(
   if (!Number.isInteger(ms) || ms < 0 || ms > DAY) throw bad("ms");
   const now = Date.now();
   const windows = phaseWindows(db, student.class);
-  const testPhase: Phase = phase === "pre" ? "pretest" : "posttest";
-  if (!windows.some((w) => w.phase === testPhase && w.start <= now)) throw new HttpError(400, `the ${phase}-test hasn't started`);
+  const testPhase = TEST_PHASE_OF[phase as TestPhase];
+  if (!windows.some((w) => w.phase === testPhase && w.start <= now)) throw new HttpError(400, phase === "delayed" ? "the delayed post-test hasn't started" : `the ${phase}-test hasn't started`);
   const late = !onTime(windows, [testPhase], now);
   const { skills } = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(student.class) as { skills: string | null };
-  const form = formFor(testOrderOf(student), phase);
+  const form = formFor(testOrderOf(student), phase as TestPhase);
   const q = testItems(student.class, skills ? JSON.parse(skills) : CURRICULUM, form, testLength)[item];
   const typed = input.slice(0, 200);
   // A pass stays a pass; anything typed is marked here. A "form" verdict means the browser should have sent it back.

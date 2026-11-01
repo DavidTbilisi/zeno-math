@@ -87,9 +87,10 @@ test("the tests export becomes scores per student, and only students who finishe
   const scores = scoresFromTests(rows);
   assert.equal(scores.length, 8);
   assert.deepEqual(scores[0], {
-    student: "s1", class: "K", condition: "adaptive", order: "AB", testLength: null, pre: { form: "A", answered: 4, correct: 1 }, post: { form: "B", answered: 4, correct: 3 },
+    student: "s1", class: "K", condition: "adaptive", treated: true, order: "AB", testLength: null, pre: { form: "A", answered: 4, correct: 1 }, post: { form: "B", answered: 4, correct: 3 },
   });
   const r = analyseStudy(scores);
+  assert.deepEqual(r.arms, { treated: "adaptive", control: "fixed" });
   assert.deepEqual(r.testLengths, [4], "without the export's test_length, the most questions anyone answered");
   assert.deepEqual(r.students, { adaptive: { all: 4, complete: 3 }, fixed: { all: 4, complete: 3 } });
   close(r.means.adaptive.pre, 5 / 12);
@@ -135,4 +136,21 @@ test("with too few finished tests there is no comparison, rather than a meaningl
   assert.equal(r.ancova, null);
   assert.equal(r.gains, null);
   assert.equal(r.forms, null);
+});
+
+test("a class testing another feature: the arms are the feature with and without, whatever the condition, and the delayed post-test stays out", () => {
+  const armed = (rows: Record<string, string>[], arm: string) => rows.map((r) => ({ ...r, feature: "spaced", arm }));
+  const late = (student: string) => [0, 1, 2, 3].map((i) => ({ ...row(student, "adaptive", "AB", "delayed", "C", i, true), feature: "spaced", arm: "off" }));
+  const rows = [
+    ...armed([...sit("a1", "adaptive", "AB", 1, 4), ...sit("a2", "adaptive", "BA", 2, 4), ...sit("a3", "adaptive", "AB", 1, 3)], "on"),
+    ...armed([...sit("b1", "adaptive", "AB", 1, 2), ...sit("b2", "adaptive", "BA", 2, 2), ...sit("b3", "adaptive", "AB", 2, 3)], "off"),
+    ...late("b1"),
+  ];
+  const scores = scoresFromTests(rows);
+  assert.deepEqual(scores.map((s) => [s.condition, s.treated]).slice(2, 4), [["spaced on", true], ["spaced off", false]]);
+  const r = analyseStudy(scores);
+  assert.deepEqual(r.arms, { treated: "spaced on", control: "spaced off" });
+  assert.deepEqual(r.students, { "spaced off": { all: 3, complete: 3 }, "spaced on": { all: 3, complete: 3 } });
+  assert.ok(r.ancova!.estimate > 0 && r.ancova!.n.treated === 3, "the arm with spaced review is the treated one");
+  assert.deepEqual(answerChecks(rows), { "spaced on": { answers: 24, late: 0, remarked: 0 }, "spaced off": { answers: 28, late: 0, remarked: 0 } });
 });
