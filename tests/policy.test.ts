@@ -190,3 +190,13 @@ test("given the student's ideas, a skill made of ideas is aimed at the one they 
   // A new student's ideas are all level: the idea is one of the skill's, at random.
   assert.equal(adaptiveChoice(m, "s", ["times"], { random: () => 0.99, ideas: {} }).idea, "multiplyLong");
 });
+
+test("a skill whose spaced review was missed is open again, whatever the model says of it", () => {
+  const model: ChanceModel = { predictAt: (_s, skill) => (skill === "linear" ? 0.95 : 0.6) };
+  const skills: SkillId[] = ["linear", "expand"];
+  assert.deepEqual(openSkills(model, "s", skills), ["expand"]);
+  assert.deepEqual(openSkills(model, "s", skills, { again: ["linear"] }), ["linear", "expand"]);
+  const picks = new Set(Array.from({ length: 40 }, (_, i) => adaptiveChoice(model, "s", skills, { again: ["linear"], random: () => (i * 0.37) % 1 }).skill));
+  assert.ok(picks.has("expand"));
+  assert.deepEqual(openSkills(model, "s", ["linear"], { again: ["linear"] }), ["linear"]);
+});

@@ -29,8 +29,9 @@ import { WorkInSteps } from "./WorkInSteps";
 import { ScratchPad } from "./ScratchPad";
 import { ComingBack, SESSION, SessionCard, SessionSummary, type SessionResult } from "./PracticeSession";
 import { addPiece, dropPiece } from "../math/target";
-import { emptyProgress, loadProgress, saveProgress, type Mistake, type Progress } from "../practiceProgress";
+import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
+import { learnSpacing, nextReview, openAgain } from "../model/spacing";
 import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
 } from "../model/placement";
@@ -127,22 +128,37 @@ export function PracticeDialog(props: Props) {
   // The class study's plan (null until loaded, or when nobody is signed in); kept in a ref because answering moves it on.
   const planRef = useRef<ClassPlan | null>(null);
   const predicted = (skill: SkillId, L: Level) => planRef.current?.model.predict({ student: ME, skill, level: L }) ?? null;
+  /** The skill of the question on screen, so that a spaced review is on another skill when one is due. */
+  const shownSkill = useRef<SkillId | undefined>(undefined);
   /**
-   * The next question. Missed ones come back first; then, in class practice, the student's condition chooses
-   * (fixed sequence, or adaptive, which on a skill made of ideas aims at the weakest), otherwise the topic and level
-   * picked above.
+   * The next question. Missed ones come back first; then what was mastered days ago and is due for its spaced review
+   * (spacing.ts: in class practice a skill, asked hard; in free practice a skill at a level); then, in class practice,
+   * the student's condition chooses (fixed sequence, or adaptive, which on a skill made of ideas aims at the weakest),
+   * otherwise the topic and level picked above.
    */
   const nextExercise = (a: Area, p: Pick, L: Level, prog: Progress, plan: ClassPlan | null): Current => {
     const grade = currentGrade(prog.placed ?? null, prog.cells ?? {});
-    const fits = (m: Mistake) =>
+    const fits = (m: Cell) =>
       plan ? plan.skills.includes(m.skill)
       : p === "place" ? false // a placement asks only fresh questions
       : p === "grade" ? gradeOf(m.skill, m.level) === grade
       : p === "mixed" ? areaOf(m.skill) === a : m.skill === p;
     const due = prog.mistakes.find((m) => fits(m) && m.due <= prog.answered);
     if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
+    const last = shownSkill.current;
+    const spaced = (skill: SkillId, L: Level): Current => ({ ex: exercise(skill, L, newSeed(), w), policy: "spaced", review: false, predicted: predicted(skill, L) });
     if (plan) {
-      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, { recent: plan.recent, ideas: plan.ideas, ema: plan.ema, unlockFloor: newcomerChance(plan.model) });
+      const k = nextReview(plan.spacing, Date.now(), (k) => fits({ skill: k as SkillId, level: 3 }), (k) => k, last);
+      if (k) return spaced(k as SkillId, 3);
+    } else {
+      const cellOf = (k: string) => ({ skill: k.split(".")[0] as SkillId, level: Number(k.split(".")[1]) as Level });
+      const k = nextReview(prog.spacing ?? {}, Date.now(), (k) => fits(cellOf(k)), (k) => cellOf(k).skill, last);
+      if (k) return spaced(cellOf(k).skill, cellOf(k).level);
+    }
+    if (plan) {
+      const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, {
+        recent: plan.recent, ideas: plan.ideas, ema: plan.ema, unlockFloor: newcomerChance(plan.model), again: openAgain(plan.spacing) as SkillId[],
+      });
       return { ex: exerciseFor(c, w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
     }
     if (p === "place" || p === "grade") {
@@ -300,6 +316,10 @@ export function PracticeDialog(props: Props) {
     const firstTry = ok && wrongs === 0;
     const key = cellKey(ex);
     let placed = progress.placed;
+    // A level made secure comes back for review a day later, and further apart with each right review (spacing.ts).
+    const cell = recordCell(progress.cells?.[key], firstTry);
+    const spacing = { ...progress.spacing };
+    learnSpacing(spacing, key, firstTry, isSecure(cell), Date.now());
     if (pick === "place" && placing) {
       const p = placementStep(placing, firstTry);
       setPlacing(p);
@@ -311,7 +331,8 @@ export function PracticeDialog(props: Props) {
       stats: { ...progress.stats, [ex.skill]: { seen: s.seen + 1, right: s.right + (ok ? 1 : 0) } },
       mistakes,
       answered: progress.answered + 1,
-      cells: { ...progress.cells, [key]: recordCell(progress.cells?.[key], firstTry) },
+      cells: { ...progress.cells, [key]: cell },
+      spacing,
       placed,
     });
     setScore((sc) => ({ right: sc.right + (ok ? 1 : 0), total: sc.total + 1, streak: ok ? sc.streak + 1 : 0 }));
@@ -358,6 +379,7 @@ export function PracticeDialog(props: Props) {
   };
   /** Puts a new question up with a clean slate. */
   function show(c: Current) {
+    shownSkill.current = c.ex.skill;
     setCur(c);
     setInput("");
     setVerdict(null);
@@ -602,8 +624,8 @@ export function PracticeDialog(props: Props) {
           {plan?.phase === "session" && plan.sessionEnds !== null && (
             <Countdown until={plan.sessionEnds} left={(time) => fill(w.ui.timeLeft, { time })} />
           )}
-          {cur.review ? (
-            <small className="hint practice-review">↻ {w.ui.review}</small>
+          {cur.review || cur.policy === "spaced" ? (
+            <small className="hint practice-review">↻ {cur.review ? w.ui.review : w.ui.spaced}</small>
           ) : (
             classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
           )}

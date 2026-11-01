@@ -85,6 +85,8 @@ export type AdaptiveOptions = {
   ideas?: IdeaState;
   /** The student's moving average on each skill: with it, a skill is mastered only once that has reached EMA_MASTERED_AT. */
   ema?: EmaState;
+  /** Skills whose spaced review was missed (spacing.ts): open for practice again, whatever the model says, until relearnt. */
+  again?: readonly SkillId[];
 };
 
 /** Whether a skill counts as mastered, given the chance the model gives a hard question on it and the student's evidence on the skill. */
@@ -95,9 +97,9 @@ export function isMastered(skill: SkillId, hard: number, options: Pick<AdaptiveO
 }
 
 /** The open skills, and the hard-question predictions they were judged by (adaptiveChoice needs those again). */
-function open(model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor" | "ideas" | "ema">): { open: SkillId[]; hard: Map<SkillId, number> } {
+function open(model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor" | "ideas" | "ema" | "again">): { open: SkillId[]; hard: Map<SkillId, number> } {
   const hard = new Map(skills.map((k) => [k, model.predictAt(student, k, 3)] as const));
-  const unmastered = skills.filter((k) => !isMastered(k, hard.get(k)!, options));
+  const unmastered = skills.filter((k) => options.again?.includes(k) || !isMastered(k, hard.get(k)!, options));
   const floor = options.unlockFloor;
   const bar = (pre: SkillId) => (floor ? Math.min(UNLOCK_AT, floor(pre)) : UNLOCK_AT);
   const ready = unmastered.filter((k) => (PREREQUISITES[k] ?? []).every((pre) => !skills.includes(pre) || model.predictAt(student, pre, 2) >= bar(pre)));
@@ -105,7 +107,7 @@ function open(model: ChanceModel, student: string, skills: readonly SkillId[], o
 }
 
 /** The skills the student may practise now: prerequisites met and not mastered (all of them once everything is). */
-export const openSkills = (model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor" | "ideas" | "ema"> = {}): SkillId[] =>
+export const openSkills = (model: ChanceModel, student: string, skills: readonly SkillId[], options: Pick<AdaptiveOptions, "unlockFloor" | "ideas" | "ema" | "again"> = {}): SkillId[] =>
   open(model, student, skills, options).open;
 
 export function adaptiveChoice(model: ChanceModel, student: string, skills: readonly SkillId[], options: AdaptiveOptions = {}): Choice {

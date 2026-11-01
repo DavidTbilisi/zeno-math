@@ -20,6 +20,7 @@ import { EloModel } from "../src/model/elo.ts";
 import { observationsFromCsv, parseCsv, replay } from "../src/model/evaluate.ts";
 import { usesOf } from "../src/model/ideaState.ts";
 import { learnEma, type EmaState } from "../src/model/policy.ts";
+import { DAY } from "../src/model/spacing.ts";
 import { analyseStudy, scoresFromTests } from "../src/model/analysis.ts";
 import { testItems } from "../src/model/testForms.ts";
 import { verdictOf } from "../src/learner.ts";
@@ -252,6 +253,29 @@ test("a class practises the skills it was given, in curriculum order", async () 
   assert.equal(all.skills.length, ALL_SKILLS.length);
   const listed = (await call("GET", "/api/classes", undefined, TEACHER)).body as { code: string; skills: string[] }[];
   assert.deepEqual(listed.find((c) => c.code === made.body.code)!.skills, made.body.skills);
+});
+
+test("the plan carries the student's spaced reviews: a skill mastered comes back a day later, then three days after a right review", async () => {
+  const { code } = (await call("POST", "/api/classes", { skills: ["linear"] }, TEACHER)).body;
+  const joined = (await call("POST", "/api/students", { class: code })).body;
+  const plan = async () => (await call("GET", `/api/students/${joined.code}/plan`)).body;
+  assert.deepEqual((await plan()).spacing, {});
+  const right = (shownAt: number, policy = joined.condition) =>
+    attempt(joined.code, { policy, level: 3, shownAt, answers: [{ verdict: "correct", ms: 9000 }] });
+  const T = Date.UTC(2026, 10, 1, 9);
+  let at = T, spacing: Record<string, { step: number; due: number; again?: boolean }> = {};
+  for (let i = 0; i < 60 && !spacing.linear; i++) {
+    assert.equal((await call("POST", "/api/attempts", right((at += 60_000)))).status, 201);
+    spacing = (await plan()).spacing;
+  }
+  assert.deepEqual(spacing.linear, { step: 0, due: at + DAY }, "scheduled by the answer that mastered it, on the student's clock");
+  // The review: chosen by the spaced review, never marked as a review of misses.
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: "spaced", review: true }))).status, 400);
+  const review = at + DAY + 5000;
+  assert.equal((await call("POST", "/api/attempts", right(review, "spaced"))).status, 201);
+  assert.deepEqual((await plan()).spacing.linear, { step: 1, due: review + 3 * DAY });
+  const exported = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.equal(exported.filter((r) => r.policy === "spaced").length, 1);
 });
 
 test("the plan: condition, skills, place in the fixed sequence, recent skills and the student's own records", async () => {

@@ -12,7 +12,8 @@ import {
 } from "../src/learner.ts";
 import { priorState } from "../src/model/classModel.ts";
 import { IDEA_PRIOR, usesOf, type IdeaState } from "../src/model/ideaState.ts";
-import { EMA } from "../src/model/policy.ts";
+import { EMA, isMastered } from "../src/model/policy.ts";
+import { DAY, openAgain } from "../src/model/spacing.ts";
 
 const w = en.pracWords;
 const student = { code: "ABCD-EFGH", class: "7BXYZ2", condition: "fixed" as const };
@@ -228,4 +229,26 @@ test("a question worked in steps: each step goes with the attempt and moves the 
   learnFromAttempt(stepped, a);
   assert.ok(stepped.commonDenom! < plain.commonDenom!);
   assert.ok(stepped.equivalent! > plain.equivalent!);
+});
+
+test("class practice schedules spaced reviews as the server will: mastered a day later, then further apart, open again after a miss", () => {
+  const plan = toClassPlan({ ...protocol, condition: "adaptive", skills: ["linear"], position: 0, recent: [], state: priorState(), ideas: {}, ema: {} });
+  assert.deepEqual(plan.spacing, {}, "a plan from a server without spacing starts with none");
+  const T = Date.UTC(2026, 10, 1, 9);
+  const base = { clientId: "x", student: student.code, skill: "linear" as const, level: 3 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, predicted: 0.5 };
+  const right = (shownAt: number, policy: Attempt["policy"] = "adaptive"): Attempt => ({ ...base, shownAt, policy, outcome: "solved", answers: [{ input: "3", verdict: "correct", ms: 1 }] });
+  const wrong = (shownAt: number): Attempt => ({ ...base, shownAt, policy: "spaced", outcome: "revealed", answers: [{ input: "0", verdict: "wrong", ms: 1 }] });
+  const mastered = () => isMastered("linear", plan.model.predictAt(ME, "linear", 3), { ema: plan.ema, ideas: plan.ideas });
+  let at = T;
+  for (let i = 0; i < 60 && !mastered(); i++) applyAttempt(plan, right((at += 60_000)));
+  assert.ok(mastered(), "right answers master the skill");
+  assert.deepEqual(plan.spacing.linear, { step: 0, due: at + DAY });
+  // The review a day later, right: the next one falls three days on.
+  const review = plan.spacing.linear.due + 5000;
+  applyAttempt(plan, right(review, "spaced"));
+  assert.deepEqual(plan.spacing.linear, { step: 1, due: review + 3 * DAY });
+  // Missed: open again for practice.
+  applyAttempt(plan, wrong(plan.spacing.linear.due));
+  assert.equal(plan.spacing.linear.again, true);
+  assert.deepEqual(openAgain(plan.spacing), ["linear"]);
 });

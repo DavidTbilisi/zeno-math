@@ -12,6 +12,7 @@ import { evidence } from "../src/model/evaluate.ts";
 import { FRACTIONS } from "../src/model/conceptGraph.ts";
 import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
 import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
+import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
 import { dashboard } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
@@ -31,8 +32,8 @@ export type Condition = (typeof CONDITIONS)[number];
 const BLOCK: readonly Condition[] = ["adaptive", "adaptive", "fixed", "fixed"];
 
 export const OUTCOMES = ["solved", "revealed", "skipped"] as const;
-/** Who chose the question: the student's condition (class practice), the student (free practice), or the review of misses. */
-export const POLICIES = ["adaptive", "fixed", "free", "review"] as const;
+/** Who chose the question: the student's condition (class practice), the student (free practice), the review of misses, or the spaced review. */
+export const POLICIES = ["adaptive", "fixed", "free", "review", "spaced"] as const;
 /** correct; close (nearly); wrong (a named mistake too); form (right idea, wrong form: sent back, not counted). */
 export const VERDICTS = ["correct", "close", "wrong", "form"] as const;
 const MAX_ANSWERS = 50;
@@ -138,17 +139,21 @@ const classSkills = (json: string | null): SkillId[] => (json ? JSON.parse(json)
 
 // ---------- the learner model and each student's ideas and moving averages, kept up to date with every stored attempt ----------
 
-type Replay = { model: ClassModel; ideas: Map<number, IdeaState>; ema: Map<number, EmaState>; lastId: number };
+type Replay = { model: ClassModel; ideas: Map<number, IdeaState>; ema: Map<number, EmaState>; spacing: Map<number, Spacing>; lastId: number };
 const replays = new WeakMap<DatabaseSync, Replay>();
-/** Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas and moving averages. */
+/**
+ * Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas,
+ * moving averages and spaced reviews.
+ */
 function replay(db: DatabaseSync): Replay {
   let cache = replays.get(db);
-  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), ema: new Map(), lastId: 0 }));
+  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), ema: new Map(), spacing: new Map(), lastId: 0 }));
   const rows = stmt(db, `
-    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, steps, json_array_length(answers) - retries AS counted FROM attempts WHERE id > ? ORDER BY id
+    SELECT id, student_id, skill, level, seed, outcome, first_correct, answers, hard, steps, shown_at, json_array_length(answers) - retries AS counted
+    FROM attempts WHERE id > ? ORDER BY id
   `).all(cache.lastId) as {
     id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; hard: string | null; steps: string | null;
-    counted: number;
+    shown_at: number; counted: number;
   }[];
   for (const r of rows) {
     // Counted answers are those not sent back for their form, as the export reads them (evaluate.ts, observation).
@@ -163,6 +168,12 @@ function replay(db: DatabaseSync): Replay {
       const json = <T>(v: string | null) => (v ? (JSON.parse(v) as T) : undefined);
       trackIdeas(ideas, { skill: r.skill, level: r.level, seed: r.seed }, r.outcome, JSON.parse(r.answers) as Answered[], json<string[]>(r.hard), json<SteppedThrough[]>(r.steps));
     }
+    // Then the spaced reviews, by the same rule as the browser's (learner.ts), with mastery as it stands after this answer.
+    if (correct !== null) {
+      const spacing = cache.spacing.get(r.student_id) ?? cache.spacing.set(r.student_id, {}).get(r.student_id)!;
+      const ema = cache.ema.get(r.student_id)!;
+      learnClassSpacing(spacing, cache.model, `s${r.student_id}`, ema, cache.ideas.get(r.student_id) ?? {}, r.skill, correct, r.shown_at);
+    }
     cache.lastId = r.id;
   }
   return cache;
@@ -172,6 +183,8 @@ export const currentModel = (db: DatabaseSync): ClassModel => replay(db).model;
 export const currentIdeas = (db: DatabaseSync, studentId: number): IdeaState => replay(db).ideas.get(studentId) ?? {};
 /** A student's moving average on each skill they have answered, for the adaptive policy's mastery rule (policy.ts). */
 export const currentEma = (db: DatabaseSync, studentId: number): EmaState => replay(db).ema.get(studentId) ?? {};
+/** A student's spaced reviews (spacing.ts): when each skill they have mastered comes back. */
+export const currentSpacing = (db: DatabaseSync, studentId: number): Spacing => replay(db).spacing.get(studentId) ?? {};
 /** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
 const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
@@ -416,6 +429,7 @@ export async function handleResearch(
         state: { ...state, students: me ? { me } : {} },
         ideas: currentIdeas(db, student.id),
         ema: currentEma(db, student.id),
+        spacing: currentSpacing(db, student.id),
         ...classProtocol(db, student.class),
         tests: studentTests(db, student),
       });
