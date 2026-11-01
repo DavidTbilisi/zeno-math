@@ -1743,6 +1743,8 @@ src/math/calcSteps.ts     how a calculus question comes apart into steps (terms,
 src/model/stepDown.ts     targeted step-down: two early misses on a skill made of ideas, three questions on its weakest idea, back
 src/model/arms.ts         what a class tests: the features, the two arms, the condition each arm practises in
 src/model/stuckList.ts    the stuck list: ten questions without three right in a row, the reason (mistake, ticked idea, weakest idea), groups
+src/model/conceptGraph.ts the ideas inside a skill: fractions and arithmetic, and signed numbers, powers, brackets, order of operations, rounding; each mistake's idea
+src/math/orderOps.ts      order of operations worked the right way or as a known mistake would, for the generator and for reading a question's ideas
 server/protocol.ts        the study protocol: class phases (logged), timed sessions, counterbalanced test forms, the delayed post-test, test answers
 server/marking.ts, checker.ts  every answer marked again on the server with the browser's checker (bundled for Docker)
 src/model/testForms.ts    the test forms A and B (pre- and post-test) and C (delayed post-test), built from the class code

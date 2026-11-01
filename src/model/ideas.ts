@@ -19,7 +19,7 @@
 // model's own likelihood (fitIdeasByLikelihood), or by the heuristic the thesis first used (fitIdeas).
 import { en } from "../locales/en.ts";
 import { exercise } from "../math/practice.ts";
-import { FRACTIONS, type FractionsNode } from "./conceptGraph.ts";
+import { FRACTIONS, IDEAS, type IdeaNode } from "./conceptGraph.ts";
 import { sigmoid } from "./elo.ts";
 import { conjunctiveStep, gapIdea, IDEA_PRIOR, IDEA_SKILLS, TICK_PRIOR, tickStep, usesOf, type IdeaSkill, type TickRates } from "./ideaState.ts";
 import { bktStep, calibration, fitBkt, rmse, type BktParams, type Prediction } from "./evaluate.ts";
@@ -34,17 +34,22 @@ import { DEFAULT_SIM } from "./simulate.ts";
 // The skills with a graph, the ideas a question needs, the idea a mistake blames and the step on several ideas at once
 // live in ideaState.ts, which the app reads too; here they are the world's.
 export { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill, type TickRates };
+/**
+ * The skills of the world of ideas: times, hcf and fractions, as the thesis ran it. The app has graphs for more skills
+ * since (issue #265), but the world stays as it was, so its numbers do too.
+ */
+export const WORLD_SKILLS = IDEA_SKILLS.slice(0, 3) as readonly IdeaSkill[];
 
 /** Questions generated per level to find which ideas a skill's questions can need. */
 const SAMPLE = 300;
-const ideas = new Map<IdeaSkill, FractionsNode[]>();
+const ideas = new Map<IdeaSkill, IdeaNode[]>();
 /** The ideas a skill's questions can need, in the graph's order, read off the generators: SKILL_IDEAS in ideaState.ts, checked. */
-export function ideasOf(skill: IdeaSkill): FractionsNode[] {
+export function ideasOf(skill: IdeaSkill): IdeaNode[] {
   let found = ideas.get(skill);
   if (!found) {
     const seen = new Set<string>();
     for (const level of [1, 2, 3] as const) for (let seed = 1; seed <= SAMPLE; seed++) for (const n of usesOf(exercise(skill, level, seed, en.pracWords))) seen.add(n);
-    ideas.set(skill, (found = (Object.keys(FRACTIONS.nodes) as FractionsNode[]).filter((n) => seen.has(n))));
+    ideas.set(skill, (found = (Object.keys(IDEAS) as IdeaNode[]).filter((n) => seen.has(n))));
   }
   return found;
 }
@@ -123,7 +128,7 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
     const global = r.normal(spread.global);
     const known = new Map<string, boolean>();
     const style = p.tickStyle && tick.next() < p.tickStyle.share ? p.tickStyle.kind : null;
-    for (const skill of IDEA_SKILLS) {
+    for (const skill of WORLD_SKILLS) {
       const ids = ideasOf(skill);
       const ability = global + r.normal(spread.skill);
       for (const id of ids) if (!known.has(id)) known.set(id, r.next() < sigmoid(ability - difficulty.get(id)!));

@@ -339,6 +339,10 @@ test("the plan: condition, skills, place in the fixed sequence, recent skills an
   assert.ok(ideas[idea] - lowered[idea] > ideas[unticked] - lowered[unticked], `${idea} fell more than ${unticked}`);
   const exported = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
   assert.deepEqual(exported.map((r) => r.hard).filter(Boolean), [JSON.stringify([idea])]);
+  // On signed numbers too (issue #265): a tick on one of its ideas is taken, and lowers that idea from its start (0.5).
+  const signedSeed = Array.from({ length: 50 }, (_, i) => i + 1).find((s) => usesOf(exercise("integers", 2, s, en.pracWords)).includes("minusNeg"))!;
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { ...missed, skill: "integers", level: 2, seed: signedSeed, hard: ["minusNeg"] }))).status, 201);
+  assert.ok(((await plan()).ideas as Record<string, number>).minusNeg! < 0.5);
   assert.equal((await call("GET", `/api/students/${joined.code}/nope`)).status, 404);
 
   const csv = (await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string;

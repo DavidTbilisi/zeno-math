@@ -133,6 +133,40 @@ test("after a wrong answer on fractions the student is asked what exactly was ha
   expect(row).toMatch(/"\[""[a-zA-Z]+""\]"/);
 });
 
+test("order of operations is made of ideas too: a wrong answer asks which of its rules was hard, in words, and the tick reaches the server", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const { code } = await (await request.post("/api/classes", { data: { name: "Order", skills: ["order"] }, headers })).json();
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  await student.locator(".practice-join summary").click();
+  await student.getByLabel("Class code").fill(code);
+  await student.getByLabel("I understand and want to take part").check();
+  await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
+  await expect(student.getByText(/Chosen for you: Order of operations/)).toBeVisible();
+
+  const list = student.getByRole("group", { name: "What exactly was hard? Tick everything that was." });
+  await student.getByLabel("Your answer").fill("12345");
+  await student.getByRole("button", { name: "Check" }).click();
+  await expect(student.locator(".practice-verdict.bad")).toBeVisible();
+  await student.getByRole("button", { name: "Show solution" }).click();
+  await expect(list).toBeVisible();
+  // Every idea offered is one of the order graph's, by its name: none is a raw id.
+  const ideas = en.pracWords.ideas as Record<string, string>;
+  const order = ["bracketsFirst", "powFirst", "mulFirst", "chainLeft", "powValue", "negLine", "signTimes", "addWhole", "multiplyFacts", "multiplyLong", "divideExact"];
+  const offered = (await list.locator("label").allTextContents()).map((s) => s.trim());
+  expect(offered.length).toBeGreaterThan(0);
+  for (const name of offered) expect(order.map((id) => ideas[id])).toContain(name);
+  await list.getByRole("checkbox").first().check();
+  await student.getByRole("button", { name: "Next" }).click();
+
+  const rows = async () => (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers })).text()).trim().split("\n");
+  await expect.poll(async () => (await rows()).length).toBe(2);
+  const tickedId = order.find((id) => ideas[id] === offered[0])!;
+  expect((await rows())[1]).toContain(`"[""${tickedId}""]"`);
+});
+
 test("a wrong answer on a fractions operation is worked in steps, and the steps reach the server", async ({ browser, request }) => {
   const headers = { "X-Teacher-Password": TEACHER };
   const { code } = await (await request.post("/api/classes", { data: { name: "Steps", skills: ["fractions"] }, headers })).json();

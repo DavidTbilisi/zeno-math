@@ -9,7 +9,7 @@ import { CURRICULUM, GRADES, inCurriculumOrder, skillsOfGrade, YEARS, type Grade
 import { ClassModel } from "../src/model/classModel.ts";
 import type { Level } from "../src/model/elo.ts";
 import { evidence } from "../src/model/evaluate.ts";
-import { FRACTIONS } from "../src/model/conceptGraph.ts";
+import { IDEAS } from "../src/model/conceptGraph.ts";
 import { hasIdeas, type IdeaState } from "../src/model/ideaState.ts";
 import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
 import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
@@ -317,8 +317,8 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
     if ((outcome === "solved") !== (correctAt >= 0)) throw bad("outcome");
     if (outcome === "skipped" && !list.length) throw bad("outcome");
   }
-  // What was ticked as hard: ideas of the graph, each once, and only on a skill made of them.
-  const ideas = Object.keys(FRACTIONS.nodes);
+  // What was ticked as hard: ideas of a graph, each once, and only on a skill made of them.
+  const ideas = Object.keys(IDEAS);
   if (hard !== undefined && (!hasIdeas(skill) || !Array.isArray(hard) || !hard.length || new Set(hard).size !== hard.length || !hard.every((h) => ideas.includes(h)))) throw bad("hard");
   // The steps: after a wrong first answer on a skill worked in steps then, no more than the question has, each
   // answered or shown; or a faded worked example's, below.
