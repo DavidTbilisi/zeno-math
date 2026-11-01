@@ -683,6 +683,63 @@ test("the delayed post-test: form C once the class reaches it, and the arms comp
   assert.ok(delayed.every((t) => t.form === "C" && t.feature === "spaced" && ["on", "off"].includes(t.arm)));
 });
 
+test("faded worked examples: checked, stored, replayed into the plan's fading, kept from the model, and switched off for an arm", async () => {
+  const { code } = (await call("POST", "/api/classes", { name: "Fade", skills: ["tangent"] }, TEACHER)).body;
+  const s = (await call("POST", "/api/students", { class: code })).body.code;
+  const q = { skill: "tangent", level: 3, seed: 5 };
+  const steps = stepsOf(exercise("tangent", 3, 5, en.pracWords), en.pracWords);
+  assert.equal(steps.length, 4);
+  const given = { answers: [], shown: true };
+  const right = (i: number) => ({ answers: [{ input: steps[i].plain, verdict: "correct", ms: 9000 }], shown: false });
+  const fading = async () => (await call("GET", `/api/students/${s}/plan`)).body.fading;
+  assert.deepEqual(await fading(), {});
+
+  // Missed whole: the fading starts with the last step for the student.
+  const missed = { ...q, policy: "free", predicted: 0.5, outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] };
+  assert.equal((await call("POST", "/api/attempts", attempt(s, missed))).status, 201);
+  assert.deepEqual(await fading(), { tangent: 1 });
+  assert.equal((await call("POST", "/api/attempts", attempt(s, { ...missed, steps: [right(0)] }))).body.error, "invalid steps", "a calculus miss isn't worked in steps");
+
+  const example = { ...q, policy: "free", predicted: 0.9, outcome: "solved", answers: [], faded: 3, steps: [given, given, given, right(3)] };
+  const refused: [string, Record<string, unknown>][] = [
+    ["faded", { faded: 0 }],
+    ["faded", { faded: 4, steps: [given, given, given, given, right(3)] }],
+    ["faded", { answers: [{ input: steps[3].plain, verdict: "correct", ms: 1 }] }],
+    ["faded", { steps: [given, given, given] }],
+    ["steps", { steps: [given, right(1), given, right(3)] }],
+    ["outcome", { outcome: "revealed" }],
+    ["outcome", { steps: [given, given, given, { answers: [{ input: "y = 1", verdict: "wrong", ms: 1 }], shown: true }] }],
+  ];
+  for (const [error, change] of refused) {
+    const res = await call("POST", "/api/attempts", { ...attempt(s, example), ...change });
+    assert.deepEqual([res.status, res.body.error], [400, `invalid ${error}`], JSON.stringify(change));
+  }
+  // Left before the last step: skipped. Done right: the student does one more step next time.
+  assert.equal((await call("POST", "/api/attempts", { ...attempt(s, example), outcome: "skipped", steps: [given, given, given] })).status, 400, "nothing worked");
+  assert.equal((await call("POST", "/api/attempts", { ...attempt(s, example) })).status, 201);
+  assert.deepEqual(await fading(), { tangent: 2 });
+  const wrongStep = { answers: [{ input: "12345", verdict: "wrong", ms: 1 }], shown: true };
+  assert.equal((await call("POST", "/api/attempts", { ...attempt(s, { ...example, faded: 2, steps: [given, given, wrongStep, right(3)] }) })).status, 201);
+  assert.deepEqual(await fading(), { tangent: 1 }, "a step missed: one back");
+
+  // The export says how many steps were given; the model and the dashboard count only the question asked whole.
+  const rows = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual(rows.map((r) => [r.faded, r.outcome]), [["", "revealed"], ["3", "solved"], ["2", "solved"]]);
+  assert.equal(JSON.parse(rows[2].steps)[2].answers[0].verdict, "wrong", "each step marked again by the server");
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.deepEqual([d.students[0].answered, d.students[0].rightFirst, d.calibration.n], [3, 0, 1]);
+  assert.equal(d.students[0].mastery.tangent.n, 1);
+
+  // In a class testing the fading, the arm without it can't send a faded example.
+  const arms = (await call("POST", "/api/classes", { name: "Fade arms", skills: ["tangent"], feature: "faded" }, TEACHER)).body.code;
+  const joined = [];
+  for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: arms })).body);
+  const without = joined.find((j) => j.arm === "off").code;
+  const withIt = joined.find((j) => j.arm === "on").code;
+  assert.deepEqual((await call("POST", "/api/attempts", attempt(without, example))).body, { error: "invalid faded" });
+  assert.equal((await call("POST", "/api/attempts", attempt(withIt, example))).status, 201);
+});
+
 test("the server marks every answer itself, and keeps the browser's verdict where they differ", async () => {
   const { code } = await newClass();
   const student = (await call("POST", "/api/students", { class: code })).body.code;

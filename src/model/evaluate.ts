@@ -500,9 +500,11 @@ export function parseCsv(text: string): Record<string, string>[] {
  * What an attempt says about the student, the same wherever it is read (server, browser, CSV): right first time is
  * right; a first counted answer that was wrong or nearly right is wrong; so is revealing the answer without trying.
  * null for a question left after only form messages ("lowest terms"): the student had the right idea and never got
- * as far as a counted answer. counted = answers that weren't sent back for their form.
+ * as far as a counted answer; and for a faded worked example (fading.ts), where some steps were done for them, which
+ * says nothing about the whole question. counted = answers that weren't sent back for their form.
  */
-export function evidence(counted: number, outcome: string, firstCorrect: boolean): boolean | null {
+export function evidence(counted: number, outcome: string, firstCorrect: boolean, faded = false): boolean | null {
+  if (faded) return null;
   if (counted > 0) return firstCorrect;
   return outcome === "revealed" ? false : null;
 }
@@ -512,7 +514,7 @@ export function observation(row: Record<string, string>): (Observation & { condi
   const skill = row.skill as SkillId;
   const level = Number(row.level) as Level;
   if (!ALL_SKILLS.includes(skill) || ![1, 2, 3].includes(level)) return null;
-  const correct = evidence(Number(row.n_answers) - Number(row.retries), row.outcome, row.first_correct === "1");
+  const correct = evidence(Number(row.n_answers) - Number(row.retries), row.outcome, row.first_correct === "1", !!row.faded);
   return correct === null ? null : { student: row.student, skill, level, correct, condition: row.condition, attempt: Number(row.attempt) };
 }
 /** Every usable attempt in the order it was stored. */

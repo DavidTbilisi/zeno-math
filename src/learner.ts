@@ -9,6 +9,7 @@ import type { FractionsNode } from "./model/conceptGraph";
 import { asksWhatWasHard, bearing, hasIdeas, learnIdeas, usesOf, type IdeaState } from "./model/ideaState";
 import { learnEma, RECENT, type Choice, type EmaState } from "./model/policy";
 import { learnClassSpacing, type Spacing } from "./model/spacing";
+import { learnFading, type Faded, type Fading } from "./model/fading";
 import type { Form, TestPhase } from "./model/testForms";
 import { hasFeature, type Arm, type Feature } from "./model/arms";
 
@@ -47,7 +48,7 @@ export type Protocol = {
  */
 export type Plan = Protocol & {
   condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; state: LogisticState; ideas: IdeaState; ema: EmaState;
-  spacing?: Spacing;
+  spacing?: Spacing; fading?: Fading;
 };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 /** One step of a question worked in steps (stepsOf in practice.ts), in the steps' order: the answers to it, and whether its answer was shown. */
@@ -73,6 +74,11 @@ export type Attempt = {
   hard?: string[];
   /** The steps the student worked after a wrong answer, when the question was worked in steps. */
   steps?: StepLog[];
+  /**
+   * A faded worked example (fading.ts): how many of the question's steps were shown done. Those come first in steps,
+   * shown and unanswered; the student worked the rest, and answers is empty.
+   */
+  faded?: number;
 };
 
 /** One question as the student works on it. Times are from performance.now(), so a clock change doesn't skew them. */
@@ -88,6 +94,8 @@ export type QuestionLog = {
   hard: string[];
   /** The steps worked so far, when the question is being worked in steps. */
   steps: StepLog[];
+  /** The steps shown done, when the question is a faded worked example. */
+  faded?: number;
 };
 
 export const startLog = (shownAt = Date.now(), t0 = performance.now()): QuestionLog =>
@@ -131,6 +139,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
     shownAt: log.shownAt,
     ...(log.hard.length ? { hard: log.hard } : {}),
     ...(log.steps.length ? { steps: log.steps } : {}),
+    ...(log.faded ? { faded: log.faded } : {}),
   };
 }
 
@@ -139,9 +148,10 @@ export const ME = "me";
 /** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
 export type ClassPlan = Protocol & {
   condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; model: LogisticModel; ideas: IdeaState; ema: EmaState;
-  spacing: Spacing;
+  spacing: Spacing; fading: Fading;
 };
-export const toClassPlan = ({ state, spacing, ...rest }: Plan): ClassPlan => ({ ...rest, spacing: spacing ?? {}, model: LogisticModel.fromState(state) });
+export const toClassPlan = ({ state, spacing, fading, ...rest }: Plan): ClassPlan =>
+  ({ ...rest, spacing: spacing ?? {}, fading: fading ?? {}, model: LogisticModel.fromState(state) });
 /** A newer plan's protocol (the teacher may have moved the class on) over the plan the browser has been carrying forward. */
 export const withProtocol = (plan: ClassPlan, p: Protocol): ClassPlan =>
   ({ ...plan, class: p.class, phase: p.phase, sessionEnds: p.sessionEnds, testLength: p.testLength, tests: p.tests });
@@ -160,7 +170,7 @@ export type TestAnswer = {
 };
 /**
  * What the server will do once it has the attempt: the model, the moving average and the ideas learn from it, the spaced
- * reviews move on, the fixed sequence moves on.
+ * reviews and the fading move on, the fixed sequence moves on.
  */
 export function applyAttempt(plan: ClassPlan, a: Attempt) {
   const correct = attemptEvidence(a);
@@ -170,14 +180,25 @@ export function applyAttempt(plan: ClassPlan, a: Attempt) {
   }
   learnFromAttempt(plan.ideas, a);
   if (correct !== null) learnClassSpacing(plan.spacing, plan.model, ME, plan.ema, plan.ideas, a.skill, correct, a.shownAt);
+  learnFading(plan.fading, a.skill, fadedOf(a));
   if (a.policy === "fixed") plan.position++;
   plan.recent = [...plan.recent, a.skill].slice(-RECENT);
 }
 
 /** What the attempt tells the learner model, by the same rule the server uses (null: nothing). */
-export function attemptEvidence(a: Pick<Attempt, "outcome" | "answers">): boolean | null {
+export function attemptEvidence(a: Pick<Attempt, "outcome" | "answers" | "faded">): boolean | null {
   const counted = a.answers.filter((x) => x.verdict !== "form");
-  return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct");
+  return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct", !!a.faded);
+}
+/**
+ * What the attempt tells the fading (fading.ts), the same on the server and in the browser: the question is rebuilt to
+ * count its steps; a faded one went right when every step the student worked was right at its first counted answer.
+ */
+export function fadedOf(a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "steps" | "faded">): Faded {
+  const steps = stepsOf(exercise(a.skill, a.level, a.seed, en.pracWords), en.pracWords).length;
+  const given = a.faded ?? 0;
+  const worked = (a.steps ?? []).slice(given);
+  return { steps, given, correct: attemptEvidence(a), stepsRight: given > 0 && worked.length === steps - given && worked.every((s) => stepEvidence(s) === true) };
 }
 /** What a step says, by the same rule: its first counted answer, or wrong when its answer was shown untried. */
 const stepEvidence = (s: StepLog) => attemptEvidence({ outcome: s.shown ? "revealed" : "skipped", answers: s.answers });
@@ -194,14 +215,16 @@ const firstMistake = (ex: Exercise, answers: readonly Pick<LoggedAnswer, "input"
  * recognises, is read off that answer, and what the student ticked as hard goes with it. Then each step worked, as a
  * question of its own on the ideas it needs. The words don't matter to either; English rebuilds it everywhere.
  */
-export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "hard" | "steps">) {
+export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "hard" | "steps" | "faded">) {
   if (!hasIdeas(a.skill)) return;
   const correct = attemptEvidence(a);
-  if (correct === null) return;
+  // A faded worked example says nothing of the whole question, only of the steps the student worked.
+  if (correct === null && !a.faded) return;
   const ex = exercise(a.skill, a.level, a.seed, en.pracWords);
-  learnIdeas(state, ex, correct, correct ? undefined : firstMistake(ex, a.answers), a.hard);
+  if (correct !== null) learnIdeas(state, ex, correct, correct ? undefined : firstMistake(ex, a.answers), a.hard);
   const steps = a.steps?.length ? stepsOf(ex, en.pracWords) : [];
   a.steps?.forEach((s, i) => {
+    if (i < (a.faded ?? 0)) return;
     const right = stepEvidence(s);
     if (right !== null && steps[i]) learnIdeas(state, steps[i], right, right ? undefined : firstMistake(steps[i], s.answers));
   });
