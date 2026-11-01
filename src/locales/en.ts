@@ -8885,6 +8885,7 @@ export const en = {
       wrong: "Not quite — try again.",
       revealed: "Here is the answer and how to get it.",
       review: "From your mistakes: try this one again.",
+      spaced: "Review: you mastered this a while ago. Still got it?",
       score: "{right} of {total} right · streak {streak}",
       sound: "Sound on or off",
       scratch: { title: "Scratch paper", pen: "Pen", rub: "Eraser", lift: "Line eraser", dots: "Snap to dots", undo: "Undo", clear: "Clear", black: "Black ink", blue: "Blue ink", red: "Red ink" },

@@ -427,6 +427,8 @@ export type PracticeWords = {
     wrong: string;
     revealed: string;
     review: string;
+    /** Over a question that is the spaced review of something mastered days ago. */
+    spaced: string;
     score: string;
     progress: string;
     count: string;

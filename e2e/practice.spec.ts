@@ -267,3 +267,38 @@ test("with dots on, the scratch pen draws and the eraser rubs straight from dot 
   await page.reload();
   await expect(page.getByRole("button", { name: s.dots })).toHaveAttribute("aria-pressed", "true");
 });
+
+test("a level made secure comes back for review a day later, then three days after a right review", async ({ page }) => {
+  const DAY = 86_400_000;
+  const T = new Date("2026-11-02T09:00:00Z").getTime();
+  // Only the date is faked: the page's timers run as usual.
+  await page.clock.setFixedTime(T);
+  const { r, ex } = questionWith("fractions", () => true);
+  await page.goto("/#/practice");
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  const answer = async () => {
+    await page.getByLabel("Your answer").fill(ex.plain);
+    await page.getByRole("button", { name: "Check" }).click();
+    await expect(page.getByText("Correct!")).toBeVisible();
+  };
+  const spacing = () => page.evaluate(() => JSON.parse(localStorage.getItem("zeno.practice.v1")!).spacing?.["fractions.1"] ?? null);
+  // Three right at the first try make the level secure: its review falls a day later, and isn't asked before then.
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  for (let i = 0; i < 3; i++) {
+    if (i) await page.getByRole("button", { name: "Next →" }).click();
+    await answer();
+  }
+  expect(await spacing()).toEqual({ step: 0, due: T + DAY });
+  await page.getByRole("button", { name: "Next →" }).click();
+  await expect(page.locator(".practice-review")).toHaveCount(0);
+
+  // Two days on, the review comes first, marked as one; answered right, the next falls three days later.
+  await page.clock.setFixedTime(T + 2 * DAY);
+  await page.getByRole("button", { name: /^Fractions \d+\/\d+$/ }).click();
+  await expect(page.locator(".practice-review")).toHaveText(`↻ ${w.ui.spaced}`);
+  await answer();
+  expect(await spacing()).toEqual({ step: 1, due: T + 5 * DAY });
+  await page.getByRole("button", { name: "Next →" }).click();
+  await expect(page.locator(".practice-review")).toHaveCount(0);
+});
