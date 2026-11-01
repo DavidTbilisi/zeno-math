@@ -96,12 +96,13 @@ A class tests one feature, `feature` when it is made (`src/model/arms.ts`; 400 f
 - **`spaced`**: spaced review (`src/model/spacing.ts`).
 - **`steps`**: a fractions operation missed is worked in steps.
 - **`hard`**: after a miss on fractions, "what exactly was hard?".
+- **`faded`**: worked examples that fade (`src/model/fading.ts`), on every skill worked in steps.
 
 Students are given an arm in random blocks of four, two of each. In a class testing anything but the policy both
 arms practise with the adaptive policy. Only the feature under test differs: the arm without it goes without it, in
 class practice and free practice alike, and every other feature stays on for both. An attempt that shows a feature
 the student's arm hasn't got is refused with 400: a `spaced` policy (`invalid policy`), `steps` (`invalid steps`) or
-`hard` (`invalid hard`). Classes and students from before arms tested the policy; their arm follows from their
+`hard` (`invalid hard`) or `faded` (`invalid faded`). Classes and students from before arms tested the policy; their arm follows from their
 condition.
 
 ### The protocol
@@ -123,6 +124,7 @@ minute, when they next ask for the plan.
 
 ```text
 { class, condition, feature, arm, skills, position, recent, state,   ← class practice
+  ideas, ema, spacing, fading,
   phase, sessionEnds, testLength,                                     ← the protocol
   tests: { pre: { form, answered }, post: { form, answered }, delayed: { form, answered } } }
 ```
@@ -133,6 +135,8 @@ minute, when they next ask for the plan.
   answers counted on each skill (`answers`), and the student's own records under `students.me` (right, wrong and
   recent answers on each skill, each area and overall, and where each skill was last practised), so the browser can
   choose questions offline.
+- **`fading`**: for each skill whose worked examples are fading, how many steps (counted from the end) the student
+  works on its next question; the rest are shown done (`src/model/fading.ts`).
 - **`tests`**: which form each test uses (A and B counterbalanced within each arm, C for everyone's delayed
   post-test) and which questions are already answered.
 
@@ -142,7 +146,7 @@ minute, when they next ask for the plan.
 
 ```text
 { clientId, student, skill, level, seed, review, outcome, policy?, predicted?, solutionViewed, msTotal, shownAt,
-  answers: [{ input, verdict, ms }], hard?, steps?: [{ answers: [{ input, verdict, ms }], shown }] }
+  answers: [{ input, verdict, ms }], hard?, steps?: [{ answers: [{ input, verdict, ms }], shown }], faded? }
 ```
 
 - **`clientId`**: made by the browser (8–64 of `A-Za-z0-9-`).
@@ -161,6 +165,12 @@ minute, when they next ask for the plan.
   whether its answer was shown. No more entries than the question has steps, each answered or shown, and none when
   the first counted answer was right. The server marks each step's answers again, and each step moves the ideas it
   needs in the plan.
+- **`faded`**: a faded worked example, on any skill whose questions have steps (the calculus skills and fractions
+  operations): how many of the question's first steps were shown done, from 1 to one fewer than it has. Then
+  `answers` is empty and `steps` holds every step reached: the given ones first, shown and unanswered, then the
+  student's. It is `solved` or `revealed` by its last step, the question itself, and `skipped` before it. Its steps
+  move the ideas and the fading in the plan; it tells the learner model nothing, since part of it was done for the
+  student.
 
 The answers must agree with the outcome, or the attempt is refused with 400:
 
@@ -241,7 +251,7 @@ used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=
 
 - **`attempts.csv`** columns: attempt, student, class, feature, arm, condition, policy, predicted, area, skill, level, seed,
   review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, hard,
-  steps, remarked, late, shown_at, created_at.
+  steps, faded, remarked, late, shown_at, created_at.
 - **`tests.csv`** columns: response, student, class, feature, arm, condition, test_order, phase, form, test_length, item, area,
   skill, level, seed, input, verdict, correct, client_verdict, late, retries, ms, created_at. `test_length` is the
   number of questions on each of the class's tests.

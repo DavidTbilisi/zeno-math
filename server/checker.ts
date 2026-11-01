@@ -3,8 +3,9 @@
 // marking.ts loads the bundle there; elsewhere marking.ts loads this file from source.
 // The verdict doesn't depend on the interface language, so the server marks in English.
 import { en } from "../src/locales/en.ts";
-import { learnFromAttempt, verdictOf, type AnswerVerdict, type Outcome } from "../src/learner.ts";
-import { check, exercise, stepsOf, type SkillId } from "../src/math/practice.ts";
+import { attemptEvidence, fadedOf, learnFromAttempt, verdictOf, type AnswerVerdict, type Outcome } from "../src/learner.ts";
+import { check, exercise, stepsOf, STEPS_AFTER_MISS, type SkillId } from "../src/math/practice.ts";
+import { learnFading, type Fading } from "../src/model/fading.ts";
 import type { Level } from "../src/model/elo.ts";
 import type { IdeaState } from "../src/model/ideaState.ts";
 import type { MistakeId } from "../src/math/mistakes.ts";
@@ -16,12 +17,25 @@ export type Answered = { input: string; verdict: AnswerVerdict };
 export type SteppedThrough = { answers: Answered[]; shown: boolean };
 
 /** Moves a student's ideas on by one stored attempt, as the browser does (learnFromAttempt): it rebuilds the question. */
-export function trackIdeas(state: IdeaState, q: Question, outcome: string, answers: readonly Answered[], hard?: string[], steps?: readonly SteppedThrough[]): void {
-  const timed = (list: readonly Answered[]) => list.map((a) => ({ ...a, ms: 0 }));
-  learnFromAttempt(state, {
-    skill: q.skill, level: q.level as Level, seed: q.seed, outcome: outcome as Outcome, answers: timed(answers), hard, steps: steps?.map((s) => ({ answers: timed(s.answers), shown: s.shown })),
-  });
+export function trackIdeas(
+  state: IdeaState, q: Question, outcome: string, answers: readonly Answered[], hard?: string[], steps?: readonly SteppedThrough[], faded?: number,
+): void {
+  learnFromAttempt(state, { ...asAttempt(q, outcome, answers, steps, faded), hard });
 }
+const timed = (list: readonly Answered[]) => list.map((a) => ({ ...a, ms: 0 }));
+const asAttempt = (q: Question, outcome: string, answers: readonly Answered[], steps?: readonly SteppedThrough[], faded?: number) => ({
+  skill: q.skill, level: q.level as Level, seed: q.seed, outcome: outcome as Outcome, answers: timed(answers),
+  steps: steps?.map((s) => ({ answers: timed(s.answers), shown: s.shown })), ...(faded ? { faded } : {}),
+});
+/** Moves a student's fading on by one stored attempt, as the browser does (applyAttempt in learner.ts). */
+export function trackFading(f: Fading, q: Question, outcome: string, answers: readonly Answered[], steps?: readonly SteppedThrough[], faded?: number): void {
+  const a = asAttempt(q, outcome, answers, steps, faded);
+  // Most answers move nothing (right first time on a skill not being faded): those aren't rebuilt.
+  if (!faded && !(q.skill in f) && attemptEvidence(a) !== false) return;
+  learnFading(f, q.skill, fadedOf(a));
+}
+/** Whether a question of the skill is worked in steps after a wrong answer (the steps fade on every skill that has them). */
+export const stepsAfterMiss = (skill: string) => STEPS_AFTER_MISS.includes(skill as SkillId);
 
 /** The verdict the checker gives this input for the question, or for its step when one is given: correct, close, wrong or form (sent back). */
 export function mark(q: Question, input: string, step?: number): AnswerVerdict {

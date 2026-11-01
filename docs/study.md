@@ -19,6 +19,8 @@ or emails.
 - *Spaced review:* a skill mastered comes back after 1, 3, 7 and 21 days.
 - *Steps after a miss:* a fractions operation answered wrong is worked in steps.
 - *Asking what was hard:* after a miss on fractions, the student ticks the idea that was hard.
+- *Worked examples that fade:* after a miss on a skill worked in steps, a worked example, then fewer steps given each
+  time, below.
 
 In a class testing anything but the choice of question, both arms practise adaptively, and only the feature under
 test differs: the arm without it goes without it, and every other feature stays on for both. The server refuses an
@@ -60,6 +62,20 @@ A signed-in student practises in one of two ways:
     and then its answer is shown, and then the student answers the whole question again. The steps go with the
     attempt (`steps`), and each step moves the ideas it needs as a question of its own would, so a wrong step says
     which idea went wrong; a question worked in steps is not asked what was hard.
+  - **Worked examples that fade** (issue #266, `src/model/fading.ts`). A novice learns more from studying a worked
+    example than from solving the same problem (Sweller and Cooper 1985), and the help should fade as they improve
+    (Renkl and Atkinson 2003). Every calculus question comes apart into steps, each a question the checker marks
+    (`worked` in `src/math/practice.ts`, from `src/math/calcSteps.ts`): a sum term by term, a product or quotient by u′
+    and v′, a function of a function by its inside, then values at a point, Newton's or the iteration's first
+    steps, the strip width and ordinates of the trapezium rule, the values on the way back through a network. The last
+    step is the question itself. Fractions operations have their steps already. A question asked whole and missed on
+    such a skill shows a worked example of the same kind with other numbers, every step done (unless it was just
+    worked in steps). The next question of that kind has every step but the last done for the student, then all but
+    the last two, and so on, until they solve it whole; a faded step missed moves back one step, and solving it whole
+    ends the fading. Reviews and the placement are always asked whole. The server replays the fading from the
+    attempts and sends it with the plan; with nobody signed in it is kept with the practice progress. A faded example
+    counts in the session but not in the learner model, the moving average or the course: part of it was done for
+    the student.
 
   Everything else is the same for both groups: the feedback, the worked solutions, the steps after a wrong answer on
   a fractions operation, the list of what was hard (asked of both, though only the adaptive policy reads them), and

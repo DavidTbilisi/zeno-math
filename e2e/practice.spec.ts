@@ -86,7 +86,8 @@ test("practice has a page of its own, reached from the home page", async ({ page
 });
 
 test("the practice page counts a session of ten and sums it up", async ({ page }) => {
-  const { r } = questionWith("fractions", () => true);
+  // A question without steps, so a miss doesn't start fading worked examples (that has a test of its own).
+  const { r } = questionWith("fractions", (e) => stepsOf(e, w).length < 2);
   await page.goto("/#/practice");
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
@@ -301,4 +302,41 @@ test("a level made secure comes back for review a day later, then three days aft
   expect(await spacing()).toEqual({ step: 1, due: T + 5 * DAY });
   await page.getByRole("button", { name: "Next →" }).click();
   await expect(page.locator(".practice-review")).toHaveCount(0);
+});
+
+test("a missed calculus question brings a worked example; the next leaves its last step, then the student solves it alone", async ({ page, request }) => {
+  const { r, ex } = questionWith("stationary", (e) => stepsOf(e, w).length === 2);
+  const steps = stepsOf(ex, w);
+  await practise(page, request, "Calculus", w.skills.stationary, r);
+  await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
+  // Asked whole and missed: a worked example of the same kind, with other numbers, every step done.
+  await page.getByLabel("Your answer").fill("12345");
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.locator(".practice-verdict.bad")).toBeVisible();
+  await page.getByRole("button", { name: "Show solution" }).click();
+  const example = page.getByRole("region", { name: w.ui.workedExample });
+  await expect(example).toBeVisible();
+  await expect(example.locator("li.given")).toHaveCount(2);
+  await expect(example.locator("input")).toHaveCount(0);
+
+  // The next question of the kind (the same one, Math.random being fixed) has dy/dx done; the student does the rest.
+  await page.getByRole("button", { name: "Next →" }).click();
+  const faded = page.getByRole("region", { name: w.ui.fadedIntro.replace("{k}", "1").replace("{n}", "2") });
+  await expect(faded).toBeVisible();
+  await expect(faded.locator("li.given")).toContainText(steps[0].prompt);
+  await expect(page.getByLabel("Your answer")).toHaveCount(0);
+  const last = faded.getByLabel("Step 2 of 2");
+  await last.fill(ex.plain);
+  await last.press("Enter");
+  await expect(page.getByRole("button", { name: "Next →" })).toBeVisible();
+
+  // Then nothing is given: the student solves it alone, and the fading is over.
+  await page.getByRole("button", { name: "Next →" }).click();
+  await expect(faded).toHaveCount(0);
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+  await page.getByRole("button", { name: "Next →" }).click();
+  await expect(page.getByLabel("Your answer")).toBeVisible();
+  await expect(page.locator(".practice-steps")).toHaveCount(0);
 });

@@ -17,6 +17,8 @@ export const FEATURES = [
   "steps",
   // after a miss on fractions, "what exactly was hard?" (whatWasHard in learner.ts)
   "hard",
+  // after a miss on a skill worked in steps, a worked example, then fewer steps given each time (fading.ts, #266)
+  "faded",
 ] as const;
 export type Feature = (typeof FEATURES)[number];
 export const ARMS = ["on", "off"] as const;

@@ -24,7 +24,7 @@ import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protoc
 import { currentIdeas, currentModel } from "./research.ts";
 
 type AttemptRow = {
-  id: number; seed: number; answers: string; hard: string | null;
+  id: number; seed: number; answers: string; hard: string | null; faded: number | null;
   student_id: number; arm: Arm; condition: string; policy: string; predicted: number | null; skill: SkillId; level: Level;
   outcome: string; first_correct: number; counted: number; solution_viewed: number; ms_total: number; created_at: number;
 };
@@ -50,7 +50,7 @@ function median(xs: readonly number[]) {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 }
 /** Right first time, wrong, or nothing to say, by the rule the model learns by. */
-const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1);
+const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1, a.faded !== null);
 
 export function dashboard(db: DatabaseSync, classCode: string) {
   const klass = stmt(db, "SELECT code, name, skills, feature, created_at AS createdAt FROM classes WHERE code = ?").get(classCode) as
@@ -60,7 +60,7 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   const students = stmt(db, "SELECT id, code, arm, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
     { id: number; code: string; arm: Arm; condition: string }[];
   const attempts = stmt(db, `
-    SELECT a.id, a.seed, a.answers, a.hard, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
+    SELECT a.id, a.seed, a.answers, a.hard, a.faded, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
       json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
     FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
   `).all(classCode) as AttemptRow[];

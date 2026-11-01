@@ -3,7 +3,7 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
+  applyAttempt, attemptEvidence, exerciseFor, fadedOf, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { newcomerChance } from "../model/logistic";
@@ -12,7 +12,7 @@ import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
 import {
-  ALL_SKILLS, AREAS, areaOf, check, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, stepsOf, type Area, type Exercise, type Level, type PracticeSpec,
+  ALL_SKILLS, AREAS, areaOf, check, exampleLike, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, stepsOf, STEPS_AFTER_MISS, type Area, type Exercise, type Level, type PracticeSpec,
   type SkillId, type Verdict,
 } from "../math/practice";
 import { renderSolution } from "../math/practiceSolve";
@@ -33,6 +33,7 @@ import { emptyProgress, loadProgress, saveProgress, type Progress } from "../pra
 import { gradeOf } from "../model/curriculum";
 import { learnSpacing, nextReview, openAgain } from "../model/spacing";
 import type { Feature } from "../model/arms";
+import { givenSteps, learnFading, type Fading } from "../model/fading";
 import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
 } from "../model/placement";
@@ -192,9 +193,16 @@ export function PracticeDialog(props: Props) {
   const [solution, setSolution] = useState<{ src?: string; error?: string } | null>(null);
   /** The ideas ticked as hard on this question, as the log keeps them for the attempt. */
   const [hard, setHard] = useState<string[]>([]);
-  /** A fractions operation answered wrong is worked in steps before the student tries the whole of it again. */
+  /**
+   * The question's steps: a fractions operation answered wrong is worked in them before the student tries the whole of
+   * it again; and on any skill with steps, worked examples fade (fading.ts).
+   */
   const steps = useMemo(() => stepsOf(cur.ex, w), [cur, w]);
   const [stepping, setStepping] = useState<"no" | "now" | "done">("no");
+  /** A faded worked example: how many of the question's first steps are shown done (0: the question is asked whole). */
+  const [given, setGiven] = useState(0);
+  /** Free practice's fading when nobody is signed in (a student's comes with their plan). */
+  const freeFading = useRef<Fading>(progress.fading ?? {});
   const inputRef = useRef<HTMLInputElement>(null);
 
   // ---------- the class study: what happens on each question is saved under the student's code ----------
@@ -223,6 +231,13 @@ export function PracticeDialog(props: Props) {
       outbox.add(attempt);
       // Free practice and reviews tell the model about the student too.
       if (planRef.current) applyAttempt(planRef.current, attempt);
+    } else if (!student) {
+      // Nobody signed in: the fading moves on all the same, and is kept with the practice progress.
+      const a = toAttempt(log.current, cur.ex, cur, { code: "", class: "", condition: "adaptive" });
+      if (a) {
+        learnFading(freeFading.current, a.skill, fadedOf(a));
+        record({ ...live.current.progress, fading: { ...freeFading.current } });
+      }
     }
     log.current = startLog();
     sendQueued(keepalive);
@@ -240,7 +255,8 @@ export function PracticeDialog(props: Props) {
       planRef.current = plan;
       setPlanStatus("ready");
       const { inClass, progress, area, pick, level } = live.current;
-      if (inClass && !log.current.answers.length && !log.current.outcome) show(nextExercise(area, pick, level, progress, plan));
+      const untouched = !log.current.answers.length && !log.current.outcome && log.current.steps.length <= (log.current.faded ?? 0);
+      if (inClass && untouched) show(nextExercise(area, pick, level, progress, plan));
     } catch (e) {
       // gone: the server has no such student (their answers were deleted, or the server was reset).
       if (live.current.student?.code === s.code) setPlanStatus(e instanceof ApiError && e.status === 404 ? "gone" : "error");
@@ -377,7 +393,7 @@ export function PracticeDialog(props: Props) {
     playSound("miss");
     const n = wrongs + 1;
     setWrongs(n);
-    if (n === 1 && steps.length && has("steps")) setStepping("now");
+    if (n === 1 && steps.length && STEPS_AFTER_MISS.includes(cur.ex.skill) && has("steps")) setStepping("now");
     else if (n >= 2) reveal();
   };
   const reveal = () => {
@@ -388,6 +404,13 @@ export function PracticeDialog(props: Props) {
   /** Puts a new question up with a clean slate. */
   function show(c: Current) {
     shownSkill.current = c.ex.skill;
+    // A question of a skill being faded comes with its first steps done; reviews and the placement are asked whole.
+    const fading = live.current.student ? planRef.current?.fading : freeFading.current;
+    const n = stepsOf(c.ex, w).length;
+    const g = fading && has("faded") && !c.review && c.policy !== "spaced" && live.current.pick !== "place" ? givenSteps(fading, c.ex.skill, n) : 0;
+    setGiven(g);
+    log.current.faded = g || undefined;
+    log.current.steps = Array.from({ length: g }, () => ({ answers: [], shown: true }));
     setCur(c);
     setInput("");
     setVerdict(null);
@@ -484,6 +507,14 @@ export function PracticeDialog(props: Props) {
   }, [cur, shown]);
   // Once a question is over after a wrong answer, a signed-in student is asked what exactly was hard: the ticks go with
   // the attempt and move their ideas (ideaState.ts), so they are asked only where something keeps them.
+  // A question asked whole and missed, on a skill worked in steps: a worked example of the same kind with other numbers
+  // (unless the question was just worked in steps), and the fading begins (fading.ts).
+  const example = useMemo(() => {
+    if (!done || given || steps.length < 2 || log.current.steps.length || !has("faded")) return null;
+    if (attemptEvidence({ outcome: log.current.outcome ?? "skipped", answers: log.current.answers }) !== false) return null;
+    const ex = exampleLike(cur.ex, w);
+    return ex && { ex, steps: stepsOf(ex, w) };
+  }, [done, cur, w, given, steps]);
   const hardChoices = useMemo(() => (done && student && has("hard") ? whatWasHard(cur.ex, log.current) : null), [done, cur, student]);
   const toggleHard = (id: string) => {
     const ticked = (hardChoices ?? []).filter((i) => (i === id) !== hard.includes(i));
@@ -526,6 +557,7 @@ export function PracticeDialog(props: Props) {
     <button
       className="btn small add-fn"
       onClick={() => {
+        freeFading.current = {};
         record(emptyProgress());
         setScore({ right: 0, total: 0, streak: 0 });
       }}
@@ -659,105 +691,110 @@ export function PracticeDialog(props: Props) {
               <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
             </div>
           )}
-          {/* A question answered by doing has buttons of its own: in a label, a click anywhere would press the first. */}
-          <AnswerField className="field" play={!!cur.ex.play}>
-            <span>{w.ui.answerHere} <span className="hint">({w.formats[cur.ex.format]})</span></span>
-            {cur.ex.play ? (
-              <PlayAnswer
-                key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
-                play={cur.ex.play}
-                look={w.ui.look}
-                onEnter={() => (done ? onNext() : onCheck())}
-                value={input}
-                disabled={done !== null}
-                label={cur.ex.prompt}
-                tone={done === "solved" ? "right" : verdict && !verdict.ok && !verdict.why ? "wrong" : null}
-                onChange={(s) => {
-                  setInput(s);
-                  setVerdict(null);
-                }}
-              />
-            ) : (
-            <div className="field-row">
-              <input
-                ref={inputRef}
-                className="mono practice-input"
-                spellCheck={false}
-                autoComplete="off"
-                value={input}
-                disabled={done !== null || stepping === "now"}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  setVerdict(null);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key !== "Enter") return;
-                  e.preventDefault();
-                  if (done) onNext();
-                  else onCheck();
-                }}
-              />
-              {typed && !done && <img className="practice-typed" src={typed} alt="" />}
-            </div>
-            )}
-          </AnswerField>
-          {cur.ex.format === "sign" && !done && (
-            <SignPicks
-              onPick={(s) => {
-                setInput(s);
-                setVerdict(null);
-                inputRef.current?.focus();
-              }}
-            />
-          )}
-          {cur.ex.answer.k === "order" && !done && (
-            <ListPicks
-              items={cur.ex.answer.items.map((i) => i.text)}
-              typed={input}
-              onChange={(s) => {
-                setInput(s);
-                setVerdict(null);
-              }}
-            />
-          )}
-          {cur.ex.answer.k === "divisors" && !done && (
-            <TogglePicks
-              items={cur.ex.answer.offered.map(String)}
-              typed={input}
-              onChange={(s) => {
-                setInput(s);
-                setVerdict(null);
-              }}
-            />
-          )}
-          {(cur.ex.answer.k === "near" || cur.ex.answer.k === "pick") && !done && (
-            <ChoicePicks
-              choices={cur.ex.answer.options.map((o) => ({ label: o.text, value: o.plain }))}
-              onPick={(s) => {
-                setInput(s);
-                setVerdict(null);
-                inputRef.current?.focus();
-              }}
-            />
-          )}
-          {cur.ex.answer.k === "target" && !done && (
-            <TargetPicks
-              cards={cur.ex.answer.puzzle.cards}
-              ops={cur.ex.answer.puzzle.ops}
-              onPick={(s) => {
-                setInput((x) => addPiece(x, s));
-                setVerdict(null);
-                inputRef.current?.focus();
-              }}
-              onBack={() => {
-                setInput(dropPiece);
-                setVerdict(null);
-              }}
-            />
+          {/* A faded worked example is answered step by step below, not here. */}
+          {!given && (
+            <>
+              {/* A question answered by doing has buttons of its own: in a label, a click anywhere would press the first. */}
+              <AnswerField className="field" play={!!cur.ex.play}>
+                <span>{w.ui.answerHere} <span className="hint">({w.formats[cur.ex.format]})</span></span>
+                {cur.ex.play ? (
+                  <PlayAnswer
+                    key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
+                    play={cur.ex.play}
+                    look={w.ui.look}
+                    onEnter={() => (done ? onNext() : onCheck())}
+                    value={input}
+                    disabled={done !== null}
+                    label={cur.ex.prompt}
+                    tone={done === "solved" ? "right" : verdict && !verdict.ok && !verdict.why ? "wrong" : null}
+                    onChange={(s) => {
+                      setInput(s);
+                      setVerdict(null);
+                    }}
+                  />
+                ) : (
+                <div className="field-row">
+                  <input
+                    ref={inputRef}
+                    className="mono practice-input"
+                    spellCheck={false}
+                    autoComplete="off"
+                    value={input}
+                    disabled={done !== null || stepping === "now"}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      setVerdict(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      e.preventDefault();
+                      if (done) onNext();
+                      else onCheck();
+                    }}
+                  />
+                  {typed && !done && <img className="practice-typed" src={typed} alt="" />}
+                </div>
+                )}
+              </AnswerField>
+              {cur.ex.format === "sign" && !done && (
+                <SignPicks
+                  onPick={(s) => {
+                    setInput(s);
+                    setVerdict(null);
+                    inputRef.current?.focus();
+                  }}
+                />
+              )}
+              {cur.ex.answer.k === "order" && !done && (
+                <ListPicks
+                  items={cur.ex.answer.items.map((i) => i.text)}
+                  typed={input}
+                  onChange={(s) => {
+                    setInput(s);
+                    setVerdict(null);
+                  }}
+                />
+              )}
+              {cur.ex.answer.k === "divisors" && !done && (
+                <TogglePicks
+                  items={cur.ex.answer.offered.map(String)}
+                  typed={input}
+                  onChange={(s) => {
+                    setInput(s);
+                    setVerdict(null);
+                  }}
+                />
+              )}
+              {(cur.ex.answer.k === "near" || cur.ex.answer.k === "pick") && !done && (
+                <ChoicePicks
+                  choices={cur.ex.answer.options.map((o) => ({ label: o.text, value: o.plain }))}
+                  onPick={(s) => {
+                    setInput(s);
+                    setVerdict(null);
+                    inputRef.current?.focus();
+                  }}
+                />
+              )}
+              {cur.ex.answer.k === "target" && !done && (
+                <TargetPicks
+                  cards={cur.ex.answer.puzzle.cards}
+                  ops={cur.ex.answer.puzzle.ops}
+                  onPick={(s) => {
+                    setInput((x) => addPiece(x, s));
+                    setVerdict(null);
+                    inputRef.current?.focus();
+                  }}
+                  onBack={() => {
+                    setInput(dropPiece);
+                    setVerdict(null);
+                  }}
+                />
+              )}
+            </>
           )}
           <div className="field-row practice-actions">
-            {!done && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
-            {!done && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
+            {!done && !given && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
+            {!done && !given && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
             {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
             {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
             <button
@@ -801,6 +838,23 @@ export function PracticeDialog(props: Props) {
               }}
             />
           )}
+          {given > 0 && (
+            <WorkInSteps
+              key={`faded:${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}:${given}`}
+              steps={steps}
+              w={w}
+              given={given}
+              intro={fill(w.ui.fadedIntro, { k: given, n: steps.length })}
+              onAnswer={(i, typed, v) => logStep(log.current, i, typed, v)}
+              onShow={(i) => logStep(log.current, i, null)}
+              onDone={(right) => {
+                // A question of the session, but not in the stats or the course: some of it was done for the student.
+                finish(log.current, right ? "solved" : "revealed");
+                setDone(right ? "solved" : "revealed");
+                if (sessionOn) setSession((r) => [...r, { skill: cur.ex.skill, right }]);
+              }}
+            />
+          )}
           {done === "revealed" && <div className="practice-verdict close" role="status">{w.ui.revealed}</div>}
           {done && (
             <div className="field">
@@ -817,6 +871,19 @@ export function PracticeDialog(props: Props) {
                   {solution.src ? <img src={solution.src} alt="" style={{ maxWidth: "100%" }} /> : solution.error ? <span className="error">{solution.error}</span> : <span className="hint">{w.ui.solving}</span>}
                 </div>
               )}
+            </div>
+          )}
+          {example && (
+            <div className="practice-example">
+              <WorkInSteps
+                key={`example:${example.ex.skill}:${example.ex.level}:${example.ex.seed}`}
+                steps={example.steps}
+                w={w}
+                given={example.steps.length}
+                intro={w.ui.workedExample}
+                onAnswer={() => {}}
+                onShow={() => {}}
+              />
             </div>
           )}
           {hardChoices && (

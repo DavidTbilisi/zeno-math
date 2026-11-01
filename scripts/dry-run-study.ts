@@ -204,7 +204,7 @@ export async function dryRun(o: DryRunOptions): Promise<DryRunResult> {
   const listed = dash.stuck.flatMap((g) => g.rows.map((r) => `${r.student} ${r.skill} ${r.answers}`)).sort();
   const bySkill = new Map<string, Try[]>();
   for (const a of attemptRows) {
-    const correct = evidence(Number(a.n_answers) - Number(a.retries), a.outcome, a.first_correct === "1");
+    const correct = evidence(Number(a.n_answers) - Number(a.retries), a.outcome, a.first_correct === "1", !!a.faded);
     const k = `${a.student} ${a.skill}`;
     if (correct !== null) (bySkill.get(k) ?? bySkill.set(k, []).get(k)!).push({ id: Number(a.attempt), correct });
   }

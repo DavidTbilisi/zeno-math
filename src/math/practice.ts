@@ -2,6 +2,7 @@
 // roots, points, expressions up to equivalence — in the form the question asks for), and a worked solution from the
 // tool that covers the topic. A worksheet is a numbered set of questions with an optional answer key.
 import { REL_TEX, splitRel, type Rel } from "./algebra";
+import { diffParts, intParts } from "./calcSteps";
 import { antiderivative } from "./applied";
 import { C, esc, fill, FONT, r2, W, wrap } from "./chart";
 import { derive } from "./derive";
@@ -130,9 +131,17 @@ export type Exercise = {
   solution?: { kind: SolutionKind; spec: unknown };
   /** Worked lines when no tool draws the solution. */
   steps?: string[];
+  /**
+   * The steps before the last, each a question of its own, on a skill whose questions are worked in steps (stepsOf):
+   * the last step is the question itself. Faded worked examples show some of them done and leave the rest.
+   */
+  worked?: Part[];
   /** Answered by doing rather than typing: a shape made on a grid, a pin put on a line (the answer is still text). */
   play?: Play;
 };
+
+/** A step of a question: a question without its skill, level and seed, which are the question's. */
+export type Part = Omit<Exercise, "skill" | "level" | "seed" | "worked">;
 
 export type PracticeWords = {
   bad: string;
@@ -153,6 +162,10 @@ export type PracticeWords = {
     stepTops: string;
     stepTimes: string;
     stepDivide: string;
+    /** A calculus question's steps (calcSteps.ts): differentiate a part, integrate a part, work out a value. */
+    stepDiff: string;
+    stepInt: string;
+    stepWork: string;
     percentOf: string;
     percentChange: string;
     percentReverse: string;
@@ -475,6 +488,9 @@ export type PracticeWords = {
     sessionOver: string;
     classClosed: string;
     inSteps: string;
+    workedExample: string;
+    fadedIntro: string;
+    given: string;
     stepOf: string;
     showStep: string;
     stepsDone: string;
@@ -803,13 +819,20 @@ function fractionForm(r: Rng, L: Level, w: PracticeWords): Omit<Exercise, "skill
 }
 
 /**
- * A fractions operation worked in steps, as the usual method does it (src/math/fracop.ts): each mixed number as an
- * improper fraction; for + and −, the lowest common denominator, each fraction over it, then the tops added or taken
- * away; for ÷, the reciprocal; for × and ÷, tops times tops over bottoms times bottoms; then the result in lowest terms
- * when it isn't. Each step is a question of its own, read for its ideas as a form is (src/model/conceptGraph.ts), so a
- * wrong step says which idea went wrong. The practice offers them after a wrong answer. Any other question has none.
+ * A question worked in steps, each a question of its own. A calculus question's steps are the parts it was built with
+ * (`worked`, from calcSteps.ts) and then the question itself. A fractions operation is worked as the usual method does
+ * it (src/math/fracop.ts): each mixed number as an improper fraction; for + and −, the lowest common denominator, each
+ * fraction over it, then the tops added or taken away; for ÷, the reciprocal; for × and ÷, tops times tops over
+ * bottoms times bottoms; then the result in lowest terms when it isn't. Each fractions step is read for its ideas as a
+ * form is (src/model/conceptGraph.ts), so a wrong step says which idea went wrong. After a wrong answer the practice
+ * works a fractions operation in steps (STEPS_AFTER_MISS); every skill with steps fades its worked examples
+ * (src/model/fading.ts). Any other question has none.
  */
 export function stepsOf(ex: Exercise, w: PracticeWords): Exercise[] {
+  if (ex.worked?.length) {
+    const { worked, ...whole } = ex;
+    return [...worked.map((p) => ({ skill: ex.skill, level: ex.level, seed: ex.seed, ...p })), whole];
+  }
   const spec = ex.solution?.spec as { type?: string; op: "+" | "-" | "×" | "÷"; a: string; b: string } | undefined;
   if (ex.skill !== "fractions" || spec?.type !== "fracop") return [];
   const steps: Exercise[] = [];
@@ -853,6 +876,53 @@ export function stepsOf(ex: Exercise, w: PracticeWords): Exercise[] {
   const g = gcd(...raw);
   if (raw[0] !== 0 && g > 1) add("lowest", w.prompts.fracLowest, fracTex(...raw), num(raw[0] / raw[1], 1e-9, { lowest: true }), fraction(raw[0] / g, raw[1] / g), `${raw[0]}/${raw[1]}`);
   return steps;
+}
+
+/**
+ * A worked example for a question: another of the same skill and level, with other numbers and at least two steps
+ * (the seeds tried follow from the question's, so it is the same everywhere); null when none turns up.
+ */
+export function exampleLike(ex: Exercise, w: PracticeWords): Exercise | null {
+  for (let i = 1; i <= 40; i++) {
+    const seed = (ex.seed + i * 7919) % 2 ** 31;
+    const other = exercise(ex.skill, ex.level, seed, w);
+    if (stepsOf(other, w).length >= 2 && other.plain !== ex.plain) return other;
+  }
+  return null;
+}
+
+/** The skills whose question is worked in steps right after a wrong answer (the arms' "steps" feature). */
+export const STEPS_AFTER_MISS: readonly SkillId[] = ["fractions"];
+
+/** A step whose answer is an expression; an antiderivative accepts any constant added. */
+function exprPart(prompt: string, q: string, e: E, plusC = false): Part {
+  return {
+    prompt, q, answer: { k: "expr", e, ...(plusC ? { mode: "plusC" as const } : {}) },
+    show: tex(e) + (plusC ? " + C" : ""), plain: plainE(e) + (plusC ? " + C" : ""), format: plusC ? "antiderivative" : "expr",
+  };
+}
+/** A step whose answer is a number: a whole one, a simple fraction exactly, or anything else to 3 decimal places. */
+function numPart(prompt: string, q: string, v: number): Part {
+  if (Number.isInteger(v)) return { prompt, q, answer: num(v), show: String(v), plain: String(v), format: "number" };
+  const f = toFrac(v);
+  if (f.d <= 100 && Math.abs(f.toNumber() - v) < 1e-9) return { prompt, q, answer: num(v), show: f.tex(), plain: plainFrac(f), format: "exact" };
+  return { prompt, q, answer: num(v, 0.0006), show: dp(v, 3), plain: dp(v, 6), format: "dp3" };
+}
+/** The steps of differentiating f: each term of a sum, u′ and v′ of a product or quotient, or the inside's derivative. */
+function diffSteps(f: E, w: PracticeWords): Part[] {
+  const p = diffParts(f);
+  const d = (name: string, e: E) => exprPart(w.prompts.stepDiff, `${name} = ${tex(e)}: \\quad \\frac{d${name}}{dx}`, simp(derive(e)));
+  if (!p) return [];
+  if (p.kind === "sum") return p.terms.map((t) => exprPart(w.prompts.stepDiff, `\\frac{d}{dx}\\left(${tex(t)}\\right)`, simp(derive(t))));
+  return p.kind === "chain" ? [d("u", p.inner)] : [d("u", p.u), d("v", p.v)];
+}
+/** The steps of integrating f: each term of a sum (any constant will do), or the derivative of a linear inside. */
+function intSteps(f: E, w: PracticeWords): Part[] {
+  const p = intParts(f);
+  if (!p) return [];
+  if (p.kind === "linear") return [exprPart(w.prompts.stepDiff, `u = ${tex(p.inner)}: \\quad \\frac{du}{dx}`, simp(derive(p.inner)))];
+  const Fs = p.terms.map(antiderivative);
+  return Fs.every(Boolean) ? p.terms.map((t, i) => exprPart(w.prompts.stepInt, `\\int ${tex(t)} \\, dx`, Fs[i]!, true)) : [];
 }
 
 const FLIP_SIGN: Record<CompareSign, CompareSign> = { "<": ">", "=": "=", ">": "<" };
@@ -3216,7 +3286,10 @@ const GENS: Record<SkillId, Gen> = {
     }
     const f = parseE(src);
     const d = simp(derive(f));
-    return { prompt: w.prompts.differentiate, q: `y = ${tex(f)}`, answer: { k: "expr", e: d }, show: `\\frac{dy}{dx} = ${tex(d)}`, plain: plainE(d), format: "expr", solution: { kind: "deriv", spec: { topic: "rules", src, at: "" } } };
+    return {
+      prompt: w.prompts.differentiate, q: `y = ${tex(f)}`, answer: { k: "expr", e: d }, show: `\\frac{dy}{dx} = ${tex(d)}`, plain: plainE(d), format: "expr",
+      solution: { kind: "deriv", spec: { topic: "rules", src, at: "" } }, worked: diffSteps(f, w),
+    };
   },
 
   tangent(r, L, w) {
@@ -3236,11 +3309,20 @@ const GENS: Record<SkillId, Gen> = {
     const m = evalE(d, at);
     const y0 = evalE(f, at);
     const mF = toFrac(m);
+    // dy/dx, then (for the tangent) its value and y's at the point; the last step is the question.
+    const derivative = exprPart(w.prompts.stepDiff, `y = ${tex(f)}: \\quad \\frac{dy}{dx}`, simp(d));
     if (L < 3)
-      return { prompt: fill(w.prompts.gradient, { a: at }), q: `y = ${tex(f)}`, answer: num(m), show: `\\frac{dy}{dx}\\Big|_{x = ${at}} = ${mF.tex()}`, plain: plainFrac(mF), format: "exact", solution: { kind: "deriv", spec: { topic: "tangent", src, at: String(at) } } };
+      return {
+        prompt: fill(w.prompts.gradient, { a: at }), q: `y = ${tex(f)}`, answer: num(m), show: `\\frac{dy}{dx}\\Big|_{x = ${at}} = ${mF.tex()}`, plain: plainFrac(mF), format: "exact",
+        solution: { kind: "deriv", spec: { topic: "tangent", src, at: String(at) } }, worked: [derivative],
+      };
     const c = toFrac(y0 - m * at);
     const e = fromPoly([c, mF]);
-    return { prompt: fill(w.prompts.tangent, { a: at }), q: `y = ${tex(f)}`, answer: { k: "expr", e, mode: "line" }, show: `y = ${tex(e)}`, plain: `y = (${plainFrac(mF)})x + (${plainFrac(c)})`, format: "line", solution: { kind: "deriv", spec: { topic: "tangent", src, at: String(at) } } };
+    return {
+      prompt: fill(w.prompts.tangent, { a: at }), q: `y = ${tex(f)}`, answer: { k: "expr", e, mode: "line" }, show: `y = ${tex(e)}`, plain: `y = (${plainFrac(mF)})x + (${plainFrac(c)})`, format: "line",
+      solution: { kind: "deriv", spec: { topic: "tangent", src, at: String(at) } },
+      worked: [derivative, numPart(w.prompts.stepWork, `\\frac{dy}{dx}\\Big|_{x = ${at}}`, m), numPart(w.prompts.stepWork, `y\\Big|_{x = ${at}}`, y0)],
+    };
   },
 
   stationary(r, L, w) {
@@ -3267,7 +3349,11 @@ const GENS: Record<SkillId, Gen> = {
       xs = [0, 3 * p].sort((a, b) => a - b);
     }
     const src = polyStr(cs);
-    return { prompt: w.prompts.stationary, q: `y = ${T(src)}`, answer: { k: "set", vs: xs, tol: 1e-9 }, show: xs.map((x) => `x = ${x}`).join(", \\; "), plain: xs.join("; "), format: "roots", solution: { kind: "deriv", spec: { topic: "stationary", src, at: "" } } };
+    return {
+      prompt: w.prompts.stationary, q: `y = ${T(src)}`, answer: { k: "set", vs: xs, tol: 1e-9 }, show: xs.map((x) => `x = ${x}`).join(", \\; "), plain: xs.join("; "), format: "roots",
+      solution: { kind: "deriv", spec: { topic: "stationary", src, at: "" } },
+      worked: [exprPart(w.prompts.stepDiff, `y = ${T(src)}: \\quad \\frac{dy}{dx}`, simp(derive(parseE(src))))],
+    };
   },
 
   integrate(r, L, w) {
@@ -3293,6 +3379,7 @@ const GENS: Record<SkillId, Gen> = {
       plain: `${plainE(Fe)} + C`,
       format: "antiderivative",
       steps: [`\\int ${tex(f)} \\, dx = ${tex(Fe)} + C`, `\\frac{d}{dx}\\left(${tex(Fe)}\\right) = ${tex(simp(derive(Fe)))}`],
+      worked: intSteps(f, w),
     };
   },
 
@@ -3339,6 +3426,14 @@ const GENS: Record<SkillId, Gen> = {
       else [src, a, b, v, show] = [`cos x`, "0", "pi/2", 1, "1"];
     }
     const lim = (s: string) => (s === "pi" ? "\\pi" : s === "pi/2" ? "\\frac{\\pi}{2}" : s);
+    // F(x), then F at each limit: their difference is the question.
+    const Fe = antiderivative(parseE(src))!;
+    const at = (s: string) => evalE(Fe, evalE(parseE(s), NaN));
+    const worked = [
+      exprPart(w.prompts.stepInt, `F(x) = \\int ${T(src)} \\, dx`, Fe),
+      numPart(w.prompts.stepWork, `F\\left(${lim(b)}\\right)`, at(b)),
+      numPart(w.prompts.stepWork, `F\\left(${lim(a)}\\right)`, at(a)),
+    ];
     return {
       prompt: w.prompts.definite,
       q: `\\int_{${lim(a)}}^{${lim(b)}} ${T(src)} \\, dx`,
@@ -3347,6 +3442,7 @@ const GENS: Record<SkillId, Gen> = {
       plain: dp(v, 6),
       format: "dp3",
       solution: { kind: "applied", spec: { topic: "area", f: src, g: "", a, b, c: "", opt: "" } },
+      worked,
     };
   },
 
@@ -3368,6 +3464,11 @@ const GENS: Record<SkillId, Gen> = {
         plain: dp(x3, 6),
         format: "dp3",
         solution: sol("iterate", `x = ${src}; x0 = ${x0}; 3 steps`),
+        // x₁ and x₂, each from the one before; x₃ is the question.
+        worked: [
+          numPart(w.prompts.stepWork, `x_1 = ${cube ? "\\sqrt[3]" : "\\sqrt"}{${a} \\cdot ${x0} + ${b}}`, g(x0)),
+          numPart(w.prompts.stepWork, `x_2 = ${cube ? "\\sqrt[3]" : "\\sqrt"}{${a}x_1 + ${b}}`, g(g(x0))),
+        ],
       };
     }
     // Newton–Raphson: one step (level 1) or to the root (level 3)
@@ -3390,6 +3491,14 @@ const GENS: Record<SkillId, Gen> = {
     const step = (x: number) => x - evalE(f, x) / evalE(d, x);
     let v = step(x0);
     if (L === 3) for (let i = 0; i < 30; i++) v = step(v);
+    // One step: f(x₀) and f′(x₀). To the root: f′(x), then the first two steps.
+    const worked = L === 1
+      ? [numPart(w.prompts.stepWork, `f(${x0})`, evalE(f, x0)), numPart(w.prompts.stepWork, `f'(${x0})`, evalE(d, x0))]
+      : [
+        exprPart(w.prompts.stepDiff, `f'(x)`, d),
+        numPart(w.prompts.stepWork, `x_1 = x_0 - \\frac{f(x_0)}{f'(x_0)}`, step(x0)),
+        numPart(w.prompts.stepWork, `x_2 = x_1 - \\frac{f(x_1)}{f'(x_1)}`, step(step(x0))),
+      ];
     return {
       prompt: fill(L === 1 ? w.prompts.numNewton : w.prompts.numRoot, { a: x0 }),
       q: `f(x) = ${T(src)}`,
@@ -3398,6 +3507,7 @@ const GENS: Record<SkillId, Gen> = {
       plain: dp(v, 6),
       format: "dp3",
       solution: sol("newton", L === 1 ? `${src}; x0 = ${x0}; 1 step` : `${src}; x0 = ${x0}; 3 dp`),
+      worked,
     };
   },
 
@@ -3424,6 +3534,17 @@ const GENS: Record<SkillId, Gen> = {
       plain: dp(v, 6),
       format: "dp3",
       solution: { kind: "numerical", spec: { topic: "integrate", src: `${src}; [${a}, ${b}]; n = ${n}; ${simpsonRule ? "simpson" : "trapezium"}` } },
+      // The strip width, the two ends, then the ordinates inside (Simpson's: the odd ones, then the even ones).
+      worked: [
+        numPart(w.prompts.stepWork, `h = \\frac{${b} - ${a}}{${n}}`, h),
+        numPart(w.prompts.stepWork, `y_0 + y_${n}`, ys[0] + ys[n]),
+        ...(simpsonRule
+          ? [
+            numPart(w.prompts.stepWork, `y_1 + y_3`, ys[1] + ys[3]),
+            numPart(w.prompts.stepWork, `y_2`, ys[2]),
+          ]
+          : [numPart(w.prompts.stepWork, inner.map((_, i) => `y_${i + 1}`).join(" + "), inner.reduce((s, y) => s + y, 0))]),
+      ],
     };
   },
 
@@ -3818,6 +3939,11 @@ const GENS: Record<SkillId, Gen> = {
         plain: options[fates.indexOf(fate)].plain,
         format: "pick",
         steps: [`f'(x) = ${polyStr([0, 2 * a])}`, show, `|${q}| ${Math.abs(q) < 1 ? "<" : ">"} 1`],
+        // f′(x), then what every step multiplies x by.
+        worked: [
+          exprPart(w.prompts.stepDiff, `f'(x)`, parseE(polyStr([0, 2 * a]))),
+          numPart(w.prompts.stepWork, `x_{n+1} = x_n - ${eta} f'(x_n) = q\\, x_n: \\quad q`, q),
+        ],
       };
     }
     // f = ax² + bx + c from a whole x₀ ≠ 0, η a simple fraction, so every step is an exact decimal.
@@ -3846,14 +3972,23 @@ const GENS: Record<SkillId, Gen> = {
       plain: dec6(v),
       format: "number",
       steps,
+      // f′(x); then one step's slope at x₀, or two steps' first.
+      worked: [
+        exprPart(w.prompts.stepDiff, `f'(x)`, parseE(polyStr([b, 2 * a]))),
+        L === 1
+          ? numPart(w.prompts.stepWork, `f'(${x0})`, 2 * a * x0 + b)
+          : numPart(w.prompts.stepWork, `x_1 = x_0 - ${e} \\cdot f'(x_0)`, xs[1].toNumber()),
+      ],
     };
   },
 
   backprop(r, L, w) {
     const d = (top: string, by: string) => `\\frac{\\partial ${top}}{\\partial ${by}}`;
     const given = (vs: [string, number][]) => vs.map(([k, v]) => `${k} = ${v}`).join(", \\ ");
-    const out = (prompt: string, q: string, v: number, steps: string[], traps: Trap[] = []) => ({
+    // The values on the way back, each a step of its own; the gradient asked for is the question.
+    const out = (prompt: string, q: string, v: number, steps: string[], traps: Trap[] = [], worked: [string, number][] = []) => ({
       prompt, q, answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number" as const, steps,
+      worked: worked.map(([tq, tv]) => numPart(w.prompts.stepWork, tq, tv)),
     });
     if (L === 1) {
       // One node in the middle: f = (x ± y)z goes back through q = x ± y, f = xy + z through p = xy.
@@ -3866,12 +4001,14 @@ const GENS: Record<SkillId, Gen> = {
         const v = by === "z" ? qv : by === "x" ? z : s * z;
         const head = [`q = x ${s > 0 ? "+" : "-"} y = ${qv}`, `f = q z`];
         const last = by === "z" ? `${d("f", "z")} = q = ${qv}` : `${d("f", by)} = ${d("f", "q")} \\cdot ${d("q", by)} = z \\cdot ${par(by === "x" ? 1 : s)} = ${v}`;
-        return out(fill(w.prompts.bpNode, { v: by }), `f = (x ${s > 0 ? "+" : "-"} y)\\, z, \\quad ${given([["x", x], ["y", y], ["z", z]])}`, v, [...head, last]);
+        return out(fill(w.prompts.bpNode, { v: by }), `f = (x ${s > 0 ? "+" : "-"} y)\\, z, \\quad ${given([["x", x], ["y", y], ["z", z]])}`, v, [...head, last], [],
+          [[`q = x ${s > 0 ? "+" : "-"} y`, qv]]);
       }
       const by = r.pick(["x", "y", "z"] as const);
       const v = by === "x" ? y : by === "y" ? x : 2 * z;
       const last = by === "z" ? `${d("f", "z")} = 2z = ${v}` : `${d("f", by)} = ${d("f", "p")} \\cdot ${d("p", by)} = 1 \\cdot ${by === "x" ? "y" : "x"} = ${v}`;
-      return out(fill(w.prompts.bpNode, { v: by }), `f = x y + z^2, \\quad ${given([["x", x], ["y", y], ["z", z]])}`, v, [`p = x y = ${x * y}`, `f = p + z^2`, last]);
+      return out(fill(w.prompts.bpNode, { v: by }), `f = x y + z^2, \\quad ${given([["x", x], ["y", y], ["z", z]])}`, v, [`p = x y = ${x * y}`, `f = p + z^2`, last], [],
+        [["p = x y", x * y]]);
     }
     if (L === 2) {
       // A squared error L = (wx + b − y)²: ∂L/∂w = 2e·x, ∂L/∂b = 2e for the error e.
@@ -3881,7 +4018,8 @@ const GENS: Record<SkillId, Gen> = {
       const by = r.pick(["w", "b"] as const);
       const v = by === "w" ? 2 * e * x : 2 * e;
       const steps = [`\\hat y = w x + b = ${w0 * x + b}`, `e = \\hat y - y = ${e}`, `${d("L", "e")} = 2e = ${2 * e}`, by === "w" ? `${d("L", "w")} = 2e \\cdot x = ${2 * e} \\cdot ${par(x)} = ${v}` : `${d("L", "b")} = 2e \\cdot 1 = ${v}`];
-      return out(fill(w.prompts.bpLoss, { v: by }), `L = (w x + b - y)^2, \\quad ${given([["w", w0], ["x", x], ["b", b], ["y", y]])}`, v, steps, [{ id: "noTwo", a: num(v / 2) }]);
+      return out(fill(w.prompts.bpLoss, { v: by }), `L = (w x + b - y)^2, \\quad ${given([["w", w0], ["x", x], ["b", b], ["y", y]])}`, v, steps, [{ id: "noTwo", a: num(v / 2) }],
+        [["\\hat y = w x + b", w0 * x + b], ["e = \\hat y - y", e], [`${d("L", "e")} = 2e`, 2 * e]]);
     }
     // h = ReLU(w₁x), ŷ = w₂h: the gradient reaches w₁ only when the ReLU is on (mostly it is).
     let w1: number, x: number, w2: number, y: number, e: number;
@@ -3899,7 +4037,11 @@ const GENS: Record<SkillId, Gen> = {
       on ? `${d("L", "w_1")} = ${d("L", "h")} \\cdot 1 \\cdot x = ${2 * e * w2} \\cdot ${par(x)} = ${v}` : `w_1 x < 0: \\ ${d("L", "w_1")} = ${d("L", "h")} \\cdot 0 \\cdot x = 0`,
     ];
     const traps: Trap[] = on ? [{ id: "noTwo", a: num(v / 2) }] : [{ id: "reluOff", a: num(2 * e * w2 * x) }];
-    return out(w.prompts.bpRelu, given([["w_1", w1], ["x", x], ["w_2", w2], ["y", y]]), v, steps, traps);
+    return out(w.prompts.bpRelu, given([["w_1", w1], ["x", x], ["w_2", w2], ["y", y]]), v, steps, traps, [
+      ["h = \\operatorname{ReLU}(w_1 x)", Math.max(0, w1 * x)],
+      [`${d("L", "\\hat y")} = 2(\\hat y - y)`, 2 * e],
+      [`${d("L", "h")} = ${d("L", "\\hat y")} \\cdot w_2`, 2 * e * w2],
+    ]);
   },
 
   softmax(r, L, w) {
