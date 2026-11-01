@@ -509,6 +509,8 @@ input.invalid { border-color: var(--danger); }
   border: 1px solid var(--border); border-radius: 10px; background-color: #ffffff;
   background-image: linear-gradient(#e1e7f2 1px, transparent 1px), linear-gradient(90deg, #e1e7f2 1px, transparent 1px);
 }
+/* Dot paper: a dot where the squares' corners were, which the pen's straight lines snap to. */
+.scratch-sheet.dots { background-image: radial-gradient(circle, #9aa6bd 1.6px, transparent 2.1px); }
 .scratch-sheet canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
 .scratch-sheet.rub canvas, .scratch-sheet.lift canvas { cursor: cell; }
 .practice-hard { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 8px 12px 10px; border: 1px solid var(--border); border-radius: 8px; }

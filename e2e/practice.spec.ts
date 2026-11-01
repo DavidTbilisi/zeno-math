@@ -210,3 +210,28 @@ test("scratch paper on the practice page draws, rubs out, lifts whole lines, und
   await expect(undo).toBeDisabled();
   expect(await inked()).toBe(0);
 });
+
+test("with dots on, the scratch pen draws straight from dot to dot, and the choice is remembered", async ({ page }) => {
+  const s = w.ui.scratch;
+  await page.goto("/#/practice");
+  await page.getByRole("button", { name: s.title }).click();
+  const dots = page.getByRole("button", { name: s.dots });
+  await dots.click();
+  await expect(dots).toHaveAttribute("aria-pressed", "true");
+  const sheet = page.locator(".scratch-sheet canvas");
+  await sheet.scrollIntoViewIfNeeded();
+  const box = (await sheet.boundingBox())!;
+  // A wobbly drag from near (40, 40) to near (160, 40) becomes the straight line between those dots.
+  await page.mouse.move(box.x + 43, box.y + 37);
+  await page.mouse.down();
+  for (const [x, y] of [[80, 55], [120, 25], [157, 44]]) await page.mouse.move(box.x + x, box.y + y, { steps: 4 });
+  await page.mouse.up();
+  const ink = await sheet.evaluate((c: HTMLCanvasElement) => {
+    const dpr = window.devicePixelRatio || 1;
+    const at = (x: number, y: number) => c.getContext("2d")!.getImageData(Math.round(x * dpr), Math.round(y * dpr), 1, 1).data[3] > 0;
+    return { line: [40, 70, 100, 130, 160].every((x) => at(x, 40)), above: at(100, 30), below: at(100, 50), past: at(170, 40) };
+  });
+  expect(ink).toEqual({ line: true, above: false, below: false, past: false });
+  await page.reload();
+  await expect(page.getByRole("button", { name: s.dots })).toHaveAttribute("aria-pressed", "true");
+});
