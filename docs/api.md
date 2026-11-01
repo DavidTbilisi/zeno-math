@@ -33,12 +33,12 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/boards/:id/share` | anyone | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
 | DELETE | `/api/boards/:id/share` | anyone | take the read-only link away: 204; the old link stops working |
 | GET | `/api/shared/:token` | anyone | the shared board, `{ title, scene, updatedAt }`, without its id; 404 once the link is taken away |
-| GET | `/api/classes` | teacher | every class: code, name, skills, phase, sessionEnds, testLength, students per condition, attempts |
-| POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength? }`: 201 with its code |
+| GET | `/api/classes` | teacher | every class: code, name, skills, feature, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
+| POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
-| POST | `/api/students` | anyone | join a class: `{ class }` gives 201 `{ code, class, condition }`, randomised in blocks of four |
-| GET | `/api/students/:code` | student | `{ code, class, condition, answered }` |
+| POST | `/api/students` | anyone | join a class: `{ class }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four |
+| GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered }` |
 | DELETE | `/api/students/:code` | student | delete the student and everything saved under the code: 204 |
 | GET | `/api/students/:code/plan` | student | what the browser needs to choose class practice; see *The plan* |
 | POST | `/api/attempts` | student | one practice question; see *Attempts* |
@@ -87,12 +87,30 @@ like everyone else, and with it could open any board for editing. Without one, t
 
 The class code is 6 characters from an alphabet without look-alikes (no 0/O, 1/I/L).
 
+### Arms
+
+A class tests one feature, `feature` when it is made (`src/model/arms.ts`; 400 for another):
+
+- **`policy`** (the default): the adaptive choice of question (`arm: "on"`, condition `adaptive`) against the fixed
+  sequence (`off`, condition `fixed`).
+- **`spaced`**: spaced review (`src/model/spacing.ts`).
+- **`steps`**: a fractions operation missed is worked in steps.
+- **`hard`**: after a miss on fractions, "what exactly was hard?".
+
+Students are given an arm in random blocks of four, two of each. In a class testing anything but the policy both
+arms practise with the adaptive policy. Only the feature under test differs: the arm without it goes without it, in
+class practice and free practice alike, and every other feature stays on for both. An attempt that shows a feature
+the student's arm hasn't got is refused with 400: a `spaced` policy (`invalid policy`), `steps` (`invalid steps`) or
+`hard` (`invalid hard`). Classes and students from before arms tested the policy; their arm follows from their
+condition.
+
 ### The protocol
 
 `POST /api/classes/:code/phase` (teacher) takes `{ phase }`, one of:
 
 - **`open`**: class practice any time.
-- **`pretest`** / **`posttest`**: the test, for students who haven't finished it. Class practice waits.
+- **`pretest`** / **`posttest`** / **`delayed`**: the test, for students who haven't finished it. Class practice
+  waits. `delayed` is the delayed post-test, best given a week or more after the post-test, on form C.
 - **`session`**: class practice for `minutes` (1–240), the same window for everyone, starting now.
 - **`closed`**: no class practice.
 
@@ -104,9 +122,9 @@ minute, when they next ask for the plan.
 `GET /api/students/:code/plan` returns:
 
 ```text
-{ class, condition, skills, position, recent, state,       ← class practice
-  phase, sessionEnds, testLength,                          ← the protocol
-  tests: { pre: { form, answered }, post: { form, answered } } }
+{ class, condition, feature, arm, skills, position, recent, state,   ← class practice
+  phase, sessionEnds, testLength,                                     ← the protocol
+  tests: { pre: { form, answered }, post: { form, answered }, delayed: { form, answered } } }
 ```
 
 - **`position`**: how many fixed-sequence questions the student has done.
@@ -115,8 +133,8 @@ minute, when they next ask for the plan.
   answers counted on each skill (`answers`), and the student's own records under `students.me` (right, wrong and
   recent answers on each skill, each area and overall, and where each skill was last practised), so the browser can
   choose questions offline.
-- **`tests`**: which form each test uses (counterbalanced within each condition) and which questions are already
-  answered.
+- **`tests`**: which form each test uses (A and B counterbalanced within each arm, C for everyone's delayed
+  post-test) and which questions are already answered.
 
 ### Attempts
 
@@ -129,8 +147,9 @@ minute, when they next ask for the plan.
 
 - **`clientId`**: made by the browser (8–64 of `A-Za-z0-9-`).
 - **`outcome`**: `solved`, `revealed` or `skipped`.
-- **`policy`**: `adaptive`, `fixed`, `free` or `review`. `review` exactly when `review` is true; `adaptive` and
-  `fixed` only for a student in that condition.
+- **`policy`**: `adaptive`, `fixed`, `free`, `review` or `spaced`. `review` exactly when `review` is true;
+  `adaptive` and `fixed` only for a student in that condition; `spaced` only for a student with spaced review
+  (see *Arms*).
 - **`predicted`**: the model's chance of a right first answer when the question was shown, from 0 to 1.
 - **`answers`**: at most 50. Each `verdict` is `correct`, `close`, `wrong` or `form`; inputs are cut to 200
   characters.
@@ -163,7 +182,7 @@ stored twice.
 `POST /api/tests` stores one test answer. The body:
 
 ```text
-{ clientId, student, phase: "pre" | "post", item, input, verdict, retries, ms }
+{ clientId, student, phase: "pre" | "post" | "delayed", item, input, verdict, retries, ms }
 ```
 
 - **`item`**: the question's number on the test, 0 to testLength − 1.
@@ -196,18 +215,23 @@ question: a repeat keeps the first, with 200 `{ stored: false }`.
   takes the row off until ten more questions after `through`; 404 for anything else.
 - **`class`**: the class with its protocol.
 - **`students`**: per student:
-  - export name (`s17`), code and condition;
+  - export name (`s17`), code, arm and condition;
   - questions answered, right first time, and minutes of class practice;
-  - each test's form, answers, right answers and whether it is complete;
+  - each test's form (pre, post, delayed), answers, score (right answers over the test's questions) and whether it
+    is complete;
   - mastery of every skill (the chance of a right first answer at each level, and the answers that rests on).
-- **`conditions`**: per group:
+- **`arms`**: `on` and `off`, each:
   - students and questions;
   - right first time;
   - the model's expected chance, and how far practice was from the target;
   - median time per question, solutions opened, questions left unfinished;
   - practice minutes;
-  - pre- and post-test mean (SD, n), and the gain.
-- **`tests`**: Cohen's d of the gain, and the pre-test on form A against form B.
+  - each test (`pre`, `post`, `delayed`) by intention to treat: mean (SD, n) over every student of the arm, with a
+    question not answered counted as wrong (a test not sat scores 0), and `finished`, how many sat all of it.
+- **`tests`**:
+  - `started`: when each test's phase first began, or null;
+  - `effect`: Cohen's d of each test by intention to treat, `on` over `off`;
+  - `forms`: the pre-test on form A against form B.
 - **`calibration`**: the logged predictions against what happened (log-loss, AUC, ten bins).
 
 ### Exports
@@ -215,10 +239,10 @@ question: a repeat keeps the first, with 200 `{ stored: false }`.
 Both CSVs name students `s1`, `s2`, … by their row number, never by their code, so a published data set can't be
 used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=1+2` as a formula.
 
-- **`attempts.csv`** columns: attempt, student, class, condition, policy, predicted, area, skill, level, seed,
+- **`attempts.csv`** columns: attempt, student, class, feature, arm, condition, policy, predicted, area, skill, level, seed,
   review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, hard,
   steps, remarked, late, shown_at, created_at.
-- **`tests.csv`** columns: response, student, class, condition, test_order, phase, form, test_length, item, area,
+- **`tests.csv`** columns: response, student, class, feature, arm, condition, test_order, phase, form, test_length, item, area,
   skill, level, seed, input, verdict, correct, client_verdict, late, retries, ms, created_at. `test_length` is the
   number of questions on each of the class's tests.
 

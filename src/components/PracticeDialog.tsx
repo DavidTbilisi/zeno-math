@@ -3,7 +3,7 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, toAttempt, toClassPlan, whatWasHard, withProtocol,
+  applyAttempt, exerciseFor, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { newcomerChance } from "../model/logistic";
@@ -32,6 +32,7 @@ import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
 import { learnSpacing, nextReview, openAgain } from "../model/spacing";
+import type { Feature } from "../model/arms";
 import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
 } from "../model/placement";
@@ -128,6 +129,11 @@ export function PracticeDialog(props: Props) {
   // The class study's plan (null until loaded, or when nobody is signed in); kept in a ref because answering moves it on.
   const planRef = useRef<ClassPlan | null>(null);
   const predicted = (skill: SkillId, L: Level) => planRef.current?.model.predict({ student: ME, skill, level: L }) ?? null;
+  /**
+   * Whether the student has a feature of practice: in a class testing it, the arm without it doesn't (arms.ts). Their
+   * plan says, or before it comes, what was kept when they signed in.
+   */
+  const has = (f: Feature) => studentHas(planRef.current ?? loadStudent(), f);
   /** The skill of the question on screen, so that a spaced review is on another skill when one is due. */
   const shownSkill = useRef<SkillId | undefined>(undefined);
   /**
@@ -147,17 +153,19 @@ export function PracticeDialog(props: Props) {
     if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
     const last = shownSkill.current;
     const spaced = (skill: SkillId, L: Level): Current => ({ ex: exercise(skill, L, newSeed(), w), policy: "spaced", review: false, predicted: predicted(skill, L) });
-    if (plan) {
+    // A student in a class testing spaced review, in the arm without it, has none in class practice or free practice.
+    const reviews = has("spaced");
+    if (reviews && plan) {
       const k = nextReview(plan.spacing, Date.now(), (k) => fits({ skill: k as SkillId, level: 3 }), (k) => k, last);
       if (k) return spaced(k as SkillId, 3);
-    } else {
+    } else if (reviews) {
       const cellOf = (k: string) => ({ skill: k.split(".")[0] as SkillId, level: Number(k.split(".")[1]) as Level });
       const k = nextReview(prog.spacing ?? {}, Date.now(), (k) => fits(cellOf(k)), (k) => cellOf(k).skill, last);
       if (k) return spaced(cellOf(k).skill, cellOf(k).level);
     }
     if (plan) {
       const c = choosePolicy(plan.condition, plan.model, ME, plan.skills, plan.position, {
-        recent: plan.recent, ideas: plan.ideas, ema: plan.ema, unlockFloor: newcomerChance(plan.model), again: openAgain(plan.spacing) as SkillId[],
+        recent: plan.recent, ideas: plan.ideas, ema: plan.ema, unlockFloor: newcomerChance(plan.model), again: reviews ? (openAgain(plan.spacing) as SkillId[]) : [],
       });
       return { ex: exerciseFor(c, w), policy: plan.condition, review: false, predicted: predicted(c.skill, c.level) };
     }
@@ -369,7 +377,7 @@ export function PracticeDialog(props: Props) {
     playSound("miss");
     const n = wrongs + 1;
     setWrongs(n);
-    if (n === 1 && steps.length) setStepping("now");
+    if (n === 1 && steps.length && has("steps")) setStepping("now");
     else if (n >= 2) reveal();
   };
   const reveal = () => {
@@ -476,7 +484,7 @@ export function PracticeDialog(props: Props) {
   }, [cur, shown]);
   // Once a question is over after a wrong answer, a signed-in student is asked what exactly was hard: the ticks go with
   // the attempt and move their ideas (ideaState.ts), so they are asked only where something keeps them.
-  const hardChoices = useMemo(() => (done && student ? whatWasHard(cur.ex, log.current) : null), [done, cur, student]);
+  const hardChoices = useMemo(() => (done && student && has("hard") ? whatWasHard(cur.ex, log.current) : null), [done, cur, student]);
   const toggleHard = (id: string) => {
     const ticked = (hardChoices ?? []).filter((i) => (i === id) !== hard.includes(i));
     setHard(ticked);
@@ -527,7 +535,7 @@ export function PracticeDialog(props: Props) {
   );
   // What the class's phase allows right now (class practice only; free practice is always open).
   const plan = classOn && planStatus === "ready" ? planRef.current : null;
-  const testPhase = plan?.phase === "pretest" ? "pre" : plan?.phase === "posttest" ? "post" : null;
+  const testPhase = plan?.phase === "pretest" ? "pre" : plan?.phase === "posttest" ? "post" : plan?.phase === "delayed" ? "delayed" : null;
   // When a timed session runs out, one more render finds it over (the clock itself ticks on its own).
   const sessionEnds = plan?.phase === "session" ? plan.sessionEnds : null;
   const [, sessionEnded] = useReducer((n: number) => n + 1, 0);

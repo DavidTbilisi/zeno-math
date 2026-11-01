@@ -10,9 +10,17 @@ import { asksWhatWasHard, bearing, hasIdeas, learnIdeas, usesOf, type IdeaState 
 import { learnEma, RECENT, type Choice, type EmaState } from "./model/policy";
 import { learnClassSpacing, type Spacing } from "./model/spacing";
 import type { Form, TestPhase } from "./model/testForms";
+import { hasFeature, type Arm, type Feature } from "./model/arms";
 
 export type Condition = "adaptive" | "fixed";
-export type Student = { code: string; class: string; condition: Condition };
+/** A student signed in: their class and condition, and the feature their class tests with their arm (none kept from before arms). */
+export type Student = { code: string; class: string; condition: Condition; feature?: Feature; arm?: Arm };
+/**
+ * Whether a student has a feature of practice (arms.ts): the arm without the feature their class tests goes without it.
+ * Anyone else has every feature: nobody signed in, or a student kept from before arms whose plan hasn't come yet.
+ */
+export const studentHas = (s: { feature?: Feature; arm?: Arm } | null | undefined, f: Feature): boolean =>
+  !s?.feature || !s.arm || hasFeature({ feature: s.feature, arm: s.arm }, f);
 /** correct; close (nearly); wrong; form (right idea, wrong form: sent back without counting as a miss). */
 export type AnswerVerdict = "correct" | "close" | "wrong" | "form";
 export type Outcome = "solved" | "revealed" | "skipped";
@@ -24,8 +32,8 @@ export type ChosenBy = Condition | "free" | "review" | "spaced";
 /** How a question came to be asked, recorded with it. */
 export type Origin = { policy: ChosenBy; review: boolean; predicted: number | null };
 /** What the class is doing, set by the teacher (see server/protocol.ts). */
-export type Phase = "open" | "pretest" | "session" | "posttest" | "closed";
-/** Where the student is with the class's protocol: its phase, a timed session's end, and their two tests. */
+export type Phase = "open" | "pretest" | "session" | "posttest" | "delayed" | "closed";
+/** Where the student is with the class's protocol: its phase, a timed session's end, and their three tests. */
 export type Protocol = {
   class: string;
   phase: Phase;
@@ -38,7 +46,8 @@ export type Protocol = {
  * ideas under "ideas", their moving average on each skill under "ema", their spaced reviews under "spacing".
  */
 export type Plan = Protocol & {
-  condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; state: LogisticState; ideas: IdeaState; ema: EmaState; spacing?: Spacing;
+  condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; state: LogisticState; ideas: IdeaState; ema: EmaState;
+  spacing?: Spacing;
 };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 /** One step of a question worked in steps (stepsOf in practice.ts), in the steps' order: the answers to it, and whether its answer was shown. */
@@ -129,7 +138,8 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
 export const ME = "me";
 /** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
 export type ClassPlan = Protocol & {
-  condition: Condition; skills: SkillId[]; position: number; recent: SkillId[]; model: LogisticModel; ideas: IdeaState; ema: EmaState; spacing: Spacing;
+  condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; model: LogisticModel; ideas: IdeaState; ema: EmaState;
+  spacing: Spacing;
 };
 export const toClassPlan = ({ state, spacing, ...rest }: Plan): ClassPlan => ({ ...rest, spacing: spacing ?? {}, model: LogisticModel.fromState(state) });
 /** A newer plan's protocol (the teacher may have moved the class on) over the plan the browser has been carrying forward. */

@@ -94,7 +94,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
   return (
     <>
       <div className="field-row">
-        <strong>{phase === "pre" ? w.ui.preTest : w.ui.postTest}</strong>
+        <strong>{phase === "pre" ? w.ui.preTest : phase === "post" ? w.ui.postTest : w.ui.delayedTest}</strong>
         <span className="hint">{fill(w.ui.testProgress, { i: index + 1, n: items.length })}</span>
       </div>
       <small className="hint">{w.ui.testIntro}</small>

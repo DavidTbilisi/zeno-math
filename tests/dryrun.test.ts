@@ -26,9 +26,14 @@ test("a dry run of the study through the server keeps every guarantee and can be
       assert.ok(total(practice.wrong) > 0 && total(practice.named) > 0, `${world}: ${JSON.stringify(practice.named)} of ${JSON.stringify(practice.wrong)}`);
       assert.deepEqual(Object.keys(practice.wrong).sort(), ["adaptive", "fixed"]);
       const tests = tallyMistakes(parseCsv(result.testsCsv));
-      assert.ok(Object.keys(tests.wrong).every((g) => /^(adaptive|fixed) (pre|post)$/.test(g)), Object.keys(tests.wrong).join());
+      assert.ok(Object.keys(tests.wrong).every((g) => /^(adaptive|fixed) (pre|post|delayed)$/.test(g)), Object.keys(tests.wrong).join());
       assert.ok(total(tests.named) > 0, `${world} tests: ${JSON.stringify(tests.named)} of ${JSON.stringify(tests.wrong)}`);
     }
+    // A class testing another feature: both arms practise adaptively, and are reported by arm.
+    const spaced = await dryRun({ base: server.base, teacher: "dry", students: 8, questions: 6, testLength: 4, world: "elo", seed: 3, refreshEvery: 3, feature: "spaced" });
+    for (const c of spaced.checks) assert.ok(c.ok, `spaced: ${c.name} (${c.detail})`);
+    assert.deepEqual(spaced.analysis.arms, { treated: "spaced on", control: "spaced off" });
+    assert.deepEqual(Object.keys(tallyMistakes(parseCsv(spaced.attemptsCsv)).wrong).sort(), ["spaced off", "spaced on"]);
   } finally {
     await server.stop();
   }

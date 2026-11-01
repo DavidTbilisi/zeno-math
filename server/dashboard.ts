@@ -1,6 +1,12 @@
 // What the teacher's dashboard shows for a class: each student's mastery of each skill (from the learner model), the
-// two conditions side by side, the pre- and post-test, and how well the model's logged predictions matched what
-// students then did; and at the top, who is stuck on what and why (src/model/stuckList.ts).
+// two arms side by side (with the feature the class tests and without it, src/model/arms.ts), the three tests, and how
+// well the model's logged predictions matched what students then did; and at the top, who is stuck on what and why
+// (src/model/stuckList.ts).
+//
+// The arms are compared by intention to treat (issue #268): every student counts in the arm they were given, and a
+// question not answered counts as wrong, so a student who never sat a test scores 0 on it. Counting only those who
+// finished credits an arm for the students it lost (the ASSISTments outcome of 23 October 2026); how many finished is
+// shown beside the scores as an outcome of its own.
 import type { DatabaseSync } from "node:sqlite";
 import type { SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM } from "../src/model/curriculum.ts";
@@ -8,16 +14,18 @@ import type { Level } from "../src/model/elo.ts";
 import { auc, calibration, evidence, logLoss, type Prediction } from "../src/model/evaluate.ts";
 import { hasIdeas, knownOf, SKILL_IDEAS } from "../src/model/ideaState.ts";
 import { TARGET } from "../src/model/policy.ts";
+import type { Arm, Feature } from "../src/model/arms.ts";
+import { TEST_PHASES, type TestPhase } from "../src/model/testForms.ts";
 import { becauseOf, groupByReason, isStuckNow, sinceLastStreak, type Because, type Example } from "../src/model/stuckList.ts";
 import type { MistakeId } from "../src/math/mistakes.ts";
 import { stmt } from "./db.ts";
 import { mistakeOf } from "./marking.ts";
-import { classProtocol, testScores } from "./protocol.ts";
+import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protocol.ts";
 import { currentIdeas, currentModel } from "./research.ts";
 
 type AttemptRow = {
   id: number; seed: number; answers: string; hard: string | null;
-  student_id: number; condition: string; policy: string; predicted: number | null; skill: SkillId; level: Level;
+  student_id: number; arm: Arm; condition: string; policy: string; predicted: number | null; skill: SkillId; level: Level;
   outcome: string; first_correct: number; counted: number; solution_viewed: number; ms_total: number; created_at: number;
 };
 const share = (xs: readonly boolean[]) => (xs.length ? xs.filter(Boolean).length / xs.length : null);
@@ -28,6 +36,13 @@ const sd = (xs: readonly number[]) => {
   return Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / (xs.length - 1));
 };
 const describe = (xs: readonly number[]) => ({ n: xs.length, mean: mean(xs), sd: sd(xs) });
+/** Cohen's d of a over b with the pooled SD: a first look; the planned analysis is `npm run analyse`. */
+function cohen(a: readonly number[], b: readonly number[]) {
+  const [x, y] = [describe(a), describe(b)];
+  if (x.n < 2 || y.n < 2) return null;
+  const pooled = Math.sqrt(((x.n - 1) * x.sd! ** 2 + (y.n - 1) * y.sd! ** 2) / (x.n + y.n - 2));
+  return pooled ? (x.mean! - y.mean!) / pooled : null;
+}
 function median(xs: readonly number[]) {
   if (!xs.length) return null;
   const s = [...xs].sort((a, b) => a - b);
@@ -38,22 +53,24 @@ function median(xs: readonly number[]) {
 const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1);
 
 export function dashboard(db: DatabaseSync, classCode: string) {
-  const klass = stmt(db, "SELECT code, name, skills, created_at AS createdAt FROM classes WHERE code = ?").get(classCode) as
-    { code: string; name: string; skills: string | null; createdAt: number } | undefined;
+  const klass = stmt(db, "SELECT code, name, skills, feature, created_at AS createdAt FROM classes WHERE code = ?").get(classCode) as
+    { code: string; name: string; skills: string | null; feature: Feature; createdAt: number } | undefined;
   if (!klass) return null;
   const skills: SkillId[] = klass.skills ? JSON.parse(klass.skills) : [...CURRICULUM];
-  const students = stmt(db, "SELECT id, code, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
-    { id: number; code: string; condition: string }[];
+  const students = stmt(db, "SELECT id, code, arm, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
+    { id: number; code: string; arm: Arm; condition: string }[];
   const attempts = stmt(db, `
-    SELECT a.id, a.seed, a.answers, a.hard, a.student_id, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
+    SELECT a.id, a.seed, a.answers, a.hard, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
       json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
     FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
   `).all(classCode) as AttemptRow[];
 
   const model = currentModel(db);
   const protocol = classProtocol(db, classCode);
-  // A test counts once every question on it has an answer (passing over a question is an answer).
-  const scores = new Map<number, { pre?: { form: string; answered: number; score: number }; post?: { form: string; answered: number; score: number } }>();
+  // A test is finished once every question on it has an answer (passing over a question is an answer); its score is
+  // the share of all its questions answered right.
+  type Score = { form: string; answered: number; score: number };
+  const scores = new Map<number, Partial<Record<TestPhase, Score>>>();
   for (const t of testScores(db, classCode)) {
     const entry = scores.get(t.studentId) ?? {};
     entry[t.phase] = { form: t.form, answered: t.answered, score: t.correct / protocol.testLength };
@@ -73,12 +90,14 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     return {
       id: `s${s.id}`,
       code: s.code,
+      arm: s.arm,
       condition: s.condition,
       answered: mine.length,
       /** Minutes spent on questions class practice chose (what timed sessions keep equal). */
       practiceMinutes: mine.filter((a) => a.policy === s.condition).reduce((sum, a) => sum + a.ms_total, 0) / 60_000,
       pre: test.pre ? { ...test.pre, complete: complete(test.pre) } : null,
       post: test.post ? { ...test.post, complete: complete(test.post) } : null,
+      delayed: test.delayed ? { ...test.delayed, complete: complete(test.delayed) } : null,
       rightFirst: share(verdicts),
       lastAt: mine.at(-1)?.created_at ?? null,
       // The chance of a right first answer at each level, and how many answers on the skill it rests on.
@@ -89,13 +108,14 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     };
   });
 
-  const group = (condition: string) => {
-    const mine = attempts.filter((a) => a.condition === condition);
-    const chosen = mine.filter((a) => a.policy === condition);
-    const people = rows.filter((r) => r.condition === condition);
-    const both = people.filter((r) => r.pre?.complete && r.post?.complete);
+  /** Each student's score on a test, by intention to treat: a test not sat scores 0, and questions left unanswered count as wrong. */
+  const itt = (people: typeof rows, phase: TestPhase) => people.map((r) => r[phase]?.score ?? 0);
+  const group = (arm: Arm) => {
+    const mine = attempts.filter((a) => a.arm === arm);
+    const chosen = mine.filter((a) => a.policy === a.condition);
+    const people = rows.filter((r) => r.arm === arm);
     return {
-      students: students.filter((s) => s.condition === condition).length,
+      students: people.length,
       answered: mine.length,
       classPractice: chosen.length,
       rightFirst: share(mine.map(verdict).filter((v) => v !== null)),
@@ -106,17 +126,17 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       solutionViewed: share(mine.map((a) => a.solution_viewed === 1)),
       skipped: share(mine.map((a) => a.outcome === "skipped")),
       practiceMinutes: mean(people.map((r) => r.practiceMinutes)),
-      // Test scores (share right) over completed tests; the gain only for students who completed both.
-      pre: describe(people.filter((r) => r.pre?.complete).map((r) => r.pre!.score)),
-      post: describe(people.filter((r) => r.post?.complete).map((r) => r.post!.score)),
-      gain: describe(both.map((r) => r.post!.score - r.pre!.score)),
+      // Each test by intention to treat, over every student of the arm, and how many of them finished it.
+      ...(Object.fromEntries(TEST_PHASES.map((p) => [p, { ...describe(itt(people, p)), finished: people.filter((r) => r[p]?.complete).length }])) as
+        Record<TestPhase, ReturnType<typeof describe> & { finished: number }>),
     };
   };
-  const conditions = { adaptive: group("adaptive"), fixed: group("fixed") };
-  // Cohen's d of the gain, adaptive over fixed, with the pooled SD: a first look; the planned analysis is `npm run analyse`.
-  const [a, f] = [conditions.adaptive.gain, conditions.fixed.gain];
-  const pooled = a.n >= 2 && f.n >= 2 ? Math.sqrt(((a.n - 1) * a.sd! ** 2 + (f.n - 1) * f.sd! ** 2) / (a.n + f.n - 2)) : null;
-  const effect = pooled ? (a.mean! - f.mean!) / pooled : null;
+  const arms = { on: group("on"), off: group("off") };
+  const armRows = (arm: Arm) => rows.filter((r) => r.arm === arm);
+  // When each test began (null: not yet), so the page shows only the tests the class has reached, and how long after
+  // the post-test the delayed one came.
+  const windows = phaseWindows(db, classCode);
+  const started = Object.fromEntries(TEST_PHASES.map((p) => [p, windows.find((w) => w.phase === TEST_PHASE_OF[p])?.start ?? null])) as Record<TestPhase, number | null>;
   // The forms should be equally hard: compare them on the pre-test, before any practice could make a difference.
   const preByForm = (form: string) => describe(rows.filter((r) => r.pre?.complete && r.pre.form === form).map((r) => r.pre!.score));
 
@@ -128,10 +148,15 @@ export function dashboard(db: DatabaseSync, classCode: string) {
 
   return {
     stuck: stuckList(db, classCode, students, attempts),
-    class: { code: klass.code, name: klass.name, skills, createdAt: klass.createdAt, ...protocol },
+    class: { code: klass.code, name: klass.name, skills, feature: klass.feature, createdAt: klass.createdAt, ...protocol },
     students: rows,
-    conditions,
-    tests: { effect: Number.isFinite(effect) ? effect : null, forms: { A: preByForm("A"), B: preByForm("B") } },
+    arms,
+    tests: {
+      started,
+      // Cohen's d of each test, by intention to treat, the arm with the feature over the arm without.
+      effect: Object.fromEntries(TEST_PHASES.map((p) => [p, cohen(itt(armRows("on"), p), itt(armRows("off"), p))])) as Record<TestPhase, number | null>,
+      forms: { A: preByForm("A"), B: preByForm("B") },
+    },
     calibration: {
       n: predictions.length,
       logLoss: predictions.length ? logLoss(predictions) : null,

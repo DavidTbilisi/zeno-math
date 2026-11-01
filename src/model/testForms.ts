@@ -1,13 +1,16 @@
-// The pre- and post-test of a class study. Two forms, A and B, ask about the same skills at the same levels in the same
-// order, with different seeds: the questions differ but come from the same generators, so the forms are parallel by
-// construction (the dashboard checks that their scores agree). Half of each condition takes A first and B after, the
-// other half the other way round, so a harder form can't pass for learning. Everything follows from the class code,
-// so the server and every student's browser build the same forms without storing them.
+// The tests of a class study: the pre-test, the post-test right after practice, and the delayed post-test a week or
+// more later, which asks what was kept rather than what was learnt that day (issue #268). Three forms, A, B and C, ask
+// about the same skills at the same levels in the same order, with different seeds: the questions differ but come from
+// the same generators, so the forms are parallel by construction (the dashboard checks that A and B agree). Half of
+// each arm takes A first and B after, the other half the other way round, so a harder form can't pass for learning;
+// everyone takes C last, so the arms still meet the same questions there. Everything follows from the class code, so
+// the server and every student's browser build the same forms without storing them.
 import type { SkillId } from "../math/practiceSkills.ts";
 import type { Level } from "./elo.ts";
 
-export type Form = "A" | "B";
-export type TestPhase = "pre" | "post";
+export type Form = "A" | "B" | "C";
+export const TEST_PHASES = ["pre", "post", "delayed"] as const;
+export type TestPhase = (typeof TEST_PHASES)[number];
 /** Which form a student takes first: AB = A before, B after. */
 export type TestOrder = "AB" | "BA";
 export type TestItem = { skill: SkillId; level: Level; seed: number };
@@ -41,4 +44,4 @@ export function testItems(classCode: string, skills: readonly SkillId[], form: F
   });
 }
 
-export const formFor = (order: TestOrder, phase: TestPhase): Form => (phase === "pre" ? order[0] : order[1]) as Form;
+export const formFor = (order: TestOrder, phase: TestPhase): Form => (phase === "pre" ? order[0] : phase === "post" ? order[1] : "C") as Form;

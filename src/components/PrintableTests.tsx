@@ -1,5 +1,6 @@
-// A class's two test forms on paper, for a lesson without devices or a backup when the network fails: every
-// question of form A and form B with a line for the answer, then an answer key for each. The forms are the ones the
+// A class's three test forms on paper, for a lesson without devices or a backup when the network fails: every
+// question of forms A and B (the pre- and post-test) and C (the delayed post-test) with a line for the answer, then an
+// answer key for each. The forms are the ones the
 // students' browsers build (from the class code), so a paper answer can be typed in later as the same question.
 // The browser's print dialog makes the PDF; on screen this is a preview with Print and Close.
 import { useMemo } from "react";
@@ -15,7 +16,7 @@ import { SpokenMath } from "./SpokenMath";
 export function PrintableTests({ klass, w, pw, onClose }: { klass: ClassSummary; w: Dict["teacher"]; pw: PracticeWords; onClose: () => void }) {
   const forms = useMemo(
     () =>
-      (["A", "B"] as Form[]).map((form) => ({
+      (["A", "B", "C"] as Form[]).map((form) => ({
         form,
         items: testItems(klass.code, klass.skills, form, klass.testLength).map((it) => {
           const ex = exercise(it.skill, it.level, it.seed, pw);

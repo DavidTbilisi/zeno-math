@@ -465,6 +465,7 @@ export type PracticeWords = {
     retry: string;
     preTest: string;
     postTest: string;
+    delayedTest: string;
     testIntro: string;
     testProgress: string;
     submit: string;

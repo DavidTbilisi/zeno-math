@@ -6,10 +6,25 @@ chapter plan for the thesis in [thesis/outline.md](thesis/outline.md).
 
 ## How a study runs
 
-Zeno can record practice for a study that compares ways of choosing exercises (an adaptive learner model against a
-fixed sequence). A teacher makes a class; students join it in the Practice dialog with the class code. Each student is
-given a student code to write down (it brings their record back on any device) and is assigned a condition at random,
-in blocks of four, so every class is split two-and-two as it fills. Only the codes are stored: no names or emails.
+Zeno can record practice for a study that tests one feature of practice in a class. The study it was built for
+compares ways of choosing exercises (an adaptive learner model against a fixed sequence). A teacher makes a class and
+picks what it tests; students join it in the Practice dialog with the class code. Each student is given a student
+code to write down (it brings their record back on any device) and is assigned an arm at random, with the feature or
+without it, in blocks of four, so every class is split two-and-two as it fills. Only the codes are stored: no names
+or emails.
+
+**What a class can test** (`src/model/arms.ts`, issue #268):
+
+- *Choosing the next question* (the default): the adaptive condition against the fixed one, below.
+- *Spaced review:* a skill mastered comes back after 1, 3, 7 and 21 days.
+- *Steps after a miss:* a fractions operation answered wrong is worked in steps.
+- *Asking what was hard:* after a miss on fractions, the student ticks the idea that was hard.
+
+In a class testing anything but the choice of question, both arms practise adaptively, and only the feature under
+test differs: the arm without it goes without it, and every other feature stays on for both. The server refuses an
+answer that shows a feature the student's arm hasn't got, so the arms can't mix. A new feature joins the list at the
+end, with its switch in the browser and its check on the server. Faded examples (#266) and targeted step-down (#269)
+are meant to join it this way.
 
 From then on, every question a student tries is saved: the skill, level and seed (so the exact question can be
 rebuilt), each answer typed with its verdict (correct, close, wrong, or sent back for its form) and the time it took,
@@ -65,6 +80,9 @@ the change within half a minute:
 
 - *Open practice:* class practice whenever students like, untimed.
 - *Pre-test* / *post-test:* the test, for students who haven't finished it. Class practice waits.
+- *Delayed post-test:* the same, a week or more after the post-test, on a fresh form. A post-test right after
+  practice measures what was learnt that day. The delayed one measures what was kept. The page says how many days
+  have passed since the post-test.
 - *Timed session:* class practice with a countdown, the same window for everyone in the room, so both groups get equal
   practice time. When it ends, class practice stops; free practice stays open.
 - *Closed:* no class practice.
@@ -74,10 +92,11 @@ minutes after its phase ended (a test answer after its test, class practice afte
 marked `late`: a tablet that was offline uploads when it can, and nothing is lost. The analysis says how many there
 were.
 
-The two tests come in parallel forms, A and B. Both ask about the same skills at the same levels in the same order, but
-with different questions, built from the class code, so every browser and the server build the same form. Within each
-condition, students alternate between taking A first and B first, so a harder form can't pass for learning; the
-dashboard compares the forms on the pre-test. A test shows no marks and no solutions. Only a wrong-*form* message
+The tests come in parallel forms, A, B and C. All three ask about the same skills at the same levels in the same
+order, but with different questions, built from the class code, so every browser and the server build the same form.
+Within each arm, students alternate between taking A first and B first, so a harder form can't pass for learning;
+the dashboard compares the forms on the pre-test. Everyone takes C for the delayed post-test, so both arms still meet
+the same questions there. A test shows no marks and no solutions. Only a wrong-*form* message
 ("lowest terms") allows another try, so notation isn't penalised. Passing a question counts as an answer. Each question
 is answered once; the server works out which question it was from the form, so a client can't answer a question that
 wasn't on its test, and marks the answer itself. A test can't be answered before the teacher starts it. Test answers
@@ -95,16 +114,20 @@ set). There they can make classes and hand out the codes, and see for each class
   together, to be taken as a small group. A student leaves the list after three right in a row, or when the teacher
   marks them seen, until ten more questions go by. Students appear by number (`s3`), with their code only when
   "show student codes" is on.
-- **The two groups** side by side: students, questions answered, right first time, the model's expected chance and how
+- **The two arms** side by side: students, questions answered, right first time, the model's expected chance and how
   far class practice was from the 75 % target, the median time per question, how often the worked solution was opened,
   and how often a question was left unfinished.
 - **Mastery by skill:** one row per student, one column per skill, shaded by the chance of a right first answer at
   medium level. The scale has five bins, validated as an ordinal colour ramp for both light and dark mode, and grey
-  means no answers yet. Each group's average sits on top. Hovering a cell gives all three levels; "show numbers" puts
+  means no answers yet. Each arm's average sits on top. Hovering a cell gives all three levels; "show numbers" puts
   the percentages in the cells.
-- **The pre- and post-test:** scores per group as mean (SD, n) over completed tests, the gain for students who
-  completed both, Cohen's d of the gain as a first look, and the form check. Each student's scores also appear beside
-  their row in the heatmap, in brackets while a test is unfinished.
+- **The tests,** each once the class has reached it, by intention to treat. Every student counts in their arm, and
+  a question not answered counts as wrong, so a student who never sat a test scores 0 on it. ASSISTments' published
+  outcome credits students for quitting, and its tutoring effect vanishes under the stricter rule. So the page shows
+  each arm's mean (SD, n) over all its students, how many finished the test as a result of its own, Cohen's d of each
+  test as a first look, and the form check. Each student's scores also appear beside their row in the heatmap, in
+  brackets while a test is unfinished. The planned analysis (`npm run analyse`) is unchanged: it is pre-registered on
+  the students who finished both the pre- and the post-test.
 - **Practice time per student,** from the questions class practice chose: the check that both groups got equal time.
 - **Whether the model predicts well:** the chance logged when each question appeared, against what the student then
   did, as a calibration plot (bigger dots rest on more answers), with log-loss, AUC and a table view.
@@ -115,13 +138,13 @@ The same data is at `/api/research/dashboard?class=CODE`, and the CSV download i
 # make a class (send the header only if TEACHER_PASSWORD is set); skills: skill ids and/or areas, default every skill there is when the class is made (kept if skills are added later)
 curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
   -d '{"name":"7B","skills":["algebra","average"]}'
-# classes, with how many students are in each condition
+# classes, with how many students are in each arm
 curl localhost:8787/api/classes -H 'X-Teacher-Password: …'
 # every attempt as CSV (add ?class=CODE for one class); students appear as s1, s2, … and never by their code
 curl -OJ localhost:8787/api/research/attempts.csv -H 'X-Teacher-Password: …'
-# every test answer: student, condition, form order, test, form, question, skill, level, seed, what was typed (as JSON), verdict
+# every test answer: student, feature, arm, condition, form order, test, form, question, skill, level, seed, what was typed (as JSON), verdict
 curl -OJ localhost:8787/api/research/tests.csv -H 'X-Teacher-Password: …'
-# move a class on: open | pretest | session (with minutes) | posttest | closed
+# move a class on: open | pretest | session (with minutes) | posttest | delayed | closed
 curl -X POST localhost:8787/api/classes/CODE/phase -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
   -d '{"phase":"session","minutes":20}'
 ```
@@ -363,8 +386,10 @@ The CSVs behind these tables are in [`docs/results/`](results/).
 
 `npm run dry-run` rehearses the whole study with simulated students against the real server, through its HTTP API:
 
-1. It makes a class and joins 40 students, who are randomised in blocks.
-2. It runs the pre-test, a practice session and the post-test. Each student answers like a browser would:
+1. It makes a class testing a feature (`--feature`, the choice of question by default) and joins 40 students, who
+   are randomised to its arms in blocks.
+2. It runs the pre-test, a practice session, the post-test and the delayed post-test. The simulated students don't
+   forget, so the delayed post-test checks the plumbing, not forgetting. Each student answers like a browser would:
    - test questions are rebuilt from the class code;
    - practice is chosen by the student's condition from the plan the server sends, carried forward between refreshes;
    - answers are typed and marked by the real checker.
@@ -372,9 +397,9 @@ The CSVs behind these tables are in [`docs/results/`](results/).
 
 It checks the study's guarantees and fails if one breaks:
 
-- the groups are balanced;
-- the forms are counterbalanced within each condition;
-- each test is on its form;
+- the arms are balanced;
+- the forms are counterbalanced within each arm;
+- each test is on its form (C for the delayed post-test);
 - every test is complete;
 - every practice question is stored, and a retried upload is stored once;
 - class practice follows each student's condition;
@@ -383,10 +408,13 @@ It checks the study's guarantees and fails if one breaks:
 - every wrong test answer could be typed;
 - the server marked every answer as the browser did;
 - nothing arrived after its phase.
+- the dashboard's tests by intention to treat match the export;
+- the stuck list matches the export.
 
 ```bash
 npm run dry-run                                         # 40 students, 30 questions, 12-question tests (~10 s)
 npm run dry-run -- --students 60 --world bkt --out dry-run
+npm run dry-run -- --feature spaced                      # a class testing spaced review
 npm run analyse -- dry-run/tests.csv
 npm run model -- dry-run/attempts.csv
 ```

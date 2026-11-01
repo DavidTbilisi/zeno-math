@@ -28,13 +28,17 @@ if (args.includes("--json")) {
     console.log(`${c.padEnd(9)} ${n.complete} of ${n.all} students finished both tests` + (m ? `; pre ${pct(m.pre)}, post ${pct(m.post)}, gain ${pts(m.gain)} points` : ""));
   }
   console.log("");
+  // The arm with the feature against the arm without: adaptive − fixed when the classes test the policy.
+  const { treated = "with", control = "without" } = { treated: result.arms.treated ?? undefined, control: result.arms.control ?? undefined };
+  const versus = `${treated} − ${control}`;
+  if (new Set(rows.map((r) => r.feature || "policy")).size > 1) console.log("Warning: these classes test different features; analyse each feature's classes on their own.\n");
   if (result.ancova) {
     const a = result.ancova;
-    console.log("Primary (ANCOVA, post-test adjusted for pre-test): adaptive − fixed");
+    console.log(`Primary (ANCOVA, post-test adjusted for pre-test): ${versus}`);
     console.log(`  ${line(a)}`);
-    console.log(`  adjusted post-test means: adaptive ${pct(a.adjusted.treated)}, fixed ${pct(a.adjusted.control)}; d = ${a.d.toFixed(2)}`);
-  } else console.log("Primary (ANCOVA): not enough students who finished both tests in each condition");
-  if (result.gains) console.log(`Secondary (Welch's t-test on gains): adaptive − fixed\n  ${line(result.gains)}`);
+    console.log(`  adjusted post-test means: ${treated} ${pct(a.adjusted.treated)}, ${control} ${pct(a.adjusted.control)}; d = ${a.d.toFixed(2)}`);
+  } else console.log("Primary (ANCOVA): not enough students who finished both tests in each arm");
+  if (result.gains) console.log(`Secondary (Welch's t-test on gains): ${versus}\n  ${line(result.gains)}`);
   if (result.forms) console.log(`Check (pre-test, form A − form B; near 0 if the forms are parallel)\n  ${line(result.forms)}`);
   // Report these with the result: answers sent long after their test ended, and the browser disagreeing with the server.
   console.log("\nAnswers (all kept, as the server marked them):");
