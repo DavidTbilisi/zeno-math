@@ -134,6 +134,9 @@ export function initResearch(db: DatabaseSync) {
   // The student's arm: on (with the feature) or off. Students from before arms take it from their condition, and the
   // blocks still being handed out turn their conditions into arms.
   add("students", "arm", "TEXT");
+  // The student's number in the class list, if they gave one: the teacher finds a lost student code by it. It stays on
+  // the teacher's page and is never exported, so the research data still knows students only by their own number.
+  add("students", "list_no", "INTEGER");
   stmt(db, "UPDATE students SET arm = CASE condition WHEN 'fixed' THEN 'off' ELSE 'on' END WHERE arm IS NULL").run();
   stmt(db, `UPDATE classes SET block = replace(replace(block, '"adaptive"', '"on"'), '"fixed"', '"off"') WHERE block LIKE '%"adaptive"%' OR block LIKE '%"fixed"%'`).run();
   initProtocol(db);
@@ -156,6 +159,15 @@ export function parseSkills(value: unknown): SkillId[] | null {
     else throw new HttpError(400, `unknown skill, area or grade: ${String(v).slice(0, 40)}`);
   }
   return inCurriculumOrder([...out]);
+}
+/** The highest number in a class list a student can give. */
+export const MAX_LIST_NO = 99;
+/** The student's number in the class list, or null when they gave none. */
+export function parseListNo(value: unknown): number | null {
+  if (value === undefined || value === null) return null;
+  if (!Number.isInteger(value) || (value as number) < 1 || (value as number) > MAX_LIST_NO)
+    throw new HttpError(400, `number must be a whole number from 1 to ${MAX_LIST_NO}`);
+  return value as number;
 }
 const classSkills = (json: string | null): SkillId[] => (json ? JSON.parse(json) : [...CURRICULUM]);
 
@@ -457,11 +469,16 @@ export async function handleResearch(
     if (!id && req.method === "POST") {
       const body = await readJson(req, MAX_ATTEMPT_BODY);
       const classCode = normalizeCode(body.class);
+      const listNo = parseListNo(body.number);
       // One transaction: the arm leaves the block and the student is stored together, or neither is. (node:sqlite is
       // synchronous, so nothing else runs in between anyway.)
       const joined = transaction(db, () => {
         const klass = stmt(db, "SELECT code, block, feature FROM classes WHERE code = ?").get(classCode) as { code: string; block: string; feature: Feature } | undefined;
         if (!klass) return null;
+        // Someone in the class already gave this number: most likely the same student on another device, who would
+        // split their record (and could land in the other arm). Joined again only when they say it isn't them.
+        if (listNo !== null && body.again !== true && stmt(db, "SELECT 1 FROM students WHERE class_code = ? AND list_no = ?").get(klass.code, listNo))
+          return "taken" as const;
         let block = JSON.parse(klass.block) as Arm[];
         if (!block.length) block = shuffled(BLOCK);
         const arm = block.shift()!;
@@ -470,10 +487,11 @@ export async function handleResearch(
         while (findStudent(code)) code = randomCode(STUDENT_LEN);
         code = normalizeCode(code);
         stmt(db, "UPDATE classes SET block = ? WHERE code = ?").run(JSON.stringify(block), klass.code);
-        stmt(db, "INSERT INTO students (code, class_code, condition, arm, test_order, created_at) VALUES (?, ?, ?, ?, ?, ?)")
-          .run(code, klass.code, condition, arm, nextTestOrder(db, klass.code, arm), Date.now());
+        stmt(db, "INSERT INTO students (code, class_code, condition, arm, test_order, list_no, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
+          .run(code, klass.code, condition, arm, nextTestOrder(db, klass.code, arm), listNo, Date.now());
         return { code, class: klass.code, condition, feature: klass.feature, arm };
       });
+      if (joined === "taken") return send(res, 409, { error: "a student in this class already gave that number" });
       return joined ? send(res, 201, joined) : send(res, 404, { error: "no such class" });
     }
     if (!id) return send(res, 405, { error: "method not allowed" });

@@ -193,6 +193,31 @@ test("attempts that don't add up are refused", async () => {
   assert.equal(await refused({ outcome: "skipped", answers: [{ input: "2", verdict: "close", ms: 5 }] }), 201);
 });
 
+test("a student's number in the class list: checked, warned about when given twice, on the dashboard and never exported", async () => {
+  const { code } = await newClass();
+  const join = (body: Record<string, unknown>) => call("POST", "/api/students", { class: code, ...body });
+  for (const number of [0, 100, 2.5, "7"]) assert.equal((await join({ number })).status, 400, `number ${number}`);
+  const first = await join({ number: 7 });
+  assert.equal(first.status, 201);
+  assert.equal((await join({ number: 7 })).status, 409, "the same number again is most likely the same student");
+  const again = await join({ number: 7, again: true });
+  assert.equal(again.status, 201, "joined anyway when they say it wasn't them");
+  assert.notEqual(again.body.code, first.body.code);
+  assert.equal((await join({})).status, 201, "a number is optional");
+  const other = await newClass();
+  assert.equal((await call("POST", "/api/students", { class: other.code, number: 7 })).status, 201, "numbers are per class");
+
+  const board = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body as { students: { code: string; number: number | null }[] };
+  assert.deepEqual(board.students.map((s) => s.number), [7, 7, null]);
+  assert.equal(board.students[0].code, first.body.code);
+
+  await call("POST", "/api/attempts", attempt(first.body.code));
+  for (const kind of ["attempts", "tests"]) {
+    const csv = (await call("GET", `/api/research/${kind}.csv?class=${code}`, undefined, TEACHER)).body as string;
+    assert.doesNotMatch(csv.split("\n")[0], /number|list/, `${kind}.csv has no list number`);
+  }
+});
+
 test("deleting a student deletes their answers", async () => {
   const { code } = await newClass();
   const student = (await call("POST", "/api/students", { class: code })).body.code;

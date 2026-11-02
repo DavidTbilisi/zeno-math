@@ -41,6 +41,14 @@ function App() {
         <PracticePage key={practice[1]} start={practice[1]} />
       </Suspense>
     );
+  // A class's join link: the practice page, with the class code typed into its join box.
+  const invite = hash.match(/^#\/join\/([A-Za-z0-9]+)$/)?.[1];
+  if (invite)
+    return (
+      <Suspense fallback={<div className="center-msg">…</div>}>
+        <PracticePage key={invite} invite={invite.toUpperCase()} />
+      </Suspense>
+    );
   if (hash === "#/course")
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>

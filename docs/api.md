@@ -39,7 +39,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
-| POST | `/api/students` | anyone | join a class: `{ class }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four |
+| POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
 | GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered }` |
 | DELETE | `/api/students/:code` | student | delete the student and everything saved under the code: 204 |
 | GET | `/api/students/:code/plan` | student | what the browser needs to choose class practice; see *The plan* |
@@ -235,7 +235,7 @@ question: a repeat keeps the first, with 200 `{ stored: false }`.
   takes the row off until ten more questions after `through`; 404 for anything else.
 - **`class`**: the class with its protocol.
 - **`students`**: per student:
-  - export name (`s17`), code, arm and condition;
+  - export name (`s17`), code, number in the class list (`null` if none was given), arm and condition;
   - questions answered, right first time, and minutes of class practice;
   - each test's form (pre, post, delayed), answers, score (right answers over the test's questions) and whether it
     is complete;
