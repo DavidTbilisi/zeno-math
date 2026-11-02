@@ -2,6 +2,7 @@ import type { Dashboard } from "../server/dashboard";
 import type { Attempt, Phase, Plan, SendResult, Student, TestAnswer } from "./learner";
 import type { SkillId } from "./math/practiceSkills";
 import type { Feature } from "./model/arms";
+import type { Form, TestPhase } from "./model/testForms";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
@@ -100,6 +101,10 @@ export type { Dashboard };
 export const studentName = (id: string, number: number | null | undefined, code?: string) =>
   [number ? `№ ${number}` : id, code].filter(Boolean).join(" · ");
 
+/** What came of a paper test typed in (server/protocol.ts recordPaperTest): each question's verdict, null where the
+ * student had answered it online; reordered when the student's form order was swapped to fit the form they wrote. */
+export type PaperResult = { form: Form; stored: number; kept: number; verdicts: (string | null)[]; reordered: boolean };
+
 /** The teacher's side of the study. The password goes in a header (empty when the server doesn't ask for one). */
 export function teacherApi(password: string) {
   const headers: Record<string, string> = password ? { "X-Teacher-Password": password } : {};
@@ -111,6 +116,9 @@ export function teacherApi(password: string) {
     setPhase: (code: string, phase: Phase, minutes?: number) =>
       req<{ phase: Phase; sessionEnds: number | null }>("POST", `/api/classes/${encodeURIComponent(code)}/phase`, { phase, minutes }, false, headers),
     dashboard: (code: string) => req<Dashboard>("GET", `/api/research/dashboard?class=${encodeURIComponent(code)}`, undefined, false, headers),
+    /** A test written on paper, typed in: one answer per question in the printout's order, "" for one left blank. */
+    paper: (code: string, student: string, phase: TestPhase, form: Form, answers: string[]) =>
+      req<PaperResult>("POST", `/api/classes/${encodeURIComponent(code)}/paper`, { student, phase, form, answers }, false, headers),
     /** The teacher has seen a stuck student: off the stuck list until ten more questions after attempt `through`. */
     seen: (code: string, student: string, skill: string, through: number) =>
       req<void>("POST", `/api/classes/${encodeURIComponent(code)}/seen`, { student, skill, through }, false, headers),

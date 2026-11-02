@@ -5,6 +5,7 @@ import { en } from "../src/locales/en.ts";
 import { ka } from "../src/locales/ka.ts";
 import { ru } from "../src/locales/ru.ts";
 import { check, exercise, stepsOf, trapInputs } from "../src/math/practice.ts";
+import { parseCsv } from "../src/model/evaluate.ts";
 import { testItems } from "../src/model/testForms.ts";
 
 const TEACHER = "e2e-teacher";
@@ -137,6 +138,34 @@ test("the join link fills the class code in; a number given twice is caught, and
   const find = teacher.locator(".find-code");
   await find.locator("summary").click();
   for (const c of codes) await expect(find.getByRole("row", { name: new RegExp(c) })).toContainText("Same number twice");
+});
+
+test("a test written on paper is typed in on the teacher page, marked, and exported as paper", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const name = `Paper ${Date.now()}`;
+  const { code } = await (await request.post("/api/classes", { data: { name, skills: ["linear"], testLength: 4 }, headers })).json();
+  const student = (await (await request.post("/api/students", { data: { class: code, number: 3 } })).json()).code as string;
+  const plan = await (await request.get(`/api/students/${student}/plan`)).json();
+  const items = testItems(code, ["linear"], plan.tests.pre.form, 4).map((q) => exercise(q.skill, q.level, q.seed, en.pracWords));
+
+  const page = await (await browser.newContext()).newPage();
+  await page.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
+  await page.goto("/#/teacher");
+  await page.locator(".class-item", { hasText: name }).click();
+  const card = page.locator(".paper-card");
+  await card.locator("summary").click();
+  await card.getByRole("combobox", { name: "Student", exact: true }).selectOption({ label: `№ 3 · ${student}` });
+  await expect(card.getByRole("combobox", { name: "Form on their sheet" })).toHaveValue(plan.tests.pre.form);
+  // Right, wrong, left blank, right.
+  await card.getByRole("textbox", { name: "Answer 1", exact: true }).fill(items[0].plain);
+  await card.getByRole("textbox", { name: "Answer 2", exact: true }).fill("12345");
+  await card.getByRole("textbox", { name: "Answer 4", exact: true }).fill(items[3].plain);
+  await card.getByRole("button", { name: "Save the answers" }).click();
+  await expect(card.getByRole("status")).toHaveText("Saved 4 answers, 2 right.");
+  await expect(card.locator(".paper-mark")).toHaveText(["✓", "✗", "–", "✓"]);
+
+  const csv = parseCsv(await (await request.get(`/api/research/tests.csv?class=${code}`, { headers })).text());
+  expect(csv.map((r) => [r.phase, r.verdict, r.paper])).toEqual([["pre", "correct", "1"], ["pre", "wrong", "1"], ["pre", "skipped", "1"], ["pre", "correct", "1"]]);
 });
 
 test("after a wrong answer on fractions the student is asked what exactly was hard, and the ticks reach the server", async ({ browser, request }) => {

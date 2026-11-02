@@ -21,7 +21,7 @@ import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { mark, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
-import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
+import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordPaperTest, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
 // An attempt is a few hundred bytes; nothing legitimate comes near this.
@@ -396,7 +396,7 @@ const CSV_COLUMNS = [
 
 const TEST_CSV_COLUMNS = [
   "response", "student", "class", "feature", "arm", "condition", "test_order", "phase", "form", "test_length", "item", "area", "skill", "level", "seed", "input",
-  "verdict", "correct", "client_verdict", "late", "retries", "ms", "created_at",
+  "verdict", "correct", "client_verdict", "late", "paper", "retries", "ms", "created_at",
 ] as const;
 function sendCsv(res: ServerResponse, name: string, columns: readonly string[], rows: Record<string, unknown>[]) {
   const stamp = new Date().toISOString().slice(0, 10);
@@ -423,6 +423,12 @@ export async function handleResearch(
   if (resource === "classes" && id && sub === "phase" && req.method === "POST") {
     teacher(req);
     return setPhase(req, res, db, normalizeCode(decodeURIComponent(id)));
+  }
+
+  // A test written on paper, typed in by the teacher.
+  if (resource === "classes" && id && sub === "paper" && req.method === "POST") {
+    teacher(req);
+    return recordPaperTest(req, res, db, normalizeCode(decodeURIComponent(id)), findStudent);
   }
 
   // The teacher has seen a stuck student ({ student: "s3", skill, through: attempt id }).
@@ -605,7 +611,7 @@ export async function handleResearch(
     const rows = forClass(query.get("class"), `
       SELECT t.id AS response, 's' || s.id AS student, s.class_code AS class, c.feature, s.arm, s.condition, COALESCE(s.test_order, '') AS test_order,
         t.phase, t.form, c.test_length, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct,
-        t.client_verdict, t.late, t.retries, t.ms, t.created_at
+        t.client_verdict, t.late, t.paper, t.retries, t.ms, t.created_at
       FROM test_responses t JOIN students s ON s.id = t.student_id JOIN classes c ON c.code = s.class_code
       {where}
       ORDER BY s.id, t.phase DESC, t.item
