@@ -38,6 +38,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | GET | `/api/classes` | teacher | every class: code, name, skills, feature, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
+| POST | `/api/classes/:code/paper` | teacher | a test written on paper, typed in: `{ student, phase, form?, answers }`; see *Paper tests* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
 | POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
 | GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered }` |
@@ -122,6 +123,23 @@ condition.
 
 It answers `{ phase, sessionEnds }`, or 404 for an unknown class. Students' browsers see the change within half a
 minute, when they next ask for the plan.
+
+
+### Paper tests
+
+`POST /api/classes/:code/paper` (teacher) stores a test a student wrote on the printout (**Print the tests**), typed in
+afterwards: `{ student, phase, form?, answers }`, with `phase` one of `pre`, `post`, `delayed`, and `answers` one string
+per question in the printout's order (`""` for a question left blank, stored as `skipped`). The server works out each
+question from the class code and the form, marks what was typed as it marks an online answer (an answer only wrong in
+its form, such as a fraction not in lowest terms, counts as wrong: on paper it couldn't be sent back), and stores it with
+`paper = 1`, never late. A question the student already answered online keeps that answer. It doesn't matter whether
+the class's test has started: the network may have been down.
+
+`form` is the form on the student's sheet, theirs by default. The other of A and B is taken only while the student has
+taken neither test: their order is swapped to fit (so their next test is the form they haven't seen), which is what
+happens when a whole class writes the pre-test on paper before joining. Otherwise another form is refused with 409.
+The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, reordered }`: `verdicts` per question,
+`null` where the online answer was kept.
 
 ### The plan
 
@@ -268,7 +286,8 @@ used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=
   review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, hard,
   steps, faded, remarked, late, shown_at, created_at.
 - **`tests.csv`** columns: response, student, class, feature, arm, condition, test_order, phase, form, test_length, item, area,
-  skill, level, seed, input, verdict, correct, client_verdict, late, retries, ms, created_at. `test_length` is the
-  number of questions on each of the class's tests.
+  skill, level, seed, input, verdict, correct, client_verdict, late, paper, retries, ms, created_at. `test_length` is the
+  number of questions on each of the class's tests; `paper` is 1 for an answer written on paper and typed in by the
+  teacher (its `ms` is 0 and its `created_at` when it was typed in, not when it was written).
 
 `npm run model` reads the first and `npm run analyse` the second.

@@ -7,10 +7,11 @@
 // phase too, but it hears of a change only every 30 s and keeps answers while the Wi-Fi is down, so the server judges
 // by when an answer arrives: a test that hasn't started is refused, and an answer that arrives more than GRACE after
 // its phase ended is stored but marked late, for the analysis to report (an offline tablet's answers aren't lost).
+import { randomUUID } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import { CURRICULUM } from "../src/model/curriculum.ts";
-import { DEFAULT_TEST_LENGTH, formFor, MAX_TEST_LENGTH, MIN_TEST_LENGTH, TEST_PHASES, testItems, type TestOrder, type TestPhase } from "../src/model/testForms.ts";
+import { DEFAULT_TEST_LENGTH, formFor, type Form, MAX_TEST_LENGTH, MIN_TEST_LENGTH, TEST_PHASES, testItems, type TestOrder, type TestPhase } from "../src/model/testForms.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { mark } from "./marking.ts";
@@ -72,6 +73,8 @@ export function initProtocol(db: DatabaseSync) {
   add("test_responses", "client_verdict", "TEXT");
   // 1: arrived more than GRACE after its test ended.
   add("test_responses", "late", "INTEGER NOT NULL DEFAULT 0");
+  // 1: written on paper and typed in by the teacher afterwards (recordPaperTest), so when it arrived says nothing.
+  add("test_responses", "paper", "INTEGER NOT NULL DEFAULT 0");
   // A class from before the log gets the history its data shows: open from when it was made, each test from its first
   // stored answer, and its phase now from now on. So an answer still waiting in a browser for a test that ran before
   // this update is kept (late, if its test has since ended), not refused.
@@ -206,4 +209,63 @@ export function testScores(db: DatabaseSync, classCode: string) {
     FROM test_responses t JOIN students s ON s.id = t.student_id WHERE s.class_code = ?
     GROUP BY t.student_id, t.phase
   `).all(classCode) as (TestScore & { studentId: number })[];
+}
+
+/** What came of a paper test typed in: how each question was marked (null: already answered online, so kept as it was). */
+export type PaperResult = { form: Form; stored: number; kept: number; verdicts: (string | null)[]; reordered: boolean };
+
+/**
+ * POST /api/classes/:code/paper (teacher): { student, phase, form?, answers } — a test the student wrote on the printed
+ * copy (a lesson without network or devices), typed in afterwards, one answer per question in the printout's order,
+ * "" for one left blank. Each is marked as an answer typed online would be and stored with paper = 1; a question the
+ * student already answered online keeps that answer.
+ *
+ * The printout has every form, and the teacher may not know whose is whose when the network is down (in Lesson 1 the
+ * students may not even have joined yet). So the form the student actually wrote is stored. If it is the other of A
+ * and B than their order says and they have taken neither test yet, their order is swapped to fit, so their next test
+ * is the form they haven't seen; otherwise a form other than theirs is refused (409), naming the right one.
+ */
+export async function recordPaperTest(
+  req: IncomingMessage, res: ServerResponse, db: DatabaseSync, classCode: string, findStudent: (code: unknown) => { id: number; class: string; test_order: string | null } | undefined,
+) {
+  const body = await readJson(req, MAX_BODY);
+  const bad = (what: string) => new HttpError(400, `invalid ${what}`);
+  const student = findStudent(body.student);
+  if (!student || student.class !== classCode) return send(res, 404, { error: "no such student in this class" });
+  const phase = body.phase as TestPhase;
+  if (!TEST_PHASES.includes(phase)) throw bad("phase");
+  const { testLength } = classProtocol(db, classCode);
+  const answers = body.answers;
+  if (!Array.isArray(answers) || answers.length !== testLength || answers.some((a) => typeof a !== "string")) throw bad("answers");
+  const order = testOrderOf(student);
+  const theirs = formFor(order, phase);
+  const form = (body.form ?? theirs) as Form;
+  if (!["A", "B", "C"].includes(form)) throw bad("form");
+  const done = stmt(db, "SELECT COUNT(*) AS n FROM test_responses WHERE student_id = ? AND phase IN ('pre', 'post')").get(student.id) as { n: number };
+  // Form A at the pre-test or B at the post-test means order AB; the other way round, BA.
+  const fits: TestOrder | null = phase === "delayed" || form === "C" ? null : (phase === "pre") === (form === "A") ? "AB" : "BA";
+  const reordered = form !== theirs && fits !== null && done.n === 0;
+  if (form !== theirs && !reordered) return send(res, 409, { error: `this student's ${phase} test is form ${theirs}`, form: theirs });
+  const { skills } = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(classCode) as { skills: string | null };
+  const items = testItems(classCode, skills ? JSON.parse(skills) : CURRICULUM, form, testLength);
+  const now = Date.now();
+  const result = transaction(db, () => {
+    if (reordered) stmt(db, "UPDATE students SET test_order = ? WHERE id = ?").run(fits, student.id);
+    const insert = stmt(db, `
+      INSERT OR IGNORE INTO test_responses (client_id, student_id, phase, form, item, skill, level, seed, input, verdict, client_verdict, late, paper, retries, ms, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 0, 1, 0, 0, ?)
+    `);
+    const batch = randomUUID();
+    return items.map((q, item) => {
+      const typed = (answers[item] as string).trim().slice(0, 200);
+      // On paper nothing could be sent back for its form ("lowest terms"), so such an answer counts as wrong, as a
+      // test answer left in that form would.
+      const marked = typed ? mark(q, typed) : "skipped";
+      const verdict = marked === "form" ? "wrong" : marked;
+      return insert.run(`paper-${batch}-${item}`, student.id, phase, form, item, q.skill, q.level, q.seed, typed, verdict, now).changes ? verdict : null;
+    });
+  });
+  const stored = result.filter((v) => v !== null).length;
+  const out: PaperResult = { form, stored, kept: testLength - stored, verdicts: result, reordered };
+  return send(res, 201, out);
 }

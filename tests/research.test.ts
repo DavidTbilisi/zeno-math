@@ -218,6 +218,59 @@ test("a student's number in the class list: checked, warned about when given twi
   }
 });
 
+test("a paper test typed in: marked like an online one, flagged paper, an online answer kept, the order swapped to fit when it still can be", async () => {
+  const skills = ["linear", "expand", "factor"];
+  const { code } = (await call("POST", "/api/classes", { name: "Paper", skills, testLength: 6 }, TEACHER)).body as { code: string };
+  const join = async () => (await call("POST", "/api/students", { class: code })).body.code as string;
+  const [a, b, c] = [await join(), await join(), await join()];
+  const formOf = async (s: string, phase: "pre" | "post") => (await call("GET", `/api/students/${s}/plan`)).body.tests[phase].form as "A" | "B";
+  const paper = (body: Record<string, unknown>, headers: Record<string, string> = TEACHER) => call("POST", `/api/classes/${code}/paper`, body, headers);
+  /** Six answers for the form: right, wrong, blank, unreadable ("lowest terms" can't be sent back on paper), right, right. */
+  const sheet = (form: string) => testItems(code, skills as never, form as never, 6).map((q, i) =>
+    i === 2 ? "" : i === 1 ? typed(q, "wrong") : i === 3 ? typed(q, "form") : typed(q, "correct"));
+
+  const formA = await formOf(a, "pre");
+  assert.equal((await paper({ student: a, phase: "pre", answers: sheet(formA) }, {})).status, 403, "the teacher's password");
+  assert.equal((await paper({ student: "AAAA-BBBB", phase: "pre", answers: sheet(formA) })).status, 404);
+  const elsewhere = (await call("POST", "/api/students", { class: (await newClass()).code })).body.code;
+  assert.equal((await paper({ student: elsewhere, phase: "pre", answers: sheet("A") })).status, 404, "only a student of this class");
+  assert.equal((await paper({ student: a, phase: "pre", answers: sheet(formA).slice(1) })).status, 400, "one answer per question");
+  assert.equal((await paper({ student: a, phase: "mid", answers: sheet(formA) })).status, 400);
+
+  // Typed in before the class's test has even started (the network was down): stored, each marked by the server.
+  const done = await paper({ student: a, phase: "pre", answers: sheet(formA) });
+  assert.equal(done.status, 201);
+  assert.deepEqual(done.body, { form: formA, stored: 6, kept: 0, verdicts: ["correct", "wrong", "skipped", "wrong", "correct", "correct"], reordered: false });
+  assert.equal((await paper({ student: a, phase: "pre", answers: sheet(formA) })).body.stored, 0, "typed in twice, stored once");
+  // Their post-test is the other form; giving them the same form again is refused, naming theirs.
+  const wrongForm = await paper({ student: a, phase: "post", form: formA, answers: sheet(formA) });
+  assert.deepEqual([wrongForm.status, wrongForm.body.form], [409, formA === "A" ? "B" : "A"]);
+  assert.equal((await paper({ student: a, phase: "delayed", form: "A", answers: sheet("A") })).status, 409, "the delayed post-test is form C");
+
+  // A question answered online before the network went keeps its online answer.
+  await call("POST", `/api/classes/${code}/phase`, { phase: "pretest" }, TEACHER);
+  const formB = await formOf(b, "pre");
+  const q0 = testItems(code, skills as never, formB, 6)[0];
+  await call("POST", "/api/tests", { clientId: `paper-online-${Date.now()}`, student: b, phase: "pre", item: 0, input: typed(q0, "wrong"), verdict: "wrong", retries: 0, ms: 9000 });
+  const mixed = (await paper({ student: b, phase: "pre", answers: sheet(formB) })).body;
+  assert.deepEqual([mixed.stored, mixed.kept, mixed.verdicts[0]], [5, 1, null]);
+  assert.equal(await formOf(b, "post"), formB === "A" ? "B" : "A");
+
+  // A student who wrote the other form than their order says, before any test: their order is swapped to fit, so the
+  // post-test is the form they haven't seen.
+  const formC = await formOf(c, "pre");
+  const other = formC === "A" ? "B" : "A";
+  const swapped = await paper({ student: c, phase: "pre", form: other, answers: sheet(other) });
+  assert.deepEqual([swapped.status, swapped.body.reordered, swapped.body.verdicts[0]], [201, true, "correct"]);
+  assert.deepEqual([await formOf(c, "pre"), await formOf(c, "post")], [other, formC]);
+
+  const rows = parseCsv((await call("GET", `/api/research/tests.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.equal(rows.length, 18);
+  assert.equal(rows.filter((r) => r.paper === "1").length, 17, "all but the one answered online");
+  assert.ok(rows.every((r) => r.late === "0" && r.client_verdict === ""), "paper isn't late, and the server's verdict is the only one");
+  assert.ok(rows.every((r) => r.form === (r.test_order === "AB" ? "A" : "B")), "every pre-test on the form the (swapped) order says");
+});
+
 test("deleting a student deletes their answers", async () => {
   const { code } = await newClass();
   const student = (await call("POST", "/api/students", { class: code })).body.code;
@@ -588,7 +641,7 @@ test("the protocol: phases and sessions, counterbalanced forms, one answer per t
   const q = testItems(code, skills as never, plans[0].tests.pre.form, 6)[0];
   assert.deepEqual([row.phase, row.form, row.item, row.skill, row.level, row.seed], ["pre", plans[0].tests.pre.form, "0", q.skill, String(q.level), String(q.seed)]);
   assert.deepEqual([row.verdict, row.correct, row.client_verdict, row.late], ["form", "0", "correct", "0"], "marked by the server, not the browser");
-  assert.ok(lines.every((l) => !l.includes('"""=1+2"""') === /,,0,0,\d+,[^,]+$/.test(l)), "the browser agreed everywhere else");
+  assert.ok(lines.every((l) => !l.includes('"""=1+2"""') === /,,0,0,0,\d+,[^,]+$/.test(l)), "the browser agreed everywhere else"); // client_verdict, late, paper, retries
 
   // Practice time counts the questions class practice chose.
   await call("POST", "/api/attempts", attempt(s0, { policy: students[0].condition, msTotal: 120_000 }));

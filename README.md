@@ -1614,6 +1614,13 @@ Backups:
   safe while the server is running. The copies sit on the same disk, so also copy that folder somewhere else,
   for example nightly from another machine:
   `ssh server 'docker exec zeno-app-1 sh -c "cat /data/backups/\$(ls /data/backups | tail -n 1)"' > zeno-$(date +%F).db`.
+- **Checked by restoring.** `npm run restore-check -- zeno-2026-11-02.db` starts Zeno on a copy of a backup and
+  reads everything back through it: every class, student, practice question, test answer and board. A backup that
+  hasn't been restored is a hope, so run it on each copy you take.
+- **Putting one back.** Stop the app, copy the backup over the database in the data volume, start it again:
+  `docker compose stop app`, then `docker compose run --rm -v "$PWD/zeno-2026-11-02.db:/restore.db:ro" --entrypoint sh app
+  -c 'cp /restore.db /data/boards.db && rm -f /data/boards.db-wal /data/boards.db-shm'`, then `docker compose start app`.
+  Answers sent after that backup was made are lost, except those still waiting in a student's browser, which upload again.
 - **Boards as JSON.** The home page links to `/api/export`, every board in one JSON file.
 
 Uptime: `.github/workflows/uptime.yml` asks the public server's `/api/health` (no password needed) every ten minutes
@@ -1646,7 +1653,8 @@ The full description is in **[docs/study.md](docs/study.md)**:
 - the learner model, judged on held-out students against a logistic model, PFA, BKT and baselines, on simulated
   classes and on the public ASSISTments data (`npm run model`; `docs/evaluation/prediction-benchmark.md`);
 - the simulation study across three kinds of simulated learner, and its power analysis (`npm run simulate`);
-- a dry run of the whole study through the real server (`npm run dry-run`);
+- a dry run of the whole study through the real server (`npm run dry-run`), also against a running server with every
+  student at once, as a load test (`--base`, `--parallel`);
 - the answer checker against a teacher's marking, and how often it names the mistake a teacher sees (`npm run checker-agreement`);
 - which mistakes each group made, from either export (`npm run mistakes`).
 
@@ -1747,6 +1755,7 @@ src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
 src/components/StudentPanel.tsx  joining a class (with your number in the class list), signing back in, deleting your answers
 src/components/JoinLink.tsx      a class's join link (#/join/<code>) and its QR code, on the teacher page
+src/components/PaperTest.tsx     typing in a test written on the printout, on the teacher page
 server/dashboard.ts       the teacher's dashboard data: who is stuck, mastery per student and skill, the two arms, tests by intention to treat, calibration
 src/model/fading.ts       worked examples that fade: after a miss, then one step fewer given each time, until solved alone
 src/math/calcSteps.ts     how a calculus question comes apart into steps (terms, u and v, the inside)
@@ -1769,7 +1778,8 @@ scripts/benchmark.ts      `npm run benchmark`: the benchmark CSVs in docs/result
 scripts/import-assistments.ts  `npm run import-assistments`: the ASSISTments file as observations
 scripts/simulate-study.ts `npm run simulate`: the conditions on simulated classes, across worlds and assumptions; power
 scripts/analyse-study.ts  `npm run analyse`: the planned analysis on the tests export
-scripts/dry-run-study.ts  `npm run dry-run`: the whole study with simulated students through the real server
+scripts/dry-run-study.ts  `npm run dry-run`: the whole study with simulated students through the real server (or a running one, under load)
+scripts/restore-check.ts  `npm run restore-check`: a backup restored into a fresh Zeno and read back whole
 scripts/checker-agreement.ts  `npm run checker-agreement`: the answer checker against labelled answers
 scripts/mistakes.ts       `npm run mistakes`: the known mistakes in an export's wrong answers, per condition
 scripts/thesis-figures.ts `npm run figures`: the thesis figures (diagrams, calibration, screenshots) made again from the code

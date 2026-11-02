@@ -1279,3 +1279,13 @@ span.board-home:hover { background: none; }
 /* The student's skills by how they hold (#264): kept, mastered with a review to come, practised again. */
 .practice-holds { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
 .practice-holds .hold-mastered, .practice-holds .hold-again { color: var(--muted); }
+
+/* Typing in a paper test (PaperTest.tsx): each question as the printout shows it, its answer box and the mark. */
+.paper-card summary { cursor: pointer; }
+.paper-card summary h3 { display: inline; }
+.paper-items { display: grid; gap: 0.75rem; padding-left: 1.5rem; }
+.paper-items input { min-width: 0; flex: 1 1 10rem; max-width: 20rem; }
+.paper-mark { font-weight: 700; min-width: 1.5em; text-align: center; }
+.paper-mark.correct { color: var(--ok); }
+.paper-mark.wrong, .paper-mark.close { color: var(--danger); }
+.paper-items .paper-card-img { display: block; max-width: min(100%, 26rem); height: auto; margin-bottom: 0.25rem; background: #fff; border-radius: 6px; }

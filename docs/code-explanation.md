@@ -77,6 +77,7 @@ The existing documents describe Zeno from above: `README.md` (features), `docs/a
   - [src/components/MasteryHeatmap.tsx](#srccomponentsmasteryheatmaptsx)
   - [src/components/CalibrationChart.tsx](#srccomponentscalibrationcharttsx)
   - [src/components/PrintableTests.tsx](#srccomponentsprintableteststsx)
+  - [src/components/PaperTest.tsx](#srccomponentspapertesttsx)
   - [Cross-cutting notes](#cross-cutting-notes)
 - [5. The tool dialogs](#5-the-tool-dialogs)
 - [6. Live pieces, the 3D viewer, shapes and the drawing primitives](#6-live-pieces-the-3d-viewer-shapes-and-the-drawing-primitives)
@@ -1778,7 +1779,15 @@ Fixed 340×280 viewBox with margins (`:12-16`); `x(v)`, `y(v)` map 0..1 to pixel
 
 Comment (`PrintableTests.tsx:1-4`): both forms on paper "for a lesson without devices or a backup when the network fails"; the forms "are the ones the students' browsers build (from the class code), so a paper answer can be typed in later as the same question"; "The browser's print dialog makes the PDF."
 
-`forms` memoised on `[klass, pw]`: for `A` and `B`, `testItems(klass.code, klass.skills, form, klass.testLength)` → each with `exercise(...)`, the question card as a data URL, and the answer (`latexToSvg(ex.show)`) as a data URL. Render: a `print-overlay` dialog with Print (`window.print()`) and Close, then a `print-sheet` holding one `print-page[data-form]` per form (title `fill(w.printTitle, {name, form})`, a student blank, the note, an `<ol class="print-items">` of card + `SpokenMath` + answer line) and one `print-page print-key[data-key]` per form (answer images with `alt={ex.plain}`). `e2e/print.spec.ts:13-16` counts 6 items per form and key for a 6-question class.
+`forms` memoised on `[klass, pw]`: for `A`, `B` and `C`, `testItems(klass.code, klass.skills, form, klass.testLength)` → each with `exercise(...)`, the question card as a data URL, and the answer (`latexToSvg(ex.show)`) as a data URL. Render: a `print-overlay` dialog with Print (`window.print()`) and Close, then a `print-sheet` holding one `print-page[data-form]` per form (title `fill(w.printTitle, {name, form})`, a student blank, the note, an `<ol class="print-items">` of card + `SpokenMath` + answer line) and one `print-page print-key[data-key]` per form (answer images with `alt={ex.plain}`). `e2e/print.spec.ts:13-16` counts 6 items per form and key for a 6-question class.
+
+### src/components/PaperTest.tsx
+
+The way back from paper: a test written on the printout, typed in on the teacher page. It sits in a closed `<details>` card ("Type in a paper test", `paper-card`) under *Find a student's code*, and is lazy-loaded only once the card is opened (`TeacherPage` keeps `typingPaper` from `onToggle`), because it draws every question with MathJax as `PrintableTests` does.
+
+State: the `student` (a code, picked from the dashboard's students by `studentName`, sorted by number), the test `phase`, the `form` on the sheet and the `planned` form, the items answered `online`, the typed `answers`, and the `result`. Picking a student or a test fetches the student's plan (`study.plan`), the same one their browser gets: `tests[phase].form` is the form their order says, `tests[phase].answered` the questions already answered online, which are shown disabled. The questions are `testItems(code, skills, form, testLength)`, as the printout and the student's browser build them, so typing beside question 3 means question 3 of that form.
+
+Save sends `api.paper(code, student, phase, form, answers)` (`POST /api/classes/:code/paper`, `recordPaperTest` in `server/protocol.ts`). The server marks each answer with the same checker (an answer only wrong in its form counts as wrong), keeps online answers (`INSERT OR IGNORE` on student, phase and item) and stores the rest with `paper = 1`. The result puts ✓, ≈, ✗ or – beside each question, so a typo shows, and says how many were stored and right. A 409 means the student has already taken a test on the other form, so the sheet must be theirs (`paperWrongForm`, naming the `planned` form). A `reordered` result means their order was swapped to fit the form they wrote, which is allowed while they have taken neither test.
 
 ### Cross-cutting notes
 

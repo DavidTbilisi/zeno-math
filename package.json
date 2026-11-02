@@ -28,6 +28,7 @@
     "grouping": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/grouping.ts",
     "analyse": "node --disable-warning=ExperimentalWarning scripts/analyse-study.ts",
     "dry-run": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dry-run-study.ts",
+    "restore-check": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/restore-check.ts",
     "checker-agreement": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/checker-agreement.ts",
     "mistakes": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/mistakes.ts",
     "dashboard": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dashboard.ts",

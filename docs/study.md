@@ -215,9 +215,14 @@ group, the test answers that came late and those the browser marked differently 
 the server's verdicts and keeps every answer). Report these and the practice time per group from the dashboard
 alongside it.
 
-**On paper.** **Print the tests** on the teacher page shows both forms of the class's test, with a line for each
+**On paper.** **Print the tests** on the teacher page shows the class's three test forms (A, B and C), with a line for each
 answer and an answer key per form; print it, or save it as a PDF. These are the questions the students' browsers
-build, so a paper test can be a backup when the network fails.
+build, so a paper test can be a backup when the network fails. **Type in a paper test** on the teacher page then
+takes each student's sheet: pick the student, the test and the form on the sheet, type the answers beside the same
+questions, and Zeno marks them as it would online. A test not taken counts as zero, so a lesson on paper must not stay
+on paper. The answers are flagged `paper` in the export, for the analysis to report. If a student wrote the other form
+than theirs before taking any test (a class that wrote the pre-test before it could join), their order is swapped to
+fit; after that, the form must be theirs. See *Paper tests* in [api.md](api.md).
 
 **Screen readers.** Each question's words and maths (as MathML) are in the page for screen readers, on the screen
 and on paper, so a student who can't see the picture can still take part.
@@ -464,6 +469,30 @@ npm run model -- dry-run/attempts.csv
 ```
 
 A smaller dry run is part of `npm test`, so CI checks the whole pipeline on every push.
+
+**On the real server, under load.** `--parallel` has every student act at once, as fast as the server answers, which is
+far heavier than a class at a human pace (an answer every half minute or so each); every request is timed and the
+times are reported by kind. `--base` runs against a server already running, with the passwords in
+`ZENO_APP_PASSWORD` and `ZENO_TEACHER_PASSWORD`, and `--clean-up` deletes its students afterwards, which takes their
+answers with them and makes the server forget them in its model; the class is left, named "Dry run … (delete me)".
+
+```bash
+ZENO_APP_PASSWORD=… ZENO_TEACHER_PASSWORD=… npm run dry-run -- --base https://zeno.example.org --parallel --students 30 --feature spaced --clean-up
+```
+
+On 2 November 2026 this ran against the public server (one CPU, shared with another app, reached over the internet
+through its Caddy): 30 students, 30 practice questions each and three 12-question tests, 2,290 requests in 13 s, about
+170 a second against the 1 or so a class needs. Every guarantee held. Medians: 69 ms a test answer, 101 ms a practice
+question (mostly the round trip); the slowest kind was fetching a student's plan, which replays the learner model, at
+198 ms median and 1.04 s at the 95th percentile.
+
+## Restore check
+
+`npm run restore-check -- <backup.db>` is a restore drill: it copies a backup into a fresh data folder, starts Zeno on
+it, and checks what the file holds against what Zeno serves from it: the file is a whole SQLite database, Zeno opens it
+(not one from a newer Zeno), every class with as many students and practice questions, every practice question and
+test answer in the exports, and every board opening. The backup itself isn't written to. `tests/restore.test.ts` runs
+it on a backup made as the server makes them, and on a damaged one and one from a newer Zeno, which it must catch.
 
 ## Answer checker
 

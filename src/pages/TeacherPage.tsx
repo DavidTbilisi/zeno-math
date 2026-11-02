@@ -22,6 +22,7 @@ import { ARMS, FEATURES, type Feature } from "../model/arms";
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
 // first shown, so the dashboard itself doesn't carry them.
 const PrintableTests = lazy(() => import("../components/PrintableTests").then((m) => ({ default: m.PrintableTests })));
+const PaperTest = lazy(() => import("../components/PaperTest").then((m) => ({ default: m.PaperTest })));
 const CalibrationChart = lazy(() => import("../components/CalibrationChart").then((m) => ({ default: m.CalibrationChart })));
 
 const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "delayed", "closed"];
@@ -64,6 +65,7 @@ export function TeacherPage() {
   const [typed, setTyped] = useState("");
   const [access, setAccess] = useState<Access>("checking");
   const [printing, setPrinting] = useState(false);
+  const [typingPaper, setTypingPaper] = useState(false);
   const [classes, setClasses] = useState<ClassSummary[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [data, setData] = useState<Dashboard | null>(null);
@@ -385,6 +387,17 @@ export function TeacherPage() {
 
                 {!!data.students.length && <FindCode students={data.students} w={w} />}
 
+                {!!data.students.length && current && (
+                  <details key={current.code} className="card paper-card" onToggle={(e) => setTypingPaper(e.currentTarget.open)}>
+                    <summary><h3>{w.paperTest}</h3></summary>
+                    <p className="hint">{w.paperTestHint}</p>
+                    {typingPaper && (
+                      <Suspense fallback={null}>
+                        <PaperTest klass={current} students={data.students} api={api} w={w} pw={t.pracWords} onSaved={() => selected && void load(selected)} />
+                      </Suspense>
+                    )}
+                  </details>
+                )}
 
                 <section className="card">
                   <h3>{w.groups}</h3>
