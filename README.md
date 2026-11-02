@@ -1616,6 +1616,11 @@ Backups:
   `ssh server 'docker exec zeno-app-1 sh -c "cat /data/backups/\$(ls /data/backups | tail -n 1)"' > zeno-$(date +%F).db`.
 - **Boards as JSON.** The home page links to `/api/export`, every board in one JSON file.
 
+Uptime: `.github/workflows/uptime.yml` asks the public server's `/api/health` (no password needed) every ten minutes
+from GitHub, outside the server. Four failed tries in a row, or a certificate with under ten days left, open one issue
+labelled `outage`, and GitHub tells the repository's watchers; the next good answer closes it. The address is the
+`UPTIME_URL` secret (`gh secret set UPTIME_URL`), so a fork without it checks nothing.
+
 The database records its schema version, and a newer Zeno's database is refused rather than misread. The server sends a Content-Security-Policy and the
 usual security headers, accepts only JSON request bodies (so a form on another site can't post to it) and refuses scenes it
 couldn't load back.

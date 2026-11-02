@@ -1,0 +1,74 @@
+name: Uptime
+
+# Every ten minutes, ask the public server for /api/health (it needs no password) from outside both the server and the
+# deploying machine. A failure opens one issue labelled "outage", and GitHub tells the repository's watchers about it;
+# the next good answer closes it. One issue per outage, not one email per check. A certificate with under ten days left
+# opens one too: Caddy renews at about thirty, so that means renewal is failing.
+#
+# The address is the UPTIME_URL secret, so the server's address stays out of this public repository. Without the
+# secret (a fork) the check does nothing. GitHub may start scheduled runs some minutes late, and turns them off in a
+# repository with no commits for sixty days.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Ask the public server for its health
+        id: health
+        env:
+          URL: ${{ secrets.UPTIME_URL }}
+        run: |
+          if [ -z "$URL" ]; then echo "No UPTIME_URL secret: nothing to check."; echo "skip=1" >> "$GITHUB_OUTPUT"; exit 0; fi
+          # Four tries over a minute and a half, so a deploy's restart or one lost packet isn't an outage.
+          # Nothing curl says is printed: its errors would name the host.
+          code=000
+          for try in 1 2 3 4; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL" 2>/dev/null) || true
+            [ "$code" = 200 ] && break
+            [ "$try" = 4 ] || sleep 30
+          done
+          host=${URL#https://}; host=${host%%/*}
+          end=$(echo | timeout 20 openssl s_client -connect "$host:443" -servername "$host" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2) || true
+          days=$([ -n "$end" ] && echo $(( ($(date -d "$end" +%s) - $(date +%s)) / 86400 )) || echo "")
+          echo "Health answered $code; the certificate has ${days:-?} days left."
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "days=$days" >> "$GITHUB_OUTPUT"
+
+      - name: Open or close the outage issue
+        if: steps.health.outputs.skip != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          CODE: ${{ steps.health.outputs.code }}
+          DAYS: ${{ steps.health.outputs.days }}
+        run: |
+          now=$(date -u '+%Y-%m-%d %H:%M UTC')
+          problem=""
+          title="The public Zeno server is down"
+          if [ "$CODE" != 200 ]; then
+            problem="The public server's health check answered HTTP $CODE (000: no answer at all) four times in a row, at $now."
+          elif [ -n "$DAYS" ] && [ "$DAYS" -lt 10 ]; then
+            title="The public Zeno server's certificate is about to run out"
+            problem="The public server's certificate runs out in $DAYS days ($now). Caddy renews at about thirty, so renewal is failing: look at the Caddy container's log on the server."
+          fi
+          open=$(gh issue list --label outage --state open --json number --jq '.[0].number // empty')
+          if [ -n "$problem" ]; then
+            if [ -n "$open" ]; then echo "Still down; issue #$open is open."; exit 0; fi
+            gh issue create --label outage --title "$title" --body "$problem
+
+          A class may be locked out. Look at the server (the app's container, then Caddy). This issue closes itself when the check passes again."
+          elif [ -n "$open" ]; then
+            gh issue close "$open" --comment "Back up: the health check answered 200 at $now."
+          fi
