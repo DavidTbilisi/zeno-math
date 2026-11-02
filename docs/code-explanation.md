@@ -57,6 +57,7 @@ The existing documents describe Zeno from above: `README.md` (features), `docs/a
   - [src/components/Modal.tsx](#srccomponentsmodaltsx)
   - [src/components/ui.tsx](#srccomponentsuitsx)
   - [src/components/ToolMenu.tsx](#srccomponentstoolmenutsx)
+  - [src/components/JoinLink.tsx](#srccomponentsjoinlinktsx)
   - [src/components/ShareBox.tsx](#srccomponentsshareboxtsx)
   - [src/components/CommandPalette.tsx](#srccomponentscommandpalettetsx)
   - [src/pages/BoardPage.tsx](#srcpagesboardpagetsx)
@@ -1322,6 +1323,7 @@ One statement: `window.EXCALIDRAW_ASSET_PATH = "/"` (`public/asset-path.js:2`). 
 |---|---|---|
 | `#/s/:token` | `/^#\/s\/([\w-]+)/` (`main.tsx:28`) | `SharedBoardPage key={token}` |
 | `#/practice`, `#/practice/:area` | `/^#\/practice(?:\/(\w+))?$/` (`main.tsx:35`) | `PracticePage key={area} start={area}` |
+| `#/join/:class` | `/^#\/join\/([A-Za-z0-9]+)$/` | `PracticePage key={class} invite={CLASS}` (the join box open, the class code typed in) |
 | `#/teacher…` | `hash.startsWith("#/teacher")` (`main.tsx:42`) | `TeacherPage` |
 | `#/b/:id` | `/^#\/b\/([\w-]+)/` (`main.tsx:27`) | `BoardPage key={id}` |
 | anything else | | `HomePage` |
@@ -1461,6 +1463,10 @@ Backdrop `onMouseDown` closes only when the target is the backdrop itself (`:46`
 ### src/components/ToolMenu.tsx
 
 A toolbar dropdown. State `open`, `pos`. `useLayoutEffect` on `[open]` (`ToolMenu.tsx:13-19`): measure the button's rect and the list's width, clamp `left` to `[8, innerWidth - w - 8]`, set `top = r.bottom + 4`, focus the first item. `useEffect` on `[open]` (`:21-42`): a capturing `pointerdown` on `document` closes when the target is outside both the list and the button; `Escape` closes and refocuses the button; `resize` closes. `onListKey` (`:44-50`): ArrowUp/Down move focus through the items, wrapping. Picking an item (`:71-76`): close, refocus the button, then `it.onPick()`. Comment: "The dialog returns focus to whatever had it when it opened: the menu button, not this vanishing item." ARIA: `aria-haspopup="menu" aria-expanded`, list `role="menu"`, items `role="menuitem"`.
+
+### src/components/JoinLink.tsx
+
+On the teacher page, under the class code: the class's join link (`joinLink(code)` = `origin + pathname + "#/join/" + code`) in a read-only input, Copy link (the clipboard, as in `ShareBox`), and "Show to the class", a wide `Modal` with a large QR code, the class code and the link. `QrCode` draws the code with `qrcode-generator` (error correction M) as one SVG path of unit squares with a four-square quiet zone, always black on white, because phone cameras want dark on light whatever the theme.
 
 ### src/components/ShareBox.tsx
 
@@ -1610,7 +1616,9 @@ State: `fns`, `range` as strings ("so partially typed values like "-" don't get 
 
 ### src/components/StudentPanel.tsx
 
-The join/consent flow. Props: `student | null`, `pending` (queued records), `ui` words, `onChange(student, forgot?)`. State: `classCode`, `ownCode`, `error`, `busy`, `sure`, `agreed`.
+The join/consent flow. Props: `student | null`, `pending` (queued records), `ui` words, `invite` (the class code from a join link), `onChange(student, forgot?)`. State: `classCode` (starts as `invite`), `listNo`, `taken`, `ownCode`, `error`, `busy`, `sure`, `agreed`. With an `invite`, an effect opens the `<details>` and scrolls it into view.
+
+Joining also asks for the student's number in the class list (1–99), and Join stays disabled until it is a whole number in range. A 409 from `study.join` means someone in the class already gave that number: `taken` is set, and an alert tells the student to ask the teacher for their code (`ui.numberTaken`), with a "join anyway" button that sends `again: true`. Editing the number clears the alert.
 
 `run(work, notFound)` (`StudentPanel.tsx:24-34`): sets busy, clears error; a 404 shows `notFound` (`ui.noClass` or `ui.noStudent`), anything else `ui.offline`. `unsaved` (`:35`) shows `fill(ui.unsaved, {n: pending})` when `pending > 0`.
 
@@ -1750,6 +1758,10 @@ Main (`:262-446`):
 
 Lazy imports (`:15-18`): "Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when first shown, so the dashboard itself doesn't carry them."
 
+
+#### Finding a student's code
+
+Under the class head sits `JoinLink`. Students are named by `studentName(id, number, code?)` (`api.ts`): "№ 14" when they gave their number in the class list, else their export name ("s12"), with the code after it when "show student codes" is on; the stuck list gets the numbers as a map by id. `FindCode`, a closed `<details>` card (so codes aren't put on a projector), lists every student by number with their code and answer count, and flags a number given twice: a student who joined again on another device, or a typo.
 ### src/components/MasteryHeatmap.tsx
 
 Header comment (`MasteryHeatmap.tsx:1-5`): one row per student grouped by condition with the group mean on top, one column per skill; "A cell's shade is the chance of a right first answer at medium level, in five 20 % bins of one blue"; grey = no answers; hover gives all three levels; "show numbers" puts the percentages in so "nothing depends on colour or hover alone."

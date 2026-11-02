@@ -44,6 +44,7 @@
     "@excalidraw/excalidraw": "^0.18.1",
     "mathjax-full": "^3.2.2",
     "mathjs": "^15.2.0",
+    "qrcode-generator": "^2.0.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "three": "^0.186.1"

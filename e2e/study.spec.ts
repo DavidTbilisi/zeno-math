@@ -66,6 +66,7 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await student.getByLabel("Class code").fill(code);
   const join = student.locator(".practice-join").getByRole("button", { name: "Join" });
   await expect(join).toBeDisabled();
+  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await join.click();
   await expect(student.locator(".practice-class strong.mono")).toContainText(/Student [A-Z0-9]{4}-[A-Z0-9]{4}/);
@@ -98,6 +99,46 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await expect(student.getByText("No marks during the test", { exact: false })).toBeVisible();
 });
 
+test("the join link fills the class code in; a number given twice is caught, and the teacher finds the code by it", async ({ browser }) => {
+  const teacher = await browser.newPage();
+  await teacher.goto("/#/teacher");
+  await teacher.getByLabel("Teacher password").fill(TEACHER);
+  await teacher.getByRole("button", { name: "Open" }).click();
+  await teacher.locator(".new-class").getByLabel("Name").fill("Join link class");
+  await teacher.getByRole("button", { name: "Create class" }).click();
+  await expect(teacher.locator(".class-head h2")).toHaveText("Join link class");
+  const code = (await teacher.locator(".class-code strong").textContent())!.trim();
+  const link = await teacher.getByRole("textbox", { name: "Join link" }).inputValue();
+  expect(link).toMatch(new RegExp(`#/join/${code}$`));
+  await expect(teacher.getByRole("img", { name: "QR code of the join link" })).toBeVisible();
+  await teacher.getByRole("button", { name: "Show to the class" }).click();
+  await expect(teacher.locator(".join-show .qr")).toBeVisible();
+  await teacher.getByRole("button", { name: "Done" }).click();
+
+  // Two students give the same number: the second is asked whether they joined before, and may join anyway.
+  const codes: string[] = [];
+  for (const second of [false, true]) {
+    const student = await (await browser.newContext()).newPage();
+    await student.goto(link.replace(/^https?:\/\/[^/]+/, ""));
+    await expect(student.getByLabel("Class code")).toHaveValue(code);
+    await student.getByLabel("Your number in the class list").fill("14");
+    await student.getByLabel("I understand and want to take part").check();
+    await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
+    if (second) {
+      await expect(student.locator(".practice-taken")).toContainText("Someone with number 14 has already joined");
+      await student.getByRole("button", { name: "It wasn't me: join" }).click();
+    }
+    const joined = student.locator(".practice-class strong.mono");
+    await expect(joined).toContainText(/Student [A-Z0-9]{4}-[A-Z0-9]{4}/);
+    codes.push((await joined.textContent())!.replace("Student ", "").trim());
+  }
+
+  await teacher.getByRole("button", { name: "Refresh" }).click();
+  const find = teacher.locator(".find-code");
+  await find.locator("summary").click();
+  for (const c of codes) await expect(find.getByRole("row", { name: new RegExp(c) })).toContainText("Same number twice");
+});
+
 test("after a wrong answer on fractions the student is asked what exactly was hard, and the ticks reach the server", async ({ browser, request }) => {
   const headers = { "X-Teacher-Password": TEACHER };
   const { code } = await (await request.post("/api/classes", { data: { name: "Fractions", skills: ["fractions"] }, headers })).json();
@@ -107,6 +148,7 @@ test("after a wrong answer on fractions the student is asked what exactly was ha
   await openPractice(student);
   await student.locator(".practice-join summary").click();
   await student.getByLabel("Class code").fill(code);
+  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
   await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();
@@ -142,6 +184,7 @@ test("order of operations is made of ideas too: a wrong answer asks which of its
   await openPractice(student);
   await student.locator(".practice-join summary").click();
   await student.getByLabel("Class code").fill(code);
+  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
   await expect(student.getByText(/Chosen for you: Order of operations/)).toBeVisible();
@@ -176,6 +219,7 @@ test("a wrong answer on a fractions operation is worked in steps, and the steps 
   await openPractice(student);
   await student.locator(".practice-join summary").click();
   await student.getByLabel("Class code").fill(code);
+  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
   await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();

@@ -94,7 +94,7 @@ function markQueuedTests(plan: ClassPlan, studentCode: string) {
 type Props = { initial?: PracticeSpec; start?: string } & (
   | { onSubmit: (spec: PracticeSpec, rendered: RenderedSvg) => void; onClose: () => void; docked?: boolean }
   // The page; noClass where there is no server to join a class on (the copy published on GitHub Pages).
-  | { onSubmit?: undefined; onClose?: undefined; docked?: undefined; noClass?: boolean }
+  | { onSubmit?: undefined; onClose?: undefined; docked?: undefined; noClass?: boolean; invite?: string }
 );
 
 export function PracticeDialog(props: Props) {
@@ -553,7 +553,8 @@ export function PracticeDialog(props: Props) {
   // What the student has kept and mastered of their class's skills, from the plan their answers carry forward.
   const held = planStatus === "ready" && planRef.current ? holds(planRef.current.spacing, planRef.current.skills) : null;
   const skillHolds = held && (Object.fromEntries(Object.entries(held).map(([h, ks]) => [h, ks.map((k) => w.skills[k as SkillId])])) as Record<Hold, string[]>);
-  const studentPanel = <StudentPanel student={student} pending={pending} ui={w.ui} skills={skillHolds ?? undefined} onChange={changeStudent} />;
+  const invite = onSubmit ? undefined : props.invite;
+  const studentPanel = <StudentPanel student={student} pending={pending} ui={w.ui} skills={skillHolds ?? undefined} invite={invite} onChange={changeStudent} />;
   const resetButton = progress.answered > 0 && (
     <button
       className="btn small add-fn"

@@ -1611,7 +1611,9 @@ Backups:
 
 - **A daily copy.** Once a day, and when it starts, the server writes a copy of the whole database (boards and
   study data) to `DATA_DIR/backups/`, keeping the newest seven. The copy is made with SQLite's `VACUUM INTO`, which is
-  safe while the server is running. The copies sit on the same disk, so also copy that folder somewhere else.
+  safe while the server is running. The copies sit on the same disk, so also copy that folder somewhere else,
+  for example nightly from another machine:
+  `ssh server 'docker exec zeno-app-1 sh -c "cat /data/backups/\$(ls /data/backups | tail -n 1)"' > zeno-$(date +%F).db`.
 - **Boards as JSON.** The home page links to `/api/export`, every board in one JSON file.
 
 The database records its schema version, and a newer Zeno's database is refused rather than misread. The server sends a Content-Security-Policy and the
@@ -1738,7 +1740,8 @@ src/model/classModel.ts   the learner model as the app runs it: starting weights
 src/model/simulate.ts     synthetic learners with a known truth, for tests and the simulation study
 src/model/curriculum.ts   the fixed order of the skills and what each builds on
 src/model/policy.ts       choosing the next question: fixed sequence or adaptive (target chance, mastery, prerequisites)
-src/components/StudentPanel.tsx  joining a class, signing back in, deleting your answers
+src/components/StudentPanel.tsx  joining a class (with your number in the class list), signing back in, deleting your answers
+src/components/JoinLink.tsx      a class's join link (#/join/<code>) and its QR code, on the teacher page
 server/dashboard.ts       the teacher's dashboard data: who is stuck, mastery per student and skill, the two arms, tests by intention to treat, calibration
 src/model/fading.ts       worked examples that fade: after a miss, then one step fewer given each time, until solved alone
 src/math/calcSteps.ts     how a calculus question comes apart into steps (terms, u and v, the inside)

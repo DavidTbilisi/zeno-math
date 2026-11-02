@@ -467,6 +467,11 @@ export type PracticeWords = {
     classCode: string;
     join: string;
     haveCode: string;
+    /** The student's number in the class list (only the teacher sees it), asked for when joining. */
+    listNo: string;
+    /** Joining with a number someone in the class already gave: {n} the number. */
+    numberTaken: string;
+    joinAnyway: string;
     signIn: string;
     joinedAs: string;
     yourSkills: string;

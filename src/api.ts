@@ -51,7 +51,9 @@ export const api = {
 
 /** The practice study (server/research.ts): joining a class, signing back in, and uploading finished questions. */
 export const study = {
-  join: (classCode: string) => req<Student>("POST", "/api/students", { class: classCode }),
+  /** number: the student's number in the class list; again: join though someone in the class already gave it (409). */
+  join: (classCode: string, number?: number, again = false) =>
+    req<Student>("POST", "/api/students", { class: classCode, number, again: again || undefined }),
   student: (code: string) => req<Student & { answered: number }>("GET", `/api/students/${encodeURIComponent(code)}`),
   plan: (code: string) => req<Plan>("GET", `/api/students/${encodeURIComponent(code)}/plan`),
   forget: (code: string) => req<void>("DELETE", `/api/students/${encodeURIComponent(code)}`),
@@ -90,6 +92,13 @@ export type ClassSummary = {
   testLength: number;
 };
 export type { Dashboard };
+
+/**
+ * How the teacher page names a student: by their number in the class list when they gave one ("№ 14"), else by their
+ * number in the study ("s12"); with the student code after it when the teacher asks for codes.
+ */
+export const studentName = (id: string, number: number | null | undefined, code?: string) =>
+  [number ? `№ ${number}` : id, code].filter(Boolean).join(" · ");
 
 /** The teacher's side of the study. The password goes in a header (empty when the server doesn't ask for one). */
 export function teacherApi(password: string) {

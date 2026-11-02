@@ -8,10 +8,14 @@ chapter plan for the thesis in [thesis/outline.md](thesis/outline.md).
 
 Zeno can record practice for a study that tests one feature of practice in a class. The study it was built for
 compares ways of choosing exercises (an adaptive learner model against a fixed sequence). A teacher makes a class and
-picks what it tests; students join it in the Practice dialog with the class code. Each student is given a student
-code to write down (it brings their record back on any device) and is assigned an arm at random, with the feature or
-without it, in blocks of four, so every class is split two-and-two as it fills. Only the codes are stored: no names
-or emails.
+picks what it tests; students join it in the Practice dialog with the class code, or open the class's join link
+(`#/join/<code>`, shown on the teacher page with a QR code for the board), which fills the code in. Each student is
+given a student code to write down (it brings their record back on any device) and is assigned an arm at random, with
+the feature or without it, in blocks of four, so every class is split two-and-two as it fills. Only the codes are
+stored: no names or emails. A student also gives their number in the class list. Only the teacher page shows it, and
+the exports leave it out: a student who loses their code gets it back from the teacher by that number ("find a
+student's code"), and one who gives a number already in the class is asked whether they joined before, instead of
+being given a second record that would split their answers and could put them in the other arm.
 
 **What a class can test** (`src/model/arms.ts`, issue #268):
 
@@ -142,8 +146,8 @@ set). There they can make classes and hand out the codes, and see for each class
   show it: the mistake the checker named again and again, in its own words for the question; else the idea the student
   ticked as hard; else their weakest idea on a skill made of ideas. Students with the same reason are listed
   together, to be taken as a small group. A student leaves the list after three right in a row, or when the teacher
-  marks them seen, until ten more questions go by. Students appear by number (`s3`), with their code only when
-  "show student codes" is on.
+  marks them seen, until ten more questions go by. Students appear by their number in the class list (`№ 14`), or
+  by their number in the study (`s3`) if they gave none, with their code only when "show student codes" is on.
 - **The two arms** side by side: students, questions answered, the skills kept and the skills mastered per student,
   right first time, the model's expected chance and how far class practice was from the 75 % target, the median time
   per question, how often the worked solution was opened, and how often a question was left unfinished.
@@ -218,8 +222,8 @@ build, so a paper test can be a backup when the network fails.
 **Screen readers.** Each question's words and maths (as MathML) are in the page for screen readers, on the screen
 and on paper, so a student who can't see the picture can still take part.
 
-Students see what taking part means before they join a class: what is saved, that the class is split into two
-groups at random, that taking part is up to them, and how to delete everything. **Join** waits until they tick that
+Students see what taking part means before they join a class: what is saved (and that their number in the class
+list is shown only to the teacher), that the class is split into two groups at random, that taking part is up to them, and how to delete everything. **Join** waits until they tick that
 they agree. Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data.
 Before collecting data from real students, check what consent and ethics approval your school or university
 requires; for children, a parent's consent usually comes first.

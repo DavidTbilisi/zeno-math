@@ -6,7 +6,7 @@
 // levels; "show numbers" puts the percentages in the cells, so nothing depends on colour or hover alone. A mark says
 // how a mastered skill holds (issue #264, spacing.ts): ✓ mastered in practice, ★ kept (right on a review days later),
 // ↺ wrong on its review and practised again.
-import type { Dashboard } from "../api";
+import { studentName, type Dashboard } from "../api";
 import { fill } from "../math/text";
 import type { SkillId } from "../math/practiceSkills";
 import { ARMS } from "../model/arms";
@@ -88,7 +88,7 @@ export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showC
                 {skills.map((k) => cell(`${label} · ${words.groupMean}`, k, mean(k), k))}
               </tr>
               {students.map((s) => {
-                const who = showCodes ? `${s.id} · ${s.code}` : s.id;
+                const who = studentName(s.id, s.number, showCodes ? s.code : undefined);
                 return (
                   <tr key={s.id}>
                     <th className="heat-name mono" scope="row">{who}</th>

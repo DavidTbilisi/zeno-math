@@ -8,8 +8,10 @@ import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api"
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
+import { JoinLink } from "../components/JoinLink";
 import { BrandBar } from "../components/BrandBar";
 import { useI18n } from "../i18n";
+import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
 import type { Phase } from "../learner";
 import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
@@ -78,6 +80,7 @@ export function TeacherPage() {
   const [minutes, setMinutes] = useState(20);
   const [askMinutes, setAskMinutes] = useState(false);
   const api = useMemo(() => teacherApi(password), [password]);
+  const numbers = useMemo(() => new Map(data?.students.map((r) => [r.id, r.number]) ?? []), [data]);
 
   const pct = useMemo(() => {
     const f = new Intl.NumberFormat(lang, { style: "percent", maximumFractionDigits: 0 });
@@ -320,6 +323,7 @@ export function TeacherPage() {
                     <span className="muted">{w.code}</span> <strong className="mono">{current.code}</strong>
                   </p>
                   <p className="hint">{w.codeHint}</p>
+                  <JoinLink key={current.code} code={current.code} name={current.name} w={w} />
                 </div>
                 <div className="field-row wrap">
                   <button className="btn" onClick={() => selected && void load(selected)}>{w.refresh}</button>
@@ -337,7 +341,7 @@ export function TeacherPage() {
 
             {/* Who needs the teacher now comes first. */}
             {data && data.class.code === selected && !!data.students.length && (
-              <StuckList stuck={data.stuck} t={t} skillName={skillName} showCodes={showCodes} onSeen={(r) => void seen(r)} />
+              <StuckList stuck={data.stuck} numbers={numbers} t={t} skillName={skillName} showCodes={showCodes} onSeen={(r) => void seen(r)} />
             )}
 
             {current && (
@@ -378,6 +382,8 @@ export function TeacherPage() {
             {data && data.class.code === selected && (
               <>
                 {!data.students.length && <p className="muted">{w.noStudents}</p>}
+
+                {!!data.students.length && <FindCode students={data.students} w={w} />}
 
 
                 <section className="card">
@@ -515,5 +521,41 @@ export function TeacherPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * A student who lost their code tells the teacher their number in the class list, and the teacher reads the code from
+ * here (closed until opened, so the codes aren't shown on a projector). A number given twice is flagged: two records
+ * for one student (who joined again on another device), or a typo; the one with the answers is usually theirs.
+ */
+function FindCode({ students, w }: { students: Dashboard["students"]; w: Dict["teacher"] }) {
+  const twice = new Set(students.map((r) => r.number).filter((n, i, all) => n !== null && all.indexOf(n) !== i));
+  const sorted = [...students].sort((a, b) => (a.number ?? Infinity) - (b.number ?? Infinity));
+  return (
+    <details className="card find-code">
+      <summary><h3>{w.findCode}</h3></summary>
+      <p className="hint">{w.findCodeHint}</p>
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th scope="col">{w.listNo}</th>
+            <th scope="col">{w.studentCode}</th>
+            <th scope="col">{w.answers}</th>
+            <th scope="col" />
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((r) => (
+            <tr key={r.id}>
+              <th scope="row">{r.number ?? "—"}</th>
+              <td className="mono">{r.code}</td>
+              <td>{r.answered}</td>
+              <td className="hint">{r.number !== null && twice.has(r.number) ? w.sameNumber : ""}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
   );
 }

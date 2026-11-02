@@ -533,6 +533,7 @@ input.invalid { border-color: var(--danger); }
 .practice-join[open] summary { margin-bottom: 6px; }
 .practice-class input { flex: 1; min-width: 0; }
 .practice-class input[type="checkbox"] { flex: none; }
+.practice-taken { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
 .practice-consent { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
 .practice-consent ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
 
@@ -574,6 +575,18 @@ input.invalid { border-color: var(--danger); }
 .class-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
 .class-head p { margin: 2px 0; }
 .class-code strong { font-size: 26px; letter-spacing: 0.08em; }
+/* The join link and its QR code. The code is always black on white (cameras want dark on light), framed in the dark theme. */
+.qr { display: block; border-radius: 6px; }
+.join-link { display: flex; gap: 12px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.join-link > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 16em; }
+.join-link input { width: 100%; }
+.qr.small { width: 96px; height: 96px; flex: none; }
+.join-show { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.join-show .qr { width: min(70vh, 80vw, 520px); height: auto; }
+.join-show-link { word-break: break-all; margin: 0; font-size: 1.25rem; }
+.join-show .hint { font-size: 1.1rem; max-width: 36em; }
+.find-code summary { cursor: pointer; }
+.find-code summary h3 { display: inline; }
 .card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .card .hint { margin: 0; }
 .field-row.wrap { flex-wrap: wrap; }

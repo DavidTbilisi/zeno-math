@@ -59,8 +59,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     { code: string; name: string; skills: string | null; feature: Feature; createdAt: number } | undefined;
   if (!klass) return null;
   const skills: SkillId[] = klass.skills ? JSON.parse(klass.skills) : [...CURRICULUM];
-  const students = stmt(db, "SELECT id, code, arm, condition FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
-    { id: number; code: string; arm: Arm; condition: string }[];
+  const students = stmt(db, "SELECT id, code, arm, condition, list_no FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
+    { id: number; code: string; arm: Arm; condition: string; list_no: number | null }[];
   const attempts = stmt(db, `
     SELECT a.id, a.seed, a.answers, a.hard, a.faded, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
       json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
@@ -93,6 +93,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     return {
       id: `s${s.id}`,
       code: s.code,
+      /** The student's number in the class list, if they gave one (for the teacher only: never exported). */
+      number: s.list_no,
       arm: s.arm,
       condition: s.condition,
       answered: mine.length,

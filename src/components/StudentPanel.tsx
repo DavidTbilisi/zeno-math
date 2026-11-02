@@ -2,24 +2,42 @@
 // on every question you work on is saved under that code. Joining shows what taking part means first (what is saved,
 // the two groups, how to stop and delete it all), and waits for the student to agree. Signed in, it lists the skills
 // they have kept (right on a review days later), those mastered whose review is still to come, and those they are
-// practising again after a wrong review (issue #264, holdOf in spacing.ts).
-import { useState, type KeyboardEvent } from "react";
+// practising again after a wrong review (issue #264, holdOf in spacing.ts). The student also gives their number in the
+// class list, which only the teacher sees: a student who lost their code gets it back from the teacher by it, and one
+// who gives a number already in the class is asked whether they joined before rather than given a second record.
+// A join link (#/join/<code>) opens it with the class code already typed in.
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { ApiError, study } from "../api";
 import type { Student } from "../learner";
 import type { PracticeWords } from "../math/practice";
 import { fill } from "../math/text";
 import type { Hold } from "../model/spacing";
 
-export function StudentPanel({ student, pending, ui, skills, onChange }: {
+/** The highest number in a class list (MAX_LIST_NO on the server). */
+const MAX_LIST_NO = 99;
+
+export function StudentPanel({ student, pending, ui, skills, invite, onChange }: {
   student: Student | null;
   pending: number;
   ui: PracticeWords["ui"];
   /** The names of the class's skills by how they hold, once the plan is here. */
   skills?: Record<Hold, string[]>;
+  /** The class code from a join link: the panel opens with it typed in. */
+  invite?: string;
   /** forgot: the student's records were deleted on the server. */
   onChange: (s: Student | null, forgot?: boolean) => void;
 }) {
-  const [classCode, setClassCode] = useState("");
+  const [classCode, setClassCode] = useState(invite ?? "");
+  const [listNo, setListNo] = useState("");
+  /** The number someone in the class already gave, when joining with it was refused. */
+  const [taken, setTaken] = useState<number | null>(null);
+  const box = useRef<HTMLDetailsElement>(null);
+  // From a join link the panel is what the student came for: open, and in view.
+  useEffect(() => {
+    if (!invite || !box.current) return;
+    box.current.open = true;
+    box.current.scrollIntoView({ block: "center" });
+  }, [invite]);
   const [ownCode, setOwnCode] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -32,7 +50,8 @@ export function StudentPanel({ student, pending, ui, skills, onChange }: {
     try {
       await work();
     } catch (e) {
-      setError(e instanceof ApiError && e.status === 404 ? notFound : ui.offline);
+      if (e instanceof ApiError && e.status === 409) setTaken(Number(listNo));
+      else setError(e instanceof ApiError && e.status === 404 ? notFound : ui.offline);
     } finally {
       setBusy(false);
     }
@@ -76,7 +95,8 @@ export function StudentPanel({ student, pending, ui, skills, onChange }: {
     );
   }
 
-  const join = () => agreed && run(async () => onChange(await study.join(classCode)), ui.noClass);
+  const number = /^\d+$/.test(listNo.trim()) && Number(listNo) >= 1 && Number(listNo) <= MAX_LIST_NO ? Number(listNo) : null;
+  const join = (again = false) => agreed && number !== null && run(async () => onChange(await study.join(classCode, number, again)), ui.noClass);
   const signIn = () =>
     run(async () => {
       const s = await study.student(ownCode);
@@ -88,7 +108,7 @@ export function StudentPanel({ student, pending, ui, skills, onChange }: {
     go();
   };
   return (
-    <details className="practice-join">
+    <details className="practice-join" ref={box}>
       <summary className="hint">{ui.joinClass}</summary>
       <div className="practice-class">
         <div className="practice-consent" role="group" aria-labelledby="practice-consent-title">
@@ -105,9 +125,19 @@ export function StudentPanel({ student, pending, ui, skills, onChange }: {
         </div>
         <div className="field-row">
           <input className="mono" aria-label={ui.classCode} placeholder={ui.classCode} autoComplete="off" spellCheck={false}
-            value={classCode} onChange={(e) => setClassCode(e.target.value)} onKeyDown={onEnter(join)} />
-          <button className="btn small" disabled={busy || !classCode.trim() || !agreed} onClick={join}>{ui.join}</button>
+            value={classCode} onChange={(e) => setClassCode(e.target.value)} onKeyDown={onEnter(() => join())} />
         </div>
+        <div className="field-row">
+          <input type="number" inputMode="numeric" min={1} max={MAX_LIST_NO} aria-label={ui.listNo} placeholder={ui.listNo}
+            value={listNo} onChange={(e) => (setListNo(e.target.value), setTaken(null))} onKeyDown={onEnter(() => join())} />
+          <button className="btn small" disabled={busy || !classCode.trim() || !agreed || number === null} onClick={() => join()}>{ui.join}</button>
+        </div>
+        {taken !== null && (
+          <div className="practice-taken" role="alert">
+            <span>{fill(ui.numberTaken, { n: taken })}</span>
+            <button className="btn small" disabled={busy} onClick={() => join(true)}>{ui.joinAnyway}</button>
+          </div>
+        )}
         <div className="field-row">
           <input className="mono" aria-label={ui.haveCode} placeholder={ui.haveCode} autoComplete="off" spellCheck={false}
             value={ownCode} onChange={(e) => setOwnCode(e.target.value)} onKeyDown={onEnter(signIn)} />
