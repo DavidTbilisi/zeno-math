@@ -1625,7 +1625,8 @@ Backups:
 
 Uptime: `.github/workflows/uptime.yml` asks the public server's `/api/health` (no password needed) every ten minutes
 from GitHub, outside the server. Four failed tries in a row, or a certificate with under ten days left, open one issue
-labelled `outage`, and GitHub tells the repository's watchers; the next good answer closes it. The address is the
+labelled `outage`, and GitHub tells the repository's watchers; the next good answer closes it. The issue gives the
+time of the first try as well as the report's, since four timed-out tries take about three minutes. The address is the
 `UPTIME_URL` secret (`gh secret set UPTIME_URL`), so a fork without it checks nothing.
 
 The database records its schema version, and a newer Zeno's database is refused rather than misread. The server sends a Content-Security-Policy and the
