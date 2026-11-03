@@ -27,7 +27,8 @@ import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
 import { WorkInSteps } from "./WorkInSteps";
 import { ScratchPad } from "./ScratchPad";
-import { ComingBack, SESSION, SessionCard, SessionSummary, type SessionResult } from "./PracticeSession";
+import { BreakPrompt, ComingBack, SessionRing, SessionSummary, type SessionResult } from "./PracticeSession";
+import { breakDue, keepLength, sessionLength, stretchAfter, type Length, type Stretch } from "../math/sessionPace";
 import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
@@ -117,10 +118,19 @@ export function PracticeDialog(props: Props) {
   const [placing, setPlacing] = useState<Placement | null>(null);
   const [justPlaced, setJustPlaced] = useState(false);
   const [score, setScore] = useState({ right: 0, total: 0, streak: 0 });
-  // The page's free practice comes in sessions of SESSION questions, with a summary at the end.
+  // The page's free practice comes in sessions of five or ten questions (the student's choice), with a summary at the end,
+  // and a word about a break after about 25 minutes of answering (PracticeSession.tsx).
   const page = !onSubmit;
   const [session, setSession] = useState<SessionResult[]>([]);
+  const [length, setLength] = useState<Length>(sessionLength);
   const [summary, setSummary] = useState(false);
+  const [stretch, setStretch] = useState<Stretch | null>(null);
+  /** A question of the session has ended: it joins the ring and the stretch without a break. */
+  const recordSession = (skill: SkillId, right: boolean) => {
+    setSession((r) => [...r, { skill, right }]);
+    setStretch((st) => stretchAfter(st, Date.now()));
+  };
+  const chooseLength = (n: Length) => (keepLength(n), setLength(n));
   const [cheer, setCheer] = useState(0);
   const [quiet, setQuiet] = useState(muted);
   // Calm (feel.ts): silent and still, so the sound switch steps aside for it.
@@ -361,7 +371,7 @@ export function PracticeDialog(props: Props) {
       placed,
     });
     setScore((sc) => ({ right: sc.right + (ok ? 1 : 0), total: sc.total + 1, streak: ok ? sc.streak + 1 : 0 }));
-    if (sessionOn) setSession((r) => [...r, { skill: ex.skill, right: ok }]);
+    if (sessionOn) recordSession(ex.skill, ok);
   };
 
   const showSolution = (ex: Exercise) => {
@@ -438,7 +448,9 @@ export function PracticeDialog(props: Props) {
     leaveQuestion();
     setSummary(true);
   };
-  const newSession = () => {
+  /** The next session, only ever from the student's tap on the summary, in the length they tapped. */
+  const newSession = (n: Length) => {
+    chooseLength(n);
     setSession([]);
     setSummary(false);
     show(nextExercise(area, pick, level, progress, classPlan()));
@@ -552,7 +564,7 @@ export function PracticeDialog(props: Props) {
 
   const classOn = !!student && inClass;
   const sessionOn = page && !classOn && mode === "practise" && pick !== "place";
-  const sessionOver = sessionOn && session.length >= SESSION;
+  const sessionOver = sessionOn && session.length >= length;
   // What the student has kept and mastered of their class's skills, from the plan their answers carry forward.
   const held = planStatus === "ready" && planRef.current ? holds(planRef.current.spacing, planRef.current.skills) : null;
   const skillHolds = held && (Object.fromEntries(Object.entries(held).map(([h, ks]) => [h, ks.map((k) => w.skills[k as SkillId])])) as Record<Hold, string[]>);
@@ -663,12 +675,14 @@ export function PracticeDialog(props: Props) {
           {!page && studentPanel}
         </>
       ) : sessionOn && summary ? (
-        <SessionSummary results={session} comingBack={progress.mistakes.length} w={w} onAgain={newSession} />
+        <SessionSummary results={session} comingBack={progress.mistakes.length} n={length} w={w} onAgain={newSession} />
       ) : mode === "practise" ? (
         <>
           {plan?.phase === "session" && plan.sessionEnds !== null && (
             <Countdown until={plan.sessionEnds} left={(time) => fill(w.ui.timeLeft, { time })} />
           )}
+          {sessionOn && breakDue(stretch) && <BreakPrompt w={w} onDismiss={() => setStretch(stretchAfter(null, Date.now()))} />}
+          {sessionOn && <SessionRing results={session} n={length} streak={score.streak} w={w} onLength={chooseLength} />}
           {cur.review || cur.policy === "spaced" ? (
             <small className="hint practice-review">↻ {cur.review ? w.ui.review : w.ui.spaced}</small>
           ) : cur.policy === "stepdown" && plan?.stepDown.now ? (
@@ -863,7 +877,7 @@ export function PracticeDialog(props: Props) {
                 // A question of the session, but not in the stats or the course: some of it was done for the student.
                 finish(log.current, right ? "solved" : "revealed");
                 setDone(right ? "solved" : "revealed");
-                if (sessionOn) setSession((r) => [...r, { skill: cur.ex.skill, right }]);
+                if (sessionOn) recordSession(cur.ex.skill, right);
               }}
             />
           )}
@@ -931,7 +945,8 @@ export function PracticeDialog(props: Props) {
     </>
   );
 
-  // The page has no board to insert into, so no worksheet either; beside the practice, the session and what comes back.
+  // The page has no board to insert into, so no worksheet either; beside the practice, the grade and what comes back (the
+  // session's ring sits with the question, where the student is looking).
   if (!onSubmit)
     return (
       <div className="practice-layout">
@@ -948,7 +963,6 @@ export function PracticeDialog(props: Props) {
               w={w.grades}
             />
           )}
-          {sessionOn && !summary && <SessionCard results={session} streak={score.streak} w={w} />}
           <ComingBack mistakes={progress.mistakes} answered={progress.answered} w={w} />
           {!props.noClass && studentPanel}
           {resetButton}

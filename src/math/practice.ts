@@ -521,6 +521,10 @@ export type PracticeWords = {
     sessionClean: string;
     sessionAgain: string;
     seeSummary: string;
+    sessionLength: string;
+    sessionOf: string;
+    breakTime: string;
+    breakOn: string;
     comingBack: string;
     backNext: string;
     backIn: string;
