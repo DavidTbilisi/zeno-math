@@ -6,7 +6,7 @@ import type { SkillId } from "./math/practiceSkills";
 import { LogisticModel, type LogisticState } from "./model/logistic";
 import { evidence } from "./model/evaluate";
 import type { IdeaNode } from "./model/conceptGraph";
-import type { Rating } from "./math/difficulty";
+import type { Rating } from "./model/difficulty";
 import { asksWhatWasHard, bearing, hasIdeas, IDEA_SKILLS, learnIdeas, SKILL_IDEAS, usesOf, type IdeaState } from "./model/ideaState";
 import { choose, learnEma, RECENT, type AdaptiveOptions, type Choice, type EmaState } from "./model/policy";
 import { learnClassSpacing, type Spacing } from "./model/spacing";

@@ -15,7 +15,7 @@ import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
 import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
 import type { Fading } from "../src/model/fading.ts";
 import { learnStepDown, noStepDown, type StepDown } from "../src/model/stepDown.ts";
-import { RATINGS, type Rating } from "../src/math/difficulty.ts";
+import { RATINGS, type Rating } from "../src/model/difficulty.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
 import { dashboard, markSeen } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";

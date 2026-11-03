@@ -29,7 +29,7 @@ import { WorkInSteps } from "./WorkInSteps";
 import { ScratchPad } from "./ScratchPad";
 import { BreakPrompt, ComingBack, SessionRing, SessionSummary, type SessionResult } from "./PracticeSession";
 import { breakDue, keepLength, sessionLength, stretchAfter, type Length, type Stretch } from "../math/sessionPace";
-import { RATINGS, rateLevel, type Rating } from "../math/difficulty";
+import { RATINGS, rateLevel, type Rating } from "../model/difficulty";
 import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";

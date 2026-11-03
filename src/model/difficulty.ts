@@ -2,7 +2,7 @@
 // easy, about right or too hard. In free practice the next questions move a level up or down (at the ends of the scale
 // there is no level to move to, and the student is told so); in class practice the study chooses, and the rating only
 // goes with the attempt as data.
-import type { Level } from "./practice";
+import type { Level } from "./elo";
 
 export type Rating = "easy" | "right" | "hard";
 export const RATINGS: readonly Rating[] = ["easy", "right", "hard"];

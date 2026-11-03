@@ -2,7 +2,7 @@
 // stays and the rating is marked as at the edge (issue #288).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { rateLevel } from "../src/math/difficulty.ts";
+import { rateLevel } from "../src/model/difficulty.ts";
 
 test("too easy goes up, too hard goes down, about right stays", () => {
   assert.deepEqual(rateLevel(1, "easy"), { level: 2, edge: false });
