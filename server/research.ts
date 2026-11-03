@@ -15,6 +15,7 @@ import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
 import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
 import type { Fading } from "../src/model/fading.ts";
 import { learnStepDown, noStepDown, type StepDown } from "../src/model/stepDown.ts";
+import { RATINGS, type Rating } from "../src/model/difficulty.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
 import { dashboard, markSeen } from "./dashboard.ts";
 import { stmt, transaction } from "./db.ts";
@@ -129,6 +130,9 @@ export function initResearch(db: DatabaseSync) {
   add("attempts", "steps", "TEXT");
   // A faded worked example (src/model/fading.ts): how many of its steps were shown done, or NULL: asked whole.
   add("attempts", "faded", "INTEGER");
+  // How the question felt to the student once it was over (easy, right or hard: too easy, about right, too hard), or
+  // NULL: they didn't say.
+  add("attempts", "rated", "TEXT");
   // The feature a class tests (arms.ts), chosen when it is made; classes from before arms tested the policy.
   add("classes", "feature", "TEXT NOT NULL DEFAULT 'policy'");
   // The student's arm: on (with the feature) or off. Students from before arms take it from their condition, and the
@@ -295,12 +299,14 @@ export type AttemptRow = {
   steps?: Step[];
   /** A faded worked example: how many of its steps were shown done (the first ones). */
   faded?: number;
+  /** How the question felt to the student once it was over: too easy, about right or too hard. */
+  rated?: Rating;
 };
 
 /** Checks an uploaded attempt and works out the summary columns from its answers, so they can't disagree. */
 export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   const bad = (what: string) => new HttpError(400, `invalid ${what}`);
-  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard, steps, faded } = body;
+  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard, steps, faded, rated } = body;
   if (typeof clientId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(clientId)) throw bad("clientId");
   if (!oneOf(ALL_SKILLS, skill)) throw bad("skill");
   if (!isInt(level, 1, 3)) throw bad("level");
@@ -333,6 +339,8 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   // What was ticked as hard: ideas of a graph, each once, and only on a skill made of them.
   const ideas = Object.keys(IDEAS);
   if (hard !== undefined && (!hasIdeas(skill) || !Array.isArray(hard) || !hard.length || new Set(hard).size !== hard.length || !hard.every((h) => ideas.includes(h)))) throw bad("hard");
+  // The student's word on the difficulty, asked only once the question is over (solved or its answer shown).
+  if (rated !== undefined && (!oneOf(RATINGS, rated) || outcome === "skipped")) throw bad("rated");
   // The steps: after a wrong first answer on a skill worked in steps then, no more than the question has, each
   // answered or shown; or a faded worked example's, below.
   let stepList: Step[] | undefined;
@@ -360,6 +368,7 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
     ...(hard ? { hard: hard as string[] } : {}),
     ...(stepList ? { steps: stepList } : {}),
     ...(faded !== undefined ? { faded: faded as number } : {}),
+    ...(rated !== undefined ? { rated: rated as Rating } : {}),
   };
 }
 
@@ -391,7 +400,7 @@ const csvCell = (v: unknown) => {
 };
 const CSV_COLUMNS = [
   "attempt", "student", "class", "feature", "arm", "condition", "policy", "predicted", "area", "skill", "level", "seed", "review", "outcome", "first_correct", "wrongs",
-  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "steps", "faded", "remarked", "late", "shown_at", "created_at",
+  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "steps", "faded", "rated", "remarked", "late", "shown_at", "created_at",
 ] as const;
 
 const TEST_CSV_COLUMNS = [
@@ -567,12 +576,12 @@ export async function handleResearch(
     const late = (classPractice || a.policy === "stepdown") && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
     const result = stmt(db, `
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
-        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, faded, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, faded, rated, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       a.clientId, student.id, a.skill, a.level, a.seed, Number(a.review), a.outcome, a.policy, a.predicted, Number(a.firstCorrect), a.wrongs, a.retries,
       Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), a.hard ? JSON.stringify(a.hard) : null,
-      a.steps ? JSON.stringify(a.steps) : null, a.faded ?? null, now,
+      a.steps ? JSON.stringify(a.steps) : null, a.faded ?? null, a.rated ?? null, now,
     );
     // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
     return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
@@ -590,7 +599,7 @@ export async function handleResearch(
     teacher(req);
     const rows = forClass(query.get("class"), `
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, c.feature, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
-        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.faded, a.remarked, a.late, a.shown_at, a.created_at,
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.faded, a.rated, a.remarked, a.late, a.shown_at, a.created_at,
         json_array_length(a.answers) AS n_answers
       FROM attempts a JOIN students s ON s.id = a.student_id JOIN classes c ON c.code = s.class_code
       {where}

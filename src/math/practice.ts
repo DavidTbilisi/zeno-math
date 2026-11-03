@@ -531,6 +531,7 @@ export type PracticeWords = {
     rateKeep: string;
     rateTop: string;
     rateBottom: string;
+    rateNoted: string;
     comingBack: string;
     backNext: string;
     backIn: string;

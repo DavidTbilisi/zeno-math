@@ -882,7 +882,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     only on a tap. After about 25 minutes of answering without a five-minute gap, a word that it is a good moment for
     a break, which the student can wave away
   - After each question of a topic or Mixed, "How was that?": 😌 too easy moves the next questions up a level, 😓 too
-    hard down one (the easy/medium/hard switch moves with it); not in class practice, where the study chooses
+    hard down one (the easy/medium/hard switch moves with it); class practice asks too but only records the answer
+    with the attempt (`rated` in attempts.csv), since the study chooses the questions there
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
     pieces as the bottom, then two to four times as many (¾ of 12 is 9), then counters too, up to 30. Any pieces will
     do; shading the top number of pieces (3 for ¾ of 12) is named
