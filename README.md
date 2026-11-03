@@ -875,6 +875,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     error, the best epoch for the stopping one and precision for recall are named
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
+  - 🌙 Calm, a switch beside it and in every game (remembered in the browser): no sounds, no confetti, no shake on
+    a miss and no clock to race, for a student who finds them too much; the questions and the stars are the same
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
     pieces as the bottom, then two to four times as many (¾ of 12 is 9), then counters too, up to 30. Any pieces will
     do; shading the top number of pieces (3 for ¾ of 12) is named
@@ -1010,7 +1012,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   among them are all laid out alike: along the top, the row of puzzles with their stars (each opens once the
   one before it has a star) and ∞ Endless (✏️ Free play on the geoboard); under it, the round's dots, or in the
   endless run its levels (easy, medium, hard) and the streak; along the bottom, the game's own buttons, then Check or
-  Next → (Next round after a round), the sound switch and the discoveries so far. They answer alike too: a miss shakes
+  Next → (Next round after a round), the sound and 🌙 calm switches and the discoveries so far. They answer alike too: a miss shakes
   the picture with a red flash and says why, a right step glows, a puzzle done cheers in proportion to its stars (one
   star is a pop with a nudge to try again, three a big burst), a streak of 5, 10, 25 or 50 gets a burst of its own, and
   the ninth star brings up a panel with every discovery made and the way on (the endless run, free play, or again from

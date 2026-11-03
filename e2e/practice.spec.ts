@@ -1,9 +1,11 @@
 // Free practice in the browser: a wrong answer that a known mistake gives is named under the verdict and the question is
-// worked in steps, an inequality typed with ≥ is accepted, and the page counts a session of ten and sums it up. The dialog's question comes from Math.random, so the test fixes it, works out the same
+// worked in steps, an inequality typed with ≥ is accepted, and the page counts a session of ten and sums it up; calm is a switch that
+// stills practice and the games alike. The dialog's question comes from Math.random, so the test fixes it, works out the same
 // question here, and types its answers.
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
+import { boardWith } from "./helpers.ts";
 
 const w = en.pracWords;
 const seedOf = (r: number) => Math.floor(r * 2 ** 31);
@@ -107,6 +109,31 @@ test("the practice page counts a session of ten and sums it up", async ({ page }
   await page.getByRole("button", { name: "Another 10 questions" }).click();
   await expect(session).toContainText("0 of 10 questions");
   await expect(page.locator(".practice-prompt")).toBeVisible();
+});
+
+test("calm hides the sound switch and stills the page, is remembered, and the games share it", async ({ page }) => {
+  await page.goto("/#/practice");
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  const calm = page.getByRole("button", { name: `🌙 ${w.ui.calm}` });
+  await expect(calm).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByRole("button", { name: w.ui.sound })).toBeVisible();
+  await calm.click();
+  await expect(calm).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: w.ui.sound })).toHaveCount(0);
+  await expect(page.locator("html")).toHaveAttribute("data-feel", "calm");
+  // Kept in this browser: after a reload practice is still calm.
+  await page.reload();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await expect(page.getByRole("button", { name: `🌙 ${w.ui.calm}` })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-feel", "calm");
+  // A game on a board is calm too, with no sound switch; turning calm off there brings the sound switch back.
+  const game = await boardWith(page, "Make the target: cards and signs", ".live-target");
+  const g = en.live.game;
+  await expect(game.getByRole("button", { name: `🌙 ${g.calm}` })).toHaveAttribute("aria-pressed", "true");
+  await expect(game.getByTitle(g.sound)).toHaveCount(0);
+  await game.getByRole("button", { name: `🌙 ${g.calm}` }).click();
+  await expect(game.getByTitle(g.sound)).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-feel", "arcade");
 });
 
 test("on a board, practice opens beside it and stays while other tools are used", async ({ page, request }) => {

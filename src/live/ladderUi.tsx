@@ -3,13 +3,14 @@
 // and the warm-up, the edge and the repair marked on them, the way into the endless run (open once every puzzle is
 // clean) or free play and, under it, where the player is — the round's dots, or the endless run's levels (each opened
 // by a streak on the one before), its clock and its streak; at the bottom the button that moves on (or plays a puzzle
-// not yet clean again), the sound switch and the discoveries so far; and the celebration when a puzzle is done (outside the piece's picture, so the 📷 copy never has confetti in it).
+// not yet clean again), the sound and calm switches and the discoveries so far; and the celebration when a puzzle is done (outside the piece's picture, so the 📷 copy never has confetti in it).
 // Every game is written on useGame.tsx, which puts these together and does what every outcome does; a game's own file
 // uses only `starText`, `RoundDots` and `newSeed` from here.
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
 import { burst, clockOpen, GAME_LEVELS, isOpen, levelOpen, PASS_STREAK, readLadder, type GameLevel, type Ladder } from "../math/ladder";
+import { useFeel, setFeel } from "./feel";
 import { muted, setMuted } from "./juice";
 import { fill, Toggle } from "./ui";
 
@@ -87,6 +88,9 @@ export function LadderBar({ stars, current, onPick, words, marks = {}, markWords
  * (one star: no confetti); `streak` is the orange mark of a streak.
  */
 export function Cheer({ text, small, stars, streak }: { text: string; small?: boolean; stars?: number; streak?: boolean }) {
+  // Calm has no celebration: the stars already show on the puzzle's button and the streak beside the levels.
+  const calm = useFeel() === "calm";
+  if (calm) return null;
   const b = streak ? burst("streak") : stars !== undefined ? burst("stars", stars) : null;
   const pieces = b ? b.pieces : small ? 14 : 18;
   return (
@@ -206,11 +210,24 @@ export function Found({ ladder, of, notices, g }: { ladder: Ladder<string>; of: 
   );
 }
 
+/** The sound switch; calm is silent whatever it says, so in calm it is not shown. */
 export function SoundToggle({ title }: { title: string }) {
   const [quiet, setQuiet] = useState(muted);
+  const calm = useFeel() === "calm";
+  if (calm) return null;
   return (
     <Toggle on={!quiet} title={title} onClick={() => (setMuted(!quiet), setQuiet(!quiet))}>
       {quiet ? "🔇" : "🔊"}
+    </Toggle>
+  );
+}
+
+/** The calm switch (feel.ts): on, no sounds, no celebrations, no shake and no clock. */
+export function CalmToggle({ label, title }: { label: string; title: string }) {
+  const calm = useFeel() === "calm";
+  return (
+    <Toggle on={calm} title={title} onClick={() => setFeel(calm ? "arcade" : "calm")}>
+      🌙 {label}
     </Toggle>
   );
 }

@@ -500,7 +500,7 @@ input.invalid { border-color: var(--danger); }
 /* Scratch paper (ScratchPad.tsx): light squared paper like the question's card, pulled taller from its corner. */
 .scratch { display: flex; flex-direction: column; gap: 8px; }
 .scratch-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.scratch-tools .btn[aria-pressed="true"], .practice-scratch[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.scratch-tools .btn[aria-pressed="true"], .practice-scratch[aria-pressed="true"], .practice-calm[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
 .scratch-ink { width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; }
 .scratch-ink[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
 .scratch-gap { flex: 1; }
@@ -844,6 +844,12 @@ input.invalid { border-color: var(--danger); }
   /* The stars still show, without moving, and go after a moment. */
   .celebrate b { animation: cheer-fade 0.01s linear 2s forwards !important; }
 }
+/* Calm (src/live/feel.ts): the same stillness, chosen in the app. The cheers are not drawn at all there. */
+:root[data-feel="calm"] .geo-done, :root[data-feel="calm"] .pv-placed, :root[data-feel="calm"] .est-reveal { animation: none !important; }
+:root[data-feel="calm"] .live-shake, :root[data-feel="calm"] .live-beat, :root[data-feel="calm"] .live-said-in { animation: none !important; }
+:root[data-feel="calm"] .live-flash { display: none; }
+:root[data-feel="calm"] .near-clock i { animation-name: near-fade; }
+:root[data-feel="calm"] .z-line-fill, :root[data-feel="calm"] .z-runner { transition: none; }
 .live-fn { display: flex; align-items: center; gap: 6px; }
 .live-fn span { font-weight: 700; font-style: italic; }
 .live-fn input { flex: 1; font-family: ui-monospace, Menlo, Consolas, monospace; }

@@ -1,8 +1,10 @@
 // Small sounds made in code, no files: a tick when a corner lands on a dot, a rising chord for a right answer (pitched
 // up a semitone for every answer of a streak, so a run of right answers climbs), a sparkle for a star, a soft low note
 // for a miss, a quick run up for a streak worth a cheer and a held chord for three stars or a ladder done. Off when the
-// viewer turns them off (kept in this browser), and nothing is made until the first sound is asked for, which is
-// always after a tap (browsers want a gesture first).
+// viewer turns them off (kept in this browser) or chooses calm (feel.ts), and nothing is made until the first sound is
+// asked for, which is always after a tap (browsers want a gesture first).
+import { isCalm } from "./feel";
+
 export type Sound = "snap" | "good" | "star" | "miss" | "streak" | "levelup";
 
 const KEY = "zeno.sound.v1";
@@ -36,7 +38,7 @@ const NOTES: Record<Sound, { f: number; at: number; len: number; wave: Oscillato
 
 /** Plays a sound, `pitch` semitones higher than written (at most an octave). */
 export function play(sound: Sound, o: { pitch?: number } = {}) {
-  if (muted()) return;
+  if (muted() || isCalm()) return;
   try {
     ctx ??= new AudioContext();
     if (ctx.state === "suspended") void ctx.resume();

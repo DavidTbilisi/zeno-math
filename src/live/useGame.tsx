@@ -11,7 +11,8 @@
 // clock a right answer over the player's pace does not count on the streak, and every miss on a puzzle and every
 // clean time is kept for the repair and the pace. The pieces under it draw the head (the puzzles with the warm-up,
 // the edge and the repair marked, the endless run's levels and its clock), the stage (with the panel over it when the
-// ladder is passed), the stars still at stake, the line of feedback and the bottom bar.
+// ladder is passed), the stars still at stake, the line of feedback and the bottom bar. In calm (feel.ts) the sounds,
+// the cheers and the shake stay away and there is no clock; what counts is the same.
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   burst,
@@ -31,8 +32,9 @@ import {
   type GameMode,
   type Ladder,
 } from "../math/ladder";
+import { useFeel } from "./feel";
 import { play } from "./juice";
-import { Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder, type GameWords } from "./ladderUi";
+import { CalmToggle, Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder, type GameWords } from "./ladderUi";
 import { fill } from "./ui";
 
 /** What a line of feedback is: a hint in grey, the prompt in bold, a miss in red, a near miss in orange, a right answer in green, a notice in purple. */
@@ -109,7 +111,9 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
 
   const run = d as unknown as { level?: GameLevel; timed?: boolean };
   const level = run.level ?? 1;
-  const clock = d.mode === "endless" && run.timed ? clockMs(ladder.pace[level - 1] ?? 0) : 0;
+  // Calm has no clock: a run started against it goes on without one.
+  const calm = useFeel() === "calm";
+  const clock = d.mode === "endless" && run.timed && !calm ? clockMs(ladder.pace[level - 1] ?? 0) : 0;
   const streakOf = (s: S) => (s as { streak?: number }).streak ?? 0;
   const streakPatch = (streak: number) => ("streak" in d ? { streak } : {});
   const saidOf = (key: K | null, patch?: Partial<S>) => (key ? { kind: "notice" as const, key } : (patch?.said ?? null));
@@ -193,7 +197,7 @@ export function useGame<K extends string, S extends GameBase<K, unknown>>(o: {
     set({ ...d, ...fresh, ...o.freePatch, mode: "free", ...patch } as S);
   };
   const block = dailyBlock(ladder, modes.includes("endless"));
-  const drill = (to: Drill) => (to.mode === "puzzle" ? go(to.stage) : to.mode === "endless" ? endless(to.level, { timed: to.timed } as unknown as Partial<S>) : free());
+  const drill = (to: Drill) => (to.mode === "puzzle" ? go(to.stage) : to.mode === "endless" ? endless(to.level, { timed: to.timed && !calm } as unknown as Partial<S>) : free());
   const onward = () => {
     if (d.mode === "endless") return endless(level);
     if (d.mode === "free") return free();
@@ -245,6 +249,7 @@ export function GameHead({ game, g, words, pace, children }: {
 }) {
   const d = game.state as GameBase<string, unknown> & { level?: GameLevel; streak?: number; seed?: number; timed?: boolean };
   const { block } = game;
+  const calm = useFeel() === "calm";
   const marks: Record<number, "anchor" | "stretch" | "repair"> = {};
   if (block.anchor !== null) marks[block.anchor] = "anchor";
   if (block.repair !== null) marks[block.repair] = "repair";
@@ -265,7 +270,7 @@ export function GameHead({ game, g, words, pace, children }: {
       marks={marks}
       onPuzzle={game.go}
       onEndless={game.modes.includes("endless") ? game.endless : undefined}
-      onClock={game.modes.includes("endless") ? () => game.drill({ mode: "endless", level: d.level ?? 1, timed: !d.timed }) : undefined}
+      onClock={game.modes.includes("endless") && !calm ? () => game.drill({ mode: "endless", level: d.level ?? 1, timed: !d.timed }) : undefined}
       onFree={game.modes.includes("free") ? () => game.free() : undefined}
       words={words ?? {}}
       g={g}
@@ -352,6 +357,7 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
         </button>
       )}
       <SoundToggle title={g.sound} />
+      <CalmToggle label={g.calm} title={g.calmWhy} />
     </div>
   );
 }
@@ -359,6 +365,7 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
 /** Every puzzle done, over the stage: the stars in all, the discoveries made, and where to go from here. */
 export function LadderDone({ game, g, notices }: { game: AnyGame; g: GameWords; notices: Record<string, string> }) {
   const { anchor, stretch, repair } = game.block;
+  const calm = useFeel() === "calm";
   return (
     <div className="ladder-done" role="status">
       <b>{fill(g.allDone, { n: totalStars(game.ladder.stars), of: 3 * game.size })}</b>
@@ -375,7 +382,7 @@ export function LadderDone({ game, g, notices }: { game: AnyGame; g: GameWords; 
       <div className="live-bar">
         {stretch?.mode === "endless" && (
           <button className="live-btn on" onClick={() => game.drill(stretch)}>
-            {stretch.timed ? `⏱ ${g.clock}` : `∞ ${g.playEndless}`}
+            {stretch.timed && !calm ? `⏱ ${g.clock}` : `∞ ${g.playEndless}`}
           </button>
         )}
         {anchor !== null && (
