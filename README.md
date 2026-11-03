@@ -884,6 +884,9 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - After each question of a topic or Mixed, "How was that?": 😌 too easy moves the next questions up a level, 😓 too
     hard down one (the easy/medium/hard switch moves with it); class practice asks too but only records the answer
     with the attempt (`rated` in attempts.csv), since the study chooses the questions there
+  - After a session, the idea map of each skill practised that is made of ideas (fractions has 16): tiles in rows
+    below the ideas they rest on, lit once the student's answers show the idea (the model's chance reaches 0.95), and
+    marked new when they lit this session. A lit tile never goes dark, though the estimate the policy reads can fall
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
     pieces as the bottom, then two to four times as many (¾ of 12 is 9), then counters too, up to 30. Any pieces will
     do; shading the top number of pieces (3 for ¾ of 12) is named

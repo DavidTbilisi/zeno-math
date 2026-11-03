@@ -5,16 +5,21 @@ import type { Grade } from "./model/curriculum";
 import type { Cells } from "./model/placement";
 import type { Spacing } from "./model/spacing";
 import type { Fading } from "./model/fading";
+import type { IdeaState } from "./model/ideaState";
 
 export type Stat = { seen: number; right: number };
 /** A missed question comes back once `due` more questions have been answered. */
 export type Mistake = { skill: SkillId; level: Level; seed: number; due: number };
 /**
  * `cells` and `placed` came later (where the learner is in the course), `spacing` (when each secure level comes back
- * for review, keyed as the cells are) later still, and `fading` (worked examples fading, by skill, src/model/fading.ts)
- * last, so older progress may have none of them.
+ * for review, keyed as the cells are) later still, `fading` (worked examples fading, by skill, src/model/fading.ts)
+ * later, and `ideas` with `lit` (the chance of knowing each idea, and the ideas the idea map has lit, which never go
+ * dark: src/model/ideaMap.ts) last, so older progress may have none of them.
  */
-export type Progress = { stats: Partial<Record<SkillId, Stat>>; mistakes: Mistake[]; answered: number; cells?: Cells; placed?: Grade; spacing?: Spacing; fading?: Fading };
+export type Progress = {
+  stats: Partial<Record<SkillId, Stat>>; mistakes: Mistake[]; answered: number; cells?: Cells; placed?: Grade; spacing?: Spacing; fading?: Fading;
+  ideas?: IdeaState; lit?: string[];
+};
 const KEY = "zeno.practice.v1";
 export const emptyProgress = (): Progress => ({ stats: {}, mistakes: [], answered: 0 });
 export function loadProgress(): Progress {

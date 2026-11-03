@@ -5,6 +5,7 @@
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
+import { usesOf } from "../src/model/ideaState.ts";
 import { boardWith } from "./helpers.ts";
 
 const w = en.pracWords;
@@ -189,6 +190,42 @@ test("too easy moves the next questions up a level, too hard down, and the ends 
   await rating.getByRole("button", { name: `😓 ${w.ui.rate.hard}` }).click();
   await expect(rating).toContainText(w.ui.rateBottom);
   await expect(page.getByRole("radio", { name: "easy" })).toHaveAttribute("aria-checked", "true");
+});
+
+test("after a session the idea map lights the ideas shown, marks the new ones, and never puts a tile out", async ({ page }) => {
+  // A fractions question on three ideas without steps, the same one each time.
+  const { r, ex } = questionWith("fractions", (e) => stepsOf(e, w).length < 2 && usesOf(e).length === 3);
+  await page.goto("/#/practice");
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await page.getByRole("region", { name: w.ui.sessionTitle }).getByRole("radio", { name: "5 questions" }).click();
+  for (let i = 1; i <= 5; i++) {
+    await page.getByLabel("Your answer").fill(ex.plain);
+    await page.getByRole("button", { name: "Check" }).click();
+    await page.getByRole("button", { name: i < 5 ? "Next →" : w.ui.seeSummary }).click();
+  }
+  const map = page.getByRole("region", { name: "The ideas of Fractions" });
+  await expect(map).toContainText("3 of 16 shown · 3 new this session");
+  await expect(map.locator(".idea-tile")).toHaveCount(16);
+  await expect(map.locator(".idea-tile.fresh")).toHaveCount(3);
+  for (const id of usesOf(ex)) await expect(map.locator(`[data-idea="${id}"]`)).toContainText(`✨ ${w.ui.ideaNew}`);
+  await expect(map.locator(".idea-map-lines line")).not.toHaveCount(0);
+  // A new tile pops in arcade; in calm it only changes colour.
+  const pop = () => map.locator(".idea-tile.fresh").first().evaluate((el) => getComputedStyle(el).animationName);
+  expect(await pop()).toBe("idea-pop");
+  await page.evaluate(() => (document.documentElement.dataset.feel = "calm"));
+  expect(await pop()).toBe("none");
+  // A session of misses lowers the estimates, but the tiles stay lit, no longer new.
+  await page.getByRole("button", { name: "Another 5 questions" }).click();
+  for (let i = 1; i <= 5; i++) {
+    await page.getByRole("button", { name: "Show solution" }).click();
+    await page.getByRole("button", { name: i < 5 ? "Next →" : w.ui.seeSummary }).click();
+  }
+  await expect(map).toContainText("3 of 16 shown");
+  await expect(map).not.toContainText("new this session");
+  await expect(map.locator(".idea-tile.lit")).toHaveCount(3);
+  await expect(map.locator(".idea-tile.fresh")).toHaveCount(0);
 });
 
 test("calm hides the sound switch and stills the page, is remembered, and the games share it", async ({ page }) => {
