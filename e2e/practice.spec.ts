@@ -111,6 +111,61 @@ test("the practice page counts a session of ten and sums it up", async ({ page }
   await expect(page.locator(".practice-prompt")).toBeVisible();
 });
 
+test("a session of five ends on a full ring, keeps the choice, and waits for a tap to start again", async ({ page }) => {
+  const { r } = questionWith("fractions", (e) => stepsOf(e, w).length < 2);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/practice");
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  const ring = page.getByRole("region", { name: w.ui.sessionTitle });
+  // On a phone the ring is with the question, not below the fold.
+  await expect(ring).toBeInViewport();
+  await ring.getByRole("radio", { name: "5 questions" }).click();
+  await expect(ring).toContainText("0 of 5 questions");
+  for (let i = 1; i <= 5; i++) {
+    await page.getByRole("button", { name: "Show solution" }).click();
+    // Once the session is under way its length is set.
+    await expect(ring.getByRole("radio")).toHaveCount(0);
+    await expect(ring).toContainText(`${i} of 5 questions`);
+    await page.getByRole("button", { name: i < 5 ? "Next →" : w.ui.seeSummary }).click();
+  }
+  await expect(page.getByRole("heading", { name: w.ui.sessionDone })).toBeVisible();
+  await expect(page.getByText("You got 0 of 5 right.")).toBeVisible();
+  // No session starts by itself: the summary stays until the student taps.
+  await page.waitForTimeout(1500);
+  await expect(page.getByRole("heading", { name: w.ui.sessionDone })).toBeVisible();
+  await expect(page.locator(".practice-prompt")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Another 5 questions" })).toBeFocused();
+  // Kept in this browser.
+  await page.reload();
+  await expect(ring).toContainText("0 of 5 questions");
+  await ring.getByRole("radio", { name: "10 questions" }).click();
+  await expect(ring).toContainText("0 of 10 questions");
+});
+
+test("after about 25 minutes of answering, a word about a break that the student can wave away", async ({ page }) => {
+  const { r } = questionWith("fractions", (e) => stepsOf(e, w).length < 2);
+  await page.clock.install();
+  await page.goto("/#/practice");
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  const prompt = page.getByRole("status").filter({ hasText: w.ui.breakTime });
+  // An answer every four minutes: the stretch reaches 25 minutes at the eighth (0, 4, ... 28).
+  for (let i = 1; i <= 8; i++) {
+    if (i > 1) await page.clock.fastForward("04:00");
+    await page.getByRole("button", { name: "Show solution" }).click();
+    await expect(prompt).toHaveCount(i < 8 ? 0 : 1);
+    await page.getByRole("button", { name: "Next →" }).click();
+  }
+  await expect(prompt).toBeVisible();
+  await prompt.getByRole("button", { name: w.ui.breakOn }).click();
+  await expect(prompt).toHaveCount(0);
+  await page.getByRole("button", { name: "Show solution" }).click();
+  await expect(prompt).toHaveCount(0);
+});
+
 test("calm hides the sound switch and stills the page, is remembered, and the games share it", async ({ page }) => {
   await page.goto("/#/practice");
   await page.getByRole("button", { name: "Fractions", exact: true }).click();

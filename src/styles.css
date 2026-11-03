@@ -449,16 +449,23 @@ input.invalid { border-color: var(--danger); }
 .practice-summary h2 { margin: 0; font-size: 24px; }
 .practice-summary p { margin: 0; }
 .practice-summary-score { font-size: 18px; }
-.session-dots { display: flex; gap: 6px; flex-wrap: wrap; }
-.session-dots span { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); }
-.session-dots span.right { background: var(--ok); border-color: var(--ok); }
-.session-dots span.missed { background: #e8590c; border-color: #e8590c; }
-.session-dots span.now { border-color: var(--accent); }
+/* The session's ring: a segment per question, filling round from the top as the questions are answered. */
+.practice-ring { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.practice-ring-text { display: flex; flex-direction: column; gap: 2px; margin-right: auto; }
+.session-ring { flex: none; }
+.session-ring circle { fill: none; stroke: var(--border); stroke-width: 6; transition: stroke 0.2s; }
+.session-ring circle.right { stroke: var(--ok); }
+.session-ring circle.missed { stroke: #e8590c; }
+.session-ring circle.now { stroke: var(--accent); }
+.session-ring text { font: 700 13px/1 system-ui, sans-serif; fill: currentColor; }
+.practice-summary-head { display: flex; align-items: center; gap: 14px; }
+.practice-summary-head .session-ring text { font-size: 11px; }
+.practice-break { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border: 2px solid var(--accent); border-radius: 8px; }
 /* On a narrow screen the session goes above the practice, and the rest of the side column below it. */
 @media (max-width: 960px) {
   .practice-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .practice-side { display: contents; }
-  .practice-session, .grade-card { order: -1; }
+  .grade-card { order: -1; }
 }
 /* Where the learner is in the course: the grades as a ladder, the way covered filled, theirs marked; during a
    placement the grades ruled out fade, so each answer visibly takes away half. */
@@ -741,6 +748,7 @@ input.invalid { border-color: var(--danger); }
 .live-said.notice { color: #9c36b5; font-weight: 600; }
 .geo-found { color: #9c36b5; font-weight: 600; white-space: nowrap; }
 .geo-stage-wrap, .practice-actions { position: relative; }
+.practice-actions { flex-wrap: wrap; }
 .geo-answer { display: flex; justify-content: center; }
 .geo-answer svg { max-width: 100%; height: auto; touch-action: none; }
 .geo-done { transform-box: fill-box; transform-origin: center; animation: geo-glow 0.6s ease-out; }
@@ -1151,8 +1159,8 @@ input.invalid { border-color: var(--danger); }
 .z .chip.text { height: 32px; padding: 0 10px; font: 600 14px/1 "FiraGO", system-ui, sans-serif; }
 .z .chip:hover { border-color: var(--z-ink); }
 .z .chip.selected { background: var(--z-ink); border-color: var(--z-ink); color: var(--z-paper); }
-.z .session-dots span.right { background: var(--z-marker); border-color: var(--z-ink); }
-.z .session-dots span.now { border-color: var(--z-ink); border-width: 3px; }
+.z .session-ring circle.right { stroke: var(--z-marker); }
+.z .session-ring circle.now { stroke: var(--z-ink); }
 .z .grade-ladder li { border-color: var(--z-ink); }
 .z .grade-ladder li.past { background: var(--z-marker); border-color: var(--z-ink); color: #172350; }
 .z .grade-ladder li.here { background: var(--z-ink); color: var(--z-paper); }

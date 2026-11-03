@@ -877,6 +877,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - 🌙 Calm, a switch beside it and in every game (remembered in the browser): no sounds, no confetti, no shake on
     a miss and no clock to race, for a student who finds them too much; the questions and the stars are the same
+  - Sessions of 5 or 10 questions (chosen before the first answer, remembered in the browser), shown as a ring that
+    fills beside the question, a segment per question; a full ring brings the summary, and the next session starts
+    only on a tap. After about 25 minutes of answering without a five-minute gap, a word that it is a good moment for
+    a break, which the student can wave away
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
     pieces as the bottom, then two to four times as many (¾ of 12 is 9), then counters too, up to 30. Any pieces will
     do; shading the top number of pieces (3 for ¾ of 12) is named
