@@ -27,6 +27,7 @@
     "grain": "node --disable-warning=ExperimentalWarning scripts/grain.ts",
     "grouping": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/grouping.ts",
     "analyse": "node --disable-warning=ExperimentalWarning scripts/analyse-study.ts",
+    "ratings": "node --disable-warning=ExperimentalWarning scripts/rating-check.ts",
     "dry-run": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dry-run-study.ts",
     "restore-check": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/restore-check.ts",
     "checker-agreement": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/checker-agreement.ts",
