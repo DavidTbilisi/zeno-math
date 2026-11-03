@@ -1666,7 +1666,8 @@ The full description is in **[docs/study.md](docs/study.md)**:
 - a dry run of the whole study through the real server (`npm run dry-run`), also against a running server with every
   student at once, as a load test (`--base`, `--parallel`);
 - the answer checker against a teacher's marking, and how often it names the mistake a teacher sees (`npm run checker-agreement`);
-- which mistakes each group made, from either export (`npm run mistakes`).
+- which mistakes each group made, from either export (`npm run mistakes`);
+- whether what felt too easy or too hard matches what the model predicted, exploratory (`npm run ratings`).
 
 More for a thesis: [docs/architecture.md](docs/architecture.md) (design, diagrams, decisions),
 [docs/api.md](docs/api.md) (every route), [docs/thesis/](docs/thesis/) (outline, references) and
@@ -1782,6 +1783,7 @@ src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes and what they 
 src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashboard's charts and their readouts
 src/model/datasets.ts     public data sets (ASSISTments) as observations, read as a stream
 src/model/analysis.ts     the study's planned analysis: ANCOVA, Welch's test, least squares, scores from the export
+src/model/ratingCheck.ts  the rating against the prediction: Spearman's ρ, within each outcome, intervals over students
 src/math/distributions.ts normal, t and χ² tails and their inverses (no imports, for the server and scripts too)
 scripts/evaluate-model.ts `npm run model`: the model against the logistic model, PFA, BKT and baselines on held-out students
 scripts/benchmark.ts      `npm run benchmark`: the benchmark CSVs in docs/results (prediction, paired splits, mastery rules) for the dashboard
@@ -1792,6 +1794,7 @@ scripts/dry-run-study.ts  `npm run dry-run`: the whole study with simulated stud
 scripts/restore-check.ts  `npm run restore-check`: a backup restored into a fresh Zeno and read back whole
 scripts/checker-agreement.ts  `npm run checker-agreement`: the answer checker against labelled answers
 scripts/mistakes.ts       `npm run mistakes`: the known mistakes in an export's wrong answers, per condition
+scripts/rating-check.ts   `npm run ratings`: how each question felt to the student against the model's prediction (exploratory)
 scripts/thesis-figures.ts `npm run figures`: the thesis figures (diagrams, calibration, screenshots) made again from the code
 scripts/dashboard.ts      `npm run dashboard`: the results dashboard's data: chapter 3's tables, the simulation CSVs, verdicts, learning profiles
 src/math/mistakes.ts      the mistakes the checker names (each question lists the answers they would give)

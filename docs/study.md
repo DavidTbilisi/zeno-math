@@ -208,6 +208,22 @@ npm run analyse -- zeno-tests.csv
   phase (see [Answer checker](#answer-checker)). It works on any export, including ones made before the checker
   named mistakes, because skill, level and seed fix the question.
 
+*Exploratory, not pre-registered:* whether what felt hard is what the model expected. After each practice question
+the student may say how it felt (`rated` in the attempts export), and each attempt carries the model's chance of a
+right first answer (`predicted`):
+
+```bash
+npm run ratings -- zeno-attempts.csv
+```
+
+It shows, for each rating, how many answers, the model's mean chance and the share right first time, then Spearman's
+ρ between the chance and how easy it felt (too easy 1, about right 0, too hard −1). A positive ρ means questions the
+model gave a higher chance felt easier. The student rates after answering, so a rating partly echoes how the answer
+went; ρ is therefore also given within answers right first time and within those that were not, where the answer
+itself cannot drive it. A student's answers are not independent, so the 95 % intervals come from resampling students
+(2,000 resamples, a fixed seed). Every rated attempt with a prediction counts: class practice, reviews and a
+signed-in student's free practice.
+
 Only students who finished both tests are analysed; the script says how many in each group did. A test is finished,
 and scored, on its own class's length (the export's `test_length`), as the dashboard counts it, so classes given tests
 of different lengths are analysed together; an export from before that column takes the longest test anyone answered
