@@ -29,6 +29,7 @@ import { WorkInSteps } from "./WorkInSteps";
 import { ScratchPad } from "./ScratchPad";
 import { BreakPrompt, ComingBack, SessionRing, SessionSummary, type SessionResult } from "./PracticeSession";
 import { breakDue, keepLength, sessionLength, stretchAfter, type Length, type Stretch } from "../math/sessionPace";
+import { RATINGS, rateLevel, type Rating } from "../math/difficulty";
 import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
@@ -81,6 +82,9 @@ const wantScratch = (on: boolean) => {
   }
 };
 const queued = () => outbox.items().length + testOutbox.items().length;
+/** The faces on the difficulty buttons. */
+const RATE_ICON: Record<Rating, string> = { easy: "😌", right: "👍", hard: "😓" };
+
 /** How often the dialog asks whether the teacher has moved the class on (a new phase, a session starting). */
 const PROTOCOL_POLL_MS = 30_000;
 /** Test answers still waiting to be sent count as answered, so the test doesn't ask the same question twice. */
@@ -204,6 +208,8 @@ export function PracticeDialog(props: Props) {
   const [solution, setSolution] = useState<{ src?: string; error?: string } | null>(null);
   /** The ideas ticked as hard on this question, as the log keeps them for the attempt. */
   const [hard, setHard] = useState<string[]>([]);
+  /** The student's word on this question's difficulty (free practice), and where it moved the level. */
+  const [rated, setRated] = useState<{ r: Rating; level: Level; edge: boolean } | null>(null);
   /**
    * The question's steps: a fractions operation answered wrong is worked in them before the student tries the whole of
    * it again; and on any skill with steps, worked examples fade (fading.ts).
@@ -429,6 +435,7 @@ export function PracticeDialog(props: Props) {
     setDone(null);
     setSolution(null);
     setHard([]);
+    setRated(null);
     setStepping("no");
   }
   const next = () => {
@@ -565,6 +572,16 @@ export function PracticeDialog(props: Props) {
   const classOn = !!student && inClass;
   const sessionOn = page && !classOn && mode === "practise" && pick !== "place";
   const sessionOver = sessionOn && session.length >= length;
+  // Free practice of a topic or Mixed asks how hard the question was; the class's plan and a grade's practice choose
+  // their own levels.
+  const rateable = !classOn && mode === "practise" && pick !== "grade" && pick !== "place";
+  /** Too easy or too hard moves the level of the questions after this one; the level switch moves with it. */
+  const rate = (r: Rating) => {
+    const to = rateLevel(level, r);
+    setRated({ r, ...to });
+    if (to.level !== level) setLevel(to.level);
+  };
+  const levelName = (L: Level) => w.levels[String(L) as "1" | "2" | "3"];
   // What the student has kept and mastered of their class's skills, from the plan their answers carry forward.
   const held = planStatus === "ready" && planRef.current ? holds(planRef.current.spacing, planRef.current.skills) : null;
   const skillHolds = held && (Object.fromEntries(Object.entries(held).map(([h, ks]) => [h, ks.map((k) => w.skills[k as SkillId])])) as Record<Hold, string[]>);
@@ -882,6 +899,26 @@ export function PracticeDialog(props: Props) {
             />
           )}
           {done === "revealed" && <div className="practice-verdict close" role="status">{w.ui.revealed}</div>}
+          {done && rateable && (
+            <div className="practice-rate" role="group" aria-label={w.ui.rateAsk}>
+              {rated ? (
+                <span role="status">
+                  {rated.edge ? (rated.r === "easy" ? w.ui.rateTop : w.ui.rateBottom)
+                    : rated.r === "right" ? fill(w.ui.rateKeep, { level: levelName(rated.level) })
+                    : fill(w.ui.rateNext, { level: levelName(rated.level) })}
+                </span>
+              ) : (
+                <>
+                  <span>{w.ui.rateAsk}</span>
+                  {RATINGS.map((r) => (
+                    <button key={r} className="btn small" onClick={() => rate(r)}>
+                      {RATE_ICON[r]} {w.ui.rate[r]}
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
           {done && (
             <div className="field">
               <span>{w.answer}</span>

@@ -166,6 +166,30 @@ test("after about 25 minutes of answering, a word about a break that the student
   await expect(prompt).toHaveCount(0);
 });
 
+test("too easy moves the next questions up a level, too hard down, and the ends say so", async ({ page }) => {
+  await page.goto("/#/practice");
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  const rating = page.getByRole("group", { name: w.ui.rateAsk });
+  await expect(rating).toHaveCount(0);
+  await page.getByRole("button", { name: "Show solution" }).click();
+  await rating.getByRole("button", { name: `😌 ${w.ui.rate.easy}` }).click();
+  await expect(rating).toContainText("Next questions: medium.");
+  await expect(rating.getByRole("button")).toHaveCount(0);
+  await expect(page.getByRole("radio", { name: "medium" })).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("button", { name: "Next →" }).click();
+  await expect(page.locator(".practice-question")).toContainText("medium");
+  // Too hard goes back down, and below easy there is nowhere to go.
+  await page.getByRole("button", { name: "Show solution" }).click();
+  await rating.getByRole("button", { name: `😓 ${w.ui.rate.hard}` }).click();
+  await expect(rating).toContainText("Next questions: easy.");
+  await page.getByRole("button", { name: "Next →" }).click();
+  await page.getByRole("button", { name: "Show solution" }).click();
+  await rating.getByRole("button", { name: `😓 ${w.ui.rate.hard}` }).click();
+  await expect(rating).toContainText(w.ui.rateBottom);
+  await expect(page.getByRole("radio", { name: "easy" })).toHaveAttribute("aria-checked", "true");
+});
+
 test("calm hides the sound switch and stills the page, is remembered, and the games share it", async ({ page }) => {
   await page.goto("/#/practice");
   await page.getByRole("button", { name: "Fractions", exact: true }).click();
