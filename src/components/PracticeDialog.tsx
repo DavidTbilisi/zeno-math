@@ -18,6 +18,7 @@ import { renderSolution } from "../math/practiceSolve";
 import { svgToDataUrl } from "../math/svg";
 import { Countdown } from "./Countdown";
 import { AnswerField, PlayAnswer } from "./PlayAnswer";
+import { setFeel, useFeel } from "../live/feel";
 import { muted, play as playSound, setMuted } from "../live/juice";
 import { Cheer } from "../live/ladderUi";
 import { Modal } from "./Modal";
@@ -122,6 +123,8 @@ export function PracticeDialog(props: Props) {
   const [summary, setSummary] = useState(false);
   const [cheer, setCheer] = useState(0);
   const [quiet, setQuiet] = useState(muted);
+  // Calm (feel.ts): silent and still, so the sound switch steps aside for it.
+  const calm = useFeel() === "calm";
   const [scratch, setScratch] = useState(scratchWanted);
 
   // ---------- practise ----------
@@ -801,14 +804,19 @@ export function PracticeDialog(props: Props) {
             {!done && !given && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
             {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
             {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
-            <button
-              className="btn small practice-sound"
-              title={w.ui.sound}
-              aria-label={w.ui.sound}
-              aria-pressed={!quiet}
-              onClick={() => (setMuted(!quiet), setQuiet(!quiet))}
-            >
-              {quiet ? "🔇" : "🔊"}
+            {!calm && (
+              <button
+                className="btn small practice-sound"
+                title={w.ui.sound}
+                aria-label={w.ui.sound}
+                aria-pressed={!quiet}
+                onClick={() => (setMuted(!quiet), setQuiet(!quiet))}
+              >
+                {quiet ? "🔇" : "🔊"}
+              </button>
+            )}
+            <button className="btn small practice-calm" title={w.ui.calmWhy} aria-pressed={calm} onClick={() => setFeel(calm ? "arcade" : "calm")}>
+              🌙 {w.ui.calm}
             </button>
             {/* On a board the board itself is the paper. */}
             {page && (
