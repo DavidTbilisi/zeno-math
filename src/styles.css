@@ -522,6 +522,7 @@ input.invalid { border-color: var(--danger); }
 .scratch-sheet.rub canvas, .scratch-sheet.lift canvas { cursor: cell; }
 .practice-hard { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 8px 12px 10px; border: 1px solid var(--border); border-radius: 8px; }
 .practice-hard legend { font-weight: 600; font-size: 14px; padding: 0 4px; }
+.practice-rate { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .practice-review { color: #e8590c; }
 .practice-steps { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
 .practice-steps-intro { margin: 0; font-weight: 600; }

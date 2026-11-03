@@ -525,6 +525,12 @@ export type PracticeWords = {
     sessionOf: string;
     breakTime: string;
     breakOn: string;
+    rateAsk: string;
+    rate: { easy: string; right: string; hard: string };
+    rateNext: string;
+    rateKeep: string;
+    rateTop: string;
+    rateBottom: string;
     comingBack: string;
     backNext: string;
     backIn: string;
