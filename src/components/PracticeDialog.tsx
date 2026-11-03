@@ -3,7 +3,7 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, attemptEvidence, classQuestion, fadedOf, finish, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
+  applyAttempt, attemptEvidence, classQuestion, fadedOf, finish, learnFromAttempt, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { newcomerChance } from "../model/logistic";
@@ -36,6 +36,9 @@ import { gradeOf } from "../model/curriculum";
 import { holds, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
 import type { Feature } from "../model/arms";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
+import { newlyLit } from "../model/ideaMap";
+import { hasIdeas } from "../model/ideaState";
+import { IdeaMap } from "./IdeaMap";
 import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
 } from "../model/placement";
@@ -129,6 +132,8 @@ export function PracticeDialog(props: Props) {
   const [length, setLength] = useState<Length>(sessionLength);
   const [summary, setSummary] = useState(false);
   const [stretch, setStretch] = useState<Stretch | null>(null);
+  /** The ideas lit on the idea map during this session, marked new on the map after it. */
+  const [sessionLit, setSessionLit] = useState<string[]>([]);
   /** A question of the session has ended: it joins the ring and the stretch without a break. */
   const recordSession = (skill: SkillId, right: boolean) => {
     setSession((r) => [...r, { skill, right }]);
@@ -242,19 +247,32 @@ export function PracticeDialog(props: Props) {
   };
   /** Records the question the student is leaving (moving on, changing topic, closing) and starts a fresh log. */
   const leaveQuestion = (keepalive = false) => {
-    const { cur, student } = live.current;
+    const { cur, student, inClass } = live.current;
     const attempt = student && toAttempt(log.current, cur.ex, cur, student);
+    // Nobody signed in: the same record, kept only in this browser.
+    const own = !student ? toAttempt(log.current, cur.ex, cur, { code: "", class: "", condition: "adaptive" }) : null;
+    let p = live.current.progress;
     if (attempt) {
       outbox.add(attempt);
       // Free practice and reviews tell the model about the student too.
       if (planRef.current) applyAttempt(planRef.current, attempt);
-    } else if (!student) {
-      // Nobody signed in: the fading moves on all the same, and is kept with the practice progress.
-      const a = toAttempt(log.current, cur.ex, cur, { code: "", class: "", condition: "adaptive" });
-      if (a) {
-        learnFading(freeFading.current, a.skill, fadedOf(a));
-        record({ ...live.current.progress, fading: { ...freeFading.current } });
-      }
+    } else if (own) {
+      // The fading moves on all the same, and is kept with the practice progress.
+      learnFading(freeFading.current, own.skill, fadedOf(own));
+      p = { ...p, fading: { ...freeFading.current } };
+    }
+    // Free practice moves the ideas the idea map shows, kept with the practice progress; a tile lit stays lit.
+    const a = attempt || own;
+    if (a && !(student && inClass) && hasIdeas(a.skill)) {
+      const ideas = { ...p.ideas };
+      learnFromAttempt(ideas, a);
+      const fresh = newlyLit(p.lit ?? [], ideas);
+      p = { ...p, ideas, lit: [...(p.lit ?? []), ...fresh] };
+      if (fresh.length) setSessionLit((s) => [...s, ...fresh]);
+    }
+    if (p !== live.current.progress) {
+      record(p);
+      live.current.progress = p;
     }
     log.current = startLog();
     sendQueued(keepalive);
@@ -459,13 +477,14 @@ export function PracticeDialog(props: Props) {
   const newSession = (n: Length) => {
     chooseLength(n);
     setSession([]);
+    setSessionLit([]);
     setSummary(false);
     show(nextExercise(area, pick, level, progress, classPlan()));
   };
   // A new topic or level starts a new question (free practice only: class practice has no topic menus).
   const choose = (a: Area, p: Pick, L: Level) => {
     // From a session's summary, a new topic starts the next session.
-    if (summary) (setSession([]), setSummary(false));
+    if (summary) (setSession([]), setSessionLit([]), setSummary(false));
     setArea(a);
     setPick(p);
     setLevel(L);
@@ -697,7 +716,11 @@ export function PracticeDialog(props: Props) {
           {!page && studentPanel}
         </>
       ) : sessionOn && summary ? (
-        <SessionSummary results={session} comingBack={progress.mistakes.length} n={length} w={w} onAgain={newSession} />
+        <SessionSummary results={session} comingBack={progress.mistakes.length} n={length} w={w} onAgain={newSession}>
+          {[...new Set(session.map((r) => r.skill))].filter(hasIdeas).map((skill) => (
+            <IdeaMap key={skill} skill={skill} lit={progress.lit ?? []} fresh={sessionLit} w={w} />
+          ))}
+        </SessionSummary>
       ) : mode === "practise" ? (
         <>
           {plan?.phase === "session" && plan.sessionEnds !== null && (

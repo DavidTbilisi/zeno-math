@@ -523,6 +523,25 @@ input.invalid { border-color: var(--danger); }
 .practice-hard { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 8px 12px 10px; border: 1px solid var(--border); border-radius: 8px; }
 .practice-hard legend { font-weight: 600; font-size: 14px; padding: 0 4px; }
 .practice-rate { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* The idea map after a session: rows of tiles, the ideas each rests on above it, lines drawn behind where they land. */
+.idea-map { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+.idea-map h3 { margin: 0; }
+.idea-map p { margin: 0; }
+.idea-map-board { position: relative; }
+.idea-map-lines { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.idea-map-lines line { stroke: var(--border); stroke-width: 2; }
+.idea-map-lines line.joins { stroke-dasharray: 5 4; }
+.idea-map-lines line.lit { stroke: var(--ok); }
+.idea-map .idea-map-rows, .idea-map .idea-map-row { list-style: none; margin: 0; padding: 0; }
+.idea-map .idea-map-rows { position: relative; display: flex; flex-direction: column; gap: 22px; }
+.idea-map .idea-map-row { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px 12px; }
+.idea-tile { display: flex; flex-direction: column; gap: 2px; width: 150px; padding: 8px 10px; border: 2px dashed var(--border); border-radius: 10px; background: var(--surface); font-size: 13px; line-height: 1.25; transition: background 0.3s, border-color 0.3s; }
+.idea-tile small { color: var(--muted); font-size: 11px; }
+.idea-tile.lit { border-style: solid; border-color: var(--ok); background: color-mix(in srgb, var(--ok) 16%, var(--surface)); }
+.idea-tile.fresh { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); animation: idea-pop 0.6s ease-out; }
+@media (prefers-reduced-motion: reduce) { .idea-tile { animation: none !important; transition: none; } }
+@keyframes idea-pop { 0% { transform: scale(0.85); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@media (max-width: 520px) { .idea-tile { width: calc(50% - 6px); } }
 .practice-review { color: #e8590c; }
 .practice-steps { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
 .practice-steps-intro { margin: 0; font-weight: 600; }
@@ -857,6 +876,7 @@ input.invalid { border-color: var(--danger); }
 :root[data-feel="calm"] .geo-done, :root[data-feel="calm"] .pv-placed, :root[data-feel="calm"] .est-reveal { animation: none !important; }
 :root[data-feel="calm"] .live-shake, :root[data-feel="calm"] .live-beat, :root[data-feel="calm"] .live-said-in { animation: none !important; }
 :root[data-feel="calm"] .live-flash { display: none; }
+:root[data-feel="calm"] .idea-tile { animation: none !important; transition: none; }
 :root[data-feel="calm"] .near-clock i { animation-name: near-fade; }
 :root[data-feel="calm"] .z-line-fill, :root[data-feel="calm"] .z-runner { transition: none; }
 .live-fn { display: flex; align-items: center; gap: 6px; }

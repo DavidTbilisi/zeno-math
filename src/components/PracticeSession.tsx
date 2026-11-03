@@ -4,6 +4,7 @@
 // for a break. Class practice has the class's own timed session instead.
 import type { PracticeWords, SkillId } from "../math/practice";
 import { fill } from "../math/text";
+import type { ReactNode } from "react";
 import { LENGTHS, type Length } from "../math/sessionPace";
 import { Segmented } from "./ui";
 
@@ -61,12 +62,14 @@ export function SessionRing({ results, n, streak, w, onLength }: {
 
 /** The end of a session: the full ring, the score, each topic's share right, and how many misses will come back. The next
  *  session waits for a tap, in either length. */
-export function SessionSummary({ results, comingBack, n, w, onAgain }: {
+export function SessionSummary({ results, comingBack, n, w, onAgain, children }: {
   results: readonly SessionResult[];
   comingBack: number;
   n: Length;
   w: PracticeWords;
   onAgain: (n: Length) => void;
+  /** Below the summary: the idea map of each skill practised that has one. */
+  children?: ReactNode;
 }) {
   const right = results.filter((r) => r.right).length;
   const topics = [...new Set(results.map((r) => r.skill))].map((skill) => {
@@ -92,6 +95,7 @@ export function SessionSummary({ results, comingBack, n, w, onAgain }: {
           </button>
         ))}
       </div>
+      {children}
     </section>
   );
 }
