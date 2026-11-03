@@ -33,6 +33,8 @@ jobs:
           if [ -z "$URL" ]; then echo "No UPTIME_URL secret: nothing to check."; echo "skip=1" >> "$GITHUB_OUTPUT"; exit 0; fi
           # Four tries over a minute and a half, so a deploy's restart or one lost packet isn't an outage.
           # Nothing curl says is printed: its errors would name the host.
+          # The first try's time goes in the issue: with every try timing out, the report is three minutes later.
+          echo "start=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> "$GITHUB_OUTPUT"
           code=000
           for try in 1 2 3 4; do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL" 2>/dev/null) || true
@@ -52,13 +54,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           CODE: ${{ steps.health.outputs.code }}
+          START: ${{ steps.health.outputs.start }}
           DAYS: ${{ steps.health.outputs.days }}
         run: |
           now=$(date -u '+%Y-%m-%d %H:%M UTC')
           problem=""
           title="The public Zeno server is down"
           if [ "$CODE" != 200 ]; then
-            problem="The public server's health check answered HTTP $CODE (000: no answer at all) four times in a row, at $now."
+            problem="The public server's health check answered HTTP $CODE (000: no answer at all) four times in a row, from $START to $now."
           elif [ -n "$DAYS" ] && [ "$DAYS" -lt 10 ]; then
             title="The public Zeno server's certificate is about to run out"
             problem="The public server's certificate runs out in $DAYS days ($now). Caddy renews at about thirty, so renewal is failing: look at the Caddy container's log on the server."
