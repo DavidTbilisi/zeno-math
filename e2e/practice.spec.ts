@@ -169,7 +169,8 @@ test("after about 25 minutes of answering, a word about a break that the student
 test("too easy moves the next questions up a level, too hard down, and the ends say so", async ({ page }) => {
   await page.goto("/#/practice");
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  // A topic whose questions have no steps: on fractions two misses in a row bring a worked example instead of a question.
+  await page.getByRole("button", { name: "Percentages", exact: true }).click();
   const rating = page.getByRole("group", { name: w.ui.rateAsk });
   await expect(rating).toHaveCount(0);
   await page.getByRole("button", { name: "Show solution" }).click();
