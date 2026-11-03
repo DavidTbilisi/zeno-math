@@ -202,6 +202,17 @@ test("what was hard is asked after a miss no recognised mistake explains, and th
   assert.deepEqual(toAttempt(miss, ex, free, student)!.hard, [usesOf(ex)[1]]);
 });
 
+test("how the question felt goes with the attempt when the student said, and not otherwise (issue #290)", () => {
+  const ex = exercise("fractions", 1, 5, w), log = startLog(0, 0);
+  logAnswer(log, ex.plain, check(ex, ex.plain, w), 3000);
+  finish(log, "solved", 3000);
+  const student = { code: "ABCD-EFGH", class: "XYZXYZ", condition: "adaptive" as const };
+  const origin = { policy: "adaptive" as const, review: false, predicted: 0.7 };
+  assert.equal("rated" in toAttempt(log, ex, origin, student, 4000)!, false);
+  log.rated = "easy";
+  assert.equal(toAttempt(log, ex, origin, student, 4000)!.rated, "easy");
+});
+
 test("a question worked in steps: each step goes with the attempt and moves the ideas it needs", () => {
   // A sum over two denominators: its first step is their lowest common denominator, its second a fraction over it.
   const ex = (() => {

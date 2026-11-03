@@ -9047,6 +9047,7 @@ export const en = {
       rateKeep: "The level stays {level}.",
       rateTop: "That's already the hardest level here. Try another topic, or keep going.",
       rateBottom: "That's already the easiest level. Reading the answer and how to get it can help.",
+      rateNoted: "Thanks, noted. It helps to see which questions feel too easy or too hard.",
       comingBack: "Coming back",
       backNext: "next",
       backIn: "after {n} more",

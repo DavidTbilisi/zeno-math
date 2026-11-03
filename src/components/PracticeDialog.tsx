@@ -572,11 +572,16 @@ export function PracticeDialog(props: Props) {
   const classOn = !!student && inClass;
   const sessionOn = page && !classOn && mode === "practise" && pick !== "place";
   const sessionOver = sessionOn && session.length >= length;
-  // Free practice of a topic or Mixed asks how hard the question was; the class's plan and a grade's practice choose
-  // their own levels.
-  const rateable = !classOn && mode === "practise" && pick !== "grade" && pick !== "place";
-  /** Too easy or too hard moves the level of the questions after this one; the level switch moves with it. */
+  // How hard the question felt is asked in class practice and in free practice of a topic or Mixed; a grade's practice
+  // and the placement choose their own levels and are not asked.
+  const rateable = mode === "practise" && (classOn || (pick !== "grade" && pick !== "place"));
+  /**
+   * The rating goes with the attempt. In free practice too easy or too hard also moves the level of the questions after
+   * this one, and the level switch moves with it; in class practice the study chooses, so it is only recorded.
+   */
   const rate = (r: Rating) => {
+    log.current.rated = r;
+    if (classOn) return setRated({ r, level, edge: false });
     const to = rateLevel(level, r);
     setRated({ r, ...to });
     if (to.level !== level) setLevel(to.level);
@@ -903,7 +908,8 @@ export function PracticeDialog(props: Props) {
             <div className="practice-rate" role="group" aria-label={w.ui.rateAsk}>
               {rated ? (
                 <span role="status">
-                  {rated.edge ? (rated.r === "easy" ? w.ui.rateTop : w.ui.rateBottom)
+                  {classOn ? w.ui.rateNoted
+                    : rated.edge ? (rated.r === "easy" ? w.ui.rateTop : w.ui.rateBottom)
                     : rated.r === "right" ? fill(w.ui.rateKeep, { level: levelName(rated.level) })
                     : fill(w.ui.rateNext, { level: levelName(rated.level) })}
                 </span>

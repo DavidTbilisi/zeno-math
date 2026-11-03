@@ -188,6 +188,10 @@ The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, 
   question's own ideas (`part`, `commonDenom`, `minusNeg`, `mulFirst`, …) once. Only on a skill made of ideas
   (times, hcf, fractions, integers, order, rounding, indices, expand: `IDEA_SKILLS` in `src/model/ideaState.ts`), and
   left out when nothing was ticked; it moves the student's ideas in the plan.
+- **`rated`**: how the question felt to the student, asked once it was over: `easy` (too easy), `right` (about
+  right) or `hard` (too hard). Left out when they didn't say; refused on a `skipped` question. Every arm is asked
+  alike, and it moves nothing in the plan: it is stored and exported (`rated` in attempts.csv) for comparing with
+  `predicted`.
 - **`steps`**: a fractions operation worked in steps after a wrong first answer, one entry per step reached, in the
   order of the question's steps: the answers to that step (as `answers`, and nothing after a correct one) and
   whether its answer was shown. No more entries than the question has steps, each answered or shown, and none when

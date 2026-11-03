@@ -193,6 +193,25 @@ test("attempts that don't add up are refused", async () => {
   assert.equal(await refused({ outcome: "skipped", answers: [{ input: "2", verdict: "close", ms: 5 }] }), 201);
 });
 
+test("how a question felt to the student (issue #290): checked, stored and exported, from class practice in either condition", async () => {
+  const { code } = await newClass();
+  const students = [(await call("POST", "/api/students", { class: code })).body, (await call("POST", "/api/students", { class: code })).body] as { code: string; condition: string }[];
+  // The first two of a block of four: the conditions may match, so post each in its own.
+  const post = (who: { code: string; condition: string }, extra: Record<string, unknown>) =>
+    call("POST", "/api/attempts", attempt(who.code, { policy: who.condition, ...extra }));
+  const [s] = students;
+  for (const rated of ["meh", "EASY", 3, null])
+    assert.deepEqual((await post(s, { rated })).body, { error: "invalid rated" }, JSON.stringify(rated));
+  // Asked only once the question is over: not on one left after a try.
+  assert.equal((await post(s, { outcome: "skipped", answers: [{ verdict: "close", ms: 5 }], rated: "hard" })).status, 400);
+  for (const [who, rated] of [[students[0], "easy"], [students[1], "hard"], [students[0], "right"]] as const)
+    assert.equal((await post(who, { rated })).status, 201, `${who.condition} ${rated}`);
+  assert.equal((await post(s, {})).status, 201, "and it can be left out");
+  const exported = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual(exported.map((r) => r.rated), ["easy", "hard", "right", ""]);
+  assert.deepEqual(exported.map((r) => r.policy), [students[0], students[1], students[0], students[0]].map((x) => x.condition));
+});
+
 test("a student's number in the class list: checked, warned about when given twice, on the dashboard and never exported", async () => {
   const { code } = await newClass();
   const join = (body: Record<string, unknown>) => call("POST", "/api/students", { class: code, ...body });

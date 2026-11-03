@@ -6,6 +6,7 @@ import type { SkillId } from "./math/practiceSkills";
 import { LogisticModel, type LogisticState } from "./model/logistic";
 import { evidence } from "./model/evaluate";
 import type { IdeaNode } from "./model/conceptGraph";
+import type { Rating } from "./math/difficulty";
 import { asksWhatWasHard, bearing, hasIdeas, IDEA_SKILLS, learnIdeas, SKILL_IDEAS, usesOf, type IdeaState } from "./model/ideaState";
 import { choose, learnEma, RECENT, type AdaptiveOptions, type Choice, type EmaState } from "./model/policy";
 import { learnClassSpacing, type Spacing } from "./model/spacing";
@@ -82,6 +83,8 @@ export type Attempt = {
    * shown and unanswered; the student worked the rest, and answers is empty.
    */
   faded?: number;
+  /** The student's word on the question once it was over: too easy, about right or too hard, when they gave one. */
+  rated?: Rating;
 };
 
 /** One question as the student works on it. Times are from performance.now(), so a clock change doesn't skew them. */
@@ -99,6 +102,8 @@ export type QuestionLog = {
   steps: StepLog[];
   /** The steps shown done, when the question is a faded worked example. */
   faded?: number;
+  /** How the question felt to the student, asked once it was over (difficulty.ts). */
+  rated?: Rating;
 };
 
 export const startLog = (shownAt = Date.now(), t0 = performance.now()): QuestionLog =>
@@ -143,6 +148,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
     ...(log.hard.length ? { hard: log.hard } : {}),
     ...(log.steps.length ? { steps: log.steps } : {}),
     ...(log.faded ? { faded: log.faded } : {}),
+    ...(log.rated ? { rated: log.rated } : {}),
   };
 }
 

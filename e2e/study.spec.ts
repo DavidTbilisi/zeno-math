@@ -168,7 +168,7 @@ test("a test written on paper is typed in on the teacher page, marked, and expor
   expect(csv.map((r) => [r.phase, r.verdict, r.paper])).toEqual([["pre", "correct", "1"], ["pre", "wrong", "1"], ["pre", "skipped", "1"], ["pre", "correct", "1"]]);
 });
 
-test("after a wrong answer on fractions the student is asked what exactly was hard, and the ticks reach the server", async ({ browser, request }) => {
+test("after a wrong answer on fractions the student is asked what exactly was hard, and the ticks and how it felt reach the server", async ({ browser, request }) => {
   const headers = { "X-Teacher-Password": TEACHER };
   const { code } = await (await request.post("/api/classes", { data: { name: "Fractions", skills: ["fractions"] }, headers })).json();
   const student = await (await browser.newContext()).newPage();
@@ -194,6 +194,10 @@ test("after a wrong answer on fractions the student is asked what exactly was ha
   const idea = (await list.locator("label").first().textContent())!.trim();
   expect(idea.length).toBeGreaterThan(3);
   await first.check();
+  // How it felt is asked in class practice too, and only noted: the study chooses the questions (issue #290).
+  const rating = student.getByRole("group", { name: "How was that?" });
+  await rating.getByRole("button", { name: "😓 Too hard" }).click();
+  await expect(rating).toContainText("Thanks, noted.");
   await student.getByRole("button", { name: "Next" }).click();
 
   const rows = async () => (await (await request.get(`/api/research/attempts.csv?class=${code}`, { headers })).text()).trim().split("\n");
@@ -202,6 +206,8 @@ test("after a wrong answer on fractions the student is asked what exactly was ha
   // The export's answers column holds JSON with commas in it, so the ticked ideas are found by their own quoting.
   expect(head.split(",")).toContain("hard");
   expect(row).toMatch(/"\[""[a-zA-Z]+""\]"/);
+  const cells = row.match(/("([^"]|"")*"|[^,]*)(,|$)/g)!.map((c) => c.replace(/,$/, ""));
+  expect(cells[head.split(",").indexOf("rated")]).toBe("hard");
 });
 
 test("order of operations is made of ideas too: a wrong answer asks which of its rules was hard, in words, and the tick reaches the server", async ({ browser, request }) => {
