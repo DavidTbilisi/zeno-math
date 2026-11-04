@@ -125,7 +125,7 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onChanged }
                     <td className="homework-items">
                       {r.items.map((it, i) => (
                         <span key={i} className={`hw-mark ${it.outcome === null ? "todo" : it.firstCorrect ? "right" : "wrong"}`} title={title(it)}>
-                          {it.why === "review" ? "↻" : it.why === "stretch" ? "↑" : ""}{mark(it)}
+                          {({ repair: "↓", review: "↻", stretch: "↑", practice: "" } as const)[it.why]}{mark(it)}
                         </span>
                       ))}
                     </td>

@@ -5,8 +5,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { exercise, type SkillId } from "../src/math/practice.ts";
-import { homeworkFor, type HomeworkInput } from "../src/homework.ts";
-import { HOMEWORK_REVIEWS, homeworkIndex, nextHomework, type Homework } from "../src/model/homework.ts";
+import { homeworkFor, repairLevel, type HomeworkInput } from "../src/homework.ts";
+import { HOMEWORK_REPAIRS, HOMEWORK_REVIEWS, homeworkIndex, nextHomework, type Homework } from "../src/model/homework.ts";
 import { hasIdeas } from "../src/model/ideaState.ts";
 import { DAY, type Spacing } from "../src/model/spacing.ts";
 import { rng } from "../src/model/random.ts";
@@ -48,6 +48,23 @@ test("homework: no more than two reviews, always at least one practice question 
   assert.equal(homeworkFor(input(due), 8, rng(1).next).filter((i) => i.why === "review").length, HOMEWORK_REVIEWS);
   assert.deepEqual(homeworkFor(input(due), 4, rng(1).next).map((i) => i.why), ["review", "review", "practice", "stretch"]);
   assert.deepEqual(homeworkFor(input(), 4, rng(1).next).map((i) => i.why), ["practice", "practice", "practice", "stretch"]);
+});
+
+test("homework for a stuck student (issue #303): two repair questions first, on that skill at the level closest to 0.85, aimed at the idea; reviews and practice after", () => {
+  const spacing: Spacing = { linear: { step: 0, due: NOW - DAY }, times: { step: 0, due: NOW - 2 * DAY } };
+  const items = homeworkFor({ ...input(spacing), repair: { skill: "fractions", idea: "commonDenom" } }, 8, rng(5).next);
+  assert.equal(items.length, 8);
+  assert.deepEqual(items.slice(0, HOMEWORK_REPAIRS).map((i) => [i.why, i.skill, i.level, i.idea]), [["repair", "fractions", 1, "commonDenom"], ["repair", "fractions", 1, "commonDenom"]]);
+  assert.deepEqual(items.slice(2, 4).map((i) => i.why), ["review", "review"]);
+  assert.deepEqual(items.slice(4).map((i) => i.why), ["practice", "practice", "practice", "stretch"]);
+  // Short homework: the repair keeps its place, the reviews give theirs up, and practice and the stretch stay.
+  assert.deepEqual(homeworkFor({ ...input(spacing), repair: { skill: "fractions" } }, 4, rng(5).next).map((i) => i.why), ["repair", "repair", "practice", "stretch"]);
+  // A skill the class doesn't practise gets no repair.
+  assert.ok(!homeworkFor({ ...input(), repair: { skill: "integers" } }, 8, rng(5).next).some((i) => i.why === "repair"));
+  // The level: closest to 0.85, the easier on a tie.
+  assert.equal(repairLevel(flat, "me", "times"), 1);
+  assert.equal(repairLevel({ predictAt: (_s, _k, L) => ({ 1: 0.99, 2: 0.86, 3: 0.6 })[L as 1 | 2 | 3] }, "me", "times"), 2);
+  assert.equal(repairLevel({ predictAt: (_s, _k, L) => ({ 1: 0.95, 2: 0.75, 3: 0.6 })[L as 1 | 2 | 3] }, "me", "times"), 1);
 });
 
 test("homework in the browser: the first question not answered comes next, an attempt marks it answered, and a fresh plan keeps that", () => {

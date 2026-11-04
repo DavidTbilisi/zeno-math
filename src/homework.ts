@@ -1,5 +1,5 @@
-// Homework made for one student (issue #297) from what class practice already knows of them: the spaced reviews that
-// are due, then the questions the adaptive policy would ask next (on a skill made of ideas, aimed at the weakest idea,
+// Homework made for one student (issue #297) from what class practice already knows of them: for a student who is
+// stuck, a step back on that skill first (issue #303); then the spaced reviews that are due, then the questions the adaptive policy would ask next (on a skill made of ideas, aimed at the weakest idea,
 // and interleaved across skills), then one stretch question, harder than the rest. No language model: the questions
 // come from the same generators as class practice, so the server marks every answer, and each question keeps why it
 // was chosen for the teacher to read.
@@ -15,7 +15,8 @@ import { exerciseFor } from "./learner";
 import { adaptiveChoice, type ChanceModel, type EmaState } from "./model/policy";
 import type { IdeaState } from "./model/ideaState";
 import { nextReview, openAgain, type Spacing } from "./model/spacing";
-import { HOMEWORK_REVIEWS, STRETCH_TARGET, type HomeworkItem, type HomeworkWhy } from "./model/homework";
+import type { Level } from "./model/elo";
+import { HOMEWORK_REPAIRS, HOMEWORK_REVIEWS, REPAIR_TARGET, STRETCH_TARGET, type HomeworkItem, type HomeworkWhy, type Repair } from "./model/homework";
 
 /** What homework is made from: the student's records in the model, and their ideas, moving averages and spaced reviews. */
 export type HomeworkInput = {
@@ -30,19 +31,40 @@ export type HomeworkInput = {
   now: number;
   /** The adaptive policy's unlock floor (policy.ts), as class practice uses it. */
   unlockFloor?: (skill: SkillId) => number;
+  /** Where the student is stuck, if they are (server/homework.ts takes it from the teacher's stuck list). */
+  repair?: Repair | null;
 };
 
+/** The level of a skill whose chance of a right first answer comes closest to REPAIR_TARGET; on a tie, the easier. */
+export function repairLevel(model: ChanceModel, student: string, skill: SkillId): Level {
+  const off = (L: Level) => Math.abs(model.predictAt(student, skill, L) - REPAIR_TARGET);
+  return ([2, 3] as const).reduce<Level>((best, L) => (off(L) < off(best) ? L : best), 1);
+}
+
 /**
- * The student's homework of `length` questions: up to HOMEWORK_REVIEWS spaced reviews that are due, each on another
- * skill and asked hard as class practice asks them; then the adaptive policy's choices, as if each were answered on
+ * The student's homework of `length` questions: for a stuck student, HOMEWORK_REPAIRS repair questions on the skill
+ * they are stuck on, at the level they are most likely to get right (repairLevel) and aimed at the idea when there is
+ * one; then up to HOMEWORK_REVIEWS spaced reviews that are due, each on another skill and asked hard as class practice
+ * asks them; then the adaptive policy's choices, as if each were answered on
  * the way (the recent skills move on, so the questions interleave; nothing else does, since nothing is answered yet);
  * then one stretch question.
  */
 export function homeworkFor(s: HomeworkInput, length: number, random: () => number = Math.random): HomeworkItem[] {
   const seed = () => Math.floor(random() * 2 ** 31);
   const items: HomeworkItem[] = [];
+  // At least one practice question and the stretch, whatever comes before them.
+  const room = length - 2;
+  if (s.repair && s.skills.includes(s.repair.skill)) {
+    const { skill, idea } = s.repair;
+    const level = repairLevel(s.model, s.student, skill);
+    while (items.length < Math.min(HOMEWORK_REPAIRS, room)) {
+      const ex = exerciseFor({ skill, level, ...(idea ? { idea } : {}) }, en.pracWords, random);
+      items.push({ skill, level, seed: ex.seed, why: "repair", ...(idea ? { idea } : {}) });
+    }
+  }
+  const repairs = items.length;
   const reviewed = new Set<string>();
-  while (items.length < Math.min(HOMEWORK_REVIEWS, length - 2)) {
+  while (items.length < repairs + Math.min(HOMEWORK_REVIEWS, room - repairs)) {
     const k = nextReview(s.spacing, s.now, (k) => s.skills.includes(k as SkillId) && !reviewed.has(k), (k) => k);
     if (!k) break;
     reviewed.add(k);

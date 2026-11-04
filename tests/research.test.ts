@@ -1122,6 +1122,28 @@ test("homework (issue #297): refused until the delayed post-test, each student's
   assert.equal((await make()).status, 409);
 });
 
+test("homework's repair slot (issue #303): a stuck student's homework starts with two easier questions on that skill, aimed at the idea; others get none", async () => {
+  const { code } = (await call("POST", "/api/classes", { name: "Repair", skills: ["fractions", "linear"] }, TEACHER)).body;
+  const join = async () => (await call("POST", "/api/students", { class: code })).body.code as string;
+  const [stuck, fine] = [await join(), await join()];
+  await call("POST", `/api/classes/${code}/study`, { study: false }, TEACHER);
+  // Ten wrong on fractions, ticking the same idea as hard: on the stuck list for it.
+  for (let i = 0; i < 10; i++) {
+    const r = await call("POST", "/api/attempts", attempt(stuck, { skill: "fractions", level: 2, seed: 100 + i, outcome: "revealed", solutionViewed: true, hard: ["commonDenom"], answers: [{ verdict: "wrong", ms: 9000 }] }));
+    assert.equal(r.status, 201);
+  }
+  assert.equal((await call("POST", `/api/classes/${code}/homework`, { length: 6 }, TEACHER)).status, 201);
+  const homework = async (s: string) => (await call("GET", `/api/students/${s}/plan`)).body.homework.items as { skill: string; level: number; why: string; idea?: string }[];
+  const mine = await homework(stuck);
+  assert.deepEqual(mine.slice(0, 2).map((i) => [i.why, i.skill, i.idea]), [["repair", "fractions", "commonDenom"], ["repair", "fractions", "commonDenom"]]);
+  assert.ok(mine.slice(0, 2).every((i) => i.level === 1), "the level they are most likely to get right");
+  assert.deepEqual(mine.slice(2).map((i) => i.why).at(-1), "stretch");
+  assert.ok(!(await homework(fine)).some((i) => i.why === "repair"));
+  // The teacher's card shows it as a repair.
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.equal(d.homework.rows.find((r: { student: string }) => r.student === d.stuck[0].rows[0].student).items[0].why, "repair");
+});
+
 test("a class out of the study (issue #299): homework at any time but during a test, out of the all-classes exports, back in only before homework", async () => {
   const { code, study } = (await call("POST", "/api/classes", { name: "Pilot", skills: ["fractions"], testLength: 4 }, TEACHER)).body;
   assert.equal(study, true, "every class starts in the study");

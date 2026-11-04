@@ -771,7 +771,7 @@ export function PracticeDialog(props: Props) {
           {homeworkAt >= 0 && plan?.homework ? (
             <small className="hint practice-review">
               📝 {fill(w.ui.homework, { n: homeworkAt + 1, of: plan.homework.items.length })}
-              {plan.homework.items[homeworkAt].why !== "practice" && ` · ${w.ui.homeworkWhy[plan.homework.items[homeworkAt].why as "review" | "stretch"]}`}
+              {plan.homework.items[homeworkAt].why !== "practice" && ` · ${w.ui.homeworkWhy[plan.homework.items[homeworkAt].why as "repair" | "review" | "stretch"]}`}
             </small>
           ) : cur.review || cur.policy === "spaced" ? (
             <small className="hint practice-review">↻ {cur.review ? w.ui.review : w.ui.spaced}</small>
