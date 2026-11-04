@@ -18,6 +18,7 @@ import { learnStepDown, noStepDown, type StepDown } from "../src/model/stepDown.
 import { RATINGS, type Rating } from "../src/model/difficulty.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
 import { dashboard, markSeen } from "./dashboard.ts";
+import { initHomework, isHomework, makeHomework, studentHomework } from "./homework.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
@@ -39,7 +40,7 @@ export const OUTCOMES = ["solved", "revealed", "skipped"] as const;
  * Who chose the question: the student's condition (class practice), the student (free practice), the review of misses,
  * the spaced review, or a step-down to one idea after an early failure (stepDown.ts).
  */
-export const POLICIES = ["adaptive", "fixed", "free", "review", "spaced", "stepdown"] as const;
+export const POLICIES = ["adaptive", "fixed", "free", "review", "spaced", "stepdown", "homework"] as const;
 /** correct; close (nearly); wrong (a named mistake too); form (right idea, wrong form: sent back, not counted). */
 export const VERDICTS = ["correct", "close", "wrong", "form"] as const;
 const MAX_ANSWERS = 50;
@@ -144,6 +145,7 @@ export function initResearch(db: DatabaseSync) {
   stmt(db, "UPDATE students SET arm = CASE condition WHEN 'fixed' THEN 'off' ELSE 'on' END WHERE arm IS NULL").run();
   stmt(db, `UPDATE classes SET block = replace(replace(block, '"adaptive"', '"on"'), '"fixed"', '"off"') WHERE block LIKE '%"adaptive"%' OR block LIKE '%"fixed"%'`).run();
   initProtocol(db);
+  initHomework(db);
 }
 
 /**
@@ -434,6 +436,12 @@ export async function handleResearch(
     return setPhase(req, res, db, normalizeCode(decodeURIComponent(id)));
   }
 
+  // Homework for every student in the class, each made from their own records (issue #297).
+  if (resource === "classes" && id && sub === "homework" && req.method === "POST") {
+    teacher(req);
+    return makeHomework(req, res, db, normalizeCode(decodeURIComponent(id)));
+  }
+
   // A test written on paper, typed in by the teacher.
   if (resource === "classes" && id && sub === "paper" && req.method === "POST") {
     teacher(req);
@@ -538,6 +546,7 @@ export async function handleResearch(
         stepDown: currentStepDown(db, student.id),
         ...classProtocol(db, student.class),
         tests: studentTests(db, student),
+        homework: studentHomework(db, student),
       });
     }
     if (sub) return send(res, 404, { error: "not found" });
@@ -571,6 +580,8 @@ export async function handleResearch(
     if (a.steps && !hasFeature(student, "steps")) throw new HttpError(400, "invalid steps");
     if (a.hard && !hasFeature(student, "hard")) throw new HttpError(400, "invalid hard");
     if (a.faded && !hasFeature(student, "faded")) throw new HttpError(400, "invalid faded");
+    // Homework is the student's own questions: an answer to anything else isn't homework.
+    if (a.policy === "homework" && !isHomework(db, student.id, a)) throw new HttpError(400, "invalid policy");
     const now = Date.now();
     // Class practice belongs in practice time; arriving long after it ended, it is kept and marked late.
     const late = (classPractice || a.policy === "stepdown") && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);

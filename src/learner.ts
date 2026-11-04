@@ -14,6 +14,7 @@ import { learnFading, type Faded, type Fading } from "./model/fading";
 import { learnStepDown, noStepDown, type StepDown } from "./model/stepDown";
 import type { Form, TestPhase } from "./model/testForms";
 import { hasFeature, ON_TRIAL, type Arm, type Feature } from "./model/arms";
+import { homeworkIndex, type Homework } from "./model/homework";
 
 export type Condition = "adaptive" | "fixed";
 /** A student signed in: their class and condition, and the feature their class tests with their arm (none kept from before arms). */
@@ -30,21 +31,25 @@ export type AnswerVerdict = "correct" | "close" | "wrong" | "form";
 export type Outcome = "solved" | "revealed" | "skipped";
 /**
  * Who chose the question: the student's condition (class practice), the student (free practice), the review of misses,
- * the spaced review of what was mastered days ago (spacing.ts), or a step-down to one idea after an early failure
- * (stepDown.ts).
+ * the spaced review of what was mastered days ago (spacing.ts), a step-down to one idea after an early failure
+ * (stepDown.ts), or the student's homework (homework.ts).
  */
-export type ChosenBy = Condition | "free" | "review" | "spaced" | "stepdown";
+export type ChosenBy = Condition | "free" | "review" | "spaced" | "stepdown" | "homework";
 /** How a question came to be asked, recorded with it. */
 export type Origin = { policy: ChosenBy; review: boolean; predicted: number | null };
 /** What the class is doing, set by the teacher (see server/protocol.ts). */
 export type Phase = "open" | "pretest" | "session" | "posttest" | "delayed" | "closed";
-/** Where the student is with the class's protocol: its phase, a timed session's end, and their three tests. */
+/**
+ * Where the student is with the class's protocol: its phase, a timed session's end, their three tests, and their
+ * homework once the class has any (null before its delayed post-test, or when they have none).
+ */
 export type Protocol = {
   class: string;
   phase: Phase;
   sessionEnds: number | null;
   testLength: number;
   tests: Record<TestPhase, { form: Form; answered: number[] }>;
+  homework?: Homework | null;
 };
 /**
  * What the server sends for class practice (GET /api/students/:code/plan); the student's ratings are under "me", their
@@ -161,9 +166,16 @@ export type ClassPlan = Protocol & {
 };
 export const toClassPlan = ({ state, spacing, fading, stepDown, ...rest }: Plan): ClassPlan =>
   ({ ...rest, spacing: spacing ?? {}, fading: fading ?? {}, stepDown: stepDown ?? noStepDown(), model: LogisticModel.fromState(state) });
-/** A newer plan's protocol (the teacher may have moved the class on) over the plan the browser has been carrying forward. */
-export const withProtocol = (plan: ClassPlan, p: Protocol): ClassPlan =>
-  ({ ...plan, class: p.class, phase: p.phase, sessionEnds: p.sessionEnds, testLength: p.testLength, tests: p.tests });
+/**
+ * A newer plan's protocol (the teacher may have moved the class on, or made homework) over the plan the browser has
+ * been carrying forward. Homework questions answered here but not yet on the server stay answered.
+ */
+export const withProtocol = (plan: ClassPlan, p: Protocol): ClassPlan => {
+  const homework = p.homework && plan.homework?.id === p.homework.id
+    ? { ...p.homework, done: [...new Set([...p.homework.done, ...plan.homework.done])] }
+    : p.homework ?? null;
+  return { ...plan, class: p.class, phase: p.phase, sessionEnds: p.sessionEnds, testLength: p.testLength, tests: p.tests, homework };
+};
 
 /** One answer on a test. Nothing is shown to the student; the server works out which question it was. */
 export type TestAnswer = {
@@ -192,6 +204,10 @@ export function applyAttempt(plan: ClassPlan, a: Attempt) {
   learnFading(plan.fading, a.skill, fadedOf(a));
   if (studentHas(plan, "stepdown")) learnStepDown(plan.stepDown, { skill: a.skill, policy: a.policy, correct }, plan.ideas);
   if (a.policy === "fixed") plan.position++;
+  if (a.policy === "homework" && plan.homework) {
+    const i = homeworkIndex(plan.homework, a);
+    if (i >= 0 && !plan.homework.done.includes(i)) plan.homework.done.push(i);
+  }
   plan.recent = [...plan.recent, a.skill].slice(-RECENT);
 }
 

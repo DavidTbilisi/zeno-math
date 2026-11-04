@@ -116,6 +116,9 @@ export function teacherApi(password: string) {
     setPhase: (code: string, phase: Phase, minutes?: number) =>
       req<{ phase: Phase; sessionEnds: number | null }>("POST", `/api/classes/${encodeURIComponent(code)}/phase`, { phase, minutes }, false, headers),
     dashboard: (code: string) => req<Dashboard>("GET", `/api/research/dashboard?class=${encodeURIComponent(code)}`, undefined, false, headers),
+    /** Homework for every student in the class, each from their own records (409 until the delayed post-test). */
+    homework: (code: string, length: number) =>
+      req<{ students: number; length: number; createdAt: number }>("POST", `/api/classes/${encodeURIComponent(code)}/homework`, { length }, false, headers),
     /** A test written on paper, typed in: one answer per question in the printout's order, "" for one left blank. */
     paper: (code: string, student: string, phase: TestPhase, form: Form, answers: string[]) =>
       req<PaperResult>("POST", `/api/classes/${encodeURIComponent(code)}/paper`, { student, phase, form, answers }, false, headers),

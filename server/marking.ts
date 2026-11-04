@@ -19,3 +19,4 @@ export const trackIdeas = checker.trackIdeas;
 export const trackFading = checker.trackFading;
 export const stepsAfterMiss = checker.stepsAfterMiss;
 export const mistakeOf = checker.mistakeOf;
+export const homeworkFor = checker.homeworkFor;
