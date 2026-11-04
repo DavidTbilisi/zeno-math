@@ -36,8 +36,9 @@ import { gradeOf } from "../model/curriculum";
 import { holds, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
 import type { Feature } from "../model/arms";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
-import { newlyLit } from "../model/ideaMap";
-import { hasIdeas } from "../model/ideaState";
+import { keepClassLit, loadClassLit } from "../classIdeaMap";
+import { lightUp, newlyLit, type LitMap } from "../model/ideaMap";
+import { hasIdeas, SKILL_IDEAS, type IdeaState } from "../model/ideaState";
 import { IdeaMap } from "./IdeaMap";
 import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
@@ -150,6 +151,8 @@ export function PracticeDialog(props: Props) {
 
   // The class study's plan (null until loaded, or when nobody is signed in); kept in a ref because answering moves it on.
   const planRef = useRef<ClassPlan | null>(null);
+  /** The signed-in student's idea map in class practice: lit from the plan's estimates, new when lit during this visit. */
+  const classMap = useRef<LitMap>({ lit: [], fresh: [] });
   const predicted = (skill: SkillId, L: Level) => planRef.current?.model.predict({ student: ME, skill, level: L }) ?? null;
   /**
    * Whether the student has a feature of practice: in a class testing it, the arm without it doesn't (arms.ts). Their
@@ -245,6 +248,14 @@ export function PracticeDialog(props: Props) {
     setPending(queued());
     void Promise.all([outbox.flush(keepalive), testOutbox.flush(keepalive)]).then(([a, b]) => setPending(a + b));
   };
+  /** Lights the student's class idea map from the plan's estimates, and keeps it; quietly when the plan has just come. */
+  const lightClass = (code: string, ideas: IdeaState, quietly = false) => {
+    const next = lightUp(classMap.current, ideas, quietly);
+    if (next === classMap.current) return;
+    classMap.current = next;
+    keepClassLit(code, next.lit);
+    planChanged();
+  };
   /** Records the question the student is leaving (moving on, changing topic, closing) and starts a fresh log. */
   const leaveQuestion = (keepalive = false) => {
     const { cur, student, inClass } = live.current;
@@ -255,7 +266,10 @@ export function PracticeDialog(props: Props) {
     if (attempt) {
       outbox.add(attempt);
       // Free practice and reviews tell the model about the student too.
-      if (planRef.current) applyAttempt(planRef.current, attempt);
+      if (planRef.current) {
+        applyAttempt(planRef.current, attempt);
+        if (hasIdeas(attempt.skill)) lightClass(attempt.student, planRef.current.ideas);
+      }
     } else if (own) {
       // The fading moves on all the same, and is kept with the practice progress.
       learnFading(freeFading.current, own.skill, fadedOf(own));
@@ -288,6 +302,8 @@ export function PracticeDialog(props: Props) {
       markQueuedTests(plan, s.code);
       if (live.current.student?.code !== s.code) return; // signed out meanwhile
       planRef.current = plan;
+      classMap.current = { lit: loadClassLit(s.code), fresh: [] };
+      lightClass(s.code, plan.ideas, true);
       setPlanStatus("ready");
       const { inClass, progress, area, pick, level } = live.current;
       const untouched = !log.current.answers.length && !log.current.outcome && log.current.steps.length <= (log.current.faded ?? 0);
@@ -625,6 +641,9 @@ export function PracticeDialog(props: Props) {
   );
   // What the class's phase allows right now (class practice only; free practice is always open).
   const plan = classOn && planStatus === "ready" ? planRef.current : null;
+  // The class idea map is the current question's skill; new ideas lit on another skill are counted on that one's map.
+  const hereIdeas: readonly string[] = hasIdeas(cur.ex.skill) ? SKILL_IDEAS[cur.ex.skill] : [];
+  const freshHere = classMap.current.fresh.filter((id) => hereIdeas.includes(id)).length;
   const testPhase = plan?.phase === "pretest" ? "pre" : plan?.phase === "posttest" ? "post" : plan?.phase === "delayed" ? "delayed" : null;
   // When a timed session runs out, one more render finds it over (the clock itself ticks on its own).
   const sessionEnds = plan?.phase === "session" ? plan.sessionEnds : null;
@@ -989,6 +1008,15 @@ export function PracticeDialog(props: Props) {
               ))}
               <small className="hint">{w.ui.hardNote}</small>
             </fieldset>
+          )}
+          {plan && hasIdeas(cur.ex.skill) && (
+            <details className="idea-map-open">
+              <summary>
+                🗺 {w.ui.ideaMapOpen}
+                {freshHere > 0 && ` · ✨ ${fill(w.ui.ideaMapFresh, { n: freshHere })}`}
+              </summary>
+              <IdeaMap skill={cur.ex.skill} lit={classMap.current.lit} fresh={classMap.current.fresh} w={w} />
+            </details>
           )}
           {!page && studentPanel}
           {!page && resetButton}

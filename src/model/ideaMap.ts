@@ -45,3 +45,16 @@ export function ideaMap(skill: IdeaSkill): IdeaMapLayout {
   for (const n of nodes) (rows[row.get(n)!] ??= []).push(n);
   return { rows, edges };
 }
+
+/** What a student's map shows: the ideas lit, and those of them lit during this visit (marked new). */
+export type LitMap = { lit: string[]; fresh: string[] };
+
+/**
+ * The map after the model's estimates move: ideas newly shown are lit, and marked new unless `quietly` (the estimates the
+ * class plan brings when it loads were earned before this visit). Unchanged, the same object comes back.
+ */
+export function lightUp(map: LitMap, state: IdeaState, quietly = false): LitMap {
+  const more = newlyLit(map.lit, state);
+  if (!more.length) return map;
+  return { lit: [...map.lit, ...more], fresh: quietly ? map.fresh : [...map.fresh, ...more] };
+}

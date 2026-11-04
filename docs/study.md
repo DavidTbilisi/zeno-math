@@ -98,7 +98,9 @@ A signed-in student practises in one of two ways:
   Everything else is the same for both groups: the feedback, the worked solutions, the steps after a wrong answer on
   a fractions operation, the list of what was hard (asked of both, though only the adaptive policy reads them), the
   question after each question, "How was that?" (too easy, about right, too hard: recorded as `rated` and read by
-  nothing, for comparing with the model's prediction), and missed questions coming back three questions later. The first answer to a question is given before any step, so
+  nothing, for comparing with the model's prediction), the idea map under the question (closed until the student
+  opens it; lit from the same estimates of the student's ideas, which both groups' answers move), and missed
+  questions coming back three questions later. The first answer to a question is given before any step, so
   `first_correct` means what it meant before the steps.
 - **Free practice:** the student picks the topic and level, as without a class.
 

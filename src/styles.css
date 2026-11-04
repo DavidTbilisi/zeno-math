@@ -553,6 +553,10 @@ input.invalid { border-color: var(--danger); }
 .idea-map-board.wrapped .idea-map-rows { gap: 24px; }
 .idea-map-board.wrapped .idea-map-rows > li { position: relative; padding: 8px 0; border-radius: 12px; background: var(--chip); }
 .idea-map-board.wrapped .idea-map-rows > li + li::before { content: "↓"; position: absolute; top: -21px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 15px; line-height: 1; }
+/* In class practice the map opens from under the question. */
+.idea-map-open { padding-top: 8px; border-top: 1px solid var(--border); }
+.idea-map-open > summary { cursor: pointer; font-weight: 600; }
+.idea-map-open .idea-map { border-top: 0; }
 @media (prefers-reduced-motion: reduce) { .idea-tile { animation: none !important; transition: none; } }
 @keyframes idea-pop { 0% { transform: scale(0.85); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
 @media (max-width: 520px) { .idea-tile { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); } }

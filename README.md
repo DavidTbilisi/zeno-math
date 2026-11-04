@@ -887,6 +887,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - After a session, the idea map of each skill practised that is made of ideas (fractions has 16): tiles in rows
     below the ideas they rest on, lit once the student's answers show the idea (the model's chance reaches 0.95), and
     marked new when they lit this session. A lit tile never goes dark, though the estimate the policy reads can fall
+  - In class practice the same map opens under the question ("Your idea map"), lit from the student's estimates in
+    the class plan; what was lit stays lit in that browser, kept under the student's code
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
     pieces as the bottom, then two to four times as many (¾ of 12 is 9), then counters too, up to 30. Any pieces will
     do; shading the top number of pieces (3 for ¾ of 12) is named

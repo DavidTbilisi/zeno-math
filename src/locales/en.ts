@@ -9048,6 +9048,7 @@ export const en = {
       rateTop: "That's already the hardest level here. Try another topic, or keep going.",
       rateBottom: "That's already the easiest level. Reading the answer and how to get it can help.",
       rateNoted: "Thanks, noted. It helps to see which questions feel too easy or too hard.",
+      ideaMapOpen: "Your idea map",
       ideaMapTitle: "The ideas of {skill}",
       ideaMapCount: "{n} of {total} shown",
       ideaMapFresh: "{n} new this session",
