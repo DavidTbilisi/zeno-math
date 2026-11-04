@@ -560,3 +560,26 @@ test("in class practice the idea map opens under the question, lit from the stud
   await expect(open.locator(".idea-tile.lit")).toHaveCount(shown.length);
   await expect(open.locator("summary")).not.toContainText("new");
 });
+
+test("in free practice a student is told their homework is waiting, and one button takes them to it", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const { code } = await (await request.post("/api/classes", { data: { name: "Pilot", skills: ["fractions"] }, headers })).json();
+  const joined = await (await request.post("/api/students", { data: { class: code } })).json();
+  // A pilot out of the study has homework at once (issue #299).
+  await request.post(`/api/classes/${code}/study`, { data: { study: false }, headers });
+  expect((await request.post(`/api/classes/${code}/homework`, { data: { length: 4 }, headers })).status()).toBe(201);
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.addInitScript((s) => localStorage.setItem("zeno.student.v1", s), JSON.stringify(joined));
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  await expect(student.getByText("📝 Homework: question 1 of 4")).toBeVisible();
+  const notice = student.getByText("📝 Your homework is waiting: 4 of 4 questions still to do.");
+  await expect(notice).toHaveCount(0);
+  await student.getByRole("radio", { name: "Free practice" }).click();
+  await expect(notice).toBeVisible();
+  await student.getByRole("button", { name: "Do my homework" }).click();
+  await expect(student.getByRole("radio", { name: "Class practice" })).toBeChecked();
+  await expect(student.getByText("📝 Homework: question 1 of 4")).toBeVisible();
+  await expect(notice).toHaveCount(0);
+});
