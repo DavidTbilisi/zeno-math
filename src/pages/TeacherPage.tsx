@@ -264,7 +264,7 @@ export function TeacherPage() {
                     <button className={`class-item${c.code === selected ? " selected" : ""}`} aria-pressed={c.code === selected} onClick={() => setSelected(c.code)}>
                       <strong>{c.name}</strong>
                       <span className="mono small">{c.code}</span>
-                      <span className="muted small">{w.features[c.feature].name}</span>
+                      <span className="muted small">{w.features[c.feature].name}{!c.study && ` · ${w.notInStudy}`}</span>
                       <span className="muted small">{fill(w.studentsCount, { n: c.students, a: c.on, f: c.off })}</span>
                     </button>
                   </li>
@@ -383,7 +383,10 @@ export function TeacherPage() {
             )}
 
             {data && data.class.code === selected && current && (
-              <HomeworkCard klass={current} data={data} api={api} t={t} lang={lang} showCodes={showCodes} onMade={() => selected && void load(selected)} />
+              <HomeworkCard klass={current} data={data} api={api} t={t} lang={lang} showCodes={showCodes} onChanged={() => {
+                if (selected) void load(selected);
+                void api.classes().then(setClasses, () => setFailed(true));
+              }} />
             )}
 
             {data && data.class.code === selected && (

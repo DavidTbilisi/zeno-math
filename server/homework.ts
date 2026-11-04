@@ -4,7 +4,8 @@
 //
 // Homework is extra practice, so it waits for the study: a class gets it only once its delayed post-test has been
 // given (the class has been in the "delayed" phase and has moved on), and never while a test is running. Before that
-// the server refuses to make it, and the plan carries none.
+// the server refuses to make it, and the plan carries none. A class the teacher has taken out of the study (a pilot,
+// issue #299) may have it at any time, still never during a test.
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import type { SkillId } from "../src/math/practiceSkills.ts";
@@ -33,9 +34,31 @@ export function initHomework(db: DatabaseSync) {
 
 /** The phases a test runs in: no homework then. */
 const TESTS: readonly Phase[] = ["pretest", "posttest", "delayed"];
-/** Whether the class may have homework: it has given its delayed post-test, and no test is running now. */
+/** Whether the class is in the study (issue #299): every class is, unless the teacher took it out. */
+export const inStudy = (db: DatabaseSync, classCode: string) =>
+  (stmt(db, "SELECT study FROM classes WHERE code = ?").get(classCode) as { study: number } | undefined)?.study !== 0;
+/**
+ * Whether the class may have homework: no test is running now, and either it has given its delayed post-test or it
+ * isn't in the study.
+ */
 export function homeworkOpen(db: DatabaseSync, classCode: string): boolean {
-  return !TESTS.includes(classProtocol(db, classCode).phase) && phaseWindows(db, classCode).some((w) => w.phase === "delayed");
+  if (TESTS.includes(classProtocol(db, classCode).phase)) return false;
+  return !inStudy(db, classCode) || phaseWindows(db, classCode).some((w) => w.phase === "delayed");
+}
+
+/**
+ * POST /api/classes/:code/study (teacher): { study: boolean } — takes the class out of the study, or puts it back.
+ * Out of the study it may have homework at any time and the all-classes exports leave it out. It goes back in only
+ * while none of its students has had homework, which would already have changed their practice (409).
+ */
+export async function setStudy(req: IncomingMessage, res: ServerResponse, db: DatabaseSync, classCode: string) {
+  const body = await readJson(req, 4096);
+  if (typeof body.study !== "boolean") throw new HttpError(400, "study must be true or false");
+  if (!stmt(db, "SELECT 1 FROM classes WHERE code = ?").get(classCode)) return send(res, 404, { error: "no such class" });
+  if (body.study && stmt(db, "SELECT 1 FROM homework h JOIN students s ON s.id = h.student_id WHERE s.class_code = ? LIMIT 1").get(classCode))
+    throw new HttpError(409, "the class has had homework, so it can't go back into the study");
+  stmt(db, "UPDATE classes SET study = ? WHERE code = ?").run(body.study ? 1 : 0, classCode);
+  return send(res, 200, { study: body.study });
 }
 
 type Stored = { id: number; items: HomeworkItem[]; createdAt: number };
@@ -76,14 +99,14 @@ export function parseHomeworkLength(value: unknown): number {
 
 /**
  * POST /api/classes/:code/homework (teacher): { length? } — new homework for every student in the class, each made
- * from their own records, replacing what they had. Refused (409) until the class has given its delayed post-test.
+ * from their own records, replacing what they had. Refused (409) while homeworkOpen says no.
  */
 export async function makeHomework(req: IncomingMessage, res: ServerResponse, db: DatabaseSync, classCode: string) {
   const body = await readJson(req, 4096);
   const length = parseHomeworkLength(body.length);
   const klass = stmt(db, "SELECT skills FROM classes WHERE code = ?").get(classCode) as { skills: string | null } | undefined;
   if (!klass) return send(res, 404, { error: "no such class" });
-  if (!homeworkOpen(db, classCode)) throw new HttpError(409, "homework opens once the class has taken its delayed post-test");
+  if (!homeworkOpen(db, classCode)) throw new HttpError(409, "homework opens once the class has taken its delayed post-test (or is out of the study), never during a test");
   const skills: SkillId[] = klass.skills ? JSON.parse(klass.skills) : [...CURRICULUM];
   const students = stmt(db, "SELECT id FROM students WHERE class_code = ? ORDER BY id").all(classCode) as { id: number }[];
   const model = currentModel(db);
@@ -102,10 +125,12 @@ export async function makeHomework(req: IncomingMessage, res: ServerResponse, db
 
 /** A homework question as the teacher sees it: the question, why it was chosen, and how the student did (null: not yet). */
 export type HomeworkResult = HomeworkItem & { outcome: string | null; firstCorrect: boolean | null };
-/** The class's homework for the teacher: whether it is open, and each student's newest homework with how they did. */
+/** The class's homework for the teacher: whether it is open, whether the class is in the study, and each student's newest homework with how they did. */
 export function homeworkOverview(db: DatabaseSync, classCode: string, students: readonly { id: number }[]) {
   return {
     open: homeworkOpen(db, classCode),
+    /** Whether the class is in the study (issue #299); a class out of it has homework at any time. */
+    study: inStudy(db, classCode),
     rows: students.flatMap((s) => {
       const h = latest(db, s.id);
       if (!h) return [];

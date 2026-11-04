@@ -1,6 +1,7 @@
 // The teacher's homework (issue #297): homework made for every student from their own records, how far each got and
 // how they did, and the sheets to print for students without a device. Homework opens only once the class has taken
-// its delayed post-test (server/homework.ts); until then the card says why and the button is off.
+// its delayed post-test (server/homework.ts); until then the card says why and the button is off. A class that isn't
+// part of the study (a pilot) can be taken out of it here, and then has homework at any time (issue #299).
 import { lazy, Suspense, useState } from "react";
 import { ApiError, studentName, type ClassSummary, type Dashboard, type teacherApi } from "../api";
 import type { Dict } from "../locales/en";
@@ -12,21 +13,22 @@ const PrintableHomework = lazy(() => import("./PrintableHomework").then((m) => (
 
 type Row = Dashboard["homework"]["rows"][number];
 
-export function HomeworkCard({ klass, data, api, t, lang, showCodes, onMade }: {
+export function HomeworkCard({ klass, data, api, t, lang, showCodes, onChanged }: {
   klass: ClassSummary;
   data: Dashboard;
   api: ReturnType<typeof teacherApi>;
   t: Dict;
   lang: string;
   showCodes: boolean;
-  onMade: () => void;
+  /** Something the server has changed: show the class again. */
+  onChanged: () => void;
 }) {
   const w = t.teacher;
   const [length, setLength] = useState(HOMEWORK_LENGTH);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState<string | null>(null);
   const [printing, setPrinting] = useState(false);
-  const { open, rows } = data.homework;
+  const { open, study, rows } = data.homework;
   const students = new Map(data.students.map((s) => [s.id, s]));
   const nameOf = (id: string) => studentName(id, students.get(id)?.number, showCodes ? students.get(id)?.code : undefined);
   const skillName = (k: SkillId) => t.pracWords.skills[k];
@@ -38,9 +40,21 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onMade }: {
     setFailed(null);
     try {
       await api.homework(klass.code, length);
-      onMade();
+      onChanged();
     } catch (e) {
       setFailed(e instanceof ApiError && e.status === 409 ? w.homeworkLocked : w.homeworkFailed);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const switchStudy = async (to: boolean) => {
+    setBusy(true);
+    setFailed(null);
+    try {
+      await api.study(klass.code, to);
+      onChanged();
+    } catch {
+      setFailed(w.studyFailed);
     } finally {
       setBusy(false);
     }
@@ -52,8 +66,24 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onMade }: {
   return (
     <section className="card homework-card" aria-labelledby="homework-title">
       <h3 id="homework-title">{w.homework}</h3>
+      {!study && (
+        <p className="hint study-off">
+          {w.studyOff}{" "}
+          {!rows.length && <button className="btn small" disabled={busy} onClick={() => void switchStudy(true)}>{w.studyBack}</button>}
+        </p>
+      )}
       {!open ? (
-        <p className="hint">{w.homeworkLocked}</p>
+        study ? (
+          <>
+            <p className="hint">{w.homeworkLocked}</p>
+            <p className="hint">
+              {w.studyOutHint}{" "}
+              <button className="btn small" disabled={busy} onClick={() => void switchStudy(false)}>{w.studyOut}</button>
+            </p>
+          </>
+        ) : (
+          <p className="hint">{w.homeworkDuringTest}</p>
+        )
       ) : (
         <>
           <p className="hint">{w.homeworkHint}</p>

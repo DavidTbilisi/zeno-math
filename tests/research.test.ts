@@ -1082,7 +1082,7 @@ test("homework (issue #297): refused until the delayed post-test, each student's
   for (const phase of ["open", "posttest", "delayed"]) {
     if (phase !== "open") await move(phase);
     const r = await make();
-    assert.deepEqual([r.status, r.body.error], [409, "homework opens once the class has taken its delayed post-test"], phase);
+    assert.deepEqual([r.status, r.body.error], [409, "homework opens once the class has taken its delayed post-test (or is out of the study), never during a test"], phase);
     assert.equal((await plan(a)).homework, null, phase);
   }
   await move("closed");
@@ -1120,4 +1120,39 @@ test("homework (issue #297): refused until the delayed post-test, each student's
   await move("pretest");
   assert.equal((await plan(a)).homework, null);
   assert.equal((await make()).status, 409);
+});
+
+test("a class out of the study (issue #299): homework at any time but during a test, out of the all-classes exports, back in only before homework", async () => {
+  const { code, study } = (await call("POST", "/api/classes", { name: "Pilot", skills: ["fractions"], testLength: 4 }, TEACHER)).body;
+  assert.equal(study, true, "every class starts in the study");
+  const s = (await call("POST", "/api/students", { class: code })).body.code;
+  const out = (to: unknown) => call("POST", `/api/classes/${code}/study`, { study: to }, TEACHER);
+  const make = () => call("POST", `/api/classes/${code}/homework`, {}, TEACHER);
+  const listed = async () => (await call("GET", "/api/classes", undefined, TEACHER)).body.find((c: { code: string }) => c.code === code);
+
+  assert.equal((await call("POST", `/api/classes/${code}/study`, { study: false })).status, 403, "the teacher's");
+  assert.equal((await out("no")).status, 400);
+  assert.equal((await call("POST", "/api/classes/NOPE99/study", { study: false }, TEACHER)).status, 404);
+  assert.equal((await make()).status, 409, "in the study: not yet");
+  // Out and back in, before any homework.
+  assert.deepEqual([(await out(false)).status, (await listed()).study], [200, false]);
+  assert.deepEqual([(await out(true)).status, (await listed()).study], [200, true]);
+
+  // Out of the study, the class is open and has had no test, yet it may have homework.
+  await out(false);
+  assert.equal((await make()).status, 201);
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.deepEqual([d.homework.open, d.homework.study], [true, false]);
+  const [q] = (await call("GET", `/api/students/${s}/plan`)).body.homework.items;
+  assert.equal((await call("POST", "/api/attempts", attempt(s, { policy: "homework", skill: q.skill, level: q.level, seed: q.seed }))).status, 201);
+  // Its answers are in its own export but not in the study's.
+  const rows = async (q: string) => parseCsv((await call("GET", `/api/research/attempts.csv${q}`, undefined, TEACHER)).body as string);
+  assert.equal((await rows(`?class=${code}`)).length, 1);
+  assert.ok(!(await rows("")).some((r) => r.class === code));
+  // Never during a test, and no way back into the study once it has had homework.
+  await call("POST", `/api/classes/${code}/phase`, { phase: "pretest" }, TEACHER);
+  assert.equal((await make()).status, 409);
+  assert.equal((await call("GET", `/api/students/${s}/plan`)).body.homework, null);
+  assert.equal((await out(true)).status, 409);
+  assert.equal((await listed()).study, false);
 });

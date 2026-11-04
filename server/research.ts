@@ -18,7 +18,7 @@ import { learnStepDown, noStepDown, type StepDown } from "../src/model/stepDown.
 import { RATINGS, type Rating } from "../src/model/difficulty.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
 import { dashboard, markSeen } from "./dashboard.ts";
-import { initHomework, isHomework, makeHomework, studentHomework } from "./homework.ts";
+import { initHomework, isHomework, makeHomework, setStudy, studentHomework } from "./homework.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
@@ -142,6 +142,9 @@ export function initResearch(db: DatabaseSync) {
   // The student's number in the class list, if they gave one: the teacher finds a lost student code by it. It stays on
   // the teacher's page and is never exported, so the research data still knows students only by their own number.
   add("students", "list_no", "INTEGER");
+  // 0: the class isn't in the study (issue #299), e.g. a pilot: homework at any time, and the all-classes exports
+  // leave it out. Every class is in the study unless the teacher takes it out.
+  add("classes", "study", "INTEGER NOT NULL DEFAULT 1");
   stmt(db, "UPDATE students SET arm = CASE condition WHEN 'fixed' THEN 'off' ELSE 'on' END WHERE arm IS NULL").run();
   stmt(db, `UPDATE classes SET block = replace(replace(block, '"adaptive"', '"on"'), '"fixed"', '"off"') WHERE block LIKE '%"adaptive"%' OR block LIKE '%"fixed"%'`).run();
   initProtocol(db);
@@ -425,11 +428,12 @@ export async function handleResearch(
       SELECT s.id, s.code, s.class_code AS class, s.condition, s.arm, c.feature, s.test_order FROM students s JOIN classes c ON c.code = s.class_code WHERE s.code = ?
     `).get(normalizeCode(code)) as { id: number; code: string; class: string; condition: Condition; arm: Arm; feature: Feature; test_order: string | null } | undefined;
   // An export of one class or of all of them: two statements, so the one for a class goes by the students_class index
-  // (a "? IS NULL OR class_code = ?" condition would make SQLite scan every row either way).
+  // (a "? IS NULL OR class_code = ?" condition would make SQLite scan every row either way). The export of all of them
+  // is the study's data, so it leaves out the classes not in the study (issue #299); asked for by name, one still comes.
   const forClass = (klass: string | null, sql: string) =>
     (klass
       ? stmt(db, sql.replace("{where}", "WHERE s.class_code = ?")).all(normalizeCode(klass))
-      : stmt(db, sql.replace("{where}", "")).all()) as Record<string, unknown>[];
+      : stmt(db, sql.replace("{where}", "WHERE c.study = 1")).all()) as Record<string, unknown>[];
 
   if (resource === "classes" && id && sub === "phase" && req.method === "POST") {
     teacher(req);
@@ -440,6 +444,12 @@ export async function handleResearch(
   if (resource === "classes" && id && sub === "homework" && req.method === "POST") {
     teacher(req);
     return makeHomework(req, res, db, normalizeCode(decodeURIComponent(id)));
+  }
+
+  // In the study or not ({ study: boolean }, issue #299).
+  if (resource === "classes" && id && sub === "study" && req.method === "POST") {
+    teacher(req);
+    return setStudy(req, res, db, normalizeCode(decodeURIComponent(id)));
   }
 
   // A test written on paper, typed in by the teacher.
@@ -461,14 +471,14 @@ export async function handleResearch(
     if (req.method === "GET") {
       // Each count goes by the students_class index (and from there attempts_student), so no table is scanned.
       const rows = stmt(db, `
-        SELECT c.code, c.name, c.skills, c.feature, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength,
+        SELECT c.code, c.name, c.skills, c.feature, c.study = 1 AS study, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code) AS students,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.arm = 'on') AS "on",
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.arm = 'off') AS "off",
           (SELECT COUNT(*) FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = c.code) AS attempts
         FROM classes c ORDER BY c.created_at
-      `).all() as { skills: string | null }[];
-      return send(res, 200, rows.map((r) => ({ ...r, skills: classSkills(r.skills) })));
+      `).all() as { skills: string | null; study: number }[];
+      return send(res, 200, rows.map((r) => ({ ...r, skills: classSkills(r.skills), study: r.study === 1 })));
     }
     if (req.method === "POST") {
       const body = await readJson(req, MAX_ATTEMPT_BODY);
@@ -483,7 +493,7 @@ export async function handleResearch(
       const stored = skills ?? [...CURRICULUM];
       stmt(db, "INSERT INTO classes (code, name, skills, feature, test_length, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), feature, testLength, now);
       logPhase(db, code, "open", null, now);
-      return send(res, 201, { code, name, skills: stored, feature, createdAt: now, phase: "open", sessionEnds: null, testLength });
+      return send(res, 201, { code, name, skills: stored, feature, study: true, createdAt: now, phase: "open", sessionEnds: null, testLength });
     }
     return send(res, 405, { error: "method not allowed" });
   }

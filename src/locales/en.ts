@@ -8383,6 +8383,13 @@ export const en = {
     homeworkPrintTitle: "{name}: homework for {student}",
     homeworkPrintNote: "Your own questions, chosen from your practice. Write each answer on its line.",
     homeworkPrintKey: "Answers: {student}",
+    studyOutHint: "Is this class not part of the study, a pilot say? Take it out: it can have homework at any time, and the exports of all classes leave its answers out (its own export still has them).",
+    studyOut: "Take this class out of the study",
+    studyOff: "This class isn't in the study: it can have homework at any time, and the exports of all classes leave it out.",
+    studyBack: "Put it back in the study",
+    studyFailed: "Couldn't change that. Try again.",
+    homeworkDuringTest: "No homework while a test is running. It opens again when the test is over.",
+    notInStudy: "not in the study",
     noTests: "No test has started yet.",
   },
   pracWords: {

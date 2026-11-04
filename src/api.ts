@@ -83,6 +83,8 @@ export type ClassSummary = {
   skills: SkillId[];
   /** The feature the class tests (arms.ts), and how many students are in each arm. */
   feature: Feature;
+  /** Whether the class is in the study (issue #299); one out of it has homework at any time and stays out of the exports. */
+  study: boolean;
   createdAt: number;
   students: number;
   on: number;
@@ -119,6 +121,9 @@ export function teacherApi(password: string) {
     /** Homework for every student in the class, each from their own records (409 until the delayed post-test). */
     homework: (code: string, length: number) =>
       req<{ students: number; length: number; createdAt: number }>("POST", `/api/classes/${encodeURIComponent(code)}/homework`, { length }, false, headers),
+    /** Takes the class out of the study or puts it back (409 back in once it has had homework). */
+    study: (code: string, study: boolean) =>
+      req<{ study: boolean }>("POST", `/api/classes/${encodeURIComponent(code)}/study`, { study }, false, headers),
     /** A test written on paper, typed in: one answer per question in the printout's order, "" for one left blank. */
     paper: (code: string, student: string, phase: TestPhase, form: Form, answers: string[]) =>
       req<PaperResult>("POST", `/api/classes/${encodeURIComponent(code)}/paper`, { student, phase, form, answers }, false, headers),
