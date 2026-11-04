@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { exercise } from "../src/math/practice.ts";
-import { ideaMap, LIT, newlyLit } from "../src/model/ideaMap.ts";
+import { ideaMap, lightUp, LIT, newlyLit } from "../src/model/ideaMap.ts";
 import { IDEA_SKILLS, learnIdeas, SKILL_IDEAS, usesOf, type IdeaState } from "../src/model/ideaState.ts";
 
 test("each skill's map has every idea once, each row below the ideas it rests on, and only its own edges", () => {
@@ -47,4 +47,14 @@ test("right answers light a question's ideas within a session; wrong ones after 
   }
   assert.ok(usesOf(ex).every((id) => (state[id] ?? 0) < LIT), "the estimate fell");
   assert.deepEqual([...lit].sort(), [...usesOf(ex)].sort(), "the tiles did not");
+});
+
+test("a class map lights quietly from the estimates the plan brings, then marks what lights during the visit as new", () => {
+  const start = lightUp({ lit: ["part"], fresh: [] }, { part: 0.5, equivalent: 0.97, lowest: 0.3 }, true);
+  // Lit before stays lit though its estimate fell; lit from the plan's own estimates is not new.
+  assert.deepEqual(start, { lit: ["part", "equivalent"], fresh: [] });
+  const after = lightUp(start, { part: 0.5, equivalent: 0.97, lowest: 0.96 });
+  assert.deepEqual(after, { lit: ["part", "equivalent", "lowest"], fresh: ["lowest"] });
+  // Nothing newly shown: the same map back, so nothing is saved or drawn again.
+  assert.equal(lightUp(after, { lowest: 0.2 }), after);
 });

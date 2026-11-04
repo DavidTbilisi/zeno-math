@@ -6,6 +6,8 @@ import { ka } from "../src/locales/ka.ts";
 import { ru } from "../src/locales/ru.ts";
 import { check, exercise, stepsOf, trapInputs } from "../src/math/practice.ts";
 import { parseCsv } from "../src/model/evaluate.ts";
+import { LIT } from "../src/model/ideaMap.ts";
+import { usesOf, type IdeaState } from "../src/model/ideaState.ts";
 import { testItems } from "../src/model/testForms.ts";
 
 const TEACHER = "e2e-teacher";
@@ -515,4 +517,46 @@ test("a skill mastered, then kept by a right review days later: the student's pa
   await expect(row.locator(".heat-kept .heat-hold")).toHaveText("★");
   await expect(row.locator(".heat-mastered .heat-hold")).toHaveText("✓");
   await expect(teacher.locator(".teacher").getByText(en.teacher.metrics.kept)).toBeVisible();
+});
+
+test("in class practice the idea map opens under the question, lit from the student's estimates, and nothing goes dark", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": TEACHER };
+  const { code } = await (await request.post("/api/classes", { data: { name: `Map ${Date.now()}`, skills: ["fractions"] }, headers })).json();
+  const joined = await (await request.post("/api/students", { data: { class: code } })).json();
+  // Right answers on one three-idea question, straight to the server, until the student has shown some ideas.
+  const seed = Array.from({ length: 200 }, (_, i) => i + 1).find((s) => usesOf(exercise("fractions", 1, s, en.pracWords)).length === 3)!;
+  const ex = exercise("fractions", 1, seed, en.pracWords);
+  for (let i = 0; i < 10; i++) {
+    const data = {
+      clientId: `e2e-map-${i}-${Date.now()}`, student: joined.code, skill: "fractions", level: 1, seed, review: false, outcome: "solved",
+      policy: joined.condition, predicted: 0.7, solutionViewed: false, msTotal: 9000, shownAt: Date.now() - (20 - i) * 60_000,
+      answers: [{ input: ex.plain, verdict: "correct", ms: 9000 }],
+    };
+    expect((await request.post("/api/attempts", { data })).status()).toBe(201);
+  }
+  const { ideas } = (await (await request.get(`/api/students/${joined.code}/plan`)).json()) as { ideas: IdeaState };
+  const shown = Object.keys(ideas).filter((id) => (ideas[id] ?? 0) >= LIT);
+  expect(shown.length).toBeGreaterThan(0);
+
+  const student = await (await browser.newContext()).newPage();
+  const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
+  await student.addInitScript((s) => localStorage.setItem("zeno.student.v1", s), JSON.stringify(joined));
+  await student.goto(`/#/b/${board.id}`);
+  await openPractice(student);
+  await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();
+  const open = student.locator(".idea-map-open");
+  await expect(open.locator("summary")).toHaveText(`🗺 ${en.pracWords.ui.ideaMapOpen}`);
+  await open.locator("summary").click();
+  const map = open.getByRole("region", { name: "The ideas of Fractions" });
+  // Lit from what the student had shown before this visit, so none is new.
+  await expect(map).toContainText(`${shown.length} of 16 shown`);
+  for (const id of shown) await expect(map.locator(`[data-idea="${id}"]`)).toHaveClass(/\blit\b/);
+  await expect(map.locator(".idea-tile.fresh")).toHaveCount(0);
+  // A wrong answer lowers the estimates, but what was lit stays lit.
+  await answerWrong(student);
+  await student.getByRole("button", { name: "Show solution" }).click();
+  await student.getByRole("button", { name: "Next" }).click();
+  await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();
+  await expect(open.locator(".idea-tile.lit")).toHaveCount(shown.length);
+  await expect(open.locator("summary")).not.toContainText("new");
 });

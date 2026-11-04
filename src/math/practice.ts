@@ -532,6 +532,7 @@ export type PracticeWords = {
     rateTop: string;
     rateBottom: string;
     rateNoted: string;
+    ideaMapOpen: string;
     ideaMapTitle: string;
     ideaMapCount: string;
     ideaMapFresh: string;
