@@ -5,6 +5,7 @@
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
+import { fill } from "../src/math/text.ts";
 import { usesOf } from "../src/model/ideaState.ts";
 import { boardWith } from "./helpers.ts";
 
@@ -210,7 +211,17 @@ test("after a session the idea map lights the ideas shown, marks the new ones, a
   await expect(map.locator(".idea-tile")).toHaveCount(16);
   await expect(map.locator(".idea-tile.fresh")).toHaveCount(3);
   for (const id of usesOf(ex)) await expect(map.locator(`[data-idea="${id}"]`)).toContainText(`✨ ${w.ui.ideaNew}`);
+  // On a laptop the rows shrink instead of wrapping, so every line shows.
+  await expect(map.locator(".idea-map-board")).not.toHaveClass(/wrapped/);
   await expect(map.locator(".idea-map-lines line")).not.toHaveCount(0);
+  // Picking an idea says in words what it rests on.
+  await expect(map).toContainText(w.ui.ideaMapPick);
+  await map.locator('[data-idea="addSub"] button').click();
+  await expect(map.locator('[data-idea="addSub"] button')).toHaveAttribute("aria-pressed", "true");
+  await expect(map.locator(".idea-map-say")).toContainText(`“${w.ideas.addSub}” rests on:`);
+  await expect(map.locator(".idea-map-say li")).toHaveText([w.ideas.part, w.ideas.commonDenom, w.ideas.toImproper, w.ideas.addWhole]);
+  await map.locator('[data-idea="part"] button').click();
+  await expect(map).toContainText(fill(w.ui.ideaRestsOnNothing, { idea: w.ideas.part }));
   // A new tile pops in arcade; in calm it only changes colour.
   const pop = () => map.locator(".idea-tile.fresh").first().evaluate((el) => getComputedStyle(el).animationName);
   expect(await pop()).toBe("idea-pop");
@@ -226,6 +237,32 @@ test("after a session the idea map lights the ideas shown, marks the new ones, a
   await expect(map).not.toContainText("new this session");
   await expect(map.locator(".idea-tile.lit")).toHaveCount(3);
   await expect(map.locator(".idea-tile.fresh")).toHaveCount(0);
+});
+
+test("on a phone the idea map's rows wrap into bands, and only the picked idea's lines are drawn", async ({ page }) => {
+  const { r, ex } = questionWith("fractions", (e) => stepsOf(e, w).length < 2 && usesOf(e).length === 3);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/practice");
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await page.getByRole("region", { name: w.ui.sessionTitle }).getByRole("radio", { name: "5 questions" }).click();
+  for (let i = 1; i <= 5; i++) {
+    await page.getByLabel("Your answer").fill(ex.plain);
+    await page.getByRole("button", { name: "Check" }).click();
+    await page.getByRole("button", { name: i < 5 ? "Next →" : w.ui.seeSummary }).click();
+  }
+  const map = page.getByRole("region", { name: "The ideas of Fractions" });
+  await expect(map.locator(".idea-map-board")).toHaveClass(/wrapped/);
+  await expect(map.locator(".idea-map-lines line")).toHaveCount(0);
+  await map.locator('[data-idea="commonDenom"] button').click();
+  const lines = map.locator(".idea-map-lines line");
+  await expect(lines).not.toHaveCount(0);
+  await expect(map.locator(".idea-map-lines line:not(.picked)")).toHaveCount(0);
+  // No page-wide sideways scroll.
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await map.locator('[data-idea="commonDenom"] button').click();
+  await expect(lines).toHaveCount(0);
 });
 
 test("calm hides the sound switch and stills the page, is remembered, and the games share it", async ({ page }) => {

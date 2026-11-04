@@ -539,6 +539,9 @@ export type PracticeWords = {
     ideaNew: string;
     ideaShown: string;
     ideaNotYet: string;
+    ideaMapPick: string;
+    ideaRestsOn: string;
+    ideaRestsOnNothing: string;
     comingBack: string;
     backNext: string;
     backIn: string;
