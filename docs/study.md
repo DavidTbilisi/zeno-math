@@ -184,7 +184,7 @@ curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H '
   -d '{"name":"7B","skills":["algebra","average"]}'
 # classes, with how many students are in each arm
 curl localhost:8787/api/classes -H 'X-Teacher-Password: …'
-# every attempt as CSV (add ?class=CODE for one class); students appear as s1, s2, … and never by their code
+# every attempt as CSV, the classes in the study (add ?class=CODE for one class, in the study or not); students appear as s1, s2, … and never by their code
 curl -OJ localhost:8787/api/research/attempts.csv -H 'X-Teacher-Password: …'
 # every test answer: student, feature, arm, condition, form order, test, form, question, skill, level, seed, what was typed (as JSON), verdict
 curl -OJ localhost:8787/api/research/tests.csv -H 'X-Teacher-Password: …'

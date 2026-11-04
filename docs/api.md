@@ -35,11 +35,12 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/boards/:id/share` | anyone | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
 | DELETE | `/api/boards/:id/share` | anyone | take the read-only link away: 204; the old link stops working |
 | GET | `/api/shared/:token` | anyone | the shared board, `{ title, scene, updatedAt }`, without its id; 404 once the link is taken away |
-| GET | `/api/classes` | teacher | every class: code, name, skills, feature, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
+| GET | `/api/classes` | teacher | every class: code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
 | POST | `/api/classes/:code/paper` | teacher | a test written on paper, typed in: `{ student, phase, form?, answers }`; see *Paper tests* |
 | POST | `/api/classes/:code/homework` | teacher | homework for every student in the class: `{ length? }`, 201; see *Homework* |
+| POST | `/api/classes/:code/study` | teacher | take the class out of the study or put it back: `{ study }`; see *Homework* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
 | POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
 | GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered }` |
@@ -48,8 +49,8 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/attempts` | student | one practice question; see *Attempts* |
 | POST | `/api/tests` | student | one test answer; see *Test answers* |
 | GET | `/api/research/dashboard?class=CODE` | teacher | the teacher page's data for one class; see *Dashboard* |
-| GET | `/api/research/attempts.csv[?class=CODE]` | teacher | every practice attempt as CSV |
-| GET | `/api/research/tests.csv[?class=CODE]` | teacher | every test answer as CSV |
+| GET | `/api/research/attempts.csv[?class=CODE]` | teacher | every practice attempt as CSV (without `class`: the classes in the study) |
+| GET | `/api/research/tests.csv[?class=CODE]` | teacher | every test answer as CSV (without `class`: the classes in the study) |
 
 Anything else under `/api/` is 404, and a known path with the wrong method is 405. Paths outside `/api/` serve the
 built app: hashed assets are cached for a year, and the page itself comes with a strict Content-Security-Policy.
@@ -181,8 +182,14 @@ even chance (`stretch`). Answers `201 { students, length, createdAt }`.
 Homework is extra practice, so it waits for the study: until the class has been through its delayed post-test, and
 while any test is running, the request is refused with 409 and the plan carries `homework: null`. The student answers
 it in class practice, whatever the phase, as attempts with policy `homework`; the dashboard's `homework` gives
-`{ open, rows: [{ student, createdAt, items }] }`, each item with the student's `outcome` and `firstCorrect` (`null`
-until answered), and its arms leave homework out.
+`{ open, study, rows: [{ student, createdAt, items }] }`, each item with the student's `outcome` and `firstCorrect`
+(`null` until answered), and its arms leave homework out.
+
+A class that isn't part of the study, a pilot say, can be taken out of it: `POST /api/classes/:code/study`
+`{ study: false }` (teacher), 200 `{ study }`. It may then have homework at any time (still never while a test is
+running), and the exports of all classes (`attempts.csv` and `tests.csv` without `?class=`) leave it out; its own export
+still has it. `{ study: true }` puts it back, refused with 409 once any of its students has had homework, which has
+already changed their practice. Every class starts in the study.
 
 ### Attempts
 
