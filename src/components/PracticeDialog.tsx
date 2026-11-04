@@ -35,6 +35,7 @@ import { emptyProgress, loadProgress, saveProgress, type Progress } from "../pra
 import { gradeOf } from "../model/curriculum";
 import { holds, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
 import type { Feature } from "../model/arms";
+import { homeworkIndex, nextHomework } from "../model/homework";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
 import { keepClassLit, loadClassLit } from "../classIdeaMap";
 import { lightUp, newlyLit, type LitMap } from "../model/ideaMap";
@@ -162,7 +163,8 @@ export function PracticeDialog(props: Props) {
   /** The skill of the question on screen, so that a spaced review is on another skill when one is due. */
   const shownSkill = useRef<SkillId | undefined>(undefined);
   /**
-   * The next question. Missed ones come back first; then what was mastered days ago and is due for its spaced review
+   * The next question. In class practice, the student's homework comes first, in its order (homework.ts). Then missed
+   * ones come back; then what was mastered days ago and is due for its spaced review
    * (spacing.ts: in class practice a skill, asked hard; in free practice a skill at a level); then, in class practice,
    * a step-down to one idea after an early failure (for the arm with it), or the student's condition chooses (fixed
    * sequence, or adaptive, which on a skill made of ideas aims at the weakest),
@@ -175,6 +177,11 @@ export function PracticeDialog(props: Props) {
       : p === "place" ? false // a placement asks only fresh questions
       : p === "grade" ? gradeOf(m.skill, m.level) === grade
       : p === "mixed" ? areaOf(m.skill) === a : m.skill === p;
+    const homework = plan && nextHomework(plan.homework);
+    if (homework) {
+      const { skill, level, seed } = homework.item;
+      return { ex: exercise(skill, level, seed, w), policy: "homework", review: false, predicted: predicted(skill, level) };
+    }
     const due = prog.mistakes.find((m) => fits(m) && m.due <= prog.answered);
     if (due) return { ex: exercise(due.skill, due.level, due.seed, w), policy: "review", review: true, predicted: predicted(due.skill, due.level) };
     const last = shownSkill.current;
@@ -653,10 +660,14 @@ export function PracticeDialog(props: Props) {
     const timer = setTimeout(sessionEnded, sessionEnds - Date.now() + 50);
     return () => clearTimeout(timer);
   }, [sessionEnds]);
-  const blocked = !plan ? null
+  // Homework isn't class practice: it can be done whatever the class is doing, until it is finished.
+  const homeworkAt = plan?.homework && cur.policy === "homework" ? homeworkIndex(plan.homework, cur.ex) : -1;
+  const stopped = !plan || homeworkAt >= 0 || nextHomework(plan.homework) ? null
     : plan.phase === "closed" ? w.ui.classClosed
     : plan.phase === "session" && plan.sessionEnds !== null && Date.now() >= plan.sessionEnds ? w.ui.sessionOver
     : null;
+  const homeworkDone = !!plan?.homework && !nextHomework(plan.homework);
+  const blocked = stopped && homeworkDone ? `${w.ui.homeworkDone} ${stopped}` : stopped;
   const stat = (s: SkillId) => progress.stats[s];
   const skills = SKILLS[area] as readonly SkillId[];
 
@@ -747,7 +758,12 @@ export function PracticeDialog(props: Props) {
           )}
           {sessionOn && breakDue(stretch) && <BreakPrompt w={w} onDismiss={() => setStretch(stretchAfter(null, Date.now()))} />}
           {sessionOn && <SessionRing results={session} n={length} streak={score.streak} w={w} onLength={chooseLength} />}
-          {cur.review || cur.policy === "spaced" ? (
+          {homeworkAt >= 0 && plan?.homework ? (
+            <small className="hint practice-review">
+              📝 {fill(w.ui.homework, { n: homeworkAt + 1, of: plan.homework.items.length })}
+              {plan.homework.items[homeworkAt].why !== "practice" && ` · ${w.ui.homeworkWhy[plan.homework.items[homeworkAt].why as "review" | "stretch"]}`}
+            </small>
+          ) : cur.review || cur.policy === "spaced" ? (
             <small className="hint practice-review">↻ {cur.review ? w.ui.review : w.ui.spaced}</small>
           ) : cur.policy === "stepdown" && plan?.stepDown.now ? (
             <small className="hint practice-review">↓ {fill(w.ui.stepDown, { idea: w.ideas[plan.stepDown.now.idea as keyof typeof w.ideas] })}</small>

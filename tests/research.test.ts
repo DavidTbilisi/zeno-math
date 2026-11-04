@@ -1067,3 +1067,57 @@ test("phase windows: each phase until the next, a session until its time is up, 
   assert.ok(onTime(old, ["pretest"], Date.now()));
   assert.ok(!onTime(old, ["pretest"], Date.now() + 2 * GRACE), "late once the grace after the update is over");
 });
+
+test("homework (issue #297): refused until the delayed post-test, each student's own, answered in class practice, kept out of the arms, shown to the teacher", async () => {
+  const skills = ["fractions", "linear"];
+  const { code } = (await call("POST", "/api/classes", { name: "Homework", skills, testLength: 4 }, TEACHER)).body;
+  const a = (await call("POST", "/api/students", { class: code })).body.code;
+  const b = (await call("POST", "/api/students", { class: code })).body.code;
+  const make = (length?: number) => call("POST", `/api/classes/${code}/homework`, { length }, TEACHER);
+  const move = (phase: string) => call("POST", `/api/classes/${code}/phase`, { phase }, TEACHER);
+  const plan = async (s: string) => (await call("GET", `/api/students/${s}/plan`)).body;
+
+  assert.equal((await call("POST", `/api/classes/${code}/homework`, {})).status, 403, "the teacher's");
+  // Before the delayed post-test, and while it runs: none, so the study compares the arms without it.
+  for (const phase of ["open", "posttest", "delayed"]) {
+    if (phase !== "open") await move(phase);
+    const r = await make();
+    assert.deepEqual([r.status, r.body.error], [409, "homework opens once the class has taken its delayed post-test"], phase);
+    assert.equal((await plan(a)).homework, null, phase);
+  }
+  await move("closed");
+  assert.equal((await make(3)).status, 400);
+  const made = await make(6);
+  assert.deepEqual([made.status, made.body.students, made.body.length], [201, 2, 6]);
+  const mine = (await plan(a)).homework;
+  const theirs = (await plan(b)).homework;
+  assert.deepEqual([mine.items.length, mine.done, mine.items.at(-1).why], [6, [], "stretch"]);
+  assert.ok(mine.items.every((i: { skill: string }) => skills.includes(i.skill)));
+  assert.notEqual(mine.id, theirs.id);
+
+  // An answer to a homework question is stored (the class is closed, but homework isn't class practice) and done.
+  const [q0, q1] = mine.items;
+  const answer = (student: string, q: { skill: string; level: number; seed: number }, answers: { verdict: string; ms: number }[]) =>
+    call("POST", "/api/attempts", attempt(student, { policy: "homework", skill: q.skill, level: q.level, seed: q.seed, answers }));
+  assert.equal((await answer(a, q0, [{ verdict: "correct", ms: 9000 }])).status, 201);
+  assert.equal((await answer(a, q1, [{ verdict: "wrong", ms: 9000 }, { verdict: "correct", ms: 19000 }])).status, 201);
+  assert.deepEqual((await plan(a)).homework.done, [0, 1]);
+  // Anything else isn't homework: another seed, or someone else's question.
+  assert.equal((await answer(a, { ...q0, seed: q0.seed + 1 }, [{ verdict: "correct", ms: 9000 }])).status, 400);
+  assert.equal((await answer(b, q0, [{ verdict: "correct", ms: 9000 }])).status, 400);
+
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.equal(d.homework.open, true);
+  const row = d.homework.rows.find((r: { student: string }) => r.student === d.students.find((s: { code: string }) => s.code === a).id);
+  assert.deepEqual(row.items.map((i: { outcome: string | null; firstCorrect: boolean | null }) => [i.outcome, i.firstCorrect]),
+    [["solved", true], ["solved", false], [null, null], [null, null], [null, null], [null, null]]);
+  assert.equal(d.arms.on.answered + d.arms.off.answered, 0, "the arms are compared without homework");
+  assert.equal(d.students.find((s: { code: string }) => s.code === a).answered, 2);
+  const csv = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual(csv.map((r) => r.policy), ["homework", "homework"]);
+
+  // A new test (another study in the same class) hides homework again.
+  await move("pretest");
+  assert.equal((await plan(a)).homework, null);
+  assert.equal((await make()).status, 409);
+});

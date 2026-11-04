@@ -39,6 +39,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
 | POST | `/api/classes/:code/paper` | teacher | a test written on paper, typed in: `{ student, phase, form?, answers }`; see *Paper tests* |
+| POST | `/api/classes/:code/homework` | teacher | homework for every student in the class: `{ length? }`, 201; see *Homework* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
 | POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
 | GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered }` |
@@ -149,7 +150,8 @@ The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, 
 { class, condition, feature, arm, skills, position, recent, state,   ← class practice
   ideas, ema, spacing, fading, stepDown,
   phase, sessionEnds, testLength,                                     ← the protocol
-  tests: { pre: { form, answered }, post: { form, answered }, delayed: { form, answered } } }
+  tests: { pre: { form, answered }, post: { form, answered }, delayed: { form, answered } },
+  homework }                                                          ← null, or { id, createdAt, items, done }
 ```
 
 - **`position`**: how many fixed-sequence questions the student has done.
@@ -165,6 +167,22 @@ The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, 
   ideas, the step-down under way (the questions left on its idea), and the skill to go back to once it is over.
 - **`tests`**: which form each test uses (A and B counterbalanced within each arm, C for everyone's delayed
   post-test) and which questions are already answered.
+- **`homework`**: the student's newest homework once the class may have it (see *Homework*), else `null`: its
+  questions `items: [{ skill, level, seed, why, idea? }]` in order, and `done`, the indices already answered.
+
+### Homework
+
+`POST /api/classes/:code/homework` (teacher) makes new homework for every student in the class from their own records
+(`src/homework.ts`), replacing what they had: `{ length? }`, 4 to 20 questions (8 when left out). Each student's
+homework is up to two spaced reviews that are due (`why: "review"`, asked hard), then the adaptive policy's choices
+(`practice`, interleaved across skills, with the `idea` aimed at on a skill made of ideas), then one question at an
+even chance (`stretch`). Answers `201 { students, length, createdAt }`.
+
+Homework is extra practice, so it waits for the study: until the class has been through its delayed post-test, and
+while any test is running, the request is refused with 409 and the plan carries `homework: null`. The student answers
+it in class practice, whatever the phase, as attempts with policy `homework`; the dashboard's `homework` gives
+`{ open, rows: [{ student, createdAt, items }] }`, each item with the student's `outcome` and `firstCorrect` (`null`
+until answered), and its arms leave homework out.
 
 ### Attempts
 
@@ -177,9 +195,10 @@ The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, 
 
 - **`clientId`**: made by the browser (8–64 of `A-Za-z0-9-`).
 - **`outcome`**: `solved`, `revealed` or `skipped`.
-- **`policy`**: `adaptive`, `fixed`, `free`, `review`, `spaced` or `stepdown`. `review` exactly when `review` is
-  true; `adaptive` and `fixed` only for a student in that condition; `spaced` only for a student with spaced review,
-  `stepdown` only for one with step-down (see *Arms*). A `stepdown` question is class practice: it is marked late
+- **`policy`**: `adaptive`, `fixed`, `free`, `review`, `spaced`, `stepdown` or `homework`. `review` exactly when
+  `review` is true; `adaptive` and `fixed` only for a student in that condition; `spaced` only for a student with spaced
+  review, `stepdown` only for one with step-down (see *Arms*); `homework` only for a question of the student's own
+  homework (see *Homework*). A `stepdown` question is class practice: it is marked late
   like one.
 - **`predicted`**: the model's chance of a right first answer when the question was shown, from 0 to 1.
 - **`answers`**: at most 50. Each `verdict` is `correct`, `close`, `wrong` or `form`; inputs are cut to 200

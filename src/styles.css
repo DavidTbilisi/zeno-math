@@ -1342,3 +1342,10 @@ span.board-home:hover { background: none; }
 .paper-mark.correct { color: var(--ok); }
 .paper-mark.wrong, .paper-mark.close { color: var(--danger); }
 .paper-items .paper-card-img { display: block; max-width: min(100%, 26rem); height: auto; margin-bottom: 0.25rem; background: #fff; border-radius: 6px; }
+
+/* The class's homework on the teacher page (HomeworkCard): one mark per question. */
+.homework-items, .homework-table thead th:last-child { text-align: left !important; white-space: normal; }
+.hw-mark { display: inline-block; min-width: 1.6em; margin: 0 2px 2px 0; padding: 0 3px; border-radius: 4px; text-align: center; cursor: help; }
+.hw-mark.right { background: color-mix(in srgb, #2b8a3e 18%, transparent); }
+.hw-mark.wrong { background: color-mix(in srgb, #e8590c 18%, transparent); }
+.hw-mark.todo { color: var(--muted); }

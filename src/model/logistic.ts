@@ -244,4 +244,4 @@ export class LogisticModel implements Predictor {
 /** A student no model has seen: what the logistic model expects of someone with no answers yet. */
 const NEWCOMER = "\u0000newcomer";
 /** The chance of a right medium question for a student with no answers, per skill: the adaptive policy's unlock floor (src/model/policy.ts). */
-export const newcomerChance = (model: LogisticModel) => (skill: string) => model.predictAt(NEWCOMER, skill, 2);
+export const newcomerChance = (model: Pick<LogisticModel, "predictAt">) => (skill: string) => model.predictAt(NEWCOMER, skill, 2);

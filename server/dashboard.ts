@@ -22,6 +22,7 @@ import { becauseOf, groupByReason, isStuckNow, sinceLastStreak, type Because, ty
 import type { MistakeId } from "../src/math/mistakes.ts";
 import { stmt } from "./db.ts";
 import { mistakeOf } from "./marking.ts";
+import { homeworkOverview } from "./homework.ts";
 import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protocol.ts";
 import { currentIdeas, currentModel, currentSpacing } from "./research.ts";
 
@@ -123,7 +124,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   /** Each student's score on a test, by intention to treat: a test not sat scores 0, and questions left unanswered count as wrong. */
   const itt = (people: typeof rows, phase: TestPhase) => people.map((r) => r[phase]?.score ?? 0);
   const group = (arm: Arm) => {
-    const mine = attempts.filter((a) => a.arm === arm);
+    // Homework comes only after the study (homework.ts), so the arms are compared without it.
+    const mine = attempts.filter((a) => a.arm === arm && a.policy !== "homework");
     const chosen = mine.filter((a) => a.policy === a.condition);
     const people = rows.filter((r) => r.arm === arm);
     return {
@@ -174,6 +176,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       effect: Object.fromEntries(TEST_PHASES.map((p) => [p, cohen(itt(armRows("on"), p), itt(armRows("off"), p))])) as Record<TestPhase, number | null>,
       forms: { A: preByForm("A"), B: preByForm("B") },
     },
+    /** Each student's newest homework and how they did on it, and whether the class may have homework yet (issue #297). */
+    homework: homeworkOverview(db, classCode, students),
     calibration: {
       n: predictions.length,
       logLoss: predictions.length ? logLoss(predictions) : null,

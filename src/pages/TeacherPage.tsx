@@ -8,6 +8,7 @@ import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api"
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
+import { HomeworkCard } from "../components/HomeworkCard";
 import { JoinLink } from "../components/JoinLink";
 import { BrandBar } from "../components/BrandBar";
 import { useI18n } from "../i18n";
@@ -379,6 +380,10 @@ export function TeacherPage() {
                 )}
                 <p className="hint">{w.phaseHint}</p>
               </section>
+            )}
+
+            {data && data.class.code === selected && current && (
+              <HomeworkCard klass={current} data={data} api={api} t={t} lang={lang} showCodes={showCodes} onMade={() => selected && void load(selected)} />
             )}
 
             {data && data.class.code === selected && (

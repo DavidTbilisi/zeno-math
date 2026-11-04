@@ -50,3 +50,6 @@ export const stepCount = (q: Question) => stepsOf(exercise(q.skill, q.level as L
 export function mistakeOf(q: Question, input: string): MistakeId | undefined {
   return check(exercise(q.skill, q.level as Level, q.seed, en.pracWords), input, en.pracWords).mistake;
 }
+
+/** A student's homework (src/homework.ts), made here because it needs the question generators. */
+export { homeworkFor } from "../src/homework.ts";
