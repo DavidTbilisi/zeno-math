@@ -1,6 +1,6 @@
 // Homework made for each student (issue #297): the teacher makes it for the whole class, each student's from their own
-// records (src/homework.ts), and the student answers it in class practice, as attempts with policy "homework" that the
-// learner model learns from like any other.
+// records (src/homework.ts), with a step back first for a student on the stuck list (issue #303), and the student
+// answers it in class practice, as attempts with policy "homework" that the learner model learns from like any other.
 //
 // Homework is extra practice, so it waits for the study: a class gets it only once its delayed post-test has been
 // given (the class has been in the "delayed" phase and has moved on), and never while a test is running. Before that
@@ -10,11 +10,13 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import type { SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM } from "../src/model/curriculum.ts";
-import { HOMEWORK_LENGTH, homeworkIndex, MAX_HOMEWORK, MIN_HOMEWORK, type Homework, type HomeworkItem } from "../src/model/homework.ts";
+import { HOMEWORK_LENGTH, homeworkIndex, MAX_HOMEWORK, MIN_HOMEWORK, type Homework, type HomeworkItem, type Repair } from "../src/model/homework.ts";
+import { hasIdeas, weakestIdea, type IdeaState } from "../src/model/ideaState.ts";
 import { newcomerChance } from "../src/model/logistic.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { homeworkFor } from "./marking.ts";
+import { stuckRows, type StuckRow } from "./dashboard.ts";
 import { classProtocol, phaseWindows, type Phase } from "./protocol.ts";
 import { currentEma, currentIdeas, currentModel, currentSpacing } from "./research.ts";
 
@@ -98,6 +100,19 @@ export function parseHomeworkLength(value: unknown): number {
 }
 
 /**
+ * Where a stuck student needs repair (issue #303): of the class's skills they are on the teacher's stuck list for, the
+ * one they have been stuck on longest; on a skill made of ideas, the idea the list gives as the reason (ticked as hard,
+ * or weakest), or when the reason is a repeated mistake, their weakest idea of the skill. Null when they aren't stuck.
+ */
+export function repairOf(rows: readonly StuckRow[], skills: readonly SkillId[], ideas: IdeaState): Repair | null {
+  const row = rows.filter((r) => skills.includes(r.skill)).reduce<StuckRow | null>((a, r) => (!a || r.answers > a.answers ? r : a), null);
+  if (!row) return null;
+  const { skill, because } = row;
+  if (because && because.kind !== "mistake") return { skill, idea: because.idea };
+  return hasIdeas(skill) ? { skill, idea: weakestIdea(ideas, skill, () => 0) } : { skill };
+}
+
+/**
  * POST /api/classes/:code/homework (teacher): { length? } — new homework for every student in the class, each made
  * from their own records, replacing what they had. Refused (409) while homeworkOpen says no.
  */
@@ -112,10 +127,15 @@ export async function makeHomework(req: IncomingMessage, res: ServerResponse, db
   const model = currentModel(db);
   const unlockFloor = newcomerChance(model);
   const now = Date.now();
-  const made = students.map((s) => ({
-    id: s.id,
-    items: homeworkFor({ model, student: `s${s.id}`, skills, ideas: currentIdeas(db, s.id), ema: currentEma(db, s.id), spacing: currentSpacing(db, s.id), now, unlockFloor }, length),
-  }));
+  const stuck = stuckRows(db, classCode);
+  const made = students.map((s) => {
+    const ideas = currentIdeas(db, s.id);
+    const repair = repairOf(stuck.filter((r) => r.student === `s${s.id}`), skills, ideas);
+    return {
+      id: s.id,
+      items: homeworkFor({ model, student: `s${s.id}`, skills, ideas, ema: currentEma(db, s.id), spacing: currentSpacing(db, s.id), now, unlockFloor, repair }, length),
+    };
+  });
   transaction(db, () => {
     const insert = stmt(db, "INSERT INTO homework (student_id, items, created_at) VALUES (?, ?, ?)");
     for (const m of made) insert.run(m.id, JSON.stringify(m.items), now);

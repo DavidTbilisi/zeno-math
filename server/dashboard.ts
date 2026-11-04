@@ -52,6 +52,12 @@ function median(xs: readonly number[]) {
   const m = Math.floor(s.length / 2);
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 }
+/** Every attempt of the class's students, in order. */
+const classAttempts = (db: DatabaseSync, classCode: string) => stmt(db, `
+  SELECT a.id, a.seed, a.answers, a.hard, a.faded, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
+    json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
+  FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
+`).all(classCode) as AttemptRow[];
 /** Right first time, wrong, or nothing to say, by the rule the model learns by. */
 const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1, a.faded !== null);
 
@@ -62,11 +68,7 @@ export function dashboard(db: DatabaseSync, classCode: string) {
   const skills: SkillId[] = klass.skills ? JSON.parse(klass.skills) : [...CURRICULUM];
   const students = stmt(db, "SELECT id, code, arm, condition, list_no FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
     { id: number; code: string; arm: Arm; condition: string; list_no: number | null }[];
-  const attempts = stmt(db, `
-    SELECT a.id, a.seed, a.answers, a.hard, a.faded, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
-      json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
-    FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
-  `).all(classCode) as AttemptRow[];
+  const attempts = classAttempts(db, classCode);
 
   const model = currentModel(db);
   const protocol = classProtocol(db, classCode);
@@ -234,6 +236,12 @@ function stuckList(db: DatabaseSync, classCode: string, students: readonly { id:
     rows.push({ student: `s${id}`, code: codes.get(id)!, skill, answers: since.length, through: since.at(-1)!.id, because: becauseOf(since, mistakes, weakest) });
   }
   return groupByReason(rows);
+}
+
+/** The class's stuck students as the teacher's list has them, one row per student and skill (homework's repair, #303). */
+export function stuckRows(db: DatabaseSync, classCode: string): StuckRow[] {
+  const students = stmt(db, "SELECT id, code FROM students WHERE class_code = ? ORDER BY id").all(classCode) as { id: number; code: string }[];
+  return stuckList(db, classCode, students, classAttempts(db, classCode)).flatMap((g) => g.rows);
 }
 
 /**

@@ -174,7 +174,10 @@ The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, 
 ### Homework
 
 `POST /api/classes/:code/homework` (teacher) makes new homework for every student in the class from their own records
-(`src/homework.ts`), replacing what they had: `{ length? }`, 4 to 20 questions (8 when left out). Each student's
+(`src/homework.ts`), replacing what they had: `{ length? }`, 4 to 20 questions (8 when left out). A student on the
+teacher's stuck list (see *Dashboard*) starts with two repair questions (`why: "repair"`) on the class skill they have
+been stuck on longest, at the level the model gives them the chance closest to 0.85 (mostly the easy one), with the
+`idea` to aim at on a skill made of ideas: the one the list gives as the reason, or their weakest. Then each student's
 homework is up to two spaced reviews that are due (`why: "review"`, asked hard), then the adaptive policy's choices
 (`practice`, interleaved across skills, with the `idea` aimed at on a skill made of ideas), then one question at an
 even chance (`stretch`). Answers `201 { students, length, createdAt }`.
