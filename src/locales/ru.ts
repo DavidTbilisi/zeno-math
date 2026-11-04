@@ -8987,6 +8987,8 @@ export const ru: Dict = {
       homework: "Домашнее задание: вопрос {n} из {of}",
       homeworkWhy: { review: "повторение освоенного", stretch: "напоследок — посложнее" },
       homeworkDone: "Домашнее задание выполнено!",
+      homeworkWaiting: "Вас ждёт домашнее задание: осталось {n} из {of} вопросов.",
+      homeworkGo: "Сделать домашнее задание",
       score: "Верно {right} из {total} · серия {streak}",
       sound: "Включить или выключить звук",
       calm: "Спокойно",

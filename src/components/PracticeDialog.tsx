@@ -320,9 +320,10 @@ export function PracticeDialog(props: Props) {
       if (live.current.student?.code === s.code) setPlanStatus(e instanceof ApiError && e.status === 404 ? "gone" : "error");
     }
   };
-  // The teacher moves the class on from the dashboard: pick up the new phase, keeping the model this browser carries.
+  // The teacher moves the class on from the dashboard: pick up the new phase, keeping the model this browser carries. In
+  // free practice too, so homework made meanwhile is announced there (issue #301).
   useEffect(() => {
-    if (!student || !inClass || planStatus !== "ready") return;
+    if (!student || planStatus !== "ready") return;
     const timer = setInterval(async () => {
       try {
         const fresh = await study.plan(student.code);
@@ -335,7 +336,7 @@ export function PracticeDialog(props: Props) {
       }
     }, PROTOCOL_POLL_MS);
     return () => clearInterval(timer);
-  }, [student, inClass, planStatus]);
+  }, [student, planStatus]);
   useEffect(() => {
     if (student) void loadPlan(student);
     sendQueued(); // anything left from an earlier visit
@@ -667,6 +668,9 @@ export function PracticeDialog(props: Props) {
     : plan.phase === "session" && plan.sessionEnds !== null && Date.now() >= plan.sessionEnds ? w.ui.sessionOver
     : null;
   const homeworkDone = !!plan?.homework && !nextHomework(plan.homework);
+  // In free practice: homework still to do, announced with a way to it (issue #301).
+  const waiting = student && !inClass && planStatus === "ready" ? planRef.current?.homework ?? null : null;
+  const homeworkLeft = waiting && nextHomework(waiting) ? waiting.items.length - waiting.done.length : 0;
   const blocked = stopped && homeworkDone ? `${w.ui.homeworkDone} ${stopped}` : stopped;
   const stat = (s: SkillId) => progress.stats[s];
   const skills = SKILLS[area] as readonly SkillId[];
@@ -675,6 +679,12 @@ export function PracticeDialog(props: Props) {
     <>
       {student && (
         <Segmented items={[true, false]} value={inClass} onChange={switchPractice} label={(c) => (c ? w.ui.classPractice : w.ui.freePractice)} />
+      )}
+      {homeworkLeft > 0 && waiting && (
+        <div className="practice-homework-waiting field-row wrap" role="status">
+          <span>📝 {fill(w.ui.homeworkWaiting, { n: homeworkLeft, of: waiting.items.length })}</span>
+          <button className="btn small primary" onClick={() => switchPractice(true)}>{w.ui.homeworkGo}</button>
+        </div>
       )}
       {!classOn && (pick === "place" || pick === "grade") ? (
         // The placement and a grade's practice choose the questions themselves: no topics or levels to pick.

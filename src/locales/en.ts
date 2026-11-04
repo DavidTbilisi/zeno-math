@@ -8989,6 +8989,8 @@ export const en = {
       homework: "Homework: question {n} of {of}",
       homeworkWhy: { review: "a review of something you mastered", stretch: "a harder one to finish" },
       homeworkDone: "Homework done!",
+      homeworkWaiting: "Your homework is waiting: {n} of {of} questions still to do.",
+      homeworkGo: "Do my homework",
       score: "{right} of {total} right · streak {streak}",
       sound: "Sound on or off",
       calm: "Calm",
