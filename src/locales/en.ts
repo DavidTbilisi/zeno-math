@@ -908,6 +908,7 @@ export const en = {
         hanoi: "Towers of Hanoi",
         queens: "N queens",
         subsets: "Subset sum",
+        farm: "Split the farm",
       },
       info: {
         fib: "Each call f(n) calls f(n − 1) and f(n − 2) until it reaches f(1) or f(0). Without memory the same calls repeat and the tree grows like φⁿ; with memoisation each value is computed once — O(n).",
@@ -915,6 +916,7 @@ export const en = {
         hanoi: "To move n discs from A to C: move n − 1 discs out of the way to B, move the largest disc to C, then move the n − 1 discs from B onto it. 2ⁿ − 1 moves, and no solution uses fewer.",
         queens: "Place one queen per row, in the first column no earlier queen attacks; when a row has no safe column, go back and move the queen in the row above. Whole branches are abandoned without being tried.",
         subsets: "Each level decides one number: take it (left, +x) or skip it (right). A branch whose sum is already over the target is cut — nothing below it can work.",
+        farm: "Divide and conquer: mark out the biggest squares that fit along the farm. The strip left over is a smaller farm, and the biggest square that splits it evenly also splits the whole farm, so split it the same way. The base case is a strip its short side divides exactly. This is Euclid's algorithm: gcd(a, b) = gcd(b, a mod b).",
       },
       legend: {
         repeated: "computed again (wasted)",
@@ -924,9 +926,13 @@ export const en = {
         found: "reaches the target",
         pruned: "over the target: cut",
         deadEnd: "no numbers left",
+        left: "Striped: the strip left over, a smaller farm to split the same way.",
       },
       cols: {
         action: "Step",
+        farm: "Farm (m)",
+        squares: "Biggest squares",
+        left: "Left over",
       },
       calls: "{calls} calls for {distinct} different values",
       memoOn: "With memoisation every f(k) is computed once; later calls just read the stored value (grey).",
@@ -942,6 +948,9 @@ export const en = {
       subsetsFound: "{k} subset(s) add up to {t}: {list}",
       subsetsNone: "No subset adds up to {t}.",
       subsetsInfo: "{cut} branch(es) cut because the sum went over the target.",
+      farmField: "Farm: width, height (m)",
+      farmEven: "splits evenly: base case",
+      farmAnswer: "The biggest square plot is {g} × {g} m: the {a} × {b} farm splits evenly into {cols} × {rows} = {n} plots. gcd({a}, {b}) = {g}.",
     },
     str: {
       names: {
@@ -5858,6 +5867,7 @@ export const en = {
         selection: "Selection sort",
         merge: "Merge",
         partition: "Partition",
+        quick: "Quicksort",
       },
       ask: {
         bubble: "be the pass. Tap ⇄ under the next two neighbours it swaps.",
@@ -5865,6 +5875,7 @@ export const en = {
         selection: "be the algorithm. Tap the smallest of the unsorted part.",
         merge: "be the algorithm. Tap the run head that goes out next.",
         partition: "be the algorithm. Tap the next item smaller than the pivot {p}.",
+        quick: "be the algorithm. In the bracketed part, tap the next item smaller than the pivot {p}; when none is left, tap {p} to land it.",
       },
       hint: {
         bubble: "The pass goes left to right from ▲; neighbours in order are left alone, and the green ones are settled.",
@@ -5872,6 +5883,7 @@ export const en = {
         selection: "Green is sorted. The smallest of the rest swaps into the first place after it; of two alike, the first one.",
         merge: "Compare the two blue heads: the smaller goes out; a tie goes from the top run.",
         partition: "The scan goes left to right from ▲: an item smaller than {p} swaps behind the red wall; the others stay.",
+        quick: "The scan goes left to right from ▲: smaller than {p} swaps behind the red wall. Then {p} lands at the wall, and the left part is sorted before the right.",
       },
       why: {
         settled: "That end is settled: the biggest ones have bubbled there already.",
@@ -5887,6 +5899,10 @@ export const en = {
         behind: "{x} is behind the wall already.",
         notSmaller: "{x} isn't smaller than the pivot {p}: it stays where it is.",
         scanFirst: "The scan goes left to right from ▲: {x} comes first.",
+        fixed: "{x} is in its final place already: quicksort never moves it again.",
+        otherPart: "{x} is in another part: quicksort sorts the bracketed part first.",
+        pivotEarly: "Not yet: {x} is smaller than the pivot {p} and goes behind the wall first.",
+        landNow: "Nothing smaller than {p} is left: tap the pivot {p} to land it at the wall.",
       },
       right: {
         bubble: "Sorted in {n} swaps, just as bubble sort does! {stars}",
@@ -5894,6 +5910,7 @@ export const en = {
         selection: "Sorted in {n} swaps, just as selection sort does! {stars}",
         merge: "Merged: one sorted row from two! {stars}",
         partition: "Partitioned: the smaller ones left of {p}, the rest right, and {p} has landed. {stars}",
+        quick: "Sorted: every pivot landed, {n} moves in all! {stars}",
       },
       moves: "Moves: {k} of {n}",
       gap: "Gap {i}",
@@ -5905,6 +5922,7 @@ export const en = {
         inPlace: "A key that stays where it is: nothing bigger before it!",
         selfSwap: "The smallest was in place already: selection swaps it with itself, always n − 1 swaps!",
         runEmpty: "One run emptied first: the rest of the other goes out at once!",
+        lopsided: "A pivot landed at the end of its part, one side empty: that is quicksort's bad case, O(n²) on sorted input!",
         landed: "The pivot landed in its final place: quick sort never moves it again!",
         streak10: "Ten sorts in a row without a miss!",
       },
@@ -8360,6 +8378,9 @@ export const en = {
     minutesValue: "{n} min",
     downloadTests: "Download test answers (CSV)",
     printTests: "Print the tests",
+    deleteClass: "Delete class",
+    deleteClassConfirm: "Delete this class? Its code stops working. This can't be undone.",
+    deleteClassHasStudents: "Students have joined this class, so it keeps their records: close it instead (Now → Closed).",
     printTitle: "{name}: test, form {form}",
     printNote: "Each student takes one form before practice and the other after, in the order they were given when they joined, and form C a week or more later. No marks or help during the test.",
     printStudent: "Student code",

@@ -1,6 +1,7 @@
 // Recursion and backtracking for the Algorithms tool: call trees for Fibonacci (with repeated calls
 // marked, or cut short by memoisation), factorial and the towers of Hanoi; N-queens solved by
-// backtracking (trace + board); and subset sum as an include / skip tree with pruning.
+// backtracking (trace + board); subset sum as an include / skip tree with pruning; and divide and conquer, a farm
+// split into the biggest equal square plots by Euclid's algorithm, drawn to scale.
 import type { AlgoWords, RecurSpec, Steps } from "./algo";
 import { legendRow, parseNum, parseNums, ROLES, table, txt, type Role } from "./algoArrays";
 import { C, compose, fill, nt, r2, W, type Caption } from "./chart";
@@ -70,6 +71,99 @@ const count = (t: TN): number => 1 + t.kids.reduce((s, k) => s + count(k), 0);
 
 function nIn(spec: RecurSpec, w: AlgoWords, a: number, b: number): number {
   return parseNum(spec.n, w, (v) => Number.isInteger(v) && v >= a && v <= b);
+}
+
+/** One call of the farm split: the piece (x, y, w, h in metres), the side s of its biggest square and how many fit. */
+export type FarmCall = { x: number; y: number; w: number; h: number; s: number; k: number; across: boolean };
+
+/**
+ * Divide and conquer on a w × h farm: mark out as many s × s squares as fit (s the short side); what is left over is
+ * a smaller farm whose biggest even square is also the whole farm's, so split that the same way. The base case is a
+ * piece the short side divides exactly. The last s is gcd(w, h) — this is Euclid's algorithm.
+ */
+export function farmCalls(a: number, b: number): FarmCall[] {
+  const calls: FarmCall[] = [];
+  let [x, y, w, h] = [0, 0, a, b];
+  for (;;) {
+    const across = w >= h;
+    const s = Math.min(w, h);
+    const k = Math.floor(Math.max(w, h) / s);
+    calls.push({ x, y, w, h, s, k, across });
+    const rest = Math.max(w, h) - k * s;
+    if (!rest) return calls;
+    if (across) (x += k * s), (w = rest);
+    else (y += k * s), (h = rest);
+  }
+}
+
+const FARM_MAX = 100000;
+// The pieces' colours, one per call, in turn; green is kept for the answer.
+const FARM_ROLES: Role[] = ["key", "compare", "pivot", "min"];
+
+function farm(spec: RecurSpec, w: AlgoWords, st: Steps): { svg: string; h: number; tex: string; caps: Caption[] } {
+  const r = w.recur;
+  const nums = parseNums(spec.data, w, 2, true);
+  const bad = nums.find((v) => v < 1 || v > FARM_MAX);
+  if (nums.length < 2 || bad !== undefined) throw new Error(fill(w.badNumber, { s: bad === undefined ? spec.data : String(bad) }));
+  // Drawn lying down, the long side across.
+  const [a, b] = nums[0] >= nums[1] ? nums : [nums[1], nums[0]];
+  const calls = farmCalls(a, b);
+  const shown = 1 + st.count(calls.length - 1);
+  const done = shown === calls.length;
+  const g = calls[calls.length - 1].s;
+
+  const scale = Math.min((W - 32) / a, 230 / b);
+  const [fw, fh] = [a * scale, b * scale];
+  const X = (m: number) => 16 + (W - 32 - fw) / 2 + m * scale;
+  const Y = (m: number) => 12 + m * scale;
+  const parts: string[] = [];
+  // The whole farm, still unsplit.
+  parts.push(`<rect x="${r2(X(0))}" y="${r2(Y(0))}" width="${r2(fw)}" height="${r2(fh)}" fill="#ffffff" stroke="#868e96" stroke-width="1.2" stroke-dasharray="5 4"/>`);
+  calls.slice(0, shown).forEach((c, i) => {
+    const role = ROLES[FARM_ROLES[i % FARM_ROLES.length]];
+    const px = c.s * scale;
+    const sq = (j: number) => (c.across ? [c.x + j * c.s, c.y] : [c.x, c.y + j * c.s]);
+    if (c.k <= 60 && px >= 3)
+      for (let j = 0; j < c.k; j++) {
+        const [sx, sy] = sq(j);
+        parts.push(`<rect x="${r2(X(sx))}" y="${r2(Y(sy))}" width="${r2(px)}" height="${r2(px)}" fill="${role.fill}" stroke="${role.stroke}" stroke-width="1.4"/>`);
+        if (px >= 34) parts.push(txt(X(sx) + px / 2, Y(sy) + px / 2 + 4, nt(c.s), { size: px >= 60 ? 13 : 11, anchor: "middle", color: role.stroke, bold: true }));
+      }
+    else {
+      // Too many squares, or too small, to draw one by one: one band, labelled with how many.
+      const [bw, bh] = c.across ? [c.k * c.s, c.s] : [c.s, c.k * c.s];
+      parts.push(`<rect x="${r2(X(c.x))}" y="${r2(Y(c.y))}" width="${r2(bw * scale)}" height="${r2(bh * scale)}" fill="${role.fill}" stroke="${role.stroke}" stroke-width="1.4"/>`);
+      if (Math.min(bw, bh) * scale >= 14) parts.push(txt(X(c.x) + (bw * scale) / 2, Y(c.y) + (bh * scale) / 2 + 4, `${c.k} × ${nt(c.s)}²`, { size: 11, anchor: "middle", color: role.stroke, bold: true }));
+    }
+    // The newest call ringed, and the piece it leaves over (if any) outlined: the smaller farm still to split.
+    if (i === shown - 1 && !done) {
+      parts.push(`<rect x="${r2(X(c.x) - 3)}" y="${r2(Y(c.y) - 3)}" width="${r2(c.w * scale + 6)}" height="${r2(c.h * scale + 6)}" fill="none" stroke="${C.orange}" stroke-width="2.5" rx="3"/>`);
+      const [lx, ly, lw, lh] = c.across ? [c.x + c.k * c.s, c.y, c.w - c.k * c.s, c.h] : [c.x, c.y + c.k * c.s, c.w, c.h - c.k * c.s];
+      parts.push(`<rect x="${r2(X(lx))}" y="${r2(Y(ly))}" width="${r2(lw * scale)}" height="${r2(lh * scale)}" fill="url(#farm-left)" stroke="${C.ink}" stroke-width="1.6"/>`);
+      if (Math.min(lw, lh) * scale >= 28) parts.push(txt(X(lx) + (lw * scale) / 2, Y(ly) + (lh * scale) / 2 + 4, `${nt(lw)} × ${nt(lh)}`, { size: 12, anchor: "middle", bold: true }));
+    }
+  });
+  // The answer: the whole farm in g × g plots, when they are big enough to see.
+  if (done && g * scale >= 4 && (a / g) * (b / g) <= 4000) {
+    for (let i = 1; i < a / g; i++) parts.push(`<line x1="${r2(X(i * g))}" y1="${r2(Y(0))}" x2="${r2(X(i * g))}" y2="${r2(Y(b))}" stroke="${C.green}" stroke-width="0.6" opacity="0.6"/>`);
+    for (let j = 1; j < b / g; j++) parts.push(`<line x1="${r2(X(0))}" y1="${r2(Y(j * g))}" x2="${r2(X(a))}" y2="${r2(Y(j * g))}" stroke="${C.green}" stroke-width="0.6" opacity="0.6"/>`);
+  }
+  // Each call's piece, its squares and what it leaves.
+  const tb = table(16, Y(b) + 16, [{ head: "#", w: 34 }, { head: r.cols.farm, w: 170 }, { head: r.cols.squares, w: 200 }, { head: r.cols.left, w: W - 32 - 404 }],
+    calls.slice(0, shown).map((c, i) => {
+      const last = i === calls.length - 1;
+      const role = last ? C.green : i === shown - 1 ? C.orange : C.ink;
+      const [lw, lh] = c.across ? [c.w - c.k * c.s, c.h] : [c.w, c.h - c.k * c.s];
+      return { cells: [String(i + 1), `${nt(c.w)} × ${nt(c.h)}`, `${c.k} × (${nt(c.s)} × ${nt(c.s)})`, last ? r.farmEven : `${nt(lw)} × ${nt(lh)}`], colors: [C.grey, C.ink, role, last ? C.green : C.ink] };
+    }), 21);
+  const defs = `<defs><pattern id="farm-left" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff9db"/><line x1="0" y1="0" x2="0" y2="7" stroke="#fab005" stroke-width="2"/></pattern></defs>`;
+  // gcd(a, b) = gcd(b, a mod b) = … : each call's pair, the answer once it is reached.
+  const chain = calls.slice(0, shown).map((c) => `\\text{gcd}(${Math.max(c.w, c.h)},\\ ${c.s})`).join(" = ");
+  const caps: Caption[] = [
+    ...st.final({ text: fill(r.farmAnswer, { g: nt(g), a: nt(a), b: nt(b), cols: nt(a / g), rows: nt(b / g), n: nt((a / g) * (b / g)) }), color: C.green }),
+  ];
+  if (!done) caps.push({ text: r.legend.left, color: "#b08900" });
+  return { svg: defs + parts.join("") + tb.svg, h: Y(b) + 16 + tb.h + 4, tex: done ? `${chain} = ${g}` : chain, caps };
 }
 
 export function renderRecur(spec: RecurSpec, w: AlgoWords, st: Steps): RenderedSvg {
@@ -205,6 +299,12 @@ export function renderRecur(spec: RecurSpec, w: AlgoWords, st: Steps): RenderedS
     tex = `n = ${n}`;
     caps.push(...st.final({ text: fill(r.queensStats, { tries, backs, n, sols }), color: C.blue }));
     caps.push(...st.final({ text: r.queensInfo, color: "#495057" }));
+  } else if (spec.problem === "farm") {
+    const f = farm(spec, w, st);
+    body = f.svg;
+    h = f.h;
+    tex = f.tex;
+    caps.push(...f.caps);
   } else {
     const items = parseNums(spec.data, w, 4, true);
     if (items.some((v) => v <= 0)) throw new Error(fill(w.badNumber, { s: spec.data }));

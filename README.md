@@ -998,7 +998,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     per coin) and the ways to climb a staircase 1 to k steps at a time
   - *Recursion*: call trees for Fibonacci (repeated calls marked — or cut short with memoisation), factorial and
     the towers of Hanoi (every move numbered); N-queens by backtracking (the first steps, dead ends, the board and
-    the number of solutions); subset sum as a take / skip tree with branches over the target cut
+    the number of solutions); subset sum as a take / skip tree with branches over the target cut; divide and
+    conquer as *Split the farm*: a width × height farm drawn to scale, each call marking out the biggest squares that
+    fit and recursing on the striped strip left over, until a strip splits evenly; the last square is the gcd
+    (Euclid's algorithm), laid over the whole farm as a grid of equal plots
   - *Strings*: naive matching (every shift), KMP (prefix table, shifts that skip what is known to match) and
     Rabin–Karp (rolling hash, spurious hits) — character comparisons counted against the naive algorithm
   - *Complexity*: the master theorem with the recursion tree and the work on each level, and growth rates
@@ -1188,12 +1191,15 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     between two neighbours; the compares that swap nothing play themselves from the ▲, and a pass with no swap ends
     the sort), the gap insertion sort's key drops into, the smallest of the rest for selection sort (the first of two
     alike), the run head a merge takes next (a tie from the top run), and the next item smaller than the pivot for a
-    partition (it swaps behind the red wall, and the pivot lands by itself). A tap that is not the algorithm's next
+    partition (it swaps behind the red wall, and the pivot lands by itself). Quicksort is the whole thing: the same
+    partition on the bracketed part, then a tap on the pivot to land it at the wall (green from then on), the left
+    part before the right, until every pivot has landed; a tap on a landed pivot, on another part or on the pivot too
+    soon is refused with its rule. A tap that is not the algorithm's next
     move is not made, and says the rule it broke ("16 and 19 are in order already: bubble sort leaves them"). No miss
-    earns three stars, one two. Nine puzzles open in turn, from bubble sort on five items to a merge of two runs of
-    four; the endless run mixes them, from the three simple sorts on five or six items to all five on eight or nine.
-    Six discoveries (a pass with no swap, a key that stays, the smallest already in place, a run emptied first, the
-    pivot landed, ten in a row)
+    earns three stars, one two. Eleven puzzles open in turn, from bubble sort on five items to quicksort on eight; the
+    endless run mixes them, from the three simple sorts on five or six items to all six on eight or nine.
+    Seven discoveries (a pass with no swap, a key that stays, the smallest already in place, a run emptied first, a
+    lopsided pivot with one side empty — quicksort's O(n²) case — the pivot landed, ten in a row)
   - *Be the search*: the player is the computer running a graph search on the memory the code keeps, one operation at
     a time, by drag and drop (or a tap on what to move, then on where it goes). Breadth-first search keeps a queue in
     an array (FIFO): drag queue[head] into v, then each new neighbour of v, in alphabetical order, into queue[tail],
@@ -1603,7 +1609,9 @@ Environment variables:
 - `DATA_DIR`: `./data` by default.
 - `STATIC_DIR`: `./dist` by default.
 - `APP_PASSWORD`: empty means no auth.
-- `TEACHER_PASSWORD`: empty means anyone can create classes and download the study data; see below.
+- `TEACHER_PASSWORD`: empty means anyone can create classes and download the study data; see below. A browser tab
+  signed in on the teacher's page also has every game's endless run open (all three levels and the clock), so a
+  teacher can show a class any of them without first playing through the puzzles; it closes with the tab.
 - `TRUST_PROXY`: 1 behind a reverse proxy, as above.
 - `PASSWORD_ATTEMPTS` and `PASSWORD_WINDOW_MINUTES`: 10 and 10 by default. An address that gave a right password in
   the last day is allowed ten times `PASSWORD_ATTEMPTS`, so a class sharing a school's address isn't locked out by
@@ -1659,7 +1667,9 @@ their own (no names or emails), see what taking part means and agree before they
 class through a pre-test, timed practice, a post-test and a delayed post-test a week or more later, with parallel forms
 counterbalanced within each arm. The dashboard shows who is stuck and why, the two arms, mastery by skill, the tests
 by intention to treat (every student counts, and finishing is a result of its own) and how well the model predicts; both data sets
-download as CSV.
+download as CSV. A class nobody has joined yet can be deleted (Delete class, `DELETE /api/classes/:code`); once a
+student has joined, the server refuses (409), so no records are lost, and the class is closed instead (Now → Closed). The page's top bar has **+ New board**, which makes a board and opens it
+in one click, without going through the boards list.
 
 The full description is in **[docs/study.md](docs/study.md)**:
 
@@ -1885,7 +1895,7 @@ src/math/algo.ts          algorithms: specs, presets, words (renderers in the al
 src/math/algoArrays.ts    sorting, searching, stacks/queues/hashing, DP tables, complexity + cell/table helpers
 src/math/algoGraphs.ts    graph algorithms (BFS, DFS, Dijkstra, Bellman–Ford, Floyd–Warshall, Prim, Kruskal, union–find,
                           topological sort), BST/AVL, heaps
-src/math/algoRecur.ts     recursion trees (Fibonacci, factorial, Hanoi), N-queens, subset sum
+src/math/algoRecur.ts     recursion trees (Fibonacci, factorial, Hanoi), N-queens, subset sum, the farm split (divide and conquer)
 src/math/algoStrings.ts   string matching: naive, KMP, Rabin–Karp
 src/math/algoPatterns.ts  patterns: two pointers, fast & slow pointers, sliding windows, prefix sums, monotonic stack, Kadane
 src/math/graphtheory.ts   graph theory: properties, Euler, Hamilton, colouring, walks, spanning trees

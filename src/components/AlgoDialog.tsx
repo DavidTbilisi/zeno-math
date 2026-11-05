@@ -203,7 +203,9 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
       {spec.topic === "recur" && (
         <>
           {segmented(RECUR_PROBLEMS, (p) => w.recur.names[p], spec.problem, (problem) => set({ problem }))}
-          {spec.problem === "subsets" ? (
+          {spec.problem === "farm" ? (
+            row(w.recur.farmField, "data")
+          ) : spec.problem === "subsets" ? (
             <>
               {row(t.algoNumbers, "data")}
               <div className="range-grid">{text(t.algoGoal, "target", 90)}</div>

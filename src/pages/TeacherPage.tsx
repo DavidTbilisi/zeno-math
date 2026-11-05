@@ -4,7 +4,7 @@
 // whether the learner model's predictions come true. The teacher password
 // (TEACHER_PASSWORD on the server) is kept for this tab only.
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
+import { api as boardApi, ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
@@ -19,6 +19,7 @@ import { AREAS, type Area, type SkillId } from "../math/practiceSkills";
 import { GRADES, skillsOfGrade } from "../model/curriculum";
 import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH, TEST_PHASES } from "../model/testForms";
 import { ARMS, FEATURES, type Feature } from "../model/arms";
+import { TEACHER_KEY } from "../teacherMode";
 
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
 // first shown, so the dashboard itself doesn't carry them.
@@ -29,7 +30,7 @@ const CalibrationChart = lazy(() => import("../components/CalibrationChart").the
 const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "delayed", "closed"];
 const DAY = 86_400_000;
 
-const KEY = "zeno.teacher";
+const KEY = TEACHER_KEY;
 const remembered = () => {
   try {
     return sessionStorage.getItem(KEY) ?? "";
@@ -82,6 +83,8 @@ export function TeacherPage() {
   const [feature, setFeature] = useState<Feature>("policy");
   const [minutes, setMinutes] = useState(20);
   const [askMinutes, setAskMinutes] = useState(false);
+  // The class whose deletion is waiting for a second click (null: none).
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const api = useMemo(() => teacherApi(password), [password]);
   const numbers = useMemo(() => new Map(data?.students.map((r) => [r.id, r.number]) ?? []), [data]);
 
@@ -157,6 +160,23 @@ export function TeacherPage() {
       setFailed(true);
     }
   };
+  /**
+   * Deletes a class, once confirmed on the page (a native confirm() is blocked in some browsers and embedded views,
+   * where it answers "no" without showing anything); only one nobody has joined, which the server checks too.
+   */
+  const removeClass = async (klass: ClassSummary) => {
+    setConfirmDelete(null);
+    if (klass.students > 0) return;
+    try {
+      await api.remove(klass.code);
+      const list = await api.classes();
+      setClasses(list);
+      setData(null);
+      setSelected(list.at(-1)?.code ?? null);
+    } catch {
+      setFailed(true);
+    }
+  };
   /** Takes a stuck student off the list, then shows the class as the server now has it. */
   const seen = async (row: { student: string; skill: string; through: number }) => {
     if (!selected) return;
@@ -183,9 +203,21 @@ export function TeacherPage() {
   // A running session's clock.
   const sessionEnds = classes.find((c) => c.code === selected && c.phase === "session")?.sessionEnds ?? null;
 
+  // A fresh board straight from here, so a teacher about to explain something doesn't detour through the boards list.
+  const newBoard = async () => {
+    setFailed(false);
+    try {
+      const b = await boardApi.create(t.untitled);
+      location.hash = `#/b/${b.id}`;
+    } catch {
+      setFailed(true);
+    }
+  };
+
   const bar = (
     <BrandBar>
       <a href="#/">{t.myBoards}</a>
+      <button className="btn small primary" onClick={() => void newBoard()}>+ {t.newBoard}</button>
     </BrandBar>
   );
   const header = <h1 className="z-page-title">{w.title}</h1>;
@@ -333,7 +365,20 @@ export function TeacherPage() {
                   <button className="btn" onClick={() => void download("attempts")}>⤓ {w.download}</button>
                   <button className="btn" onClick={() => void download("tests")}>⤓ {w.downloadTests}</button>
                   <button className="btn" onClick={() => setPrinting(true)}>{w.printTests}</button>
+                  {confirmDelete !== current.code && (
+                    <button className="btn danger" disabled={current.students > 0} title={current.students > 0 ? w.deleteClassHasStudents : undefined}
+                      onClick={() => setConfirmDelete(current.code)}>
+                      {w.deleteClass}
+                    </button>
+                  )}
                 </div>
+                {confirmDelete === current.code && (
+                  <div className="field-row wrap" role="alert">
+                    <span className="error">{w.deleteClassConfirm}</span>
+                    <button className="btn danger" autoFocus onClick={() => void removeClass(current)}>{w.deleteClass}</button>
+                    <button className="btn" onClick={() => setConfirmDelete(null)}>{t.cancel}</button>
+                  </div>
+                )}
               </section>
             )}
             {printing && current && (

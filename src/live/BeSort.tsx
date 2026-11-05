@@ -32,7 +32,7 @@ export function BeSort({ state: d, set, w: words, svgRef }: PieceProps<"beSort">
   const pic = sortSvg(run, d.done ? run.moves.length : d.step);
   const vars = {
     k: look.algo === "insertion" ? look.a[look.i] : 0,
-    p: run.task.a[run.task.a.length - 1],
+    p: look.algo === "quick" ? look.a[look.hi] : run.task.a[run.task.a.length - 1],
   };
   const right = `${fill(w.right[algo], { n: run.moves.length, p: vars.p, stars: starText(stars) })}${d.mode === "puzzle" && stars === 1 ? ` ${g.oneStar}` : ""}`;
   const line: Line =
