@@ -34,7 +34,7 @@ test("be the sort: bubble sort's swaps tapped in turn earn three stars and open 
   for (const m of run.moves.slice(1)) await tap(m);
   await expect(game.getByText(new RegExp(`Sorted in ${run.moves.length} swaps, just as bubble sort does! ★★★`))).toBeVisible();
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
-  expect(SORT_LADDER).toHaveLength(9);
+  expect(SORT_LADDER).toHaveLength(11);
 });
 
 test("be the sort: a tap on two neighbours in order is refused and says why", async ({ page }) => {
