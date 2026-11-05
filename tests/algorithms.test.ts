@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { ALGO_PRESETS, ALGO_TOPICS, renderAlgo, SORT_ALGOS, upgradeAlgo, type AlgoSpec, type PatternAlgo } from "../src/math/algo.ts";
 import { farmCalls } from "../src/math/algoRecur.ts";
+import { fnOf, trendOf, type Bound } from "../src/math/algoBounds.ts";
 
 const w = en.algoWords;
 const text = (spec: AlgoSpec) => [...renderAlgo(spec, w).svg.matchAll(/<text[^>]*>(.*?)<\/text>/g)].map((m) => m[1].replace(/<[^>]+>/g, "").replace(/&amp;/g, "&")).join(" ").replace(/\s+/g, " ");
@@ -88,6 +89,32 @@ test("recursion and backtracking", () => {
   has(r("queens", "6"), "4 solution(s) for n = 6");
   has(r("subsets", "", false, "3, 5, 6, 7", "15"), "1 subset(s) add up to 15: {3, 5, 7}");
   assert.throws(() => renderAlgo(r("fib", "9"), w), "fib without memo is limited to small n");
+});
+
+test("asymptotic notation: O, Ω, Θ, o, ω with their witnesses c and n₀", () => {
+  const b = (f: string, g: string, rel: Bound, c = "", n = "20") => ({ topic: "growth", mode: "bounds", a: "2", b: "2", d: "1", n, f, g, rel, c }) as AlgoSpec;
+  // 3n² + 5n + 20 ≤ 4n² once n² − 5n − 20 ≥ 0, i.e. from n = 8 (the root is 7.6).
+  has(b("3n^2 + 5n + 20", "n^2", "O"), "With c = 4 and n₀ = 8", "f(n)/g(n) → 3 as n grows, so f is O(g), Ω(g), Θ(g)");
+  // A c of our own: 3n² + 5n + 20 ≤ 10n² once 7n² ≥ 5n + 20, from n = 3 (at 2: 42 > 40).
+  has(b("3n^2 + 5n + 20", "n^2", "O", "10"), "With c = 10 and n₀ = 3");
+  has(b("3n^2 + 5n + 20", "n^2", "O", "2"), "doesn't stay within the bound");
+  // n²/2 − 3n ≥ 0.4n² from n = 30; ≤ 0.8n² always.
+  has(b("n^2/2 - 3n", "n^2", "Theta", "", "40"), "With c₁ = 0.4, c₂ = 0.8 and n₀ = 30");
+  has(b("n log n", "n", "Omega"), "With c = 1 and n₀ = 2", "→ ∞");
+  // n/n² = 1/n: under 0.05 from n = 21, under 0.03 from 34, under 0.025 from 41.
+  has(b("n", "n^2", "o"), "0.05·g from n = 21 on", "0.03·g from n = 34 on", "0.025·g from n = 41 on", "so f = o(g)");
+  has(b("2^n", "n^3", "omega"), "so f = ω(g)");
+  has(b("n^2", "n log n", "O"), "f outgrows every c·g", "f ≠ O(g)");
+  has(b("n", "n", "o"), "f/g → 1, not 0", "never, as far as checked");
+  has(b("5n + 3", "n^2", "Theta"), "f/g → 0: f can't be held");
+  // Past what a double can hold, the side still finite tells the way: n! outgrows 2ⁿ, n¹⁰⁰ is o(2ⁿ).
+  assert.equal(trendOf(fnOf("n!", "?"), fnOf("2^n", "?")).trend, "more");
+  assert.equal(trendOf(fnOf("n^100", "?"), fnOf("2^n", "?")).trend, "less");
+  assert.equal(trendOf(fnOf("log n", "?"), fnOf("ln n", "?")).trend, "same");
+  assert.equal(fnOf("n log n", "?")(8), 24);
+  for (const [f, g] of [["n +", "n"], ["n", "0"], ["-n", "n"], ["", "n"]]) assert.throws(() => renderAlgo(b(f, g, "O"), w), `${f} vs ${g}`);
+  // Boards saved before the mode existed still open their growth pictures unchanged.
+  assert.doesNotMatch(renderAlgo({ topic: "growth", mode: "compare", a: "2", b: "2", d: "1", n: "20" }, w).svg, /NaN|undefined/);
 });
 
 test("divide and conquer: the farm splits into the biggest even squares, Euclid's algorithm", () => {

@@ -1005,7 +1005,11 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - *Strings*: naive matching (every shift), KMP (prefix table, shifts that skip what is known to match) and
     Rabin–Karp (rolling hash, spurious hits) — character comparisons counted against the naive algorithm
   - *Complexity*: the master theorem with the recursion tree and the work on each level, and growth rates
-    from log n to n! with running times at 10⁸ operations per second
+    from log n to n! with running times at 10⁸ operations per second; and *Big O & co.*: type f(n) and g(n)
+    (`3n^2 + 5n + 20`, `n log n`, `2^n`, `n!`, with log meaning log₂) and pick O, Ω, Θ, o or ω. The ratio f/g, followed
+    far out, decides whether the relation holds. For O, Ω and Θ the graph shows f against c·g (or between c₁·g and c₂·g)
+    with the witnesses c and n₀; for o and ω, which must hold for every c, it shows f/g passing three c's, each with
+    its own n₀. A relation that fails is drawn too, shaded red from the n where f breaks out for good.
 - **∑ Formulas** — type LaTeX with a symbol palette and live preview; rendered with MathJax
 - **📈 Graphs** — plot up to 6 functions `y = f(x)` with ranges, grid, auto-scaling and asymptote handling
 - The tools sit in four menus on the top bar: **Arithmetic** (models, with place value among them, and mental math), **Geometry** (geometry,

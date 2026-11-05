@@ -6,6 +6,7 @@
 // a monotonic stack, Kadane).
 // Every picture is one standalone SVG.
 import type { RenderedSvg } from "./latex";
+import type { Bound } from "./algoBounds";
 import { renderDp, renderDs, renderGrowth, renderSearch, renderSort } from "./algoArrays";
 import { renderGraph, renderTree } from "./algoGraphs";
 import { renderPattern } from "./algoPatterns";
@@ -23,7 +24,7 @@ export type StringAlgo = "naive" | "kmp" | "rk";
 export type TreeKind = "bst" | "avl" | "minheap" | "maxheap";
 export type DsKind = "stack" | "queue" | "chaining" | "probing";
 export type DpProblem = "lcs" | "edit" | "knapsack" | "coins" | "ways" | "stairs";
-export type GrowthMode = "master" | "compare";
+export type GrowthMode = "master" | "compare" | "bounds";
 
 export const SORT_ALGOS: SortAlgo[] = ["bubble", "insertion", "selection", "shell", "merge", "quick", "heap", "counting"];
 export const SORT_VIEWS: SortView[] = ["cells", "bars"];
@@ -35,7 +36,7 @@ export const STRING_ALGOS: StringAlgo[] = ["naive", "kmp", "rk"];
 export const TREE_KINDS: TreeKind[] = ["bst", "avl", "minheap", "maxheap"];
 export const DS_KINDS: DsKind[] = ["stack", "queue", "chaining", "probing"];
 export const DP_PROBLEMS: DpProblem[] = ["lcs", "edit", "knapsack", "coins", "ways", "stairs"];
-export const GROWTH_MODES: GrowthMode[] = ["master", "compare"];
+export const GROWTH_MODES: GrowthMode[] = ["master", "compare", "bounds"];
 
 export type SortSpec = { topic: "sort"; algo: SortAlgo; data: string; view?: SortView; step?: number };
 /** target: the value to find (binary, linear), the sum of the pair (two pointers) or the window size k. */
@@ -47,8 +48,11 @@ export type TreeSpec = { topic: "tree"; kind: TreeKind; data: string; step?: num
 export type DsSpec = { topic: "ds"; kind: DsKind; ops: string; m: string; step?: number };
 /** lcs/edit: a, b are the strings · knapsack: a weights, b values, c capacity · coins, ways: a coins, c amount · stairs: a the longest step, c the steps. */
 export type DpSpec = { topic: "dp"; problem: DpProblem; a: string; b: string; c: string; step?: number };
-/** master: T(n) = a·T(n/b) + Θ(n^d) · compare: growth rates up to n. */
-export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: string; d: string; n: string; step?: number };
+/**
+ * master: T(n) = a·T(n/b) + Θ(n^d) · compare: growth rates up to n · bounds: is f(n) = rel(g(n)), with the constant c
+ * (blank: chosen) and the graph up to n. f, g, rel and c came later, so older boards don't carry them.
+ */
+export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: string; d: string; n: string; f?: string; g?: string; rel?: Bound; c?: string; step?: number };
 
 /** n for fib / fact / hanoi / queens; data (the numbers) and target for subsets; data "width, height" for farm; memo for fib. */
 export type RecurSpec = { topic: "recur"; problem: RecurProblem; n: string; memo: boolean; data: string; target: string; step?: number };
@@ -154,6 +158,24 @@ export type AlgoWords = {
   levelWork: string;
   leaves: string;
   growthHint: string;
+  bounds: {
+    names: Record<Bound, string>;
+    info: Record<Bound, string>;
+    holds: Record<"O" | "Omega" | "Theta", string>;
+    fails: Record<Bound, string>;
+    oHolds: string;
+    omegaHolds: string;
+    tooSmall: string;
+    limit: string;
+    never: string;
+    belowFrom: string;
+    aboveFrom: string;
+    outFrom: string;
+    cols: { below: string; above: string };
+    fields: { f: string; g: string; c: string };
+    badFormula: string;
+    notPositive: string;
+  };
   timeAt: string;
   units: { s: string; min: string; h: string; d: string; y: string };
   sortMore: { moved: string; heapBuild: string; heapMove: string; heapRoot: string; shellGap: string; gapGroup: string; countRange: string; countRow: string; countEnds: string; countPlace: string; countStats: string };
@@ -361,6 +383,12 @@ export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf
     { label: "Karatsuba · T(n) = 3T(n/2) + n", spec: { topic: "growth", mode: "master", a: "3", b: "2", d: "1", n: "20" } },
     { label: "T(n) = 2T(n/2) + n²", spec: { topic: "growth", mode: "master", a: "2", b: "2", d: "2", n: "20" } },
     { label: "Growth rates", spec: { topic: "growth", mode: "compare", a: "2", b: "2", d: "1", n: "20" } },
+    { label: "3n² + 5n + 20 = O(n²)", spec: { topic: "growth", mode: "bounds", a: "2", b: "2", d: "1", n: "20", f: "3n^2 + 5n + 20", g: "n^2", rel: "O", c: "" } },
+    { label: "n²/2 − 3n = Θ(n²)", spec: { topic: "growth", mode: "bounds", a: "2", b: "2", d: "1", n: "40", f: "n^2/2 - 3n", g: "n^2", rel: "Theta", c: "" } },
+    { label: "n log n = Ω(n)", spec: { topic: "growth", mode: "bounds", a: "2", b: "2", d: "1", n: "20", f: "n log n", g: "n", rel: "Omega", c: "" } },
+    { label: "n = o(n²)", spec: { topic: "growth", mode: "bounds", a: "2", b: "2", d: "1", n: "20", f: "n", g: "n^2", rel: "o", c: "" } },
+    { label: "2ⁿ = ω(n³)", spec: { topic: "growth", mode: "bounds", a: "2", b: "2", d: "1", n: "20", f: "2^n", g: "n^3", rel: "omega", c: "" } },
+    { label: "n² ≠ O(n log n)", spec: { topic: "growth", mode: "bounds", a: "2", b: "2", d: "1", n: "20", f: "n^2", g: "n log n", rel: "O", c: "" } },
   ],
 };
 
