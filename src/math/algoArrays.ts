@@ -5,6 +5,7 @@
 import type { AlgoWords, DpSpec, DsSpec, GrowthSpec, SearchSpec, SortSpec, Steps } from "./algo";
 import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nf, nt, r2, texAt, textLen, tn, W, wrap, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
+import { renderBounds } from "./algoBounds";
 
 // ---------- parsing ----------
 
@@ -1037,7 +1038,7 @@ const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 const sup = (n: number) => String(n).replace(/\d/g, (d) => SUP[Number(d)]);
 
 export function renderGrowth(spec: GrowthSpec, w: AlgoWords): RenderedSvg {
-  return spec.mode === "master" ? renderMaster(spec, w) : renderCompare(spec, w);
+  return spec.mode === "master" ? renderMaster(spec, w) : spec.mode === "bounds" ? renderBounds(spec, w) : renderCompare(spec, w);
 }
 
 function renderMaster(spec: GrowthSpec, w: AlgoWords): RenderedSvg {

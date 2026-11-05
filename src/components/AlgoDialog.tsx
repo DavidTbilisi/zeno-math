@@ -20,6 +20,7 @@ import {
   type AlgoSpecOf,
   type AlgoTopic,
 } from "../math/algo";
+import { BOUNDS, DEFAULT_BOUND } from "../math/algoBounds";
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
@@ -56,7 +57,7 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
   const patternTarget: Partial<Record<(typeof PATTERN_ALGOS)[number], string>> = { twoptr: t.algoSum, window: t.algoWindow, partition: t.algoPivot, minsum: t.algoAtLeast, prefix: t.algoSum };
   const shown = Math.min(spec.step ?? steps, steps);
 
-  const value = (key: string) => (spec as Record<string, unknown>)[key] as string;
+  const value = (key: string) => ((spec as Record<string, unknown>)[key] as string | undefined) ?? "";
   const text = (label: string, key: string, width = 70) => (
     <label key={key}>
       <span>{label}</span>
@@ -234,7 +235,7 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
 
       {spec.topic === "growth" && (
         <>
-          {segmented(GROWTH_MODES, (m) => t.growthModes[m], spec.mode, (mode) => set({ mode }))}
+          {segmented(GROWTH_MODES, (m) => t.growthModes[m], spec.mode, (mode) => set({ mode, ...(mode === "bounds" && spec.f === undefined ? DEFAULT_BOUND : {}) }))}
           {spec.mode === "master" ? (
             <>
               <small className="hint mono">T(n) = a·T(n/b) + Θ(nᵈ)</small>
@@ -242,6 +243,16 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
                 {text("a", "a")}
                 {text("b", "b")}
                 {text("d", "d")}
+              </div>
+            </>
+          ) : spec.mode === "bounds" ? (
+            <>
+              {segmented(BOUNDS, (b) => w.bounds.names[b], spec.rel ?? DEFAULT_BOUND.rel, (rel) => set({ rel }))}
+              {row(`${w.bounds.fields.f} =`, "f")}
+              {row(`${w.bounds.fields.g} =`, "g")}
+              <div className="range-grid">
+                {spec.rel !== "Theta" && spec.rel !== "o" && spec.rel !== "omega" && text(w.bounds.fields.c, "c", 90)}
+                {text(t.algoN, "n")}
               </div>
             </>
           ) : (
