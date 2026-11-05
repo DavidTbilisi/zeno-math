@@ -121,6 +121,8 @@ export function teacherApi(password: string) {
     /** Homework for every student in the class, each from their own records (409 until the delayed post-test). */
     homework: (code: string, length: number) =>
       req<{ students: number; length: number; createdAt: number }>("POST", `/api/classes/${encodeURIComponent(code)}/homework`, { length }, false, headers),
+    /** Deletes a class nobody has joined (409 once someone has: close it instead). */
+    remove: (code: string) => req<void>("DELETE", `/api/classes/${encodeURIComponent(code)}`, undefined, false, headers),
     /** Takes the class out of the study or puts it back (409 back in once it has had homework). */
     study: (code: string, study: boolean) =>
       req<{ study: boolean }>("POST", `/api/classes/${encodeURIComponent(code)}/study`, { study }, false, headers),

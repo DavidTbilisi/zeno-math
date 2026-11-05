@@ -97,6 +97,10 @@ input.invalid { border-color: var(--danger); }
 .board-link { display: flex; flex-direction: column; gap: 6px; padding: 16px 16px 10px; min-height: 84px; }
 .board-title { font-weight: 600; overflow-wrap: anywhere; }
 .board-actions { display: flex; gap: 4px; padding: 0 8px 8px; }
+/* Renaming or confirming a delete on the card: the field or the question takes the row, the buttons wrap under it. */
+.board-ask { flex-wrap: wrap; align-items: center; }
+.board-ask input, .board-ask > span { flex: 1 1 100%; min-width: 0; }
+.board-ask input { font: inherit; padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg, transparent); color: inherit; }
 
 /* Board */
 .board-page { display: flex; flex-direction: column; height: 100%; }

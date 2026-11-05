@@ -2135,7 +2135,7 @@ Since October 2026 the games follow the drill ladder of the Neural OS notes (`wi
 |---|---|---|
 | 0 Orientation | free play (or the first puzzle) | always open |
 | 1–3 Isolation, clean repetition, controlled variation | the puzzles in order | `PASS_STARS` = 2 on a puzzle; `onward` replays a puzzle below it |
-| 4 Automaticity | the endless run, easy | every puzzle at two stars (`levelOpen(p, 1)`) |
+| 4 Automaticity | the endless run, easy | every puzzle at two stars (`levelOpen(p, 1)`); a teacher signed in on the teacher's page in this tab has every level and the clock open (`src/teacherMode.ts`) |
 | 5 Mixing | the endless run, medium and hard | `PASS_STREAK` = 5 on the level before |
 | 6 Pressure | ⏱ against the clock, at any open level | a streak of 5 on hard (`clockOpen`); the limit is `clockMs(pace)`, a fifth over the running average of the player's clean times |
 | 7 Transfer | outside the game (practice, problems) | — |

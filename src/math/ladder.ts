@@ -89,11 +89,14 @@ export const ladderPassed = (stars: readonly number[]) => stars.length > 0 && st
 export const isOpen = (p: { stars: number[] }, stage: number) => stage === 0 || passed(p.stars, stage - 1) || (p.stars[stage] ?? 0) > 0;
 
 type Run = Pick<Ladder<string>, "stars" | "best" | "runs">;
-/** The endless run's first level opens once every puzzle is clean (or for a player who ran it before); each level after it with a streak of five on the one before. */
-export const levelOpen = (p: Run, level: GameLevel) =>
-  level === 1 ? ladderPassed(p.stars) || p.best > 0 : (p.runs[level - 2] ?? 0) >= PASS_STREAK || (p.runs[level - 1] ?? 0) > 0;
-/** The clock opens with a streak of five on the top level. */
-export const clockOpen = (p: Pick<Ladder<string>, "runs">) => (p.runs[GAME_LEVELS.length - 1] ?? 0) >= PASS_STREAK;
+/**
+ * The endless run's first level opens once every puzzle is clean (or for a player who ran it before); each level after
+ * it with a streak of five on the one before. A teacher has every level open, to show a class any of them.
+ */
+export const levelOpen = (p: Run, level: GameLevel, teacher = false) =>
+  teacher || (level === 1 ? ladderPassed(p.stars) || p.best > 0 : (p.runs[level - 2] ?? 0) >= PASS_STREAK || (p.runs[level - 1] ?? 0) > 0);
+/** The clock opens with a streak of five on the top level, or for a teacher. */
+export const clockOpen = (p: Pick<Ladder<string>, "runs">, teacher = false) => teacher || (p.runs[GAME_LEVELS.length - 1] ?? 0) >= PASS_STREAK;
 
 /** The running average of clean solve times after one more. */
 export const paceAfter = (pace: number, ms: number) => Math.round(pace > 0 ? 0.7 * pace + 0.3 * ms : ms);

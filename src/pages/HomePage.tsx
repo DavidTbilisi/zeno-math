@@ -38,9 +38,13 @@ export function HomePage() {
     location.hash = `#/b/${b.id}`;
   });
 
-  const rename = (b: BoardSummary) => {
-    const title = prompt(t.rename, b.title);
-    if (title === null || !title.trim()) return;
+  // Renaming and deleting happen on the board's card, not in prompt() and confirm(): some browsers and embedded views
+  // block those dialogs, and then they answer "cancel" without showing anything. One card at a time.
+  const [busy, setBusy] = useState<{ id: string; mode: "rename" | "delete"; title: string } | null>(null);
+
+  const rename = (b: BoardSummary, title: string) => {
+    setBusy(null);
+    if (!title.trim() || title === b.title) return;
     return attempt(async () => {
       await api.save(b.id, { title });
       await load();
@@ -48,7 +52,7 @@ export function HomePage() {
   };
 
   const remove = (b: BoardSummary) => {
-    if (!confirm(`${t.confirmDelete}\n\n${b.title}`)) return;
+    setBusy(null);
     return attempt(async () => {
       await api.remove(b.id);
       await load();
@@ -98,10 +102,32 @@ export function HomePage() {
                       {t.updated}: {date.format(b.updatedAt)}
                     </span>
                   </a>
-                  <div className="board-actions">
-                    <button className="btn small ghost" onClick={() => rename(b)}>{t.rename}</button>
-                    <button className="btn small ghost danger" onClick={() => remove(b)}>{t.delete}</button>
-                  </div>
+                  {busy?.id === b.id && busy.mode === "rename" ? (
+                    <form
+                      className="board-actions board-ask"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        void rename(b, busy.title);
+                      }}
+                      onKeyDown={(e) => e.key === "Escape" && setBusy(null)}
+                    >
+                      <input aria-label={t.rename} value={busy.title} autoFocus onFocus={(e) => e.currentTarget.select()}
+                        onChange={(e) => setBusy({ ...busy, title: e.target.value })} />
+                      <button className="btn small primary" type="submit" disabled={!busy.title.trim()}>{t.rename}</button>
+                      <button className="btn small ghost" type="button" onClick={() => setBusy(null)}>{t.cancel}</button>
+                    </form>
+                  ) : busy?.id === b.id && busy.mode === "delete" ? (
+                    <div className="board-actions board-ask" role="alert" onKeyDown={(e) => e.key === "Escape" && setBusy(null)}>
+                      <span className="error small">{t.confirmDelete}</span>
+                      <button className="btn small danger" autoFocus onClick={() => void remove(b)}>{t.delete}</button>
+                      <button className="btn small ghost" onClick={() => setBusy(null)}>{t.cancel}</button>
+                    </div>
+                  ) : (
+                    <div className="board-actions">
+                      <button className="btn small ghost" onClick={() => setBusy({ id: b.id, mode: "rename", title: b.title })}>{t.rename}</button>
+                      <button className="btn small ghost danger" onClick={() => setBusy({ id: b.id, mode: "delete", title: b.title })}>{t.delete}</button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

@@ -5,6 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { ALGO_PRESETS, ALGO_TOPICS, renderAlgo, SORT_ALGOS, upgradeAlgo, type AlgoSpec, type PatternAlgo } from "../src/math/algo.ts";
+import { farmCalls } from "../src/math/algoRecur.ts";
 
 const w = en.algoWords;
 const text = (spec: AlgoSpec) => [...renderAlgo(spec, w).svg.matchAll(/<text[^>]*>(.*?)<\/text>/g)].map((m) => m[1].replace(/<[^>]+>/g, "").replace(/&amp;/g, "&")).join(" ").replace(/\s+/g, " ");
@@ -87,6 +88,23 @@ test("recursion and backtracking", () => {
   has(r("queens", "6"), "4 solution(s) for n = 6");
   has(r("subsets", "", false, "3, 5, 6, 7", "15"), "1 subset(s) add up to 15: {3, 5, 7}");
   assert.throws(() => renderAlgo(r("fib", "9"), w), "fib without memo is limited to small n");
+});
+
+test("divide and conquer: the farm splits into the biggest even squares, Euclid's algorithm", () => {
+  const f = (data: string, step?: number) => ({ topic: "recur", problem: "farm", n: "", memo: false, data, target: "", ...(step === undefined ? {} : { step }) }) as AlgoSpec;
+  // 1680 × 640: two 640-squares leave 400 × 640, then 400 × 240, 160 × 240, 160 × 80, which 80 splits evenly.
+  assert.deepEqual(farmCalls(1680, 640).map((c) => [c.w, c.h, c.s, c.k]), [[1680, 640, 640, 2], [400, 640, 400, 1], [400, 240, 240, 1], [160, 240, 160, 1], [160, 80, 80, 2]]);
+  has(f("1680, 640"), "The biggest square plot is 80 × 80 m: the 1680 × 640 farm splits evenly into 21 × 8 = 168 plots", "splits evenly: base case");
+  // The other way round is the same farm, lying down.
+  assert.equal(renderAlgo(f("640, 1680"), w).svg, renderAlgo(f("1680, 640"), w).svg);
+  // On the slider, the answer waits for the last call; the first step shows the strip still to split.
+  const first = renderAlgo(f("1680, 640", 0), w);
+  assert.equal(first.steps, 4); // the first call is always there, then one step per call
+  assert.ok(!text(f("1680, 640", 0)).includes("biggest square plot") && text(f("1680, 640", 0)).includes("400 × 640"));
+  has(f("7, 7"), "1 × 1 = 1 plots");
+  has(f("34, 21"), "1 × 1 m");
+  assert.doesNotMatch(renderAlgo(f("100000, 1"), w).svg, /NaN|undefined/);
+  for (const bad of ["0, 5", "5", "3, 4, 5", "1.5, 2", "200000, 3"]) assert.throws(() => renderAlgo(f(bad), w), bad);
 });
 
 test("string matching", () => {

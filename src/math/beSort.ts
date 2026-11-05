@@ -3,15 +3,17 @@
 // compares that swap nothing play themselves, and a pass with no swap ends the sort). Insertion sort: tap the gap the
 // key drops into. Selection sort: tap the smallest of the unsorted part. Merge: tap the head of the run that goes out
 // next (a tie goes to the left run, so equal values keep their order). Partition (Lomuto, the last item the pivot): tap
-// the next item smaller than the pivot, and it swaps behind the wall; the pivot lands at the end by itself. A wrong tap
+// the next item smaller than the pivot, and it swaps behind the wall; the pivot lands at the end by itself. Quicksort:
+// the same partition on each part in turn, the left part before the right, and once nothing smaller is left the player
+// taps the pivot to land it at the wall; parts of one item are in place by themselves. A wrong tap
 // is not made, and says the rule it broke. Kept free of React: the run of an algorithm is worked out once, as the
 // pictures before each move and the moves themselves, and the board only counts how far along it the player is.
 import { cell, txt } from "./algoArrays";
 import type { EndlessGame, TryGame } from "./ladder";
 import { rng } from "./random";
 
-export type SortAlgo = "bubble" | "insertion" | "selection" | "merge" | "partition";
-export const SORT_ALGOS: readonly SortAlgo[] = ["bubble", "insertion", "selection", "merge", "partition"];
+export type SortAlgo = "bubble" | "insertion" | "selection" | "merge" | "partition" | "quick";
+export const SORT_ALGOS: readonly SortAlgo[] = ["bubble", "insertion", "selection", "merge", "partition", "quick"];
 export type SortLevel = 1 | 2 | 3;
 /** The items to sort; for a merge, two sorted runs, the second starting at `mid` (elsewhere `mid` is the length). */
 export type SortTask = { algo: SortAlgo; a: number[]; mid: number };
@@ -19,18 +21,20 @@ export type SortTask = { algo: SortAlgo; a: number[]; mid: number };
 /**
  * What the board shows before a move: bubble sort's pass scanning on from `at` with everything from `end` settled;
  * insertion sort's key a[i] with a[0..i) sorted; selection sort's a[0..i) in place; a merge's two runs taken up to p
- * and q; a partition's wall (a[0..wall) smaller than the pivot, the last item) with the scan at `at`. `done` is the
- * last picture, after the last move.
+ * and q; a partition's wall (a[0..wall) smaller than the pivot, the last item) with the scan at `at`; quicksort's
+ * part a[lo..hi] being partitioned around a[hi], the same way from lo, with `fixed` the places already final. `done`
+ * is the last picture, after the last move.
  */
 export type Look =
   | { algo: "bubble"; a: number[]; at: number; end: number }
   | { algo: "insertion" | "selection"; a: number[]; i: number }
   | { algo: "merge"; left: number[]; right: number[]; p: number; q: number; out: number[] }
-  | { algo: "partition"; a: number[]; wall: number; at: number };
+  | { algo: "partition"; a: number[]; wall: number; at: number }
+  | { algo: "quick"; a: number[]; lo: number; hi: number; wall: number; at: number; fixed: boolean[] };
 export type Done = { algo: SortAlgo; a: number[]; done: true; pivotAt: number };
 
-export type SortNotice = "earlyStop" | "inPlace" | "selfSwap" | "runEmpty" | "landed" | "streak10";
-export const SORT_NOTICES: SortNotice[] = ["earlyStop", "inPlace", "selfSwap", "runEmpty", "landed", "streak10"];
+export type SortNotice = "earlyStop" | "inPlace" | "selfSwap" | "runEmpty" | "lopsided" | "landed" | "streak10";
+export const SORT_NOTICES: SortNotice[] = ["earlyStop", "inPlace", "selfSwap", "runEmpty", "lopsided", "landed", "streak10"];
 
 /** The algorithm's run: the picture before each move, the moves, the last picture, and what the run showed on the way. */
 export type SortRun = { task: SortTask; looks: Look[]; moves: number[]; end: Done; seen: SortNotice[] };
@@ -106,6 +110,37 @@ function partitionRun(a: number[], looks: Look[], moves: number[], seen: Set<Sor
   seen.add("landed");
   return wall;
 }
+/** Quicksort, Lomuto: partition a[lo..hi] around a[hi], land it, then the left part, then the right. */
+function quickRun(a: number[], looks: Look[], moves: number[], seen: Set<SortNotice>) {
+  const fixed = a.map(() => false);
+  const sort = (lo: number, hi: number) => {
+    if (lo > hi) return;
+    if (lo === hi) return void (fixed[lo] = true);
+    const pivot = a[hi];
+    let wall = lo;
+    let at = lo;
+    const look = () => looks.push({ algo: "quick", a: [...a], lo, hi, wall, at, fixed: [...fixed] });
+    for (let j = lo; j < hi; j++)
+      if (a[j] < pivot) {
+        look();
+        moves.push(j);
+        [a[wall], a[j]] = [a[j], a[wall]];
+        wall++;
+        at = j + 1;
+      }
+    at = hi;
+    look();
+    moves.push(hi);
+    [a[wall], a[hi]] = [a[hi], a[wall]];
+    fixed[wall] = true;
+    seen.add("landed");
+    // A pivot at an end of a part of three or more leaves one side empty: the bad case, O(n²) on sorted input.
+    if (hi - lo >= 2 && (wall === lo || wall === hi)) seen.add("lopsided");
+    sort(lo, wall - 1);
+    sort(wall + 1, hi);
+  };
+  sort(0, a.length - 1);
+}
 
 /** The run of the task's algorithm, worked out once. */
 export function sortRun(task: SortTask): SortRun {
@@ -118,6 +153,7 @@ export function sortRun(task: SortTask): SortRun {
   else if (task.algo === "insertion") insertionRun(a, looks, moves, seen);
   else if (task.algo === "selection") selectionRun(a, looks, moves, seen);
   else if (task.algo === "merge") a = mergeRun(task, looks, moves, seen);
+  else if (task.algo === "quick") quickRun(a, looks, moves, seen);
   else pivotAt = partitionRun(a, looks, moves, seen);
   return { task, looks, moves, end: { algo: task.algo, a, done: true, pivotAt }, seen: SORT_NOTICES.filter((k) => seen.has(k)) };
 }
@@ -130,7 +166,8 @@ export type SortWhy =
   | "stopsAfter" | "slidesPast"
   | "sortedPart" | "notMin" | "firstMin"
   | "smaller" | "tie"
-  | "behind" | "notSmaller" | "scanFirst";
+  | "behind" | "notSmaller" | "scanFirst"
+  | "fixed" | "otherPart" | "pivotEarly" | "landNow";
 export type SortCheck = { ok: true } | { ok: false; why: SortWhy; vars: Record<string, number> };
 
 /** Whether `tap` is the move the algorithm makes at step k, and if not, the rule it broke. */
@@ -163,6 +200,17 @@ export function checkTap(run: SortRun, k: number, tap: number): SortCheck {
       const a = look.a;
       const p = a[a.length - 1];
       if (tap < look.wall) return no("behind", { x: a[tap] });
+      if (a[tap] >= p) return no("notSmaller", { x: a[tap], p });
+      return no("scanFirst", { x: a[want], p });
+    }
+    case "quick": {
+      const a = look.a;
+      const p = a[look.hi];
+      if (look.fixed[tap]) return no("fixed", { x: a[tap] });
+      if (tap < look.lo || tap > look.hi) return no("otherPart", { x: a[tap] });
+      if (tap < look.wall) return no("behind", { x: a[tap] });
+      if (want === look.hi) return no("landNow", { p });
+      if (tap === look.hi) return no("pivotEarly", { x: a[want], p });
       if (a[tap] >= p) return no("notSmaller", { x: a[tap], p });
       return no("scanFirst", { x: a[want], p });
     }
@@ -215,6 +263,12 @@ export function sortTask(spec: Spec, next: () => number): SortTask {
     const t: SortTask = { algo, a, mid: a.length };
     const run = sortRun(t);
     if (algo === "partition" && (run.moves.length < 2 || run.moves.length > a.length - 3 || run.moves.every((j, m) => j === m))) continue;
+    // Quicksort: at least one item really jumps the wall, and the first pivot splits the row into two real parts.
+    if (algo === "quick") {
+      const first = run.looks.filter((l) => l.algo === "quick" && l.lo === 0 && l.hi === a.length - 1).length - 1;
+      const jumps = run.looks.some((l, k) => l.algo === "quick" && run.moves[k] !== l.hi && run.moves[k] !== l.wall);
+      if (!jumps || first < 2 || first > a.length - 3) continue;
+    }
     if (spec.kind === "dups" && algo === "selection" && !run.looks.some((l, k) => l.algo === "selection" && l.a.slice(l.i).filter((x) => x === l.a[run.moves[k]]).length > 1)) continue;
     return t;
   }
@@ -230,6 +284,9 @@ export const SORT_LADDER: (Spec & { seed: number })[] = [
   { algo: "merge", n: 6, seed: 2107 },
   { algo: "partition", n: 7, seed: 2108 },
   { algo: null, n: 8, seed: 2116 },
+  // Added after the rest, so the stars a saved ladder keeps by place stay on their puzzles.
+  { algo: "quick", n: 6, seed: 2109 },
+  { algo: "quick", n: 8, seed: 2110 },
 ];
 /** The endless run: easy, the three simple sorts on 5 or 6 items; medium, merge and partition too on 7; hard, any on 8 or 9, some alike. */
 export function levelSpec(level: SortLevel, next: () => number): Spec {
@@ -354,6 +411,21 @@ export function sortSvg(run: SortRun, k: number): SortPic {
       parts.push(wallLine(rowX(look.wall) - (STEP - CELL) / 2, y, CELL));
       if (look.at < n - 1) parts.push(marker(rowX(look.at) + CELL / 2, y + CELL + 6));
       return { w, h: y + CELL + 30, body: parts.join(""), targets };
+    }
+    case "quick": {
+      const y = 24;
+      look.a.forEach((v, i) => {
+        const inPart = i >= look.lo && i <= look.hi;
+        const role = look.fixed[i] ? "sorted" : !inPart ? "idle" : i === look.hi ? "pivot" : i < look.wall ? "key" : i < look.at ? "compare" : "plain";
+        parts.push(cell(rowX(i), y, CELL, CELL, String(v), role, 18, true));
+        targets.push({ x: rowX(i), y, w: CELL, h: CELL, move: i, kind: "cell", v });
+      });
+      // The part being sorted, bracketed underneath.
+      const [x0, x1, yb] = [rowX(look.lo) - 4, rowX(look.hi) + CELL + 4, y + CELL + 26];
+      parts.push(`<path d="M ${x0} ${yb - 6} V ${yb} H ${x1} V ${yb - 6}" fill="none" stroke="${BLUE}" stroke-width="2"/>`);
+      parts.push(wallLine(rowX(look.wall) - (STEP - CELL) / 2, y, CELL));
+      if (look.at < look.hi) parts.push(marker(rowX(look.at) + CELL / 2, y + CELL + 4));
+      return { w, h: yb + 14, body: parts.join(""), targets };
     }
   }
 }

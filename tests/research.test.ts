@@ -1144,6 +1144,22 @@ test("homework's repair slot (issue #303): a stuck student's homework starts wit
   assert.equal(d.homework.rows.find((r: { student: string }) => r.student === d.stuck[0].rows[0].student).items[0].why, "repair");
 });
 
+test("a class nobody has joined can be deleted by the teacher; one with students is kept", async () => {
+  const listed = async (code: string) => (await call("GET", "/api/classes", undefined, TEACHER)).body.some((c: { code: string }) => c.code === code);
+  const empty = (await call("POST", "/api/classes", { name: "Spare" }, TEACHER)).body.code as string;
+  await call("POST", `/api/classes/${empty}/phase`, { phase: "closed" }, TEACHER);
+  assert.equal((await call("DELETE", `/api/classes/${empty}`)).status, 403, "the teacher's");
+  assert.equal((await call("DELETE", `/api/classes/${empty.toLowerCase()}`, undefined, TEACHER)).status, 204, "the code in any case");
+  assert.equal(await listed(empty), false);
+  assert.equal((await call("POST", "/api/students", { class: empty })).status, 404, "its code no longer joins");
+  assert.equal((await call("DELETE", `/api/classes/${empty}`, undefined, TEACHER)).status, 404);
+  // Joined: kept, with its student.
+  const used = (await call("POST", "/api/classes", { name: "Used" }, TEACHER)).body.code as string;
+  assert.equal((await call("POST", "/api/students", { class: used })).status, 201);
+  assert.equal((await call("DELETE", `/api/classes/${used}`, undefined, TEACHER)).status, 409);
+  assert.equal(await listed(used), true);
+});
+
 test("a class out of the study (issue #299): homework at any time but during a test, out of the all-classes exports, back in only before homework", async () => {
   const { code, study } = (await call("POST", "/api/classes", { name: "Pilot", skills: ["fractions"], testLength: 4 }, TEACHER)).body;
   assert.equal(study, true, "every class starts in the study");

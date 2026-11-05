@@ -466,6 +466,21 @@ export async function handleResearch(
       ? send(res, 204) : send(res, 404, { error: "no such stuck student" });
   }
 
+  // A class deleted: only one nobody has joined, so no student's records or study data can go with it (404 for no
+  // such class, 409 once someone has joined; close it instead).
+  if (resource === "classes" && id && !sub && req.method === "DELETE") {
+    teacher(req);
+    const code = normalizeCode(decodeURIComponent(id));
+    const gone = transaction(db, () => {
+      if (!stmt(db, "SELECT 1 FROM classes WHERE code = ?").get(code)) return 404;
+      if (stmt(db, "SELECT 1 FROM students WHERE class_code = ? LIMIT 1").get(code)) return 409;
+      stmt(db, "DELETE FROM class_phases WHERE class_code = ?").run(code);
+      stmt(db, "DELETE FROM classes WHERE code = ?").run(code);
+      return 204;
+    });
+    return gone === 204 ? send(res, 204) : send(res, gone, { error: gone === 404 ? "no such class" : "the class has students" });
+  }
+
   if (resource === "classes" && !id) {
     teacher(req);
     if (req.method === "GET") {

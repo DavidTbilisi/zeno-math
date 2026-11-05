@@ -104,6 +104,10 @@ test("the endless run opens once every puzzle is clean, a level at a time by a s
   assert.ok(levelOpen(with_({ runs: [5, 0, 0] }), 2) && !levelOpen(with_({ runs: [5, 0, 0] }), 3));
   assert.ok(levelOpen(with_({ runs: [0, 1, 0] }), 2));
   assert.ok(!clockOpen(with_({ runs: [9, 9, 4] })) && clockOpen(with_({ runs: [0, 0, 5] })));
+  // A teacher has every level and the clock open on a fresh ladder.
+  const fresh = with_({ stars: [0, 0, 0] });
+  assert.ok(([1, 2, 3] as const).every((l) => !levelOpen(fresh, l)) && !clockOpen(fresh));
+  assert.ok(([1, 2, 3] as const).every((l) => levelOpen(fresh, l, true)) && clockOpen(fresh, true));
 });
 
 test("the clock's pace: a running average of clean times, beaten by a fifth more and never under a second and a half", () => {

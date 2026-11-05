@@ -44,6 +44,18 @@ function plainMoves(t: SortTask): number[] {
     while (p < t.mid && q < a.length) out.push(a[p] <= a[q] ? (p++, 0) : (q++, 1));
   }
   if (t.algo === "partition") a.slice(0, -1).forEach((x, j) => x < a[a.length - 1] && out.push(j));
+  if (t.algo === "quick") {
+    const qs = (lo: number, hi: number) => {
+      if (lo >= hi) return;
+      let i = lo;
+      for (let j = lo; j < hi; j++) if (a[j] < a[hi]) ([a[i], a[j]] = [a[j], a[i]]), out.push(j), i++;
+      [a[i], a[hi]] = [a[hi], a[i]];
+      out.push(hi);
+      qs(lo, i - 1);
+      qs(i + 1, hi);
+    };
+    qs(0, a.length - 1);
+  }
   return out;
 }
 
@@ -79,7 +91,7 @@ test("every task is worth playing: never sorted already, merge runs that interle
   }
   assert.deepEqual(
     SORT_LADDER.map((s, stage) => [sortNow({ mode: "puzzle", stage, level: 1, seed: 1 }).algo, s.n]),
-    [["bubble", 5], ["bubble", 6], ["insertion", 5], ["insertion", 7], ["selection", 6], ["selection", 6], ["merge", 6], ["partition", 7], ["merge", 8]],
+    [["bubble", 5], ["bubble", 6], ["insertion", 5], ["insertion", 7], ["selection", 6], ["selection", 6], ["merge", 6], ["partition", 7], ["merge", 8], ["quick", 6], ["quick", 8]],
   );
   // The repeated values puzzle has two smallest alike to choose from at least once.
   const dups = sortRun(sortNow({ mode: "puzzle", stage: 5, level: 1, seed: 1 }));
@@ -131,6 +143,18 @@ test("a wrong tap is refused with the rule it broke, worked by hand", () => {
   assert.deepEqual(why(partition, 0, 3), ["scanFirst", { x: 2, p: 5 }]);
   assert.deepEqual(why(partition, 1, 0), ["behind", { x: 2 }]);
   assert.deepEqual(sortRun(partition).end, { algo: "partition", a: [2, 1, 5, 7, 9], done: true, pivotAt: 2 });
+  // Quicksort of 3 7 1 8 2 5: around 5 take 3, 1, 2 and land 5 at place 3; then 3 1 2 around 2 takes 1 and lands 2;
+  // then 7 8 around 8 takes 7 and lands 8 where it is.
+  const quick: SortTask = { algo: "quick", a: [3, 7, 1, 8, 2, 5], mid: 6 };
+  assert.deepEqual(sortRun(quick).moves, [0, 2, 4, 5, 1, 2, 4, 5]);
+  assert.deepEqual(why(quick, 0, 1), ["notSmaller", { x: 7, p: 5 }]);
+  assert.deepEqual(why(quick, 0, 2), ["scanFirst", { x: 3, p: 5 }]);
+  assert.deepEqual(why(quick, 0, 5), ["pivotEarly", { x: 3, p: 5 }]);
+  assert.deepEqual(why(quick, 1, 0), ["behind", { x: 3 }]);
+  assert.deepEqual(why(quick, 3, 3), ["landNow", { p: 5 }]);
+  assert.deepEqual(why(quick, 4, 3), ["fixed", { x: 5 }]);
+  assert.deepEqual(why(quick, 4, 4), ["otherPart", { x: 7 }]);
+  assert.deepEqual(sortRun(quick).end.a, [1, 2, 3, 5, 7, 8]);
 });
 
 test("stars and notices: no miss three stars and what the run showed, ten in a row", () => {
@@ -146,6 +170,8 @@ test("stars and notices: no miss three stars and what the run showed, ten in a r
   assert.deepEqual(sortRun({ algo: "merge", a: [1, 2, 3, 9], mid: 2 }).seen, ["runEmpty"]);
   assert.deepEqual(sortRun({ algo: "merge", a: [1, 4, 2, 3], mid: 2 }).seen, []);
   assert.deepEqual(sortRun({ algo: "partition", a: [7, 2, 9, 1, 5], mid: 5 }).seen, ["landed"]);
+  assert.deepEqual(sortRun({ algo: "quick", a: [3, 7, 1, 8, 2, 5], mid: 6 }).seen, ["landed"]);
+  assert.deepEqual(sortRun({ algo: "quick", a: [1, 2, 3, 4], mid: 4 }).seen, ["lopsided", "landed"]);
 });
 
 test("every picture draws without a gap, with one place to tap per move the algorithm could make", () => {
@@ -163,7 +189,7 @@ test("every picture draws without a gap, with one place to tap per move the algo
       assert.ok(moves.includes(run.moves[k]), `${where} step ${k}`);
       assert.equal(new Set(moves.map((m, i) => `${pic.targets[i].kind}${m}`)).size, moves.length, where);
       const n = t.a.length;
-      const want = look.algo === "bubble" ? n - 1 : look.algo === "insertion" ? look.i + 1 : look.algo === "selection" ? n : look.algo === "merge" ? 2 : n - 1;
+      const want = look.algo === "bubble" ? n - 1 : look.algo === "insertion" ? look.i + 1 : look.algo === "selection" ? n : look.algo === "merge" ? 2 : look.algo === "quick" ? n : n - 1;
       assert.equal(pic.targets.length, want, `${where} step ${k}`);
     }
   }

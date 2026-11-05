@@ -18,7 +18,7 @@ export type SortView = "cells" | "bars";
 export type SearchAlgo = "binary" | "linear" | "twoptr" | "window";
 export type PatternAlgo = "twoptr" | "water" | "trap" | "dedupe" | "partition" | "cycle" | "window" | "distinct" | "minsum" | "prefix" | "mono" | "kadane";
 export type GraphAlgo = "bfs" | "dfs" | "dijkstra" | "bellman" | "floyd" | "prim" | "kruskal" | "unionfind" | "topo";
-export type RecurProblem = "fib" | "fact" | "hanoi" | "queens" | "subsets";
+export type RecurProblem = "fib" | "fact" | "hanoi" | "queens" | "subsets" | "farm";
 export type StringAlgo = "naive" | "kmp" | "rk";
 export type TreeKind = "bst" | "avl" | "minheap" | "maxheap";
 export type DsKind = "stack" | "queue" | "chaining" | "probing";
@@ -30,7 +30,7 @@ export const SORT_VIEWS: SortView[] = ["cells", "bars"];
 export const SEARCH_ALGOS: SearchAlgo[] = ["binary", "linear"];
 export const PATTERN_ALGOS: PatternAlgo[] = ["twoptr", "water", "trap", "dedupe", "partition", "cycle", "window", "distinct", "minsum", "prefix", "mono", "kadane"];
 export const GRAPH_ALGOS: GraphAlgo[] = ["bfs", "dfs", "dijkstra", "bellman", "floyd", "prim", "kruskal", "unionfind", "topo"];
-export const RECUR_PROBLEMS: RecurProblem[] = ["fib", "fact", "hanoi", "queens", "subsets"];
+export const RECUR_PROBLEMS: RecurProblem[] = ["fib", "fact", "hanoi", "queens", "subsets", "farm"];
 export const STRING_ALGOS: StringAlgo[] = ["naive", "kmp", "rk"];
 export const TREE_KINDS: TreeKind[] = ["bst", "avl", "minheap", "maxheap"];
 export const DS_KINDS: DsKind[] = ["stack", "queue", "chaining", "probing"];
@@ -50,7 +50,7 @@ export type DpSpec = { topic: "dp"; problem: DpProblem; a: string; b: string; c:
 /** master: T(n) = a·T(n/b) + Θ(n^d) · compare: growth rates up to n. */
 export type GrowthSpec = { topic: "growth"; mode: GrowthMode; a: string; b: string; d: string; n: string; step?: number };
 
-/** n for fib / fact / hanoi / queens; data (the numbers) and target for subsets; memo for fib. */
+/** n for fib / fact / hanoi / queens; data (the numbers) and target for subsets; data "width, height" for farm; memo for fib. */
 export type RecurSpec = { topic: "recur"; problem: RecurProblem; n: string; memo: boolean; data: string; target: string; step?: number };
 export type StringSpec = { topic: "string"; algo: StringAlgo; text: string; pattern: string; step?: number };
 /**
@@ -162,8 +162,11 @@ export type AlgoWords = {
   recur: {
     names: Record<RecurProblem, string>;
     info: Record<RecurProblem, string>;
-    legend: { repeated: string; cached: string; base: string; move: string; found: string; pruned: string; deadEnd: string };
-    cols: { action: string };
+    legend: { repeated: string; cached: string; base: string; move: string; found: string; pruned: string; deadEnd: string; left: string };
+    cols: { action: string; farm: string; squares: string; left: string };
+    farmField: string;
+    farmEven: string;
+    farmAnswer: string;
     calls: string;
     memoOn: string;
     memoOff: string;
@@ -343,6 +346,8 @@ export const ALGO_PRESETS: { [K in AlgoTopic]: { label: string; spec: AlgoSpecOf
     { label: "4 queens", spec: { topic: "recur", problem: "queens", n: "4", memo: false, data: "", target: "" } },
     { label: "8 queens", spec: { topic: "recur", problem: "queens", n: "8", memo: false, data: "", target: "" } },
     { label: "Subset sum · 3 5 6 7 → 15", spec: { topic: "recur", problem: "subsets", n: "", memo: false, data: "3, 5, 6, 7", target: "15" } },
+    { label: "Farm · 1680 × 640", spec: { topic: "recur", problem: "farm", n: "", memo: false, data: "1680, 640", target: "" } },
+    { label: "Farm · 34 × 21", spec: { topic: "recur", problem: "farm", n: "", memo: false, data: "34, 21", target: "" } },
   ],
   string: [
     { label: "Naive · ABABC in ABABABCAB", spec: { topic: "string", algo: "naive", text: "ABABABCAB", pattern: "ABABC" } },
