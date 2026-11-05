@@ -5,6 +5,7 @@
 // did. An operation the code would not make is not made: the stage shakes and the line names the rule it broke. No miss
 // earns three stars, one two. Nine puzzles open in turn, and the endless run keeps a streak of runs made without a
 // miss. Built on the game shell (useGame), which does the ladder, the sounds and the cheer.
+import { CodeLine } from "./CodeLine";
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { apply, checkOp, CODE, expect, LB_LADDER, LB_NOTICES, lbNotice, lbNow, lbRun, lbStars, lbSvg, logText, replay, serverName, type LbAttempt, type LiveBeBalance } from "../math/beBalance";
 import { starText } from "./ladderUi";
@@ -156,7 +157,7 @@ export function BeBalance({ state: d, set, w: words, svgRef }: PieceProps<"beBal
           <div className="search-side">
             <div className="search-code" role="group" aria-label={w.code}>
               {CODE[task.algo].map((l, i) => (
-                <div key={i} className={!d.done && m.lines.includes(i) ? "lit" : undefined}>{l}</div>
+                <div key={i} className={!d.done && m.lines.includes(i) ? "lit" : undefined}><CodeLine text={l} /></div>
               ))}
             </div>
             <ol className="search-log" aria-label={w.log} aria-live="polite" start={m.log.length - log.length + 1}>
@@ -168,7 +169,7 @@ export function BeBalance({ state: d, set, w: words, svgRef }: PieceProps<"beBal
         </div>
       </Stage>
       <p className="live-said info">{fill(w.moves, { k: d.ops.length, n: run.ops.length })}</p>
-      <GameActions game={game} g={g} done={d.done} />
+      <GameActions game={game} g={g} code done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

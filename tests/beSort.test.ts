@@ -7,7 +7,7 @@ import { en } from "../src/locales/en.ts";
 import { ka } from "../src/locales/ka.ts";
 import { ru } from "../src/locales/ru.ts";
 import { rng } from "../src/math/random.ts";
-import { checkTap, levelSpec, SORT_ALGOS, SORT_LADDER, sortNotice, sortNow, sortRun, sortStars, sortSvg, sortTask, type SortLevel, type SortTask } from "../src/math/beSort.ts";
+import { checkTap, levelSpec, moveLine, SORT_ALGOS, SORT_LADDER, SORT_PLAY_CODE, sortCodeSvg, sortNotice, sortNow, sortRun, sortStars, sortSvg, sortTask, type SortLevel, type SortTask } from "../src/math/beSort.ts";
 
 const ascending = (a: number[]) => [...a].sort((x, y) => x - y);
 const tasks = (): { t: SortTask; where: string }[] => [
@@ -193,6 +193,43 @@ test("every picture draws without a gap, with one place to tap per move the algo
       assert.equal(pic.targets.length, want, `${where} step ${k}`);
     }
   }
+});
+
+test("the code view: the same places to tap, no colour telling anything, and the line each move ran", () => {
+  // What carries meaning by colour alone in the coloured picture: the role fills (key, compared, sorted, pivot, idle),
+  // the wall and the bracket. In the code view colour only edges a cell a named pointer points at.
+  const meaning = /#d0ebff|#ffe8cc|#d3f9d8|#f3d9fa|#f8f9fa" stroke="#dee2e6|stroke-width="4"|<path d="M [\d.]+ [\d.]+ V/;
+  for (const { t, where } of tasks().slice(0, 40)) {
+    const run = sortRun(t);
+    for (let k = 0; k <= run.moves.length; k++) {
+      const [pic, code] = [sortSvg(run, k), sortCodeSvg(run, k)];
+      assert.doesNotMatch(code.body, /NaN|undefined/, `${where} step ${k}`);
+      assert.deepEqual(code.targets.map((x) => `${x.kind}${x.move}`), pic.targets.map((x) => `${x.kind}${x.move}`), `${where} step ${k}`);
+      // Chips are buttons, not meaning: leave them out before looking for colours.
+      assert.doesNotMatch(code.body.replace(/<rect[^>]*rx="12"[^>]*\/>/g, ""), meaning, `${where} step ${k}`);
+      // Every coloured cell edge belongs to a pointer: as many as there are cells pointed at.
+      const edges = (code.body.match(/fill="none" stroke="#[0-9a-f]{6}" stroke-width="2.6"/g) ?? []).length;
+      assert.ok(edges <= (code.body.match(/>↑</g) ?? []).length, `${where} step ${k}`);
+      if (k < run.moves.length) {
+        const line = moveLine(run, k);
+        assert.ok(line >= 0 && line < SORT_PLAY_CODE[t.algo].length, `${where} move ${k}`);
+      }
+    }
+  }
+  // Quicksort's pointers: lo, hi, the wall i and the scan j, by name; a landing move runs the pivot's swap line.
+  const quick = SORT_LADDER.find((s) => s.algo === "quick")!;
+  const q = sortRun(sortTask(quick, rng(quick.seed)));
+  assert.match(sortCodeSvg(q, 0).body, />lo<.*>hi<|>hi<.*>lo</s);
+  const land = q.moves.findIndex((m, i) => m === (q.looks[i] as { hi: number }).hi);
+  assert.equal(moveLine(q, land), 6);
+  assert.equal(moveLine(q, -1), -1);
+  // Under aliases: the same places to tap, the pointers and the values by their new names, in the old colours.
+  const names = { lo: "low", hi: "high", i: "wall" };
+  const aliased = sortCodeSvg(q, 0, names);
+  assert.deepEqual(aliased.targets, sortCodeSvg(q, 0).targets);
+  assert.match(aliased.body, />low<.*>high<|>high<.*>low</s);
+  assert.doesNotMatch(aliased.body, />lo<|>hi</);
+  assert.match(aliased.body, /fill="#2f9e44"[^>]*>low</);
 });
 
 test("the words: every algorithm, rule and notice in every language, with the same blanks", () => {

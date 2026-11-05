@@ -9,6 +9,7 @@
 // is not made, and says the rule it broke. Kept free of React: the run of an algorithm is worked out once, as the
 // pictures before each move and the moves themselves, and the board only counts how far along it the player is.
 import { cell, txt } from "./algoArrays";
+import { highlight, rename, tspans, varColor, type Names } from "./codeStyle";
 import type { EndlessGame, TryGame } from "./ladder";
 import { rng } from "./random";
 
@@ -337,6 +338,209 @@ function chip(x: number, y: number, label: string, on: boolean): string {
 const marker = (x: number, y: number) => `<path d="M ${x} ${y} l -7 12 h 14 z" fill="${BLUE}"/>`;
 const wallLine = (x: number, y: number, h: number) => `<line x1="${x}" y1="${y - 8}" x2="${x}" y2="${y + h + 8}" stroke="#e03131" stroke-width="4" stroke-linecap="round"/>`;
 const slot = (x: number, y: number) => `<rect x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="3" fill="none" stroke="#adb5bd" stroke-width="1.3" stroke-dasharray="5 4"/>`;
+
+// ---------- the code view ----------
+
+/** Each algorithm as the code the player is running, for the code view's panel. */
+export const SORT_PLAY_CODE: Record<SortAlgo, string[]> = {
+  bubble: [
+    "for end in range(n, 1, -1):",
+    "    swapped = False",
+    "    for j in range(end - 1):",
+    "        if a[j] > a[j + 1]:",
+    "            a[j], a[j + 1] = a[j + 1], a[j]",
+    "            swapped = True",
+    "    if not swapped: break",
+  ],
+  insertion: ["for i in range(1, n):", "    key = a.pop(i)", "    j = i", "    while j > 0 and a[j - 1] > key: j -= 1", "    a.insert(j, key)"],
+  selection: ["for i in range(n - 1):", "    m = min(range(i, n), key=lambda k: a[k])", "    a[i], a[m] = a[m], a[i]"],
+  merge: ["i, j, out = 0, 0, []", "while i < len(L) and j < len(R):", "    if L[i] <= R[j]: out.append(L[i]); i += 1", "    else: out.append(R[j]); j += 1", "out += L[i:] + R[j:]"],
+  partition: ["p = a[hi]; i = 0", "for j in range(hi):", "    if a[j] < p:", "        a[i], a[j] = a[j], a[i]; i += 1", "a[i], a[hi] = a[hi], a[i]"],
+  quick: [
+    "def quick(lo, hi):",
+    "    if lo >= hi: return",
+    "    p = a[hi]; i = lo",
+    "    for j in range(lo, hi):",
+    "        if a[j] < p:",
+    "            a[i], a[j] = a[j], a[i]; i += 1",
+    "    a[i], a[hi] = a[hi], a[i]",
+    "    quick(lo, i - 1); quick(i + 1, hi)",
+  ],
+};
+
+/** The line of the code the move made at step m ran (the swap, the insert, the append …); -1 before any move. */
+export function moveLine(run: SortRun, m: number): number {
+  if (m < 0) return -1;
+  switch (run.task.algo) {
+    case "bubble":
+      return 4;
+    case "insertion":
+      return 4;
+    case "selection":
+      return 2;
+    case "merge":
+      return run.moves[m] === 0 ? 2 : 3;
+    case "partition":
+      return 3;
+    case "quick": {
+      const look = run.looks[m] as Extract<Look, { algo: "quick" }>;
+      return run.moves[m] === look.hi ? 6 : 5;
+    }
+  }
+}
+
+const MONO = `font-family="Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"`;
+const monoTxt = (x: number, y: number, s: string, size = 13, anchor = "middle", bold = true, color = "#1e1e1e") =>
+  `<text x="${x}" y="${y}" ${MONO} font-size="${size}" fill="${color}" text-anchor="${anchor}"${bold ? ` font-weight="700"` : ""} xml:space="preserve">${s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</text>`;
+/** A plain cell, the same for every item: what an item is, the pointers say. */
+const plain = (x: number, y: number, v: number) =>
+  `<rect x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="7" fill="#ffffff" stroke="#ced4da" stroke-width="1.3"/>` + txt(x + CELL / 2, y + CELL / 2 + 6.5, String(v), { size: 18, anchor: "middle", bold: true });
+
+/**
+ * Pointers under a row of cells (y is the row's bottom edge): ↑ and the names of the variables that hold that index,
+ * stacked, each in its own colour, and the cell pointed at edged in the first one's; an index at n (one past the end)
+ * points just past the last cell. Returns the drawing and how tall it is.
+ */
+function pointers(ptrs: [string, number][], y: number, n: number, names: Names = {}): { svg: string; h: number } {
+  const at = new Map<number, string[]>();
+  for (const [name, i] of ptrs) if (i >= 0 && i <= n) at.set(i, [...(at.get(i) ?? []), name]);
+  const parts: string[] = [];
+  let deep = 0;
+  for (const [i, here] of at) {
+    const cx = i < n ? rowX(i) + CELL / 2 : rowX(n - 1) + CELL + (STEP - CELL) / 2;
+    if (i < n) parts.push(`<rect x="${rowX(i)}" y="${y - CELL}" width="${CELL}" height="${CELL}" rx="7" fill="none" stroke="${varColor(here[0])}" stroke-width="2.6"/>`);
+    parts.push(monoTxt(cx, y + 14, "↑", 15, "middle", true, varColor(here[0])));
+    // Under its alias, if it has one, in its own colour; a long alias gets smaller rather than run into the next.
+    here.forEach((nm, k) => {
+      const s = rename(nm, names);
+      parts.push(monoTxt(cx, y + 30 + k * 15, s, Math.min(13, (STEP + 4) / (0.6 * s.length)), "middle", true, varColor(nm)));
+    });
+    deep = Math.max(deep, here.length);
+  }
+  return { svg: parts.join(""), h: deep ? 22 + deep * 15 : 0 };
+}
+
+/**
+ * The code view's picture at step k: the same places to tap as sortSvg, told by the code instead of by roles. The cells
+ * are alike; where things are is said by the code's own variables pointing at their cells (j, end, i, key, lo, hi …),
+ * and the values that matter are written out as highlighted code underneath. Colour only repeats a variable's name.
+ */
+export function sortCodeSvg(run: SortRun, k: number, names: Names = {}): SortPic {
+  const look: Look | Done = k < run.moves.length ? run.looks[k] : run.end;
+  const n = run.task.a.length;
+  const w = Math.max(widthFor(n), 320);
+  const parts: string[] = [];
+  const targets: Target[] = [];
+  // The values as code, under the aliases; squeezed to the picture's width if the aliases make it longer than that.
+  const varsLine = (y: number, s: string) => {
+    const room = w - 2 * PAD;
+    const fit = rename(s, names).length * 8.1 > room ? ` textLength="${room}" lengthAdjust="spacingAndGlyphs"` : "";
+    parts.push(`<text x="${PAD}" y="${y}" ${MONO} font-size="13.5" fill="#1e1e1e"${fit} xml:space="preserve">${tspans(highlight(s, names))}</text>`);
+  };
+  const ptrs = (ps: [string, number][], y: number, len = n) => pointers(ps, y, len, names);
+  if ("done" in look) {
+    const y = 24;
+    look.a.forEach((v, i) => parts.push(plain(rowX(i), y, v)));
+    const p = look.algo === "partition" ? ptrs([["i", look.pivotAt]], y + CELL, n) : { svg: "", h: 0 };
+    parts.push(p.svg);
+    const yv = y + CELL + p.h + 26;
+    varsLine(yv, look.algo === "partition" ? `a[:${look.pivotAt}] < p = a[${look.pivotAt}] <= a[${look.pivotAt + 1}:]` : `a = [${look.a.join(", ")}]`);
+    return { w, h: yv + 16, body: parts.join(""), targets };
+  }
+  switch (look.algo) {
+    case "bubble": {
+      const y = 24;
+      look.a.forEach((v, i) => parts.push(plain(rowX(i), y, v)));
+      const p = ptrs([["j", look.at], ...(look.end < n ? [["end", look.end] as [string, number]] : [])], y + CELL, n);
+      parts.push(p.svg);
+      const yc = y + CELL + p.h + 26;
+      for (let g = 0; g + 1 < n; g++) {
+        const cx = rowX(g) + CELL + (STEP - CELL) / 2;
+        parts.push(chip(cx, yc, "⇄", g + 1 < look.end));
+        targets.push({ x: cx - 16, y: yc - 14, w: 32, h: 28, move: g, kind: "gap" });
+      }
+      varsLine(yc + 36, `end = ${look.end}   j = ${look.at}`);
+      return { w, h: yc + 50, body: parts.join(""), targets };
+    }
+    case "insertion": {
+      const [yKey, y] = [10, 104];
+      parts.push(plain(rowX(look.i), yKey, look.a[look.i]));
+      parts.push(monoTxt(rowX(look.i) + CELL + 8, yKey + CELL / 2 + 5, `← ${rename("key", names)}`, 13, "start"));
+      look.a.forEach((v, i) => parts.push(i === look.i ? slot(rowX(i), y) : plain(rowX(i), y, v)));
+      for (let g = 0; g <= look.i; g++) {
+        const cx = rowX(g) - (STEP - CELL) / 2;
+        parts.push(chip(cx, y - 24, "▼", true));
+        targets.push({ x: cx - 16, y: y - 38, w: 32, h: 28, move: g, kind: "gap" });
+      }
+      const p = ptrs([["i", look.i]], y + CELL, n);
+      parts.push(p.svg);
+      const yv = y + CELL + p.h + 22;
+      varsLine(yv, `i = ${look.i}   key = ${look.a[look.i]}   a[:${look.i}] = [${look.a.slice(0, look.i).join(", ")}]`);
+      return { w, h: yv + 16, body: parts.join(""), targets };
+    }
+    case "selection": {
+      const y = 24;
+      look.a.forEach((v, i) => {
+        parts.push(plain(rowX(i), y, v));
+        targets.push({ x: rowX(i), y, w: CELL, h: CELL, move: i, kind: "cell", v });
+      });
+      const p = ptrs([["i", look.i]], y + CELL, n);
+      parts.push(p.svg);
+      const yv = y + CELL + p.h + 22;
+      varsLine(yv, `i = ${look.i}   m = ?   a[m] == min(a[${look.i}:])`);
+      return { w, h: yv + 16, body: parts.join(""), targets };
+    }
+    case "merge": {
+      const runs = [look.left, look.right];
+      const at = [look.p, look.q];
+      const runName = ["L", "R"];
+      const ptrName = ["i", "j"];
+      let y = 14;
+      runs.forEach((r, s) => {
+        parts.push(monoTxt(PAD - 6, y + CELL / 2 + 5, rename(runName[s], names), 14, "end"));
+        r.forEach((v, i) => {
+          parts.push(plain(rowX(i), y, v));
+          if (i === at[s]) targets.push({ x: rowX(i), y, w: CELL, h: CELL, move: s, kind: "head", v });
+        });
+        const p = ptrs([[ptrName[s], at[s]]], y + CELL, r.length);
+        parts.push(p.svg);
+        y += CELL + Math.max(p.h, 10) + 12;
+      });
+      parts.push(monoTxt(PAD - 6, y + CELL / 2 + 5, rename("out", names), 13, "end"));
+      for (let i = 0; i < n; i++) parts.push(i < look.out.length ? plain(rowX(i), y, look.out[i]) : slot(rowX(i), y));
+      const yv = y + CELL + 24;
+      varsLine(yv, `i = ${look.p}   j = ${look.q}   L[i] = ${look.left[look.p]}   R[j] = ${look.right[look.q]}`);
+      return { w: w + 10, h: yv + 16, body: parts.join(""), targets };
+    }
+    case "partition": {
+      const y = 24;
+      look.a.forEach((v, i) => {
+        parts.push(plain(rowX(i), y, v));
+        if (i < n - 1) targets.push({ x: rowX(i), y, w: CELL, h: CELL, move: i, kind: "cell", v });
+      });
+      const p = ptrs([["i", look.wall], ...(look.at < n - 1 ? [["j", look.at] as [string, number]] : []), ["hi", n - 1]], y + CELL, n);
+      parts.push(p.svg);
+      const yv = y + CELL + p.h + 22;
+      varsLine(yv, `p = a[hi] = ${look.a[n - 1]}   i = ${look.wall}   j = ${look.at}`);
+      return { w, h: yv + 16, body: parts.join(""), targets };
+    }
+    case "quick": {
+      const y = 24;
+      look.a.forEach((v, i) => {
+        parts.push(plain(rowX(i), y, v));
+        targets.push({ x: rowX(i), y, w: CELL, h: CELL, move: i, kind: "cell", v });
+      });
+      const p = ptrs([["lo", look.lo], ["hi", look.hi], ["i", look.wall], ...(look.at < look.hi ? [["j", look.at] as [string, number]] : [])], y + CELL, n);
+      parts.push(p.svg);
+      const yv = y + CELL + p.h + 22;
+      // The places already final, as code rather than a colour.
+      const done = look.fixed.flatMap((f, i) => (f ? [i] : []));
+      varsLine(yv, `quick(${look.lo}, ${look.hi})   p = a[hi] = ${look.a[look.hi]}   i = ${look.wall}   j = ${look.at}`);
+      varsLine(yv + 20, `final: ${done.length ? `a[${done.join("], a[")}]` : "—"}`);
+      return { w, h: yv + 36, body: parts.join(""), targets };
+    }
+  }
+}
 
 /** The picture at step k of the run (the last picture once every move is made), and the places to tap on it. */
 export function sortSvg(run: SortRun, k: number): SortPic {

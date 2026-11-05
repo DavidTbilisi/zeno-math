@@ -14,7 +14,9 @@ import { renderRecur } from "./algoRecur";
 import { renderString } from "./algoStrings";
 
 export type SortAlgo = "bubble" | "insertion" | "selection" | "merge" | "quick" | "heap" | "shell" | "counting";
-export type SortView = "cells" | "bars";
+/** code: the algorithm as a program, one line a step, with pointers and the tests written out instead of colours. */
+export type SortView = "cells" | "bars" | "code";
+export type SearchView = "cells" | "code";
 /** twoptr and window have moved to Patterns; boards saved before still carry them here (see upgradeAlgo). */
 export type SearchAlgo = "binary" | "linear" | "twoptr" | "window";
 export type PatternAlgo = "twoptr" | "water" | "trap" | "dedupe" | "partition" | "cycle" | "window" | "distinct" | "minsum" | "prefix" | "mono" | "kadane";
@@ -27,7 +29,8 @@ export type DpProblem = "lcs" | "edit" | "knapsack" | "coins" | "ways" | "stairs
 export type GrowthMode = "master" | "compare" | "bounds";
 
 export const SORT_ALGOS: SortAlgo[] = ["bubble", "insertion", "selection", "shell", "merge", "quick", "heap", "counting"];
-export const SORT_VIEWS: SortView[] = ["cells", "bars"];
+export const SORT_VIEWS: SortView[] = ["cells", "bars", "code"];
+export const SEARCH_VIEWS: SearchView[] = ["cells", "code"];
 export const SEARCH_ALGOS: SearchAlgo[] = ["binary", "linear"];
 export const PATTERN_ALGOS: PatternAlgo[] = ["twoptr", "water", "trap", "dedupe", "partition", "cycle", "window", "distinct", "minsum", "prefix", "mono", "kadane"];
 export const GRAPH_ALGOS: GraphAlgo[] = ["bfs", "dfs", "dijkstra", "bellman", "floyd", "prim", "kruskal", "unionfind", "topo"];
@@ -38,9 +41,10 @@ export const DS_KINDS: DsKind[] = ["stack", "queue", "chaining", "probing"];
 export const DP_PROBLEMS: DpProblem[] = ["lcs", "edit", "knapsack", "coins", "ways", "stairs"];
 export const GROWTH_MODES: GrowthMode[] = ["master", "compare", "bounds"];
 
-export type SortSpec = { topic: "sort"; algo: SortAlgo; data: string; view?: SortView; step?: number };
+/** names: the code view's aliases for its variables, "i = left, j = scan" (blank: none). */
+export type SortSpec = { topic: "sort"; algo: SortAlgo; data: string; view?: SortView; names?: string; step?: number };
 /** target: the value to find (binary, linear), the sum of the pair (two pointers) or the window size k. */
-export type SearchSpec = { topic: "search"; algo: SearchAlgo; data: string; target: string; step?: number };
+export type SearchSpec = { topic: "search"; algo: SearchAlgo; data: string; target: string; view?: SearchView; names?: string; step?: number };
 /** Edges like "A-B 4, B-C 2"; the weight is optional. */
 export type GraphSpec = { topic: "graph"; algo: GraphAlgo; edges: string; directed: boolean; start: string; step?: number };
 export type TreeSpec = { topic: "tree"; kind: TreeKind; data: string; step?: number };
@@ -158,6 +162,7 @@ export type AlgoWords = {
   levelWork: string;
   leaves: string;
   growthHint: string;
+  code: { vars: string; step: string; sortStats: string; countingRange: string; badName: string };
   bounds: {
     names: Record<Bound, string>;
     info: Record<Bound, string>;
