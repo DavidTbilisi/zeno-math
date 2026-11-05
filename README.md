@@ -975,8 +975,18 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     step at a time (the newest one highlighted), and the answer is only stated on the last step
   - *Sorting*: bubble, insertion, selection, Shell, merge, quicksort (Lomuto), heap and counting sort — one row
     per pass, split, merge or partition, with arrows showing where every value moved, the partition being worked
-    on bracketed, comparisons and swaps counted, and the complexity explained; as cells or as bars
-  - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed) and linear search
+    on bracketed, comparisons and swaps counted, and the complexity explained; as cells, as bars, or as **Code**
+  - *Searching*: binary search with lo / mid / hi on every step (sorting the input first if needed) and linear search;
+    as cells or as **Code**
+  - The **Code** view (sorting and searching) runs the algorithm as a short Python-like program, one line per step of
+    the slider, like a debugger: the array in plain cells under their indices, each index variable pointing at its
+    cell (↑ i, ↑ j, ↑ lo, ↑ mid, ↑ hi …), the line about to run marked ▶ in highlighted code, every variable with its
+    value (the call stack too, for quicksort and merge sort), and each test written out with the numbers in
+    (`a[j] > a[j + 1] → 7 > 1 → True`). Colour only repeats the names: each variable has one colour for its arrow,
+    the cell it points at and its name in the code. **Names** gives the variables aliases (`i = left, j = scan`, any
+    alphabet, up to 10 characters): the code, the pointers, the variables and the tests all use the new names, in
+    the old colours, and the code shrinks to fit its box if they make it longer. Whole names only, so `min` and `in`
+    stay, and a keyword argument such as `key=` is left alone
   - *Patterns*: two pointers (a pair with a given sum, the two lines that hold the most water, the rain trapped
     between bars, removing duplicates in place with a slow and a fast pointer, the Dutch national flag's three-way
     partition), Floyd's fast and slow pointers (meeting in the loop, then at its entrance — the repeated number),
@@ -1204,6 +1214,13 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     endless run mixes them, from the three simple sorts on five or six items to all six on eight or nine.
     Seven discoveries (a pass with no swap, a key that stays, the smallest already in place, a run emptied first, a
     lopsided pivot with one side empty — quicksort's O(n²) case — the pivot landed, ten in a row)
+  - **</> Code view** (a switch beside Sound and Calm in every algorithm game, kept in this browser): Be the sort
+    drops its roles, wall and bracket for the code's own variables pointing at their cells (j, end, i, key, lo, hi),
+    the values written out as code underneath, and its program shown with ▶ on the line the last move ran; the prompts
+    and hints speak in code (tap the next a[j] < p). In the other algorithm games the code panel is highlighted like an
+    editor, the running line marked ▶ on a band. Beside the switch, **Names** takes aliases for the variables
+    (`j = scan, end = stop`), kept in this browser for every game: Be the sort's pointers, values, code, prompt and hint
+    take them at once; a part that isn't an alias marks the field red and the plain names stay until it's mended
   - *Be the search*: the player is the computer running a graph search on the memory the code keeps, one operation at
     a time, by drag and drop (or a tap on what to move, then on where it goes). Breadth-first search keeps a queue in
     an array (FIFO): drag queue[head] into v, then each new neighbour of v, in alphabetical order, into queue[tail],

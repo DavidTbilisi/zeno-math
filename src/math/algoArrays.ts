@@ -6,6 +6,7 @@ import type { AlgoWords, DpSpec, DsSpec, GrowthSpec, SearchSpec, SortSpec, Steps
 import { axes, C, compose, curve, esc, fill, FONT, lbl, makeFrame, nf, nt, r2, texAt, textLen, tn, W, wrap, type Caption } from "./chart";
 import type { RenderedSvg } from "./latex";
 import { renderBounds } from "./algoBounds";
+import { renderSearchCode, renderSortCode } from "./algoCode";
 
 // ---------- parsing ----------
 
@@ -200,6 +201,7 @@ export function renderSort(spec: SortSpec, w: AlgoWords, st: Steps): RenderedSvg
   if (a0.length < 2) throw new Error(fill(w.badList, { s: spec.data }));
   const n = a0.length;
   const m = w.sortMore;
+  if (spec.view === "code") return renderSortCode(spec, a0, w, st);
   if (spec.algo === "counting") return renderCounting(spec, a0, w, st);
   const a = a0.slice();
   // ids[i]: which input item is at index i now — rows compare it with the previous row to draw the moves.
@@ -494,6 +496,7 @@ export function renderScan(spec: SearchSpec, w: AlgoWords, st: Steps): RenderedS
 
 export function renderSearch(spec: SearchSpec, w: AlgoWords, st: Steps): RenderedSvg {
   if (spec.algo === "twoptr" || spec.algo === "window") return renderScan(spec, w, st);
+  if (spec.view === "code") return renderSearchCode(spec, w, st);
   const input = parseNums(spec.data, w, 16);
   const t = parseNum(spec.target, w);
   const binary = spec.algo === "binary";

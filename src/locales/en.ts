@@ -861,6 +861,13 @@ export const en = {
     levelWork: "work on each level",
     leaves: "leaves",
     growthHint: "When n doubles: log n grows by 1, n doubles, n² quadruples and 2ⁿ squares. For large n the growth rate matters far more than constant factors.",
+    code: {
+      vars: "variables",
+      step: "Step {k} of {n}: ▶ is the line about to run, ↑ shows the cell each index variable points at.",
+      sortStats: "{c} comparisons and {s} writes to the array: a = {a}",
+      countingRange: "Counting sort's code view takes whole numbers from 0 to 40.",
+      badName: "Names are written like i = left, j = scan (a letter first, at most {n} characters, not a keyword): {s}",
+    },
     bounds: {
       names: {
         O: "O · at most",
@@ -1152,7 +1159,9 @@ export const en = {
   algoDirected: "Directed",
   algoStart: "Start",
   algoView: "View",
-  algoViews: { cells: "Cells", bars: "Bars" },
+  algoViews: { cells: "Cells", bars: "Bars", code: "Code" },
+  algoNames: "Names",
+  algoNamesHint: "i = left, j = scan",
   algoSum: "Sum",
   algoWindow: "Window k",
   algoPivot: "Pivot",
@@ -5405,6 +5414,9 @@ export const en = {
       playEndless: "Keep going: the endless run",
       replay: "Play again from puzzle 1",
       oneStar: "Two stars open the next one: try it again.",
+      codeView: "Code view",
+      codeNames: "Names",
+      codeNamesHint: "i = left, j = scan",
       retry: "Try again",
       endlessLocked: "Get two stars on every puzzle to open the endless run",
       levelLocked: "A streak of {n} on the level before opens this one",
@@ -5908,6 +5920,23 @@ export const en = {
       },
     },
     beSort: {
+      code: "The code",
+      codeAsk: {
+        bubble: "be the pass. Tap ⇄ under the next a[j], a[j + 1] the loop swaps.",
+        insertion: "be the algorithm. Tap ▼ where key = {k} is inserted.",
+        selection: "be the algorithm. Tap a[m], the smallest of a[i:].",
+        merge: "be the algorithm. Tap L[i] or R[j], whichever out.append takes next.",
+        partition: "be the algorithm. Tap the next a[j] < p = {p}.",
+        quick: "be the algorithm. Between lo and hi, tap the next a[j] < p = {p}; when j reaches hi, tap a[hi] = {p} to swap it to a[i].",
+      },
+      codeHint: {
+        bubble: "j runs from 0 up to end − 1: a[j] > a[j + 1] swaps them; the cells from end on are settled.",
+        insertion: "key = {k} moves left while a[j − 1] > key, and is inserted at the first j where that is False.",
+        selection: "a[:i] is sorted. m is the index of the smallest of a[i:]; of two alike, the first.",
+        merge: "L[i] <= R[j] takes L[i] (a tie takes from L), otherwise R[j].",
+        partition: "j scans left to right: a[j] < p swaps a[j] with a[i] and moves i on; the rest stay.",
+        quick: "j scans from lo: a[j] < p swaps with a[i], and i moves on. Then p = a[hi] swaps to a[i], and quick(lo, i − 1) runs before quick(i + 1, hi).",
+      },
       names: {
         bubble: "Bubble sort",
         insertion: "Insertion sort",

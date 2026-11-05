@@ -6,6 +6,8 @@ import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { ALGO_PRESETS, ALGO_TOPICS, renderAlgo, SORT_ALGOS, upgradeAlgo, type AlgoSpec, type PatternAlgo } from "../src/math/algo.ts";
 import { farmCalls } from "../src/math/algoRecur.ts";
+import { searchCode, sortCode } from "../src/math/algoCode.ts";
+import { highlight, parseNames, rename, varColor } from "../src/math/codeStyle.ts";
 import { fnOf, trendOf, type Bound } from "../src/math/algoBounds.ts";
 
 const w = en.algoWords;
@@ -21,12 +23,75 @@ test("sorting: random input, every algorithm, cells and bars", () => {
   for (let k = 0; k < 40; k++) {
     const data = Array.from({ length: 2 + (k % 12) }, rnd).join(", ");
     for (const algo of SORT_ALGOS)
-      for (const view of ["cells", "bars"] as const) {
+      for (const view of ["cells", "bars", "code"] as const) {
         const svg = renderAlgo({ topic: "sort", algo, data, view }, w).svg;
         assert.doesNotMatch(svg, /NaN|undefined/, `${algo} ${view}: ${data}`);
       }
   }
   assert.throws(() => renderAlgo({ topic: "sort", algo: "counting", data: "1, 100", view: "cells" }, w));
+});
+
+test("code view: every sort, run line by line, ends sorted; the frames are the program's", () => {
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 1103515245 + 12345) % 2147483648), seed % 30);
+  for (let k = 0; k < 30; k++) {
+    const a = Array.from({ length: 2 + (k % 12) }, rnd);
+    const want = a.slice().sort((x, y) => x - y);
+    for (const algo of SORT_ALGOS) {
+      const run = sortCode(algo, a);
+      assert.deepEqual(run.frames.at(-1)!.a, want, `${algo}: ${a}`);
+      for (const f of run.frames) {
+        assert.ok(f.line >= 0 && f.line < run.lines.length, `${algo}: line ${f.line}`);
+        for (const [name, i] of f.ptr) assert.ok(Number.isInteger(i), `${algo}: ${name} = ${i}`);
+      }
+    }
+  }
+  // Bubble sort on [3, 1, 2]: 3 > 1 swaps, 3 > 2 swaps, then 1 > 2 is False and nothing swapped ends it.
+  const b = sortCode("bubble", [3, 1, 2]);
+  assert.deepEqual(b.frames.filter((f) => f.test).map((f) => `${f.test!.math} ${f.test!.ok}`), ["3 > 1 true", "3 > 2 true", "1 > 2 false"]);
+  assert.deepEqual(b.frames.map((f) => f.line + 1), [2, 4, 5, 4, 5, 2, 4, 7, 8]);
+  assert.deepEqual(b.frames[1].ptr, [["j", 0], ["j+1", 1]]);
+  assert.equal(b.compares, 3);
+  // Binary search for 7 in [1, 3, 5, 7, 9]: mid = 2 (5 < 7, lo = 3), then mid = 3 hits.
+  const s = searchCode("binary", [1, 3, 5, 7, 9], 7);
+  assert.equal(s.found, 3);
+  assert.deepEqual(s.frames.filter((f) => f.act).map((f) => f.act), ["lo, hi = 0, 4", "mid = (0 + 4) // 2 = 2", "lo = 2 + 1 = 3", "mid = (3 + 4) // 2 = 3", "return 3"]);
+  assert.equal(searchCode("binary", [1, 3], 2).frames.at(-1)!.act, "return -1");
+  const code = (spec: AlgoSpec) => text(spec);
+  const shown = code({ topic: "sort", algo: "bubble", data: "3, 1, 2", view: "code", step: 1 } as AlgoSpec).replace(/&gt;/g, ">").replace(/&lt;/g, "<");
+  assert.ok(shown.includes("a[j] > a[j + 1] → 3 > 1 → True") && shown.includes("▶") && shown.includes("j+1"), shown);
+  has({ topic: "search", algo: "binary", data: "9, 1, 7, 3, 5", target: "7", view: "code" } as AlgoSpec, "Found 7 at index 3 after 2 comparisons", "sorted first");
+  assert.throws(() => renderAlgo({ topic: "sort", algo: "counting", data: "1, 99", view: "code" }, w));
+});
+
+test("code view aliases: written as pairs, applied to whole names everywhere, keeping the colour", () => {
+  assert.deepEqual(parseNames("i = left, j -> scan; key: k2\nlo→низ"), { names: { i: "left", j: "scan", key: "k2", lo: "низ" } });
+  assert.deepEqual(parseNames(""), { names: {} });
+  assert.deepEqual(parseNames(" , "), { names: {} });
+  assert.equal(parseNames("i = left, j").bad, "j");
+  assert.equal(parseNames("i = for").bad, "i = for");
+  assert.equal(parseNames("i = 2x").bad, "i = 2x");
+  assert.equal(parseNames("i = abcdefghijk").bad, "i = abcdefghijk");
+  const names = { i: "left", j: "scan", key: "k2" };
+  // Whole names only (min, in, a stay), and not a keyword argument key=…, but an assignment key = … yes.
+  assert.equal(rename("for i in range(1, n): a[i], a[j] = min(a), i", names), "for left in range(1, n): a[left], a[scan] = min(a), left");
+  assert.equal(rename("m = min(range(i, n), key=lambda k: a[k]); key = a[i]", names), "m = min(range(left, n), key=lambda k: a[k]); k2 = a[left]");
+  // The alias wears the variable's colour.
+  assert.deepEqual(highlight("i += 1", names)[0], { text: "left", color: varColor("i"), bold: true });
+
+  const shown = (spec: AlgoSpec) => text(spec).replace(/&gt;/g, ">").replace(/&lt;/g, "<");
+  const plain = shown({ topic: "sort", algo: "bubble", data: "3, 1, 2", view: "code", step: 1 } as AlgoSpec);
+  const named = shown({ topic: "sort", algo: "bubble", data: "3, 1, 2", view: "code", step: 1, names: "j = scan, k = pass" } as AlgoSpec);
+  // The code, the pointers (j and j+1), the variables and the test all take the alias; the numbers stay.
+  assert.ok(named.includes("for pass in range(1, n):") && named.includes("a[scan] > a[scan + 1] → 3 > 1 → True") && named.includes("scan+1") && named.includes("pass = 1"), named);
+  assert.ok(!/\bj\b/.test(named) && /\bj\b/.test(plain), named);
+  const search = shown({ topic: "search", algo: "binary", data: "1, 3, 5, 7, 9", target: "7", view: "code", step: 4, names: "lo=low, hi=high" } as AlgoSpec);
+  assert.ok(search.includes("while low <= high:") && search.includes("low = 2 + 1 = 3"), search);
+  // A bad alias is said, not drawn.
+  assert.throws(() => renderAlgo({ topic: "sort", algo: "bubble", data: "3, 1", view: "code", names: "j = while" }, w), /j = while/);
+  // Long aliases shrink the code to fit its box instead of running out of it.
+  const long = renderAlgo({ topic: "sort", algo: "quick", data: "5, 2, 8, 1", view: "code", names: "lo = leftmost_x, hi = rightmostx" }, w).svg;
+  for (const m of long.matchAll(/font-size="([\d.]+)"/g)) assert.ok(Number(m[1]) >= 7, m[0]);
 });
 
 test("patterns: pointers, windows, prefix sums, a monotonic stack", () => {

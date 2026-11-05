@@ -1,7 +1,7 @@
 // Draws a live piece inside its embeddable on the board: the piece at its design size, scaled to the element's size,
 // with a button that copies what it shows as a picture. Changes go back to the board through the host, which writes
 // them into the element (so they are saved and can be undone).
-import { lazy, Suspense, useRef, type ComponentType } from "react";
+import { lazy, Suspense, useLayoutEffect, useRef, useState, type ComponentType } from "react";
 import type { ExcalidrawEmbeddableElement, NonDeleted } from "@excalidraw/excalidraw/element/types";
 import { useI18n } from "../i18n";
 import { LIVE_SIZES, type LiveGraphState, type LiveKind } from "../math/live";
@@ -187,10 +187,32 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {
   const { t } = useI18n();
   const svgRef = useRef<SVGSVGElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
   const data = liveDataOf(element);
+  const H0 = data ? LIVE_SIZES[data.live][1] : 0;
+  // The piece keeps its design height (some fill it, like the problem stage); when what it shows runs taller (the code
+  // view, a long line in Georgian), the overflow is measured and the whole of it scaled into the element, instead of the
+  // bottom being cut off. The box itself never changes size, so its children are watched, and new ones as they come.
+  const [tall, setTall] = useState(H0);
+  useLayoutEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const measure = () => setTall(el.scrollHeight);
+    const ro = new ResizeObserver(measure);
+    const watch = () => {
+      ro.disconnect();
+      for (const c of Array.from(el.children)) ro.observe(c);
+      measure();
+    };
+    watch();
+    const mo = new MutationObserver(watch);
+    mo.observe(el, { childList: true });
+    return () => (ro.disconnect(), mo.disconnect());
+  }, [H0]);
   if (!data) return null;
   const kind = data.live;
-  const [W, H] = LIVE_SIZES[kind];
+  const W = LIVE_SIZES[kind][0];
+  const H = Math.max(H0, tall);
   // The element's padding is its stroke width on each side.
   const [w, h] = [element.width - 2 * element.strokeWidth, element.height - 2 * element.strokeWidth];
   const s = Math.max(0.05, Math.min(w / W, h / H));
@@ -198,8 +220,9 @@ export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbe
   return (
     <div className="live-host">
       <div
+        ref={boxRef}
         className={`live live-${kind}`}
-        style={{ width: W, height: H, transform: `translate(${(w - W * s) / 2}px, ${(h - H * s) / 2}px) scale(${s})` }}
+        style={{ width: W, height: H0, transform: `translate(${(w - W * s) / 2}px, ${(h - H * s) / 2}px) scale(${s})` }}
       >
         <Suspense fallback={null}>
           <Piece state={data.state} set={(state) => host.update(element.id, { live: kind, state })} w={t.live} svgRef={svgRef} open={host.open && ((k, patch) => host.open?.(element.id, k, patch))} />

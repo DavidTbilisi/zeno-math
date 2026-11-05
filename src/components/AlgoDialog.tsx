@@ -12,6 +12,7 @@ import {
   renderAlgo,
   SEARCH_ALGOS,
   SORT_ALGOS,
+  SEARCH_VIEWS,
   SORT_VIEWS,
   STRING_ALGOS,
   TREE_KINDS,
@@ -70,6 +71,13 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
       <input className="mono" spellCheck={false} value={value(key)} onChange={(e) => set({ [key]: e.target.value } as Partial<AlgoSpec>)} />
     </div>
   );
+  // The code view's aliases for its variables: i = left, j = scan.
+  const namesRow = (
+    <div className="fn-row">
+      <span className="fn-prefix" style={{ fontStyle: "normal" }}>{t.algoNames}</span>
+      <input className="mono" spellCheck={false} placeholder={t.algoNamesHint} aria-label={t.algoNames} value={value("names")} onChange={(e) => set({ names: e.target.value } as Partial<AlgoSpec>)} />
+    </div>
+  );
   const segmented = <K extends string>(keys: readonly K[], label: (k: K) => string, current: K, onPick: (k: K) => void) => (
     <Segmented className="wrap" itemClassName="math-label" items={keys} value={current} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
@@ -112,6 +120,7 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
             <span className="hint">{t.algoView}</span>
             {segmented(SORT_VIEWS, (v) => t.algoViews[v], spec.view ?? "cells", (view) => set({ view }))}
           </div>
+          {spec.view === "code" && namesRow}
         </>
       )}
 
@@ -120,6 +129,8 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
           {segmented(SEARCH_ALGOS, (a) => w.searchNames[a], spec.algo, (algo) => set({ algo }))}
           {row(t.algoData, "data")}
           <div className="range-grid">{text(t.algoTarget, "target", 90)}</div>
+          {segmented(SEARCH_VIEWS, (v) => t.algoViews[v], spec.view ?? "cells", (view) => set({ view }))}
+          {spec.view === "code" && namesRow}
         </>
       )}
 

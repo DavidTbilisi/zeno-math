@@ -6,6 +6,7 @@
 // did to memory. An operation the code would not make is not made: the stage shakes and the line names the rule it
 // broke. No miss earns three stars, one two. Nine puzzles open in turn, and the endless run keeps a streak of searches
 // made without a miss. Built on the game shell (useGame), which does the ladder, the sounds and the cheer.
+import { CodeLine } from "./CodeLine";
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { name } from "../math/graphPlay";
 import { apply, checkOp, CODE, expect, logText, replay, SEARCH_LADDER, SEARCH_NOTICES, searchNotice, searchNow, searchRun, searchStars, searchSvg, type Attempt, type LiveBeSearch } from "../math/beSearch";
@@ -166,7 +167,7 @@ export function BeSearch({ state: d, set, w: words, svgRef }: PieceProps<"beSear
           <div className="search-side">
             <div className="search-code" role="group" aria-label={w.code}>
               {CODE[task.algo].map((l, i) => (
-                <div key={i} className={!d.done && m.lines.includes(i) ? "lit" : undefined}>{l}</div>
+                <div key={i} className={!d.done && m.lines.includes(i) ? "lit" : undefined}><CodeLine text={l} /></div>
               ))}
             </div>
             <ol className="search-log" aria-label={w.log} aria-live="polite" start={m.log.length - log.length + 1}>
@@ -178,7 +179,7 @@ export function BeSearch({ state: d, set, w: words, svgRef }: PieceProps<"beSear
         </div>
       </Stage>
       <p className="live-said info">{fill(w.moves, { k: d.ops.length, n: run.ops.length })}</p>
-      <GameActions game={game} g={g} done={d.done} />
+      <GameActions game={game} g={g} code done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

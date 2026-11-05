@@ -5,7 +5,10 @@
 // stars, one two. Nine puzzles open in turn, from bubble sort on five items to a merge of two runs of four, and the
 // endless run keeps a streak of sorts made without a miss. Built on the game shell (useGame), which does the ladder,
 // the sounds and the cheer.
-import { checkTap, SORT_LADDER, SORT_NOTICES, sortNotice, sortNow, sortRun, sortStars, sortSvg, type LiveBeSort, type Target } from "../math/beSort";
+import { CodeLine } from "./CodeLine";
+import { checkTap, moveLine, SORT_LADDER, SORT_NOTICES, SORT_PLAY_CODE, sortCodeSvg, sortNotice, sortNow, sortRun, sortStars, sortSvg, type LiveBeSort, type Target } from "../math/beSort";
+import { rename } from "../math/codeStyle";
+import { useCodeNames, useCodeView } from "./codeView";
 import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
@@ -29,7 +32,12 @@ export function BeSort({ state: d, set, w: words, svgRef }: PieceProps<"beSort">
     game.win({ stars, clean: d.misses === 0, notice: (streak) => sortNotice(run, d.misses, streak), patch: { step, done: true } });
   };
 
-  const pic = sortSvg(run, d.done ? run.moves.length : d.step);
+  // The code view: pointers and variables written out instead of colours, and the code with the line the last move ran.
+  const [code] = useCodeView();
+  const { names } = useCodeNames();
+  const shownStep = d.done ? run.moves.length : d.step;
+  const pic = code ? sortCodeSvg(run, shownStep, names) : sortSvg(run, shownStep);
+  const ran = moveLine(run, shownStep - 1);
   const vars = {
     k: look.algo === "insertion" ? look.a[look.i] : 0,
     p: look.algo === "quick" ? look.a[look.hi] : run.task.a[run.task.a.length - 1],
@@ -39,7 +47,7 @@ export function BeSort({ state: d, set, w: words, svgRef }: PieceProps<"beSort">
     d.said?.kind === "notice" ? { tone: "notice", text: `${w.notices[d.said.key]} ${right}` }
     : d.done ? { tone: "ok", text: right }
     : d.said?.kind === "wrong" ? { tone: "wrong", text: fill(w.why[d.said.why], d.said.vars) }
-    : { tone: "hint", text: fill(w.hint[algo], vars) };
+    : { tone: "hint", text: code ? rename(fill(w.codeHint[algo], vars), names) : fill(w.hint[algo], vars) };
   const label = (t: Target) =>
     t.kind === "gap" ? fill(w.gap, { i: t.move + 1 }) : t.kind === "head" ? fill(t.move === 0 ? w.leftHead : w.rightHead, { v: t.v! }) : fill(w.place, { i: t.move + 1, v: t.v! });
   return (
@@ -47,18 +55,28 @@ export function BeSort({ state: d, set, w: words, svgRef }: PieceProps<"beSort">
       <GameHead game={game} g={g}>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
-      <Said line={{ tone: "prompt", text: `${w.names[algo]}: ${fill(w.ask[algo], vars)}` }} />
+      <Said line={{ tone: "prompt", text: `${w.names[algo]}: ${code ? rename(fill(w.codeAsk[algo], vars), names) : fill(w.ask[algo], vars)}` }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={pic.w} height={pic.h} viewBox={`0 0 ${pic.w} ${pic.h}`} fontFamily={FONT} role="group" aria-label={w.names[algo]}>
-          <rect width={pic.w} height={pic.h} fill="#fff" />
-          <g dangerouslySetInnerHTML={{ __html: pic.body }} />
-          {pic.targets.map((t) => (
-            <rect key={`${t.kind}${t.move}`} x={t.x} y={t.y} width={t.w} height={t.h} fill="transparent" role="button" aria-label={label(t)} style={{ cursor: d.done ? "default" : "pointer" }} onClick={() => tap(t.move)} />
-          ))}
-        </svg>
+        {/* The code goes under the picture, so the game keeps its width. */}
+        <div className={code ? "sort-codeview" : undefined}>
+          <svg ref={svgRef} width={pic.w} height={pic.h} viewBox={`0 0 ${pic.w} ${pic.h}`} fontFamily={FONT} role="group" aria-label={w.names[algo]}>
+            <rect width={pic.w} height={pic.h} fill="#fff" />
+            <g dangerouslySetInnerHTML={{ __html: pic.body }} />
+            {pic.targets.map((t) => (
+              <rect key={`${t.kind}${t.move}`} x={t.x} y={t.y} width={t.w} height={t.h} fill="transparent" role="button" aria-label={label(t)} style={{ cursor: d.done ? "default" : "pointer" }} onClick={() => tap(t.move)} />
+            ))}
+          </svg>
+          {code && (
+            <div className="search-code" role="group" aria-label={w.code}>
+              {SORT_PLAY_CODE[algo].map((l, i) => (
+                <div key={i} className={i === ran ? "lit" : undefined}><CodeLine text={l} /></div>
+              ))}
+            </div>
+          )}
+        </div>
       </Stage>
       <p className="live-said info sort-moves" aria-live="polite">{fill(w.moves, { k: d.done ? run.moves.length : d.step, n: run.moves.length })}</p>
-      <GameActions game={game} g={g} done={d.done} />
+      <GameActions game={game} g={g} code done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

@@ -174,7 +174,7 @@ export function BeComp({ state: d, set, w: words, svgRef, open }: PieceProps<"be
         </div>
       </Stage>
       <p className="live-said info">{fill(w.moves, { k: d.ops.length, n: items.length })}</p>
-      <GameActions game={game} g={g} done={d.done} always>
+      <GameActions game={game} g={g} code done={d.done} always>
         {play}
       </GameActions>
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
