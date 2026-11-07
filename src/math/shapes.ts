@@ -1784,6 +1784,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveAngleGuess", group: "games", build: angleGuessPreview, live: "angleGuess" },
   { id: "liveAngleHunt", group: "games", build: angleHuntPreview, live: "angleHunt" },
   { id: "liveMirror", group: "games", build: mirrorPreview, live: "mirror" },
+  { id: "liveViews3d", group: "games", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", group: "games", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", group: "games", build: plotPointPreview, live: "plotPoint" },
   { id: "liveBarChart", group: "games", build: barChartPreview, live: "barChart" },

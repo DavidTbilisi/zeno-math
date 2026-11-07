@@ -1163,6 +1163,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four
     discoveries (no mirror line at all, the diagonals left alone, six or more lines, ten in a row)
+  - *3D views*: reconstruct a solid from top, front and right-side drawings. Easy, Medium and Hard modes offer endless generated block puzzles, using a 3 × 3 isometric builder with three-axis drag rotation, tap-to-build controls, undo, solution reveal and feedback on silhouettes and visible step edges. Alternative solids are accepted when all three views match.
   - *Cube nets*: six shapes of six squares; tap the ones that fold into a cube, then check. A shape that doesn't fold
     shows in red the squares that land on the same face, and once the board is right each net colours its opposite
     faces alike. The last three puzzles fold one net in the mind: tap the face opposite ★, pair by pair. No misses

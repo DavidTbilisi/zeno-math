@@ -30,6 +30,7 @@ import { ExprMatch } from "./ExprMatch";
 import { AngleGuess } from "./AngleGuess";
 import { AngleHunt } from "./AngleHunt";
 import { Mirror } from "./Mirror";
+import { Views3d } from "./Views3d";
 import { CubeNet } from "./CubeNet";
 import { PlotPoint } from "./PlotPoint";
 import { BarChart } from "./BarChart";
@@ -136,6 +137,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   angleGuess: AngleGuess,
   angleHunt: AngleHunt,
   mirror: Mirror,
+  views3d: Views3d,
   cubeNet: CubeNet,
   plotPoint: PlotPoint,
   barChart: BarChart,

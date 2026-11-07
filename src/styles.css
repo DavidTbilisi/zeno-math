@@ -1368,3 +1368,25 @@ span.board-home:hover { background: none; }
 
 /* Free practice: homework still to do (issue #301) */
 .practice-homework-waiting { padding: 8px 12px; border-radius: 8px; background: color-mix(in srgb, var(--accent, #4a7) 14%, transparent); justify-content: space-between; }
+
+/* A quiet workspace for the 3D-view puzzle. */
+.live-views3d { background: #fafbf7; padding: 18px; gap: 9px; overflow-y: auto; scrollbar-width: thin; }
+.live-views3d .views-heading { display: flex; align-items: center; justify-content: space-between; width: 100%; color: #365443; }
+.live-views3d .views-heading b { font-size: 20px; font-weight: 600; }
+.live-views3d .views-badge { padding: 5px 12px; border-radius: 20px; background: #edf2e7; color: #52694e; font-size: 12px; }
+.live-views3d .views-intro { margin: 0 0 2px; color: #58695c; font-size: 15px; align-self: flex-start; }
+.live-views3d .views-gesture { margin: 0; color: #58695c; font-size: 13px; text-align: center; }
+.live-views3d .live-btn { border: 1px solid #d9e2d4; background: #fff; color: #405d49; border-radius: 12px; padding: 8px 14px; }
+.live-views3d .live-btn:hover:not(:disabled) { background: #edf3e7; }
+.live-views3d .live-btn.on { background: #e2edd8; border-color: #a8bf99; }
+.live-views3d .live-btn.views-check { background: #496b50; border-color: #496b50; color: #fff; padding-inline: 25px; }
+.live-views3d .live-btn.views-check:hover:not(:disabled) { background: #3c5c43; }
+.live-views3d .views-feedback { margin: 2px 0; max-width: 640px; min-height: 20px; color: #58695c; text-align: center; font-size: 14px; }
+.live-views3d .views-feedback.success { color: #276437; }
+.live-views3d .views-actions { gap: 12px; }
+
+.live-views3d .views-secondary { margin-top: 4px; gap: 12px; }
+
+.live-views3d .views-difficulty { display: flex; gap: 4px; padding: 4px; background: #edf2e7; border-radius: 16px; }
+.live-views3d .views-difficulty .live-btn { min-width: 105px; background: transparent; border-color: transparent; padding: 7px 18px; }
+.live-views3d .views-difficulty .live-btn.on { background: #fff; border-color: #cfddc5; }

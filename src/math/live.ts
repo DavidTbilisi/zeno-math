@@ -440,6 +440,7 @@ export type LiveStates = {
   angleGuess: LiveAngleGuess;
   angleHunt: LiveAngleHunt;
   mirror: LiveMirror;
+  views3d: import("./views3d").LiveViews3d;
   cubeNet: LiveCubeNet;
   plotPoint: LivePlot;
   barChart: LiveBarChart;
@@ -529,6 +530,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   angleGuess: [600, 620],
   angleHunt: [600, 620],
   mirror: [560, 620],
+  views3d: [760, 980],
   cubeNet: [700, 600],
   plotPoint: [560, 700],
   barChart: [560, 600],
@@ -620,6 +622,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     angleGuess: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], typed: "", guess: null, streak: 0, said: null },
     angleHunt: { mode: "puzzle", stage: 0, level: 1, seed: 1, typed: "", misses: 0, done: false, streak: 0, said: null },
     mirror: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
+    views3d: { difficulty: "easy", stage: 0, seed: Date.now() >>> 0, heights: Array(9).fill(0), history: [], checked: false, revealed: false },
     cubeNet: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], checked: false, misses: 0, done: false, streak: 0, said: null },
     plotPoint: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], tap: null, streak: 0, said: null },
     barChart: { mode: "puzzle", stage: 0, level: 1, seed: 1, bars: [], wrong: [], misses: 0, done: false, streak: 0, said: null },

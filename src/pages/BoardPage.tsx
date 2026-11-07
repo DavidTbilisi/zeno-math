@@ -151,6 +151,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
       { kind: "angleGuess", icon: "∠", name: "liveAngleGuess" },
       { kind: "angleHunt", icon: "📐", name: "liveAngleHunt" },
       { kind: "mirror", icon: "🦋", name: "liveMirror" },
+      { kind: "views3d", icon: "🧊", name: "liveViews3d" },
       { kind: "cubeNet", icon: "🎲", name: "liveCubeNet" },
     ],
   },
