@@ -1587,6 +1587,9 @@ teacher password. A teacher can open a student's board from the class page to lo
 change it. Someone with neither a student code nor the teacher password gets no boards. Set `TEACHER_PASSWORD`
 whenever students use Zeno: without one, anyone without a student code counts as a teacher.
 
+Upgrading from a Zeno without board owners: every board already there becomes the teachers'. Boards weren't tied to
+anyone before, so the server can't tell which a student made.
+
 Basic auth sends the password with every request, so on a shared network put Zeno behind HTTPS. With
 `BIND_ADDRESS=127.0.0.1` the port only listens on the machine itself, and a reverse proxy serves it to the network.
 A minimal Caddyfile for a local network with no domain (Caddy's own certificate authority; install its root

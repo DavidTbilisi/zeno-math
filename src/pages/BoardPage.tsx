@@ -307,7 +307,9 @@ export function BoardPage({ id }: { id: string }) {
     } catch (e) {
       conflict.current = e instanceof ApiError && e.status === 409;
       setSaveState(conflict.current ? "conflict" : "error");
-      if (!conflict.current && !keepalive) {
+      // 403: this browser may not change the board (the student was deleted, the teacher password changed). Trying
+      // again won't help, and a teacher password sent again would count as another wrong one.
+      if (!conflict.current && !keepalive && !(e instanceof ApiError && e.status === 403)) {
         const delay = [2000, 5000, 15000, 30000][Math.min(retries.current++, 3)];
         window.clearTimeout(retryTimer.current);
         retryTimer.current = window.setTimeout(() => void saveNowRef.current(), delay);

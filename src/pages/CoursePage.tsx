@@ -71,7 +71,9 @@ export function CoursePage() {
     setFailed(false);
     try {
       let id = storedBoards()[stage];
-      if (id) await api.get(id).catch(() => (id = undefined));
+      // A board this browser can't change any more (gone, someone else's, or a student's opened in a teacher's tab)
+      // is left alone, and the stage gets a new one.
+      if (id) await api.get(id).then((b) => b.readOnly && (id = undefined), () => (id = undefined));
       if (!id) {
         id = (await api.create(fill(c.board, { stage: c.stages[stage] }))).id;
         storeBoard(stage, id);
