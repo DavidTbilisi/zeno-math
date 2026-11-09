@@ -21,6 +21,7 @@ import type { Dict } from "../locales/en";
 import { ToolMenu } from "../components/ToolMenu";
 import { useCompact } from "../components/useCompact";
 import { ShareBox } from "../components/ShareBox";
+import { ReadOnlyBoard } from "./SharedBoardPage";
 import { CommandPalette } from "../components/CommandPalette";
 import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
 import { isLiveLink, liveDataOf, liveElement } from "../live/element";
@@ -219,6 +220,8 @@ export function BoardPage({ id }: { id: string }) {
   const { t, excalidrawLang } = useI18n();
   const [board, setBoard] = useState<Board | null>(null);
   const [missing, setMissing] = useState(false);
+  // 403: this browser is neither a teacher's nor a student's (boards need one or the other).
+  const [refused, setRefused] = useState(false);
   const [title, setTitle] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -276,7 +279,7 @@ export function BoardPage({ id }: { id: string }) {
         setBoard(b);
         setTitle(b.title);
       },
-      () => setMissing(true),
+      (e) => (e instanceof ApiError && e.status === 403 ? setRefused(true) : setMissing(true)),
     );
   }, [id]);
 
@@ -304,7 +307,9 @@ export function BoardPage({ id }: { id: string }) {
     } catch (e) {
       conflict.current = e instanceof ApiError && e.status === 409;
       setSaveState(conflict.current ? "conflict" : "error");
-      if (!conflict.current && !keepalive) {
+      // 403: this browser may not change the board (the student was deleted, the teacher password changed). Trying
+      // again won't help, and a teacher password sent again would count as another wrong one.
+      if (!conflict.current && !keepalive && !(e instanceof ApiError && e.status === 403)) {
         const delay = [2000, 5000, 15000, 30000][Math.min(retries.current++, 3)];
         window.clearTimeout(retryTimer.current);
         retryTimer.current = window.setTimeout(() => void saveNowRef.current(), delay);
@@ -645,7 +650,10 @@ export function BoardPage({ id }: { id: string }) {
       </div>
     );
   }
+  if (refused) return <div className="z center-msg"><p>{t.boardsNeedOwner}</p><a className="btn" href="#/">← {t.back}</a></div>;
   if (!board || !initialData) return <div className="z center-msg">{t.loading}</div>;
+  // A teacher opening a student's board: to look at, not to change (the server refuses any save).
+  if (board.readOnly) return <ReadOnlyBoard board={board} back="#/teacher" />;
 
   const openTool = dialog && TOOLS[dialog.kind];
   const dockTool = dock && TOOLS[dock.kind];

@@ -16,7 +16,7 @@ const FOLLOW_MS = 5000;
 const READ_ONLY: LiveHost = { update: () => {}, snapshot: () => {}, freezeGraph: () => {} };
 
 export function SharedBoardPage({ token }: { token: string }) {
-  const { t, excalidrawLang } = useI18n();
+  const { t } = useI18n();
   const [board, setBoard] = useState<SharedBoard | null>(null);
   const [gone, setGone] = useState(false);
   const excalidraw = useRef<ExcalidrawImperativeAPI | null>(null);
@@ -55,11 +55,22 @@ export function SharedBoardPage({ token }: { token: string }) {
 
   if (gone) return <div className="z center-msg"><p>{t.sharedGone}</p></div>;
   if (!board) return <div className="z center-msg">{t.loading}</div>;
+  return <ReadOnlyBoard board={board} onApi={(a) => (excalidraw.current = a)} />;
+}
+
+/**
+ * A board to look at, not change: a shared link's, or a student's board opened by a teacher (back: where the mark
+ * leads, the teacher's page).
+ */
+export function ReadOnlyBoard({ board, back, onApi }: { board: SharedBoard; back?: string; onApi?: (api: ExcalidrawImperativeAPI) => void }) {
+  const { t, excalidrawLang } = useI18n();
   const scene = board.scene;
   return (
     <div className="z board-page shared-board">
       <header className="board-bar">
-        <span className="board-home"><ZenoMark size={14} /></span>
+        {back
+          ? <a className="board-home" href={back} title={t.back} aria-label={t.back}><ZenoMark size={14} /></a>
+          : <span className="board-home"><ZenoMark size={14} /></span>}
         <strong className="shared-title">{board.title}</strong>
         <span className="save-state saved">{t.readOnly}</span>
         <div className="spacer" />
@@ -67,7 +78,7 @@ export function SharedBoardPage({ token }: { token: string }) {
       </header>
       <div className="canvas-wrap">
         <Excalidraw
-          excalidrawAPI={(a) => (excalidraw.current = a)}
+          excalidrawAPI={onApi}
           langCode={excalidrawLang}
           viewModeEnabled
           initialData={{

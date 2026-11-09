@@ -636,6 +636,9 @@ input.invalid { border-color: var(--danger); }
 .join-show .hint { font-size: 1.1rem; max-width: 36em; }
 .find-code summary { cursor: pointer; }
 .find-code summary h3 { display: inline; }
+.student-boards summary { cursor: pointer; }
+.student-boards summary h3 { display: inline; }
+.student-board-list { margin: 0; padding-left: 1.2em; display: grid; gap: 0.3em; }
 .card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .card .hint { margin: 0; }
 .field-row.wrap { flex-wrap: wrap; }

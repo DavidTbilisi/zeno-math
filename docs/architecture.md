@@ -89,7 +89,10 @@ erDiagram
     TEXT scene "Excalidraw JSON"
     INTEGER created_at
     INTEGER updated_at "optimistic locking"
+    TEXT share_token UK "read-only link"
+    INTEGER student_id FK "owner; NULL: the teachers'"
   }
+  students ||--o{ boards : owns
   classes ||--o{ students : has
   classes {
     TEXT code PK "6 characters"
@@ -255,6 +258,8 @@ version is recorded in `PRAGMA user_version`, and a database from a newer Zeno i
 **Security.**
 
 - An optional site password, and a teacher password, both compared in constant time.
+- Boards have owners: a student's are reached only with their code, the teachers' only with the teacher password; a
+  teacher may read a student's board but not change it.
 - Brute-force protection: 10 wrong passwords in 10 minutes and that client waits, with 429. An address that gave a
   right password in the last day (a school, where a whole class shares one) is allowed 100. Behind a proxy
   (`TRUST_PROXY`), the client is the address the proxy adds last to `X-Forwarded-For`.

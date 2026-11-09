@@ -47,12 +47,12 @@ test("the API reference lists the routes", () => {
 });
 
 test("every route in the API reference exists, and nothing else on its resources answers", async () => {
-  const board = (await (await fetch(`${server.base}/api/boards`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).json()).id as string;
-  const doomed = (await (await fetch(`${server.base}/api/boards`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).json()).id as string;
+  const board = (await (await fetch(`${server.base}/api/boards`, { method: "POST", headers: { "Content-Type": "application/json", "X-Teacher-Password": "chalk" }, body: "{}" })).json()).id as string;
+  const doomed = (await (await fetch(`${server.base}/api/boards`, { method: "POST", headers: { "Content-Type": "application/json", "X-Teacher-Password": "chalk" }, body: "{}" })).json()).id as string;
   const klass = (await (await fetch(`${server.base}/api/classes`, { method: "POST", headers: { "Content-Type": "application/json", "X-Teacher-Password": "chalk" }, body: "{}" })).json()).code as string;
   const join = async () => (await (await fetch(`${server.base}/api/students`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ class: klass }) })).json()).code as string;
   const [student, leaver] = [await join(), await join()];
-  const token = (await (await fetch(`${server.base}/api/boards/${board}/share`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).json()).token as string;
+  const token = (await (await fetch(`${server.base}/api/boards/${board}/share`, { method: "POST", headers: { "Content-Type": "application/json", "X-Teacher-Password": "chalk" }, body: "{}" })).json()).token as string;
   const fill = (path: string, method: string) =>
     path
       .replace(":token", token)

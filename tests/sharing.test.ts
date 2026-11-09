@@ -16,7 +16,8 @@ after(async () => {
 });
 
 const call = async (method: string, path: string, body?: unknown) => {
-  const res = await fetch(server.base + path, { method, headers: { "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
+  // As a teacher: boards belong to a student or to the teachers, and this server asks for a teacher password.
+  const res = await fetch(server.base + path, { method, headers: { "Content-Type": "application/json", "X-Teacher-Password": "t" }, body: body === undefined ? undefined : JSON.stringify(body) });
   const text = await res.text();
   return { status: res.status, body: text ? JSON.parse(text) : undefined };
 };

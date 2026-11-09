@@ -10,7 +10,7 @@ import { HttpError, readJson, send, sendJsonText } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { scheduleBackups } from "./backup.ts";
 import { rawJson, stmt } from "./db.ts";
-import { handleResearch, initResearch, RESEARCH_RESOURCES } from "./research.ts";
+import { boardUser, classBoards, handleResearch, initResearch, RESEARCH_RESOURCES, type BoardUser } from "./research.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
 const DATA_DIR = resolve(process.env.DATA_DIR ?? "data");
@@ -40,9 +40,14 @@ if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some(
   db.exec("ALTER TABLE boards ADD COLUMN share_token TEXT");
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS boards_share_token ON boards(share_token)");
 initResearch(db);
+// Whose board it is: a student's (student_id), or the teachers' (NULL; every board made before boards had owners).
+// Forgetting a student deletes their boards with their answers.
+if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some((c) => c.name === "student_id"))
+  db.exec("ALTER TABLE boards ADD COLUMN student_id INTEGER REFERENCES students(id) ON DELETE CASCADE");
+db.exec("CREATE INDEX IF NOT EXISTS boards_student ON boards(student_id, updated_at)");
 // The schema this code writes. A database from a newer Zeno is refused rather than half understood; an older one has
 // just been brought up to date by the CREATE / ADD COLUMN steps above.
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 const { user_version: found } = db.prepare("PRAGMA user_version").get() as { user_version: number };
 if (found > SCHEMA_VERSION) {
   console.error(`The database in ${DATA_DIR} is from a newer version of Zeno (schema ${found}; this one knows ${SCHEMA_VERSION}). Update Zeno.`);
@@ -110,6 +115,19 @@ function cleanTitle(value: unknown): string {
   return String(value ?? "").trim().slice(0, 200) || "Untitled";
 }
 
+/**
+ * A board as this user may reach it: their own (a teacher's are the teachers' boards, shared between them), or for a
+ * teacher a student's board to read. Anyone else gets 404, as if it weren't there; a teacher changing a student's board
+ * gets 403.
+ */
+function boardFor(user: BoardUser, id: string, write: boolean): { own: boolean } {
+  const row = stmt(db, "SELECT student_id AS studentId FROM boards WHERE id = ?").get(id) as { studentId: number | null } | undefined;
+  const own = !!row && row.studentId === (user.teacher ? null : user.studentId);
+  if (!row || (!own && !user.teacher)) throw new HttpError(404, "no such board");
+  if (!own && write) throw new HttpError(403, "a student's board is theirs to change");
+  return { own };
+}
+
 async function handleApi(req: IncomingMessage, res: ServerResponse, path: string, query: URLSearchParams) {
   const [, , resource, id, sub, ...deeper] = path.split("/"); // "", "api", "boards", id?, sub?
   // No route goes deeper than /api/resource/id/sub.
@@ -125,8 +143,9 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
     if (req.headers["if-none-match"] === etag) return send(res, 304, undefined, { ETag: etag });
     return sendJsonText(res, 200, rawJson({ title: row.title, updatedAt: row.updatedAt }, { scene: row.scene }), { ETag: etag, "Cache-Control": "no-cache" });
   }
-  // Making a read-only link (or giving back the one there is), and taking it away.
+  // Making a read-only link (or giving back the one there is), and taking it away: the board's owner only.
   if (resource === "boards" && id && sub === "share") {
+    boardFor(boardUser(req, db), id, true);
     const row = stmt(db, "SELECT share_token AS token FROM boards WHERE id = ?").get(id) as { token: string | null } | undefined;
     if (!row) return send(res, 404, { error: "no such board" });
     if (req.method === "POST") {
@@ -146,8 +165,10 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
     stmt(db, "SELECT 1").get();
     return send(res, 200, { ok: true });
   }
-  // Every board in one file, for backups. Scenes are stored as JSON and go out as they are.
+  // Every board in one file, for backups: the teachers' and every student's, so a teacher's only. Scenes are stored as
+  // JSON and go out as they are.
   if (resource === "export" && req.method === "GET") {
+    if (!boardUser(req, db).teacher) throw new HttpError(403, "the teacher password is needed for the backup");
     const rows = stmt(db, "SELECT id, title, scene, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY created_at")
       .all() as { id: string; title: string; scene: string; createdAt: number; updatedAt: number }[];
     const stamp = new Date().toISOString().slice(0, 10);
@@ -157,29 +178,42 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
     });
   }
   if (resource !== "boards") return send(res, 404, { error: "not found" });
+  const user = boardUser(req, db);
+  const owner = user.teacher ? null : user.studentId;
 
   if (!id) {
     if (req.method === "GET") {
-      const rows = stmt(db, "SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY updated_at DESC").all();
+      // ?class=CODE: that class's students' boards, for a teacher to open.
+      const klass = query.get("class");
+      if (klass !== null) {
+        if (!user.teacher) throw new HttpError(403, "only a teacher sees a class's boards");
+        return send(res, 200, classBoards(db, klass));
+      }
+      const rows = stmt(db, `
+        SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards WHERE student_id IS ? ORDER BY updated_at DESC
+      `).all(owner);
       return send(res, 200, rows);
     }
     if (req.method === "POST") {
       const body = await readJson(req);
       const now = Date.now();
       const board = { id: randomUUID(), title: cleanTitle(body.title), createdAt: now, updatedAt: now };
-      stmt(db, "INSERT INTO boards (id, title, scene, created_at, updated_at) VALUES (?, ?, '{}', ?, ?)").run(board.id, board.title, now, now);
+      stmt(db, "INSERT INTO boards (id, title, scene, created_at, updated_at, student_id) VALUES (?, ?, '{}', ?, ?, ?)")
+        .run(board.id, board.title, now, now, owner);
       return send(res, 201, board);
     }
     return send(res, 405, { error: "method not allowed" });
   }
 
   if (req.method === "GET") {
+    const { own } = boardFor(user, id, false);
     const row = stmt(db, "SELECT id, title, scene, updated_at AS updatedAt, share_token AS shareToken FROM boards WHERE id = ?")
-      .get(id) as { id: string; title: string; scene: string; updatedAt: number; shareToken: string | null } | undefined;
-    if (!row) return send(res, 404, { error: "not found" });
-    const { scene, ...rest } = row;
-    return sendJsonText(res, 200, rawJson(rest, { scene }));
+      .get(id) as { id: string; title: string; scene: string; updatedAt: number; shareToken: string | null };
+    const { scene, shareToken, ...rest } = row;
+    // A teacher opening a student's board sees it, and is told it is not theirs to change.
+    return sendJsonText(res, 200, rawJson(own ? { ...rest, shareToken } : { ...rest, readOnly: true }, { scene }));
   }
+  boardFor(user, id, true);
   if (req.method === "PUT") {
     const body = await readJson(req);
     // A scene that clients can't load would break the board for everyone.

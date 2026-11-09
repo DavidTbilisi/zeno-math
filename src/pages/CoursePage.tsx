@@ -2,7 +2,7 @@
 // and how far the learner has come on them (from free practice in this browser), a tool to explore it and a lab to
 // try. "Next" is the lowest-grade level whose prerequisites are met; a tool or lab opens on the stage's own board.
 import { useState } from "react";
-import { api } from "../api";
+import { api, ApiError } from "../api";
 import { BrandBar } from "../components/BrandBar";
 import { gradeName } from "../components/GradeCard";
 import { useI18n } from "../i18n";
@@ -63,21 +63,24 @@ export function CoursePage() {
   const next = nextStep(s);
   const known = !!(progress.placed || progress.cells);
   const [opening, setOpening] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
+  // "refused": the server keeps no boards for this browser (neither a teacher's nor a joined student's).
+  const [failed, setFailed] = useState<false | true | "refused">(false);
 
   const openOnBoard = async (stage: StageId, path: string) => {
     setOpening(path);
     setFailed(false);
     try {
       let id = storedBoards()[stage];
-      if (id) await api.get(id).catch(() => (id = undefined));
+      // A board this browser can't change any more (gone, someone else's, or a student's opened in a teacher's tab)
+      // is left alone, and the stage gets a new one.
+      if (id) await api.get(id).then((b) => b.readOnly && (id = undefined), () => (id = undefined));
       if (!id) {
         id = (await api.create(fill(c.board, { stage: c.stages[stage] }))).id;
         storeBoard(stage, id);
       }
       location.hash = `#/b/${id}/${path}`;
-    } catch {
-      setFailed(true);
+    } catch (e) {
+      setFailed(e instanceof ApiError && e.status === 403 ? "refused" : true);
       setOpening(null);
     }
   };
@@ -110,7 +113,7 @@ export function CoursePage() {
           )}
         </section>
 
-        {failed && <p className="error" role="alert">{c.failed}</p>}
+        {failed && <p className="error" role="alert">{failed === "refused" ? t.boardsNeedOwner : c.failed}</p>}
         <p className="course-legend" aria-hidden="true">
           {(["secure", "behind", "open"] as const).map((k) => <span key={k}><i className={`pip ${k}`} />{c.legend[k]}</span>)}
         </p>

@@ -1580,6 +1580,16 @@ computer; on a network, set one (HTTP basic auth, any username):
 APP_PASSWORD=choose-something docker compose up -d --build
 ```
 
+**Whose boards.** The site password lets people in, but says nothing about who they are, so it doesn't decide whose
+boards they see. A student's boards are theirs: the browser sends the student code they joined their class with, and
+another student can't see, change or delete them. The teachers' boards are shared by every teacher, and need the
+teacher password. A teacher can open a student's board from the class page to look at it, but only the student can
+change it. Someone with neither a student code nor the teacher password gets no boards. Set `TEACHER_PASSWORD`
+whenever students use Zeno: without one, anyone without a student code counts as a teacher.
+
+Upgrading from a Zeno without board owners: every board already there becomes the teachers'. Boards weren't tied to
+anyone before, so the server can't tell which a student made.
+
 Basic auth sends the password with every request, so on a shared network put Zeno behind HTTPS. With
 `BIND_ADDRESS=127.0.0.1` the port only listens on the machine itself, and a reverse proxy serves it to the network.
 A minimal Caddyfile for a local network with no domain (Caddy's own certificate authority; install its root
@@ -1631,7 +1641,8 @@ Environment variables:
 - `DATA_DIR`: `./data` by default.
 - `STATIC_DIR`: `./dist` by default.
 - `APP_PASSWORD`: empty means no auth.
-- `TEACHER_PASSWORD`: empty means anyone can create classes and download the study data; see below. A browser tab
+- `TEACHER_PASSWORD`: empty means anyone can create classes, download the study data, and use the teachers' boards
+  (anyone without a student code counts as a teacher); see below. A browser tab
   signed in on the teacher's page also has every game's endless run open (all three levels and the clock), so a
   teacher can show a class any of them without first playing through the puzzles; it closes with the tab.
 - `TRUST_PROXY`: 1 behind a reverse proxy, as above.
@@ -1665,7 +1676,7 @@ Backups:
   `docker compose stop app`, then `docker compose run --rm -v "$PWD/zeno-2026-11-02.db:/restore.db:ro" --entrypoint sh app
   -c 'cp /restore.db /data/boards.db && rm -f /data/boards.db-wal /data/boards.db-shm'`, then `docker compose start app`.
   Answers sent after that backup was made are lost, except those still waiting in a student's browser, which upload again.
-- **Boards as JSON.** The home page links to `/api/export`, every board in one JSON file.
+- **Boards as JSON.** The home page offers a teacher `/api/export`, every board (the students' too) in one JSON file.
 
 Uptime: `.github/workflows/uptime.yml` asks the public server's `/api/health` (no password needed) every ten minutes
 from GitHub, outside the server. Four failed tries in a row, or a certificate with under ten days left, open one issue

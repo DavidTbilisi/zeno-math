@@ -1,4 +1,5 @@
-// The board API: saves from a stale copy are refused with 409, and static files go out compressed.
+// The board API: saves from a stale copy are refused with 409, boards belong to a student or to the teachers, and
+// static files go out compressed.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
@@ -12,9 +13,9 @@ const URL_ = `http://127.0.0.1:${PORT}`;
 const dir = mkdtempSync(join(tmpdir(), "zeno-test-"));
 const servers: ChildProcess[] = [];
 
-async function start(port: number, name: string, password = "") {
+async function start(port: number, name: string, password = "", teacherPassword = "") {
   const server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "server/index.ts"], {
-    env: { ...process.env, PORT: String(port), DATA_DIR: join(dir, name), STATIC_DIR: join(dir, "dist"), APP_PASSWORD: password },
+    env: { ...process.env, PORT: String(port), DATA_DIR: join(dir, name), STATIC_DIR: join(dir, "dist"), APP_PASSWORD: password, TEACHER_PASSWORD: teacherPassword },
     stdio: "pipe",
   });
   servers.push(server);
@@ -156,4 +157,82 @@ test("with a password, everything but the health check needs it", async () => {
   assert.equal((await fetch(`${base}/api/boards`, { headers: basic("anyone", "s3cret") })).status, 200);
   assert.equal((await fetch(`${base}/api/export`)).status, 401);
   assert.equal((await fetch(`${base}/api/health`)).status, 200);
+});
+
+test("a board is its owner's: a student's own, the teachers' shared; a teacher only reads a student's", async () => {
+  const port = PORT + 2;
+  await start(port, "owners", "", "t34cher");
+  const base = `http://127.0.0.1:${port}`;
+  const TEACHER = { "X-Teacher-Password": "t34cher" };
+  const as = (headers: Record<string, string>) => async (method: string, path: string, body?: unknown) => {
+    const res = await fetch(base + path, { method, headers: { "Content-Type": "application/json", ...headers }, body: body === undefined ? undefined : JSON.stringify(body) });
+    return { status: res.status, body: res.status === 204 || !res.headers.get("content-type")?.includes("json") ? undefined : await res.json() };
+  };
+  const teacher = as(TEACHER);
+  const klass = (await teacher("POST", "/api/classes", { name: "Boards" })).body;
+  const other = (await teacher("POST", "/api/classes", { name: "Other" })).body;
+  const join = async (code: string) => (await as({})("POST", "/api/students", { class: code })).body.code as string;
+  const [codeA, codeB] = [await join(klass.code), await join(klass.code)];
+  const a = as({ "X-Student-Code": codeA.toLowerCase().replace("-", "") });
+  const b = as({ "X-Student-Code": codeB });
+  const visitor = as({});
+
+  const mine = (await a("POST", "/api/boards", { title: "A's" })).body;
+  const theirs = (await b("POST", "/api/boards", { title: "B's" })).body;
+  const staff = (await teacher("POST", "/api/boards", { title: "Teachers'" })).body;
+  assert.equal((await a("PUT", `/api/boards/${mine.id}`, { scene: { elements: [{ id: "x" }] } })).status, 200);
+
+  // Each sees only their own; the teachers' boards are theirs alone.
+  const ids = async (call: ReturnType<typeof as>) => ((await call("GET", "/api/boards")).body as { id: string }[]).map((r) => r.id);
+  assert.deepEqual(await ids(a), [mine.id]);
+  assert.deepEqual(await ids(b), [theirs.id]);
+  assert.deepEqual(await ids(teacher), [staff.id]);
+
+  // Another student's board, or the teachers', is not there for a student: not read, changed, deleted or shared.
+  for (const id of [theirs.id, staff.id]) {
+    assert.equal((await a("GET", `/api/boards/${id}`)).status, 404);
+    assert.equal((await a("PUT", `/api/boards/${id}`, { title: "taken", scene: { elements: [] } })).status, 404);
+    assert.equal((await a("DELETE", `/api/boards/${id}`)).status, 404);
+    assert.equal((await a("POST", `/api/boards/${id}/share`, {})).status, 404);
+  }
+  assert.equal((await b("GET", `/api/boards/${theirs.id}`)).body.title, "B's");
+  assert.equal((await teacher("GET", `/api/boards/${staff.id}`)).body.title, "Teachers'");
+
+  // A teacher reads a student's board, told it is read only, and can't change, delete or share it.
+  const read = await teacher("GET", `/api/boards/${mine.id}`);
+  assert.equal(read.status, 200);
+  assert.equal(read.body.readOnly, true);
+  assert.deepEqual(read.body.scene, { elements: [{ id: "x" }] });
+  assert.equal("shareToken" in read.body, false);
+  assert.equal((await teacher("PUT", `/api/boards/${mine.id}`, { title: "Marked" })).status, 403);
+  assert.equal((await teacher("DELETE", `/api/boards/${mine.id}`)).status, 403);
+  assert.equal((await teacher("POST", `/api/boards/${mine.id}/share`, {})).status, 403);
+  assert.equal((await a("GET", `/api/boards/${mine.id}`)).body.title, "A's");
+  assert.equal((await a("GET", `/api/boards/${mine.id}`)).body.readOnly, undefined);
+
+  // A class's students' boards, for the teacher only.
+  const listed = (await teacher("GET", `/api/boards?class=${klass.code}`)).body as { id: string; student: string }[];
+  assert.deepEqual(listed.map((r) => r.id).sort(), [mine.id, theirs.id].sort());
+  assert.ok(listed.every((r) => /^s\d+$/.test(r.student)));
+  assert.deepEqual((await teacher("GET", `/api/boards?class=${other.code}`)).body, []);
+  assert.equal((await a("GET", `/api/boards?class=${klass.code}`)).status, 403);
+
+  // Neither a code nor the teacher password: no boards. A wrong code or password is refused, not taken for a visitor.
+  assert.equal((await visitor("GET", "/api/boards")).status, 403);
+  assert.equal((await visitor("POST", "/api/boards", { title: "Mine?" })).status, 403);
+  assert.equal((await visitor("GET", `/api/boards/${mine.id}`)).status, 403);
+  assert.equal((await as({ "X-Student-Code": "ZZZZ-ZZZZ" })("GET", "/api/boards")).status, 403);
+  assert.equal((await as({ "X-Teacher-Password": "nope" })("GET", "/api/boards")).status, 403);
+
+  // The backup holds every board, so it is a teacher's.
+  assert.equal((await a("GET", "/api/export")).status, 403);
+  assert.equal((await visitor("GET", "/api/export")).status, 403);
+  const backup = await fetch(`${base}/api/export`, { headers: TEACHER });
+  assert.equal(backup.status, 200);
+  assert.equal(((await backup.json()).boards as unknown[]).length, 3);
+
+  // A student who is forgotten takes their boards with them.
+  assert.equal((await as({})("DELETE", `/api/students/${codeA}`)).status, 204);
+  assert.equal((await teacher("GET", `/api/boards/${mine.id}`)).status, 404);
+  assert.deepEqual(await ids(b), [theirs.id]);
 });

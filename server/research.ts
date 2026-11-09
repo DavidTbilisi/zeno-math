@@ -264,6 +264,35 @@ function teacher(req: IncomingMessage) {
   passwords.succeed(client);
 }
 
+/**
+ * Who a board request comes from. Everyone past the site password is the same to the server, so a board belongs to
+ * someone only through what the request carries: the teacher password (the teachers' boards), or a student code (that
+ * student's own boards). The teacher password wins when both are sent. With no TEACHER_PASSWORD set, a request
+ * carrying neither is a teacher's, as for classes; with one set, it gets no boards at all.
+ */
+export type BoardUser = { teacher: true } | { teacher: false; studentId: number };
+export function boardUser(req: IncomingMessage, db: DatabaseSync): BoardUser {
+  if (req.headers["x-teacher-password"] !== undefined) {
+    teacher(req);
+    return { teacher: true };
+  }
+  const code = req.headers["x-student-code"];
+  if (code !== undefined) {
+    const row = stmt(db, "SELECT id FROM students WHERE code = ?").get(normalizeCode(code)) as { id: number } | undefined;
+    if (!row) throw new HttpError(403, "no such student code");
+    return { teacher: false, studentId: row.id };
+  }
+  if (!TEACHER_PASSWORD) return { teacher: true };
+  throw new HttpError(403, "boards need a student code or the teacher password");
+}
+
+/** A class's students' boards, for the teacher to open (read only). */
+export const classBoards = (db: DatabaseSync, klass: string) =>
+  stmt(db, `
+    SELECT b.id, b.title, b.created_at AS createdAt, b.updated_at AS updatedAt, 's' || s.id AS student, s.list_no AS number
+    FROM boards b JOIN students s ON s.id = b.student_id WHERE s.class_code = ? ORDER BY b.updated_at DESC
+  `).all(normalizeCode(klass));
+
 function shuffled<T>(items: readonly T[]): T[] {
   const a = [...items];
   for (let i = a.length - 1; i > 0; i--) {

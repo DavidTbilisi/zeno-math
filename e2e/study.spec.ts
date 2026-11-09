@@ -47,7 +47,8 @@ async function answerWrong(page: Page): Promise<boolean> {
 
 test("a teacher makes a class, a student joins and practises, and the pre-test reaches the student", async ({ browser, request }) => {
   // The teacher: sign in, make a class of algebra with a four-question test.
-  const teacher = await browser.newPage();
+  // Without the teacher header the config gives every page, so the teacher page asks for the password.
+  const teacher = await browser.newPage({ extraHTTPHeaders: {} });
   await teacher.goto("/#/teacher");
   await teacher.getByLabel("Teacher password").fill(TEACHER);
   await teacher.getByRole("button", { name: "Open" }).click();
@@ -103,7 +104,8 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
 });
 
 test("the join link fills the class code in; a number given twice is caught, and the teacher finds the code by it", async ({ browser }) => {
-  const teacher = await browser.newPage();
+  // Without the teacher header the config gives every page, so the teacher page asks for the password.
+  const teacher = await browser.newPage({ extraHTTPHeaders: {} });
   await teacher.goto("/#/teacher");
   await teacher.getByLabel("Teacher password").fill(TEACHER);
   await teacher.getByRole("button", { name: "Open" }).click();
