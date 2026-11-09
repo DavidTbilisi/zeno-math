@@ -105,7 +105,8 @@ test("wrong passwords: the eleventh in ten minutes gets 429, even with the right
   const server = await start({ DATA_DIR: data, APP_PASSWORD: "open sesame", TEACHER_PASSWORD: "chalk", TRUST_PROXY: "1" });
   const basic = (password: string) => `Basic ${Buffer.from(`any:${password}`).toString("base64")}`;
   const get = (path: string, from: string, headers: Record<string, string> = {}) =>
-    fetch(server.base + path, { headers: { "X-Forwarded-For": from, ...headers } });
+    // The teacher password too: boards are refused to a request that is neither a teacher's nor a student's.
+    fetch(server.base + path, { headers: { "X-Forwarded-For": from, "X-Teacher-Password": "chalk", ...headers } });
   try {
     for (let i = 0; i < 15; i++) assert.equal((await get("/api/boards", "10.0.0.1")).status, 401, "no password: asked for one");
     // Asking without a password doesn't count: all ten guesses are still checked.
@@ -163,7 +164,7 @@ test("the server records its schema version, backs up on start, and refuses a da
   await server.stop();
   const db = new DatabaseSync(join(data, "boards.db"));
   const { user_version } = db.prepare("PRAGMA user_version").get() as { user_version: number };
-  assert.equal(user_version, 5);
+  assert.equal(user_version, 6);
   assert.equal(backups(join(data, "backups")).length, 1, "a first backup on start");
   db.exec("PRAGMA user_version = 99");
   db.close();

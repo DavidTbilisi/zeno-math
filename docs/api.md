@@ -17,6 +17,7 @@ sends, until the oldest of them leaves the window. A client that gave a right pa
 already signed in.
 - *student*: anyone holding a student code. The code is the only thing tying answers to a student, so knowing it is
   enough.
+- *owner*: the board's owner; see *Whose boards*.
 
 `tests/api-docs.test.ts` checks this table against a running server. Every route listed must exist, and every other
 method and path on these resources must answer 404 or 405, so a route added without documenting it fails the tests.
@@ -26,14 +27,14 @@ method and path on these resources must answer 404 or 405, so a route added with
 | Method | Path | Who | What it does |
 |---|---|---|---|
 | GET | `/api/health` | anyone, no password | `{ ok: true }` once the database answers; Docker's health check |
-| GET | `/api/export` | anyone | every board with its scene, as a JSON download (`zeno-boards-DATE.json`) |
-| GET | `/api/boards` | anyone | the board list: `[{ id, title, createdAt, updatedAt }]`, newest first |
-| POST | `/api/boards` | anyone | a new board from `{ title? }` (trimmed, at most 200 characters): 201 with `{ id, title, createdAt, updatedAt }` |
-| GET | `/api/boards/:id` | anyone | `{ id, title, scene, updatedAt, shareToken }`; 404 if there is no such board |
-| PUT | `/api/boards/:id` | anyone | save `{ title?, scene?, baseUpdatedAt? }`; see *Saving a board* |
-| DELETE | `/api/boards/:id` | anyone | delete the board: 204 |
-| POST | `/api/boards/:id/share` | anyone | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
-| DELETE | `/api/boards/:id/share` | anyone | take the read-only link away: 204; the old link stops working |
+| GET | `/api/export` | teacher | every board, the teachers' and every student's, with its scene, as a JSON download (`zeno-boards-DATE.json`) |
+| GET | `/api/boards` | owner | the caller's boards: `[{ id, title, createdAt, updatedAt }]`, newest first. A teacher with `?class=CODE` gets that class's students' boards instead, each with `student` (`s17`) and `number` |
+| POST | `/api/boards` | owner | a new board, the caller's, from `{ title? }` (trimmed, at most 200 characters): 201 with `{ id, title, createdAt, updatedAt }` |
+| GET | `/api/boards/:id` | owner | `{ id, title, scene, updatedAt, shareToken }`. A teacher may open a student's board too: `{ id, title, scene, updatedAt, readOnly: true }` |
+| PUT | `/api/boards/:id` | owner | save `{ title?, scene?, baseUpdatedAt? }`; see *Saving a board* |
+| DELETE | `/api/boards/:id` | owner | delete the board: 204 |
+| POST | `/api/boards/:id/share` | owner | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
+| DELETE | `/api/boards/:id/share` | owner | take the read-only link away: 204; the old link stops working |
 | GET | `/api/shared/:token` | anyone | the shared board, `{ title, scene, updatedAt }`, without its id; 404 once the link is taken away |
 | GET | `/api/classes` | teacher | every class: code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
@@ -55,6 +56,20 @@ method and path on these resources must answer 404 or 405, so a route added with
 Anything else under `/api/` is 404, and a known path with the wrong method is 405. Paths outside `/api/` serve the
 built app: hashed assets are cached for a year, and the page itself comes with a strict Content-Security-Policy.
 
+## Whose boards
+
+Every board belongs to one student or to the teachers. A request says whose boards it is about:
+
+- **`X-Teacher-Password`**: the teachers' boards, shared by every teacher. A wrong password is 403 and counts towards
+  the limit above. This header wins when a request carries both.
+- **`X-Student-Code`**: that student's own boards. An unknown code is 403.
+- **Neither**: 403, no boards. With no `TEACHER_PASSWORD` set, such a request is a teacher's, as for classes.
+
+A board that isn't the caller's answers **404** `no such board`, the same as one that doesn't exist. The one exception
+is a teacher and a student's board: the teacher may read it (`readOnly: true`, without its link), and changing,
+deleting or sharing it is **403**. Boards made before boards had owners are the teachers'. Deleting a student
+(`DELETE /api/students/:code`) deletes their boards.
+
 ## Saving a board
 
 `PUT /api/boards/:id` takes any of `title`, `scene` and `baseUpdatedAt`:
@@ -73,8 +88,9 @@ built app: hashed assets are cached for a year, and the page itself comes with a
 seconds). The token is 16 random bytes and says nothing about the board's id, so the link can't be turned into one
 that edits.
 
-It is a way of presenting, not of keeping a board private. With `APP_PASSWORD` set, a viewer needs the site password
-like everyone else, and with it could open any board for editing. Without one, the home page lists every board.
+It is a way of presenting. With `APP_PASSWORD` set, a viewer needs the site password like everyone else. Anyone
+with the link sees the board, and nothing more: editing it still takes its owner's student code or the teacher
+password.
 
 ## The class study
 

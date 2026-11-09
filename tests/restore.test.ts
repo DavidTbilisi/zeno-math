@@ -29,7 +29,7 @@ test("a backup comes back whole; a damaged one, or one from a newer Zeno, is cau
     });
     await call("POST", `/api/classes/${code}/phase`, { phase: "pretest" }, teacher);
     await call("POST", "/api/tests", { clientId: `restore-t-${Date.now()}`, student: a, phase: "pre", item: 0, input: "1", verdict: "wrong", retries: 0, ms: 9000 });
-    await call("POST", "/api/boards", { title: "Kept" });
+    await call("POST", "/api/boards", { title: "Kept" }, teacher);
     // As server/backup.ts makes one: a snapshot of the live database while the server runs.
     new DatabaseSync(join(dir, "data", "boards.db")).exec(`VACUUM INTO '${backup}'`);
   } finally {

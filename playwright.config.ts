@@ -21,6 +21,9 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${PORT}`,
     viewport: { width: 1280, height: 860 },
     trace: "retain-on-failure",
+    // Boards belong to a student or to the teachers, and this server asks for a teacher password, so every page and
+    // request is a teacher's unless a test says otherwise (e2e/boardOwners.spec.ts makes contexts without it).
+    extraHTTPHeaders: { "X-Teacher-Password": "e2e-teacher" },
     ...(executablePath ? { launchOptions: { executablePath } } : {}),
   },
   webServer: {

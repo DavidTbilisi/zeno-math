@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, type BoardSummary } from "../api";
+import { api, ApiError, boardOwner, type BoardSummary } from "../api";
 import { BrandBar } from "../components/BrandBar";
 import { gradeName } from "../components/GradeCard";
 import { useI18n } from "../i18n";
@@ -14,11 +14,16 @@ export function HomePage() {
   const { t, lang } = useI18n();
   const [boards, setBoards] = useState<BoardSummary[] | null>(null);
   const [failed, setFailed] = useState(false);
+  // 403: this browser is neither a teacher's nor a joined student's, so it has no boards (server/research.ts boardUser).
+  const [refused, setRefused] = useState(false);
   // Where the learner is in the course, once they have practised or found their grade in this browser.
   const [progress] = useState(loadProgress);
   const grade = progress.placed || progress.cells ? currentGrade(progress.placed ?? null, progress.cells ?? {}) : null;
 
-  const load = () => api.list().then(setBoards, () => setBoards([]));
+  const load = () => api.list().then(setBoards, (e) => {
+    setRefused(e instanceof ApiError && e.status === 403);
+    setBoards([]);
+  });
   useEffect(() => {
     load();
   }, []);
@@ -59,6 +64,15 @@ export function HomePage() {
     });
   };
 
+  // The backup holds every board, students' too, so the server gives it to a teacher only.
+  const backup = () => attempt(async () => {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(await api.backup());
+    link.download = `zeno-boards-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  });
+
   const date = new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeStyle: "short" });
 
   return (
@@ -81,11 +95,16 @@ export function HomePage() {
 
           <div className="section-head">
             <h1>{t.myBoards}</h1>
-            <button className="btn primary" onClick={create}>+ {t.newBoard}</button>
+            {!refused && <button className="btn primary" onClick={create}>+ {t.newBoard}</button>}
           </div>
           {failed && <p className="error" role="alert">{t.actionFailed}</p>}
 
-          {boards === null ? (
+          {refused ? (
+            <div className="empty">
+              <p>{t.boardsNeedOwner}</p>
+              <a className="btn primary" href="#/practice">{t.practice}</a>
+            </div>
+          ) : boards === null ? (
             <p className="muted">{t.loading}</p>
           ) : boards.length === 0 ? (
             <div className="empty">
@@ -132,9 +151,9 @@ export function HomePage() {
               ))}
             </ul>
           )}
-          {!!boards?.length && (
+          {!!boards?.length && !("X-Student-Code" in boardOwner()) && (
             <p className="muted small">
-              <a href="/api/export" download>⤓ {t.backupAll}</a>
+              <button className="btn small ghost" onClick={() => void backup()}>⤓ {t.backupAll}</button>
             </p>
           )}
           <p className="muted small">

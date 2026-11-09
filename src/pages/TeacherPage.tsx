@@ -4,7 +4,7 @@
 // whether the learner model's predictions come true. The teacher password
 // (TEACHER_PASSWORD on the server) is kept for this tab only.
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { api as boardApi, ApiError, teacherApi, type ClassSummary, type Dashboard } from "../api";
+import { api as boardApi, ApiError, studentName, teacherApi, type ClassBoard, type ClassSummary, type Dashboard } from "../api";
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
@@ -440,6 +440,8 @@ export function TeacherPage() {
 
                 {!!data.students.length && <FindCode students={data.students} w={w} />}
 
+                {!!data.students.length && <StudentBoards key={data.class.code} code={data.class.code} api={api} w={w} />}
+
                 {!!data.students.length && current && (
                   <details key={current.code} className="card paper-card" onToggle={(e) => setTypingPaper(e.currentTarget.open)}>
                     <summary><h3>{w.paperTest}</h3></summary>
@@ -587,6 +589,36 @@ export function TeacherPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * The class's students' boards, closed until opened and fetched then. A board opens read only: the teacher looks at
+ * the work, and only the student changes it (the server refuses the teacher's saves).
+ */
+function StudentBoards({ code, api, w }: { code: string; api: ReturnType<typeof teacherApi>; w: Dict["teacher"] }) {
+  const [boards, setBoards] = useState<ClassBoard[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const load = () => {
+    setFailed(false);
+    api.boards(code).then(setBoards, () => setFailed(true));
+  };
+  return (
+    <details className="card student-boards" onToggle={(e) => e.currentTarget.open && load()}>
+      <summary><h3>{w.studentBoards}</h3></summary>
+      <p className="hint">{w.studentBoardsNote}</p>
+      {failed && <p className="error" role="alert">{w.loadFailed}</p>}
+      {boards && !boards.length && <p className="muted">{w.noStudentBoards}</p>}
+      {!!boards?.length && (
+        <ul className="student-board-list">
+          {boards.map((b) => (
+            <li key={b.id}>
+              <a href={`#/b/${b.id}`}>{b.title}</a> <span className="muted small">{studentName(b.student, b.number)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </details>
   );
 }
 

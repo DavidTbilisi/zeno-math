@@ -1,12 +1,16 @@
 import type { Dashboard } from "../server/dashboard";
-import type { Attempt, Phase, Plan, SendResult, Student, TestAnswer } from "./learner";
+import { loadStudent, type Attempt, type Phase, type Plan, type SendResult, type Student, type TestAnswer } from "./learner";
 import type { SkillId } from "./math/practiceSkills";
 import type { Feature } from "./model/arms";
 import type { Form, TestPhase } from "./model/testForms";
+import { TEACHER_KEY } from "./teacherMode";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
-export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene; shareToken?: string | null };
+/** readOnly: a student's board opened by a teacher, who may look but not change it. */
+export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene; shareToken?: string | null; readOnly?: boolean };
+/** A student's board in a teacher's list of a class's boards: whose it is, as the teacher's page names students. */
+export type ClassBoard = BoardSummary & { student: string; number: number | null };
 /** A board seen through its read-only link: no id, so nothing that could edit it. */
 export type SharedBoard = { title: string; updatedAt: number; scene: BoardScene };
 
@@ -29,17 +33,38 @@ async function req<T>(method: string, url: string, body?: unknown, keepalive = f
   return res.status === 204 ? (undefined as T) : res.json();
 }
 
+/**
+ * Whose boards these calls are about (server/research.ts boardUser): the teachers' in a tab signed in on the teacher's
+ * page, else this browser's student's, else nobody's (the server then refuses, unless it asks for no teacher password).
+ */
+export function boardOwner(): Record<string, string> {
+  try {
+    const password = sessionStorage.getItem(TEACHER_KEY);
+    if (password !== null) return password ? { "X-Teacher-Password": password } : {};
+  } catch {
+    // no session storage: not a teacher's tab
+  }
+  const student = loadStudent();
+  return student ? { "X-Student-Code": student.code } : {};
+}
+
 export const api = {
-  list: () => req<BoardSummary[]>("GET", "/api/boards"),
-  create: (title: string) => req<BoardSummary>("POST", "/api/boards", { title }),
-  get: (id: string) => req<Board>("GET", `/api/boards/${id}`),
+  list: () => req<BoardSummary[]>("GET", "/api/boards", undefined, false, boardOwner()),
+  create: (title: string) => req<BoardSummary>("POST", "/api/boards", { title }, false, boardOwner()),
+  get: (id: string) => req<Board>("GET", `/api/boards/${id}`, undefined, false, boardOwner()),
   /** With baseUpdatedAt, fails with status 409 if the board was saved elsewhere since. keepalive: the request may outlive the page. */
   save: (id: string, data: { title?: string; scene?: BoardScene; baseUpdatedAt?: number }, keepalive = false) =>
-    req<{ updatedAt: number; previous: number }>("PUT", `/api/boards/${id}`, data, keepalive),
-  remove: (id: string) => req<void>("DELETE", `/api/boards/${id}`),
+    req<{ updatedAt: number; previous: number }>("PUT", `/api/boards/${id}`, data, keepalive, boardOwner()),
+  remove: (id: string) => req<void>("DELETE", `/api/boards/${id}`, undefined, false, boardOwner()),
   /** The board's read-only link (made the first time), and taking it away. */
-  share: (id: string) => req<{ token: string }>("POST", `/api/boards/${id}/share`, {}),
-  unshare: (id: string) => req<void>("DELETE", `/api/boards/${id}/share`),
+  share: (id: string) => req<{ token: string }>("POST", `/api/boards/${id}/share`, {}, false, boardOwner()),
+  unshare: (id: string) => req<void>("DELETE", `/api/boards/${id}/share`, undefined, false, boardOwner()),
+  /** Every board, the teachers' and the students', as one file to save (a teacher's only). */
+  backup: async (): Promise<Blob> => {
+    const res = await fetch("/api/export", { headers: boardOwner() });
+    if (!res.ok) throw new ApiError(`GET /api/export: ${res.status}`, res.status);
+    return res.blob();
+  },
   /** A shared board; with the etag of the copy in hand, null while it is still the latest (the scene isn't sent again). */
   shared: async (token: string, etag?: string): Promise<{ board: SharedBoard; etag: string } | null> => {
     const url = `/api/shared/${encodeURIComponent(token)}`;
@@ -129,6 +154,8 @@ export function teacherApi(password: string) {
     /** A test written on paper, typed in: one answer per question in the printout's order, "" for one left blank. */
     paper: (code: string, student: string, phase: TestPhase, form: Form, answers: string[]) =>
       req<PaperResult>("POST", `/api/classes/${encodeURIComponent(code)}/paper`, { student, phase, form, answers }, false, headers),
+    /** The class's students' boards, to open read only. */
+    boards: (code: string) => req<ClassBoard[]>("GET", `/api/boards?class=${encodeURIComponent(code)}`, undefined, false, headers),
     /** The teacher has seen a stuck student: off the stuck list until ten more questions after attempt `through`. */
     seen: (code: string, student: string, skill: string, through: number) =>
       req<void>("POST", `/api/classes/${encodeURIComponent(code)}/seen`, { student, skill, through }, false, headers),
