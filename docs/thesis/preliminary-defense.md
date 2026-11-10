@@ -68,6 +68,10 @@ My conclusion. The size of a skill changes the decision. When the skill is too b
 
 **What did you do yourself?** The two proofs, the computer-made students, the sixteen ideas of fractions, the code for all three rules, and the analysis. All the code is public. Each table shows the command that made it.
 
+**Why don't you use Python or MATLAB for the simulations?** Zeno is written in TypeScript, and the simulation uses the same code as Zeno: the same question generators and the same rules for deciding. So I test the real code that students use, not a copy of it. If I wrote it again in Python or MATLAB, I would have two versions, and they could give different results. The mathematics is simple, probabilities and averages, so I do not need a special tool. I can also fix the random numbers, so one command gives the same tables again. Python is a good choice for a new project; here the product already existed in TypeScript.
+
+**What is your plan for the future of the product?** Three steps. First, I put the result of this thesis into Zeno: the rule that decides when a student knows a skill, and the small ideas to choose the next question. Second, I try Zeno with a real class and a teacher. Zeno can already split a class into two groups and give a test before and after. Third, a bigger study in several schools, to check if this kind of practice really helps students learn more. That study needs permission from the schools and a few hundred students, so it comes after the bachelor's thesis. Zeno is open source, so any teacher can use it for free.
+
 **What does this mean for Zeno?** Choose the skills and the questions together, and test the rule on Zeno's own data. The full recommendation is in the final thesis.
 
 **What is left to do?** The part with real students' answers, the ASSISTments data, and the formatting by the university rules. I send the final thesis to my supervisor by 18 January 2027.
