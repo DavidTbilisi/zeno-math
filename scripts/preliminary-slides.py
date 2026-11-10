@@ -170,7 +170,7 @@ SLIDES = [
         table=[["Parts in the real skill", "Right decisions (the truth)", "Next 3 answers right (we can see this)"],
                ["1 (correct size)", "98 %", "88 %"],
                ["2", "59 %", "75 %"],
-               ["4", "23 %", "71 %"],
+               ["4", "23 %", "70 %"],
                ["8", "8 %", "64 %"]],
         lines=["With real students we cannot see the truth. But we can see the answers after “yes”.",
                "Real students (ASSISTments): 110 skills 79 %, 5 topics 73 %, 1 skill 73 %."],
