@@ -1,6 +1,6 @@
 # Preliminary defence
 
-The talk for the preliminary defence of *The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems*, by Davit Tchintcharashvili, supervised by Mikheil Gigauri. The defence falls between 16 and 21 November 2026; the date, room and length allowed are not yet known. The talk is about 1110 words, which is about 9 minutes at an even pace. It covers what the preliminary draft sent on 9 November contains, the method and the simulation results, and every number is that draft's. The slides are in `preliminary-defense.pptx`, with this text in each slide's notes; both files are written by `scripts/preliminary-slides.py`.
+The talk for the preliminary defence of *The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems*, by Davit Tchintcharashvili, supervised by Mikheil Gigauri. The defence falls between 16 and 21 November 2026; the date, room and length allowed are not yet known. The talk is about 1280 words, which is about 10 minutes at an even pace. It covers what the preliminary draft sent on 9 November contains, the method and the simulation results, and every number is that draft's. The slides are in `preliminary-defense.pptx`, with this text in each slide's notes; both files are written by `scripts/preliminary-slides.py`.
 
 ## The talk
 
@@ -48,11 +48,15 @@ The third result uses a real topic, fractions. I divided fractions into sixteen 
 
 The fourth result is the opposite case. The students are the same and the answers are the same. But the program cuts each real part into smaller pieces. When I cut each part into four pieces, the program needs ten more answers. And with the usual 95 percent rule, it says yes to only 7 percent of students. Before, it was 94 percent. So smaller is not always better. Each small piece gets too few answers.
 
-*Slide 12: Limits of this work.*
+*Slide 12: Result 5: a warning sign that needs no truth.*
+
+The fifth result is new. I made it this month. With real students we cannot see the truth. But we can see one thing: the next three answers after the program says yes. Is this a useful sign? I checked it with the computer-made students, because there I know the truth. Look at the table. When the skill has the correct size, 98 percent of decisions are right, and 88 percent of the next answers are right. When the skill is too big, both numbers go down together. So the sign works. But it is a weak sign. The truth falls from 98 to 8 percent. The sign falls only from 88 to 64. Then I looked at real students. With 110 skills, 79 percent of the next answers are right. With 5 big topics, 73 percent. So the real data move in the same direction. A teacher can use this sign to compare two ways of dividing a subject. But it does not show how many decisions are wrong.
+
+*Slide 13: Limits of this work.*
 
 My work has limits. The students are made by computer, and real students can be different. I divided fractions into sixteen ideas myself, and another person could do it differently. A rule that works for one group does not always work for a new group. I repeated every experiment five times, and I keep only the results that stay the same. I do not say there is one best size for all skills. And I do not measure if Zeno helps a real class.
 
-*Slide 13: Conclusion and next steps.*
+*Slide 14: Conclusion and next steps.*
 
 My conclusion. The size of a skill changes the decision. When the skill is too big, the program says yes too early. When the skill is too small, the program almost never says yes. So we must choose the skills, the questions and the rule together. What is next? For the final thesis, I study the same question on answers of real students. This is a public data set called ASSISTments, with about four thousand students. Thank you. I am ready for your questions.
 
@@ -77,5 +81,7 @@ My conclusion. The size of a skill changes the decision. When the skill is too b
 **What is your plan for the future of the product?** I want to grow Zeno in three directions. First, I put the result of this thesis into Zeno and try it with a real class and a teacher. Second, more subjects. Now Zeno has mathematics. The method is not only for mathematics: any subject that we can divide into small ideas, with questions for each idea, can use it, for example physics or programming. Third, machine learning. In this thesis I divided fractions into sixteen ideas by hand. For many subjects that is too slow. So the next step is that the program learns the small ideas from the students' answers. Zeno already does a first version of this: it can split or join ideas when the data supports it. With more students and more data, stronger models become possible. Later, a bigger study in several schools can check if this practice really helps students learn more.
 
 **What does this mean for Zeno?** Choose the skills and the questions together, and test the rule on Zeno's own data. The full recommendation is in the final thesis.
+
+**In Result 5, is the sign enough to know that a skill is too big?** No. It only compares. If the next answers are worse with big topics than with small skills, the small skills are the better choice. But the sign is weak, and it cannot say how many decisions are wrong. I also tested a second sign, the forecast of BKT for the next answers. It worked on computer-made students, but not on real students. I report this in the thesis.
 
 **What is left to do?** The part with real students' answers, the ASSISTments data, and the formatting by the university rules. I send the final thesis to my supervisor by 18 January 2027.

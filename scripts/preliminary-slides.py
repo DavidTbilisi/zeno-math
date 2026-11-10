@@ -166,6 +166,25 @@ SLIDES = [
             "answers.",
     ),
     dict(
+        title="Result 5: a warning sign that needs no truth",
+        table=[["Parts in the real skill", "Right decisions (the truth)", "Next 3 answers right (we can see this)"],
+               ["1 (correct size)", "98 %", "88 %"],
+               ["2", "59 %", "75 %"],
+               ["4", "23 %", "71 %"],
+               ["8", "8 %", "64 %"]],
+        lines=["With real students we cannot see the truth. But we can see the answers after “yes”.",
+               "Real students (ASSISTments): 110 skills 79 %, 5 topics 73 %, 1 skill 73 %."],
+        say="The fifth result is new. I made it this month. With real students we cannot see the truth. But we can "
+            "see one thing: the next three answers after the program says yes. Is this a useful sign? I checked "
+            "it with the computer-made students, because there I know the truth. Look at the table. When the "
+            "skill has the correct size, 98 percent of decisions are right, and 88 percent of the next answers "
+            "are right. When the skill is too big, both numbers go down together. So the sign works. But it is a "
+            "weak sign. The truth falls from 98 to 8 percent. The sign falls only from 88 to 64. Then I looked at "
+            "real students. With 110 skills, 79 percent of the next answers are right. With 5 big topics, 73 "
+            "percent. So the real data move in the same direction. A teacher can use this sign to compare two "
+            "ways of dividing a subject. But it does not show how many decisions are wrong.",
+    ),
+    dict(
         title="Limits of this work",
         lines=["The students are made by computer. Real students can be different.",
                "I divided fractions into 16 ideas myself. Another person could divide them differently.",
@@ -240,6 +259,11 @@ QUESTIONS = [
     ("What does this mean for Zeno?",
      "Choose the skills and the questions together, and test the rule on Zeno's own data. The full recommendation is "
      "in the final thesis."),
+    ("In Result 5, is the sign enough to know that a skill is too big?",
+     "No. It only compares. If the next answers are worse with big topics than with small skills, the small skills "
+     "are the better choice. But the sign is weak, and it cannot say how many decisions are wrong. I also tested a "
+     "second sign, the forecast of BKT for the next answers. It worked on computer-made students, but not on real "
+     "students. I report this in the thesis."),
     ("What is left to do?",
      "The part with real students' answers, the ASSISTments data, and the formatting by the university rules. I send "
      "the final thesis to my supervisor by 18 January 2027."),
