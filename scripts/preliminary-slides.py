@@ -214,12 +214,14 @@ QUESTIONS = [
      "one command gives the same tables again. Python is a good choice for a new project; here the product already "
      "existed in TypeScript."),
     ("What is your plan for the future of the product?",
-     "Three steps. First, I put the result of this thesis into Zeno: the rule that decides when a student knows a "
-     "skill, and the small ideas to choose the next question. Second, I try Zeno with a real class and a teacher. "
-     "Zeno can already split a class into two groups and give a test before and after. Third, a bigger study in "
-     "several schools, to check if this kind of practice really helps students learn more. That study needs "
-     "permission from the schools and a few hundred students, so it comes after the bachelor's thesis. Zeno is "
-     "open source, so any teacher can use it for free."),
+     "I want to grow Zeno in three directions. First, I put the result of this thesis into Zeno and try it with a "
+     "real class and a teacher. Second, more subjects. Now Zeno has mathematics. The method is not only for "
+     "mathematics: any subject that we can divide into small ideas, with questions for each idea, can use it, for "
+     "example physics or programming. Third, machine learning. In this thesis I divided fractions into sixteen "
+     "ideas by hand. For many subjects that is too slow. So the next step is that the program learns the small "
+     "ideas from the students' answers. Zeno already does a first version of this: it can split or join ideas when "
+     "the data supports it. With more students and more data, stronger models become possible. Later, a bigger "
+     "study in several schools can check if this practice really helps students learn more."),
     ("What does this mean for Zeno?",
      "Choose the skills and the questions together, and test the rule on Zeno's own data. The full recommendation is "
      "in the final thesis."),
