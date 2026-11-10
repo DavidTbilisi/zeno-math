@@ -404,6 +404,71 @@ export function rightAfter(rule: MasteryRule, practices: readonly Practice[], k 
   return { rule: rule.name, practices: withAnswers, answers, right: answers ? right / answers : NaN };
 }
 
+export type AfterYes = {
+  rule: string;
+  /** The share of practices in which mastery is declared, and the share of those declarations that are right (NaN without a truth). */
+  declared: number;
+  precision: number;
+  /** Declarations followed by at least one answer, and the answers counted after them. */
+  practices: number;
+  answers: number;
+  /** The share right of the next k answers after a declaration, with a 95 % interval from resampling students. */
+  right: number;
+  rightInterval: [number, number];
+  /** For BKT: the mean chance of a right answer its own parameters forecast for those same answers when it declares (NaN for other rules). */
+  promised: number;
+  /** Observed minus promised (below zero: the students did worse than BKT forecast), with its interval. */
+  gap: number;
+  gapInterval: [number, number];
+};
+/**
+ * What a deployed system can see of a declaration without a truth: how the student did on the next k answers, and for
+ * BKT what it forecast for them. The forecast is made at the declaration and not updated by the answers that follow:
+ * P(known) after the declaring answer gives the chance of a right answer on the next question, and each further
+ * question adds only the chance to learn. A skill modelled too coarse is declared while components are still unknown,
+ * so the answers that follow fall short of a rule that is right, and the question is whether that shows here.
+ */
+export function afterYes(rule: MasteryRule, practices: readonly Practice[], fitted: Fitted, k = 3, resamples = 2000, seed = 1): AfterYes {
+  const isBkt = rule.name.startsWith("BKT");
+  const each = practices.map((p) => {
+    const at = rule.declare(p.skill, p.answers, p);
+    let right = 0, n = 0, promised = 0;
+    if (at !== null) {
+      let known = NaN;
+      const b = fitted.bkt(p.skill);
+      if (isBkt) {
+        known = b.init;
+        for (let i = 0; i < at; i++) known = bktStep(known, b, p.answers[i] === 1).known;
+      }
+      for (let i = at; i < Math.min(p.answers.length, at + k); i++) {
+        n++, (right += p.answers[i]);
+        if (isBkt) (promised += known * (1 - b.slip) + (1 - known) * b.guess), (known += (1 - known) * b.learn);
+      }
+    }
+    return { at, right, n, promised, correct: at !== null && p.known ? p.known[at - 1] === 1 : null };
+  });
+  const stats = (indices: readonly number[]) => {
+    let right = 0, n = 0, promised = 0;
+    for (const i of indices) (right += each[i].right), (n += each[i].n), (promised += each[i].promised);
+    return { right: n ? right / n : NaN, promised: isBkt && n ? promised / n : NaN, n };
+  };
+  const all = stats(practices.map((_, i) => i));
+  const declared = each.filter((e) => e.at !== null);
+  const truth = practices.some((p) => p.known);
+  return {
+    rule: rule.name,
+    declared: declared.length / practices.length,
+    precision: truth && declared.length ? declared.filter((e) => e.correct).length / declared.length : NaN,
+    practices: each.filter((e) => e.n > 0).length,
+    answers: all.n,
+    right: all.right,
+    rightInterval: all.n ? bootstrapByStudent(practices, (ix) => stats(ix).right, resamples, seed) : [NaN, NaN],
+    promised: all.promised,
+    gap: all.right - all.promised,
+    gapInterval: isBkt && all.n ? bootstrapByStudent(practices, (ix) => { const s = stats(ix); return s.right - s.promised; }, resamples, seed) : [NaN, NaN],
+  };
+}
+
 /**
  * The first rule minus the second on the same practices: the share right of the next k answers after each declares
  * mastery, and the mean answers before it (a practice never declared counting its full length), each with a 95 %

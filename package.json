@@ -25,6 +25,7 @@
     "benchmark": "node --disable-warning=ExperimentalWarning scripts/benchmark.ts",
     "h1": "node --disable-warning=ExperimentalWarning scripts/h1.ts",
     "grain": "node --disable-warning=ExperimentalWarning scripts/grain.ts",
+    "after-yes": "node --disable-warning=ExperimentalWarning scripts/after-yes.ts",
     "grouping": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/grouping.ts",
     "analyse": "node --disable-warning=ExperimentalWarning scripts/analyse-study.ts",
     "ratings": "node --disable-warning=ExperimentalWarning scripts/rating-check.ts",

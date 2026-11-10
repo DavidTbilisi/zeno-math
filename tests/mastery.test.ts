@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import type { Observation } from "../src/model/elo.ts";
 import { bktStep, EmaModel, emaStep, fitEma, type BktParams } from "../src/model/evaluate.ts";
 import {
-  agreement, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules, judge,
+  afterYes, agreement, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, cheapestAtPrecision, compareAtCost, compareAtPrecision, decide, emaRule, FINE_THRESHOLDS, fitRules, judge,
   masteryCalibration, PRECISION_TARGET, practicesFrom, precisionOf, rightAfter, simulatePractice, streakRule, thresholdForCost, tradeOff, type Practice,
 } from "../src/model/mastery.ts";
 import { rng } from "../src/model/simulate.ts";
@@ -249,4 +249,40 @@ test("BKT's chance of a right answer never passes 1 − slip, whatever the answe
   const [, right] = masteryCalibration({ bkt: () => b, ema: { alpha: 0.1, start: 0.5 } }, [practice]);
   assert.ok(right.bins.every((x) => !x.n || x.predicted <= 0.8 + 1e-12));
   assert.equal(right.bins[9].n, 0);
+});
+
+test("after a declaration: the share right on the next answers, and what BKT forecast for them when it declared", () => {
+  const b: BktParams = { init: 0.5, learn: 0.1, guess: 0.2, slip: 0.1 };
+  const fitted = { bkt: () => b, ema: { alpha: 0.2, start: 0.5 } };
+  // a is declared after two right answers and then answers 1, 0; b is never declared; c is declared on its last answer.
+  const practices: Practice[] = [
+    { student: "a", skill: "k", answers: seq("1110"), known: seq("0111") },
+    { student: "b", skill: "k", answers: seq("0000"), known: seq("0000") },
+    { student: "c", skill: "k", answers: seq("0111"), known: seq("0000") },
+  ];
+  let known = b.init;
+  for (let i = 0; i < 2; i++) known = bktStep(known, b, true).known;
+  const rule = bktRule(fitted.bkt, known);
+  assert.equal(rule.declare("k", practices[0].answers), 2);
+  assert.equal(rule.declare("k", practices[2].answers), 4);
+  const first = known * (1 - b.slip) + (1 - known) * b.guess;
+  const later = known + (1 - known) * b.learn;
+  const second = later * (1 - b.slip) + (1 - later) * b.guess;
+  const r = afterYes(rule, practices, fitted, 3, 200, 1);
+  close(r.declared, 2 / 3);
+  close(r.precision, 1 / 2, 1e-12);
+  assert.equal(r.practices, 1, "only a has answers after its declaration");
+  assert.equal(r.answers, 2);
+  close(r.right, 1 / 2);
+  close(r.promised, (first + second) / 2);
+  close(r.gap, 1 / 2 - (first + second) / 2);
+  // A rule with no model of the answers promises nothing, and without a truth there is no precision.
+  const plain = afterYes(streakRule(2), practices.map(({ known: _, ...p }) => p), fitted, 3, 200, 1);
+  // After two in a row: a has 1, 0 next and c has 1 (2 of 3 right).
+  close(plain.right, 2 / 3);
+  assert.ok(Number.isNaN(plain.promised) && Number.isNaN(plain.gap) && Number.isNaN(plain.precision));
+  // Nothing declared: nothing to report.
+  const none = afterYes(streakRule(9), practices, fitted, 3, 200, 1);
+  assert.equal(none.declared, 0);
+  assert.ok(Number.isNaN(none.right) && Number.isNaN(none.precision));
 });
