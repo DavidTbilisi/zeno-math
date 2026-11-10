@@ -1,73 +1,73 @@
 # Preliminary defence
 
-The talk for the preliminary defence of *The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems*, by Davit Tchintcharashvili, supervised by Mikheil Gigauri. The defence falls between 16 and 21 November 2026; the date, room and length allowed are not yet known. The talk is about 1200 words, which is about 9 minutes at an even pace. It covers what the preliminary draft sent on 9 November contains, the method and the simulation results, and every number is that draft's. The slides are in `preliminary-defense.pptx`, with this text in each slide's notes; both files are written by `scripts/preliminary-slides.py`.
+The talk for the preliminary defence of *The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems*, by Davit Tchintcharashvili, supervised by Mikheil Gigauri. The defence falls between 16 and 21 November 2026; the date, room and length allowed are not yet known. The talk is about 1000 words, which is about 8 minutes at an even pace. It covers what the preliminary draft sent on 9 November contains, the method and the simulation results, and every number is that draft's. The slides are in `preliminary-defense.pptx`, with this text in each slide's notes; both files are written by `scripts/preliminary-slides.py`.
 
 ## The talk
 
 *Slide 1: the title, the author, the supervisor.*
 
-Good afternoon. My thesis is about one decision that every adaptive practice system makes, and about something that decision quietly depends on. Today I present the method and the simulation results, which is what the preliminary draft contains.
+Good afternoon. My name is Davit. My thesis is about learning programs, the programs where students practise mathematics. Today I will show my method and my first results.
 
-*Slide 2: The decision: has this student mastered this skill?.*
+*Slide 2: The problem: when does a student know a skill?.*
 
-A practice system must decide, after each answer, whether the student has mastered the skill and can move on. Both mistakes cost something. Too early, and the student starts work that needs a skill they do not have. Too late, and they spend time on questions they can already answer. Every method that makes this decision takes the skill as given. But what counts as one skill is a choice. Fractions can be one skill, or sixteen separate ideas, from the times tables to converting a mixed number. I call that choice the grain.
+A learning program asks a student questions. After each answer it must decide: does the student know this skill now? The program can make two mistakes. It can say yes too early. Then the student moves on, but is not ready. Or it can say yes too late. Then the student loses time on easy questions. There is one more problem. What is one skill? Fractions can be one big skill. Or fractions can be sixteen small ideas. Somebody must choose. I call this choice the grain. A coarse grain means big skills. A fine grain means small skills.
 
 *Slide 3: Research question.*
 
-The research question, approved at the title defence, is how the grain at which skills are defined affects the accuracy and reliability of mastery estimation. Grain means two things together: how many components a topic is divided into, and which of them each question needs. Accuracy is the share of mastery declarations that are right. Reliability is whether the score can be read as a probability, and whether a threshold that works in one setting still works in another.
+This is my research question. Does the size of a skill change how well the program decides? I look at two things. First, is the decision right? When the program says the student knows the skill, is it true? Second, is the decision stable? Does the same rule work in different situations?
 
-*Slide 4: What earlier work measured, and what it did not.*
+*Slide 4: What other researchers did.*
 
-Three lines of earlier work meet here. Mastery rules have been compared before, most closely by Pelánek and Řihák, who found that the threshold and the data matter more than the model. The grain of a skill model has been compared too, on the ASSISTments system, but for predicting answers. And there is a model for questions that need several skills at once. What had not been measured is what the grain does to the mastery decision itself, checked against a known truth. That is the gap this thesis fills.
+Other researchers worked on this before me. Some compared the rules for deciding. Some compared big skills and small skills. But they only asked: can we predict the next answer? Nobody checked the decision itself, the decision that the student knows the skill. To check it, we must know the truth about the student. This is the new part of my thesis.
 
-*Slide 5: Three methods, two proofs.*
+*Slide 5: Three rules for deciding.*
 
-I compare three methods. Bayesian Knowledge Tracing treats a skill as known or not known and keeps a probability that it is known; mastery is declared when that probability reaches a threshold, usually 0.95. The exponential moving average simply weights recent answers more. The streak rule asks for N right answers in a row. Two results are proved. The first says exactly when the streak rule is a special case of the moving average. The second says that in a world built the way BKT assumes, BKT's declarations are right at least as often as its threshold says. So a world like that cannot be evidence for BKT. The comparison that counts happens in worlds that break its assumptions.
+I compare three rules. The first is BKT, Bayesian Knowledge Tracing. It calculates the probability that the student knows the skill. When the probability is 95 percent or more, it says yes. The second is the moving average. It looks at the last answers, and new answers count more. The third is the streak rule. The student must give some right answers in a row, for example three. I also proved two statements. The first: the streak rule is a special case of the moving average. The second: BKT is correct when students learn exactly as BKT expects. So I must test BKT where students learn in a different way.
 
-*Slide 6: Method: simulated students whose true state is known.*
+*Slide 6: Method: computer-made students.*
 
-Real data never show whether a student has truly mastered a skill. So I simulate students whose true state is known after every answer, and check each declaration against it. There are four worlds at one grain: BKT's own world, the same with forgetting, and two where ability rises gradually. Then three granularity studies change the grain: the model is made coarser than the way students learn, matched to it, and made finer. Everything is fitted on training students and judged on a fifth of the students held out. I measure how often declarations are right, how many answers they cost, how many students are released at all, and calibration. Every run is seeded and can be reproduced from the code.
+How can I check a decision? With real students, we never know the truth. So I made students in the computer, four hundred of them. This is called simulation. For these students, I know exactly what they know after every answer. So I can check every decision. Then I change the size of the skill. First the skill in the program is too big. Then it is the correct size. Then it is too small. I set the rules on one group of students, and I test them on a different group. Anyone can run my code and get the same numbers.
 
-*Slide 7: Result 1: at one grain, BKT works where its assumptions hold.*
+*Slide 7: Result 1: BKT is good only when students learn as it expects.*
 
-First, the methods at one grain. The rule for each method is chosen so that nine declarations in ten are right on the training students. Where students forget, BKT is the cheapest: about three and a half answers against five and a half for the moving average. Where learning is gradual, no threshold up to 0.9999 brings BKT to that standard. A later check showed it can get there, but only at a threshold of about seven nines, which has to be set knowing the world. Calibration tells the same story: BKT's Brier score is 0.023 in its own world and 0.339 in the gradual one. A number that is a good probability in one world is a poor one in another.
+The first result. The goal is that nine of ten decisions are right. When students can forget, BKT is the fastest. It needs about three and a half answers. The moving average needs five and a half. But when students learn slowly, step by step, BKT does not reach the goal. It becomes very sure after a few right answers, but the student is not ready. So the number from BKT is not always a real probability. In one situation we can trust it. In another situation we cannot.
 
-*Slide 8: Result 2: a model that is too coarse declares too early.*
+*Slide 8: Result 2: a skill that is too big gives “yes” too early.*
 
-Why does BKT fail in the gradual worlds? The answer is grain. Here every skill is made of several components, and each one is learnt in a single step, exactly as BKT assumes. But the model treats the skill as one. With one component, 98 % of BKT's declarations at 0.95 are right. With two it is 59 %, with four 23 %, with sixteen half a percent. The moving average and the streak rule fall the same way, so simplicity does not protect them. The dashed line is BKT on each real component: it stays near 98 %. But at eight and sixteen components it stops declaring at all, because thirty questions give each component too little evidence.
+The second result. Why does BKT fail? The reason is the size of the skill. Here, the real skill has several parts. The student learns each part separately. But the program sees only one big skill. Look at the picture. When the skill has one part, 98 percent of decisions are right. With two parts, 59 percent. With four parts, only 23 percent. All three rules fail together. The simple rules are not safer. The dashed line is BKT on each real part. It stays near 98 percent. But with eight or sixteen parts it stops deciding, because thirty questions are not enough for so many parts.
 
-*Slide 9: Result 3: the right grain helps, on two conditions.*
+*Slide 9: Result 3: the correct size helps, but it needs enough questions.*
 
-The second study uses a real topic. I decomposed fractions by hand into sixteen ideas and used the question generators of Zeno, the practice system this work grew out of. A fractions question needs about six ideas at once, so a wrong answer does not say which one is missing. After thirty questions the model names the missing idea in about 57 % of cases and releases almost nobody. With 120 questions it names the idea in 79 % of cases and releases 85 % of students. But precision on held-out students falls below the 90 % target, to 78 %. So the right grain helps, on two conditions: the questions must tell the ideas apart, and the practice must be long enough.
+The third result uses a real topic, fractions. I divided fractions into sixteen small ideas. The questions come from Zeno. Zeno is the practice system that I built. One fractions question needs about six ideas together. So when the answer is wrong, we do not know which idea is missing. With thirty questions, the program finds the missing idea in 57 percent of cases, and it says yes to almost nobody. With 120 questions, it finds the missing idea in 79 percent of cases. So the correct size helps. But it needs two things: questions that show the ideas separately, and enough practice.
 
-*Slide 10: Result 4: a model that is too fine wastes answers.*
+*Slide 10: Result 4: when the skill is too small, students wait too long.*
 
-The third study goes the other way. The students and their answers stay exactly the same, and I split each real component into artificial parts in the model only. Splitting four ways costs about ten more answers for the same precision. At the usual threshold of 0.95, the share of students released falls from 94.5 % to 7 %. And the fits pile up at the edge of the allowed range, which is a warning a system could see in its own data. Finer is not safer.
+The fourth result is the opposite case. The students are the same and the answers are the same. But the program cuts each real part into smaller pieces. When I cut each part into four pieces, the program needs ten more answers. And with the usual 95 percent rule, it says yes to only 7 percent of students. Before, it was 94 percent. So smaller is not always better. Each small piece gets too few answers.
 
-*Slide 11: Limits.*
+*Slide 11: Limits of this work.*
 
-The limits. The worlds are of my own making, so they show what follows under those assumptions, not how all students learn. The decomposition of fractions is done by hand. Comparing the methods at equal precision was a change made after the first run at equal cost turned out to be uninformative, and the draft says so. A threshold chosen on training students does not always hold on new ones. All tables were repeated on four more seeds, and I rely only on the effects that survive. I do not claim a best grain in general, and I do not measure whether Zeno helps a class learn.
+My work has limits. The students are made by computer, and real students can be different. I divided fractions into sixteen ideas myself, and another person could do it differently. A rule that works for one group does not always work for a new group. I repeated every experiment five times, and I keep only the results that stay the same. I do not say there is one best size for all skills. And I do not measure if Zeno helps a real class.
 
-*Slide 12: Preliminary conclusion and what remains.*
+*Slide 12: Conclusion and next steps.*
 
-The preliminary conclusion is that the grain changes both what a mastery score means and how much evidence a decision needs. A model that is too coarse becomes confident about a mixture of known and unknown ideas. A model that is too fine releases almost nobody. So the component mapping, the questions and the mastery rule have to be chosen together. For the final thesis, what remains is the same question on real students' answers, the public ASSISTments data, with the test fixed in advance, and the recommendation for Zeno. Thank you. I am glad to take questions.
+My conclusion. The size of a skill changes the decision. When the skill is too big, the program says yes too early. When the skill is too small, the program almost never says yes. So we must choose the skills, the questions and the rule together. What is next? For the final thesis, I study the same question on answers of real students. This is a public data set called ASSISTments, with about four thousand students. Thank you. I am ready for your questions.
 
 ## Questions to expect
 
-**What is new, if BKT and mastery rules have been compared before?** They have, most closely by Pelánek and Řihák (2017), and my one-grain results agree with them. Grain has been compared too, by Pardos and by Feng on ASSISTments, but for prediction. What had not been measured is what grain does to the mastery decision itself against a known truth. None of the methods is new; the measurement is.
+**What is new in your work?** Other researchers compared these rules. They also compared big and small skills, but only to predict the next answer. I check the decision itself, and I check it against the truth. The rules are not new. The measurement is new.
 
-**Why simulation and not real students?** Because real data never show whether a student has truly mastered a skill, so a declaration cannot be checked. In simulation the truth is recorded. The real-data part, on ASSISTments, is in the final thesis and tests prediction, which real data do allow.
+**Why computer-made students and not real students?** With real students we never know if they really know the skill. So we cannot check the decision. In the computer I know the truth. Real students come in the final thesis, where I test prediction.
 
-**You built the worlds yourself. Doesn't that decide the result?** It limits what the result means, and the draft says so. The G1 world is the most favourable one for BKT I could build: every component is exactly what BKT assumes. BKT still fails when the grain is wrong, so the failure comes from the grain and not from a world chosen against it.
+**You made the students yourself. Maybe the result is only because of that?** This is a real limit, and I write it in the thesis. But in Result 2 I made the best possible situation for BKT: every part is learnt exactly as BKT expects. BKT still fails when the skill is too big. So the reason is the size of the skill.
 
-**Is BKT bad, then?** No. In its own world it is right 97 to 98 % of the time at 0.95, as Proposition 2 predicts, and with forgetting it is the cheapest method. It fails when one modelled skill stands for several learnt units.
+**Is BKT a bad method?** No. When students learn as it expects, 97 to 98 percent of its decisions are right. When students forget, it is the fastest rule. It fails when one skill in the program is really several parts.
 
-**Why does BKT say “never” in the gradual worlds, and then reach the target later?** The first search stopped at 0.9999, a ceiling fixed in advance. A later check extended it and BKT reaches 90 % at about seven nines. I report both. A threshold that close to 1 has to be set knowing the world, so it is not a rule a system could use in general.
+**The table says BKT does not reach 90 %. Is that always true?** I first searched limits up to 0.9999. Later I searched higher, and BKT reaches 90 percent with a limit very close to 1, about 0.9999999. I report both results. Such a limit is not practical, because you must know how students learn to choose it.
 
-**What did you change after seeing results?** Two things, both stated in the draft: the comparison moved from equal cost to equal precision, and the granularity worlds were first built as checks after H2. The later sweeps were specified before they were run.
+**Did you change anything after you saw the results?** Yes, two things, and I write both in the thesis. First I compared the rules at the same cost. That showed nothing, so I compared them at the same share of right decisions. And I built the experiments with skill size after the first result.
 
-**What is your own work here?** The two proofs, the simulation worlds, the decomposition of fractions into sixteen ideas, the implementation of all three methods and the per-component model, and the analysis. All of it is in the public repository and each table names the command and the commit that produced it.
+**What did you do yourself?** The two proofs, the computer-made students, the sixteen ideas of fractions, the code for all three rules, and the analysis. All the code is public. Each table shows the command that made it.
 
-**What does this mean for Zeno?** Choose the components together with the questions, and check the stopping rule on the data it will face. The full recommendation is in the final thesis.
+**What does this mean for Zeno?** Choose the skills and the questions together, and test the rule on Zeno's own data. The full recommendation is in the final thesis.
 
-**What remains before the final submission?** Integrating the ASSISTments analyses, H1 on prediction and G4 on the same answers at three grains, and the formatting to the university's rules. The final thesis goes to the supervisor by 18 January 2027.
+**What is left to do?** The part with real students' answers, the ASSISTments data, and the formatting by the university rules. I send the final thesis to my supervisor by 18 January 2027.
