@@ -4,9 +4,12 @@
 
 writes docs/thesis/preliminary-defense.pptx (the text to say is in each slide's notes) and
 docs/thesis/preliminary-defense.md (the same talk to read from, with the questions to expect).
-Every number is from docs/thesis/preliminary-draft.md as sent on 9 November 2026. Needs python-pptx.
+Every number is from docs/thesis/preliminary-draft.md as sent on 9 November 2026. Needs python-pptx and Pillow.
 """
+from io import BytesIO
 from pathlib import Path
+
+from PIL import Image
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -39,6 +42,18 @@ SLIDES = [
             "one more problem. What is one skill? Fractions can be one big skill. Or fractions can be sixteen small "
             "ideas. Somebody must choose. I call this choice the grain. A coarse grain means big skills. A fine "
             "grain means small skills.",
+    ),
+    dict(
+        title="Zeno: the product behind this thesis",
+        images=[("figures/practice-mistake-hint.png", None), ("figures/dashboard-mastery.png", 0.54)],
+        lines=["Left: a student practises fractions. Zeno sees the mistake and explains it.",
+               "Right: the teacher sees every student and every skill. Zeno works in Georgian and in English."],
+        say="This is Zeno. I built it for mathematics lessons in Georgian schools. It is a working product, and it "
+            "works in Georgian and in English. On the left you see the student's side. Zeno makes the questions "
+            "itself, so every student gets different numbers. Here the student added the tops and the bottoms of "
+            "two fractions. Zeno knows this mistake and explains it. On the right you see the teacher's side. "
+            "Each row is a student and each column is a skill. Dark blue means the student is strong in this skill. "
+            "To fill this table, Zeno must decide when a student knows a skill. My thesis is about this decision.",
     ),
     dict(
         title="Research question",
@@ -281,11 +296,24 @@ def build_pptx(path):
                             RGBColor(0xF3, 0xF4, 0xF6) if r % 2 else RGBColor(0xFF, 0xFF, 0xFF))
                 top += height + Inches(0.35)
                 text_box(slide, Inches(0.7), top, W - Inches(1.4), Inches(1.6), s["lines"], 18, GREY)
+            elif "images" in s:  # screenshots side by side; the second number keeps only the top share of a tall one
+                left = Inches(1.6)
+                for name, keep in s["images"]:
+                    img = Image.open(DIR / name)
+                    if keep:
+                        img = img.crop((0, 0, img.width, int(img.height * keep)))
+                    data = BytesIO()
+                    img.save(data, "PNG")
+                    data.seek(0)
+                    pic = slide.shapes.add_picture(data, left, Inches(1.75), height=Inches(4.2))
+                    pic.line.color.rgb = RGBColor(0xD0, 0xD4, 0xD9)
+                    left += pic.width + Inches(0.6)
+                text_box(slide, Inches(0.7), Inches(6.1), W - Inches(1.4), Inches(1.2), s["lines"], 17, GREY, space=4)
             elif "image" in s:
                 slide.shapes.add_picture(str(DIR / s["image"]), Inches(2.9), Inches(1.75), height=Inches(4.2))
                 text_box(slide, Inches(0.7), Inches(6.0), W - Inches(1.4), Inches(1.3), s["lines"], 17, GREY, space=4)
             else:
-                text_box(slide, Inches(0.7), top, W - Inches(1.4), Inches(5), s["lines"], 24, bold_first=n == 3,
+                text_box(slide, Inches(0.7), top, W - Inches(1.4), Inches(5), s["lines"], 24, bold_first=s["title"] == "Research question",
                          space=16)
             text_box(slide, W - Inches(1.2), Inches(6.9), Inches(0.8), Inches(0.4), [str(n)], 12, GREY)
         slide.notes_slide.notes_text_frame.text = s["say"]
