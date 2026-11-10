@@ -1,7 +1,8 @@
 ```{=latex}
 \begin{titlepage}
-\thispagestyle{fancy}
+\thispagestyle{titlehead}
 \centering
+\setstretch{1.15}
 \vspace*{1cm}
 \includegraphics[width=3.5cm]{docs/thesis/figures/ug-logo.jpeg}\par
 \vspace{1.2cm}
@@ -15,13 +16,14 @@ the skill and of its parts\par}
 Author:\par
 Davit Tchintcharashvili\par
 \vspace{1.5cm}
-This is proved by the Bachelor Thesis Committee of the School of IT, Engineering and Mathematics of the University of
-Georgia\par
+The Bachelor Thesis is completed in order to obtain the Bachelor degree in Computer Science of the School of IT,
+Engineering and Mathematics of the University of Georgia\par
 \vspace{1.5cm}
 Supervisor:\par
 Mikheil Gigauri\par
 \vfill
-\makeatletter\@date\makeatother\par
+Tbilisi\par
+2027\par
 \end{titlepage}
 ```
 
@@ -30,7 +32,8 @@ Mikheil Gigauri\par
 Every adaptive practice system decides, after each answer, whether a student has mastered a skill, and every method
 that makes that decision takes the skill as given. This thesis asks how the grain at which skills are defined, the
 number of knowledge components a topic is divided into and which of them each question needs, affects the accuracy and
-reliability of mastery estimation. Three methods are compared: Bayesian Knowledge Tracing (BKT), the exponential
+reliability of mastery estimation. Earlier work measured what grain does to the prediction of answers; what it does
+to the mastery decision itself, checked against a known truth, had not been measured. Three methods are compared: Bayesian Knowledge Tracing (BKT), the exponential
 moving average of a student's answers, and the rule "N right in a row", which is proved to be a special case of the
 moving average. The comparison at one grain, on held-out students of the ASSISTments 2009–2010 data set and on
 simulated students whose true state is known, is the foundation: BKT decides mastery more cheaply where learning
@@ -39,10 +42,10 @@ declarations at the usual threshold of 0.95 are mostly wrong. Four granularity s
 simulated world where a skill is several components, each learnt in one step, modelling the skill as one reproduces the
 gradual pattern exactly, in proportion to how much of the skill each question leaves untested, and lowers every
 method's precision; BKT's probability becomes the least calibrated score and the threshold it needs leaves the range in
-which a probability can be read. Modelling at the learners' grain restores precision at an ordinary threshold and names
-the component a student lacks, if and only if the questions tell the components apart and the practice is long enough
-to ask about each: on fractions as Zeno's generators ask it, sixteen ideas of which a question needs six, 30 questions
-name the missing idea about half the time, and declaring mastery takes about 120. Modelling finer than the learners costs answers
+which a probability can be read. In the tested simulated settings, modelling at the learners' grain restores precision at an ordinary threshold and
+can name the component a student lacks when questions distinguish components and practice is long enough to ask about
+them. On fractions as Zeno's generators ask it, sixteen ideas of which a question needs about six, 30 questions name
+the missing idea about half the time, and declaring mastery takes about 120. Modelling finer than the learners costs answers
 for no gain in precision and shows itself in degenerate fits. On ASSISTments the same real answers are modelled at three
 grains: BKT predicts held-out answers better than the moving average, and better at the data set's 110 skills than
 at five topics or one skill, by the pre-specified test, while the moving average is indifferent to the grain. For Zeno, the system this work grew out of, the recommendation is a moving
@@ -54,7 +57,9 @@ ideas to choose what to practise next, becoming the mastery rule where the quest
 ყოველი ადაპტური სავარჯიშო სისტემა თითოეული პასუხის შემდეგ წყვეტს, აითვისა თუ არა მოსწავლემ უნარი, და ყოველი
 მეთოდი, რომელიც ამ გადაწყვეტილებას იღებს, უნარს მოცემულად თვლის. ეს ნაშრომი იკვლევს, როგორ მოქმედებს უნარების
 განსაზღვრის მარცვლოვანება, ანუ რამდენ ცოდნის კომპონენტად იყოფა თემა და რომელი კომპონენტები სჭირდება თითოეულ
-კითხვას, ათვისების შეფასების სიზუსტესა და საიმედოობაზე. შედარებულია სამი მეთოდი: ბაიესური ცოდნის მიდევნება (BKT),
+კითხვას, ათვისების შეფასების სიზუსტესა და საიმედოობაზე. ადრინდელმა კვლევებმა გაზომა, როგორ მოქმედებს მარცვალი პასუხების
+წინასწარმეტყველებაზე; როგორ მოქმედებს ის თავად ათვისების გადაწყვეტილებაზე, ცნობილ ჭეშმარიტებასთან შედარებით, აქამდე
+გაზომილი არ ყოფილა. შედარებულია სამი მეთოდი: ბაიესური ცოდნის მიდევნება (BKT),
 მოსწავლის პასუხების ექსპონენციალური მოძრავი საშუალო და წესი „N სწორი პასუხი ზედიზედ“, რომელიც, როგორც
 დამტკიცებულია, მოძრავი საშუალოს კერძო შემთხვევაა. ერთ მარცვალზე შედარება, ASSISTments 2009–2010 მონაცემთა ბაზის
 გამოყოფილ მოსწავლეებზე და სიმულირებულ მოსწავლეებზე, რომელთა ნამდვილი მდგომარეობა ცნობილია, საფუძველია: BKT

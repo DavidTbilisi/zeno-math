@@ -1,15 +1,20 @@
 ---
 # Settings for npm run thesis-pdf (scripts/thesis-pdf.ts). The fonts are the host's, from /usr/share/fonts; the
 # fallbacks cover the arrows, ticks, maths signs and Georgian that STIX Two Text lacks. The title page is written in
-# 00-abstract.md itself, after the university's template (title as running head, the UG logo, author, committee,
-# supervisor, date), so the title here only names the PDF; the date comes from the script and is printed there.
+# 00-abstract.md itself, after the university's template (the UG logo, author, degree statement,
+# supervisor, Tbilisi and the year; the running head is a short title of under 50 characters in 8 pt italics, five spaces
+# before the page number in the upper right corner, and the title page carries no number), so the title here only names the PDF; the date comes from the script and is printed there.
 title-meta: "The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems"
 author-meta: "Davit Tchintcharashvili"
 documentclass: report
 papersize: a4
 fontsize: 11pt
-geometry: margin=2.5cm
-mainfont: "STIX Two Text"
+# The university's APA sheet: margins 2.54 cm, line spacing 1.5 (1.0 in long tables), Times New Roman at 11 pt.
+# Liberation Serif is the metric-compatible Times New Roman on this host; Sylfaen (Georgian) is a Microsoft font that
+# is not installed, so Georgian falls back to Noto Serif Georgian.
+geometry: margin=2.54cm
+linestretch: 1.5
+mainfont: "Liberation Serif"
 mathfont: "STIX Two Math"
 sansfont: "Noto Sans"
 monofont: "Liberation Mono"
@@ -25,7 +30,7 @@ reference-section-title: References
 header-includes: |
   \usepackage{etoolbox}
   \setcounter{tocdepth}{1}
-  \AtBeginEnvironment{longtable}{\small}
+  \AtBeginEnvironment{longtable}{\small\setstretch{1}}
   \setlength\LTcapwidth{\linewidth}
   \newsavebox\pbox
   \usepackage{graphicx}
@@ -33,8 +38,8 @@ header-includes: |
   \pagestyle{fancy}
   \fancyhf{}
   \renewcommand\headrulewidth{0pt}
-  \fancyhead[R]{\small\itshape The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems}
-  \fancyfoot[C]{\thepage}
-  \fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\small\itshape The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems}\fancyfoot[C]{\thepage}}
+  \fancyhead[R]{{\fontsize{8}{10}\selectfont\itshape Skill Granularity and Mastery Estimation}\ \ \ \ \ \thepage}
+  \fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{{\fontsize{8}{10}\selectfont\itshape Skill Granularity and Mastery Estimation}\ \ \ \ \ \thepage}}
+  \fancypagestyle{titlehead}{\fancyhf{}\fancyhead[R]{{\fontsize{8}{10}\selectfont\itshape Skill Granularity and Mastery Estimation}}}
   \AtBeginDocument{\renewcommand*\pandocbounded[1]{\sbox\pbox{#1}\ifdim\wd\pbox>\linewidth\sbox\pbox{\resizebox{\linewidth}{!}{#1}}\fi\ifdim\ht\pbox>0.68\textheight\resizebox{!}{0.68\textheight}{\usebox\pbox}\else\usebox\pbox\fi}}
 ---
