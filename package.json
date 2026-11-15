@@ -36,6 +36,8 @@
     "dashboard": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dashboard.ts",
     "figures": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/thesis-figures.ts",
     "thesis-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts",
+    "preliminary-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts --preliminary",
+    "preliminary-docx": "node --disable-warning=ExperimentalWarning scripts/preliminary-docx.ts",
     "talk-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts --talk",
     "final-talk-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts --final",
     "concept-pdf": "node --disable-warning=ExperimentalWarning scripts/thesis-pdf.ts --concept",
