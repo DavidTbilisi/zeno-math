@@ -35,6 +35,8 @@ export const en = {
   insert: "Insert",
   update: "Update",
   cancel: "Cancel",
+  fullEditor: "Full editor…",
+  panelFullOnly: "This one changes in its full editor.",
   searchTools: "Find a tool or topic…",
   searchNone: "Nothing found.",
   searchButton: "Find a tool (Ctrl+K or /)",

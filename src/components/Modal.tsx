@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "../i18n";
+import { useInPanel } from "./ItemPanel";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -12,6 +13,9 @@ export function Modal({ title, onClose, children, footer, wide = false }: {
   wide?: boolean;
 }) {
   const { t } = useI18n();
+  // In the right-click panel the dialog is only its controls: the panel has the title and closes itself, and each
+  // change goes to the board as it is made, so there is nothing to insert.
+  const inPanel = useInPanel();
   const box = useRef<HTMLDivElement>(null);
   const [max, setMax] = useState(false);
   // Callers pass a new arrow each render; keep the latest without re-attaching the listeners.
@@ -19,6 +23,7 @@ export function Modal({ title, onClose, children, footer, wide = false }: {
   close.current = onClose;
 
   useEffect(() => {
+    if (inPanel) return;
     // Focus moves into the dialog (unless a field asked for it), Tab stays inside, and focus returns on close.
     const opener = document.activeElement as HTMLElement | null;
     const el = box.current!;
@@ -43,7 +48,9 @@ export function Modal({ title, onClose, children, footer, wide = false }: {
       window.removeEventListener("keydown", onKey);
       if (opener?.isConnected) opener.focus();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (inPanel) return <div className="modal-body in-panel">{children}</div>;
 
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>

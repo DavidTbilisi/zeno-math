@@ -16,6 +16,7 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = { [K in CombTopic]: CombSpecOf<K> };
 
@@ -54,6 +55,9 @@ export function CombDialog({ initial, start, onSubmit, onClose }: {
     <Segmented className="wrap" itemClassName="math-label" items={keys} value={current} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editComb : t.comb}
@@ -61,7 +65,7 @@ export function CombDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

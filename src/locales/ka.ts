@@ -36,6 +36,8 @@ export const ka: Dict = {
   insert: "ჩასმა",
   update: "განახლება",
   cancel: "გაუქმება",
+  fullEditor: "სრული რედაქტორი…",
+  panelFullOnly: "ეს სრულ რედაქტორში იცვლება.",
   searchTools: "ინსტრუმენტის ან თემის ძებნა…",
   searchNone: "ვერაფერი მოიძებნა.",
   searchButton: "ინსტრუმენტის ძებნა (Ctrl+K ან /)",

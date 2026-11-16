@@ -18,6 +18,7 @@ import { svgToDataUrl } from "../math/svg";
 import { Slider } from "./AnalysisDialog";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = { [K in TrigTopic]: TrigSpecOf<K> };
 
@@ -67,6 +68,9 @@ export function TrigDialog({ initial, start, onSubmit, onClose }: {
   const unitToggle = (unit: AngleUnit) => segmented(["deg", "rad"] as const, (u) => (u === "deg" ? t.degrees : t.radians), unit, (u) => set({ unit: u } as Partial<TrigSpec>));
   const sideLabel: Record<string, string> = { opp: `a (${t.trigWords.opp})`, adj: `b (${t.trigWords.adj})`, hyp: `c (${t.trigWords.hyp})`, ang: "θ (°)" };
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editTrig : t.trig}
@@ -74,7 +78,7 @@ export function TrigDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

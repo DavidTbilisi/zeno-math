@@ -7,6 +7,7 @@ import { svgToDataUrl } from "../math/svg";
 import { DEFAULT_SPACE, renderSpace, SPACE_LABELS, SPACE_OPS, SPACE_PRESETS, type SpaceSpec } from "../math/vectorspace";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 export type MatrixSpec = MatrixCalcSpec | TransformSpec | SpaceSpec;
 
@@ -34,6 +35,9 @@ export function MatrixDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, t]);
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editMatrix : t.matrices}
@@ -41,7 +45,7 @@ export function MatrixDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

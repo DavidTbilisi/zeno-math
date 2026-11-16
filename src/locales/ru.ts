@@ -36,6 +36,8 @@ export const ru: Dict = {
   insert: "Вставить",
   update: "Обновить",
   cancel: "Отмена",
+  fullEditor: "Полный редактор…",
+  panelFullOnly: "Это меняется в полном редакторе.",
   searchTools: "Найти инструмент или тему…",
   searchNone: "Ничего не найдено.",
   searchButton: "Найти инструмент (Ctrl+K или /)",

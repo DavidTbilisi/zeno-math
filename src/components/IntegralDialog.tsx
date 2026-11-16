@@ -15,6 +15,7 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = { [K in IntTopic]: IntSpecOf<K> };
 
@@ -69,6 +70,9 @@ export function IntegralDialog({ initial, start, onSubmit, onClose }: {
     </>
   );
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editIntegral : t.integrals}
@@ -76,7 +80,7 @@ export function IntegralDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>
