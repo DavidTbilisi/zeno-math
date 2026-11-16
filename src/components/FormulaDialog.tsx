@@ -3,6 +3,7 @@ import { useI18n } from "../i18n";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { ColorSwatches, Modal } from "./Modal";
+import { useLiveSubmit } from "./ItemPanel";
 
 export type FormulaData = { tex: string; color: string };
 
@@ -68,6 +69,7 @@ export function FormulaDialog({ initial, onSubmit, onClose }: {
   };
 
   const submit = () => result.rendered && onSubmit({ tex, color }, result.rendered);
+  useLiveSubmit(submit, { tex, color });
 
   return (
     <Modal

@@ -22,6 +22,7 @@ import { ADD_LIMITS, ADD_STYLES, addCase, addStepCount, SUB_LIMITS, SUB_STYLES, 
 import { MULTIPLY_LIMITS, MULTIPLY_STYLES, multiplyCase, stepCount, type MultiplySpec } from "../math/multiply";
 import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
 import { PERCENT_KINDS, percRatioStepCount, RATIO_KINDS, type PercRatioSpec } from "../math/percratio";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = { [K in ModelType]: Extract<ModelSpec, { type: K }> };
 
@@ -52,6 +53,9 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
   // A division picture from before long division moved onto the board: shown, but no longer edited here.
   const oldDivision = spec.type === "division";
 
+  const submit = () => result.rendered && !oldDivision && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       wide={spec.type === "placeValue"}
@@ -60,7 +64,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered || oldDivision} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered || oldDivision} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

@@ -4,6 +4,7 @@ import { compileExpr, DEFAULT_PLOT, PLOT_COLORS, plotToSvg, type PlotSpec } from
 import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { ColorSwatches, Modal } from "./Modal";
+import { useLiveSubmit } from "./ItemPanel";
 
 function exprError(expr: string): string | null {
   if (!expr.trim()) return null;
@@ -61,6 +62,9 @@ export function GraphDialog({ initial, onSubmit, onClose }: {
 
   const nextColor = PLOT_COLORS.find((c) => !fns.some((f) => f.color === c)) ?? PLOT_COLORS[fns.length % PLOT_COLORS.length];
 
+  const submit = () => result.rendered && onSubmit({ ...spec, functions: fns.filter((f) => f.expr.trim()) }, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editGraph : t.graph}
@@ -71,7 +75,7 @@ export function GraphDialog({ initial, onSubmit, onClose }: {
           <button
             className="btn primary"
             disabled={!result.rendered || !fns.some((f) => f.expr.trim())}
-            onClick={() => result.rendered && onSubmit({ ...spec, functions: fns.filter((f) => f.expr.trim()) }, result.rendered)}
+            onClick={submit}
           >
             {initial ? t.update : t.insert}
           </button>

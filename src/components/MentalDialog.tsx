@@ -5,6 +5,7 @@ import { CHECK_OPS, DIV_METHODS, MAJOR_SYSTEMS, MENTAL_PRESETS, MENTAL_TOPICS, r
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = Record<MentalTopic, MentalSpec>;
 const OP_LABEL = { "+": "+", "-": "−", "*": "×", "/": "÷" };
@@ -52,6 +53,9 @@ export function MentalDialog({ initial, start, onSubmit, onClose }: {
     <Segmented items={keys} value={current} onChange={(k) => onPick(k)} label={(k) => label(k)} />
   );
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editMental : t.mental}
@@ -59,7 +63,7 @@ export function MentalDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

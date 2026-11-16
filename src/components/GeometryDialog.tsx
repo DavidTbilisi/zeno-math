@@ -21,6 +21,7 @@ import {
   type Pt,
 } from "../math/geometry";
 import { Modal } from "./Modal";
+import { useLiveSubmit } from "./ItemPanel";
 
 const same = (a: Pt, b: Pt) => Math.abs(a[0] - b[0]) < 1e-9 && Math.abs(a[1] - b[1]) < 1e-9;
 const shift = (pts: Pt[], d: Pt) => pts.map((p) => [p[0] + d[0], p[1] + d[1]] as Pt);
@@ -144,6 +145,9 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
   };
   const plainShape = spec.shape === "triangle" || spec.shape === "quad";
 
+  const submit = () => onSubmit({ ...view, caption }, renderGeometry({ ...view, caption }));
+  useLiveSubmit(submit, { ...view, caption });
+
   return (
     <Modal
       title={initial ? t.editGeometry : t.geometry}
@@ -151,7 +155,7 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" onClick={() => onSubmit({ ...view, caption }, renderGeometry({ ...view, caption }))}>
+          <button className="btn primary" onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

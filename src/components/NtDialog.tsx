@@ -17,6 +17,7 @@ import { svgToDataUrl } from "../math/svg";
 import { Slider } from "./AnalysisDialog";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = { [K in NtTopic]: NtSpecOf<K> };
 
@@ -58,6 +59,9 @@ export function NtDialog({ initial, start, onSubmit, onClose }: {
   // The sieve slider runs over the primes up to √n.
   const sievers = spec.topic === "sieve" ? sievingPrimes(Math.min(400, Math.max(2, Math.floor(Number(spec.n)) || 2))) : [];
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editNt : t.nt}
@@ -65,7 +69,7 @@ export function NtDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

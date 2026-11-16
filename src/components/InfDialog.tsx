@@ -5,6 +5,7 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, startOr, Tabs } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = Record<InfTopic, InfSpec>;
 
@@ -39,6 +40,9 @@ export function InfDialog({ initial, start, onSubmit, onClose }: {
 
   const fields = infFields(spec, w);
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editInference : t.inference}
@@ -46,7 +50,7 @@ export function InfDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

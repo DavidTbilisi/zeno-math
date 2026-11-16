@@ -5,6 +5,7 @@ import { RV_FIELDS, RV_PRESETS, RV_TOPICS, renderRandvar, type RvSpec, type RvTo
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { startOr, Tabs } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = Record<RvTopic, RvSpec>;
 
@@ -36,6 +37,9 @@ export function RandvarDialog({ initial, start, onSubmit, onClose }: {
     }
   }, [spec, w]);
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editRandvar : t.randvar}
@@ -43,7 +47,7 @@ export function RandvarDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>

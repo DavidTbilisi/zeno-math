@@ -10,6 +10,7 @@ import type { RenderedSvg } from "../math/latex";
 import { svgToDataUrl } from "../math/svg";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
+import { useLiveSubmit } from "./ItemPanel";
 
 type Specs = Record<LogicTopic, LogicSpec>;
 type Field = "f" | "g" | "vals";
@@ -175,6 +176,9 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
   const symbols = topic === "sets" ? SET_SYMBOLS : topic === "nf" ? NF_SYMBOLS : LOGIC_SYMBOLS;
   const showTf = topic === "table" || topic === "equiv" || topic === "argument" || topic === "tree";
 
+  const submit = () => result.rendered && onSubmit(spec, result.rendered);
+  useLiveSubmit(submit, spec);
+
   return (
     <Modal
       title={initial ? t.editLogic : t.logic}
@@ -182,7 +186,7 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
       footer={
         <>
           <button className="btn" onClick={onClose}>{t.cancel}</button>
-          <button className="btn primary" disabled={!result.rendered} onClick={() => result.rendered && onSubmit(spec, result.rendered)}>
+          <button className="btn primary" disabled={!result.rendered} onClick={submit}>
             {initial ? t.update : t.insert}
           </button>
         </>
