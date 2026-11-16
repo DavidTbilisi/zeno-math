@@ -118,16 +118,23 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
 };
 
 // The games, apart from the tools in a menu of their own, by the sense each one builds.
-const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart" | "senseGraph" | "senseAlgo" | "senseData" | "senseSystem"; games: LiveEntry[] }[] = [
+const GAME_MENU: { sense: "senseNumber" | "senseNumberPatterns" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart" | "senseGraph" | "senseAlgo" | "senseData" | "senseSystem"; games: LiveEntry[] }[] = [
   {
     sense: "senseNumber", games: [
       { kind: "estimate", icon: "📍", name: "liveEstimate" },
       { kind: "quickLook", icon: "👀", name: "liveQuickLook" },
       { kind: "target", icon: "🎯", name: "liveTarget" },
       { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
-      { kind: "divisible", icon: "➗", name: "liveDivisible" },
-      { kind: "primeSlice", icon: "✂️", name: "livePrimeSlice" },
       { kind: "kakooma", icon: "🔢", name: "liveKakooma" },
+    ],
+  },
+  {
+    sense: "senseNumberPatterns", games: [
+      { kind: "numberShapes", icon: "⠿", name: "liveNumberShapes" },
+      { kind: "primeSlice", icon: "✂️", name: "livePrimeSlice" },
+      { kind: "divisible", icon: "➗", name: "liveDivisible" },
+      { kind: "growing", icon: "🧱", name: "liveGrowing" },
+      { kind: "machine", icon: "⚙️", name: "liveMachine" },
     ],
   },
   {
@@ -141,8 +148,6 @@ const GAME_MENU: { sense: "senseNumber" | "senseFraction" | "senseAlgebra" | "se
   {
     sense: "senseAlgebra", games: [
       { kind: "balance", icon: "⚖️", name: "liveBalance" },
-      { kind: "machine", icon: "⚙️", name: "liveMachine" },
-      { kind: "growing", icon: "🧱", name: "liveGrowing" },
       { kind: "exprMatch", icon: "x=", name: "liveExprMatch" },
     ],
   },

@@ -19,6 +19,7 @@ import type { LiveShade } from "./shadeFrac";
 import type { LiveBalance } from "./balance";
 import type { LiveMachine } from "./machine";
 import type { LiveGrow } from "./growing";
+import { SHAPES_START, type LiveNumberShapes } from "./numberShapes";
 import type { LiveExprMatch } from "./exprMatch";
 import type { LiveAngleGuess } from "./angleGuess";
 import type { LiveAngleHunt } from "./missingAngle";
@@ -436,6 +437,7 @@ export type LiveStates = {
   balance: LiveBalance;
   machine: LiveMachine;
   growing: LiveGrow;
+  numberShapes: LiveNumberShapes;
   exprMatch: LiveExprMatch;
   angleGuess: LiveAngleGuess;
   angleHunt: LiveAngleHunt;
@@ -526,6 +528,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   balance: [680, 560],
   machine: [600, 560],
   growing: [600, 660],
+  numberShapes: [640, 620],
   exprMatch: [780, 400],
   angleGuess: [600, 620],
   angleHunt: [600, 620],
@@ -618,6 +621,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     balance: { mode: "puzzle", stage: 0, level: 1, seed: 1, guess: [], weighed: false, misses: 0, done: false, streak: 0, said: null },
     machine: { mode: "puzzle", stage: 0, level: 1, seed: 1, tried: [], typed: "", misses: 0, done: false, streak: 0, said: null },
     growing: { mode: "puzzle", stage: 0, level: 1, seed: 1, built: [], typed: "", misses: 0, done: false, streak: 0, said: null },
+    numberShapes: SHAPES_START,
     exprMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     angleGuess: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], typed: "", guess: null, streak: 0, said: null },
     angleHunt: { mode: "puzzle", stage: 0, level: 1, seed: 1, typed: "", misses: 0, done: false, streak: 0, said: null },

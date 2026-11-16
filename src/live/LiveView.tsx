@@ -26,6 +26,7 @@ import { ShadeGame } from "./ShadeGame";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
+import { NumberShapes } from "./NumberShapes";
 import { ExprMatch } from "./ExprMatch";
 import { AngleGuess } from "./AngleGuess";
 import { AngleHunt } from "./AngleHunt";
@@ -133,6 +134,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   balance: Balance,
   machine: Machine,
   growing: Growing,
+  numberShapes: NumberShapes,
   exprMatch: ExprMatch,
   angleGuess: AngleGuess,
   angleHunt: AngleHunt,

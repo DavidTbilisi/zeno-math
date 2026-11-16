@@ -1576,6 +1576,13 @@ function primeSlicePreview(): Piece[] {
   ];
 }
 
+function numberShapesPreview(): Piece[] {
+  // The triangle number 6 in blue and its turned copy in orange: together 3 rows of 4.
+  const disc = (x: number, y: number, copy: boolean) =>
+    ellipse(x * 30 + 12, y * 30 + 12, 11, 11, copy ? { fill: FILL.yellow, color: "#e8590c", width: 2 } : { fill: FILL.blue, color: "#1971c2", width: 2 });
+  return [0, 1, 2].flatMap((y) => [0, 1, 2, 3].map((x) => disc(x, y, x > y)));
+}
+
 function kakoomaPreview(): Piece[] {
   // Four numbers in a square, two by two; 7 = 3 + 4 is green, with its two parts outlined.
   return [
@@ -1779,6 +1786,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBalance", group: "games", build: balancePreview, live: "balance" },
   { id: "liveMachine", group: "games", build: machinePreview, live: "machine" },
   { id: "liveGrowing", group: "games", build: growingPreview, live: "growing" },
+  { id: "liveNumberShapes", group: "games", build: numberShapesPreview, live: "numberShapes" },
   { id: "liveExprMatch", group: "games", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoboard", group: "games", build: geoboardPreview, live: "geoboard" },
   { id: "liveAngleGuess", group: "games", build: angleGuessPreview, live: "angleGuess" },
