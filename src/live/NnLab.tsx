@@ -30,7 +30,7 @@ import {
 } from "../math/nnLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, Toggle, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveNn> = { tries: 0, done: false, said: null };
@@ -106,7 +106,7 @@ export function NnLab({ state, set, w: words, svgRef }: PieceProps<"nnLab">) {
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <div className="live-bar descent-dials">
+      <SettingsBar className="descent-dials">
         {can.includes("hidden") && (
           <label className="live-slider">
             <b>{w.hidden}: {d.hidden}</b>
@@ -139,7 +139,7 @@ export function NnLab({ state, set, w: words, svgRef }: PieceProps<"nnLab">) {
             />
           </label>
         )}
-      </div>
+      </SettingsBar>
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
         {perceptron && can.includes("update") && (

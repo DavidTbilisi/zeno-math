@@ -30,7 +30,7 @@ import {
 } from "../math/softmaxLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, Stepper, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** e^x for the readout: two decimals, or a power of ten once it is large. */
@@ -155,7 +155,7 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
         <span>{fill(w.sum, { e: exps.map(big).join(" + "), s: big(sum) })}</span>
         {target !== null && <span className="descent-next">{fill(w.loss, { t: name(target), p: prob(p[target]), l: num(crossEntropy(p, target)) })}</span>}
       </div>
-      <div className="live-bar descent-dials">
+      <SettingsBar className="descent-dials">
         <label className="live-slider">
           <b>T = {num(d.T)}</b>
           <button className="live-btn" disabled={lockT || ti === 0} title={w.colder} aria-label={w.colder} onClick={() => setT(ti - 1, true)}>−</button>
@@ -169,9 +169,9 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
             <button className="live-btn" disabled={!shifted(d.z, SHIFT_STEP)} onClick={() => shift(SHIFT_STEP)}>+{SHIFT_STEP}</button>
           </span>
         )}
-      </div>
+      </SettingsBar>
       {!q && (
-        <div className="live-bar">
+        <SettingsBar>
           <span className="live-field">
             {w.classCount} <Stepper value={d.z.length} min={2} max={5} onChange={setCount} less={w.fewer} more={w.more} />
           </span>
@@ -180,7 +180,7 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
           {d.z.map((_, i) => (
             <Toggle key={i} on={d.target === i} onClick={() => commit({ target: i })}>★ {name(i)}</Toggle>
           ))}
-        </div>
+        </SettingsBar>
       )}
       <GameActions game={game} g={g} done={d.done} always>
         {q && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}

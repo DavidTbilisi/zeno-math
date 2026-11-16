@@ -29,7 +29,7 @@ import {
 } from "../math/attnLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveAttn> = { tries: 0, done: false, said: null };
@@ -127,7 +127,7 @@ export function AttnLab({ state, set, w: words, svgRef }: PieceProps<"attnLab">)
         <span>{read}</span>
       </div>
       {can.includes("dims") && (
-        <div className="live-bar descent-dials">
+        <SettingsBar className="descent-dials">
           <label className="live-slider">
             <b>d = {d.d}</b>
             <input
@@ -142,7 +142,7 @@ export function AttnLab({ state, set, w: words, svgRef }: PieceProps<"attnLab">)
               onKeyUp={() => commit()}
             />
           </label>
-        </div>
+        </SettingsBar>
       )}
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}

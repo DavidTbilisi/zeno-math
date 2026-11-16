@@ -7,7 +7,7 @@ import {
   arrangements, clampN, dotPicture, fib, fibTiles, isPrime, N_RANGE, N_START, row, SHAPE_KINDS, sumText, term, whyParts,
   type ShapeKind,
 } from "../math/numberShapes";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, INK, Stepper, Toggle, type PieceProps, SettingsBar } from "./ui";
 
 const W = 600;
 const PAD = 20;
@@ -104,7 +104,7 @@ export function NumberShapes({ state, set, w: words, svgRef }: PieceProps<"numbe
 
   return (
     <>
-      <div className="live-bar">
+      <SettingsBar>
         <label className="live-select">
           <span>{w.pattern}</span>
           <select value={kind} onChange={(e) => pick(e.target.value as ShapeKind)}>
@@ -114,7 +114,7 @@ export function NumberShapes({ state, set, w: words, svgRef }: PieceProps<"numbe
         <span>{kind === "prime" ? w.number : w.figure}</span>
         <Stepper value={n} min={N_RANGE[kind][0]} max={N_RANGE[kind][1]} onChange={(v) => set({ ...state, n: v })} less={w.less} more={w.more} />
         <Toggle on={why} onClick={() => set({ ...state, n, why: !why })}>{w.why}</Toggle>
-      </div>
+      </SettingsBar>
       <p className="live-hint">{w.hint}</p>
       <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
         <text x={PAD} y={26} fontSize={20} fill={INK}>

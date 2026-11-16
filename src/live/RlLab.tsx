@@ -31,7 +31,7 @@ import {
 } from "../math/rlLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, Toggle, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveRl> = { tries: 0, done: false, said: null };
@@ -105,10 +105,10 @@ export function RlLab({ state, set, w: words, svgRef }: PieceProps<"rlLab">) {
         <span>{read}</span>
       </div>
       {(can.includes("gamma") || can.includes("eps")) && (
-        <div className="live-bar descent-dials">
+        <SettingsBar className="descent-dials">
           {can.includes("gamma") && slider("γ", GAMMAS, d.gamma, (v) => setDraft(fresh({ gamma: v })), w.gamma)}
           {can.includes("eps") && slider("ε", EPSILONS, d.eps, (v) => setDraft(fresh({ eps: v })), w.eps)}
-        </div>
+        </SettingsBar>
       )}
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}

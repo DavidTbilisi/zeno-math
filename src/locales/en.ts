@@ -36,6 +36,7 @@ export const en = {
   update: "Update",
   cancel: "Cancel",
   fullEditor: "Full editor…",
+  duplicate: "Duplicate",
   panelFullOnly: "This one changes in its full editor.",
   searchTools: "Find a tool or topic…",
   searchNone: "Nothing found.",
@@ -5063,7 +5064,7 @@ export const en = {
     button: "Shapes",
     title: "Maths shapes",
     hint: "Click a shape to add it to the board, or drag it where you want it. Every line and label stays editable: double-click the shape to work inside it.",
-    liveHint: "Click the middle of a live piece to use it; drag it by its edge to move it.",
+    liveHint: "Right-click a live piece for its settings; click its middle to use it; drag it by its edge to move it.",
     groups: {
       games: "Games",
       live: "Live pieces",

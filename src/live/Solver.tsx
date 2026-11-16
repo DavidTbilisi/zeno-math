@@ -7,7 +7,7 @@ import { DATA, DATA_KINDS, fromPair, fromPreset, isPresetId, mendSolver, PATTERN
 import type { SlotSpec } from "../math/solver/types";
 import { cellsScene, graphScene, gridScene, Markers, matScene, rowsScene, SW, type Scene } from "./scenes";
 import { stackScenes, StepBar, StepSaid, useStepper } from "./stepper";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, Toggle, type PieceProps, SettingsBar } from "./ui";
 
 export function Solver({ state: saved, set, w: words, svgRef }: PieceProps<"solver">) {
   const w = words.solver;
@@ -57,7 +57,7 @@ export function Solver({ state: saved, set, w: words, svgRef }: PieceProps<"solv
 
   return (
     <>
-      <div className="live-bar">
+      <SettingsBar>
         <select value={state.data} aria-label={w.data} onChange={(e) => pickData(e.target.value as DataKind)}>
           {DATA_KINDS.map((d) => (
             <option key={d} value={d}>{w.kinds[d]}</option>
@@ -85,9 +85,9 @@ export function Solver({ state: saved, set, w: words, svgRef }: PieceProps<"solv
             }}
           >🙋 {w.quiz}</Toggle>
         )}
-      </div>
+      </SettingsBar>
       <p className="live-hint live-pattern-idea">{w.ideas[state.pattern]}</p>
-      <div className="live-bar live-problem-inputs">
+      <SettingsBar className="live-problem-inputs">
         {fields.map((f, i) => (
           <label key={f} className="live-select">
             <span>{w.fields[f]}</span>
@@ -102,8 +102,8 @@ export function Solver({ state: saved, set, w: words, svgRef }: PieceProps<"solv
             />
           </label>
         ))}
-      </div>
-      <div className="live-bar live-solver-slots">
+      </SettingsBar>
+      <SettingsBar className="live-solver-slots">
         {def.slots.map((sl) => (
           <label key={sl.id} className="live-select">
             <span>{w.slots[sl.id]}</span>
@@ -130,7 +130,7 @@ export function Solver({ state: saved, set, w: words, svgRef }: PieceProps<"solv
             )}
           </label>
         ))}
-      </div>
+      </SettingsBar>
       {focus && focus.kind !== "select" && focus.scope.length > 0 && <p className="live-hint live-solver-scope">{fill(w.scope, { list: focus.scope.join(", ") })}</p>}
       <div className="live-problem-stage">
         <svg ref={svgRef} width={SW} height={height} viewBox={`0 0 ${SW} ${height}`} fontFamily={FONT}>

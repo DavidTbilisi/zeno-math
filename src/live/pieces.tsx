@@ -34,7 +34,7 @@ import {
   viaHalf,
   wrapDay,
 } from "../math/live";
-import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
 
 const BLUE = "#1971c2";
 const RED = "#e03131";
@@ -131,12 +131,12 @@ export function Clock({ state, set, w, svgRef }: PieceProps<"clock">) {
         {hand("minute", minute, 112, 5)}
         <circle cx={c} cy={c} r={8} fill={INK} />
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Toggle on={state.showTime} onClick={() => set({ ...state, showTime: !state.showTime })}>{w.clock.showTime}</Toggle>
         <Toggle on={!!state.showMinutes} onClick={() => set({ ...state, showMinutes: !state.showMinutes })}>{w.clock.showMinutes}</Toggle>
         <Toggle on={state.snap} onClick={() => set({ ...state, snap: !state.snap, minutes: state.snap ? state.minutes : snapTo(state.minutes, 5) })}>{w.clock.snap}</Toggle>
         <button className="live-btn" title={w.clock.random} aria-label={w.clock.random} onClick={() => set({ ...state, minutes: 5 * Math.floor(Math.random() * 144) })}>🎲</button>
-      </div>
+      </SettingsBar>
     </>
   );
 }
@@ -191,11 +191,11 @@ export function Dice({ state, set, w, svgRef }: PieceProps<"dice">) {
         })}
         {faces.length > 1 && <text x={170} y={140} fontSize={20} textAnchor="middle" fill={INK}>{w.dice.total}: {rolling ? "…" : total}</text>}
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Stepper value={state.count} min={1} max={3} onChange={setCount} less={w.dice.fewer} more={w.dice.more} />
         <button className="live-btn primary" onClick={roll}>🎲 {w.dice.roll}</button>
         <button className="live-btn" onClick={() => set({ ...state, history: [] })}>{w.reset}</button>
-      </div>
+      </SettingsBar>
       <div className="live-history" title={w.dice.history}>
         {state.history.map((h, i) => <span key={i} className="live-chip">{h}</span>)}
       </div>
@@ -245,11 +245,11 @@ export function Spinner({ state, set, w, svgRef }: PieceProps<"spinner">) {
         <circle cx={tx} cy={ty} r={7} fill={INK} />
         <circle cx={c} cy={c} r={12} fill={INK} />
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Stepper value={n} min={2} max={10} onChange={setSections} less={w.spinner.fewer} more={w.spinner.more} />
         <button className="live-btn primary" onClick={spin}>↻ {w.spinner.spin}</button>
         <button className="live-btn" onClick={() => set({ ...state, result: -1, counts: Array(n).fill(0) })}>{w.reset}</button>
-      </div>
+      </SettingsBar>
       <div className="live-history">
         {state.counts.map((k, i) => (
           <span key={i} className="live-chip" style={{ background: SECTION_COLORS[i % SECTION_COLORS.length] }}>{i + 1}: {k}</span>
@@ -291,10 +291,10 @@ export function Coin({ state, set, w, svgRef }: PieceProps<"coin">) {
           <text y={label.length > 6 ? 8 : 12} fontSize={label.length > 6 ? 24 : 34} textAnchor="middle" fill={INK}>{label}</text>
         </g>
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <button className="live-btn primary" onClick={toss}>🪙 {w.coin.flip}</button>
         <button className="live-btn" onClick={() => set({ ...state, counts: [0, 0] })}>{w.reset}</button>
-      </div>
+      </SettingsBar>
       <div className="live-history">
         <span className="live-chip">{w.coin.heads}: {state.counts[0]}</span>
         <span className="live-chip">{w.coin.tails}: {state.counts[1]}</span>
@@ -329,11 +329,11 @@ export function Fractions({ state, set, w, svgRef }: PieceProps<"fractions">) {
         <line x1={128} y1={259} x2={172} y2={259} stroke={INK} strokeWidth={2.5} />
         <text x={150} y={286} fontSize={30} textAnchor="middle" fill={INK}>{n}</text>
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Toggle on={state.shape === "circle"} onClick={() => set({ ...state, shape: "circle" })}>{w.fractions.circle}</Toggle>
         <Toggle on={state.shape === "bar"} onClick={() => set({ ...state, shape: "bar" })}>{w.fractions.bar}</Toggle>
         <Stepper value={n} min={1} max={12} onChange={setParts} less={w.fractions.fewer} more={w.fractions.more} />
-      </div>
+      </SettingsBar>
     </>
   );
 }
@@ -363,10 +363,10 @@ export function TenFrame({ state, set, w, svgRef }: PieceProps<"tenFrame">) {
         })}
         <text x={155} y={height - 14} fontSize={30} textAnchor="middle" fill={INK}>{b ? `${a} + ${b} = ${n}` : n}</text>
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Toggle on={state.double} onClick={() => set({ ...state, double: !state.double })}>{w.tenFrame.twenty}</Toggle>
         <button className="live-btn" onClick={() => set({ ...state, cells: Array(20).fill(0) })}>{w.tenFrame.clear}</button>
-      </div>
+      </SettingsBar>
       <p className="live-hint">{w.tenFrame.hint}</p>
     </>
   );
@@ -468,14 +468,14 @@ export function Hundred({ state, set, w, svgRef }: PieceProps<"hundred">) {
           </>
         )}
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <span>{w.hundred.multiples}</span>
         <Stepper value={state.n} min={2} max={12} onChange={(n) => set({ ...state, n })} less="−" more="+" />
         <button className="live-btn primary" onClick={() => set({ ...state, marked: multiplesOf(state.n) })}>{w.hundred.show}</button>
         <button className="live-btn" onClick={() => set({ ...state, marked: [] })}>{w.hundred.clear}</button>
         <span className="live-note">{fill(w.hundred.marked, { n: state.marked.length })}</span>
-      </div>
-      <div className="live-bar">
+      </SettingsBar>
+      <SettingsBar>
         <Toggle on={!!state.walk} onClick={() => walkTo({ walk: !state.walk })}>↷ {w.hundred.jumps}</Toggle>
         {state.walk &&
           HUNDRED_STEPS.map((d) => (
@@ -488,7 +488,7 @@ export function Hundred({ state, set, w, svgRef }: PieceProps<"hundred">) {
             <button className="live-btn" disabled={start === null} onClick={() => walkTo({ start: null, steps: [] })}>{w.hundred.again}</button>
           </>
         )}
-      </div>
+      </SettingsBar>
       {state.walk && <p className="live-hint">{w.hundred.walkHint}</p>}
     </>
   );
@@ -526,7 +526,7 @@ export function Dots({ state, set, w, svgRef }: PieceProps<"dots">) {
   );
   return (
     <>
-      <div className="live-bar">
+      <SettingsBar>
         <label className="live-select">
           <span>{w.dots.perRow}</span>
           <select value={k} onChange={(e) => set({ k: Number(e.target.value), top: 0, bottom: 0 })}>
@@ -534,7 +534,7 @@ export function Dots({ state, set, w, svgRef }: PieceProps<"dots">) {
           </select>
         </label>
         <button className="live-btn" onClick={() => set({ ...state, top: 0, bottom: 0 })}>{w.dots.clear}</button>
-      </div>
+      </SettingsBar>
       <p className="live-hint">{w.dots.hint}</p>
       <svg ref={svgRef} width={W} height={steps + 4 * 34 + 20} viewBox={`0 0 ${W} ${steps + 4 * 34 + 20}`} fontFamily={FONT}>
         {Array.from({ length: k }, (_, i) => (
@@ -658,7 +658,7 @@ export function Compare({ state, set, w, svgRef }: PieceProps<"compare">) {
         {card(180, shown, cardFill, 64)}
         {card(290, b, "#d8f5a2")}
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Stepper value={a} min={0} max={COMPARE_MAX} onChange={(n) => setCount("a", n)} less={w.compare.fewer} more={w.compare.more} />
         {COMPARE_SIGNS.map((s) => (
           <Toggle key={s} on={state.guess === s} title={fill(w.compare[s === "<" ? "lt" : s === ">" ? "gt" : "eq"], { a, b })} onClick={() => set({ ...state, guess: s })}>
@@ -666,8 +666,8 @@ export function Compare({ state, set, w, svgRef }: PieceProps<"compare">) {
           </Toggle>
         ))}
         <Stepper value={b} min={0} max={COMPARE_MAX} onChange={(n) => setCount("b", n)} less={w.compare.fewer} more={w.compare.more} />
-      </div>
-      <div className="live-bar">
+      </SettingsBar>
+      <SettingsBar>
         <Toggle on={state.joined} onClick={() => set({ ...state, joined: !state.joined })}>✏️ {w.compare.join}</Toggle>
         <button
           className="live-btn"
@@ -681,7 +681,7 @@ export function Compare({ state, set, w, svgRef }: PieceProps<"compare">) {
         >
           🎲
         </button>
-      </div>
+      </SettingsBar>
       <p className="live-hint">
         {state.guess && state.guess !== sign
           ? `${w.compare.wrong}${state.joined ? "" : ` ${w.compare.tryPencils}`}`
@@ -826,7 +826,7 @@ export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareF
         <text x={190} y={357} fontSize={42} textAnchor="middle" fill={INK}>{shown}</text>
         {fracCard(298, b)}
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Stepper value={a.n} min={0} max={a.d} onChange={(n) => setFrac("a", { ...a, n })} less={wc.shadeLess} more={wc.shadeMore} />
         {COMPARE_SIGNS.map((s) => (
           <Toggle key={s} on={state.guess === s} title={fill(w.compare[s === "<" ? "lt" : s === ">" ? "gt" : "eq"], { a: fracText(a), b: fracText(b) })} onClick={() => set({ ...state, guess: s })}>
@@ -834,18 +834,18 @@ export function CompareFractions({ state, set, w, svgRef }: PieceProps<"compareF
           </Toggle>
         ))}
         <Stepper value={b.n} min={0} max={b.d} onChange={(n) => setFrac("b", { ...b, n })} less={wc.shadeLess} more={wc.shadeMore} />
-      </div>
-      <div className="live-bar">
+      </SettingsBar>
+      <SettingsBar>
         <Stepper value={a.d} min={1} max={FRACTION_PARTS} onChange={(d) => setFrac("a", { n: Math.min(a.n, d), d })} less={wc.fewerParts} more={wc.moreParts} />
         <span className="live-note">{wc.parts}</span>
         <Stepper value={b.d} min={1} max={FRACTION_PARTS} onChange={(d) => setFrac("b", { n: Math.min(b.n, d), d })} less={wc.fewerParts} more={wc.moreParts} />
-      </div>
-      <div className="live-bar">
+      </SettingsBar>
+      <SettingsBar>
         <Toggle on={state.joined} onClick={() => set({ ...state, joined: !state.joined })}>✏️ {w.compare.join}</Toggle>
         <Toggle on={showSame} title={canSame ? undefined : wc.tooMany} onClick={() => canSame && set({ ...state, same: !state.same })}>✂️ {wc.same}</Toggle>
         <Toggle on={half} onClick={() => set({ ...state, half: !half })}>½ {wc.half}</Toggle>
         <button className="live-btn" title={wc.random} aria-label={wc.random} onClick={random}>🎲</button>
-      </div>
+      </SettingsBar>
       <p className="live-hint">
         {state.guess && state.guess !== sign
           ? `${wc.wrong}${state.joined ? "" : ` ${wc.tryPencils}`}`

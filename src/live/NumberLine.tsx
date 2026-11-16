@@ -22,7 +22,7 @@ import {
   withRange,
   type RangeProblem,
 } from "../math/numberLine";
-import { fill, FONT, INK, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, INK, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
 
 const W = 760;
 const H = 250;
@@ -124,7 +124,7 @@ export function NumberLine({ state: d, set, w: words, svgRef }: PieceProps<"numb
 
   return (
     <>
-      <div className="live-bar">
+      <SettingsBar>
         {NUMBER_LINE_RANGES.map((r) => {
           const ro = { fractions: r.fractions, step: r.step, from: r.from };
           const on = r.from === from && r.to === to && r.step === step;
@@ -135,7 +135,7 @@ export function NumberLine({ state: d, set, w: words, svgRef }: PieceProps<"numb
             </Toggle>
           );
         })}
-      </div>
+      </SettingsBar>
       <svg
         ref={svgRef}
         width={W}
@@ -190,7 +190,7 @@ export function NumberLine({ state: d, set, w: words, svgRef }: PieceProps<"numb
         ))}
         {sum && <text x={W / 2} y={H - 14} fontSize={24} textAnchor="middle" fill={INK}>{sum}</text>}
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         {field("from", w.from)}
         {field("to", w.to)}
         {field("step", w.step)}
@@ -198,7 +198,7 @@ export function NumberLine({ state: d, set, w: words, svgRef }: PieceProps<"numb
         <Toggle on={d.jumps} onClick={() => set({ ...d, jumps: !d.jumps })}>↷ {w.jumps}</Toggle>
         <Toggle on={!!d.together} onClick={() => set({ ...d, together: !d.together })}>↔ {w.together}</Toggle>
         <button className="live-btn" disabled={!d.marks.length} onClick={() => set({ ...d, marks: [] })}>{w.clear}</button>
-      </div>
+      </SettingsBar>
       {problem ? <p className="live-said">{fill(w.problems[problem], { max: NUMBER_LINE_MAX_TICKS })}</p> : <p className="live-hint">{w.hint}</p>}
     </>
   );

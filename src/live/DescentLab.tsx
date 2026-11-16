@@ -30,7 +30,7 @@ import {
 } from "../math/descentLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** How many steps Run plays at a time in free play. */
@@ -217,7 +217,7 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
         </span>
         {nextText && !d.done && verdict.state === "going" && <span className="descent-next">{nextText}</span>}
       </div>
-      <div className="live-bar descent-dials">
+      <SettingsBar className="descent-dials">
         <label className="live-slider">
           <b>η = {num(d.eta)}</b>
           <button className="live-btn" disabled={!!p?.fixedEta || ei === 0 || !!run} title={w.less} aria-label={w.less} onClick={() => setEta(ei - 1, true)}>−</button>
@@ -250,7 +250,7 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
             />
           </label>
         )}
-      </div>
+      </SettingsBar>
       <GameActions game={game} g={g} done={d.done && !!p} always>
         <button className="live-btn" disabled={!canStep} onClick={() => finish(k + 1)}>{w.step}</button>
         <button className="live-btn on" disabled={!canStep} onClick={runTo}>▶ {w.run}</button>

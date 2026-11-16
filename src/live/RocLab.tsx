@@ -26,7 +26,7 @@ import {
 } from "../math/rocLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveRoc> = { tries: 0, done: false, said: null };
@@ -109,7 +109,7 @@ export function RocLab({ state, set, w: words, svgRef }: PieceProps<"rocLab">) {
       <div className="descent-read">
         <span>{fill(w.read, { tp: c.tp, fp: c.fp, fn: c.fn, tn: c.tn, a: num(m.accuracy), p: num(m.precision), r: num(m.recall) })}</span>
       </div>
-      <div className="live-bar descent-dials">
+      <SettingsBar className="descent-dials">
         <label className="live-slider">
           <b>t = {d.t > 1 ? "> 1" : d.t.toFixed(2)}</b>
           <input
@@ -139,7 +139,7 @@ export function RocLab({ state, set, w: words, svgRef }: PieceProps<"rocLab">) {
             />
           </label>
         )}
-      </div>
+      </SettingsBar>
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
         {!p && DATA_IDS.map((id) => <Toggle key={id} on={d.data === id} onClick={() => commit({ data: id })}>{w.datas[id]}</Toggle>)}

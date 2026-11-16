@@ -9,7 +9,7 @@ import { blocksFit } from "../math/divisionBlocks";
 import { divisionAsk, divisionCase, divisionNumbers, judgeDigit, type LiveDivision } from "../math/live";
 import { shareStatus, sharingAt, stepsShared } from "../math/sharing";
 import { SharingBoard } from "./SharingBoard";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, INK, Stepper, Toggle, type PieceProps, SettingsBar } from "./ui";
 
 // The room the working has in the piece (less beside the blocks); it is scaled to fit, the same scale at every step.
 const PW = 740;
@@ -39,7 +39,7 @@ function NumberBar({ state: d, set, w }: PieceProps<"division">) {
     />
   );
   return (
-    <div className="live-bar">
+    <SettingsBar>
       {number("a", wd.dividend)}
       <b>{d.style === "corner" ? ":" : "÷"}</b>
       {number("b", wd.divisor)}
@@ -48,7 +48,7 @@ function NumberBar({ state: d, set, w }: PieceProps<"division">) {
       {DIVISION_STYLES.map((s) => (
         <Toggle key={s} on={d.style === s} onClick={() => set({ ...d, style: s })}>{wd.styles[s]}</Toggle>
       ))}
-    </div>
+    </SettingsBar>
   );
 }
 
