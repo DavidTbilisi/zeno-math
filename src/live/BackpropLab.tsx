@@ -30,7 +30,7 @@ import {
   type LiveBackprop,
 } from "../math/backpropLab";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** A new try starts from empty boxes; free play starts from the first graph with its first input chosen. */
@@ -169,7 +169,7 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
           ))}
         </div>
       ) : (
-        <div className="live-bar">
+        <SettingsBar>
           <label className="live-select">
             <span>{w.graph}</span>
             <select value={graph.id} onChange={(e) => pickGraph(e.target.value as BpGraphId)}>
@@ -183,7 +183,7 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
               <button className="live-btn" disabled={stepped(values[sel], VALUE_STEP) === null} title={w.more} aria-label={w.more} onClick={() => step(VALUE_STEP)}>+</button>
             </span>
           )}
-        </div>
+        </SettingsBar>
       )}
       <div className="descent-read">
         <span className="descent-rule">{w.rule}</span>

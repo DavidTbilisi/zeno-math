@@ -1,10 +1,12 @@
 // Draws a live piece inside its embeddable on the board: the piece at its design size, scaled to the element's size,
 // with a button that copies what it shows as a picture. Changes go back to the board through the host, which writes
 // them into the element (so they are saved and can be undone).
-import { lazy, Suspense, useLayoutEffect, useRef, useState, type ComponentType } from "react";
+import { lazy, Suspense, useContext, useLayoutEffect, useRef, useState, type ComponentType } from "react";
 import type { ExcalidrawEmbeddableElement, NonDeleted } from "@excalidraw/excalidraw/element/types";
 import { useI18n } from "../i18n";
-import { LIVE_SIZES, type LiveGraphState, type LiveKind } from "../math/live";
+import { initialLive, LIVE_SIZES, type LiveGraphState, type LiveKind } from "../math/live";
+import { PanelSlot } from "../components/ItemPanel";
+import { PieceSlot, ToPanel } from "./ui";
 import { liveDataOf, type LiveData } from "./element";
 import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
 import { Chance } from "./Chance";
@@ -193,6 +195,9 @@ export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbe
   const svgRef = useRef<SVGSVGElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const data = liveDataOf(element);
+  // The right-click panel, when it is open on this piece: its settings bars and these actions go there too.
+  const slot = useContext(PanelSlot);
+  const panelNode = slot?.id === element.id ? slot.node : null;
   const H0 = data ? LIVE_SIZES[data.live][1] : 0;
   // The piece keeps its design height (some fill it, like the problem stage); when what it shows runs taller (the code
   // view, a long line in Georgian), the overflow is measured and the whole of it scaled into the element, instead of the
@@ -221,6 +226,10 @@ export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbe
   const [w, h] = [element.width - 2 * element.strokeWidth, element.height - 2 * element.strokeWidth];
   const s = Math.max(0.05, Math.min(w / W, h / H));
   const Piece = PIECES[kind] as ComponentType<PieceProps<typeof kind>>;
+  const snapshot = () => {
+    if (kind === "graph") host.freezeGraph(element.id, data.state as LiveGraphState);
+    else if (svgRef.current) host.snapshot(element.id, svgRef.current);
+  };
   return (
     <div className="live-host">
       <div
@@ -228,17 +237,22 @@ export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbe
         className={`live live-${kind}`}
         style={{ width: W, height: H0, transform: `translate(${(w - W * s) / 2}px, ${(h - H * s) / 2}px) scale(${s})` }}
       >
-        <Suspense fallback={null}>
-          <Piece state={data.state} set={(state) => host.update(element.id, { live: kind, state })} w={t.live} svgRef={svgRef} open={host.open && ((k, patch) => host.open?.(element.id, k, patch))} />
-        </Suspense>
+        <PieceSlot.Provider value={panelNode}>
+          <Suspense fallback={null}>
+            <Piece state={data.state} set={(state) => host.update(element.id, { live: kind, state })} w={t.live} svgRef={svgRef} open={host.open && ((k, patch) => host.open?.(element.id, k, patch))} />
+          </Suspense>
+          <ToPanel>
+            <div className="live-bar piece-panel-actions">
+              <button className="live-btn" onClick={() => host.update(element.id, { live: kind, state: initialLive(kind) })}>↺ {t.live.reset}</button>
+              <button className="live-btn" onClick={snapshot}>📷 {kind === "graph" ? t.live.freeze : t.live.snapshot}</button>
+            </div>
+          </ToPanel>
+        </PieceSlot.Provider>
         <button
           className="live-snap"
           title={kind === "graph" ? t.live.freeze : t.live.snapshot}
           aria-label={kind === "graph" ? t.live.freeze : t.live.snapshot}
-          onClick={() => {
-            if (kind === "graph") host.freezeGraph(element.id, data.state as LiveGraphState);
-            else if (svgRef.current) host.snapshot(element.id, svgRef.current);
-          }}
+          onClick={snapshot}
         >
           📷
         </button>

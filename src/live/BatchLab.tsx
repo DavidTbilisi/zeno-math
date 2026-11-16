@@ -31,7 +31,7 @@ import {
   type LiveBatch,
 } from "../math/batchLab";
 import { starText } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, Toggle, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** A new try of a puzzle starts from no steps; a puzzle of the ladder sets its dials, free play its own. */
@@ -135,7 +135,7 @@ export function BatchLab({ state, set, w: words, svgRef }: PieceProps<"batchLab"
           {fill(w.count, { e: epochNow, E: s.epochs, k, n: total })} · η = {num(rateAt(s.eta, s.schedule, Math.min(s.epochs - 1, epochNow)))} · {fill(w.read, { g: num(gap), w: num(pw), b: num(pb) })}
         </span>
       </div>
-      <div className="live-bar descent-dials">
+      <SettingsBar className="descent-dials">
         <label className="live-slider">
           <b>η₀ = {num(s.eta)}</b>
           <input
@@ -150,14 +150,14 @@ export function BatchLab({ state, set, w: words, svgRef }: PieceProps<"batchLab"
             onKeyUp={() => commit()}
           />
         </label>
-      </div>
-      <div className="live-bar batch-dials">
+      </SettingsBar>
+      <SettingsBar className="batch-dials">
         <span>{w.batch}</span>
         {BATCHES.map((b) => (
           <Toggle key={b} on={s.batch === b} disabled={!may("batch")} onClick={() => turn({ batch: b })}>{b === pts.length ? fill(w.all, { n: b }) : b}</Toggle>
         ))}
-      </div>
-      <div className="live-bar batch-dials">
+      </SettingsBar>
+      <SettingsBar className="batch-dials">
         <span>{w.schedule}</span>
         {SCHEDULES.map((sc) => (
           <Toggle key={sc} on={s.schedule === sc} disabled={!may("schedule")} onClick={() => turn({ schedule: sc })}>{w.schedules[sc]}</Toggle>
@@ -166,14 +166,14 @@ export function BatchLab({ state, set, w: words, svgRef }: PieceProps<"batchLab"
         {OPTIMISERS.map((o) => (
           <Toggle key={o} on={s.opt === o} disabled={!may("opt")} onClick={() => turn({ opt: o })}>{w.opts[o]}</Toggle>
         ))}
-      </div>
+      </SettingsBar>
       {!p && (
-        <div className="live-bar batch-dials">
+        <SettingsBar className="batch-dials">
           {DATA_IDS.map((id) => (
             <Toggle key={id} on={d.data === id} disabled={busy} onClick={() => turn({ data: id })}>{w.datas[id]}</Toggle>
           ))}
           <button className="live-btn" disabled={busy} onClick={() => turn({ seed: d.seed + 1 })}>{w.newSample}</button>
-        </div>
+        </SettingsBar>
       )}
       <GameActions game={game} g={g} done={d.done && !!p} always>
         <button className="live-btn" disabled={!canStep} onClick={() => finish(k + 1)}>{w.step}</button>

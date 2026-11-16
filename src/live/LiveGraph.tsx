@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { LiveGraphState, LiveParam } from "../math/live";
 import { compileWith, roundTo, sample, slope, stepFor, syncParams, zoomView } from "../math/liveGraph";
 import { niceStep, PLOT_COLORS } from "../math/plot";
-import { FONT, INK, svgPoint, Toggle, type PieceProps } from "./ui";
+import { FONT, INK, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
 
 const PW = 620;
 const PH = 330;
@@ -197,12 +197,12 @@ export function LiveGraph({ state, set, w, svgRef }: PieceProps<"graph">) {
           </g>
         )}
       </svg>
-      <div className="live-bar">
+      <SettingsBar>
         <Toggle on={cur.trace} onClick={() => set({ ...cur, trace: !cur.trace })}>{g.trace}</Toggle>
         <Toggle on={cur.tangent} onClick={() => set({ ...cur, tangent: !cur.tangent })}>{g.tangent}</Toggle>
         <button className="live-btn" onClick={() => set({ ...cur, view: { xMin: -10, xMax: 10, yMin: -5.5, yMax: 5.5 } })}>{g.resetView}</button>
         <span className="live-note">{g.zoomHint}</span>
-      </div>
+      </SettingsBar>
       <div className="live-sliders">
         {Object.keys(params).length === 0 && <p className="live-hint">{g.noParams}</p>}
         {Object.entries(params).map(([name, p]) => (

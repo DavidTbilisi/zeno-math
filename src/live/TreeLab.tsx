@@ -39,7 +39,7 @@ import {
 } from "../math/treeLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveTree> = { tries: 0, done: false, said: null };
@@ -154,7 +154,7 @@ export function TreeLab({ state, set, w: words, svgRef }: PieceProps<"treeLab">)
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <div className="live-bar descent-dials">
+      <SettingsBar className="descent-dials">
         {byHand && can.includes("split") && (
           <label className="live-slider">
             <b>{["x", "y"][d.axis]} &lt; {d.t.toFixed(3)}</b>
@@ -203,7 +203,7 @@ export function TreeLab({ state, set, w: words, svgRef }: PieceProps<"treeLab">)
             />
           </label>
         )}
-      </div>
+      </SettingsBar>
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
         {byHand && can.includes("split") && (
