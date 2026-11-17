@@ -395,6 +395,11 @@ input.invalid { border-color: var(--danger); }
 .pv-status { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 30px; }
 .pv-total { font-size: 22px; font-weight: 700; }
 .pv-message { color: var(--danger); font-size: 14px; font-weight: 600; }
+/* The mat as a live piece (live/BaseTen.tsx) is light like every piece, whatever the page's theme. */
+.live-baseTen {
+  --surface: #ffffff; --text: #1e1e1e; --muted: #6b7280; --border: #e3e5ea; --accent: #1971c2; --accent-hover: #1864ab;
+  --accent-text: #ffffff; --danger: #e03131; --ok: #2f9e44; --chip: #eef1f5; color-scheme: light; align-items: stretch;
+}
 .pv-ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: 0.85; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3)); }
 @keyframes pv-pop { from { transform: scale(0.6); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
 

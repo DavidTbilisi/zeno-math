@@ -1583,6 +1583,38 @@ function numberShapesPreview(): Piece[] {
   return [0, 1, 2].flatMap((y) => [0, 1, 2, 3].map((x) => disc(x, y, x > y)));
 }
 
+function algebraTilesPreview(): Piece[] {
+  // (x + 2)(x + 1) as tiles: an x² square, three x rods and two small squares filling a rectangle.
+  const X = 54;
+  const one = 16;
+  const tile = (x: number, y: number, w: number, h: number, fill: string, color: string) => rect(x, y, w, h, { fill, color, width: 1.5 });
+  return [
+    tile(0, 0, X, X, FILL.blue, "#1971c2"),
+    tile(X + 2, 0, one, X, FILL.green, "#2f9e44"),
+    tile(X + one + 4, 0, one, X, FILL.green, "#2f9e44"),
+    tile(0, X + 2, X, one, FILL.green, "#2f9e44"),
+    tile(X + 2, X + 2, one, one, FILL.yellow, "#f08c00"),
+    tile(X + one + 4, X + 2, one, one, FILL.yellow, "#f08c00"),
+    text(X / 2, X / 2, "x²", 16),
+  ];
+}
+
+function baseTenPreview(): Piece[] {
+  // A hundred flat, two ten rods and three ones, as on a place-value mat.
+  const s = 7;
+  const grid = (x: number, y: number, cols: number, rows: number, fill: string, color: string) => [
+    rect(x, y, cols * s, rows * s, { fill, color, width: 1.5 }),
+    ...Array.from({ length: cols - 1 }, (_, i) => seg([x + (i + 1) * s, y], [x + (i + 1) * s, y + rows * s], { color, width: 0.5 })),
+    ...Array.from({ length: rows - 1 }, (_, j) => seg([x, y + (j + 1) * s], [x + cols * s, y + (j + 1) * s], { color, width: 0.5 })),
+  ];
+  return [
+    ...grid(0, 0, 10, 10, "#a5d8ff", "#1971c2"),
+    ...grid(84, 0, 1, 10, "#b2f2bb", "#2f9e44"),
+    ...grid(96, 0, 1, 10, "#b2f2bb", "#2f9e44"),
+    ...[0, 1, 2].flatMap((i) => grid(112, 63 - i * 10, 1, 1, "#ffd8a8", "#e8590c")),
+  ];
+}
+
 function kakoomaPreview(): Piece[] {
   // Four numbers in a square, two by two; 7 = 3 + 4 is green, with its two parts outlined.
   return [
@@ -1787,6 +1819,8 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveMachine", group: "games", build: machinePreview, live: "machine" },
   { id: "liveGrowing", group: "games", build: growingPreview, live: "growing" },
   { id: "liveNumberShapes", group: "games", build: numberShapesPreview, live: "numberShapes" },
+  { id: "liveAlgebraTiles", group: "games", build: algebraTilesPreview, live: "algebraTiles" },
+  { id: "liveBaseTen", group: "games", build: baseTenPreview, live: "baseTen" },
   { id: "liveExprMatch", group: "games", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoboard", group: "games", build: geoboardPreview, live: "geoboard" },
   { id: "liveAngleGuess", group: "games", build: angleGuessPreview, live: "angleGuess" },

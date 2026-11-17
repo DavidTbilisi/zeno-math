@@ -29,6 +29,8 @@ import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
 import { NumberShapes } from "./NumberShapes";
+import { AlgebraTiles } from "./AlgebraTiles";
+import { BaseTen } from "./BaseTen";
 import { ExprMatch } from "./ExprMatch";
 import { AngleGuess } from "./AngleGuess";
 import { AngleHunt } from "./AngleHunt";
@@ -137,6 +139,8 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   machine: Machine,
   growing: Growing,
   numberShapes: NumberShapes,
+  algebraTiles: AlgebraTiles,
+  baseTen: BaseTen,
   exprMatch: ExprMatch,
   angleGuess: AngleGuess,
   angleHunt: AngleHunt,

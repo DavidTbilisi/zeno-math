@@ -4,6 +4,7 @@
 // blocks taken away; the pupil trades until every column is under 10 and the mat reads the answer.
 // Pointer events (not HTML5 drag & drop) so it also works with touch.
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "../i18n";
 import {
   applyDrop,
@@ -329,11 +330,14 @@ export function PlaceValueMat({ spec, onChange }: { spec: PlaceValueSpec; onChan
         <span>{t.pvShowTotal}</span>
       </label>
 
-      {drag?.moved && (
-        <span className="pv-ghost" style={{ left: drag.x - BLOCK[drag.kind].w / 2, top: drag.y - BLOCK[drag.kind].h / 2 }}>
-          <Block kind={drag.kind} />
-        </span>
-      )}
+      {/* On the body: inside a live piece, which is scaled on the board, a fixed position would be the piece's. */}
+      {drag?.moved &&
+        createPortal(
+          <span className="pv-ghost" style={{ left: drag.x - BLOCK[drag.kind].w / 2, top: drag.y - BLOCK[drag.kind].h / 2 }}>
+            <Block kind={drag.kind} />
+          </span>,
+          document.body,
+        )}
     </div>
   );
 }
