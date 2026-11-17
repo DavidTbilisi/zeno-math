@@ -23,6 +23,7 @@ import { SHAPES_START, type LiveNumberShapes } from "./numberShapes";
 import { TILES_START, type LiveAlgebraTiles } from "./algebraTiles";
 import type { PlaceValueSpec } from "./placeValue";
 import { CUBES_START, type LiveCubes } from "./cubes";
+import { COUNTERS_START, type LiveCounters } from "./counters";
 import { GEO_START, type LiveGeoLab } from "./geoLab";
 import type { LiveExprMatch } from "./exprMatch";
 import type { LiveAngleGuess } from "./angleGuess";
@@ -445,6 +446,7 @@ export type LiveStates = {
   algebraTiles: LiveAlgebraTiles;
   baseTen: PlaceValueSpec;
   cubes: LiveCubes;
+  counters: LiveCounters;
   geoLab: LiveGeoLab;
   exprMatch: LiveExprMatch;
   angleGuess: LiveAngleGuess;
@@ -540,6 +542,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   algebraTiles: [680, 640],
   baseTen: [830, 660],
   cubes: [720, 640],
+  counters: [680, 640],
   geoLab: [990, 710],
   exprMatch: [780, 400],
   angleGuess: [600, 620],
@@ -637,6 +640,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     algebraTiles: TILES_START,
     baseTen: { type: "placeValue", th: 0, h: 1, t: 2, o: 3, showTotal: true },
     cubes: CUBES_START,
+    counters: COUNTERS_START,
     geoLab: GEO_START,
     exprMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     angleGuess: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], typed: "", guess: null, streak: 0, said: null },
