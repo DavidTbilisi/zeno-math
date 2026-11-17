@@ -801,6 +801,8 @@ input.invalid { border-color: var(--danger); }
 .live-chip { padding: 1px 8px; border: 1px solid #dee2e6; border-radius: 10px; background: #f1f3f5; font-size: 13px; }
 .live-hint { margin: 0; font-size: 12px; color: #868e96; text-align: center; }
 /* A game's explanation, a step at a time (WhySteps). */
+.soh-side { outline: none; }
+.soh-side:focus-visible > line { stroke: rgba(240, 140, 0, 0.3); }
 .live-why { display: flex; align-items: center; gap: 8px; max-width: 540px; padding: 4px 8px; background: #fff9db; border-left: 4px solid #f59f00; border-radius: 4px; font-size: 13px; line-height: 1.35; }
 .live-why p { margin: 0; flex: 1; min-height: 3.6em; display: flex; align-items: center; }
 .live-why b { margin-right: 6px; color: #f08c00; }

@@ -47,6 +47,7 @@ import { GraphStory } from "./GraphStory";
 import { SlopeLine } from "./SlopeLine";
 import { TrigBuild } from "./TrigBuild";
 import { UnitCircleGame } from "./UnitCircleGame";
+import { SohCahToa } from "./SohCahToa";
 import { OneStroke } from "./OneStroke";
 import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
@@ -163,6 +164,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   slopeLine: SlopeLine,
   trigBuild: TrigBuild,
   unitCircleGame: UnitCircleGame,
+  sohcahtoa: SohCahToa,
   oneStroke: OneStroke,
   colourMap: ColourMap,
   shortestPath: ShortestPath,

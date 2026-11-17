@@ -46,10 +46,10 @@ const FRESH: Partial<LiveTrigBuild> = { at: 0, misses: 0, done: false, said: nul
 const W = 540;
 const H = 320;
 const GROUND = 280;
-const NAME_COLOR: Record<TrigName, string> = { opp: "#9c36b5", adj: "#0c8599", hyp: "#1971c2" };
+export const NAME_COLOR: Record<TrigName, string> = { opp: "#9c36b5", adj: "#0c8599", hyp: "#1971c2" };
 const RATIOS: TrigRatio[] = ["sin", "cos", "tan"];
-type P = [number, number];
-const mid = (a: P, b: P): P => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+export type P = [number, number];
+export const mid = (a: P, b: P): P => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 const r2 = (v: number) => Math.round(v * 10) / 10;
 
 /** Where the corners go: the foot B, the right angle C (at the foot of the wall), the top A; and pixels per metre. */
@@ -63,13 +63,13 @@ function layout(t: TrigTask) {
   return { s, A, B, C, ends: { base: [B, C], up: [C, A], hyp: [B, A] } as Record<TrigSide, [P, P]> };
 }
 /** A point pushed off the triangle, away from its middle, by `by` pixels. */
-function outward(p: P, centre: P, by: number): P {
+export function outward(p: P, centre: P, by: number): P {
   const [dx, dy] = [p[0] - centre[0], p[1] - centre[1]];
   const n = Math.hypot(dx, dy) || 1;
   return [p[0] + (dx / n) * by, p[1] + (dy / n) * by];
 }
 /** An arc at a corner between two directions, the short way round. */
-function arcAt(o: P, toA: P, toB: P, r: number): string {
+export function arcAt(o: P, toA: P, toB: P, r: number): string {
   const ang = (p: P) => Math.atan2(p[1] - o[1], p[0] - o[0]);
   let [a, b] = [ang(toA), ang(toB)];
   let d = b - a;
@@ -349,14 +349,16 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
 
 /** The explanation's steps, in order. */
 const WHY = ["hyp", "opp", "adj", "swap", "soh", "solve", "check"] as const;
-type WhyStep = (typeof WHY)[number];
+/** A step of the picture: the explanation's, or Pythagoras (for SOH CAH TOA's third side). */
+export type WhyStep = (typeof WHY)[number] | "pyth";
 
 /**
  * The explanation's own small triangle: θ at the bottom left (at the top on the swap step), the right angle at the
  * bottom right, and the step's side lit and named. On SOH CAH TOA all three are named; on the rearrangement the
- * hypotenuse is 12 and the up is x; on the sense check the up is drawn too long, past the top, and crossed out.
+ * hypotenuse is 12 and the up is x; on the sense check the up is drawn too long, past the top, and crossed out; on
+ * Pythagoras the sides are 3, 4 and 5.
  */
-function WhyPicture({ step, short }: { step: WhyStep; short: Record<TrigName, string> }) {
+export function WhyPicture({ step, short }: { step: WhyStep; short: Record<TrigName, string> }) {
   const [B, C, A]: P[] = [[14, 94], [134, 94], [134, 18]];
   const top = step === "swap";
   const side: Record<TrigSide, [P, P]> = { base: [B, C], up: [C, A], hyp: [B, A] };
@@ -384,6 +386,7 @@ function WhyPicture({ step, short }: { step: WhyStep; short: Record<TrigName, st
       <text x={top ? A[0] - 9 : B[0] + 28} y={top ? A[1] + 32 : B[1] - 6} fontSize={12} fontWeight={700} fill="#2f9e44" textAnchor="middle">θ</text>
       {(Object.keys(lit) as TrigSide[]).map((s) => tag(s, short[lit[s]!], NAME_COLOR[lit[s]!]))}
       {step === "solve" && [tag("hyp", "12", "#1e1e1e"), tag("up", "x", "#e03131")]}
+      {step === "pyth" && [tag("base", "4", "#0c8599"), tag("up", "3", "#9c36b5"), tag("hyp", "5", "#1971c2")]}
       {step === "check" && (
         <>
           <line x1={150} y1={94} x2={150} y2={2} stroke="#e8590c" strokeWidth={3} strokeDasharray="5 3" />
