@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  answer, cancelOne, cancelPairs, CHIP_CAP, NUM_RANGE, pairs, put, slots, sumSteps, sumText, take, value,
+  answer, cancelOne, cancelPairs, CHIP_CAP, NUM_RANGE, pairs, pairUp, put, slots, sumSteps, sumText, take, value,
 } from "../src/math/counters.ts";
 
 test("zero pairs cancel and the value stays", () => {
@@ -47,4 +47,19 @@ test("every sum in range ends on its answer with no pairs left and never over th
         assert.equal(pairs(end), 0);
         for (const s of steps) assert.ok(s.mat.pos <= CHIP_CAP && s.mat.neg <= CHIP_CAP && s.mat.pos >= 0 && s.mat.neg >= 0);
       }
+});
+
+test("pairs are found wherever the chips are, one above the other first", () => {
+  // The fresh mat: + in slots 2–4 over − in 2–4.
+  assert.deepEqual(pairUp([2, 3, 4], [0, 1, 2, 3, 4]), { pos: [true, true, true], neg: [false, false, true, true, true] });
+  // With gaps: the + in slot 2 and the − in slot 3 have gone. The + in 3 has no − under it, so it pairs from the end.
+  assert.deepEqual(pairUp([3, 4], [0, 1, 2, 4]), { pos: [true, true], neg: [false, false, true, true] });
+  assert.deepEqual(pairUp([], [0, 1]), { pos: [], neg: [false, false] });
+  for (let p = 0; p <= 6; p++)
+    for (let n = 0; n <= 6; n++) {
+      const s = slots({ pos: p, neg: n });
+      const u = pairUp(s.pos, s.neg);
+      assert.equal(u.pos.filter(Boolean).length, Math.min(p, n));
+      assert.equal(u.neg.filter(Boolean).length, Math.min(p, n));
+    }
 });

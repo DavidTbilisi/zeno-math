@@ -22,6 +22,8 @@ test("algebra tiles: multiply, combine and factor", async ({ page }) => {
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/tiles-combine.png` });
   // Drag the first x onto the −x: that pair cancels, the value stays.
   const pic = piece.locator("svg").first();
+  const lastOne = pic.getByRole("button", { name: "Take away this −1 tile" }).last();
+  const before = await lastOne.boundingBox();
   const x = (await pic.getByRole("button", { name: "Take away this x tile" }).first().boundingBox())!;
   const minusX = (await pic.getByRole("button", { name: "Take away this −x tile" }).boundingBox())!;
   await page.mouse.move(x.x + x.width / 2, x.y + x.height / 2);
@@ -29,6 +31,8 @@ test("algebra tiles: multiply, combine and factor", async ({ page }) => {
   await page.mouse.move(minusX.x + minusX.width / 2, minusX.y + minusX.height / 2, { steps: 8 });
   await page.mouse.up();
   await expect(piece).toContainText("On the mat: x² + 2x + 2 − 4");
+  // The tiles left hold their places.
+  expect(await lastOne.boundingBox()).toEqual(before);
   await piece.getByRole("button", { name: "Take away zero pairs" }).click();
   await expect(piece).toContainText("On the mat: x² + 2x − 2");
   await piece.getByRole("button", { name: "Put out a −x tile" }).click();

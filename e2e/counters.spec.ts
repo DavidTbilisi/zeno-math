@@ -12,6 +12,8 @@ test("integer counters: drag to cancel, take the pairs away, walk a subtraction"
 
   // Drag the first + onto a −: the pair cancels, the value stays −2.
   const pic = piece.locator("svg").first();
+  const lastMinus = pic.getByRole("button", { name: "A −1 chip" }).last();
+  const before = await lastMinus.boundingBox();
   const plus = (await pic.getByRole("button", { name: "A +1 chip" }).first().boundingBox())!;
   const minus = (await pic.getByRole("button", { name: "A −1 chip" }).nth(2).boundingBox())!;
   await page.mouse.move(plus.x + plus.width / 2, plus.y + plus.height / 2);
@@ -20,6 +22,8 @@ test("integer counters: drag to cancel, take the pairs away, walk a subtraction"
   await page.mouse.up();
   await expect(piece).toContainText("On the mat: 2 × (+1) and 4 × (−1)");
   await expect(piece).toContainText("the mat is worth −2");
+  // The chips left hold their places: the last − has not moved.
+  expect(await lastMinus.boundingBox()).toEqual(before);
 
   await piece.getByRole("button", { name: "Take away zero pairs" }).click();
   await expect(piece).toContainText("On the mat: 0 × (+1) and 2 × (−1)");

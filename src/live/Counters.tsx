@@ -5,10 +5,10 @@
 // answer. The moves come from src/math/counters.ts; "Copy as a picture" copies the mat and the words.
 import { useState, type PointerEvent as ReactPointerEvent } from "react";
 import {
-  cancelOne, cancelPairs, CHIP_CAP, COUNTER_OPS, num, NUM_RANGE, pairs, put, slots, sumSteps, sumText, take, value,
+  cancelOne, cancelPairs, CHIP_CAP, COUNTER_OPS, num, NUM_RANGE, pairs, pairUp, put, slots, sumSteps, sumText, take, value,
   type CounterStep, type Mat,
 } from "../math/counters";
-import { usePops } from "./pops";
+import { useHeld, usePops } from "./pops";
 import { fill, FONT, INK, Stepper, svgPoint, type PieceProps } from "./ui";
 
 const W = 640;
@@ -29,7 +29,8 @@ const POS = { fill: "#ffe066", stroke: "#e67700" };
 const NEG = { fill: "#ff8787", stroke: "#c92a2a" };
 
 type Words = PieceProps<"counters">["w"]["counters"];
-type Chip = { negative: boolean; i: number; x: number; y: number; paired: boolean };
+/** A chip where it is drawn; `k` is its place in the list of chips, which says which chip is which. */
+type Chip = { negative: boolean; slot: number; x: number; y: number; paired: boolean; k: number };
 type Drag = { chip: Chip; x0: number; y0: number; dx: number; dy: number; moved: boolean };
 type Ghost = { x: number; y: number; negative?: boolean; zero?: boolean };
 
@@ -38,11 +39,21 @@ const where = (slot: number, negative: boolean) => ({
   y: (negative ? NEG_TOP : TOP) + Math.floor(slot / PER_ROW) * GAP + R,
 });
 
-function chipsOf(m: Mat): Chip[] {
+type Placed = Omit<Chip, "paired" | "k">;
+const keyOf = (m: Mat) => `${m.pos}/${m.neg}`;
+
+/** The chips of a mat in their slots, + first. */
+function placed(m: Mat): Placed[] {
   const s = slots(m);
-  const side = (list: number[], negative: boolean) =>
-    list.map((slot, i): Chip => ({ negative, i, ...where(slot, negative), paired: i >= list.length - s.paired }));
-  return [...side(s.pos, false), ...side(s.neg, true)];
+  return [...s.pos.map((slot) => ({ negative: false, slot, ...where(slot, false) })), ...s.neg.map((slot) => ({ negative: true, slot, ...where(slot, true) }))];
+}
+
+/** Which of the chips are drawn as zero pairs, wherever they are (src/math/counters.ts, pairUp). */
+function withPairs(list: Placed[]): Chip[] {
+  const sides = [list.filter((c) => !c.negative), list.filter((c) => c.negative)];
+  const p = pairUp(sides[0].map((c) => c.slot), sides[1].map((c) => c.slot));
+  const counters = { pos: 0, neg: 0 };
+  return list.map((c, k) => ({ ...c, k, paired: c.negative ? p.neg[counters.neg++] : p.pos[counters.pos++] }));
 }
 
 function stepLine(s: CounterStep, w: Words): string {
@@ -69,8 +80,9 @@ function ChipDisc({ x, y, negative, paired, lift }: { x: number; y: number; nega
 }
 
 /** The mat, its chips and the words; with `on` set, what a tap or a drag does and the chips popping too. */
-function Picture({ mat, lines, height, svgRef, drag, target, ghosts, on }: {
+function Picture({ mat, chips, lines, height, svgRef, drag, target, ghosts, on }: {
   mat: Mat;
+  chips: Chip[];
   lines: string[];
   height: number;
   svgRef?: React.Ref<SVGSVGElement>;
@@ -84,9 +96,8 @@ function Picture({ mat, lines, height, svgRef, drag, target, ghosts, on }: {
     up: () => void;
   };
 }) {
-  const chips = chipsOf(mat);
   const H = height;
-  const same = (c: Chip, d?: Chip | null) => !!d && d.negative === c.negative && d.i === c.i;
+  const same = (c: Chip, d?: Chip | null) => !!d && d.k === c.k;
   return (
     <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}
       onPointerMove={on?.move} onPointerUp={on?.up} onPointerCancel={on?.up} style={on ? { touchAction: "none" } : undefined}>
@@ -97,7 +108,7 @@ function Picture({ mat, lines, height, svgRef, drag, target, ghosts, on }: {
       {chips.map((c) => {
         const label = on && fill(on.w.chip, { s: c.negative ? "−1" : "+1" });
         return (
-          <g key={`${c.negative ? "n" : "p"}${c.i}`} opacity={drag?.moved && same(c, drag.chip) ? 0.25 : 1} role={on ? "button" : undefined} aria-label={label || undefined}
+          <g key={`${c.negative ? "n" : "p"}${c.slot}`} opacity={drag?.moved && same(c, drag.chip) ? 0.25 : 1} role={on ? "button" : undefined} aria-label={label || undefined}
             style={on ? { cursor: "grab" } : undefined} onPointerDown={on && ((e) => on.press(e, c))}>
             <ChipDisc x={c.x} y={c.y} negative={c.negative} paired={c.paired} lift={same(c, target)} />
             {same(c, target) && <circle cx={c.x} cy={c.y} r={R + 5} fill="none" stroke="#2f9e44" strokeWidth={2.5} />}
@@ -128,18 +139,22 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
   const [drag, setDrag] = useState<Drag | null>(null);
   const [ghosts, pop] = usePops<Ghost>();
   const steps = sumSteps(a, op, b);
+  // The chips hold their places when some are taken away (gaps where they were) until the mat changes another way.
+  const [held, drop] = useHeld(keyOf(mat), placed(mat));
+  const chips = withPairs(held);
 
   /** A new mat by hand: the walk through the sum stops. */
   const setMat = (m: Mat) => set({ ...state, ...m, step: 0 });
-  /** The ghosts of the chips about to go, popping where they were, and a 0 on the line under each pair. */
-  const popPairs = (m: Mat) => {
-    const paired = chipsOf(m).filter((c) => c.paired);
+  /** Every zero pair goes: their ghosts pop where they were, with a 0 on the line under them; the rest stay put. */
+  const popPairs = (next: Mat) => {
+    const paired = chips.filter((c) => c.paired);
     const xs = [...new Set(paired.map((c) => c.x))];
     pop([...paired.map((c) => ({ x: c.x, y: c.y, negative: c.negative })), ...xs.map((x) => ({ x, y: LINE_Y + 17, zero: true }))]);
+    drop(paired.map((c) => c.k), keyOf(next));
   };
 
   const chipAt = (x: number, y: number, not: Chip) =>
-    chipsOf(mat).find((c) => c.negative !== not.negative && Math.hypot(c.x - x, c.y - y) <= R + 6) ?? null;
+    chips.find((c) => c.negative !== not.negative && Math.hypot(c.x - x, c.y - y) <= R + 6) ?? null;
   const target = drag?.moved ? chipAt(drag.chip.x + drag.dx, drag.chip.y + drag.dy, drag.chip) : null;
 
   const press = (e: ReactPointerEvent, chip: Chip) => {
@@ -159,20 +174,26 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
   const up = () => {
     if (!drag) return;
     setDrag(null);
-    if (!drag.moved) return setMat(take(mat, drag.chip.negative));
+    if (!drag.moved) {
+      const next = take(mat, drag.chip.negative);
+      drop([drag.chip.k], keyOf(next));
+      return setMat(next);
+    }
     if (!target) return;
     pop([
       { x: target.x - 7, y: target.y, negative: drag.chip.negative },
       { x: target.x + 7, y: target.y, negative: target.negative },
       { x: target.x, y: target.y - R - 8, zero: true },
     ]);
-    setMat(cancelOne(mat));
+    const next = cancelOne(mat);
+    drop([drag.chip.k, target.k], keyOf(next));
+    setMat(next);
   };
 
   const nextStep = () => {
     const i = step >= steps.length ? 0 : step;
     const s = steps[i];
-    if (s.kind === "cancel") popPairs(mat);
+    if (s.kind === "cancel") popPairs(s.mat);
     set({ ...state, ...s.mat, step: i + 1 });
   };
 
@@ -187,7 +208,7 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
         <button className="live-btn chip-btn pos" disabled={mat.pos >= CHIP_CAP} title={w.putPos} aria-label={w.putPos} onClick={() => setMat(put(mat, false))}>+1</button>
         <button className="live-btn chip-btn neg" disabled={mat.neg >= CHIP_CAP} title={w.putNeg} aria-label={w.putNeg} onClick={() => setMat(put(mat, true))}>−1</button>
         <button className="live-btn" disabled={mat.pos >= CHIP_CAP || mat.neg >= CHIP_CAP} onClick={() => setMat(put(put(mat, false), true))}>{w.putPair}</button>
-        <button className="live-btn" disabled={!z} onClick={() => { popPairs(mat); setMat(cancelPairs(mat)); }}>{w.removePairs}</button>
+        <button className="live-btn" disabled={!z} onClick={() => { popPairs(cancelPairs(mat)); setMat(cancelPairs(mat)); }}>{w.removePairs}</button>
         <button className="live-btn" onClick={() => setMat({ pos: 0, neg: 0 })}>{w.clear}</button>
       </div>
       <div className="live-bar">
@@ -207,9 +228,9 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
         <button className="live-btn" onClick={nextStep}>{step >= steps.length ? w.again : step ? w.next : w.show}</button>
       </div>
       <p className="live-hint">{w.hint}</p>
-      <Picture mat={mat} lines={lines} height={MAT_H + 16 + MAX_LINES * SAY} drag={drag} target={target} ghosts={ghosts} on={{ w, press, move, up }} />
+      <Picture mat={mat} chips={chips} lines={lines} height={MAT_H + 16 + MAX_LINES * SAY} drag={drag} target={target} ghosts={ghosts} on={{ w, press, move, up }} />
       <div hidden>
-        <Picture mat={mat} lines={lines} height={MAT_H + 16 + lines.length * SAY} svgRef={svgRef} />
+        <Picture mat={mat} chips={chips} lines={lines} height={MAT_H + 16 + lines.length * SAY} svgRef={svgRef} />
       </div>
     </>
   );
