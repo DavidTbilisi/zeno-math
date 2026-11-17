@@ -71,7 +71,8 @@ export type Bound = { v: number; closed: boolean };
 type Trap = { id: MistakeId; a: Answer; vars?: Record<string, string | number> };
 type Answer = (
   /** std: the answer is asked for in standard form, a × 10ⁿ; form: as an improper fraction or a mixed number. */
-  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed" }
+  /** `units`: unit signs the answer may end in ("5.64 m"); they are taken off before it is read. */
+  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed"; units?: readonly string[] }
   | { k: "set"; vs: number[]; tol: number }
   /** Values in order; they may be typed named ("y = 3; x = 2"), by `names` (x, y, z when not given). */
   | { k: "tuple"; vs: number[]; tol: number; names?: string[] }
@@ -625,6 +626,8 @@ function surdTex(p: Frac, q: Frac, m: number): string {
   if (p.isZero()) return (q.isNeg() ? "-" : "") + root;
   return `${p.tex()} ${q.isNeg() ? "-" : "+"} ${root}`;
 }
+/** The signs for metres an answer may end in: English, Russian, Georgian. */
+const METRES = ["m", "м", "მ"] as const;
 const num = (v: number, tol = 1e-9, extra: { lowest?: boolean; surd?: boolean; form?: "improper" | "mixed" } = {}): Answer => ({ k: "num", v, tol, ...extra });
 const dp = (v: number, d: number) => String(Math.round(v * 10 ** d) / 10 ** d);
 /** E as text that parseE reads back. */
@@ -2724,6 +2727,8 @@ const GENS: Record<SkillId, Gen> = {
         },
       },
       show: `${ex.show}${s.ask === "ang" ? "" : "\\,\\mathrm{m}"}`,
+      // A length may be typed with its unit, in any of the three languages: "5.64 m", "5.64м", "5.64 მ".
+      ...(s.ask === "ang" ? {} : { answer: { ...ex.answer, units: METRES } as Answer }),
     };
   },
 
@@ -5042,13 +5047,20 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
 
 export function check(ex: Exercise, input: string, w: PracticeWords): Verdict {
   exprMessages(w);
-  const src = input.trim();
+  const src = withoutUnit(ex.answer, input.trim());
   if (!src) return { ok: false, why: w.reasons.empty };
   const v = judge(ex.answer, src, w);
   // A form message or a near miss says more than naming a mistake would.
   if (v.ok || v.why || v.close) return v;
   for (const t of trapsOf(ex.answer)) if (judge(t.a, src, w).ok) return { ok: false, mistake: t.id, hint: fill(w.mistakes[t.id], t.vars ?? {}) };
   return v;
+}
+
+/** "5.64 m" → "5.64" when the answer may carry a unit; only a unit straight after a number is taken off. */
+function withoutUnit(a: Answer, s: string): string {
+  if (a.k !== "num" || !a.units) return s;
+  for (const u of a.units) if (s.endsWith(u) && /\d\s*$/.test(s.slice(0, -u.length))) return s.slice(0, -u.length).trim();
+  return s;
 }
 
 /** The answer against one expected answer: no traps. */
@@ -5236,7 +5248,7 @@ const isPrime = (n: number) => {
 
 /** What the input reads as, in LaTeX, so a typo shows before checking (null when it can't be read). */
 export function preview(ex: Exercise, input: string): string | null {
-  const s = input.trim();
+  const s = withoutUnit(ex.answer, input.trim());
   if (!s) return null;
   if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade" || ex.answer.k === "pick" || ex.answer.k === "divisors") return null;
   if (ex.answer.k === "target") {
