@@ -395,6 +395,9 @@ input.invalid { border-color: var(--danger); }
 .pv-status { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 30px; }
 .pv-total { font-size: 22px; font-weight: 700; }
 .pv-message { color: var(--danger); font-size: 14px; font-weight: 600; }
+/* Linking cubes (live/Cubes.tsx): the colour to paint with, as a swatch. */
+.cube-swatch { width: 26px; height: 26px; padding: 0; border-width: 2px; }
+.cube-swatch.on { outline: 2px solid #1e1e1e; outline-offset: 1px; }
 /* The mat as a live piece (live/BaseTen.tsx) is light like every piece, whatever the page's theme. */
 .live-baseTen {
   --surface: #ffffff; --text: #1e1e1e; --muted: #6b7280; --border: #e3e5ea; --accent: #1971c2; --accent-hover: #1864ab;

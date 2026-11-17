@@ -1615,6 +1615,18 @@ function baseTenPreview(): Piece[] {
   ];
 }
 
+function cubesPreview(): Piece[] {
+  // Two trains of linking cubes, 4 red and 3 blue, then 5 yellow: each cube with the nub that links it on top.
+  const cube = (x: number, y: number, fill: string, color: string) => [
+    rect(x + 6, y - 4, 10, 5, { fill, color, width: 1 }),
+    rect(x, y, 22, 22, { fill, color, width: 1.5 }),
+  ];
+  return [
+    ...[0, 1, 2, 3, 4, 5, 6].flatMap((i) => (i < 4 ? cube(i * 23, 6, FILL.red, "#c92a2a") : cube(i * 23, 6, FILL.blue, "#1864ab"))),
+    ...[0, 1, 2, 3, 4].flatMap((i) => cube(i * 23, 42, FILL.yellow, "#e67700")),
+  ];
+}
+
 function kakoomaPreview(): Piece[] {
   // Four numbers in a square, two by two; 7 = 3 + 4 is green, with its two parts outlined.
   return [
@@ -1821,6 +1833,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveNumberShapes", group: "games", build: numberShapesPreview, live: "numberShapes" },
   { id: "liveAlgebraTiles", group: "games", build: algebraTilesPreview, live: "algebraTiles" },
   { id: "liveBaseTen", group: "games", build: baseTenPreview, live: "baseTen" },
+  { id: "liveCubes", group: "games", build: cubesPreview, live: "cubes" },
   { id: "liveExprMatch", group: "games", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoboard", group: "games", build: geoboardPreview, live: "geoboard" },
   { id: "liveAngleGuess", group: "games", build: angleGuessPreview, live: "angleGuess" },

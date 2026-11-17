@@ -137,6 +137,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseNumberPatterns" | "senseFraction
       { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
       { kind: "kakooma", icon: "🔢", name: "liveKakooma" },
       { kind: "baseTen", icon: "🧊", name: "liveBaseTen" },
+      { kind: "cubes", icon: "🟥", name: "liveCubes" },
     ],
   },
   {

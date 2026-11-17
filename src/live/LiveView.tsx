@@ -31,6 +31,7 @@ import { Growing } from "./Growing";
 import { NumberShapes } from "./NumberShapes";
 import { AlgebraTiles } from "./AlgebraTiles";
 import { BaseTen } from "./BaseTen";
+import { Cubes } from "./Cubes";
 import { ExprMatch } from "./ExprMatch";
 import { AngleGuess } from "./AngleGuess";
 import { AngleHunt } from "./AngleHunt";
@@ -141,6 +142,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   numberShapes: NumberShapes,
   algebraTiles: AlgebraTiles,
   baseTen: BaseTen,
+  cubes: Cubes,
   exprMatch: ExprMatch,
   angleGuess: AngleGuess,
   angleHunt: AngleHunt,
