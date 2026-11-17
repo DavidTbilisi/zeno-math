@@ -43,3 +43,22 @@ test("practical scenarios and measurement instructions are available in every la
     assert.equal(check(ex, ex.plain, t.pracWords).ok, true);
   }
 });
+
+test("a length may be typed with its unit, in any language; an angle may not end in metres", () => {
+  const w = en.pracWords;
+  let lengths = 0;
+  for (let seed = 1; seed <= 60; seed++) {
+    const ex = exercise("practicalTrig", 2, seed, w);
+    const isAngle = (ex.solution!.spec as { ask: string }).ask === "ang";
+    for (const unit of [" m", "m", " м", " მ"]) assert.equal(check(ex, ex.plain + unit, w).ok, !isAngle, `${ex.plain}${unit}`);
+    if (isAngle) continue;
+    lengths++;
+    assert.equal(check(ex, `${Number(ex.plain) + 1} m`, w).ok, false);
+    assert.equal(check(ex, `-${ex.plain} m`, w).mistake, "sign");
+    assert.equal(check(ex, `${ex.plain} m m`, w).ok, false);
+  }
+  assert.ok(lengths > 20);
+  // Right-angled triangles have no units: "m" there is still not a number.
+  const plain = exercise("righttri", 2, 7, w);
+  assert.equal(check(plain, `${plain.plain} m`, w).ok, false);
+});
