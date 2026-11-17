@@ -101,7 +101,7 @@ test("a number theory picture follows its slider; a rectangle keeps Excalidraw's
 
 test("one click on a piece reaches its button; its right-click panel holds only actions", async ({ page }) => {
   await newBoard(page);
-  await page.getByRole("button", { name: "Games" }).click();
+  await page.getByRole("button", { name: "Arithmetic" }).click();
   await page.getByRole("menuitem", { name: /Number patterns as dots/ }).click();
   const piece = page.locator(".live-numberShapes");
   await expect(piece).toHaveCount(1);

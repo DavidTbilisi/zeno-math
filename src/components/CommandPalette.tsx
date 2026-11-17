@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
-import { MENUS, TOOLS, type ToolKind } from "../tools";
+import { isLiveEntry, MENUS, type MenuEntry } from "../menus";
+import { TOOLS, type ToolKind } from "../tools";
 
 type Entry = {
   kind: ToolKind;
@@ -23,7 +24,7 @@ function entries(t: Dict): Entry[] {
   const out: Entry[] = [];
   const seen = new Set<ToolKind>();
   for (const menu of MENUS)
-    for (const it of menu.items) {
+    for (const it of menu.sections.flatMap((s) => s.items).filter((e): e is MenuEntry => !isLiveEntry(e))) {
       out.push({ kind: it.kind, start: it.start, icon: it.icon, title: t[it.label], sub: t[menu.title ?? menu.label], names: [], hint: "", topic: false });
       if (seen.has(it.kind) || it.start) continue;
       seen.add(it.kind);

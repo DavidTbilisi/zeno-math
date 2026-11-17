@@ -1497,7 +1497,7 @@ Props `onPick(kind, start)`, `onClose`. State `query`, `active`. `all` memoised 
 - `SaveState` (`:46`): `"saved" | "saving" | "error" | "conflict"`; "conflict: someone saved this board elsewhere since we loaded it; autosave pauses until the user picks."
 - `PlacedImage` (`:48`) and `svgImage(r)` (`:50-55`): an SVG string becomes a `data:` URL via `svgToDataUrl`.
 - `libraryStore` (`:58-75`): Excalidraw's personal library persisted in `localStorage["zeno.library"]`, "for every board"; both methods swallow storage errors.
-- `LIVE_IN_MENUS` (`:78-81`): the live graph goes in the Algebra menu, the dice in Discrete.
+- The menus come from `MENUS` in `src/menus.ts`: each menu in headed sections, tools and live pieces side by side (the live graph under Algebra → Functions & graphs, the dice under Discrete → Probability); Games holds only the pieces with levels.
 - `mathOf(el)` (`:83`): an image whose `customData.kind` is a tool kind. `selectedMathElement(api)` (`:86-91`): the single selected element if it is such an image.
 
 #### State and refs
@@ -1565,7 +1565,7 @@ Effect on `[saveNow]` (`:210-234`). `flush(keepalive)`: if the debounce timer is
 
 `insert(d, tool, data, image)` (`:483-489`), "Puts what a tool made on the board, or in place of the picture it was editing", is shared by the dialog and the panel: if `tool.png`, build a PNG `PlacedImage` from `image.dataURL`; else theme the SVG for the current board theme and build an SVG one; then `placeImage(placed, {kind: d.kind, data, w: image.width, h: image.height}, d.editing)`.
 
-Header (`:492-527`): back link; `title-input` (`aria-label={t.rename}`, `onBlur=saveTitle`, Enter blurs); `save-state` span with one of `t.saving / t.saved / t.saveConflict / t.saveError`; spacer; when `selectedMath` an "✎ Edit …" button whose label is `t[TOOLS[kind].edit]`; 🔍 opens the palette; 📐 toggles the default sidebar on `SHAPES_TAB`; one `ToolMenu` per `MENUS` group, items from the group plus any `LIVE_IN_MENUS` entries; `ShareBox` wired to `board.shareToken`; `LangSelect`.
+Header (`:492-527`): back link; `title-input` (`aria-label={t.rename}`, `onBlur=saveTitle`, Enter blurs); `save-state` span with one of `t.saving / t.saved / t.saveConflict / t.saveError`; spacer; when `selectedMath` an "✎ Edit …" button whose label is `t[TOOLS[kind].edit]`; 🔍 opens the palette; 📐 toggles the default sidebar on `SHAPES_TAB`; one `ToolMenu` per `MENUS` group (`src/menus.ts`), its sections as headings, tools opening their dialog and live pieces going on the board; `ShareBox` wired to `board.shareToken`; `LangSelect`.
 
 Conflict bar (`:528-534`, `role="alert"`): `t.conflictText`, "Reload their version" (`location.reload()`), "Keep mine" (`saveNow(true)` → `baseUpdatedAt: undefined` → the server accepts).
 
@@ -2282,7 +2282,7 @@ Three props on `<Excalidraw>` (`src/pages/BoardPage.tsx:554-556`) and one host o
   - `update(id, data)`: maps `getSceneElementsIncludingDeleted()`, replacing the element with `{...el, customData: data, version + 1, versionNonce: random, updated: Date.now()}`; then `updateScene` with `captureUpdate: IMMEDIATELY` so every change is an undo step and reaches autosave. The subtlety (`:387-394`): Excalidraw tracks the piece the user is interacting with as `appState.activeEmbeddable.element`, by object identity; after replacing the element the host also sets `activeEmbeddable` to the new object (only when the active embeddable's id is the one being updated, keeping its `state`), "or each change would need another click to carry on".
   - `snapshot(id, svgEl)`: `XMLSerializer` → `themedSvg(svg, theme)` → `svgImage` (data URL) → `placeImage(..., undefined, undefined, besides(id))` (`:398-403`). `besides` is `x + width + 32` at the same `y`. With no `math` the image's `customData` is `{ snapshot: true }` (`:362`), a plain picture.
   - `freezeGraph(id, state)`: dynamically imports `liveGraph` and `plot`, substitutes slider values into each expression, builds a `PlotSpec` from the live view, and places the SVG with `MathData { kind: "graph", data: spec, w, h }` so the copy opens in the ordinary graph dialog (`:404-418`). Blank expressions are left out of the spec; if `plotToSvg` throws (a function that does not compile, an empty y range) the whole copy is silently not placed (`:412-417`).
-- `addLive(kind)` places `liveElement(kind)` through `placeOnBoard` (`:420`); `LIVE_IN_MENUS` also lists the graph and chance pieces in the Algebra and Discrete tool menus (`:77-81`).
+- `addLive(kind)` places `liveElement(kind)` through `placeOnBoard` (`:420`); every live piece is in exactly one section of `MENUS` (`src/menus.ts`, checked by `tests/menus.test.ts`), and the Shapes panel lists them under the same headings.
 
 Interaction model: Excalidraw's embeddable needs one click to become "active"; after that pointer events go to the rendered React tree (the clock's `onPointerDown` with pointer capture, the graph's wheel listener, plain `onClick`s). Every piece keeps transient state locally and calls `set` once per gesture, so the scene update frequency equals the number of undoable actions.
 

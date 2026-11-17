@@ -1,12 +1,11 @@
-// Every tool in one table: its dialog (loaded the first time it opens), its menu entry and its edit label.
-// The board page, the menus and the tool search are all built from this list.
+// Every tool in one table: its dialog (loaded the first time it opens) and its edit label (menus.ts places it in the menus).
+// The board page and the tool search open them from here.
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
-import type { BarIconName } from "./components/BarIcon";
 import type { Dict } from "./locales/en";
 import { AREAS, SKILLS } from "./math/practiceSkills";
 
 /** Keys of the dictionary that hold a plain string. */
-type Word = { [K in keyof Dict]: Dict[K] extends string ? K : never }[keyof Dict];
+export type Word = { [K in keyof Dict]: Dict[K] extends string ? K : never }[keyof Dict];
 
 /** What every tool dialog accepts. `initial` is the stored spec when editing; `start` opens a given topic or tab. */
 export type ToolDialogProps = {
@@ -97,85 +96,3 @@ export const TOOLS: Record<ToolKind, Tool> = {
 };
 
 export const isToolKind = (k: unknown): k is ToolKind => typeof k === "string" && Object.hasOwn(TOOLS, k);
-
-/** A menu entry: a tool, optionally opened on a given topic. */
-export type MenuEntry = { kind: ToolKind; icon: string; label: Word; start?: string };
-export type MenuGroup = { icon: BarIconName; label: Word; title?: Word; items: MenuEntry[] };
-
-export const MENUS: MenuGroup[] = [
-  {
-    icon: "arithmetic", label: "groupArithmetic", items: [
-      { kind: "model", icon: "▦", label: "models" },
-      { kind: "mental", icon: "🧠", label: "mental" },
-    ],
-  },
-  {
-    icon: "geometry", label: "groupGeometryShort", title: "groupGeometry", items: [
-      { kind: "geometry", icon: "📐", label: "geometry" },
-      { kind: "euclid", icon: "⊙", label: "euclidTool" },
-      { kind: "coord", icon: "xy", label: "coord" },
-      { kind: "vectors", icon: "↗", label: "vectors" },
-      { kind: "trig", icon: "θ", label: "trig" },
-      { kind: "identities", icon: "≡", label: "identitiesTool" },
-      { kind: "3d", icon: "🧊", label: "threeD" },
-    ],
-  },
-  {
-    icon: "algebra", label: "groupAlgebraShort", title: "groupAlgebra", items: [
-      { kind: "formula", icon: "∑", label: "formula" },
-      { kind: "graph", icon: "📈", label: "graph" },
-      { kind: "functions", icon: "f(x)", label: "functionsTool" },
-      { kind: "algebra", icon: "⚖", label: "algebra" },
-      { kind: "polynomials", icon: "x³", label: "polynomialsTool" },
-      { kind: "powers", icon: "xⁿ", label: "powers" },
-      { kind: "sequences", icon: "aₙ", label: "sequences" },
-      { kind: "matrix", icon: "[ ]", label: "matrices" },
-      { kind: "complex", icon: "ℂ", label: "complex" },
-      { kind: "analysis", icon: "ε", label: "analysis" },
-      { kind: "deriv", icon: "f′", label: "deriv" },
-      { kind: "multivar", icon: "∇", label: "multivar" },
-      { kind: "integral", icon: "∫", label: "integrals" },
-      { kind: "applied", icon: "∫⌒", label: "applied" },
-      { kind: "ode", icon: "y′", label: "odes" },
-      { kind: "numerical", icon: "≈", label: "numericalTool" },
-    ],
-  },
-  {
-    icon: "discrete", label: "groupDiscreteShort", title: "groupDiscrete", items: [
-      { kind: "nt", icon: "ℤ", label: "nt" },
-      { kind: "comb", icon: "ⁿCₖ", label: "comb" },
-      { kind: "gt", icon: "⬡", label: "gt" },
-      { kind: "logic", icon: "∧", label: "logic" },
-      { kind: "tactics", icon: "♟", label: "tactics" },
-      { kind: "strategies", icon: "♞", label: "strategies" },
-      { kind: "algo", icon: "⇅", label: "algo" },
-      { kind: "statistics", icon: "📊", label: "statistics" },
-      { kind: "randvar", icon: "E[X]", label: "randvar" },
-      { kind: "likelihood", icon: "L(θ)", label: "likelihood" },
-      { kind: "information", icon: "H(p)", label: "information" },
-      { kind: "regression", icon: "ŷ", label: "regression" },
-      { kind: "naiveBayes", icon: "P(c|w)", label: "naiveBayes" },
-      { kind: "inference", icon: "H₀", label: "inference" },
-    ],
-  },
-  {
-    icon: "ai", label: "groupAi", title: "groupAiTitle", items: [
-      { kind: "ai", icon: "⊞", label: "aiTensors", start: "tensor" },
-      { kind: "ai", icon: "⇄", label: "aiOps", start: "ops" },
-      { kind: "ai", icon: "↘", label: "aiDescent", start: "descent" },
-      { kind: "ai", icon: "∂", label: "aiBackprop", start: "backprop" },
-      { kind: "ai", icon: "eᶻ", label: "aiSoftmax", start: "softmax" },
-      { kind: "ai", icon: "∠", label: "aiEmbed", start: "embed" },
-      { kind: "ai", icon: "Σ", label: "aiSvd", start: "svd" },
-    ],
-  },
-  {
-    icon: "practice", label: "practice", items: [
-      { kind: "practice", icon: "🔢", label: "practiceNumber", start: "number" },
-      { kind: "practice", icon: "⚖", label: "practiceAlgebra", start: "algebra" },
-      { kind: "practice", icon: "📐", label: "practiceGeometry", start: "geometry" },
-      { kind: "practice", icon: "∫", label: "practiceCalculus", start: "calculus" },
-      { kind: "practice", icon: "🎲", label: "practiceData", start: "data" },
-    ],
-  },
-];

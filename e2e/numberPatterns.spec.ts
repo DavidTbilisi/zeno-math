@@ -45,6 +45,6 @@ test("the games menu has a Number patterns section", async ({ page }) => {
   await page.getByRole("button", { name: "Games" }).click();
   await expect(page.getByText("Number patterns", { exact: true })).toBeVisible();
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/menu.png` });
-  await page.getByRole("menuitem", { name: /Number patterns as dots/ }).click();
-  await expect(page.locator(".live-numberShapes")).toBeVisible();
+  await page.getByRole("menuitem", { name: /Growing patterns/ }).click();
+  await expect(page.locator(".live-growing")).toBeVisible();
 });
