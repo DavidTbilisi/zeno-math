@@ -1,5 +1,5 @@
 // The geometry lab: the 3-4-5 triangle it starts with is measured, a drawn rectangle is named and measured, an
-// enlargement by 2 makes its area 4 times as big, shapes are built from their measurements (or refused, with why).
+// enlargement by 2 makes its area 4 times as big, a drawn ellipse and sector get their π values, shapes are built from their measurements (or refused, with why).
 import { expect, test } from "@playwright/test";
 import { boardWith } from "./helpers";
 
@@ -33,7 +33,7 @@ test("geometry lab: measure, draw, enlarge and build shapes", async ({ page }) =
   await expect(plane.locator("circle[stroke='#f08c00']")).toHaveCount(1);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/geolab-hover.png` });
 
-  await piece.getByRole("button", { name: "Draw a polygon" }).dispatchEvent("click");
+  await piece.getByRole("button", { name: "Polygon", exact: true }).dispatchEvent("click");
   for (const [x, y] of [[2, 5], [8, 5], [8, 7], [2, 7], [2, 5]]) await at(x, y);
   await expect(facts.locator(".glab-name")).toHaveText("Rectangle");
   await expect(facts).toContainText("a · b = 6 · 2 = 12");
@@ -42,6 +42,20 @@ test("geometry lab: measure, draw, enlarge and build shapes", async ({ page }) =
   // Enlarge it by 2: the sides double, the area is four times as big.
   await facts.getByRole("button", { name: "Enlarge" }).click();
   await expect(facts).toContainText("a · b = 12 · 4 = 48");
+
+  // Draw an ellipse below the shapes (centre, end of the long axis, how wide), then a quarter-circle sector.
+  await piece.getByRole("button", { name: "Ellipse", exact: true }).dispatchEvent("click");
+  for (const [x, y] of [[5, -3], [8, -3], [5, -2]]) await at(x, y);
+  await expect(facts.locator(".glab-name")).toHaveText("Ellipse");
+  await expect(facts).toContainText("3π ≈ 9.42 cm²");
+  await expect(facts).toContainText("(x − 5)² / 9 + (y + 3)² / 1 = 1");
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/geolab-ellipse.png` });
+  await piece.getByRole("button", { name: "Sector", exact: true }).dispatchEvent("click");
+  for (const [x, y] of [[10, -3], [11, -3], [10, -2]]) await at(x, y);
+  await expect(facts.locator(".glab-name")).toHaveText("Sector · a quarter circle");
+  await expect(facts).toContainText("0.25π ≈ 0.785 cm²");
+  await expect(facts).toContainText("1/4 = 0.25");
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/geolab-round.png` });
 
   // Build a regular hexagon of side 4, then a triangle that can't be.
   await piece.locator(".glab-make select").selectOption({ label: "Regular polygon" });

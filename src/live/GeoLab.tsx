@@ -7,7 +7,7 @@
 // The maths is in src/math/geoLab.ts. "Copy as a picture" copies the plane without the handles, with the main numbers.
 import { useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import {
-  CANVAS, dist, enlarge, fitView, fromPx, gridStep, insertPoint, make, MAKE_PARAMS, MAKES, MAX_FIGS, MAX_PTS,
+  angleOf, CANVAS, dist, enlarge, offAxis, sweepBetween, fitView, fromPx, gridStep, insertPoint, make, MAKE_PARAMS, MAKES, MAX_FIGS, MAX_PTS,
   measureFig, moveFig, num, placeBeside, pointNames, removePoint, rounded, setSide, SHOWS, snapTo, toPx, UNITS,
   zoomView, type GeoFig, type GeoShow, type GeoTool, type GeoView, type LiveGeoLab, type MakeKind, type MakeProblem,
   type Mark, type Measured, type Pt, type SectionKey, type Val,
@@ -18,14 +18,14 @@ type Words = PieceProps<"geoLab">["w"]["geoLab"];
 type Drag =
   | { type: "vertex"; f: number; i: number; moved: boolean }
   | { type: "fig"; f: number; p0: Pt; orig: GeoFig; moved: boolean }
-  | { type: "radius"; f: number; moved: boolean }
+  | { type: "handle"; f: number; key: string; moved: boolean }
   | { type: "pan"; px0: Pt; view0: GeoView; moved: boolean };
 type Temp = { figs: GeoFig[]; view: GeoView; sel: number };
 
 const BLUE = "#1971c2";
 const HL = "#f08c00";
 const COL = { heights: "#7048e8", medians: "#2f9e44", bisectors: "#e8590c", circum: "#e03131", incircle: "#0c8599", diagonals: "#868e96", symmetry: "#ae3ec9" };
-const ORDER: SectionKey[] = ["size", "sides", "angles", "circle", "diagonals", "triangle", "regular", "symmetry", "points"];
+const ORDER: SectionKey[] = ["size", "sides", "angles", "circle", "ellipse", "sector", "diagonals", "triangle", "regular", "symmetry", "points"];
 const halo = { stroke: "#fff", strokeWidth: 3.5, paintOrder: "stroke" as const, strokeLinejoin: "round" as const };
 
 const readNum = (s: string) => {
@@ -44,7 +44,11 @@ export function shapeName(m: Measured, w: Words): string {
 function fmtVal(v: Val, w: Words, unit: string): string {
   const u = (p: string) => (unit ? ` ${unit}${p}` : "");
   if (v.dim === "pt") return fill(w.pointFmt, { x: num(v.p![0]), y: num(v.p![1]) });
-  if (v.dim === 0) return Number.isFinite(v.n) ? String(v.n) : w.infinite;
+  if (v.dim === 0) {
+    if (!Number.isFinite(v.n)) return w.infinite;
+    if (v.exact) return `${v.exact} ${rounded(v.n) ? "≈" : "="} ${num(v.n)}`;
+    return (rounded(v.n) ? "≈ " : "") + num(v.n);
+  }
   const approx = rounded(v.n) ? "≈ " : "";
   if (v.dim === "deg") return `${approx}${num(v.n)}°`;
   const tail = `${num(v.n)}${u(v.dim === 2 ? "²" : "")}`;
@@ -148,6 +152,10 @@ function Highlight({ view, marks }: { view: GeoView; marks: Mark[] }) {
           const [x, y] = toPx(view, mk.pt);
           return <circle key={i} cx={x} cy={y} r={7} fill={HL} opacity={0.85} />;
         }
+        if ("path" in mk) {
+          const d = mk.path.map((p, j) => `${j ? "L" : "M"}${toPx(view, p).map((v) => v.toFixed(2)).join(" ")}`).join(" ");
+          return <path key={i} d={d} fill="none" stroke={HL} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" opacity={0.85} />;
+        }
         if ("ring" in mk) {
           const [x, y] = toPx(view, mk.ring[0]);
           return <circle key={i} cx={x} cy={y} r={mk.ring[1] * view.s} fill="none" stroke={HL} strokeWidth={3.5} opacity={0.85} />;
@@ -157,6 +165,18 @@ function Highlight({ view, marks }: { view: GeoView; marks: Mark[] }) {
       })}
     </g>
   );
+}
+
+const dirAt = (c: Pt, deg: number, l: number): Pt => [c[0] + l * Math.cos((deg * Math.PI) / 180), c[1] + l * Math.sin((deg * Math.PI) / 180)];
+
+/** A round shape drawn on the plane (a circle, an ellipse, a sector). */
+function roundShape(view: GeoView, g: Exclude<GeoFig, { kind: "poly" }>, props: Record<string, unknown>) {
+  const [x, y] = toPx(view, g.c);
+  if (g.kind === "circle" || (g.kind === "sector" && g.sweep >= 360)) return <circle cx={x} cy={y} r={g.r * view.s} {...props} />;
+  if (g.kind === "ellipse") return <ellipse cx={x} cy={y} rx={g.a * view.s} ry={g.b * view.s} transform={`rotate(${-g.rot} ${x} ${y})`} {...props} />;
+  const [p, q] = [toPx(view, dirAt(g.c, g.from, g.r)), toPx(view, dirAt(g.c, g.from + g.sweep, g.r))];
+  const rs = g.r * view.s;
+  return <path d={`M${x} ${y} L${p[0]} ${p[1]} A${rs} ${rs} 0 ${g.sweep > 180 ? 1 : 0} 0 ${q[0]} ${q[1]} Z`} strokeLinejoin="round" {...props} />;
 }
 
 function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move", draft = [], cursor, hl, caption = [], svgRef, on }: PlaneProps) {
@@ -169,6 +189,12 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
 
   const overlays: ReactNode[] = [];
   const labels: ReactNode[] = [];
+  if (f && m && has("symmetry"))
+    m.overlay.axes.forEach(({ c, d }, i) => {
+      const l = Math.hypot(d[0], d[1]) || 1;
+      const [a, b] = [px([c[0] - (d[0] / l) * big, c[1] - (d[1] / l) * big]), px([c[0] + (d[0] / l) * big, c[1] + (d[1] / l) * big])];
+      overlays.push(<line key={`ax${i}`} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={COL.symmetry} strokeWidth={1.3} strokeDasharray="10 4 2 4" />);
+    });
   if (f && m && f.kind === "poly") {
     const pts = f.pts;
     const n = pts.length;
@@ -183,12 +209,6 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
         </g>,
       );
     };
-    if (has("symmetry"))
-      o.axes.forEach(({ c, d }, i) => {
-        const l = Math.hypot(d[0], d[1]) || 1;
-        const [a, b] = [px([c[0] - (d[0] / l) * big, c[1] - (d[1] / l) * big]), px([c[0] + (d[0] / l) * big, c[1] + (d[1] / l) * big])];
-        overlays.push(<line key={`ax${i}`} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={COL.symmetry} strokeWidth={1.3} strokeDasharray="10 4 2 4" />);
-      });
     if (has("circum") && o.circum) ring(o.circum.c, o.circum.r, COL.circum, "O", "circ");
     if (has("incircle") && o.incircle) ring(o.incircle.c, o.incircle.r, COL.incircle, "I", "inc");
     if (has("diagonals"))
@@ -269,10 +289,50 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
       );
     });
   }
-  if (f && m && f.kind === "circle") {
+  if (f && m && f.kind !== "poly") {
     const [x, y] = px(f.c);
-    const rim = px([f.c[0] + f.r, f.c[1]]);
-    if (has("lengths"))
+    const lenLabel = (a: Pt, b: Pt, text: string, key: string) => {
+      const [p, q] = [px(a), px(b)];
+      const [dx, dy] = [q[0] - p[0], q[1] - p[1]];
+      const l = Math.hypot(dx, dy) || 1;
+      labels.push(
+        <g key={key}>
+          <line x1={p[0]} y1={p[1]} x2={q[0]} y2={q[1]} stroke={BLUE} strokeWidth={1.5} />
+          <text x={(p[0] + q[0]) / 2 + (dy / l) * 12} y={(p[1] + q[1]) / 2 - (dx / l) * 12 + 4} fontSize={12} textAnchor="middle" fill={BLUE} fontWeight={600} {...halo}>{text}</text>
+        </g>,
+      );
+    };
+    if (f.kind === "ellipse") {
+      const major = f.a >= f.b ? f.rot : f.rot + 90;
+      const [A, B] = [Math.max(f.a, f.b), Math.min(f.a, f.b)];
+      if (has("lengths")) {
+        lenLabel(f.c, dirAt(f.c, major, A), `a = ${num(A)}${uText}`, "ea");
+        lenLabel(f.c, dirAt(f.c, major + 90, B), `b = ${num(B)}${uText}`, "eb");
+      }
+      if ((m.overlay.foci ?? []).length === 2)
+        m.overlay.foci!.forEach((F, i) => {
+          const [fx, fy] = px(F);
+          labels.push(<g key={`F${i}`}><circle cx={fx} cy={fy} r={3.5} fill={COL.symmetry} /><text x={fx} y={fy - 8} fontSize={12} textAnchor="middle" fill={COL.symmetry} fontWeight={700} {...halo}>{i ? "F₂" : "F₁"}</text></g>);
+        });
+    }
+    if (f.kind === "sector" && f.sweep < 360) {
+      const [P, Q] = [dirAt(f.c, f.from, f.r), dirAt(f.c, f.from + f.sweep, f.r)];
+      if (has("angles")) labels.push(<g key="th">{angleMark(view, Q, f.c, P, f.sweep, 1, "#495057", `${num(f.sweep)}°`)}</g>);
+      if (has("lengths")) {
+        const arc = m.sections.find((s) => s.key === "sector")?.facts.find((x) => x.key === "arcLength")?.v;
+        const [lx, ly] = px(dirAt(f.c, f.from + f.sweep / 2, f.r + 18 / view.s));
+        labels.push(<text key="arc" x={lx} y={ly + 4} fontSize={12} textAnchor="middle" fill={BLUE} fontWeight={600} {...halo}>l = {arc?.exact ?? num(arc?.n ?? 0)}{uText}</text>);
+        const [mx, my] = px(dirAt(f.c, f.from, f.r / 2));
+        const [nx, ny] = [Math.sin((f.from * Math.PI) / 180), -Math.cos((f.from * Math.PI) / 180)];
+        labels.push(<text key="rr" x={mx + nx * 12} y={my - ny * 12 + 4} fontSize={12} textAnchor="middle" fill={BLUE} fontWeight={600} {...halo}>r = {num(f.r)}{uText}</text>);
+      }
+      ([[P, "P", f.from], [Q, "Q", f.from + f.sweep]] as [Pt, string, number][]).forEach(([X, nm, deg]) => {
+        const [lx, ly] = px(dirAt(f.c, deg, f.r + 14 / view.s));
+        labels.push(<text key={nm} x={lx} y={ly + 4.5} fontSize={13} textAnchor="middle" fill={INK} fontWeight={700} {...halo}>{nm}{has("coords") && <tspan fontWeight={400} fontSize={11} fill="#495057">{` (${num(X[0])}; ${num(X[1])})`}</tspan>}</text>);
+      });
+    }
+    const rim = f.kind === "circle" ? px([f.c[0] + f.r, f.c[1]]) : [x, y];
+    if (f.kind === "circle" && has("lengths"))
       labels.push(
         <g key="r">
           <line x1={x} y1={y} x2={rim[0]} y2={rim[1]} stroke={BLUE} strokeWidth={1.5} />
@@ -309,9 +369,15 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
         });
     } else {
       const [x, y] = px(f.c);
-      const rim = px([f.c[0] + f.r, f.c[1]]);
       handles.push(<circle key="c" data-h={`c-${sel}`} cx={x} cy={y} r={6} fill="#fff" stroke={BLUE} strokeWidth={2} style={{ cursor: "grab" }} />);
-      handles.push(<circle key="r" data-h={`r-${sel}`} cx={rim[0]} cy={rim[1]} r={6.5} fill={BLUE} stroke="#fff" strokeWidth={2} style={{ cursor: "ew-resize" }} />);
+      const grips: [string, Pt][] =
+        f.kind === "circle" ? [["r", [f.c[0] + f.r, f.c[1]]]]
+        : f.kind === "ellipse" ? [["a", dirAt(f.c, f.rot, f.a)], ["b", dirAt(f.c, f.rot + 90, f.b)]]
+        : [["p", dirAt(f.c, f.from, f.r)], ["q", dirAt(f.c, f.from + f.sweep, f.r)]];
+      grips.forEach(([key, at]) => {
+        const [gx, gy] = px(at);
+        handles.push(<circle key={key} data-h={`k-${sel}-${key}`} cx={gx} cy={gy} r={6.5} fill={BLUE} stroke="#fff" strokeWidth={2} style={{ cursor: "pointer" }} />);
+      });
     }
   }
 
@@ -328,16 +394,13 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
         {figs.map((g, i) => {
           const on = i === sel;
           const style = { fill: on ? "#d0ebff" : "#f1f3f5", fillOpacity: on ? 0.55 : 0.7, stroke: on ? BLUE : "#495057", strokeWidth: on ? 2.2 : 1.6, cursor: tool === "move" && !clean ? "move" : undefined };
-          if (g.kind === "circle") {
-            const [x, y] = px(g.c);
-            return <circle key={i} data-h={`f-${i}`} cx={x} cy={y} r={g.r * view.s} {...style} />;
-          }
+          if (g.kind !== "poly") return <g key={i}>{roundShape(view, g, { "data-h": `f-${i}`, ...style })}</g>;
           return <path key={i} data-h={`f-${i}`} d={path(view, g.pts)} {...style} strokeLinejoin="round" fillRule="evenodd" />;
         })}
         {figs.map((g, i) =>
           i === sel ? null : (
             <g key={`n${i}`} pointerEvents="none">
-              {(g.kind === "circle" ? [g.c] : g.pts).map((p, j) => {
+              {(g.kind === "poly" ? g.pts : [g.c]).map((p, j) => {
                 const [x, y] = px(p);
                 return <text key={j} x={x + 5} y={y - 5} fontSize={11} fill="#868e96" {...halo}>{names[i][j]}</text>;
               })}
@@ -357,6 +420,17 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
               return <circle key={i} cx={x} cy={y} r={i === 0 && tool === "poly" && draft.length >= 3 ? 8 : 4.5} fill={i === 0 ? "#fff" : BLUE} stroke={BLUE} strokeWidth={2} />;
             })}
             {tool === "circle" && cursor && <text x={px(cursor)[0] + 8} y={px(cursor)[1] - 8} fontSize={12} fill={BLUE} {...halo}>r = {num(dist(draft[0], cursor))}{uText}</text>}
+            {(tool === "ellipse" || tool === "sector") && cursor && draft.length === 1 && (
+              <>
+                <line x1={px(draft[0])[0]} y1={px(draft[0])[1]} x2={px(cursor)[0]} y2={px(cursor)[1]} stroke={BLUE} strokeWidth={2} strokeDasharray="5 3" />
+                <text x={px(cursor)[0] + 8} y={px(cursor)[1] - 8} fontSize={12} fill={BLUE} {...halo}>{tool === "ellipse" ? "a" : "r"} = {num(dist(draft[0], cursor))}{uText}</text>
+              </>
+            )}
+            {tool === "ellipse" && cursor && draft.length === 2 &&
+              roundShape(view, { kind: "ellipse", c: draft[0], a: dist(draft[0], draft[1]), b: Math.max(offAxis(draft[0], angleOf(draft[0], draft[1]), cursor), 1e-9), rot: angleOf(draft[0], draft[1]) }, { fill: "#d0ebff", fillOpacity: 0.4, stroke: BLUE, strokeWidth: 2, strokeDasharray: "5 3" })}
+            {tool === "sector" && cursor && draft.length === 2 &&
+              roundShape(view, { kind: "sector", c: draft[0], r: dist(draft[0], draft[1]), from: angleOf(draft[0], draft[1]), sweep: sweepBetween(angleOf(draft[0], draft[1]), angleOf(draft[0], cursor)) }, { fill: "#d0ebff", fillOpacity: 0.4, stroke: BLUE, strokeWidth: 2, strokeDasharray: "5 3" })}
+            {tool === "sector" && cursor && draft.length === 2 && <text x={px(cursor)[0] + 8} y={px(cursor)[1] - 8} fontSize={12} fill={BLUE} {...halo}>θ = {num(sweepBetween(angleOf(draft[0], draft[1]), angleOf(draft[0], cursor)))}°</text>}
             {tool === "poly" && cursor && draft.length > 0 && <text x={px(cursor)[0] + 8} y={px(cursor)[1] - 8} fontSize={12} fill={BLUE} {...halo}>{num(dist(draft[draft.length - 1], cursor))}{uText}</text>}
           </g>
         )}
@@ -448,6 +522,7 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
   const unit = state.unit ? w.units[state.unit] : "";
   const step = gridStep(view);
   const snapP = (p: Pt) => (state.snap ? snapTo(p, step) : p);
+  const snapLen = (l: number) => (state.snap ? Math.max(step, Math.round(l / step) * step) : Math.max(l, 1e-9));
   const put = (patch: Partial<LiveGeoLab>) => set({ ...state, ...patch });
 
   const addFig = (fig: GeoFig, fit: boolean) => {
@@ -475,6 +550,19 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
       if (next.length > 1 && dist(next[next.length - 1], next[next.length - 2]) < 1e-12) return;
       return next.length >= MAX_PTS ? finish(next) : setDraft(next);
     }
+    if (state.tool === "ellipse" || state.tool === "sector") {
+      const q = snapP(p);
+      if (!draft.length) return setDraft([q]);
+      if (draft.length === 1) return dist(draft[0], q) > 0 ? setDraft([draft[0], q]) : undefined;
+      const [c, A] = draft;
+      const along = angleOf(c, A);
+      setDraft([]);
+      if (state.tool === "ellipse") {
+        const b = snapLen(offAxis(c, along, q));
+        return addFig({ kind: "ellipse", c, a: dist(c, A), b, rot: along }, false);
+      }
+      return addFig({ kind: "sector", c, r: dist(c, A), from: along, sweep: sweepBetween(along, angleOf(c, q)) }, false);
+    }
     if (state.tool === "circle") {
       if (!draft.length) return setDraft([snapP(p)]);
       const r = dist(draft[0], snapP(p));
@@ -496,7 +584,7 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
       const f = +h[1];
       base.sel = f;
       drag.current = { type: "fig", f, p0: p, orig: state.figs[f], moved: false };
-    } else if (h?.[0] === "r") drag.current = { type: "radius", f: +h[1], moved: false };
+    } else if (h?.[0] === "k") drag.current = { type: "handle", f: +h[1], key: h[2], moved: false };
     else drag.current = { type: "pan", px0: svgPoint(svg, e) as Pt, view0: state.view, moved: false };
     setTemp(base);
   };
@@ -527,11 +615,13 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
       d.moved = true;
       return replace(moveFig(d.orig, state.snap ? snapTo(raw, step) : raw));
     }
-    if (d.type === "radius" && fig.kind === "circle") {
-      const r = dist(fig.c, p);
-      const rr = state.snap ? Math.max(step, Math.round(r / step) * step) : Math.max(r, 1e-9);
+    if (d.type === "handle" && fig.kind !== "poly") {
       d.moved = true;
-      return replace({ ...fig, r: rr });
+      const ang = state.snap ? (Math.round(angleOf(fig.c, p) / 5) * 5) % 360 : angleOf(fig.c, p);
+      if (fig.kind === "circle") return replace({ ...fig, r: snapLen(dist(fig.c, p)) });
+      if (fig.kind === "ellipse") return replace(d.key === "a" ? { ...fig, a: snapLen(dist(fig.c, p)), rot: ang } : { ...fig, b: snapLen(offAxis(fig.c, fig.rot, p)) });
+      if (d.key === "p") return replace({ ...fig, r: snapLen(dist(fig.c, p)), from: ang, sweep: sweepBetween(ang, fig.from + fig.sweep) });
+      return replace({ ...fig, r: snapLen(dist(fig.c, p)), sweep: sweepBetween(fig.from, ang) });
     }
   };
   const up = () => {
@@ -576,12 +666,15 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
           .join("   ·   "),
       ]
     : [];
-  const hint = state.tool === "poly" ? (draft.length ? fill(w.hints.polyGoing, { n: draft.length }) : w.hints.poly) : state.tool === "circle" ? w.hints.circle : w.hints.move;
+  const hint =
+    state.tool === "poly" ? (draft.length ? fill(w.hints.polyGoing, { n: draft.length }) : w.hints.poly)
+    : state.tool === "move" ? w.hints.move
+    : w.hints[state.tool];
 
   return (
     <>
       <div className="live-bar">
-        {(["move", "poly", "circle"] as GeoTool[]).map((t) => (
+        {(["move", "poly", "circle", "ellipse", "sector"] as GeoTool[]).map((t) => (
           <Toggle key={t} on={state.tool === t} onClick={() => setTool(t)}>{w.tools[t]}</Toggle>
         ))}
         {state.tool === "poly" && draft.length >= 3 && <button className="live-btn primary" onClick={() => finish()}>{w.finish}</button>}

@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import {
   area2, bounds, enlarge, fitView, fromPx, gridStep, insertPoint, make, MAKE_PARAMS, MAKES, measureCircle, measureFig,
   measurePoly, moveFig, niceStep, num, placeBeside, pointNames, removePoint, rounded, setSide, snapTo, START_VIEW,
-  surd, toPx, zoomView, dist, type Fact, type GeoFig, type Measured, type Pt,
+  surd, toPx, zoomView, dist, angleOf, arcPoints, offAxis, sweepBetween, type Fact, type GeoFig, type Measured, type Pt,
 } from "../src/math/geoLab.ts";
 
 const ABC = ["A", "B", "C", "D", "E", "F", "G", "H"];
@@ -278,4 +278,86 @@ test("changing a shape: enlarge, set a side, add and take away corners", () => {
   assert.deepEqual(removePoint(tri, 0), tri, "a triangle keeps its three corners");
   const full = Array.from({ length: 20 }, (_, i) => [i, i * i] as Pt);
   assert.equal(insertPoint(full, 0).length, 20);
+});
+
+test("ellipses: axes, foci, eccentricity, area, perimeter and equation", () => {
+  const m = measureFig({ kind: "ellipse", c: [2, -1], a: 5, b: 3, rot: 0 }, ["O"]);
+  assert.equal(m.base, "ellipse");
+  assert.equal(fact(m, "semiMajor")!.v!.n, 5);
+  assert.equal(fact(m, "minorAxis")!.v!.n, 6);
+  assert.equal(fact(m, "focalDist")!.v!.n, 4);
+  assert.equal(fact(m, "focalDist")!.v!.exact, "4");
+  assert.equal(fact(m, "eccentricity")!.v!.n, 0.8);
+  assert.equal(fact(m, "area")!.v!.exact, "15π");
+  near(fact(m, "perimeter")!.v!.n, 25.526986393758545, 1e-4); // the true perimeter, by the series
+  assert.equal(fact(m, "focalSum")!.v!.n, 10);
+  assert.equal(fact(m, "equation")!.how, "(x − 2)² / 25 + (y + 1)² / 9 = 1");
+  assert.deepEqual(fact(m, "focus", "F₁")!.v!.p, [6, -1]);
+  assert.deepEqual(m.overlay.foci, [[6, -1], [-2, -1]]);
+  assert.equal(fact(m, "symLines")!.v!.n, 2);
+  // Standing up: the long axis is b, so a and b swap and the foci lie on the vertical.
+  const up = measureFig({ kind: "ellipse", c: [0, 0], a: 2, b: 4, rot: 0 }, ["O"]);
+  assert.equal(fact(up, "semiMajor")!.v!.n, 4);
+  assert.equal(fact(up, "equation")!.how, "x² / 4 + y² / 16 = 1");
+  near(up.overlay.foci![0][1], Math.sqrt(12));
+  assert.equal(fact(measureFig({ kind: "ellipse", c: [0, 0], a: 5, b: 3, rot: 90 }, ["O"]), "equation")!.how, "x² / 9 + y² / 25 = 1");
+  assert.ok(fact(measureFig({ kind: "ellipse", c: [0, 0], a: 5, b: 3, rot: 30 }, ["O"]), "equation")!.how!.includes("x′"));
+  const round = measureFig({ kind: "ellipse", c: [0, 0], a: 2, b: 2, rot: 0 }, ["O"]);
+  assert.deepEqual(round.tags, ["isCircle"]);
+  assert.equal(fact(round, "eccentricity")!.v!.n, 0);
+  assert.equal(fact(round, "symLines")!.v!.n, Infinity);
+  assert.equal(fact(round, "focus"), undefined);
+  assert.equal(fact(measureFig({ kind: "ellipse", c: [0, 0], a: 1.234, b: 1, rot: 0 }, ["O"]), "area")!.v!.exact, undefined);
+  assert.deepEqual(make("ellipse", [5, 3]), { fig: { kind: "ellipse", c: [0, 0], a: 5, b: 3, rot: 0 } });
+});
+
+test("sectors: arc, area, perimeter, chord and segment", () => {
+  const m = measureFig({ kind: "sector", c: [0, 0], r: 3, from: 0, sweep: 60 }, ["O"]);
+  assert.equal(m.base, "sector");
+  assert.deepEqual(m.tags, ["minorSector"]);
+  assert.equal(fact(m, "arcLength")!.v!.exact, "π");
+  assert.equal(fact(m, "area")!.v!.exact, "1.5π");
+  assert.equal(fact(m, "perimeter")!.v!.exact, "6 + π");
+  near(fact(m, "chord")!.v!.n, 3); // 60°: the chord is the radius
+  near(fact(m, "segmentArea")!.v!.n, 1.5 * Math.PI - (9 * Math.sqrt(3)) / 4);
+  assert.equal(fact(m, "circleShare")!.v!.exact, "1/6");
+  assert.equal(fact(m, "symLines")!.v!.n, 1);
+  assert.deepEqual(fact(m, "arcEnd", "P")!.v!.p, [3, 0]);
+  assert.deepEqual(measureFig({ kind: "sector", c: [0, 0], r: 2, from: 10, sweep: 180 }, ["O"]).tags, ["semicircle"]);
+  assert.deepEqual(measureFig({ kind: "sector", c: [0, 0], r: 2, from: 0, sweep: 90 }, ["O"]).tags, ["quadrant"]);
+  assert.deepEqual(measureFig({ kind: "sector", c: [0, 0], r: 2, from: 0, sweep: 270 }, ["O"]).tags, ["majorSector"]);
+  const full = measureFig({ kind: "sector", c: [0, 0], r: 2, from: 0, sweep: 360 }, ["O"]);
+  assert.deepEqual(full.tags, []);
+  assert.equal(fact(full, "chord"), undefined);
+  assert.equal(fact(full, "perimeter")!.v!.exact, "4π");
+  assert.equal(fact(full, "symLines")!.v!.n, Infinity);
+  const odd = measureFig({ kind: "sector", c: [0, 0], r: 2.3, from: 0, sweep: 47.5 }, ["O"]);
+  assert.equal(fact(odd, "arcLength")!.v!.exact, undefined);
+  assert.equal(fact(odd, "circleShare")!.v!.exact, undefined);
+  assert.deepEqual(make("sector", [4, 400]), { problem: "sweep" });
+  assert.deepEqual(make("sector", [4, 60]), { fig: { kind: "sector", c: [0, 0], r: 4, from: 0, sweep: 60 } });
+});
+
+test("ellipses and sectors on the plane: boxes, moving, enlarging, names, angles", () => {
+  assert.deepEqual(bounds([{ kind: "ellipse", c: [0, 0], a: 5, b: 3, rot: 0 }]), [-5, -3, 5, 3]);
+  const turned = bounds([{ kind: "ellipse", c: [0, 0], a: 5, b: 3, rot: 90 }])!;
+  near(turned[2], 3);
+  near(turned[3], 5);
+  // A quarter sector from 0° to 90°: the box is the square from the centre to r.
+  const q = bounds([{ kind: "sector", c: [1, 1], r: 2, from: 0, sweep: 90 }])!;
+  assert.deepEqual(q.map((v) => Math.round(v * 1e9) / 1e9), [1, 1, 3, 3]);
+  // From 300° through 0° to 60°: the arc passes the rightmost point.
+  near(bounds([{ kind: "sector", c: [0, 0], r: 2, from: 300, sweep: 120 }])![2], 2);
+  assert.deepEqual(moveFig({ kind: "ellipse", c: [0, 0], a: 2, b: 1, rot: 0 }, [1, 1]), { kind: "ellipse", c: [1, 1], a: 2, b: 1, rot: 0 });
+  assert.deepEqual(enlarge({ kind: "ellipse", c: [0, 0], a: 2, b: 1, rot: 0 }, 3), { kind: "ellipse", c: [0, 0], a: 6, b: 3, rot: 0 });
+  assert.deepEqual(enlarge({ kind: "sector", c: [0, 0], r: 2, from: 0, sweep: 30 }, 2), { kind: "sector", c: [0, 0], r: 4, from: 0, sweep: 30 });
+  assert.deepEqual(pointNames([{ kind: "ellipse", c: [0, 0], a: 2, b: 1, rot: 0 }, { kind: "sector", c: [0, 0], r: 1, from: 0, sweep: 90 }]), [["O"], ["O₂"]]);
+  near(angleOf([0, 0], [0, -1]), 270);
+  assert.equal(sweepBetween(300, 60), 120);
+  assert.equal(sweepBetween(45, 45), 360);
+  near(offAxis([0, 0], 0, [3, -2]), 2);
+  const pts = arcPoints([0, 0], 2, 1, 90, 0, 90);
+  near(pts[0][0], 0);
+  near(pts[0][1], 2);
+  near(pts[pts.length - 1][0], -1);
 });

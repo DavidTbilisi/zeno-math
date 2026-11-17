@@ -8,13 +8,21 @@
 import { symmetryOf } from "./geometry";
 
 export type Pt = [number, number];
-export type GeoFig = { kind: "poly"; pts: Pt[] } | { kind: "circle"; c: Pt; r: number };
+export type GeoFig =
+  | { kind: "poly"; pts: Pt[] }
+  | { kind: "circle"; c: Pt; r: number }
+  /** Semi-axis a along the direction rot (degrees anticlockwise from +x), b across it. */
+  | { kind: "ellipse"; c: Pt; a: number; b: number; rot: number }
+  /** The arc from the angle `from` anticlockwise through `sweep` degrees (0 < sweep ≤ 360). */
+  | { kind: "sector"; c: Pt; r: number; from: number; sweep: number };
+/** Any shape but a polygon: what has a centre. */
+export type RoundFig = Exclude<GeoFig, { kind: "poly" }>;
 
 export const SHOWS = ["lengths", "angles", "diagonals", "heights", "medians", "bisectors", "circum", "incircle", "symmetry", "coords", "grid"] as const;
 export type GeoShow = (typeof SHOWS)[number];
 export const UNITS = ["", "mm", "cm", "m", "km"] as const;
 export type GeoUnit = (typeof UNITS)[number];
-export type GeoTool = "move" | "poly" | "circle";
+export type GeoTool = "move" | "poly" | "circle" | "ellipse" | "sector";
 /** The plane's view: the point at the centre of the picture and how many pixels one unit is. */
 export type GeoView = { cx: number; cy: number; s: number };
 
@@ -116,7 +124,7 @@ export function pointNames(figs: GeoFig[]): string[][] {
   let circles = 0;
   const sub = "₀₁₂₃₄₅₆₇₈₉";
   return figs.map((f) => {
-    if (f.kind === "circle") {
+    if (f.kind !== "poly") {
       circles++;
       return [circles === 1 ? "O" : `O${String(circles).split("").map((d) => sub[+d]).join("")}`];
     }
@@ -130,9 +138,9 @@ export function pointNames(figs: GeoFig[]): string[][] {
 
 // ---------- building shapes from their measurements ----------
 
-export const MAKES = ["sss", "sas", "asa", "right", "equilateral", "isosceles", "square", "rectangle", "parallelogram", "rhombus", "trapezoid", "kite", "regular", "circle"] as const;
+export const MAKES = ["sss", "sas", "asa", "right", "equilateral", "isosceles", "square", "rectangle", "parallelogram", "rhombus", "trapezoid", "kite", "regular", "circle", "ellipse", "sector"] as const;
 export type MakeKind = (typeof MAKES)[number];
-export type ParamKey = "AB" | "BC" | "CA" | "angleA" | "angleB" | "leg1" | "leg2" | "side" | "legs" | "base" | "w" | "h" | "angle" | "bottom" | "top" | "height" | "d1" | "d2" | "topPart" | "n" | "r";
+export type ParamKey = "AB" | "BC" | "CA" | "angleA" | "angleB" | "leg1" | "leg2" | "side" | "legs" | "base" | "w" | "h" | "angle" | "bottom" | "top" | "height" | "d1" | "d2" | "topPart" | "n" | "r" | "a" | "b" | "sweep";
 export const MAKE_PARAMS: Record<MakeKind, { keys: ParamKey[]; start: number[] }> = {
   sss: { keys: ["AB", "BC", "CA"], start: [7, 5, 6] },
   sas: { keys: ["AB", "CA", "angleA"], start: [6, 5, 50] },
@@ -148,8 +156,10 @@ export const MAKE_PARAMS: Record<MakeKind, { keys: ParamKey[]; start: number[] }
   kite: { keys: ["d1", "d2", "topPart"], start: [8, 6, 2] },
   regular: { keys: ["n", "side"], start: [6, 4] },
   circle: { keys: ["r"], start: [3] },
+  ellipse: { keys: ["a", "b"], start: [5, 3] },
+  sector: { keys: ["r", "sweep"], start: [4, 60] },
 };
-export type MakeProblem = "positive" | "triangle" | "angles" | "n" | "kite" | "angle";
+export type MakeProblem = "positive" | "triangle" | "angles" | "n" | "kite" | "angle" | "sweep";
 
 const at = (deg: number, l: number, from: Pt = [0, 0]): Pt => add(from, [l * Math.cos(deg * RAD), l * Math.sin(deg * RAD)]);
 /** Cleans away the float dust (1e-16) the sines leave, so a built square has whole corners. */
@@ -213,6 +223,8 @@ export function make(kind: MakeKind, v: number[]): { fig: GeoFig } | { problem: 
       return { fig: poly(pts) };
     }
     case "circle": return { fig: { kind: "circle", c: [0, 0], r: v[0] } };
+    case "ellipse": return { fig: { kind: "ellipse", c: [0, 0], a: v[0], b: v[1], rot: 0 } };
+    case "sector": return v[1] > 360 ? { problem: "sweep" } : { fig: { kind: "sector", c: [0, 0], r: v[0], from: 0, sweep: v[1] } };
   }
 }
 
@@ -224,7 +236,19 @@ export function bounds(figs: GeoFig[]): [number, number, number, number] | null 
   const ys: number[] = [];
   for (const f of figs) {
     if (f.kind === "circle") xs.push(f.c[0] - f.r, f.c[0] + f.r), ys.push(f.c[1] - f.r, f.c[1] + f.r);
-    else for (const [x, y] of f.pts) xs.push(x), ys.push(y);
+    else if (f.kind === "ellipse") {
+      const [co, si] = [Math.cos(f.rot * RAD), Math.sin(f.rot * RAD)];
+      const [wx, wy] = [Math.hypot(f.a * co, f.b * si), Math.hypot(f.a * si, f.b * co)];
+      xs.push(f.c[0] - wx, f.c[0] + wx), ys.push(f.c[1] - wy, f.c[1] + wy);
+    } else if (f.kind === "sector") {
+      // The centre, the arc's two ends, and the arc's furthest points left, right, up and down when it passes them.
+      const ends = [f.from, f.from + f.sweep, ...[0, 90, 180, 270, 360, 450, 540, 630].filter((d) => d > f.from && d < f.from + f.sweep)];
+      for (const d of ends) {
+        const [x, y] = at(d, f.r, f.c);
+        xs.push(x), ys.push(y);
+      }
+      xs.push(f.c[0]), ys.push(f.c[1]);
+    }    else for (const [x, y] of f.pts) xs.push(x), ys.push(y);
   }
   return xs.length ? [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] : null;
 }
@@ -255,7 +279,7 @@ export const fromPx = (v: GeoView, [px, py]: Pt): Pt => [v.cx + (px - CANVAS.w /
 export const snapTo = (p: Pt, step: number): Pt => p.map((c) => Math.round(c / step) * step + 0) as Pt;
 
 export function moveFig(f: GeoFig, d: Pt): GeoFig {
-  return f.kind === "circle" ? { ...f, c: add(f.c, d) } : { ...f, pts: f.pts.map((p) => add(p, d)) };
+  return f.kind === "poly" ? { ...f, pts: f.pts.map((p) => add(p, d)) } : { ...f, c: add(f.c, d) };
 }
 
 /** A new shape put to the right of the others (whole steps away, so its corners stay where they were on the grid). */
@@ -273,7 +297,8 @@ export function placeBeside(figs: GeoFig[], f: GeoFig): GeoFig {
 /** The shape enlarged by k about its centre. */
 export function enlarge(f: GeoFig, k: number): GeoFig {
   if (!(k > 0)) return f;
-  if (f.kind === "circle") return { ...f, r: f.r * k };
+  if (f.kind === "circle" || f.kind === "sector") return { ...f, r: f.r * k };
+  if (f.kind === "ellipse") return { ...f, a: f.a * k, b: f.b * k };
   const c = mul(f.pts.reduce((s, p) => add(s, p), [0, 0] as Pt), 1 / f.pts.length);
   return { ...f, pts: f.pts.map((p) => add(c, mul(sub(p, c), k))) };
 }
@@ -303,13 +328,14 @@ export const GEO_START: LiveGeoLab = {
 
 export type BaseName =
   | "triangle" | "quadrilateral" | "square" | "rectangle" | "rhombus" | "parallelogram" | "trapezoid" | "kite"
-  | "pentagon" | "hexagon" | "heptagon" | "octagon" | "nonagon" | "decagon" | "polygon" | "circle";
-export type Tag = "regular" | "equilateral" | "isosceles" | "scalene" | "right" | "acute" | "obtuse" | "concave" | "crossed" | "flat";
+  | "pentagon" | "hexagon" | "heptagon" | "octagon" | "nonagon" | "decagon" | "polygon" | "circle" | "ellipse" | "sector";
+export type Tag = "regular" | "equilateral" | "isosceles" | "scalene" | "right" | "acute" | "obtuse" | "concave" | "crossed" | "flat"
+  | "isCircle" | "semicircle" | "quadrant" | "minorSector" | "majorSector";
 export type Dim = 0 | 1 | 2 | "deg" | "pt";
 /** A value: a number of a kind (a length, an area, an angle, a count) or a point; exact is its exact form (2√5, 9π). */
 export type Val = { n: number; dim: Dim; exact?: string; p?: Pt };
 /** What a fact shows on the picture while the pointer is on it. */
-export type Mark = { seg: [Pt, Pt] } | { pt: Pt } | { ring: [Pt, number] } | { corner: [Pt, Pt, Pt] };
+export type Mark = { seg: [Pt, Pt] } | { pt: Pt } | { ring: [Pt, number] } | { corner: [Pt, Pt, Pt] } | { path: Pt[] };
 export type FactKey =
   | "point" | "centre" | "side" | "angle" | "angleSum" | "exteriorSum" | "perimeter" | "area" | "heron"
   | "diagCount" | "diag" | "diagAngle" | "diagBisect" | "diagPerp" | "diagEqual" | "parallel" | "cyclic"
@@ -317,9 +343,11 @@ export type FactKey =
   | "orthocentre" | "euler" | "sines" | "cosines" | "pythagoras"
   | "interior" | "exterior" | "central" | "apothem"
   | "symLines" | "symOrder"
-  | "radius" | "diameter" | "circumference" | "circleArea" | "equation";
+  | "radius" | "diameter" | "circumference" | "circleArea" | "equation"
+  | "focus" | "semiMajor" | "semiMinor" | "majorAxis" | "minorAxis" | "focalDist" | "eccentricity" | "focalSum"
+  | "arcEnd" | "centralAngle" | "arcLength" | "chord" | "segmentArea" | "circleShare";
 export type Fact = { key: FactKey; name?: string; v?: Val; how?: string; mark?: Mark[] };
-export type SectionKey = "points" | "sides" | "angles" | "size" | "diagonals" | "triangle" | "regular" | "symmetry" | "circle";
+export type SectionKey = "points" | "sides" | "angles" | "size" | "diagonals" | "triangle" | "regular" | "symmetry" | "circle" | "ellipse" | "sector";
 export type Section = { key: SectionKey; facts: Fact[] };
 
 /** Lines and points that the "show" switches draw. */
@@ -332,6 +360,8 @@ export type Overlay = {
   incircle?: { c: Pt; r: number };
   centres: { name: "G" | "O" | "I" | "H"; p: Pt }[];
   axes: { c: Pt; d: Pt }[];
+  /** An ellipse's foci. */
+  foci?: Pt[];
 };
 
 export type Measured = { base: BaseName; n: number; tags: Tag[]; sections: Section[]; overlay: Overlay; angles: number[]; orient: number };
@@ -664,6 +694,154 @@ export function measureCircle(c: Pt, r: number, name: string): Measured {
   };
 }
 
-export function measureFig(f: GeoFig, names: string[]): Measured {
-  return f.kind === "circle" ? measureCircle(f.c, f.r, names[0]) : measurePoly(f.pts, names);
+const EMPTY_OVERLAY = (): Overlay => ({ diagonals: [], heights: [], medians: [], bisectors: [], centres: [], axes: [] });
+const dirOf = (deg: number): Pt => [Math.cos(deg * RAD), Math.sin(deg * RAD)];
+/** Points along an ellipse (a circle when a = b) from one angle to another, for marking it on the picture. */
+export function arcPoints(c: Pt, a: number, b: number, rot: number, from: number, to: number): Pt[] {
+  const n = Math.max(8, Math.ceil(Math.abs(to - from) / 4));
+  const [co, si] = [Math.cos(rot * RAD), Math.sin(rot * RAD)];
+  return Array.from({ length: n + 1 }, (_, i) => {
+    const t = (from + ((to - from) * i) / n) * RAD;
+    const [x, y] = [a * Math.cos(t), b * Math.sin(t)];
+    return [c[0] + x * co - y * si, c[1] + x * si + y * co] as Pt;
+  });
 }
+/** "(x − 2)²" or "x²" (or "(y + 1)²"). */
+const shifted = (v: string, h: number) => (Math.abs(h) < 1e-12 ? `${v}²` : `(${v} ${h < 0 ? "+" : "−"} ${num(Math.abs(h))})²`);
+
+/** Everything about an ellipse: its axes, foci, eccentricity, area, perimeter and equation. */
+export function measureEllipse(f: Extract<GeoFig, { kind: "ellipse" }>, name: string): Measured {
+  const { c } = f;
+  const [A, B] = f.a >= f.b ? [f.a, f.b] : [f.b, f.a];
+  const major = f.a >= f.b ? f.rot : f.rot + 90;
+  const round = Math.abs(A - B) <= 1e-9 * A;
+  const fc = round ? 0 : Math.sqrt(A * A - B * B);
+  const [F1, F2] = [add(c, mul(dirOf(major), fc)), add(c, mul(dirOf(major), -fc))];
+  const exact = onHalf(A) && onHalf(B) ? piText(A * B) ?? undefined : undefined;
+  // Ramanujan's second approximation: within a few parts in a million even for a thin ellipse.
+  const h = ((A - B) / (A + B)) ** 2;
+  const perimeter = Math.PI * (A + B) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
+  const turn = ((f.rot % 180) + 180) % 180;
+  const eq = turn < 1e-9 || Math.abs(turn - 90) < 1e-9
+    ? `${shifted("x", c[0])} / ${num((turn < 1e-9 ? f.a : f.b) ** 2)} + ${shifted("y", c[1])} / ${num((turn < 1e-9 ? f.b : f.a) ** 2)} = 1`
+    : `x′² / ${num(f.a ** 2)} + y′² / ${num(f.b ** 2)} = 1, x′ ∠ ${num(f.rot)}°`;
+  const [vA, vB] = [add(c, mul(dirOf(major), A)), add(c, mul(dirOf(major + 90), B))];
+  const ring: Mark = { path: arcPoints(c, f.a, f.b, f.rot, 0, 360) };
+  const overlay = EMPTY_OVERLAY();
+  overlay.axes = round ? [] : [{ c, d: dirOf(major) }, { c, d: dirOf(major + 90) }];
+  overlay.foci = round ? [c] : [F1, F2];
+  const near = (x: number) => onHalf(x) && Math.abs(x) < 1e6;
+  return {
+    base: "ellipse",
+    n: 0,
+    tags: round ? ["isCircle"] : [],
+    angles: [],
+    orient: 1,
+    overlay,
+    sections: [
+      {
+        key: "size",
+        facts: [
+          { key: "perimeter", v: len1(perimeter), how: `≈ π(a + b)(1 + 3h / (10 + √(4 − 3h))), h = ((a − b) / (a + b))² = ${num(h)}`, mark: [ring] },
+          { key: "area", v: { ...sq(Math.PI * A * B), exact }, how: `πab = π · ${num(A)} · ${num(B)}` },
+        ],
+      },
+      {
+        key: "ellipse",
+        facts: [
+          { key: "semiMajor", name: "a", v: len1(A), mark: [{ seg: [c, vA] }] },
+          { key: "semiMinor", name: "b", v: len1(B), mark: [{ seg: [c, vB] }] },
+          { key: "majorAxis", v: len1(2 * A), how: `2a = 2 · ${num(A)}`, mark: [{ seg: [add(c, mul(dirOf(major), -A)), vA] }] },
+          { key: "minorAxis", v: len1(2 * B), how: `2b = 2 · ${num(B)}`, mark: [{ seg: [add(c, mul(dirOf(major + 90), -B)), vB] }] },
+          { key: "focalDist", name: "c", v: len1(fc, near(A) && near(B) ? surd(A * A - B * B) : null), how: `√(a² − b²) = √(${num(A * A)} − ${num(B * B)})`, mark: [{ seg: [c, F1] }] },
+          { key: "eccentricity", name: "e", v: { n: fc / A, dim: 0 }, how: `c / a = ${num(fc)} / ${num(A)}` },
+          { key: "focalSum", v: len1(2 * A), how: `PF₁ + PF₂ = 2a`, mark: [{ seg: [F1, vB] }, { seg: [vB, F2] }] },
+          { key: "equation", how: eq },
+        ],
+      },
+      { key: "symmetry", facts: [{ key: "symLines", v: { n: round ? Infinity : 2, dim: 0 } }, { key: "symOrder", v: { n: round ? Infinity : 2, dim: 0 } }] },
+      {
+        key: "points",
+        facts: [
+          { key: "centre", name, v: ptV(c), mark: [{ pt: c }] },
+          ...(round ? [] : [{ key: "focus" as const, name: "F₁", v: ptV(F1), mark: [{ pt: F1 }] }, { key: "focus" as const, name: "F₂", v: ptV(F2), mark: [{ pt: F2 }] }]),
+        ],
+      },
+    ],
+  };
+}
+
+/** Everything about a sector: its arc, area, perimeter, chord and the segment the chord cuts off. */
+export function measureSector(f: Extract<GeoFig, { kind: "sector" }>, name: string): Measured {
+  const { c, r, sweep: th } = f;
+  const full = th >= 360 - 1e-9;
+  const rad = th * RAD;
+  const arc = r * rad;
+  const area = (r * r * rad) / 2;
+  const nice = onHalf(r) && Number.isInteger(Math.round(th * 1e6) / 1e6);
+  const exArc = nice ? piText((r * th) / 180) ?? undefined : undefined;
+  const exArea = nice ? piText((r * r * th) / 360) ?? undefined : undefined;
+  const [P, Q] = [at(f.from, r, c), at(f.from + th, r, c)];
+  const arcMark: Mark = { path: arcPoints(c, r, r, 0, f.from, f.from + th) };
+  const g = Number.isInteger(th) ? gcd(th, 360) : 0;
+  const tags: Tag[] = full ? [] : Math.abs(th - 180) < 1e-9 ? ["semicircle"] : Math.abs(th - 90) < 1e-9 ? ["quadrant"] : [th < 180 ? "minorSector" : "majorSector"];
+  const overlay = EMPTY_OVERLAY();
+  overlay.axes = full ? [] : [{ c, d: dirOf(f.from + th / 2) }];
+  const chord = 2 * r * Math.sin(rad / 2);
+  const sizeFacts: Fact[] = [
+    { key: "perimeter", v: { ...len1(full ? arc : 2 * r + arc), ...(exArc ? { exact: full ? exArc : `${num(2 * r)} + ${exArc}` } : {}) }, how: full ? "l" : `2r + l = 2 · ${num(r)} + ${num(arc)}`, mark: [arcMark, { seg: [c, P] }, { seg: [c, Q] }] },
+    { key: "area", v: { ...sq(area), exact: exArea }, how: `πr² · θ / 360° = π · ${num(r)}² · ${num(th)} / 360` },
+  ];
+  const sectorFacts: Fact[] = [
+    { key: "radius", name: "r", v: len1(r), mark: [{ seg: [c, P] }] },
+    { key: "centralAngle", name: "θ", v: degV(th), how: `${num(th)}° = ${num(rad)} rad`, mark: full ? undefined : [{ corner: [P, c, Q] }] },
+    { key: "circleShare", v: { n: th / 360, dim: 0, ...(g ? { exact: `${th / g}/${360 / g}` } : {}) }, how: `θ / 360° = ${num(th)} / 360` },
+    { key: "arcLength", name: "l", v: { ...len1(arc), exact: exArc }, how: `2πr · θ / 360° = 2 · π · ${num(r)} · ${num(th)} / 360`, mark: [arcMark] },
+  ];
+  if (!full) {
+    sectorFacts.push(
+      { key: "chord", name: "PQ", v: len1(chord), how: `2r · sin(θ / 2) = 2 · ${num(r)} · sin ${num(th / 2)}°`, mark: [{ seg: [P, Q] }] },
+      { key: "segmentArea", v: sq((r * r * (rad - Math.sin(rad))) / 2), how: `½r²(θ − sin θ) = ½ · ${num(r)}² · (${num(rad)} − ${num(Math.sin(rad))})`, mark: [arcMark, { seg: [P, Q] }] },
+    );
+  }
+  return {
+    base: "sector",
+    n: 0,
+    tags,
+    angles: [],
+    orient: 1,
+    overlay,
+    sections: [
+      { key: "size", facts: sizeFacts },
+      { key: "sector", facts: sectorFacts },
+      { key: "symmetry", facts: [{ key: "symLines", v: { n: full ? Infinity : 1, dim: 0 } }, { key: "symOrder", v: { n: full ? Infinity : 1, dim: 0 } }] },
+      {
+        key: "points",
+        facts: [
+          { key: "centre", name, v: ptV(c), mark: [{ pt: c }] },
+          { key: "arcEnd", name: "P", v: ptV(P), mark: [{ pt: P }] },
+          ...(full ? [] : [{ key: "arcEnd" as const, name: "Q", v: ptV(Q), mark: [{ pt: Q }] }]),
+        ],
+      },
+    ],
+  };
+}
+
+export function measureFig(f: GeoFig, names: string[]): Measured {
+  switch (f.kind) {
+    case "circle": return measureCircle(f.c, f.r, names[0]);
+    case "ellipse": return measureEllipse(f, names[0]);
+    case "sector": return measureSector(f, names[0]);
+    case "poly": return measurePoly(f.pts, names);
+  }
+}
+
+/** Angle of p seen from c, in degrees 0…360. */
+export const angleOf = (c: Pt, p: Pt) => ((Math.atan2(p[1] - c[1], p[0] - c[0]) / RAD) % 360 + 360) % 360;
+/** The angle swept anticlockwise from `from` to `to`, in (0, 360]. */
+export const sweepBetween = (from: number, to: number) => {
+  const s = (((to - from) % 360) + 360) % 360;
+  return s < 1e-9 ? 360 : s;
+};
+/** Distance from p to the line through c in the direction rot. */
+export const offAxis = (c: Pt, rot: number, p: Pt) => Math.abs(cross(dirOf(rot), sub(p, c)));

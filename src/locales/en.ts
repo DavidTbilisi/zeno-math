@@ -5735,7 +5735,7 @@ export const en = {
       },
     },
     geoLab: {
-      tools: { move: "✋ Move", poly: "⬠ Draw a polygon", circle: "◯ Draw a circle" },
+      tools: { move: "Move", poly: "Polygon", circle: "Circle", ellipse: "Ellipse", sector: "Sector" },
       finish: "Finish the shape",
       cancel: "Cancel",
       zoomIn: "Zoom in",
@@ -5761,14 +5761,17 @@ export const en = {
         kite: "Kite",
         regular: "Regular polygon",
         circle: "Circle",
+        ellipse: "Ellipse",
+        sector: "Sector",
       },
       params: {
         AB: "AB", BC: "BC", CA: "CA", angleA: "∠A°", angleB: "∠B°", leg1: "leg a", leg2: "leg b", side: "side", legs: "legs",
         base: "base", w: "width", h: "height", angle: "angle°", bottom: "base", top: "top", height: "height",
-        d1: "diagonal d₁", d2: "diagonal d₂", topPart: "d₂ crosses d₁ at", n: "corners", r: "radius",
+        d1: "diagonal d₁", d2: "diagonal d₂", topPart: "d₂ crosses d₁ at", n: "corners", r: "radius", a: "a", b: "b", sweep: "angle θ°",
       },
       add: "Add",
       problems: {
+        sweep: "A sector's angle is at most 360°.",
         positive: "Every measurement must be a number above 0.",
         triangle: "These sides don't make a triangle: each side must be shorter than the other two together.",
         angles: "Two angles of a triangle must add up to less than 180°.",
@@ -5791,6 +5794,8 @@ export const en = {
         poly: "Tap to put the corners down; tap the first corner again (or Finish) to close the shape.",
         polyGoing: "{n} corners so far: tap the first corner again (or Finish) to close the shape.",
         circle: "Tap the centre, then a point on the circle.",
+        ellipse: "Tap the centre, then the end of one axis (a), then how wide it is across (b).",
+        sector: "Tap the centre, then where the arc starts, then where it ends (going anticlockwise).",
       },
       empty: "Draw a shape on the plane or make one from its measurements above.",
       pick: "Tap a shape to see everything about it.",
@@ -5798,16 +5803,16 @@ export const en = {
       pointFmt: "({x}; {y})",
       sections: {
         points: "Points", sides: "Sides", angles: "Angles", size: "Perimeter and area", diagonals: "Diagonals",
-        triangle: "Heights, medians, bisectors and centres", regular: "Regular polygon", symmetry: "Symmetry", circle: "Circle",
+        triangle: "Heights, medians, bisectors and centres", regular: "Regular polygon", symmetry: "Symmetry", circle: "Circle", ellipse: "Ellipse", sector: "Sector",
       },
       bases: {
         triangle: "Triangle", quadrilateral: "Quadrilateral", square: "Square", rectangle: "Rectangle", rhombus: "Rhombus",
         parallelogram: "Parallelogram", trapezoid: "Trapezoid", kite: "Kite", pentagon: "Pentagon", hexagon: "Hexagon",
-        heptagon: "Heptagon", octagon: "Octagon", nonagon: "Nonagon", decagon: "Decagon", polygon: "Polygon with {n} corners", circle: "Circle",
+        heptagon: "Heptagon", octagon: "Octagon", nonagon: "Nonagon", decagon: "Decagon", polygon: "Polygon with {n} corners", circle: "Circle", ellipse: "Ellipse", sector: "Sector",
       },
       tags: {
         regular: "regular", equilateral: "equilateral", isosceles: "isosceles", scalene: "scalene", right: "right-angled",
-        acute: "acute-angled", obtuse: "obtuse-angled", concave: "concave", crossed: "its sides cross", flat: "flat: no area",
+        acute: "acute-angled", obtuse: "obtuse-angled", concave: "concave", crossed: "its sides cross", flat: "flat: no area", isCircle: "a circle (a = b)", semicircle: "a semicircle", quadrant: "a quarter circle", minorSector: "less than half the circle", majorSector: "more than half the circle",
       },
       /** The tags of a trapezoid (a feminine noun in Russian). */
       trapezoidTags: { isosceles: "isosceles", right: "right-angled" },
@@ -5824,6 +5829,10 @@ export const en = {
         pythagoras: "Pythagoras' theorem", interior: "Each interior angle", exterior: "Each exterior angle", central: "Central angle",
         apothem: "Apothem (centre to a side)", symLines: "Lines of symmetry", symOrder: "Order of rotational symmetry",
         radius: "Radius r", diameter: "Diameter d", circumference: "Circumference C", circleArea: "Area S", equation: "Equation",
+        focus: "Focus {name}", semiMajor: "Semi-major axis a", semiMinor: "Semi-minor axis b", majorAxis: "Major axis 2a",
+        minorAxis: "Minor axis 2b", focalDist: "Centre to a focus c", eccentricity: "Eccentricity e", focalSum: "From any point to both foci",
+        arcEnd: "End of the arc {name}", centralAngle: "Angle θ", arcLength: "Arc length l", chord: "Chord PQ",
+        segmentArea: "Area of the segment (between the arc and the chord)", circleShare: "Part of the whole circle",
       },
     },
     algebraTiles: {
