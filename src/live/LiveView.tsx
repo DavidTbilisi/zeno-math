@@ -32,6 +32,7 @@ import { NumberShapes } from "./NumberShapes";
 import { AlgebraTiles } from "./AlgebraTiles";
 import { BaseTen } from "./BaseTen";
 import { Cubes } from "./Cubes";
+import { GeoLab } from "./GeoLab";
 import { ExprMatch } from "./ExprMatch";
 import { AngleGuess } from "./AngleGuess";
 import { AngleHunt } from "./AngleHunt";
@@ -143,6 +144,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   algebraTiles: AlgebraTiles,
   baseTen: BaseTen,
   cubes: Cubes,
+  geoLab: GeoLab,
   exprMatch: ExprMatch,
   angleGuess: AngleGuess,
   angleHunt: AngleHunt,

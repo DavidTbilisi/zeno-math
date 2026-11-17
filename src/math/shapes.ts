@@ -1684,6 +1684,25 @@ function geoboardPreview(): Piece[] {
   return [...dots, poly(corners.map(([x, y]): Pt => [x * s, y * s]), { fill: FILL.blue, color: "#1971c2", width: 2 })];
 }
 
+function geoLabPreview(): Piece[] {
+  // A 3-4-5 triangle on a light grid: its sides labelled, the right angle marked, the circle through its corners.
+  const s = 22;
+  const grid = { color: "#dee2e6", width: 1 };
+  const lines: Piece[] = [];
+  for (let i = 0; i <= 6; i++) lines.push(seg([i * s, 0], [i * s, 5 * s], grid));
+  for (let j = 0; j <= 5; j++) lines.push(seg([0, j * s], [6 * s, j * s], grid));
+  const [A, B, C]: Pt[] = [[s, 4.5 * s], [5 * s, 4.5 * s], [s, 1.5 * s]];
+  return [
+    ...lines,
+    ellipse(3 * s, 3 * s, 2.5 * s, 2.5 * s, { color: "#e03131", width: 1.5, dashed: true }),
+    poly([A, B, C], { fill: FILL.blue, color: "#1971c2", width: 2 }),
+    path([[s, 4.5 * s - 9], [s + 9, 4.5 * s - 9], [s + 9, 4.5 * s]], { color: "#1971c2", width: 1.5 }),
+    text(3 * s, 4.5 * s + 14, "4", 15),
+    text(s - 10, 3 * s, "3", 15),
+    text(3.4 * s, 2.6 * s, "5", 15),
+  ];
+}
+
 function comparePreview(): Piece[] {
   const [w, h, mid, gap] = [40, 16, 40, 60];
   const colors = [FILL.red, FILL.yellow, FILL.green, FILL.violet, FILL.blue];
@@ -1835,6 +1854,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBaseTen", group: "games", build: baseTenPreview, live: "baseTen" },
   { id: "liveCubes", group: "games", build: cubesPreview, live: "cubes" },
   { id: "liveExprMatch", group: "games", build: exprMatchPreview, live: "exprMatch" },
+  { id: "liveGeoLab", group: "games", build: geoLabPreview, live: "geoLab" },
   { id: "liveGeoboard", group: "games", build: geoboardPreview, live: "geoboard" },
   { id: "liveAngleGuess", group: "games", build: angleGuessPreview, live: "angleGuess" },
   { id: "liveAngleHunt", group: "games", build: angleHuntPreview, live: "angleHunt" },

@@ -99,6 +99,7 @@ const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
     { kind: "numberLine", icon: "↔", name: "liveNumberLine" },
   ],
   groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],
+  groupGeometryShort: [{ kind: "geoLab", icon: "📐", name: "liveGeoLab" }],
   groupAi: [
     { kind: "descentLab", icon: "⛳", name: "liveDescentLab" },
     { kind: "pcaLab", icon: "📏", name: "livePcaLab" },
@@ -166,6 +167,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseNumberPatterns" | "senseFraction
   },
   {
     sense: "senseShape", games: [
+      { kind: "geoLab", icon: "📐", name: "liveGeoLab" },
       { kind: "geoboard", icon: "⬠", name: "liveGeoboard" },
       { kind: "angleGuess", icon: "∠", name: "liveAngleGuess" },
       { kind: "angleHunt", icon: "📐", name: "liveAngleHunt" },
