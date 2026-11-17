@@ -30,7 +30,7 @@ import {
 } from "../math/knnLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveKnn> = { tries: 0, done: false, said: null };
@@ -120,7 +120,7 @@ export function KnnLab({ state, set, w: words, svgRef }: PieceProps<"knnLab">) {
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <SettingsBar className="descent-dials">
+      <div className="live-bar descent-dials">
         {can.includes("k") && (
           <label className="live-slider">
             <b>k = {d.k}</b>
@@ -153,7 +153,7 @@ export function KnnLab({ state, set, w: words, svgRef }: PieceProps<"knnLab">) {
             />
           </label>
         )}
-      </SettingsBar>
+      </div>
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
         {can.includes("metric") && METRICS.map((m) => <Toggle key={m} on={d.metric === m} disabled={d.done} onClick={() => commit(fresh({ metric: m }))}>{w.metrics[m]}</Toggle>)}

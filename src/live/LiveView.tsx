@@ -1,12 +1,12 @@
 // Draws a live piece inside its embeddable on the board: the piece at its design size, scaled to the element's size,
 // with a button that copies what it shows as a picture. Changes go back to the board through the host, which writes
 // them into the element (so they are saved and can be undone).
-import { lazy, Suspense, useContext, useLayoutEffect, useRef, useState, type ComponentType } from "react";
+import { lazy, Suspense, useContext, useLayoutEffect, useRef, useState, type ComponentType, type SyntheticEvent } from "react";
+import { createPortal } from "react-dom";
 import type { ExcalidrawEmbeddableElement, NonDeleted } from "@excalidraw/excalidraw/element/types";
 import { useI18n } from "../i18n";
 import { initialLive, LIVE_SIZES, type LiveGraphState, type LiveKind } from "../math/live";
 import { PanelSlot } from "../components/ItemPanel";
-import { PieceSlot, ToPanel } from "./ui";
 import { liveDataOf, type LiveData } from "./element";
 import { Clock, Coin, Compare, CompareFractions, Dice, Dots, Fractions, Hundred, Spinner, TenFrame } from "./pieces";
 import { Chance } from "./Chance";
@@ -190,12 +190,14 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   rlLab: RlLab,
 };
 
+const stop = (e: SyntheticEvent) => e.stopPropagation();
+
 export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbeddableElement>; host: LiveHost }) {
   const { t } = useI18n();
   const svgRef = useRef<SVGSVGElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const data = liveDataOf(element);
-  // The right-click panel, when it is open on this piece: its settings bars and these actions go there too.
+  // The right-click panel, when it is open on this piece: its reset and copy buttons go there.
   const slot = useContext(PanelSlot);
   const panelNode = slot?.id === element.id ? slot.node : null;
   const H0 = data ? LIVE_SIZES[data.live][1] : 0;
@@ -237,17 +239,18 @@ export function LiveView({ element, host }: { element: NonDeleted<ExcalidrawEmbe
         className={`live live-${kind}`}
         style={{ width: W, height: H0, transform: `translate(${(w - W * s) / 2}px, ${(h - H * s) / 2}px) scale(${s})` }}
       >
-        <PieceSlot.Provider value={panelNode}>
-          <Suspense fallback={null}>
-            <Piece state={data.state} set={(state) => host.update(element.id, { live: kind, state })} w={t.live} svgRef={svgRef} open={host.open && ((k, patch) => host.open?.(element.id, k, patch))} />
-          </Suspense>
-          <ToPanel>
-            <div className="live-bar piece-panel-actions">
-              <button className="live-btn" onClick={() => host.update(element.id, { live: kind, state: initialLive(kind) })}>↺ {t.live.reset}</button>
-              <button className="live-btn" onClick={snapshot}>📷 {kind === "graph" ? t.live.freeze : t.live.snapshot}</button>
-            </div>
-          </ToPanel>
-        </PieceSlot.Provider>
+        <Suspense fallback={null}>
+          <Piece state={data.state} set={(state) => host.update(element.id, { live: kind, state })} w={t.live} svgRef={svgRef} open={host.open && ((k, patch) => host.open?.(element.id, k, patch))} />
+        </Suspense>
+        {panelNode &&
+          createPortal(
+            // Events stop here: in React they would bubble on through the piece to the board's embeddable.
+            <span className="piece-panel-part" onPointerDown={stop} onMouseDown={stop} onClick={stop} onKeyDown={stop} onContextMenu={stop}>
+              <button className="btn" onClick={() => host.update(element.id, { live: kind, state: initialLive(kind) })}>↺ {t.live.reset}</button>
+              <button className="btn" onClick={snapshot}>📷 {kind === "graph" ? t.live.freeze : t.live.snapshot}</button>
+            </span>,
+            panelNode,
+          )}
         <button
           className="live-snap"
           title={kind === "graph" ? t.live.freeze : t.live.snapshot}

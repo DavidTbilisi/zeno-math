@@ -24,7 +24,7 @@ import {
   type KakSign,
   type LiveKakooma,
 } from "../math/kakooma";
-import { fill, FONT, INK, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, INK, Toggle, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 import { starText } from "./ladderUi";
 
@@ -151,13 +151,13 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
       </GameHead>
       {/* The endless run's sign: a new set of it, at the same level. */}
       {d.mode === "endless" && (
-        <SettingsBar>
+        <div className="live-bar">
           {KAK_SIGNS.map((k) => (
             <Toggle key={k} on={task.sign === k} title={w.signs[k]} onClick={() => game.endless(d.level, { sign: k })}>
               {SIGN_TEXT[k]}
             </Toggle>
           ))}
-        </SettingsBar>
+        </div>
       )}
       <Stage game={game} stars={stars} done={done} g={g} notices={w.notices}>
         <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={ask}>

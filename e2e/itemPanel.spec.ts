@@ -99,46 +99,39 @@ test("a number theory picture follows its slider; a rectangle keeps Excalidraw's
   await expect(panel).toHaveCount(0);
 });
 
-test("a live piece's settings in the panel: the dots piece changes from there, duplicates and goes", async ({ page }) => {
+test("one click on a piece reaches its button; its right-click panel holds only actions", async ({ page }) => {
   await newBoard(page);
   await page.getByRole("button", { name: "Games" }).click();
   await page.getByRole("menuitem", { name: /Number patterns as dots/ }).click();
   const piece = page.locator(".live-numberShapes");
   await expect(piece).toHaveCount(1);
   await page.waitForTimeout(600);
+  const n = piece.locator(".live-stepper b");
+  await expect(n).toHaveText("4");
 
+  // The piece is not in use yet: one click on its "+" (by where it is on screen) does what "+" does.
+  const more = (await piece.getByRole("button", { name: "One more" }).boundingBox())!;
+  await page.mouse.click(more.x + more.width / 2, more.y + more.height / 2);
+  await expect(n).toHaveText("5");
+  // In use now: the next click goes straight to it.
+  await piece.getByRole("button", { name: "One more" }).click();
+  await expect(n).toHaveText("6");
+
+  // Its settings stay on the piece: the panel has no copy of them, only what to do with the piece.
+  await page.keyboard.press("Escape");
   await rightClickPiece(page, piece);
   const panel = page.locator(".item-panel");
   await expect(panel.getByRole("heading", { name: "Number patterns as dots" })).toBeVisible();
   await expect(page.locator(".context-menu")).toHaveCount(0);
-  // Its settings bar, in the panel: picking a pattern there redraws the piece.
-  await panel.getByRole("combobox").selectOption("triangle");
-  await expect(piece).toContainText("Triangle numbers");
-  await panel.getByRole("button", { name: "Why?" }).click();
-  await expect(piece).toContainText("Two copies make 4 rows of 5");
-  await expect(panel.getByRole("button", { name: /Reset/ })).toBeVisible();
+  await expect(panel.getByRole("combobox")).toHaveCount(0);
+  await expect(panel.getByRole("button")).toHaveText(["×", /Reset/, /Copy as a picture/, "Duplicate", "Delete"]);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/panel-piece.png` });
-  // The piece took the right-click as its way in: its own button answers the first click.
-  await piece.getByRole("button", { name: "One more" }).first().click();
-  await expect(piece).toContainText("Rows of 1, 2, … up to 5: 15 dots");
 
+  await panel.getByRole("button", { name: /Reset/ }).click();
+  await expect(n).toHaveText("4");
   await panel.getByRole("button", { name: "Duplicate" }).click();
   await expect(page.locator(".live-numberShapes")).toHaveCount(2);
-  await expect(page.locator(".live-numberShapes").nth(1)).toContainText("Triangle numbers");
   await panel.getByRole("button", { name: "Delete" }).click();
   await expect(panel).toHaveCount(0);
   await expect(page.locator(".live-numberShapes")).toHaveCount(1);
-});
-
-test("a game's puzzles in the panel", async ({ page }) => {
-  await newBoard(page);
-  await page.getByRole("button", { name: "Games" }).click();
-  await page.getByRole("menuitem", { name: /Divisible by/ }).click();
-  const piece = page.locator(".live-divisible");
-  await expect(piece).toHaveCount(1);
-  await page.waitForTimeout(600);
-  await rightClickPiece(page, piece);
-  const panel = page.locator(".item-panel");
-  await expect(panel.locator(".geo-ladder")).toBeVisible();
-  if (SHOTS) await page.screenshot({ path: `${SHOTS}/panel-game.png` });
 });

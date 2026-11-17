@@ -42,7 +42,7 @@ test("a round of the estimation game with every pin on its number earns three st
   const game = page.locator(".live-estimate");
   await game.waitFor();
   const box = (await game.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
   await expect(game.getByRole("button", { name: /^Round 2/ })).toHaveCount(0);
 
   const round = roundTasks(ESTIMATE_LADDER[0].level, ESTIMATE_LADDER[0].seed);
@@ -107,7 +107,7 @@ async function boardWith(page: Page, name: string, piece: string): Promise<Locat
   const game = page.locator(piece);
   await game.waitFor();
   const box = (await game.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
   return game;
 }
 

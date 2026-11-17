@@ -170,12 +170,9 @@ input.invalid { border-color: var(--danger); }
 .item-panel-body { padding: 0 2px; overflow-y: auto; min-height: 0; }
 .item-panel-body .modal-body { padding: 4px 12px 10px; gap: 10px; overflow: visible; }
 .item-panel-body > .hint { padding: 4px 14px 10px; }
-.item-panel-slot:empty { display: none; }
-/* A live piece's settings, drawn as on the piece: light, whatever the board's theme. */
-.item-panel-slot { display: flex; flex-direction: column; gap: 8px; margin: 4px 12px 10px; padding: 10px; background: #fff; color: #1e1e1e; border-radius: 8px; font-size: 14px; }
-.piece-panel-part { display: flex; flex-direction: column; gap: 8px; }
-.item-panel-slot .descent-dials .live-slider { min-width: 0; }
-.item-panel-slot .live-bar { flex-wrap: wrap; justify-content: flex-start; margin: 0; }
+/* A live piece's own actions (reset, copy) join the panel's row of buttons. */
+.item-panel-slot, .piece-panel-part { display: contents; }
+.item-panel-body:empty + .item-panel-actions { border-top: 0; }
 .item-panel-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; padding: 8px 12px 12px; border-top: 1px solid var(--border); }
 /* The item on the board is the preview: the dialog's own shows only when it has an error to tell. */
 .item-panel .field:has(> .preview):not(:has(.error:not(:empty))),
@@ -764,7 +761,7 @@ input.invalid { border-color: var(--danger); }
 .live-btn.on { background: #d0ebff; border-color: #1971c2; }
 .live-btn.primary { background: #1971c2; border-color: #1971c2; color: #fff; }
 .live-btn.primary:hover:not(:disabled) { background: #1864ab; }
-.live select, .live input, .item-panel-slot select, .item-panel-slot input {
+.live select, .live input {
   font: inherit; font-size: 13px; color: inherit; background: #fff; border: 1px solid #ced4da; border-radius: 6px; padding: 3px 6px;
 }
 .live input.invalid { border-color: #e03131; background: #fff5f5; }
@@ -776,9 +773,9 @@ input.invalid { border-color: var(--danger); }
 .live-hint { margin: 0; font-size: 12px; color: #868e96; text-align: center; }
 .live-note { font-size: 12px; color: #868e96; }
 .live-stage { display: flex; align-items: center; justify-content: center; flex: none; }
-.live .live-num, .item-panel-slot .live-num { width: 7em; font-family: ui-monospace, Menlo, Consolas, monospace; text-align: right; }
+.live .live-num { width: 7em; font-family: ui-monospace, Menlo, Consolas, monospace; text-align: right; }
 .live-field { display: inline-flex; align-items: center; gap: 4px; }
-.live .live-field .live-num, .item-panel-slot .live-field .live-num { width: 5em; }
+.live .live-field .live-num { width: 5em; }
 .live-digits { display: inline-flex; gap: 3px; }
 .live-digits .live-btn { min-width: 2em; font-weight: 700; }
 .live-said { margin: 0; font-size: 13px; color: #c92a2a; text-align: center; }
@@ -788,12 +785,12 @@ input.invalid { border-color: var(--danger); }
 .live-sign { display: inline-block; min-width: 1em; font-size: 20px; line-height: 1; }
 .live-face { min-width: 2.6em; font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 15px; }
 .live-rubik-alg { display: inline-flex; align-items: center; gap: 6px; }
-.live .live-rubik-alg input, .item-panel-slot .live-rubik-alg input { width: 15em; font-family: Georgia, "Times New Roman", serif; font-size: 15px; }
+.live .live-rubik-alg input { width: 15em; font-family: Georgia, "Times New Roman", serif; font-size: 15px; }
 .live-rubik-fact { font-style: italic; }
 .live-rubik-speed { min-width: 200px; }
 .live-rubik-speed b { width: auto; }
-.live .live-rubik-swatch, .item-panel-slot .live-rubik-swatch { width: 30px; height: 30px; padding: 0; border: 2px solid #495057; }
-.live .live-rubik-swatch.on, .item-panel-slot .live-rubik-swatch.on { outline: 3px solid #1971c2; outline-offset: 2px; }
+.live .live-rubik-swatch { width: 30px; height: 30px; padding: 0; border: 2px solid #495057; }
+.live .live-rubik-swatch.on { outline: 3px solid #1971c2; outline-offset: 2px; }
 .live-rubik-solution .done { color: #adb5bd; }
 .live-rubik-solution .next { font-weight: 700; color: #1971c2; text-decoration: underline; }
 .live-snap {
@@ -801,7 +798,7 @@ input.invalid { border-color: var(--danger); }
   font-size: 15px; cursor: pointer; opacity: 0;
 }
 .live:hover .live-snap, .live-snap:focus-visible { opacity: 0.6; }
-.live .live-snap:hover, .item-panel-slot .live-snap:hover { opacity: 1; }
+.live .live-snap:hover { opacity: 1; }
 .live-bag { display: inline-flex; align-items: center; gap: 2px; }
 .live-bag i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
 .live-fns { align-self: stretch; display: flex; flex-direction: column; gap: 4px; padding-right: 24px; }
@@ -936,7 +933,7 @@ input.invalid { border-color: var(--danger); }
 .live-slider { display: flex; align-items: center; gap: 5px; min-width: 0; }
 .live-slider b { flex: none; width: 76px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; }
 .live-slider input[type="range"] { flex: 1; min-width: 0; padding: 0; }
-.live .live-bound, .item-panel-slot .live-bound { flex: none; width: 34px; padding: 2px; font-size: 12px; text-align: center; }
+.live .live-bound { flex: none; width: 34px; padding: 2px; font-size: 12px; text-align: center; }
 .live-slider .live-btn { flex: none; padding: 2px 7px; }
 /* Gradient descent lab (live/DescentLab.tsx): the update rule and where the ball is, the dashed hop's step, and the
    η and β dials side by side. */
@@ -948,24 +945,24 @@ input.invalid { border-color: var(--danger); }
 /* Batch lab (live/BatchLab.tsx): a row of choices after its name. */
 .batch-dials { align-self: stretch; align-items: center; font-size: 13px; color: #495057; }
 .batch-dials > span { font-weight: 700; }
-.live .descent-fn, .item-panel-slot .descent-fn { width: 16em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .descent-fn { width: 16em; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .live-pattern-idea { max-width: 760px; font-size: 13px; color: #495057; }
 .live-pattern-stage { position: relative; flex: none; }
-.live .live-pattern-edit, .item-panel-slot .live-pattern-edit {
+.live .live-pattern-edit {
   position: absolute; box-sizing: border-box; padding: 0; text-align: center; font-size: 17px;
   border: 2px solid #1971c2; border-radius: 5px; background: #fff;
 }
-.live .live-pattern-data, .item-panel-slot .live-pattern-data { width: 21em; font-family: ui-monospace, Menlo, Consolas, monospace; }
-.live .live-pattern-extra, .item-panel-slot .live-pattern-extra { width: 6em; font-family: ui-monospace, Menlo, Consolas, monospace; }
-.live .live-problem-input, .item-panel-slot .live-problem-input { width: 16em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .live-pattern-data { width: 21em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .live-pattern-extra { width: 6em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .live-problem-input { width: 16em; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .live-problem-inputs { flex-wrap: wrap; max-width: 780px; }
 /* The interview problems' pictures vary a lot in height: one too tall for the piece shrinks to the room left. */
 .live-problem-stage { flex: 1 1 0; min-height: 0; display: flex; justify-content: center; }
-.live .live-problem-stage svg, .item-panel-slot .live-problem-stage svg { flex: 0 1 auto; max-height: 100%; max-width: 100%; width: auto; height: auto; }
+.live .live-problem-stage svg { flex: 0 1 auto; max-height: 100%; max-width: 100%; width: auto; height: auto; }
 .live-pattern-said { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 760px; }
 .live-pattern-q { font-weight: 600; }
 .live-solver-slots { flex-wrap: wrap; max-width: 780px; }
-.live .live-solver-slot, .item-panel-slot .live-solver-slot { width: 24em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.live .live-solver-slot { width: 24em; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .live .live-solver-slot.short, .live .live-problem-input.short { width: 6em; }
 .live-solver-scope { max-width: 760px; font-size: 12px; color: #868e96; }
 

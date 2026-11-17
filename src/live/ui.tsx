@@ -1,7 +1,6 @@
 // What the live pieces share: their props, the font of their pictures, pointer positions in SVG units, and the
 // small buttons under each piece.
-import { createContext, useContext, type HTMLAttributes, type ReactNode, type RefObject, type SyntheticEvent } from "react";
-import { createPortal } from "react-dom";
+import type { ReactNode, RefObject } from "react";
 import type { Dict } from "../locales/en";
 import type { LiveKind, LiveStates } from "../math/live";
 
@@ -64,40 +63,3 @@ export const HtmlFrac = ({ n, d }: { n: number; d: number }) => (
     <i>{d}</i>
   </span>
 );
-
-// ——— The right-click panel ———
-
-/** Where this piece's settings go while the right-click panel is open on it (null when it isn't). */
-export const PieceSlot = createContext<HTMLElement | null>(null);
-
-const stop = (e: SyntheticEvent) => e.stopPropagation();
-
-/**
- * Puts a copy of `children` in the right-click panel while it is open on this piece, and nothing anywhere else. The
- * copy works the piece's own state, so a change made in either place shows in both. Its events stop at the copy: in
- * React they would bubble on through the piece to the board's embeddable, which would take a click for its own.
- */
-export function ToPanel({ children }: { children: ReactNode }) {
-  const node = useContext(PieceSlot);
-  return node
-    ? createPortal(
-        <div className="piece-panel-part" onPointerDown={stop} onMouseDown={stop} onClick={stop} onKeyDown={stop} onWheel={stop} onContextMenu={stop}>
-          {children}
-        </div>,
-        node,
-      )
-    : null;
-}
-
-/** A bar of the piece's settings (what it shows and how, not the play itself): in the piece, and in the panel too. */
-export function SettingsBar({ className, children, ...rest }: HTMLAttributes<HTMLDivElement>) {
-  const cls = className ? `live-bar ${className}` : "live-bar";
-  return (
-    <>
-      <div className={cls} {...rest}>{children}</div>
-      <ToPanel>
-        <div className={cls} {...rest}>{children}</div>
-      </ToPanel>
-    </>
-  );
-}

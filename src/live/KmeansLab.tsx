@@ -33,7 +33,7 @@ import {
 } from "../math/kmeansLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveKmeans> = { tries: 0, done: false, said: null };
@@ -153,7 +153,7 @@ export function KmeansLab({ state, set, w: words, svgRef }: PieceProps<"kmeansLa
         <span>{read}</span>
       </div>
       {can.includes("k") && (
-        <SettingsBar className="descent-dials">
+        <div className="live-bar descent-dials">
           <label className="live-slider">
             <b>k = {d.k}</b>
             <input
@@ -168,7 +168,7 @@ export function KmeansLab({ state, set, w: words, svgRef }: PieceProps<"kmeansLa
               onKeyUp={() => commit()}
             />
           </label>
-        </SettingsBar>
+        </div>
       )}
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}

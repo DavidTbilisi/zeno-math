@@ -30,7 +30,7 @@ import {
   type TnSetupId,
 } from "../math/tensorLab";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const SUB = "₀₁₂₃";
@@ -119,7 +119,7 @@ export function TensorLab({ state, set, w: words, svgRef }: PieceProps<"tensorLa
         </svg>
       </Stage>
       {p?.kind === "strides" && (
-        <SettingsBar>
+        <div className="live-bar">
           {v.shape.map((_, k) => (
             <label key={k} className="live-field">
               s{SUB[k]} =
@@ -139,10 +139,10 @@ export function TensorLab({ state, set, w: words, svgRef }: PieceProps<"tensorLa
               />
             </label>
           ))}
-        </SettingsBar>
+        </div>
       )}
       {!p && (
-        <SettingsBar>
+        <div className="live-bar">
           <label className="live-select">
             <span>{w.setup}</span>
             <select value={setup.id} onChange={(e) => commit(fresh({ setup: e.target.value as TnSetupId, sel: null }))}>
@@ -150,7 +150,7 @@ export function TensorLab({ state, set, w: words, svgRef }: PieceProps<"tensorLa
             </select>
           </label>
           <button className="live-btn" onClick={() => commit({ sel: walk(v, d.sel) })}>{w.next} →</button>
-        </SettingsBar>
+        </div>
       )}
       <div className="descent-read">
         <span className="descent-rule">{w.rule}</span>

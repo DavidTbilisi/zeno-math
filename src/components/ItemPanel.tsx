@@ -1,8 +1,8 @@
 // The right-click panel: a board item's own controls in a small box beside it, every change drawn on the board at
 // once. A tool's dialog renders into it unchanged: Modal sees it is in the panel (PanelContext) and leaves out its
 // backdrop, header and footer, and the dialog's useLiveSubmit sends each change in, a moment after it is made.
-// Live pieces put their settings bars in it through the slot (PanelSlot). No backdrop and no trap: the board stays
-// in use beside it.
+// A live piece keeps its settings on itself; the panel gives it actions (reset and copy come from the piece, through
+// the slot, PanelSlot). No backdrop and no trap: the board stays in use beside it.
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 import { panelPlace } from "../live/hit";
@@ -11,7 +11,7 @@ import { panelPlace } from "../live/hit";
 export const PanelContext = createContext(false);
 export const useInPanel = () => useContext(PanelContext);
 
-/** Which live piece's settings go to the panel, and the node they go into. */
+/** Which live piece's actions go to the panel, and the node they go into. */
 export type Slot = { id: string; node: HTMLElement } | null;
 export const PanelSlot = createContext<Slot>(null);
 
@@ -46,7 +46,7 @@ export function ItemPanel({ title, anchor, onClose, actions, children, slotRef }
   /** Buttons along the bottom (reset, copy, the full editor…). */
   actions?: ReactNode;
   children?: ReactNode;
-  /** The node live pieces portal their settings into. */
+  /** The node a live piece portals its own actions into, at the start of the row of buttons. */
   slotRef?: (node: HTMLDivElement | null) => void;
 }) {
   const { t } = useI18n();
@@ -97,9 +97,13 @@ export function ItemPanel({ title, anchor, onClose, actions, children, slotRef }
       </header>
       <div className="item-panel-body">
         <PanelContext.Provider value={true}>{children}</PanelContext.Provider>
-        <div ref={slotRef} className="item-panel-slot" />
       </div>
-      {actions && <footer className="item-panel-actions">{actions}</footer>}
+      {(actions || slotRef) && (
+        <footer className="item-panel-actions">
+          {slotRef && <div ref={slotRef} className="item-panel-slot" />}
+          {actions}
+        </footer>
+      )}
     </div>
   );
 }

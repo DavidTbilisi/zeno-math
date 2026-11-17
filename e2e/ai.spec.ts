@@ -236,7 +236,7 @@ test("the gradient descent lab: too small a rate runs out of steps, a better one
   const lab = page.locator(".live-descentLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Roll the ball to the bottom of the valley in 10 steps or fewer/)).toBeVisible();
   await lab.getByRole("button", { name: /Run/ }).click();
@@ -262,7 +262,7 @@ test("the PCA lab: a line across the cloud is not the best, turned along it is P
   const lab = page.locator(".live-pcaLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Turn the line .* add up to as little as they can/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -289,7 +289,7 @@ test("the overfitting lab: degree 1 misses the points, degree 9 goes through the
   const lab = page.locator(".live-fitLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Raise the degree d of the curve until it goes through every training point/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -315,7 +315,7 @@ test("the batch training lab: too small a rate is slow, 0.2 settles at the best 
   const lab = page.locator(".live-batchLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Fit the line to all 24 points at once/)).toBeVisible();
   await expect(lab.getByRole("button", { name: "Adam" })).toBeDisabled();
@@ -342,7 +342,7 @@ test("the threshold lab: a high threshold misses positives, a lower one catches 
   const lab = page.locator(".live-rocLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Drag t so that at least 90 % of the positives are caught/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -367,7 +367,7 @@ test("the softmax lab: cat's probability is short, its bar dragged up gets it ov
   const lab = page.locator(".live-softmaxLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/so that cat gets at least 0\.8 of the probability/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -398,7 +398,7 @@ test("the embeddings lab: dog at right angles to cat is not alike, beside it it 
   const lab = page.locator(".live-embedLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/so that cat and dog are alike: a cosine of at least 0\.95/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -428,7 +428,7 @@ test("the backprop lab goes on the board from the AI menu, and its boxes are fil
   const lab = page.locator(".live-backpropLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Fill in ∂L\/∂q and ∂L\/∂z/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -461,7 +461,7 @@ test("the tensors lab goes on the board from the AI menu, and its entries and pl
   const lab = page.locator(".live-tensorLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Tap the entry T\[1, 2\]/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -510,7 +510,7 @@ test("the k-NN lab: the point among the blue is called blue, dragged into the or
   const lab = page.locator(".live-knnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Drag it until it is called orange/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -541,7 +541,7 @@ test("the decision-tree lab: no split yet says so, a cut at x < 0.6 makes both s
   const lab = page.locator(".live-treeLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/slide the cut so that both sides are pure/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -569,7 +569,7 @@ test("the k-means lab: unfinished says so, assign and move until nothing changes
   const lab = page.locator(".live-kmeansLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Step until nothing changes/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -595,7 +595,7 @@ test("the network lab: the perceptron's mistakes are counted, and updates turn i
   const lab = page.locator(".live-nnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Update until no point is wrong/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -620,7 +620,7 @@ test("the convolution lab: no cell picked says so, the cell where the signal ste
   const lab = page.locator(".live-convLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Tap the output cell where the signal steps up/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -647,7 +647,7 @@ test("the attention lab: the query away from cat gives it little weight, pointed
   const lab = page.locator(".live-attnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/so that cat gets at least 60 % of the attention/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -676,7 +676,7 @@ test("the recurrent-network lab: w = 0.5 forgets the pulse, w = 1.3 keeps it", a
   const lab = page.locator(".live-rnnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/still holds at least 0\.5 after 12 steps/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
@@ -701,7 +701,7 @@ test("the reinforcement-learning lab: the weather's shares settle after enough d
   const lab = page.locator(".live-rlLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
 
   await expect(lab.getByText(/Step the days until the shares stop moving/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();

@@ -13,7 +13,7 @@ import { burst, clockOpen, GAME_LEVELS, isOpen, levelOpen, PASS_STREAK, readLadd
 import { useFeel, setFeel } from "./feel";
 import { muted, setMuted } from "./juice";
 import { isTeacher } from "../teacherMode";
-import { fill, ToPanel, Toggle } from "./ui";
+import { fill, Toggle } from "./ui";
 
 export type GameWords = Dict["live"]["game"];
 export { GAME_LEVELS, type GameLevel };
@@ -133,7 +133,8 @@ export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPu
   const into = level && levelOpen(ladder, level, teacher) ? level : 1;
   const runOpen = levelOpen(ladder, 1, teacher);
   const clock = clockOpen(ladder, teacher);
-  const puzzles = (
+  return (
+    <>
       <LadderBar
         stars={ladder.stars}
         current={mode === "puzzle" ? stage : null}
@@ -150,8 +151,7 @@ export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPu
         )}
         {onFree && <Toggle on={mode === "free"} onClick={onFree}>✏️ {words.free ?? g.free}</Toggle>}
       </LadderBar>
-  );
-  const levels = mode === "endless" && onEndless && (
+      {mode === "endless" && onEndless ? (
         <div className="live-bar">
           {GAME_LEVELS.map((l) => {
             const open = levelOpen(ladder, l, teacher);
@@ -169,16 +169,9 @@ export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPu
           )}
           <span className="est-streak">{pace}{fill(g.streak, { n: streak ?? 0, best: ladder.best })}</span>
         </div>
-  );
-  // The puzzles and the levels go in the right-click panel too; the round itself stays on the piece.
-  return (
-    <>
-      {puzzles}
-      {levels || children}
-      <ToPanel>
-        {puzzles}
-        {levels}
-      </ToPanel>
+      ) : (
+        children
+      )}
     </>
   );
 }

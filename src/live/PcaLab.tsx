@@ -33,7 +33,7 @@ import {
 } from "../math/pcaLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** The most points free play takes. */
@@ -179,7 +179,7 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
         <span>{read}</span>
       </div>
       {(own || score) && (
-        <SettingsBar className="descent-dials">
+        <div className="live-bar descent-dials">
           {own ? (
             <label className="live-slider">
               <b>θ = {Math.round(line.angle)}°</b>
@@ -209,7 +209,7 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
               />
             </label>
           )}
-        </SettingsBar>
+        </div>
       )}
       <GameActions game={game} g={g} done={d.done} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}

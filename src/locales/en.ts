@@ -5064,7 +5064,7 @@ export const en = {
     button: "Shapes",
     title: "Maths shapes",
     hint: "Click a shape to add it to the board, or drag it where you want it. Every line and label stays editable: double-click the shape to work inside it.",
-    liveHint: "Right-click a live piece for its settings; click its middle to use it; drag it by its edge to move it.",
+    liveHint: "Click a live piece to use it; drag it to move it; right-click it to reset, copy, duplicate or delete it.",
     groups: {
       games: "Games",
       live: "Live pieces",
