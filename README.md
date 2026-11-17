@@ -1167,7 +1167,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     matter, hard none (and may ask for the angle). θ is at the foot or the top, so opposite and adjacent swap. A
     wrong side is told what it is, a wrong ratio what it joins, and a wrong rearrangement is worked out and drawn
     beside the side, so a wall taller than its ladder can be seen to be impossible (or sin⁻¹ of more than 1 to have
-    no answer, or tan⁻¹ upside down to be the other angle). No misses earns three stars. Four discoveries (θ at the
+    no answer, or tan⁻¹ upside down to be the other angle). "Why?" steps through the method on a small
+    triangle of its own, so as not to give the puzzle's sides away, opening at the step the puzzle is on: hypotenuse,
+    opposite, adjacent, the swap when θ moves corner, SOH CAH TOA, the rearrangement and the sense check; it costs no
+    stars. No misses earns three stars. Four discoveries (θ at the
     top, a division, an angle found, ten in a row)
   - *Round the unit circle*: a point P dragged round a circle of radius 1 (or turned 15° at a time with the arrow
     keys), its across drawn as cos and its up as sin as it goes. Easy: put P at an angle (30°s and 45°s, all the way

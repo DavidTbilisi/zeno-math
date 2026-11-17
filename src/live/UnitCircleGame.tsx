@@ -25,6 +25,7 @@ import {
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
+import { WhySteps } from "./WhySteps";
 
 const FRESH: Partial<LiveUnitCircle> = { p: 0, placed: false, found: [], misses: 0, done: false, said: null };
 const W = 460;
@@ -233,13 +234,7 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
         </svg>
       </Stage>
       {explain !== null && (
-        <div className="uc-why" role="note">
-          <button className="live-btn" disabled={explain === 0} aria-label={w.whyBack} onClick={() => setExplain(explain - 1)}>‹</button>
-          <p>
-            <b>{explain + 1}/{whySteps.length}</b> {fill(w.whyText[whySteps[explain]], { s: rn.sin, c: rn.cos, t: rn.tan })}
-          </p>
-          <button className="live-btn" disabled={explain === whySteps.length - 1} aria-label={w.whyNext} onClick={() => setExplain(explain + 1)}>›</button>
-        </div>
+        <WhySteps at={explain} of={whySteps.length} text={fill(w.whyText[whySteps[explain]], { s: rn.sin, c: rn.cos, t: rn.tan })} back={w.whyBack} next={w.whyNext} onStep={setExplain} />
       )}
       <GameActions game={game} g={g} done={d.done} always>
         {!d.done &&

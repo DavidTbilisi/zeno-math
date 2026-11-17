@@ -6178,6 +6178,18 @@ export const en = {
       },
     },
     trigBuild: {
+      why: "Why?",
+      whyBack: "Back a step",
+      whyNext: "Next step",
+      whyText: {
+        hyp: "The hypotenuse is the side across from the right angle. It is always the longest side.",
+        opp: "The opposite side is across from θ: the one side that doesn't touch θ.",
+        adj: "The adjacent side touches θ and isn't the hypotenuse.",
+        swap: "Move θ to the other corner and opposite and adjacent swap places. The hypotenuse stays where it is.",
+        soh: "SOH CAH TOA: {s} θ = {o} ÷ {h}, {c} θ = {a} ÷ {h}, {t} θ = {o} ÷ {a}. Choose the one with the two sides the problem is about.",
+        solve: "If x is on top ({s} θ = x ÷ 12), multiply: x = 12 × {s} θ. If x is underneath, divide. For an angle, undo {s} with {s}⁻¹.",
+        check: "Check the answer makes sense: a leg is always shorter than the hypotenuse, so an x longer than 12 here is wrong.",
+      },
       givenOne: "{an} is {a}, at {t}.",
       givenTwo: "{an} is {a} and {bn} is {b}.",
       m: "m",

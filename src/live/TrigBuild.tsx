@@ -3,9 +3,12 @@
 // tap the sides as they are asked for (the hypotenuse, the side opposite θ, the side next to it), and each takes its
 // name; choose the ratio that joins the two sides that matter; choose how to rearrange it. Each wrong step says why,
 // and a wrong rearrangement is worked out and drawn beside the side, so a wall taller than its own ladder shows. The
-// scaffold fades up the levels (see math/trigBuild.ts). No misses earns three stars, one two. Nine puzzles open in
+// scaffold fades up the levels (see math/trigBuild.ts). "Why?" steps through the method on a small triangle of its
+// own (not the puzzle's, whose sides it would give away), opening at the step the puzzle is on: the hypotenuse,
+// opposite and adjacent, the swap when θ moves corner, SOH CAH TOA, the rearrangement, and the sense check. It costs
+// no stars. No misses earns three stars, one two. Nine puzzles open in
 // turn, and the endless run keeps a streak with no misses. Built on the game shell (useGame).
-import type { KeyboardEvent, ReactNode } from "react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
 import {
   lenText,
   nameOf,
@@ -37,6 +40,7 @@ import {
 import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
+import { WhySteps } from "./WhySteps";
 
 const FRESH: Partial<LiveTrigBuild> = { at: 0, misses: 0, done: false, said: null };
 const W = 540;
@@ -79,6 +83,8 @@ function arcAt(o: P, toA: P, toB: P, r: number): string {
 
 export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigBuild">) {
   const [w, g] = [words.trigBuild, words.game];
+  // The explanation's step, or none: for this viewer only.
+  const [explain, setExplain] = useState<number | null>(null);
   const game = useGame({ key: "zeno.trigbuild.v1", size: TRIG_LADDER.length, notices: TRIG_NOTICES, modes: ["puzzle", "endless"], state: d, set, fresh: FRESH });
   const task = trigNow(d);
   const steps = stepsOf(task);
@@ -304,7 +310,18 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
           {d.done ? `  ⇒  ${opText(task, right, rn)} = ${valueText(task, right, w.m)}` : ""}
         </p>
       )}
-      <GameActions game={game} g={g} done={d.done}>
+      {explain !== null && (
+        <WhySteps
+          at={explain}
+          of={WHY.length}
+          text={fill(w.whyText[WHY[explain]], { s: rn.sin, c: rn.cos, t: rn.tan, o: w.short.opp, a: w.short.adj, h: w.short.hyp })}
+          back={w.whyBack}
+          next={w.whyNext}
+          onStep={setExplain}
+          picture={<WhyPicture step={WHY[explain]} short={w.short} />}
+        />
+      )}
+      <GameActions game={game} g={g} done={d.done} always>
         {cur?.kind === "ratio" &&
           RATIOS.map((r) => (
             <button key={r} className="live-btn on" onClick={() => pickRatio(r)}>
@@ -317,8 +334,65 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
               {opText(task, op, rn)}
             </button>
           ))}
+        <button
+          className={`live-btn${explain !== null ? " on" : ""}`}
+          aria-pressed={explain !== null}
+          onClick={() => setExplain(explain !== null ? null : WHY.indexOf(cur?.kind === "name" ? cur.n : cur?.kind === "ratio" ? "soh" : cur?.kind === "op" ? "solve" : "hyp"))}
+        >
+          💡 {w.why}
+        </button>
       </GameActions>
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
+  );
+}
+
+/** The explanation's steps, in order. */
+const WHY = ["hyp", "opp", "adj", "swap", "soh", "solve", "check"] as const;
+type WhyStep = (typeof WHY)[number];
+
+/**
+ * The explanation's own small triangle: θ at the bottom left (at the top on the swap step), the right angle at the
+ * bottom right, and the step's side lit and named. On SOH CAH TOA all three are named; on the rearrangement the
+ * hypotenuse is 12 and the up is x; on the sense check the up is drawn too long, past the top, and crossed out.
+ */
+function WhyPicture({ step, short }: { step: WhyStep; short: Record<TrigName, string> }) {
+  const [B, C, A]: P[] = [[14, 94], [134, 94], [134, 18]];
+  const top = step === "swap";
+  const side: Record<TrigSide, [P, P]> = { base: [B, C], up: [C, A], hyp: [B, A] };
+  const lit: Partial<Record<TrigSide, TrigName>> =
+    step === "hyp" ? { hyp: "hyp" }
+    : step === "opp" ? { up: "opp" }
+    : step === "adj" ? { base: "adj" }
+    : step === "swap" ? { base: "opp", up: "adj", hyp: "hyp" }
+    : step === "soh" ? { base: "adj", up: "opp", hyp: "hyp" }
+    : {};
+  const tag = (s: TrigSide, text: string, color: string) => {
+    const m = mid(...side[s]);
+    const at: P = s === "base" ? [m[0], m[1] + 14] : s === "up" ? [m[0] + 6, m[1] + 4] : [m[0] - 10, m[1] - 6];
+    return <text key={`t${s}`} x={at[0]} y={at[1]} fontSize={11} fontWeight={700} textAnchor={s === "up" ? "start" : s === "hyp" ? "end" : "middle"} fill={color}>{text}</text>;
+  };
+  return (
+    <svg width={176} height={112} viewBox="0 0 176 112" fontFamily={FONT} aria-hidden>
+      <polygon points={`${B[0]},${B[1]} ${C[0]},${C[1]} ${A[0]},${A[1]}`} fill="#fff" stroke="#adb5bd" strokeWidth={2} />
+      {(Object.keys(lit) as TrigSide[]).map((s) => {
+        const [p, q] = side[s];
+        return <line key={s} x1={p[0]} y1={p[1]} x2={q[0]} y2={q[1]} stroke={NAME_COLOR[lit[s]!]} strokeWidth={4} strokeLinecap="round" />;
+      })}
+      <path d={`M${C[0] - 10},${C[1]} V${C[1] - 10} H${C[0]}`} fill="none" stroke={step === "hyp" ? "#e03131" : "#1e1e1e"} strokeWidth={step === "hyp" ? 2 : 1.2} />
+      <path d={top ? arcAt(A, B, C, 20) : arcAt(B, C, A, 22)} fill="none" stroke="#2f9e44" strokeWidth={2} />
+      <text x={top ? A[0] - 9 : B[0] + 28} y={top ? A[1] + 32 : B[1] - 6} fontSize={12} fontWeight={700} fill="#2f9e44" textAnchor="middle">θ</text>
+      {(Object.keys(lit) as TrigSide[]).map((s) => tag(s, short[lit[s]!], NAME_COLOR[lit[s]!]))}
+      {step === "solve" && [tag("hyp", "12", "#1e1e1e"), tag("up", "x", "#e03131")]}
+      {step === "check" && (
+        <>
+          <line x1={150} y1={94} x2={150} y2={2} stroke="#e8590c" strokeWidth={3} strokeDasharray="5 3" />
+          <text x={158} y={84} fontSize={12} fontWeight={700} fill="#e8590c">x?</text>
+          <line x1={143} y1={40} x2={157} y2={54} stroke="#e03131" strokeWidth={2.5} />
+          <line x1={157} y1={40} x2={143} y2={54} stroke="#e03131" strokeWidth={2.5} />
+          {tag("hyp", "12", "#1e1e1e")}
+        </>
+      )}
+    </svg>
   );
 }
