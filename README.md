@@ -1183,6 +1183,16 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     (cos θ, sin θ), the signs in each quarter, and on a tan puzzle tan as up over across; it costs no stars. No misses
     earns three stars. Four discoveries (a point with
     both coordinates negative, tan, one angle picked by a sign, ten in a row)
+  - *SOH CAH TOA*: a bare right-angled triangle with whole sides (3, 4, 5 and the like), θ at one of its sharp
+    corners, and sin θ, cos θ and tan θ each built as a fraction: drag a side's length into the top or the bottom,
+    or tap two sides, top first. A wrong fraction is told what it is (that's cos θ; upside down; none of the three)
+    and its two sides are named on the triangle, opposite, adjacent or hypotenuse. Easy lies flat with θ at the
+    bottom and the mnemonic shown; medium turns the triangle any way and moves θ; hard gives one ratio (cos θ =
+    24/25) with the sides unlabelled: drag its two numbers onto their sides, choose the third side from four lengths
+    (the sides added, taken away, and Pythagoras the wrong way round, each drawn on the side and told why), then
+    build the other two. "Why?" steps through the right angle, opposite, adjacent, the swap, SOH CAH TOA and on hard
+    Pythagoras, on a small triangle of its own; it costs no stars. No misses earns three stars. Four discoveries
+    (all three ratios, a triangle on a slant, a whole triangle from one ratio, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four

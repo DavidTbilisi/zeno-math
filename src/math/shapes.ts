@@ -1029,6 +1029,23 @@ function unitCircleGamePreview(): Piece[] {
   ];
 }
 
+function sohcahtoaPreview(): Piece[] {
+  // A 3-4-5 triangle with θ at its foot and sin θ = 3/5 built beside it.
+  return [
+    poly([[0, 140], [120, 140], [120, 50]], { width: 2.5 }),
+    path([[108, 140], [108, 128], [120, 128]], { width: 1.5 }),
+    path(arc(0, 140, 30, 30, 0, 37), { color: "#2f9e44", width: 2.5 }),
+    text(40, 130, "θ", 15, "center", "#2f9e44"),
+    text(60, 162, "4", 16, "center"),
+    text(136, 100, "3", 16, "center", "#9c36b5"),
+    text(50, 82, "5", 16, "center", BLUE),
+    text(170, 82, "sin θ =", 15, "center"),
+    text(220, 72, "3", 16, "center", "#9c36b5"),
+    seg([206, 80], [234, 80], { width: 2 }),
+    text(220, 100, "5", 16, "center", BLUE),
+  ];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -1921,6 +1938,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSlopeLine", build: slopeLinePreview, live: "slopeLine" },
   { id: "liveTrigBuild", build: trigBuildPreview, live: "trigBuild" },
   { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
+  { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
   { id: "liveOneStroke", build: oneStrokePreview, live: "oneStroke" },
   { id: "liveColourMap", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", build: shortestPathPreview, live: "shortestPath" },
