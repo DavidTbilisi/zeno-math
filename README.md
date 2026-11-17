@@ -1175,7 +1175,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     sin θ = ½ or the like by putting P at both of its angles from 0° to 360°, the line sin = ½ dashed across the
     circle. Hard: no line; tan, drawn where the line through P meets the tangent at 1; sin or cos 0 or ±1; and an
     equation whose other ratio's sign leaves one angle. A wrong angle is told how far to turn, or what its ratio
-    really is there and whether only the sign is wrong. No misses earns three stars. Four discoveries (a point with
+    really is there and whether only the sign is wrong. "Why cos and sin?" steps through the reason on the
+    picture: the right-angled triangle under P with hypotenuse 1, its up lit as sin, its across lit as cos, P as
+    (cos θ, sin θ), the signs in each quarter, and on a tan puzzle tan as up over across; it costs no stars. No misses
+    earns three stars. Four discoveries (a point with
     both coordinates negative, tan, one angle picked by a sign, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape

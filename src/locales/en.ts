@@ -6226,6 +6226,17 @@ export const en = {
       },
     },
     unitCircleGame: {
+      why: "Why {c} and {s}?",
+      whyBack: "Back a step",
+      whyNext: "Next step",
+      whyText: {
+        triangle: "Drop a line from P straight down (or up) to the x-axis: that makes a right-angled triangle, and its hypotenuse is the radius, 1.",
+        sin: "{s} θ = opposite ÷ hypotenuse = opposite ÷ 1. So the up, the purple side, is {s} θ.",
+        cos: "{c} θ = adjacent ÷ hypotenuse = adjacent ÷ 1. So the across, the teal side, is {c} θ.",
+        point: "That's why P is ({c} θ, {s} θ): across first, then up, like x before y (and c before s in the alphabet).",
+        signs: "Past 90° the across and the up keep going, with signs: left of the y-axis {c} θ is negative, below the x-axis {s} θ is negative.",
+        tan: "{t} θ = {s} θ ÷ {c} θ: up over across, how steep the radius is. Follow it out to the line x = 1 and the height there is {t} θ.",
+      },
       handle: "P, on the circle",
       ratios: { sin: "sin", cos: "cos", tan: "tan" },
       and: " and ",
