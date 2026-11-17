@@ -1160,6 +1160,15 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     on arms from a point draws the arm it would make, dashed, so it can be seen to be too big or too small. Right
     first time earns three stars. Four discoveries (a whole turn's last angle, one under 30°, an isosceles base angle,
     ten in a row)
+  - *Trig builder*: a ladder against a wall, a ramp or a pole's support cable, drawn to scale, with an angle and a
+    side given and a side or the angle to find, solved a step at a time on the picture: tap the sides as they are
+    asked for (hypotenuse, opposite θ, adjacent) and each takes its name; choose sin, cos or tan; choose the
+    rearrangement (× or ÷, or the inverse). The scaffold fades: easy names all three sides, medium the two that
+    matter, hard none (and may ask for the angle). θ is at the foot or the top, so opposite and adjacent swap. A
+    wrong side is told what it is, a wrong ratio what it joins, and a wrong rearrangement is worked out and drawn
+    beside the side, so a wall taller than its ladder can be seen to be impossible (or sin⁻¹ of more than 1 to have
+    no answer, or tan⁻¹ upside down to be the other angle). No misses earns three stars. Four discoveries (θ at the
+    top, a division, an angle found, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four
