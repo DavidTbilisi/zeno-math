@@ -3,7 +3,7 @@
 // pointer is (handed over as a library item, which Excalidraw places itself). What lands on the board is ordinary
 // elements in one group, so every line and label can still be moved, recoloured or retyped; a live piece lands as
 // one element that answers clicks (see live/).
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   CaptureUpdateAction,
   convertToExcalidrawElements,
@@ -19,12 +19,14 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useI18n } from "../i18n";
 import { SHAPE_GROUPS, SHAPES, type Piece, type ShapeDef, type ShapeWords } from "../math/shapes";
 import { liveElement } from "../live/element";
+import { isLiveEntry, MENUS } from "../menus";
 
 export const SHAPES_TAB = "maths";
 const INK = "#1e1e1e";
 // Thumbnails by theme and language (a few pieces carry words), kept while the page is open: the panel unmounts each
 // time it closes.
 const thumbCache = new Map<string, Record<string, string>>();
+const BY_LIVE = new Map(SHAPES.filter((s) => s.live).map((s) => [s.live!, s]));
 
 /**
  * Where something w × h wide can go at x without covering anything: from y, slid down below whatever it would
@@ -176,18 +178,32 @@ export function ShapesPanel({ api, theme }: { api: () => ExcalidrawImperativeAPI
   };
 
   const svg = thumbs.key === key ? thumbs.svg : {};
+  const tile = (s: ShapeDef) => <Tile key={s.id} shape={s} words={words} name={w.names[s.id as keyof typeof w.names]} thumb={svg[s.id]} onInsert={insert} />;
   return (
     <div className="shapes-panel">
       <p className="hint">{w.hint}</p>
-      {SHAPE_GROUPS.map((g) => (
+      <p className="hint">{w.liveHint}</p>
+      {/* Live pieces under the toolbar menu and heading they have there, in the same order. */}
+      {MENUS.map((m) => {
+        const sections = m.sections
+          .map((sec) => ({ title: sec.title, shapes: sec.items.filter(isLiveEntry).flatMap((e) => BY_LIVE.get(e.live) ?? []) }))
+          .filter((sec) => sec.shapes.length);
+        return sections.length ? (
+          <section key={m.label}>
+            <h3>{t[m.title ?? m.label]}</h3>
+            {sections.map((sec, i) => (
+              <Fragment key={sec.title ?? i}>
+                {sec.title && <h4>{t[sec.title]}</h4>}
+                <div className="shape-grid">{sec.shapes.map(tile)}</div>
+              </Fragment>
+            ))}
+          </section>
+        ) : null;
+      })}
+      {SHAPE_GROUPS.filter((g) => g !== "games" && g !== "live").map((g) => (
         <section key={g}>
           <h3>{w.groups[g]}</h3>
-          {(g === "games" || g === "live") && <p className="hint">{w.liveHint}</p>}
-          <div className="shape-grid">
-            {SHAPES.filter((s) => s.group === g).map((s) => (
-              <Tile key={s.id} shape={s} words={words} name={w.names[s.id as keyof typeof w.names]} thumb={svg[s.id]} onInsert={insert} />
-            ))}
-          </div>
+          <div className="shape-grid">{SHAPES.filter((s) => s.group === g).map(tile)}</div>
         </section>
       ))}
     </div>

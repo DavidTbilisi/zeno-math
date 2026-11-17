@@ -34,7 +34,8 @@ import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { BarIcon } from "../components/BarIcon";
 import { ZenoMark } from "../components/ZenoMark";
-import { isToolKind, MENUS, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
+import { isLiveEntry, MENUS } from "../menus";
+import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 
 /** When a change to the scene is recorded for undo (now, with the next recorded change, or never). */
 type CaptureUpdateActionType = (typeof CaptureUpdateAction)[keyof typeof CaptureUpdateAction];
@@ -88,143 +89,6 @@ const libraryStore = {
     }
   },
 };
-
-type LiveEntry = { kind: LiveKind; icon: string; name: keyof Dict["shapes"]["names"] };
-
-// Live pieces offered in the tool menus too (all of them are in the Shapes panel), by menu.
-const LIVE_IN_MENUS: Record<string, LiveEntry[]> = {
-  groupArithmetic: [
-    { kind: "division", icon: "÷", name: "liveDivision" },
-    { kind: "soroban", icon: "🧮", name: "liveSoroban" },
-    { kind: "numberLine", icon: "↔", name: "liveNumberLine" },
-  ],
-  groupAlgebraShort: [{ kind: "graph", icon: "🎚", name: "liveGraph" }],
-  groupGeometryShort: [{ kind: "geoLab", icon: "📐", name: "liveGeoLab" }],
-  groupAi: [
-    { kind: "descentLab", icon: "⛳", name: "liveDescentLab" },
-    { kind: "pcaLab", icon: "📏", name: "livePcaLab" },
-    { kind: "softmaxLab", icon: "📊", name: "liveSoftmaxLab" },
-    { kind: "embedLab", icon: "🧭", name: "liveEmbedLab" },
-    { kind: "backpropLab", icon: "🔙", name: "liveBackpropLab" },
-    { kind: "tensorLab", icon: "🧊", name: "liveTensorLab" },
-    { kind: "fitLab", icon: "〰", name: "liveFitLab" },
-    { kind: "batchLab", icon: "🎯", name: "liveBatchLab" },
-    { kind: "rocLab", icon: "⚖", name: "liveRocLab" },
-    { kind: "knnLab", icon: "📍", name: "liveKnnLab" },
-    { kind: "treeLab", icon: "🌳", name: "liveTreeLab" },
-    { kind: "kmeansLab", icon: "✳", name: "liveKmeansLab" },
-    { kind: "nnLab", icon: "🕸", name: "liveNnLab" },
-    { kind: "convLab", icon: "▩", name: "liveConvLab" },
-    { kind: "attnLab", icon: "👁", name: "liveAttnLab" },
-    { kind: "rnnLab", icon: "🔁", name: "liveRnnLab" },
-    { kind: "rlLab", icon: "🎲", name: "liveRlLab" },
-  ],
-  groupDiscreteShort: [
-    { kind: "chance", icon: "🎲", name: "liveChance" },
-    { kind: "rubik", icon: "🧩", name: "liveRubik" },
-    { kind: "patterns", icon: "👆", name: "livePatterns" },
-    { kind: "problems", icon: "🧑‍💻", name: "liveProblems" },
-    { kind: "solver", icon: "🧮", name: "liveSolver" },
-  ],
-};
-
-// The games, apart from the tools in a menu of their own, by the sense each one builds.
-const GAME_MENU: { sense: "senseNumber" | "senseNumberPatterns" | "senseFraction" | "senseAlgebra" | "senseShape" | "senseChart" | "senseGraph" | "senseAlgo" | "senseData" | "senseSystem"; games: LiveEntry[] }[] = [
-  {
-    sense: "senseNumber", games: [
-      { kind: "estimate", icon: "📍", name: "liveEstimate" },
-      { kind: "quickLook", icon: "👀", name: "liveQuickLook" },
-      { kind: "target", icon: "🎯", name: "liveTarget" },
-      { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
-      { kind: "kakooma", icon: "🔢", name: "liveKakooma" },
-      { kind: "baseTen", icon: "🧊", name: "liveBaseTen" },
-      { kind: "cubes", icon: "🟥", name: "liveCubes" },
-    ],
-  },
-  {
-    sense: "senseNumberPatterns", games: [
-      { kind: "numberShapes", icon: "⠿", name: "liveNumberShapes" },
-      { kind: "primeSlice", icon: "✂️", name: "livePrimeSlice" },
-      { kind: "divisible", icon: "➗", name: "liveDivisible" },
-      { kind: "growing", icon: "🧱", name: "liveGrowing" },
-      { kind: "machine", icon: "⚙️", name: "liveMachine" },
-    ],
-  },
-  {
-    sense: "senseFraction", games: [
-      { kind: "fractionWall", icon: "▤", name: "liveFractionWall" },
-      { kind: "equivMatch", icon: "🃏", name: "liveEquivMatch" },
-      { kind: "fracOrder", icon: "⇢", name: "liveFracOrder" },
-      { kind: "shadeFrac", icon: "◔", name: "liveShadeFrac" },
-    ],
-  },
-  {
-    sense: "senseAlgebra", games: [
-      { kind: "algebraTiles", icon: "▦", name: "liveAlgebraTiles" },
-      { kind: "balance", icon: "⚖️", name: "liveBalance" },
-      { kind: "exprMatch", icon: "x=", name: "liveExprMatch" },
-    ],
-  },
-  {
-    sense: "senseShape", games: [
-      { kind: "geoLab", icon: "📐", name: "liveGeoLab" },
-      { kind: "geoboard", icon: "⬠", name: "liveGeoboard" },
-      { kind: "angleGuess", icon: "∠", name: "liveAngleGuess" },
-      { kind: "angleHunt", icon: "📐", name: "liveAngleHunt" },
-      { kind: "mirror", icon: "🦋", name: "liveMirror" },
-      { kind: "views3d", icon: "🧊", name: "liveViews3d" },
-      { kind: "cubeNet", icon: "🎲", name: "liveCubeNet" },
-    ],
-  },
-  {
-    sense: "senseChart", games: [
-      { kind: "plotPoint", icon: "⌖", name: "livePlotPoint" },
-      { kind: "barChart", icon: "📊", name: "liveBarChart" },
-      { kind: "graphStory", icon: "🚶", name: "liveGraphStory" },
-      { kind: "slopeLine", icon: "📈", name: "liveSlopeLine" },
-    ],
-  },
-  {
-    sense: "senseGraph", games: [
-      { kind: "oneStroke", icon: "✍️", name: "liveOneStroke" },
-      { kind: "colourMap", icon: "🎨", name: "liveColourMap" },
-      { kind: "shortestPath", icon: "🧭", name: "liveShortestPath" },
-      { kind: "connectTowns", icon: "🛤️", name: "liveConnectTowns" },
-    ],
-  },
-  {
-    sense: "senseAlgo", games: [
-      { kind: "beSort", icon: "🔀", name: "liveBeSort" },
-      { kind: "beSearch", icon: "🔦", name: "liveBeSearch" },
-      { kind: "beDp", icon: "▦", name: "liveBeDp" },
-      { kind: "beBinary", icon: "🔍", name: "liveBeBinary" },
-      { kind: "bePointers", icon: "👉", name: "liveBePointers" },
-      { kind: "beWindow", icon: "🪟", name: "liveBeWindow" },
-      { kind: "beBacktrack", icon: "♛", name: "liveBeBacktrack" },
-      { kind: "beTopo", icon: "➡️", name: "liveBeTopo" },
-      { kind: "beName", icon: "🏷️", name: "liveBeName" },
-    ],
-  },
-  {
-    sense: "senseData", games: [
-      { kind: "beHeap", icon: "⛰️", name: "liveBeHeap" },
-      { kind: "beTree", icon: "🌳", name: "liveBeTree" },
-      { kind: "beStack", icon: "📚", name: "liveBeStack" },
-      { kind: "beUnion", icon: "🔗", name: "liveBeUnion" },
-    ],
-  },
-  {
-    sense: "senseSystem", games: [
-      { kind: "beCache", icon: "🗄️", name: "liveBeCache" },
-      { kind: "beBalance", icon: "⚖️", name: "liveBeBalance" },
-      { kind: "beRing", icon: "⭕", name: "liveBeRing" },
-      { kind: "beLimit", icon: "🚦", name: "liveBeLimit" },
-      { kind: "beQuorum", icon: "🗃️", name: "liveBeQuorum" },
-      { kind: "beQueue", icon: "📨", name: "liveBeQueue" },
-      { kind: "beComp", icon: "🧱", name: "liveBeComp" },
-    ],
-  },
-];
 
 const mathOf = (el: ExcalidrawElement | undefined): MathData | undefined =>
   el?.type === "image" && isToolKind(el.customData?.kind) ? (el.customData as MathData) : undefined;
@@ -787,18 +651,16 @@ export function BoardPage({ id }: { id: string }) {
           <BarIcon name="shapes" /> <span className="btn-label minor">{t.shapes.button}</span>
         </button>
         {MENUS.map((m) => (
-          <ToolMenu key={m.label} icon={<BarIcon name={m.icon} />} label={t[m.label]} title={m.title && t[m.title]} items={[
-            ...m.items.map((it) => ({
+          <ToolMenu key={m.label} icon={<BarIcon name={m.icon} />} label={t[m.label]} title={m.title && t[m.title]} items={m.sections.flatMap((sec) =>
+            sec.items.map((it) => ({
               icon: it.icon,
-              label: t[it.label],
-              onPick: () => open({ kind: it.kind, start: it.start }),
+              section: sec.title && t[sec.title],
+              ...(isLiveEntry(it)
+                ? { label: pieceName(it.live), onPick: () => addLive(it.live) }
+                : { label: t[it.label], onPick: () => open({ kind: it.kind, start: it.start }) }),
             })),
-            ...(LIVE_IN_MENUS[m.label] ?? []).map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], onPick: () => addLive(it.kind) })),
-          ]} />
+          )} />
         ))}
-        <ToolMenu icon={<BarIcon name="games" />} label={t.gamesMenu} items={GAME_MENU.flatMap((s) =>
-          s.games.map((it) => ({ icon: it.icon, label: t.shapes.names[it.name], section: t[s.sense], onPick: () => addLive(it.kind) })),
-        )} />
         <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })} />
         <LangSelect />
       </header>
