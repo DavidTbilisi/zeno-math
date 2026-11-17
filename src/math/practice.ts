@@ -150,6 +150,11 @@ export type Exercise = {
 export type Part = Omit<Exercise, "skill" | "level" | "seed" | "worked">;
 
 export type PracticeWords = {
+  practicalTrig: {
+    ladder: string; ramp: string; cable: string;
+    opp: string; adj: string; hyp: string; ang: string;
+    given: string; find: string; length: string; angle: string; diagram: string;
+  };
   bad: string;
   onlyX: string;
   tooBig: string;
@@ -2649,7 +2654,7 @@ const GENS: Record<SkillId, Gen> = {
       }
     }
     // The values the trig tool needs; unknown sides get a placeholder it ignores for this case.
-    const spec = { topic: "right", given, opp: known.opp ?? "3", adj: known.adj ?? "4", hyp: known.hyp ?? S(hyp), ang: known.ang ?? "30" };
+    const spec = { topic: "right", given, ask, opp: known.opp ?? "3", adj: known.adj ?? "4", hyp: known.hyp ?? S(hyp), ang: known.ang ?? "30" };
     const pic = (x0: number, y0: number) => {
       // θ at bottom left, right angle at bottom right; roughly to scale, except that a steeper angle is drawn
       // as STEEPEST so that its label still fits inside.
@@ -2687,6 +2692,38 @@ const GENS: Record<SkillId, Gen> = {
       plain: dp(v, 2),
       format: "dp2",
       solution: { kind: "trig", spec },
+    };
+  },
+
+  practicalTrig(r, L, w) {
+    const ex = GENS.righttri(r, L, w);
+    const s = ex.solution!.spec as { given: string; ask: "opp" | "adj" | "hyp" | "ang"; opp: string; adj: string; hyp: string; ang: string };
+    const p = w.practicalTrig;
+    const scenario = r.pick(["ladder", "ramp", "cable"] as const);
+    const keys = { angHyp: ["ang", "hyp"], angAdj: ["ang", "adj"], angOpp: ["ang", "opp"], oppAdj: ["opp", "adj"], oppHyp: ["opp", "hyp"], adjHyp: ["adj", "hyp"] } as const;
+    const given = keys[s.given as keyof typeof keys].map((k) => fill(p.given, { name: p[k], value: s[k], unit: k === "ang" ? "°" : "m" })).join("; ");
+    const original = ex.pic!;
+    return {
+      ...ex,
+      prompt: `${p[scenario]} ${given}. ${fill(p.find, { name: p[s.ask] })} ${s.ask === "ang" ? p.angle : p.length} ${p.diagram}`,
+      pic: {
+        ...original,
+        svg: (x: number, y: number) => {
+          const svg = original.svg(x, y);
+          // Keep the same mathematical geometry as the checked question, adding the physical setting.
+          const points = /points="([^"]+)"/.exec(svg)![1].split(/[ ,]/).map(Number);
+          const [bx, by, cx, , , ay] = points;
+          const setting = `<path d="M${bx - 8},${by + 3} H${cx + 5} V${ay - 8}" fill="none" stroke="${C.ink}" stroke-width="3"/>`;
+          const rungs = scenario === "ladder" ? Array.from({ length: 7 }, (_, i) => {
+            const t = (i + 1) / 8;
+            const px = bx + (cx - bx) * t;
+            const py = by + (ay - by) * t;
+            return `<path d="M${r2(px - 3)},${r2(py - 4)} l6,8" stroke="${C.orange}" stroke-width="2"/>`;
+          }).join("") : "";
+          return setting + svg + rungs;
+        },
+      },
+      show: `${ex.show}${s.ask === "ang" ? "" : "\\,\\mathrm{m}"}`,
     };
   },
 

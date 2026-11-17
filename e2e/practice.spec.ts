@@ -72,6 +72,17 @@ test("an inequality is accepted however its sign is typed", async ({ page, reque
   await expect(page.getByText("Correct!")).toBeVisible();
 });
 
+test("practical trig opens directly and checks a real-world measurement", async ({ page }) => {
+  const r = 0.123;
+  await page.addInitScript((value) => { Math.random = () => value; }, r);
+  await page.goto("/#/practice/practicalTrig.1");
+  const ex = exercise("practicalTrig", 1, seedOf(r), w);
+  await expect(page.locator(".practice-question")).toContainText(ex.prompt);
+  await page.getByLabel(/^Your answer/).fill(ex.plain);
+  await page.getByRole("button", { name: "Check", exact: true }).click();
+  await expect(page.locator(".practice-verdict.ok")).toContainText(w.ui.correct);
+});
+
 test("practice has a page of its own, reached from the home page", async ({ page }) => {
   const { r, ex } = questionWith("fractions", () => true);
   await page.goto("/");

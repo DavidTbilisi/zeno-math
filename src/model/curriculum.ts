@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri", "practicalTrig",
   "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -66,6 +66,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   line: ["linear"],
   distance: ["line"],
   righttri: ["fractions"],
+  practicalTrig: ["righttri"],
   probability: ["fractions"],
   similarity: ["percent"],
   volume: ["times"],
@@ -204,6 +205,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   factor: [8, 8, 8],
   quadratic: [8, 8, 10], // by factorisation (Sec 2); by the formula (Sec 3/4)
   simultaneous: [8, 8, 8],
+  practicalTrig: [8, 8, 8],
   righttri: [8, 8, 8], // sine, cosine and tangent of acute angles
   similarity: [8, 8, 10], // similar figures (Sec 2); ratios of areas and volumes (Sec 3/4)
   volume: [7, 8, 8], // prisms and cylinders (Sec 1); pyramids, cones and spheres (Sec 2)
