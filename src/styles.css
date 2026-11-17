@@ -800,6 +800,10 @@ input.invalid { border-color: var(--danger); }
 .live-history { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
 .live-chip { padding: 1px 8px; border: 1px solid #dee2e6; border-radius: 10px; background: #f1f3f5; font-size: 13px; }
 .live-hint { margin: 0; font-size: 12px; color: #868e96; text-align: center; }
+/* The unit circle game's explanation of cos and sin. */
+.uc-why { display: flex; align-items: center; gap: 8px; max-width: 480px; padding: 4px 8px; background: #fff9db; border-left: 4px solid #f59f00; border-radius: 4px; font-size: 13px; line-height: 1.35; }
+.uc-why p { margin: 0; flex: 1; min-height: 3.6em; display: flex; align-items: center; }
+.uc-why b { margin-right: 6px; color: #f08c00; }
 .live-note { font-size: 12px; color: #868e96; }
 .live-stage { display: flex; align-items: center; justify-content: center; flex: none; }
 .live .live-num { width: 7em; font-family: ui-monospace, Menlo, Consolas, monospace; text-align: right; }

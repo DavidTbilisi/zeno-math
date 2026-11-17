@@ -5,7 +5,7 @@ import { rng } from "../src/math/random.ts";
 import { CIRCLE_LADDER, circleTask } from "../src/math/unitCircleGame.ts";
 import { boardWith } from "./helpers.ts";
 
-test("unit circle: P put at 120° with the arrow keys, then its coordinates picked", async ({ page }) => {
+test("unit circle: P put at 120° with the arrow keys, then its coordinates picked; the hint says why", async ({ page }) => {
   const game = await boardWith(page, "Round the unit circle", ".live-unitCircleGame");
   const t = circleTask(CIRCLE_LADDER[0].level, rng(CIRCLE_LADDER[0].seed));
   expect(t.kind === "place" && t.angle).toBe(120);
@@ -27,4 +27,12 @@ test("unit circle: P put at 120° with the arrow keys, then its coordinates pick
   await expect(game.getByText(/is the point at \d+° \(in orange\)/)).toBeVisible();
   await game.getByRole("button", { name: "(−½, √3/2)" }).click();
   await expect(game.getByText(/^Right! P at 120° is \(−½, √3\/2\)\. ★☆☆/)).toBeVisible();
+  // The explanation, open after the puzzle too: why the up is sin and the across cos.
+  // A step at a time: the triangle first, then why the up is sin.
+  await game.getByRole("button", { name: "💡 Why cos and sin?" }).click();
+  await expect(game.getByRole("note")).toContainText("1/5 Drop a line from P straight down");
+  await game.getByRole("button", { name: "Next step" }).click();
+  await expect(game.getByRole("note")).toContainText("2/5 sin θ = opposite ÷ hypotenuse = opposite ÷ 1. So the up, the purple side, is sin θ.");
+  await game.getByRole("button", { name: "💡 Why cos and sin?" }).click();
+  await expect(game.getByRole("note")).toHaveCount(0);
 });

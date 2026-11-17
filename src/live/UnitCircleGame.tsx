@@ -3,7 +3,10 @@
 // (a wrong pair is drawn, in orange, where it really is). Medium: solve sin θ = ½ or the like by putting P at each of
 // its angles, the line sin = ½ dashed across the circle. Hard: no line; tan, drawn where the line through P meets the
 // tangent at 1; and an equation with one angle, the other ratio's sign given. A wrong angle is told what its ratio
-// really is there, and whether only the sign is wrong. No misses earns three stars, one two. Built on the game shell.
+// really is there, and whether only the sign is wrong. "Why cos and sin?" steps through why, a sentence at a time,
+// on the picture: the right-angled triangle under P (its hypotenuse the radius, 1), its up lit as sin, its across lit
+// as cos, P as (cos θ, sin θ), the signs in each quarter, and on a tan puzzle tan. It is help, not an answer, so it
+// costs no stars. No misses earns three stars, one two. Built on the game shell.
 import { useState, type KeyboardEvent, type PointerEvent } from "react";
 import {
   CIRCLE_LADDER,
@@ -39,6 +42,8 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
   const task = circleNow(d);
   const stars = circleStars(d.misses);
   const [drag, setDrag] = useState<number | null>(null);
+  // The explanation, open or shut, for this viewer only.
+  const [explain, setExplain] = useState<number | null>(null);
   const p = drag ?? d.p;
   const moving = !d.done && !(task.kind === "place" && d.placed);
 
@@ -66,6 +71,7 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
   };
 
   const rn = w.ratios;
+  const whySteps: WhyStep[] = ["triangle", "sin", "cos", "point", "signs", ...(task.kind === "solve" && task.fn === "tan" ? ["tan" as const] : [])];
   const eq = task.kind === "solve" ? `${rn[task.fn]} θ = ${exactText(task.v)}${task.cond ? `${w.and}${w.cond[task.cond]}` : ""}` : "";
   const list = (xs: number[]) => xs.map((a) => `${a}°`).join(", ");
 
@@ -178,11 +184,12 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
           {/* The angle from 0°, anticlockwise, and the radius to P. */}
           {p !== 0 && <path d={`M${CX + arcR},${CY} A${arcR},${arcR} 0 ${p > 180 ? 1 : 0} 0 ${ax},${ay}`} fill="none" stroke="#2f9e44" strokeWidth={2.5} />}
           <line x1={CX} y1={CY} x2={px} y2={py} stroke="#1971c2" strokeWidth={2.5} />
+          {explain !== null && <WhyTriangle p={p} step={whySteps[explain]} words={{ c: rn.cos, s: rn.sin }} />}
           {/* P's across (cos) and up (sin). */}
           <line x1={CX} y1={CY} x2={px} y2={CY} stroke={wrongAt && task.kind === "solve" && task.fn === "cos" ? "#e8590c" : COS} strokeWidth={5} strokeLinecap="round" />
           <line x1={px} y1={CY} x2={px} y2={py} stroke={wrongAt && task.kind === "solve" && task.fn === "sin" ? "#e8590c" : SIN} strokeWidth={5} strokeLinecap="round" />
-          {Math.abs(px - CX) > 24 && <text x={r2((CX + px) / 2)} y={py < CY ? CY + 18 : CY - 8} fontSize={13} fontWeight={700} textAnchor="middle" fill={COS}>{rn.cos}</text>}
-          {Math.abs(py - CY) > 24 && <text x={px + (px >= CX ? 8 : -8)} y={r2((CY + py) / 2 + 5)} fontSize={13} fontWeight={700} textAnchor={px >= CX ? "start" : "end"} fill={SIN}>{rn.sin}</text>}
+          {Math.abs(px - CX) > 24 && <text x={r2((CX + px) / 2)} y={py < CY ? CY + 18 : CY - 8} fontSize={13} fontWeight={700} textAnchor="middle" stroke="#fff" strokeWidth={4} paintOrder="stroke" fill={COS}>{rn.cos}</text>}
+          {Math.abs(py - CY) > 24 && <text x={px + (px >= CX ? 8 : -8)} y={r2((CY + py) / 2 + 5)} fontSize={13} fontWeight={700} textAnchor={px >= CX ? "start" : "end"} stroke="#fff" strokeWidth={4} paintOrder="stroke" fill={SIN}>{rn.sin}</text>}
           {d.found.map((a) => {
             const [x, y] = at(a);
             const [lx, ly] = at(a, R + 30);
@@ -225,17 +232,78 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
           </text>
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        {task.kind === "place" && d.placed
-          ? task.choices.map((b) => (
-              <button key={b} className="live-btn on" disabled={b === ghost} onClick={() => pickCoords(b)}>
-                {coordText(b)}
-              </button>
-            ))
-          : <button className="live-btn on" onClick={check}>{g.check}</button>}
+      {explain !== null && (
+        <div className="uc-why" role="note">
+          <button className="live-btn" disabled={explain === 0} aria-label={w.whyBack} onClick={() => setExplain(explain - 1)}>‹</button>
+          <p>
+            <b>{explain + 1}/{whySteps.length}</b> {fill(w.whyText[whySteps[explain]], { s: rn.sin, c: rn.cos, t: rn.tan })}
+          </p>
+          <button className="live-btn" disabled={explain === whySteps.length - 1} aria-label={w.whyNext} onClick={() => setExplain(explain + 1)}>›</button>
+        </div>
+      )}
+      <GameActions game={game} g={g} done={d.done} always>
+        {!d.done &&
+          (task.kind === "place" && d.placed
+            ? task.choices.map((b) => (
+                <button key={b} className="live-btn on" disabled={b === ghost} onClick={() => pickCoords(b)}>
+                  {coordText(b)}
+                </button>
+              ))
+            : <button className="live-btn on" onClick={check}>{g.check}</button>)}
+        <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain === null ? 0 : null)}>
+          💡 {fill(w.why, { s: rn.sin, c: rn.cos })}
+        </button>
       </GameActions>
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
+  );
+}
+
+type WhyStep = "triangle" | "sin" | "cos" | "point" | "signs" | "tan";
+const QUARTERS: { at: [number, number]; c: string; s: string }[] = [
+  { at: [W - 62, 30], c: "+", s: "+" },
+  { at: [62, 30], c: "−", s: "+" },
+  { at: [62, H - 30], c: "−", s: "−" },
+  { at: [W - 62, H - 30], c: "+", s: "−" },
+];
+/**
+ * A step of the explanation on the picture: the right-angled triangle under P, always, with the radius marked 1, the
+ * right angle and θ; then the up lit (sin), the across lit (cos), P named (cos θ, sin θ), or the signs of cos and sin
+ * in each quarter. P on an axis makes no triangle: then only the 1 is marked.
+ */
+function WhyTriangle({ p, step, words }: { p: number; step: WhyStep; words: { c: string; s: string } }) {
+  const [px, py] = at(p);
+  const flat = p % 90 === 0;
+  const [mx, my] = at(p, R / 2);
+  // The 1 sits off the radius, on the side away from the triangle (which lies toward the x-axis).
+  const q = (p + (p % 180 < 90 ? 90 : -90)) * RAD;
+  const [nx, ny] = [Math.cos(q) * 14, -Math.sin(q) * 14];
+  const sx = px > CX ? -1 : 1;
+  const sy = py < CY ? -1 : 1;
+  // θ halfway along its arc.
+  const [tx, ty] = at(p / 2, 46);
+  const glow = (x1: number, y1: number, x2: number, y2: number, color: string) => <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={16} strokeOpacity={0.3} strokeLinecap="round" />;
+  return (
+    <g>
+      {!flat && <polygon points={`${CX},${CY} ${px},${CY} ${px},${py}`} fill="#fff3bf" fillOpacity={0.7} stroke="none" />}
+      {!flat && <path d={`M${r2(px + sx * 12)},${CY} V${r2(CY + sy * 12)} H${px}`} fill="none" stroke="#1e1e1e" strokeWidth={1.4} />}
+      {step === "triangle" && glow(CX, CY, px, py, "#1971c2")}
+      {step === "sin" && glow(px, CY, px, py, SIN)}
+      {step === "cos" && glow(CX, CY, px, CY, COS)}
+      <text x={r2(mx + nx)} y={r2(my + ny + 5)} fontSize={15} fontWeight={700} textAnchor="middle" fill="#1971c2" stroke="#fff" strokeWidth={4} paintOrder="stroke">1</text>
+      {!flat && <text x={tx} y={ty + 5} fontSize={13} fontWeight={700} textAnchor="middle" fill="#2f9e44" stroke="#fff" strokeWidth={4} paintOrder="stroke">θ</text>}
+      {step === "point" && (
+        <text x={Math.max(72, Math.min(W - 72, px))} y={py + (py <= CY ? -32 : 44)} fontSize={15} fontWeight={700} textAnchor="middle" stroke="#fff" strokeWidth={4} paintOrder="stroke">
+          (<tspan fill={COS}>{words.c} θ</tspan>, <tspan fill={SIN}>{words.s} θ</tspan>)
+        </text>
+      )}
+      {step === "signs" &&
+        QUARTERS.map((k) => (
+          <text key={k.at.join()} x={k.at[0]} y={k.at[1]} fontSize={14} fontWeight={700} textAnchor="middle">
+            <tspan fill={COS}>{words.c} {k.c}</tspan> <tspan fill={SIN}>{words.s} {k.s}</tspan>
+          </text>
+        ))}
+    </g>
   );
 }
 

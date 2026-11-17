@@ -562,7 +562,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   graphStory: [600, 600],
   slopeLine: [560, 700],
   trigBuild: [600, 660],
-  unitCircleGame: [520, 680],
+  unitCircleGame: [520, 760],
   oneStroke: [560, 500],
   colourMap: [560, 540],
   shortestPath: [560, 540],
