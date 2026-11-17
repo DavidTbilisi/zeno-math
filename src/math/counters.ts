@@ -106,3 +106,24 @@ export function slots({ pos, neg }: Mat): { pos: number[]; neg: number[]; paired
     paired: z,
   };
 }
+
+/**
+ * Which chips are drawn as zero pairs, given the slot of every + chip and every − chip (there may be gaps where chips
+ * were taken away). A + and a − in the same slot pair first, one above the other; any pairs still to find come from the
+ * ends of the two rows. As many pairs as `pairs` counts.
+ */
+export function pairUp(pos: number[], neg: number[]): { pos: boolean[]; neg: boolean[] } {
+  const z = Math.min(pos.length, neg.length);
+  const out = { pos: pos.map(() => false), neg: neg.map(() => false) };
+  let found = 0;
+  pos.forEach((s, i) => {
+    const j = neg.findIndex((t, k) => t === s && !out.neg[k]);
+    if (j >= 0 && found < z) [out.pos[i], out.neg[j], found] = [true, true, found + 1];
+  });
+  for (let i = pos.length - 1, j = neg.length - 1; found < z; ) {
+    while (out.pos[i]) i--;
+    while (out.neg[j]) j--;
+    [out.pos[i], out.neg[j], found] = [true, true, found + 1];
+  }
+  return out;
+}

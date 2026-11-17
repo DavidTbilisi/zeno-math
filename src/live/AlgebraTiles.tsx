@@ -7,7 +7,7 @@ import {
   clampFactors, FACTOR_TARGETS, matText, net, ONE_RANGE, partsText, poly, product, rectangle, removePairs, rows, same,
   side, TILE_CAP, TILE_KINDS, TILE_MODES, X_RANGE, zeroPairs, type Counts, type Tile, type TileKind,
 } from "../math/algebraTiles";
-import { usePops } from "./pops";
+import { useHeld, usePops } from "./pops";
 import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
 
 const W = 640;
@@ -58,12 +58,16 @@ export function AlgebraTiles({ state, set, w: words, svgRef }: PieceProps<"algeb
   let bar: ReactNode;
   const [drag, setDrag] = useState<Drag | null>(null);
   const [ghosts, pop] = usePops<{ t: Tile; u: number; zero?: boolean }>();
+  // Combine's tiles hold their places when some are taken away (gaps where they were) until the mat changes another way.
+  const matKey = (p: Counts, n: Counts) => `${p.join()}|${n.join()}`;
+  const [held, dropTiles] = useHeld(matKey(pos, neg), rows(pos, neg, 16).tiles);
   /** The picture's own pointer handlers: a drag in combine. */
   let svgOn: { onPointerMove?: (e: ReactPointerEvent<SVGSVGElement>) => void; onPointerUp?: () => void; onPointerCancel?: () => void } = {};
 
   if (mode === "combine") {
     const pairs = zeroPairs(pos, neg);
-    const { tiles, h } = rows(pos, neg, 16);
+    const tiles = held;
+    const h = Math.max(0, ...tiles.map((t) => t.y + t.h));
     const u = Math.min(30, PIC_W / 16, PIC_H / Math.max(h, 1));
     // The first tiles of each kind on either side are the ones in pairs.
     const seen = { pos: [0, 0, 0], neg: [0, 0, 0] };
@@ -97,12 +101,18 @@ export function AlgebraTiles({ state, set, w: words, svgRef }: PieceProps<"algeb
       if (!drag) return;
       setDrag(null);
       const t = tiles[drag.i];
-      if (!drag.moved) return set({ ...state, ...counts(t, -1) });
+      if (!drag.moved) {
+        const next = { pos, neg, ...counts(t, -1) };
+        dropTiles([drag.i], matKey(next.pos, next.neg));
+        return set({ ...state, ...next });
+      }
       if (target < 0) return;
       const other = tiles[target];
       pop([{ t: other, u }, { t: { ...t, x: other.x + 0.25, y: other.y + 0.25 }, u }, { t: other, u, zero: true }]);
       const k = TILE_KINDS.indexOf(t.kind);
-      set({ ...state, pos: pos.map((p, j) => (j === k ? p - 1 : p)) as Counts, neg: neg.map((n, j) => (j === k ? n - 1 : n)) as Counts });
+      const next = { pos: pos.map((p, j) => (j === k ? p - 1 : p)) as Counts, neg: neg.map((n, j) => (j === k ? n - 1 : n)) as Counts };
+      dropTiles([drag.i, target], matKey(next.pos, next.neg));
+      set({ ...state, ...next });
     };
     svgOn = {
       onPointerMove: (e) => {
@@ -136,7 +146,9 @@ export function AlgebraTiles({ state, set, w: words, svgRef }: PieceProps<"algeb
     );
     const takePairs = () => {
       pop(tiles.flatMap((t, i) => (paired[i] ? [{ t, u }] : [])));
-      set({ ...state, ...removePairs(pos, neg) });
+      const next = removePairs(pos, neg);
+      dropTiles(tiles.flatMap((_, i) => (paired[i] ? [i] : [])), matKey(next.pos, next.neg));
+      set({ ...state, ...next });
     };
     lines.push(fill(w.onMat, { e: matText(pos, neg) }));
     if (pairs.some(Boolean)) lines.push(fill(w.cancel, { e: poly(net(pos, neg)) }));
