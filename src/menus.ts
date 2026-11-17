@@ -268,6 +268,7 @@ export const MENUS: MenuGroup[] = [
           { live: "angleGuess", icon: "∠" },
           { live: "angleHunt", icon: "📐" },
           { live: "trigBuild", icon: "🪜" },
+          { live: "unitCircleGame", icon: "◴" },
           { live: "views3d", icon: "🧊" },
           { live: "cubeNet", icon: "🎲" },
         ],
