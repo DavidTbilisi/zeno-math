@@ -24,6 +24,7 @@ import { TILES_START, type LiveAlgebraTiles } from "./algebraTiles";
 import type { PlaceValueSpec } from "./placeValue";
 import { CUBES_START, type LiveCubes } from "./cubes";
 import { COUNTERS_START, type LiveCounters } from "./counters";
+import { CARDS_START, type LiveCards } from "./cards";
 import { GEO_START, type LiveGeoLab } from "./geoLab";
 import type { LiveExprMatch } from "./exprMatch";
 import type { LiveAngleGuess } from "./angleGuess";
@@ -418,6 +419,7 @@ export type LiveStates = {
   dots: { k: number; top: number; bottom: number };
   graph: LiveGraphState;
   chance: { device: Device; tally: Tally; view: ChanceView; relative: boolean; theory: boolean; focus: number; last: number };
+  cards: LiveCards;
   compare: { a: number; b: number; joined: boolean; guess: CompareSign | null };
   compareFractions: { a: Frac; b: Frac; joined: boolean; guess: CompareSign | null; same: boolean; half: boolean };
   division: LiveDivision;
@@ -514,6 +516,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   dots: [520, 600],
   graph: [640, 560],
   chance: [680, 500],
+  cards: [690, 610],
   compare: [380, 530],
   compareFractions: [400, 680],
   division: [760, 820],
@@ -611,6 +614,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     hundred: { marked: [], n: 3 },
     dots: { k: 5, top: 3, bottom: 1 },
     graph: DEFAULT_LIVE_GRAPH,
+    cards: CARDS_START,
     chance: { device: { kind: "die", sides: 6 }, tally: emptyTally(6), view: "bars", relative: true, theory: true, focus: 5, last: -1 },
     compare: { a: 5, b: 2, joined: false, guess: null },
     compareFractions: { a: { n: 2, d: 3 }, b: { n: 3, d: 4 }, joined: false, guess: null, same: false, half: false },

@@ -1625,6 +1625,19 @@ function cubesPreview(): Piece[] {
   ];
 }
 
+function cardsPreview(): Piece[] {
+  // Three playing cards fanned out: A♠, K♥ and 7♦, each with its corner and a big suit sign.
+  const card = (x: number, rank: string, suit: string, red: boolean) => {
+    const color = red ? RED : "#1e1e1e";
+    return [
+      rect(x, 0, 52, 76, { fill: "#ffffff", width: 1.5 }, true),
+      text(x + 9, 14, rank, 14, "center", color),
+      text(x + 26, 42, suit, 26, "center", color),
+    ];
+  };
+  return [...card(0, "A", "♠", false), ...card(40, "K", "♥", true), ...card(80, "7", "♦", true)];
+}
+
 function countersPreview(): Piece[] {
   // Integer counters: three yellow + chips over three red − chips (zero pairs, dashed), and two − chips left over.
   const chip = (x: number, y: number, neg: boolean, dashed: boolean) => {
@@ -1927,6 +1940,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDots", build: dotsPreview, live: "dots" },
   { id: "liveGraph", build: graphPreview, live: "graph" },
   { id: "liveChance", build: chancePreview, live: "chance" },
+  { id: "liveCards", build: cardsPreview, live: "cards" },
   { id: "liveCompare", build: comparePreview, live: "compare" },
   { id: "liveCompareFractions", build: compareFractionsPreview, live: "compareFractions" },
   { id: "liveDivision", build: divisionPreview, live: "division" },

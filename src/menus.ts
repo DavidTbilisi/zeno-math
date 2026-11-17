@@ -154,6 +154,7 @@ export const MENUS: MenuGroup[] = [
           { live: "coin", icon: "🪙" },
           { live: "dice", icon: "🎲" },
           { live: "spinner", icon: "🌀" },
+          { live: "cards", icon: "🃏" },
           { live: "chance", icon: "🎰" },
           { kind: "randvar", icon: "E[X]", label: "randvar" },
         ], shapes: ["probabilityScale", "dice", "spinner", "sampleSpace", "tree", "twoWay"],
