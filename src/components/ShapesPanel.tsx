@@ -1,5 +1,5 @@
-// The "Maths shapes" tab of the board's side panel: every ready-made piece from math/shapes.ts, by group, each shown
-// as a thumbnail in the board's theme. A click adds the piece in the middle of the view; dragging drops it where the
+// The "Maths shapes" tab of the board's side panel: every ready-made piece from math/shapes.ts, under the toolbar's
+// menus and headings (menus.ts), each shown as a thumbnail in the board's theme. A click adds the piece in the middle of the view; dragging drops it where the
 // pointer is (handed over as a library item, which Excalidraw places itself). What lands on the board is ordinary
 // elements in one group, so every line and label can still be moved, recoloured or retyped; a live piece lands as
 // one element that answers clicks (see live/).
@@ -17,7 +17,7 @@ import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/tran
 import type { ExcalidrawElement, NonDeleted } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useI18n } from "../i18n";
-import { SHAPE_GROUPS, SHAPES, type Piece, type ShapeDef, type ShapeWords } from "../math/shapes";
+import { SHAPES, type Piece, type ShapeDef, type ShapeWords } from "../math/shapes";
 import { liveElement } from "../live/element";
 import { isLiveEntry, MENUS } from "../menus";
 
@@ -27,6 +27,7 @@ const INK = "#1e1e1e";
 // time it closes.
 const thumbCache = new Map<string, Record<string, string>>();
 const BY_LIVE = new Map(SHAPES.filter((s) => s.live).map((s) => [s.live!, s]));
+const BY_ID = new Map(SHAPES.map((s) => [s.id, s]));
 
 /**
  * Where something w × h wide can go at x without covering anything: from y, slid down below whatever it would
@@ -183,10 +184,13 @@ export function ShapesPanel({ api, theme }: { api: () => ExcalidrawImperativeAPI
     <div className="shapes-panel">
       <p className="hint">{w.hint}</p>
       <p className="hint">{w.liveHint}</p>
-      {/* Live pieces under the toolbar menu and heading they have there, in the same order. */}
+      {/* Under the toolbar menu and heading each piece has there, in the same order: live pieces, then pictures. */}
       {MENUS.map((m) => {
         const sections = m.sections
-          .map((sec) => ({ title: sec.title, shapes: sec.items.filter(isLiveEntry).flatMap((e) => BY_LIVE.get(e.live) ?? []) }))
+          .map((sec) => ({
+            title: sec.title,
+            shapes: [...sec.items.filter(isLiveEntry).flatMap((e) => BY_LIVE.get(e.live) ?? []), ...(sec.shapes ?? []).flatMap((id) => BY_ID.get(id) ?? [])],
+          }))
           .filter((sec) => sec.shapes.length);
         return sections.length ? (
           <section key={m.label}>
@@ -200,12 +204,6 @@ export function ShapesPanel({ api, theme }: { api: () => ExcalidrawImperativeAPI
           </section>
         ) : null;
       })}
-      {SHAPE_GROUPS.filter((g) => g !== "games" && g !== "live").map((g) => (
-        <section key={g}>
-          <h3>{w.groups[g]}</h3>
-          <div className="shape-grid">{SHAPES.filter((s) => s.group === g).map(tile)}</div>
-        </section>
-      ))}
     </div>
   );
 }

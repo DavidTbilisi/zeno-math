@@ -1,5 +1,5 @@
-// The toolbar's menus, by topic and heading. The board's toolbar, its Shapes panel and the tool search are all built
-// from this list; the tools themselves are in tools.tsx.
+// The toolbar's menus, by topic and heading. The board's toolbar, its Shapes panel (live pieces and ready-made
+// pictures alike) and the tool search are all built from this list; the tools themselves are in tools.tsx.
 import type { BarIconName } from "./components/BarIcon";
 import type { LiveKind } from "./math/live";
 import type { ToolKind, Word } from "./tools";
@@ -8,8 +8,12 @@ import type { ToolKind, Word } from "./tools";
 export type MenuEntry = { kind: ToolKind; icon: string; label: Word; start?: string };
 export type LiveEntry = { live: LiveKind; icon: string };
 export const isLiveEntry = (e: MenuEntry | LiveEntry): e is LiveEntry => "live" in e;
-/** A heading in a menu and what is under it, roughly from the first thing a learner meets to the last. */
-export type MenuSection = { title?: Word; items: (MenuEntry | LiveEntry)[] };
+/**
+ * A heading in a menu and what is under it, roughly from the first thing a learner meets to the last. `shapes` are
+ * ready-made pictures (ids in math/shapes.ts), shown under the same heading in the Shapes panel but not in the menu;
+ * a section with only shapes appears only in the panel.
+ */
+export type MenuSection = { title?: Word; items: (MenuEntry | LiveEntry)[]; shapes?: string[] };
 export type MenuGroup = { icon: BarIconName; label: Word; title?: Word; sections: MenuSection[] };
 
 /**
@@ -28,7 +32,7 @@ export const MENUS: MenuGroup[] = [
           { live: "hundred", icon: "💯" },
           { live: "soroban", icon: "🧮" },
           { live: "numberShapes", icon: "⠿" },
-        ],
+        ], shapes: ["tenFrame", "oneCube", "tenRod", "hundredFlat", "hundredSquare", "placeValue"],
       },
       {
         title: "secCalculating", items: [
@@ -38,38 +42,46 @@ export const MENUS: MenuGroup[] = [
           { live: "dots", icon: "⁘" },
           { live: "numberLine", icon: "↔" },
           { live: "division", icon: "÷" },
-        ],
+        ], shapes: ["numberLine", "barModel", "partWhole", "multiplicationSquare"],
       },
       {
         title: "secFractions", items: [
           { live: "fractions", icon: "◔" },
           { live: "compareFractions", icon: "½" },
-        ],
+        ], shapes: ["fractionWall", "quarters", "eighths", "numberLine01"],
       },
-      { title: "secTime", items: [{ live: "clock", icon: "🕒" }] },
+      { title: "secTime", items: [{ live: "clock", icon: "🕒" }], shapes: ["clock"] },
     ],
   },
   {
     icon: "geometry", label: "groupGeometryShort", title: "groupGeometry", sections: [
+      { title: "secMeasuring", items: [], shapes: ["ruler", "protractor", "protractor360", "setSquare45", "setSquare30"] },
       {
-        title: "secShapes", items: [
+        title: "secPlane", items: [
           { live: "geoLab", icon: "📐" },
           { kind: "geometry", icon: "📐", label: "geometry" },
           { kind: "euclid", icon: "⊙", label: "euclidTool" },
-          { kind: "3d", icon: "🧊", label: "threeD" },
         ],
+        shapes: [
+          "angle", "parallel", "transversalAngles", "triangle", "rightTriangle", "parallelogram", "rhombus", "kite", "trapezium",
+          "pentagon", "hexagon", "octagon", "circleParts",
+        ],
+      },
+      {
+        title: "secSolids", items: [{ kind: "3d", icon: "🧊", label: "threeD" }],
+        shapes: ["cube", "cuboid", "prism", "cylinder", "pyramid", "cone", "sphere", "netCube", "netCuboid", "netPrism", "netPyramid", "netCylinder", "isometricDots"],
       },
       {
         title: "secCoordinates", items: [
           { kind: "coord", icon: "xy", label: "coord" },
           { kind: "vectors", icon: "↗", label: "vectors" },
-        ],
+        ], shapes: ["gridPaper", "axesQ1", "axes", "axes3d"],
       },
       {
         title: "secTrig", items: [
           { kind: "trig", icon: "θ", label: "trig" },
           { kind: "identities", icon: "≡", label: "identitiesTool" },
-        ],
+        ], shapes: ["trigTriangle", "unitCircle"],
       },
     ],
   },
@@ -83,14 +95,14 @@ export const MENUS: MenuGroup[] = [
           { kind: "powers", icon: "xⁿ", label: "powers" },
           { kind: "polynomials", icon: "x³", label: "polynomialsTool" },
           { kind: "sequences", icon: "aₙ", label: "sequences" },
-        ],
+        ], shapes: ["tile1", "tileX", "tileX2", "tileY", "tileXY", "tileNeg1", "tileNegX", "tileNegX2", "balance"],
       },
       {
         title: "secFunctions", items: [
           { kind: "functions", icon: "f(x)", label: "functionsTool" },
           { kind: "graph", icon: "📈", label: "graph" },
           { live: "graph", icon: "🎚" },
-        ],
+        ], shapes: ["functionMachine", "axesSketch"],
       },
       {
         title: "secMatrices", items: [
@@ -119,7 +131,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "logic", icon: "∧", label: "logic" },
           { kind: "comb", icon: "ⁿCₖ", label: "comb" },
           { kind: "gt", icon: "⬡", label: "gt" },
-        ],
+        ], shapes: ["venn2", "venn3"],
       },
       {
         title: "secProblemSolving", items: [
@@ -143,7 +155,7 @@ export const MENUS: MenuGroup[] = [
           { live: "spinner", icon: "🌀" },
           { live: "chance", icon: "🎰" },
           { kind: "randvar", icon: "E[X]", label: "randvar" },
-        ],
+        ], shapes: ["probabilityScale", "dice", "spinner", "sampleSpace", "tree", "twoWay"],
       },
       {
         title: "secStatistics", items: [
@@ -153,7 +165,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "likelihood", icon: "L(θ)", label: "likelihood" },
           { kind: "information", icon: "H(p)", label: "information" },
           { kind: "naiveBayes", icon: "P(c|w)", label: "naiveBayes" },
-        ],
+        ], shapes: ["boxPlot"],
       },
     ],
   },

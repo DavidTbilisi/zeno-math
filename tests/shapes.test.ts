@@ -1,16 +1,14 @@
-// Maths shapes: every piece builds, with finite coordinates and a sensible size, every group has pieces, and every
-// piece has a name in the panel (the i18n test checks the other languages have the same names).
+// Maths shapes: every piece builds, with finite coordinates and a sensible size, and every piece has a name in the
+// panel (the i18n test checks the other languages have the same names; tests/menus.test.ts, that each has a heading).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
-import { bounds, SHAPE_GROUPS, SHAPES } from "../src/math/shapes.ts";
+import { bounds, SHAPES } from "../src/math/shapes.ts";
 
 test("ids are unique and every shape has a name", () => {
   const ids = SHAPES.map((s) => s.id);
   assert.equal(new Set(ids).size, ids.length);
   assert.deepEqual(Object.keys(en.shapes.names).sort(), [...ids].sort());
-  assert.deepEqual(Object.keys(en.shapes.groups), [...SHAPE_GROUPS]);
-  for (const g of SHAPE_GROUPS) assert.ok(SHAPES.some((s) => s.group === g), g);
 });
 
 test("every shape builds, with finite numbers and a size that fits a board", () => {
