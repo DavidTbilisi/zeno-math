@@ -1625,6 +1625,18 @@ function cubesPreview(): Piece[] {
   ];
 }
 
+function countersPreview(): Piece[] {
+  // Integer counters: three yellow + chips over three red − chips (zero pairs, dashed), and two − chips left over.
+  const chip = (x: number, y: number, neg: boolean, dashed: boolean) => {
+    const color = neg ? "#c92a2a" : "#e67700";
+    return [ellipse(x, y, 11, 11, { fill: neg ? FILL.red : FILL.yellow, color, width: 1.5, dashed }), text(x, y, neg ? "−" : "+", 16, "center", color)];
+  };
+  return [
+    ...[2, 3, 4].flatMap((i) => chip(11 + i * 27, 11, false, true)),
+    ...[0, 1, 2, 3, 4].flatMap((i) => chip(11 + i * 27, 45, true, i >= 2)),
+  ];
+}
+
 function kakoomaPreview(): Piece[] {
   // Four numbers in a square, two by two; 7 = 3 + 4 is green, with its two parts outlined.
   return [
@@ -1851,6 +1863,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveAlgebraTiles", build: algebraTilesPreview, live: "algebraTiles" },
   { id: "liveBaseTen", build: baseTenPreview, live: "baseTen" },
   { id: "liveCubes", build: cubesPreview, live: "cubes" },
+  { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveExprMatch", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoLab", build: geoLabPreview, live: "geoLab" },
   { id: "liveGeoboard", build: geoboardPreview, live: "geoboard" },

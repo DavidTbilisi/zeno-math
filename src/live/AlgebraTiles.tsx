@@ -1,13 +1,14 @@
 // Algebra tiles on the board: x² a big square, x a long rod, 1 a small square, red when negative. Combine puts tiles
-// out and takes zero pairs away; multiply draws (ax + b)(cx + d) as a rectangle with the sides along its edges;
+// out and takes zero pairs away (drag a tile onto its negative and the two pop, or take every pair at once); multiply draws (ax + b)(cx + d) as a rectangle with the sides along its edges;
 // factor asks for the sides whose rectangle uses exactly a trinomial's tiles. The tiles come from
 // src/math/algebraTiles.ts.
-import type { ReactNode } from "react";
+import { useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import {
   clampFactors, FACTOR_TARGETS, matText, net, ONE_RANGE, partsText, poly, product, rectangle, removePairs, rows, same,
   side, TILE_CAP, TILE_KINDS, TILE_MODES, X_RANGE, zeroPairs, type Counts, type Tile, type TileKind,
 } from "../math/algebraTiles";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
+import { usePops } from "./pops";
+import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
 
 const W = 640;
 const PAD = 20;
@@ -22,14 +23,22 @@ const COLORS: Record<TileKind | "neg", { fill: string; stroke: string }> = {
 };
 const NAME: Record<TileKind, string> = { x2: "x²", x: "x", one: "1" };
 
-/** One tile at scale u from (ox, oy); dashed when it is half of a zero pair. */
-function TileRect({ t, u, ox, oy, dashed, onClick, label }: { t: Tile; u: number; ox: number; oy: number; dashed?: boolean; onClick?: () => void; label?: string }) {
+type Drag = { i: number; x0: number; y0: number; dx: number; dy: number; moved: boolean };
+
+/** One tile at scale u from (ox, oy); dashed when it is half of a zero pair, ringed when a dragged tile would cancel it. */
+function TileRect({ t, u, ox, oy, dashed, ring, onClick, onPointerDown, label, className, opacity }: {
+  t: Tile; u: number; ox: number; oy: number; dashed?: boolean; ring?: boolean; onClick?: () => void;
+  onPointerDown?: (e: ReactPointerEvent) => void; label?: string; className?: string; opacity?: number;
+}) {
   const c = COLORS[t.neg ? "neg" : t.kind];
   const [x, y, w, h] = [ox + t.x * u, oy + t.y * u, t.w * u, t.h * u];
   const text = `${t.neg ? "−" : ""}${NAME[t.kind]}`;
   const size = Math.min(w, h) * 0.55;
+  const active = onClick || onPointerDown;
   return (
-    <g style={onClick ? { cursor: "pointer" } : undefined} onClick={onClick} aria-label={label} role={onClick ? "button" : undefined}>
+    <g className={className} opacity={opacity} style={active ? { cursor: onPointerDown ? "grab" : "pointer" } : undefined} onClick={onClick} onPointerDown={onPointerDown}
+      aria-label={label} role={active ? "button" : undefined}>
+      {ring && <rect x={x - 3} y={y - 3} width={w + 6} height={h + 6} rx={6} fill="none" stroke="#2f9e44" strokeWidth={3} />}
       <rect x={x + 1} y={y + 1} width={w - 2} height={h - 2} rx={Math.min(4, u / 6)} fill={c.fill} stroke={c.stroke} strokeWidth={2} strokeDasharray={dashed ? "5 3" : undefined} />
       {size >= 9 && (
         <text x={x + w / 2} y={y + h / 2 + size * 0.36} fontSize={Math.min(size, 20)} textAnchor="middle" fill={c.stroke} fontWeight={700} pointerEvents="none">{text}</text>
@@ -47,6 +56,10 @@ export function AlgebraTiles({ state, set, w: words, svgRef }: PieceProps<"algeb
   let solved = false;
   let picture: ReactNode;
   let bar: ReactNode;
+  const [drag, setDrag] = useState<Drag | null>(null);
+  const [ghosts, pop] = usePops<{ t: Tile; u: number; zero?: boolean }>();
+  /** The picture's own pointer handlers: a drag in combine. */
+  let svgOn: { onPointerMove?: (e: ReactPointerEvent<SVGSVGElement>) => void; onPointerUp?: () => void; onPointerCancel?: () => void } = {};
 
   if (mode === "combine") {
     const pairs = zeroPairs(pos, neg);
@@ -54,21 +67,77 @@ export function AlgebraTiles({ state, set, w: words, svgRef }: PieceProps<"algeb
     const u = Math.min(30, PIC_W / 16, PIC_H / Math.max(h, 1));
     // The first tiles of each kind on either side are the ones in pairs.
     const seen = { pos: [0, 0, 0], neg: [0, 0, 0] };
+    const paired = tiles.map((t) => {
+      const k = TILE_KINDS.indexOf(t.kind);
+      return (t.neg ? seen.neg : seen.pos)[k]++ < pairs[k];
+    });
+    const dragged = drag?.moved ? tiles[drag.i] : null;
+    // The tile a dragged one is over, if it is the same kind with the other sign: dropped there, the two cancel.
+    const target = dragged && drag
+      ? tiles.findIndex((t, j) => {
+          const [cx, cy] = [(dragged.x + dragged.w / 2) * u + drag.dx, (dragged.y + dragged.h / 2) * u + drag.dy];
+          return j !== drag.i && t.kind === dragged.kind && t.neg !== dragged.neg && cx >= t.x * u && cx <= (t.x + t.w) * u && cy >= t.y * u && cy <= (t.y + t.h) * u;
+        })
+      : -1;
+    const counts = (t: Tile, by: number) => {
+      const k = TILE_KINDS.indexOf(t.kind);
+      const next = (t.neg ? [...neg] : [...pos]) as Counts;
+      next[k] += by;
+      return t.neg ? { neg: next } : { pos: next };
+    };
+    const press = (e: ReactPointerEvent, i: number) => {
+      if (e.button !== 0) return;
+      const svg = (e.currentTarget as SVGElement).ownerSVGElement;
+      if (!svg) return;
+      svg.setPointerCapture(e.pointerId);
+      const [x, y] = svgPoint(svg, e);
+      setDrag({ i, x0: x, y0: y, dx: 0, dy: 0, moved: false });
+    };
+    const up = () => {
+      if (!drag) return;
+      setDrag(null);
+      const t = tiles[drag.i];
+      if (!drag.moved) return set({ ...state, ...counts(t, -1) });
+      if (target < 0) return;
+      const other = tiles[target];
+      pop([{ t: other, u }, { t: { ...t, x: other.x + 0.25, y: other.y + 0.25 }, u }, { t: other, u, zero: true }]);
+      const k = TILE_KINDS.indexOf(t.kind);
+      set({ ...state, pos: pos.map((p, j) => (j === k ? p - 1 : p)) as Counts, neg: neg.map((n, j) => (j === k ? n - 1 : n)) as Counts });
+    };
+    svgOn = {
+      onPointerMove: (e) => {
+        if (!drag) return;
+        const [x, y] = svgPoint(e.currentTarget, e);
+        const [dx, dy] = [x - drag.x0, y - drag.y0];
+        setDrag({ ...drag, dx, dy, moved: drag.moved || Math.hypot(dx, dy) > 5 });
+      },
+      onPointerUp: up,
+      onPointerCancel: up,
+    };
     picture = tiles.length ? (
-      tiles.map((t, i) => {
-        const k = TILE_KINDS.indexOf(t.kind);
-        const side = t.neg ? seen.neg : seen.pos;
-        const paired = side[k]++ < pairs[k];
-        const take = () => {
-          const next = (t.neg ? [...neg] : [...pos]) as Counts;
-          next[k]--;
-          set({ ...state, ...(t.neg ? { neg: next } : { pos: next }) });
-        };
-        return <TileRect key={i} t={t} u={u} ox={PAD} oy={PIC_TOP} dashed={paired} onClick={take} label={fill(w.take, { t: `${t.neg ? "−" : ""}${NAME[t.kind]}` })} />;
-      })
+      <>
+        {tiles.map((t, i) => (
+          <TileRect key={i} t={t} u={u} ox={PAD} oy={PIC_TOP} dashed={paired[i]} ring={i === target} opacity={dragged && drag?.i === i ? 0.25 : 1}
+            onPointerDown={(e) => press(e, i)} label={fill(w.take, { t: `${t.neg ? "−" : ""}${NAME[t.kind]}` })} />
+        ))}
+        {ghosts?.items.map((g, i) =>
+          g.zero ? (
+            <text key={`${ghosts.id}-${i}`} className="chip-zero" x={PAD + (g.t.x + g.t.w / 2) * g.u} y={PIC_TOP + g.t.y * g.u - 6} fontSize={22} fontWeight={700} textAnchor="middle" fill="#2f9e44">0</text>
+          ) : (
+            <TileRect key={`${ghosts.id}-${i}`} className="chip-pop" t={g.t} u={g.u} ox={PAD} oy={PIC_TOP} />
+          ),
+        )}
+        {dragged && drag && (
+          <g pointerEvents="none" transform={`translate(${drag.dx} ${drag.dy})`}><TileRect t={dragged} u={u} ox={PAD} oy={PIC_TOP} /></g>
+        )}
+      </>
     ) : (
       <text x={W / 2} y={PIC_TOP + PIC_H / 2} fontSize={18} textAnchor="middle" fill="#868e96">{w.empty}</text>
     );
+    const takePairs = () => {
+      pop(tiles.flatMap((t, i) => (paired[i] ? [{ t, u }] : [])));
+      set({ ...state, ...removePairs(pos, neg) });
+    };
     lines.push(fill(w.onMat, { e: matText(pos, neg) }));
     if (pairs.some(Boolean)) lines.push(fill(w.cancel, { e: poly(net(pos, neg)) }));
     const add = (k: number, isNeg: boolean) => {
@@ -89,7 +158,7 @@ export function AlgebraTiles({ state, set, w: words, svgRef }: PieceProps<"algeb
             );
           }),
         )}
-        <button className="live-btn" disabled={!pairs.some(Boolean)} onClick={() => set({ ...state, ...removePairs(pos, neg) })}>{w.removePairs}</button>
+        <button className="live-btn" disabled={!pairs.some(Boolean)} onClick={takePairs}>{w.removePairs}</button>
         <button className="live-btn" onClick={() => set({ ...state, pos: [0, 0, 0], neg: [0, 0, 0] })}>{w.clear}</button>
       </div>
     );
@@ -170,7 +239,7 @@ export function AlgebraTiles({ state, set, w: words, svgRef }: PieceProps<"algeb
       </div>
       {bar}
       <p className="live-hint">{w.hints[mode]}</p>
-      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
+      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} {...svgOn} style={mode === "combine" ? { touchAction: "none" } : undefined}>
         {picture}
         {lines.map((l, i) => (
           <text key={i} x={PAD} y={PIC_TOP + PIC_H + 24 + i * 28} fontSize={l.length > 60 ? (19 * 60) / l.length : 19} fill={solved && i ? "#2f9e44" : i ? "#495057" : INK} fontWeight={i && !solved ? 400 : 700}>{l}</text>
