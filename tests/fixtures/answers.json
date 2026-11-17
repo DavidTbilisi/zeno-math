@@ -1410,6 +1410,98 @@
       "note": "the other angle"
     },
     {
+      "skill": "practicalTrig",
+      "level": 1,
+      "seed": 7,
+      "input": "5.64",
+      "label": "correct"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 1,
+      "seed": 7,
+      "input": "5.64 m",
+      "label": "correct",
+      "note": "with the unit"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 1,
+      "seed": 7,
+      "input": "5.6",
+      "label": "close",
+      "note": "1 decimal place"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 1,
+      "seed": 7,
+      "input": "2.05",
+      "label": "wrong",
+      "note": "sin for cos: the height, not the distance"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 2,
+      "seed": 7,
+      "input": "43.86",
+      "label": "correct"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 2,
+      "seed": 7,
+      "input": "41.21",
+      "label": "wrong",
+      "note": "tan for sin"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 2,
+      "seed": 7,
+      "input": "5.13",
+      "label": "wrong",
+      "note": "multiplied by sin instead of dividing"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 3,
+      "seed": 7,
+      "input": "41.81",
+      "label": "correct"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 3,
+      "seed": 7,
+      "input": "41.81°",
+      "label": "correct"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 3,
+      "seed": 7,
+      "input": "48.19",
+      "label": "wrong",
+      "note": "the other angle"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 3,
+      "seed": 7,
+      "input": "33.69",
+      "label": "wrong",
+      "note": "tan for sin"
+    },
+    {
+      "skill": "practicalTrig",
+      "level": 3,
+      "seed": 7,
+      "input": "0.73",
+      "label": "wrong",
+      "note": "radians, not degrees"
+    },
+    {
       "skill": "circles",
       "level": 1,
       "seed": 7,
