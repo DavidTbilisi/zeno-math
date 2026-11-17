@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useI18n } from "../i18n";
 import {
   COMPASS_QUADS,
+  HAND_PEGS,
   renderTrig,
   RIGHT_GIVENS,
   TRI_CASES,
@@ -148,6 +149,30 @@ export function TrigDialog({ initial, start, onSubmit, onClose }: {
               ))}
             </div>
           )}
+        </>
+      )}
+
+      {spec.topic === "hand" && (
+        <>
+          {unitToggle(spec.unit)}
+          <Slider label={t.trigAngle} min={-360} max={720} step={15} value={spec.angle} shown={`${spec.angle}°`} onChange={(angle) => set({ angle })} />
+          <div className="field">
+            <span>{t.trigPegs}</span>
+            <div className="range-grid">
+              {HAND_PEGS.map((k) => (
+                <label key={k}>
+                  <span className="math-label">{k === "pi" ? "π" : `/${k.slice(1)}`}</span>
+                  <input
+                    type="text"
+                    style={{ width: 170 }}
+                    placeholder={t.trigWords.hand.pegs[k]}
+                    value={spec[k] ?? ""}
+                    onChange={(e) => set({ [k]: e.target.value } as Partial<TrigSpec>)}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
         </>
       )}
 

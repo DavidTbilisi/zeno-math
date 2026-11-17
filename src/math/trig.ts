@@ -37,15 +37,31 @@ export type CompassSpec = {
   sw?: string;
   se?: string;
 };
+/**
+ * The hand trick for the first-quadrant values, carried round the circle by reflection and read in radians.
+ * pi, d2, d3, d4, d6: the user's own pegs for π and for each slice size (blank = the language's default).
+ */
+export type HandSpec = {
+  topic: "hand";
+  angle: number;
+  unit: AngleUnit;
+  pi?: string;
+  d2?: string;
+  d3?: string;
+  d4?: string;
+  d6?: string;
+};
+export type HandPeg = "pi" | "d2" | "d3" | "d4" | "d6";
+export const HAND_PEGS: HandPeg[] = ["pi", "d2", "d3", "d4", "d6"];
 export type RightSpec = { topic: "right"; given: RightGiven; opp: string; adj: string; hyp: string; ang: string };
 /** Sides a, b, c are opposite angles A, B, C (degrees). Which ones are used depends on the case. */
 export type TriangleSpec = { topic: "triangle"; kase: TriCase; a: string; b: string; c: string; A: string; B: string; C: string };
 export type GraphSpec = { topic: "graph"; fn: TrigFn; A: string; B: string; C: string; D: string; unit: AngleUnit };
 export type EquationSpec = { topic: "equation"; fn: TrigFn; k: string; unit: AngleUnit };
-export type TrigSpec = CircleSpec | CompassSpec | RightSpec | TriangleSpec | GraphSpec | EquationSpec;
+export type TrigSpec = CircleSpec | CompassSpec | HandSpec | RightSpec | TriangleSpec | GraphSpec | EquationSpec;
 export type TrigTopic = TrigSpec["topic"];
 export type TrigSpecOf<K extends TrigTopic> = Extract<TrigSpec, { topic: K }>;
-export const TRIG_TOPICS: TrigTopic[] = ["circle", "compass", "right", "triangle", "graph", "equation"];
+export const TRIG_TOPICS: TrigTopic[] = ["circle", "compass", "hand", "right", "triangle", "graph", "equation"];
 
 export type TrigWords = {
   quadrant: string;
@@ -85,6 +101,22 @@ export type TrigWords = {
     axis: string;
     bearing: string;
   };
+  hand: {
+    /** Pinky, ring, middle, pointer, thumb: the fingers for 0°, 30°, 45°, 60°, 90°. */
+    fingers: string[];
+    ladder: string;
+    radian: string;
+    folded: string;
+    count: string;
+    onHand: string;
+    reflect: string;
+    axis: string;
+    slices: string;
+    half: string;
+    zero: string;
+    pegs: Record<HandPeg, string>;
+    notOnHand: string;
+  };
 };
 
 export const TRIG_PRESETS: { [K in TrigTopic]: { label: string; spec: TrigSpecOf<K> }[] } = {
@@ -104,6 +136,14 @@ export const TRIG_PRESETS: { [K in TrigTopic]: { label: string; spec: TrigSpecOf
     { label: "90°", spec: { topic: "compass", angle: 90, unit: "deg", n: "", e: "", s: "", w: "" } },
     { label: "225° · images", spec: { topic: "compass", angle: 225, unit: "deg", n: "", e: "", s: "", w: "", quads: "images" } },
     { label: "120° · images", spec: { topic: "compass", angle: 120, unit: "deg", n: "", e: "", s: "", w: "", quads: "images" } },
+  ],
+  hand: [
+    { label: "30°", spec: { topic: "hand", angle: 30, unit: "deg" } },
+    { label: "7π/6", spec: { topic: "hand", angle: 210, unit: "rad" } },
+    { label: "5π/3", spec: { topic: "hand", angle: 300, unit: "rad" } },
+    { label: "135°", spec: { topic: "hand", angle: 135, unit: "deg" } },
+    { label: "3π/2", spec: { topic: "hand", angle: 270, unit: "rad" } },
+    { label: "π", spec: { topic: "hand", angle: 180, unit: "rad" } },
   ],
   right: [
     { label: "3, 4 → ?", spec: { topic: "right", given: "oppAdj", opp: "3", adj: "4", hyp: "5", ang: "30" } },
@@ -816,12 +856,172 @@ function renderEquation(s: EquationSpec, w: TrigWords): RenderedSvg {
   return compose(tex, parts.join(""), 346, [{ text: fill(w.solutions, { n: sols.length, range: deg ? "[0°, 360°)" : "[0, 2π)" }) }]);
 }
 
+// ---------- hand ----------
+
+/** The fingers point along the first-quadrant angles: pinky 0°, ring 30°, middle 45°, pointer 60°, thumb 90°. */
+export const HAND_ANGLES = [0, 30, 45, 60, 90] as const;
+/** |sin| of the five hand angles in the √n/2 ladder (|cos| is the same ladder read backwards). */
+const LADDER_TEXT = ["0", "1/2", "√2/2", "√3/2", "1"];
+
+export type HandReading = {
+  /** The angle reduced to [0°, 360°). */
+  turn: number;
+  /** 1–4 for a quadrant, 0 on an axis. */
+  quad: number;
+  /** Distance to the nearest East–West axis: which finger to fold. */
+  ref: number;
+  /** 0 = pinky … 4 = thumb. */
+  finger: number;
+  /** Fingers on the pinky (0°) side: sin = √below / 2. */
+  below: number;
+  /** Fingers on the thumb (90°) side: cos = √above / 2. */
+  above: number;
+  sinSign: number;
+  cosSign: number;
+  /** θ = kπ/d in lowest terms (d ∈ 1, 2, 3, 4, 6); null for θ = 0. */
+  slices: { k: number; d: number } | null;
+};
+
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
+
+/** Read an angle off the hand, or null when it is not a whole multiple of 30° or 45°. */
+export function handReading(deg: number): HandReading | null {
+  if (!Number.isInteger(deg) || (deg % 30 !== 0 && deg % 45 !== 0)) return null;
+  const turn = mod(deg, 360);
+  const quad = turn % 90 === 0 ? 0 : Math.floor(turn / 90) + 1;
+  const ref = turn <= 90 ? turn : turn <= 180 ? 180 - turn : turn <= 270 ? turn - 180 : 360 - turn;
+  const finger = (HAND_ANGLES as readonly number[]).indexOf(ref);
+  const sign = (v: number) => (Math.abs(v) < 1e-9 ? 0 : Math.sign(v));
+  const g = gcd(Math.abs(deg), 180);
+  return {
+    turn,
+    quad,
+    ref,
+    finger,
+    below: finger,
+    above: 4 - finger,
+    sinSign: sign(Math.sin(turn * RAD)),
+    cosSign: sign(Math.cos(turn * RAD)),
+    slices: deg === 0 ? null : { k: deg / g, d: 180 / g },
+  };
+}
+
+const signed = (n: number, sgn: number) => (sgn === 0 ? "0" : `${sgn < 0 ? "−" : ""}${LADDER_TEXT[n]}`);
+const clip = (t: string, n: number) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
+const rootText = (n: number) => `√${n}/2${n === 0 || n === 1 || n === 4 ? ` = ${LADDER_TEXT[n]}` : ""}`;
+
+function renderHand(s: HandSpec, w: TrigWords): RenderedSvg {
+  const hw = w.hand;
+  const cw = w.compass;
+  const h = handReading(s.angle);
+  if (!h) throw new Error(fill(hw.notOnHand, { a: `${nt(s.angle, 2)}°` }));
+  const peg = (k: HandPeg) => s[k]?.trim() || hw.pegs[k];
+  const parts: string[] = [];
+
+  // The hand: a palm at O with the fingers fanned along their angles; the folded one is a stub with a ghost outline.
+  const [ox, oy] = [78, 300];
+  const at = (a: number, r: number): [number, number] => [ox + r * Math.cos(a * RAD), oy - r * Math.sin(a * RAD)];
+  const LEN = [168, 206, 222, 206, 150];
+  parts.push(`<path d="${arcPath(ox, oy, 246, 0, Math.PI / 2)}" fill="none" stroke="#ced4da" stroke-width="1.4" stroke-dasharray="5 4"/>`);
+  HAND_ANGLES.forEach((a, i) => {
+    const folded = i === h.finger;
+    const [x0, y0] = at(a, 36);
+    const [x1, y1] = at(a, folded ? 96 : LEN[i]);
+    const [gx, gy] = at(a, LEN[i]);
+    const [ink, skin] = folded ? ["#868e96", "#dee2e6"] : i < h.finger ? [C.red, "#ffc9c9"] : [C.green, "#b2f2bb"];
+    if (folded)
+      parts.push(`<line x1="${r2(x0)}" y1="${r2(y0)}" x2="${r2(gx)}" y2="${r2(gy)}" stroke="#adb5bd" stroke-width="24" stroke-linecap="round" stroke-dasharray="3 5" opacity="0.6"/>`);
+    parts.push(
+      `<line x1="${r2(x0)}" y1="${r2(y0)}" x2="${r2(x1)}" y2="${r2(y1)}" stroke="${ink}" stroke-width="26" stroke-linecap="round"/>`,
+      `<line x1="${r2(x0)}" y1="${r2(y0)}" x2="${r2(x1)}" y2="${r2(y1)}" stroke="${skin}" stroke-width="21" stroke-linecap="round"/>`,
+    );
+    const [lx, ly] = at(a, LEN[i] + 24);
+    parts.push(txt(lx, ly + 5, `${a}°`, folded ? C.orange : ink, "middle", folded ? 15 : 13));
+  });
+  parts.push(`<circle cx="${ox}" cy="${oy}" r="50" fill="#fff4e6" stroke="#e8590c" stroke-width="1.6"/>`);
+  const [fx, fy] = at(HAND_ANGLES[h.finger], 118);
+  parts.push(txt(fx, fy + 4, hw.folded, C.orange, "middle", 11));
+  parts.push(
+    txt(ox, oy + 6, `${h.ref}°`, C.orange, "middle", 16),
+    txt(14, 382, `|sin θ| = ${rootText(h.below)}`, C.red, "start", 14),
+    txt(14, 402, `|cos θ| = ${rootText(h.above)}`, C.green, "start", 14),
+  );
+
+  // The √n/2 ladder, the folded finger's row lit.
+  const lx = 352;
+  const cardW = W - lx - 12;
+  const card = (y: number, ht: number, title: string) =>
+    `<rect x="${lx}" y="${y}" width="${cardW}" height="${ht}" rx="8" fill="#f8f9fa" stroke="#dee2e6"/>` + txt(lx + 12, y + 20, title, C.ink, "start", 13);
+  parts.push(card(0, 162, hw.ladder));
+  const col = [lx + 16, lx + 84, lx + 180];
+  parts.push(txt(col[0], 44, "θ", C.grey, "start", 12), txt(col[1], 44, "sin", C.red, "start", 12), txt(col[2], 44, "cos", C.green, "start", 12));
+  HAND_ANGLES.forEach((a, i) => {
+    const y = 66 + 22 * i;
+    if (i === h.finger) parts.push(`<rect x="${lx + 6}" y="${y - 15}" width="${cardW - 12}" height="21" rx="4" fill="${C.orange}" opacity="0.14"/>`);
+    parts.push(
+      txt(col[0], y, `${a}°`, i === h.finger ? C.orange : C.ink, "start", 12),
+      txt(col[1], y, rootText(i), C.red, "start", 12),
+      txt(col[2], y, rootText(4 - i), C.green, "start", 12),
+    );
+  });
+
+  // Radians: π and the slice sizes, each with its peg; the one this angle is counted in is lit.
+  parts.push(card(176, 232, hw.radian));
+  const rad = radText(s.angle);
+  const sl = h.slices;
+  parts.push(txt(lx + 16, 226, s.angle === 0 ? "0" : rad, C.ink, "start", 20));
+  if (sl) {
+    const size = 180 / sl.d;
+    parts.push(txt(lx + 108, 224, `${nt(sl.k, 0)} × ${size}° = ${nt(s.angle, 0)}°`, C.blue, "start", 13));
+  }
+  const rows: [HandPeg, string, number][] = [["pi", "π", 1], ["d2", "/2", 2], ["d3", "/3", 3], ["d4", "/4", 4], ["d6", "/6", 6]];
+  rows.forEach(([k, sym, d], i) => {
+    const y = 262 + 28 * i;
+    const on = sl?.d === d;
+    if (on) parts.push(`<rect x="${lx + 6}" y="${y - 17}" width="${cardW - 12}" height="25" rx="4" fill="${C.blue}" opacity="0.12"/>`);
+    parts.push(
+      txt(lx + 16, y, sym, on ? C.blue : C.ink, "start", 14),
+      txt(lx + 50, y, `${180 / d}°`, on ? C.blue : C.grey, "start", 12),
+      txt(lx + 86, y, clip(peg(k), 30), on ? C.blue : C.grey, "start", 11),
+    );
+  });
+
+  // Header and captions: the size from the hand, the signs from the compass, the radian as a count of slices.
+  const ex = exact(s.angle)!;
+  const tex =
+    `\\theta = ${angleTex(s.angle, "deg")} = ${radTex(s.angle)} \\qquad ` +
+    `{\\color{#e03131}\\sin\\theta = ${ex.sin}} \\quad {\\color{#2f9e44}\\cos\\theta = ${ex.cos}}`;
+  const a = angleText(s.angle, s.unit);
+  const vals = { s: signed(h.below, h.sinSign), c: signed(h.above, h.cosSign) };
+  const finger = hw.fingers[h.finger];
+  const captions: Caption[] = [{ text: fill(hw.count, { finger, n: h.below, m: h.above }) }];
+  if (h.quad === 1) captions.push({ text: fill(hw.onHand, { a, finger, ...vals }), color: C.orange });
+  else if (h.quad) {
+    const dir = cw.names[(["ne", "nw", "sw", "se"] as const)[h.quad - 1]];
+    const axis = cw.names[h.quad === 2 || h.quad === 3 ? "w" : "e"];
+    captions.push({ text: fill(hw.reflect, { a, dir, r: `${h.ref}°`, axis, finger, ...vals }), color: C.orange });
+  } else {
+    const dir = cw.names[(["e", "n", "w", "s"] as const)[h.turn / 90]];
+    captions.push({ text: fill(hw.axis, { a, dir, finger, ...vals }), color: C.orange });
+  }
+  if (!sl) captions.push({ text: hw.zero, color: C.blue });
+  else if (sl.d === 1) captions.push({ text: fill(hw.half, { rad, peg: peg("pi"), k: nt(sl.k, 0), total: `${nt(s.angle, 0)}°` }), color: C.blue });
+  else
+    captions.push({
+      text: fill(hw.slices, { rad, d: sl.d, size: `${180 / sl.d}°`, peg: peg(`d${sl.d}` as HandPeg), k: nt(sl.k, 0), total: `${nt(s.angle, 0)}°` }),
+      color: C.blue,
+    });
+  return compose(tex, parts.join(""), 412, captions);
+}
+
 export function renderTrig(spec: TrigSpec, words: TrigWords): RenderedSvg {
   switch (spec.topic) {
     case "circle":
       return renderCircle(spec, words);
     case "compass":
       return renderCompass(spec, words);
+    case "hand":
+      return renderHand(spec, words);
     case "right":
       return renderRight(spec, words);
     case "triangle":

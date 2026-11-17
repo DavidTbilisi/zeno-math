@@ -338,6 +338,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     bearing of the same direction (clockwise from North) next to the angle (anticlockwise from East). Or label the
     quadrants with diagonal images of their own and the feeling that carries the signs (straw — clean, all +; sick
     nose — mixed; man in soup — heavy, all −; cookie in milk — mixed, calmer), plus a gaze drill
+  - *Hand trick*: the values worked out, not memorised — the fingers fan along 0°, 30°, 45°, 60° and 90°; fold
+    the one for θ and the fingers toward 0° count n for sin = √n/2, those toward 90° count m for cos = √m/2 (the
+    √n/2 ladder, lit beside it). Any multiple of 30° or 45°: the hand gives the size, the compass the signs. Radians
+    read as slices — the denominator names the slice, the numerator counts them from East (7π/6 = 7 × 30°) — each
+    slice with a peg of your own or the default (π: half a pie in the wet milk; /2 a knee bent square; /3 a musical
+    triangle; /4 the straw, tilted; /6 a clock hand, one hour)
   - *Right triangle*: SOH CAH TOA from any two of a, b, c, θ — every step, given parts in blue
   - *Solve a triangle*: SSS and SAS with the law of cosines, ASA/AAS with the law of sines, and the ambiguous
     SSA case — two triangles, one, or none — with areas ½·ab·sin C
