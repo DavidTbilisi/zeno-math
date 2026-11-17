@@ -1253,6 +1253,28 @@ input.invalid { border-color: var(--danger); }
 .z .board-card:hover { border-color: var(--z-ink); }
 .z .board-title { font-weight: 600; }
 .z .empty { border: 2px dashed var(--border); }
+/* The home in sections (Learn, My boards, For teachers), each under a small ink heading, with the small print below. */
+.z .home-section { margin-bottom: 44px; }
+.z .home-head { margin: 0 0 14px; font-size: 1.5rem; font-weight: 800; }
+.z .home-section .section-head .home-head { margin: 0; }
+.z .z-practice { margin-bottom: 12px; }
+.home-course {
+  display: flex; align-items: center; gap: 24px; padding: 18px 32px;
+  border: 2px solid var(--z-ink); border-radius: 12px; color: var(--z-ink); text-decoration: none;
+}
+.home-course:hover { background: var(--chip); }
+.home-course-text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.home-course-text strong { font-size: 1.125rem; font-weight: 800; }
+.home-course-text span { color: var(--z-graphite); }
+.home-course .z-btn { background: transparent; color: var(--z-ink); }
+.home-tools { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 12px; }
+.home-sort { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--border); border-radius: 8px; }
+.home-sort .btn { border: 0; }
+.home-sort .btn.on { background: var(--z-ink); color: var(--z-paper); }
+.board-run + .board-run { margin-top: 20px; }
+.z .board-age { margin: 0 0 8px; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--z-graphite); }
+.home-links { display: flex; flex-wrap: wrap; gap: 12px; }
+.z .home-foot { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 24px 0 0; border-top: 1px solid var(--border); margin: 0 24px; }
 
 /* Practice and the teacher's page in the same dress: the page's name set large, cards outlined in ink rather than
    floated on shadows, and a right answer in the session marked in marker yellow, as part of the way covered. */
@@ -1386,6 +1408,11 @@ span.board-home:hover { background: none; }
   .z-own { margin: 0 -16px; padding: 48px 16px; border-radius: 0; }
   .z-practice { flex-wrap: wrap; padding: 24px 20px; }
   .z-practice .z-btn { width: 100%; }
+  .home-course { flex-wrap: wrap; padding: 18px 20px; }
+  .home-course .z-btn { width: 100%; }
+  .z .home-section .section-head { flex-wrap: wrap; }
+  .home-tools { justify-content: flex-start; }
+  .z .home-foot { margin: 0 16px; padding: 20px 0 0; }
   .course-next { flex-wrap: wrap; padding: 24px 20px; }
   .course-next .z-btn { width: 100%; }
   .course-stage { grid-template-columns: 40px minmax(0, 1fr); gap: 14px; }
