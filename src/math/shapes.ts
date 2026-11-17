@@ -999,6 +999,19 @@ function slopeLinePreview(): Piece[] {
   ];
 }
 
+function trigBuildPreview(): Piece[] {
+  // A ladder against a wall: the angle at its foot marked, the ladder's length given and the height asked.
+  return [
+    poly([[200, 0], [216, 0], [216, 150], [200, 150]], { fill: FILL.gray, color: MUTED, width: 1.5 }),
+    seg([0, 150], [230, 150], { color: MUTED, width: 2 }),
+    seg([40, 150], [200, 20], { color: "#e8590c", width: 4 }),
+    path(arc(40, 150, 36, 36, 0, 39), { color: "#2f9e44", width: 2.5 }),
+    text(96, 140, "39°", 15, "center", "#2f9e44"),
+    text(102, 70, "9 m", 16, "center"),
+    text(186, 90, "x", 18, "center", RED),
+  ];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -1889,6 +1902,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBarChart", build: barChartPreview, live: "barChart" },
   { id: "liveGraphStory", build: graphStoryPreview, live: "graphStory" },
   { id: "liveSlopeLine", build: slopeLinePreview, live: "slopeLine" },
+  { id: "liveTrigBuild", build: trigBuildPreview, live: "trigBuild" },
   { id: "liveOneStroke", build: oneStrokePreview, live: "oneStroke" },
   { id: "liveColourMap", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", build: shortestPathPreview, live: "shortestPath" },

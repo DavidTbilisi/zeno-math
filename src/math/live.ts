@@ -29,6 +29,7 @@ import { GEO_START, type LiveGeoLab } from "./geoLab";
 import type { LiveExprMatch } from "./exprMatch";
 import type { LiveAngleGuess } from "./angleGuess";
 import type { LiveAngleHunt } from "./missingAngle";
+import type { LiveTrigBuild } from "./trigBuild";
 import type { LiveMirror } from "./symmetry";
 import type { LiveCubeNet } from "./cubeNets";
 import type { LivePlot } from "./plotPoint";
@@ -460,6 +461,7 @@ export type LiveStates = {
   barChart: LiveBarChart;
   graphStory: LiveGraphStory;
   slopeLine: LiveSlope;
+  trigBuild: LiveTrigBuild;
   oneStroke: LiveStroke;
   colourMap: LiveColour;
   shortestPath: LivePath;
@@ -557,6 +559,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   barChart: [560, 600],
   graphStory: [600, 600],
   slopeLine: [560, 700],
+  trigBuild: [600, 660],
   oneStroke: [560, 500],
   colourMap: [560, 540],
   shortestPath: [560, 540],
@@ -656,6 +659,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     barChart: { mode: "puzzle", stage: 0, level: 1, seed: 1, bars: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
     graphStory: { mode: "puzzle", stage: 0, level: 1, seed: 1, drawn: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
     slopeLine: { mode: "puzzle", stage: 0, level: 1, seed: 1, b: null, misses: 0, done: false, streak: 0, said: null },
+    trigBuild: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, misses: 0, done: false, streak: 0, said: null },
     oneStroke: { mode: "puzzle", stage: 0, level: 1, seed: 1, trail: [], misses: 0, done: false, streak: 0, said: null },
     colourMap: { mode: "puzzle", stage: 0, level: 1, seed: 1, colours: [], pen: 0, misses: 0, done: false, streak: 0, said: null },
     shortestPath: { mode: "puzzle", stage: 0, level: 1, seed: 1, route: [], misses: 0, done: false, streak: 0, said: null },

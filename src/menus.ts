@@ -267,6 +267,7 @@ export const MENUS: MenuGroup[] = [
           { live: "mirror", icon: "🦋" },
           { live: "angleGuess", icon: "∠" },
           { live: "angleHunt", icon: "📐" },
+          { live: "trigBuild", icon: "🪜" },
           { live: "views3d", icon: "🧊" },
           { live: "cubeNet", icon: "🎲" },
         ],

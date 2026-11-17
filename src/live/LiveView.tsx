@@ -45,6 +45,7 @@ import { PlotPoint } from "./PlotPoint";
 import { BarChart } from "./BarChart";
 import { GraphStory } from "./GraphStory";
 import { SlopeLine } from "./SlopeLine";
+import { TrigBuild } from "./TrigBuild";
 import { OneStroke } from "./OneStroke";
 import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
@@ -159,6 +160,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   barChart: BarChart,
   graphStory: GraphStory,
   slopeLine: SlopeLine,
+  trigBuild: TrigBuild,
   oneStroke: OneStroke,
   colourMap: ColourMap,
   shortestPath: ShortestPath,
