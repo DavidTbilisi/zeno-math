@@ -136,6 +136,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseNumberPatterns" | "senseFraction
       { kind: "target", icon: "🎯", name: "liveTarget" },
       { kind: "closerTo", icon: "≈", name: "liveCloserTo" },
       { kind: "kakooma", icon: "🔢", name: "liveKakooma" },
+      { kind: "baseTen", icon: "🧊", name: "liveBaseTen" },
     ],
   },
   {
@@ -157,6 +158,7 @@ const GAME_MENU: { sense: "senseNumber" | "senseNumberPatterns" | "senseFraction
   },
   {
     sense: "senseAlgebra", games: [
+      { kind: "algebraTiles", icon: "▦", name: "liveAlgebraTiles" },
       { kind: "balance", icon: "⚖️", name: "liveBalance" },
       { kind: "exprMatch", icon: "x=", name: "liveExprMatch" },
     ],
