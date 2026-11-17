@@ -30,7 +30,7 @@ test("a geoboard puzzle done first time earns three stars and opens the next one
   const board = page.locator(".live-geoboard");
   await board.waitFor();
   const box = (await board.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
   await board.getByRole("button", { name: /^Puzzle 1/ }).click();
   await expect(board.getByText(/Make a rectangle with an area of \d+ squares/)).toBeVisible();
   await expect(board.getByRole("button", { name: /^Puzzle 2/ })).toHaveCount(0);

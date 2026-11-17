@@ -11,7 +11,7 @@ import { depth } from "../math/problems/core";
 import { costQuestion, DONE, isCoding, rungsOf, solveInfo, techniqueQuestion, withAsks, type Technique } from "../math/problems/solve";
 import { archScene, cellsScene, graphScene, gridScene, listScene, Markers, matScene, rowsScene, spansScene, SW, treeScene, type Scene } from "./scenes";
 import { stackScenes, StepBar, StepSaid, useStepper } from "./stepper";
-import { fill, FONT, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, Toggle, type PieceProps } from "./ui";
 
 /** The ladder's rungs that the piece treats apart: the plan, the trace, the cost (math/problems/solve RUNGS). */
 const PLAN = 3;
@@ -223,7 +223,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
 
   return (
     <>
-      <SettingsBar>
+      <div className="live-bar">
         <select
           value={info.cat}
           aria-label={w.category}
@@ -266,7 +266,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
             }}
           >🙋 {w.quiz}</Toggle>
         )}
-      </SettingsBar>
+      </div>
       {solving && (
         <div className="live-bar live-solve-rungs" role="tablist">
           {rungs.map((r, i) => (
@@ -278,7 +278,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
       )}
       {/* On the cost rung the idea is put away again, since it often says what the solution costs. */}
       {rung !== COST && <p className="live-hint live-pattern-idea">{!solving || marks.shown.idea || rung > PLAN ? pw.idea : s.hidden}</p>}
-      <SettingsBar className="live-problem-inputs">
+      <div className="live-bar live-problem-inputs">
         {pw.labels.map((label, i) => (
           <label key={i} className="live-select">
             <span>{label}</span>
@@ -293,7 +293,7 @@ export function Problems({ state, set, w: words, svgRef }: PieceProps<"problems"
             />
           </label>
         ))}
-      </SettingsBar>
+      </div>
       <div className="live-problem-stage">
         <svg ref={svgRef} width={SW} height={height} viewBox={`0 0 ${SW} ${height}`} fontFamily={FONT}>
           <Markers />

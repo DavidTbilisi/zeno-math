@@ -39,7 +39,7 @@ import {
 } from "../math/fitLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** The most points free play takes. */
@@ -203,7 +203,7 @@ export function FitLab({ state, set, w: words, svgRef }: PieceProps<"fitLab">) {
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <SettingsBar className="descent-dials">
+      <div className="live-bar descent-dials">
         {p ? slider(knob) : (["degree", "lambda", "n"] as Knob[]).map(slider)}
         {!p && (
           <label className="live-slider">
@@ -220,7 +220,7 @@ export function FitLab({ state, set, w: words, svgRef }: PieceProps<"fitLab">) {
             />
           </label>
         )}
-      </SettingsBar>
+      </div>
       <GameActions game={game} g={g} done={d.done} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
         {!p && (

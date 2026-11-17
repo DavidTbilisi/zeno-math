@@ -25,7 +25,7 @@ import {
   type RnnControl,
 } from "../math/rnnLab";
 import { starText } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, Toggle, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveRnn> = { tries: 0, done: false, said: null };
@@ -81,7 +81,7 @@ export function RnnLab({ state, set, w: words, svgRef }: PieceProps<"rnnLab">) {
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <SettingsBar className="descent-dials">
+      <div className="live-bar descent-dials">
         {can.map((c) => {
           const r = RANGES[c];
           return (
@@ -101,7 +101,7 @@ export function RnnLab({ state, set, w: words, svgRef }: PieceProps<"rnnLab">) {
             </label>
           );
         })}
-      </SettingsBar>
+      </div>
       <GameActions game={game} g={g} done={d.done && !!p} always>
         {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
         {!p && CELLS.map((c) => <Toggle key={c} on={d.cell === c} onClick={() => commit({ cell: c })}>{w.cells[c]}</Toggle>)}

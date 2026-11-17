@@ -2,7 +2,7 @@
 // with Math.random fixed so the question is the one the test works out.
 import { expect, type Locator, type Page, type APIRequestContext } from "@playwright/test";
 
-/** A new board with one live piece from the Shapes panel, clicked in its middle so it answers clicks. */
+/** A new board with one live piece from the Shapes panel, clicked in a corner so it answers clicks (a click on a control would also press it). */
 export async function boardWith(page: Page, name: string, piece: string): Promise<Locator> {
   await page.goto("/");
   await page.getByRole("button", { name: /New board/ }).first().click();
@@ -13,7 +13,7 @@ export async function boardWith(page: Page, name: string, piece: string): Promis
   const game = page.locator(piece);
   await game.waitFor();
   const box = (await game.boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
   return game;
 }
 

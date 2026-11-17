@@ -244,6 +244,8 @@ export function BoardPage({ id }: { id: string }) {
   // The panel's node that a live piece puts its settings in.
   const [slotNode, setSlotNode] = useState<HTMLDivElement | null>(null);
   const panelRef = useRef<Panel | null>(null);
+  /** Where and when the last press on the board began, to tell a click on a live piece from a drag of it. */
+  const press = useRef<{ x: number; y: number; t: number } | null>(null);
   panelRef.current = panel;
   // Whether the panel has changed its item since it opened: closing it then makes all of it one step to undo.
   const panelChanged = useRef(false);
@@ -818,6 +820,39 @@ export function BoardPage({ id }: { id: string }) {
           e.preventDefault();
           e.stopPropagation();
           openPanel(el);
+        }}
+        // One click on a live piece that isn't in use puts it in use and passes the click on to what is under it, so its
+        // buttons answer the first click (Excalidraw wants a click in its middle third, or a double-click). Dragging it
+        // still moves it.
+        onPointerDownCapture={(e) => {
+          press.current = e.button === 0 ? { x: e.clientX, y: e.clientY, t: e.timeStamp } : null;
+        }}
+        onPointerUpCapture={(e) => {
+          const p = press.current;
+          press.current = null;
+          const ex = excalidraw.current;
+          if (!ex || !p || e.button !== 0 || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+          if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > 4 || e.timeStamp - p.t > 400) return;
+          const st = ex.getAppState();
+          if (st.activeTool.type !== "selection") return;
+          const z = st.zoom.value;
+          const el = itemAt(ex.getSceneElements(), (e.clientX - st.offsetLeft) / z - st.scrollX, (e.clientY - st.offsetTop) / z - st.scrollY, (x) => !!liveDataOf(x));
+          if (!el || (st.activeEmbeddable?.element.id === el.id && st.activeEmbeddable.state === "active")) return;
+          const [cx, cy] = [e.clientX, e.clientY];
+          // After Excalidraw's own handling of the press, which selects the piece.
+          window.setTimeout(() => {
+            const now = ex.getSceneElements().find((x) => x.id === el.id);
+            if (!now) return;
+            ex.updateScene({
+              appState: { selectedElementIds: { [el.id]: true }, activeEmbeddable: { element: now as NonDeletedExcalidrawElement, state: "active" } },
+              captureUpdate: CaptureUpdateAction.NEVER,
+            });
+            // Once the piece takes pointer events, the click goes to the control under it.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              const target = document.elementFromPoint(cx, cy);
+              if (target?.closest(".live")) target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: cx, clientY: cy, view: window }));
+            }));
+          }, 0);
         }}
         // Double-clicking a formula/graph opens its editor (instead of Excalidraw's image crop mode).
         onDoubleClickCapture={(e) => {

@@ -8,7 +8,7 @@ import {
   patternTrace, TRAVERSALS, writeGrid, writeTree, type Frame, type PatternId, type Trace,
 } from "../math/patternSteps";
 import { cellsScene, gridScene, listScene, Markers, rowsScene, spansScene, SW, treeScene, type Scene, type Spot } from "./scenes";
-import { fill, FONT, Stepper, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, Stepper, Toggle, type PieceProps } from "./ui";
 
 /** A box on the picture to type into, and what to do with what is typed. */
 type Edit = { x: number; y: number; w: number; h: number; value: string; commit: (v: string) => void };
@@ -173,7 +173,7 @@ export function Patterns({ state, set, w: words, svgRef }: PieceProps<"patterns"
 
   return (
     <>
-      <SettingsBar>
+      <div className="live-bar">
         <select
           value={pattern}
           aria-label={w.pattern}
@@ -194,9 +194,9 @@ export function Patterns({ state, set, w: words, svgRef }: PieceProps<"patterns"
             patch({ quiz: !quiz });
           }}
         >🙋 {w.quiz}</Toggle>
-      </SettingsBar>
+      </div>
       <p className="live-hint live-pattern-idea">{w.ideas[pattern]}</p>
-      <SettingsBar>
+      <div className="live-bar">
         {kind !== "none" && (
           <label className="live-select">
             <span>{w.data[kind]}</span>
@@ -247,7 +247,7 @@ export function Patterns({ state, set, w: words, svgRef }: PieceProps<"patterns"
             </label>
           </>
         )}
-      </SettingsBar>
+      </div>
       <div className="live-pattern-stage">
         <svg ref={svgRef} width={SW} height={height} viewBox={`0 0 ${SW} ${height}`} fontFamily={FONT}>
           <Markers />

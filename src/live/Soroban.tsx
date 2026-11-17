@@ -7,7 +7,7 @@ import type { Dict } from "../locales/en";
 import type { LiveSoroban } from "../math/live";
 import { beadsOf, clickBead, rodDigits, SOROBAN_RODS, sorobanFits, sorobanMax, sorobanSteps, sorobanTarget, type SorobanStep } from "../math/soroban";
 import { subCase } from "../math/addition";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
 
 // Rod spacing and bead size; the frame's side, top and beam; the rows below the frame.
 const SP = 58;
@@ -104,7 +104,7 @@ export function Soroban({ state, set, w: words, svgRef }: PieceProps<"soroban">)
           <text x={W / 2} y={height - 12} fontSize={34} textAnchor="middle" fill={INK} data-value={value}>{grouped(value)}</text>
         )}
       </svg>
-      <SettingsBar>
+      <div className="live-bar">
         <span>{w.rods}</span>
         <Stepper
           value={rods}
@@ -118,8 +118,8 @@ export function Soroban({ state, set, w: words, svgRef }: PieceProps<"soroban">)
         <Toggle on={state.showDigits} onClick={() => patch({ showDigits: !state.showDigits })}>{w.digits}</Toggle>
         <button className="live-btn" onClick={() => patch({ value: 0, work: null })}>{w.clear}</button>
         <button className="live-btn" onClick={() => patch({ target: sorobanTarget(rods, Math.random), value: 0, work: null })}>🎯 {w.target}</button>
-      </SettingsBar>
-      <SettingsBar>
+      </div>
+      <div className="live-bar">
         <input
           className="live-num"
           key={state.n}
@@ -144,7 +144,7 @@ export function Soroban({ state, set, w: words, svgRef }: PieceProps<"soroban">)
             <button className="live-btn" disabled={k >= steps.length} title={w.all} aria-label={w.all} onClick={() => go(steps.length)}>⏭</button>
           </>
         )}
-      </SettingsBar>
+      </div>
       {work ? (
         <p className="live-said info">
           {special === "zero"

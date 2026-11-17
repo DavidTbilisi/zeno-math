@@ -3,7 +3,7 @@
 // "Over time" follows one outcome's relative frequency as the trials pile up, on a log scale, settling on p.
 import { BAG_COLORS, DIE_SIDES, emptyTally, MAX_TRIALS, outcomes, runTrials, type Device, type LiveStates } from "../math/live";
 import { SECTION_COLORS } from "./pieces";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps, SettingsBar } from "./ui";
+import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
 
 type State = LiveStates["chance"];
 const W = 660;
@@ -50,7 +50,7 @@ export function Chance({ state, set, w, svgRef }: PieceProps<"chance">) {
 
   return (
     <>
-      <SettingsBar>
+      <div className="live-bar">
         <select
           value={d.kind}
           aria-label={c.bars}
@@ -94,7 +94,7 @@ export function Chance({ state, set, w, svgRef }: PieceProps<"chance">) {
               </span>
             );
           })}
-      </SettingsBar>
+      </div>
       <div className="live-bar">
         {[1, 10, 100, 1000].map((m) => (
           <button key={m} className="live-btn primary" disabled={n >= MAX_TRIALS} onClick={() => run(m)}>×{m}</button>
@@ -105,12 +105,12 @@ export function Chance({ state, set, w, svgRef }: PieceProps<"chance">) {
           <span className="live-chip" style={{ background: colors[state.last] }}>{c.last}: {labels[state.last]}</span>
         )}
       </div>
-      <SettingsBar>
+      <div className="live-bar">
         <Toggle on={state.view === "bars"} onClick={() => set({ ...state, view: "bars" })}>{c.bars}</Toggle>
         <Toggle on={state.view === "time"} onClick={() => set({ ...state, view: "time" })}>{c.overTime}</Toggle>
         {state.view === "bars" && <Toggle on={state.relative} onClick={() => set({ ...state, relative: !state.relative })}>{c.relative}</Toggle>}
         <Toggle on={state.theory} onClick={() => set({ ...state, theory: !state.theory })}>{c.theory}</Toggle>
-      </SettingsBar>
+      </div>
       <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
         <rect width={W} height={H} fill="#fff" />
         {state.view === "bars" ? (
