@@ -1169,6 +1169,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     beside the side, so a wall taller than its ladder can be seen to be impossible (or sin⁻¹ of more than 1 to have
     no answer, or tan⁻¹ upside down to be the other angle). No misses earns three stars. Four discoveries (θ at the
     top, a division, an angle found, ten in a row)
+  - *Round the unit circle*: a point P dragged round a circle of radius 1 (or turned 15° at a time with the arrow
+    keys), its across drawn as cos and its up as sin as it goes. Easy: put P at an angle (30°s and 45°s, all the way
+    round), then pick its coordinates from four; a wrong pair is drawn, in orange, where it really is. Medium: solve
+    sin θ = ½ or the like by putting P at both of its angles from 0° to 360°, the line sin = ½ dashed across the
+    circle. Hard: no line; tan, drawn where the line through P meets the tangent at 1; sin or cos 0 or ±1; and an
+    equation whose other ratio's sign leaves one angle. A wrong angle is told how far to turn, or what its ratio
+    really is there and whether only the sign is wrong. No misses earns three stars. Four discoveries (a point with
+    both coordinates negative, tan, one angle picked by a sign, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four

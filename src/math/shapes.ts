@@ -1012,6 +1012,23 @@ function trigBuildPreview(): Piece[] {
   ];
 }
 
+function unitCircleGamePreview(): Piece[] {
+  // The unit circle with P at 120°: the radius, cos along the axis, sin up to P, and the dashed line sin = √3/2.
+  const [cx, cy, r] = [90, 90, 80];
+  const p: Pt = [cx + r * Math.cos(rad(120)), cy - r * Math.sin(rad(120))];
+  return [
+    seg([0, cy], [180, cy], { color: MUTED, width: 1.5 }),
+    seg([cx, 0], [cx, 180], { color: MUTED, width: 1.5 }),
+    path(arc(cx, cy, r, r, 0, 360), { width: 2 }),
+    seg([0, p[1]], [180, p[1]], { color: "#9c36b5", width: 1.5, dashed: true }),
+    seg([cx, cy], p, { color: BLUE, width: 2.5 }),
+    seg([cx, cy], [p[0], cy], { color: "#0c8599", width: 4 }),
+    seg([p[0], cy], p, { color: "#9c36b5", width: 4 }),
+    dot(p, 6),
+    text(p[0] - 14, p[1] - 8, "P", 15, "center"),
+  ];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -1903,6 +1920,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveGraphStory", build: graphStoryPreview, live: "graphStory" },
   { id: "liveSlopeLine", build: slopeLinePreview, live: "slopeLine" },
   { id: "liveTrigBuild", build: trigBuildPreview, live: "trigBuild" },
+  { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
   { id: "liveOneStroke", build: oneStrokePreview, live: "oneStroke" },
   { id: "liveColourMap", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", build: shortestPathPreview, live: "shortestPath" },
