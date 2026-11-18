@@ -34,6 +34,7 @@ import type { LiveUnitCircle } from "./unitCircleGame";
 import type { LiveSoh } from "./sohcahtoa";
 import type { LiveDiscover } from "./trigDiscover";
 import type { LivePythDiscover } from "./pythDiscover";
+import type { LiveCircleDiscover } from "./circleDiscover";
 import type { LiveMirror } from "./symmetry";
 import type { LiveCubeNet } from "./cubeNets";
 import type { LivePlot } from "./plotPoint";
@@ -470,6 +471,7 @@ export type LiveStates = {
   sohcahtoa: LiveSoh;
   trigDiscover: LiveDiscover;
   pythDiscover: LivePythDiscover;
+  circleDiscover: LiveCircleDiscover;
   oneStroke: LiveStroke;
   colourMap: LiveColour;
   shortestPath: LivePath;
@@ -572,6 +574,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   sohcahtoa: [600, 680],
   trigDiscover: [640, 720],
   pythDiscover: [640, 720],
+  circleDiscover: [640, 720],
   oneStroke: [560, 500],
   colourMap: [560, 540],
   shortestPath: [560, 540],
@@ -676,6 +679,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     sohcahtoa: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, top: null, bottom: null, misses: 0, done: false, streak: 0, said: null },
     trigDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], a: null, op: null, b: null, tried: [], flipped: false, misses: 0, done: false, streak: 0, said: null },
     pythDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], p1: null, op: null, p2: null, pr: null, tried: [], misses: 0, done: false, streak: 0, said: null },
+    circleDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], qa: null, qx: null, qy: null, tried: [], misses: 0, done: false, streak: 0, said: null },
     oneStroke: { mode: "puzzle", stage: 0, level: 1, seed: 1, trail: [], misses: 0, done: false, streak: 0, said: null },
     colourMap: { mode: "puzzle", stage: 0, level: 1, seed: 1, colours: [], pen: 0, misses: 0, done: false, streak: 0, said: null },
     shortestPath: { mode: "puzzle", stage: 0, level: 1, seed: 1, route: [], misses: 0, done: false, streak: 0, said: null },
