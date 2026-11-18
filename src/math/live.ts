@@ -32,6 +32,7 @@ import type { LiveAngleHunt } from "./missingAngle";
 import type { LiveTrigBuild } from "./trigBuild";
 import type { LiveUnitCircle } from "./unitCircleGame";
 import type { LiveSoh } from "./sohcahtoa";
+import type { LiveDiscover } from "./trigDiscover";
 import type { LiveMirror } from "./symmetry";
 import type { LiveCubeNet } from "./cubeNets";
 import type { LivePlot } from "./plotPoint";
@@ -466,6 +467,7 @@ export type LiveStates = {
   trigBuild: LiveTrigBuild;
   unitCircleGame: LiveUnitCircle;
   sohcahtoa: LiveSoh;
+  trigDiscover: LiveDiscover;
   oneStroke: LiveStroke;
   colourMap: LiveColour;
   shortestPath: LivePath;
@@ -566,6 +568,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   trigBuild: [600, 780],
   unitCircleGame: [520, 760],
   sohcahtoa: [600, 680],
+  trigDiscover: [640, 720],
   oneStroke: [560, 500],
   colourMap: [560, 540],
   shortestPath: [560, 540],
@@ -668,6 +671,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     trigBuild: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, misses: 0, done: false, streak: 0, said: null },
     unitCircleGame: { mode: "puzzle", stage: 0, level: 1, seed: 1, p: 0, placed: false, found: [], misses: 0, done: false, streak: 0, said: null },
     sohcahtoa: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, top: null, bottom: null, misses: 0, done: false, streak: 0, said: null },
+    trigDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], a: null, op: null, b: null, tried: [], flipped: false, misses: 0, done: false, streak: 0, said: null },
     oneStroke: { mode: "puzzle", stage: 0, level: 1, seed: 1, trail: [], misses: 0, done: false, streak: 0, said: null },
     colourMap: { mode: "puzzle", stage: 0, level: 1, seed: 1, colours: [], pen: 0, misses: 0, done: false, streak: 0, said: null },
     shortestPath: { mode: "puzzle", stage: 0, level: 1, seed: 1, route: [], misses: 0, done: false, streak: 0, said: null },

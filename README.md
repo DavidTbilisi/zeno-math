@@ -1201,6 +1201,17 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     why Pythagoras holds (the same steps as the geometry tool's, opening there on the third side), on a small
     triangle of its own; it costs no stars. No misses earns three stars. Four discoveries
     (all three ratios, a triangle on a slant, a whole triangle from one ratio, ten in a row)
+  - *Discover trig*: sin, cos and tan found before they are named. Easy keeps θ and lets the size go: drag the
+    triangle's top corner to grow or shrink it on a grid, measure it into a table at three sizes or more, then make a
+    new column from two sides (a side, + − × or ÷, another side) and claim the one that is the same in every row.
+    Trying costs nothing; a claim that changes costs a star; the ratio found is named (opp ÷ hyp is sin 37°), upside
+    down too. Medium keeps the hypotenuse at 10 and turns θ: measure as it turns and stop at the angle where a ratio
+    has the value asked (opp ÷ hyp = 0.5 at 30°). Hard uses it: a triangle too big to measure, one side known, a
+    small triangle with the same angle measured beside it, and four lengths to choose from (the same difference,
+    the ratio upside down and the wrong side told why). "Why?" steps through the level's idea with a picture (sides
+    double, so only a fraction keeps up; with hyp 10 the ratio is read off a side; the big triangle is the small one
+    grown). Five discoveries (the size not mattering, a ratio upside down, the angle deciding, a side out of reach,
+    ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four

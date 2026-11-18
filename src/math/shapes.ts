@@ -1046,6 +1046,22 @@ function sohcahtoaPreview(): Piece[] {
   ];
 }
 
+function trigDiscoverPreview(): Piece[] {
+  // A triangle and its double sharing θ, and the ratio that stays: 3/5 = 6/10.
+  return [
+    poly([[0, 150], [120, 150], [120, 60]], { width: 1.5, color: "#adb5bd" }),
+    poly([[0, 150], [60, 150], [60, 105]], { width: 2.5 }),
+    path(arc(0, 150, 26, 26, 0, 37), { color: "#2f9e44", width: 2.5 }),
+    text(36, 140, "θ", 14, "center", "#2f9e44"),
+    text(70, 128, "3", 14, "center", "#9c36b5"),
+    text(132, 105, "6", 14, "center", "#9c36b5"),
+    text(24, 116, "5", 14, "center", BLUE),
+    text(52, 92, "10", 14, "center", BLUE),
+    text(196, 96, "3/5 = 6/10", 16, "center"),
+    text(196, 122, "🔍", 18, "center"),
+  ];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -1939,6 +1955,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTrigBuild", build: trigBuildPreview, live: "trigBuild" },
   { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
   { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
+  { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
   { id: "liveOneStroke", build: oneStrokePreview, live: "oneStroke" },
   { id: "liveColourMap", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", build: shortestPathPreview, live: "shortestPath" },
