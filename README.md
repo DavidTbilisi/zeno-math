@@ -741,7 +741,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 97 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 98 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), clock times (3:45,
     15:45), lengths of time (1 h 25 min, 85 min, 1:25) and measures (235 cm, 2 m 35 cm, 1 kg 200 g), fractions, mixed numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
@@ -764,7 +764,11 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     average speed, the small marks of a scale counted as 1 each, the zero that holds a place lost (3 ℓ 40 ml as
     340 ml), the pictures of a picture graph counted as ones, the highest temperature given for the biggest rise, a
     pie chart's angle taken for a number of children and a number for an angle, a stem-and-leaf plot's leaf read
-    without its stem, the largest mark given for the range, and more (107 in all, in
+    without its stem, the largest mark given for the range, 90° + t taken for the obtuse angle with the sine of t,
+    the minus sign of an obtuse angle's cosine dropped, the sine rule upside down, the angles shared out in the ratio
+    of the sides, x² given for x, the area without its sine or its half, the acute angle of the ambiguous case, 360°
+    taken from a bearing for the way back, the turn between two bearings taken for the angle inside, an angle of
+    elevation measured from the vertical, and more (119 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -866,6 +870,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     at half past (half-way between two points), or for the biggest rise from one hour to the next; a pie chart of
     favourite fruit, a slice's children from its angle or its angle from its children; a stem-and-leaf plot of test
     marks, their median or their range. The worked solution marks what was read
+  - Trigonometry beyond the right angle, from the secondary 3 books (Think Mathematics 3B ch. 6–7): the sine and
+    cosine of an obtuse angle on the unit circle (the same sine at 180° − θ, the cosine the other sign); the sine rule
+    for a side or an angle, the cosine rule for a side or an angle, the area ½ab sin C; the ambiguous case of the sine
+    rule, a back bearing, a ship's two legs on bearings, and angles of elevation and depression from a tower or a
+    cliff. Every figure is drawn to scale, and the worked solution marks the mirror angle, the back bearing or the
+    angle inside the triangle
   - Graph stories: a walk from home told in parts (walks away slowly, runs away, stops, walks or runs back) and four
     graphs of the distance from home against the time to pick from, by letter — walking only, then walking and running,
     then four parts. A graph with a stop and a walk mixed up, or with walking and running the wrong way round, is
@@ -1877,7 +1887,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (97 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (98 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that

@@ -4323,6 +4323,140 @@
       "label": "wrong"
     },
     {
+      "skill": "trigRules",
+      "level": 1,
+      "seed": 1,
+      "input": "165",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 1,
+      "seed": 1,
+      "input": "15",
+      "label": "wrong",
+      "note": "the cosine of the obtuse angle taken as positive",
+      "mistake": "cosSignLost"
+    },
+    {
+      "skill": "trigRules",
+      "level": 1,
+      "seed": 2,
+      "input": "-0.5",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 1,
+      "seed": 2,
+      "input": "0.5",
+      "label": "wrong",
+      "note": "the cosine of an obtuse angle is negative",
+      "mistake": "sign"
+    },
+    {
+      "skill": "trigRules",
+      "level": 1,
+      "seed": 7,
+      "input": "109",
+      "label": "wrong",
+      "note": "90° + 19°, not 180° − 19°",
+      "mistake": "notSupplement"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 1,
+      "input": "130.6°",
+      "label": "correct",
+      "note": "with the degree sign"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 1,
+      "input": "49.4",
+      "label": "wrong",
+      "note": "the acute angle: the minus sign of the cosine dropped",
+      "mistake": "cosSignLost"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 4,
+      "input": "14.32 cm²",
+      "label": "correct",
+      "note": "with the unit"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 4,
+      "input": "21",
+      "label": "wrong",
+      "note": "½bc without sin A",
+      "mistake": "areaNoSine"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 6,
+      "input": "93",
+      "label": "wrong",
+      "note": "x² from the cosine rule, no square root",
+      "mistake": "noSquareRoot"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 1,
+      "input": "219.80",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 1,
+      "input": "29.12",
+      "label": "wrong",
+      "note": "the angle of depression measured from the cliff",
+      "mistake": "fromVertical"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 6,
+      "input": "6.46",
+      "label": "wrong",
+      "note": "the turn between the bearings used as the angle inside",
+      "mistake": "bearingTurnInside"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 7,
+      "input": "59.44",
+      "label": "wrong",
+      "note": "the acute angle of the ambiguous case",
+      "mistake": "ambiguousAcute"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 12,
+      "input": "215",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 12,
+      "input": "325",
+      "label": "wrong",
+      "note": "360° − 035° for the back bearing",
+      "mistake": "backBearingMirror"
+    },
+    {
       "skill": "graphStory",
       "level": 1,
       "seed": 7,

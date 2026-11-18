@@ -109,5 +109,17 @@ export const MISTAKES = [
   "countAsAngle",
   "leafOnly",
   "largestAsRange",
+  "notSupplement",
+  "cosSignLost",
+  "sineRuleFlipped",
+  "anglesAsSides",
+  "noSquareRoot",
+  "wrongAngleFound",
+  "areaNoSine",
+  "areaNotHalved",
+  "ambiguousAcute",
+  "backBearingMirror",
+  "bearingTurnInside",
+  "fromVertical",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
