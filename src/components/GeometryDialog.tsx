@@ -20,6 +20,7 @@ import {
   type GeometrySpec,
   type Pt,
 } from "../math/geometry";
+import { PythagorasWhy } from "../live/PythagorasWhy";
 import { Modal } from "./Modal";
 import { useLiveSubmit } from "./ItemPanel";
 
@@ -222,6 +223,11 @@ export function GeometryDialog({ initial, onSubmit, onClose }: {
         </svg>
       </div>
       <small className="hint">{hint}</small>
+      {spec.shape === "pythagoras" && (
+        <div className="geo-why">
+          <PythagorasWhy w={t.live.pythWhy} />
+        </div>
+      )}
       {practice && (
         <div className="pv-toolbar">
           <button className="btn small primary" onClick={check}>{t.check}</button>
