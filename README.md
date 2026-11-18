@@ -760,7 +760,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     points, a ratio's terms added to instead of multiplied, m : n taken for the fraction m/n, a rate worked the wrong way
     round, one of two parts given for the number they make, a number used twice, a total of the wrong parity, only
     the neighbours out of order counted, the hour a clock's short hand is nearing read too soon, an hour counted as 100
-    minutes, the afternoon's hours left without the 12, and more (92 in all, in
+    minutes, the afternoon's hours left without the 12, minutes taken for hours, the mean of two speeds taken for the
+    average speed, and more (96 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -795,7 +796,11 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
       worked solutions (a term added to instead of multiplied, and m : n taken for m/n, named)
     - *Rate*: rice by the kilogram and a tap by the minute — the rate, the total or the number of units from the
       other two, then two steps through the rate for one (dividing the wrong way round, and adding the difference in
-      units instead of scaling, named)
+      units instead of scaling, named). Speed (P6) from medium on: distance, speed or time from the other two on the
+      double number line, a car's distance in so many minutes (the minutes taken for hours named), a runner in metres
+      a second; then, with a picture of the road, the average speed over two legs (the mean of the two speeds named),
+      two vehicles meeting head on and one catching another up (the difference and the sum of the speeds swapped,
+      named). The answer may carry its unit: 48 km, 60 km/h, 3 h
   - Time, from the primary syllabus (P2 to P4), answered with a clock time or a length of time:
     - *Easy*: what a clock with hands shows, to the hour, the half hour or five minutes (the hour the short hand is
       nearing, and the hands read the wrong way round, named; 15:40 is sent back, a clock with hands goes up to 12)

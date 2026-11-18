@@ -21,13 +21,18 @@ test("4 kg for 28: ÷ 4 on both lines, 7 green at one kilogram; minutes get a cl
   assert.equal(rateAmount({ cost: false }, 1.5), "1.5");
 });
 
-test("every rate question draws its double number line, and the line's answer is the answer", async () => {
+test("every rate question with a double number line has the answer on it; the others are worked in lines", async () => {
   const seen = new Set<string>();
   for (const level of [1, 2, 3] as const)
     for (let seed = 1; seed <= 150; seed++) {
       const ex = exercise("rate", level, seed, w);
       const where = `level ${level} seed ${seed}`;
-      assert.equal(ex.solution?.kind, "rate", where);
+      // Speed with minutes or seconds, and the hard speed questions, are worked in lines instead.
+      if (ex.solution?.kind !== "rate") {
+        assert.ok(ex.steps?.length, where);
+        assert.deepEqual(check(ex, ex.plain, w), { ok: true });
+        continue;
+      }
       const s = ex.solution!.spec as RateSolution;
       seen.add(s.ask);
       assert.equal(pictured(s), ex.plain, where);

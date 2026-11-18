@@ -52,6 +52,7 @@ import { compareSign, fracSign, samePieces, type CompareSign, type Frac as Fract
 import type { MistakeId } from "./mistakes";
 import type { SpaceSpec } from "./vectorspace";
 import { AREAS, SKILLS, type Area, type SkillId } from "./practiceSkills";
+import { roadSvg, type RoadSpec } from "./speedPics";
 import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, timeTex, type DurationStems, type TimeSolution } from "./timePics";
 
 export { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "./practiceSkills";
@@ -411,6 +412,14 @@ export type PracticeWords = {
     time12: string;
     timeTrip: string;
     timeTripEnd: string;
+    speedDistance: string;
+    speedSpeed: string;
+    speedTime: string;
+    speedMinutes: string;
+    speedRunner: string;
+    speedAverage: string;
+    speedMeet: string;
+    speedCatch: string;
   };
   /** A hypothesis test's two decisions: on a button (text) and typed (plain). */
   decisions: Record<"reject" | "keep", { text: string; plain: string }>;
@@ -428,6 +437,8 @@ export type PracticeWords = {
    * Time: hours and minutes as written after a number, the first letters a typed answer may write them with, the parts
    * of the day a 12-hour time is said in (3:45 in the afternoon), and the hands of the clock in the worked solution.
    */
+  /** Units of speed, and seconds, as written after a number. */
+  speed: { kmh: string; ms: string; s: string };
   time: { h: string; min: string; stems: DurationStems; parts: Record<DayPart, string>; shortHand: string; longHand: string };
   formats: Record<Format, string>;
   /** What each recognised mistake is, said kindly: the slip, and how to see it. */
@@ -1069,6 +1080,96 @@ const ptsTex = (ps: { x: number; y: number }[]) => ps.map((p) => `(${p.x}, ${p.y
 const errTable = (head: string, heads: (string | number)[], rows: [string, number[]][]) =>
   `\\begin{array}{c|${"c".repeat(heads.length)}} ${head} & ${heads.join(" & ")} \\\\ \\hline ${rows.map(([k, vs]) => `${k} & ${vs.join(" & ")}`).join(" \\\\ ")} \\end{array}`;
 
+/** A speed answer, which may be typed with its unit (48 km, 60 km/h, 3 h, 5 m/s). */
+const speedNum = (v: number, w: PracticeWords, traps: Trap[] = []): Answer => ({ k: "num", v, tol: 1e-9, units: [w.speed.kmh, w.speed.ms, w.units.km, w.units.m, w.time.h, w.speed.s], traps });
+
+/**
+ * Speed (P6), the medium rate questions about it: distance = speed × time with any one of the three missing, in
+ * kilometres and hours on a double number line; or a time in minutes (taking the minutes for hours is the trap), or a
+ * runner in metres and seconds, worked in lines.
+ */
+function speedOne(r: Rng, w: PracticeWords): Omit<Exercise, "skill" | "level" | "seed"> {
+  const P = w.prompts;
+  const kind = r.int(0, 4);
+  const line = (ask: RateSolution["ask"], v: number, t: number, steps: string[]) => ({
+    kind: "rate" as const, spec: { ask, u: v, n: t, t: v * t, cost: false, top: w.time.h, bottom: w.units.km, steps } satisfies RateSolution & { steps: string[] },
+  });
+  const base = { q: "", format: "number" as const };
+  if (kind <= 2) {
+    const [v, t] = [5 * r.int(6, 24), r.int(2, 5)];
+    const d = v * t;
+    if (kind === 0) return { ...base, prompt: fill(P.speedDistance, { v, t }), answer: speedNum(d, w), show: String(d), plain: String(d), solution: line("total", v, t, [`${v} \\times ${t} = ${d}`]) };
+    if (kind === 1) {
+      const traps: Trap[] = [{ id: "rateInverted", a: num(t / d), vars: { t: d, n: t } }];
+      return { ...base, prompt: fill(P.speedSpeed, { d, t }), answer: speedNum(v, w, traps), show: String(v), plain: String(v), solution: line("rate", v, t, [`${d} \\div ${t} = ${v}`]) };
+    }
+    return { ...base, prompt: fill(P.speedTime, { d, v }), answer: speedNum(t, w), show: String(t), plain: String(t), solution: line("units", v, t, [`${d} \\div ${v} = ${t}`]) };
+  }
+  if (kind === 3) {
+    // Minutes are sixtieths of an hour: v is a multiple of 6 and t of 10, so the distance is whole.
+    const [v, t] = [6 * r.int(5, 20), 10 * r.int(1, 5)];
+    const d = (v * t) / 60;
+    const traps: Trap[] = [{ id: "minutesAsHours", a: num(v * t), vars: { t, v, d } }];
+    const steps = [`${t}\\text{ ${w.time.min}} = \\frac{${t}}{60}\\text{ ${w.time.h}}`, `${v} \\times \\frac{${t}}{60} = ${d}`];
+    return { ...base, prompt: fill(P.speedMinutes, { v, t }), answer: speedNum(d, w, traps), show: String(d), plain: String(d), steps };
+  }
+  const [v, t] = [r.int(3, 9), 10 * r.int(2, 9)];
+  const d = v * t;
+  return { ...base, prompt: fill(P.speedRunner, { d, t }), answer: speedNum(v, w, [{ id: "rateInverted", a: num(t / d), vars: { t: d, n: t } }]), show: String(v), plain: String(v), steps: [`${d} \\div ${t} = ${v}`] };
+}
+
+/**
+ * Speed in two steps, the hard rate questions about it: the average speed over two legs (the mean of the two speeds is
+ * the trap), two vehicles driving towards each other (closing at the sum of their speeds) and one catching another up
+ * (gaining at the difference). Each comes with a picture of the road.
+ */
+function speedTwo(r: Rng, w: PracticeWords): Omit<Exercise, "skill" | "level" | "seed"> {
+  const P = w.prompts;
+  const kind = r.int(0, 2);
+  const u = { kmh: w.speed.kmh, km: w.units.km, h: w.time.h };
+  const pic = (spec: RoadSpec) => {
+    const p = roadSvg(spec, u);
+    return { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${p.body}</g>`, h: p.h, w: p.w };
+  };
+  const answer = (v: number, traps: Trap[]) => ({ answer: speedNum(v, w, traps), show: tidy(v), plain: tidy(v), q: "", format: "number" as const });
+  if (kind === 0) {
+    // Whole hours on each leg, different times, and an average that comes out whole.
+    let v1: number, v2: number, t1: number, t2: number;
+    do [v1, v2, t1, t2] = [10 * r.int(3, 9), 10 * r.int(3, 9), r.int(1, 3), r.int(1, 3)];
+    while (v1 === v2 || t1 === t2 || (v1 * t1 + v2 * t2) % (t1 + t2) !== 0);
+    const [d1, d2] = [v1 * t1, v2 * t2];
+    const avg = (d1 + d2) / (t1 + t2);
+    const traps: Trap[] = [{ id: "meanOfSpeeds", a: num((v1 + v2) / 2), vars: { d: d1 + d2, h: t1 + t2 } }];
+    return {
+      prompt: fill(P.speedAverage, { d1, v1, d2, v2 }),
+      pic: pic({ kind: "legs", d1, v1, d2, v2 }),
+      ...answer(avg, traps),
+      steps: [`${d1} + ${d2} = ${d1 + d2}`, `\\frac{${d1}}{${v1}} + \\frac{${d2}}{${v2}} = ${t1} + ${t2} = ${t1 + t2}`, `${d1 + d2} \\div ${t1 + t2} = ${avg}`],
+    };
+  }
+  if (kind === 1) {
+    const [v1, v2, t] = [10 * r.int(4, 9), 10 * r.int(4, 9), r.int(2, 5)];
+    const d = (v1 + v2) * t;
+    const traps: Trap[] = v1 !== v2 ? [{ id: "meetDifference", a: num(d / Math.abs(v1 - v2)), vars: { a: v1, b: v2, s: v1 + v2 } }] : [];
+    return { prompt: fill(P.speedMeet, { d, v1, v2 }), pic: pic({ kind: "meet", d, v1, v2 }), ...answer(t, traps), steps: [`${v1} + ${v2} = ${v1 + v2}`, `${d} \\div ${v1 + v2} = ${t}`] };
+  }
+  // A cyclist's head start of h hours, and a car that catches up in t hours (a half or a whole number).
+  let v1: number, h: number, t: number, diff: number;
+  do {
+    [v1, h, t] = [r.int(10, 20), r.int(1, 3), r.pick([0.5, 1, 1.5, 2, 3])];
+    diff = (v1 * h) / t;
+  } while (!Number.isInteger(diff) || v1 + diff > 120 || diff < 10);
+  const v2 = v1 + diff;
+  const gap = v1 * h;
+  const traps: Trap[] = [{ id: "catchSum", a: num(gap / (v1 + v2)), vars: { a: v2, b: v1, s: diff } }];
+  return {
+    prompt: fill(P.speedCatch, { v1, h, v2 }),
+    pic: pic({ kind: "catch", d: gap, v1, v2, h }),
+    ...answer(t, traps),
+    steps: [`${v1} \\times ${h} = ${gap}`, `${v2} - ${v1} = ${diff}`, `${gap} \\div ${diff} = ${tidy(t)}`],
+  };
+}
+
 const GENS: Record<SkillId, Gen> = {
   times(r, L, w) {
     const [a, b] = L === 1 ? [r.int(12, 99), r.int(3, 9)] : L === 2 ? [r.int(12, 99), r.int(12, 99)] : [r.int(101, 999), r.int(12, 99)];
@@ -1473,7 +1574,8 @@ const GENS: Record<SkillId, Gen> = {
       return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${u} \\times ${n} = ${t}`], line("total", u, n, t)) };
     }
     if (L === 2) {
-      const kind = r.int(0, 2);
+      const kind = r.int(0, 4);
+      if (kind >= 3) return speedOne(r, w);
       if (kind === 0) {
         // How many units: the total divided by the rate.
         const [u, n] = [r.int(2, 12), r.int(3, 15)];
@@ -1487,6 +1589,7 @@ const GENS: Record<SkillId, Gen> = {
       if (kind === 1) return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${shown(u)} \\times ${n} = ${shown(t)}`], line("total", u, n, t)) };
       return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${shown(t)} \\div ${n} = ${shown(u)}`], line("rate", u, n, t), inverted(t, n)) };
     }
+    if (r.next() < 0.5) return speedTwo(r, w);
     // Two steps, the rate first (the unitary method): n units for t, so m units for? Adding the difference in units to
     // the total, as if each unit added one, is the trap.
     const u = cost ? 5 * r.int(5, 60) / 100 : r.int(2, 12);

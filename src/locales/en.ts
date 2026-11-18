@@ -9584,6 +9584,14 @@ export const en = {
       time12: "A phone shows {a}. What time does a clock with hands show?",
       timeTrip: "A train leaves at {a} and arrives at {b}. How long is the journey?",
       timeTripEnd: "A train leaves at {a} and the journey takes {d}. What time does it arrive, on the 24-hour clock?",
+      speedDistance: "A car travels at {v} km/h for {t} hours. How far does it go, in km?",
+      speedSpeed: "A cyclist rides {d} km in {t} hours. What is the cyclist's average speed, in km/h?",
+      speedTime: "A train travels {d} km at {v} km/h. How many hours does the journey take?",
+      speedMinutes: "A car travels at {v} km/h for {t} minutes. How far does it go, in km?",
+      speedRunner: "A runner covers {d} m in {t} seconds. What is the runner's speed, in m/s?",
+      speedAverage: "A car travels {d1} km at {v1} km/h, then {d2} km at {v2} km/h. What is its average speed for the whole journey, in km/h?",
+      speedMeet: "Two towns are {d} km apart. A car leaves one at {v1} km/h and, at the same time, a lorry leaves the other at {v2} km/h, driving towards each other. After how many hours do they meet?",
+      speedCatch: "A cyclist sets off at {v1} km/h. {h} h later, a car sets off after the cyclist along the same road at {v2} km/h. How many hours after setting off does the car catch up?",
     },
     decisions: {
       reject: { text: "Reject H₀", plain: "reject" },
@@ -9602,6 +9610,7 @@ export const en = {
     marbleNames: { first: "1st red", second: "2nd red" },
     money: "${v}",
     units: { km: "km", m: "m", cm: "cm", kg: "kg", g: "g", l: "ℓ", ml: "ml" },
+    speed: { kmh: "km/h", ms: "m/s", s: "s" },
     time: {
       h: "h",
       min: "min",
@@ -9737,6 +9746,10 @@ export const en = {
       hourNotCarried: "The minutes crossed an o'clock, so the hour changes too: it's {v}.",
       not24: "After noon the 24-hour clock adds 12 to the hours: {a} {part} is {v}.",
       twelveNotTen: "Take 12 from the hours, not 10: {h} − 12 = {k}, so it's {v}.",
+      minutesAsHours: "{t} minutes is {t}/60 of an hour, not {t} hours: the car goes {v} × {t}/60 = {d} km.",
+      meanOfSpeeds: "The average speed isn't the mean of the two speeds: more of the time is spent at the slower one. Divide the whole distance by the whole time: {d} km in {h} h.",
+      meetDifference: "Driving towards each other, they close the gap at both speeds together: {a} + {b} = {s} km/h, not the difference.",
+      catchSum: "Going the same way, the car gains only the difference of the speeds: {a} − {b} = {s} km each hour, not the sum.",
     },
     reasons: {
       empty: "Type an answer first.",
