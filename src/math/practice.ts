@@ -56,6 +56,7 @@ import { roadSvg, type RoadSpec } from "./speedPics";
 import { dialPic, jugPic, readMeasure, rulerPic, unitWords } from "./measurePics";
 import { diagramPic, hourText, lineQuestion, lineSteps, lineTraps, pictoQuestion, pictoSteps, pictoTraps, pieCount, pieQuestion, pieSteps, pieTraps, stemQuestion, stemSteps, stemTraps, type DiagramSolution, type StemWords } from "./dataGraphs";
 import { appliedQuestion, figureSvg, obtuseQuestion, PROMPT_OF, sineCosineQuestion, three, type TrigRuleWords } from "./trigRules";
+import { degreeQuestion, PROMPT_OF as ARC_PROMPT, radianQuestion, sectorQuestion, sectorSvg, type ArcWords } from "./arcs";
 import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, timeTex, type DurationStems, type TimeSolution } from "./timePics";
 
 export { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "./practiceSkills";
@@ -63,7 +64,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round" | "divisible" | "time" | "diagram" | "trigRule";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round" | "divisible" | "time" | "diagram" | "trigRule" | "arc";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
@@ -181,6 +182,8 @@ export type PracticeWords = {
   };
   /** Trigonometry beyond the right angle: the prompt of each kind of question (src/math/trigRules.ts). */
   trigRules: TrigRuleWords;
+  /** Arcs, sectors and radians: the prompt of each kind of question (src/math/arcs.ts). */
+  arcs: ArcWords;
   bad: string;
   onlyX: string;
   tooBig: string;
@@ -3193,6 +3196,30 @@ const GENS: Record<SkillId, Gen> = {
       plain: shown,
       format: q.exact ? "number" : "dp2",
       solution: { kind: "trigRule", spec: { fig: q.fig, steps: q.steps } },
+    };
+  },
+
+  arcs(r, L, w) {
+    // Arcs, sectors and radians (src/math/arcs.ts): the arc, area and perimeter of a sector in degrees (easy), radians
+    // and s = rθ, A = ½r²θ (medium), the angle from an arc, the radius from an area and a segment's area (hard). The
+    // angle is drawn to scale; the worked figure of a segment marks the triangle taken away.
+    const u = { cm: w.units.cm, rad: w.arcs.rad };
+    const q = L === 1 ? degreeQuestion(r.next, u) : L === 2 ? radianQuestion(r.next, u) : sectorQuestion(r.next, u);
+    const pic = q.fig ? sectorSvg(q.fig) : null;
+    const shown = q.exact ? String(q.v) : dp(q.v, 2);
+    return {
+      prompt: fill(w.arcs[ARC_PROMPT[q.kind]], { u: q.unit?.[0] ?? "", ...q.vars }),
+      q: q.q,
+      pic: pic ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w } : undefined,
+      answer: {
+        ...num(q.v, q.exact ? 1e-9 : 0.0051),
+        units: q.measure === "deg" ? ["°"] : q.unit ? [...new Set(q.unit)] : undefined,
+        traps: q.traps.map((t) => ({ id: t.id, a: num(t.v, 0.0051), vars: t.vars })),
+      },
+      show: `${q.exact ? "" : "\\approx "}${shown}${q.measure === "deg" ? "^\\circ" : ""}${q.unit ? `\\,\\mathrm{${q.unit[1].replace("²", "}^2{")}}` : ""}`,
+      plain: shown,
+      format: q.exact ? "number" : "dp2",
+      solution: { kind: "arc", spec: { fig: q.fig, steps: q.steps } },
     };
   },
 

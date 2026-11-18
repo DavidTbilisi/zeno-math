@@ -7,7 +7,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
-  "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
+  "probability", "similarity", "volume", "circles", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
@@ -75,6 +75,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   similarity: ["percent"],
   volume: ["times"],
   circles: ["linear"],
+  arcs: ["volume", "circles"],
   indices: ["times"],
   simultaneous: ["linear"],
   quadratic: ["factor"],
@@ -221,6 +222,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   indices: [10, 10, 10], // zero, negative and fractional indices
   line: [10, 10, 10], // y = mx + c from two points; perpendicular lines (Additional Mathematics)
   distance: [10, 10, 10], // midpoint (Additional Mathematics) and length
+  arcs: [10, 10, 10], // arc length and sector area, radian measure (Sec 3/4)
   circles: [10, 10, 10], // angle and symmetry properties; the alternate segment theorem (Additional Mathematics)
   trigexact: [10, 10, 10], // exact values, any angle, radians (Additional Mathematics)
   polynomials: [10, 10, 10], // remainder and factor theorems, the binomial theorem (Additional Mathematics)

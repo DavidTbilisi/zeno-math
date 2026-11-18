@@ -124,6 +124,10 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./dataGraphs").DiagramSolution & { steps: string[] };
       return (await import("./dataGraphs")).renderDiagram(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "arc": {
+      const spec = s as import("./arcs").ArcSolution;
+      return (await import("./arcs")).renderArc(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "trigRule": {
       // The triangle, the unit circle, the bearings or the cliff, with the angle that answers it marked, and the working.
       const spec = s as import("./trigRules").RuleSolution;

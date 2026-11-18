@@ -4457,6 +4457,198 @@
       "mistake": "backBearingMirror"
     },
     {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 1,
+      "input": "14.53",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 1,
+      "input": "14.53 cm²",
+      "label": "correct",
+      "note": "with its unit"
+    },
+    {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 1,
+      "input": "28.27",
+      "label": "wrong",
+      "note": "the whole circle, not θ/360 of it",
+      "mistake": "wholeCircle"
+    },
+    {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 1,
+      "input": "9.69",
+      "label": "wrong",
+      "note": "the arc formula for an area",
+      "mistake": "areaAsArc"
+    },
+    {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 2,
+      "input": "27.44",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 2,
+      "input": "13.44",
+      "label": "wrong",
+      "note": "the perimeter without the radii",
+      "mistake": "perimeterNoRadii"
+    },
+    {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 7,
+      "input": "16.49",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 1,
+      "seed": 7,
+      "input": "24.74",
+      "label": "wrong",
+      "note": "the area formula for an arc",
+      "mistake": "arcAsArea"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 1,
+      "input": "9.3",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 1,
+      "input": "0.16",
+      "label": "wrong",
+      "note": "radians taken as degrees",
+      "mistake": "radiansAsDegrees"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 4,
+      "input": "28.8",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 4,
+      "input": "57.6",
+      "label": "wrong",
+      "note": "½r²θ without the half",
+      "mistake": "sectorNotHalved"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 7,
+      "input": "0.61",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 7,
+      "input": "2005.35",
+      "label": "wrong",
+      "note": "the conversion upside down",
+      "mistake": "radianFlipped"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 12,
+      "input": "340",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 18,
+      "input": "189.08",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 3,
+      "seed": 1,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 3,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong",
+      "note": "r², not r",
+      "mistake": "noSquareRoot"
+    },
+    {
+      "skill": "arcs",
+      "level": 3,
+      "seed": 2,
+      "input": "6.06",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 3,
+      "seed": 2,
+      "input": "23.4",
+      "label": "wrong",
+      "note": "the sector, not the segment",
+      "mistake": "segmentNoTriangle"
+    },
+    {
+      "skill": "arcs",
+      "level": 3,
+      "seed": 2,
+      "input": "22.99",
+      "label": "wrong",
+      "note": "sin θ in degree mode",
+      "mistake": "degreeMode"
+    },
+    {
+      "skill": "arcs",
+      "level": 3,
+      "seed": 7,
+      "input": "2.75",
+      "label": "correct"
+    },
+    {
+      "skill": "arcs",
+      "level": 3,
+      "seed": 7,
+      "input": "0.36",
+      "label": "wrong",
+      "note": "r ÷ s for the angle",
+      "mistake": "arcRatioFlipped"
+    },
+    {
+      "skill": "arcs",
+      "level": 2,
+      "seed": 12,
+      "input": "340°",
+      "label": "correct",
+      "note": "with the degree sign"
+    },
+    {
       "skill": "graphStory",
       "level": 1,
       "seed": 7,

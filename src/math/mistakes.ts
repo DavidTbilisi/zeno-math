@@ -121,5 +121,15 @@ export const MISTAKES = [
   "backBearingMirror",
   "bearingTurnInside",
   "fromVertical",
+  "wholeCircle",
+  "arcAsArea",
+  "areaAsArc",
+  "perimeterNoRadii",
+  "radianFlipped",
+  "radiansAsDegrees",
+  "sectorNotHalved",
+  "arcRatioFlipped",
+  "segmentNoTriangle",
+  "degreeMode",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
