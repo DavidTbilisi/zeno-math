@@ -98,5 +98,10 @@ export const MISTAKES = [
   "meanOfSpeeds",
   "meetDifference",
   "catchSum",
+  "markAsOne",
+  "rulerEnd",
+  "lostZero",
+  "notRegrouped",
+  "smallerUnitFromLarger",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

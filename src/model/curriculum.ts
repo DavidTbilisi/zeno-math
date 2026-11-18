@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri", "practicalTrig",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri", "practicalTrig",
   "probability", "similarity", "volume", "circles", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -46,6 +46,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   makeWhole: ["equivalent"],
   money: ["times"],
   time: ["times"],
+  measure: ["times"],
   fractions: ["times"],
   decimals: ["fractions", "money"],
   percent: ["fractions"],
@@ -133,6 +134,7 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
   closerTo: [1, 4, 4], // to 100; fractions and decimals near 0, ½, 1; rounding to estimate (≈, P4)
   times: [3, 4, 4], // 2 digits by 1 (P3), by 2 and 3 digits by 2 (P4)
   money: [2, 3, 4], // decimal notation and cents (P2), adding and subtracting (P3), decimals × a digit (P4)
+  measure: [2, 3, 3], // reading a ruler, a scale and a jug (P2); two units, one changed into the other, added and taken away (P3)
   time: [2, 3, 4], // a clock with hands to 5 minutes, a.m. and p.m. (P2); how long and when, in hours and minutes (P3); the 24-hour clock (P4)
   makeTarget: [1, 5, 5], // + and − within 20 (brackets can always be dropped); × and ÷ with brackets (P5)
   kakooma: [1, 1, 3], // addition within 10, within 20 (P1); the multiplication tables (P3)

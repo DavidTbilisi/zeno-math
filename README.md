@@ -741,10 +741,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 95 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 96 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), clock times (3:45,
-    15:45) and lengths of time (1 h 25 min, 85 min, 1:25), fractions, mixed numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
+    15:45), lengths of time (1 h 25 min, 85 min, 1:25) and measures (235 cm, 2 m 35 cm, 1 kg 200 g), fractions, mixed numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
     [[1, 2], [3, 4]]), eigenvectors (any non-zero multiple), and expressions in x that are checked for equivalence (any form of a derivative, any + C)
   - The form counts when the question asks for one: "lowest terms", "simplify the surd", "not fully factorised",
     "multiply out the brackets", "standard form" and "check your rounding" are said, not marked wrong
@@ -761,7 +761,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     round, one of two parts given for the number they make, a number used twice, a total of the wrong parity, only
     the neighbours out of order counted, the hour a clock's short hand is nearing read too soon, an hour counted as 100
     minutes, the afternoon's hours left without the 12, minutes taken for hours, the mean of two speeds taken for the
-    average speed, and more (96 in all, in
+    average speed, the small marks of a scale counted as 1 each, the zero that holds a place lost (3 ℓ 40 ml as
+    340 ml), and more (101 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -801,6 +802,13 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
       a second; then, with a picture of the road, the average speed over two legs (the mean of the two speeds named),
       two vehicles meeting head on and one catching another up (the difference and the sum of the speeds swapped,
       named). The answer may carry its unit: 48 km, 60 km/h, 3 h
+  - Measuring, from the primary syllabus (P2 and P3), answered with a measure in one unit or two:
+    - *Easy*: a pencil along a ruler, a kitchen scale's dial and a measuring jug, whose small marks are worth 10, 20,
+      25, 40 or 50 (counting each small mark as 1 named)
+    - *Medium*: a pencil that doesn't start at 0 (the end mark read named), 2 m 35 cm in centimetres and 1450 g in
+      kilograms and grams (3 ℓ 40 ml as 340 ml named), and which is more, a measure in two units or one in the smaller
+    - *Hard*: adding lengths, masses and volumes in two units with a new unit made (5 m 125 cm named), and taking away
+      with one changed into the smaller unit (the smaller number taken from the larger named)
   - Time, from the primary syllabus (P2 to P4), answered with a clock time or a length of time:
     - *Easy*: what a clock with hands shows, to the hour, the half hour or five minutes (the hour the short hand is
       nearing, and the hands read the wrong way round, named; 15:40 is sent back, a clock with hands goes up to 12)
@@ -1856,7 +1864,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (95 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (96 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that

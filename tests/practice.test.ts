@@ -68,6 +68,9 @@ function wrong(ex: Exercise): string {
       return a.h24 ? clock24(a.t + 5) : clock12(a.t + 5);
     case "dur":
       return String(a.m + 5);
+    case "meas":
+      // The last number one more (99 cm becomes 100 cm, which is never a right answer either).
+      return ex.plain.replace(/(\d+)(?!.*\d)/, (n) => String(Number(n) + 1));
     case "pin":
       // The far end of the line.
       return `pin:${a.v - a.play.from > (a.play.to - a.play.from) / 2 ? a.play.from : a.play.to}`;
