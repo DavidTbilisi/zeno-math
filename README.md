@@ -1212,6 +1212,16 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     double, so only a fraction keeps up; with hyp 10 the ratio is read off a side; the big triangle is the small one
     grown). Five discoveries (the size not mattering, a ratio upside down, the angle deciding, a side out of reach,
     ten in a row)
+  - *Discover Pythagoras*: a² + b² = c² found before it is named. Easy draws a right triangle on a grid with a
+    square on each side, its area written in it: drag the ends of a and b to change the shape, measure three
+    triangles or more (a and b each changed, so no rule holds by accident), then make a rule (a or a², + − or ×, b
+    or b², against c or c²) and claim it when it holds in every row; trying is free, a rule claimed that fails costs
+    a star. The later puzzles make a shorter side the same way (c² − a² = b²). Medium keeps a and b and opens or
+    closes the corner between them, the table showing c² against a² + b² with <, = or >: stop where they are equal
+    (only at 90°), or where c² is more or less. Hard uses it: two sides measured, the third out of reach, four
+    lengths to choose from (the sides added or taken away, the square left unrooted, the squares the wrong way round,
+    each told why). "Why?" steps through the squares, the proof, the corner and the square root with pictures. Four
+    discoveries (any shape, the squares telling a right angle, a side out of reach, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four
