@@ -515,8 +515,8 @@ it on a backup made as the server makes them, and on a damaged one and one from 
 
 ## Answer checker
 
-A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 953 typed answers to questions from
-all 99 skills, each marked the way a teacher would:
+A test score is only as good as its marking. [`tests/fixtures/answers.json`](../tests/fixtures/answers.json) has 976 typed answers to questions from
+all 100 skills, each marked the way a teacher would:
 
 - correct;
 - close (a rounding slip);
@@ -527,12 +527,12 @@ all 99 skills, each marked the way a teacher would:
 
 | teacher \ checker | correct | close | wrong | form |
 |---|---|---|---|---|
-| correct (430) | 426 | 0 | 1 | 3 |
+| correct (440) | 436 | 0 | 1 | 3 |
 | close (23) | 0 | 3 | 3 | 17 |
-| wrong (397) | 0 | 0 | 397 | 0 |
-| form (103) | 2 | 0 | 9 | 92 |
+| wrong (409) | 0 | 0 | 409 | 0 |
+| form (104) | 2 | 0 | 9 | 93 |
 
-The checker agrees 96.3 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
+The checker agrees 96.4 % of the time. It marks every wrong answer wrong. It credits two answers a teacher wouldn't:
 
 - `13*17` for "work out 13 × 17";
 - an integral without `+ C`.
@@ -551,11 +551,11 @@ Its other disagreements are mild:
 **Naming the mistake.** Many wrong answers are predictable: ½ + ⅓ answered as 2/5 (tops and bottoms added),
 (2x + 7)² as 4x² + 49, x > −8 where dividing by a negative should have turned the sign round. Each question lists the
 answers the known mistakes would give from its own numbers ([`src/math/mistakes.ts`](../src/math/mistakes.ts) has the
-129 of them), and "right size, wrong sign" is tried on every question. A wrong answer that matches one is still marked
+132 of them), and "right size, wrong sign" is tried on every question. A wrong answer that matches one is still marked
 wrong and counts as a miss; in practice the student also reads what the slip was and a number to test it with. Tests
 give no feedback, so the names appear only in the exports' analysis.
 
-160 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 160,
+171 of the wrong answers in the corpus show a mistake a teacher would name. The checker names the same one in all 171,
 and names none in the 237 wrong answers that show no known mistake. The catalogue is the author's list of common slips, not one
 found in students' answers, so this says what the checker can recognise, not how often students make each mistake.
 

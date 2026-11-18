@@ -56,6 +56,7 @@ import { roadSvg, type RoadSpec } from "./speedPics";
 import { dialPic, jugPic, readMeasure, rulerPic, unitWords } from "./measurePics";
 import { diagramPic, hourText, lineQuestion, lineSteps, lineTraps, pictoQuestion, pictoSteps, pictoTraps, pieCount, pieQuestion, pieSteps, pieTraps, stemQuestion, stemSteps, stemTraps, type DiagramSolution, type StemWords } from "./dataGraphs";
 import { appliedQuestion, figureSvg, obtuseQuestion, PROMPT_OF, sineCosineQuestion, three, type TrigRuleWords } from "./trigRules";
+import { algebraQuestion, graphSvg, powerQuestion, wordQuestion, type ProportionWords } from "./proportion";
 import { degreeQuestion, PROMPT_OF as ARC_PROMPT, radianQuestion, sectorQuestion, sectorSvg, type ArcWords } from "./arcs";
 import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, timeTex, type DurationStems, type TimeSolution } from "./timePics";
 
@@ -184,6 +185,7 @@ export type PracticeWords = {
   trigRules: TrigRuleWords;
   /** Arcs, sectors and radians: the prompt of each kind of question (src/math/arcs.ts). */
   arcs: ArcWords;
+  proportion: ProportionWords;
   bad: string;
   onlyX: string;
   tooBig: string;
@@ -1825,6 +1827,25 @@ const GENS: Record<SkillId, Gen> = {
       plain: pf.map(([p, e]) => (e > 1 ? `${p}^${e}` : String(p))).join(" * "),
       format: "primes",
       solution: { kind: "nt", spec: { topic: "factor", n: String(n) } },
+    };
+  },
+
+  proportion(r, L, w) {
+    // Direct and inverse proportion (src/math/proportion.ts): word problems through the amount for one or the product
+    // that stays the same (easy); y = kx and y = k/x from a pair, a table or a graph (medium); y in proportion to a
+    // power of x, x back from y, and y's factor when x is scaled (hard). The worked solution is the working.
+    const q = L === 1 ? wordQuestion(r.next) : L === 2 ? algebraQuestion(r.next) : powerQuestion(r.next);
+    const pic = q.graph ? graphSvg(q.graph) : null;
+    const [shown, plain] = q.frac ? [fracTex(q.frac[0], q.frac[1]), `${q.frac[0]}/${q.frac[1]}`] : [String(q.v), String(q.v)];
+    return {
+      prompt: fill(w.proportion[q.kind], q.vars),
+      q: q.q,
+      pic: pic ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w } : undefined,
+      answer: { ...num(q.v, 1e-9, q.frac ? { lowest: true } : {}), traps: q.traps.map((t) => ({ id: t.id, a: num(t.v, 0.0051), vars: t.vars })) },
+      show: shown,
+      plain,
+      format: q.frac ? "fraction" : "number",
+      steps: q.steps,
     };
   },
 
