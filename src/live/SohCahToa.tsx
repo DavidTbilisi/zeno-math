@@ -5,7 +5,8 @@
 // triangle, opposite, adjacent or hypotenuse, so the slip shows where it was. Easy lies flat with θ at the bottom and
 // the mnemonic shown; medium turns the triangle and moves θ; hard gives one ratio with the sides unlabelled: drag (or
 // tap) its two numbers onto their sides, choose the third side from four lengths (Pythagoras the right way round),
-// then build the other two. "Why?" steps through the method on a small triangle of its own and costs no stars. No
+// then build the other two. "Why?" steps through the method on a small triangle of its own (on hard, then why
+// Pythagoras holds and how it finds a side; on the third side's step it opens there) and costs no stars. No
 // misses earns three stars, one two. Nine puzzles open in turn, and the endless run keeps a streak with no misses.
 import { useState, type KeyboardEvent, type PointerEvent } from "react";
 import {
@@ -31,6 +32,7 @@ import {
 } from "../math/sohcahtoa";
 import { RATIO_PARTS, type TrigName, type TrigRatio } from "../math/trigBuild";
 import { starText } from "./ladderUi";
+import { isPythStep, PYTH_STEPS, PythPicture, type PythStep } from "./PythagorasWhy";
 import { arcAt, mid, NAME_COLOR, outward, WhyPicture, type P, type WhyStep } from "./TrigBuild";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
@@ -251,9 +253,10 @@ export function SohCahToa({ state: d, set, w: words, svgRef }: PieceProps<"sohca
     : d.said ? { tone: "wrong", text: `${why()} ${stepHint}` }
     : { tone: "hint", text: stepHint };
 
-  const whys: WhyStep[] = ["hyp", "opp", "adj", "swap", "soh", ...(task.given ? (["pyth"] as const) : [])];
-  const openAt = cur?.kind === "third" ? whys.indexOf("pyth") : d.said?.kind === "build" ? whys.indexOf("soh") : 0;
-  const whyKey = (s: WhyStep) => s as keyof typeof w.whyText;
+  // The method's steps, and on hard why Pythagoras holds and how it finds the third side; on that step it opens there.
+  const whys: (WhyStep | PythStep)[] = ["hyp", "opp", "adj", "swap", "soh", ...(task.given ? PYTH_STEPS : [])];
+  const openAt = cur?.kind === "third" ? whys.indexOf("squares") : d.said?.kind === "build" ? whys.indexOf("soh") : 0;
+  const whyText = (s: WhyStep | PythStep) => (isPythStep(s) ? words.pythWhy.steps[s] : fill(w.whyText[s as keyof typeof w.whyText], { s: rn.sin, c: rn.cos, t: rn.tan, o: tw.short.opp, a: tw.short.adj, h: tw.short.hyp }));
   const dragChip = drag && !(Math.hypot(drag.at[0] - drag.start[0], drag.at[1] - drag.start[1]) < 6) ? (drag.from === "chip" ? String(placing) : lenOf(drag.from)) : null;
 
   return (
@@ -382,11 +385,11 @@ export function SohCahToa({ state: d, set, w: words, svgRef }: PieceProps<"sohca
         <WhySteps
           at={explain}
           of={whys.length}
-          text={fill(w.whyText[whyKey(whys[explain])], { s: rn.sin, c: rn.cos, t: rn.tan, o: tw.short.opp, a: tw.short.adj, h: tw.short.hyp })}
+          text={whyText(whys[explain])}
           back={w.whyBack}
           next={w.whyNext}
           onStep={setExplain}
-          picture={<WhyPicture step={whys[explain]} short={tw.short} />}
+          picture={isPythStep(whys[explain]) ? <PythPicture step={whys[explain] as PythStep} /> : <WhyPicture step={whys[explain] as WhyStep} short={tw.short} />}
         />
       )}
       <GameActions game={game} g={g} done={d.done} always>
@@ -397,7 +400,7 @@ export function SohCahToa({ state: d, set, w: words, svgRef }: PieceProps<"sohca
             </button>
           ))}
         <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain !== null ? null : Math.max(0, openAt))}>
-          💡 {w.why}
+          💡 {cur?.kind === "third" ? words.pythWhy.whyHere : w.why}
         </button>
       </GameActions>
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />

@@ -349,14 +349,12 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
 
 /** The explanation's steps, in order. */
 const WHY = ["hyp", "opp", "adj", "swap", "soh", "solve", "check"] as const;
-/** A step of the picture: the explanation's, or Pythagoras (for SOH CAH TOA's third side). */
-export type WhyStep = (typeof WHY)[number] | "pyth";
+export type WhyStep = (typeof WHY)[number];
 
 /**
  * The explanation's own small triangle: θ at the bottom left (at the top on the swap step), the right angle at the
  * bottom right, and the step's side lit and named. On SOH CAH TOA all three are named; on the rearrangement the
- * hypotenuse is 12 and the up is x; on the sense check the up is drawn too long, past the top, and crossed out; on
- * Pythagoras the sides are 3, 4 and 5.
+ * hypotenuse is 12 and the up is x; on the sense check the up is drawn too long, past the top, and crossed out.
  */
 export function WhyPicture({ step, short }: { step: WhyStep; short: Record<TrigName, string> }) {
   const [B, C, A]: P[] = [[14, 94], [134, 94], [134, 18]];
@@ -386,7 +384,6 @@ export function WhyPicture({ step, short }: { step: WhyStep; short: Record<TrigN
       <text x={top ? A[0] - 9 : B[0] + 28} y={top ? A[1] + 32 : B[1] - 6} fontSize={12} fontWeight={700} fill="#2f9e44" textAnchor="middle">θ</text>
       {(Object.keys(lit) as TrigSide[]).map((s) => tag(s, short[lit[s]!], NAME_COLOR[lit[s]!]))}
       {step === "solve" && [tag("hyp", "12", "#1e1e1e"), tag("up", "x", "#e03131")]}
-      {step === "pyth" && [tag("base", "4", "#0c8599"), tag("up", "3", "#9c36b5"), tag("hyp", "5", "#1971c2")]}
       {step === "check" && (
         <>
           <line x1={150} y1={94} x2={150} y2={2} stroke="#e8590c" strokeWidth={3} strokeDasharray="5 3" />

@@ -78,7 +78,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - *Quadrilateral*: angles sum to 360° (reflex corners too), perimeter, area, and a live name —
     square, rectangle, rhombus, parallelogram, trapezium, kite
   - *Circle*: r, d, C = 2πr, S = πr², C : d = π
-  - *Pythagoras*: squares on all three sides of a right triangle — a² + b² = c² you can count on the grid
+  - *Pythagoras*: squares on all three sides of a right triangle — a² + b² = c² you can count on the grid; "Why?"
+    steps through the squares, their sum, the proof with four triangles in a 7 × 7 square, and finding a missing side
   - *Angle facts*: angles on a straight line (180°), around a point (360°), vertically opposite
     (equal, same colour), and parallel lines cut by a transversal — corresponding, alternate and
     co-interior angles, numbered 1–8
@@ -1197,7 +1198,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     24/25) with the sides unlabelled: drag its two numbers onto their sides, choose the third side from four lengths
     (the sides added, taken away, and Pythagoras the wrong way round, each drawn on the side and told why), then
     build the other two. "Why?" steps through the right angle, opposite, adjacent, the swap, SOH CAH TOA and on hard
-    Pythagoras, on a small triangle of its own; it costs no stars. No misses earns three stars. Four discoveries
+    why Pythagoras holds (the same steps as the geometry tool's, opening there on the third side), on a small
+    triangle of its own; it costs no stars. No misses earns three stars. Four discoveries
     (all three ratios, a triangle on a slant, a whole triangle from one ratio, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape

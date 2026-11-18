@@ -6303,6 +6303,19 @@ export const en = {
         streak10: "Ten in a row with no misses!",
       },
     },
+    pythWhy: {
+      why: "Why?",
+      whyHere: "Why Pythagoras?",
+      whyBack: "Back a step",
+      whyNext: "Next step",
+      steps: {
+        squares: "Pythagoras is about squares. Draw a square on each side of a right-angled triangle: on sides 3, 4 and 5 they hold 9, 16 and 25 small squares.",
+        sum: "The two smaller squares together make the biggest: 9 + 16 = 25. So a² + b² = c², where c is the hypotenuse, across from the right angle.",
+        proof: "Why? Fit four copies of the triangle into a 7 × 7 square two ways. The space left over is c² one way and a² + b² the other, so the two are equal.",
+        findHyp: "Hypotenuse missing? Square the other two sides, add, then take the square root: √(3² + 4²) = √25 = 5.",
+        findLeg: "A shorter side missing? Take the squares away instead: √(5² − 4²) = √9 = 3. Adding or taking away the sides themselves (4 + 3, 5 − 4) doesn't work.",
+      },
+    },
     sohcahtoa: {
       why: "Why?",
       whyBack: "Back a step",
@@ -6313,7 +6326,6 @@ export const en = {
         adj: "The adjacent side touches θ and isn't the hypotenuse.",
         swap: "Always start from θ. Move θ to the other corner and opposite and adjacent swap places. The hypotenuse stays where it is.",
         soh: "SOH CAH TOA: {s} = {o} / {h}, {c} = {a} / {h}, {t} = {o} / {a}. The first letter is the ratio, then the side on top, then the side underneath.",
-        pyth: "Pythagoras: the two shorter sides squared and added make the hypotenuse squared, 3² + 4² = 5². For a shorter side, take away: 5² − 4² = 3².",
       },
       card: "SOH CAH TOA",
       prompt: "Write {s} θ, {c} θ and {t} θ for this triangle as fractions of its sides.",
