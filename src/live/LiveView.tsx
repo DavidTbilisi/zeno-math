@@ -49,6 +49,7 @@ import { TrigBuild } from "./TrigBuild";
 import { UnitCircleGame } from "./UnitCircleGame";
 import { SohCahToa } from "./SohCahToa";
 import { TrigDiscover } from "./TrigDiscover";
+import { PythDiscover } from "./PythDiscover";
 import { OneStroke } from "./OneStroke";
 import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
@@ -167,6 +168,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   unitCircleGame: UnitCircleGame,
   sohcahtoa: SohCahToa,
   trigDiscover: TrigDiscover,
+  pythDiscover: PythDiscover,
   oneStroke: OneStroke,
   colourMap: ColourMap,
   shortestPath: ShortestPath,

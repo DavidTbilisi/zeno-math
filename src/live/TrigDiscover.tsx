@@ -417,7 +417,7 @@ export function TrigDiscover({ state: d, set, w: words, svgRef }: PieceProps<"tr
 }
 
 /** A row of buttons, one of them chosen. */
-function Choice<T extends string>({ label, options, on, text, color, off, pick }: { label: string; options: readonly T[]; on: T | null; text: (t: T) => string; color?: (t: T) => string; off?: (t: T) => boolean; pick: (t: T) => void }) {
+export function Choice<T extends string>({ label, options, on, text, color, off, pick }: { label: string; options: readonly T[]; on: T | null; text: (t: T) => string; color?: (t: T) => string; off?: (t: T) => boolean; pick: (t: T) => void }) {
   return (
     <span className="disc-choice" role="group" aria-label={label}>
       {options.map((o) => (

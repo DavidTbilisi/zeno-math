@@ -1062,6 +1062,24 @@ function trigDiscoverPreview(): Piece[] {
   ];
 }
 
+function pythDiscoverPreview(): Piece[] {
+  // A 3-4-5 triangle with its three squares and their areas, and the rule found: 9 + 16 = 25.
+  const u = 14;
+  const C: Pt = [70, 110];
+  const at = ([x, y]: Pt): Pt => [C[0] + x * u, C[1] - y * u];
+  return [
+    poly([at([0, 0]), at([4, 0]), at([4, -4]), at([0, -4])], { width: 1.5, color: "#0c8599" }),
+    poly([at([0, 0]), at([0, 3]), at([-3, 3]), at([-3, 0])], { width: 1.5, color: "#9c36b5" }),
+    poly([at([4, 0]), at([0, 3]), at([3, 7]), at([7, 4])], { width: 1.5, color: BLUE }),
+    poly([at([0, 0]), at([4, 0]), at([0, 3])], { width: 2.5 }),
+    text(at([2, -2])[0], at([2, -2])[1], "16", 14, "center", "#0c8599"),
+    text(at([-1.5, 1.5])[0], at([-1.5, 1.5])[1], "9", 14, "center", "#9c36b5"),
+    text(at([3.5, 3.5])[0], at([3.5, 3.5])[1], "25", 14, "center", BLUE),
+    text(210, 60, "9 + 16 = 25", 15, "center"),
+    text(210, 86, "🔍", 18, "center"),
+  ];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -1956,6 +1974,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
   { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
   { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
+  { id: "livePythDiscover", build: pythDiscoverPreview, live: "pythDiscover" },
   { id: "liveOneStroke", build: oneStrokePreview, live: "oneStroke" },
   { id: "liveColourMap", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", build: shortestPathPreview, live: "shortestPath" },
