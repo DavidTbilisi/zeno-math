@@ -270,6 +270,7 @@ export const MENUS: MenuGroup[] = [
           { live: "trigBuild", icon: "🪜" },
           { live: "unitCircleGame", icon: "◴" },
           { live: "sohcahtoa", icon: "◺" },
+          { live: "trigDiscover", icon: "🔍" },
           { live: "views3d", icon: "🧊" },
           { live: "cubeNet", icon: "🎲" },
         ],

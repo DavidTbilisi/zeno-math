@@ -48,6 +48,7 @@ import { SlopeLine } from "./SlopeLine";
 import { TrigBuild } from "./TrigBuild";
 import { UnitCircleGame } from "./UnitCircleGame";
 import { SohCahToa } from "./SohCahToa";
+import { TrigDiscover } from "./TrigDiscover";
 import { OneStroke } from "./OneStroke";
 import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
@@ -165,6 +166,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   trigBuild: TrigBuild,
   unitCircleGame: UnitCircleGame,
   sohcahtoa: SohCahToa,
+  trigDiscover: TrigDiscover,
   oneStroke: OneStroke,
   colourMap: ColourMap,
   shortestPath: ShortestPath,
