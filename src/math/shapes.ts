@@ -1080,6 +1080,28 @@ function pythDiscoverPreview(): Piece[] {
   ];
 }
 
+function circleDiscoverPreview(): Piece[] {
+  // The unit circle with P at 30° and its mirror Q at 150°, each with its across and up, and the rule found beside it.
+  const [cx, cy, r] = [70, 90, 60];
+  const pt = (t: number): Pt => [cx + r * Math.cos(rad(t)), cy - r * Math.sin(rad(t))];
+  const [p, q] = [pt(30), pt(150)];
+  return [
+    seg([cx - r - 8, cy], [cx + r + 8, cy], { color: MUTED, width: 1.5 }),
+    seg([cx, cy - r - 8], [cx, cy + r + 8], { color: MUTED, width: 1.5 }),
+    path(arc(cx, cy, r, r, 0, 360), { width: 2 }),
+    seg([cx, cy], [p[0], cy], { color: "#0c8599", width: 3.5 }),
+    seg([p[0], cy], p, { color: "#9c36b5", width: 3.5 }),
+    seg([cx, cy], [q[0], cy], { color: "#0c8599", width: 2.5, dashed: true }),
+    seg([q[0], cy], q, { color: "#9c36b5", width: 2.5, dashed: true }),
+    dot(p, 5),
+    dot(q, 5),
+    text(p[0] + 12, p[1] - 6, "P", 14, "center"),
+    text(q[0] - 12, q[1] - 6, "Q", 14, "center"),
+    text(200, 70, "sin 150° = sin 30°", 13, "center"),
+    text(200, 98, "🔍", 18, "center"),
+  ];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -1975,6 +1997,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
   { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
   { id: "livePythDiscover", build: pythDiscoverPreview, live: "pythDiscover" },
+  { id: "liveCircleDiscover", build: circleDiscoverPreview, live: "circleDiscover" },
   { id: "liveOneStroke", build: oneStrokePreview, live: "oneStroke" },
   { id: "liveColourMap", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", build: shortestPathPreview, live: "shortestPath" },

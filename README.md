@@ -1222,6 +1222,17 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     lengths to choose from (the sides added or taken away, the square left unrooted, the squares the wrong way round,
     each told why). "Why?" steps through the squares, the proof, the corner and the square root with pictures. Four
     discoveries (any shape, the squares telling a right angle, a side out of reach, ten in a row)
+  - *Discover the unit circle*: sin and cos past 90° found from the first quarter before they are told. Easy puts
+    P on a circle of radius 1 in the first quarter and draws its mirror Q in another quarter (across the up axis,
+    through the centre or across the across axis): drag P, measure three angles or more (θ, P's x and y, Q's angle,
+    x and y), then make a rule for Q (180° − θ, 180° + θ, 360° − θ or 90° + θ; x, −x, y or −y for each coordinate),
+    each part lit green or orange row by row, and claim it when it holds in every row; trying is free, a rule claimed
+    that fails costs a star, and the one found is named (sin(180° − θ) = sin θ, cos(180° − θ) = −cos θ). Medium lets
+    P go all the way round: an angle's sin or cos is given, measure as P turns and stop at the other angle with the
+    same value. Hard uses it: sin or cos of an angle past 90° out of reach, from the first-quarter angle it mirrors,
+    four values to choose from (the sign wrong, sin and cos swapped, both, each told why). "Why?" steps through the
+    mirror, the signs of each quarter, the twin angles and the reference angle with pictures. Four discoveries (every
+    angle, each value twice, past 90° without measuring, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four
