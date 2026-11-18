@@ -281,6 +281,7 @@ export const MENUS: MenuGroup[] = [
         title: "senseChart", items: [
           { live: "plotPoint", icon: "⌖" },
           { live: "barChart", icon: "📊" },
+          { live: "makeDiagram", icon: "🥧" },
           { live: "graphStory", icon: "🚶" },
           { live: "slopeLine", icon: "📈" },
         ],

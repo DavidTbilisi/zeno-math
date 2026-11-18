@@ -1282,6 +1282,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     still wrong at a check turn orange with a dashed mark where they should reach, and a bar raised to its number of
     lines is told what each line is worth. Right at the first check earns three stars. Four discoveries (a bar of 0, a
     scale in tens or more, a bar between two lines, ten in a row)
+  - *Make the diagram*: the numbers given and the diagram drawn — a picture graph (tap where a row's last face goes,
+    the left half of a place for half a face), a line graph of the temperature (tap or drag each hour's point), a pie
+    chart (drag the dots on the edge until each fruit's slice is its share of 360°); arrow keys on every row, point
+    and dot. Wrong parts turn orange, and as many faces as the number, a point as many lines up as degrees, or a
+    slice of as many degrees as children is told what each is worth. Nine puzzles, three of each, and an endless run.
+    Four discoveries (half a face, a point between two lines, a pie right first time, ten in a row)
   - *Graph stories*: a walk from home told part by part, and its graph of the distance from home against the time
     built from pieces — walking away climbs gently, running steeply, a stop is flat, coming back goes down. The parts
     drawn wrong turn red, with why the first one is. Right at the first check earns three stars. Four discoveries (a
