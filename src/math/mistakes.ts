@@ -103,5 +103,11 @@ export const MISTAKES = [
   "lostZero",
   "notRegrouped",
   "smallerUnitFromLarger",
+  "picturesCounted",
+  "valueNotChange",
+  "angleAsCount",
+  "countAsAngle",
+  "leafOnly",
+  "largestAsRange",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

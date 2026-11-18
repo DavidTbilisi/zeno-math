@@ -4238,6 +4238,91 @@
       "note": "the difference, not the total"
     },
     {
+      "skill": "diagrams",
+      "level": 1,
+      "seed": 7,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "note": "the pictures counted, not times the key",
+      "mistake": "picturesCounted"
+    },
+    {
+      "skill": "diagrams",
+      "level": 1,
+      "seed": 7,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 7,
+      "input": "2 °C",
+      "label": "correct",
+      "note": "with the unit"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong",
+      "note": "the highest temperature, not the rise",
+      "mistake": "valueNotChange"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 7,
+      "input": "45",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 7,
+      "input": "45°",
+      "label": "correct",
+      "note": "with the degree sign"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong",
+      "note": "the number of children for the angle",
+      "mistake": "countAsAngle"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 7,
+      "input": "90",
+      "label": "wrong"
+    },
+    {
       "skill": "graphStory",
       "level": 1,
       "seed": 7,

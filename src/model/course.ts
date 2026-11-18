@@ -19,7 +19,7 @@ const MOVED: Partial<Record<SkillId, StageId>> = {
   overfitting: "classical", precision: "classical", clustering: "classical",
   backprop: "deep", softmax: "deep",
   // Reading a chart and the mean are primary-school data, taught with number; so are the puzzles.
-  readChart: "number", average: "number", oneStroke: "number", colouring: "number", shortestPath: "number", spanningTree: "number", parity: "number", inversions: "number",
+  readChart: "number", diagrams: "number", average: "number", oneStroke: "number", colouring: "number", shortestPath: "number", spanningTree: "number", parity: "number", inversions: "number",
   shapeArea: "algebra", estimateAngle: "algebra", missingAngle: "algebra", symmetryLines: "algebra", cubeNets: "algebra", coordinates: "algebra",
 };
 const AREA_STAGE: Record<Area, StageId> = { number: "number", algebra: "algebra", geometry: "algebra", calculus: "calculus", data: "probability" };
