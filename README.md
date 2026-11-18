@@ -741,10 +741,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 93 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 95 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
-  - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), fractions, mixed
-    numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
+  - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), clock times (3:45,
+    15:45) and lengths of time (1 h 25 min, 85 min, 1:25), fractions, mixed numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
     [[1, 2], [3, 4]]), eigenvectors (any non-zero multiple), and expressions in x that are checked for equivalence (any form of a derivative, any + C)
   - The form counts when the question asks for one: "lowest terms", "simplify the surd", "not fully factorised",
     "multiply out the brackets", "standard form" and "check your rounding" are said, not marked wrong
@@ -759,7 +759,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     the smaller digit taken from the larger in every column, the last digits of decimals lined up instead of the
     points, a ratio's terms added to instead of multiplied, m : n taken for the fraction m/n, a rate worked the wrong way
     round, one of two parts given for the number they make, a number used twice, a total of the wrong parity, only
-    the neighbours out of order counted, and more (78 in all, in
+    the neighbours out of order counted, the hour a clock's short hand is nearing read too soon, an hour counted as 100
+    minutes, the afternoon's hours left without the 12, and more (92 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -795,6 +796,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     - *Rate*: rice by the kilogram and a tap by the minute — the rate, the total or the number of units from the
       other two, then two steps through the rate for one (dividing the wrong way round, and adding the difference in
       units instead of scaling, named)
+  - Time, from the primary syllabus (P2 to P4), answered with a clock time or a length of time:
+    - *Easy*: what a clock with hands shows, to the hour, the half hour or five minutes (the hour the short hand is
+      nearing, and the hands read the wrong way round, named; 15:40 is sent back, a clock with hands goes up to 12)
+    - *Medium*: when a film ends, when a bus ride started, how long a lesson is, always across an o'clock on the
+      12-hour clock (the hour left as it was, 2:75 for an hour of 100 minutes, and 3:15 − 2:50 worked as 315 − 250,
+      named); the worked solution is a time line hopping to the next o'clock, on by whole hours, then the minutes left
+    - *Hard*: the 24-hour clock: a time said with its part of the day, back to a clock with hands, and train journeys
+      across noon (12 not added to the afternoon's hours, and 10 taken from them instead of 12, named)
   - Make the target: number cards and a target, answered with a sum of the cards, typed or tapped from buttons — three
     cards with + and −, then four with + − ×, then all four with + − × ÷ (like the 24 game). The sum is worked out
     exactly in fractions with × and ÷ first, and the preview shows what it makes as it is typed; a number not on the
@@ -1842,7 +1851,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (93 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (95 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that

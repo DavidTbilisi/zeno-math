@@ -4871,6 +4871,129 @@
       "note": "the cost, not the change"
     },
     {
+      "skill": "time",
+      "level": 1,
+      "seed": 7,
+      "input": "1:00",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 1,
+      "seed": 7,
+      "input": "01:00",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 1,
+      "seed": 7,
+      "input": "12:05",
+      "label": "wrong",
+      "mistake": "handsSwapped"
+    },
+    {
+      "skill": "time",
+      "level": 1,
+      "seed": 7,
+      "input": "13:00",
+      "label": "form"
+    },
+    {
+      "skill": "time",
+      "level": 1,
+      "seed": 7,
+      "input": "2:00",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 7,
+      "input": "1:35",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 7,
+      "input": "1.35",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 7,
+      "input": "2:35",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 7,
+      "input": "1:75",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 7,
+      "input": "1:45",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 7,
+      "input": "half past one",
+      "label": "form"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 7,
+      "input": "23:40",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 7,
+      "input": "23.40",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 7,
+      "input": "11:40",
+      "label": "wrong",
+      "mistake": "not24"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 7,
+      "input": "21:40",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 7,
+      "input": "23:4",
+      "label": "form"
+    },
+    {
       "skill": "decimals",
       "level": 1,
       "seed": 7,

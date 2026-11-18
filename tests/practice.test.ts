@@ -9,6 +9,7 @@ import { ALL_SKILLS, check, exercise, LEVELS, preview, readSign, renderPractice,
 import { renderSolution } from "../src/math/practiceSolve.ts";
 import { parseE, tex } from "../src/math/expr.ts";
 import { latexToMathML } from "../src/math/latex.ts";
+import { clock12, clock24 } from "../src/math/timePics.ts";
 
 const w = en.pracWords;
 
@@ -62,6 +63,11 @@ function wrong(ex: Exercise): string {
     case "target":
       // One card alone is never the target.
       return String(a.puzzle.cards[0]);
+    case "clock":
+      // Five minutes later.
+      return a.h24 ? clock24(a.t + 5) : clock12(a.t + 5);
+    case "dur":
+      return String(a.m + 5);
     case "pin":
       // The far end of the line.
       return `pin:${a.v - a.play.from > (a.play.to - a.play.from) / 2 ? a.play.from : a.play.to}`;
