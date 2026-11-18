@@ -179,6 +179,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./ratePics").RateSolution & { steps: string[] };
       return (await import("./ratePics")).renderRate(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "time": {
+      // The clock with its hands picked out, or the time line hop by hop, with the working beneath.
+      const spec = s as import("./timePics").TimeSolution;
+      return (await import("./timePics")).renderTime(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "round": {
       // Rounding: the digits and a zoom on the number line; bounds as a band; standard form as the point hopping; the working beneath.
       const spec = s as import("./roundPics").RoundSolution & { steps: string[] };

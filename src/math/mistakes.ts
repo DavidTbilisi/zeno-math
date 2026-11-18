@@ -87,5 +87,12 @@ export const MISTAKES = [
   "trainError",
   "bestEpoch",
   "swappedPR",
+  "hourAhead",
+  "handsSwapped",
+  "minutes100",
+  "timeAsDecimal",
+  "hourNotCarried",
+  "not24",
+  "twelveNotTen",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
