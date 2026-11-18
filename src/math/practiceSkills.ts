@@ -5,7 +5,7 @@ export const AREAS: Area[] = ["number", "algebra", "geometry", "calculus", "data
 export const SKILLS = {
   number: ["compare", "quickLook", "estimateLine", "closerTo", "times", "money", "time", "measure", "makeTarget", "kakooma", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes"],
   algebra: ["balance", "findRule", "growingPattern", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions", "matrices", "determinant", "elimination", "eigen"],
-  geometry: ["shapeArea", "estimateAngle", "missingAngle", "symmetryLines", "cubeNets", "coordinates", "slope", "line", "distance", "trigexact", "righttri", "practicalTrig", "trigRules", "circles", "similarity", "volume", "identities", "vectors", "dotangle", "projection"],
+  geometry: ["shapeArea", "estimateAngle", "missingAngle", "symmetryLines", "cubeNets", "coordinates", "slope", "line", "distance", "trigexact", "righttri", "practicalTrig", "trigRules", "circles", "arcs", "similarity", "volume", "identities", "vectors", "dotangle", "projection"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite", "numroots", "numint", "descent", "backprop"],
   data: ["readChart", "diagrams", "oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "inversions", "average", "probability", "counting", "ci", "expectation", "conditional", "distributions", "correlation", "hypothesis", "softmax", "overfitting", "precision", "clustering"],
 } as const satisfies Record<Area, readonly string[]>;
