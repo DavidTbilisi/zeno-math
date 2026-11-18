@@ -119,6 +119,11 @@ export async function renderSolution(sol: { kind: SolutionKind; spec: unknown },
       const spec = s as import("./barChart").ChartSolution & { steps: string[] };
       return (await import("./barChart")).renderChart(spec, (await import("./practice")).renderSteps(spec.steps));
     }
+    case "diagram": {
+      // The picture graph, line graph, pie chart or stem-and-leaf plot with what was read marked, with the working beneath.
+      const spec = s as import("./dataGraphs").DiagramSolution & { steps: string[] };
+      return (await import("./dataGraphs")).renderDiagram(spec, (await import("./practice")).renderSteps(spec.steps));
+    }
     case "story": {
       // The walk's graph with its parts numbered.
       const spec = s as import("./graphStory").StorySolution;
