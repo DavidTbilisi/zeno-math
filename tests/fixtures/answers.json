@@ -5214,33 +5214,33 @@
       "skill": "rate",
       "level": 3,
       "seed": 7,
-      "input": "4.40",
+      "input": "1.5",
       "label": "correct"
     },
     {
       "skill": "rate",
       "level": 3,
       "seed": 7,
-      "input": "4.4",
+      "input": "1.5 h",
       "label": "correct",
-      "note": "the last zero left off"
+      "note": "with the unit"
     },
     {
       "skill": "rate",
       "level": 3,
       "seed": 7,
-      "input": "5.60",
+      "input": "0.375",
       "label": "wrong",
-      "note": "2 kg more taken as $2 more",
-      "mistake": "addedNotScaled"
+      "note": "the head start divided by the sum of the speeds",
+      "mistake": "catchSum"
     },
     {
       "skill": "rate",
       "level": 3,
       "seed": 7,
-      "input": "0.40",
+      "input": "2.5",
       "label": "wrong",
-      "note": "the price of 1 kg"
+      "note": "counted from the cyclist's start"
     },
     {
       "skill": "parity",

@@ -145,7 +145,7 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
   decimals: [4, 5, 5], // + −, × ÷ by a digit (P4); by 10, 100, 1000 and units in decimal form (P5)
   percent: [5, 6, 6], // a percentage of a whole (P5); increase and decrease, the whole from a part (P6)
   ratio: [6, 6, 6],
-  rate: [5, 5, 5],
+  rate: [5, 6, 6], // the rate for one unit (P5); speed, its average and meeting or catching up (P6)
   rounding: [4, null, null], // decimals to 1 or 2 places; standard form and bounds
   divisibility: [4, 4, 4], // multiples of a 1-digit number
   hcf: [4, null, 4], // common factors of two numbers (P4); the LCM of two-digit numbers

@@ -551,7 +551,7 @@ Its other disagreements are mild:
 **Naming the mistake.** Many wrong answers are predictable: ½ + ⅓ answered as 2/5 (tops and bottoms added),
 (2x + 7)² as 4x² + 49, x > −8 where dividing by a negative should have turned the sign round. Each question lists the
 answers the known mistakes would give from its own numbers ([`src/math/mistakes.ts`](../src/math/mistakes.ts) has the
-92 of them), and "right size, wrong sign" is tried on every question. A wrong answer that matches one is still marked
+96 of them), and "right size, wrong sign" is tried on every question. A wrong answer that matches one is still marked
 wrong and counts as a miss; in practice the student also reads what the slip was and a number to test it with. Tests
 give no feedback, so the names appear only in the exports' analysis.
 

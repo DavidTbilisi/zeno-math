@@ -94,5 +94,9 @@ export const MISTAKES = [
   "hourNotCarried",
   "not24",
   "twelveNotTen",
+  "minutesAsHours",
+  "meanOfSpeeds",
+  "meetDifference",
+  "catchSum",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
