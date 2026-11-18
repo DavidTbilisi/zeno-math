@@ -55,6 +55,7 @@ import { AREAS, SKILLS, type Area, type SkillId } from "./practiceSkills";
 import { roadSvg, type RoadSpec } from "./speedPics";
 import { dialPic, jugPic, readMeasure, rulerPic, unitWords } from "./measurePics";
 import { diagramPic, hourText, lineQuestion, lineSteps, lineTraps, pictoQuestion, pictoSteps, pictoTraps, pieCount, pieQuestion, pieSteps, pieTraps, stemQuestion, stemSteps, stemTraps, type DiagramSolution, type StemWords } from "./dataGraphs";
+import { appliedQuestion, figureSvg, obtuseQuestion, PROMPT_OF, sineCosineQuestion, three, type TrigRuleWords } from "./trigRules";
 import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, timeTex, type DurationStems, type TimeSolution } from "./timePics";
 
 export { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "./practiceSkills";
@@ -62,7 +63,7 @@ export type Level = 1 | 2 | 3;
 export const LEVELS: Level[] = [1, 2, 3];
 
 /** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round" | "divisible" | "time" | "diagram";
+export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round" | "divisible" | "time" | "diagram" | "trigRule";
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
@@ -178,6 +179,8 @@ export type PracticeWords = {
     opp: string; adj: string; hyp: string; ang: string;
     given: string; find: string; length: string; angle: string; diagram: string;
   };
+  /** Trigonometry beyond the right angle: the prompt of each kind of question (src/math/trigRules.ts). */
+  trigRules: TrigRuleWords;
   bad: string;
   onlyX: string;
   tooBig: string;
@@ -3163,6 +3166,33 @@ const GENS: Record<SkillId, Gen> = {
       show: `${ex.show}${s.ask === "ang" ? "" : "\\,\\mathrm{m}"}`,
       // A length may be typed with its unit, in any of the three languages: "5.64 m", "5.64м", "5.64 მ".
       ...(s.ask === "ang" ? {} : { answer: { ...ex.answer, units: METRES } as Answer }),
+    };
+  },
+
+  trigRules(r, L, w) {
+    // Trigonometry beyond the right angle (src/math/trigRules.ts): the sine and cosine of an obtuse angle (easy), the
+    // sine rule, the cosine rule and the area ½bc sin A (medium), the ambiguous case, bearings and angles of elevation
+    // and depression (hard). The figure is drawn to scale; the worked solution marks the mirror angle, the back bearing
+    // or the angle inside the triangle.
+    const u = { cm: w.units.cm, km: w.units.km, m: w.units.m };
+    const q = L === 1 ? obtuseQuestion(r.next) : L === 2 ? sineCosineQuestion(r.next, u.cm) : appliedQuestion(r.next, u);
+    const pic = figureSvg(q.fig);
+    const tol = q.exact ? 1e-9 : 0.0051;
+    const shown = q.exact ? (q.kind === "back" ? three(q.v) : String(q.v)) : dp(q.v, 2);
+    const deg = q.measure === "deg" ? "^\\circ" : "";
+    return {
+      prompt: fill(w.trigRules[PROMPT_OF[q.kind]], { u: q.unit?.[0] ?? "", ...q.vars }),
+      q: q.q,
+      pic: { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${pic.body}</g>`, h: pic.h, w: pic.w },
+      answer: {
+        ...num(q.v, tol),
+        units: q.measure === "deg" ? ["°"] : q.unit ? [...new Set(q.unit)] : undefined,
+        traps: q.traps.map((t) => ({ id: t.id, a: num(t.v, tol), vars: t.vars })),
+      },
+      show: `${q.exact ? "" : "\\approx "}${shown}${deg}${q.unit ? `\\,\\mathrm{${q.unit[1].replace("²", "}^2{")}}` : ""}`,
+      plain: shown,
+      format: q.exact ? "number" : "dp2",
+      solution: { kind: "trigRule", spec: { fig: q.fig, steps: q.steps } },
     };
   },
 
