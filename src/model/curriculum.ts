@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -63,6 +63,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   sameExpression: ["findRule"],
   average: ["fractions"],
   linear: ["fractions"],
+  proportion: ["rate", "linear"],
   inequalities: ["linear", "integers"],
   expand: ["linear"],
   factor: ["expand"],
@@ -208,6 +209,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   slope: [7, 7, 7], // the gradient of a linear graph, positive and negative
   graphStory: [7, 7, 7], // a graph as a relationship between two variables
   linear: [7, 7, 7], // including fractional answers
+  proportion: [8, 8, 8], // direct and inverse proportion, y = kx, y = k/x, y ∝ x² (Sec 2)
   inequalities: [8, 8, 10], // ax + b < c (Sec 2); simultaneous inequalities (Sec 3/4)
   expand: [8, 8, 8],
   factor: [8, 8, 8],

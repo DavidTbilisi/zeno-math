@@ -4649,6 +4649,191 @@
       "note": "with the degree sign"
     },
     {
+      "skill": "proportion",
+      "level": 1,
+      "seed": 2,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 1,
+      "seed": 2,
+      "input": "36",
+      "label": "wrong",
+      "note": "more pipes taken as more time: direct for an inverse case",
+      "mistake": "inverseAsDirect"
+    },
+    {
+      "skill": "proportion",
+      "level": 1,
+      "seed": 2,
+      "input": "17",
+      "label": "wrong",
+      "note": "one off"
+    },
+    {
+      "skill": "proportion",
+      "level": 1,
+      "seed": 4,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 1,
+      "seed": 4,
+      "input": "1.8",
+      "label": "wrong",
+      "note": "slower taken as less time",
+      "mistake": "inverseAsDirect"
+    },
+    {
+      "skill": "proportion",
+      "level": 1,
+      "seed": 7,
+      "input": "120",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 1,
+      "seed": 7,
+      "input": "4.8",
+      "label": "wrong",
+      "note": "more books taken as a lower stack",
+      "mistake": "directAsInverse"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 2,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 2,
+      "input": "2.91",
+      "label": "wrong",
+      "note": "the table read as direct",
+      "mistake": "inverseAsDirect"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 5,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 5,
+      "input": "64",
+      "label": "wrong",
+      "note": "the table read as inverse",
+      "mistake": "directAsInverse"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 4,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 4,
+      "input": "4",
+      "label": "wrong",
+      "note": "the curve read as a line through the origin",
+      "mistake": "inverseAsDirect"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 2,
+      "seed": 7,
+      "input": "288",
+      "label": "wrong",
+      "note": "k as x × y for direct proportion",
+      "mistake": "directAsInverse"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 4,
+      "input": "1/9",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 4,
+      "input": "1/3",
+      "label": "wrong",
+      "note": "the square left out",
+      "mistake": "powerIgnored"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 4,
+      "input": "9",
+      "label": "wrong",
+      "note": "scaled up, not down",
+      "mistake": "inverseAsDirect"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 4,
+      "input": "3/27",
+      "label": "form",
+      "note": "not in lowest terms"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 6,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 6,
+      "input": "16",
+      "label": "wrong",
+      "note": "x² given for x",
+      "mistake": "noSquareRoot"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 7,
+      "input": "324",
+      "label": "correct"
+    },
+    {
+      "skill": "proportion",
+      "level": 3,
+      "seed": 7,
+      "input": "378",
+      "label": "wrong",
+      "note": "y ∝ x for y ∝ x²",
+      "mistake": "powerIgnored"
+    },
+    {
       "skill": "graphStory",
       "level": 1,
       "seed": 7,

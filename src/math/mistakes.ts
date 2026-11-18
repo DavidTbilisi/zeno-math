@@ -131,5 +131,8 @@ export const MISTAKES = [
   "arcRatioFlipped",
   "segmentNoTriangle",
   "degreeMode",
+  "inverseAsDirect",
+  "directAsInverse",
+  "powerIgnored",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
