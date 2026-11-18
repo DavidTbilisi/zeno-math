@@ -4994,6 +4994,106 @@
       "label": "form"
     },
     {
+      "skill": "measure",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 7,
+      "input": "3 cm",
+      "label": "correct",
+      "note": "with the unit"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 7,
+      "input": "0.03 m",
+      "label": "form",
+      "note": "in metres when centimetres were asked for"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 7,
+      "input": "9 cm",
+      "label": "correct",
+      "note": "with the unit"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong",
+      "note": "the end mark read",
+      "mistake": "rulerEnd"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "6 m 25 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "6m 25cm",
+      "label": "correct",
+      "note": "no spaces"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "625 cm",
+      "label": "form",
+      "note": "in centimetres only"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "5 m 125 cm",
+      "label": "wrong",
+      "note": "the 100 cm not carried",
+      "mistake": "notRegrouped"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "5 m 25 cm",
+      "label": "wrong"
+    },
+    {
       "skill": "decimals",
       "level": 1,
       "seed": 7,
