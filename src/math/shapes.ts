@@ -975,6 +975,20 @@ function barChartPreview(): Piece[] {
   return out;
 }
 
+function makeDiagramPreview(): Piece[] {
+  // A pie in three slices, one edge being dragged round: its dot on the rim.
+  const [cx, cy, R] = [90, 80, 70];
+  const at = (deg: number): [number, number] => [cx + R * Math.sin((deg * Math.PI) / 180), cy - R * Math.cos((deg * Math.PI) / 180)];
+  const arc = (a: number, b: number) => Array.from({ length: 13 }, (_, i) => at(a + ((b - a) * i) / 12));
+  const out: Piece[] = [
+    poly([[cx, cy], ...arc(0, 90)], { fill: FILL.blue, width: 2 }),
+    poly([[cx, cy], ...arc(90, 225)], { fill: FILL.yellow, width: 2 }),
+    poly([[cx, cy], ...arc(225, 360)], { fill: FILL.green, width: 2 }),
+  ];
+  out.push(ellipse(...at(90), 7, 7, { fill: "#ffffff", color: BLUE, width: 3 }));
+  return out;
+}
+
 function graphStoryPreview(): Piece[] {
   // Distance from home against time: away, a stop, then back home.
   return [
@@ -1990,6 +2004,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
   { id: "liveBarChart", build: barChartPreview, live: "barChart" },
+  { id: "liveMakeDiagram", build: makeDiagramPreview, live: "makeDiagram" },
   { id: "liveGraphStory", build: graphStoryPreview, live: "graphStory" },
   { id: "liveSlopeLine", build: slopeLinePreview, live: "slopeLine" },
   { id: "liveTrigBuild", build: trigBuildPreview, live: "trigBuild" },

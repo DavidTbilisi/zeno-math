@@ -39,6 +39,7 @@ import type { LiveMirror } from "./symmetry";
 import type { LiveCubeNet } from "./cubeNets";
 import type { LivePlot } from "./plotPoint";
 import type { LiveBarChart } from "./barChart";
+import type { LiveMakeDiagram } from "./makeDiagram";
 import type { LiveGraphStory } from "./graphStory";
 import type { LiveSlope } from "./slope";
 import type { LiveStroke } from "./oneStroke";
@@ -464,6 +465,7 @@ export type LiveStates = {
   cubeNet: LiveCubeNet;
   plotPoint: LivePlot;
   barChart: LiveBarChart;
+  makeDiagram: LiveMakeDiagram;
   graphStory: LiveGraphStory;
   slopeLine: LiveSlope;
   trigBuild: LiveTrigBuild;
@@ -567,6 +569,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   cubeNet: [700, 600],
   plotPoint: [560, 700],
   barChart: [560, 600],
+  makeDiagram: [600, 580],
   graphStory: [600, 600],
   slopeLine: [560, 700],
   trigBuild: [600, 780],
@@ -672,6 +675,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     cubeNet: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], checked: false, misses: 0, done: false, streak: 0, said: null },
     plotPoint: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, results: [], tap: null, streak: 0, said: null },
     barChart: { mode: "puzzle", stage: 0, level: 1, seed: 1, bars: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
+    makeDiagram: { mode: "puzzle", stage: 0, level: 1, seed: 1, drawn: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
     graphStory: { mode: "puzzle", stage: 0, level: 1, seed: 1, drawn: [], wrong: [], misses: 0, done: false, streak: 0, said: null },
     slopeLine: { mode: "puzzle", stage: 0, level: 1, seed: 1, b: null, misses: 0, done: false, streak: 0, said: null },
     trigBuild: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, misses: 0, done: false, streak: 0, said: null },

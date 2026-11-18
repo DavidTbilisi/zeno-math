@@ -63,7 +63,7 @@ export function pictoSteps(q: PictoQuestion): string[] {
   return q.ask === "one" ? read : [...read, `${vs[0]} - ${vs[1]} = ${q.v}`];
 }
 /** One picture: a smiling face, or its left half when it stands for half of the key. */
-function face(x: number, y: number, r: number, halfOnly: boolean): string {
+export function face(x: number, y: number, r: number, halfOnly: boolean): string {
   const eye = (dx: number) => `<circle cx="${r2(x + dx)}" cy="${r2(y - r / 4)}" r="1.8" fill="${C.ink}"/>`;
   if (halfOnly)
     return `<path d="M ${r2(x)} ${r2(y - r)} A ${r} ${r} 0 0 0 ${r2(x)} ${r2(y + r)} Z" fill="#ffd43b" stroke="${C.ink}" stroke-width="1.4"/>${eye(-r / 3)}<path d="M ${r2(x - r / 2)} ${r2(y + r / 4)} Q ${r2(x - r / 4)} ${r2(y + r * 0.6)} ${r2(x)} ${r2(y + r * 0.6)}" fill="none" stroke="${C.ink}" stroke-width="1.4"/>`;
@@ -214,7 +214,7 @@ export function pieSteps(q: PieQuestion): string[] {
   const [x, c] = [q.task.slices[q.at].deg, pieCount(q)];
   return q.ask === "count" ? [`\\frac{${x}}{360} \\times ${n} = ${c}`] : [`\\frac{${c}}{${n}} \\times 360^\\circ = ${x}^\\circ`];
 }
-const PIE = ["#a5d8ff", "#ffd8a8", "#b2f2bb", "#eebefa", "#ffec99"];
+export const PIE = ["#a5d8ff", "#ffd8a8", "#b2f2bb", "#eebefa", "#ffec99"];
 /** The pie with each slice's angle written in it (but the one hidden) and its fruit outside. */
 export function pieSvg(t: PieTask, hide: number | null, marked: number | null = null): Pic {
   const R = 100;

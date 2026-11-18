@@ -5167,6 +5167,7 @@ export const en = {
       liveCubeNet: "Cube nets: which ones fold?",
       livePlotPoint: "Plot the point",
       liveBarChart: "Make the bar chart",
+      liveMakeDiagram: "Make the diagram",
       liveGraphStory: "Graph stories: draw the walk",
       liveSlopeLine: "Draw the gradient",
       liveTrigBuild: "Trig builder",
@@ -6166,6 +6167,31 @@ export const en = {
         negative: "Both numbers negative: below 0 and to the left of it!",
         corner: "The fourth corner found: it shares a number with each corner beside it!",
         streak10: "Ten points in a row!",
+      },
+    },
+    makeDiagram: {
+      hint: {
+        picto: "Make each row show its number: tap the place where its last face goes (the left half of a place for half a face). Then check.",
+        line: "Put each hour's point at its temperature: tap or drag in its column, or use the arrow keys. Then check.",
+        pie: "Drag the dots on the edge until each fruit's slice is its share of 360°: c children of n make c/n of 360°. Then check.",
+      },
+      wrong: {
+        picto: "Not yet: the orange rows have the wrong number of faces. Each face stands for {k}.",
+        line: "Not yet: the orange points should be on the dashed marks. Read the numbers up the side.",
+        pie: "Not yet: the orange slices are the wrong size. All {c} children make 360°.",
+      },
+      slip: {
+        picto: "Each face stands for {k}, not 1: {n} faces in the {f} row make {h}, but there are {v}.",
+        line: "Each line of the scale is worth {s}: the point at {t} is at {h} °C, but it was {v} °C. Read the numbers up the side.",
+        pie: "The {f} slice is {x}°, but {x} is the number of children. All {n} children make 360°, so {x} of them make {x}/{n} of 360°.",
+      },
+      children: "{n} children:",
+      right: "Right! The diagram shows every number. {stars}",
+      notices: {
+        half: "Half a face for half of the key, right first time!",
+        between: "A point between two lines, right first time!",
+        pie: "A pie chart right first time: every angle worked out!",
+        streak10: "Ten diagrams in a row right first time!",
       },
     },
     barChart: {
