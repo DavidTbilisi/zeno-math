@@ -166,6 +166,15 @@ const at = (deg: number, l: number, from: Pt = [0, 0]): Pt => add(from, [l * Mat
 const clean = (p: Pt): Pt => p.map((v) => (Math.abs(v - Math.round(v * 1e9) / 1e9) < 1e-11 ? Math.round(v * 1e9) / 1e9 : v)) as Pt;
 const poly = (pts: Pt[]): GeoFig => ({ kind: "poly", pts: pts.map(clean) });
 
+/**
+ * Three lengths that make no triangle, as the lab shows them: the longest c as a base and the other two, a ≤ b, laid
+ * flat from its ends, falling `gap` = c − (a + b) short of meeting (0: they meet only lying flat). Null when they close.
+ */
+export function wontClose(sides: number[]): { a: number; b: number; c: number; gap: number } | null {
+  const [a, b, c] = sides.slice().sort((x, y) => x - y);
+  return a + b <= c + 1e-12 ? { a, b, c, gap: Math.max(0, c - a - b) } : null;
+}
+
 /** The shape the measurements describe, its first corner at the origin (the centre for a circle), or what is wrong. */
 export function make(kind: MakeKind, v: number[]): { fig: GeoFig } | { problem: MakeProblem } {
   if (v.length !== MAKE_PARAMS[kind].keys.length || v.some((x) => !Number.isFinite(x) || x <= 0)) return { problem: "positive" };

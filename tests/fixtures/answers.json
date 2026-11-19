@@ -8007,6 +8007,287 @@
       "label": "wrong",
       "note": "one step along the cycle of remainders",
       "mistake": "cycleOffByOne"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 1,
+      "seed": 2,
+      "input": "D",
+      "label": "correct"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 1,
+      "seed": 2,
+      "input": "d",
+      "label": "correct",
+      "note": "lower case"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 1,
+      "seed": 2,
+      "input": "C",
+      "label": "wrong",
+      "note": "6 + 11 = 17 taken as enough",
+      "mistake": "flatTriangle"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 1,
+      "seed": 2,
+      "input": "A",
+      "label": "wrong"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 1,
+      "seed": 2,
+      "input": "4, 5, 6",
+      "label": "form",
+      "note": "the lengths, not the letter"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 1,
+      "seed": 7,
+      "input": "D",
+      "label": "correct"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 1,
+      "seed": 7,
+      "input": "B",
+      "label": "wrong",
+      "note": "7 + 8 = 15 taken as enough",
+      "mistake": "flatTriangle"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 2,
+      "seed": 2,
+      "input": "2 < x < 18",
+      "label": "correct"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 2,
+      "seed": 2,
+      "input": "18 > x > 2",
+      "label": "correct",
+      "note": "written the other way round"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 2,
+      "seed": 2,
+      "input": "2 <= x <= 18",
+      "label": "wrong",
+      "note": "the ends included",
+      "mistake": "boundary"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 2,
+      "seed": 2,
+      "input": "x < 18",
+      "label": "wrong",
+      "note": "the lower end left out",
+      "mistake": "noLowerBound"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 2,
+      "seed": 2,
+      "input": "2 < x < 19",
+      "label": "wrong"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "note": "1 and 5 counted too",
+      "mistake": "boundary"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 3,
+      "seed": 2,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 3,
+      "seed": 2,
+      "input": "A",
+      "label": "wrong",
+      "note": "at an end of the longest side",
+      "mistake": "besideNotOpposite"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 3,
+      "seed": 2,
+      "input": "B",
+      "label": "wrong",
+      "note": "the smallest angle",
+      "mistake": "besideNotOpposite"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 3,
+      "seed": 7,
+      "input": "26",
+      "label": "correct"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 3,
+      "seed": 7,
+      "input": "16",
+      "label": "wrong",
+      "note": "2, 2, 12 cannot close",
+      "mistake": "isoscelesImpossible"
+    },
+    {
+      "skill": "triangleInequality",
+      "level": 3,
+      "seed": 7,
+      "input": "26 cm",
+      "label": "correct",
+      "note": "with its unit"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 1,
+      "seed": 2,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 1,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "note": "the parts added",
+      "mistake": "chordsAdded"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 1,
+      "seed": 2,
+      "input": "24",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 1,
+      "seed": 4,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 1,
+      "seed": 4,
+      "input": "13",
+      "label": "wrong",
+      "note": "the parts added",
+      "mistake": "chordsAdded"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 2,
+      "seed": 2,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 2,
+      "seed": 2,
+      "input": "15",
+      "label": "wrong",
+      "note": "PA × AB = PC × CD",
+      "mistake": "secantChordOnly"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 2,
+      "seed": 2,
+      "input": "24",
+      "label": "wrong",
+      "note": "the whole secant PD",
+      "mistake": "wholeSecant"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 2,
+      "seed": 7,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 2,
+      "seed": 7,
+      "input": "4.67",
+      "label": "wrong",
+      "note": "PA × AB = PC × CD, rounded",
+      "mistake": "secantChordOnly"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 3,
+      "seed": 2,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 3,
+      "seed": 2,
+      "input": "16",
+      "label": "wrong",
+      "note": "PT² given",
+      "mistake": "tangentNotRooted"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 3,
+      "seed": 2,
+      "input": "3.46",
+      "label": "wrong",
+      "note": "PT² = PA × AB",
+      "mistake": "secantChordOnly"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 3,
+      "seed": 4,
+      "input": "21",
+      "label": "correct"
+    },
+    {
+      "skill": "powerPoint",
+      "level": 3,
+      "seed": 4,
+      "input": "25",
+      "label": "wrong",
+      "note": "the whole secant PB",
+      "mistake": "wholeSecant"
     }
   ]
 }

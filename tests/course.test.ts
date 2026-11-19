@@ -23,8 +23,9 @@ test("every skill is in one stage, after the stages of what it builds on", () =>
     ["overfitting", "precision", "clustering"],
     ["backprop", "softmax"],
   ]);
-  // The puzzles and the competition number theory no syllabus teaches are extras, with number.
-  assert.deepEqual(ALL_SKILLS.filter(isExtra).map(stageOf), Array(8).fill("number"));
+  // The puzzles and the competition number theory and geometry no syllabus teaches are extras: the puzzles and the
+  // number theory with number, the geometry with algebra, the stage geometry belongs to.
+  assert.deepEqual(ALL_SKILLS.filter(isExtra).map(stageOf).sort(), [...Array(2).fill("algebra"), ...Array(8).fill("number")]);
 });
 
 test("a level is secure after a run at the first try, behind when its grade is below the learner's, otherwise open", () => {

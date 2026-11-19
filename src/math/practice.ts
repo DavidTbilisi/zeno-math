@@ -58,6 +58,7 @@ import { dialPic, jugPic, readMeasure, rulerPic, unitWords } from "./measurePics
 import { diagramPic, hourText, lineQuestion, lineSteps, lineTraps, pictoQuestion, pictoSteps, pictoTraps, pieCount, pieQuestion, pieSteps, pieTraps, stemQuestion, stemSteps, stemTraps, type DiagramSolution, type StemWords } from "./dataGraphs";
 import { appliedQuestion, figureSvg, obtuseQuestion, PROMPT_OF, sineCosineQuestion, three, type TrigRuleWords } from "./trigRules";
 import { algebraQuestion, graphSvg, powerQuestion, wordQuestion, type ProportionWords } from "./proportion";
+import { chordsQuestion, hardSidesQuestion, LETTERS as SIDE_LETTERS, pickQuestion, rangeQuestion, secantsQuestion, tangentQuestion, type SidesQuestion, type TriangleSidesWords } from "./sidesAndSecants";
 import { baseOpQuestion, congruenceQuestion, divisorQuestion, fromTenQuestion, productRemainderQuestion, repeatingQuestion, toTenQuestion, unitsDigitQuestion, type NumberTheoryQuestion, type NumberTheoryWords } from "./numberTheory";
 import { degreeQuestion, PROMPT_OF as ARC_PROMPT, radianQuestion, sectorQuestion, sectorSvg, type ArcWords } from "./arcs";
 import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, timeTex, type DurationStems, type TimeSolution } from "./timePics";
@@ -192,6 +193,8 @@ export type PracticeWords = {
   proportion: ProportionWords;
   /** Number bases, divisors, remainders and congruences: the prompts (src/math/numberTheory.ts). */
   numberTheory: NumberTheoryWords;
+  /** The triangle inequality: the prompts (src/math/sidesAndSecants.ts). */
+  triangleSides: TriangleSidesWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
@@ -849,6 +852,59 @@ const fracBars = (form: StepForm, a: string, b: string | null, rows: { n: number
   spec: { type: "fraction", form, a, b, rows, shape: "bar", unitLabels: true },
 });
 const fracTex = (n: number, d: number) => `\\frac{${n}}{${d}}`;
+
+/** A triangle inequality question as a practice question: a letter picked, an inequality, or a number. */
+function sidesPart(q: SidesQuestion, w: PracticeWords): Part {
+  const W = w.triangleSides;
+  if (q.kind === "pick" || q.kind === "largest") {
+    const n = q.kind === "pick" ? 4 : 3;
+    const options = SIDE_LETTERS.slice(0, n).map((l) => ({ text: l, plain: l, tex: `\\text{${l}}` }));
+    const traps: Trap[] =
+      q.kind === "pick"
+        ? [{ id: "flatTriangle", a: { k: "pick", options, right: q.flat }, vars: { x: SIDE_LETTERS[q.flat], a: q.sets[q.flat][0], b: q.sets[q.flat][1], c: q.sets[q.flat][2], v: SIDE_LETTERS[q.right] } }]
+        : q.beside.map((at) => ({ id: "besideNotOpposite" as const, a: { k: "pick" as const, options, right: at }, vars: { x: SIDE_LETTERS[at], s: q.longest, v: SIDE_LETTERS[q.right] } }));
+    const sets = q.kind === "pick" ? q.sets.map((s, i) => `\\text{${SIDE_LETTERS[i]}: } ${s.join(",\\ ")}`) : [];
+    return {
+      prompt: q.kind === "pick" ? W.pick : fill(W.largest, q.vars),
+      q: q.kind === "pick" ? `\\begin{array}{ll} ${sets[0]} & ${sets[1]} \\\\ ${sets[2]} & ${sets[3]} \\end{array}` : "",
+      answer: { k: "pick", options, right: q.right, traps },
+      show: `\\text{${SIDE_LETTERS[q.right]}}`,
+      plain: SIDE_LETTERS[q.right],
+      format: "pick",
+      steps: q.steps,
+    };
+  }
+  if (q.kind === "range") {
+    const [lo, hi] = [{ v: q.range.lo, closed: false }, { v: q.range.hi, closed: false }];
+    const closed = [{ ...lo, closed: true }, { ...hi, closed: true }] as const;
+    return {
+      prompt: fill(W.range, { a: q.a, b: q.b }),
+      q: "",
+      answer: {
+        k: "ineq",
+        lo,
+        hi,
+        traps: [
+          { id: "boundary", a: { k: "ineq", lo: closed[0], hi: closed[1] } },
+          { id: "noLowerBound", a: { k: "ineq", lo: null, hi }, vars: { x: ineqPlain(null, hi), a: q.a, b: q.b, d: q.range.lo, v: ineqPlain(lo, hi) } },
+        ],
+      },
+      show: ineqTex(lo, hi),
+      plain: ineqPlain(lo, hi),
+      format: "inequality",
+      steps: q.steps,
+    };
+  }
+  return {
+    prompt: fill(q.kind === "count" ? W.count : W.isosceles, q.vars),
+    q: "",
+    answer: { k: "num", v: q.v, tol: 1e-9, units: ["cm"], traps: [{ id: q.trap.id, a: num(q.trap.v), vars: q.trap.vars }] },
+    show: String(q.v),
+    plain: String(q.v),
+    format: "number",
+    steps: q.steps,
+  };
+}
 
 /** The subscript digits a base is written with after a numeral (1011₂). */
 const SUBSCRIPT = "₀₁₂₃₄₅₆₇₈₉";
@@ -3319,6 +3375,31 @@ const GENS: Record<SkillId, Gen> = {
       plain: shown,
       format: q.exact ? "number" : "dp2",
       solution: { kind: "arc", spec: { fig: q.fig, steps: q.steps } },
+    };
+  },
+
+  triangleInequality(r, L, w) {
+    // The triangle inequality (src/math/sidesAndSecants.ts): which three lengths make a triangle (easy); the third
+    // side's range, or how many whole lengths it can be (medium); an isosceles triangle's perimeter, and the largest
+    // angle (hard). The worked solution is the working.
+    return sidesPart(L === 1 ? pickQuestion(r.next) : L === 2 ? rangeQuestion(r.next) : hardSidesQuestion(r.next), w);
+  },
+
+  powerPoint(r, L, w) {
+    // Power of a point (src/math/sidesAndSecants.ts): crossing chords (easy), two secants (medium), a tangent and a
+    // secant (hard), drawn and worked by the circle theorems tool.
+    const q = L === 1 ? chordsQuestion(r.next) : L === 2 ? secantsQuestion(r.next) : tangentQuestion(r.next);
+    const full = `${q.src}; find ${q.ask}`;
+    const fig = circleFigure(full);
+    return {
+      prompt: fill(w.prompts.circleFind, { a: q.ask }),
+      q: q.given,
+      pic: fig ? { svg: (x: number, y: number) => `<g transform="translate(${r2(x)} ${r2(y)})">${fig.svg}</g>`, h: fig.h, w: fig.w } : undefined,
+      answer: { ...num(q.v, 1e-6), traps: q.traps.map((t) => ({ id: t.id, a: num(t.v, Number.isInteger(t.v) ? 1e-9 : 0.006), vars: t.vars })) },
+      show: String(q.v),
+      plain: String(q.v),
+      format: "number",
+      solution: { kind: "euclid", spec: { topic: "circle", src: full } },
     };
   },
 

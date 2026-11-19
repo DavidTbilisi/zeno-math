@@ -92,7 +92,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
 - **⊙ School geometry** — type what you know; every answer comes with its reason and a figure drawn to fit
   - *Circle theorems*: the angle at the centre, the angle in a semicircle, angles in the same segment, cyclic
     quadrilaterals, tangent and radius, two tangents from a point, the alternate segment, the perpendicular from the
-    centre to a chord, intersecting chords and tangent–secant (AE × EB = CE × ED, PT² = PA × PB). Each angle or length
+    centre to a chord, intersecting chords, tangent–secant and two secants (AE × EB = CE × ED, PT² = PA × PB,
+    PA × PB = PC × PD). Each angle or length
     is found with its reason (isosceles triangle, angles in a triangle, Pythagoras, SOH CAH TOA…), unknowns such as
     ∠A = 2x, ∠C = x + 30 are solved for, and the figure is drawn to the angles found: given in blue, found in green,
     still unknown in red
@@ -744,7 +745,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 104 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 106 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), clock times (3:45,
     15:45), lengths of time (1 h 25 min, 85 min, 1:25) and measures (235 cm, 2 m 35 cm, 1 kg 200 g), fractions, mixed numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
@@ -779,7 +780,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     a squared or rooted subject left with its power on, place values started at the base, the remainders read
     downwards, carrying at ten in another base, the exponents multiplied without their +1, a units digit one step off
     in its cycle, a repeating decimal put over 100 instead of 99, a remainder not reduced, and multiplying by a instead
-    of its inverse in a congruence, and more (144 in all, in
+    of its inverse in a congruence, two sides adding up to exactly the third taken for a triangle, the short end of a
+    side's range left out, the isosceles triangle that can't close, the angle beside the longest side taken for the
+    largest, chord parts added, a secant's inside part used for the whole (or the whole given for the part), and PT²
+    given for PT, and more (152 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -895,6 +899,13 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     rule, a back bearing, a ship's two legs on bearings, and angles of elevation and depression from a tower or a
     cliff. Every figure is drawn to scale, and the worked solution marks the mirror angle, the back bearing or the
     angle inside the triangle
+  - Triangle inequality (AoPS Introduction to Geometry ch. 10): which of four sets of lengths makes a triangle (one
+    lies flat, a + b = c, named); the third side's range as an inequality (the ends included, or the short end left
+    out, named) or how many whole lengths it can be; an isosceles triangle's perimeter when only one way closes, and
+    the largest angle, opposite the longest side (an angle beside it named)
+  - Power of a point (AoPS Introduction to Geometry ch. 13): two crossing chords, two secants from a point, and a
+    tangent with a secant, each a missing length on a figure from the circle theorems tool (chord parts added, a
+    secant's inside part used for the whole, the whole secant given for its part, and PT² for PT, named)
   - Arcs, sectors and radians (Think Mathematics 3B ch. 8, AoPS Introduction to Geometry ch. 11): the arc length,
     area and perimeter of a sector with its angle in degrees; degrees to radians and back, s = rθ and A = ½r²θ; the
     angle at the centre from an arc, the radius from a sector's area, and the area of a segment. The sector's angle is
@@ -1920,7 +1931,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (104 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (106 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
