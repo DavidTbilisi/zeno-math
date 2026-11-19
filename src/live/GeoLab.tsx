@@ -10,7 +10,7 @@ import {
   angleOf, CANVAS, dist, enlarge, offAxis, sweepBetween, fitView, fromPx, gridStep, insertPoint, make, MAKE_PARAMS, MAKES, MAX_FIGS, MAX_PTS,
   measureFig, moveFig, num, placeBeside, pointNames, removePoint, rounded, setSide, SHOWS, snapTo, toPx, UNITS,
   zoomView, type GeoFig, type GeoShow, type GeoTool, type GeoView, type LiveGeoLab, type MakeKind, type MakeProblem,
-  type Mark, type Measured, type Pt, type SectionKey, type Val,
+  type Mark, type Measured, type Pt, type SectionKey, type Val, wontClose,
 } from "../math/geoLab";
 import { fill, FONT, INK, svgPoint, Toggle, type PieceProps } from "./ui";
 
@@ -444,6 +444,36 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
 
 // ---------- the panel ----------
 
+/**
+ * Why three lengths make no triangle: the longest side as a base, and the other two swung down flat from its ends with
+ * the gap between them, under the arcs their free ends can reach, which never meet above the base.
+ */
+function NoClose({ open, w }: { open: NonNullable<ReturnType<typeof wontClose>>; w: Words }) {
+  const { a, b, c, gap } = open;
+  const [W, H, x0, y0] = [340, 150, 30, 120];
+  const k = (W - 2 * x0) / c;
+  const [xa, xb] = [x0 + a * k, x0 + (c - b) * k];
+  const arc = (cx: number, r: number, right: boolean) => `M${cx + (right ? r : -r)} ${y0} A${r} ${r} 0 0 ${right ? 0 : 1} ${cx} ${y0 - r}`;
+  const n = (v: number) => num(v);
+  return (
+    <figure className="glab-noclose">
+      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={w.problems.triangle}>
+        <path d={arc(x0, a * k, true)} fill="none" stroke={HL} strokeWidth={1.4} strokeDasharray="4 4" />
+        <path d={arc(x0 + c * k, b * k, false)} fill="none" stroke={COL.medians} strokeWidth={1.4} strokeDasharray="4 4" />
+        <line x1={x0} y1={y0 + 8} x2={x0 + c * k} y2={y0 + 8} stroke={BLUE} strokeWidth={3} />
+        <line x1={x0} y1={y0} x2={xa} y2={y0} stroke={HL} strokeWidth={3} />
+        <line x1={x0 + c * k} y1={y0} x2={xb} y2={y0} stroke={COL.medians} strokeWidth={3} />
+        {gap > 0 && <line x1={xa} y1={y0} x2={xb} y2={y0} stroke="#e03131" strokeWidth={2} strokeDasharray="2 3" />}
+        <text x={(x0 + xa) / 2} y={y0 - 6} textAnchor="middle" fontSize={12} fill={HL} fontFamily={FONT}>{n(a)}</text>
+        <text x={(xb + x0 + c * k) / 2} y={y0 - 6} textAnchor="middle" fontSize={12} fill={COL.medians} fontFamily={FONT}>{n(b)}</text>
+        <text x={x0 + (c * k) / 2} y={y0 + 24} textAnchor="middle" fontSize={12} fill={BLUE} fontFamily={FONT}>{n(c)}</text>
+        {gap > 0 && <text x={(xa + xb) / 2} y={y0 - 6} textAnchor="middle" fontSize={12} fontWeight={700} fill="#e03131" fontFamily={FONT}>{n(gap)}</text>}
+      </svg>
+      <figcaption>{fill(gap > 0 ? w.noCloseShort : w.noCloseFlat, { a: n(a), b: n(b), c: n(c), s: n(a + b), g: n(gap) })}</figcaption>
+    </figure>
+  );
+}
+
 function Facts({ m, w, unit, setHl, editSide, sides }: {
   m: Measured;
   w: Words;
@@ -512,6 +542,8 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
   const [makeKind, setMakeKind] = useState<MakeKind>("sss");
   const [vals, setVals] = useState<string[]>(MAKE_PARAMS.sss.start.map(String));
   const [problem, setProblem] = useState<MakeProblem | null>(null);
+  // The sides of a triangle that would not close, to show why.
+  const [open, setOpen] = useState<ReturnType<typeof wontClose>>(null);
   const [k, setK] = useState("2");
 
   const figs = temp?.figs ?? state.figs;
@@ -643,6 +675,8 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
 
   const build = () => {
     const r = make(makeKind, vals.map(readNum));
+    const sides = vals.map(readNum);
+    setOpen("problem" in r && r.problem === "triangle" ? wontClose(makeKind === "isosceles" ? [sides[0], sides[0], sides[1]] : sides) : null);
     if ("problem" in r) return setProblem(r.problem);
     setProblem(null);
     addFig(placeBeside(state.figs, r.fig), true);
@@ -651,6 +685,7 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
     setMakeKind(kind);
     setVals(MAKE_PARAMS[kind].start.map(String));
     setProblem(null);
+    setOpen(null);
   };
   const selFig = state.figs[state.sel];
   const replaceSel = (g: GeoFig) => put({ figs: state.figs.map((x, j) => (j === state.sel ? g : x)) });
@@ -713,6 +748,7 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
         <button className="live-btn primary" disabled={state.figs.length >= MAX_FIGS} onClick={build}>{w.add}</button>
       </div>
       {problem && <p className="live-said">{w.problems[problem]}</p>}
+      {problem === "triangle" && open && <NoClose open={open} w={w} />}
       <div className="live-bar">
         {SHOWS.map((s) => (
           <Toggle key={s} on={state.show.includes(s)} onClick={() => put({ show: state.show.includes(s) ? state.show.filter((x) => x !== s) : [...state.show, s] })}>

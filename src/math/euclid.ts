@@ -13,7 +13,7 @@ export const EUCLID_TOPICS: EuclidTopic[] = ["circle", "similar", "transform", "
 export type EuclidSpec = { topic: EuclidTopic; src: string };
 
 type CircleWhy =
-  | "centre" | "semicircle" | "segment" | "cyclic" | "tangent" | "tangents" | "alternate" | "chord" | "chords" | "secant"
+  | "centre" | "semicircle" | "segment" | "cyclic" | "tangent" | "tangents" | "alternate" | "chord" | "chords" | "secant" | "secants"
   | "triangle" | "quad" | "line" | "isosceles" | "symmetry" | "sum" | "pythagoras" | "trig";
 
 export type EuclidWords = {
@@ -805,6 +805,59 @@ const SCENES: Record<string, Scene> = {
       };
     },
   },
+  secants: {
+    keys: ["secants", "two secants", "secant secant", "secants from a point"],
+    q: lengths("PA", "PB", "AB", "PC", "PD", "CD"),
+    alias: { AP: "PA", BP: "PB", BA: "AB", CP: "PC", DP: "PD", DC: "CD" },
+    coreA: [],
+    coreL: ["PA", "PB", "PC", "PD"],
+    rels: [rel("PB", "PA + AB", "sum"), rel("PD", "PC + CD", "sum")],
+    prods: [{ l: ["PA", "PB"], r: ["PC", "PD"], why: "secants" }],
+    fig(v) {
+      // Each secant's near and far ends: from the parts given, then from PA × PB = PC × PD.
+      let [pa, pb, pc, pd] = ["PA", "PB", "PC", "PD"].map(v);
+      const [ab, cd] = [v("AB"), v("CD")];
+      for (let i = 0; i < 2; i++) {
+        if (pb === undefined && pa !== undefined && ab !== undefined) pb = pa + ab;
+        if (pa === undefined && pb !== undefined && ab !== undefined) pa = pb - ab;
+        if (pd === undefined && pc !== undefined && cd !== undefined) pd = pc + cd;
+        if (pc === undefined && pd !== undefined && cd !== undefined) pc = pd - cd;
+        if (pd === undefined && pa !== undefined && pb !== undefined && pc !== undefined) pd = (pa * pb) / pc;
+        if (pc === undefined && pa !== undefined && pb !== undefined && pd !== undefined) pc = (pa * pb) / pd;
+        if (pb === undefined && pa !== undefined && pc !== undefined && pd !== undefined) pb = (pc * pd) / pa;
+        if (pa === undefined && pb !== undefined && pc !== undefined && pd !== undefined) pa = (pc * pd) / pb;
+      }
+      pa ??= 3;
+      pb ??= 8;
+      pc ??= 4;
+      pd ??= (pa * pb) / pc;
+      if (!(pa > 0 && pb > pa && pc > 0 && pd > pc)) throw cantDraw();
+      // A unit circle and P at distance d from its centre: each secant's ends are at √(d² − 1)·√(ratio) and
+      // √(d² − 1)/√(ratio) from P, which fits through the circle while their sum is at most 2d.
+      const [r1, r2] = [pa / pb, pc / pd];
+      const spread = Math.max(Math.sqrt(r1) + 1 / Math.sqrt(r1), Math.sqrt(r2) + 1 / Math.sqrt(r2));
+      const d = Math.min(2.6, 0.97 / Math.sqrt(Math.max(1e-6, 1 - 4 / (spread * spread))));
+      const k = Math.sqrt(d * d - 1);
+      const P0: P = [-d, 0];
+      const line = (ratio: number, sign: number) => {
+        const [near, far] = [k * Math.sqrt(ratio), k / Math.sqrt(ratio)];
+        const th = Math.acos(Math.min(1, (near + far) / (2 * d))) * sign;
+        const u: P = [Math.cos(th), Math.sin(th)];
+        return [vadd(P0, vmul(u, near)), vadd(P0, vmul(u, far))];
+      };
+      const [A, B] = line(r1, -1);
+      const [Cc, D] = line(r2, 1);
+      return {
+        pts: { P: P0, A, B, C: Cc, D, O: [0, 0] },
+        hide: ["O"],
+        circles: [{ c: [0, 0], r: 1 }],
+        segs: [["P", "B"], ["P", "D"]],
+        angles: {},
+        lengths: { PA: ["P", "A"], AB: ["A", "B"], PB: ["P", "B", 1], PC: ["P", "C"], CD: ["C", "D"], PD: ["P", "D", 1] },
+        centre: [-0.3, 0],
+      };
+    },
+  },
 };
 function circumcentre(a: P, b: P, c: P): P {
   const d = 2 * (a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1]));
@@ -1204,7 +1257,7 @@ function renderCircle(src: string, figure?: { out?: Pic }): RenderedSvg {
   const pic = drawFig(fig, tags, { w: 380, h: 300 });
 
   const caps: Caption[] = [];
-  for (const w of ["centre", "semicircle", "segment", "cyclic", "tangent", "tangents", "alternate", "chord", "chords", "secant"] as CircleWhy[])
+  for (const w of ["centre", "semicircle", "segment", "cyclic", "tangent", "tangents", "alternate", "chord", "chords", "secant", "secants"] as CircleWhy[])
     if (used.has(w)) caps.push({ text: Wc.thm[w], color: C.ink });
   if (!used.size && !rows.length) caps.push({ text: Wc.thm[sc.rels[0]?.why ?? sc.prods![0].why], color: C.ink });
   const missing = [...shownSet].filter((n) => !facts.has(n) || hasX(facts.get(n)!.v));
@@ -3529,6 +3582,7 @@ export const EUCLID_PRESETS: { [K in EuclidTopic]: { label: string; spec: Euclid
     { label: "chord", spec: S("circle", "chord; AB = 16; OA = 10; find OM") },
     { label: "intersecting chords", spec: S("circle", "chords; AE = x; EB = 6; CE = 4; ED = 9") },
     { label: "tangent–secant", spec: S("circle", "secant; PA = 4; AB = 5; find PT") },
+    { label: "two secants", spec: S("circle", "secants; PA = 3; AB = 5; PC = 4; find CD") },
   ],
   similar: [
     { label: "missing sides", spec: S("similar", "ABC ~ DEF; AB = 6; BC = 8; AC = 10; DE = 9") },

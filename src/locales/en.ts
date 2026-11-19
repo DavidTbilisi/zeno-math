@@ -4400,7 +4400,7 @@ export const en = {
   },
   euclidHints: {
     circle:
-      "A theorem, then what you know, separated by ; — centre; AOB = 130 · cyclic; A = 2x; C = x + 30 · tangents; APB = 50 · chord; AB = 16; OA = 10. Add find … for what you want. Theorems: centre, semicircle, segment, cyclic, tangent, tangents, alternate, chord, chords, secant.",
+      "A theorem, then what you know, separated by ; — centre; AOB = 130 · cyclic; A = 2x; C = x + 30 · tangents; APB = 50 · chord; AB = 16; OA = 10. Add find … for what you want. Theorems: centre, semicircle, segment, cyclic, tangent, tangents, alternate, chord, chords, secant, secants.",
     similar:
       "Two triangles with matching corners in order: ABC ~ DEF (similar), ABC ≅ DEF (congruent) or ABC, DEF (which test proves it?), then sides and angles: AB = 6; A = 50; EF = x + 2. A shared corner gives the A-shape (ADE ~ ABC, the first triangle inside); add ; X for a bow-tie. Or ratios: lengths 2 : 3; area 20 : ?",
     transform:
@@ -4448,6 +4448,7 @@ export const en = {
         chord: "⟂ from centre bisects chord",
         chords: "intersecting chords",
         secant: "tangent–secant",
+        secants: "two secants",
         triangle: "angles in a triangle",
         quad: "angles in a quadrilateral",
         line: "angles on a line",
@@ -4468,6 +4469,7 @@ export const en = {
         chord: "The perpendicular from the centre to a chord bisects the chord.",
         chords: "For two chords that cross: AE × EB = CE × ED.",
         secant: "For a tangent and a secant from the same point: PT² = PA × PB.",
+        secants: "For two secants from the same point: PA × PB = PC × PD (each outside part times its whole secant).",
         triangle: "",
         quad: "",
         line: "",
@@ -5118,9 +5120,9 @@ export const en = {
   practiceCalculus: "Calculus",
   practiceData: "Probability & statistics",
   practiceHints: {
-    number: "Comparing numbers and fractions, multiplication, money, time, measuring, negative numbers, order of operations, fractions, decimals, percentages, ratio, rate, rounding and estimation, divisibility rules, HCF and LCM, prime factors.",
+    number: "Comparing numbers and fractions, multiplication, money, time, measuring, negative numbers, order of operations, fractions, decimals, percentages, ratio, rate, rounding and estimation, divisibility rules, HCF and LCM, prime factors, number bases, divisors, remainders and congruences.",
     algebra: "Balance puzzles, finding the rule, growing patterns, equal expressions, graph stories, linear equations, inequalities, expanding, factorising, quadratics, simultaneous equations, polynomials, indices, logarithms, surds, matrices, determinants, systems and rank, eigenvalues.",
-    geometry: "Estimating angles, missing angles, lines of symmetry, nets of a cube, coordinates, gradients, equations of lines, distances and midpoints, exact trigonometric values, right triangles, the sine and cosine rules, bearings and elevation, circle theorems, similar shapes, surface area and volume, trig identities, vectors and projections.",
+    geometry: "Estimating angles, missing angles, the triangle inequality, lines of symmetry, nets of a cube, coordinates, gradients, equations of lines, distances and midpoints, exact trigonometric values, right triangles, the sine and cosine rules, bearings and elevation, circle theorems, chords, secants and tangents, similar shapes, surface area and volume, trig identities, vectors and projections.",
     calculus: "Derivatives, gradients and tangents, stationary points, integrals, numerical methods, gradient descent, backpropagation.",
     data: "Reading bar charts, picture graphs, line graphs, pie charts and stem-and-leaf plots, graphs and networks (one stroke, colouring, shortest routes, connecting towns), parity and swaps to sort, averages, probability, counting, confidence intervals, expected value and variance, conditional probability, binomial and normal distributions, covariance and correlation, hypothesis tests, softmax and cross-entropy, overfitting, precision and recall, nearest neighbours and k-means.",
   },
@@ -5918,6 +5920,8 @@ export const en = {
         d1: "diagonal d₁", d2: "diagonal d₂", topPart: "d₂ crosses d₁ at", n: "corners", r: "radius", a: "a", b: "b", sweep: "angle θ°",
       },
       add: "Add",
+      noCloseShort: "{a} + {b} = {s}, less than {c}: even swung down flat along the longest side, the other two fall {g} short of meeting. Their free ends can only reach the dashed arcs, and those never meet.",
+      noCloseFlat: "{a} + {b} = {c}: the other two sides meet only lying flat along the longest, so there is no room for a corner on top.",
       problems: {
         sweep: "A sector's angle is at most 360°.",
         positive: "Every measurement must be a number above 0.",
@@ -9279,6 +9283,13 @@ export const en = {
       substitute: "Find {s} when {given}.",
       subject: "Make {s} the subject of the formula.",
     },
+    triangleSides: {
+      pick: "Which set of three lengths can be the sides of a triangle?",
+      range: "Two sides of a triangle are {a} cm and {b} cm, and the third side is x cm. Write the possible values of x as an inequality.",
+      count: "Two sides of a triangle are {a} cm and {b} cm. How many whole numbers of centimetres can the third side be?",
+      isosceles: "An isosceles triangle has sides of {a} cm and {b} cm. Find its perimeter, in cm.",
+      largest: "In triangle ABC, AB = {c}, BC = {a} and CA = {b}. Which angle is the largest: A, B or C?",
+    },
     numberTheory: {
       toTen: "Write this base-{b} number in base 10.",
       fromTen: "Write {n} in base {b}.",
@@ -9355,6 +9366,8 @@ export const en = {
       arcs: "Arcs, sectors and radians",
       proportion: "Direct and inverse proportion",
       algFractions: "Algebraic fractions",
+      triangleInequality: "Triangle inequality",
+      powerPoint: "Power of a point: chords, secants, tangents",
       bases: "Number bases",
       modular: "Divisors, remainders and congruences",
       formulae: "Formulae and changing the subject",
@@ -9931,6 +9944,14 @@ export const en = {
       overPowerOfTen: "{x} reads the decimal as if it stopped. Digits that repeat for ever go over nines (here {nines}), not over {tens}: the answer is {v}.",
       notReduced: "{x} is not a remainder yet: dividing by {m} leaves less than {m}. {x} = {m} × {q} + {v}, so the answer is {v}.",
       timesNotInverse: "{x} multiplies by {a}. To undo × {a} modulo {m}, multiply by its inverse, {i} ({a} × {i} leaves 1): the answer is {v}.",
+      flatTriangle: "In {x}, {a} + {b} = {c}: the two shorter sides lie flat along the longest, so they make no triangle. The two shorter sides must add up to more than the longest: {v}.",
+      noLowerBound: "{x} leaves out the short end: the third side must also be longer than {b} − {a} = {d}, or the other two sides could not meet. The answer is {v}.",
+      isoscelesImpossible: "{x} uses {a}, {a} and {b}, but {a} + {a} = {s} is not more than {b}: those sides cannot close. The equal sides are {b} and {b}: the perimeter is {v}.",
+      besideNotOpposite: "{x} is at an end of the longest side, {s}. The largest angle is the one opposite the longest side: {v}.",
+      chordsAdded: "{x} adds the parts: AE + EB = CE + ED. For crossing chords the parts multiply, AE × EB = CE × ED: the answer is {v}.",
+      secantChordOnly: "{x} uses the part inside the circle. Each outside part is multiplied by its whole secant, {f}: the answer is {v}.",
+      wholeSecant: "{x} is the whole secant {w}. The part inside the circle is {w} − {o} = {v}.",
+      tangentNotRooted: "{x} is PT², not PT: take the square root. PT = {v}.",
     },
     reasons: {
       empty: "Type an answer first.",
