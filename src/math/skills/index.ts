@@ -25,6 +25,7 @@ import decimals from "./decimals";
 import percent from "./percent";
 import ratio from "./ratio";
 import rate from "./rate";
+import barModels from "./barModels";
 import rounding from "./rounding";
 import divisibility from "./divisibility";
 import hcf from "./hcf";
@@ -133,6 +134,7 @@ export const GENS: Record<SkillId, Gen> = {
   percent,
   ratio,
   rate,
+  barModels,
   rounding,
   divisibility,
   hcf,

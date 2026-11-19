@@ -2,6 +2,7 @@
 // formats and solution kinds, and the words a question is written in (PracticeWords). Types only, plus the levels,
 // so any module can name a question without loading the generators.
 import type { ArcWords } from "./arcs";
+import type { BarModelWords } from "./barProblems";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
 import type { PinPlay } from "./estimate";
@@ -160,6 +161,8 @@ export type PracticeWords = {
   numberTheory: NumberTheoryWords;
   /** The triangle inequality: the prompts (src/math/sidesAndSecants.ts). */
   triangleSides: TriangleSidesWords;
+  /** Bar-model word problems: the names, prompts and steps (src/math/barProblems.ts). */
+  barModels: BarModelWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
