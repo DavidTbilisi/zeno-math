@@ -1,749 +1,80 @@
 // Practice: questions made from a seed for each skill and level, answers checked (numbers, fractions, surds, sets of
 // roots, points, expressions up to equivalence — in the form the question asks for), and a worked solution from the
 // tool that covers the topic. A worksheet is a numbered set of questions with an optional answer key.
-import { REL_TEX, splitRel, type Rel } from "./algebra";
-import { diffParts, intParts } from "./calcSteps";
-import { antiderivative } from "./applied";
-import { C, esc, fill, FONT, r2, W, wrap } from "./chart";
-import { derive } from "./derive";
-import { circleFigure, solidFigure } from "./euclid";
-import { evalE, exprMessages, fromPoly, parseE, pdeg, pow, simp, sqrtSplit, tex, toPoly, type E } from "./expr";
-import { formulaQuestion, fractionQuestion } from "./formulae";
-import { Frac } from "./fraction";
-import { normCdf, normSf, tUpper, zUpper, type Alt, type InfSpec } from "./inference";
-import { covariance } from "./randvar";
-import { percentSteps, type PercentSolution } from "./percentPics";
-import { ratioSteps, type RatioSolution } from "./ratioPics";
-import type { RateSolution } from "./ratePics";
-import type { RoundSolution } from "./roundPics";
-import { latexToSvg, type RenderedSvg } from "./latex";
-import { orderApply, orderTree, orderValue, type OrderNode } from "./orderOps";
-import { det, env, gaussJordan, mul, texM, type Mat, type MatrixCalcSpec, type MatrixOp } from "./matrix";
-import { fractionBarsSvg, towersSvg, type FractionBarsSpec } from "./compare";
-import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps, type GeoPlay, type PolyProblem } from "./geoPlay";
-import { judgeNear, nearSteps, nearTask, type Bench } from "./benchmark";
-import { divSlips, divTask, judgeDivisors } from "./divisible";
-import { kakSet, kakSum, kakTraps } from "./kakooma";
-import { inversions as countInversions } from "./tactics";
-import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
-import { eqQuestion, partsSvg } from "./equivMatch";
-import { encodeShade, judgeShade, shadeSvg, shadeTask, type ShadePlay } from "./shadeFrac";
-import { balanceSteps, balanceSvg, balanceTask, oneSideOnly } from "./balance";
-import { machineAnswer, ruleQuestion, ruleSteps, ruleTable, scaledOutput, undoOrder } from "./machine";
-import { countOf, figuresSvg, growAnswer, growQuestion, growSteps, scaledFigure } from "./growing";
-import { exprQuestion, exprSteps, exprTex, judgePick, type ExprOption } from "./exprMatch";
+import { REL_TEX, splitRel } from "./algebra";
 import { angleQuestion, angleSteps, angleSvg } from "./angleGuess";
-import { huntSteps, huntSvg, huntTask, huntTraps } from "./missingAngle";
-import { falseDiagonals, mirrorsOf, symSvg, symTask } from "./symmetry";
-import { LETTERS, netOptions, netQuestion, netSteps, netSvg } from "./cubeNets";
-import { plotSteps, plotSvg, plotTask, ptText, signed, swapped } from "./plotPoint";
+import { antiderivative } from "./applied";
+import { degreeQuestion, PROMPT_OF as ARC_PROMPT, radianQuestion, sectorQuestion, sectorSvg } from "./arcs";
+import { balanceSteps, balanceSvg, balanceTask, oneSideOnly } from "./balance";
 import { chartQuestion, chartSteps, chartSvg, chartTraps } from "./barChart";
-import { storyChoicesSvg, storyOptions, storyQuestion, storyWords, type StoryWord } from "./graphStory";
-import { gradTex, gradText, runOverRise, slopeQuestion, slopeQuestionSvg, slopeSteps } from "./slope";
-import { evenCount, strokeQuestion, strokeQuestionSvg, strokeSteps } from "./oneStroke";
+import { judgeNear, nearSteps, nearTask } from "./benchmark";
+import { diffParts, intParts } from "./calcSteps";
+import { C, esc, fill, FONT, r2, W, wrap } from "./chart";
 import { colourQuestion, colourSvg, colourTraps } from "./colouring";
-import { pathSteps, pathSvg, pathTask, pathTraps } from "./shortestPath";
+import { type FractionBarsSpec, fractionBarsSvg, towersSvg } from "./compare";
 import { cheapestRoads, townSteps, townSvg, townTask } from "./connectTowns";
+import { LETTERS, netOptions, netQuestion, netSteps, netSvg } from "./cubeNets";
+import { diagramPic, type DiagramSolution, hourText, lineQuestion, lineSteps, lineTraps, pictoQuestion, pictoSteps, pictoTraps, pieCount, pieQuestion, pieSteps, pieTraps, stemQuestion, stemSteps, stemTraps } from "./dataGraphs";
+import { derive } from "./derive";
+import { divSlips, divTask, judgeDivisors } from "./divisible";
+import { eqQuestion, partsSvg } from "./equivMatch";
+import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong } from "./estimate";
+import { circleFigure, solidFigure } from "./euclid";
+import { type E, evalE, exprMessages, fromPoly, parseE, pdeg, pow, simp, sqrtSplit, tex, toPoly } from "./expr";
+import { exprQuestion, exprSteps, exprTex, judgePick } from "./exprMatch";
+import { formulaQuestion, fractionQuestion } from "./formulae";
+import { bottomsOrder, judgeOrder, orderTask, rightOrder } from "./fracOrder";
+import { Frac } from "./fraction";
+import { acrossGap, lcm, sumOf, wallSvg, wallTask } from "./fractionWall";
+import { areaText, encodePoly, geoGridSvg, judgePoly, polyTask, polyTraps } from "./geoPlay";
 import { name as vertexName } from "./graphPlay";
-import { bottomsOrder, judgeOrder, orderTask, rightOrder, type OrderItem, type OrderProblem } from "./fracOrder";
-import { judgeTarget, parseSum, qText, sumText, targetPuzzle, valueOf, type TargetPuzzle } from "./target";
-import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
-import { encodePin, estimateTask, judgePin, lineSvg, numText, shareAlong, type PinPlay } from "./estimate";
-import { compareSign, fracSign, samePieces, type CompareSign, type Frac as Fraction } from "./live";
-import type { MistakeId } from "./mistakes";
-import type { SpaceSpec } from "./vectorspace";
-import { AREAS, SKILLS, type Area, type SkillId } from "./practiceSkills";
-import { roadSvg, type RoadSpec } from "./speedPics";
+import { storyChoicesSvg, storyOptions, storyQuestion, storyWords } from "./graphStory";
+import { countOf, figuresSvg, growAnswer, growQuestion, growSteps, scaledFigure } from "./growing";
+import { type Alt, type InfSpec, normCdf, normSf, tUpper, zUpper } from "./inference";
+import { kakSet, kakSum, kakTraps } from "./kakooma";
+import { latexToSvg, type RenderedSvg } from "./latex";
+import { type CompareSign, compareSign, type Frac as Fraction, fracSign, samePieces } from "./live";
+import { machineAnswer, ruleQuestion, ruleSteps, ruleTable, scaledOutput, undoOrder } from "./machine";
+import { det, env, gaussJordan, type Mat, mul, texM } from "./matrix";
 import { dialPic, jugPic, readMeasure, rulerPic, unitWords } from "./measurePics";
-import { diagramPic, hourText, lineQuestion, lineSteps, lineTraps, pictoQuestion, pictoSteps, pictoTraps, pieCount, pieQuestion, pieSteps, pieTraps, stemQuestion, stemSteps, stemTraps, type DiagramSolution, type StemWords } from "./dataGraphs";
-import { appliedQuestion, figureSvg, obtuseQuestion, PROMPT_OF, sineCosineQuestion, three, type TrigRuleWords } from "./trigRules";
-import { algebraQuestion, graphSvg, powerQuestion, wordQuestion, type ProportionWords } from "./proportion";
-import { chordsQuestion, hardSidesQuestion, LETTERS as SIDE_LETTERS, pickQuestion, rangeQuestion, secantsQuestion, tangentQuestion, type SidesQuestion, type TriangleSidesWords } from "./sidesAndSecants";
-import { baseOpQuestion, congruenceQuestion, divisorQuestion, fromTenQuestion, productRemainderQuestion, repeatingQuestion, toTenQuestion, unitsDigitQuestion, type NumberTheoryQuestion, type NumberTheoryWords } from "./numberTheory";
-import { degreeQuestion, PROMPT_OF as ARC_PROMPT, radianQuestion, sectorQuestion, sectorSvg, type ArcWords } from "./arcs";
-import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, timeTex, type DurationStems, type TimeSolution } from "./timePics";
+import { huntSteps, huntSvg, huntTask, huntTraps } from "./missingAngle";
+import type { MistakeId } from "./mistakes";
+import { baseOpQuestion, congruenceQuestion, divisorQuestion, fromTenQuestion, productRemainderQuestion, repeatingQuestion, toTenQuestion, unitsDigitQuestion } from "./numberTheory";
+import { evenCount, strokeQuestion, strokeQuestionSvg, strokeSteps } from "./oneStroke";
+import { orderApply, type OrderNode, orderTree, orderValue } from "./orderOps";
+import { type PercentSolution, percentSteps } from "./percentPics";
+import { plotSteps, plotSvg, plotTask, ptText, signed, swapped } from "./plotPoint";
+import { type Area, AREAS, type SkillId, SKILLS } from "./practiceSkills";
+import { algebraQuestion, graphSvg, powerQuestion, wordQuestion } from "./proportion";
+import { dotsHeight, dotsSvg, FLASH_MS, LOOK_W, lookSteps, lookTask } from "./quickLook";
+import { covariance } from "./randvar";
+import type { RateSolution } from "./ratePics";
+import { type RatioSolution, ratioSteps } from "./ratioPics";
+import type { RoundSolution } from "./roundPics";
+import { encodeShade, judgeShade, shadeSvg, shadeTask } from "./shadeFrac";
+import { pathSteps, pathSvg, pathTask, pathTraps } from "./shortestPath";
+import { chordsQuestion, hardSidesQuestion, LETTERS as SIDE_LETTERS, pickQuestion, rangeQuestion, secantsQuestion, type SidesQuestion, tangentQuestion } from "./sidesAndSecants";
+import { gradTex, gradText, runOverRise, slopeQuestion, slopeQuestionSvg, slopeSteps } from "./slope";
+import { type RoadSpec, roadSvg } from "./speedPics";
+import { falseDiagonals, mirrorsOf, symSvg, symTask } from "./symmetry";
+import { inversions as countInversions } from "./tactics";
+import { judgeTarget, parseSum, qText, targetPuzzle, valueOf } from "./target";
+import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, type TimeSolution, timeTex } from "./timePics";
+import { appliedQuestion, figureSvg, obtuseQuestion, PROMPT_OF, sineCosineQuestion, three } from "./trigRules";
+import type { SpaceSpec } from "./vectorspace";
+import { LEVELS, type Answer, type Bound, type Exercise, type FractionForm, type Gen, type Level, type MeasurePair, type MeasureUnit, type Part, type PracticeWords, type Rng, type StepForm, type Trap } from "./practiceTypes";
+import { bracket, colTex, dp, errTable, exprPart, FLIP, FLIP_SIGN, fmtM, fr, fracBars, fracTex, gcd, ineqPlain, ineqTex, ints, M, matAnswer, matCalc, matPlain, minusSign, mixedTex, money, noZeroEnd, num, numberTheoryPart, numPart, OP_SIGN, par, plainE, plainFrac, pmul, polyStr, readSign, rngOf, signExercise, sumTex, surdTex, T, tidy, toFrac } from "./practiceKit";
 
+export { LEVELS, type Bound, type DayPart, type Exercise, type Format, type FractionForm, type Level, type MeasurePair, type MeasureUnit, type Part, type Play, type PracticeWords, type SolutionKind, type StepForm } from "./practiceTypes";
+export { ineqPlain, ineqTex, plainE, readSign, rngOf } from "./practiceKit";
 export { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "./practiceSkills";
-export type Level = 1 | 2 | 3;
-export const LEVELS: Level[] = [1, 2, 3];
-
-/** The tools whose pictures serve as worked solutions. */
-export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "powers" | "coord" | "trig" | "deriv" | "applied" | "statistics" | "comb" | "nt" | "inference" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "shape" | "pin" | "dots" | "wall" | "orderline" | "shade" | "balance" | "grow" | "angle" | "angles" | "mirror" | "net" | "plot" | "chart" | "story" | "slope" | "stroke" | "colour" | "route" | "network" | "matrix" | "randvar" | "decimal" | "percent" | "ratio" | "rate" | "round" | "divisible" | "time" | "diagram" | "trigRule" | "arc";
-export type Format =
-  | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
-  | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base";
-
-/** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
-export type MeasurePair = { big: MeasureUnit; small: MeasureUnit; f: number };
-/** The parts of the day a 12-hour time is said in. */
-export type DayPart = "morning" | "afternoon" | "evening" | "night";
-/** The units a measurement is converted between (decimals). */
-export type MeasureUnit = "km" | "m" | "cm" | "kg" | "g" | "l" | "ml";
-/** One end of the solution set of an inequality: closed when the number itself is included. */
-export type Bound = { v: number; closed: boolean };
-/** A predictable mistake and the answer it gives (with the numbers its message names). */
-type Trap = { id: MistakeId; a: Answer; vars?: Record<string, string | number> };
-type Answer = (
-  /** std: the answer is asked for in standard form, a × 10ⁿ; form: as an improper fraction or a mixed number. */
-  /** `units`: unit signs the answer may end in ("5.64 m"); they are taken off before it is read. */
-  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed"; units?: readonly string[] }
-  | { k: "set"; vs: number[]; tol: number }
-  /** Values in order; they may be typed named ("y = 3; x = 2"), by `names` (x, y, z when not given). */
-  | { k: "tuple"; vs: number[]; tol: number; names?: string[] }
-  /** A matrix, row by row. */
-  | { k: "matrix"; rows: number[][]; tol: number }
-  /** A direction: any non-zero multiple of vs (an eigenvector). */
-  | { k: "dir"; vs: number[] }
-  /** `vars`: letters besides x the answer is in (a formula's subject); they are tried at positive values.
-   *  `fraction`: one fraction, cut down (no factor common to the top and the bottom). */
-  | { k: "expr"; e: E; mode?: "factor" | "expand" | "plusC" | "line" | "fraction"; vars?: readonly string[] }
-  | { k: "primes"; n: number }
-  /** x between lo and hi; a missing end is unbounded. */
-  | { k: "ineq"; lo: Bound | null; hi: Bound | null }
-  /** The sign between two numbers. */
-  | { k: "sign"; v: CompareSign }
-  /** A shape made on a dot grid, typed as its corners ("poly:1,1;5,1;5,4"); sample is one that does it. */
-  | { k: "poly"; play: GeoPlay; sample: string }
-  /** A pin put on a number line ("pin:36.8"): right within 5 % of the line of v, close within 10 %. */
-  | { k: "pin"; play: PinPlay; v: number }
-  /** A sum of the cards (each at most once, every one when `all`) that makes the target. */
-  | { k: "target"; puzzle: Pick<TargetPuzzle, "cards" | "target" | "ops" | "all">; sample: string }
-  /** One of the options offered, picked: the benchmark nearest a number, or the one equal to a fraction. */
-  | { k: "near"; options: Bench[]; right: number }
-  /** The items listed in the order `seq` (places in `items`): smallest first, or the order a slip gives. */
-  | { k: "order"; items: OrderItem[]; seq: number[] }
-  /** `count` of the shape's pieces shaded ("shade:0,1,5"), any of them. */
-  | { k: "shade"; play: ShadePlay; count: number }
-  /** One of the expressions offered, picked or typed as written (not any equal one: that would be the question). */
-  | { k: "pick"; options: ExprOption[]; right: number }
-  /** The divisors of n among those `offered`, listed in any order. */
-  | { k: "divisors"; n: number; offered: number[]; right: number[] }
-  /** A ratio of whole numbers in its simplest form, a : b or a : b : c. */
-  | { k: "ratio"; vs: number[] }
-  /**
-   * A time on the clock (t minutes after midnight), typed as h:mm. On the 24-hour clock when h24, else any hour that
-   * shows the same on a clock with hands; `face` asks what a clock with hands shows, so the hour is 1 to 12. `typed`:
-   * how a trap's answer is typed when it is no real time (2:75).
-   */
-  | { k: "clock"; t: number; h24?: boolean; face?: boolean; typed?: string }
-  /** A length of time in minutes, typed as minutes or as hours and minutes (85 min, 1 h 25 min, 1:25). */
-  | { k: "dur"; m: number; typed?: string }
-  /**
-   * A measure, v of the smaller unit of a pair: typed in the smaller unit (235, 235 cm) or, when `whole`, in both
-   * (2 m 35 cm). `typed`: how a trap's answer is typed.
-   */
-  | ({ k: "meas"; v: number; whole?: boolean; typed?: string } & MeasurePair)
-) & { traps?: Trap[] };
-/** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
-export type Play =
-  | ({ kind: "grid" } & GeoPlay)
-  | ({ kind: "pin" } & PinPlay)
-  /** Dots shown for `ms` and hidden, then the number typed: the dots' picture, `h` high. */
-  | { kind: "flash"; ms: number; body: string; h: number }
-  /** A shape cut into pieces to shade by tapping. */
-  | ({ kind: "shade" } & ShadePlay);
-
-export type Exercise = {
-  skill: SkillId;
-  level: Level;
-  seed: number;
-  /** The instruction, in words. */
-  prompt: string;
-  /** The question in LaTeX ("" when the prompt says it all). */
-  q: string;
-  /** A drawing that goes with the question (the right triangle), with its height and the width it can take up. */
-  pic?: { svg: (x: number, y: number) => string; h: number; w: number };
-  answer: Answer;
-  /** The answer in LaTeX. */
-  show: string;
-  /** A typed answer that is accepted (for the tests). */
-  plain: string;
-  format: Format;
-  solution?: { kind: SolutionKind; spec: unknown };
-  /** Worked lines when no tool draws the solution. */
-  steps?: string[];
-  /**
-   * The question as plain working ("-3 - (-5)", "2 + 3 * 4"), on the skills with no solution spec to read it from
-   * (integers, order): what conceptGraph.ts reads its ideas off.
-   */
-  src?: string;
-  /**
-   * The steps before the last, each a question of its own, on a skill whose questions are worked in steps (stepsOf):
-   * the last step is the question itself. Faded worked examples show some of them done and leave the rest.
-   */
-  worked?: Part[];
-  /** Answered by doing rather than typing: a shape made on a grid, a pin put on a line (the answer is still text). */
-  play?: Play;
-};
-
-/** A step of a question: a question without its skill, level and seed, which are the question's. */
-export type Part = Omit<Exercise, "skill" | "level" | "seed" | "worked">;
-
-export type PracticeWords = {
-  practicalTrig: {
-    ladder: string; ramp: string; cable: string;
-    opp: string; adj: string; hyp: string; ang: string;
-    given: string; find: string; length: string; angle: string; diagram: string;
-  };
-  /** Trigonometry beyond the right angle: the prompt of each kind of question (src/math/trigRules.ts). */
-  trigRules: TrigRuleWords;
-  /** Arcs, sectors and radians: the prompt of each kind of question (src/math/arcs.ts). */
-  arcs: ArcWords;
-  proportion: ProportionWords;
-  /** Number bases, divisors, remainders and congruences: the prompts (src/math/numberTheory.ts). */
-  numberTheory: NumberTheoryWords;
-  /** The triangle inequality: the prompts (src/math/sidesAndSecants.ts). */
-  triangleSides: TriangleSidesWords;
-  /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
-  formulae: { simplify: string; single: string; substitute: string; subject: string };
-  bad: string;
-  onlyX: string;
-  tooBig: string;
-  skills: Record<SkillId, string>;
-  levels: Record<"1" | "2" | "3", string>;
-  mixed: string;
-  prompts: {
-    times: string;
-    fractions: string;
-    fracEquivalent: string;
-    fracLowest: string;
-    fracLcd: string;
-    fracReciprocal: string;
-    fracImproper: string;
-    fracMixed: string;
-    stepTops: string;
-    stepTimes: string;
-    stepDivide: string;
-    /** A calculus question's steps (calcSteps.ts): differentiate a part, integrate a part, work out a value. */
-    stepDiff: string;
-    stepInt: string;
-    stepWork: string;
-    percentOf: string;
-    percentChange: string;
-    percentReverse: string;
-    hcf: string;
-    lcm: string;
-    primes: string;
-    linear: string;
-    expand: string;
-    factor: string;
-    quadratic: string;
-    simultaneous: string;
-    evaluate: string;
-    surds: string;
-    rationalise: string;
-    line: string;
-    perp: string;
-    midpoint: string;
-    distance: string;
-    trigexact: string;
-    idDouble: string;
-    idMax: string;
-    polyRem: string;
-    polyCoef: string;
-    circleFind: string;
-    similarSide: string;
-    similarA: string;
-    scaleArea: string;
-    scaleVolume: string;
-    scaleAreaVolume: string;
-    volume: string;
-    surface: string;
-    solidDim: string;
-    rightSide: string;
-    rightAngle: string;
-    vecCombo: string;
-    vecLength: string;
-    vecPerp: string;
-    vecDot: string;
-    vecAngle: string;
-    vecAngleExact: string;
-    projScalar: string;
-    projVector: string;
-    projFoot: string;
-    matProduct: string;
-    matTranspose: string;
-    matIdentity: string;
-    matDet: string;
-    matInverse: string;
-    elimSolve: string;
-    elimRank: string;
-    elimK: string;
-    eigValues: string;
-    eigVector: string;
-    eigRest: string;
-    expMean: string;
-    expVar: string;
-    expRule: string;
-    condTable: string;
-    condTotal: string;
-    condBayes: string;
-    binomEq: string;
-    normalP: string;
-    covData: string;
-    corrData: string;
-    covJoint: string;
-    hypDecide: string;
-    hypZ: string;
-    hypP: string;
-    gdStep: string;
-    gdTwo: string;
-    gdRate: string;
-    bpNode: string;
-    bpLoss: string;
-    bpRelu: string;
-    smProb: string;
-    smLoss: string;
-    smGrad: string;
-    fitOver: string;
-    fitUnder: string;
-    fitDegree: string;
-    fitStop: string;
-    prPrecision: string;
-    prRecall: string;
-    prF1: string;
-    prThreshP: string;
-    prThreshR: string;
-    knnVote: string;
-    kmCentroid: string;
-    kmInertia: string;
-    seqTerm: string;
-    seqTwo: string;
-    serSum: string;
-    serInf: string;
-    serSigma: string;
-    fnComp: string;
-    fnInv: string;
-    differentiate: string;
-    gradient: string;
-    tangent: string;
-    stationary: string;
-    integrate: string;
-    definite: string;
-    numNewton: string;
-    numRoot: string;
-    numIterate: string;
-    numTrapezium: string;
-    numSimpson: string;
-    mean: string;
-    median: string;
-    mode: string;
-    range: string;
-    sd: string;
-    die: string;
-    dice: string;
-    marbles: string;
-    lineUp: string;
-    podium: string;
-    choose: string;
-    word: string;
-    ciZ: string;
-    ciT: string;
-    ciP: string;
-    intRise: string;
-    intFall: string;
-    intDiff: string;
-    compare: string;
-    roundTo10: string;
-    roundTo100: string;
-    roundTo1000: string;
-    roundDp1: string;
-    roundDp2: string;
-    roundSf1: string;
-    roundSf: string;
-    stdForm: string;
-    stdMul: string;
-    estimate: string;
-    boundLow: string;
-    boundHigh: string;
-    boundTotal: string;
-    precWhole: string;
-    precDp1: string;
-    precTen: string;
-    ineqSolve: string;
-    ineqWord: string;
-    shapeRect: string;
-    shapeTriangle: string;
-    shapeAreaPerim: string;
-    estimatePlace: string;
-    quickLook: string;
-    makeTarget: string;
-    makeTargetAll: string;
-    kakoomaSum: string;
-    kakoomaProduct: string;
-    closerTo: string;
-    closerToCalc: string;
-    makeWhole: string;
-    equivShaded: string;
-    equivFraction: string;
-    equivDecimal: string;
-    orderFractions: string;
-    shadeShape: string;
-    shadeSet: string;
-    balance: string;
-    findRuleOut: string;
-    findRuleIn: string;
-    growCount: string;
-    growWhich: string;
-    sameExpression: string;
-    estimateAngle: string;
-    missingAngle: string;
-    symmetryLines: string;
-    cubeNet: string;
-    cubeOpposite: string;
-    coordinates: string;
-    coordCorner: string;
-    chartOne: string;
-    chartMore: string;
-    chartTotal: string;
-    graphStory: string;
-    slope: string;
-    oddVertices: string;
-    oneStroke: string;
-    colouring: string;
-    shortestPath: string;
-    spanningTree: string;
-    parity: string;
-    inversions: string;
-    divisibility: string;
-    moneyDollars: string;
-    moneyCents: string;
-    moneyFromCents: string;
-    moneyAdd: string;
-    moneyChange: string;
-    moneyLeft: string;
-    moneyShop: string;
-    convertUnit: string;
-    decimalQuotient: string;
-    decimalQuotient2: string;
-    ratioSimplify: string;
-    ratioMissing: string;
-    ratioShare: string;
-    ratioShare3: string;
-    ratioPart: string;
-    ratioWhole: string;
-    ratioFraction: string;
-    rateCost: string;
-    rateCostTotal: string;
-    rateCostUnits: string;
-    rateCostTwo: string;
-    rateTap: string;
-    rateTapTotal: string;
-    rateTapUnits: string;
-    rateTapTwo: string;
-    timeRead: string;
-    timeEnd: string;
-    timeStart: string;
-    timeLength: string;
-    time24: string;
-    time12: string;
-    timeTrip: string;
-    timeTripEnd: string;
-    speedDistance: string;
-    speedSpeed: string;
-    speedTime: string;
-    speedMinutes: string;
-    speedRunner: string;
-    speedAverage: string;
-    speedMeet: string;
-    speedCatch: string;
-    measRuler: string;
-    measScale: string;
-    measJug: string;
-    measToSmall: string;
-    measToWhole: string;
-    measAddLength: string;
-    measAddMass: string;
-    measAddVolume: string;
-    measSubLength: string;
-    measSubMass: string;
-    measSubVolume: string;
-    lineRead: string;
-    lineHalf: string;
-    lineRise: string;
-    pieCount: string;
-    pieAngle: string;
-    stemMedian: string;
-    stemRange: string;
-  };
-  /** A hypothesis test's two decisions: on a button (text) and typed (plain). */
-  decisions: Record<"reject" | "keep", { text: string; plain: string }>;
-  /** Where gradient descent goes with a learning rate: on a button (text) and typed (plain). */
-  fates: Record<"steady" | "zigzag" | "diverge", { text: string; plain: string }>;
-  /** A walk from home told part by part (graph stories): each part, and what joins them. */
-  story: { parts: Record<StoryWord, string>; then: string };
-  events: { even: string; greater: string; prime: string; mult3: string };
-  marbleNames: { first: string; second: string };
-  /** An amount of money in the language's own currency ({v} is the number, e.g. 4.05). */
-  money: string;
-  /** Units of length, mass and volume as they are written after a number. */
-  units: Record<MeasureUnit, string>;
-  /** The stem-and-leaf plot's headings and key ("{s} | {l} means {v}"). */
-  stemLeaf: StemWords;
-  /**
-   * Time: hours and minutes as written after a number, the first letters a typed answer may write them with, the parts
-   * of the day a 12-hour time is said in (3:45 in the afternoon), and the hands of the clock in the worked solution.
-   */
-  /** Units of speed, and seconds, as written after a number. */
-  speed: { kmh: string; ms: string; s: string };
-  time: { h: string; min: string; stems: DurationStems; parts: Record<DayPart, string>; shortHand: string; longHand: string };
-  formats: Record<Format, string>;
-  /** What each recognised mistake is, said kindly: the slip, and how to see it. */
-  mistakes: Record<MistakeId, string>;
-  reasons: {
-    empty: string;
-    unreadable: string;
-    notLowest: string;
-    notOneFraction: string;
-    notImproper: string;
-    notMixed: string;
-    notSimplified: string;
-    notFactored: string;
-    notExpanded: string;
-    notPrime: string;
-    count: string;
-    rounding: string;
-    notNumber: string;
-    notIneq: string;
-    notStandard: string;
-    notSign: string;
-    shape: Record<PolyProblem, string>;
-    pin: { unreadable: string; offLine: string; left: string; right: string };
-    target: { unreadable: string; other: string; notAll: string; op: string; divZero: string; makes: string };
-    near: { unreadable: string; notOption: string };
-    order: Record<OrderProblem | "reversed", string>;
-    shading: { unreadable: string; none: string; outside: string; twice: string; count: string };
-    pick: { notOption: string };
-    divisors: { unreadable: string; notOffered: string; more: string };
-    ratio: { unreadable: string; notSimplest: string };
-    /** A time that can't be read, a length of time that can't be read, an hour over 12 on a clock with hands. */
-    time: { unreadable: string; unreadableLength: string; face: string };
-    /** A measure that can't be read, in other units, asked in two units, asked in the smaller unit. */
-    measure: { unreadable: string; units: string; whole: string; inSmall: string };
-    matrixSize: string;
-    zeroVector: string;
-  };
-  answer: string;
-  answers: string;
-  ui: {
-    look: string;
-    /** The scratch paper under a question on the practice page: its toggle and title, tools (rub rubs out what it passes
-     * over, lift takes away whole lines, dots turns the squares into dots the pen draws and the eraser rubs straight
-     * between and the line eraser cuts lines at), and the inks' names. */
-    scratch: { title: string; pen: string; rub: string; lift: string; dots: string; undo: string; clear: string; black: string; blue: string; red: string };
-    practise: string;
-    sheet: string;
-    check: string;
-    next: string;
-    reveal: string;
-    correct: string;
-    wrong: string;
-    revealed: string;
-    review: string;
-    /** Over a question that is the spaced review of something mastered days ago. */
-    spaced: string;
-    stepDown: string;
-    score: string;
-    progress: string;
-    count: string;
-    withAnswers: string;
-    newSet: string;
-    answerHere: string;
-    solving: string;
-    reset: string;
-    joinClass: string;
-    /** What joining a class study means, shown before a student joins; consentAgree is the box they tick. */
-    consentTitle: string;
-    consentSaved: string;
-    consentGroups: string;
-    consentStop: string;
-    consentAgree: string;
-    classCode: string;
-    join: string;
-    haveCode: string;
-    /** The student's number in the class list (only the teacher sees it), asked for when joining. */
-    listNo: string;
-    /** Joining with a number someone in the class already gave: {n} the number. */
-    numberTaken: string;
-    joinAnyway: string;
-    signIn: string;
-    joinedAs: string;
-    yourSkills: string;
-    keptList: string;
-    masteredList: string;
-    againList: string;
-    keepCode: string;
-    signOut: string;
-    forget: string;
-    forgetSure: string;
-    noClass: string;
-    noStudent: string;
-    offline: string;
-    unsaved: string;
-    classPractice: string;
-    freePractice: string;
-    chosen: string;
-    loadingPlan: string;
-    planError: string;
-    retry: string;
-    preTest: string;
-    postTest: string;
-    delayedTest: string;
-    testIntro: string;
-    testProgress: string;
-    submit: string;
-    pass: string;
-    testDone: string;
-    timeLeft: string;
-    sessionOver: string;
-    classClosed: string;
-    inSteps: string;
-    workedExample: string;
-    fadedIntro: string;
-    given: string;
-    stepOf: string;
-    showStep: string;
-    stepsDone: string;
-    sessionTitle: string;
-    sessionCount: string;
-    sessionRight: string;
-    sessionDone: string;
-    sessionScore: string;
-    sessionTopics: string;
-    sessionTopic: string;
-    sessionBack: string;
-    sessionClean: string;
-    sessionAgain: string;
-    seeSummary: string;
-    sessionLength: string;
-    sessionOf: string;
-    breakTime: string;
-    breakOn: string;
-    rateAsk: string;
-    rate: { easy: string; right: string; hard: string };
-    rateNext: string;
-    rateKeep: string;
-    rateTop: string;
-    rateBottom: string;
-    rateNoted: string;
-    ideaMapOpen: string;
-    ideaMapTitle: string;
-    ideaMapCount: string;
-    ideaMapFresh: string;
-    ideaMapHint: string;
-    ideaNew: string;
-    ideaShown: string;
-    ideaNotYet: string;
-    ideaMapPick: string;
-    ideaRestsOn: string;
-    ideaRestsOnNothing: string;
-    comingBack: string;
-    backNext: string;
-    backIn: string;
-  };
-  /** Where the learner is in the course (GradeCard). */
-  grades: Record<"title" | "intro" | "place" | "placeAgain" | "placing" | "between" | "found" | "here" | "secure" | "practise" | "grade" | "pair" | "uni" | "uniShort" | "topics", string>;
-};
-
-// ---------- random numbers ----------
-
-type Rng = { next: () => number; int: (lo: number, hi: number) => number; nz: (lo: number, hi: number) => number; pick: <T>(a: readonly T[]) => T; sign: () => 1 | -1 };
-/** mulberry32: the same seed gives the same questions. */
-export function rngOf(seed: number): Rng {
-  let a = seed >>> 0 || 1;
-  const next = () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  const int = (lo: number, hi: number) => lo + Math.floor(next() * (hi - lo + 1));
-  const nz = (lo: number, hi: number) => {
-    for (;;) {
-      const v = int(lo, hi);
-      if (v) return v;
-    }
-  };
-  return { next, int, nz, pick: (a) => a[Math.floor(next() * a.length)], sign: () => (next() < 0.5 ? -1 : 1) };
-}
 
 // ---------- building expressions ----------
 
-const gcd = (a: number, b: number): number => {
-  a = Math.abs(a);
-  b = Math.abs(b);
-  while (b) [a, b] = [b, a % b];
-  return a;
-};
-const fr = (n: number, d = 1) => new Frac(n, d);
-/** A polynomial typed out from its coefficients, highest power first: [c0, c1, c2] → "c2x^2 + c1x + c0". */
-function polyStr(cs: number[], v = "x"): string {
-  let out = "";
-  for (let k = cs.length - 1; k >= 0; k--) {
-    const c = cs[k];
-    if (!c) continue;
-    const a = Math.abs(c);
-    const body = k === 0 ? String(a) : `${a === 1 ? "" : a}${v}${k > 1 ? `^${k}` : ""}`;
-    out += out ? (c < 0 ? ` - ${body}` : ` + ${body}`) : c < 0 ? `-${body}` : body;
-  }
-  return out || "0";
-}
-/** Product of two polynomials given by coefficients. */
-const pmul = (a: number[], b: number[]) => {
-  const out = Array<number>(a.length + b.length - 1).fill(0);
-  a.forEach((x, i) => b.forEach((y, j) => (out[i + j] += x * y)));
-  return out;
-};
-/** "(2x + 3)" from a, b. */
-const bracket = (a: number, b: number) => `(${polyStr([b, a])})`;
-const T = (src: string) => tex(parseE(src));
-/** A number as a typed answer: 3/4, -2. */
-const plainFrac = (f: Frac) => (f.d === 1 ? String(f.n) : `${f.n}/${f.d}`);
-/** The signs of a sum as words list them: × and ÷, a true minus. */
-const OP_SIGN = { "+": "+", "-": "−", "*": "×", "/": "÷" } as const;
-/** A sum of cards in LaTeX: (3 + 5) \times 2. */
-const sumTex = (e: Parameters<typeof sumText>[0]) => sumText(e).replace(/×/g, "\\times").replace(/÷/g, "\\div").replace(/−/g, "-");
 /** An area given as twice itself, in LaTeX: 7 or 7\frac{1}{2}. */
 const areaTex = (area2: number) => (area2 % 2 ? `${area2 > 1 ? (area2 - 1) / 2 : ""}\\frac{1}{2}` : String(area2 / 2));
-/** p + q√m in LaTeX. */
-function surdTex(p: Frac, q: Frac, m: number): string {
-  if (m === 1) return p.add(q).tex();
-  const qa = q.abs();
-  const root = qa.d === 1 ? `${qa.n === 1 ? "" : qa.n}\\sqrt{${m}}` : `\\frac{${qa.n === 1 ? "" : qa.n}\\sqrt{${m}}}{${qa.d}}`;
-  if (p.isZero()) return (q.isNeg() ? "-" : "") + root;
-  return `${p.tex()} ${q.isNeg() ? "-" : "+"} ${root}`;
-}
 /** The signs for metres an answer may end in: English, Russian, Georgian. */
 const METRES = ["m", "м", "მ"] as const;
-const num = (v: number, tol = 1e-9, extra: { lowest?: boolean; surd?: boolean; form?: "improper" | "mixed" } = {}): Answer => ({ k: "num", v, tol, ...extra });
-const dp = (v: number, d: number) => String(Math.round(v * 10 ** d) / 10 ** d);
-/** E as text that parseE reads back. */
-export function plainE(e: E): string {
-  switch (e.k) {
-    case "num":
-      return e.v.d === 1 ? (e.v.n < 0 ? `(${e.v.n})` : String(e.v.n)) : `(${e.v.n}/${e.v.d})`;
-    case "var":
-      return e.name;
-    case "e":
-      return "e";
-    case "pi":
-      return "pi";
-    case "add":
-      return `(${e.ts.map(plainE).join(" + ")})`;
-    case "mul":
-      return `(${e.fs.map(plainE).join(" * ")})`;
-    case "pow":
-      return `(${plainE(e.b)})^(${plainE(e.e)})`;
-    case "fn":
-      return `${e.f}(${plainE(e.a)})`;
-    case "log":
-      return e.base.d === 1 && e.base.n === 10 ? `log(${plainE(e.a)})` : `log_${e.base.n}(${plainE(e.a)})`;
-    case "d":
-      return plainE(e.a);
-  }
-}
 
 // ---------- order of operations ----------
 /** One operation done, the leftmost of those that can be: the next line of working. */
@@ -780,24 +111,11 @@ function stagesM(m: number, p: number, k: number): number {
   for (let j = p - 1; j >= k; j--) x = roundM(x, p, j);
   return x;
 }
-/** m/10^p with k decimal places shown (none when k ≤ 0). */
-const fmtM = (m: number, p: number, k = p) => (m / 10 ** p).toFixed(Math.max(0, Math.min(k, p)));
-/** A decimal without trailing zeros, safe from floating dust: 7.350000001 → "7.35". */
-const tidy = (v: number) => String(Number(v.toFixed(10)));
 
 // ---------- money, decimals, ratio and rate ----------
 
-/** An amount of money in the language's currency: a whole amount bare, any other with its two places (20, 4.05). */
-const money = (w: PracticeWords, v: number) => fill(w.money, { v: Number.isInteger(v) ? String(v) : v.toFixed(2) });
 /** Cents as dollars with both places, for the working: 405 → 4.05. */
 const dollars = (cents: number) => (cents / 100).toFixed(2);
-/** A whole number from lo to hi that doesn't end in 0, so a decimal made from it shows all its places. */
-function noZeroEnd(r: Rng, lo: number, hi: number): number {
-  for (;;) {
-    const m = r.int(lo, hi);
-    if (m % 10) return m;
-  }
-}
 /**
  * a − b worked column by column taking the smaller digit from the larger and never exchanging (2000 − 1365 → 1365):
  * the classic slip in a subtraction, of whole numbers (amounts in cents).
@@ -834,24 +152,13 @@ export function angleLabelAt(bx: number, by: number, bw: number, th: number, tw:
 
 // ---------- the generators ----------
 
-type Gen = (r: Rng, L: Level, w: PracticeWords) => Omit<Exercise, "skill" | "level" | "seed">;
-
 /**
  * The share of fractions questions that ask for one idea of fractions alone, in place of an operation. An operation
  * needs seven to ten ideas at once, so a wrong answer could be any of them; these forms each test one step by itself
  * (src/model/conceptGraph.ts, test 1), so the ideas a student lacks can be told apart.
  */
 const FRACTION_FORM_SHARE = 0.4;
-export type FractionForm = "equivalent" | "lowest" | "lcd" | "reciprocal" | "toImproper" | "toMixed";
 const FRACTION_FORMS: readonly FractionForm[] = ["equivalent", "lowest", "lcd", "reciprocal", "toImproper", "toMixed"];
-/** A step of an operation worked in steps (stepsOf): a form, or the operation itself once the fractions are ready for it. */
-export type StepForm = FractionForm | "addTops" | "timesTops" | "divideTops";
-/** The worked picture of a fraction form: bars of the fractions named, with the form and numbers kept so the question can be read for its ideas. */
-const fracBars = (form: StepForm, a: string, b: string | null, rows: { n: number; d: number }[]) => ({
-  kind: "model" as const,
-  spec: { type: "fraction", form, a, b, rows, shape: "bar", unitLabels: true },
-});
-const fracTex = (n: number, d: number) => `\\frac{${n}}{${d}}`;
 
 /** A triangle inequality question as a practice question: a letter picked, an inequality, or a number. */
 function sidesPart(q: SidesQuestion, w: PracticeWords): Part {
@@ -905,28 +212,6 @@ function sidesPart(q: SidesQuestion, w: PracticeWords): Part {
     steps: q.steps,
   };
 }
-
-/** The subscript digits a base is written with after a numeral (1011₂). */
-const SUBSCRIPT = "₀₁₂₃₄₅₆₇₈₉";
-
-/**
- * A number theory question as a practice question: a whole number, a fraction in lowest terms (a repeating decimal), or
- * a numeral in base b, typed as its digits and read as such (1011 for 1011₂; a written base after it is taken off).
- * The worked solution is the number theory tool's picture where it draws one, else the working.
- */
-function numberTheoryPart(q: NumberTheoryQuestion, w: PracticeWords): Part {
-  const units = q.base ? [`_${q.base}`, SUBSCRIPT[q.base], `(${q.base})`] : undefined;
-  return {
-    prompt: fill(w.numberTheory[q.kind], q.vars),
-    q: q.q,
-    answer: { ...num(q.v, 1e-9, q.frac ? { lowest: true } : {}), ...(units ? { units } : {}), traps: q.traps.map((t) => ({ id: t.id, a: num(t.v), vars: t.vars })) },
-    show: q.frac ? fracTex(q.frac[0], q.frac[1]) : q.base ? `${q.v}_{${q.base}}` : String(q.v),
-    plain: q.frac ? `${q.frac[0]}/${q.frac[1]}` : String(q.v),
-    format: q.frac ? "fraction" : q.base ? "base" : "number",
-    ...(q.spec ? { solution: { kind: "nt" as const, spec: q.spec } } : { steps: q.steps }),
-  };
-}
-const mixedTex = (whole: number, n: number, d: number) => `${whole}\\frac{${n}}{${d}}`;
 
 /** One idea of fractions alone: a missing top, lowest terms, the lowest common denominator, a reciprocal, or a conversion between mixed and improper. */
 function fractionForm(r: Rng, L: Level, w: PracticeWords): Omit<Exercise, "skill" | "level" | "seed"> {
@@ -1064,20 +349,6 @@ export function exampleLike(ex: Exercise, w: PracticeWords): Exercise | null {
 /** The skills whose question is worked in steps right after a wrong answer (the arms' "steps" feature). */
 export const STEPS_AFTER_MISS: readonly SkillId[] = ["fractions"];
 
-/** A step whose answer is an expression; an antiderivative accepts any constant added. */
-function exprPart(prompt: string, q: string, e: E, plusC = false): Part {
-  return {
-    prompt, q, answer: { k: "expr", e, ...(plusC ? { mode: "plusC" as const } : {}) },
-    show: tex(e) + (plusC ? " + C" : ""), plain: plainE(e) + (plusC ? " + C" : ""), format: plusC ? "antiderivative" : "expr",
-  };
-}
-/** A step whose answer is a number: a whole one, a simple fraction exactly, or anything else to 3 decimal places. */
-function numPart(prompt: string, q: string, v: number): Part {
-  if (Number.isInteger(v)) return { prompt, q, answer: num(v), show: String(v), plain: String(v), format: "number" };
-  const f = toFrac(v);
-  if (f.d <= 100 && Math.abs(f.toNumber() - v) < 1e-9) return { prompt, q, answer: num(v), show: f.tex(), plain: plainFrac(f), format: "exact" };
-  return { prompt, q, answer: num(v, 0.0006), show: dp(v, 3), plain: dp(v, 6), format: "dp3" };
-}
 /** The steps of differentiating f: each term of a sum, u′ and v′ of a product or quotient, or the inside's derivative. */
 function diffSteps(f: E, w: PracticeWords): Part[] {
   const p = diffParts(f);
@@ -1094,43 +365,6 @@ function intSteps(f: E, w: PracticeWords): Part[] {
   const Fs = p.terms.map(antiderivative);
   return Fs.every(Boolean) ? p.terms.map((t, i) => exprPart(w.prompts.stepInt, `\\int ${tex(t)} \\, dx`, Fs[i]!, true)) : [];
 }
-
-const FLIP_SIGN: Record<CompareSign, CompareSign> = { "<": ">", "=": "=", ">": "<" };
-/** A number as a hint writes it, with a proper minus sign. */
-const minusSign = (s: string | number) => String(s).replace(/^-/, "−");
-
-/** The one sign in an answer (<, = or >, typed or full-width), or null when there is none or more than one. */
-export function readSign(src: string): CompareSign | null {
-  const signs = src.replace(/＜/g, "<").replace(/＞/g, ">").replace(/＝/g, "=").match(/[<>=]/g);
-  return signs?.length === 1 ? (signs[0] as CompareSign) : null;
-}
-
-/**
- * a ? b, written as given. `naive` are the traps of known mistakes, each with the sign it gives; the first that gives
- * a different sign from the right one is the question's trap, or else the sign turned round (when it isn't =).
- */
-function signExercise(w: PracticeWords, a: string, b: string, sign: CompareSign, more: Partial<Omit<Exercise, "skill" | "level" | "seed">>, naive: Trap[] = []) {
-  const big = sign === "<" ? b : a;
-  const trap = naive.find((t) => t.a.k === "sign" && t.a.v !== sign);
-  const traps: Trap[] = trap ? [trap] : sign === "=" ? [] : [{ id: "compareFlip", a: { k: "sign", v: FLIP_SIGN[sign] }, vars: { big: minusSign(big.replace(/\\frac\{(\d+)\}\{(\d+)\}/, "$1/$2")) } }];
-  return { prompt: w.prompts.compare, q: `${a} \\;\\square\\; ${b}`, answer: { k: "sign" as const, v: sign, traps }, show: `${a} ${sign} ${b}`, plain: sign, format: "sign" as const, ...more };
-}
-
-// ---------- linear algebra ----------
-
-/** An m × n matrix of whole numbers from lo to hi. */
-const ints = (r: Rng, m: number, n: number, lo: number, hi: number) => Array.from({ length: m }, () => Array.from({ length: n }, () => r.int(lo, hi)));
-const M = (rows: number[][]): Mat => rows.map((row) => row.map((x) => fr(x)));
-const matAnswer = (m: Mat): Answer => ({ k: "matrix", rows: m.map((row) => row.map((x) => x.toNumber())), tol: 1e-9 });
-/** A matrix as typed: rows split by ;, numbers by commas. */
-const matPlain = (m: Mat) => m.map((row) => row.map(plainFrac).join(", ")).join("; ");
-/** A column of entries already in LaTeX. */
-const colTex = (v: string[]) => env(v.map((x) => [x]));
-/** The Matrices tool's working for an operation on A (and B). */
-const matCalc = (op: MatrixOp, A: number[][], B: number[][] = []): Exercise["solution"] => {
-  const spec: MatrixCalcSpec = { type: "calc", op, A: A.map((row) => row.map(String)), B: B.map((row) => row.map(String)), k: "1", steps: true };
-  return { kind: "matrix", spec };
-};
 
 // ---------- probability and statistics ----------
 
@@ -1167,8 +401,6 @@ const zTest = (mean: number, sigma: number, n: number, mu0: number, alt: Alt): I
 
 /** A decimal as written: to 6 places at most, so no float noise shows. */
 const dec6 = (v: number) => String(Math.round(v * 1e6) / 1e6);
-/** A factor in a product, bracketed when negative. */
-const par = (v: number | string) => (String(v).startsWith("-") ? `(${v})` : String(v));
 /** One step of gradient descent on ax² + bx + c from x (uphill: the step taken up the slope instead). */
 const gdStep = (x: Frac, a: number, b: number, eta: Frac, uphill = false) => {
   const s = eta.mul(x.mul(fr(2 * a)).add(fr(b)));
@@ -1201,9 +433,6 @@ function dotsPic(dots: Dot[], marks: { x: number; y: number; name: string }[]): 
 }
 /** Points with their coordinates, in LaTeX. */
 const ptsTex = (ps: { x: number; y: number }[]) => ps.map((p) => `(${p.x}, ${p.y})`).join(",\\ ");
-/** Errors in a table: one column for each of `heads`, one row for each named list. */
-const errTable = (head: string, heads: (string | number)[], rows: [string, number[]][]) =>
-  `\\begin{array}{c|${"c".repeat(heads.length)}} ${head} & ${heads.join(" & ")} \\\\ \\hline ${rows.map(([k, vs]) => `${k} & ${vs.join(" & ")}`).join(" \\\\ ")} \\end{array}`;
 
 /** A speed answer, which may be typed with its unit (48 km, 60 km/h, 3 h, 5 m/s). */
 const speedNum = (v: number, w: PracticeWords, traps: Trap[] = []): Answer => ({ k: "num", v, tol: 1e-9, units: [w.speed.kmh, w.speed.ms, w.units.km, w.units.m, w.time.h, w.speed.s], traps });
@@ -5490,15 +4719,6 @@ const GENS: Record<SkillId, Gen> = {
 
 };
 
-/** A decimal that is really a simple fraction (gradients, values of derivatives) back to the fraction. */
-function toFrac(v: number): Frac {
-  for (let d = 1; d <= 1000; d++) {
-    const n = Math.round(v * d);
-    if (Math.abs(n / d - v) < 1e-9) return fr(n, d);
-  }
-  return fr(Math.round(v * 1e6), 1e6);
-}
-
 /** The exercise for a skill, level and seed: always the same one. */
 export function exercise(skill: SkillId, level: Level, seed: number, w: PracticeWords): Exercise {
   exprMessages(w);
@@ -5688,7 +4908,6 @@ function hasLetter(s: string): boolean {
 
 const INF = /^\+?\s*(∞|inf(inity)?)$/i;
 const NEG_INF = /^[-−]\s*(∞|inf(inity)?)$/i;
-const FLIP: Record<Rel, Rel> = { "<": ">", "<=": ">=", ">": "<", ">=": "<=", "=": "=" };
 /** "x >= 4", "4 ≤ x", "-1 < x <= 3", "[4, ∞)", "(-2; 3]" as the ends of the set; null if it isn't an inequality. */
 export function readIneq(src: string): { lo: Bound | null; hi: Bound | null } | null {
   try {
@@ -5723,22 +4942,6 @@ function ineqEnds(t: string): { lo: Bound | null; hi: Bound | null } | null {
   if (rels.every((r) => r[0] === "<")) return { lo: { v: a, closed: rels[0] === "<=" }, hi: { v: b, closed: rels[1] === "<=" } };
   if (rels.every((r) => r[0] === ">")) return { lo: { v: b, closed: rels[1] === ">=" }, hi: { v: a, closed: rels[0] === ">=" } };
   return null;
-}
-const boundTex = (b: Bound, below: boolean) => (below ? (b.closed ? "\\le" : "<") : b.closed ? "\\ge" : ">");
-/** x ≥ 4, −1 < x ≤ 3 in LaTeX. */
-export function ineqTex(lo: Bound | null, hi: Bound | null, v = "x"): string {
-  const n = (b: Bound) => toFrac(b.v).tex();
-  if (lo && hi) return `${n(lo)} ${boundTex(lo, true)} ${v} ${boundTex(hi, true)} ${n(hi)}`;
-  if (lo) return `${v} ${boundTex(lo, false)} ${n(lo)}`;
-  return `${v} ${boundTex(hi!, true)} ${n(hi!)}`;
-}
-/** The same, typed: x >= 4, -1 < x <= 3. */
-export function ineqPlain(lo: Bound | null, hi: Bound | null, v = "x"): string {
-  const n = (b: Bound) => plainFrac(toFrac(b.v));
-  const op = (b: Bound, below: boolean) => (below ? (b.closed ? "<=" : "<") : b.closed ? ">=" : ">");
-  if (lo && hi) return `${n(lo)} ${op(lo, true)} ${v} ${op(hi, true)} ${n(hi)}`;
-  if (lo) return `${v} ${op(lo, false)} ${n(lo)}`;
-  return `${v} ${op(hi!, true)} ${n(hi!)}`;
 }
 
 /** Negating an expression, for the sign trap. */
