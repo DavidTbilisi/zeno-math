@@ -71,6 +71,14 @@ function wrong(ex: Exercise): string {
     case "meas":
       // The last number one more (99 cm becomes 100 cm, which is never a right answer either).
       return ex.plain.replace(/(\d+)(?!.*\d)/, (n) => String(Number(n) + 1));
+    case "lines":
+      // The right order turned round.
+      return [...a.seq].reverse().map((i) => "ABCDEFG"[i]).join(", ");
+    case "counter":
+      // An object the claim holds for, or one it isn't about: never a counterexample.
+      return a.claim === "nilpotent" ? "1, 0; 0, 1" : a.claim === "squaresEqual" || a.claim === "primeSum" || a.claim === "sqrtSum" ? "0, 0" : "2";
+    case "decide":
+      return a.truth ? "false" : "true";
     case "pin":
       // The far end of the line.
       return `pin:${a.v - a.play.from > (a.play.to - a.play.from) / 2 ? a.play.from : a.play.to}`;

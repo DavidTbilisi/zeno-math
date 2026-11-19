@@ -7,7 +7,7 @@ export const SKILLS = {
   algebra: ["balance", "shapePatterns", "findRule", "growingPattern", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions", "matrices", "determinant", "elimination", "eigen"],
   geometry: ["shapeArea", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets", "coordinates", "slope", "line", "distance", "trigexact", "righttri", "practicalTrig", "trigRules", "circles", "powerPoint", "arcs", "similarity", "volume", "identities", "vectors", "dotangle", "projection"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite", "numroots", "numint", "descent", "backprop"],
-  data: ["readChart", "diagrams", "oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "inversions", "average", "probability", "counting", "ci", "expectation", "conditional", "distributions", "correlation", "hypothesis", "softmax", "overfitting", "precision", "clustering"],
+  data: ["readChart", "diagrams", "oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "inversions", "average", "probability", "counting", "ci", "expectation", "conditional", "distributions", "correlation", "hypothesis", "softmax", "overfitting", "precision", "clustering", "proofs"],
 } as const satisfies Record<Area, readonly string[]>;
 export type SkillId = (typeof SKILLS)[Area][number];
 /**

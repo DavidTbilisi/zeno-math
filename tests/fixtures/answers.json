@@ -8496,6 +8496,118 @@
       "input": "25",
       "label": "form",
       "note": "the position, not the shape"
+    },
+    {
+      "skill": "proofs",
+      "level": 1,
+      "seed": 7,
+      "input": "B, C, D, A",
+      "label": "correct"
+    },
+    {
+      "skill": "proofs",
+      "level": 1,
+      "seed": 7,
+      "input": "b c d a",
+      "label": "correct",
+      "note": "lower case, spaces"
+    },
+    {
+      "skill": "proofs",
+      "level": 1,
+      "seed": 7,
+      "input": "B, E, D, A",
+      "label": "wrong",
+      "note": "the look-alike line in place of C",
+      "mistake": "lookAlikeLine"
+    },
+    {
+      "skill": "proofs",
+      "level": 1,
+      "seed": 7,
+      "input": "A, B, C, D",
+      "label": "wrong",
+      "note": "the letters in the order shown"
+    },
+    {
+      "skill": "proofs",
+      "level": 1,
+      "seed": 7,
+      "input": "B, C, C, A",
+      "label": "form",
+      "note": "a line used twice"
+    },
+    {
+      "skill": "proofs",
+      "level": 2,
+      "seed": 7,
+      "input": "B, D, E, C, F, A",
+      "label": "correct"
+    },
+    {
+      "skill": "proofs",
+      "level": 2,
+      "seed": 7,
+      "input": "B, D, G, C, F, A",
+      "label": "wrong",
+      "note": "the look-alike line used",
+      "mistake": "lookAlikeLine"
+    },
+    {
+      "skill": "proofs",
+      "level": 3,
+      "seed": 7,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "proofs",
+      "level": 3,
+      "seed": 7,
+      "input": "41",
+      "label": "correct",
+      "note": "another counterexample: 41² + 41 + 41 = 41 × 43"
+    },
+    {
+      "skill": "proofs",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "note": "an example the claim fits",
+      "mistake": "exampleNotCounter"
+    },
+    {
+      "skill": "proofs",
+      "level": 3,
+      "seed": 7,
+      "input": "-1",
+      "label": "form",
+      "note": "not a whole number n ≥ 0"
+    },
+    {
+      "skill": "proofs",
+      "level": 3,
+      "seed": 8,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "proofs",
+      "level": 3,
+      "seed": 8,
+      "input": "1",
+      "label": "correct",
+      "note": "1² = 1 is not more than 1"
+    },
+    {
+      "skill": "proofs",
+      "level": 3,
+      "seed": 8,
+      "input": "2",
+      "label": "wrong",
+      "note": "2² > 2: the claim fits",
+      "mistake": "exampleNotCounter"
     }
   ]
 }

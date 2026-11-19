@@ -20,6 +20,7 @@ import { type Area, AREAS, type SkillId, SKILLS } from "./practiceSkills";
 import { encodeShade, judgeShade } from "./shadeFrac";
 import { judgeTarget, parseSum, qText, valueOf } from "./target";
 import { clock12, clock24, DAY, HALF_DAY, readClock, readDuration } from "./timePics";
+import { CLAIMS, linesText, readLines, testObject, type ClaimKind } from "./proofs";
 import { LEVELS, type Answer, type Bound, type Exercise, type Level, type PracticeWords, type StepForm, type Trap } from "./practiceTypes";
 import { FLIP, fracBars, fracTex, gcd, ineqPlain, ineqTex, mixedTex, num, OP_SIGN, plainE, plainFrac, readSign, rngOf, sumTex, toFrac } from "./practiceKit";
 
@@ -356,7 +357,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : a.k === "ratio" ? a.vs.join(" : ") : a.k === "clock" ? (a.typed ?? (a.h24 ? clock24(a.t) : clock12(a.t))) : a.k === "dur" ? (a.typed ?? String(a.m)) : a.k === "meas" ? (a.typed ?? String(a.v)) : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : a.k === "ratio" ? a.vs.join(" : ") : a.k === "clock" ? (a.typed ?? (a.h24 ? clock24(a.t) : clock12(a.t))) : a.k === "dur" ? (a.typed ?? String(a.m)) : a.k === "meas" ? (a.typed ?? String(a.v)) : a.k === "lines" ? linesText(a.seq) : a.k === "decide" ? (a.truth ? "true" : `false: ${CLAIMS[a.claim].example}`) : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -381,6 +382,29 @@ function withoutUnit(a: Answer, s: string): string {
 
 /** 60 or more minutes after the hours (2:75, 1 h 65 min): the hour counted as 100 minutes. */
 const minutesOver = (m: number, w: PracticeWords): Verdict => ({ ok: false, mistake: "minutes100", hint: fill(w.mistakes.minutes100, { m, h: Math.floor(m / 60), r: m % 60 }) });
+
+/** An object of a claim's kind, as typed: a whole number, a real number, a pair "2, -2", or a 2 × 2 matrix "0, 1; 0, 0". */
+function readObject(kind: ClaimKind, src: string): number[] | number[][] | null {
+  if (kind === "matrix") {
+    const m = readMatrix(src);
+    return m && m.length === 2 && m.every((r) => r.length === 2) ? m : null;
+  }
+  if (kind === "pair") {
+    const ps = parts(src.replace(/;/g, ","));
+    const vs = ps.map(value);
+    return vs.length === 2 && vs.every(Number.isFinite) ? vs : null;
+  }
+  const v = value(src);
+  return Number.isFinite(v) && (kind === "real" || Number.isInteger(v)) ? [v] : null;
+}
+/** "false: 40", "true", "ложь 40": the decision, in the learner's words or in English, and anything after it. */
+function readDecision(src: string, w: PracticeWords): { truth: boolean; rest: string } | null {
+  const m = src.trim().match(/^([^\s:,;]+)[\s:,;]*(.*)$/u);
+  if (!m) return null;
+  const word = m[1].toLowerCase();
+  const truth = [w.proofs.true.toLowerCase(), "true", "t"].includes(word) ? true : [w.proofs.false.toLowerCase(), "false", "f"].includes(word) ? false : null;
+  return truth === null ? null : { truth, rest: m[2].trim() };
+}
 
 /** The answer against one expected answer: no traps. */
 function judge(a: Answer, input: string, w: PracticeWords): Verdict {
@@ -559,6 +583,29 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         if (!a.whole && bigPart) return { ok: false, close: true, why: fill(w.reasons.measure.inSmall, { small }) };
         return { ok: true };
       }
+      case "lines": {
+        const r = readLines(a.count, src);
+        if ("problem" in r) return { ok: false, why: w.proofs.why[r.problem === "count" ? "unreadable" : r.problem] };
+        return { ok: r.seq.length === a.seq.length && r.seq.every((i, k) => i === a.seq[k]) };
+      }
+      case "counter": {
+        const kind = CLAIMS[a.claim].kind;
+        const x = readObject(kind, src);
+        if (!x) return { ok: false, why: fill(w.proofs.why.notObject, { typed: w.proofs.typed[kind] }) };
+        const t = testObject(a.claim, x);
+        if (t === "outside") return { ok: false, why: w.proofs.why.outside };
+        return t === "counter" ? { ok: true } : { ok: false, mistake: "exampleNotCounter", hint: fill(w.mistakes.exampleNotCounter, { x: src }) };
+      }
+      case "decide": {
+        const said = readDecision(src, w);
+        if (!said) return { ok: false, why: w.proofs.why.notDecided };
+        // A true claim called false: its "counterexample" holds, which is the mistake to name.
+        if (a.truth && !said.truth) return said.rest && readObject(CLAIMS[a.claim].kind, said.rest) ? judge({ k: "counter", claim: a.claim }, said.rest, w) : { ok: false };
+        if (said.truth !== a.truth) return { ok: false };
+        if (a.truth) return { ok: true };
+        if (!said.rest) return { ok: false, why: w.proofs.why.noWitness };
+        return judge({ k: "counter", claim: a.claim }, said.rest, w);
+      }
       case "dur": {
         const d = readDuration(src, w.time.stems);
         if (!d) return { ok: false, why: fill(w.reasons.time.unreadableLength, { s: input }) };
@@ -607,7 +654,7 @@ const isPrime = (n: number) => {
 export function preview(ex: Exercise, input: string): string | null {
   const s = withoutUnit(ex.answer, input.trim());
   if (!s) return null;
-  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade" || ex.answer.k === "pick" || ex.answer.k === "divisors" || ex.answer.k === "clock" || ex.answer.k === "dur" || ex.answer.k === "meas") return null;
+  if (ex.answer.k === "poly" || ex.answer.k === "pin" || ex.answer.k === "near" || ex.answer.k === "order" || ex.answer.k === "shade" || ex.answer.k === "pick" || ex.answer.k === "divisors" || ex.answer.k === "clock" || ex.answer.k === "dur" || ex.answer.k === "meas" || ex.answer.k === "lines" || ex.answer.k === "decide") return null;
   if (ex.answer.k === "target") {
     // The sum as maths, and what it makes so far.
     const e = parseSum(s);

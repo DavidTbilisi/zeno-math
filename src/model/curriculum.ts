@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "ci",
+  "stationary", "integrate", "definite", "numroots", "numint", "ci", "proofs",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -109,6 +109,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   numint: ["definite"],
   ci: ["average"],
   expectation: ["probability", "average"],
+  proofs: ["parity", "primes", "expand"],
   conditional: ["probability"],
   distributions: ["expectation", "counting"],
   correlation: ["expectation"],
@@ -260,6 +261,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   numint: [13, 13, 13],
   ci: [13, 13, 13],
   expectation: [12, 12, 12], // discrete random variables, E(X) and Var(X) (H2)
+  proofs: [13, 13, 13], // ordering a proof and its reasons, a faulty proof, counterexamples (Velleman, Hammack)
   conditional: [12, 12, 12], // conditional probability (H2)
   distributions: [12, 12, 12], // the binomial and normal distributions (H2)
   correlation: [12, 12, 13], // the product-moment correlation coefficient (H2); covariance from a joint distribution is past it

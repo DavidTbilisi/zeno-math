@@ -5,6 +5,7 @@
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
 import { ChoicePicks, ListPicks, SignPicks, TargetPicks, TogglePicks } from "./ui";
+import { LINE_LETTERS } from "../math/proofs";
 import { addPiece, dropPiece } from "../math/target";
 import { AnswerField, PlayAnswer } from "./PlayAnswer";
 import { newId, type ClassPlan, type Outbox, type Student, type TestAnswer } from "../learner";
@@ -156,6 +157,29 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
           onChange={(s) => {
             setInput(s);
             setMessage(null);
+          }}
+        />
+      )}
+      {ex.answer.k === "lines" && (
+        <ListPicks
+          items={LINE_LETTERS.slice(0, ex.answer.count)}
+          typed={input}
+          onChange={(s) => {
+            setInput(s);
+            setMessage(null);
+          }}
+        />
+      )}
+      {ex.answer.k === "decide" && (
+        <ChoicePicks
+          choices={[
+            { label: w.proofs.true, value: w.proofs.true },
+            { label: w.proofs.false, value: `${w.proofs.false}: ` },
+          ]}
+          onPick={(s) => {
+            setInput(s);
+            setMessage(null);
+            inputRef.current?.focus();
           }}
         />
       )}
