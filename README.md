@@ -741,7 +741,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 100 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 102 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), clock times (3:45,
     15:45), lengths of time (1 h 25 min, 85 min, 1:25) and measures (235 cm, 2 m 35 cm, 1 kg 200 g), fractions, mixed numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
@@ -771,8 +771,9 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     elevation measured from the vertical, the whole circle taken for a sector, an arc worked out as an area (or the
     other way), a sector's perimeter without its radii, degrees and radians converted the wrong way, radians taken for
     degrees, ½r²θ without its half, θ = r ÷ s, a segment's triangle not taken away, sin θ worked out in degree mode,
-    an inverse proportion worked as direct (or the other way), y ∝ x² worked as y ∝ x,
-    and more (132 in all, in
+    an inverse proportion worked as direct (or the other way), y ∝ x² worked as y ∝ x, terms cancelled in an
+    algebraic fraction instead of factors, the tops and the bottoms added, a formula's steps undone in the wrong order,
+    a squared or rooted subject left with its power on, and more (136 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -888,6 +889,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     (books and the stack's height, workers and days, speed and time) through the amount for one or the product that
     stays the same; y = kx and y = k/x from a pair of values, from a table that shows which it is, or from a graph
     through the origin or a curve; y in proportion to x², x³, √x or 1/x², x back from y, and y's factor when x is scaled
+  - Algebraic fractions (Think Mathematics workbook 2A ch. 6): simplify by factorising; add, subtract, multiply and
+    divide over linear bottoms, then over quadratic ones factorised first. The answer is typed as one fraction and
+    checked by value; one not cut down, or still two fractions, is sent back
+  - Formulae: substitute into v = u + at, s = ut + ½at², A = ½(a + b)h or F = 9C/5 + 32; make a letter the subject in
+    one step, in two (undone in reverse order), or when it is squared, under a root, or appears twice (hx = kx + c).
+    The answer is an expression in the formula's other letters, checked at many values of them
   - Graph stories: a walk from home told in parts (walks away slowly, runs away, stops, walks or runs back) and four
     graphs of the distance from home against the time to pick from, by letter — walking only, then walking and running,
     then four parts. A graph with a stop and a walk mixed up, or with walking and running the wrong way round, is
@@ -1899,7 +1906,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (100 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (102 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that

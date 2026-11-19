@@ -134,5 +134,9 @@ export const MISTAKES = [
   "inverseAsDirect",
   "directAsInverse",
   "powerIgnored",
+  "cancelTerms",
+  "addTopsBottoms",
+  "subjectOrder",
+  "powerNotUndone",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
