@@ -8368,6 +8368,134 @@
       "input": "45",
       "label": "wrong",
       "note": "Ben's amount after the gift"
+    },
+    {
+      "skill": "ordinals",
+      "level": 1,
+      "seed": 7,
+      "input": "heart",
+      "label": "correct"
+    },
+    {
+      "skill": "ordinals",
+      "level": 1,
+      "seed": 7,
+      "input": "Heart",
+      "label": "correct",
+      "note": "capital letter"
+    },
+    {
+      "skill": "ordinals",
+      "level": 1,
+      "seed": 7,
+      "input": "star",
+      "label": "wrong",
+      "note": "the 3rd counted from the right",
+      "mistake": "otherEnd"
+    },
+    {
+      "skill": "ordinals",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "form",
+      "note": "the position, not the shape"
+    },
+    {
+      "skill": "ordinals",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "ordinals",
+      "level": 2,
+      "seed": 7,
+      "input": "3rd",
+      "label": "correct",
+      "note": "written as an ordinal"
+    },
+    {
+      "skill": "ordinals",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "note": "counted from the right",
+      "mistake": "otherEnd"
+    },
+    {
+      "skill": "ordinals",
+      "level": 3,
+      "seed": 7,
+      "input": "heart",
+      "label": "correct"
+    },
+    {
+      "skill": "ordinals",
+      "level": 3,
+      "seed": 7,
+      "input": "circle",
+      "label": "wrong",
+      "note": "the neighbour before, not after",
+      "mistake": "wrongNeighbour"
+    },
+    {
+      "skill": "shapePatterns",
+      "level": 1,
+      "seed": 7,
+      "input": "purple",
+      "label": "correct"
+    },
+    {
+      "skill": "shapePatterns",
+      "level": 1,
+      "seed": 7,
+      "input": "red",
+      "label": "wrong",
+      "note": "the last colour shown again",
+      "mistake": "repeatedLast"
+    },
+    {
+      "skill": "shapePatterns",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapePatterns",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "note": "the number of different colours",
+      "mistake": "distinctNotUnit"
+    },
+    {
+      "skill": "shapePatterns",
+      "level": 3,
+      "seed": 7,
+      "input": "diamond",
+      "label": "correct"
+    },
+    {
+      "skill": "shapePatterns",
+      "level": 3,
+      "seed": 7,
+      "input": "star",
+      "label": "wrong",
+      "note": "the remainder counted one along",
+      "mistake": "remainderShift"
+    },
+    {
+      "skill": "shapePatterns",
+      "level": 3,
+      "seed": 7,
+      "input": "25",
+      "label": "form",
+      "note": "the position, not the shape"
     }
   ]
 }

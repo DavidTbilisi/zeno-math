@@ -5,6 +5,7 @@ import type { SkillId } from "../practiceSkills";
 import type { Gen } from "../practiceTypes";
 import compare from "./compare";
 import quickLook from "./quickLook";
+import ordinals from "./ordinals";
 import estimateLine from "./estimateLine";
 import closerTo from "./closerTo";
 import times from "./times";
@@ -33,6 +34,7 @@ import primes from "./primes";
 import bases from "./bases";
 import modular from "./modular";
 import balance from "./balance";
+import shapePatterns from "./shapePatterns";
 import findRule from "./findRule";
 import growingPattern from "./growingPattern";
 import sameExpression from "./sameExpression";
@@ -114,6 +116,7 @@ import clustering from "./clustering";
 export const GENS: Record<SkillId, Gen> = {
   compare,
   quickLook,
+  ordinals,
   estimateLine,
   closerTo,
   times,
@@ -142,6 +145,7 @@ export const GENS: Record<SkillId, Gen> = {
   bases,
   modular,
   balance,
+  shapePatterns,
   findRule,
   growingPattern,
   sameExpression,

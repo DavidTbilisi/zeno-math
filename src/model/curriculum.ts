@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -61,6 +61,8 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   primes: ["times"],
   bases: ["times"],
   modular: ["primes", "decimals"],
+  ordinals: ["compare"],
+  shapePatterns: ["ordinals"],
   findRule: ["times"],
   growingPattern: ["findRule"],
   balance: ["times"],
@@ -164,6 +166,8 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
   divisibility: [4, 4, 4], // multiples of a 1-digit number
   hcf: [4, null, 4], // common factors of two numbers (P4); the LCM of two-digit numbers
   balance: [6, 6, null], // a linear equation with whole number coefficients; two unknowns
+  ordinals: [1, 1, 1], // 1st to 10th in a line of pictures, from the left or the right (P1)
+  shapePatterns: [1, 1, 3], // the next shape, the repeating part (P1); a far term by the remainder (P3)
   findRule: [3, null, null], // one step within the tables; two steps with negative numbers
   growingPattern: [2, 4, 6], // continuing it, a far figure, which figure (an equation, P6)
   sameExpression: [6, null, null], // like terms without brackets (P6); brackets

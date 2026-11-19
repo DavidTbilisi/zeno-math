@@ -162,5 +162,10 @@ export const MISTAKES = [
   "loopExtraPost",
   "givenOnlyOnce",
   "leftShortSubtracted",
+  "otherEnd",
+  "wrongNeighbour",
+  "repeatedLast",
+  "distinctNotUnit",
+  "remainderShift",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
