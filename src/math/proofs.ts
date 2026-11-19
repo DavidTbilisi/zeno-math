@@ -77,7 +77,9 @@ export function testObject(id: ClaimId, x: Obj): Tested {
 // ---------- the proofs and the faulty ones ----------
 
 /** Why a line follows. */
-export type ReasonKey = "hypothesis" | "defEven" | "defOdd" | "defDivides" | "algebra" | "substitution" | "assumeNot" | "knownResult" | "contradiction" | "contrapositive";
+export type ReasonKey =
+  | "hypothesis" | "defEven" | "defOdd" | "defDivides" | "algebra" | "substitution" | "assumeNot" | "knownResult" | "contradiction" | "contrapositive"
+  | "base" | "assumeK" | "inductionHyp" | "induction";
 export const REASON_KEYS: readonly ReasonKey[] = ["hypothesis", "defEven", "defOdd", "defDivides", "algebra", "substitution", "assumeNot", "knownResult", "contradiction", "contrapositive"];
 export type ProofId = "evenSum" | "oddProduct" | "consecutive" | "divides" | "sqrt2" | "contrapositive";
 /** Each proof's lines' reasons, in order, and the line its wrong look-alike stands in for. */
@@ -99,7 +101,38 @@ export const FLAWS: Record<FlawId, { lines: number; first: number; later: number
   examples: { lines: 4, first: 3, later: null },
   flipInequality: { lines: 3, first: 1, later: 2 },
 };
-export const FLAW_IDS = Object.keys(FLAWS) as FlawId[];
+export const FLAW_IDS: readonly FlawId[] = ["oneIsTwo", "rootOfSquare", "examples", "flipInequality"];
+
+// ---------- proofs by induction ----------
+
+/** The reasons offered beside an induction proof's line. */
+export const INDUCTION_REASON_KEYS: readonly ReasonKey[] = ["base", "assumeK", "inductionHyp", "induction", "algebra", "defDivides", "hypothesis", "contradiction"];
+export type InductionId = "sumN" | "oddSum" | "div3" | "powerBound";
+/** Each induction proof's lines' reasons, and the line its look-alike (which assumes what is to be proved) stands in for. */
+export const INDUCTION: Record<InductionId, { reasons: ReasonKey[]; mimics: number }> = {
+  sumN: { reasons: ["base", "assumeK", "inductionHyp", "algebra", "induction"], mimics: 2 },
+  oddSum: { reasons: ["base", "assumeK", "inductionHyp", "algebra", "induction"], mimics: 2 },
+  div3: { reasons: ["base", "assumeK", "inductionHyp", "algebra", "defDivides", "induction"], mimics: 2 },
+  powerBound: { reasons: ["base", "assumeK", "inductionHyp", "algebra", "algebra", "induction"], mimics: 2 },
+};
+export const SHORT_INDUCTION: readonly InductionId[] = ["sumN", "oddSum"];
+export const LONG_INDUCTION: readonly InductionId[] = ["div3", "powerBound"];
+export type InductionFlawId = "horses" | "noBase" | "badBase";
+/** Each faulty induction's first wrong line, a later one wrong only because of it, and a right line taken for the wrong one. */
+export const INDUCTION_FLAWS: Record<InductionFlawId, { lines: number; first: number; later: number | null; sound: number | null }> = {
+  // The two groups of k horses share one only when k ≥ 2: the step from 1 to 2 fails.
+  horses: { lines: 6, first: 4, later: 5, sound: null },
+  // The step is right, but there is no base case, and n = 1 gives 2, which is even.
+  noBase: { lines: 4, first: 3, later: null, sound: 2 },
+  // The base case is worked wrong: (1 + 1 + 2)/2 = 2, not 1.
+  badBase: { lines: 5, first: 0, later: 4, sound: null },
+};
+export const INDUCTION_FLAW_IDS: readonly InductionFlawId[] = ["horses", "noBase", "badBase"];
+export const INDUCTION_FLAW_TEX: Record<InductionFlawId, string> = {
+  horses: "k = 1:\\ \\{h_1\\} \\cap \\{h_2\\} = \\varnothing",
+  noBase: "n = 1:\\ 1^2 + 1 = 2",
+  badBase: "\\tfrac{1 + 1 + 2}{2} = 2 \\ne 1",
+};
 
 /** The words of the proofs (the locale's `proofs` block). */
 export type ProofWords = {
@@ -111,6 +144,9 @@ export type ProofWords = {
   /** Each proof's claim, its lines in order, and a line that looks like one of them but doesn't follow. */
   proofs: Record<ProofId, { claim: string; lines: string[]; wrong: string }>;
   flaws: Record<FlawId, { claim: string; lines: string[] }>;
+  /** Proofs by induction, as `proofs`, and faulty ones, as `flaws`. */
+  induction: Record<InductionId, { claim: string; lines: string[]; wrong: string }>;
+  inductionFlaws: Record<InductionFlawId, { claim: string; lines: string[] }>;
   claims: Record<ClaimId, string>;
   prompt: { order: string; reason: string; flaw: string; counter: string; decide: string };
   /** What each kind of object is typed like, after a counterexample's prompt. */

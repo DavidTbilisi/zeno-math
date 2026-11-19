@@ -8608,6 +8608,364 @@
       "label": "wrong",
       "note": "2² > 2: the claim fits",
       "mistake": "exampleNotCounter"
+    },
+    {
+      "skill": "logic",
+      "level": 1,
+      "seed": 7,
+      "input": "false",
+      "label": "correct"
+    },
+    {
+      "skill": "logic",
+      "level": 1,
+      "seed": 7,
+      "input": "true",
+      "label": "wrong",
+      "note": "P true, Q false: the one row where P → Q fails"
+    },
+    {
+      "skill": "logic",
+      "level": 1,
+      "seed": 7,
+      "input": "maybe",
+      "label": "form",
+      "note": "not one of the options"
+    },
+    {
+      "skill": "logic",
+      "level": 2,
+      "seed": 7,
+      "input": "1, 0, 1, 1",
+      "label": "correct"
+    },
+    {
+      "skill": "logic",
+      "level": 2,
+      "seed": 7,
+      "input": "1; 0; 1; 1",
+      "label": "correct",
+      "note": "semicolons"
+    },
+    {
+      "skill": "logic",
+      "level": 2,
+      "seed": 7,
+      "input": "1, 0, 0, 0",
+      "label": "wrong",
+      "note": "P → Q taken as false when P is false",
+      "mistake": "vacuousTruth"
+    },
+    {
+      "skill": "logic",
+      "level": 2,
+      "seed": 7,
+      "input": "1, 0, 1",
+      "label": "form",
+      "note": "three rows of four"
+    },
+    {
+      "skill": "logic",
+      "level": 3,
+      "seed": 7,
+      "input": "¬Q → ¬P",
+      "label": "correct"
+    },
+    {
+      "skill": "logic",
+      "level": 3,
+      "seed": 7,
+      "input": "Q → P",
+      "label": "wrong",
+      "note": "the converse",
+      "mistake": "converseSlip"
+    },
+    {
+      "skill": "quantifiers",
+      "level": 1,
+      "seed": 7,
+      "input": "true",
+      "label": "correct"
+    },
+    {
+      "skill": "quantifiers",
+      "level": 1,
+      "seed": 7,
+      "input": "false",
+      "label": "wrong",
+      "note": "not every x works, but one is enough",
+      "mistake": "existsNeedsAll"
+    },
+    {
+      "skill": "quantifiers",
+      "level": 2,
+      "seed": 7,
+      "input": "∃x ∀y: x + y ≠ 0",
+      "label": "correct"
+    },
+    {
+      "skill": "quantifiers",
+      "level": 2,
+      "seed": 7,
+      "input": "∀x ∃y: x + y ≠ 0",
+      "label": "wrong",
+      "note": "the quantifiers kept",
+      "mistake": "keptQuantifier"
+    },
+    {
+      "skill": "quantifiers",
+      "level": 3,
+      "seed": 7,
+      "input": "true",
+      "label": "correct"
+    },
+    {
+      "skill": "quantifiers",
+      "level": 3,
+      "seed": 7,
+      "input": "false",
+      "label": "wrong",
+      "note": "read as ∃y ∀x",
+      "mistake": "swappedQuantifiers"
+    },
+    {
+      "skill": "sets",
+      "level": 1,
+      "seed": 7,
+      "input": "6; 7",
+      "label": "correct"
+    },
+    {
+      "skill": "sets",
+      "level": 1,
+      "seed": 7,
+      "input": "7, 6",
+      "label": "correct",
+      "note": "any order, commas"
+    },
+    {
+      "skill": "sets",
+      "level": 1,
+      "seed": 7,
+      "input": "1; 2; 4; 5; 6; 7; 8; 9; 10",
+      "label": "wrong",
+      "note": "the union",
+      "mistake": "unionIntersect"
+    },
+    {
+      "skill": "sets",
+      "level": 1,
+      "seed": 7,
+      "input": "six",
+      "label": "form"
+    },
+    {
+      "skill": "sets",
+      "level": 2,
+      "seed": 7,
+      "input": "23",
+      "label": "correct"
+    },
+    {
+      "skill": "sets",
+      "level": 2,
+      "seed": 7,
+      "input": "25",
+      "label": "wrong",
+      "note": "the overlap counted twice",
+      "mistake": "doubleCounted"
+    },
+    {
+      "skill": "sets",
+      "level": 3,
+      "seed": 7,
+      "input": "24",
+      "label": "correct"
+    },
+    {
+      "skill": "sets",
+      "level": 3,
+      "seed": 7,
+      "input": "22",
+      "label": "wrong",
+      "note": "the part in all three not added back",
+      "mistake": "tripleMissed"
+    },
+    {
+      "skill": "mappings",
+      "level": 1,
+      "seed": 7,
+      "input": "injective, not surjective",
+      "label": "correct"
+    },
+    {
+      "skill": "mappings",
+      "level": 1,
+      "seed": 7,
+      "input": "bijective",
+      "label": "wrong",
+      "note": "an element of B with no arrow",
+      "mistake": "missedTarget"
+    },
+    {
+      "skill": "mappings",
+      "level": 1,
+      "seed": 7,
+      "input": "one-to-one",
+      "label": "form",
+      "note": "not one of the options"
+    },
+    {
+      "skill": "mappings",
+      "level": 3,
+      "seed": 7,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "mappings",
+      "level": 3,
+      "seed": 7,
+      "input": "-1/19",
+      "label": "wrong",
+      "note": "1/f(−7)",
+      "mistake": "inverseReciprocal"
+    },
+    {
+      "skill": "relations",
+      "level": 1,
+      "seed": 7,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "relations",
+      "level": 1,
+      "seed": 7,
+      "input": "yes",
+      "label": "wrong",
+      "note": "a loop missing",
+      "mistake": "missedLoop"
+    },
+    {
+      "skill": "relations",
+      "level": 2,
+      "seed": 7,
+      "input": "1; 4; 7; 10",
+      "label": "correct"
+    },
+    {
+      "skill": "relations",
+      "level": 2,
+      "seed": 7,
+      "input": "1; 4; 7",
+      "label": "wrong",
+      "note": "10 left out of its own class",
+      "mistake": "classWithoutItself"
+    },
+    {
+      "skill": "relations",
+      "level": 3,
+      "seed": 7,
+      "input": "4; 9; 10",
+      "label": "correct"
+    },
+    {
+      "skill": "relations",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "note": "the smallest, not every minimal one",
+      "mistake": "smallestOnly"
+    },
+    {
+      "skill": "induction",
+      "level": 1,
+      "seed": 7,
+      "input": "B, C, D, E, A",
+      "label": "correct"
+    },
+    {
+      "skill": "induction",
+      "level": 1,
+      "seed": 7,
+      "input": "B, C, F, E, A",
+      "label": "wrong",
+      "note": "the line that assumes what is to be proved",
+      "mistake": "lookAlikeLine"
+    },
+    {
+      "skill": "induction",
+      "level": 3,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "induction",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "note": "the conclusion, wrong only because of line 5",
+      "mistake": "laterLine"
+    },
+    {
+      "skill": "cardinality",
+      "level": 1,
+      "seed": 7,
+      "input": "ℝ",
+      "label": "correct"
+    },
+    {
+      "skill": "cardinality",
+      "level": 1,
+      "seed": 7,
+      "input": "ℚ",
+      "label": "wrong",
+      "note": "dense taken for uncountable",
+      "mistake": "denseNotUncountable"
+    },
+    {
+      "skill": "cardinality",
+      "level": 2,
+      "seed": 7,
+      "input": "25",
+      "label": "correct"
+    },
+    {
+      "skill": "cardinality",
+      "level": 2,
+      "seed": 7,
+      "input": "24",
+      "label": "wrong",
+      "note": "the place of +12",
+      "mistake": "signSwap"
+    },
+    {
+      "skill": "cardinality",
+      "level": 3,
+      "seed": 7,
+      "input": "1, 0, 1, 1, 0",
+      "label": "correct"
+    },
+    {
+      "skill": "cardinality",
+      "level": 3,
+      "seed": 7,
+      "input": "0, 1, 0, 0, 1",
+      "label": "wrong",
+      "note": "the diagonal unchanged",
+      "mistake": "diagonalNotFlipped"
+    },
+    {
+      "skill": "cardinality",
+      "level": 3,
+      "seed": 7,
+      "input": "1, 0, 1",
+      "label": "form",
+      "note": "three digits of five"
     }
   ]
 }

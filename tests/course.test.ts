@@ -18,7 +18,7 @@ test("every skill is in one stage, after the stages of what it builds on", () =>
   for (const [k, pres] of Object.entries(PREREQUISITES)) for (const pre of pres!) assert.ok(at(pre) <= at(k as SkillId), `${pre} is after ${k}`);
   assert.deepEqual(STAGES.slice(3).map((s) => s.skills), [
     ["projection", "matrices", "determinant", "elimination", "eigen"],
-    ["probability", "counting", "ci", "proofs", "expectation", "conditional", "distributions", "correlation", "hypothesis"],
+    ["probability", "counting", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "expectation", "conditional", "distributions", "correlation", "hypothesis"],
     ["descent"],
     ["overfitting", "precision", "clustering"],
     ["backprop", "softmax"],

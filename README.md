@@ -986,6 +986,20 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     right (n² + n + 41 at 40 or 41, 2ᵖ − 1 at 11, A² = 0 with A ≠ 0), or a claim decided true, or false with its
     counterexample ("false: 40"). An example the claim fits, offered as a counterexample, is named; one it isn't
     about is sent back
+  - Logic and proof, the first course of a maths degree (Velleman; Hammack; Halmos, *Naive Set Theory*), seven
+    skills: logic (a statement's value at one row, its whole truth-table column typed as 1s and 0s, the statement
+    that means the same: contrapositive not converse, De Morgan, the negation of "if … then"), quantifiers ("for
+    all" and "there is" checked on a small set, the negation of ∀x ∃y, a statement whose quantifier order matters,
+    the negation of the ε–N and ε–δ definitions), sets (a Venn diagram read, |A ∪ B|, |A × B|, |P(A)|, three sets),
+    functions (injective, surjective, bijective from arrows or a rule such as eˣ on ℝ, then (f ∘ g)(k) and f⁻¹(y)),
+    relations (reflexive, symmetric or transitive from arrows, an equivalence class mod m, the minimal or maximal
+    elements of a Hasse diagram under divides), proof by induction (the lines of a sum, divisibility or inequality
+    proof in order, a line's reason, the first wrong line of all horses one colour, no base case, a wrong base case)
+    and countable or not (the uncountable set among countable ones, places in the listings of ℤ and of the pairs,
+    the first digits of Cantor's diagonal sequence). Each has its named slips: an "if … then" with a false first
+    part taken as false, "or" taken as one but not both, the converse, a kept quantifier, union and intersection
+    swapped, the overlap counted twice, 2n subsets, (g ∘ f) for (f ∘ g), 1/f for f⁻¹, the smallest for every
+    minimal element, ℚ taken for uncountable, the diagonal left unchanged
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - 🌙 Calm, a switch beside it and in every game (remembered in the browser): no sounds, no confetti, no shake on

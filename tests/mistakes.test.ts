@@ -167,6 +167,40 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   calledTrue: ["proofs", [3]],
   lookAlikeLine: ["proofs", [1, 2]],
   laterLine: ["proofs", [2]],
+  vacuousTruth: ["logic", [1, 2]],
+  exclusiveOr: ["logic", [1, 2]],
+  converseSlip: ["logic", [3]],
+  deMorganSlip: ["logic", [3]],
+  negatedImplication: ["logic", [3]],
+  allFromSome: ["quantifiers", [1]],
+  existsNeedsAll: ["quantifiers", [1]],
+  keptQuantifier: ["quantifiers", [2, 3]],
+  swappedQuantifiers: ["quantifiers", [3]],
+  unionIntersect: ["sets", [1]],
+  differenceOrder: ["sets", [1]],
+  complementInsideOnly: ["sets", [1]],
+  doubleCounted: ["sets", [2]],
+  productAsSum: ["sets", [2]],
+  powerSetDouble: ["sets", [2]],
+  tripleMissed: ["sets", [3]],
+  missedTarget: ["mappings", [1, 2]],
+  sharedTarget: ["mappings", [1, 2]],
+  injSurjSwap: ["mappings", [1, 2]],
+  compositionOrder: ["mappings", [3]],
+  inverseReciprocal: ["mappings", [3]],
+  missedLoop: ["relations", [1]],
+  missedReverse: ["relations", [1]],
+  missedChain: ["relations", [1]],
+  classWithoutItself: ["relations", [2]],
+  smallestOnly: ["relations", [3]],
+  largestOnly: ["relations", [3]],
+  missingBase: ["induction", [3]],
+  denseNotUncountable: ["cardinality", [1]],
+  boundedCountable: ["cardinality", [1]],
+  signSwap: ["cardinality", [2]],
+  diagonalDirection: ["cardinality", [2]],
+  diagonalNotFlipped: ["cardinality", [3]],
+  flippedRow: ["cardinality", [3]],
   partForWhole: ["kakooma", [1, 2, 3]],
   usedTwice: ["kakooma", [1, 2, 3]],
   sumNotProduct: ["kakooma", [3]],
@@ -224,7 +258,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

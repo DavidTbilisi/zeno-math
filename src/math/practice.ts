@@ -440,7 +440,7 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         }
         const vs = ps.map(value);
         if (vs.some((v) => !Number.isFinite(v))) return { ok: false, why: fill(w.reasons.unreadable, { s: src }) };
-        if (vs.length !== a.vs.length) return { ok: false, why: fill(w.reasons.count, { n: a.vs.length }) };
+        if (vs.length !== a.vs.length) return a.k === "set" && a.listed ? { ok: false } : { ok: false, why: fill(w.reasons.count, { n: a.vs.length }) };
         if (a.k === "tuple") {
           if (vs.every((v, i) => near(v, a.vs[i], a.tol))) return { ok: true };
           return a.tol >= 0.0005 && vs.every((v, i) => near(v, a.vs[i], a.tol * 20)) ? { ok: false, close: true, why: w.reasons.rounding } : { ok: false };
