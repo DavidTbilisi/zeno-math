@@ -1015,6 +1015,21 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     swapped, the p-test backwards or used at 0, the area under one curve, π left out, the integral squared, the
     1 + left out of an arc, k! left out, the series about 0, the radius inverted, the ends guessed, terms tending
     to 0 taken as enough, the ratio test at 1, conditional taken as absolute
+  - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
+    eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
+    span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),
+    rank and nullity (a rank, a nullity by rank–nullity, a vector of the null space, any multiple), linear maps
+    (linear or not, the matrix from T(e₁) and T(e₂), the matrix in another basis, P⁻¹AP), inner products (k for
+    orthogonality or a weighted inner product, the second Gram–Schmidt vector, the least-squares line),
+    diagonalisation (diagonalisable or not, D for A = PDP⁻¹, Aⁿ through PDⁿP⁻¹) and the SVD (singular values, the
+    error of the best rank-k approximation, the best rank-1 approximation). Every matrix is made from whole-number
+    shears, so answers are whole or small fractions. The named slips: a set without 0, a set not closed, the
+    coefficients swapped, two rows checked of three, the vectors counted, pairwise independence taken for
+    independence, coordinates in the standard basis, the degree for the dimension, a constraint ignored, non-zero
+    rows counted before reducing, the rows taken for the columns, a row of A for a null vector, an affine map
+    called linear, the images as rows, PAP⁻¹, the plain dot product, divided by the length, the line through two
+    points, a repeated eigenvalue taken as not diagonalisable, eigenvalues counted, D in the wrong order, the
+    entries powered, the square root forgotten, only the next singular value, v₁u₁ᵀ for u₁v₁ᵀ
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - 🌙 Calm, a switch beside it and in every game (remembered in the browser): no sounds, no confetti, no shake on

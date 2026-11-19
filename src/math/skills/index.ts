@@ -128,6 +128,13 @@ import intApplications from "./intApplications";
 import taylor from "./taylor";
 import powerSeries from "./powerSeries";
 import convergence from "./convergence";
+import subspaces from "./subspaces";
+import basis from "./basis";
+import rankNullity from "./rankNullity";
+import linearMaps from "./linearMaps";
+import innerProducts from "./innerProducts";
+import spectral from "./spectral";
+import svd from "./svd";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -255,4 +262,11 @@ export const GENS: Record<SkillId, Gen> = {
   taylor,
   powerSeries,
   convergence,
+  subspaces,
+  basis,
+  rankNullity,
+  linearMaps,
+  innerProducts,
+  spectral,
+  svd,
 };
