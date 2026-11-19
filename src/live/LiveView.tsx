@@ -52,6 +52,7 @@ import { SohCahToa } from "./SohCahToa";
 import { TrigDiscover } from "./TrigDiscover";
 import { PythDiscover } from "./PythDiscover";
 import { CircleDiscover } from "./CircleDiscover";
+import { Tessellate } from "./Tessellate";
 import { OneStroke } from "./OneStroke";
 import { ColourMap } from "./ColourMap";
 import { ShortestPath } from "./ShortestPath";
@@ -173,6 +174,7 @@ const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   trigDiscover: TrigDiscover,
   pythDiscover: PythDiscover,
   circleDiscover: CircleDiscover,
+  tessellate: Tessellate,
   oneStroke: OneStroke,
   colourMap: ColourMap,
   shortestPath: ShortestPath,
