@@ -1889,6 +1889,7 @@ More for a thesis: [docs/architecture.md](docs/architecture.md) (design, diagram
 ```bash
 npm test           # node:test, no extra dependencies
 npm run test:changed   # only the test files that import (or read) something changed since main; -- --list to see them
+npm run snapshot   # every skill's questions against tests/fixtures/practice-snapshot.json; -- --write after a meant change
 npm run typecheck
 npm run lint       # ESLint: recommended, typescript-eslint, React's rules of hooks
 npm run coverage   # the tests, failing below 95 % of lines / 88 % of branches / 95 % of functions in src/math and src/model
@@ -2004,6 +2005,7 @@ scripts/analyse-study.ts  `npm run analyse`: the planned analysis on the tests e
 scripts/dry-run-study.ts  `npm run dry-run`: the whole study with simulated students through the real server (or a running one, under load)
 scripts/restore-check.ts  `npm run restore-check`: a backup restored into a fresh Zeno and read back whole
 scripts/checker-agreement.ts  `npm run checker-agreement`: the answer checker against labelled answers
+scripts/snapshot-practice.ts  `npm run snapshot`: a hash per skill of all its questions, to show a refactor changed none
 scripts/mistakes.ts       `npm run mistakes`: the known mistakes in an export's wrong answers, per condition
 scripts/rating-check.ts   `npm run ratings`: how each question felt to the student against the model's prediction (exploratory)
 scripts/thesis-figures.ts `npm run figures`: the thesis figures (diagrams, calibration, screenshots) made again from the code
