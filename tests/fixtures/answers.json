@@ -8288,6 +8288,86 @@
       "label": "wrong",
       "note": "the whole secant PB",
       "mistake": "wholeSecant"
+    },
+    {
+      "skill": "barModels",
+      "level": 1,
+      "seed": 7,
+      "input": "19",
+      "label": "correct"
+    },
+    {
+      "skill": "barModels",
+      "level": 1,
+      "seed": 7,
+      "input": "$19",
+      "label": "correct",
+      "note": "with the dollar sign"
+    },
+    {
+      "skill": "barModels",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong",
+      "note": "the difference added: more taken to mean add",
+      "mistake": "moreMeansAdd"
+    },
+    {
+      "skill": "barModels",
+      "level": 1,
+      "seed": 7,
+      "input": "21",
+      "label": "wrong",
+      "note": "59 − 40 slipped"
+    },
+    {
+      "skill": "barModels",
+      "level": 2,
+      "seed": 7,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "barModels",
+      "level": 2,
+      "seed": 7,
+      "input": "36",
+      "label": "wrong",
+      "note": "the total halved without taking the difference away",
+      "mistake": "sharedEqually"
+    },
+    {
+      "skill": "barModels",
+      "level": 2,
+      "seed": 7,
+      "input": "32",
+      "label": "wrong",
+      "note": "the two equal bars together, not one"
+    },
+    {
+      "skill": "barModels",
+      "level": 3,
+      "seed": 7,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "barModels",
+      "level": 3,
+      "seed": 7,
+      "input": "30",
+      "label": "wrong",
+      "note": "the gift counted once, not from one and to the other",
+      "mistake": "givenOnlyOnce"
+    },
+    {
+      "skill": "barModels",
+      "level": 3,
+      "seed": 7,
+      "input": "45",
+      "label": "wrong",
+      "note": "Ben's amount after the gift"
     }
   ]
 }

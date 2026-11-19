@@ -150,6 +150,14 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   addTopsBottoms: ["algFractions", [2, 3]],
   subjectOrder: ["formulae", [2]],
   powerNotUndone: ["formulae", [3]],
+  moreMeansAdd: ["barModels", [1]],
+  postsAreGaps: ["barModels", [1]],
+  oneStepOnly: ["barModels", [1]],
+  sharedEqually: ["barModels", [2]],
+  unitsMiscount: ["barModels", [2, 3]],
+  loopExtraPost: ["barModels", [2]],
+  givenOnlyOnce: ["barModels", [3]],
+  leftShortSubtracted: ["barModels", [3]],
   partForWhole: ["kakooma", [1, 2, 3]],
   usedTwice: ["kakooma", [1, 2, 3]],
   sumNotProduct: ["kakooma", [3]],
@@ -207,7 +215,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

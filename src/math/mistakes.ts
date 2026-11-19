@@ -154,5 +154,13 @@ export const MISTAKES = [
   "addTopsBottoms",
   "subjectOrder",
   "powerNotUndone",
+  "moreMeansAdd",
+  "postsAreGaps",
+  "oneStepOnly",
+  "sharedEqually",
+  "unitsMiscount",
+  "loopExtraPost",
+  "givenOnlyOnce",
+  "leftShortSubtracted",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

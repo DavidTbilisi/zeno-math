@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -53,6 +53,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   decimals: ["fractions", "money"],
   percent: ["fractions"],
   ratio: ["fractions"],
+  barModels: ["times", "money"],
   rate: ["decimals"],
   rounding: ["times"],
   divisibility: ["times"],
@@ -157,6 +158,7 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
   decimals: [4, 5, 5], // + −, × ÷ by a digit (P4); by 10, 100, 1000 and units in decimal form (P5)
   percent: [5, 6, 6], // a percentage of a whole (P5); increase and decrease, the whole from a part (P6)
   ratio: [6, 6, 6],
+  barModels: [3, 4, 5], // comparison and part-whole (P3); sum and difference, units, intervals (P4); before and after, leftover and shortage (P5)
   rate: [5, 6, 6], // the rate for one unit (P5); speed, its average and meeting or catching up (P6)
   rounding: [4, null, null], // decimals to 1 or 2 places; standard form and bounds
   divisibility: [4, 4, 4], // multiples of a 1-digit number

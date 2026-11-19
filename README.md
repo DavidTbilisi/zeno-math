@@ -823,6 +823,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
       a second; then, with a picture of the road, the average speed over two legs (the mean of the two speeds named),
       two vehicles meeting head on and one catching another up (the difference and the sum of the speeds swapped,
       named). The answer may carry its unit: 48 km, 60 km/h, 3 h
+    - *Bar-model word problems* (Singapore Math Challenge Word Problems; Visible Thinking 2A, 3A), one form per
+      structure the bar model solves: easy is one amount less than another, posts along a straight fence, how much more
+      one has when the total is known; medium a total and a difference, "k times as many" with a total, trees round a
+      closed pond; hard before and after a gift that makes two amounts equal, leftover and shortage, three amounts
+      compared. The steps before the answer are questions of their own, each with the bar model as it is built (units
+      first, then the amounts found); posts and trees are drawn as a fence or a pond. Named slips: adding when one has
+      "more", gaps counted for posts and a post too many round a loop, stopping at one person's amount, halving the
+      total, too few units, a gift counted once, the shortage taken from the leftover
   - Measuring, from the primary syllabus (P2 and P3), answered with a measure in one unit or two:
     - *Easy*: a pencil along a ruler, a kitchen scale's dial and a measuring jug, whose small marks are worth 10, 20,
       25, 40 or 50 (counting each small mark as 1 named)
