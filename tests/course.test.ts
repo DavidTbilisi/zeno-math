@@ -53,7 +53,7 @@ test("a level waits only for the levels of its prerequisites taught by its grade
 
 test("following the next step walks the whole course: every graded level ends secure or behind", () => {
   assert.deepEqual(nextStep(standing({}, null)), { skill: "quickLook", level: 1 });
-  assert.deepEqual(nextStep(standing({}, 13)), { skill: "numroots", level: 1 });
+  assert.deepEqual(nextStep(standing({}, 13)), { skill: "deMoivre", level: 1 });
   for (const placed of [null, 8, 13] as const) {
     const cells: Cells = {};
     const order: string[] = [];

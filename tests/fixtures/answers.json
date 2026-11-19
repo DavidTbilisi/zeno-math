@@ -9827,6 +9827,291 @@
       "input": "4.8, 6.4; 3.6, 4.8",
       "label": "wrong",
       "mistake": "outerProductOrder"
+    },
+    {
+      "skill": "complex",
+      "level": 1,
+      "seed": 7,
+      "input": "-15 - 35i",
+      "label": "correct"
+    },
+    {
+      "skill": "complex",
+      "level": 1,
+      "seed": 7,
+      "input": "-15-35i",
+      "label": "correct"
+    },
+    {
+      "skill": "complex",
+      "level": 1,
+      "seed": 7,
+      "input": "-35 - 35i",
+      "label": "wrong",
+      "mistake": "iSquaredPlusOne"
+    },
+    {
+      "skill": "complex",
+      "level": 1,
+      "seed": 7,
+      "input": "-25 - 10i",
+      "label": "wrong",
+      "mistake": "likePartsOnly"
+    },
+    {
+      "skill": "complex",
+      "level": 1,
+      "seed": 7,
+      "input": "-15 + 35i",
+      "label": "wrong"
+    },
+    {
+      "skill": "complex",
+      "level": 2,
+      "seed": 7,
+      "input": "-4 + 4i",
+      "label": "correct"
+    },
+    {
+      "skill": "complex",
+      "level": 2,
+      "seed": 7,
+      "input": "-8 + 8i",
+      "label": "wrong",
+      "mistake": "conjugateTopOnly"
+    },
+    {
+      "skill": "complex",
+      "level": 2,
+      "seed": 7,
+      "input": "-4 + 4j",
+      "label": "form"
+    },
+    {
+      "skill": "complex",
+      "level": 2,
+      "seed": 7,
+      "input": "4 - 4i",
+      "label": "wrong"
+    },
+    {
+      "skill": "complex",
+      "level": 3,
+      "seed": 7,
+      "input": "-4 + i; -4 - i",
+      "label": "correct"
+    },
+    {
+      "skill": "complex",
+      "level": 3,
+      "seed": 7,
+      "input": "-4 - i; -4 + i",
+      "label": "correct"
+    },
+    {
+      "skill": "complex",
+      "level": 3,
+      "seed": 7,
+      "input": "-4 + i",
+      "label": "form"
+    },
+    {
+      "skill": "complex",
+      "level": 3,
+      "seed": 7,
+      "input": "4 + i; 4 - i",
+      "label": "wrong",
+      "mistake": "minusBForgotten"
+    },
+    {
+      "skill": "complex",
+      "level": 3,
+      "seed": 7,
+      "input": "-4 + 2i; -4 - 2i",
+      "label": "wrong",
+      "mistake": "halvedOnlyB"
+    },
+    {
+      "skill": "polarForm",
+      "level": 1,
+      "seed": 7,
+      "input": "-1 - i",
+      "label": "correct"
+    },
+    {
+      "skill": "polarForm",
+      "level": 1,
+      "seed": 7,
+      "input": "-1-1i",
+      "label": "correct"
+    },
+    {
+      "skill": "polarForm",
+      "level": 1,
+      "seed": 7,
+      "input": "-1 + i",
+      "label": "wrong"
+    },
+    {
+      "skill": "polarForm",
+      "level": 1,
+      "seed": 7,
+      "input": "1 - i",
+      "label": "wrong"
+    },
+    {
+      "skill": "polarForm",
+      "level": 2,
+      "seed": 7,
+      "input": "3e^(pi i/6)",
+      "label": "correct"
+    },
+    {
+      "skill": "polarForm",
+      "level": 2,
+      "seed": 7,
+      "input": "3e^(i pi/6)",
+      "label": "correct"
+    },
+    {
+      "skill": "polarForm",
+      "level": 2,
+      "seed": 7,
+      "input": "3√3/2 + 3/2 i",
+      "label": "form"
+    },
+    {
+      "skill": "polarForm",
+      "level": 2,
+      "seed": 7,
+      "input": "27e^(pi i/6)",
+      "label": "wrong"
+    },
+    {
+      "skill": "polarForm",
+      "level": 3,
+      "seed": 7,
+      "input": "√2e^(3pi i/4)",
+      "label": "correct"
+    },
+    {
+      "skill": "polarForm",
+      "level": 3,
+      "seed": 7,
+      "input": "sqrt(2)e^(3 pi i/4)",
+      "label": "correct"
+    },
+    {
+      "skill": "polarForm",
+      "level": 3,
+      "seed": 7,
+      "input": "√2e^(-pi i/4)",
+      "label": "wrong",
+      "mistake": "arctanQuadrant"
+    },
+    {
+      "skill": "polarForm",
+      "level": 3,
+      "seed": 7,
+      "input": "2e^(3pi i/4)",
+      "label": "wrong",
+      "mistake": "modulusNoRoot"
+    },
+    {
+      "skill": "polarForm",
+      "level": 3,
+      "seed": 7,
+      "input": "-1 + i",
+      "label": "form"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 1,
+      "seed": 7,
+      "input": "-2 + 2i",
+      "label": "correct"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 1,
+      "seed": 7,
+      "input": "-1 + i",
+      "label": "wrong",
+      "mistake": "modulusNotPowered"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 1,
+      "seed": 7,
+      "input": "2 + 2i",
+      "label": "wrong",
+      "mistake": "argumentNotMultiplied"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 1,
+      "seed": 7,
+      "input": "-8 + 8i",
+      "label": "wrong"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 2,
+      "seed": 7,
+      "input": "i; -i",
+      "label": "correct"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 2,
+      "seed": 7,
+      "input": "e^(pi i/2); e^(-pi i/2)",
+      "label": "correct"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 2,
+      "seed": 7,
+      "input": "-1; 1",
+      "label": "wrong",
+      "mistake": "rootsAngleNotDivided"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 2,
+      "seed": 7,
+      "input": "i",
+      "label": "form"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 3,
+      "seed": 7,
+      "input": "the half-line from −4 − 4i (not including it) at angle 3π/4 to the positive real direction",
+      "label": "correct"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 3,
+      "seed": 7,
+      "input": "the whole line through −4 − 4i at angle 3π/4 to the real axis",
+      "label": "wrong",
+      "mistake": "locusFullLine"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 3,
+      "seed": 7,
+      "input": "the half-line from 4 + 4i (not including it) at angle 3π/4 to the positive real direction",
+      "label": "wrong",
+      "mistake": "locusCentreSign"
+    },
+    {
+      "skill": "deMoivre",
+      "level": 3,
+      "seed": 7,
+      "input": "the half-line from −4 − 4i (not including it) at angle −3π/4 to the positive real direction",
+      "label": "wrong"
     }
   ]
 }

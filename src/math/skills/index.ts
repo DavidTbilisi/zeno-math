@@ -135,6 +135,9 @@ import linearMaps from "./linearMaps";
 import innerProducts from "./innerProducts";
 import spectral from "./spectral";
 import svd from "./svd";
+import complex from "./complex";
+import polarForm from "./polarForm";
+import deMoivre from "./deMoivre";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -269,4 +272,7 @@ export const GENS: Record<SkillId, Gen> = {
   innerProducts,
   spectral,
   svd,
+  complex,
+  polarForm,
+  deMoivre,
 };

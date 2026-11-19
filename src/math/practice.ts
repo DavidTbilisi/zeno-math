@@ -21,7 +21,8 @@ import { encodeShade, judgeShade } from "./shadeFrac";
 import { judgeTarget, parseSum, qText, valueOf } from "./target";
 import { clock12, clock24, DAY, HALF_DAY, readClock, readDuration } from "./timePics";
 import { CLAIMS, linesText, readLines, testObject, type ClaimKind } from "./proofs";
-import { LEVELS, type Answer, type Bound, type Exercise, type Level, type PracticeWords, type StepForm, type Trap } from "./practiceTypes";
+import { looksPolar, readCx, sameList } from "./complexPractice";
+import { LEVELS, type Answer, type Bound, type CxVal, type Exercise, type Level, type PracticeWords, type StepForm, type Trap } from "./practiceTypes";
 import { FLIP, fracBars, fracTex, gcd, ineqPlain, ineqTex, mixedTex, num, OP_SIGN, plainE, plainFrac, readSign, rngOf, sumTex, toFrac } from "./practiceKit";
 
 export { LEVELS, type Bound, type DayPart, type Exercise, type Format, type FractionForm, type Level, type MeasurePair, type MeasureUnit, type Part, type Play, type PracticeWords, type SolutionKind, type StepForm } from "./practiceTypes";
@@ -357,7 +358,7 @@ export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "dir" ? `(${a.vs.join(", ")})` : a.k === "matrix" ? a.rows.map((r) => r.join(", ")).join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : a.k === "ratio" ? a.vs.join(" : ") : a.k === "clock" ? (a.typed ?? (a.h24 ? clock24(a.t) : clock12(a.t))) : a.k === "dur" ? (a.typed ?? String(a.m)) : a.k === "meas" ? (a.typed ?? String(a.v)) : a.k === "lines" ? linesText(a.seq) : a.k === "decide" ? (a.truth ? "true" : `false: ${CLAIMS[a.claim].example}`) : null;
+    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "dir" ? `(${a.vs.join(", ")})` : a.k === "complex" ? a.vs.map((z) => (a.polar ? `${Math.hypot(z.re, z.im)}*e^(${Math.atan2(z.im, z.re)}*i)` : `${z.re} + (${z.im})*i`)).join("; ") : a.k === "matrix" ? a.rows.map((r) => r.join(", ")).join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : a.k === "ratio" ? a.vs.join(" : ") : a.k === "clock" ? (a.typed ?? (a.h24 ? clock24(a.t) : clock12(a.t))) : a.k === "dur" ? (a.typed ?? String(a.m)) : a.k === "meas" ? (a.typed ?? String(a.v)) : a.k === "lines" ? linesText(a.seq) : a.k === "decide" ? (a.truth ? "true" : `false: ${CLAIMS[a.claim].example}`) : null;
     return input === null ? [] : [{ id, input }];
   });
 }
@@ -543,6 +544,14 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         const k = vs[i] / a.vs[i];
         return { ok: vs.every((v, j) => near(v, k * a.vs[j], 1e-9 * Math.max(1, Math.abs(v)))) };
       }
+      case "complex": {
+        // Each number in any form; several in any order. Asked for as re^{iθ}, a + bi is the right value in the wrong form.
+        const zs = parts(src).map(readCx);
+        if (zs.some((z) => !z)) return { ok: false, why: fill(w.reasons.unreadable, { s: input }) };
+        if (zs.length !== a.vs.length) return { ok: false, why: fill(w.reasons.count, { n: a.vs.length }) };
+        if (!sameList(zs as CxVal[], a.vs, a.tol)) return { ok: false };
+        return a.polar && !looksPolar(src) ? { ok: false, close: true, why: w.reasons.polar } : { ok: true };
+      }
       case "ratio": {
         // The same ratio is each term the same multiple of the one asked for; a multiple other than 1 is not simplest.
         const ps = src.split(/[:∶]/);
@@ -663,6 +672,7 @@ export function preview(ex: Exercise, input: string): string | null {
   }
   try {
     if (ex.answer.k === "set" || ex.answer.k === "tuple") return parts(s).map((p) => tex(parseE(bare(p)))).join(", \\; ");
+    if (ex.answer.k === "complex") return parts(s).map((p) => tex(parseE(bare(p).replace(/\/\s*(\d+)\s*i(?![a-z])/g, "/$1*i"), ["i"]))).join(", \\; ");
     if (ex.answer.k === "dir") return `\\begin{pmatrix} ${parts(s).map((p) => tex(parseE(bare(p)))).join(" \\\\ ")} \\end{pmatrix}`;
     if (ex.answer.k === "matrix") {
       const rows = matrixCells(s);

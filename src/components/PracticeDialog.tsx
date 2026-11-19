@@ -8,6 +8,7 @@ import {
 } from "../learner";
 import { newcomerChance } from "../model/logistic";
 import type { Dict } from "../locales/en";
+import { CX_KEYS } from "../math/complexPractice";
 import { fill } from "../math/text";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
 import {
@@ -905,6 +906,16 @@ export function PracticeDialog(props: Props) {
                   choices={cur.ex.answer.options.map((o) => ({ label: o.text, value: o.plain }))}
                   onPick={(s) => {
                     setInput(s);
+                    setVerdict(null);
+                    inputRef.current?.focus();
+                  }}
+                />
+              )}
+              {cur.ex.answer.k === "complex" && !done && (
+                <ChoicePicks
+                  choices={CX_KEYS}
+                  onPick={(s) => {
+                    setInput((x) => x + s);
                     setVerdict(null);
                     inputRef.current?.focus();
                   }}

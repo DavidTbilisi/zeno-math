@@ -1030,6 +1030,17 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     called linear, the images as rows, PAP⁻¹, the plain dot product, divided by the length, the line through two
     points, a repeated eigenvalue taken as not diagonalisable, eigenvalues counted, D in the wrong order, the
     entries powered, the square root forgotten, only the next singular value, v₁u₁ᵀ for u₁v₁ᵀ
+  - Complex numbers (H2 Mathematics 9758; OpenStax Precalculus; Needham), three skills in algebra: arithmetic (a
+    product, a quotient through the conjugate, a modulus, both roots of a real quadratic with Δ < 0), the polar form
+    (re^{iθ} as a + bi, a product or quotient in polar form, a + bi of the second or third quadrant as re^{iθ}) and De
+    Moivre (a power of 1 ± i or 1 ± √3i, every root of zⁿ = w, a locus |z − a| = r or arg(z − a) = θ). A new answer
+    kind reads a complex number in any form (3 − 4i, −1/2 + (√3/2)i, 2e^(2pi i/3), 2cis(pi/3), 2∠60°), roots in any
+    order; when re^{iθ} is asked for, a right number typed as a + bi is sent back, not marked wrong, and any argument
+    of it is right. Keys i, π, √ and e^(i under the answer. The named slips: i² taken as +1, only the like parts
+    multiplied, the bottom not multiplied by the conjugate, r² for r, the sign of −b/2 lost, √Δ not halved, cos and
+    sin swapped, the angles multiplied, the lengths added, the angles added in a quotient, tan⁻¹(b/a) in the wrong
+    quadrant, r not powered, θ not multiplied, the modulus not rooted, the angle not divided by n, the centre's sign
+    flipped, the whole line for a half-line
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - 🌙 Calm, a switch beside it and in every game (remembered in the browser): no sounds, no confetti, no shake on

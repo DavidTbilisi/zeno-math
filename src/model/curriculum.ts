@@ -8,7 +8,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
-  "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
+  "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd",
@@ -141,6 +141,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   innerProducts: ["projection", "basis"],
   spectral: ["eigen", "linearMaps"],
   svd: ["spectral", "innerProducts"],
+  complex: ["quadratic", "surds"],
+  polarForm: ["complex", "trigexact"],
+  deMoivre: ["polarForm"],
   descent: ["stationary"],
   backprop: ["descent"],
   softmax: ["logs", "probability"],
@@ -315,6 +318,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   innerProducts: [13, 13, 13], // inner products, Gram–Schmidt and least squares
   spectral: [13, 13, 13], // diagonalisation, A = PDP⁻¹ and powers of A
   svd: [13, 13, 13], // the singular value decomposition and low-rank approximation (Strang)
+  complex: [12, 12, 12], // complex arithmetic, the conjugate and complex roots of real quadratics (H2 Mathematics 9758)
+  polarForm: [12, 12, 12], // the modulus–argument form, re^{iθ}, products as rotations (H2 Mathematics 9758)
+  deMoivre: [13, 13, 13], // De Moivre, n-th roots and loci in the Argand diagram (OpenStax Precalculus; Needham)
   descent: [13, 13, 13], // gradient descent: one step, two steps, what the learning rate does
   backprop: [13, 13, 13], // the chain rule through a computational graph, a squared error, a ReLU
   softmax: [13, 13, 13], // softmax probabilities, the cross-entropy loss and its gradient
