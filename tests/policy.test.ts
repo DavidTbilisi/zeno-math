@@ -33,11 +33,12 @@ test("the adaptive choice reaches every skill, each once what it builds on is ma
     open.forEach((k) => known.add(k));
     rounds.push(open);
   }
-  // The longest chain runs from comparing numbers to eigenvalues, through vectors, matrices and elimination;
-  // backpropagation, on descent, is one round before.
-  assert.equal(rounds.length, 11);
-  assert.deepEqual(rounds.at(-1), ["eigen"]);
-  assert.ok(rounds.at(-2)!.includes("backprop"));
+  // The longest chain runs from comparing numbers to the singular value decomposition, through vectors, matrices,
+  // elimination, eigenvalues and diagonalisation; backpropagation, on descent, is a round before eigenvalues.
+  assert.equal(rounds.length, 15);
+  assert.deepEqual(rounds.at(-1), ["svd"]);
+  assert.deepEqual(rounds.at(-2), ["spectral"]);
+  assert.ok(rounds[9].includes("backprop") && rounds[10].includes("eigen"));
 });
 
 test("skills are tagged with the years of the primary syllabus their levels belong to", () => {
@@ -74,7 +75,7 @@ test("every level has a grade, from grade 1 to university, agreeing with the pri
   assert.deepEqual(CURRICULUM.filter((k) => levels.every((L) => gradeOf(k, L) === null)), ["oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "inversions", "bases", "modular", "triangleInequality", "powerPoint"]);
   assert.deepEqual(CURRICULUM.flatMap((k) => levels.filter((L) => gradeOf(k, L) === null && levels.some((M) => gradeOf(k, M) !== null)).map((L) => `${k}${L}`)), ["rounding3"]);
   for (const g of GRADES) assert.ok(skillsOfGrade(g).length >= 3, `grade ${g}`);
-  assert.deepEqual(skillsOfGrade(13), ["numroots", "numint", "limits", "improper", "intApplications", "taylor", "powerSeries", "convergence", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "correlation", "matrices", "determinant", "elimination", "eigen", "descent", "backprop", "softmax", "overfitting", "precision", "clustering"]);
+  assert.deepEqual(skillsOfGrade(13), ["numroots", "numint", "limits", "improper", "intApplications", "taylor", "powerSeries", "convergence", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "correlation", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "descent", "backprop", "softmax", "overfitting", "precision", "clustering"]);
   assert.deepEqual([gradeOf("quadratic", 1), gradeOf("quadratic", 3), gradeOf("vectors", 1), gradeOf("vectors", 2)], [8, 10, 10, 12]);
 });
 

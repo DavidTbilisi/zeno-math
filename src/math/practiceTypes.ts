@@ -6,6 +6,7 @@ import type { BarModelWords } from "./barProblems";
 import type { RowWords } from "./rowsAndPatterns";
 import type { LogicWords } from "./logicSets";
 import type { CalcTwoWords } from "./calculusTwo";
+import type { LinAlgWords } from "./linearAlgebra";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -35,7 +36,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec" | "nullvec" | "singular"
   | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base" | "lines" | "counter" | "decide" | "elements" | "bits";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
@@ -183,6 +184,8 @@ export type PracticeWords = {
   logic: LogicWords;
   /** Limits, integration techniques and uses, Taylor and power series, convergence tests (src/math/calculusTwo.ts). */
   calc2: CalcTwoWords;
+  /** Subspaces, bases, rank, linear maps, inner products, diagonalisation and the SVD (src/math/linearAlgebra.ts). */
+  linalg: LinAlgWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

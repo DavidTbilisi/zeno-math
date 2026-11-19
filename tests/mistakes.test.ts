@@ -227,6 +227,31 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   ratioOneDecides: ["convergence", [2]],
   conditionalAsAbsolute: ["convergence", [3]],
   alternatingAlwaysConverges: ["convergence", [3]],
+  missesZero: ["subspaces", [1]],
+  notClosed: ["subspaces", [1]],
+  coefficientsSwapped: ["subspaces", [2]],
+  firstTwoRowsOnly: ["subspaces", [2]],
+  countedVectors: ["subspaces", [3]],
+  pairwiseMeansIndependent: ["basis", [1]],
+  coordsStandardBasis: ["basis", [2]],
+  degreeNotDimension: ["basis", [3]],
+  constraintIgnored: ["basis", [3]],
+  rankFromNonzeroRows: ["rankNullity", [1]],
+  nullityFromRows: ["rankNullity", [2]],
+  rowNotNull: ["rankNullity", [3]],
+  affineAsLinear: ["linearMaps", [1]],
+  imagesAsRows: ["linearMaps", [2]],
+  conjugatedWrongWay: ["linearMaps", [3]],
+  standardInnerProduct: ["innerProducts", [1]],
+  dividedByLength: ["innerProducts", [2]],
+  lineThroughTwoPoints: ["innerProducts", [3]],
+  repeatedMeansNot: ["spectral", [1]],
+  countedEigenvalues: ["spectral", [1]],
+  eigenvaluesOutOfOrder: ["spectral", [2]],
+  poweredEntries: ["spectral", [3]],
+  forgotSquareRoot: ["svd", [1, 2]],
+  onlyNextValue: ["svd", [2]],
+  outerProductOrder: ["svd", [3]],
   partForWhole: ["kakooma", [1, 2, 3]],
   usedTwice: ["kakooma", [1, 2, 3]],
   sumNotProduct: ["kakooma", [3]],
@@ -284,7 +309,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

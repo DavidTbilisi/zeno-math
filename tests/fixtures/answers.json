@@ -9377,6 +9377,456 @@
       "label": "wrong",
       "note": "Σ 1/n^(1/3) diverges",
       "mistake": "conditionalAsAbsolute"
+    },
+    {
+      "skill": "subspaces",
+      "level": 1,
+      "seed": 7,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "subspaces",
+      "level": 1,
+      "seed": 7,
+      "input": "yes",
+      "label": "wrong",
+      "note": "(1, 0) is in S but −(1, 0) is not",
+      "mistake": "notClosed"
+    },
+    {
+      "skill": "subspaces",
+      "level": 2,
+      "seed": 7,
+      "input": "(-2; 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "subspaces",
+      "level": 2,
+      "seed": 7,
+      "input": "(-2, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "subspaces",
+      "level": 2,
+      "seed": 7,
+      "input": "(2, -2)",
+      "label": "wrong",
+      "mistake": "coefficientsSwapped"
+    },
+    {
+      "skill": "subspaces",
+      "level": 2,
+      "seed": 7,
+      "input": "(-2; 3)",
+      "label": "wrong"
+    },
+    {
+      "skill": "subspaces",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "subspaces",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "note": "all three are multiples of (1, 0, −1)",
+      "mistake": "countedVectors"
+    },
+    {
+      "skill": "subspaces",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "basis",
+      "level": 1,
+      "seed": 7,
+      "input": "independent",
+      "label": "correct"
+    },
+    {
+      "skill": "basis",
+      "level": 1,
+      "seed": 7,
+      "input": "dependent",
+      "label": "wrong"
+    },
+    {
+      "skill": "basis",
+      "level": 2,
+      "seed": 7,
+      "input": "(0; -2)",
+      "label": "correct"
+    },
+    {
+      "skill": "basis",
+      "level": 2,
+      "seed": 7,
+      "input": "(6, -6)",
+      "label": "wrong",
+      "mistake": "coordsStandardBasis"
+    },
+    {
+      "skill": "basis",
+      "level": 2,
+      "seed": 7,
+      "input": "(-2; 0)",
+      "label": "wrong"
+    },
+    {
+      "skill": "basis",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "basis",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "note": "upper triangular 2 × 2",
+      "mistake": "constraintIgnored"
+    },
+    {
+      "skill": "basis",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "rankFromNonzeroRows"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "nullityFromRows"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 3,
+      "seed": 7,
+      "input": "(1; 1; 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 3,
+      "seed": 7,
+      "input": "(-2; -2; -2)",
+      "label": "correct",
+      "note": "any non-zero multiple"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 3,
+      "seed": 7,
+      "input": "(2, -6, 4)",
+      "label": "wrong",
+      "mistake": "rowNotNull"
+    },
+    {
+      "skill": "rankNullity",
+      "level": 3,
+      "seed": 7,
+      "input": "(1; -1; 1)",
+      "label": "wrong"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 1,
+      "seed": 7,
+      "input": "not linear",
+      "label": "correct"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 1,
+      "seed": 7,
+      "input": "linear",
+      "label": "wrong",
+      "note": "T(0, 0) = (−1, 0)",
+      "mistake": "affineAsLinear"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 2,
+      "seed": 7,
+      "input": "-4, 2; 4, 0",
+      "label": "correct"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 2,
+      "seed": 7,
+      "input": "-4, 4; 2, 0",
+      "label": "wrong",
+      "mistake": "imagesAsRows"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 2,
+      "seed": 7,
+      "input": "4, 2; 4, 0",
+      "label": "wrong"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 3,
+      "seed": 7,
+      "input": "-2, 2; -2, 0",
+      "label": "correct"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 3,
+      "seed": 7,
+      "input": "2, 2; -6, -4",
+      "label": "wrong",
+      "mistake": "conjugatedWrongWay"
+    },
+    {
+      "skill": "linearMaps",
+      "level": 3,
+      "seed": 7,
+      "input": "0, 2; -2, -2",
+      "label": "wrong",
+      "note": "A itself"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 2,
+      "seed": 7,
+      "input": "(-2/9; -5/9; 4/9)",
+      "label": "correct"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 2,
+      "seed": 7,
+      "input": "(-2/3; 1/3; 4/3)",
+      "label": "wrong",
+      "mistake": "dividedByLength"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 2,
+      "seed": 7,
+      "input": "(0; -1; 0)",
+      "label": "wrong",
+      "note": "v₂ itself"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 3,
+      "seed": 7,
+      "input": "(-2; 5/3)",
+      "label": "correct"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 3,
+      "seed": 7,
+      "input": "(-2; 2)",
+      "label": "wrong",
+      "mistake": "lineThroughTwoPoints"
+    },
+    {
+      "skill": "innerProducts",
+      "level": 3,
+      "seed": 7,
+      "input": "(-2; 3)",
+      "label": "wrong"
+    },
+    {
+      "skill": "spectral",
+      "level": 1,
+      "seed": 7,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "spectral",
+      "level": 1,
+      "seed": 7,
+      "input": "yes",
+      "label": "wrong",
+      "note": "λ = 4 twice, one eigenvector",
+      "mistake": "countedEigenvalues"
+    },
+    {
+      "skill": "spectral",
+      "level": 2,
+      "seed": 7,
+      "input": "-3, 0; 0, -6",
+      "label": "correct"
+    },
+    {
+      "skill": "spectral",
+      "level": 2,
+      "seed": 7,
+      "input": "-6, 0; 0, -3",
+      "label": "wrong",
+      "mistake": "eigenvaluesOutOfOrder"
+    },
+    {
+      "skill": "spectral",
+      "level": 3,
+      "seed": 7,
+      "input": "16, 16; -8, -8",
+      "label": "correct"
+    },
+    {
+      "skill": "spectral",
+      "level": 3,
+      "seed": 7,
+      "input": "64, 64; -8, -8",
+      "label": "wrong",
+      "mistake": "poweredEntries"
+    },
+    {
+      "skill": "spectral",
+      "level": 3,
+      "seed": 7,
+      "input": "4, 4; -2, -2",
+      "label": "wrong",
+      "note": "A itself"
+    },
+    {
+      "skill": "svd",
+      "level": 1,
+      "seed": 7,
+      "input": "10; 5",
+      "label": "correct"
+    },
+    {
+      "skill": "svd",
+      "level": 1,
+      "seed": 7,
+      "input": "5; 10",
+      "label": "correct"
+    },
+    {
+      "skill": "svd",
+      "level": 1,
+      "seed": 7,
+      "input": "100; 25",
+      "label": "wrong",
+      "mistake": "forgotSquareRoot"
+    },
+    {
+      "skill": "svd",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "svd",
+      "level": 2,
+      "seed": 7,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "forgotSquareRoot"
+    },
+    {
+      "skill": "svd",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "onlyNextValue"
+    },
+    {
+      "skill": "svd",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "note": "4 + 3"
+    },
+    {
+      "skill": "svd",
+      "level": 3,
+      "seed": 7,
+      "input": "24/5, 18/5; 32/5, 24/5",
+      "label": "correct"
+    },
+    {
+      "skill": "svd",
+      "level": 3,
+      "seed": 7,
+      "input": "4.8, 3.6; 6.4, 4.8",
+      "label": "correct"
+    },
+    {
+      "skill": "svd",
+      "level": 3,
+      "seed": 7,
+      "input": "4.8, 6.4; 3.6, 4.8",
+      "label": "wrong",
+      "mistake": "outerProductOrder"
     }
   ]
 }

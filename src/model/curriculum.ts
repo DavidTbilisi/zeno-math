@@ -11,7 +11,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
-  "projection", "matrices", "determinant", "elimination", "eigen",
+  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
@@ -134,6 +134,13 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   determinant: ["matrices"],
   elimination: ["simultaneous", "determinant"],
   eigen: ["elimination", "quadratic"],
+  subspaces: ["vectors", "elimination"],
+  basis: ["subspaces"],
+  rankNullity: ["basis"],
+  linearMaps: ["matrices", "basis"],
+  innerProducts: ["projection", "basis"],
+  spectral: ["eigen", "linearMaps"],
+  svd: ["spectral", "innerProducts"],
   descent: ["stationary"],
   backprop: ["descent"],
   softmax: ["logs", "probability"],
@@ -301,6 +308,13 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   determinant: [13, 13, 13],
   elimination: [13, 13, 13],
   eigen: [13, 13, 13],
+  subspaces: [13, 13, 13], // subspaces, spans and their dimension (Axler, Strang)
+  basis: [13, 13, 13], // independence, coordinates in a basis, the dimension of a space
+  rankNullity: [13, 13, 13], // rank, nullity and the rank–nullity theorem
+  linearMaps: [13, 13, 13], // linear maps, their matrices and change of basis
+  innerProducts: [13, 13, 13], // inner products, Gram–Schmidt and least squares
+  spectral: [13, 13, 13], // diagonalisation, A = PDP⁻¹ and powers of A
+  svd: [13, 13, 13], // the singular value decomposition and low-rank approximation (Strang)
   descent: [13, 13, 13], // gradient descent: one step, two steps, what the learning rate does
   backprop: [13, 13, 13], // the chain rule through a computational graph, a squared error, a ReLU
   softmax: [13, 13, 13], // softmax probabilities, the cross-entropy loss and its gradient
