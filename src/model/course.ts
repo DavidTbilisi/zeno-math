@@ -32,7 +32,7 @@ export const STAGES: readonly Stage[] = STAGE_IDS.map((id) => ({ id, skills: CUR
 
 /** A level as the map shows it: secure, behind the learner's grade, or still to do. */
 export type LevelState = "secure" | "behind" | "open";
-/** A skill no syllabus here gives a grade (the graph puzzles): on the map, but never the next thing to do. */
+/** A skill no syllabus here gives a grade (the graph puzzles, number bases and congruences): on the map, but never the next thing to do. */
 export const isExtra = (skill: SkillId) => LEVELS.every((L) => gradeOf(skill, L) === null);
 
 export type Standing = {
