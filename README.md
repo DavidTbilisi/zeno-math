@@ -1316,6 +1316,17 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     four values to choose from (the sign wrong, sin and cos swapped, both, each told why). "Why?" steps through the
     mirror, the signs of each quarter, the twin angles and the reference angle with pictures. Four discoveries (every
     angle, each value twice, past 90° without measuring, ten in a row)
+  - *Tile it: tessellations and tangrams*: which shapes cover a floor with no gaps and no overlaps. Easy puts copies
+    of one regular polygon round a point, one at a time, the angles adding up as they go (a gap shown orange, an
+    overlap red), and asks whether it tiles: only when its angle goes into 360° exactly, so only triangles, squares
+    and hexagons. Medium fills the gap round a point where polygons already meet from a palette (triangle, square,
+    hexagon, octagon, twelve-gon) until the angles make 360° exactly; one that would go past it is drawn red and costs
+    a star. Hard is the tangram: drag the pieces from the tray onto a grey outline, turn them a quarter or flip them
+    (arrow keys, R and F work too), made when the pieces cover it exactly, parts covered twice shown red; the ladder
+    goes from two small triangles to all seven pieces in their square, and the endless run lays 3 to 5 pieces at
+    random. Each piece and outline is a set of quarter cells (grid squares cut by their diagonals), so the check is
+    exact. "Why?" steps through the full turn, the angle of a regular polygon, mixed points and area with pictures.
+    Four discoveries (only three tile alone, a full turn at every point, area kept by moving, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four

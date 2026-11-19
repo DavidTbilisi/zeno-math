@@ -8,6 +8,7 @@
 // the locales along with the names in the panel.
 
 import type { LiveKind } from "./live";
+import { cornersOf, polygonAt, SQUARE_SOLUTION } from "./tessellate";
 
 export type Pt = readonly [number, number];
 type Style = { color?: string; width?: number; dashed?: boolean; fill?: string };
@@ -1116,6 +1117,15 @@ function circleDiscoverPreview(): Piece[] {
   ];
 }
 
+function tessellatePreview(): Piece[] {
+  // Three hexagons round a point, angles 120° each, and the tangram's seven pieces in their square beside them.
+  const [cx, cy, side] = [70, 92, 34];
+  const hexes = [0, 120, 240].map((from, i) => poly(polygonAt(6, from, side).map(([x, y]): Pt => [cx + x, cy - y]), { fill: i === 1 ? FILL.blue : "#d0ebff", color: BLUE, width: 1.5 }));
+  const u = 20;
+  const pieces = SQUARE_SOLUTION.map((p, i) => poly(cornersOf(p).map(([x, y]): Pt => [150 + x * u, 52 + y * u]), { fill: [FILL.blue, FILL.violet, FILL.green, FILL.pink, FILL.yellow, FILL.red, FILL.yellow][i], width: 1 }));
+  return [...hexes, dot([cx, cy], 3), ...pieces];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -2013,6 +2023,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
   { id: "livePythDiscover", build: pythDiscoverPreview, live: "pythDiscover" },
   { id: "liveCircleDiscover", build: circleDiscoverPreview, live: "circleDiscover" },
+  { id: "liveTessellate", build: tessellatePreview, live: "tessellate" },
   { id: "liveOneStroke", build: oneStrokePreview, live: "oneStroke" },
   { id: "liveColourMap", build: colourMapPreview, live: "colourMap" },
   { id: "liveShortestPath", build: shortestPathPreview, live: "shortestPath" },

@@ -273,6 +273,7 @@ export const MENUS: MenuGroup[] = [
           { live: "trigDiscover", icon: "🔍" },
           { live: "pythDiscover", icon: "⊿" },
           { live: "circleDiscover", icon: "◕" },
+          { live: "tessellate", icon: "⬡" },
           { live: "views3d", icon: "🧊" },
           { live: "cubeNet", icon: "🎲" },
         ],
