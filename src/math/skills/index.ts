@@ -113,6 +113,13 @@ import overfitting from "./overfitting";
 import precision from "./precision";
 import clustering from "./clustering";
 import proofs from "./proofs";
+import logic from "./logic";
+import quantifiers from "./quantifiers";
+import sets from "./sets";
+import mappings from "./mappings";
+import relations from "./relations";
+import induction from "./induction";
+import cardinality from "./cardinality";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -225,4 +232,11 @@ export const GENS: Record<SkillId, Gen> = {
   precision,
   clustering,
   proofs,
+  logic,
+  quantifiers,
+  sets,
+  mappings,
+  relations,
+  induction,
+  cardinality,
 };

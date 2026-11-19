@@ -22,6 +22,7 @@ import {
   type FlawId,
   type ProofId,
   type ProofWords,
+  type ReasonKey,
 } from "../proofs";
 
 type Rng = Parameters<Gen>[0];
@@ -36,7 +37,7 @@ const shuffled = <T>(r: Rng, xs: readonly T[]) => {
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /** The lines of a proof, each with its letter or number in front; one line may be marked. */
-function linesPic(claim: string, tags: string[], lines: string[], marked = -1): Exercise["pic"] {
+export function linesPic(claim: string, tags: string[], lines: string[], marked = -1): Exercise["pic"] {
   const H = 24;
   const rows = lines
     .map((l, i) => {
@@ -48,21 +49,19 @@ function linesPic(claim: string, tags: string[], lines: string[], marked = -1): 
   const svg = `<text x="6" y="12" font-size="13" font-style="italic" fill="#495057">${esc(claim)}</text>${rows}`;
   return { svg: (x: number, y: number) => `<g transform="translate(${x} ${y})">${svg}</g>`, h: 34 + lines.length * H, w: 600 };
 }
-const numbers = (n: number) => Array.from({ length: n }, (_, i) => `${i + 1}.`);
+export const numbers = (n: number) => Array.from({ length: n }, (_, i) => `${i + 1}.`);
 
 /** A proof's lines and the line that doesn't follow, shuffled and lettered; the right order, and the order with the look-alike in. */
-export function orderPart(id: ProofId, r: Rng, W: ProofWords): Part {
-  const p = W.proofs[id];
+export function orderLines(p: { claim: string; lines: string[]; wrong: string }, mimics: number, r: Rng): Part & { answer: { k: "lines" } } {
   const n = p.lines.length;
   // Places 0..n−1 are the proof's lines in order; n is the look-alike.
   const shown = shuffled(r, Array.from({ length: n + 1 }, (_, i) => i));
   const at = (k: number) => shown.indexOf(k);
   const seq = Array.from({ length: n }, (_, k) => at(k));
-  const mimics = PROOFS[id].mimics;
   const slip = seq.map((v, k) => (k === mimics ? at(n) : v));
   const traps: Trap[] = [{ id: "lookAlikeLine", a: { k: "lines", count: n + 1, seq: slip }, vars: { x: LINE_LETTERS[at(n)], y: LINE_LETTERS[at(mimics)] } }];
   return {
-    prompt: fill(W.prompt.order, { claim: p.claim }),
+    prompt: "",
     q: "",
     pic: linesPic(p.claim, shown.map((_, i) => `${LINE_LETTERS[i]}`), shown.map((k) => (k === n ? p.wrong : p.lines[k]))),
     answer: { k: "lines", count: n + 1, seq, traps },
@@ -72,43 +71,46 @@ export function orderPart(id: ProofId, r: Rng, W: ProofWords): Part {
     steps: [seq.map((i) => `\\text{${LINE_LETTERS[i]}}`).join(" \\to ")],
   };
 }
+export const orderPart = (id: ProofId, r: Rng, W: ProofWords): Part => ({ ...orderLines(W.proofs[id], PROOFS[id].mimics, r), prompt: fill(W.prompt.order, { claim: W.proofs[id].claim }) });
 
-/** Why a marked line of a proof follows: the right reason and three others to choose from. */
-export function reasonPart(id: ProofId, r: Rng, W: ProofWords): Part {
-  const p = W.proofs[id];
+/** Why a marked line of a proof follows: the right reason and three others from `keys` to choose from. */
+export function reasonLines(p: { claim: string; lines: string[] }, reasons: readonly ReasonKey[], keys: readonly ReasonKey[], r: Rng, W: ProofWords): Part {
   const m = Math.floor(r.next() * p.lines.length);
-  const right = PROOFS[id].reasons[m];
-  const keys = shuffled(r, [right, ...shuffled(r, REASON_KEYS.filter((k) => k !== right)).slice(0, 3)]);
-  const options = keys.map((k) => ({ text: W.reasons[k], plain: W.reasons[k], tex: `\\text{${W.reasons[k]}}` }));
+  const right = reasons[m];
+  const others = shuffled(r, keys.filter((k) => k !== right)).slice(0, 3);
+  const opts = shuffled(r, [right, ...others]);
+  const options = opts.map((k) => ({ text: W.reasons[k], plain: W.reasons[k], tex: `\\text{${W.reasons[k]}}` }));
   return {
     prompt: fill(W.prompt.reason, { m: m + 1 }),
     q: "",
     pic: linesPic(p.claim, numbers(p.lines.length), p.lines, m),
-    answer: { k: "pick", options, right: keys.indexOf(right) },
+    answer: { k: "pick", options, right: opts.indexOf(right) },
     show: `\\text{${W.reasons[right]}}`,
     plain: W.reasons[right],
     format: "pick",
     steps: [`${m + 1}:\\ \\text{${W.reasons[right]}}`],
   };
 }
+export const reasonPart = (id: ProofId, r: Rng, W: ProofWords): Part => reasonLines(W.proofs[id], PROOFS[id].reasons, REASON_KEYS, r, W);
 
-/** The first wrong line of a faulty proof; a later line, wrong only because of it, is the slip. */
-export function flawPart(id: FlawId, W: ProofWords): Part {
-  const f = FLAWS[id];
-  const lines = W.flaws[id].lines;
-  const options = lines.map((_, i) => ({ text: `${i + 1}`, plain: `${i + 1}`, tex: `${i + 1}` }));
-  const traps: Trap[] = f.later === null ? [] : [{ id: "laterLine", a: { k: "pick", options, right: f.later }, vars: { x: f.later + 1, v: f.first + 1 } }];
+/** The first wrong line of a faulty proof; a later line, wrong only because of it, is the slip, and so is a right line taken for it. */
+export function flawLines(p: { claim: string; lines: string[] }, f: { first: number; later: number | null; sound?: number | null }, tex: string, W: ProofWords): Part {
+  const options = p.lines.map((_, i) => ({ text: `${i + 1}`, plain: `${i + 1}`, tex: `${i + 1}` }));
+  const traps: Trap[] = [];
+  if (f.later !== null) traps.push({ id: "laterLine", a: { k: "pick", options, right: f.later }, vars: { x: f.later + 1, v: f.first + 1 } });
+  if (f.sound !== undefined && f.sound !== null) traps.push({ id: "missingBase", a: { k: "pick", options, right: f.sound }, vars: { x: f.sound + 1 } });
   return {
-    prompt: fill(W.prompt.flaw, { claim: W.flaws[id].claim }),
+    prompt: fill(W.prompt.flaw, { claim: p.claim }),
     q: "",
-    pic: linesPic(W.flaws[id].claim, numbers(lines.length), lines),
+    pic: linesPic(p.claim, numbers(p.lines.length), p.lines),
     answer: { k: "pick", options, right: f.first, traps },
     show: `${f.first + 1}`,
     plain: `${f.first + 1}`,
     format: "pick",
-    steps: [`${f.first + 1}:\\ ${FLAW_TEX[id]}`],
+    steps: [`${f.first + 1}:\\ ${tex}`],
   };
 }
+export const flawPart = (id: FlawId, W: ProofWords): Part => flawLines(W.flaws[id], FLAWS[id], FLAW_TEX[id], W);
 
 /** A counterexample to a false claim, any that breaks it. */
 export function counterPart(id: ClaimId, W: ProofWords): Part {

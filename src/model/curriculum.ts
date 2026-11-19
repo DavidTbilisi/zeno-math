@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "ci", "proofs",
+  "stationary", "integrate", "definite", "numroots", "numint", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -110,6 +110,13 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   ci: ["average"],
   expectation: ["probability", "average"],
   proofs: ["parity", "primes", "expand"],
+  logic: ["proofs"],
+  quantifiers: ["logic"],
+  sets: ["logic"],
+  mappings: ["sets", "functions"],
+  relations: ["sets", "modular"],
+  induction: ["proofs", "series"],
+  cardinality: ["mappings"],
   conditional: ["probability"],
   distributions: ["expectation", "counting"],
   correlation: ["expectation"],
@@ -262,6 +269,13 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   ci: [13, 13, 13],
   expectation: [12, 12, 12], // discrete random variables, E(X) and Var(X) (H2)
   proofs: [13, 13, 13], // ordering a proof and its reasons, a faulty proof, counterexamples (Velleman, Hammack)
+  logic: [13, 13, 13], // truth values, truth tables, contrapositive and De Morgan (Velleman, Hammack)
+  quantifiers: [13, 13, 13], // for all and there is on a small set, negations, the order of quantifiers and ε–δ
+  sets: [13, 13, 13], // a Venn diagram read, |A ∪ B|, |A × B|, |P(A)|, three sets (Halmos, Hammack)
+  mappings: [13, 13, 13], // injective, surjective, bijective; composition and inverse
+  relations: [13, 13, 13], // reflexive, symmetric, transitive; equivalence classes; a partial order's extremes
+  induction: [13, 13, 13], // ordering an induction proof and its reasons, a faulty induction
+  cardinality: [13, 13, 13], // countable or not, listing ℤ and ℕ × ℕ, Cantor's diagonal
   conditional: [12, 12, 12], // conditional probability (H2)
   distributions: [12, 12, 12], // the binomial and normal distributions (H2)
   correlation: [12, 12, 13], // the product-moment correlation coefficient (H2); covariance from a joint distribution is past it

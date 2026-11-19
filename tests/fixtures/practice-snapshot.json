@@ -108,5 +108,12 @@
   "overfitting": "af8781d8845ee65f",
   "precision": "84a90aa2ff332f5a",
   "clustering": "9372ebb860d24490",
-  "proofs": "94856b04f45f660e"
+  "proofs": "94856b04f45f660e",
+  "logic": "2c6d44dd9aac5e3f",
+  "quantifiers": "ba8a0c4f10674c85",
+  "sets": "aacff6ec328c7b5e",
+  "mappings": "b5e6b52a5cf06693",
+  "relations": "f73be763c633075b",
+  "induction": "20eaad7561f4aa02",
+  "cardinality": "e06348729a46e5e8"
 }

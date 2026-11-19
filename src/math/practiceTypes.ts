@@ -4,6 +4,7 @@
 import type { ArcWords } from "./arcs";
 import type { BarModelWords } from "./barProblems";
 import type { RowWords } from "./rowsAndPatterns";
+import type { LogicWords } from "./logicSets";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -34,7 +35,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
-  | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base" | "lines" | "counter" | "decide";
+  | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base" | "lines" | "counter" | "decide" | "elements" | "bits";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
 export type MeasurePair = { big: MeasureUnit; small: MeasureUnit; f: number };
@@ -55,7 +56,9 @@ export type Answer = (
   /** std: the answer is asked for in standard form, a × 10ⁿ; form: as an improper fraction or a mixed number. */
   /** `units`: unit signs the answer may end in ("5.64 m"); they are taken off before it is read. */
   | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed"; units?: readonly string[] }
-  | { k: "set"; vs: number[]; tol: number }
+  /** `listed`: the elements of a set are listed, so how many there are is part of the answer, not told: a list of the
+   *  wrong length is wrong (and may be a named slip), not sent back. */
+  | { k: "set"; vs: number[]; tol: number; listed?: boolean }
   /** Values in order; they may be typed named ("y = 3; x = 2"), by `names` (x, y, z when not given). */
   | { k: "tuple"; vs: number[]; tol: number; names?: string[] }
   /** A matrix, row by row. */
@@ -175,6 +178,8 @@ export type PracticeWords = {
   rows: RowWords;
   /** Proofs: their lines, reasons, faulty proofs and claims (src/math/proofs.ts). */
   proofs: ProofWords;
+  /** Logic, quantifiers, sets, functions, relations and countability: prompts and words (src/math/logicSets.ts). */
+  logic: LogicWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
