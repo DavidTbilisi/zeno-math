@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -67,6 +67,8 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   inequalities: ["linear", "integers"],
   expand: ["linear"],
   factor: ["expand"],
+  algFractions: ["factor"],
+  formulae: ["linear"],
   line: ["linear"],
   distance: ["line"],
   righttri: ["fractions"],
@@ -213,6 +215,8 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   inequalities: [8, 8, 10], // ax + b < c (Sec 2); simultaneous inequalities (Sec 3/4)
   expand: [8, 8, 8],
   factor: [8, 8, 8],
+  algFractions: [8, 8, 8], // simplify, then + − × ÷ over linear and over quadratic bottoms (Sec 2)
+  formulae: [8, 8, 8], // substitute; change the subject in one or two steps, squared or rooted, or twice (Sec 2)
   quadratic: [8, 8, 10], // by factorisation (Sec 2); by the formula (Sec 3/4)
   simultaneous: [8, 8, 8],
   practicalTrig: [8, 8, 8],

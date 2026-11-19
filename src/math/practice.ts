@@ -7,7 +7,8 @@ import { antiderivative } from "./applied";
 import { C, esc, fill, FONT, r2, W, wrap } from "./chart";
 import { derive } from "./derive";
 import { circleFigure, solidFigure } from "./euclid";
-import { evalE, exprMessages, fromPoly, parseE, simp, sqrtSplit, tex, toPoly, type E } from "./expr";
+import { evalE, exprMessages, fromPoly, parseE, pdeg, pow, simp, sqrtSplit, tex, toPoly, type E } from "./expr";
+import { formulaQuestion, fractionQuestion } from "./formulae";
 import { Frac } from "./fraction";
 import { normCdf, normSf, tUpper, zUpper, type Alt, type InfSpec } from "./inference";
 import { covariance } from "./randvar";
@@ -69,7 +70,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
-  | "clock" | "duration" | "measure";
+  | "clock" | "duration" | "measure" | "algFraction" | "formula";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
 export type MeasurePair = { big: MeasureUnit; small: MeasureUnit; f: number };
@@ -92,7 +93,9 @@ type Answer = (
   | { k: "matrix"; rows: number[][]; tol: number }
   /** A direction: any non-zero multiple of vs (an eigenvector). */
   | { k: "dir"; vs: number[] }
-  | { k: "expr"; e: E; mode?: "factor" | "expand" | "plusC" | "line" }
+  /** `vars`: letters besides x the answer is in (a formula's subject); they are tried at positive values.
+   *  `fraction`: one fraction, cut down (no factor common to the top and the bottom). */
+  | { k: "expr"; e: E; mode?: "factor" | "expand" | "plusC" | "line" | "fraction"; vars?: readonly string[] }
   | { k: "primes"; n: number }
   /** x between lo and hi; a missing end is unbounded. */
   | { k: "ineq"; lo: Bound | null; hi: Bound | null }
@@ -186,6 +189,8 @@ export type PracticeWords = {
   /** Arcs, sectors and radians: the prompt of each kind of question (src/math/arcs.ts). */
   arcs: ArcWords;
   proportion: ProportionWords;
+  /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
+  formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
   onlyX: string;
   tooBig: string;
@@ -484,6 +489,7 @@ export type PracticeWords = {
     empty: string;
     unreadable: string;
     notLowest: string;
+    notOneFraction: string;
     notImproper: string;
     notMixed: string;
     notSimplified: string;
@@ -2026,6 +2032,40 @@ const GENS: Record<SkillId, Gen> = {
     }
     const ex = polyStr(cs);
     return { prompt: w.prompts.factor, q: T(ex), answer: { k: "expr", e: parseE(ex), mode: "factor" }, show: T(fac), plain: fac, format: "factors", solution: { kind: "algebra", spec: { topic: "factor", eq: ex, method: "factor" } } };
+  },
+
+  algFractions(r, L, w) {
+    // Simplify by factorising (easy); add, subtract, multiply and divide over linear bottoms (medium) and over
+    // quadratic ones that are factorised first (hard), as one fraction cut down (src/math/formulae.ts).
+    const q = fractionQuestion(r.next, L);
+    const simplify = ["monomial", "termsCancel", "bracket", "diffSquares", "quadQuad"].includes(q.kind);
+    return {
+      prompt: simplify ? w.formulae.simplify : w.formulae.single,
+      q: q.q,
+      answer: { k: "expr", e: parseE(q.ans), mode: "fraction", traps: q.traps.map((t) => ({ id: t.id, a: { k: "expr", e: parseE(t.e) }, vars: t.vars })) },
+      show: q.show,
+      plain: q.ans,
+      format: "algFraction",
+      steps: q.steps,
+    };
+  },
+
+  formulae(r, L, w) {
+    // Substitute into a formula, or make a letter its subject: one step (easy), two (medium), a squared or rooted
+    // subject or one that appears twice (hard) (src/math/formulae.ts).
+    const q = formulaQuestion(r.next, L);
+    if (q.kind === "substitute")
+      return { prompt: fill(w.formulae.substitute, q.vars), q: q.q, answer: num(q.v!), show: `${q.vars.s} = ${q.show}`, plain: q.ans, format: "number", steps: q.steps };
+    const vars = q.letters.filter((l) => l !== q.vars.s);
+    return {
+      prompt: fill(w.formulae.subject, q.vars),
+      q: q.q,
+      answer: { k: "expr", e: parseE(q.ans, vars), vars, traps: q.traps.map((t) => ({ id: t.id, a: { k: "expr", e: parseE(t.e, vars), vars }, vars: t.vars })) },
+      show: q.show,
+      plain: q.ans,
+      format: "formula",
+      steps: q.steps,
+    };
   },
 
   quadratic(r, L, w) {
@@ -5356,6 +5396,62 @@ export function exercise(skill: SkillId, level: Level, seed: number, w: Practice
 export type Verdict = { ok: boolean; why?: string; close?: boolean; mistake?: MistakeId; hint?: string };
 
 const SAMPLES = [-2.71, -1.33, -0.62, 0.37, 0.91, 1.73, 2.29, 3.11, 0.17, 1.19, 2.63, -0.23, 4.37, 5.71, 7.13, -4.61];
+/** Positive values for a formula's letters (lengths, masses, times): each letter gets a different one at each sample. */
+const POSITIVE = [1.37, 2.91, 0.73, 4.19, 1.83, 3.47, 0.59, 2.23, 5.11, 1.09, 3.89, 2.57, 0.97, 4.73, 1.61, 3.17];
+
+/** An expression's values at the samples: x alone takes SAMPLES; with other letters, all of them take POSITIVE. */
+function valuesOf(e: E, vars?: readonly string[]): number[] {
+  if (!vars?.length) return SAMPLES.map((x) => evalE(e, x));
+  return POSITIVE.map((_, i) => {
+    const at = (j: number) => POSITIVE[(i + 5 * j + j * j) % POSITIVE.length];
+    const env = Object.fromEntries(vars.map((v, j) => [v, at(j)]));
+    return evalE(e, env.x ?? at(vars.length), env);
+  });
+}
+
+/** A factor that is a bottom: something to a negative power. */
+const isDen = (f: E): f is Extract<E, { k: "pow" }> => f.k === "pow" && f.e.k === "num" && f.e.v.isNeg();
+const hasDen = (e: E): boolean => (e.k === "add" ? e.ts.some(hasDen) : e.k === "mul" ? e.fs.some(hasDen) : e.k === "pow" ? (e.e.k === "num" && e.e.v.isNeg()) || hasDen(e.b) : false);
+/** The top and the bottom of a fraction, as lists of factors. */
+function topBottom(e: E): { top: E[]; bottom: E[] } {
+  const fs = factorsOf(e);
+  return {
+    top: fs.filter((f) => !isDen(f)),
+    bottom: fs.filter(isDen).map((f) => (f.e.k === "num" && f.e.v.n === -1 && f.e.v.d === 1 ? f.b : pow(f.b, f.e.k === "num" ? { k: "num", v: f.e.v.neg() } : f.e))),
+  };
+}
+/** One fraction: no fraction inside its top or its bottom (a/(x + 1) + b/(x + 2) is two). */
+function oneFraction(e: E): boolean {
+  const { top, bottom } = topBottom(e);
+  return ![...top, ...bottom].some(hasDen);
+}
+/** The remainder of a ÷ b, for polynomials with exact coefficients (lowest power first). */
+function polyMod(a: Frac[], b: Frac[]): Frac[] {
+  const db = pdeg(b);
+  let r = a.slice(0, pdeg(a) + 1);
+  while (r.length > db && !(r.length === 1 && r[0].isZero())) {
+    const dr = r.length - 1;
+    const k = r[dr].div(b[db]);
+    for (let i = 0; i <= db; i++) r[dr - db + i] = r[dr - db + i].sub(k.mul(b[i]));
+    r = r.slice(0, dr);
+    while (r.length > 1 && r[r.length - 1].isZero()) r.pop();
+    if (!r.length) r = [new Frac(0)];
+  }
+  return r;
+}
+/** Cut down: the top and the bottom share no factor, neither an (x + a) nor a whole number. */
+function lowestTerms(e: E): boolean {
+  const { top, bottom } = topBottom(e);
+  const P = toPoly(top.length ? { k: "mul", fs: top } : { k: "num", v: new Frac(1) });
+  const Q = toPoly(bottom.length ? { k: "mul", fs: bottom } : { k: "num", v: new Frac(1) });
+  if (!P || !Q) return true;
+  let [p, q] = [P, Q];
+  while (!(pdeg(q) === 0 && q[0].isZero())) [p, q] = [q, polyMod(p, q)];
+  if (pdeg(p) > 0) return false;
+  const whole = [...P, ...Q].every((c) => c.isInt());
+  const content = (cs: Frac[]) => cs.reduce((g, c) => gcd(g, c.n), 0);
+  return !whole || gcd(content(P), content(Q)) <= 1;
+}
 
 /** "x = 2", "θ = 35°", "25%", "$4.05" → the bare value. */
 const bare = (s: string) => s.trim().replace(/^[a-zA-Zθ]\w*\s*=\s*/, "").replace(/[%°$₾₽]/g, "").trim();
@@ -5527,7 +5623,7 @@ export function ineqPlain(lo: Bound | null, hi: Bound | null, v = "x"): string {
 }
 
 /** Negating an expression, for the sign trap. */
-const negE = (e: E): E => parseE(`-(${plainE(e)})`);
+const negE = (e: E, vars: readonly string[] = []): E => parseE(`-(${plainE(e)})`, vars);
 /** The question's traps, then "right size, wrong sign" unless the answer is 0 or one of them is already that. */
 function trapsOf(a: Answer): Trap[] {
   const own = a.traps ?? [];
@@ -5539,8 +5635,8 @@ function trapsOf(a: Answer): Trap[] {
       return same ? null : { k: "set", vs: neg, tol: a.tol };
     }
     if (a.k === "expr") {
-      if (SAMPLES.every((x) => Math.abs(evalE(a.e, x)) < 1e-9 || !Number.isFinite(evalE(a.e, x)))) return null;
-      return { k: "expr", e: negE(a.e), mode: a.mode === "plusC" ? "plusC" : undefined };
+      if (valuesOf(a.e, a.vars).every((v) => Math.abs(v) < 1e-9 || !Number.isFinite(v))) return null;
+      return { k: "expr", e: negE(a.e, a.vars), mode: a.mode === "plusC" ? "plusC" : undefined, vars: a.vars };
     }
     return null;
   })();
@@ -5629,12 +5725,12 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         let t = src.replace(/[′']/g, "");
         if (t.includes("=")) t = t.slice(t.lastIndexOf("=") + 1);
         if (a.mode === "plusC") t = t.replace(/\+\s*[cC]\s*$/, "").replace(/^\s*[cC]\s*\+/, "");
-        const e = parseE(t);
+        const e = parseE(t, a.vars ?? []);
         let diff0: number | null = null;
         let compared = 0;
-        for (const x of SAMPLES) {
-          const u = evalE(e, x);
-          const v = evalE(a.e, x);
+        const [us, vs] = [valuesOf(e, a.vars), valuesOf(a.e, a.vars)];
+        for (let i = 0; i < us.length; i++) {
+          const [u, v] = [us[i], vs[i]];
           if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
           compared++;
           if (a.mode === "plusC") {
@@ -5645,6 +5741,8 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         if (compared < 4) return { ok: false, why: fill(w.reasons.unreadable, { s: src }) };
         if (a.mode === "factor" && !factored(e)) return { ok: false, close: true, why: w.reasons.notFactored };
         if (a.mode === "expand" && !expanded(e)) return { ok: false, close: true, why: w.reasons.notExpanded };
+        if (a.mode === "fraction" && !oneFraction(e)) return { ok: false, close: true, why: w.reasons.notOneFraction };
+        if (a.mode === "fraction" && !lowestTerms(e)) return { ok: false, close: true, why: w.reasons.notLowest };
         return { ok: true };
       }
       case "primes": {

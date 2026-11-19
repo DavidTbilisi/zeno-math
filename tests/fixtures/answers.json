@@ -4834,6 +4834,354 @@
       "mistake": "powerIgnored"
     },
     {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 7,
+      "input": "x^2/7",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 7,
+      "input": "(1/7)x^2",
+      "label": "correct",
+      "note": "a fraction in front"
+    },
+    {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 7,
+      "input": "4x^2/28",
+      "label": "form",
+      "note": "the 4 not cancelled"
+    },
+    {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 7,
+      "input": "x^3/7",
+      "label": "wrong",
+      "note": "the x not cancelled from the power"
+    },
+    {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 4,
+      "input": "(x+3)/(x-4)",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 4,
+      "input": "(x - 3)(x + 3)/((x - 3)(x - 4))",
+      "label": "form",
+      "note": "factorised but (x − 3) not cancelled"
+    },
+    {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 4,
+      "input": "-9/(-7x+12)",
+      "label": "wrong",
+      "note": "the x² terms cancelled",
+      "mistake": "cancelTerms"
+    },
+    {
+      "skill": "algFractions",
+      "level": 1,
+      "seed": 4,
+      "input": "(x-3)/(x-4)",
+      "label": "wrong",
+      "note": "the wrong bracket kept"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 7,
+      "input": "(7x+17)/((x+3)(x-1))",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 7,
+      "input": "(7x + 17)/(x^2 + 2x - 3)",
+      "label": "correct",
+      "note": "the bottom multiplied out"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 7,
+      "input": "7/(2x+2)",
+      "label": "wrong",
+      "note": "tops and bottoms added",
+      "mistake": "addTopsBottoms"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 7,
+      "input": "1/(x+3) + 6/(x-1)",
+      "label": "form",
+      "note": "the question copied: still two fractions"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 7,
+      "input": "(7x+3)/((x+3)(x-1))",
+      "label": "wrong",
+      "note": "6 × 3 + 1 × (−1) slipped"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 12,
+      "input": "-(3x+29)/((x+6)(x-5))",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 12,
+      "input": "(3x+29)/((x+6)(x-5))",
+      "label": "wrong",
+      "note": "the sign of the top lost",
+      "mistake": "sign"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 12,
+      "input": "-3/11",
+      "label": "wrong",
+      "note": "tops and bottoms subtracted",
+      "mistake": "addTopsBottoms"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 7,
+      "input": "(4x+5)/((x-1)(x+1))",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 7,
+      "input": "(4x+5)/(x^2-1)",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 7,
+      "input": "13/(x^2+x)",
+      "label": "wrong",
+      "note": "tops and bottoms added",
+      "mistake": "addTopsBottoms"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 1,
+      "input": "(x+6)/(x-1)",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 1,
+      "input": "(5x-6)/(-2x+1)",
+      "label": "wrong",
+      "note": "the x² terms cancelled",
+      "mistake": "cancelTerms"
+    },
+    {
+      "skill": "formulae",
+      "level": 1,
+      "seed": 7,
+      "input": "69",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 1,
+      "seed": 7,
+      "input": "v = 69",
+      "label": "correct",
+      "note": "with the letter"
+    },
+    {
+      "skill": "formulae",
+      "level": 1,
+      "seed": 7,
+      "input": "189",
+      "label": "wrong",
+      "note": "u + a taken before × t"
+    },
+    {
+      "skill": "formulae",
+      "level": 1,
+      "seed": 2,
+      "input": "V/I",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 1,
+      "seed": 2,
+      "input": "R = V/I",
+      "label": "correct",
+      "note": "with the letter"
+    },
+    {
+      "skill": "formulae",
+      "level": 1,
+      "seed": 2,
+      "input": "VI",
+      "label": "wrong",
+      "note": "multiplied instead of divided"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 7,
+      "input": "(v-u)/a",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 7,
+      "input": "t = v/a - u/a",
+      "label": "correct",
+      "note": "split into two fractions"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 7,
+      "input": "v/a - u",
+      "label": "wrong",
+      "note": "÷ a before − u",
+      "mistake": "subjectOrder"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 7,
+      "input": "(u-v)/a",
+      "label": "wrong",
+      "note": "the subtraction the wrong way round",
+      "mistake": "sign"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 1,
+      "input": "5(F-32)/9",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 1,
+      "input": "5/9(F - 32)",
+      "label": "correct",
+      "note": "the fraction in front"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 1,
+      "input": "5F/9 - 32",
+      "label": "wrong",
+      "note": "× 5/9 before − 32",
+      "mistake": "subjectOrder"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 1,
+      "input": "9(F-32)/5",
+      "label": "wrong",
+      "note": "9/5 not turned over"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 7,
+      "input": "sqrt(2K/m)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 7,
+      "input": "√(2K/m)",
+      "label": "correct",
+      "note": "with the root sign"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 7,
+      "input": "2K/m",
+      "label": "wrong",
+      "note": "v² given for v",
+      "mistake": "powerNotUndone"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 7,
+      "input": "sqrt(K/(2m))",
+      "label": "wrong",
+      "note": "the ½ divided instead of multiplied"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 1,
+      "input": "sqrt(c^2-b^2)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 1,
+      "input": "c - b",
+      "label": "wrong",
+      "note": "the root taken term by term"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 2,
+      "input": "c/(h-k)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 2,
+      "input": "-c/(k-h)",
+      "label": "correct",
+      "note": "top and bottom both negated"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 2,
+      "input": "c/h - k",
+      "label": "wrong",
+      "note": "brackets left off the bottom"
+    },
+    {
       "skill": "graphStory",
       "level": 1,
       "seed": 7,
