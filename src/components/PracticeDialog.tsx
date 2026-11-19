@@ -25,6 +25,7 @@ import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
+import { LINE_LETTERS } from "../math/proofs";
 import { WorkInSteps } from "./WorkInSteps";
 import { ScratchPad } from "./ScratchPad";
 import { BreakPrompt, ComingBack, SessionRing, SessionSummary, type SessionResult } from "./PracticeSession";
@@ -863,6 +864,29 @@ export function PracticeDialog(props: Props) {
                   onChange={(s) => {
                     setInput(s);
                     setVerdict(null);
+                  }}
+                />
+              )}
+              {cur.ex.answer.k === "lines" && !done && (
+                <ListPicks
+                  items={LINE_LETTERS.slice(0, cur.ex.answer.count)}
+                  typed={input}
+                  onChange={(s) => {
+                    setInput(s);
+                    setVerdict(null);
+                  }}
+                />
+              )}
+              {cur.ex.answer.k === "decide" && !done && (
+                <ChoicePicks
+                  choices={[
+                    { label: w.proofs.true, value: w.proofs.true },
+                    { label: w.proofs.false, value: `${w.proofs.false}: ` },
+                  ]}
+                  onPick={(s) => {
+                    setInput(s);
+                    setVerdict(null);
+                    inputRef.current?.focus();
                   }}
                 />
               )}

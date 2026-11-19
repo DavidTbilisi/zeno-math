@@ -4,6 +4,7 @@
 import type { ArcWords } from "./arcs";
 import type { BarModelWords } from "./barProblems";
 import type { RowWords } from "./rowsAndPatterns";
+import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
 import type { PinPlay } from "./estimate";
@@ -33,7 +34,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
-  | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base";
+  | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base" | "lines" | "counter" | "decide";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
 export type MeasurePair = { big: MeasureUnit; small: MeasureUnit; f: number };
@@ -100,6 +101,12 @@ export type Answer = (
    * (2 m 35 cm). `typed`: how a trap's answer is typed.
    */
   | ({ k: "meas"; v: number; whole?: boolean; typed?: string } & MeasurePair)
+  /** A proof's lines put in order, typed as their letters ("C, A, D"); `count` lines are shown, those not in `seq` don't belong. */
+  | { k: "lines"; count: number; seq: number[] }
+  /** An object that breaks a claim (src/math/proofs.ts), tested by the claim's own rule. */
+  | { k: "counter"; claim: ClaimId }
+  /** A claim decided true or false; when false, with a counterexample after it ("false: 40"). */
+  | { k: "decide"; claim: ClaimId; truth: boolean }
 ) & { traps?: Trap[] };
 
 /** What a question answered by doing rather than typing shows: a dot grid to make a shape on, a line to put a pin on. */
@@ -166,6 +173,8 @@ export type PracticeWords = {
   barModels: BarModelWords;
   /** Ordinal numbers and repeating patterns: shapes, colours, ordinals, prompts (src/math/rowsAndPatterns.ts). */
   rows: RowWords;
+  /** Proofs: their lines, reasons, faulty proofs and claims (src/math/proofs.ts). */
+  proofs: ProofWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

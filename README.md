@@ -976,6 +976,16 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     clustering (a k-nearest-neighbours vote and a k-means step and its sum of squares, on a drawn grid). Stepping up
     the slope, the missing 2 of u², a gradient through an off ReLU, p for p − 1, the degree with the lowest training
     error, the best epoch for the stopping one and precision for recall are named
+  - Proofs (Velleman, *How to Prove It*; Hammack, *Book of Proof*), with answer kinds any skill can use to check
+    reasoning: put a short proof's lines in order by tapping their letters (one line looks right but doesn't follow,
+    named if used) or pick the reason for a marked line (the definition of even, algebra, supposing the opposite …);
+    then the same with a proof by contradiction (√2) or the contrapositive, or the first wrong line of a faulty proof
+    (2 = 1 by dividing by zero, −2 = 2 by a square root, examples taken for a proof, an inequality divided by a
+    negative; the later line that is wrong only because of it named); then a counterexample to a claim, typed as a
+    whole number, a pair, a number or a 2 × 2 matrix and tested by the claim's own rule, so any counterexample is
+    right (n² + n + 41 at 40 or 41, 2ᵖ − 1 at 11, A² = 0 with A ≠ 0), or a claim decided true, or false with its
+    counterexample ("false: 40"). An example the claim fits, offered as a counterexample, is named; one it isn't
+    about is sent back
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - 🌙 Calm, a switch beside it and in every game (remembered in the browser): no sounds, no confetti, no shake on

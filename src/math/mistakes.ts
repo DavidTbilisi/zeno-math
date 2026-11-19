@@ -167,5 +167,9 @@ export const MISTAKES = [
   "repeatedLast",
   "distinctNotUnit",
   "remainderShift",
+  "exampleNotCounter",
+  "calledTrue",
+  "lookAlikeLine",
+  "laterLine",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

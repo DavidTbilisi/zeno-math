@@ -112,6 +112,7 @@ import softmax from "./softmax";
 import overfitting from "./overfitting";
 import precision from "./precision";
 import clustering from "./clustering";
+import proofs from "./proofs";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -223,4 +224,5 @@ export const GENS: Record<SkillId, Gen> = {
   overfitting,
   precision,
   clustering,
+  proofs,
 };

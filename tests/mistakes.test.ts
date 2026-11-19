@@ -163,6 +163,10 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   repeatedLast: ["shapePatterns", [1]],
   distinctNotUnit: ["shapePatterns", [2]],
   remainderShift: ["shapePatterns", [2, 3]],
+  exampleNotCounter: ["proofs", [3]],
+  calledTrue: ["proofs", [3]],
+  lookAlikeLine: ["proofs", [1, 2]],
+  laterLine: ["proofs", [2]],
   partForWhole: ["kakooma", [1, 2, 3]],
   usedTwice: ["kakooma", [1, 2, 3]],
   sumNotProduct: ["kakooma", [3]],
@@ -220,7 +224,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {
