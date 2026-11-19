@@ -7642,6 +7642,371 @@
       "input": "150",
       "label": "wrong",
       "note": "every point measured to c₁"
+    },
+    {
+      "skill": "bases",
+      "level": 1,
+      "seed": 2,
+      "input": "108",
+      "label": "correct"
+    },
+    {
+      "skill": "bases",
+      "level": 1,
+      "seed": 2,
+      "input": "756",
+      "label": "wrong",
+      "note": "place values started at 7, not 1",
+      "mistake": "placeFromOne"
+    },
+    {
+      "skill": "bases",
+      "level": 1,
+      "seed": 2,
+      "input": "213",
+      "label": "wrong",
+      "note": "the base-7 digits copied back"
+    },
+    {
+      "skill": "bases",
+      "level": 1,
+      "seed": 2,
+      "input": "107",
+      "label": "wrong",
+      "note": "one off"
+    },
+    {
+      "skill": "bases",
+      "level": 1,
+      "seed": 7,
+      "input": "28",
+      "label": "correct"
+    },
+    {
+      "skill": "bases",
+      "level": 1,
+      "seed": 7,
+      "input": "56",
+      "label": "wrong",
+      "note": "place values started at 2",
+      "mistake": "placeFromOne"
+    },
+    {
+      "skill": "bases",
+      "level": 2,
+      "seed": 7,
+      "input": "11010",
+      "label": "correct"
+    },
+    {
+      "skill": "bases",
+      "level": 2,
+      "seed": 7,
+      "input": "11010_2",
+      "label": "correct",
+      "note": "the base written after it"
+    },
+    {
+      "skill": "bases",
+      "level": 2,
+      "seed": 7,
+      "input": "1011",
+      "label": "wrong",
+      "note": "remainders read from the top",
+      "mistake": "remaindersDown"
+    },
+    {
+      "skill": "bases",
+      "level": 2,
+      "seed": 7,
+      "input": "26",
+      "label": "wrong",
+      "note": "the number given back in base 10"
+    },
+    {
+      "skill": "bases",
+      "level": 2,
+      "seed": 4,
+      "input": "265",
+      "label": "correct"
+    },
+    {
+      "skill": "bases",
+      "level": 2,
+      "seed": 4,
+      "input": "265₉",
+      "label": "correct",
+      "note": "the base as a subscript"
+    },
+    {
+      "skill": "bases",
+      "level": 2,
+      "seed": 4,
+      "input": "562",
+      "label": "wrong",
+      "note": "remainders read from the top",
+      "mistake": "remaindersDown"
+    },
+    {
+      "skill": "bases",
+      "level": 3,
+      "seed": 4,
+      "input": "644",
+      "label": "correct"
+    },
+    {
+      "skill": "bases",
+      "level": 3,
+      "seed": 4,
+      "input": "633",
+      "label": "wrong",
+      "note": "carried at ten",
+      "mistake": "carryInTen"
+    },
+    {
+      "skill": "bases",
+      "level": 3,
+      "seed": 4,
+      "input": "528",
+      "label": "wrong",
+      "note": "the sum given in base 10"
+    },
+    {
+      "skill": "bases",
+      "level": 3,
+      "seed": 2,
+      "input": "212",
+      "label": "correct"
+    },
+    {
+      "skill": "bases",
+      "level": 3,
+      "seed": 2,
+      "input": "102",
+      "label": "wrong",
+      "note": "base-10 times table: 4 × 3 = 12, write 2, carry 1",
+      "mistake": "carryInTen"
+    },
+    {
+      "skill": "bases",
+      "level": 3,
+      "seed": 2,
+      "input": "57",
+      "label": "wrong",
+      "note": "the product given in base 10"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong",
+      "note": "one step along the cycle 3, 9, 7, 1",
+      "mistake": "cycleOffByOne"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 7,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "note": "the exponents multiplied without their +1",
+      "mistake": "noPlusOne"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 9,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 9,
+      "input": "3",
+      "label": "wrong",
+      "note": "the exponents multiplied without their +1",
+      "mistake": "noPlusOne"
+    },
+    {
+      "skill": "modular",
+      "level": 1,
+      "seed": 9,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 7,
+      "input": "8/9",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 7,
+      "input": "4/5",
+      "label": "wrong",
+      "note": "read as 0.8, as if it stopped",
+      "mistake": "overPowerOfTen"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 7,
+      "input": "0.8",
+      "label": "wrong",
+      "note": "the decimal cut off",
+      "mistake": "overPowerOfTen"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 7,
+      "input": "16/18",
+      "label": "form",
+      "note": "not in lowest terms"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 9,
+      "input": "17/90",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 9,
+      "input": "9/50",
+      "label": "wrong",
+      "note": "read as 0.18, as if it stopped",
+      "mistake": "overPowerOfTen"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 9,
+      "input": "2/11",
+      "label": "wrong",
+      "note": "the whole 18 taken as the repeating block"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 9,
+      "input": "34/180",
+      "label": "form",
+      "note": "not in lowest terms"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 2,
+      "input": "7",
+      "label": "wrong",
+      "note": "3 × 2 + 1 = 7 not divided by 4 again",
+      "mistake": "notReduced"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 4,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 2,
+      "seed": 4,
+      "input": "25",
+      "label": "wrong",
+      "note": "5 × 5 × 1 = 25 not divided by 6 again",
+      "mistake": "notReduced"
+    },
+    {
+      "skill": "modular",
+      "level": 3,
+      "seed": 2,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 3,
+      "seed": 2,
+      "input": "34",
+      "label": "wrong",
+      "note": "a solution, but not the smallest"
+    },
+    {
+      "skill": "modular",
+      "level": 3,
+      "seed": 4,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 3,
+      "seed": 7,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "note": "one step along the cycle of remainders",
+      "mistake": "cycleOffByOne"
+    },
+    {
+      "skill": "modular",
+      "level": 3,
+      "seed": 9,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "modular",
+      "level": 3,
+      "seed": 9,
+      "input": "4",
+      "label": "wrong",
+      "note": "one step along the cycle of remainders",
+      "mistake": "cycleOffByOne"
     }
   ]
 }

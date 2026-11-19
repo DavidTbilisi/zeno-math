@@ -130,6 +130,14 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   inverseAsDirect: ["proportion", [1, 2, 3]],
   directAsInverse: ["proportion", [1, 2]],
   powerIgnored: ["proportion", [3]],
+  placeFromOne: ["bases", [1]],
+  remaindersDown: ["bases", [2]],
+  carryInTen: ["bases", [3]],
+  noPlusOne: ["modular", [1]],
+  cycleOffByOne: ["modular", [1, 3]],
+  overPowerOfTen: ["modular", [2]],
+  notReduced: ["modular", [2]],
+  timesNotInverse: ["modular", [3]],
   cancelTerms: ["algFractions", [1, 3]],
   addTopsBottoms: ["algFractions", [2, 3]],
   subjectOrder: ["formulae", [2]],
@@ -191,7 +199,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

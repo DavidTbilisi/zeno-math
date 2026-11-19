@@ -329,6 +329,9 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     theorem (also for non-coprime moduli), drawn as rows of matching numbers
   - *Number bases*: any base 2–36, place-value expansion, repeated division read from bottom to top, and the
     grouping shortcut between bases 2, 4, 8, 16, 32
+  - *Base arithmetic*: adding, subtracting and multiplying in any base 2–16 in columns, as by hand — carries above
+    the columns, borrowed digits crossed out, one row per digit of a longer multiplier — with each carry or borrow
+    explained and the check in base 10
 - **θ Trigonometry**
   - *Unit circle*: P = (cos θ, sin θ) with the cos (green), sin (red) and tan (orange) segments, the sine wave traced
     alongside, exact values for every multiple of 15° (sin 75° = (√6 + √2)/4), degrees or radians, quadrant
@@ -741,7 +744,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     two-way table, with the expected counts, each (O − E)²/E and a warning when an expected count is below 5
   - *Errors and power*: the curves under H₀ and H₁ with α, β and the power shaded, and the n needed for 80 % power
   - The normal, t and χ² probabilities are computed (incomplete gamma and beta functions), not read from tables
-- **🎯 Practice** — questions made fresh for 102 skills in five areas (number, algebra, geometry & trigonometry,
+- **🎯 Practice** — questions made fresh for 104 skills in five areas (number, algebra, geometry & trigonometry,
   calculus, probability & statistics), at three levels
   - Type the answer and press Enter: numbers (an amount of money with or without its $, ₾ or ₽), clock times (3:45,
     15:45), lengths of time (1 h 25 min, 85 min, 1:25) and measures (235 cm, 2 m 35 cm, 1 kg 200 g), fractions, mixed numbers, surds, sets of roots in any order, ratios (2 : 3, sent back when not in simplest form), points, intervals, matrices row by row (1, 2; 3, 4 or
@@ -773,7 +776,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     degrees, ½r²θ without its half, θ = r ÷ s, a segment's triangle not taken away, sin θ worked out in degree mode,
     an inverse proportion worked as direct (or the other way), y ∝ x² worked as y ∝ x, terms cancelled in an
     algebraic fraction instead of factors, the tops and the bottoms added, a formula's steps undone in the wrong order,
-    a squared or rooted subject left with its power on, and more (136 in all, in
+    a squared or rooted subject left with its power on, place values started at the base, the remainders read
+    downwards, carrying at ten in another base, the exponents multiplied without their +1, a units digit one step off
+    in its cycle, a repeating decimal put over 100 instead of 99, a remainder not reduced, and multiplying by a instead
+    of its inverse in a congruence, and more (144 in all, in
     [src/math/mistakes.ts](src/math/mistakes.ts));
     it still counts as a miss
   - Comparing numbers with <, = and >: towers of blocks to count first, then place value, decimals, negative numbers
@@ -828,6 +834,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
       named); the worked solution is a time line hopping to the next o'clock, on by whole hours, then the minutes left
     - *Hard*: the 24-hour clock: a time said with its part of the day, back to a clock with hands, and train journeys
       across noon (12 not added to the afternoon's hours, and 10 taken from them instead of 12, named)
+  - Number bases (AoPS Introduction to Number Theory ch. 8–9): a base-b numeral in base 10 (place values started at b
+    named), a number written in base b by dividing again and again (the remainders read downwards named), and adding,
+    subtracting or multiplying in base b (carrying at ten named). The answer is typed as its digits, with or without
+    its base (1011, 1011_2, 1011₂); the worked solution is the number theory tool's conversion or column working
+  - Divisors, remainders and congruences (AoPS Introduction to Number Theory ch. 5, 10–14): how many divisors from
+    the prime factorisation, and the units digit of a large power from its cycle; a repeating decimal as a fraction in
+    lowest terms (0.(27), 0.(142), 0.1(6)), and the remainder of a big product from the remainders of its numbers;
+    the remainder of a power from its cycle, a·x ≡ b (mod p), and the smallest number with two given remainders
   - Make the target: number cards and a target, answered with a sum of the cards, typed or tapped from buttons — three
     cards with + and −, then four with + − ×, then all four with + − × ÷ (like the 24 game). The sum is worked out
     exactly in fractions with × and ÷ first, and the preview shows what it makes as it is typed; a number not on the
@@ -1906,7 +1920,7 @@ match numerical ones, and stationary points, tangents and the chain rule agree w
 distances travelled, optima and rates match independent numerical computations; that the normal, t and χ²
 functions match tables and closed forms, a two-sided test rejects exactly when the interval misses μ₀, Welch, paired,
 pooled and χ² statistics match their formulas, the n for 80 % power is just enough and about 95 % of simulated 95 %
-intervals catch μ; that every practice question (102 skills × 3 levels × 60 seeds) accepts its own answer and
+intervals catch μ; that every practice question (104 skills × 3 levels × 60 seeds) accepts its own answer and
 rejects a wrong one, answers in other forms are judged fairly and wrong forms are named, and every worked solution
 renders; that every known mistake is named in the questions that can produce it, still counts as a miss, is never the
 right answer and never hides a form message, and inequalities and standard form are read however they are typed; that no picture repeats an attribute; that
@@ -2080,7 +2094,7 @@ src/math/logicGrid.ts     logic grids: categories and clues, every answer counte
 src/math/logicMill.ts     Mill's methods: agreement, difference and joint method on a table of cases, concomitant
                           variation as scatters with r, residues as a bar model
 src/math/combinatorics.ts counting, Pascal's triangle, stars and bars, inclusion–exclusion, Catalan/Stirling/partitions
-src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases
+src/math/numtheory.ts     number theory: sieve, factorization, gcd/Bézout/Diophantine, modular arithmetic, CRT, bases, base arithmetic
 src/math/trig.ts          trigonometry: unit circle, right triangles, laws of sines/cosines, graphs, equations
 src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenvalues (exact) + ℝ²/ℝ³ pictures
 src/math/algebra.ts       equations & polynomials: linear, inequalities, expanding, factoring, quadratics (exact)

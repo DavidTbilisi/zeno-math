@@ -3,7 +3,7 @@
 export type Area = "number" | "algebra" | "geometry" | "calculus" | "data";
 export const AREAS: Area[] = ["number", "algebra", "geometry", "calculus", "data"];
 export const SKILLS = {
-  number: ["compare", "quickLook", "estimateLine", "closerTo", "times", "money", "time", "measure", "makeTarget", "kakooma", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes"],
+  number: ["compare", "quickLook", "estimateLine", "closerTo", "times", "money", "time", "measure", "makeTarget", "kakooma", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular"],
   algebra: ["balance", "findRule", "growingPattern", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions", "matrices", "determinant", "elimination", "eigen"],
   geometry: ["shapeArea", "estimateAngle", "missingAngle", "symmetryLines", "cubeNets", "coordinates", "slope", "line", "distance", "trigexact", "righttri", "practicalTrig", "trigRules", "circles", "arcs", "similarity", "volume", "identities", "vectors", "dotangle", "projection"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite", "numroots", "numint", "descent", "backprop"],
