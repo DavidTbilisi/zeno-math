@@ -5,6 +5,7 @@ import type { ArcWords } from "./arcs";
 import type { BarModelWords } from "./barProblems";
 import type { RowWords } from "./rowsAndPatterns";
 import type { LogicWords } from "./logicSets";
+import type { CalcTwoWords } from "./calculusTwo";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -180,6 +181,8 @@ export type PracticeWords = {
   proofs: ProofWords;
   /** Logic, quantifiers, sets, functions, relations and countability: prompts and words (src/math/logicSets.ts). */
   logic: LogicWords;
+  /** Limits, integration techniques and uses, Taylor and power series, convergence tests (src/math/calculusTwo.ts). */
+  calc2: CalcTwoWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

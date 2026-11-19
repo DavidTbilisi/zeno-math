@@ -1000,6 +1000,21 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     part taken as false, "or" taken as one but not both, the converse, a kept quantifier, union and intersection
     swapped, the overlap counted twice, 2n subsets, (g ∘ f) for (f ∘ g), 1/f for f⁻¹, the smallest for every
     minimal element, ℚ taken for uncountable, the diagonal left unchanged
+  - Single-variable calculus, the second course of a maths degree (Stewart; Spivak; Apostol), eight skills:
+    limits (0/0 cancelled by factorising, ratios of polynomials at infinity, the limits that give e, L'Hôpital, a
+    limit whose two sides disagree), implicit differentiation (dy/dx at a point of a circle or of a curve with an
+    xy term, a related rate: a sliding ladder or a spreading ripple), techniques of integration (a substitution, by parts, partial fractions or a squared
+    sine, typed as an antiderivative and judged up to its constant), improper integrals (∫ 1/xᵖ converges or not
+    at infinity and at 0, their values, ∫ 1/(1 + x²) to π), area, volume and arc length (between a parabola and a
+    line, a solid of revolution as a multiple of π, curves whose length is an integral done by hand), Taylor series
+    (four Maclaurin coefficients, a value approximated to 3 places, a coefficient about a ≠ 0), power series (a
+    radius, an interval with each end tried) and convergence tests (geometric and p-series, which test settles a
+    series, absolute or conditional). Every integral is made from its answer, so each is right by construction.
+    The named slips: 0/0 read as 0, the constant terms used at infinity, 1^∞ taken as 1, the chain factor left out of L'Hôpital, one side taken for both, the product
+    rule dropped on xy, both ends of a ladder at one speed, dr/dt left out, the inner factor of a substitution not divided out, the sign of by parts, the cover-up values
+    swapped, the p-test backwards or used at 0, the area under one curve, π left out, the integral squared, the
+    1 + left out of an arc, k! left out, the series about 0, the radius inverted, the ends guessed, terms tending
+    to 0 taken as enough, the ratio test at 1, conditional taken as absolute
   - A sound for a right answer and a miss (🔊 turns them off, remembered in the browser) and a burst of confetti at
     3, 5, 10, 15 and 20 right in a row, still for anyone who has asked for less motion
   - 🌙 Calm, a switch beside it and in every game (remembered in the browser): no sounds, no confetti, no shake on
