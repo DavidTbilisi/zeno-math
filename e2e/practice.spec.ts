@@ -324,7 +324,7 @@ test("on a board, practice opens beside it and stays while other tools are used"
   await expect(page.getByRole("button", { name: /Edit practice sheet/ })).toBeVisible();
   await expect(dock).toBeVisible();
   // Another tool opens as a dialog while practice stays docked.
-  await page.getByRole("button", { name: /Algebra/ }).click();
+  await page.getByRole("button", { name: /^Algebra\b/ }).click();
   await page.getByRole("menuitem", { name: /Formula/ }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(dock).toBeVisible();
