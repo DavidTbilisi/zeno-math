@@ -862,6 +862,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - Quick look: dots shown for a moment when Look is pressed, then hidden, and the number typed — a die or scattered
     dots up to 6, then ten frames, two dice or two groups up to 12, then two ten frames or three groups up to 20 (one
     more look after a wrong answer); the worked solution colours the groups and adds them (10 − 2 = 8, 4 + 3 + 5 = 12)
+  - Ordinal numbers (Visible Thinking 1A ch. 6, Dimension Math KB): a row of coloured shapes; which shape is 4th from
+    the left, then the position of the shape under an arrow counted from the left or the right (3, or 3rd), then the
+    shape just before or after the 7th, counting from either side. Counting from the other end and the neighbour on the
+    wrong side are named
   - Number line estimation, answered by putting a pin on a line with only its ends labelled: 0 to 10 or 20, then 0 to
     100 or 1000, then fractions and decimals on 0 to 1 or negative numbers. Within 5 % of the line's length is right,
     within 10 % close, and a miss says which way the number is; the worked solution shows the number's place, how
@@ -1014,6 +1018,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - Growing patterns: figures 1, 2 and 3 of a pattern of squares (an L, a T, a plus, a frame, a square), and how many
     squares figure 5, 10 to 20 or 12 has (n² and n(n + 1) at hard), or which figure has so many. Figure 10 taken for
     ten figure 1s is named; the worked solution colours the part that stays and the part that grows
+  - Repeating patterns (Visible Thinking 1A ch. 5, 2B ch. 14): a row of shapes, or of coloured circles, repeating a
+    unit (AB, ABB, AABB, ABCD …); what comes next, then how many shapes the repeating part has or which is the 13th,
+    then which is the 20th to the 60th, worked by the remainder (25 = 8 × 3 + 1). The last shape shown repeated, the
+    different shapes counted for the unit's length and the remainder counted one along are named
   - Equal expressions: which of four is equal to x + 1 + x, 3(x − 2) or x · 2x for every x, typed or picked. The
     wrong options are the slips people make, each named when picked: unlike terms joined (3x for 2x + 1), only the
     first term in the bracket multiplied, x · x taken for 2x
