@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useI18n } from "../i18n";
 import {
+  BASE_OPS,
   CRT_MODES,
   GCD_MODES,
   MOD_OPS,
@@ -154,6 +155,17 @@ export function NtDialog({ initial, start, onSubmit, onClose }: {
           {text(t.ntFrom, "from", 70)}
           {text(t.ntTo, "to", 70)}
         </div>
+      )}
+
+      {spec.topic === "baseOps" && (
+        <>
+          {segmented(BASE_OPS, (o) => t.baseOps[o], spec.op, (op) => set({ op }))}
+          <div className="range-grid">
+            {text(t.ntA, "a", 140)}
+            {text(t.ntB, "b", 140)}
+            {text(t.ntBase, "base", 70)}
+          </div>
+        </>
       )}
 
       <div className="field">

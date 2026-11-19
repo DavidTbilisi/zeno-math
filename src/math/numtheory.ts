@@ -24,11 +24,15 @@ export type ModSpec = { topic: "mod"; op: ModOp; a: string; k: string; m: string
 /** linear: a·x ≡ b (mod m) · system: "2 mod 3, 3 mod 5, 2 mod 7". */
 export type CrtSpec = { topic: "crt"; mode: CrtMode; a: string; b: string; m: string; system: string };
 export type BaseSpec = { topic: "bases"; n: string; from: string; to: string };
+export type BaseOp = "add" | "sub" | "mul";
+export const BASE_OPS: BaseOp[] = ["add", "sub", "mul"];
+/** a + b, a − b or a × b worked in columns in base `base` (2 to 16), with the carries and borrows. */
+export type BaseOpsSpec = { topic: "baseOps"; op: BaseOp; a: string; b: string; base: string };
 
-export type NtSpec = SieveSpec | FactorSpec | GcdSpec | ModSpec | CrtSpec | BaseSpec;
+export type NtSpec = SieveSpec | FactorSpec | GcdSpec | ModSpec | CrtSpec | BaseSpec | BaseOpsSpec;
 export type NtTopic = NtSpec["topic"];
 export type NtSpecOf<K extends NtTopic> = Extract<NtSpec, { topic: K }>;
-export const NT_TOPICS: NtTopic[] = ["sieve", "factor", "gcd", "mod", "crt", "bases"];
+export const NT_TOPICS: NtTopic[] = ["sieve", "factor", "gcd", "mod", "crt", "bases", "baseOps"];
 
 export type NtWords = {
   badInt: string;
@@ -82,6 +86,16 @@ export type NtWords = {
   baseInfo10: string;
   baseInfo: string;
   grouping: string;
+  /** Base arithmetic: one line per column that carries or borrows, the check in base 10, and how it works. */
+  colCarry: string;
+  colBorrow: string;
+  mulRow: string;
+  baseCheck: string;
+  baseAddInfo: string;
+  baseSubInfo: string;
+  baseMulInfo: string;
+  baseSubOrder: string;
+  baseMulLong: string;
 };
 
 export const NT_PRESETS: { [K in NtTopic]: { label: string; spec: NtSpecOf<K> }[] } = {
@@ -136,6 +150,15 @@ export const NT_PRESETS: { [K in NtTopic]: { label: string; spec: NtSpecOf<K> }[
     { label: "1011011₂ → base 8", spec: { topic: "bases", n: "1011011", from: "2", to: "8" } },
     { label: "2024 → base 5", spec: { topic: "bases", n: "2024", from: "10", to: "5" } },
     { label: "7B₁₆ → base 3", spec: { topic: "bases", n: "7B", from: "16", to: "3" } },
+  ],
+  baseOps: [
+    { label: "254₇ + 163₇", spec: { topic: "baseOps", op: "add", a: "254", b: "163", base: "7" } },
+    { label: "1011₂ + 111₂", spec: { topic: "baseOps", op: "add", a: "1011", b: "111", base: "2" } },
+    { label: "523₆ − 145₆", spec: { topic: "baseOps", op: "sub", a: "523", b: "145", base: "6" } },
+    { label: "1000₂ − 11₂", spec: { topic: "baseOps", op: "sub", a: "1000", b: "11", base: "2" } },
+    { label: "346₈ × 5₈", spec: { topic: "baseOps", op: "mul", a: "346", b: "5", base: "8" } },
+    { label: "43₅ × 24₅", spec: { topic: "baseOps", op: "mul", a: "43", b: "24", base: "5" } },
+    { label: "3A₁₆ + 2F₁₆", spec: { topic: "baseOps", op: "add", a: "3A", b: "2F", base: "16" } },
   ],
 };
 
@@ -838,6 +861,155 @@ function renderBases(spec: BaseSpec, w: NtWords): RenderedSvg {
   return compose(head.join(" = "), parts.join(""), y, caps);
 }
 
+// ---------- base arithmetic ----------
+
+/** A numeral's digits in base b, the ones first (null when a character is no digit of the base). */
+function digitsOf(s: string, b: number): number[] | null {
+  const ds = [...s].map((ch) => DIGITS.indexOf(ch));
+  return ds.length && ds.every((d) => d >= 0 && d < b) ? ds.reverse() : null;
+}
+/** Digits, the ones first, as a numeral without leading zeros. */
+const digitChars = (ds: number[]) => ds.map((d) => DIGITS[d]).reverse().join("").replace(/^0+(?=.)/, "");
+
+/** One line of the working: a column that carries or borrows, or a row of a long multiplication. */
+export type BaseNote = { key: "colCarry" | "colBorrow" | "mulRow"; vars: Record<string, string | number> };
+
+/**
+ * a op b in base `base`, column by column, the way it is written by hand: the digits of the answer (ones first), what
+ * is carried into each column (adding, or multiplying by one digit), the top digit each column is worked with after
+ * borrowing (subtracting; null where it is unchanged), the rows of a long multiplication, and the notes.
+ */
+export function baseWork(a: string, b: string, op: BaseOp, base: number) {
+  const A = digitsOf(a, base)!;
+  const B = digitsOf(b, base)!;
+  const D = (d: number) => DIGITS[d];
+  const carries: number[] = [];
+  const tops: (number | null)[] = [];
+  const rows: string[] = [];
+  const notes: BaseNote[] = [];
+  const out: number[] = [];
+  const times = (ds: number[], m: number, cs: number[] | null) => {
+    const res: number[] = [];
+    let c = 0;
+    ds.forEach((d, i) => {
+      const t = d * m + c;
+      if (cs) {
+        cs[i] = c;
+        if (t >= base) notes.push({ key: "colCarry", vars: { i: i + 1, s: `${D(d)} × ${D(m)}${c ? ` + ${c}` : ""}`, t, c: Math.floor(t / base), d: D(t % base), b: base } });
+      }
+      res.push(t % base);
+      c = Math.floor(t / base);
+    });
+    while (c) (res.push(c % base), (c = Math.floor(c / base)));
+    return res;
+  };
+  const plus = (x: number[], y: number[], cs: number[] | null) => {
+    const res: number[] = [];
+    let c = 0;
+    for (let i = 0; i < Math.max(x.length, y.length); i++) {
+      const t = (x[i] ?? 0) + (y[i] ?? 0) + c;
+      if (cs) {
+        cs[i] = c;
+        if (t >= base) notes.push({ key: "colCarry", vars: { i: i + 1, s: `${D(x[i] ?? 0)} + ${D(y[i] ?? 0)}${c ? ` + ${c}` : ""}`, t, c: Math.floor(t / base), d: D(t % base), b: base } });
+      }
+      res.push(t % base);
+      c = Math.floor(t / base);
+    }
+    if (c) res.push(c);
+    return res;
+  };
+  if (op === "add") out.push(...plus(A, B, carries));
+  else if (op === "sub") {
+    let lent = 0;
+    A.forEach((d, i) => {
+      const top = d - lent;
+      const u = B[i] ?? 0;
+      if (top < u) {
+        notes.push({ key: "colBorrow", vars: { i: i + 1, t: lent ? `${D(d)} − 1` : D(d), u: D(u), b: base, tb: top + base, d: D(top + base - u) } });
+        tops.push(top + base);
+        out.push(top + base - u);
+        lent = 1;
+      } else {
+        tops.push(lent ? top : null);
+        out.push(top - u);
+        lent = 0;
+      }
+    });
+  } else if (B.length === 1) out.push(...times(A, B[0], carries));
+  else {
+    let sum: number[] = [0];
+    B.forEach((m, i) => {
+      const row = [...Array(i).fill(0), ...times(A, m, null)];
+      rows.push(digitChars(row));
+      notes.push({ key: "mulRow", vars: { a: digitChars(A), d: D(m), row: digitChars(row.slice(i)) } });
+      sum = plus(sum, row, null);
+    });
+    out.push(...sum);
+  }
+  while (out.length > 1 && out[out.length - 1] === 0) out.pop();
+  return { result: digitChars(out), carries, tops, rows, notes };
+}
+
+function renderBaseOps(spec: BaseOpsSpec, w: NtWords): RenderedSvg {
+  const base = intOf(spec.base, w, 2, 16);
+  const clean = (s: string) => s.trim().toUpperCase().replace(/\s+/g, "");
+  const [a, b] = [clean(spec.a), clean(spec.b)];
+  for (const s of [a, b]) if (!s || s.length > 12 || !digitsOf(s, base)) throw new Error(fill(w.badDigits, { s: s || "", b: base }));
+  const [va, vb] = [parseInt(a, base), parseInt(b, base)];
+  if (spec.op === "sub" && va < vb) throw new Error(w.baseSubOrder);
+  if (spec.op === "mul" && b.replace(/^0+(?=.)/, "").length > 3) throw new Error(w.baseMulLong);
+  const work = baseWork(a, b, spec.op, base);
+  const sign = { add: "+", sub: "−", mul: "×" }[spec.op];
+  const value = spec.op === "add" ? va + vb : spec.op === "sub" ? va - vb : va * vb;
+
+  // Right-aligned columns: the operator in a column of its own on the left.
+  const cols = Math.max(a.length, b.length, work.result.length, ...work.rows.map((r) => r.length)) + 1;
+  const cw = 34;
+  const right = W / 2 + (cols * cw) / 2;
+  const cx = (i: number) => right - cw / 2 - i * cw; // column i from the right (0 = ones)
+  const parts: string[] = [];
+  const row = (s: string, y: number, color: string = C.ink, bold = false) =>
+    [...s].reverse().forEach((ch, i) => parts.push(txt(cx(i), y, ch, { size: 22, anchor: "middle", color, bold })));
+  const rule = (y: number) => parts.push(`<line x1="${r2(right - cols * cw)}" y1="${y}" x2="${r2(right)}" y2="${y}" stroke="${C.ink}" stroke-width="1.6"/>`);
+  let y = 18;
+  // Carries above the column they go into; after borrowing, the digit a column is worked with above the crossed one.
+  if (spec.op === "sub") {
+    work.tops.forEach((t, i) => {
+      if (t === null) return;
+      parts.push(txt(cx(i), y, String(t), { size: 13, anchor: "middle", color: C.orange, bold: true }));
+      parts.push(`<line x1="${r2(cx(i) - 8)}" y1="${y + 26}" x2="${r2(cx(i) + 8)}" y2="${y + 12}" stroke="${C.orange}" stroke-width="1.6"/>`);
+    });
+  } else work.carries.forEach((c, i) => c && parts.push(txt(cx(i), y, String(c), { size: 13, anchor: "middle", color: C.orange, bold: true })));
+  y += 28;
+  row(a, y);
+  y += 32;
+  row(b, y);
+  parts.push(txt(cx(cols - 1), y, sign, { size: 22, anchor: "middle" }));
+  y += 12;
+  rule(y);
+  if (work.rows.length) {
+    y += 30;
+    work.rows.forEach((r, i) => {
+      row(r, y + i * 30, C.blue);
+      if (i) parts.push(txt(cx(cols - 1), y + i * 30, "+", { size: 22, anchor: "middle", color: C.blue }));
+    });
+    y += (work.rows.length - 1) * 30 + 12;
+    rule(y);
+  }
+  y += 30;
+  row(work.result, y, C.green, true);
+  y += 14;
+
+  const notes = work.notes.slice(0, 6).map((n) => ({ text: fill(w[n.key], n.vars), color: C.ink }));
+  const shown = (s: string) => `\\mathtt{${s}}_{${base}}`;
+  const caps: Caption[] = [
+    ...notes,
+    { text: fill(w.baseCheck, { a: va, op: sign, b2: vb, v: value, out: work.result, b: base }), color: C.green },
+    { text: fill({ add: w.baseAddInfo, sub: w.baseSubInfo, mul: w.baseMulInfo }[spec.op], { b: base }), color: "#495057" },
+  ];
+  return compose(`${shown(a)} ${{ add: "+", sub: "-", mul: "\\times" }[spec.op]} ${shown(b)} = ${shown(work.result)}`, parts.join(""), y, caps);
+}
+
 export function renderNt(spec: NtSpec, words: NtWords): RenderedSvg {
   switch (spec.topic) {
     case "sieve":
@@ -852,5 +1024,7 @@ export function renderNt(spec: NtSpec, words: NtWords): RenderedSvg {
       return renderCrt(spec, words);
     case "bases":
       return renderBases(spec, words);
+    case "baseOps":
+      return renderBaseOps(spec, words);
   }
 }

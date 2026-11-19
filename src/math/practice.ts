@@ -58,6 +58,7 @@ import { dialPic, jugPic, readMeasure, rulerPic, unitWords } from "./measurePics
 import { diagramPic, hourText, lineQuestion, lineSteps, lineTraps, pictoQuestion, pictoSteps, pictoTraps, pieCount, pieQuestion, pieSteps, pieTraps, stemQuestion, stemSteps, stemTraps, type DiagramSolution, type StemWords } from "./dataGraphs";
 import { appliedQuestion, figureSvg, obtuseQuestion, PROMPT_OF, sineCosineQuestion, three, type TrigRuleWords } from "./trigRules";
 import { algebraQuestion, graphSvg, powerQuestion, wordQuestion, type ProportionWords } from "./proportion";
+import { baseOpQuestion, congruenceQuestion, divisorQuestion, fromTenQuestion, productRemainderQuestion, repeatingQuestion, toTenQuestion, unitsDigitQuestion, type NumberTheoryQuestion, type NumberTheoryWords } from "./numberTheory";
 import { degreeQuestion, PROMPT_OF as ARC_PROMPT, radianQuestion, sectorQuestion, sectorSvg, type ArcWords } from "./arcs";
 import { clock12, clock24, clockPic, DAY, durationTex, durationText, HALF_DAY, hops, readClock, readDuration, timeTex, type DurationStems, type TimeSolution } from "./timePics";
 
@@ -70,7 +71,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
   | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec"
-  | "clock" | "duration" | "measure" | "algFraction" | "formula";
+  | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
 export type MeasurePair = { big: MeasureUnit; small: MeasureUnit; f: number };
@@ -189,6 +190,8 @@ export type PracticeWords = {
   /** Arcs, sectors and radians: the prompt of each kind of question (src/math/arcs.ts). */
   arcs: ArcWords;
   proportion: ProportionWords;
+  /** Number bases, divisors, remainders and congruences: the prompts (src/math/numberTheory.ts). */
+  numberTheory: NumberTheoryWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
@@ -846,6 +849,27 @@ const fracBars = (form: StepForm, a: string, b: string | null, rows: { n: number
   spec: { type: "fraction", form, a, b, rows, shape: "bar", unitLabels: true },
 });
 const fracTex = (n: number, d: number) => `\\frac{${n}}{${d}}`;
+
+/** The subscript digits a base is written with after a numeral (1011₂). */
+const SUBSCRIPT = "₀₁₂₃₄₅₆₇₈₉";
+
+/**
+ * A number theory question as a practice question: a whole number, a fraction in lowest terms (a repeating decimal), or
+ * a numeral in base b, typed as its digits and read as such (1011 for 1011₂; a written base after it is taken off).
+ * The worked solution is the number theory tool's picture where it draws one, else the working.
+ */
+function numberTheoryPart(q: NumberTheoryQuestion, w: PracticeWords): Part {
+  const units = q.base ? [`_${q.base}`, SUBSCRIPT[q.base], `(${q.base})`] : undefined;
+  return {
+    prompt: fill(w.numberTheory[q.kind], q.vars),
+    q: q.q,
+    answer: { ...num(q.v, 1e-9, q.frac ? { lowest: true } : {}), ...(units ? { units } : {}), traps: q.traps.map((t) => ({ id: t.id, a: num(t.v), vars: t.vars })) },
+    show: q.frac ? fracTex(q.frac[0], q.frac[1]) : q.base ? `${q.v}_{${q.base}}` : String(q.v),
+    plain: q.frac ? `${q.frac[0]}/${q.frac[1]}` : String(q.v),
+    format: q.frac ? "fraction" : q.base ? "base" : "number",
+    ...(q.spec ? { solution: { kind: "nt" as const, spec: q.spec } } : { steps: q.steps }),
+  };
+}
 const mixedTex = (whole: number, n: number, d: number) => `${whole}\\frac{${n}}{${d}}`;
 
 /** One idea of fractions alone: a missing top, lowest terms, the lowest common denominator, a reciprocal, or a conversion between mixed and improper. */
@@ -1834,6 +1858,20 @@ const GENS: Record<SkillId, Gen> = {
       format: "primes",
       solution: { kind: "nt", spec: { topic: "factor", n: String(n) } },
     };
+  },
+
+  bases(r, L, w) {
+    // Number bases (src/math/numberTheory.ts): a base-b numeral in base 10 (easy), base 10 in base b (medium), adding,
+    // subtracting and multiplying in base b (hard). The worked solution is the number theory tool's picture.
+    return numberTheoryPart(L === 1 ? toTenQuestion(r.next) : L === 2 ? fromTenQuestion(r.next) : baseOpQuestion(r.next), w);
+  },
+
+  modular(r, L, w) {
+    // Divisors, units digits, repeating decimals, remainders and congruences (src/math/numberTheory.ts): divisors from
+    // the prime factorisation and the units digit of a power (easy); a repeating decimal as a fraction and the
+    // remainder of a product (medium); the remainder of a power, a x ≡ b (mod m) and two congruences at once (hard).
+    const q = L === 1 ? (r.next() < 0.5 ? divisorQuestion : unitsDigitQuestion) : L === 2 ? (r.next() < 0.5 ? repeatingQuestion : productRemainderQuestion) : congruenceQuestion;
+    return numberTheoryPart(q(r.next), w);
   },
 
   proportion(r, L, w) {

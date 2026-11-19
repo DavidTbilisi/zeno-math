@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "estimateLine", "closerTo", "times", "money", "time", "measure", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "ci",
@@ -57,6 +57,8 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   divisibility: ["times"],
   hcf: ["times"],
   primes: ["times"],
+  bases: ["times"],
+  modular: ["primes", "decimals"],
   findRule: ["times"],
   growingPattern: ["findRule"],
   balance: ["times"],
