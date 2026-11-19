@@ -7,6 +7,7 @@ import type { RowWords } from "./rowsAndPatterns";
 import type { LogicWords } from "./logicSets";
 import type { CalcTwoWords } from "./calculusTwo";
 import type { LinAlgWords } from "./linearAlgebra";
+import type { ComplexWords } from "./complexPractice";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -36,7 +37,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec" | "nullvec" | "singular"
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec" | "nullvec" | "singular" | "complex" | "complexPolar" | "complexList"
   | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base" | "lines" | "counter" | "decide" | "elements" | "bits";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
@@ -50,6 +51,9 @@ export type MeasureUnit = "km" | "m" | "cm" | "kg" | "g" | "l" | "ml";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
+
+/** A complex number, a + bi. */
+export type CxVal = { re: number; im: number };
 
 /** A predictable mistake and the answer it gives (with the numbers its message names). */
 export type Trap = { id: MistakeId; a: Answer; vars?: Record<string, string | number> };
@@ -67,6 +71,11 @@ export type Answer = (
   | { k: "matrix"; rows: number[][]; tol: number }
   /** A direction: any non-zero multiple of vs (an eigenvector). */
   | { k: "dir"; vs: number[] }
+  /**
+   * One complex number, or several compared as a list in any order (the roots of an equation), typed as a + bi or
+   * re^{iθ}. `polar`: asked for in the form re^{iθ}, so a + bi is the right value in the wrong form.
+   */
+  | { k: "complex"; vs: CxVal[]; tol: number; polar?: boolean }
   /** `vars`: letters besides x the answer is in (a formula's subject); they are tried at positive values.
    *  `fraction`: one fraction, cut down (no factor common to the top and the bottom). */
   | { k: "expr"; e: E; mode?: "factor" | "expand" | "plusC" | "line" | "fraction"; vars?: readonly string[] }
@@ -186,6 +195,8 @@ export type PracticeWords = {
   calc2: CalcTwoWords;
   /** Subspaces, bases, rank, linear maps, inner products, diagonalisation and the SVD (src/math/linearAlgebra.ts). */
   linalg: LinAlgWords;
+  /** Complex numbers: arithmetic, the polar form, De Moivre, roots and loci (src/math/complexPractice.ts). */
+  cxq: ComplexWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
@@ -514,6 +525,7 @@ export type PracticeWords = {
     measure: { unreadable: string; units: string; whole: string; inSmall: string };
     matrixSize: string;
     zeroVector: string;
+    polar: string;
   };
   answer: string;
   answers: string;

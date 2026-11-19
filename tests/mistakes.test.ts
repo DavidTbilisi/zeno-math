@@ -252,6 +252,23 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   forgotSquareRoot: ["svd", [1, 2]],
   onlyNextValue: ["svd", [2]],
   outerProductOrder: ["svd", [3]],
+  iSquaredPlusOne: ["complex", [1]],
+  likePartsOnly: ["complex", [1]],
+  conjugateTopOnly: ["complex", [2]],
+  modulusNoRoot: ["complex", [2]],
+  minusBForgotten: ["complex", [3]],
+  halvedOnlyB: ["complex", [3]],
+  cosSinSwapped: ["polarForm", [1]],
+  anglesMultiplied: ["polarForm", [2]],
+  lengthsAdded: ["polarForm", [2]],
+  quotientAnglesAdded: ["polarForm", [2]],
+  arctanQuadrant: ["polarForm", [3]],
+  modulusNotPowered: ["deMoivre", [1]],
+  argumentNotMultiplied: ["deMoivre", [1]],
+  rootModulusNotRooted: ["deMoivre", [2]],
+  rootsAngleNotDivided: ["deMoivre", [2]],
+  locusCentreSign: ["deMoivre", [3]],
+  locusFullLine: ["deMoivre", [3]],
   partForWhole: ["kakooma", [1, 2, 3]],
   usedTwice: ["kakooma", [1, 2, 3]],
   sumNotProduct: ["kakooma", [3]],
@@ -309,7 +326,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

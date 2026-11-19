@@ -31,6 +31,9 @@ function wrong(ex: Exercise): string {
       const at = Math.max(0, a.vs.indexOf(0));
       return `(${a.vs.map((v, i) => (i === at ? v + 1 : v)).join("; ")})`;
     }
+    case "complex":
+      // The first number one more: 1 added to its real part.
+      return [`(${a.vs[0].re + 1}) + (${a.vs[0].im})*i`, ...a.vs.slice(1).map((z) => `(${z.re}) + (${z.im})*i`)].join("; ");
     case "ratio":
       // The first term one more: never the same ratio.
       return [a.vs[0] + 1, ...a.vs.slice(1)].join(" : ");

@@ -5,6 +5,7 @@
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { SpokenMath } from "./SpokenMath";
 import { ChoicePicks, ListPicks, SignPicks, TargetPicks, TogglePicks } from "./ui";
+import { CX_KEYS } from "../math/complexPractice";
 import { LINE_LETTERS } from "../math/proofs";
 import { addPiece, dropPiece } from "../math/target";
 import { AnswerField, PlayAnswer } from "./PlayAnswer";
@@ -198,6 +199,15 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
           choices={ex.answer.options.map((o) => ({ label: o.text, value: o.plain }))}
           onPick={(s) => {
             setInput(s);
+            setMessage(null);
+          }}
+        />
+      )}
+      {ex.answer.k === "complex" && (
+        <ChoicePicks
+          choices={CX_KEYS}
+          onPick={(s) => {
+            setInput((x) => x + s);
             setMessage(null);
           }}
         />
