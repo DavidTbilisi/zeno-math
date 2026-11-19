@@ -1,0 +1,220 @@
+// Every practice skill's generator, one file each: GENS maps a skill to the function that makes its question for a
+// level and a random source. TypeScript checks that each skill in practiceSkills.ts has exactly one. A new skill is
+// a file here, an import and an entry below, its id in practiceSkills.ts and curriculum.ts, and its words.
+import type { SkillId } from "../practiceSkills";
+import type { Gen } from "../practiceTypes";
+import compare from "./compare";
+import quickLook from "./quickLook";
+import estimateLine from "./estimateLine";
+import closerTo from "./closerTo";
+import times from "./times";
+import money from "./money";
+import time from "./time";
+import measure from "./measure";
+import makeTarget from "./makeTarget";
+import kakooma from "./kakooma";
+import makeWhole from "./makeWhole";
+import equivalent from "./equivalent";
+import orderFractions from "./orderFractions";
+import shadeFraction from "./shadeFraction";
+import integers from "./integers";
+import order from "./order";
+import compareFractions from "./compareFractions";
+import fractions from "./fractions";
+import decimals from "./decimals";
+import percent from "./percent";
+import ratio from "./ratio";
+import rate from "./rate";
+import rounding from "./rounding";
+import divisibility from "./divisibility";
+import hcf from "./hcf";
+import primes from "./primes";
+import bases from "./bases";
+import modular from "./modular";
+import balance from "./balance";
+import findRule from "./findRule";
+import growingPattern from "./growingPattern";
+import sameExpression from "./sameExpression";
+import graphStory from "./graphStory";
+import linear from "./linear";
+import proportion from "./proportion";
+import inequalities from "./inequalities";
+import expand from "./expand";
+import factor from "./factor";
+import algFractions from "./algFractions";
+import formulae from "./formulae";
+import quadratic from "./quadratic";
+import simultaneous from "./simultaneous";
+import polynomials from "./polynomials";
+import indices from "./indices";
+import logs from "./logs";
+import surds from "./surds";
+import sequences from "./sequences";
+import series from "./series";
+import functions from "./functions";
+import matrices from "./matrices";
+import determinant from "./determinant";
+import elimination from "./elimination";
+import eigen from "./eigen";
+import shapeArea from "./shapeArea";
+import estimateAngle from "./estimateAngle";
+import missingAngle from "./missingAngle";
+import triangleInequality from "./triangleInequality";
+import symmetryLines from "./symmetryLines";
+import cubeNets from "./cubeNets";
+import coordinates from "./coordinates";
+import slope from "./slope";
+import line from "./line";
+import distance from "./distance";
+import trigexact from "./trigexact";
+import righttri from "./righttri";
+import practicalTrig from "./practicalTrig";
+import trigRules from "./trigRules";
+import circles from "./circles";
+import powerPoint from "./powerPoint";
+import arcs from "./arcs";
+import similarity from "./similarity";
+import volume from "./volume";
+import identities from "./identities";
+import vectors from "./vectors";
+import dotangle from "./dotangle";
+import projection from "./projection";
+import differentiate from "./differentiate";
+import tangent from "./tangent";
+import stationary from "./stationary";
+import integrate from "./integrate";
+import definite from "./definite";
+import numroots from "./numroots";
+import numint from "./numint";
+import descent from "./descent";
+import backprop from "./backprop";
+import readChart from "./readChart";
+import diagrams from "./diagrams";
+import oneStroke from "./oneStroke";
+import colouring from "./colouring";
+import shortestPath from "./shortestPath";
+import spanningTree from "./spanningTree";
+import parity from "./parity";
+import inversions from "./inversions";
+import average from "./average";
+import probability from "./probability";
+import counting from "./counting";
+import ci from "./ci";
+import expectation from "./expectation";
+import conditional from "./conditional";
+import distributions from "./distributions";
+import correlation from "./correlation";
+import hypothesis from "./hypothesis";
+import softmax from "./softmax";
+import overfitting from "./overfitting";
+import precision from "./precision";
+import clustering from "./clustering";
+
+export const GENS: Record<SkillId, Gen> = {
+  compare,
+  quickLook,
+  estimateLine,
+  closerTo,
+  times,
+  money,
+  time,
+  measure,
+  makeTarget,
+  kakooma,
+  makeWhole,
+  equivalent,
+  orderFractions,
+  shadeFraction,
+  integers,
+  order,
+  compareFractions,
+  fractions,
+  decimals,
+  percent,
+  ratio,
+  rate,
+  rounding,
+  divisibility,
+  hcf,
+  primes,
+  bases,
+  modular,
+  balance,
+  findRule,
+  growingPattern,
+  sameExpression,
+  graphStory,
+  linear,
+  proportion,
+  inequalities,
+  expand,
+  factor,
+  algFractions,
+  formulae,
+  quadratic,
+  simultaneous,
+  polynomials,
+  indices,
+  logs,
+  surds,
+  sequences,
+  series,
+  functions,
+  matrices,
+  determinant,
+  elimination,
+  eigen,
+  shapeArea,
+  estimateAngle,
+  missingAngle,
+  triangleInequality,
+  symmetryLines,
+  cubeNets,
+  coordinates,
+  slope,
+  line,
+  distance,
+  trigexact,
+  righttri,
+  practicalTrig,
+  trigRules,
+  circles,
+  powerPoint,
+  arcs,
+  similarity,
+  volume,
+  identities,
+  vectors,
+  dotangle,
+  projection,
+  differentiate,
+  tangent,
+  stationary,
+  integrate,
+  definite,
+  numroots,
+  numint,
+  descent,
+  backprop,
+  readChart,
+  diagrams,
+  oneStroke,
+  colouring,
+  shortestPath,
+  spanningTree,
+  parity,
+  inversions,
+  average,
+  probability,
+  counting,
+  ci,
+  expectation,
+  conditional,
+  distributions,
+  correlation,
+  hypothesis,
+  softmax,
+  overfitting,
+  precision,
+  clustering,
+};

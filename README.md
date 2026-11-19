@@ -2079,6 +2079,7 @@ src/math/statistics.ts    statistics & probability pictures: data, scatter, chan
 src/math/inference.ts     inference: confidence intervals, coverage, z/t/proportion tests, two samples, χ², power
 src/math/practice.ts      practice: question generators, answer checking, worksheets; practiceSolve.ts draws solutions
 src/math/practiceTypes.ts the shapes of a question, its answer and its words; practiceKit.ts the helpers generators share
+src/math/skills/          one file per practice skill: its generator (questions for each level); index.ts gathers them
 src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX header + captions)
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
