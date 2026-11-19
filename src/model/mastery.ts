@@ -59,7 +59,7 @@ export const bktRule = (paramsOf: (skill: string) => BktParams, threshold: numbe
 // ---------- practice with a known truth ----------
 
 /** In the gradual worlds, a skill counts as mastered when the true chance of a right answer is at least this. */
-export const MASTERED_AT = 0.9;
+export const TRUE_MASTERED_AT = 0.9;
 export type PracticeParams = Partial<SimParams> & {
   skills?: readonly SkillId[];
   /** Questions each learner answers on each skill. */
@@ -77,7 +77,7 @@ export const ALL_SIM_SKILLS: readonly SkillId[] = AREAS.flatMap((a) => [...SIM_S
  * forgetting the bkt world is exactly BKT (Proposition 2 in the outline).
  */
 export function simulatePractice(params: PracticeParams = {}): Practice[] {
-  const { skills = ALL_SIM_SKILLS, length = 30, level = 2, masteredAt = MASTERED_AT, ...sim } = params;
+  const { skills = ALL_SIM_SKILLS, length = 30, level = 2, masteredAt = TRUE_MASTERED_AT, ...sim } = params;
   const world = makeWorld(sim);
   const knows = (sim.world ?? DEFAULT_SIM.world) === "bkt"
     ? (l: SimLearner, skill: SkillId) => l.known.get(skill)!

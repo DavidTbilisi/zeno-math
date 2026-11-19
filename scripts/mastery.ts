@@ -20,8 +20,8 @@ import { fromFile, type DatasetFile } from "../src/model/datasets.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import {
   agreement, ALL_SIM_SKILLS, compareAfter, heldOutLogisticRule, BEYOND_THRESHOLDS, bktRule, bootstrapByStudent, compareAtCost, compareAtPrecision, decide, FINE_THRESHOLDS, fitRules,
-  judge, MASTERED_AT, masteryCalibration, practicesFrom,
-  PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, tradeOff, usualRules,
+  judge, masteryCalibration, practicesFrom,
+  PRECISION_TARGET, precisionOf, rightAfter, simulatePractice, streakRule, tradeOff, TRUE_MASTERED_AT, usualRules,
   type AtCost, type AtPrecision, type Calibration, type CurvePoint, type PracticeParams,
 } from "../src/model/mastery.ts";
 import { isSimSkill, SIM_SKILLS } from "../src/model/simulate.ts";
@@ -98,7 +98,7 @@ function simulated() {
     : ALL_SIM_SKILLS;
   const unknown = skills.filter((s) => !isSimSkill(s));
   if (unknown.length) fail(`unknown skills: ${unknown.join(", ")}`);
-  const base: PracticeParams = { skills, students: whole("--students", 400), length: whole("--length", 30), seed, masteredAt: share("--mastered-at", MASTERED_AT) };
+  const base: PracticeParams = { skills, students: whole("--students", 400), length: whole("--length", 30), seed, masteredAt: share("--mastered-at", TRUE_MASTERED_AT) };
   // The two learning rates of the simulation study (scripts/simulate-study.ts), so H2 rests on no rate chosen for it.
   const rates = opt("--learn-rates", "0.02,0.1").split(",").map(Number);
   if (rates.some((r) => !(r > 0))) fail("--learn-rates must be numbers above 0, separated by commas");
