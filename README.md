@@ -2078,6 +2078,7 @@ src/math/integration.ts   integration techniques: substitution, by parts, partia
 src/math/statistics.ts    statistics & probability pictures: data, scatter, chance, trees, distributions, CLT
 src/math/inference.ts     inference: confidence intervals, coverage, z/t/proportion tests, two samples, χ², power
 src/math/practice.ts      practice: question generators, answer checking, worksheets; practiceSolve.ts draws solutions
+src/math/practiceTypes.ts the shapes of a question, its answer and its words; practiceKit.ts the helpers generators share
 src/math/chart.ts         shared plot helpers (frames, axes, curves, LaTeX header + captions)
 src/math/analysis.ts      real analysis pictures: ε–N, ε–δ, secant → tangent, Riemann sums, series, Taylor
 src/math/geometry.ts      plane geometry: measurements, classification, drawing
