@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "vectors", "dotangle", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -107,6 +107,14 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   definite: ["integrate"],
   numroots: ["functions"],
   numint: ["definite"],
+  limits: ["functions"],
+  implicit: ["differentiate"],
+  intTechniques: ["integrate"],
+  improper: ["definite", "limits"],
+  intApplications: ["definite"],
+  taylor: ["differentiate", "series"],
+  powerSeries: ["taylor", "limits"],
+  convergence: ["series", "limits"],
   ci: ["average"],
   expectation: ["probability", "average"],
   proofs: ["parity", "primes", "expand"],
@@ -266,6 +274,14 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   counting: [12, 12, 12], // permutations and combinations
   numroots: [13, 13, 13],
   numint: [13, 13, 13],
+  limits: [13, 13, 13], // factor and cancel, limits at infinity, L'Hôpital, one-sided limits (Spivak, Stewart)
+  implicit: [12, 12, 12], // implicit differentiation and connected rates of change (H2)
+  intTechniques: [12, 12, 12], // substitution, by parts, partial fractions, sin² and cos² (H2)
+  improper: [13, 13, 13], // integrals to infinity and of functions that blow up (Stewart)
+  intApplications: [12, 12, 13], // area between curves and volume of revolution (H2); arc length (Stewart)
+  taylor: [12, 12, 13], // Maclaurin series (H2); Taylor series about a ≠ 0 (Stewart)
+  powerSeries: [13, 13, 13], // radius and interval of convergence (Stewart)
+  convergence: [13, 13, 13], // the comparison, ratio, integral and alternating series tests (Stewart)
   ci: [13, 13, 13],
   expectation: [12, 12, 12], // discrete random variables, E(X) and Var(X) (H2)
   proofs: [13, 13, 13], // ordering a proof and its reasons, a faulty proof, counterexamples (Velleman, Hammack)

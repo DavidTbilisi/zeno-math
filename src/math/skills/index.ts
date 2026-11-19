@@ -120,6 +120,14 @@ import mappings from "./mappings";
 import relations from "./relations";
 import induction from "./induction";
 import cardinality from "./cardinality";
+import limits from "./limits";
+import implicit from "./implicit";
+import intTechniques from "./intTechniques";
+import improper from "./improper";
+import intApplications from "./intApplications";
+import taylor from "./taylor";
+import powerSeries from "./powerSeries";
+import convergence from "./convergence";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -239,4 +247,12 @@ export const GENS: Record<SkillId, Gen> = {
   relations,
   induction,
   cardinality,
+  limits,
+  implicit,
+  intTechniques,
+  improper,
+  intApplications,
+  taylor,
+  powerSeries,
+  convergence,
 };

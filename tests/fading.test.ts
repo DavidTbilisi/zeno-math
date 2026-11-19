@@ -7,7 +7,8 @@ import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { diffParts, intParts } from "../src/math/calcSteps.ts";
 import { parseE, tex } from "../src/math/expr.ts";
-import { check, exampleLike, exercise, SKILLS, stepsOf, type Exercise } from "../src/math/practice.ts";
+import { check, exampleLike, exercise, stepsOf, type Exercise } from "../src/math/practice.ts";
+import { FIRST_SKILLS } from "../src/math/practiceSkills.ts";
 import { attemptEvidence, fadedOf, learnFromAttempt, type Attempt } from "../src/learner.ts";
 import { givenSteps, learnFading, type Fading } from "../src/model/fading.ts";
 import { learnIdeas, type IdeaState } from "../src/model/ideaState.ts";
@@ -38,8 +39,12 @@ test("how a derivative and an integral come apart", () => {
   for (const s of ["e^(x^2)", "3/x^2", "x^3", "x sin x"]) assert.equal(i(s), null, s);
 });
 
+// The calculus of the first course and the two machine-learning skills are worked in steps; the degree's single-variable
+// calculus (#379) shows its working as a solution instead.
+const WORKED = [...FIRST_SKILLS.calculus, "descent", "backprop"] as const;
+
 test("every calculus question comes apart into steps the checker accepts, the last being the question itself", () => {
-  for (const skill of SKILLS.calculus)
+  for (const skill of WORKED)
     for (const level of [1, 2, 3] as const) {
       let withSteps = 0;
       for (let seed = 1; seed <= 60; seed++) {
