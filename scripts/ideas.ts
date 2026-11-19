@@ -26,8 +26,11 @@
 //   --idea-fit heuristic    fit each idea by the heuristic that takes a wrong answer as wrong on every idea the question
 //                           needed (the thesis's results before 23 October), not on the conjunctive model's likelihood
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
+//   --jobs 4   worker threads the settings run on (default: the processors less one; the numbers are the same with any)
 //   --json     machine-readable output
 import { compareIdeas, DEFAULT_IDEAS, type IdeaFitting, ideasOf, simulateIdeas, TICK_STYLES, type IdeasComparison, type IdeaSkill, type TickStyle, WORLD_SKILLS } from "../src/model/ideas.ts";
+import { isMainThread } from "node:worker_threads";
+import { jobsFrom, pool, serve } from "./pool.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import { BEYOND_THRESHOLDS, FINE_THRESHOLDS, PRECISION_TARGET, type AtPrecision } from "../src/model/mastery.ts";
 
@@ -93,21 +96,31 @@ const fitTicks = opt("--assume", "") === "fit";
 const assumed = fitTicks ? "fit" as const : rates2("--assume") ?? base.checklist ?? undefined;
 
 type Result = { learnRate: number; isolateRate: number; length: number; knownAtEnd: number; ideasPerQuestion: number } & IdeasComparison;
-const results: Result[] = [];
-for (const learnRate of rates)
-  for (const isolateRate of isolates)
-    for (const length of lengths) {
-      const { train, test } = splitByStudent(simulateIdeas({ ...base, length, learnRate, isolateRate }), testShare, base.seed);
-      for (const skill of skills) {
-        const mine = test.filter((p) => p.skill === skill);
-        const knownAtEnd = mine.filter((p) => p.known[p.known.length - 1]).length / mine.length;
-        const ideasPerQuestion = mine.reduce((s, p) => s + p.needs.reduce((t, n) => t + n.length, 0), 0) / mine.reduce((s, p) => s + p.needs.length, 0);
-        results.push({ learnRate, isolateRate, length, knownAtEnd, ideasPerQuestion, ...compareIdeas(train, test, skill, target, resamples, base.seed, thresholds, assumed, fitting) });
-      }
-    }
+type Setting = { learnRate: number; isolateRate: number; length: number; skill: IdeaSkill };
+const settings: Setting[] = [];
+for (const learnRate of rates) for (const isolateRate of isolates) for (const length of lengths) for (const skill of skills) settings.push({ learnRate, isolateRate, length, skill });
+/**
+ * One skill of one simulated class. The class depends on the setting alone, so a thread that is given several of its
+ * skills simulates it once and every thread simulates the same class.
+ */
+let last: { key: string; split: ReturnType<typeof simulated> } | undefined;
+const simulated = (learnRate: number, isolateRate: number, length: number) => splitByStudent(simulateIdeas({ ...base, length, learnRate, isolateRate }), testShare, base.seed);
+function runSetting({ learnRate, isolateRate, length, skill }: Setting): Result {
+  const key = `${learnRate} ${isolateRate} ${length}`;
+  if (last?.key !== key) last = { key, split: simulated(learnRate, isolateRate, length) };
+  const { train, test } = last.split;
+  const mine = test.filter((p) => p.skill === skill);
+  const knownAtEnd = mine.filter((p) => p.known[p.known.length - 1]).length / mine.length;
+  const ideasPerQuestion = mine.reduce((s, p) => s + p.needs.reduce((t, n) => t + n.length, 0), 0) / mine.reduce((s, p) => s + p.needs.length, 0);
+  return { learnRate, isolateRate, length, knownAtEnd, ideasPerQuestion, ...compareIdeas(train, test, skill, target, resamples, base.seed, thresholds, assumed, fitting) };
+}
+if (!isMainThread) serve(runSetting);
+const results: Result[] = isMainThread ? await pool(import.meta.url, settings, jobsFrom(args, settings.length), runSetting) : [];
 // Written with a single write, not console.log and process.exit: a large JSON on a pipe is cut off by an exit before it has drained.
-if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, assumed: assumed ?? null, fitting, lengths, learnRates: rates, isolateRates: isolates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
-else report();
+if (isMainThread) {
+  if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, assumed: assumed ?? null, fitting, lengths, learnRates: rates, isolateRates: isolates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
+  else report();
+}
 
 function report() {
   const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);

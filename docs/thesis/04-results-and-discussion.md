@@ -14,15 +14,15 @@ commands in Appendix B.
 
 The corrected ASSISTments 2009–2010 skill builder file has 346,860 rows. The importer kept 259,399 of them as
 answers: main problems with a skill and a first-attempt result, every one naming its problem. They come from 4,163
-students in 213 classes, on 110 skills, of which 102 carry a name and eight only a tag number; 432 students answered
+students in 213 classes, on 110 stored labels: 102 named and 8 numeric, including the composite label `97_99_105`; 432 students answered
 in more than one class and are counted in the class they answered most in. The rows left out are the scaffolding
 questions that a wrong answer opens and the problems with no skill tag, which the corrected file writes as NA. Of the
 kept answers 65.8 % were right at the first attempt. Split seed 1 holds out 853 students with 51,452 answers, 66.6 % of
 them right, and leaves 3,310 students with 207,947 answers for fitting; the same split serves H1, H3 and G4, and the
 held-out students' answers form 7,561 practices, one per student and skill, of 6.8 answers on average, since a skill
 builder ends after three right in a row. The EMA fitted on the training students has $\alpha$ = 0.15 and a starting
-score of 0.594, the share of right first answers, above one half as Proposition 1 predicts. For G4 the 110 skills fall
-into five topic areas, algebra (29 skills), geometry (26), number (26), data (16) and the rest (13), and at the
+score of 0.594, the share of right first answers, above one half as Proposition 1 predicts. For G4 the 110 stored labels fall
+into five topic areas, algebra (29 labels), geometry (26), number (26), data (16) and the rest (13), and at the
 coarsest grain into one. Every problem is one observation in the corrected file, so every grain has every answer and
 the three grains are compared on the same 51,452 held-out answers.
 

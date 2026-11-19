@@ -441,8 +441,11 @@ export function afterYes(rule: MasteryRule, practices: readonly Practice[], fitt
         for (let i = 0; i < at; i++) known = bktStep(known, b, p.answers[i] === 1).known;
       }
       for (let i = at; i < Math.min(p.answers.length, at + k); i++) {
-        n++, (right += p.answers[i]);
-        if (isBkt) (promised += known * (1 - b.slip) + (1 - known) * b.guess), (known += (1 - known) * b.learn);
+        n++;
+        right += p.answers[i];
+        if (!isBkt) continue;
+        promised += known * (1 - b.slip) + (1 - known) * b.guess;
+        known += (1 - known) * b.learn;
       }
     }
     return { at, right, n, promised, correct: at !== null && p.known ? p.known[at - 1] === 1 : null };

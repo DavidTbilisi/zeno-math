@@ -11,13 +11,16 @@
 //
 //   npm run grain -- --observations assistments.json     a data set (scripts/import-assistments.ts); topics from its areas
 //   npm run grain -- --simulate                          synthetic learners, topics being the curriculum's areas
+//   --jobs 4   worker threads the grains and the random groupings run on (default: the processors less one; the numbers are the same with any)
 //   --seed 1   --test-share 0.2   --resamples 10000   --smallest 0.005   --streak 3   --partitions 0   --min-practice 1   --json
 import { readFileSync } from "node:fs";
+import { isMainThread } from "node:worker_threads";
+import { jobsFrom, pool, serve } from "./pool.ts";
 import { AREAS, type SkillId } from "../src/math/practiceSkills.ts";
 import { assistmentsTopic, fromFile, longPractices, type DatasetFile } from "../src/model/datasets.ts";
 import type { Observation } from "../src/model/elo.ts";
 import { SMALLEST_DIFFERENCE } from "../src/model/evaluate.ts";
-import { compareGrains, topicBaseline, type GrainResult } from "../src/model/grain.ts";
+import { baselineFrom, combineGrains, dealings, GRAINS, lossesAt, modelAt, type Grain, type GrainPart, type GrainResult, type GroupingLoss } from "../src/model/grain.ts";
 import { SIM_SKILLS, simulateRandom } from "../src/model/simulate.ts";
 
 const args = process.argv.slice(2);
@@ -65,45 +68,59 @@ const withProblems = observations.filter((o) => o.problem !== undefined).length;
 
 // A student with no class stands alone, as in H1's check.
 const classOf = Object.keys(classes).length ? (student: string) => (student in classes ? `class ${classes[student]}` : `student ${student}`) : undefined;
-const result = compareGrains(observations, topicOf, { seed, testShare, resamples, smallest, streak, classOf });
-const baseline = partitions ? topicBaseline(observations, topicOf, { seed, testShare, partitions }) : undefined;
+// Each grain, and each grouping of the baseline, is a task of its own: the groupings are dealt here, in order, from
+// the one seeded generator, and a thread only fits the grouping it is given.
+type Task = { grain: Grain } | { groupOf: Record<string, string> | null };
+const options = { seed, testShare, resamples, smallest, streak, classOf };
+const run = (t: Task): GrainPart | GroupingLoss =>
+  "grain" in t ? modelAt(observations, t.grain, topicOf, options) : lossesAt(observations, t.groupOf ? (skill) => t.groupOf![skill] : topicOf, seed, testShare);
+if (!isMainThread) serve(run);
+else await main();
 
-if (args.includes("--json")) {
-  process.stdout.write(JSON.stringify({ source, minPractice, withProblems, ...result, ...(baseline && { baseline }) }, null, 2) + "\n");
-} else {
-  const n = (x: number) => x.toLocaleString("en");
-  const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
-  const signed = (x: number) => `${x < 0 ? "−" : "+"}${Math.abs(x).toFixed(4)}`;
-  const span = ([lo, hi]: [number, number]) => `[${signed(lo)}, ${signed(hi)}]`;
-  console.log(`${source}: ${n(observations.length)} answers${minPractice > 1 ? ` in practices of ${minPractice} or more` : ""}${withProblems ? ` (${n(withProblems)} name their problem)` : " (no problems named: nothing falls together at a coarser grain)"}; ${(testShare * 100).toFixed(0)} % of students held out, seed ${seed}; ${n(resamples)} resamples of students; smallest difference that counts ${smallest}\n`);
-  console.log(`${"grain".padEnd(8)}${"skills".padStart(7)}${"train".padStart(10)}${"test".padStart(9)}${"BKT".padStart(9)}${"EMA".padStart(9)}  ${"BKT fits at bound / edge".padEnd(26)}EMA α`);
-  for (const g of result.grains)
-    console.log(`${g.grain.padEnd(8)}${n(g.skills).padStart(7)}${n(g.answers.train).padStart(10)}${n(g.answers.test).padStart(9)}${g.bkt.logLoss.toFixed(4).padStart(9)}${g.ema.logLoss.toFixed(4).padStart(9)}  ${`${pct(g.bkt.fits.atBound)} / ${pct(g.bkt.fits.atEdge)} of ${g.bkt.fits.fits}`.padEnd(26)}${g.ema.alpha}`);
-  console.log(`\nfiner grain against coarser, mean log-loss per answer on the ${n(result.tests[0].test.answers)} answers every grain has (below zero, the finer predicts better)`);
-  console.log(`${"comparison".padEnd(28)}${"difference".padStart(11)}  ${"95 % interval".padEnd(20)}verdict`);
-  for (const { name, test } of result.tests) console.log(`${`${name}${test === result.tests[0].test ? " (test)" : ""}`.padEnd(28)}${signed(test.difference).padStart(11)}  ${span(test.interval).padEnd(20)}${test.verdict.replace("first", "finer").replace("second", "coarser")}`);
-  console.log(`\nG4 is decided by BKT skill against one: ${result.tests[0].test.verdict.replace("first", "the finer grain").replace("second", "the coarser grain")}.`);
-  const e = result.emaLosesLess;
-  console.log(`coarsening from skills to one costs BKT ${signed(e.estimate)} per answer more than it costs the EMA ${span(e.interval)} (above zero, BKT loses more)`);
-  if (classOf) {
-    console.log(`\nresampling whole classes (a robustness check, not a second test)`);
-    for (const { name, byClass } of result.tests) console.log(`${name.padEnd(28)}${n(byClass!.groups).padStart(6)} classes  ${span(byClass!.interval).padEnd(20)}${byClass!.verdict.replace("first", "finer").replace("second", "coarser")}`);
-    console.log(`${"BKT's loss minus the EMA's".padEnd(28)}${"".padStart(14)}  ${span(e.byClass!)}`);
-  } else if (dataset) console.log("\nthe data set names no classes: the intervals resample students only, and are optimistic if classmates are alike");
-  if (baseline) {
-    const b = baseline;
-    const sorted = (xs: number[]) => [...xs].sort((x, y) => x - y);
-    const range = (of: "bkt" | "ema") => {
-      const xs = sorted(b.random.map((x) => x[of]));
-      const at = (q: number) => xs[Math.min(xs.length - 1, Math.floor(q * xs.length))];
-      return `${at(0).toFixed(4)} to ${at(1).toFixed(4)} (middle 95 %: ${at(0.025).toFixed(4)} to ${at(0.975).toFixed(4)})`;
-    };
-    console.log(`\nthe topics against ${n(b.partitions)} random groupings of the skills into groups of the same sizes (${Object.entries(b.sizes).map(([t, k]) => `${t} ${k}`).join(", ")}), log-loss on the same answers`);
-    console.log(`  BKT  topics ${b.topics.bkt.toFixed(4)}, random ${range("bkt")}; share of groupings at least as good ${b.beaten.bkt.toFixed(3)}`);
-    console.log(`  EMA  topics ${b.topics.ema.toFixed(4)}, random ${range("ema")}; share of groupings at least as good ${b.beaten.ema.toFixed(3)}`);
+async function main() {
+  const tasks: Task[] = [...GRAINS.map((grain) => ({ grain })), ...(partitions ? [{ groupOf: null }, ...dealings(observations, topicOf, seed, partitions).map((groupOf) => ({ groupOf }))] : [])];
+  const done = await pool(import.meta.url, tasks, jobsFrom(args, tasks.length), run);
+  const result = combineGrains(done.slice(0, GRAINS.length) as GrainPart[], options);
+  const losses = done.slice(GRAINS.length) as GroupingLoss[];
+  const baseline = partitions ? baselineFrom(observations, topicOf, seed, losses[0], losses.slice(1)) : undefined;
+
+  if (args.includes("--json")) {
+    process.stdout.write(JSON.stringify({ source, minPractice, withProblems, ...result, ...(baseline && { baseline }) }, null, 2) + "\n");
+  } else {
+    const n = (x: number) => x.toLocaleString("en");
+    const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
+    const signed = (x: number) => `${x < 0 ? "−" : "+"}${Math.abs(x).toFixed(4)}`;
+    const span = ([lo, hi]: [number, number]) => `[${signed(lo)}, ${signed(hi)}]`;
+    console.log(`${source}: ${n(observations.length)} answers${minPractice > 1 ? ` in practices of ${minPractice} or more` : ""}${withProblems ? ` (${n(withProblems)} name their problem)` : " (no problems named: nothing falls together at a coarser grain)"}; ${(testShare * 100).toFixed(0)} % of students held out, seed ${seed}; ${n(resamples)} resamples of students; smallest difference that counts ${smallest}\n`);
+    console.log(`${"grain".padEnd(8)}${"skills".padStart(7)}${"train".padStart(10)}${"test".padStart(9)}${"BKT".padStart(9)}${"EMA".padStart(9)}  ${"BKT fits at bound / edge".padEnd(26)}EMA α`);
+    for (const g of result.grains)
+      console.log(`${g.grain.padEnd(8)}${n(g.skills).padStart(7)}${n(g.answers.train).padStart(10)}${n(g.answers.test).padStart(9)}${g.bkt.logLoss.toFixed(4).padStart(9)}${g.ema.logLoss.toFixed(4).padStart(9)}  ${`${pct(g.bkt.fits.atBound)} / ${pct(g.bkt.fits.atEdge)} of ${g.bkt.fits.fits}`.padEnd(26)}${g.ema.alpha}`);
+    console.log(`\nfiner grain against coarser, mean log-loss per answer on the ${n(result.tests[0].test.answers)} answers every grain has (below zero, the finer predicts better)`);
+    console.log(`${"comparison".padEnd(28)}${"difference".padStart(11)}  ${"95 % interval".padEnd(20)}verdict`);
+    for (const { name, test } of result.tests) console.log(`${`${name}${test === result.tests[0].test ? " (test)" : ""}`.padEnd(28)}${signed(test.difference).padStart(11)}  ${span(test.interval).padEnd(20)}${test.verdict.replace("first", "finer").replace("second", "coarser")}`);
+    console.log(`\nG4 is decided by BKT skill against one: ${result.tests[0].test.verdict.replace("first", "the finer grain").replace("second", "the coarser grain")}.`);
+    const e = result.emaLosesLess;
+    console.log(`coarsening from skills to one costs BKT ${signed(e.estimate)} per answer more than it costs the EMA ${span(e.interval)} (above zero, BKT loses more)`);
+    if (classOf) {
+      console.log(`\nresampling whole classes (a robustness check, not a second test)`);
+      for (const { name, byClass } of result.tests) console.log(`${name.padEnd(28)}${n(byClass!.groups).padStart(6)} classes  ${span(byClass!.interval).padEnd(20)}${byClass!.verdict.replace("first", "finer").replace("second", "coarser")}`);
+      console.log(`${"BKT's loss minus the EMA's".padEnd(28)}${"".padStart(14)}  ${span(e.byClass!)}`);
+    } else if (dataset) console.log("\nthe data set names no classes: the intervals resample students only, and are optimistic if classmates are alike");
+    if (baseline) {
+      const b = baseline;
+      const sorted = (xs: number[]) => [...xs].sort((x, y) => x - y);
+      const range = (of: "bkt" | "ema") => {
+        const xs = sorted(b.random.map((x) => x[of]));
+        const at = (q: number) => xs[Math.min(xs.length - 1, Math.floor(q * xs.length))];
+        return `${at(0).toFixed(4)} to ${at(1).toFixed(4)} (middle 95 %: ${at(0.025).toFixed(4)} to ${at(0.975).toFixed(4)})`;
+      };
+      console.log(`\nthe topics against ${n(b.partitions)} random groupings of the skills into groups of the same sizes (${Object.entries(b.sizes).map(([t, k]) => `${t} ${k}`).join(", ")}), log-loss on the same answers`);
+      console.log(`  BKT  topics ${b.topics.bkt.toFixed(4)}, random ${range("bkt")}; share of groupings at least as good ${b.beaten.bkt.toFixed(3)}`);
+      console.log(`  EMA  topics ${b.topics.ema.toFixed(4)}, random ${range("ema")}; share of groupings at least as good ${b.beaten.ema.toFixed(3)}`);
+    }
+    console.log("\nmastery declarations on the held-out practices at each grain (no truth; the share declared, the mean answers to a declaration, the share right on the next three answers)");
+    const line = (g: GrainResult, d: GrainResult["declarations"][number]) => console.log(`  ${g.grain.padEnd(8)}${d.rule.padEnd(22)}${pct(d.declared).padStart(8)}${d.cost.toFixed(2).padStart(9)}${pct(d.rightAfter).padStart(9)}`);
+    console.log(`  ${"grain".padEnd(8)}${"rule".padEnd(22)}${"declared".padStart(8)}${"answers".padStart(9)}${"right after".padStart(12)}`);
+    for (const g of result.grains) for (const d of g.declarations) line(g, d);
   }
-  console.log("\nmastery declarations on the held-out practices at each grain (no truth; the share declared, the mean answers to a declaration, the share right on the next three answers)");
-  const line = (g: GrainResult, d: GrainResult["declarations"][number]) => console.log(`  ${g.grain.padEnd(8)}${d.rule.padEnd(22)}${pct(d.declared).padStart(8)}${d.cost.toFixed(2).padStart(9)}${pct(d.rightAfter).padStart(9)}`);
-  console.log(`  ${"grain".padEnd(8)}${"rule".padEnd(22)}${"declared".padStart(8)}${"answers".padStart(9)}${"right after".padStart(12)}`);
-  for (const g of result.grains) for (const d of g.declarations) line(g, d);
 }

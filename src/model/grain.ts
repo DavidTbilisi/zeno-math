@@ -92,31 +92,47 @@ export type GrainComparison = {
  * G4: the answers at every grain, split by student (the same students held out at each), BKT and the EMA fitted and
  * replayed at each, the paired tests between grains, and the declarations each method makes at each grain.
  */
-export function compareGrains(observations: readonly Observation[], topicOf: (skill: string) => string, { seed = 1, testShare = 0.2, resamples = 10000, smallest = SMALLEST_DIFFERENCE, streak = 3, classOf }: GrainOptions = {}): GrainComparison {
-  const predictions = new Map<string, StudentPrediction[]>();
-  const grains = GRAINS.map((grain): GrainResult => {
-    const at = regrain(observations, grain, topicOf);
-    const { train, test } = splitByStudent(at, testShare, seed);
-    if (!train.length || !test.length) throw new Error("too few students to hold some out");
-    const bkt = new BktModel(), ema = new EmaModel();
-    const keep = primary(test);
-    const shared = (ps: StudentPrediction[]) => ps.filter((_, i) => keep[i]);
-    const bktPs = heldOutPredictions(bkt, train, test), emaPs = heldOutPredictions(ema, train, test);
-    predictions.set(`BKT ${grain}`, shared(bktPs));
-    predictions.set(`EMA ${grain}`, shared(emaPs));
-    const skills = [...sequencesBySkill(train).keys()];
-    const fitted: Fitted = { bkt: (skill) => bkt.paramsOf(skill), ema: ema.params };
-    const trainPractices = practicesFrom(train), testPractices = practicesFrom(test);
-    const rules = usualRules(fitted, trainPractices, streak);
-    return {
+export function compareGrains(observations: readonly Observation[], topicOf: (skill: string) => string, options: GrainOptions = {}): GrainComparison {
+  return combineGrains(GRAINS.map((grain) => modelAt(observations, grain, topicOf, options)), options);
+}
+
+/** One grain's part of compareGrains: its result, and both models' predictions of the answers every grain has. */
+export type GrainPart = { result: GrainResult; bkt: StudentPrediction[]; ema: StudentPrediction[] };
+/**
+ * The answers at one grain, split by student, BKT and the EMA fitted and replayed, and the declarations counted. It
+ * depends on the grain and the seed alone, so the grains can be modelled apart (scripts/grain.ts does, on threads).
+ */
+export function modelAt(observations: readonly Observation[], grain: Grain, topicOf: (skill: string) => string, { seed = 1, testShare = 0.2, streak = 3 }: GrainOptions = {}): GrainPart {
+  const at = regrain(observations, grain, topicOf);
+  const { train, test } = splitByStudent(at, testShare, seed);
+  if (!train.length || !test.length) throw new Error("too few students to hold some out");
+  const bkt = new BktModel(), ema = new EmaModel();
+  const keep = primary(test);
+  const shared = (ps: StudentPrediction[]) => ps.filter((_, i) => keep[i]);
+  const bktPs = heldOutPredictions(bkt, train, test), emaPs = heldOutPredictions(ema, train, test);
+  const skills = [...sequencesBySkill(train).keys()];
+  const fitted: Fitted = { bkt: (skill) => bkt.paramsOf(skill), ema: ema.params };
+  const trainPractices = practicesFrom(train), testPractices = practicesFrom(test);
+  const rules = usualRules(fitted, trainPractices, streak);
+  return {
+    result: {
       grain,
       skills: skills.length,
       answers: { train: train.length, test: test.length },
       bkt: { logLoss: meanLoss(bktPs), fits: fitShares(skills.map(fitted.bkt)) },
       ema: { logLoss: meanLoss(emaPs), alpha: ema.params.alpha, start: ema.params.start },
       declarations: rules.map((rule) => ({ ...judge(rule, testPractices), rightAfter: rightAfter(rule, testPractices).right })),
-    };
-  });
+    },
+    bkt: shared(bktPs),
+    ema: shared(emaPs),
+  };
+}
+
+/** The grains' parts, in the order of GRAINS, put together: the paired tests between grains and the contrast. */
+export function combineGrains(parts: readonly GrainPart[], { seed = 1, testShare = 0.2, resamples = 10000, smallest = SMALLEST_DIFFERENCE, classOf }: GrainOptions = {}): GrainComparison {
+  const predictions = new Map<string, StudentPrediction[]>();
+  for (const p of parts) predictions.set(`BKT ${p.result.grain}`, p.bkt), predictions.set(`EMA ${p.result.grain}`, p.ema);
+  const grains = parts.map((p) => p.result);
   const of = (name: string) => ({ name, predictions: predictions.get(name)! });
   const pair = (first: string, second: string) => ({
     name: `${first} against ${second}`,
@@ -166,29 +182,41 @@ export function contrast(terms: readonly (readonly [readonly StudentPrediction[]
  * least as well as the topics, a one-sided permutation p-value (counting the topics themselves among the groupings).
  */
 export function topicBaseline(observations: readonly Observation[], topicOf: (skill: string) => string, { seed = 1, testShare = 0.2, partitions = 100 }: { seed?: number; testShare?: number; partitions?: number } = {}) {
+  const topics = lossesAt(observations, topicOf, seed, testShare);
+  const random = dealings(observations, topicOf, seed, partitions).map((groupOf) => lossesAt(observations, (skill) => groupOf[skill], seed, testShare));
+  return baselineFrom(observations, topicOf, seed, topics, random);
+}
+export type GroupingLoss = { bkt: number; ema: number };
+/** The held-out log-loss of BKT and the EMA with the skills grouped by groupOf, on the answers every grain has. */
+export function lossesAt(observations: readonly Observation[], groupOf: (skill: string) => string, seed = 1, testShare = 0.2): GroupingLoss {
+  const at = regrain(observations, "topic", groupOf);
+  const { train, test } = splitByStudent(at, testShare, seed);
+  if (!train.length || !test.length) throw new Error("too few students to hold some out");
+  const keep = primary(test);
+  const loss = (ps: StudentPrediction[]) => meanLoss(ps.filter((_, i) => keep[i]));
+  return { bkt: loss(heldOutPredictions(new BktModel(), train, test)), ema: loss(heldOutPredictions(new EmaModel(), train, test)) };
+}
+/** The random groupings of topicBaseline, each skill's group by its name: all dealt from the one seeded generator, in order. */
+export function dealings(observations: readonly Observation[], topicOf: (skill: string) => string, seed = 1, partitions = 100): Record<string, string>[] {
   const skills = [...new Set(observations.map((o) => o.skill))].sort();
   const labels = skills.map(topicOf);
-  const lossesAt = (groupOf: (skill: string) => string) => {
-    const at = regrain(observations, "topic", groupOf);
-    const { train, test } = splitByStudent(at, testShare, seed);
-    if (!train.length || !test.length) throw new Error("too few students to hold some out");
-    const keep = primary(test);
-    const loss = (ps: StudentPrediction[]) => meanLoss(ps.filter((_, i) => keep[i]));
-    return { bkt: loss(heldOutPredictions(new BktModel(), train, test)), ema: loss(heldOutPredictions(new EmaModel(), train, test)) };
-  };
-  const topics = lossesAt(topicOf);
   const r = rng(seed);
-  const random: { bkt: number; ema: number }[] = [];
+  const out: Record<string, string>[] = [];
   for (let k = 0; k < partitions; k++) {
     const dealt = [...labels];
     for (let i = dealt.length - 1; i > 0; i--) {
       const j = Math.floor(r.next() * (i + 1));
       [dealt[i], dealt[j]] = [dealt[j], dealt[i]];
     }
-    const groupOf = new Map(skills.map((s, i) => [s, dealt[i]]));
-    random.push(lossesAt((skill) => groupOf.get(skill)!));
+    out.push(Object.fromEntries(skills.map((s, i) => [s, dealt[i]])));
   }
+  return out;
+}
+/** topicBaseline's result from the topics' losses and the random groupings' losses, in the order dealings dealt them. */
+export function baselineFrom(observations: readonly Observation[], topicOf: (skill: string) => string, seed: number, topics: GroupingLoss, random: readonly GroupingLoss[]) {
+  const partitions = random.length;
+  const labels = [...new Set(observations.map((o) => o.skill))].sort().map(topicOf);
   const beaten = (of: "bkt" | "ema") => (1 + random.filter((x) => x[of] <= topics[of]).length) / (1 + random.length);
   const sizes = Object.fromEntries([...new Set(labels)].sort().map((t) => [t, labels.filter((l) => l === t).length]));
-  return { seed, partitions, sizes, topics, random, beaten: { bkt: beaten("bkt"), ema: beaten("ema") } };
+  return { seed, partitions, sizes, topics, random: [...random], beaten: { bkt: beaten("bkt"), ema: beaten("ema") } };
 }

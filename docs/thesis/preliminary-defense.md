@@ -1,6 +1,6 @@
 # Preliminary defence
 
-The talk for the preliminary defence of *The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems*, by Davit Tchintcharashvili, supervised by Mikheil Gigauri. The defence falls between 16 and 21 November 2026; the date, room and length allowed are not yet known. The talk is about 1280 words, which is about 10 minutes at an even pace. It covers what the preliminary draft sent on 9 November contains, the method and the simulation results, and every number is that draft's. The slides are in `preliminary-defense.pptx`, with this text in each slide's notes; both files are written by `scripts/preliminary-slides.py`.
+The talk for the preliminary defence of *The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems*, by Davit Tchintcharashvili, supervised by Mikheil Gigauri. The defence is on 19 November 2026 at 18:30 in room 325; attendance is mandatory, and the length allowed is not yet known. The talk is about 1420 words, which is about 11 minutes at an even pace. It covers what the preliminary draft sent on 9 November contains, the method and the simulation results, and every number is that draft's. The slides are in `preliminary-defense.pptx`, with this text in each slide's notes; both files are written by `scripts/preliminary-slides.py`.
 
 ## The talk
 
@@ -16,47 +16,51 @@ A learning program asks a student questions. After each answer it must decide: d
 
 This is Zeno. I built it for mathematics lessons in Georgian schools. It is a working product, and it works in Georgian and in English. On the left you see the student's side. Zeno makes the questions itself, so every student gets different numbers. Here the student added the tops and the bottoms of two fractions. Zeno knows this mistake and explains it. On the right you see the teacher's side. Each row is a student and each column is a skill. Dark blue means the student is strong in this skill. To fill this table, Zeno must decide when a student knows a skill. My thesis is about this decision.
 
-*Slide 4: Research question.*
+*Slide 4: Technology and architecture.*
+
+This is how Zeno is built. The students open Zeno in a browser. The front is React and TypeScript, and the whiteboard is Excalidraw, which is free and open. The questions, the checker and the learner model run in the browser, so Zeno keeps working when the Wi-Fi stops, and it sends the answers later. The server runs on one school computer or on the teacher's laptop. Caddy gives it HTTPS. The server is Node, and it keeps everything in one SQLite file: no database server, easy to copy, easy to back up. The server marks every answer again with the same checker. The same TypeScript code runs in the browser and on the server, so the model gives the same answer in both places. This is also why my simulations use this code: I test the real code that students use.
+
+*Slide 5: Research question.*
 
 This is my research question. Does the size of a skill change how well the program decides? I look at two things. First, is the decision right? When the program says the student knows the skill, is it true? Second, is the decision stable? Does the same rule work in different situations?
 
-*Slide 5: What other researchers did.*
+*Slide 6: What other researchers did.*
 
 Other researchers worked on this before me. Some compared the rules for deciding. Some compared big skills and small skills. But they only asked: can we predict the next answer? Nobody checked the decision itself, the decision that the student knows the skill. To check it, we must know the truth about the student. This is the new part of my thesis.
 
-*Slide 6: Three rules for deciding.*
+*Slide 7: Three rules for deciding.*
 
 I compare three rules. The first is BKT, Bayesian Knowledge Tracing. It calculates the probability that the student knows the skill. When the probability is 95 percent or more, it says yes. The second is the moving average. It looks at the last answers, and new answers count more. The third is the streak rule. The student must give some right answers in a row, for example three. I also proved two statements. The first: the streak rule is a special case of the moving average. The second: BKT is correct when students learn exactly as BKT expects. So I must test BKT where students learn in a different way.
 
-*Slide 7: Method: computer-made students.*
+*Slide 8: Method: computer-made students.*
 
 How can I check a decision? With real students, we never know the truth. So I made students in the computer, four hundred of them. This is called simulation. For these students, I know exactly what they know after every answer. So I can check every decision. Then I change the size of the skill. First the skill in the program is too big. Then it is the correct size. Then it is too small. I set the rules on one group of students, and I test them on a different group. Anyone can run my code and get the same numbers.
 
-*Slide 8: Result 1: BKT is good only when students learn as it expects.*
+*Slide 9: Result 1: BKT is good only when students learn as it expects.*
 
 The first result. The goal is that nine of ten decisions are right. When students can forget, BKT is the fastest. It needs about three and a half answers. The moving average needs five and a half. But when students learn slowly, step by step, BKT does not reach the goal. It becomes very sure after a few right answers, but the student is not ready. So the number from BKT is not always a real probability. In one situation we can trust it. In another situation we cannot.
 
-*Slide 9: Result 2: a skill that is too big gives “yes” too early.*
+*Slide 10: Result 2: a skill that is too big gives “yes” too early.*
 
 The second result. Why does BKT fail? The reason is the size of the skill. Here, the real skill has several parts. The student learns each part separately. But the program sees only one big skill. Look at the picture. When the skill has one part, 98 percent of decisions are right. With two parts, 59 percent. With four parts, only 23 percent. All three rules fail together. The simple rules are not safer. The dashed line is BKT on each real part. It stays near 98 percent. But with eight or sixteen parts it stops deciding, because thirty questions are not enough for so many parts.
 
-*Slide 10: Result 3: the correct size helps, but it needs enough questions.*
+*Slide 11: Result 3: the correct size helps, but it needs enough questions.*
 
 The third result uses a real topic, fractions. I divided fractions into sixteen small ideas. The questions come from Zeno. Zeno is the practice system that I built. One fractions question needs about six ideas together. So when the answer is wrong, we do not know which idea is missing. With thirty questions, the program finds the missing idea in 57 percent of cases, and it says yes to almost nobody. With 120 questions, it finds the missing idea in 79 percent of cases. So the correct size helps. But it needs two things: questions that show the ideas separately, and enough practice.
 
-*Slide 11: Result 4: when the skill is too small, students wait too long.*
+*Slide 12: Result 4: when the skill is too small, students wait too long.*
 
 The fourth result is the opposite case. The students are the same and the answers are the same. But the program cuts each real part into smaller pieces. When I cut each part into four pieces, the program needs ten more answers. And with the usual 95 percent rule, it says yes to only 7 percent of students. Before, it was 94 percent. So smaller is not always better. Each small piece gets too few answers.
 
-*Slide 12: Result 5: a warning sign that needs no truth.*
+*Slide 13: Result 5: a warning sign that needs no truth.*
 
-The fifth result is new. I made it this month. With real students we cannot see the truth. But we can see one thing: the next three answers after the program says yes. Is this a useful sign? I checked it with the computer-made students, because there I know the truth. Look at the table. When the skill has the correct size, 98 percent of decisions are right, and 88 percent of the next answers are right. When the skill is too big, both numbers go down together. So the sign works. But it is a weak sign. The truth falls from 98 to 8 percent. The sign falls only from 88 to 64. Then I looked at real students. With 110 skills, 79 percent of the next answers are right. With 5 big topics, 73 percent. So the real data move in the same direction. A teacher can use this sign to compare two ways of dividing a subject. But it does not show how many decisions are wrong.
+The fifth result is new. I made it this month. With real students we cannot see the truth. But we can see one thing: the next three answers after the program says yes. Is this a useful sign? I checked it with the computer-made students, because there I know the truth. Look at the chart. When the skill has the correct size, 98 percent of decisions are right, and 88 percent of the next answers are right. When the skill is too big, both numbers go down together. So the sign works. But it is a weak sign. The truth falls from 98 to 8 percent. The sign falls only from 88 to 64. Then I looked at real students. With 110 skills, 79 percent of the next answers are right. With 5 big topics, 73 percent. So the real data move in the same direction. A teacher can use this sign to compare two ways of dividing a subject. But it does not show how many decisions are wrong.
 
-*Slide 13: Limits of this work.*
+*Slide 14: Limits of this work.*
 
 My work has limits. The students are made by computer, and real students can be different. I divided fractions into sixteen ideas myself, and another person could do it differently. A rule that works for one group does not always work for a new group. I repeated every experiment five times, and I keep only the results that stay the same. I do not say there is one best size for all skills. And I do not measure if Zeno helps a real class.
 
-*Slide 14: Conclusion and next steps.*
+*Slide 15: Conclusion and next steps.*
 
 My conclusion. The size of a skill changes the decision. When the skill is too big, the program says yes too early. When the skill is too small, the program almost never says yes. So we must choose the skills, the questions and the rule together. What is next? For the final thesis, I study the same question on answers of real students. This is a public data set called ASSISTments, with about four thousand students. Thank you. I am ready for your questions.
 
@@ -77,6 +81,18 @@ My conclusion. The size of a skill changes the decision. When the skill is too b
 **What did you do yourself?** The two proofs, the computer-made students, the sixteen ideas of fractions, the code for all three rules, and the analysis. All the code is public. Each table shows the command that made it.
 
 **Why don't you use Python or MATLAB for the simulations?** Zeno is written in TypeScript, and the simulation uses the same code as Zeno: the same question generators and the same rules for deciding. So I test the real code that students use, not a copy of it. If I wrote it again in Python or MATLAB, I would have two versions, and they could give different results. The mathematics is simple, probabilities and averages, so I do not need a special tool. I can also fix the random numbers, so one command gives the same tables again. Python is a good choice for a new project; here the product already existed in TypeScript.
+
+**Why did you build Zeno with these technologies?** Because of the schools. In a Georgian school the Wi-Fi often does not work, the computers are old and shared, and there is no money for licences. So Zeno runs on one school computer or on the teacher's laptop, and the students open it in a browser. It loads nothing from the internet and keeps working when the connection is lost. The front is React and TypeScript, and the whiteboard is Excalidraw, which is free and open. The server is Node with one SQLite file: no database server, easy to copy, easy to back up. It does not scale to thousands of schools at once, but one school does not need that. The same TypeScript runs in the browser and on the server, so the model gives the same answer in both places.
+
+**Why do you need HTTPS if Zeno is local?** Local means that the server is on the school's computer. But the students open Zeno on their own computers, so every answer goes over the school Wi-Fi. Without HTTPS, anyone on that Wi-Fi can read the teacher's password, the student codes and the answers. Also, browsers allow some functions only with HTTPS, for example copying a link. If Zeno is opened only on the same computer, as localhost, HTTPS is not needed. Caddy makes the certificate itself, so HTTPS costs the school nothing.
+
+**Why these three rules, and not deep learning, for example DKT?** I compare the rules that real programs use to decide. BKT with 95 percent is the classic rule from Corbett and Anderson. Three right in a row is the rule of the ASSISTments skill builders. The moving average is used in practice too, and I proved that the streak rule is a special case of it. Deep knowledge tracing predicts the next answer well, but much of its advantage goes away when BKT gets forgetting and differences between students. It needs a lot of data, its inside is hard to explain to a teacher, and programs do not use it to say "this student knows the skill". My question is about that decision, so I compare the rules that make it.
+
+**Why 95 percent for BKT? Is it not arbitrary?** 95 percent is the standard value since Corbett and Anderson, so I start there. But I do not trust one value. For every rule I also search the cheapest threshold that reaches nine right decisions of ten, and I set it on one group of students and test it on another. So the result does not depend on the choice of 95.
+
+**Why ASSISTments 2009-2010?** It is public, it is large, about four thousand students and 260 thousand answers, and it is the data set most papers in knowledge tracing use. So other researchers can check my numbers. I use the corrected version of the file, and the import is in the code. Zeno's own data is still small; it comes later.
+
+**Zeno chooses questions with an Elo model. Why does the thesis study BKT?** Two different jobs. The Elo model in Zeno chooses the next question, at the right difficulty. The thesis studies the other job: the decision that the student knows the skill. BKT is the classic model for that decision. The Elo model is in my prediction table, as a point of comparison. On ASSISTments it even predicts the next answer a little better than BKT, 0.561 against 0.569 in log-loss. But a good forecast of the next answer is not the same as a right decision. That difference is the reason for this thesis.
 
 **What is your plan for the future of the product?** I want to grow Zeno in three directions. First, I put the result of this thesis into Zeno and try it with a real class and a teacher. Second, more subjects. Now Zeno has mathematics. The method is not only for mathematics: any subject that we can divide into small ideas, with questions for each idea, can use it, for example physics or programming. Third, machine learning. In this thesis I divided fractions into sixteen ideas by hand. For many subjects that is too slow. So the next step is that the program learns the small ideas from the students' answers. Zeno already does a first version of this: it can split or join ideas when the data supports it. With more students and more data, stronger models become possible. Later, a bigger study in several schools can check if this practice really helps students learn more.
 

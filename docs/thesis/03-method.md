@@ -198,9 +198,10 @@ the $k$); and, in the world of ideas, the three skills of three, six and sixteen
 The measures are the precision of each method at the threshold a deployed system would use without a truth to set it by,
 the cheapest threshold meeting the 90 % standard, and the Brier score of each method's score against the truth.
 
-G2, the right grain, and the condition on the questions. Modelling at the true grain, BKT on each component read
-conjunctively, restores the standard at an ordinary threshold and lets the model say which component a learner lacks,
-if and only if the questions tell the components apart. The sweep, in the world of ideas on fractions, is the share of
+G2, the right grain, and the condition on the questions. G2 tests whether modelling at the true grain, BKT on each
+component read conjunctively, restores the standard at an ordinary threshold and helps identify the missing component.
+In these simulated worlds, both depend on question evidence that distinguishes components and enough practice to
+observe them. The sweep, in the world of ideas on fractions, is the share of
 questions that ask for one idea alone (0, 25, 50 and 100 %) against the length of the practice (30, 60 and 120
 questions), at both learning rates; the number of components a question needs is swept in the world of components,
 where it can be set. The measures are those of G1, together with whether the missing idea is found (at every moment a
@@ -245,7 +246,7 @@ result of 0 or 1; the corrected file writes a missing value as NA, which the imp
 answers in the order they were given, by the log's order identifier, and keeps each problem's identifier. Where a file
 has a row per skill, a problem tagged with several skills counts once for each skill, as in most work on knowledge
 tracing; this gives the same answer weight on each of its skills, and section 3.3 returns to it. The corrected file
-has one row per problem, which carries the first of the problem's skills, so on it every problem is one observation. The importer also
+has one row per student-problem. Its one composite multi-skill tag, `97_99_105`, is retained as one stored label by the importer; this analysis does not split it into component skills. The finest grain is therefore the dataset's stored-tag grain, and this composite label accounts for 147 of the 259,399 retained observations (0.06%). Each problem remains one observation, so every grain has every answer. The importer also
 keeps each student's class, so the bootstrap can resample whole classes as a robustness check (section 2.3). A student
 who answered in several classes is counted in the one in which they answered most of the kept problems. For the
 mastery methods the answers are grouped into sequences, one per student and skill, which this thesis calls practices.

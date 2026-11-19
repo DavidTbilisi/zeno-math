@@ -172,9 +172,10 @@ stated for the sweeps that have not yet been run.
   time on times (three ideas, all in every question), 55 to 77 % on hcf (six, four a question) and 16 to 30 % on
   fractions (sixteen, six a question). This is also the diagnosis of H2's result: a coarse grain makes all-at-once
   learning look gradual, and it does so in proportion to what each question leaves untested.
-- **G2, the right grain, and the condition on the questions.** Modelling at the true grain (BKT per component,
-  conjunctive) restores the standard at an ordinary threshold and lets the model say which component a learner lacks,
-  if and only if the questions tell the components apart. Sweep, in the ideas world: the share of questions that ask
+- **G2, the right grain, and the condition on the questions.** G2 tests whether modelling at the true grain (BKT per
+  component, conjunctive) restores the standard at an ordinary threshold and helps identify the missing component. In
+  these simulated worlds, both outcomes depend on question evidence that distinguishes components and enough practice
+  to observe them. Sweep, in the ideas world: the share of questions that ask
   for one component alone (0, 25, 50, 100 %) against practice length (30, 60, 120), on fractions (sixteen
   components, six a question as generated); and, in the atoms world where it can be set, the number of components a
   question needs (`--per-question`). Measures: as G1, plus "missing idea found" (at every moment a learner is one
@@ -206,14 +207,18 @@ stated for the sweeps that have not yet been run.
   held-out ones. Sweep: over-splitting factor 1, 2, 4 at the true k; k from 1 to 32 at n = 30 and 120. Measures: as
   G1, plus answers to declaration, the share of learners never declared, the share of degenerate fits, and the
   difference between the threshold chosen on training learners and the one that would have been best on held-out
-  ones (threshold stability). This study has no first run; it needs an over-splitting variant in `atoms.ts`.
+  ones (threshold stability). Results are reported in Tables 3.13 and 3.14 of
+  `04-results-and-discussion.md`, and `scripts/atoms.ts` includes the `--split`
+  variant. Table 3.13 tests split factors 1, 2 and 4 at a true k of two; Table
+  3.14 reports the longer 120-question settings. This resolves the earlier
+  “no first run” status, but the recorded runs do not cover the originally
+  proposed k through 32 at both practice lengths.
 - **G4, real data across grains (confirmatory).** On ASSISTments 2009–2010 the same answers can be modelled at three
-  grains without new data: the data set's own skill tags (110 skills), the topic areas the importer
+  grains without new data: the data set's stored skill labels (110 labels, one composite), the topic areas the importer
   already assigns to them (`assistmentsTopic` in `src/model/datasets.ts`, five areas), and one skill for all of
   mathematics (`src/model/grain.ts`, `npm run grain`). In a file with a row per skill a problem tagged with several
   skills is one observation per skill at the finest grain and, where those skills fall together, one at a coarser
-  grain; the paired tests run on the first observation of each problem, which every grain keeps. The corrected file
-  has one row per problem under its first skill, so there every grain has every answer. Hypothesis: BKT fitted at the data set's grain predicts held-out students' answers better than BKT
+  grain; the paired tests run on the first observation of each problem, which every grain keeps. The corrected file has one row per student-problem. Its one composite multi-skill tag, `97_99_105` (147 retained answers), is treated as one stored label, so the finest grain is the dataset's tag grain rather than a decomposition into component skills. Every grain still has every answer. Hypothesis: BKT fitted at the data set's grain predicts held-out students' answers better than BKT
   at the topic grain, which predicts better than one skill (log-loss, paired bootstrap over students, 0.005 as the
   smallest difference that counts, the finest-against-coarsest difference as the one confirmatory test). Exploratory
   beside it: whether the EMA loses less than BKT from coarsening (it conditions on fewer answers, so it should),

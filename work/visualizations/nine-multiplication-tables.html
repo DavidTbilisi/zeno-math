@@ -1,0 +1,54 @@
+<div id="nine-tables">
+  <div class="viz-controls">
+    <label class="form-label">Groups in each picture
+      <select class="form-select" aria-label="Number of groups"><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
+    </label>
+  </div>
+  <div class="pictures" aria-live="polite"></div>
+  <style>
+    #nine-tables .pictures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px 16px; margin-top:20px; }
+    #nine-tables .picture { min-width:0; }
+    #nine-tables .dots { display:grid; gap:5px; width:fit-content; margin:12px 0; }
+    #nine-tables .dot { width:12px; height:12px; border-radius:50%; background:var(--viz-series-1); }
+    #nine-tables .caption { color:var(--muted-foreground); }
+    @media(max-width:520px) { #nine-tables .pictures { grid-template-columns:repeat(2,minmax(0,1fr)); } #nine-tables .dot { width:10px; height:10px; } #nine-tables .dots { gap:4px; } }
+  </style>
+  <script>
+    (() => {
+      const root = document.getElementById('nine-tables');
+      const select = root.querySelector('select');
+      const pictures = root.querySelector('.pictures');
+      function render(value) {
+        const groups = Math.max(1,Math.min(9,Number(value)||4));
+        select.value = String(groups);
+        pictures.replaceChildren();
+        for(let n=1;n<=9;n++) {
+          const panel = document.createElement('section');
+          panel.className='picture';
+          const heading=document.createElement('div');
+          heading.textContent=`${n} × ${groups} = ${n*groups}`;
+          heading.className='tabular-nums';
+          const dots=document.createElement('div');
+          dots.className='dots';
+          dots.style.gridTemplateColumns=`repeat(${n}, auto)`;
+          dots.setAttribute('role','img');
+          dots.setAttribute('aria-label',`${groups} rows of ${n} dots: ${n*groups} dots altogether`);
+          for(let i=0;i<n*groups;i++) {
+            const dot=document.createElement('span'); dot.className='dot'; dot.setAttribute('aria-hidden','true'); dots.append(dot);
+          }
+          const caption=document.createElement('div'); caption.className='caption text-small'; caption.textContent=`${groups} groups of ${n}`;
+          panel.append(heading,dots,caption); pictures.append(panel);
+        }
+      }
+      render(window.openai?.widgetState?.modelContent?.groups);
+      select.addEventListener('change',()=>{
+        render(select.value);
+        window.openai?.setWidgetState({modelContent:{groups:Number(select.value)},privateContent:null}).catch(()=>{});
+      });
+      window.addEventListener('openai:set_globals',e=>{
+        const state=e.detail?.globals?.widgetState;
+        if(state) render(state.modelContent?.groups);
+      });
+    })();
+  </script>
+</div>

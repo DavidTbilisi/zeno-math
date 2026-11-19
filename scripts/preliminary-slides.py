@@ -2,22 +2,17 @@
 
   python3 scripts/preliminary-slides.py
 
-writes docs/thesis/preliminary-defense.pptx (the text to say is in each slide's notes) and
+writes docs/thesis/preliminary-defense.pptx (the text to say is in each slide's notes; the look and the charts are
+in scripts/preliminary_deck.py) and
 docs/thesis/preliminary-defense.md (the same talk to read from, with the questions to expect).
-Every number is from docs/thesis/preliminary-draft.md as sent on 9 November 2026. Needs python-pptx and Pillow.
+Every number is from docs/thesis/preliminary-draft.md as sent on 9 November 2026. Needs python-pptx, Pillow and matplotlib.
 """
-from io import BytesIO
 from pathlib import Path
 
-from PIL import Image
-
-from pptx import Presentation
-from pptx.dml.color import RGBColor
-from pptx.util import Inches, Pt
+from preliminary_deck import build_pptx
 
 DIR = Path(__file__).resolve().parent.parent / "docs" / "thesis"
 TITLE = "The Effect of Skill Granularity on Mastery Estimation in Adaptive Learning Systems"
-INK, GREY, RED = RGBColor(0x1F, 0x23, 0x28), RGBColor(0x5A, 0x62, 0x6B), RGBColor(0xC8, 0x10, 0x2E)
 
 # Each slide: title, lines (short text), optional table (rows of cells) or image, and say (the talk).
 # The language is kept simple on purpose: short sentences and common words, for listeners whose English is limited.
@@ -54,6 +49,20 @@ SLIDES = [
             "two fractions. Zeno knows this mistake and explains it. On the right you see the teacher's side. "
             "Each row is a student and each column is a skill. Dark blue means the student is strong in this skill. "
             "To fill this table, Zeno must decide when a student knows a skill. My thesis is about this decision.",
+    ),
+    dict(
+        title="Technology and architecture",
+        lines=["Students' browsers (React, TypeScript, Excalidraw) → Caddy (HTTPS) → Node server → one SQLite file.",
+               "The same TypeScript runs in the browser and on the server.",
+               "Built for schools: works offline, free tools, one file to back up."],
+        say="This is how Zeno is built. The students open Zeno in a browser. The front is React and TypeScript, and "
+            "the whiteboard is Excalidraw, which is free and open. The questions, the checker and the learner model "
+            "run in the browser, so Zeno keeps working when the Wi-Fi stops, and it sends the answers later. The "
+            "server runs on one school computer or on the teacher's laptop. Caddy gives it HTTPS. The server is Node, "
+            "and it keeps everything in one SQLite file: no database server, easy to copy, easy to back up. The "
+            "server marks every answer again with the same checker. The same TypeScript code runs in the browser and "
+            "on the server, so the model gives the same answer in both places. This is also why my simulations use "
+            "this code: I test the real code that students use.",
     ),
     dict(
         title="Research question",
@@ -176,7 +185,7 @@ SLIDES = [
                "Real students (ASSISTments): 110 skills 79 %, 5 topics 73 %, 1 skill 73 %."],
         say="The fifth result is new. I made it this month. With real students we cannot see the truth. But we can "
             "see one thing: the next three answers after the program says yes. Is this a useful sign? I checked "
-            "it with the computer-made students, because there I know the truth. Look at the table. When the "
+            "it with the computer-made students, because there I know the truth. Look at the chart. When the "
             "skill has the correct size, 98 percent of decisions are right, and 88 percent of the next answers "
             "are right. When the skill is too big, both numbers go down together. So the sign works. But it is a "
             "weak sign. The truth falls from 98 to 8 percent. The sign falls only from 88 to 64. Then I looked at "
@@ -247,6 +256,42 @@ QUESTIONS = [
      "simple, probabilities and averages, so I do not need a special tool. I can also fix the random numbers, so "
      "one command gives the same tables again. Python is a good choice for a new project; here the product already "
      "existed in TypeScript."),
+    ("Why did you build Zeno with these technologies?",
+     "Because of the schools. In a Georgian school the Wi-Fi often does not work, the computers are old and shared, "
+     "and there is no money for licences. So Zeno runs on one school computer or on the teacher's laptop, and the "
+     "students open it in a browser. It loads nothing from the internet and keeps working when the connection is "
+     "lost. The front is React and TypeScript, and the whiteboard is Excalidraw, which is free and open. The server "
+     "is Node with one SQLite file: no database server, easy to copy, easy to back up. It does not scale to "
+     "thousands of schools at once, but one school does not need that. The same TypeScript runs in the browser and "
+     "on the server, so the model gives the same answer in both places."),
+    ("Why do you need HTTPS if Zeno is local?",
+     "Local means that the server is on the school's computer. But the students open Zeno on their own computers, "
+     "so every answer goes over the school Wi-Fi. Without HTTPS, anyone on that Wi-Fi can read the teacher's "
+     "password, the student codes and the answers. Also, browsers allow some functions only with HTTPS, for "
+     "example copying a link. If Zeno is opened only on the same computer, as localhost, HTTPS is not needed. "
+     "Caddy makes the certificate itself, so HTTPS costs the school nothing."),
+    ("Why these three rules, and not deep learning, for example DKT?",
+     "I compare the rules that real programs use to decide. BKT with 95 percent is the classic rule from Corbett and "
+     "Anderson. Three right in a row is the rule of the ASSISTments skill builders. The moving average is used in "
+     "practice too, and I proved that the streak rule is a special case of it. Deep knowledge tracing predicts the "
+     "next answer well, but much of its advantage goes away when BKT gets forgetting and differences between "
+     "students. It needs a lot of data, its inside is hard to explain to a teacher, and programs do not use it to "
+     "say \"this student knows the skill\". My question is about that decision, so I compare the rules that make "
+     "it."),
+    ("Why 95 percent for BKT? Is it not arbitrary?",
+     "95 percent is the standard value since Corbett and Anderson, so I start there. But I do not trust one value. "
+     "For every rule I also search the cheapest threshold that reaches nine right decisions of ten, and I set it on "
+     "one group of students and test it on another. So the result does not depend on the choice of 95."),
+    ("Why ASSISTments 2009-2010?",
+     "It is public, it is large, about four thousand students and 260 thousand answers, and it is the data set most "
+     "papers in knowledge tracing use. So other researchers can check my numbers. I use the corrected version of the "
+     "file, and the import is in the code. Zeno's own data is still small; it comes later."),
+    ("Zeno chooses questions with an Elo model. Why does the thesis study BKT?",
+     "Two different jobs. The Elo model in Zeno chooses the next question, at the right difficulty. The thesis "
+     "studies the other job: the decision that the student knows the skill. BKT is the classic model for that "
+     "decision. The Elo model is in my prediction table, as a point of comparison. On ASSISTments it even predicts the "
+     "next answer a little better than BKT, 0.561 against 0.569 in log-loss. But a good forecast of the next answer "
+     "is not the same as a right decision. That difference is the reason for this thesis."),
     ("What is your plan for the future of the product?",
      "I want to grow Zeno in three directions. First, I put the result of this thesis into Zeno and try it with a "
      "real class and a teacher. Second, more subjects. Now Zeno has mathematics. The method is not only for "
@@ -270,87 +315,14 @@ QUESTIONS = [
 ]
 
 
-def text_box(slide, left, top, width, height, lines, size, color=INK, bold_first=False, space=10):
-    frame = slide.shapes.add_textbox(left, top, width, height).text_frame
-    frame.word_wrap = True
-    for i, line in enumerate(lines):
-        p = frame.paragraphs[0] if i == 0 else frame.add_paragraph()
-        p.space_after = Pt(space)
-        run = p.add_run()
-        run.text = line
-        run.font.size, run.font.color.rgb, run.font.name = Pt(size), color, "Arial"
-        run.font.bold = bold_first and i == 0
-    return frame
-
-
-def build_pptx(path):
-    prs = Presentation()
-    prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
-    W = prs.slide_width
-    for n, s in enumerate(SLIDES, 1):
-        slide = prs.slides.add_slide(prs.slide_layouts[6])
-        if s.get("kind") == "title":
-            slide.shapes.add_picture(str(DIR / "figures/ug-logo.jpeg"), Inches(5.9), Inches(0.5), height=Inches(1.5))
-            f = text_box(slide, Inches(1), Inches(2.3), W - Inches(2), Inches(1.8), [s["title"]], 34)
-            f.paragraphs[0].alignment = 2
-            f = text_box(slide, Inches(1), Inches(4.4), W - Inches(2), Inches(2.6), s["lines"], 20, GREY, space=6)
-            for p in f.paragraphs:
-                p.alignment = 2
-            f.paragraphs[0].runs[0].font.color.rgb = RED
-        else:
-            text_box(slide, Inches(0.7), Inches(0.45), W - Inches(1.4), Inches(1.1), [s["title"]], 30)
-            bar = slide.shapes.add_shape(1, Inches(0.7), Inches(1.5), Inches(1.2), Inches(0.06))
-            bar.fill.solid()
-            bar.fill.fore_color.rgb = RED
-            bar.line.fill.background()
-            top = Inches(1.9)
-            if "table" in s:
-                rows, cols = len(s["table"]), len(s["table"][0])
-                height = Inches(0.48) * rows
-                table = slide.shapes.add_table(rows, cols, Inches(0.7), top, W - Inches(1.4), height).table
-                for r, row in enumerate(s["table"]):
-                    for c, cell_text in enumerate(row):
-                        cell = table.cell(r, c)
-                        cell.text = cell_text
-                        run = cell.text_frame.paragraphs[0].runs[0]
-                        run.font.size, run.font.name, run.font.bold = Pt(18), "Arial", r == 0
-                        run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF) if r == 0 else INK
-                        cell.fill.solid()
-                        cell.fill.fore_color.rgb = INK if r == 0 else (
-                            RGBColor(0xF3, 0xF4, 0xF6) if r % 2 else RGBColor(0xFF, 0xFF, 0xFF))
-                top += height + Inches(0.35)
-                text_box(slide, Inches(0.7), top, W - Inches(1.4), Inches(1.6), s["lines"], 18, GREY)
-            elif "images" in s:  # screenshots side by side; the second number keeps only the top share of a tall one
-                left = Inches(1.6)
-                for name, keep in s["images"]:
-                    img = Image.open(DIR / name)
-                    if keep:
-                        img = img.crop((0, 0, img.width, int(img.height * keep)))
-                    data = BytesIO()
-                    img.save(data, "PNG")
-                    data.seek(0)
-                    pic = slide.shapes.add_picture(data, left, Inches(1.75), height=Inches(4.2))
-                    pic.line.color.rgb = RGBColor(0xD0, 0xD4, 0xD9)
-                    left += pic.width + Inches(0.6)
-                text_box(slide, Inches(0.7), Inches(6.1), W - Inches(1.4), Inches(1.2), s["lines"], 17, GREY, space=4)
-            elif "image" in s:
-                slide.shapes.add_picture(str(DIR / s["image"]), Inches(2.9), Inches(1.75), height=Inches(4.2))
-                text_box(slide, Inches(0.7), Inches(6.0), W - Inches(1.4), Inches(1.3), s["lines"], 17, GREY, space=4)
-            else:
-                text_box(slide, Inches(0.7), top, W - Inches(1.4), Inches(5), s["lines"], 24, bold_first=s["title"] == "Research question",
-                         space=16)
-            text_box(slide, W - Inches(1.2), Inches(6.9), Inches(0.8), Inches(0.4), [str(n)], 12, GREY)
-        slide.notes_slide.notes_text_frame.text = s["say"]
-    prs.save(path)
-
 
 def build_md(path):
     words = sum(len(s["say"].split()) for s in SLIDES)
     out = [
         "# Preliminary defence", "",
         f"The talk for the preliminary defence of *{TITLE}*, by Davit Tchintcharashvili, supervised by Mikheil "
-        "Gigauri. The defence falls between 16 and 21 November 2026; the date, room and length allowed are not yet "
-        f"known. The talk is about {round(words, -1)} words, which is about {round(words / 130)} minutes at an even "
+        "Gigauri. The defence is on 19 November 2026 at 18:30 in room 325; attendance is mandatory, and the length "
+        f"allowed is not yet known. The talk is about {round(words, -1)} words, which is about {round(words / 130)} minutes at an even "
         "pace. It covers what the preliminary draft sent on 9 November contains, the method and the simulation "
         "results, and every number is that draft's. The slides are in `preliminary-defense.pptx`, with this text "
         "in each slide's notes; both files are written by `scripts/preliminary-slides.py`.", "",
@@ -366,6 +338,6 @@ def build_md(path):
     return words
 
 
-build_pptx(DIR / "preliminary-defense.pptx")
+build_pptx(DIR / "preliminary-defense.pptx", SLIDES)
 print(f"{DIR / 'preliminary-defense.pptx'} ({len(SLIDES)} slides)")
 print(f"{DIR / 'preliminary-defense.md'} ({build_md(DIR / 'preliminary-defense.md')} words to say)")

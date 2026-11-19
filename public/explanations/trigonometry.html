@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trigonometry in practice · Zeno</title>
+<style>
+  :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101b2d; color: #eef5ff; }
+  body { max-width: 960px; margin: 0 auto; padding: 32px 20px; }
+  h1 { font-size: clamp(24px, 4vw, 36px); }
+  p { color: #b9cadc; line-height: 1.6; }
+  video { width: 100%; border-radius: 12px; background: #101b2d; }
+  summary { cursor: pointer; padding: 12px 0; }
+  a { color: #55c5ff; }
+</style>
+<body>
+<p>ZENO / A SMALL STEP</p>
+<h1>How high does the ladder reach?</h1>
+<p>Use sine, cosine and tangent to connect an angle to real distances.</p>
+<video controls playsinline preload="metadata" aria-label="Practical trigonometry: ladder height">
+  <source src="trigonometry.mp4" type="video/mp4">
+  <track kind="captions" src="trigonometry.vtt" srclang="en" label="English">
+  <a href="trigonometry.mp4">Download the video</a>
+</video>
+<details><summary>Read the explanation</summary>
+<p>A 5 m ladder makes a 37° angle with level ground. The wall and ground form a right angle. Relative to the ground angle, the height is the opposite side, the ground distance is the adjacent side, and the ladder is the hypotenuse.</p>
+<p>sin θ = opposite / hypotenuse; cos θ = adjacent / hypotenuse; tan θ = opposite / adjacent. So height = 5 sin 37° ≈ 3.01 m, and ground distance = 5 cos 37° ≈ 3.99 m. Use degrees for these calculations. The drawing uses a 3–4–5 triangle, whose ground angle is approximately 36.87°; the calculations use the rounded 37°.</p>
+</details>
+<p>Your turn: a 10 m ladder makes the same 37° angle. How high does it reach?</p>
+<p><a href="../#/practice/practicalTrig.1">Practise practical trigonometry: ladders, ramps and cables</a></p>
+<details><summary>Check your answer</summary><p>10 sin 37° ≈ 6.02 m. At the same angle, doubling the ladder length doubles the height.</p></details>
+<p><a href="./">Watch equivalent fractions</a></p>
+</body>
+</html>

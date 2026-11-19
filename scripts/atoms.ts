@@ -19,7 +19,10 @@
 //   --atoms 1,2,3,4  --uses 1  --split 1  --per-question 1  --learn-rates 0.02,0.1  --students 400  --skills 12  --length 30  --seed 1
 //   --test-share 0.2  --target 0.9  --resamples 2000
 //   --beyond   search thresholds above 0.9999 too, up to 1 − 10^−15, as H2's check after the results did
+//   --jobs 4   worker threads the settings run on (default: the processors less one; the numbers are the same with any)
 //   --json     machine-readable output
+import { isMainThread } from "node:worker_threads";
+import { jobsFrom, pool, serve } from "./pool.ts";
 import { compareAtoms, DEFAULT_ATOMS, simulateAtoms, type AtomsComparison } from "../src/model/atoms.ts";
 import { splitByStudent } from "../src/model/evaluate.ts";
 import { BEYOND_THRESHOLDS, FINE_THRESHOLDS, PRECISION_TARGET, type AtPrecision } from "../src/model/mastery.ts";
@@ -69,7 +72,8 @@ for (const k of atoms)
   for (const u of uses) if ((base.skills * k) % u) fail(`${base.skills} skills of ${k} atoms cannot put every atom in ${u} skills`);
 
 type Result = { atoms: number; uses: number; split: number; perQuestion: number; learnRate: number; knownAtEnd: number } & AtomsComparison;
-const results: Result[] = [];
+type Setting = { atoms: number; uses: number; split: number; perQuestion: number; learnRate: number };
+const settings: Setting[] = [];
 for (const learnRate of rates)
   for (const k of atoms)
     for (const u of uses)
@@ -77,14 +81,22 @@ for (const learnRate of rates)
         for (const perQuestion of perQuestions) {
           if (perQuestion > k) continue;
           if (k * split > 255) fail(`${k} atoms × ${split} components is more than 255 components a skill`);
-          const { train, test } = splitByStudent(simulateAtoms({ ...base, atoms: k, uses: u, split, perQuestion, learnRate }), testShare, base.seed);
-          const knownAtEnd = test.filter((p) => p.known[p.known.length - 1]).length / test.length;
-          results.push({ atoms: k, uses: u, split, perQuestion, learnRate, knownAtEnd, ...compareAtoms(train, test, target, resamples, base.seed, thresholds) });
+          settings.push({ atoms: k, uses: u, split, perQuestion, learnRate });
         }
-if (!results.length) fail("no setting to run: every --per-question is above every --atoms");
+if (!settings.length) fail("no setting to run: every --per-question is above every --atoms");
+/** One setting: its learners simulated, split, and every method compared. Seeded by the setting alone. */
+function runSetting(s: Setting): Result {
+  const { train, test } = splitByStudent(simulateAtoms({ ...base, ...s }), testShare, base.seed);
+  const knownAtEnd = test.filter((p) => p.known[p.known.length - 1]).length / test.length;
+  return { ...s, knownAtEnd, ...compareAtoms(train, test, target, resamples, base.seed, thresholds) };
+}
+if (!isMainThread) serve(runSetting);
+const results: Result[] = isMainThread ? await pool(import.meta.url, settings, jobsFrom(args, settings.length), runSetting) : [];
 // Written with a single write, not console.log and process.exit: a large JSON on a pipe is cut off by an exit before it has drained.
-if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, learnRates: rates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
-else report();
+if (isMainThread) {
+  if (args.includes("--json")) process.stdout.write(JSON.stringify({ ...base, learnRates: rates, testShare, target, resamples, highestThreshold: thresholds.at(-1), results }, null, 2) + "\n");
+  else report();
+}
 
 function report() {
   const pct = (x: number) => (Number.isNaN(x) ? "–" : `${(x * 100).toFixed(1)} %`);
