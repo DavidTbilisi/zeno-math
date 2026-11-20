@@ -18,6 +18,7 @@ import type { StatWords } from "./mathStats";
 import type { NumAnalysisWords } from "./numericalAnalysis";
 import type { HigherGeometryWords } from "./higherGeometry";
 import type { OptimisationWords } from "./optimisation";
+import type { StochasticWords } from "./stochastic";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -242,6 +243,8 @@ export type PracticeWords = {
   hg: HigherGeometryWords;
   /** Linear programming, the simplex method, convex optimisation (src/math/optimisation.ts). */
   opt: OptimisationWords;
+  /** Random walks, the Poisson process, Brownian motion (src/math/stochastic.ts). */
+  sp: StochasticWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
