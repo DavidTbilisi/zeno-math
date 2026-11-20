@@ -357,6 +357,39 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   trainError: ["overfitting", [2]],
   bestEpoch: ["overfitting", [3]],
   swappedPR: ["precision", [1, 3]],
+  notReducedMod: ["groups", [1]],
+  inverseWrongOperation: ["groups", [1]],
+  reciprocalNotMod: ["groups", [1]],
+  onlyRotations: ["groups", [1]],
+  identityIsUsual: ["groups", [2]],
+  inverseIsUsual: ["groups", [2]],
+  inverseOfUsualIdentity: ["groups", [2]],
+  closureNotChecked: ["groups", [3]],
+  inversesNotChecked: ["groups", [3]],
+  associativityNotChecked: ["groups", [3]],
+  groupAxiomsHold: ["groups", [3]],
+  orderIsElement: ["elementOrder", [1, 2]],
+  orderIsGroupSize: ["elementOrder", [1, 2]],
+  orderIsGcd: ["elementOrder", [1]],
+  orderAdditive: ["elementOrder", [2]],
+  generatorsAllNonzero: ["elementOrder", [3]],
+  generatorsArePrimes: ["elementOrder", [3]],
+  orderProductNotLcm: ["elementOrder", [3]],
+  indexSubtracted: ["subgroups", [1]],
+  forgotTrivialSubgroups: ["subgroups", [1]],
+  forgotIdentity: ["subgroups", [2]],
+  noWrapAround: ["subgroups", [2]],
+  cosetIsSubgroup: ["subgroups", [3]],
+  indexIsOrder: ["subgroups", [3]],
+  orderSumNotLcm: ["permutations", [1]],
+  composedLeftToRight: ["permutations", [2]],
+  cycleLengthParity: ["permutations", [3]],
+  cycleRotationsCounted: ["permutations", [3]],
+  isoTheoremSubtracted: ["homomorphisms", [1]],
+  imageForKernel: ["homomorphisms", [2]],
+  orderInGNotQuotient: ["homomorphisms", [3]],
+  subgroupAssumedNormal: ["homomorphisms", [3]],
+  normalMissed: ["homomorphisms", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -400,7 +433,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

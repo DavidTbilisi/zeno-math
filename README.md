@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, group theory, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1058,6 +1058,21 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     remainder, the other Darboux sum, the width left out, a jump taken to rule out the integral, bounded taken to
     be enough, an improper integral for a Riemann one, the value across the jump, the sup at the endpoint,
     pointwise or a continuous limit taken for uniform, the sup not worked out
+  - Group theory (Pinter, A Book of Abstract Algebra; Judson, Abstract Algebra: Theory and Applications; Gallian),
+    five skills in algebra: groups (an inverse in ℤₙ or U(n), the order of a dihedral group, the identity and inverses
+    of a made-up operation, whether a set with an operation is a group and which axiom fails first), orders of
+    elements (in ℤₙ and in U(n), the number of generators of ℤₙ, the order of a pair in ℤₘ × ℤₙ), subgroups and
+    cosets (the index by Lagrange, the orders a subgroup may have, a cyclic subgroup ⟨a⟩, a coset a + H, the number of
+    cosets), permutations (the order from cycles or two-line notation, στ written as where 1, 2, …, n go, even or odd,
+    how many k-cycles Sₙ has) and homomorphisms (|ker φ| or |φ(G)| by the first isomorphism theorem, φ(a) and the
+    kernel of a map ℤₘ → ℤₙ, the order of a coset in ℤₙ/H, normal or not). Sets of elements are typed with ;. The
+    named slips: a number left unreduced mod n, the inverse of the other operation, 1/a in U(n), the rotations only,
+    the usual identity or inverse, an unchecked axiom, the element, the group's size or the gcd taken for the order,
+    the additive order in U(n), every non-zero element or the primes as generators, the product for the lcm,
+    |G| − |H|, 1 and |G| left out, 0 left out, the multiples without going round, H for its coset, the size of ⟨a⟩ for
+    the number of cosets, the sum of the cycle lengths, σ applied first, a k-cycle counted as k transpositions, every
+    starting point of a cycle counted, a subtraction for the isomorphism theorem, the image for the kernel, the order
+    in ℤₙ for the order in the quotient, a subgroup taken to be normal or a normal one missed
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

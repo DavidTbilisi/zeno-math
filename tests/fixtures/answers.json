@@ -11781,6 +11781,414 @@
       "input": "converges uniformly",
       "label": "wrong",
       "mistake": "pointwiseMeansUniform"
+    },
+    {
+      "skill": "groups",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "groups",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "inverseWrongOperation"
+    },
+    {
+      "skill": "groups",
+      "level": 1,
+      "seed": 7,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "notReducedMod"
+    },
+    {
+      "skill": "groups",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "groups",
+      "level": 2,
+      "seed": 7,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "groups",
+      "level": 2,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "identityIsUsual"
+    },
+    {
+      "skill": "groups",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "groups",
+      "level": 3,
+      "seed": 7,
+      "input": "not a group: associativity fails",
+      "label": "correct"
+    },
+    {
+      "skill": "groups",
+      "level": 3,
+      "seed": 7,
+      "input": "a group",
+      "label": "wrong",
+      "mistake": "associativityNotChecked"
+    },
+    {
+      "skill": "groups",
+      "level": 3,
+      "seed": 7,
+      "input": "not a group: no identity",
+      "label": "wrong"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "orderIsElement"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "orderIsGroupSize"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "orderIsGroupSize"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "orderIsElement"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "orderAdditive"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 3,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "generatorsAllNonzero"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "generatorsArePrimes"
+    },
+    {
+      "skill": "elementOrder",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "subgroups",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "subgroups",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "indexSubtracted"
+    },
+    {
+      "skill": "subgroups",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "subgroups",
+      "level": 2,
+      "seed": 7,
+      "input": "0; 2; 4; 6",
+      "label": "correct"
+    },
+    {
+      "skill": "subgroups",
+      "level": 2,
+      "seed": 7,
+      "input": "6; 4; 2; 0",
+      "label": "correct"
+    },
+    {
+      "skill": "subgroups",
+      "level": 2,
+      "seed": 7,
+      "input": "2; 4; 6",
+      "label": "wrong",
+      "mistake": "forgotIdentity"
+    },
+    {
+      "skill": "subgroups",
+      "level": 2,
+      "seed": 7,
+      "input": "0; 6",
+      "label": "wrong",
+      "mistake": "noWrapAround"
+    },
+    {
+      "skill": "subgroups",
+      "level": 2,
+      "seed": 7,
+      "input": "0; 6; 12",
+      "label": "wrong"
+    },
+    {
+      "skill": "subgroups",
+      "level": 3,
+      "seed": 7,
+      "input": "3; 7",
+      "label": "correct"
+    },
+    {
+      "skill": "subgroups",
+      "level": 3,
+      "seed": 7,
+      "input": "7; 3",
+      "label": "correct"
+    },
+    {
+      "skill": "subgroups",
+      "level": 3,
+      "seed": 7,
+      "input": "0; 4",
+      "label": "wrong",
+      "mistake": "cosetIsSubgroup"
+    },
+    {
+      "skill": "subgroups",
+      "level": 3,
+      "seed": 7,
+      "input": "7; 11",
+      "label": "wrong",
+      "mistake": "notReducedMod"
+    },
+    {
+      "skill": "subgroups",
+      "level": 3,
+      "seed": 7,
+      "input": "3; 7; 11",
+      "label": "wrong"
+    },
+    {
+      "skill": "permutations",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "permutations",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "orderSumNotLcm"
+    },
+    {
+      "skill": "permutations",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "permutations",
+      "level": 2,
+      "seed": 7,
+      "input": "1; 4; 2; 3",
+      "label": "correct"
+    },
+    {
+      "skill": "permutations",
+      "level": 2,
+      "seed": 7,
+      "input": "3; 1; 2; 4",
+      "label": "wrong",
+      "mistake": "composedLeftToRight"
+    },
+    {
+      "skill": "permutations",
+      "level": 2,
+      "seed": 7,
+      "input": "4; 1; 2; 3",
+      "label": "wrong"
+    },
+    {
+      "skill": "permutations",
+      "level": 3,
+      "seed": 7,
+      "input": "odd",
+      "label": "correct"
+    },
+    {
+      "skill": "permutations",
+      "level": 3,
+      "seed": 7,
+      "input": "even",
+      "label": "wrong",
+      "mistake": "cycleLengthParity"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "isoTheoremSubtracted"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 2,
+      "seed": 7,
+      "input": "0; 2; 4",
+      "label": "correct"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 2,
+      "seed": 7,
+      "input": "4; 2; 0",
+      "label": "correct"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 2,
+      "seed": 7,
+      "input": "2; 4",
+      "label": "wrong",
+      "mistake": "forgotIdentity"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 2,
+      "seed": 7,
+      "input": "0; 2",
+      "label": "wrong",
+      "mistake": "imageForKernel"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 2,
+      "seed": 7,
+      "input": "0; 4",
+      "label": "wrong"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "orderIsGroupSize"
+    },
+    {
+      "skill": "homomorphisms",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong"
     }
   ]
 }

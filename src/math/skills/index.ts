@@ -156,6 +156,11 @@ import svd from "./svd";
 import complex from "./complex";
 import polarForm from "./polarForm";
 import deMoivre from "./deMoivre";
+import groups from "./groups";
+import elementOrder from "./elementOrder";
+import subgroups from "./subgroups";
+import permutations from "./permutations";
+import homomorphisms from "./homomorphisms";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -311,4 +316,9 @@ export const GENS: Record<SkillId, Gen> = {
   complex,
   polarForm,
   deMoivre,
+  groups,
+  elementOrder,
+  subgroups,
+  permutations,
+  homomorphisms,
 };
