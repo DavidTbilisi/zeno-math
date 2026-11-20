@@ -418,6 +418,38 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   squareOnlyIfPerfect: ["residues", [2]],
   reciprocitySignIgnored: ["residues", [3]],
   reciprocitySignAlways: ["residues", [3]],
+  densityHeightOne: ["densities", [1]],
+  constantNotInverted: ["densities", [1]],
+  uniformLengthOnly: ["densities", [2]],
+  cdfIsDensity: ["densities", [2]],
+  exponentialCdfForSurvival: ["densities", [2]],
+  densityForProbability: ["densities", [2]],
+  meanIsMidpoint: ["densities", [3]],
+  expectationWithoutX: ["densities", [3]],
+  exponentialMeanIsRate: ["densities", [3]],
+  marginalOneCell: ["jointDist", [1]],
+  conditionalNotDivided: ["jointDist", [2]],
+  conditionedWrongWay: ["jointDist", [2]],
+  covarianceNoSubtraction: ["jointDist", [3]],
+  covarianceSignFlipped: ["jointDist", [3]],
+  independenceOneCell: ["jointDist", [3]],
+  mgfAtZero: ["mgf", [1]],
+  secondMomentAsVariance: ["mgf", [2]],
+  varianceSubtracted: ["mgf", [3]],
+  coefficientsNotSquared: ["mgf", [3]],
+  mgfExponentsMultiplied: ["mgf", [3]],
+  varianceNotDivided: ["limitTheorems", [1]],
+  rootNConfused: ["limitTheorems", [1]],
+  cltForgotRootN: ["limitTheorems", [2]],
+  normalWrongTail: ["limitTheorems", [2, 3]],
+  sumSdLinear: ["limitTheorems", [3]],
+  continuityCorrectionMissed: ["limitTheorems", [3]],
+  squaredOneEntry: ["markov", [1]],
+  columnForRow: ["markov", [1]],
+  matrixTimesVector: ["markov", [2]],
+  stationaryFlipped: ["markov", [3]],
+  stationaryFromDiagonal: ["markov", [3]],
+  returnTimeIsProbability: ["markov", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -461,7 +493,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

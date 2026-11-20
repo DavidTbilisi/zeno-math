@@ -12656,6 +12656,392 @@
       "input": "1",
       "label": "wrong",
       "mistake": "reciprocitySignIgnored"
+    },
+    {
+      "skill": "densities",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "densities",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "densityHeightOne"
+    },
+    {
+      "skill": "densities",
+      "level": 1,
+      "seed": 7,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "constantNotInverted"
+    },
+    {
+      "skill": "densities",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "densities",
+      "level": 2,
+      "seed": 7,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "densities",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "uniformLengthOnly"
+    },
+    {
+      "skill": "densities",
+      "level": 2,
+      "seed": 7,
+      "input": "1/12",
+      "label": "wrong"
+    },
+    {
+      "skill": "densities",
+      "level": 3,
+      "seed": 7,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "densities",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "exponentialMeanIsRate"
+    },
+    {
+      "skill": "densities",
+      "level": 3,
+      "seed": 7,
+      "input": "1/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "jointDist",
+      "level": 1,
+      "seed": 7,
+      "input": "2/5",
+      "label": "correct"
+    },
+    {
+      "skill": "jointDist",
+      "level": 1,
+      "seed": 7,
+      "input": "3/10",
+      "label": "wrong",
+      "mistake": "marginalOneCell"
+    },
+    {
+      "skill": "jointDist",
+      "level": 1,
+      "seed": 7,
+      "input": "1/2",
+      "label": "wrong"
+    },
+    {
+      "skill": "jointDist",
+      "level": 2,
+      "seed": 7,
+      "input": "1/8",
+      "label": "correct"
+    },
+    {
+      "skill": "jointDist",
+      "level": 2,
+      "seed": 7,
+      "input": "1/20",
+      "label": "wrong",
+      "mistake": "conditionalNotDivided"
+    },
+    {
+      "skill": "jointDist",
+      "level": 2,
+      "seed": 7,
+      "input": "1/6",
+      "label": "wrong",
+      "mistake": "conditionedWrongWay"
+    },
+    {
+      "skill": "jointDist",
+      "level": 2,
+      "seed": 7,
+      "input": "1/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "jointDist",
+      "level": 3,
+      "seed": 7,
+      "input": "-13/121",
+      "label": "correct"
+    },
+    {
+      "skill": "jointDist",
+      "level": 3,
+      "seed": 7,
+      "input": "9/22",
+      "label": "wrong",
+      "mistake": "covarianceNoSubtraction"
+    },
+    {
+      "skill": "jointDist",
+      "level": 3,
+      "seed": 7,
+      "input": "13/121",
+      "label": "wrong",
+      "mistake": "covarianceSignFlipped"
+    },
+    {
+      "skill": "jointDist",
+      "level": 3,
+      "seed": 7,
+      "input": "-1/11",
+      "label": "wrong"
+    },
+    {
+      "skill": "mgf",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "mgf",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "mgfAtZero"
+    },
+    {
+      "skill": "mgf",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "mgf",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "mgf",
+      "level": 2,
+      "seed": 7,
+      "input": "39",
+      "label": "wrong",
+      "mistake": "secondMomentAsVariance"
+    },
+    {
+      "skill": "mgf",
+      "level": 2,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "mgf",
+      "level": 3,
+      "seed": 7,
+      "input": "48",
+      "label": "correct"
+    },
+    {
+      "skill": "mgf",
+      "level": 3,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "varianceSubtracted"
+    },
+    {
+      "skill": "mgf",
+      "level": 3,
+      "seed": 7,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "coefficientsNotSquared"
+    },
+    {
+      "skill": "mgf",
+      "level": 3,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "varianceNotDivided"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "3/4",
+      "label": "wrong",
+      "mistake": "rootNConfused"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "9/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "0.023",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "0.369",
+      "label": "wrong",
+      "mistake": "cltForgotRootN"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "0.977",
+      "label": "wrong",
+      "mistake": "normalWrongTail"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "0.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "0.159",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "0.401",
+      "label": "wrong",
+      "mistake": "sumSdLinear"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "0.841",
+      "label": "wrong",
+      "mistake": "normalWrongTail"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "0.25",
+      "label": "wrong"
+    },
+    {
+      "skill": "markov",
+      "level": 1,
+      "seed": 7,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "markov",
+      "level": 1,
+      "seed": 7,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "squaredOneEntry"
+    },
+    {
+      "skill": "markov",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "markov",
+      "level": 2,
+      "seed": 7,
+      "input": "9/16",
+      "label": "correct"
+    },
+    {
+      "skill": "markov",
+      "level": 2,
+      "seed": 7,
+      "input": "5/16",
+      "label": "wrong",
+      "mistake": "matrixTimesVector"
+    },
+    {
+      "skill": "markov",
+      "level": 2,
+      "seed": 7,
+      "input": "7/16",
+      "label": "wrong"
+    },
+    {
+      "skill": "markov",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "markov",
+      "level": 3,
+      "seed": 7,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "returnTimeIsProbability"
+    },
+    {
+      "skill": "markov",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong"
     }
   ]
 }
