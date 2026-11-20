@@ -2,7 +2,7 @@
 // be tried on real answers before any class has used Zeno. The first is ASSISTments 2009–2010 "skill builder" (Feng,
 // Heffernan & Koedinger 2009): middle-school maths, one row per problem a student answered, with whether the first
 // attempt was right.
-import type { Observation } from "./elo.ts";
+import { usableMs, type Observation } from "./elo.ts";
 
 /**
  * CSV records from text that arrives in pieces (a file stream), RFC 4180: quoted fields may hold commas, line breaks
@@ -138,7 +138,9 @@ export async function assistmentsAttempts(records: AsyncIterable<string[]>): Pro
 export async function fromAssistments(records: AsyncIterable<string[]>, source = "ASSISTments 2009–2010 skill builder"): Promise<Dataset> {
   const { read, attempts: rows } = await assistmentsAttempts(records);
   // order_id names the problem log, so a problem tagged with several skills has the same problem on each of its observations.
-  const observations: Observation[] = rows.map(({ student, skill, correct, order, problem }) => ({ student, skill, level: 2, correct, problem: String(order), ...(problem ? { item: problem } : {}) }));
+  const observations: Observation[] = rows.map(({ student, skill, correct, order, problem, ms }) => ({
+    student, skill, level: 2, correct, problem: String(order), ...(problem ? { item: problem } : {}), ...(usableMs(ms) ? { ms } : {}),
+  }));
   const skills = [...new Set(rows.map((r) => r.skill))];
   // Kept problems per student and class, in the order first met, so a tie goes to the class met first.
   const perClass = new Map<string, Map<string, number>>();
@@ -156,12 +158,16 @@ export async function fromAssistments(records: AsyncIterable<string[]>, source =
   return { source, observations, areas: Object.fromEntries(skills.map((k) => [k, assistmentsTopic(k)])), classes, counts };
 }
 
-/** The file the importer writes: observations as compact [student, skill, level, right, problem, item] rows (problem and item where known), and each student's class. */
+/**
+ * The file the importer writes: observations as compact [student, skill, level, right, problem, item] rows (problem and
+ * item where known), each student's class, and the first-response times beside the rows (null where unknown).
+ */
 export type DatasetFile = {
   source: string;
   areas: Record<string, string>;
   classes?: Record<string, string>;
   counts: Dataset["counts"];
+  ms?: (number | null)[];
   rows: ([string, string, number, 0 | 1] | [string, string, number, 0 | 1, string] | [string, string, number, 0 | 1, string, string])[];
 };
 export const toFile = (d: Dataset): DatasetFile => ({
@@ -169,6 +175,7 @@ export const toFile = (d: Dataset): DatasetFile => ({
   areas: d.areas,
   classes: d.classes,
   counts: d.counts,
+  ...(d.observations.some((o) => o.ms !== undefined) ? { ms: d.observations.map((o) => o.ms ?? null) } : {}),
   rows: d.observations.map((o) => {
     const row: [string, string, number, 0 | 1] = [o.student, o.skill, o.level, o.correct ? 1 : 0];
     return o.problem === undefined ? row : o.item === undefined ? [...row, o.problem] : [...row, o.problem, o.item];
@@ -183,8 +190,10 @@ export function fromFile(f: DatasetFile): Dataset {
     classes: f.classes ?? {},
     counts: f.counts,
     // Files written before problems (or items) were kept have none.
-    observations: f.rows.map(([student, skill, level, right, problem, item]) => ({
+    // Files written before times were kept have none.
+    observations: f.rows.map(([student, skill, level, right, problem, item], i) => ({
       student, skill, level: (level === 1 || level === 3 ? level : 2) as 1 | 2 | 3, correct: right === 1, ...(problem === undefined ? {} : { problem }), ...(item === undefined ? {} : { item }),
+      ...(typeof f.ms?.[i] === "number" ? { ms: f.ms[i]! } : {}),
     })),
   };
 }

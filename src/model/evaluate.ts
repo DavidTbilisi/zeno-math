@@ -4,7 +4,7 @@
 // for how close the probabilities are, AUC for how well they rank right above wrong, and calibration bins for whether
 // "70 %" comes true about 70 % of the time. Two baselines show what the model adds over simply counting.
 import { ALL_SKILLS, type SkillId } from "../math/practiceSkills.ts";
-import type { Level, Observation } from "./elo.ts";
+import { usableMs, type Level, type Observation } from "./elo.ts";
 import { rng } from "./random.ts";
 
 /**
@@ -515,7 +515,8 @@ export function observation(row: Record<string, string>): (Observation & { condi
   const level = Number(row.level) as Level;
   if (!ALL_SKILLS.includes(skill) || ![1, 2, 3].includes(level)) return null;
   const correct = evidence(Number(row.n_answers) - Number(row.retries), row.outcome, row.first_correct === "1", !!row.faded);
-  return correct === null ? null : { student: row.student, skill, level, correct, condition: row.condition, attempt: Number(row.attempt) };
+  const ms = Number(row.ms_first);
+  return correct === null ? null : { student: row.student, skill, level, correct, condition: row.condition, attempt: Number(row.attempt), ...(row.ms_first && usableMs(ms) ? { ms } : {}) };
 }
 /** Every usable attempt in the order it was stored. */
 export const observationsFromCsv = (text: string) =>
