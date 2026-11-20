@@ -19,6 +19,7 @@ import type { NumAnalysisWords } from "./numericalAnalysis";
 import type { HigherGeometryWords } from "./higherGeometry";
 import type { OptimisationWords } from "./optimisation";
 import type { StochasticWords } from "./stochastic";
+import type { GameWords } from "./gameTheory";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -245,6 +246,8 @@ export type PracticeWords = {
   opt: OptimisationWords;
   /** Random walks, the Poisson process, Brownian motion (src/math/stochastic.ts). */
   sp: StochasticWords;
+  /** Games in normal form, mixed equilibria, backward induction (src/math/gameTheory.ts). */
+  gt: GameWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

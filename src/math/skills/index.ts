@@ -192,6 +192,9 @@ import projective from "./projective";
 import linearProgramming from "./linearProgramming";
 import simplex from "./simplex";
 import convex from "./convex";
+import normalForm from "./normalForm";
+import mixedNash from "./mixedNash";
+import backwardInduction from "./backwardInduction";
 import randomWalks from "./randomWalks";
 import poissonProcess from "./poissonProcess";
 import brownian from "./brownian";
@@ -406,6 +409,9 @@ export const GENS: Record<SkillId, Gen> = {
   linearProgramming,
   simplex,
   convex,
+  normalForm,
+  mixedNash,
+  backwardInduction,
   randomWalks,
   poissonProcess,
   brownian,
