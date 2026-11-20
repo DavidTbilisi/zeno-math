@@ -11,6 +11,7 @@ import type { ComplexWords } from "./complexPractice";
 import type { VecCalcWords } from "./vectorCalculus";
 import type { OdeWords } from "./odes";
 import type { RealWords } from "./realAnalysis";
+import type { GroupWords } from "./groups";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -40,7 +41,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec" | "nullvec" | "singular" | "complex" | "complexPolar" | "complexList" | "plane" | "exprT" | "exprS" | "potential" | "supInf" | "limits"
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec" | "nullvec" | "singular" | "complex" | "complexPolar" | "complexList" | "plane" | "exprT" | "exprS" | "potential" | "supInf" | "limits" | "images"
   | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base" | "lines" | "counter" | "decide" | "elements" | "bits";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
@@ -206,6 +207,8 @@ export type PracticeWords = {
   ode: OdeWords;
   /** Suprema, ε–N and ε–δ, the mean value theorem, Darboux sums and uniform convergence (src/math/realAnalysis.ts). */
   real: RealWords;
+  /** Groups, orders, subgroups and cosets, permutations, homomorphisms and quotients (src/math/groups.ts). */
+  group: GroupWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
