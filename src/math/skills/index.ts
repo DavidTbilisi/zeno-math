@@ -195,6 +195,9 @@ import convex from "./convex";
 import normalForm from "./normalForm";
 import mixedNash from "./mixedNash";
 import backwardInduction from "./backwardInduction";
+import discreteLog from "./discreteLog";
+import elGamal from "./elGamal";
+import ellipticCurves from "./ellipticCurves";
 import randomWalks from "./randomWalks";
 import poissonProcess from "./poissonProcess";
 import brownian from "./brownian";
@@ -412,6 +415,9 @@ export const GENS: Record<SkillId, Gen> = {
   normalForm,
   mixedNash,
   backwardInduction,
+  discreteLog,
+  elGamal,
+  ellipticCurves,
   randomWalks,
   poissonProcess,
   brownian,

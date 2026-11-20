@@ -20,6 +20,7 @@ import type { HigherGeometryWords } from "./higherGeometry";
 import type { OptimisationWords } from "./optimisation";
 import type { StochasticWords } from "./stochastic";
 import type { GameWords } from "./gameTheory";
+import type { CryptoWords } from "./crypto";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -248,6 +249,8 @@ export type PracticeWords = {
   sp: StochasticWords;
   /** Games in normal form, mixed equilibria, backward induction (src/math/gameTheory.ts). */
   gt: GameWords;
+  /** Discrete logarithms, ElGamal, elliptic curves (src/math/crypto.ts). */
+  cr: CryptoWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
