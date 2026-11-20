@@ -12,6 +12,7 @@ import type { VecCalcWords } from "./vectorCalculus";
 import type { OdeWords } from "./odes";
 import type { RealWords } from "./realAnalysis";
 import type { GroupWords } from "./groups";
+import type { NtWords } from "./numberTheoryTwo";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -209,6 +210,8 @@ export type PracticeWords = {
   real: RealWords;
   /** Groups, orders, subgroups and cosets, permutations, homomorphisms and quotients (src/math/groups.ts). */
   group: GroupWords;
+  /** Extended Euclid, linear congruences, the CRT, Fermat and Euler, RSA, quadratic residues (src/math/numberTheoryTwo.ts). */
+  nt: NtWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

@@ -12189,6 +12189,473 @@
       "seed": 7,
       "input": "2",
       "label": "wrong"
+    },
+    {
+      "skill": "bezout",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "bezout",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "lastQuotientAsGcd"
+    },
+    {
+      "skill": "bezout",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "bezout",
+      "level": 2,
+      "seed": 7,
+      "input": "3; -16",
+      "label": "correct"
+    },
+    {
+      "skill": "bezout",
+      "level": 2,
+      "seed": 7,
+      "input": "(3, -16)",
+      "label": "correct"
+    },
+    {
+      "skill": "bezout",
+      "level": 2,
+      "seed": 7,
+      "input": "(8, -43)",
+      "label": "wrong",
+      "mistake": "bezoutSignSlip"
+    },
+    {
+      "skill": "bezout",
+      "level": 2,
+      "seed": 7,
+      "input": "3; 16",
+      "label": "wrong"
+    },
+    {
+      "skill": "bezout",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "bezout",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "nonnegativeCounted"
+    },
+    {
+      "skill": "bezout",
+      "level": 3,
+      "seed": 7,
+      "input": "34",
+      "label": "wrong"
+    },
+    {
+      "skill": "congruences",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "congruences",
+      "level": 1,
+      "seed": 7,
+      "input": "29",
+      "label": "wrong",
+      "mistake": "inverseWrongOperation"
+    },
+    {
+      "skill": "congruences",
+      "level": 1,
+      "seed": 7,
+      "input": "44",
+      "label": "wrong",
+      "mistake": "bezoutSignSlip"
+    },
+    {
+      "skill": "congruences",
+      "level": 1,
+      "seed": 7,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "congruences",
+      "level": 2,
+      "seed": 7,
+      "input": "12; 36",
+      "label": "correct"
+    },
+    {
+      "skill": "congruences",
+      "level": 2,
+      "seed": 7,
+      "input": "36; 12",
+      "label": "correct"
+    },
+    {
+      "skill": "congruences",
+      "level": 2,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "onlyOneSolution"
+    },
+    {
+      "skill": "congruences",
+      "level": 2,
+      "seed": 7,
+      "input": "12; 24",
+      "label": "wrong"
+    },
+    {
+      "skill": "congruences",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "congruences",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "onlyOneSolution"
+    },
+    {
+      "skill": "congruences",
+      "level": 3,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong"
+    },
+    {
+      "skill": "crt",
+      "level": 1,
+      "seed": 7,
+      "input": "216",
+      "label": "correct"
+    },
+    {
+      "skill": "crt",
+      "level": 1,
+      "seed": 7,
+      "input": "328",
+      "label": "wrong",
+      "mistake": "crtForgotInverse"
+    },
+    {
+      "skill": "crt",
+      "level": 1,
+      "seed": 7,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "crt",
+      "level": 2,
+      "seed": 7,
+      "input": "122",
+      "label": "correct"
+    },
+    {
+      "skill": "crt",
+      "level": 2,
+      "seed": 7,
+      "input": "118",
+      "label": "wrong",
+      "mistake": "crtForgotInverse"
+    },
+    {
+      "skill": "crt",
+      "level": 2,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "crtFirstTwoOnly"
+    },
+    {
+      "skill": "crt",
+      "level": 2,
+      "seed": 7,
+      "input": "504",
+      "label": "wrong"
+    },
+    {
+      "skill": "crt",
+      "level": 3,
+      "seed": 7,
+      "input": "11; 12",
+      "label": "correct"
+    },
+    {
+      "skill": "crt",
+      "level": 3,
+      "seed": 7,
+      "input": "(11, 12)",
+      "label": "correct"
+    },
+    {
+      "skill": "crt",
+      "level": 3,
+      "seed": 7,
+      "input": "(11, 24)",
+      "label": "wrong",
+      "mistake": "crtProductNotLcm"
+    },
+    {
+      "skill": "crt",
+      "level": 3,
+      "seed": 7,
+      "input": "11; 2",
+      "label": "wrong"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 1,
+      "seed": 7,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 1,
+      "seed": 7,
+      "input": "98",
+      "label": "wrong",
+      "mistake": "phiAsPrime"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 1,
+      "seed": 7,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "phiPowersIgnored"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 1,
+      "seed": 7,
+      "input": "30",
+      "label": "wrong"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "exponentModN"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "phiOfPNotPMinusOne"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "primitiveRootsNonresidues"
+    },
+    {
+      "skill": "fermatEuler",
+      "level": 3,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "rsa",
+      "level": 1,
+      "seed": 7,
+      "input": "29",
+      "label": "correct"
+    },
+    {
+      "skill": "rsa",
+      "level": 1,
+      "seed": 7,
+      "input": "22",
+      "label": "wrong",
+      "mistake": "eNotCoprime"
+    },
+    {
+      "skill": "rsa",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "eNotCoprime"
+    },
+    {
+      "skill": "rsa",
+      "level": 2,
+      "seed": 7,
+      "input": "899",
+      "label": "correct"
+    },
+    {
+      "skill": "rsa",
+      "level": 2,
+      "seed": 7,
+      "input": "795",
+      "label": "wrong",
+      "mistake": "inverseModN"
+    },
+    {
+      "skill": "rsa",
+      "level": 2,
+      "seed": 7,
+      "input": "757",
+      "label": "wrong",
+      "mistake": "bezoutSignSlip"
+    },
+    {
+      "skill": "rsa",
+      "level": 2,
+      "seed": 7,
+      "input": "35",
+      "label": "wrong"
+    },
+    {
+      "skill": "rsa",
+      "level": 3,
+      "seed": 7,
+      "input": "71",
+      "label": "correct"
+    },
+    {
+      "skill": "rsa",
+      "level": 3,
+      "seed": 7,
+      "input": "39",
+      "label": "wrong",
+      "mistake": "rsaMultiplied"
+    },
+    {
+      "skill": "rsa",
+      "level": 3,
+      "seed": 7,
+      "input": "97",
+      "label": "wrong",
+      "mistake": "rsaWrongKey"
+    },
+    {
+      "skill": "rsa",
+      "level": 3,
+      "seed": 7,
+      "input": "58",
+      "label": "wrong"
+    },
+    {
+      "skill": "residues",
+      "level": 1,
+      "seed": 7,
+      "input": "1; 2; 4",
+      "label": "correct"
+    },
+    {
+      "skill": "residues",
+      "level": 1,
+      "seed": 7,
+      "input": "4; 2; 1",
+      "label": "correct"
+    },
+    {
+      "skill": "residues",
+      "level": 1,
+      "seed": 7,
+      "input": "1; 4; 9",
+      "label": "wrong",
+      "mistake": "squaresNotReduced"
+    },
+    {
+      "skill": "residues",
+      "level": 1,
+      "seed": 7,
+      "input": "0; 1; 2; 4",
+      "label": "wrong",
+      "mistake": "zeroAsResidue"
+    },
+    {
+      "skill": "residues",
+      "level": 1,
+      "seed": 7,
+      "input": "1; 4",
+      "label": "wrong"
+    },
+    {
+      "skill": "residues",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "residues",
+      "level": 2,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "squareOnlyIfPerfect"
+    },
+    {
+      "skill": "residues",
+      "level": 3,
+      "seed": 7,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "residues",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "reciprocitySignIgnored"
     }
   ]
 }
