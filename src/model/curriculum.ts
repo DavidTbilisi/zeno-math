@@ -8,7 +8,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
-  "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
+  "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "markov", "randomWalks", "poissonProcess", "brownian",
@@ -190,6 +190,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   crt: ["congruences"],
   fermatEuler: ["congruences", "primes"],
   rsa: ["fermatEuler"],
+  discreteLog: ["rsa"],
+  elGamal: ["discreteLog"],
+  ellipticCurves: ["residues", "discreteLog"],
   residues: ["fermatEuler"],
   groups: ["modular"],
   elementOrder: ["groups"],
@@ -446,6 +449,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   crt: [13, 13, 13], // the Chinese remainder theorem, coprime and not (Burton; Stein; Niven–Zuckerman–Montgomery)
   fermatEuler: [13, 13, 13], // φ, Fermat, Euler, primitive roots and Wilson (Burton; Stein; Niven–Zuckerman–Montgomery)
   rsa: [13, 13, 13], // RSA keys, encryption and decryption with small primes (Stein; Burton)
+  discreteLog: [13, 13, 13], // orders, primitive roots, discrete logarithms, Diffie–Hellman (Hoffstein, Pipher & Silverman)
+  elGamal: [13, 13, 13], // ElGamal keys, encryption, decryption and signatures (Hoffstein, Pipher & Silverman)
+  ellipticCurves: [13, 13, 13], // points over ℤₚ, the chord-and-tangent group law, elliptic Diffie–Hellman (Washington)
   residues: [13, 13, 13], // quadratic residues, Euler's criterion and quadratic reciprocity (Burton; Stein; Niven–Zuckerman–Montgomery)
   groups: [13, 13, 13], // the group axioms, ℤₙ, U(n) and the dihedral groups (Pinter; Judson; Gallian)
   elementOrder: [13, 13, 13], // orders of elements, cyclic groups and generators (Pinter; Judson; Gallian)

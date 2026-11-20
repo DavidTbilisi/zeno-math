@@ -16388,6 +16388,268 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 1,
+      "seed": 7,
+      "input": "28",
+      "label": "wrong",
+      "mistake": "orderAsPMinusOne"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "orderStoppedAtMinusOne"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "logIndexShifted"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 3,
+      "seed": 7,
+      "input": "23",
+      "label": "correct"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 3,
+      "seed": 7,
+      "input": "19",
+      "label": "wrong",
+      "mistake": "dhPublicsMultiplied"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 3,
+      "seed": 7,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "dhOwnPublic"
+    },
+    {
+      "skill": "discreteLog",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "elGamal",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "elGamal",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "powerAsProduct"
+    },
+    {
+      "skill": "elGamal",
+      "level": 1,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "powerBaseSwapped"
+    },
+    {
+      "skill": "elGamal",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "elGamal",
+      "level": 2,
+      "seed": 7,
+      "input": "19",
+      "label": "correct"
+    },
+    {
+      "skill": "elGamal",
+      "level": 2,
+      "seed": 7,
+      "input": "17",
+      "label": "wrong",
+      "mistake": "elgMaskFromG"
+    },
+    {
+      "skill": "elGamal",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "elgMaskAdded"
+    },
+    {
+      "skill": "elGamal",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "elGamal",
+      "level": 3,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "elGamal",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "elgNotInverted"
+    },
+    {
+      "skill": "elGamal",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "elgMaskSubtracted"
+    },
+    {
+      "skill": "elGamal",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 1,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong",
+      "mistake": "ecInfinityForgotten"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "ecOneRootPerX"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 2,
+      "seed": 7,
+      "input": "(0, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 2,
+      "seed": 7,
+      "input": "(0, 22)",
+      "label": "wrong",
+      "mistake": "ecNotReflected"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 2,
+      "seed": 7,
+      "input": "(21, 6)",
+      "label": "wrong",
+      "mistake": "ecSlopeInverted"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 2,
+      "seed": 7,
+      "input": "(1, 1)",
+      "label": "wrong"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 3,
+      "seed": 7,
+      "input": "(4, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 3,
+      "seed": 7,
+      "input": "(12, 3)",
+      "label": "wrong",
+      "mistake": "ecDoublingNoA"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 3,
+      "seed": 7,
+      "input": "(4, 13)",
+      "label": "wrong",
+      "mistake": "ecNotReflected"
+    },
+    {
+      "skill": "ellipticCurves",
+      "level": 3,
+      "seed": 7,
+      "input": "(1, 1)",
+      "label": "wrong"
     }
   ]
 }

@@ -20,6 +20,8 @@ const MOVED: Partial<Record<SkillId, StageId>> = {
   linearSolvers: "linear", odeSystems: "linear", stability: "linear",
   // The number theory of a degree is taught beside group theory, not with primary-school number.
   bezout: "algebra", congruences: "algebra", crt: "algebra", fermatEuler: "algebra", rsa: "algebra", residues: "algebra",
+  // So is the cryptography built on it (Hoffstein, Pipher & Silverman).
+  discreteLog: "algebra", elGamal: "algebra", ellipticCurves: "algebra",
   // Metric spaces and topology build on the limits and ε–δ of real analysis, so they sit with calculus.
   metrics: "calculus", openClosed: "calculus", compactness: "calculus", connected: "calculus", topologies: "calculus",
   // Curves and surfaces need derivatives, integrals and partial derivatives.

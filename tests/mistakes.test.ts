@@ -769,6 +769,25 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   opponentHostile: ["backwardInduction", [1, 2]],
   cournotForStackelberg: ["backwardInduction", [3]],
   reactionNotHalved: ["backwardInduction", [3]],
+  orderAsPMinusOne: ["discreteLog", [1]],
+  orderStoppedAtMinusOne: ["discreteLog", [1]],
+  logBaseSwapped: ["discreteLog", [2]],
+  logIndexShifted: ["discreteLog", [2]],
+  dhPublicsMultiplied: ["discreteLog", [3]],
+  dhOwnPublic: ["discreteLog", [3]],
+  powerAsProduct: ["elGamal", [1]],
+  powerBaseSwapped: ["elGamal", [1]],
+  elgMaskFromG: ["elGamal", [2]],
+  elgMaskAdded: ["elGamal", [2]],
+  elgNotInverted: ["elGamal", [3]],
+  elgMaskSubtracted: ["elGamal", [3]],
+  signModP: ["elGamal", [3]],
+  signKNotInverted: ["elGamal", [3]],
+  ecInfinityForgotten: ["ellipticCurves", [1]],
+  ecOneRootPerX: ["ellipticCurves", [1]],
+  ecSlopeInverted: ["ellipticCurves", [2]],
+  ecNotReflected: ["ellipticCurves", [2, 3]],
+  ecDoublingNoA: ["ellipticCurves", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -812,7 +831,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "randomWalks", "poissonProcess", "brownian", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "curves", "surfaces", "nonEuclidean", "projective", "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "densities", "jointDist", "mgf", "limitTheorems", "markov", "randomWalks", "poissonProcess", "brownian", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "curves", "surfaces", "nonEuclidean", "projective", "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {
