@@ -690,14 +690,15 @@ export function preview(ex: Exercise, input: string): string | null {
     }
     let t = s.replace(/[′']/g, "");
     if (ex.answer.k === "expr" && t.includes("=")) t = t.slice(t.lastIndexOf("=") + 1);
-    if (ex.answer.k === "expr" && ex.answer.mode === "plusC") return tex(parseE(t.replace(/\+\s*[cC]\s*$/, ""))) + " + C";
+    const vars = ex.answer.k === "expr" ? (ex.answer.vars ?? []) : [];
+    if (ex.answer.k === "expr" && ex.answer.mode === "plusC") return tex(parseE(t.replace(/\+\s*[cC]\s*$/, ""), vars)) + " + C";
     if (ex.answer.k === "num") {
       if (ex.answer.std) t = stdText(t);
       const mixed = bare(t).match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
       if (mixed) return `${mixed[1]}${mixed[2]}\\frac{${mixed[3]}}{${mixed[4]}}`;
       t = bare(t);
     }
-    return tex(parseE(t.replace(/[·×]/g, "*")));
+    return tex(parseE(t.replace(/[·×]/g, "*"), vars));
   } catch {
     return null;
   }

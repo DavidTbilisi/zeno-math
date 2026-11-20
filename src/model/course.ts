@@ -12,10 +12,12 @@ export type StageId = "number" | "algebra" | "calculus" | "linear" | "probabilit
 export type Stage = { id: StageId; skills: readonly SkillId[] };
 
 const LEVELS = [1, 2, 3] as const;
-/** The stage of each skill not in the stage of its practice area: linear algebra, the machine learning, and data. */
+/** The stage of each skill not in the stage of its practice area: linear algebra (with the linear systems of ODEs and
+ *  the stability of equilibria, which need eigenvalues), the machine learning, and data. */
 const MOVED: Partial<Record<SkillId, StageId>> = {
   projection: "linear", matrices: "linear", determinant: "linear", elimination: "linear", eigen: "linear",
   subspaces: "linear", basis: "linear", rankNullity: "linear", linearMaps: "linear", innerProducts: "linear", spectral: "linear", svd: "linear",
+  odeSystems: "linear", stability: "linear",
   descent: "optimisation",
   overfitting: "classical", precision: "classical", clustering: "classical",
   backprop: "deep", softmax: "deep",
