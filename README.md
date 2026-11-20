@@ -1104,6 +1104,20 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     mean's, n and √n swapped, σ for σ/√n, nσ for σ√n, the other tail, the continuity correction left out, pᵢⱼ squared,
     the column for the row, P times π₀ as a column, the stationary parts swapped or the stay-probabilities normalised,
     πᵢ for 1/πᵢ.
+  - Discrete mathematics past the school counting puzzles (Rosen, Discrete Mathematics and Its Applications; Levin,
+    Discrete Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory),
+    five skills in probability & statistics after the logic course: linear recurrences (a term of aₙ = p aₙ₋₁ +
+    q aₙ₋₂, the roots of the characteristic equation, A and B in the closed form A r₁ⁿ + B r₂ⁿ), generating functions
+    (choices with repeats as a coefficient of 1/(1 − x)ᵐ, bounded solutions of x₁ + x₂ + x₃ = n, the coefficient of xⁿ
+    in 1/((1 − ax)(1 − bx))), inclusion–exclusion (|A ∪ B ∪ C|, the numbers up to N divisible by one or none of two or
+    three divisors, derangements and permutations with exactly k fixed points), the pigeonhole principle (socks and
+    birth months, the fullest box ⌈N/m⌉, pairs summing to 2n + 1 and differences divisible by k) and graph theory (edges
+    from a degree sequence, the edges of a tree or Kₙ, Euler circuits in Kₙ and Kₘ,ₙ, faces by Euler's formula, the
+    perfect matchings of K₂ₙ). The named slips: the term before, the roots' signs flipped, A and B swapped, the
+    binomial one place off or repeats ignored, the upper bounds left out, the two series added, the triple overlap left
+    out or no overlaps subtracted, the complement not taken, n!/2 for Dₙ, the others not deranged, the + 1 left out,
+    the floor for the ceiling, the degree sum not halved, n edges in a tree, n(n − 1) for Kₙ, odd degrees ignored, the
+    outer face forgotten, the pairs ordered.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),
