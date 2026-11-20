@@ -10599,6 +10599,344 @@
       "seed": 7,
       "input": "64",
       "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 7,
+      "input": "4e^(-2x)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 7,
+      "input": "((e)^((((-1) * 2) * x)) + 3)",
+      "label": "wrong",
+      "mistake": "constantAddedAfterExp"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 7,
+      "input": "4e^(-2x) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 7,
+      "input": "3e^(-2x) - e^(3x)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 7,
+      "input": "((((-1) * 15) * (e)^((((-1) * 2) * x))) + (17 * (e)^((((-1) * 3) * x))))",
+      "label": "wrong",
+      "mistake": "integratingFactorSign"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 7,
+      "input": "3e^(-2x) - e^(3x) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 7,
+      "input": "-3x^2y + xy - 4x + 3y^2 + C",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 7,
+      "input": "(((((-1) * 6) * (x)^(2)) * y) + ((2 * x) * y) + ((-1) * (4 * x)) + (3 * (y)^(2)))",
+      "label": "wrong",
+      "mistake": "exactAddedBoth"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 7,
+      "input": "2(-3x^2y + xy - 4x + 3y^2)",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 1,
+      "seed": 7,
+      "input": "e^(-3x) - e^(3x)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 1,
+      "seed": 7,
+      "input": "e^(-3x) - e^(3x) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 2,
+      "seed": 7,
+      "input": "e^(x)(-3cos(2x) - 3sin(2x))",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 2,
+      "seed": 7,
+      "input": "((((-1) * 3) * cos((2 * x))) + ((-1) * (3 * sin((2 * x)))))",
+      "label": "wrong",
+      "mistake": "forgotExpFactor"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 2,
+      "seed": 7,
+      "input": "e^(x)(-3cos(2x) - 3sin(2x)) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 7,
+      "input": "-x",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 7,
+      "input": "(((-1) * x) + (2 * (3)^((-1))))",
+      "label": "wrong",
+      "mistake": "undeterminedNoDerivatives"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 7,
+      "input": "-x + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 1,
+      "seed": 7,
+      "input": "0; 1",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 1,
+      "seed": 7,
+      "input": "-3; 4",
+      "label": "wrong",
+      "mistake": "diagonalAsEigenvalues"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 1,
+      "seed": 7,
+      "input": "5; 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 2,
+      "seed": 7,
+      "input": "a stable node",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 2,
+      "seed": 7,
+      "input": "an unstable node",
+      "label": "wrong",
+      "mistake": "stabilitySignSwapped"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 2,
+      "seed": 7,
+      "input": "a saddle",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 3,
+      "seed": 7,
+      "input": "-e^(-2t) + 2e^(-t)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 3,
+      "seed": 7,
+      "input": "((-1) * (e)^((((-1) * 2) * t)))",
+      "label": "wrong",
+      "mistake": "initialAsCoefficients"
+    },
+    {
+      "skill": "odeSystems",
+      "level": 3,
+      "seed": 7,
+      "input": "-e^(-2t) + 2e^(-t) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 7,
+      "input": "-3/(s + 3) + 3s/(s^2 + 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 7,
+      "input": "((((-1) * 3) * ((s + ((-1) * 3)))^((-1))) + ((3 * s) * (((s)^(2) + 4))^((-1))))",
+      "label": "wrong",
+      "mistake": "laplaceShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 7,
+      "input": "((((-1) * 3) * ((s + 3))^((-1))) + (6 * (((s)^(2) + 4))^((-1))))",
+      "label": "wrong",
+      "mistake": "laplaceSinCos"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 7,
+      "input": "-3/(s + 3) + 3s/(s^2 + 4) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 7,
+      "input": "e^(-3t) - e^(3t)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 7,
+      "input": "((e)^((3 * t)) + ((-1) * (e)^((((-1) * 3) * t))))",
+      "label": "wrong",
+      "mistake": "inverseShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 7,
+      "input": "e^(-3t) - e^(3t) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 7,
+      "input": "3 - e^(3t)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 7,
+      "input": "(3 + ((-1) * (3 * (e)^((3 * t)))))",
+      "label": "wrong",
+      "mistake": "initialValueDropped"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 7,
+      "input": "3 - e^(3t) + 1",
+      "label": "wrong"
+    },
+    {
+      "skill": "stability",
+      "level": 1,
+      "seed": 7,
+      "input": "-4; 0; 4",
+      "label": "correct"
+    },
+    {
+      "skill": "stability",
+      "level": 1,
+      "seed": 7,
+      "input": "-4; 4",
+      "label": "wrong",
+      "mistake": "equilibriumZeroLost"
+    },
+    {
+      "skill": "stability",
+      "level": 1,
+      "seed": 7,
+      "input": "1; 0; 4",
+      "label": "wrong"
+    },
+    {
+      "skill": "stability",
+      "level": 2,
+      "seed": 7,
+      "input": "stable",
+      "label": "correct"
+    },
+    {
+      "skill": "stability",
+      "level": 2,
+      "seed": 7,
+      "input": "unstable",
+      "label": "wrong",
+      "mistake": "stabilitySignSwapped"
+    },
+    {
+      "skill": "stability",
+      "level": 2,
+      "seed": 7,
+      "input": "semi-stable",
+      "label": "wrong"
+    },
+    {
+      "skill": "stability",
+      "level": 3,
+      "seed": 7,
+      "input": "1, 0; -6, -6",
+      "label": "correct"
+    },
+    {
+      "skill": "stability",
+      "level": 3,
+      "seed": 7,
+      "input": "1, -6; 0, -6",
+      "label": "wrong",
+      "mistake": "jacobianTransposed"
+    },
+    {
+      "skill": "stability",
+      "level": 3,
+      "seed": 7,
+      "input": "3, 0; 0, 6",
+      "label": "wrong",
+      "mistake": "linearisedAtOrigin"
+    },
+    {
+      "skill": "stability",
+      "level": 3,
+      "seed": 7,
+      "input": "6, 0; -6, -6",
+      "label": "wrong"
     }
   ]
 }

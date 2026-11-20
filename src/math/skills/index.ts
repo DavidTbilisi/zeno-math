@@ -135,6 +135,11 @@ import multipleIntegrals from "./multipleIntegrals";
 import changeVariables from "./changeVariables";
 import lineIntegrals from "./lineIntegrals";
 import vectorTheorems from "./vectorTheorems";
+import odeFirst from "./odeFirst";
+import odeSecond from "./odeSecond";
+import odeSystems from "./odeSystems";
+import laplace from "./laplace";
+import stability from "./stability";
 import subspaces from "./subspaces";
 import basis from "./basis";
 import rankNullity from "./rankNullity";
@@ -279,6 +284,11 @@ export const GENS: Record<SkillId, Gen> = {
   changeVariables,
   lineIntegrals,
   vectorTheorems,
+  odeFirst,
+  odeSecond,
+  odeSystems,
+  laplace,
+  stability,
   subspaces,
   basis,
   rankNullity,

@@ -1028,6 +1028,20 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     value, the smallest value, the other width left out, the inner limit taken as constant, the r of dA, the sin φ or
     ρ² of dV, the wrong partials compared, only φ at the end, r′(t) left out, Green's order swapped, the surface area
     for the volume, a sign in the curl
+  - Ordinary differential equations (Boyce and DiPrima; Lebl, Notes on Diffy Qs; Trench; Strogatz), five skills in
+    calculus: first-order equations (a separable y′ = kxⁿy with an initial value, a linear y′ + ay = g(x) by an
+    integrating factor, the potential ψ of an exact equation), second-order equations with constant coefficients
+    (two whole roots, a repeated root or complex roots fitted to y(0) and y′(0), a particular solution by
+    undetermined coefficients), linear systems x′ = Ax (the eigenvalues, node, saddle, spiral or centre from the
+    trace and determinant, x₁(t) of an initial value problem), the Laplace transform (a transform, an inverse by
+    partial fractions, an initial value problem through Y(s)) and equilibria (every equilibrium of y′ = f(y), stable,
+    unstable or semi-stable, the Jacobian of a competition system). Answers are typed in x, t or s and compared by
+    value. The named slips: the constant added after taking e^, e^(−ax) as the integrating factor, the shared terms
+    of ψ counted twice, the roots with the wrong sign, the x·e^(rx) solution or the e^(αx) left out, only the qy term
+    matched, the diagonal taken for the eigenvalues, stability the wrong way round, a saddle or a spiral called a
+    node, x(0) used as the coefficients, 1/(s + b) for e^(bt), the n! of tⁿ, sine and cosine swapped, the initial
+    values left out of ℒ{y′}, the roots' signs flipped, y = 0 lost by dividing, a double root not called
+    semi-stable, the Jacobian transposed or taken at the origin
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

@@ -249,6 +249,26 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   greenOrderSwapped: ["vectorTheorems", [1]],
   areaForVolume: ["vectorTheorems", [2]],
   curlSignSlip: ["vectorTheorems", [3]],
+  constantAddedAfterExp: ["odeFirst", [1]],
+  integratingFactorSign: ["odeFirst", [2]],
+  exactAddedBoth: ["odeFirst", [3]],
+  rootsSignFlipped: ["odeSecond", [1]],
+  repeatedRootNoX: ["odeSecond", [2]],
+  forgotExpFactor: ["odeSecond", [2]],
+  undeterminedNoDerivatives: ["odeSecond", [3]],
+  diagonalAsEigenvalues: ["odeSystems", [1]],
+  stabilitySignSwapped: ["odeSystems", [2]],
+  saddleAsNode: ["odeSystems", [2]],
+  spiralAsNode: ["odeSystems", [2]],
+  initialAsCoefficients: ["odeSystems", [3]],
+  laplaceShiftSign: ["laplace", [1]],
+  laplaceNoFactorial: ["laplace", [1]],
+  laplaceSinCos: ["laplace", [1]],
+  inverseShiftSign: ["laplace", [2]],
+  initialValueDropped: ["laplace", [3]],
+  equilibriumZeroLost: ["stability", [1]],
+  semiStableMissed: ["stability", [2]],
+  linearisedAtOrigin: ["stability", [3]],
   missesZero: ["subspaces", [1]],
   notClosed: ["subspaces", [1]],
   coefficientsSwapped: ["subspaces", [2]],
@@ -348,7 +368,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {
