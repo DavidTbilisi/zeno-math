@@ -171,6 +171,12 @@ import openClosed from "./openClosed";
 import compactness from "./compactness";
 import connected from "./connected";
 import topologies from "./topologies";
+import estimators from "./estimators";
+import mle from "./mle";
+import regression from "./regression";
+import chiSquared from "./chiSquared";
+import anova from "./anova";
+import bayes from "./bayes";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -361,6 +367,12 @@ export const GENS: Record<SkillId, Gen> = {
   compactness,
   connected,
   topologies,
+  estimators,
+  mle,
+  regression,
+  chiSquared,
+  anova,
+  bayes,
   bezout,
   congruences,
   crt,

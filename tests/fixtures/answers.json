@@ -14348,6 +14348,474 @@
       "input": "not homeomorphic",
       "label": "wrong",
       "mistake": "boundednessNotTopological"
+    },
+    {
+      "skill": "estimators",
+      "level": 1,
+      "seed": 7,
+      "input": "-14/5",
+      "label": "correct"
+    },
+    {
+      "skill": "estimators",
+      "level": 1,
+      "seed": 7,
+      "input": "14/5",
+      "label": "wrong",
+      "mistake": "biasSignFlipped"
+    },
+    {
+      "skill": "estimators",
+      "level": 1,
+      "seed": 7,
+      "input": "21/5",
+      "label": "wrong",
+      "mistake": "biasIsExpectation"
+    },
+    {
+      "skill": "estimators",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimators",
+      "level": 2,
+      "seed": 7,
+      "input": "9/2",
+      "label": "correct"
+    },
+    {
+      "skill": "estimators",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "weightsNotSquared"
+    },
+    {
+      "skill": "estimators",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimators",
+      "level": 3,
+      "seed": 7,
+      "input": "consistent",
+      "label": "correct"
+    },
+    {
+      "skill": "estimators",
+      "level": 3,
+      "seed": 7,
+      "input": "not consistent",
+      "label": "wrong"
+    },
+    {
+      "skill": "mle",
+      "level": 1,
+      "seed": 7,
+      "input": "2/3",
+      "label": "correct"
+    },
+    {
+      "skill": "mle",
+      "level": 1,
+      "seed": 7,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "mleFailuresCounted"
+    },
+    {
+      "skill": "mle",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "mleSumNotMean"
+    },
+    {
+      "skill": "mle",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "mle",
+      "level": 2,
+      "seed": 7,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "mle",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "mleRateInverted"
+    },
+    {
+      "skill": "mle",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "mle",
+      "level": 3,
+      "seed": 7,
+      "input": "107/16",
+      "label": "correct"
+    },
+    {
+      "skill": "mle",
+      "level": 3,
+      "seed": 7,
+      "input": "107/12",
+      "label": "wrong",
+      "mistake": "mleBesselDivisor"
+    },
+    {
+      "skill": "mle",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "regression",
+      "level": 1,
+      "seed": 7,
+      "input": "-3/10",
+      "label": "correct"
+    },
+    {
+      "skill": "regression",
+      "level": 1,
+      "seed": 7,
+      "input": "-2/15",
+      "label": "wrong",
+      "mistake": "slopeInverted"
+    },
+    {
+      "skill": "regression",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "regression",
+      "level": 2,
+      "seed": 7,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "regression",
+      "level": 2,
+      "seed": 7,
+      "input": "-1/5",
+      "label": "wrong",
+      "mistake": "residualReversed"
+    },
+    {
+      "skill": "regression",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "regression",
+      "level": 3,
+      "seed": 7,
+      "input": "0.481",
+      "label": "correct"
+    },
+    {
+      "skill": "regression",
+      "level": 3,
+      "seed": 7,
+      "input": "231/445",
+      "label": "wrong",
+      "mistake": "rSquaredFlipped"
+    },
+    {
+      "skill": "regression",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 7,
+      "input": "39.375",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 7,
+      "input": "28",
+      "label": "wrong",
+      "mistake": "expectedUniform"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 7,
+      "input": "9.7",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 7,
+      "input": "16.121463077984817",
+      "label": "wrong",
+      "mistake": "chiSquaredByObserved"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 7,
+      "input": "194",
+      "label": "wrong",
+      "mistake": "chiSquaredNotDivided"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 7,
+      "input": "18.592",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 7,
+      "input": "26.412503969979298",
+      "label": "wrong",
+      "mistake": "chiSquaredByObserved"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 7,
+      "input": "431.8084",
+      "label": "wrong",
+      "mistake": "chiSquaredNotDivided"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 7,
+      "input": "578/25",
+      "label": "wrong",
+      "mistake": "expectedUniform"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "anova",
+      "level": 1,
+      "seed": 7,
+      "input": "19",
+      "label": "correct"
+    },
+    {
+      "skill": "anova",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "anovaDfSwapped"
+    },
+    {
+      "skill": "anova",
+      "level": 1,
+      "seed": 7,
+      "input": "21",
+      "label": "wrong",
+      "mistake": "anovaDfTotal"
+    },
+    {
+      "skill": "anova",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "anova",
+      "level": 2,
+      "seed": 7,
+      "input": "48",
+      "label": "correct"
+    },
+    {
+      "skill": "anova",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "ssbSizesLeftOut"
+    },
+    {
+      "skill": "anova",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "anova",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "anova",
+      "level": 3,
+      "seed": 7,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "fRatioSumsNotMeans"
+    },
+    {
+      "skill": "anova",
+      "level": 3,
+      "seed": 7,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "fRatioInverted"
+    },
+    {
+      "skill": "anova",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "bayes",
+      "level": 1,
+      "seed": 7,
+      "input": "3/35",
+      "label": "correct"
+    },
+    {
+      "skill": "bayes",
+      "level": 1,
+      "seed": 7,
+      "input": "1/256",
+      "label": "wrong",
+      "mistake": "posteriorNotNormalised"
+    },
+    {
+      "skill": "bayes",
+      "level": 1,
+      "seed": 7,
+      "input": "3/19",
+      "label": "wrong",
+      "mistake": "priorIgnored"
+    },
+    {
+      "skill": "bayes",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "bayes",
+      "level": 2,
+      "seed": 7,
+      "input": "15/22",
+      "label": "correct"
+    },
+    {
+      "skill": "bayes",
+      "level": 2,
+      "seed": 7,
+      "input": "7/22",
+      "label": "wrong",
+      "mistake": "posteriorFailuresSwapped"
+    },
+    {
+      "skill": "bayes",
+      "level": 2,
+      "seed": 7,
+      "input": "7/10",
+      "label": "wrong",
+      "mistake": "priorIgnored"
+    },
+    {
+      "skill": "bayes",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "bayes",
+      "level": 3,
+      "seed": 7,
+      "input": "116/11",
+      "label": "correct"
+    },
+    {
+      "skill": "bayes",
+      "level": 3,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong",
+      "mistake": "precisionsNotWeighted"
+    },
+    {
+      "skill": "bayes",
+      "level": 3,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "priorIgnored"
+    },
+    {
+      "skill": "bayes",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }

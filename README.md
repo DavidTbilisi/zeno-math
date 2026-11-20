@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, estimators, maximum likelihood, regression, χ² tests, ANOVA and Bayesian inference, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1167,6 +1167,23 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     open discs joined, a countable set taken to cut the plane, ∅ or X missing, unions or intersections not checked, a
     subbasis taken as the topology, intersections skipped, images checked for preimages, boundedness taken as
     topological, a cut point ignored.
+  - Mathematical statistics (Wackerly, Mendenhall & Scheaffer, Mathematical Statistics with Applications; OpenIntro
+    Statistics; Wasserman, All of Statistics; Casella & Berger, Statistical Inference), six skills in data after the
+    limit theorems: estimators (the bias of a scaled sum or of the variance with divisor n, the mean squared error of
+    a weighted sum of two draws, consistent or not), maximum likelihood (a Bernoulli p, a Poisson λ, an exponential
+    rate, a geometric p, a normal variance, a uniform end point), least-squares regression (the slope and intercept
+    from summary statistics or a table of points, a residual, R² and the adjusted R²), χ² tests (an expected count
+    under independence, the degrees of freedom, the goodness-of-fit and independence statistics), one-way ANOVA (the
+    between- and within-groups degrees of freedom, the between-groups sum of squares, the F statistic) and Bayesian
+    inference (which coin after some tosses, the beta–binomial posterior mean, normal–normal and gamma–Poisson
+    updating). The named slips: the bias's sign flipped, E(θ̂) for the bias, the divisor-n variance called unbiased,
+    the weights or the bias not squared, unbiased taken for consistent and biased for inconsistent, the failures
+    counted, the sum not divided, the rate inverted, n − 1 for n, the method of moments for the uniform, s_x and s_y
+    swapped, the intercept's sign, ŷ − y, SSE/SST for R², R² for the adjusted R², N spread evenly over the cells, k
+    for k − 1, rc − 1 for (r − 1)(c − 1), divided by O or not divided, the degrees of freedom swapped or N − 1, the
+    group sizes left out, the unweighted grand mean, sums of squares for mean squares, F upside down, the posterior
+    not normalised, the prior ignored, successes and failures swapped, the means not weighted by their precisions, the
+    rate not updated.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),
