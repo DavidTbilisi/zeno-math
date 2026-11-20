@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "markov", "randomWalks", "poissonProcess", "brownian",
   "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -217,6 +217,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   fourier: ["intTechniques", "convergence"],
   pdeClassify: ["partials"],
   separation: ["odeSecond", "fourier", "pdeClassify"],
+  lebesgueMeasure: ["riemann", "convergence"],
+  simpleIntegrals: ["lebesgueMeasure"],
+  convergenceTheorems: ["simpleIntegrals", "uniform"],
   curves: ["intApplications", "vectors"],
   surfaces: ["partials", "curves"],
   nonEuclidean: ["trigRules", "circles"],
@@ -476,6 +479,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   fourier: [13, 13, 13], // Fourier coefficients, parity, convergence at a jump, Parseval (Strauss; Haberman; Lebl)
   pdeClassify: [13, 13, 13], // order, linearity, elliptic/parabolic/hyperbolic, characteristics (Strauss; Haberman)
   separation: [13, 13, 13], // heat, wave and Laplace equations by separation of variables (Strauss; Haberman; Lebl)
+  lebesgueMeasure: [13, 13, 13], // outer measure, null sets, Cantor sets, countable additivity, continuity of measure (Axler MIRA ch. 2)
+  simpleIntegrals: [13, 13, 13], // integrals of simple functions, almost everywhere, other measures (Axler MIRA ch. 3)
+  convergenceTheorems: [13, 13, 13], // monotone and dominated convergence, mass that escapes, Lᵖ norms (Axler MIRA ch. 3, 7)
   curves: [13, 13, 13], // speed, arc length, curvature and torsion of space curves (Pressley; do Carmo)
   surfaces: [13, 13, 13], // tangent planes, the first fundamental form, Gaussian curvature (Pressley; do Carmo)
   nonEuclidean: [13, 13, 13], // angle sums, Girard's theorem, hyperbolic area, regular tilings (Greenberg; Stillwell)

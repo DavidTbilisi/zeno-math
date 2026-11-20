@@ -16650,6 +16650,236 @@
       "seed": 7,
       "input": "(1, 1)",
       "label": "wrong"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "countableCounted"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 2,
+      "seed": 7,
+      "input": "65/81",
+      "label": "correct"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 2,
+      "seed": 7,
+      "input": "40/81",
+      "label": "wrong",
+      "mistake": "oneGapPerStep"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 2,
+      "seed": 7,
+      "input": "16/81",
+      "label": "wrong",
+      "mistake": "remainingForRemoved"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "seriesFromZero"
+    },
+    {
+      "skill": "lebesgueMeasure",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "heightsAdded"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "27/2",
+      "label": "correct"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "rationalPartUsed"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "81/2",
+      "label": "wrong",
+      "mistake": "rationalPartAdded"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "69/2",
+      "label": "correct"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "33/2",
+      "label": "wrong",
+      "mistake": "diracIgnored"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "45/2",
+      "label": "wrong",
+      "mistake": "diracWeightDropped"
+    },
+    {
+      "skill": "simpleIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "limitSwapped"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "exponentSignSlip"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "supTimesLength"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "signKept"
+    },
+    {
+      "skill": "convergenceTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
