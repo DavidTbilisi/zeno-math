@@ -21,6 +21,7 @@ import type { OptimisationWords } from "./optimisation";
 import type { StochasticWords } from "./stochastic";
 import type { GameWords } from "./gameTheory";
 import type { CryptoWords } from "./crypto";
+import type { MeasureWords } from "./measureTheory";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -251,6 +252,8 @@ export type PracticeWords = {
   gt: GameWords;
   /** Discrete logarithms, ElGamal, elliptic curves (src/math/crypto.ts). */
   cr: CryptoWords;
+  /** Lebesgue measure, Lebesgue integrals, convergence theorems and Lᵖ norms (src/math/measureTheory.ts). */
+  mt: MeasureWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

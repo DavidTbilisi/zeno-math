@@ -198,6 +198,9 @@ import backwardInduction from "./backwardInduction";
 import discreteLog from "./discreteLog";
 import elGamal from "./elGamal";
 import ellipticCurves from "./ellipticCurves";
+import lebesgueMeasure from "./lebesgueMeasure";
+import simpleIntegrals from "./simpleIntegrals";
+import convergenceTheorems from "./convergenceTheorems";
 import randomWalks from "./randomWalks";
 import poissonProcess from "./poissonProcess";
 import brownian from "./brownian";
@@ -418,6 +421,9 @@ export const GENS: Record<SkillId, Gen> = {
   discreteLog,
   elGamal,
   ellipticCurves,
+  lebesgueMeasure,
+  simpleIntegrals,
+  convergenceTheorems,
   randomWalks,
   poissonProcess,
   brownian,
