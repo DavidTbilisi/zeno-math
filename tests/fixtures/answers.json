@@ -13373,6 +13373,310 @@
       "seed": 7,
       "input": "7",
       "label": "wrong"
+    },
+    {
+      "skill": "analytic",
+      "level": 1,
+      "seed": 7,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "analytic",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "cauchyRiemannSign"
+    },
+    {
+      "skill": "analytic",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "analytic",
+      "level": 2,
+      "seed": 7,
+      "input": "6 + 3i",
+      "label": "correct"
+    },
+    {
+      "skill": "analytic",
+      "level": 2,
+      "seed": 7,
+      "input": "6 - 3i",
+      "label": "wrong",
+      "mistake": "derivativeSignCR"
+    },
+    {
+      "skill": "analytic",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "analytic",
+      "level": 3,
+      "seed": 7,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "analytic",
+      "level": 3,
+      "seed": 7,
+      "input": "-10",
+      "label": "wrong",
+      "mistake": "harmonicConjugateSign"
+    },
+    {
+      "skill": "analytic",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "contour",
+      "level": 1,
+      "seed": 7,
+      "input": "5 + 10i",
+      "label": "correct"
+    },
+    {
+      "skill": "contour",
+      "level": 1,
+      "seed": 7,
+      "input": "-5 - 10i",
+      "label": "wrong",
+      "mistake": "contourEndsSwapped"
+    },
+    {
+      "skill": "contour",
+      "level": 1,
+      "seed": 7,
+      "input": "2 + 14i",
+      "label": "wrong",
+      "mistake": "contourNotDivided"
+    },
+    {
+      "skill": "contour",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "contour",
+      "level": 2,
+      "seed": 7,
+      "input": "8pi i",
+      "label": "correct"
+    },
+    {
+      "skill": "contour",
+      "level": 2,
+      "seed": 7,
+      "input": "14pi i",
+      "label": "wrong",
+      "mistake": "poleOutsideCounted"
+    },
+    {
+      "skill": "contour",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "twoPiIMissing"
+    },
+    {
+      "skill": "contour",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "contour",
+      "level": 3,
+      "seed": 7,
+      "input": "-6pi - 6pi i",
+      "label": "correct"
+    },
+    {
+      "skill": "contour",
+      "level": 3,
+      "seed": 7,
+      "input": "-2pi + 6pi i",
+      "label": "wrong",
+      "mistake": "cauchyDerivativeSkipped"
+    },
+    {
+      "skill": "contour",
+      "level": 3,
+      "seed": 7,
+      "input": "-12pi - 12pi i",
+      "label": "wrong",
+      "mistake": "cauchyFactorialForgotten"
+    },
+    {
+      "skill": "contour",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "laurent",
+      "level": 1,
+      "seed": 7,
+      "input": "essential singularity",
+      "label": "correct"
+    },
+    {
+      "skill": "laurent",
+      "level": 1,
+      "seed": 7,
+      "input": "simple pole",
+      "label": "wrong",
+      "mistake": "essentialCalledPole"
+    },
+    {
+      "skill": "laurent",
+      "level": 1,
+      "seed": 7,
+      "input": "removable singularity",
+      "label": "wrong"
+    },
+    {
+      "skill": "laurent",
+      "level": 2,
+      "seed": 7,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "laurent",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "laurentIndexOff"
+    },
+    {
+      "skill": "laurent",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "laurent",
+      "level": 3,
+      "seed": 7,
+      "input": "-1/18",
+      "label": "correct"
+    },
+    {
+      "skill": "laurent",
+      "level": 3,
+      "seed": 7,
+      "input": "4/9",
+      "label": "wrong",
+      "mistake": "wrongAnnulusExpansion"
+    },
+    {
+      "skill": "laurent",
+      "level": 3,
+      "seed": 7,
+      "input": "1/18",
+      "label": "wrong",
+      "mistake": "partialFractionSign"
+    },
+    {
+      "skill": "laurent",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 1,
+      "seed": 7,
+      "input": "-1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 1,
+      "seed": 7,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "residueFactorFlipped"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 2,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "doublePoleNoDerivative"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 3,
+      "seed": 7,
+      "input": "pi",
+      "label": "correct"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 3,
+      "seed": 7,
+      "input": "pi/2",
+      "label": "wrong",
+      "mistake": "piIForTwoPiI"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 3,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "allPolesCounted"
+    },
+    {
+      "skill": "residueCalc",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }

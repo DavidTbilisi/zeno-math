@@ -177,6 +177,10 @@ import generating from "./generating";
 import inclusionExclusion from "./inclusionExclusion";
 import pigeonhole from "./pigeonhole";
 import graphTheory from "./graphTheory";
+import analytic from "./analytic";
+import contour from "./contour";
+import laurent from "./laurent";
+import residueCalc from "./residueCalc";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -353,4 +357,8 @@ export const GENS: Record<SkillId, Gen> = {
   inclusionExclusion,
   pigeonhole,
   graphTheory,
+  analytic,
+  contour,
+  laurent,
+  residueCalc,
 };
