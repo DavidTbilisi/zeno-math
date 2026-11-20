@@ -1321,6 +1321,17 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     of the other direction, rows for columns, the largest signed eigenvalue, the largest entry, the kernel's supremum,
     the integral in x, the signed supremum, ⟨v, u⟩ not divided by ⟨u, u⟩ or divided by ⟨v, v⟩, the constant weighted π,
     π left out, the value at the midpoint, the average of the ends, ‖f‖² without the projection taken off.
+  - Dynamical systems, an elective of the degree (Strogatz, Nonlinear Dynamics and Chaos), three skills in calculus
+    after the stability of equilibria: bifurcations (the critical r of a saddle-node bifurcation, where f = 0 and
+    f′ = 0 meet; saddle-node, transcritical or pitchfork, super- or subcritical, from a normal form; the stable fixed
+    points for a given r), iterated maps (the nonzero fixed point of the logistic map and two iterates from x₀; the
+    multiplier f′(x*) = 2 − r and whether x* is stable by |f′(x*)| < 1; the 2-cycle past r = 3, exact fractions) and
+    Lyapunov exponents (three steps of x ↦ m x mod 1; λ of the shift, tent and skew tent maps; the next period
+    doubling from Feigenbaum's δ, or δ from three doublings). The named slips: the discriminant's 4 kept, the meeting
+    x given for r, a transcritical bifurcation called saddle-node, the pitchforks swapped, the origin kept stable,
+    the root left off, the sign read the wrong way, 1/r for the fixed point, one step only, f′(0) for f′(x*), f′ < 1
+    without the absolute value, the fixed points left in the cycle or given as it, mod 1 dropped, m for ln m, log₁₀
+    for ln, the log of the average slope, δ multiplied, equal spacing, the ratio inverted.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

@@ -24,6 +24,7 @@ import type { CryptoWords } from "./crypto";
 import type { MeasureWords } from "./measureTheory";
 import type { FunctionalWords } from "./functionalAnalysis";
 import type { FoundationsWords } from "./foundations";
+import type { DynamicsWords } from "./dynamics";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -260,6 +261,8 @@ export type PracticeWords = {
   fa: FunctionalWords;
   /** Normal forms, structures, ordinals and cardinals (src/math/foundations.ts). */
   fo: FoundationsWords;
+  /** Bifurcations, iterated maps, Lyapunov exponents (src/math/dynamics.ts). */
+  dyn: DynamicsWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

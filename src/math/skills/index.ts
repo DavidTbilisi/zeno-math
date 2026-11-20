@@ -140,6 +140,9 @@ import odeSecond from "./odeSecond";
 import odeSystems from "./odeSystems";
 import laplace from "./laplace";
 import stability from "./stability";
+import bifurcations from "./bifurcations";
+import iteratedMaps from "./iteratedMaps";
+import lyapunov from "./lyapunov";
 import supInf from "./supInf";
 import seqLimits from "./seqLimits";
 import epsilonDelta from "./epsilonDelta";
@@ -369,6 +372,9 @@ export const GENS: Record<SkillId, Gen> = {
   odeSystems,
   laplace,
   stability,
+  bifurcations,
+  iteratedMaps,
+  lyapunov,
   supInf,
   seqLimits,
   epsilonDelta,

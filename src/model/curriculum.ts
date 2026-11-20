@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "norms", "operatorNorms", "hilbertSpaces", "markov", "randomWalks", "poissonProcess", "brownian",
   "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -127,6 +127,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   odeSystems: ["odeSecond", "eigen"],
   laplace: ["odeFirst", "improper"],
   stability: ["odeSystems", "partials"],
+  bifurcations: ["odeFirst", "stationary"],
+  iteratedMaps: ["stationary", "sequences"],
+  lyapunov: ["iteratedMaps", "logs"],
   supInf: ["sequences", "limits"],
   seqLimits: ["supInf"],
   epsilonDelta: ["seqLimits"],
@@ -396,6 +399,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   odeSystems: [13, 13, 13], // x′ = Ax by eigenvalues, phase portraits (Lebl, Strogatz)
   laplace: [13, 13, 13], // the transform, its inverse, initial value problems (Trench, Boyce and DiPrima)
   stability: [13, 13, 13], // equilibria, their stability, linearisation (Strogatz)
+  bifurcations: [13, 13, 13], // saddle-node, transcritical and pitchfork bifurcations of x′ = f(x, r) (Strogatz ch. 3)
+  iteratedMaps: [13, 13, 13], // fixed points, their stability by |f′|, 2-cycles of the logistic map (Strogatz ch. 10)
+  lyapunov: [13, 13, 13], // Lyapunov exponents of shift and tent maps, Feigenbaum's δ (Strogatz ch. 10)
   supInf: [13, 13, 13], // the completeness axiom, suprema and the approximation property (Abbott, Bartle and Sherbert)
   seqLimits: [13, 13, 13], // ε–N, monotone convergence, subsequences (Abbott, Lebl Basic Analysis)
   epsilonDelta: [13, 13, 13], // continuity by ε and δ, uniform continuity (Abbott, Bartle and Sherbert)
