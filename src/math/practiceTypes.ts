@@ -17,6 +17,7 @@ import type { TopologyWords } from "./topology";
 import type { StatWords } from "./mathStats";
 import type { NumAnalysisWords } from "./numericalAnalysis";
 import type { HigherGeometryWords } from "./higherGeometry";
+import type { OptimisationWords } from "./optimisation";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -239,6 +240,8 @@ export type PracticeWords = {
   pde: PdeWords;
   /** Curves, surfaces, non-Euclidean and projective geometry (src/math/higherGeometry.ts). */
   hg: HigherGeometryWords;
+  /** Linear programming, the simplex method, convex optimisation (src/math/optimisation.ts). */
+  opt: OptimisationWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
