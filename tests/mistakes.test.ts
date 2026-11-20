@@ -491,6 +491,42 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   doublePoleNoDerivative: ["residueCalc", [2]],
   piIForTwoPiI: ["residueCalc", [3]],
   allPolesCounted: ["residueCalc", [3]],
+  unitsZeroDivisorsSwapped: ["rings", [1]],
+  zeroDivisorIncludesZero: ["rings", [1]],
+  fieldInversesMissed: ["rings", [2]],
+  domainCalledField: ["rings", [2]],
+  zeroDivisorMissed: ["rings", [2]],
+  idealGcdLcmSwapped: ["rings", [3]],
+  idealIntersectionProduct: ["rings", [3]],
+  idealGeneratorsAdded: ["rings", [3]],
+  quotientSizeMultiplied: ["rings", [3]],
+  remainderAtMinusA: ["polyRings", [1]],
+  eisensteinSquareIgnored: ["polyRings", [2]],
+  rootMissedModP: ["polyRings", [3]],
+  noRootMeansIrreducible: ["polyRings", [3]],
+  degreesAdded: ["fieldExt", [1]],
+  dependentRootsCounted: ["fieldExt", [1]],
+  minimalSignSlip: ["fieldExt", [2]],
+  minimalConstantSlip: ["fieldExt", [2]],
+  crossTermDropped: ["fieldExt", [2]],
+  normNotDivided: ["fieldExt", [3]],
+  conjugateNotTaken: ["fieldExt", [3]],
+  inverseAsNegative: ["finiteFields", [1]],
+  fermatExponentModP: ["finiteFields", [1]],
+  groupOrderIsFieldSize: ["finiteFields", [2]],
+  primitiveCountAll: ["finiteFields", [2]],
+  subfieldsAllBelow: ["finiteFields", [2]],
+  powerNotReduced: ["finiteFields", [3]],
+  galoisDegreeIsPolyDegree: ["galois", [1]],
+  cyclotomicDegreeP: ["galois", [1]],
+  kleinCalledCyclic: ["galois", [2]],
+  frobeniusNotCyclic: ["galois", [2]],
+  complexRootsIgnored: ["galois", [2]],
+  allPermutationsAssumed: ["galois", [2]],
+  discriminantSignSlip: ["galois", [3]],
+  discriminantCoefficientsSwapped: ["galois", [3]],
+  discriminantIgnored: ["galois", [3]],
+  realRootsMeansCyclic: ["galois", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -534,7 +570,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

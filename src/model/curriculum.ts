@@ -8,7 +8,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
-  "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "vectors", "dotangle", "differentiate", "tangent",
+  "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability", "markov",
@@ -187,6 +187,11 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   subgroups: ["elementOrder"],
   permutations: ["groups", "inversions"],
   homomorphisms: ["subgroups", "permutations"],
+  rings: ["homomorphisms", "congruences"],
+  polyRings: ["rings", "polynomials"],
+  fieldExt: ["polyRings", "surds"],
+  finiteFields: ["fieldExt", "fermatEuler"],
+  galois: ["finiteFields", "permutations"],
   descent: ["stationary"],
   backprop: ["descent"],
   softmax: ["logs", "probability"],
@@ -406,6 +411,11 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   subgroups: [13, 13, 13], // subgroups, cosets and Lagrange's theorem (Pinter; Judson; Gallian)
   permutations: [13, 13, 13], // cycle notation, composition, sign, Sₙ and Aₙ (Pinter; Judson; Gallian)
   homomorphisms: [13, 13, 13], // kernels, normal subgroups, quotients, the first isomorphism theorem (Pinter; Judson; Gallian)
+  rings: [13, 13, 13], // units, zero divisors, integral domains and fields, ideals and quotient rings (Pinter; Gallian)
+  polyRings: [13, 13, 13], // the remainder theorem in ℤₚ[x], Eisenstein's criterion, irreducibility mod p (Gallian; Judson)
+  fieldExt: [13, 13, 13], // degrees by the tower law, minimal polynomials, inverses in ℚ(√d) (Stewart, Galois Theory; Judson)
+  finiteFields: [13, 13, 13], // GF(p) and GF(pⁿ) = ℤₚ[x]/(f), the cyclic multiplicative group, subfields (Judson; Gallian)
+  galois: [13, 13, 13], // Galois groups of splitting fields, cyclotomic fields, the discriminant of a cubic (Stewart; Judson)
   deMoivre: [13, 13, 13], // De Moivre, n-th roots and loci in the Argand diagram (OpenStax Precalculus; Needham)
   descent: [13, 13, 13], // gradient descent: one step, two steps, what the learning rate does
   backprop: [13, 13, 13], // the chain rule through a computational graph, a squared error, a ReLU
