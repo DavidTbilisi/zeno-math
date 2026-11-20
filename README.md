@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, estimators, maximum likelihood, regression, χ² tests, ANOVA and Bayesian inference, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, numerical analysis (rounding error, interpolation, Runge–Kutta steps, LU and iterative solvers, orders of convergence), statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, estimators, maximum likelihood, regression, χ² tests, ANOVA and Bayesian inference, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1184,6 +1184,24 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     group sizes left out, the unweighted grand mean, sums of squares for mean squares, F upside down, the posterior
     not normalised, the prior ignored, successes and failures swapped, the means not weighted by their precisions, the
     rate not updated.
+  - Numerical analysis (Burden & Faires, Numerical Analysis; Süli & Mayers, An Introduction to Numerical Analysis),
+    five skills: rounding error and conditioning (the absolute and relative error of a rounding, the relative
+    condition number |x f′/f| of x − a, x² − a² and 1/(a − x) near a, the condition number κ∞ of a 2 × 2 matrix),
+    polynomial interpolation (a Lagrange basis polynomial or the interpolating quadratic at a point, the second divided
+    difference, the error bound M·|Π(x − xᵢ)|/(n + 1)!), numerical methods for ODEs (one Euler, Heun or classical RK4
+    step, how the global error of a method of order p shrinks when the step is cut), orders of convergence (bisection
+    steps for 10⁻ᵏ, Newton's linear rate (m − 1)/m at a root of multiplicity m, the rate of a fixed-point iteration and
+    whether it converges) in calculus after topological spaces, and LU and iterative solvers (an entry of a Doolittle
+    factorisation, one Jacobi or Gauss–Seidel sweep, the Gauss–Seidel spectral radius of a 2 × 2 system, Jacobi
+    convergence without diagonal dominance) on the linear stage after the SVD. The named slips: the error's sign kept,
+    divided by p* or not divided, |f′| for the relative condition number or the ratio upside down, the inverse not
+    divided by det A or ‖A‖ squared, the basis numerator only, the chord through the nearest two points, the divided
+    difference not divided or divided by x₂ − x₁, (n + 1)! missing or n!, the Euler slope not scaled by h or given as
+    the answer, Heun stopped at Euler's predictor or not halved, RK4 weighted equally, the global error scaled as h or
+    as hᵖ⁺¹, a sign slip in u₂₂, l₃₂ without l₃₁u₁₂ or inverted, Jacobi and Gauss–Seidel swapped, the Jacobi radius
+    for Gauss–Seidel, dominance taken as necessary or one dominant row as enough, bisection one step short or one step
+    per digit, Newton's rate 1/m or quadratic at a multiple root, the sign of g′(r) kept, a negative g′(r) taken to
+    diverge, every fixed point taken to attract.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),
