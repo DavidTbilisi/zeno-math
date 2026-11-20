@@ -10937,6 +10937,850 @@
       "seed": 7,
       "input": "6, 0; -6, -6",
       "label": "wrong"
+    },
+    {
+      "skill": "supInf",
+      "level": 1,
+      "seed": 7,
+      "input": "0; -3",
+      "label": "correct"
+    },
+    {
+      "skill": "supInf",
+      "level": 1,
+      "seed": 7,
+      "input": "(-3, 0)",
+      "label": "wrong",
+      "mistake": "supInfSwapped"
+    },
+    {
+      "skill": "supInf",
+      "level": 1,
+      "seed": 7,
+      "input": "5; -3",
+      "label": "wrong"
+    },
+    {
+      "skill": "supInf",
+      "level": 2,
+      "seed": 7,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "supInf",
+      "level": 2,
+      "seed": 7,
+      "input": "a largest and a smallest element",
+      "label": "wrong",
+      "mistake": "boundAsAttained"
+    },
+    {
+      "skill": "supInf",
+      "level": 2,
+      "seed": 7,
+      "input": "a largest element only",
+      "label": "wrong"
+    },
+    {
+      "skill": "supInf",
+      "level": 3,
+      "seed": 7,
+      "input": "501",
+      "label": "correct"
+    },
+    {
+      "skill": "supInf",
+      "level": 3,
+      "seed": 7,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "epsilonBoundaryN"
+    },
+    {
+      "skill": "supInf",
+      "level": 3,
+      "seed": 7,
+      "input": "508",
+      "label": "wrong"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "500",
+      "label": "correct"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "499",
+      "label": "wrong",
+      "mistake": "epsilonBoundaryN"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "501",
+      "label": "wrong",
+      "mistake": "forgotShiftN"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "507",
+      "label": "wrong"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 2,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "negativeFixedPoint"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "-4; -3; -2",
+      "label": "correct"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "-4; -2",
+      "label": "wrong",
+      "mistake": "missedZeroSubsequence"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "averageAsLimit"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "1; -3; -2",
+      "label": "wrong"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 1,
+      "seed": 7,
+      "input": "1/20",
+      "label": "correct"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 1,
+      "seed": 7,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "deltaTimesSlope"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 2,
+      "seed": 7,
+      "input": "1/90",
+      "label": "correct"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 2,
+      "seed": 7,
+      "input": "1/80",
+      "label": "wrong",
+      "mistake": "boundAtPointOnly"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 3,
+      "seed": 7,
+      "input": "uniformly continuous",
+      "label": "correct"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 3,
+      "seed": 7,
+      "input": "continuous, but not uniformly",
+      "label": "wrong"
+    },
+    {
+      "skill": "mvt",
+      "level": 1,
+      "seed": 7,
+      "input": "3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "mvt",
+      "level": 1,
+      "seed": 7,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "slopeAsC"
+    },
+    {
+      "skill": "mvt",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "boundWrongEnd"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "forgotIntervalLength"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "1/162",
+      "label": "correct"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "1/27",
+      "label": "wrong",
+      "mistake": "remainderNoFactorial"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "1/18",
+      "label": "wrong",
+      "mistake": "remainderWrongPower"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "573/32",
+      "label": "correct"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "213/32",
+      "label": "wrong",
+      "mistake": "otherDarbouxSum"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "191/8",
+      "label": "wrong",
+      "mistake": "sumWithoutWidth"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "901",
+      "label": "correct"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "900",
+      "label": "wrong",
+      "mistake": "epsilonBoundaryN"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "301",
+      "label": "wrong",
+      "mistake": "sumWithoutWidth"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "908",
+      "label": "wrong"
+    },
+    {
+      "skill": "riemann",
+      "level": 3,
+      "seed": 7,
+      "input": "not Riemann integrable",
+      "label": "correct"
+    },
+    {
+      "skill": "riemann",
+      "level": 3,
+      "seed": 7,
+      "input": "Riemann integrable",
+      "label": "wrong",
+      "mistake": "boundedMeansIntegrable"
+    },
+    {
+      "skill": "uniform",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "uniform",
+      "level": 1,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "pointwiseLimitJump"
+    },
+    {
+      "skill": "uniform",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "uniform",
+      "level": 2,
+      "seed": 7,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "uniform",
+      "level": 2,
+      "seed": 7,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "supAtEndpoint"
+    },
+    {
+      "skill": "uniform",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "uniform",
+      "level": 3,
+      "seed": 7,
+      "input": "converges pointwise, not uniformly",
+      "label": "correct"
+    },
+    {
+      "skill": "uniform",
+      "level": 3,
+      "seed": 7,
+      "input": "converges uniformly",
+      "label": "wrong",
+      "mistake": "pointwiseMeansUniform"
+    },
+    {
+      "skill": "supInf",
+      "level": 1,
+      "seed": 7,
+      "input": "0; -3",
+      "label": "correct"
+    },
+    {
+      "skill": "supInf",
+      "level": 1,
+      "seed": 7,
+      "input": "(-3, 0)",
+      "label": "wrong",
+      "mistake": "supInfSwapped"
+    },
+    {
+      "skill": "supInf",
+      "level": 1,
+      "seed": 7,
+      "input": "5; -3",
+      "label": "wrong"
+    },
+    {
+      "skill": "supInf",
+      "level": 2,
+      "seed": 7,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "supInf",
+      "level": 2,
+      "seed": 7,
+      "input": "a largest and a smallest element",
+      "label": "wrong",
+      "mistake": "boundAsAttained"
+    },
+    {
+      "skill": "supInf",
+      "level": 2,
+      "seed": 7,
+      "input": "a largest element only",
+      "label": "wrong"
+    },
+    {
+      "skill": "supInf",
+      "level": 3,
+      "seed": 7,
+      "input": "501",
+      "label": "correct"
+    },
+    {
+      "skill": "supInf",
+      "level": 3,
+      "seed": 7,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "epsilonBoundaryN"
+    },
+    {
+      "skill": "supInf",
+      "level": 3,
+      "seed": 7,
+      "input": "508",
+      "label": "wrong"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "500",
+      "label": "correct"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "499",
+      "label": "wrong",
+      "mistake": "epsilonBoundaryN"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "501",
+      "label": "wrong",
+      "mistake": "forgotShiftN"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 1,
+      "seed": 7,
+      "input": "507",
+      "label": "wrong"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 2,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "negativeFixedPoint"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "-4; -3; -2",
+      "label": "correct"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "-4; -2",
+      "label": "wrong",
+      "mistake": "missedZeroSubsequence"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "averageAsLimit"
+    },
+    {
+      "skill": "seqLimits",
+      "level": 3,
+      "seed": 7,
+      "input": "1; -3; -2",
+      "label": "wrong"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 1,
+      "seed": 7,
+      "input": "1/20",
+      "label": "correct"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 1,
+      "seed": 7,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "deltaTimesSlope"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 2,
+      "seed": 7,
+      "input": "1/90",
+      "label": "correct"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 2,
+      "seed": 7,
+      "input": "1/80",
+      "label": "wrong",
+      "mistake": "boundAtPointOnly"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 3,
+      "seed": 7,
+      "input": "uniformly continuous",
+      "label": "correct"
+    },
+    {
+      "skill": "epsilonDelta",
+      "level": 3,
+      "seed": 7,
+      "input": "continuous, but not uniformly",
+      "label": "wrong"
+    },
+    {
+      "skill": "mvt",
+      "level": 1,
+      "seed": 7,
+      "input": "3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "mvt",
+      "level": 1,
+      "seed": 7,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "slopeAsC"
+    },
+    {
+      "skill": "mvt",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "boundWrongEnd"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "forgotIntervalLength"
+    },
+    {
+      "skill": "mvt",
+      "level": 2,
+      "seed": 7,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "1/162",
+      "label": "correct"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "1/27",
+      "label": "wrong",
+      "mistake": "remainderNoFactorial"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "1/18",
+      "label": "wrong",
+      "mistake": "remainderWrongPower"
+    },
+    {
+      "skill": "mvt",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "573/32",
+      "label": "correct"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "213/32",
+      "label": "wrong",
+      "mistake": "otherDarbouxSum"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "191/8",
+      "label": "wrong",
+      "mistake": "sumWithoutWidth"
+    },
+    {
+      "skill": "riemann",
+      "level": 1,
+      "seed": 7,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "901",
+      "label": "correct"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "900",
+      "label": "wrong",
+      "mistake": "epsilonBoundaryN"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "301",
+      "label": "wrong",
+      "mistake": "sumWithoutWidth"
+    },
+    {
+      "skill": "riemann",
+      "level": 2,
+      "seed": 7,
+      "input": "908",
+      "label": "wrong"
+    },
+    {
+      "skill": "riemann",
+      "level": 3,
+      "seed": 7,
+      "input": "not Riemann integrable",
+      "label": "correct"
+    },
+    {
+      "skill": "riemann",
+      "level": 3,
+      "seed": 7,
+      "input": "Riemann integrable",
+      "label": "wrong",
+      "mistake": "boundedMeansIntegrable"
+    },
+    {
+      "skill": "uniform",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "uniform",
+      "level": 1,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "pointwiseLimitJump"
+    },
+    {
+      "skill": "uniform",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "uniform",
+      "level": 2,
+      "seed": 7,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "uniform",
+      "level": 2,
+      "seed": 7,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "supAtEndpoint"
+    },
+    {
+      "skill": "uniform",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "uniform",
+      "level": 3,
+      "seed": 7,
+      "input": "converges pointwise, not uniformly",
+      "label": "correct"
+    },
+    {
+      "skill": "uniform",
+      "level": 3,
+      "seed": 7,
+      "input": "converges uniformly",
+      "label": "wrong",
+      "mistake": "pointwiseMeansUniform"
     }
   ]
 }

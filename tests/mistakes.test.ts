@@ -269,6 +269,38 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   equilibriumZeroLost: ["stability", [1]],
   semiStableMissed: ["stability", [2]],
   linearisedAtOrigin: ["stability", [3]],
+  supInfSwapped: ["supInf", [1]],
+  alternatingFirstTerm: ["supInf", [1]],
+  boundAsAttained: ["supInf", [2]],
+  limitAsBound: ["supInf", [2]],
+  epsilonBoundaryN: ["supInf", [3]],
+  forgotSquareRootN: ["supInf", [3]],
+  forgotShiftN: ["seqLimits", [1]],
+  negativeFixedPoint: ["seqLimits", [2]],
+  fixedPointSign: ["seqLimits", [2]],
+  averageAsLimit: ["seqLimits", [3]],
+  missedZeroSubsequence: ["seqLimits", [3]],
+  deltaTimesSlope: ["epsilonDelta", [1]],
+  boundAtPointOnly: ["epsilonDelta", [2]],
+  forgotMinOne: ["epsilonDelta", [2]],
+  continuousMeansUniform: ["epsilonDelta", [3]],
+  notCompactNotUniform: ["epsilonDelta", [3]],
+  slopeAsC: ["mvt", [1]],
+  midpointAsC: ["mvt", [1]],
+  boundWrongEnd: ["mvt", [2]],
+  forgotIntervalLength: ["mvt", [2]],
+  remainderNoFactorial: ["mvt", [3]],
+  remainderWrongPower: ["mvt", [3]],
+  otherDarbouxSum: ["riemann", [1]],
+  sumWithoutWidth: ["riemann", [1, 2]],
+  discontinuousNotIntegrable: ["riemann", [3]],
+  boundedMeansIntegrable: ["riemann", [3]],
+  improperAsRiemann: ["riemann", [3]],
+  pointwiseLimitJump: ["uniform", [1]],
+  supAtEndpoint: ["uniform", [2]],
+  pointwiseMeansUniform: ["uniform", [3]],
+  continuousLimitMeansUniform: ["uniform", [3]],
+  supNotComputed: ["uniform", [3]],
   missesZero: ["subspaces", [1]],
   notClosed: ["subspaces", [1]],
   coefficientsSwapped: ["subspaces", [2]],
@@ -368,7 +400,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

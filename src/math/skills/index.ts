@@ -140,6 +140,12 @@ import odeSecond from "./odeSecond";
 import odeSystems from "./odeSystems";
 import laplace from "./laplace";
 import stability from "./stability";
+import supInf from "./supInf";
+import seqLimits from "./seqLimits";
+import epsilonDelta from "./epsilonDelta";
+import mvt from "./mvt";
+import riemann from "./riemann";
+import uniform from "./uniform";
 import subspaces from "./subspaces";
 import basis from "./basis";
 import rankNullity from "./rankNullity";
@@ -289,6 +295,12 @@ export const GENS: Record<SkillId, Gen> = {
   odeSystems,
   laplace,
   stability,
+  supInf,
+  seqLimits,
+  epsilonDelta,
+  mvt,
+  riemann,
+  uniform,
   subspaces,
   basis,
   rankNullity,
