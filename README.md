@@ -1015,6 +1015,19 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     swapped, the p-test backwards or used at 0, the area under one curve, π left out, the integral squared, the
     1 + left out of an arc, k! left out, the series about 0, the radius inverted, the ends guessed, terms tending
     to 0 taken as enough, the ratio test at 1, conditional taken as absolute
+  - Multivariable and vector calculus (OpenStax Calculus Volume 3; Marsden and Tromba; Colley), seven skills in
+    calculus: partial derivatives (a gradient at a point, a directional derivative towards a vector that is not of
+    length 1, a tangent plane z = ax + by + c), the chain rule (dz/dt, the Jacobian matrix at a point, ∂z/∂s),
+    extrema (the critical point of a quadratic, min, max, saddle or undecided by D = fₓₓf_yy − fₓᵧ², the largest value
+    under a constraint by Lagrange multipliers), double integrals (over a rectangle, over a triangle, one that needs
+    its order reversed), polar, cylindrical and spherical coordinates (a disc, the volume under a paraboloid, a
+    ball), line integrals (conservative or not, the work of a gradient field, ∫ F · dr along (t, tᵐ)) and the
+    theorems of Green, Gauss and Stokes. The named slips: a term in the other letter taken as 0, the gradient's parts
+    swapped, ∇f · v not divided by |v|, c taken as f(a, b), a term of the chain rule left out, the Jacobian
+    transposed, the t-derivatives for the s-derivatives, the sign of fₓₓ read before D, max and min swapped, λ for the
+    value, the smallest value, the other width left out, the inner limit taken as constant, the r of dA, the sin φ or
+    ρ² of dV, the wrong partials compared, only φ at the end, r′(t) left out, Green's order swapped, the surface area
+    for the volume, a sign in the curl
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

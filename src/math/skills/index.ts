@@ -128,6 +128,13 @@ import intApplications from "./intApplications";
 import taylor from "./taylor";
 import powerSeries from "./powerSeries";
 import convergence from "./convergence";
+import partials from "./partials";
+import chainMulti from "./chainMulti";
+import extremaMulti from "./extremaMulti";
+import multipleIntegrals from "./multipleIntegrals";
+import changeVariables from "./changeVariables";
+import lineIntegrals from "./lineIntegrals";
+import vectorTheorems from "./vectorTheorems";
 import subspaces from "./subspaces";
 import basis from "./basis";
 import rankNullity from "./rankNullity";
@@ -265,6 +272,13 @@ export const GENS: Record<SkillId, Gen> = {
   taylor,
   powerSeries,
   convergence,
+  partials,
+  chainMulti,
+  extremaMulti,
+  multipleIntegrals,
+  changeVariables,
+  lineIntegrals,
+  vectorTheorems,
   subspaces,
   basis,
   rankNullity,

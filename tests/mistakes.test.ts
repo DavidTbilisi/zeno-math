@@ -227,6 +227,28 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   ratioOneDecides: ["convergence", [2]],
   conditionalAsAbsolute: ["convergence", [3]],
   alternatingAlwaysConverges: ["convergence", [3]],
+  otherVariableZero: ["partials", [1]],
+  partialsSwapped: ["partials", [1]],
+  directionNotUnit: ["partials", [2]],
+  planeNotThroughPoint: ["partials", [3]],
+  chainOneTermOnly: ["chainMulti", [1, 3]],
+  jacobianTransposed: ["chainMulti", [2]],
+  chainWrongVariable: ["chainMulti", [3]],
+  fxxAloneDecides: ["extremaMulti", [2]],
+  hessianSignsSwapped: ["extremaMulti", [2]],
+  gaveLambda: ["extremaMulti", [3]],
+  minForMax: ["extremaMulti", [3]],
+  forgotOtherWidth: ["multipleIntegrals", [1]],
+  limitsAsConstants: ["multipleIntegrals", [2]],
+  forgotJacobianR: ["changeVariables", [1, 2]],
+  forgotSinPhi: ["changeVariables", [3]],
+  sphericalNoRhoSquared: ["changeVariables", [3]],
+  wrongPartialsCompared: ["lineIntegrals", [1]],
+  potentialAtEndOnly: ["lineIntegrals", [2]],
+  forgotDrDt: ["lineIntegrals", [3]],
+  greenOrderSwapped: ["vectorTheorems", [1]],
+  areaForVolume: ["vectorTheorems", [2]],
+  curlSignSlip: ["vectorTheorems", [3]],
   missesZero: ["subspaces", [1]],
   notClosed: ["subspaces", [1]],
   coefficientsSwapped: ["subspaces", [2]],
@@ -326,7 +348,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

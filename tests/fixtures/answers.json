@@ -10112,6 +10112,493 @@
       "seed": 7,
       "input": "the half-line from −4 − 4i (not including it) at angle −3π/4 to the positive real direction",
       "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 7,
+      "input": "(0; -5)",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 7,
+      "input": "(0, -2)",
+      "label": "wrong",
+      "mistake": "otherVariableZero"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 7,
+      "input": "(-5, 0)",
+      "label": "wrong",
+      "mistake": "partialsSwapped"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 7,
+      "input": "5; -5",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 7,
+      "input": "24/5",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 7,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "directionNotUnit"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 3,
+      "seed": 7,
+      "input": "(0; -5; 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 3,
+      "seed": 7,
+      "input": "(0, -5, -1)",
+      "label": "wrong",
+      "mistake": "planeNotThroughPoint"
+    },
+    {
+      "skill": "partials",
+      "level": 3,
+      "seed": 7,
+      "input": "5; -5; 4",
+      "label": "wrong"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 1,
+      "seed": 7,
+      "input": "-108",
+      "label": "correct"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 1,
+      "seed": 7,
+      "input": "-12",
+      "label": "wrong",
+      "mistake": "chainOneTermOnly"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 1,
+      "seed": 7,
+      "input": "-101",
+      "label": "wrong"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 7,
+      "input": "-3, -3; 4, -3",
+      "label": "correct"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 7,
+      "input": "-3, 4; -3, -3",
+      "label": "wrong",
+      "mistake": "jacobianTransposed"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 7,
+      "input": "2, -3; 4, -3",
+      "label": "wrong"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "-8",
+      "label": "correct"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "-19",
+      "label": "wrong",
+      "mistake": "chainWrongVariable"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "-9",
+      "label": "wrong",
+      "mistake": "chainOneTermOnly"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 1,
+      "seed": 7,
+      "input": "(1; 0)",
+      "label": "correct"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 1,
+      "seed": 7,
+      "input": "(1, -0.6666666666666666)",
+      "label": "wrong",
+      "mistake": "otherVariableZero"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 1,
+      "seed": 7,
+      "input": "6; 0",
+      "label": "wrong"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 7,
+      "input": "a local minimum",
+      "label": "correct"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 7,
+      "input": "a local maximum",
+      "label": "wrong",
+      "mistake": "hessianSignsSwapped"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 7,
+      "input": "a saddle point",
+      "label": "wrong"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "5/4",
+      "label": "wrong",
+      "mistake": "gaveLambda"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "-10",
+      "label": "wrong",
+      "mistake": "minForMax"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 3,
+      "seed": 7,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "64",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "forgotOtherWidth"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "71",
+      "label": "wrong"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "32",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "64",
+      "label": "wrong",
+      "mistake": "limitsAsConstants"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "39",
+      "label": "wrong"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "3(e^1 - 1)/2",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "5.154845485377136",
+      "label": "wrong",
+      "mistake": "forgotInnerFactor"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 7,
+      "input": "2pi/3",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 7,
+      "input": "3.141592653589793",
+      "label": "wrong",
+      "mistake": "forgotJacobianR"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 7,
+      "input": "pi/2",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 7,
+      "input": "4.1887902047863905",
+      "label": "wrong",
+      "mistake": "forgotJacobianR"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 3,
+      "seed": 7,
+      "input": "4pi/3",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 3,
+      "seed": 7,
+      "input": "6.579736267392906",
+      "label": "wrong",
+      "mistake": "forgotSinPhi"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 3,
+      "seed": 7,
+      "input": "12.566370614359172",
+      "label": "wrong",
+      "mistake": "sphericalNoRhoSquared"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 3,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "yes",
+      "label": "correct"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 1,
+      "seed": 7,
+      "input": "no",
+      "label": "wrong",
+      "mistake": "wrongPartialsCompared"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "potentialAtEndOnly"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "-2/3",
+      "label": "correct"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "-1/3",
+      "label": "wrong",
+      "mistake": "forgotDrDt"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "54pi",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "-169.64600329384882",
+      "label": "wrong",
+      "mistake": "greenOrderSwapped"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 7,
+      "input": "177",
+      "label": "wrong"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "-18",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "-66",
+      "label": "wrong",
+      "mistake": "areaForVolume"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 7,
+      "input": "-11",
+      "label": "wrong"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "18pi",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "curlSignSlip"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 3,
+      "seed": 7,
+      "input": "64",
+      "label": "wrong"
     }
   ]
 }
