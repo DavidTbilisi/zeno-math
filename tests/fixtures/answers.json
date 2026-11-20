@@ -15976,6 +15976,220 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 1,
+      "seed": 7,
+      "input": "27/64",
+      "label": "correct"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 1,
+      "seed": 7,
+      "input": "27/256",
+      "label": "wrong",
+      "mistake": "walkPathNotCounted"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 1,
+      "seed": 7,
+      "input": "81/128",
+      "label": "wrong",
+      "mistake": "walkStepsNotHalved"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "durationAsDistance"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 3,
+      "seed": 7,
+      "input": "40/19",
+      "label": "correct"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "durationFairFormula"
+    },
+    {
+      "skill": "randomWalks",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 1,
+      "seed": 7,
+      "input": "0.029",
+      "label": "correct"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 1,
+      "seed": 7,
+      "input": "0.19536681481316456",
+      "label": "wrong",
+      "mistake": "poissonRateNotScaled"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 1,
+      "seed": 7,
+      "input": "0.17175686548608607",
+      "label": "wrong",
+      "mistake": "poissonFactorialMissed"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 2,
+      "seed": 7,
+      "input": "0.368",
+      "label": "correct"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 2,
+      "seed": 7,
+      "input": "0.6321205588285577",
+      "label": "wrong",
+      "mistake": "expCdfForTail"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 3,
+      "seed": 7,
+      "input": "0.169",
+      "label": "correct"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 3,
+      "seed": 7,
+      "input": "0.08923507835998891",
+      "label": "wrong",
+      "mistake": "splitRateNotThinned"
+    },
+    {
+      "skill": "poissonProcess",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "brownian",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "brownian",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "covarianceProduct"
+    },
+    {
+      "skill": "brownian",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "brownian",
+      "level": 2,
+      "seed": 7,
+      "input": "49",
+      "label": "correct"
+    },
+    {
+      "skill": "brownian",
+      "level": 2,
+      "seed": 7,
+      "input": "55",
+      "label": "wrong",
+      "mistake": "brownianCovDropped"
+    },
+    {
+      "skill": "brownian",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "brownian",
+      "level": 3,
+      "seed": 7,
+      "input": "0.046",
+      "label": "correct"
+    },
+    {
+      "skill": "brownian",
+      "level": 3,
+      "seed": 7,
+      "input": "0.02275013194817921",
+      "label": "wrong",
+      "mistake": "reflectionNotDoubled"
+    },
+    {
+      "skill": "brownian",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }

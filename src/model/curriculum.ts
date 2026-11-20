@@ -11,7 +11,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
-  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "markov",
+  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "markov", "randomWalks", "poissonProcess", "brownian",
   "linearProgramming", "simplex", "convex", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
@@ -167,6 +167,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   anova: ["hypothesis"],
   bayes: ["conditional", "densities"],
   markov: ["conditional", "matrices"],
+  randomWalks: ["markov", "distributions"],
+  poissonProcess: ["distributions", "densities"],
+  brownian: ["limitTheorems", "randomWalks"],
   projection: ["dotangle"],
   matrices: ["dotangle"],
   determinant: ["matrices"],
@@ -418,6 +421,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   anova: [13, 13, 13], // one-way ANOVA: degrees of freedom, sums of squares, the F statistic (OpenIntro; Wackerly)
   bayes: [13, 13, 13], // posterior probabilities, beta–binomial, normal–normal and gamma–Poisson updating (Wasserman; Casella & Berger)
   markov: [13, 13, 13], // transition matrices, n-step probabilities, stationary distributions, return times (Norris; Grinstead & Snell)
+  randomWalks: [13, 13, 13], // the simple random walk, the fair and the biased gambler's ruin (Ross; Grimmett & Stirzaker)
+  poissonProcess: [13, 13, 13], // Poisson counts, exponential gaps, memorylessness, splitting and merging (Ross)
+  brownian: [13, 13, 13], // covariance min(s, t), drift and scaling, the reflection principle (Ross; Grimmett & Stirzaker)
   projection: [12, 12, 12], // the length of a projection |a · n̂|, the foot of the perpendicular from a point to a line (H2)
   matrices: [10, 13, 13], // multiplying matrices (Sec 3/4); the transpose and A² = aA + bI are past school
   determinant: [13, 13, 13],

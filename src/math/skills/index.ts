@@ -192,6 +192,9 @@ import projective from "./projective";
 import linearProgramming from "./linearProgramming";
 import simplex from "./simplex";
 import convex from "./convex";
+import randomWalks from "./randomWalks";
+import poissonProcess from "./poissonProcess";
+import brownian from "./brownian";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -403,6 +406,9 @@ export const GENS: Record<SkillId, Gen> = {
   linearProgramming,
   simplex,
   convex,
+  randomWalks,
+  poissonProcess,
+  brownian,
   bezout,
   congruences,
   crt,
