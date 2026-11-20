@@ -13042,6 +13042,337 @@
       "seed": 7,
       "input": "2",
       "label": "wrong"
+    },
+    {
+      "skill": "recurrences",
+      "level": 1,
+      "seed": 7,
+      "input": "63",
+      "label": "correct"
+    },
+    {
+      "skill": "recurrences",
+      "level": 1,
+      "seed": 7,
+      "input": "39",
+      "label": "wrong",
+      "mistake": "recurrenceIndexOff"
+    },
+    {
+      "skill": "recurrences",
+      "level": 1,
+      "seed": 7,
+      "input": "64",
+      "label": "wrong"
+    },
+    {
+      "skill": "recurrences",
+      "level": 2,
+      "seed": 7,
+      "input": "2; 3",
+      "label": "correct"
+    },
+    {
+      "skill": "recurrences",
+      "level": 2,
+      "seed": 7,
+      "input": "-3; -2",
+      "label": "wrong",
+      "mistake": "characteristicSignFlipped"
+    },
+    {
+      "skill": "recurrences",
+      "level": 2,
+      "seed": 7,
+      "input": "3; 4",
+      "label": "wrong"
+    },
+    {
+      "skill": "recurrences",
+      "level": 3,
+      "seed": 7,
+      "input": "-1; 1",
+      "label": "correct"
+    },
+    {
+      "skill": "recurrences",
+      "level": 3,
+      "seed": 7,
+      "input": "(1, -1)",
+      "label": "wrong",
+      "mistake": "closedFormSwapped"
+    },
+    {
+      "skill": "recurrences",
+      "level": 3,
+      "seed": 7,
+      "input": "0; 2",
+      "label": "wrong"
+    },
+    {
+      "skill": "generating",
+      "level": 1,
+      "seed": 7,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "generating",
+      "level": 1,
+      "seed": 7,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "multisetOffByOne"
+    },
+    {
+      "skill": "generating",
+      "level": 1,
+      "seed": 7,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "generating",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "generating",
+      "level": 2,
+      "seed": 7,
+      "input": "55",
+      "label": "wrong",
+      "mistake": "upperBoundIgnored"
+    },
+    {
+      "skill": "generating",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "generating",
+      "level": 3,
+      "seed": 7,
+      "input": "781",
+      "label": "correct"
+    },
+    {
+      "skill": "generating",
+      "level": 3,
+      "seed": 7,
+      "input": "337",
+      "label": "wrong",
+      "mistake": "gfAddedNotMultiplied"
+    },
+    {
+      "skill": "generating",
+      "level": 3,
+      "seed": 7,
+      "input": "782",
+      "label": "wrong"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 1,
+      "seed": 7,
+      "input": "33",
+      "label": "correct"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 1,
+      "seed": 7,
+      "input": "32",
+      "label": "wrong",
+      "mistake": "tripleNotAdded"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 1,
+      "seed": 7,
+      "input": "45",
+      "label": "wrong",
+      "mistake": "intersectionsNotSubtracted"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 1,
+      "seed": 7,
+      "input": "34",
+      "label": "wrong"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 2,
+      "seed": 7,
+      "input": "220",
+      "label": "correct"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 2,
+      "seed": 7,
+      "input": "310",
+      "label": "wrong",
+      "mistake": "overlapNotSubtracted"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 2,
+      "seed": 7,
+      "input": "221",
+      "label": "wrong"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 3,
+      "seed": 7,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 3,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "derangementTruncated"
+    },
+    {
+      "skill": "inclusionExclusion",
+      "level": 3,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 1,
+      "seed": 7,
+      "input": "13",
+      "label": "correct"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "pigeonholeNoPlusOne"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 1,
+      "seed": 7,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "floorForCeiling"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 3,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "pigeonholeNoPlusOne"
+    },
+    {
+      "skill": "pigeonhole",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 1,
+      "seed": 7,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "degreeSumNotHalved"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 2,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "treeEdgesEqualVertices"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 3,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "outerFaceForgotten"
+    },
+    {
+      "skill": "graphTheory",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong"
     }
   ]
 }

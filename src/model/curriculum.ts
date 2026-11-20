@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "vectors", "dotangle", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability", "markov",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -143,6 +143,11 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   relations: ["sets", "modular"],
   induction: ["proofs", "series"],
   cardinality: ["mappings"],
+  recurrences: ["induction", "sequences"],
+  generating: ["counting", "series", "recurrences"],
+  inclusionExclusion: ["counting", "sets"],
+  pigeonhole: ["counting", "proofs"],
+  graphTheory: ["spanningTree", "counting"],
   conditional: ["probability"],
   distributions: ["expectation", "counting"],
   correlation: ["expectation"],
@@ -354,6 +359,11 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   relations: [13, 13, 13], // reflexive, symmetric, transitive; equivalence classes; a partial order's extremes
   induction: [13, 13, 13], // ordering an induction proof and its reasons, a faulty induction
   cardinality: [13, 13, 13], // countable or not, listing ℤ and ℕ × ℕ, Cantor's diagonal
+  recurrences: [13, 13, 13], // linear recurrences, the characteristic equation, the closed form (Rosen; Levin)
+  generating: [13, 13, 13], // counting with generating functions (Wilf, generatingfunctionology)
+  inclusionExclusion: [13, 13, 13], // inclusion–exclusion, divisibility counts, derangements (Rosen)
+  pigeonhole: [13, 13, 13], // the pigeonhole principle and its generalised form (Rosen; Levin)
+  graphTheory: [13, 13, 13], // the handshake lemma, trees, Kₙ, Euler circuits, Euler's formula, matchings (Wilson)
   conditional: [12, 12, 12], // conditional probability (H2)
   distributions: [12, 12, 12], // the binomial and normal distributions (H2)
   correlation: [12, 12, 13], // the product-moment correlation coefficient (H2); covariance from a joint distribution is past it

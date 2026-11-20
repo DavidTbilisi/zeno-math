@@ -450,6 +450,27 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   stationaryFlipped: ["markov", [3]],
   stationaryFromDiagonal: ["markov", [3]],
   returnTimeIsProbability: ["markov", [3]],
+  recurrenceIndexOff: ["recurrences", [1]],
+  characteristicSignFlipped: ["recurrences", [2]],
+  closedFormSwapped: ["recurrences", [3]],
+  multisetOffByOne: ["generating", [1]],
+  repetitionIgnored: ["generating", [1]],
+  upperBoundIgnored: ["generating", [2]],
+  gfAddedNotMultiplied: ["generating", [3]],
+  tripleNotAdded: ["inclusionExclusion", [1]],
+  intersectionsNotSubtracted: ["inclusionExclusion", [1]],
+  overlapNotSubtracted: ["inclusionExclusion", [2]],
+  complementNotTaken: ["inclusionExclusion", [2]],
+  derangementTruncated: ["inclusionExclusion", [3]],
+  fixedChosenNotDeranged: ["inclusionExclusion", [3]],
+  pigeonholeNoPlusOne: ["pigeonhole", [1, 3]],
+  floorForCeiling: ["pigeonhole", [2]],
+  degreeSumNotHalved: ["graphTheory", [1]],
+  treeEdgesEqualVertices: ["graphTheory", [2]],
+  completeEdgesNotHalved: ["graphTheory", [2]],
+  eulerOddDegreesIgnored: ["graphTheory", [2]],
+  outerFaceForgotten: ["graphTheory", [3]],
+  matchingsOrdered: ["graphTheory", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -493,7 +514,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

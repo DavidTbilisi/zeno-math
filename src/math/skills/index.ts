@@ -172,6 +172,11 @@ import jointDist from "./jointDist";
 import mgf from "./mgf";
 import limitTheorems from "./limitTheorems";
 import markov from "./markov";
+import recurrences from "./recurrences";
+import generating from "./generating";
+import inclusionExclusion from "./inclusionExclusion";
+import pigeonhole from "./pigeonhole";
+import graphTheory from "./graphTheory";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -343,4 +348,9 @@ export const GENS: Record<SkillId, Gen> = {
   mgf,
   limitTheorems,
   markov,
+  recurrences,
+  generating,
+  inclusionExclusion,
+  pigeonhole,
+  graphTheory,
 };
