@@ -664,6 +664,43 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   steadyStateZero: ["separation", [2]],
   radialPowerOne: ["separation", [3]],
   boundaryValueTaken: ["separation", [3]],
+  speedNoRoot: ["curves", [1]],
+  speedFromPosition: ["curves", [1]],
+  arcLengthNoRoot: ["curves", [1]],
+  arcLengthDropHeight: ["curves", [1]],
+  curvatureIsSecondDerivative: ["curves", [2]],
+  curvaturePowerOne: ["curves", [2]],
+  curvatureCircleRadius: ["curves", [2]],
+  torsionCurvatureSwapped: ["curves", [2, 3]],
+  curvatureNotNormalised: ["curves", [3]],
+  curvatureSpeedSquared: ["curves", [3]],
+  torsionNotSquared: ["curves", [3]],
+  tangentPlaneNoShift: ["surfaces", [1]],
+  tangentPlaneSignSlip: ["surfaces", [1]],
+  partialWrongVariable: ["surfaces", [1]],
+  firstFormNoOne: ["surfaces", [2]],
+  firstFormFOne: ["surfaces", [2]],
+  areaElementNoRoot: ["surfaces", [2]],
+  areaElementNoOne: ["surfaces", [2]],
+  gaussianNotSquared: ["surfaces", [3]],
+  gaussianMixedSign: ["surfaces", [3]],
+  hessianFromCoefficients: ["surfaces", [3]],
+  angleSumSwapped: ["nonEuclidean", [1]],
+  parallelsSwapped: ["nonEuclidean", [1]],
+  excessNotSubtracted: ["nonEuclidean", [1]],
+  curvatureRadiusDropped: ["nonEuclidean", [1, 2]],
+  defectSignSwapped: ["nonEuclidean", [2, 3]],
+  polygonAsTriangle: ["nonEuclidean", [2]],
+  tilingTypeSwapped: ["nonEuclidean", [3]],
+  tilingAngleHalved: ["nonEuclidean", [3]],
+  homogeneousNotDivided: ["projective", [1, 2]],
+  homogeneousDividedWrong: ["projective", [1]],
+  crossProductSignSlip: ["projective", [2]],
+  crossRatioInverted: ["projective", [2]],
+  crossRatioPairsSwapped: ["projective", [2]],
+  harmonicMidpoint: ["projective", [3]],
+  harmonicReflection: ["projective", [3]],
+  projectivityLinear: ["projective", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -707,7 +744,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "curves", "surfaces", "nonEuclidean", "projective", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

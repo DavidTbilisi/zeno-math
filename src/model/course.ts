@@ -22,6 +22,8 @@ const MOVED: Partial<Record<SkillId, StageId>> = {
   bezout: "algebra", congruences: "algebra", crt: "algebra", fermatEuler: "algebra", rsa: "algebra", residues: "algebra",
   // Metric spaces and topology build on the limits and ε–δ of real analysis, so they sit with calculus.
   metrics: "calculus", openClosed: "calculus", compactness: "calculus", connected: "calculus", topologies: "calculus",
+  // Curves and surfaces need derivatives, integrals and partial derivatives.
+  curves: "calculus", surfaces: "calculus",
   descent: "optimisation",
   overfitting: "classical", precision: "classical", clustering: "classical",
   backprop: "deep", softmax: "deep",

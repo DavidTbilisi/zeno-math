@@ -16,6 +16,7 @@ import type { RingsFieldsWords } from "./ringsFields";
 import type { TopologyWords } from "./topology";
 import type { StatWords } from "./mathStats";
 import type { NumAnalysisWords } from "./numericalAnalysis";
+import type { HigherGeometryWords } from "./higherGeometry";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -236,6 +237,8 @@ export type PracticeWords = {
   na: NumAnalysisWords;
   /** Fourier series, the kind of a PDE, separation of variables (src/math/pdes.ts). */
   pde: PdeWords;
+  /** Curves, surfaces, non-Euclidean and projective geometry (src/math/higherGeometry.ts). */
+  hg: HigherGeometryWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
