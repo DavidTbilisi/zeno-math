@@ -26,6 +26,8 @@ const MOVED: Partial<Record<SkillId, StageId>> = {
   curves: "calculus", surfaces: "calculus",
   // Linear programming and convex optimisation are taught with the optimisation machine learning runs on.
   linearProgramming: "optimisation", simplex: "optimisation", convex: "optimisation",
+  // Game theory follows them there (Osborne): equilibria are optimisation by each player at once.
+  normalForm: "optimisation", mixedNash: "optimisation", backwardInduction: "optimisation",
   descent: "optimisation",
   overfitting: "classical", precision: "classical", clustering: "classical",
   backprop: "deep", softmax: "deep",

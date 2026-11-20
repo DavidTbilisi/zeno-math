@@ -16190,6 +16190,204 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "normalForm",
+      "level": 1,
+      "seed": 7,
+      "input": "U",
+      "label": "correct"
+    },
+    {
+      "skill": "normalForm",
+      "level": 1,
+      "seed": 7,
+      "input": "D",
+      "label": "wrong",
+      "mistake": "bestResponseWrongPayoff"
+    },
+    {
+      "skill": "normalForm",
+      "level": 1,
+      "seed": 7,
+      "input": "M",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalForm",
+      "level": 2,
+      "seed": 7,
+      "input": "(U, C)",
+      "label": "correct"
+    },
+    {
+      "skill": "normalForm",
+      "level": 2,
+      "seed": 7,
+      "input": "(U, L)",
+      "label": "wrong",
+      "mistake": "nashOneSided"
+    },
+    {
+      "skill": "normalForm",
+      "level": 2,
+      "seed": 7,
+      "input": "(U, R)",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalForm",
+      "level": 3,
+      "seed": 7,
+      "input": "(U, R)",
+      "label": "correct"
+    },
+    {
+      "skill": "normalForm",
+      "level": 3,
+      "seed": 7,
+      "input": "(U, L)",
+      "label": "wrong"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 2,
+      "seed": 7,
+      "input": "1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 2,
+      "seed": 7,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "mixOwnPayoff"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 2,
+      "seed": 7,
+      "input": "5/6",
+      "label": "wrong",
+      "mistake": "mixSwapped"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 3,
+      "seed": 7,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 3,
+      "seed": 7,
+      "input": "3/4",
+      "label": "wrong",
+      "mistake": "mixOwnPayoff"
+    },
+    {
+      "skill": "mixedNash",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "opponentHostile"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "opponentHostile"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 3,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "cournotForStackelberg"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "reactionNotHalved"
+    },
+    {
+      "skill": "backwardInduction",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
