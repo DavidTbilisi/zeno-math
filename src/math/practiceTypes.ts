@@ -15,6 +15,7 @@ import type { GroupWords } from "./groups";
 import type { RingsFieldsWords } from "./ringsFields";
 import type { TopologyWords } from "./topology";
 import type { StatWords } from "./mathStats";
+import type { NumAnalysisWords } from "./numericalAnalysis";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
 import type { DiscreteWords } from "./discrete";
@@ -230,6 +231,8 @@ export type PracticeWords = {
   top: TopologyWords;
   /** Estimators, maximum likelihood, regression, χ² tests, ANOVA, Bayesian inference (src/math/mathStats.ts). */
   st: StatWords;
+  /** Rounding error, interpolation, one-step ODE methods, linear solvers, orders of convergence (src/math/numericalAnalysis.ts). */
+  na: NumAnalysisWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

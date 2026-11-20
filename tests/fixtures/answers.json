@@ -14816,6 +14816,377 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 1,
+      "seed": 7,
+      "input": "1/3000",
+      "label": "correct"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 1,
+      "seed": 7,
+      "input": "-0.0003333333333333333",
+      "label": "wrong",
+      "mistake": "errorSignKept"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 2,
+      "seed": 7,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "conditionAbsolute"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 2,
+      "seed": 7,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "conditionInverted"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 3,
+      "seed": 7,
+      "input": "240/79",
+      "label": "correct"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 3,
+      "seed": 7,
+      "input": "240",
+      "label": "wrong",
+      "mistake": "inverseDetSkipped"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 3,
+      "seed": 7,
+      "input": "256",
+      "label": "wrong",
+      "mistake": "conditionNormSquared"
+    },
+    {
+      "skill": "floatingPoint",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "interpolation",
+      "level": 1,
+      "seed": 7,
+      "input": "-1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "interpolation",
+      "level": 1,
+      "seed": 7,
+      "input": "-5/3",
+      "label": "wrong",
+      "mistake": "interpLinearOnly"
+    },
+    {
+      "skill": "interpolation",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "interpolation",
+      "level": 2,
+      "seed": 7,
+      "input": "7/12",
+      "label": "correct"
+    },
+    {
+      "skill": "interpolation",
+      "level": 2,
+      "seed": 7,
+      "input": "7/3",
+      "label": "wrong",
+      "mistake": "differenceNotDivided"
+    },
+    {
+      "skill": "interpolation",
+      "level": 2,
+      "seed": 7,
+      "input": "7/9",
+      "label": "wrong",
+      "mistake": "dividedDifferenceSpan"
+    },
+    {
+      "skill": "interpolation",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "interpolation",
+      "level": 3,
+      "seed": 7,
+      "input": "16/3",
+      "label": "correct"
+    },
+    {
+      "skill": "interpolation",
+      "level": 3,
+      "seed": 7,
+      "input": "32",
+      "label": "wrong",
+      "mistake": "errorFactorialMissing"
+    },
+    {
+      "skill": "interpolation",
+      "level": 3,
+      "seed": 7,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "errorFactorialLow"
+    },
+    {
+      "skill": "interpolation",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 1,
+      "seed": 7,
+      "input": "-1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 1,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "eulerStepNotScaled"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 2,
+      "seed": 7,
+      "input": "-11/50",
+      "label": "correct"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 2,
+      "seed": 7,
+      "input": "-1/5",
+      "label": "wrong",
+      "mistake": "heunEulerOnly"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 2,
+      "seed": 7,
+      "input": "-11/25",
+      "label": "wrong",
+      "mistake": "heunNotHalved"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 3,
+      "seed": 7,
+      "input": "3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "numericalOde",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "luSignSlip"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 2,
+      "seed": 7,
+      "input": "5/16",
+      "label": "correct"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 2,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "jacobiForSeidel"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 3,
+      "seed": 7,
+      "input": "1.7320508075688772",
+      "label": "wrong",
+      "mistake": "jacobiSeidelRadiusSwapped"
+    },
+    {
+      "skill": "linearSolvers",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "bisectionOffByOne"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "bisectionDigitPerStep"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "2/3",
+      "label": "correct"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "newtonRateOneOverM"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "newtonAlwaysQuadratic"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 3,
+      "seed": 7,
+      "input": "diverges",
+      "label": "correct"
+    },
+    {
+      "skill": "convergenceOrder",
+      "level": 3,
+      "seed": 7,
+      "input": "converges",
+      "label": "wrong",
+      "mistake": "fixedPointAlwaysConverges"
     }
   ]
 }

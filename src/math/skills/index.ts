@@ -177,6 +177,11 @@ import regression from "./regression";
 import chiSquared from "./chiSquared";
 import anova from "./anova";
 import bayes from "./bayes";
+import floatingPoint from "./floatingPoint";
+import interpolation from "./interpolation";
+import numericalOde from "./numericalOde";
+import linearSolvers from "./linearSolvers";
+import convergenceOrder from "./convergenceOrder";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -373,6 +378,11 @@ export const GENS: Record<SkillId, Gen> = {
   chiSquared,
   anova,
   bayes,
+  floatingPoint,
+  interpolation,
+  numericalOde,
+  linearSolvers,
+  convergenceOrder,
   bezout,
   congruences,
   crt,

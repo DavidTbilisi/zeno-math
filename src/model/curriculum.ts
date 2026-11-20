@@ -9,9 +9,9 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
-  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability", "markov",
+  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "markov",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
@@ -203,6 +203,11 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   compactness: ["openClosed", "seqLimits"],
   connected: ["openClosed"],
   topologies: ["openClosed", "epsilonDelta"],
+  floatingPoint: ["rounding", "differentiate"],
+  interpolation: ["polynomials"],
+  numericalOde: ["odeFirst", "numint"],
+  linearSolvers: ["elimination"],
+  convergenceOrder: ["numroots"],
   descent: ["stationary"],
   backprop: ["descent"],
   softmax: ["logs", "probability"],
@@ -438,6 +443,11 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   compactness: [13, 13, 13], // Heine–Borel, Bolzano–Weierstrass, finite subcovers, the extreme value theorem (Sutherland; Abbott)
   connected: [13, 13, 13], // connected subsets of ℝ and the plane, components, path-connectedness (Sutherland; Munkres, Topology)
   topologies: [13, 13, 13], // topologies on finite sets, subbases, continuity by preimages, homeomorphisms (Munkres; Sutherland)
+  floatingPoint: [13, 13, 13], // absolute and relative error, condition numbers of functions and matrices (Burden & Faires; Trefethen & Bau)
+  interpolation: [13, 13, 13], // Lagrange and Newton interpolation, divided differences, the error term (Burden & Faires; Süli & Mayers)
+  numericalOde: [13, 13, 13], // Euler, improved Euler and RK4 steps, global error against step size (Burden & Faires; Süli & Mayers)
+  linearSolvers: [13, 13, 13], // LU factorisation, Jacobi and Gauss–Seidel sweeps and their convergence (Burden & Faires; Trefethen & Bau)
+  convergenceOrder: [13, 13, 13], // bisection steps, Newton at a multiple root, fixed-point rates (Burden & Faires; Süli & Mayers)
   deMoivre: [13, 13, 13], // De Moivre, n-th roots and loci in the Argand diagram (OpenStax Precalculus; Needham)
   descent: [13, 13, 13], // gradient descent: one step, two steps, what the learning rate does
   backprop: [13, 13, 13], // the chain rule through a computational graph, a squared error, a ReLU
