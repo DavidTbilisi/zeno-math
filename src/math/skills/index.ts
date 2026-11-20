@@ -223,6 +223,9 @@ import generating from "./generating";
 import inclusionExclusion from "./inclusionExclusion";
 import pigeonhole from "./pigeonhole";
 import graphTheory from "./graphTheory";
+import normalForms from "./normalForms";
+import structures from "./structures";
+import ordinalArith from "./ordinalArith";
 import analytic from "./analytic";
 import contour from "./contour";
 import laurent from "./laurent";
@@ -449,6 +452,9 @@ export const GENS: Record<SkillId, Gen> = {
   inclusionExclusion,
   pigeonhole,
   graphTheory,
+  normalForms,
+  structures,
+  ordinalArith,
   analytic,
   contour,
   laurent,

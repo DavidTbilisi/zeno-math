@@ -23,6 +23,7 @@ import type { GameWords } from "./gameTheory";
 import type { CryptoWords } from "./crypto";
 import type { MeasureWords } from "./measureTheory";
 import type { FunctionalWords } from "./functionalAnalysis";
+import type { FoundationsWords } from "./foundations";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -257,6 +258,8 @@ export type PracticeWords = {
   mt: MeasureWords;
   /** Norms, operator norms and Hilbert spaces (src/math/functionalAnalysis.ts). */
   fa: FunctionalWords;
+  /** Normal forms, structures, ordinals and cardinals (src/math/foundations.ts). */
+  fo: FoundationsWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

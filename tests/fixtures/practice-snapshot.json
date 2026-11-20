@@ -222,5 +222,8 @@
   "generating": "23582775cb1bd2cc",
   "inclusionExclusion": "82285f59279ec3c5",
   "pigeonhole": "d47191cb77112210",
-  "graphTheory": "71e2b38f76120fcc"
+  "graphTheory": "71e2b38f76120fcc",
+  "normalForms": "8542404cd7818ce7",
+  "structures": "877b6bcae81d5c4b",
+  "ordinalArith": "c4c193b40dcdfeaf"
 }

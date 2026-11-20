@@ -1158,6 +1158,18 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     out or no overlaps subtracted, the complement not taken, n!/2 for Dₙ, the others not deranged, the + 1 left out,
     the floor for the ceiling, the degree sum not halved, n edges in a tree, n(n − 1) for Kₙ, odd degrees ignored, the
     outer face forgotten, the pairs ordered.
+  - Logic and set theory, an elective of the degree (Enderton, A Mathematical Introduction to Logic; Elements of Set
+    Theory), three skills in probability & statistics after graph theory: normal forms (the rows of P, Q, R that make a
+    statement true; the terms of its full DNF or the clauses of its full CNF; tautology, satisfiable or unsatisfiable,
+    and the resolvent of two clauses), structures (the x in {1, …, n} for which ∀y R(x, y) or ∃y R(x, y) holds for a
+    relation given by a rule; the free variables of a formula; the relations on an n-element set that satisfy
+    reflexivity, irreflexivity or symmetry) and ordinal arithmetic (α + β and α · β below ω^ω, picked from four; a
+    cardinal among ℵ₀, 𝔠 and 2^𝔠; the axiom of ZFC that gives a set). The named slips: a false first part making
+    “if … then” false, “or” read as one but not both, the DNF and CNF swapped, the resolvent joined with “and”, the
+    variable resolved on kept, satisfiable called a tautology, ∀ for ∃, R's arguments swapped, a variable bound once
+    taken as bound everywhere, every quantified variable counted free, all 2^(n²) relations counted, the off-diagonal
+    pairs taken in order, the diagonal forgotten, the sum or the product the other way round, a product taken for a
+    power, ℵ₀^ℵ₀ kept countable, 𝔠^ℵ₀ taken past 𝔠, Replacement for Separation and the other way round.
   - Complex analysis (Needham, Visual Complex Analysis; Brown & Churchill, Complex Variables and Applications; Stein &
     Shakarchi, Complex Analysis), four skills in calculus after uniform convergence: analytic functions (the k that
     makes u + iv satisfy the Cauchy–Riemann equations, f′(z₀) = uₓ − i u_y from u alone, a harmonic conjugate at a

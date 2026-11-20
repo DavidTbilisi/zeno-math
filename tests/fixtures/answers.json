@@ -17118,6 +17118,228 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "normalForms",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "normalForms",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "vacuousTruth"
+    },
+    {
+      "skill": "normalForms",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "exclusiveOr"
+    },
+    {
+      "skill": "normalForms",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalForms",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "normalForms",
+      "level": 2,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "dnfCnfSwapped"
+    },
+    {
+      "skill": "normalForms",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "vacuousTruth"
+    },
+    {
+      "skill": "normalForms",
+      "level": 2,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "exclusiveOr"
+    },
+    {
+      "skill": "normalForms",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalForms",
+      "level": 3,
+      "seed": 7,
+      "input": "a tautology",
+      "label": "correct"
+    },
+    {
+      "skill": "normalForms",
+      "level": 3,
+      "seed": 7,
+      "input": "satisfiable, not a tautology",
+      "label": "wrong",
+      "mistake": "satisfiableAsTautology"
+    },
+    {
+      "skill": "normalForms",
+      "level": 3,
+      "seed": 7,
+      "input": "unsatisfiable",
+      "label": "wrong"
+    },
+    {
+      "skill": "structures",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "structures",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "forallForExists"
+    },
+    {
+      "skill": "structures",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "structures",
+      "level": 2,
+      "seed": 7,
+      "input": "{y}",
+      "label": "correct"
+    },
+    {
+      "skill": "structures",
+      "level": 2,
+      "seed": 7,
+      "input": "∅",
+      "label": "wrong",
+      "mistake": "boundOnceBoundEverywhere"
+    },
+    {
+      "skill": "structures",
+      "level": 2,
+      "seed": 7,
+      "input": "{x, y}",
+      "label": "wrong",
+      "mistake": "quantifiedCountedFree"
+    },
+    {
+      "skill": "structures",
+      "level": 2,
+      "seed": 7,
+      "input": "{x, y, z}",
+      "label": "wrong"
+    },
+    {
+      "skill": "structures",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "structures",
+      "level": 3,
+      "seed": 7,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "allRelationsCounted"
+    },
+    {
+      "skill": "structures",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 1,
+      "seed": 7,
+      "input": "ω²·2 + ω·2 + 2",
+      "label": "correct"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 1,
+      "seed": 7,
+      "input": "ω²·2 + ω·2 + 3",
+      "label": "wrong",
+      "mistake": "ordinalSumCommuted"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 1,
+      "seed": 7,
+      "input": "ω²·3 + ω·2 + 3",
+      "label": "wrong"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 2,
+      "seed": 7,
+      "input": "ω",
+      "label": "correct"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 2,
+      "seed": 7,
+      "input": "ω·3",
+      "label": "wrong",
+      "mistake": "ordinalProductCommuted"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 2,
+      "seed": 7,
+      "input": "ω·4",
+      "label": "wrong"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 3,
+      "seed": 7,
+      "input": "ℵ₀",
+      "label": "correct"
+    },
+    {
+      "skill": "ordinalArith",
+      "level": 3,
+      "seed": 7,
+      "input": "𝔠 = 2^ℵ₀",
+      "label": "wrong"
     }
   ]
 }
