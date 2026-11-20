@@ -17340,6 +17340,228 @@
       "seed": 7,
       "input": "𝔠 = 2^ℵ₀",
       "label": "wrong"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 1,
+      "seed": 7,
+      "input": "-25",
+      "label": "correct"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 1,
+      "seed": 7,
+      "input": "-100",
+      "label": "wrong",
+      "mistake": "discriminantNotQuartered"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "bifurcationPointX"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 2,
+      "seed": 7,
+      "input": "saddle-node",
+      "label": "correct"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 2,
+      "seed": 7,
+      "input": "transcritical",
+      "label": "wrong"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 3,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "stabilitySignSwapped"
+    },
+    {
+      "skill": "bifurcations",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 1,
+      "seed": 7,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 1,
+      "seed": 7,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "fixedPointOneOverR"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 2,
+      "seed": 7,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 2,
+      "seed": 7,
+      "input": "3/2",
+      "label": "wrong",
+      "mistake": "derivativeAtZero"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 3,
+      "seed": 7,
+      "input": "21/37; 28/37",
+      "label": "correct"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 3,
+      "seed": 7,
+      "input": "0; 0.5675675675675675; 0.6756756756756757; 0.7567567567567568",
+      "label": "wrong",
+      "mistake": "fixedPointsNotDivided"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 3,
+      "seed": 7,
+      "input": "0.6756756756756757",
+      "label": "wrong",
+      "mistake": "fixedPointForCycle"
+    },
+    {
+      "skill": "iteratedMaps",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 1,
+      "seed": 7,
+      "input": "2/5",
+      "label": "correct"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 1,
+      "seed": 7,
+      "input": "32/5",
+      "label": "wrong",
+      "mistake": "modDropped"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 1,
+      "seed": 7,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "iteratedOnce"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 2,
+      "seed": 7,
+      "input": "0.693",
+      "label": "correct"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "lyapunovNoLog"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 2,
+      "seed": 7,
+      "input": "0.3010299956639812",
+      "label": "wrong",
+      "mistake": "log10ForLn"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 3,
+      "seed": 7,
+      "input": "4.762",
+      "label": "correct"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 3,
+      "seed": 7,
+      "input": "21/100",
+      "label": "wrong",
+      "mistake": "ratioInverted"
+    },
+    {
+      "skill": "lyapunov",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
