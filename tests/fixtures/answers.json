@@ -15417,6 +15417,334 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "curves",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "curves",
+      "level": 1,
+      "seed": 7,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "speedNoRoot"
+    },
+    {
+      "skill": "curves",
+      "level": 1,
+      "seed": 7,
+      "input": "3.6055512754639896",
+      "label": "wrong",
+      "mistake": "speedFromPosition"
+    },
+    {
+      "skill": "curves",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "curves",
+      "level": 2,
+      "seed": 7,
+      "input": "18/125",
+      "label": "correct"
+    },
+    {
+      "skill": "curves",
+      "level": 2,
+      "seed": 7,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "curvatureIsSecondDerivative"
+    },
+    {
+      "skill": "curves",
+      "level": 2,
+      "seed": 7,
+      "input": "6/25",
+      "label": "wrong",
+      "mistake": "curvaturePowerOne"
+    },
+    {
+      "skill": "curves",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "curves",
+      "level": 3,
+      "seed": 7,
+      "input": "-1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "curves",
+      "level": 3,
+      "seed": 7,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "torsionNotSquared"
+    },
+    {
+      "skill": "curves",
+      "level": 3,
+      "seed": 7,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "torsionCurvatureSwapped"
+    },
+    {
+      "skill": "curves",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "surfaces",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "surfaces",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "partialWrongVariable"
+    },
+    {
+      "skill": "surfaces",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "surfaces",
+      "level": 2,
+      "seed": 7,
+      "input": "32",
+      "label": "correct"
+    },
+    {
+      "skill": "surfaces",
+      "level": 2,
+      "seed": 7,
+      "input": "33",
+      "label": "wrong",
+      "mistake": "firstFormFOne"
+    },
+    {
+      "skill": "surfaces",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "surfaces",
+      "level": 3,
+      "seed": 7,
+      "input": "-21",
+      "label": "correct"
+    },
+    {
+      "skill": "surfaces",
+      "level": 3,
+      "seed": 7,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "gaussianMixedSign"
+    },
+    {
+      "skill": "surfaces",
+      "level": 3,
+      "seed": 7,
+      "input": "-12",
+      "label": "wrong",
+      "mistake": "hessianFromCoefficients"
+    },
+    {
+      "skill": "surfaces",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 1,
+      "seed": 7,
+      "input": "none",
+      "label": "correct"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 1,
+      "seed": 7,
+      "input": "infinitely many",
+      "label": "wrong",
+      "mistake": "parallelsSwapped"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 1,
+      "seed": 7,
+      "input": "exactly one",
+      "label": "wrong"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 2,
+      "seed": 7,
+      "input": "37pi/30",
+      "label": "correct"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 2,
+      "seed": 7,
+      "input": "-3.8746309394274117",
+      "label": "wrong",
+      "mistake": "defectSignSwapped"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 2,
+      "seed": 7,
+      "input": "0.9686577348568529",
+      "label": "wrong",
+      "mistake": "curvatureRadiusDropped"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 3,
+      "seed": 7,
+      "input": "on a sphere",
+      "label": "correct"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 3,
+      "seed": 7,
+      "input": "in the hyperbolic plane",
+      "label": "wrong",
+      "mistake": "tilingTypeSwapped"
+    },
+    {
+      "skill": "nonEuclidean",
+      "level": 3,
+      "seed": 7,
+      "input": "in the Euclidean plane",
+      "label": "wrong"
+    },
+    {
+      "skill": "projective",
+      "level": 1,
+      "seed": 7,
+      "input": "-9/4",
+      "label": "correct"
+    },
+    {
+      "skill": "projective",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "homogeneousNotDivided"
+    },
+    {
+      "skill": "projective",
+      "level": 1,
+      "seed": 7,
+      "input": "-4/9",
+      "label": "wrong",
+      "mistake": "homogeneousDividedWrong"
+    },
+    {
+      "skill": "projective",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "projective",
+      "level": 2,
+      "seed": 7,
+      "input": "-10/9",
+      "label": "correct"
+    },
+    {
+      "skill": "projective",
+      "level": 2,
+      "seed": 7,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "homogeneousNotDivided"
+    },
+    {
+      "skill": "projective",
+      "level": 2,
+      "seed": 7,
+      "input": "10/9",
+      "label": "wrong",
+      "mistake": "crossProductSignSlip"
+    },
+    {
+      "skill": "projective",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "projective",
+      "level": 3,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "projective",
+      "level": 3,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "harmonicMidpoint"
+    },
+    {
+      "skill": "projective",
+      "level": 3,
+      "seed": 7,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "harmonicReflection"
+    },
+    {
+      "skill": "projective",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }

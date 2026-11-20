@@ -185,6 +185,10 @@ import convergenceOrder from "./convergenceOrder";
 import fourier from "./fourier";
 import pdeClassify from "./pdeClassify";
 import separation from "./separation";
+import curves from "./curves";
+import surfaces from "./surfaces";
+import nonEuclidean from "./nonEuclidean";
+import projective from "./projective";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -389,6 +393,10 @@ export const GENS: Record<SkillId, Gen> = {
   fourier,
   pdeClassify,
   separation,
+  curves,
+  surfaces,
+  nonEuclidean,
+  projective,
   bezout,
   congruences,
   crt,

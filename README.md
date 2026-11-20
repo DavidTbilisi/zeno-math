@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, numerical analysis (rounding error, interpolation, Runge–Kutta steps, LU and iterative solvers, orders of convergence), Fourier series and partial differential equations (the type of a PDE, separation of variables for the heat, wave and Laplace equations), statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, estimators, maximum likelihood, regression, χ² tests, ANOVA and Bayesian inference, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, numerical analysis (rounding error, interpolation, Runge–Kutta steps, LU and iterative solvers, orders of convergence), Fourier series and partial differential equations (the type of a PDE, separation of variables for the heat, wave and Laplace equations), differential geometry (the curvature and torsion of curves, the Gaussian curvature of surfaces), spherical, hyperbolic and projective geometry (Girard's theorem, regular tilings, homogeneous coordinates and the cross-ratio), statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, estimators, maximum likelihood, regression, χ² tests, ANOVA and Bayesian inference, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1167,6 +1167,25 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     open discs joined, a countable set taken to cut the plane, ∅ or X missing, unions or intersections not checked, a
     subbasis taken as the topology, intersections skipped, images checked for preimages, boundedness taken as
     topological, a cut point ignored.
+  - Geometry (Pressley, Elementary Differential Geometry; do Carmo, Differential Geometry of Curves and Surfaces;
+    Greenberg, Euclidean and Non-Euclidean Geometries; Coxeter, Projective Geometry), four skills in geometry after
+    topological spaces: curves and surfaces sit on the calculus stage, since they need derivatives and integrals.
+    Curves (the speed of a plane curve, the length of a helix, the curvature of y = ax², the curvature and torsion of
+    a helix and of the twisted cubic (at, bt², ct³)), surfaces (the tangent plane of a quadric graph, E, F or G of
+    its first fundamental form, the area element, the Gaussian curvature at the origin), non-Euclidean geometry (how
+    a triangle's angle sum compares with π on a sphere, in the plane and in the hyperbolic plane, how many parallels
+    there are, Girard's theorem, the area of a hyperbolic triangle or a regular spherical polygon, where a regular
+    tiling {p, q} lives, the area of a hyperbolic tile) and projective geometry (a point from homogeneous
+    coordinates, where two lines meet by the cross product, the cross-ratio, the harmonic conjugate, the image under
+    a projective map of the line). The named slips: the speed not rooted or taken from the position, the helix's
+    climb dropped, y″ taken as the curvature or (1 + y′²) not raised to 3/2, the helix's curvature taken as 1/a,
+    curvature and torsion swapped, |r′ × r″| not divided by |r′|³ or by its square, the torsion's denominator not
+    squared, the tangent plane's constant not shifted or its sign slipped, f_y for f_x, the 1 left out of E or put
+    into F, the area element not rooted or without its 1, the Gaussian denominator not squared, f_xy² added, the
+    Hessian read off the coefficients, the sphere and the hyperbolic plane swapped, π not subtracted, R² left out,
+    the defect's sign flipped, a polygon treated as a triangle, a tile's angle taken as π/q, homogeneous coordinates
+    not divided or divided the wrong way, a cross-product sign slip, the cross-ratio upside down or its pairs swapped,
+    the midpoint or C's reflection for the harmonic conjugate, a projective map extrapolated as if linear.
   - Mathematical statistics (Wackerly, Mendenhall & Scheaffer, Mathematical Statistics with Applications; OpenIntro
     Statistics; Wasserman, All of Statistics; Casella & Berger, Statistical Inference), six skills in data after the
     limit theorems: estimators (the bias of a scaled sum or of the variance with divisor n, the mean squared error of
