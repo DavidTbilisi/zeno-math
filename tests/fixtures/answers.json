@@ -15745,6 +15745,237 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 1,
+      "seed": 7,
+      "input": "Yes, feasible",
+      "label": "correct"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 1,
+      "seed": 7,
+      "input": "No, infeasible",
+      "label": "wrong",
+      "mistake": "boundaryInfeasible"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 2,
+      "seed": 7,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 2,
+      "seed": 7,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "cornerIntersectionMissed"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 2,
+      "seed": 7,
+      "input": "49/3",
+      "label": "wrong",
+      "mistake": "infeasibleIntercept"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 3,
+      "seed": 7,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 3,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "minAtOrigin"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 3,
+      "seed": 7,
+      "input": "49/3",
+      "label": "wrong",
+      "mistake": "maxForMin"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 3,
+      "seed": 7,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "infeasibleIntercept"
+    },
+    {
+      "skill": "linearProgramming",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "simplex",
+      "level": 1,
+      "seed": 7,
+      "input": "x₂",
+      "label": "correct"
+    },
+    {
+      "skill": "simplex",
+      "level": 1,
+      "seed": 7,
+      "input": "x₁",
+      "label": "wrong",
+      "mistake": "enteringSmallestGain"
+    },
+    {
+      "skill": "simplex",
+      "level": 1,
+      "seed": 7,
+      "input": "x₃",
+      "label": "wrong"
+    },
+    {
+      "skill": "simplex",
+      "level": 2,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "simplex",
+      "level": 2,
+      "seed": 7,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "pivotNotDivided"
+    },
+    {
+      "skill": "simplex",
+      "level": 2,
+      "seed": 7,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "pivotWrongRow"
+    },
+    {
+      "skill": "simplex",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "simplex",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "simplex",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "dualNotTransposed"
+    },
+    {
+      "skill": "simplex",
+      "level": 3,
+      "seed": 7,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "dualValueForPrice"
+    },
+    {
+      "skill": "simplex",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "convex",
+      "level": 1,
+      "seed": 7,
+      "input": "Convex",
+      "label": "correct"
+    },
+    {
+      "skill": "convex",
+      "level": 1,
+      "seed": 7,
+      "input": "Concave",
+      "label": "wrong",
+      "mistake": "convexConcaveSwapped"
+    },
+    {
+      "skill": "convex",
+      "level": 1,
+      "seed": 7,
+      "input": "Neither",
+      "label": "wrong"
+    },
+    {
+      "skill": "convex",
+      "level": 2,
+      "seed": 7,
+      "input": "Convex",
+      "label": "correct"
+    },
+    {
+      "skill": "convex",
+      "level": 2,
+      "seed": 7,
+      "input": "Neither",
+      "label": "wrong",
+      "mistake": "hessianNotDoubled"
+    },
+    {
+      "skill": "convex",
+      "level": 2,
+      "seed": 7,
+      "input": "Concave",
+      "label": "wrong"
+    },
+    {
+      "skill": "convex",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "convex",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "kktHalfMultiplier"
+    },
+    {
+      "skill": "convex",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }

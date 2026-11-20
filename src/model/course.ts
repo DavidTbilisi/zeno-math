@@ -24,6 +24,8 @@ const MOVED: Partial<Record<SkillId, StageId>> = {
   metrics: "calculus", openClosed: "calculus", compactness: "calculus", connected: "calculus", topologies: "calculus",
   // Curves and surfaces need derivatives, integrals and partial derivatives.
   curves: "calculus", surfaces: "calculus",
+  // Linear programming and convex optimisation are taught with the optimisation machine learning runs on.
+  linearProgramming: "optimisation", simplex: "optimisation", convex: "optimisation",
   descent: "optimisation",
   overfitting: "classical", precision: "classical", clustering: "classical",
   backprop: "deep", softmax: "deep",

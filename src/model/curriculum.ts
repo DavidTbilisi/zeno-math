@@ -12,7 +12,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "markov",
-  "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
+  "linearProgramming", "simplex", "convex", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
 /** The skills each skill builds on directly. */
@@ -215,6 +215,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   surfaces: ["partials", "curves"],
   nonEuclidean: ["trigRules", "circles"],
   projective: ["vectors", "similarity"],
+  linearProgramming: ["inequalities", "simultaneous"],
+  simplex: ["linearProgramming", "elimination"],
+  convex: ["extremaMulti", "linearProgramming"],
   descent: ["stationary"],
   backprop: ["descent"],
   softmax: ["logs", "probability"],
@@ -462,6 +465,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   surfaces: [13, 13, 13], // tangent planes, the first fundamental form, Gaussian curvature (Pressley; do Carmo)
   nonEuclidean: [13, 13, 13], // angle sums, Girard's theorem, hyperbolic area, regular tilings (Greenberg; Stillwell)
   projective: [13, 13, 13], // homogeneous coordinates, meets of lines, cross-ratio, projectivities (Coxeter; Stillwell)
+  linearProgramming: [13, 13, 13], // feasible points, corners, the graphical method for max and min (Vanderbei; Hillier & Lieberman)
+  simplex: [13, 13, 13], // entering and leaving variables, a pivot, shadow prices and the dual (Vanderbei; Hillier & Lieberman)
+  convex: [13, 13, 13], // convex sets and functions, the Hessian test, the KKT conditions (Boyd & Vandenberghe)
   deMoivre: [13, 13, 13], // De Moivre, n-th roots and loci in the Argand diagram (OpenStax Precalculus; Needham)
   descent: [13, 13, 13], // gradient descent: one step, two steps, what the learning rate does
   backprop: [13, 13, 13], // the chain rule through a computational graph, a squared error, a ReLU

@@ -189,6 +189,9 @@ import curves from "./curves";
 import surfaces from "./surfaces";
 import nonEuclidean from "./nonEuclidean";
 import projective from "./projective";
+import linearProgramming from "./linearProgramming";
+import simplex from "./simplex";
+import convex from "./convex";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -397,6 +400,9 @@ export const GENS: Record<SkillId, Gen> = {
   surfaces,
   nonEuclidean,
   projective,
+  linearProgramming,
+  simplex,
+  convex,
   bezout,
   congruences,
   crt,

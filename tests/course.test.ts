@@ -19,7 +19,7 @@ test("every skill is in one stage, after the stages of what it builds on", () =>
   assert.deepEqual(STAGES.slice(3).map((s) => s.skills), [
     ["projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability"],
     ["probability", "counting", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "markov"],
-    ["descent"],
+    ["linearProgramming", "simplex", "convex", "descent"],
     ["overfitting", "precision", "clustering"],
     ["backprop", "softmax"],
   ]);
