@@ -15187,6 +15187,236 @@
       "input": "converges",
       "label": "wrong",
       "mistake": "fixedPointAlwaysConverges"
+    },
+    {
+      "skill": "fourier",
+      "level": 1,
+      "seed": 7,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "fourier",
+      "level": 1,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "constantTermNotDoubled"
+    },
+    {
+      "skill": "fourier",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "fourier",
+      "level": 2,
+      "seed": 7,
+      "input": "4/(5pi)",
+      "label": "correct"
+    },
+    {
+      "skill": "fourier",
+      "level": 2,
+      "seed": 7,
+      "input": "0.12732395447351627",
+      "label": "wrong",
+      "mistake": "fourierHalfPeriod"
+    },
+    {
+      "skill": "fourier",
+      "level": 2,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "cosNPiAsOne"
+    },
+    {
+      "skill": "fourier",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "fourier",
+      "level": 3,
+      "seed": 7,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "fourier",
+      "level": 3,
+      "seed": 7,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "jumpOneSidedValue"
+    },
+    {
+      "skill": "fourier",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "orderFromPower"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 2,
+      "seed": 7,
+      "input": "parabolic",
+      "label": "correct"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 2,
+      "seed": 7,
+      "input": "hyperbolic",
+      "label": "wrong",
+      "mistake": "discriminantNoFour"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 2,
+      "seed": 7,
+      "input": "elliptic",
+      "label": "wrong"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 3,
+      "seed": 7,
+      "input": "elliptic",
+      "label": "correct"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 3,
+      "seed": 7,
+      "input": "hyperbolic",
+      "label": "wrong",
+      "mistake": "discriminantSignSwapped"
+    },
+    {
+      "skill": "pdeClassify",
+      "level": 3,
+      "seed": 7,
+      "input": "parabolic",
+      "label": "wrong"
+    },
+    {
+      "skill": "separation",
+      "level": 1,
+      "seed": 7,
+      "input": "4pi",
+      "label": "correct"
+    },
+    {
+      "skill": "separation",
+      "level": 1,
+      "seed": 7,
+      "input": "157.91367041742973",
+      "label": "wrong",
+      "mistake": "waveFrequencySquared"
+    },
+    {
+      "skill": "separation",
+      "level": 1,
+      "seed": 7,
+      "input": "3.141592653589793",
+      "label": "wrong",
+      "mistake": "waveFrequencyNoC"
+    },
+    {
+      "skill": "separation",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "separation",
+      "level": 2,
+      "seed": 7,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "separation",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "timeFactorDropped"
+    },
+    {
+      "skill": "separation",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "modesSameFrequency"
+    },
+    {
+      "skill": "separation",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "separation",
+      "level": 3,
+      "seed": 7,
+      "input": "-5/2",
+      "label": "correct"
+    },
+    {
+      "skill": "separation",
+      "level": 3,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "radialPowerOne"
+    },
+    {
+      "skill": "separation",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "boundaryValueTaken"
+    },
+    {
+      "skill": "separation",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
