@@ -8,6 +8,7 @@ import { api as boardApi, ApiError, studentName, teacherApi, type ClassBoard, ty
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
+import { PaceList } from "../components/PaceList";
 import { HomeworkCard } from "../components/HomeworkCard";
 import { JoinLink } from "../components/JoinLink";
 import { BrandBar } from "../components/BrandBar";
@@ -391,6 +392,7 @@ export function TeacherPage() {
             {data && data.class.code === selected && !!data.students.length && (
               <StuckList stuck={data.stuck} numbers={numbers} t={t} skillName={skillName} showCodes={showCodes} onSeen={(r) => void seen(r)} />
             )}
+            {data && data.class.code === selected && <PaceList pace={data.pace} numbers={numbers} t={t} showCodes={showCodes} />}
 
             {current && (
               <section className="card">

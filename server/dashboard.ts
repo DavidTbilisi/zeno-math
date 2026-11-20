@@ -15,6 +15,7 @@ import type { Level } from "../src/model/elo.ts";
 import { auc, calibration, evidence, logLoss, type Prediction } from "../src/model/evaluate.ts";
 import { hasIdeas, knownOf, SKILL_IDEAS } from "../src/model/ideaState.ts";
 import { TARGET } from "../src/model/policy.ts";
+import { classPace } from "../src/model/pace.ts";
 import { holdOf, holds, type Hold } from "../src/model/spacing.ts";
 import type { Arm, Feature } from "../src/model/arms.ts";
 import { TEST_PHASES, type TestPhase } from "../src/model/testForms.ts";
@@ -29,7 +30,7 @@ import { currentIdeas, currentModel, currentSpacing } from "./research.ts";
 type AttemptRow = {
   id: number; seed: number; answers: string; hard: string | null; faded: number | null;
   student_id: number; arm: Arm; condition: string; policy: string; predicted: number | null; skill: SkillId; level: Level;
-  outcome: string; first_correct: number; counted: number; solution_viewed: number; ms_total: number; created_at: number;
+  outcome: string; first_correct: number; counted: number; solution_viewed: number; ms_total: number; ms_first: number | null; created_at: number;
 };
 const share = (xs: readonly boolean[]) => (xs.length ? xs.filter(Boolean).length / xs.length : null);
 const mean = (xs: readonly number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null);
@@ -55,7 +56,7 @@ function median(xs: readonly number[]) {
 /** Every attempt of the class's students, in order. */
 const classAttempts = (db: DatabaseSync, classCode: string) => stmt(db, `
   SELECT a.id, a.seed, a.answers, a.hard, a.faded, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
-    json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.created_at
+    json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.ms_first, a.created_at
   FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
 `).all(classCode) as AttemptRow[];
 /** Right first time, wrong, or nothing to say, by the rule the model learns by. */
@@ -169,6 +170,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
 
   return {
     stuck: stuckList(db, classCode, students, attempts),
+    /** Students whose last five timed first answers are at least twice as fast, or as slow, as their own pace before (#63). */
+    pace: paceList(students, attempts),
     class: { code: klass.code, name: klass.name, skills, feature: klass.feature, createdAt: klass.createdAt, ...protocol },
     students: rows,
     arms,
@@ -236,6 +239,16 @@ function stuckList(db: DatabaseSync, classCode: string, students: readonly { id:
     rows.push({ student: `s${id}`, code: codes.get(id)!, skill, answers: since.length, through: since.at(-1)!.id, because: becauseOf(since, mistakes, weakest) });
   }
   return groupByReason(rows);
+}
+
+/** Changes of pace in the class (src/model/pace.ts), the faster ones first: they are the ones followed by more mistakes. */
+export type PaceRow = { student: string; code: string; direction: "faster" | "slower"; factor: number; answers: number };
+function paceList(students: readonly { id: number; code: string }[], attempts: readonly AttemptRow[]): PaceRow[] {
+  const codes = new Map(students.map((s) => [`s${s.id}`, s.code]));
+  const jumps = classPace(attempts.map((a) => ({ student: `s${a.student_id}`, skill: a.skill, level: a.level, correct: a.first_correct === 1, ms: a.ms_first ?? undefined })));
+  return [...jumps]
+    .map(([student, j]) => ({ student, code: codes.get(student)!, direction: j.direction, factor: Math.round(j.factor * 10) / 10, answers: j.answers }))
+    .sort((a, b) => (a.direction === b.direction ? b.factor - a.factor : a.direction === "faster" ? -1 : 1));
 }
 
 /** The class's stuck students as the teacher's list has them, one row per student and skill (homework's repair, #303). */

@@ -734,6 +734,7 @@ input.invalid { border-color: var(--danger); }
 .stuck-list ul { list-style: none; margin: 0; padding: 0; }
 .stuck-list .stuck-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 4px 0; border-top: 1px solid var(--border); }
 .stuck-list .stuck-row .btn { margin-left: auto; }
+.pace-list .pace-faster { color: var(--danger); }
 .calib-row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
 .calib { flex: 1 1 300px; max-width: 420px; }
 .calib svg { width: 100%; height: auto; display: block; overflow: visible; }

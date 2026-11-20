@@ -314,6 +314,8 @@ test("the learner model replays the export", async () => {
   // The skip after only a form message says nothing, so three of the four count.
   assert.deepEqual(obs.map((o) => [o.skill, o.level, o.correct]), [["linear", 2, true], ["linear", 2, false], ["factor", 1, false]]);
   assert.equal(obs[1].student, obs[2].student); // both s2
+  // The first answer's time comes along for the pace model (#63); a question given up unanswered has none.
+  assert.deepEqual(obs.map((o) => o.ms), [900, 15000, undefined]);
   assert.notEqual(obs[0].student, obs[1].student);
   const ps = replay(new EloModel(), obs);
   assert.ok(ps.every(({ p }) => p > 0 && p < 1));
@@ -576,6 +578,18 @@ test("the stuck list: ten questions without three right in a row, why, grouped, 
   for (let i = 0; i < 3; i++) await post(attempt(b.code, { skill: "fractions", level: 1, seed, answers: [{ verdict: "correct", ms: 9000 }] }));
   groups = await stuck();
   assert.equal(rowOf(b.code), undefined);
+});
+
+test("a change of pace: a student whose last five answers come far faster than their own pace before is listed, faster first", async () => {
+  const { code } = (await call("POST", "/api/classes", { skills: ["fractions"] }, TEACHER)).body;
+  const join = async () => (await call("POST", "/api/students", { class: code })).body as { code: string };
+  const [quick, steady, slow] = [await join(), await join(), await join()];
+  const at = (student: string, ms: number) =>
+    call("POST", "/api/attempts", attempt(student, { skill: "fractions", level: 1, answers: [{ verdict: "correct", ms }], msTotal: ms, shownAt: Date.now() - ms }));
+  for (let i = 0; i < 15; i++) for (const s of [quick, steady, slow]) await at(s.code, 20_000);
+  for (let i = 0; i < 5; i++) await at(quick.code, 2_000), await at(steady.code, 20_000), await at(slow.code, 60_000);
+  const pace = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body.pace as { code: string; direction: string; factor: number; answers: number }[];
+  assert.deepEqual(pace.map((r) => [r.code, r.direction, r.factor, r.answers]), [[quick.code, "faster", 10, 20], [slow.code, "slower", 3, 20]]);
 });
 
 test("the protocol: phases and sessions, counterbalanced forms, one answer per test question, results on the dashboard", async () => {

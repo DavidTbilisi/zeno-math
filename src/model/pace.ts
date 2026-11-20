@@ -206,3 +206,26 @@ export function paceJump(rel: readonly number[], factor = JUMP_FACTOR): PaceJump
   if (Math.abs(d) < Math.log(factor)) return null;
   return { direction: d < 0 ? "faster" : "slower", factor: Math.exp(Math.abs(d)) };
 }
+
+/** A class's norm for a skill at a level needs this many timed answers; with fewer, those answers say nothing about pace. */
+export const CLASS_NORM_MIN = 5;
+/**
+ * The students of a class whose last answers depart from their own pace, for the teacher page. Zeno makes every question
+ * afresh, so the norm is the class's median time at each skill and level. On ASSISTments (npm run pace) the answer after
+ * a run flagged faster was right 8 to 12 points less often than the student's own share, after one flagged slower no
+ * less often: a faster run suggests rushing or guessing, a slower one tiredness or harder work.
+ */
+export function classPace(observations: readonly Observation[]): Map<string, PaceJump & { answers: number }> {
+  const count = new Map<string, number>();
+  for (const o of observations) if (usableMs(o.ms)) count.set(skillKey(o), (count.get(skillKey(o)) ?? 0) + 1);
+  const norms = fitNorms(observations.filter((o) => (count.get(skillKey(o)) ?? 0) >= CLASS_NORM_MIN));
+  const rel = new Map<string, number[]>();
+  for (const o of observations)
+    if ((count.get(skillKey(o)) ?? 0) >= CLASS_NORM_MIN && usableMs(o.ms)) (rel.get(o.student) ?? rel.set(o.student, []).get(o.student)!).push(relative(norms, o));
+  const out = new Map<string, PaceJump & { answers: number }>();
+  for (const [student, xs] of rel) {
+    const j = paceJump(xs);
+    if (j) out.set(student, { ...j, answers: xs.length });
+  }
+  return out;
+}
