@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "vectors", "dotangle", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -127,6 +127,12 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   odeSystems: ["odeSecond", "eigen"],
   laplace: ["odeFirst", "improper"],
   stability: ["odeSystems", "partials"],
+  supInf: ["sequences", "limits"],
+  seqLimits: ["supInf"],
+  epsilonDelta: ["seqLimits"],
+  mvt: ["epsilonDelta", "taylor"],
+  riemann: ["supInf", "definite"],
+  uniform: ["seqLimits", "powerSeries"],
   ci: ["average"],
   expectation: ["probability", "average"],
   proofs: ["parity", "primes", "expand"],
@@ -316,6 +322,12 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   odeSystems: [13, 13, 13], // x′ = Ax by eigenvalues, phase portraits (Lebl, Strogatz)
   laplace: [13, 13, 13], // the transform, its inverse, initial value problems (Trench, Boyce and DiPrima)
   stability: [13, 13, 13], // equilibria, their stability, linearisation (Strogatz)
+  supInf: [13, 13, 13], // the completeness axiom, suprema and the approximation property (Abbott, Bartle and Sherbert)
+  seqLimits: [13, 13, 13], // ε–N, monotone convergence, subsequences (Abbott, Lebl Basic Analysis)
+  epsilonDelta: [13, 13, 13], // continuity by ε and δ, uniform continuity (Abbott, Bartle and Sherbert)
+  mvt: [13, 13, 13], // Rolle, the mean value theorem, Taylor's remainder (Lebl Basic Analysis, Rudin)
+  riemann: [13, 13, 13], // Darboux sums and Riemann integrability (Abbott, Lebl Basic Analysis)
+  uniform: [13, 13, 13], // pointwise against uniform convergence, the Weierstrass M-test (Abbott, Rudin)
   ci: [13, 13, 13],
   expectation: [12, 12, 12], // discrete random variables, E(X) and Var(X) (H2)
   proofs: [13, 13, 13], // ordering a proof and its reasons, a faulty proof, counterexamples (Velleman, Hammack)

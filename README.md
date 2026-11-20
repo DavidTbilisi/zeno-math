@@ -1042,6 +1042,22 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     node, x(0) used as the coefficients, 1/(s + b) for e^(bt), the n! of tⁿ, sine and cosine swapped, the initial
     values left out of ℒ{y′}, the roots' signs flipped, y = 0 lost by dividing, a double root not called
     semi-stable, the Jacobian transposed or taken at the origin
+  - Real analysis (Abbott; Lebl, Basic Analysis; Bartle and Sherbert; Rudin), six skills in calculus: suprema and
+    infima (sup and inf of a set given by a rule, whether they are a max and a min, the first element within ε of
+    the sup), limits of sequences (the N of the ε–N definition, the limit of a monotone recursive sequence from its
+    fixed point, every subsequential limit), continuity by ε and δ (the largest δ for a line, the δ of the proof that
+    x² is continuous, uniformly continuous or not), the mean value theorem (the c it promises, the largest or
+    smallest f(b) from bounds on f′, Lagrange's bound on a Maclaurin remainder), the Riemann integral (an upper or
+    lower Darboux sum, how many parts bring U − L below ε, integrable or not) and uniform convergence (a pointwise
+    limit, the sup norm ‖fₙ‖, uniform or only pointwise). The named slips: sup and inf swapped, the first term taken
+    for both bounds, a bound taken as attained, the limit taken for a bound, the N where the distance only equals
+    ε, the square root or the shift forgotten, the negative fixed point, L on the wrong side, the average taken as
+    a limit, the zero subsequence missed, ε times the slope, |x + a| bounded by 2|a|, the 1 left out of the minimum,
+    continuous taken for uniformly continuous and an open domain taken to rule it out, the slope or the midpoint
+    taken for c, the other bound on f′, the interval's length forgotten, the factorial or the power of the
+    remainder, the other Darboux sum, the width left out, a jump taken to rule out the integral, bounded taken to
+    be enough, an improper integral for a Riemann one, the value across the jump, the sup at the endpoint,
+    pointwise or a continuous limit taken for uniform, the sup not worked out
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),
