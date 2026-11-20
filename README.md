@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1147,6 +1147,26 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     outside counted, 2πi left off, f(a) for the derivative, n! left out, the numerator's zero ignored, an essential
     singularity called a pole, the next term, n! dropped, 1/(z − a) expanded in powers of z, the partial fractions'
     sign, 1/(b − a), the numerator dropped, no derivative at a double pole, πi for 2πi, every pole counted.
+  - Metric spaces and topology (Sutherland, Introduction to Metric and Topological Spaces; Munkres, Topology; Abbott,
+    Understanding Analysis), five skills in geometry after projections, on the calculus stage since they build on
+    limits and ε–δ: metric spaces (a distance in d₁, d₂ or d∞, whether a rule is a metric and which axiom fails, the
+    shape or area of a ball), open and closed sets (open, closed, both or neither; the interior or closure typed as an
+    interval such as (1, 3] or [−2, 4); the boundary points), compactness (by Heine–Borel, the limits of a sequence's
+    convergent subsequences, the smallest subcover of [a, b], where a nested open cover first covers a set, the
+    maximum on a closed interval), connectedness (connected or not, the number of components of a subset of ℝ or the
+    plane, path-connected, connected only or not connected) and topological spaces (whether a collection on {a, b, c}
+    is a topology and which axiom fails, the size of the topology a subbasis generates, whether a map between finite
+    spaces is continuous, whether two spaces are homeomorphic). The named slips: another metric's distance, a metric
+    rejected, the identity, symmetry or triangle inequality not checked, the d₁ and d∞ balls swapped, the discrete
+    ball's radius, not open taken to mean closed, ℝ and ∅ not seen to be both, a limit point missed, an unbounded set
+    called not closed, the end points kept in the interior, limit points left out of the closure, a gap or isolated
+    point left off the boundary, bounded or closed taken to be enough, the fencepost in a subcover, a subsequence
+    limit missed, an open end taken to be covered, the ends alone tried for a maximum, a missing point ignored, a
+    union of touching pieces called disconnected, a dense set called connected, the plane split by points, touching
+    pieces counted apart, n points removed giving n pieces, the topologist's sine curve called path-connected, tangent
+    open discs joined, a countable set taken to cut the plane, ∅ or X missing, unions or intersections not checked, a
+    subbasis taken as the topology, intersections skipped, images checked for preimages, boundedness taken as
+    topological, a cut point ignored.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

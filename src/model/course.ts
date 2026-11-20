@@ -20,6 +20,8 @@ const MOVED: Partial<Record<SkillId, StageId>> = {
   odeSystems: "linear", stability: "linear",
   // The number theory of a degree is taught beside group theory, not with primary-school number.
   bezout: "algebra", congruences: "algebra", crt: "algebra", fermatEuler: "algebra", rsa: "algebra", residues: "algebra",
+  // Metric spaces and topology build on the limits and ε–δ of real analysis, so they sit with calculus.
+  metrics: "calculus", openClosed: "calculus", compactness: "calculus", connected: "calculus", topologies: "calculus",
   descent: "optimisation",
   overfitting: "classical", precision: "classical", clustering: "classical",
   backprop: "deep", softmax: "deep",

@@ -14048,6 +14048,306 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "metrics",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "metrics",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "otherMetric"
+    },
+    {
+      "skill": "metrics",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "otherMetric"
+    },
+    {
+      "skill": "metrics",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "metrics",
+      "level": 2,
+      "seed": 7,
+      "input": "a metric",
+      "label": "correct"
+    },
+    {
+      "skill": "metrics",
+      "level": 2,
+      "seed": 7,
+      "input": "no: identity (d = 0 only for x = y)",
+      "label": "wrong"
+    },
+    {
+      "skill": "metrics",
+      "level": 3,
+      "seed": 7,
+      "input": "a square with sides along the axes",
+      "label": "correct"
+    },
+    {
+      "skill": "metrics",
+      "level": 3,
+      "seed": 7,
+      "input": "a diamond (a square standing on a corner)",
+      "label": "wrong",
+      "mistake": "ballShapesSwapped"
+    },
+    {
+      "skill": "metrics",
+      "level": 3,
+      "seed": 7,
+      "input": "a disc",
+      "label": "wrong"
+    },
+    {
+      "skill": "openClosed",
+      "level": 1,
+      "seed": 7,
+      "input": "closed",
+      "label": "correct"
+    },
+    {
+      "skill": "openClosed",
+      "level": 1,
+      "seed": 7,
+      "input": "open",
+      "label": "wrong"
+    },
+    {
+      "skill": "openClosed",
+      "level": 2,
+      "seed": 7,
+      "input": "[-6, -5]",
+      "label": "correct"
+    },
+    {
+      "skill": "openClosed",
+      "level": 2,
+      "seed": 7,
+      "input": "-6 < x <= -5",
+      "label": "wrong",
+      "mistake": "limitPointsLeftOut"
+    },
+    {
+      "skill": "openClosed",
+      "level": 2,
+      "seed": 7,
+      "input": "[-6, -4]",
+      "label": "wrong"
+    },
+    {
+      "skill": "openClosed",
+      "level": 3,
+      "seed": 7,
+      "input": "-6; -5; -1; 2",
+      "label": "correct"
+    },
+    {
+      "skill": "openClosed",
+      "level": 3,
+      "seed": 7,
+      "input": "-6; 2",
+      "label": "wrong",
+      "mistake": "boundaryGapMissed"
+    },
+    {
+      "skill": "openClosed",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "compactness",
+      "level": 1,
+      "seed": 7,
+      "input": "compact",
+      "label": "correct"
+    },
+    {
+      "skill": "compactness",
+      "level": 1,
+      "seed": 7,
+      "input": "not compact",
+      "label": "wrong"
+    },
+    {
+      "skill": "compactness",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "compactness",
+      "level": 2,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "fencepostSubcover"
+    },
+    {
+      "skill": "compactness",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "compactness",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "compactness",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "openEndIncluded"
+    },
+    {
+      "skill": "compactness",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "connected",
+      "level": 1,
+      "seed": 7,
+      "input": "connected",
+      "label": "correct"
+    },
+    {
+      "skill": "connected",
+      "level": 1,
+      "seed": 7,
+      "input": "not connected",
+      "label": "wrong",
+      "mistake": "unionAlwaysDisconnected"
+    },
+    {
+      "skill": "connected",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "connected",
+      "level": 2,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "touchingPiecesCounted"
+    },
+    {
+      "skill": "connected",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "connected",
+      "level": 3,
+      "seed": 7,
+      "input": "connected, not path-connected",
+      "label": "correct"
+    },
+    {
+      "skill": "connected",
+      "level": 3,
+      "seed": 7,
+      "input": "path-connected",
+      "label": "wrong",
+      "mistake": "connectedMeansPathConnected"
+    },
+    {
+      "skill": "connected",
+      "level": 3,
+      "seed": 7,
+      "input": "not connected",
+      "label": "wrong"
+    },
+    {
+      "skill": "topologies",
+      "level": 1,
+      "seed": 7,
+      "input": "a topology",
+      "label": "correct"
+    },
+    {
+      "skill": "topologies",
+      "level": 1,
+      "seed": 7,
+      "input": "no: the empty set or X is missing",
+      "label": "wrong"
+    },
+    {
+      "skill": "topologies",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "topologies",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "subbasisIsTopology"
+    },
+    {
+      "skill": "topologies",
+      "level": 2,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "intersectionsSkipped"
+    },
+    {
+      "skill": "topologies",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "topologies",
+      "level": 3,
+      "seed": 7,
+      "input": "homeomorphic",
+      "label": "correct"
+    },
+    {
+      "skill": "topologies",
+      "level": 3,
+      "seed": 7,
+      "input": "not homeomorphic",
+      "label": "wrong",
+      "mistake": "boundednessNotTopological"
     }
   ]
 }

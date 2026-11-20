@@ -13,6 +13,7 @@ import type { OdeWords } from "./odes";
 import type { RealWords } from "./realAnalysis";
 import type { GroupWords } from "./groups";
 import type { RingsFieldsWords } from "./ringsFields";
+import type { TopologyWords } from "./topology";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
 import type { DiscreteWords } from "./discrete";
@@ -224,6 +225,8 @@ export type PracticeWords = {
   ca: ComplexAnalysisWords;
   /** Rings and ideals, polynomial rings, field extensions, finite fields, Galois groups (src/math/ringsFields.ts). */
   rf: RingsFieldsWords;
+  /** Metric spaces, open and closed sets, compactness, connectedness, topological spaces (src/math/topology.ts). */
+  top: TopologyWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

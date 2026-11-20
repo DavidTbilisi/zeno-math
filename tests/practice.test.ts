@@ -42,7 +42,8 @@ function wrong(ex: Exercise): string {
     case "primes":
       return `${ex.plain} * 2`;
     case "ineq":
-      return ex.plain.replace(/-?\d+$/, (v) => String(Number(v) + 1));
+      // The last number, also inside an interval's closing bracket.
+      return ex.plain.replace(/-?\d+(?=\D*$)/, (v) => String(Number(v) + 1));
     case "sign":
       return a.v === "=" ? "<" : "=";
     case "poly":
