@@ -8,7 +8,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
-  "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "vectors", "dotangle", "differentiate", "tangent",
+  "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
   "expectation", "conditional", "distributions", "correlation", "hypothesis",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability",
@@ -162,6 +162,12 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   complex: ["quadratic", "surds"],
   polarForm: ["complex", "trigexact"],
   deMoivre: ["polarForm"],
+  bezout: ["hcf", "modular"],
+  congruences: ["bezout"],
+  crt: ["congruences"],
+  fermatEuler: ["congruences", "primes"],
+  rsa: ["fermatEuler"],
+  residues: ["fermatEuler"],
   groups: ["modular"],
   elementOrder: ["groups"],
   subgroups: ["elementOrder"],
@@ -361,6 +367,12 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   svd: [13, 13, 13], // the singular value decomposition and low-rank approximation (Strang)
   complex: [12, 12, 12], // complex arithmetic, the conjugate and complex roots of real quadratics (H2 Mathematics 9758)
   polarForm: [12, 12, 12], // the modulus–argument form, re^{iθ}, products as rotations (H2 Mathematics 9758)
+  bezout: [13, 13, 13], // the extended Euclidean algorithm and linear Diophantine equations (Burton; Stein; Niven–Zuckerman–Montgomery)
+  congruences: [13, 13, 13], // inverses mod n and linear congruences with gcd(a, n) > 1 (Burton; Stein; Niven–Zuckerman–Montgomery)
+  crt: [13, 13, 13], // the Chinese remainder theorem, coprime and not (Burton; Stein; Niven–Zuckerman–Montgomery)
+  fermatEuler: [13, 13, 13], // φ, Fermat, Euler, primitive roots and Wilson (Burton; Stein; Niven–Zuckerman–Montgomery)
+  rsa: [13, 13, 13], // RSA keys, encryption and decryption with small primes (Stein; Burton)
+  residues: [13, 13, 13], // quadratic residues, Euler's criterion and quadratic reciprocity (Burton; Stein; Niven–Zuckerman–Montgomery)
   groups: [13, 13, 13], // the group axioms, ℤₙ, U(n) and the dihedral groups (Pinter; Judson; Gallian)
   elementOrder: [13, 13, 13], // orders of elements, cyclic groups and generators (Pinter; Judson; Gallian)
   subgroups: [13, 13, 13], // subgroups, cosets and Lagrange's theorem (Pinter; Judson; Gallian)

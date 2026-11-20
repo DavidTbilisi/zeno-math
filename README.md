@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, group theory, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1073,6 +1073,21 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     the number of cosets, the sum of the cycle lengths, σ applied first, a k-cycle counted as k transpositions, every
     starting point of a cycle counted, a subtraction for the isomorphism theorem, the image for the kernel, the order
     in ℤₙ for the order in the quotient, a subgroup taken to be normal or a normal one missed
+  - Number theory (Burton, Elementary Number Theory; Stein, Elementary Number Theory: Primes, Congruences, and
+    Secrets; Niven, Zuckerman & Montgomery), six skills in number, taught after De Moivre beside group theory: the
+    extended Euclidean algorithm (the gcd by Euclid, whether ax + by = c has integer solutions, the Bézout pair, the
+    number of positive solutions), linear congruences (an inverse mod n, every solution of ax ≡ b (mod n), how many
+    there are, the modulus left after cancelling), the Chinese remainder theorem (two or three coprime moduli, then
+    moduli with a common factor, answered as x ≡ r (mod m)), Fermat, Euler and Wilson (φ(n), a huge power mod n, the
+    number of primitive roots, (p − 1)! and (p − 2)! mod p), RSA (φ(n), a valid public exponent, the private key d,
+    encrypting and decrypting with small primes) and quadratic residues (the residues mod p, the Legendre symbol by
+    Euler's criterion and by quadratic reciprocity). The named slips: the last quotient for the gcd, a and b thought
+    to need to be coprime, the gcd test left out, a sign slipped substituting back, x = 0 or y = 0 counted, the step
+    b for b/d, one solution for d, the modulus not divided, the CRT without the inverses or with two congruences only,
+    the product for the lcm, n − 1 or the powers left out in φ, the exponent reduced mod n or n − 1, φ(p) for
+    φ(p − 1), every non-residue a primitive root, Wilson's sign, an e sharing a factor with φ(n), d mod n, m · e for
+    mᵉ, the other key, the squares not reduced, 0 counted, a^(p − 1) for Euler's criterion, only perfect squares as
+    residues, the reciprocity sign left out or put in.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

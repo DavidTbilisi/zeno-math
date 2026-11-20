@@ -164,6 +164,7 @@ export function PracticeDialog(props: Props) {
   const has = (f: Feature) => studentHas(planRef.current ?? loadStudent(), f);
   /** The skill of the question on screen, so that a spaced review is on another skill when one is due. */
   const shownSkill = useRef<SkillId | undefined>(undefined);
+  const menu = useRef<HTMLDivElement>(null);
   /**
    * The next question. In class practice, the student's homework comes first, in its order (homework.ts). Then missed
    * ones come back; then what was mastered days ago and is due for its spaced review
@@ -676,6 +677,13 @@ export function PracticeDialog(props: Props) {
   const blocked = stopped && homeworkDone ? `${w.ui.homeworkDone} ${stopped}` : stopped;
   const stat = (s: SkillId) => progress.stats[s];
   const skills = SKILLS[area] as readonly SkillId[];
+  // On a phone the topics can fill the screen: a chosen one brings its question up, the session's ring on top.
+  const bringUp = () =>
+    requestAnimationFrame(() => {
+      const top = menu.current?.parentElement?.querySelector<HTMLElement>(".practice-ring, .practice-prompt");
+      const narrow = window.matchMedia("(max-width: 960px)").matches;
+      if (narrow && top && top.getBoundingClientRect().top > window.innerHeight / 2) top.scrollIntoView({ block: "start" });
+    });
 
   const body = (
     <>
@@ -699,11 +707,11 @@ export function PracticeDialog(props: Props) {
           <Tabs items={AREAS} value={area} onChange={(a) => choose(a, "mixed", level)} label={(a) => areaLabel(t, a)} />
           <small className="hint">{t.practiceHints[area]}</small>
 
-          <div className="snippets">
+          <div className="snippets" ref={menu}>
             {(["mixed", ...skills] as (SkillId | "mixed")[]).map((s) => {
               const st = s === "mixed" ? undefined : stat(s);
               return (
-                <button key={s} className={`chip text${pick === s ? " selected" : ""}`} aria-pressed={pick === s} onClick={() => choose(area, s, level)}>
+                <button key={s} className={`chip text${pick === s ? " selected" : ""}`} aria-pressed={pick === s} onClick={() => (choose(area, s, level), bringUp())}>
                   {s === "mixed" ? w.mixed : w.skills[s]}
                   {st && st.seen > 0 && <span className="practice-stat"> {fill(w.ui.progress, { right: st.right, seen: st.seen })}</span>}
                 </button>

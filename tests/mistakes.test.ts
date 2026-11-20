@@ -390,6 +390,34 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   orderInGNotQuotient: ["homomorphisms", [3]],
   subgroupAssumedNormal: ["homomorphisms", [3]],
   normalMissed: ["homomorphisms", [3]],
+  lastQuotientAsGcd: ["bezout", [1]],
+  coprimeNeeded: ["bezout", [1]],
+  solvableWithoutGcd: ["bezout", [1]],
+  bezoutSignSlip: ["bezout", [2]],
+  nonnegativeCounted: ["bezout", [3]],
+  stepNotDivided: ["bezout", [3]],
+  onlyOneSolution: ["congruences", [2, 3]],
+  modulusNotDivided: ["congruences", [2, 3]],
+  crtForgotInverse: ["crt", [1, 2]],
+  crtFirstTwoOnly: ["crt", [2]],
+  crtProductNotLcm: ["crt", [3]],
+  phiAsPrime: ["fermatEuler", [1]],
+  phiPowersIgnored: ["fermatEuler", [1]],
+  exponentModN: ["fermatEuler", [2]],
+  exponentModNMinusOne: ["fermatEuler", [2]],
+  phiOfPNotPMinusOne: ["fermatEuler", [3]],
+  primitiveRootsNonresidues: ["fermatEuler", [3]],
+  wilsonSign: ["fermatEuler", [3]],
+  eNotCoprime: ["rsa", [1]],
+  inverseModN: ["rsa", [2]],
+  rsaMultiplied: ["rsa", [3]],
+  rsaWrongKey: ["rsa", [3]],
+  squaresNotReduced: ["residues", [1]],
+  zeroAsResidue: ["residues", [1]],
+  eulerExponentWrong: ["residues", [2]],
+  squareOnlyIfPerfect: ["residues", [2]],
+  reciprocitySignIgnored: ["residues", [3]],
+  reciprocitySignAlways: ["residues", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -433,7 +461,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

@@ -161,6 +161,12 @@ import elementOrder from "./elementOrder";
 import subgroups from "./subgroups";
 import permutations from "./permutations";
 import homomorphisms from "./homomorphisms";
+import bezout from "./bezout";
+import congruences from "./congruences";
+import crt from "./crt";
+import fermatEuler from "./fermatEuler";
+import rsa from "./rsa";
+import residues from "./residues";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -321,4 +327,10 @@ export const GENS: Record<SkillId, Gen> = {
   subgroups,
   permutations,
   homomorphisms,
+  bezout,
+  congruences,
+  crt,
+  fermatEuler,
+  rsa,
+  residues,
 };

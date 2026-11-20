@@ -118,8 +118,8 @@ export const twoLineTex = (p: Perm) => `\\begin{pmatrix} ${p.map((_, i) => i + 1
 
 type Shown = { answer: Answer; show: string; plain: string; format: Format };
 
-/** Where 1, …, n go, in order, with named slips that give another row. */
-export function rowOf(vs: number[], slips: [MistakeId, number[]][]): Shown {
+/** Where 1, …, n go, in order (or any whole numbers in a fixed order), with named slips that give another row. */
+export function rowOf(vs: number[], slips: [MistakeId, number[]][], format: Format = "images"): Shown {
   const traps: Trap[] = [];
   const same = (a: number[], b: number[]) => a.every((x, i) => x === b[i]);
   for (const [id, s] of slips)
@@ -128,7 +128,7 @@ export function rowOf(vs: number[], slips: [MistakeId, number[]][]): Shown {
     answer: { k: "tuple", vs, tol: 1e-9, ...(traps.length ? { traps } : {}) },
     show: vs.join(", \\; "),
     plain: vs.join("; "),
-    format: "images",
+    format,
   };
 }
 
