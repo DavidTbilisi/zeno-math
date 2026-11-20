@@ -2283,7 +2283,7 @@ every skill has each of its three levels tagged with the grade that teaches it, 
 `src/model/curriculum.ts`). Students join with its code, are randomised to an arm in balanced blocks and get a code of
 their own (no names or emails), see what taking part means and agree before they join. The teacher then moves the
 class through a pre-test, timed practice, a post-test and a delayed post-test a week or more later, with parallel forms
-counterbalanced within each arm. The dashboard shows who is stuck and why, the two arms, mastery by skill, the tests
+counterbalanced within each arm. The dashboard shows who is stuck and why, whose pace has changed, the two arms, mastery by skill, the tests
 by intention to treat (every student counts, and finishing is a result of its own) and how well the model predicts; both data sets
 download as CSV. A class nobody has joined yet can be deleted (Delete class, `DELETE /api/classes/:code`); once a
 student has joined, the server refuses (409), so no records are lost, and the class is closed instead (Now → Closed). The page's top bar has **+ New board**, which makes a board and opens it
@@ -2301,6 +2301,15 @@ The full description is in **[docs/study.md](docs/study.md)**:
 - the answer checker against a teacher's marking, and how often it names the mistake a teacher sees (`npm run checker-agreement`);
 - which mistakes each group made, from either export (`npm run mistakes`);
 - whether what felt too easy or too hard matches what the model predicted, exploratory (`npm run ratings`).
+- relative response time (issue #63, `npm run pace`, not in the thesis): first-answer times against each question's
+  norm, modelled with the learner model's three layers. On ASSISTments held-out students the student, area and skill
+  layers together explain 20–24 % of the variance of the next relative time, 22–25 % with a term for the answer's place
+  in the practice (the first answer on a skill takes ×1.5 the norm). Weighting fast answers in the EMA mastery rule
+  failed the verdict rule fixed before the first run (a gain of a point in the next three answers after mastery, its
+  interval above 0) for all three variants on three seeds: each was 0.4 to 1 point *worse* than the plain EMA, which
+  stays. What did hold is the change of pace: after five answers at least twice as fast as the student's own pace, the
+  next one was right 8 to 12 points less often than the student's usual, so the teacher page lists such students
+  (slower runs come after it, with no more mistakes following them).
 
 More for a thesis: [docs/architecture.md](docs/architecture.md) (design, diagrams, decisions),
 [docs/api.md](docs/api.md) (every route), [docs/thesis/](docs/thesis/) (outline, references) and
@@ -2407,6 +2416,7 @@ src/math/calcSteps.ts     how a calculus question comes apart into steps (terms,
 src/model/stepDown.ts     targeted step-down: two early misses on a skill made of ideas, three questions on its weakest idea, back
 src/model/arms.ts         what a class tests: the features, the two arms, the condition each arm practises in
 src/model/stuckList.ts    the stuck list: ten questions without three right in a row, the reason (mistake, ticked idea, weakest idea), groups
+src/model/pace.ts         relative response time: question norms, the three-layer pace model, speed-weighted EMA (rejected), a change of pace
 src/model/conceptGraph.ts the ideas inside a skill: fractions and arithmetic, and signed numbers, powers, brackets, order of operations, rounding; each mistake's idea
 src/math/orderOps.ts      order of operations worked the right way or as a known mistake would, for the generator and for reading a question's ideas
 server/protocol.ts        the study protocol: class phases (logged), timed sessions, counterbalanced test forms, the delayed post-test, test answers

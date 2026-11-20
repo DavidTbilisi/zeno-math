@@ -20,9 +20,14 @@ export type Level = 1 | 2 | 3;
 /**
  * One answer: who, on what skill, at what level, right or not; problem names the answer's log entry, where a data set
  * has that (a problem tagged with several skills is one observation per skill, with the same problem), and item the
- * question itself, the same for every student given it (ASSISTments' problem_id; Zeno's questions are new each time).
+ * question itself, the same for every student given it (ASSISTments' problem_id; Zeno's questions are new each time);
+ * ms how long the first response took, where the data has it (src/model/pace.ts).
  */
-export type Observation = { student: string; skill: string; level: Level; correct: boolean; problem?: string; item?: string };
+export type Observation = { student: string; skill: string; level: Level; correct: boolean; problem?: string; item?: string; ms?: number };
+/** A first response faster than a tenth of a second or slower than an hour says nothing about pace: it is dropped. */
+export const MIN_MS = 100;
+export const MAX_MS = 3_600_000;
+export const usableMs = (ms: number | undefined): ms is number => ms !== undefined && Number.isFinite(ms) && ms >= MIN_MS && ms <= MAX_MS;
 
 export type EloParams = {
   /** Uncertainty U(n) = alpha / (1 + beta·n). */
