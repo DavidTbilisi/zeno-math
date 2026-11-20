@@ -210,6 +210,9 @@ import hilbertSpaces from "./hilbertSpaces";
 import randomWalks from "./randomWalks";
 import poissonProcess from "./poissonProcess";
 import brownian from "./brownian";
+import interestRates from "./interestRates";
+import binomialPricing from "./binomialPricing";
+import optionPricing from "./optionPricing";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -442,6 +445,9 @@ export const GENS: Record<SkillId, Gen> = {
   randomWalks,
   poissonProcess,
   brownian,
+  interestRates,
+  binomialPricing,
+  optionPricing,
   bezout,
   congruences,
   crt,

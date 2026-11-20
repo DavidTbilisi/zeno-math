@@ -1144,6 +1144,19 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     λ/n for n/λ, the process not thinned, the rates' ratio for the share, the means added, the covariance multiplied
     or the larger time, the covariance dropped, t for √t, the drift ignored, the other tail, the reflection not
     doubled.
+  - Financial mathematics, an elective of the degree (Shreve, Stochastic Calculus for Finance I: The Binomial Asset
+    Pricing Model), three skills in probability & statistics after Brownian motion: interest and annuities (the
+    amount compounded n times a year or continuously, a present value, the payment that repays a loan and the present
+    value of an annuity, to the cent), the binomial model (the risk-neutral probability p̃ = (1 + r − d)/(u − d), the
+    price of a one-period call or put with a real-world p that plays no part, the shares Δ₀ of the replicating
+    portfolio, and whether a model has an arbitrage and which) and option pricing (two-period European calls and puts
+    by backward induction, a put from a call by put–call parity, a two-period American put with early exercise, all
+    exact fractions). The named slips: simple interest for compound, the rate not divided by n, the years not
+    multiplied by n, yearly compounding for continuous, discounting forward, a simple discount, a loan with no
+    interest, the sinking-fund payment, the payments undiscounted, the future value for the present, p̃ without the
+    rate, the down chance, the price undiscounted, the real-world p, Δ₀ inverted or over S₀, the arbitrage the wrong
+    way round or missed at a boundary, discounting once for two periods, the payoff of the average price, the strike
+    undiscounted in parity, the sign of S₀ swapped, the European price for the American, the payoff now.
   - Discrete mathematics past the school counting puzzles (Rosen, Discrete Mathematics and Its Applications; Levin,
     Discrete Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory),
     five skills in probability & statistics after the logic course: linear recurrences (a term of aₙ = p aₙ₋₁ +

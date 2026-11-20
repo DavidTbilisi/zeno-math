@@ -17562,6 +17562,268 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "interestRates",
+      "level": 1,
+      "seed": 7,
+      "input": "580.81",
+      "label": "correct"
+    },
+    {
+      "skill": "interestRates",
+      "level": 1,
+      "seed": 7,
+      "input": "575",
+      "label": "wrong",
+      "mistake": "simpleForCompound"
+    },
+    {
+      "skill": "interestRates",
+      "level": 1,
+      "seed": 7,
+      "input": "2945.8015520228732",
+      "label": "wrong",
+      "mistake": "rateNotDividedByN"
+    },
+    {
+      "skill": "interestRates",
+      "level": 1,
+      "seed": 7,
+      "input": "506.281328222705",
+      "label": "wrong",
+      "mistake": "periodsNotMultiplied"
+    },
+    {
+      "skill": "interestRates",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "interestRates",
+      "level": 2,
+      "seed": 7,
+      "input": "745.91",
+      "label": "correct"
+    },
+    {
+      "skill": "interestRates",
+      "level": 2,
+      "seed": 7,
+      "input": "734.6640384000003",
+      "label": "wrong",
+      "mistake": "continuousAsAnnual"
+    },
+    {
+      "skill": "interestRates",
+      "level": 2,
+      "seed": 7,
+      "input": "700",
+      "label": "wrong",
+      "mistake": "simpleForCompound"
+    },
+    {
+      "skill": "interestRates",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "interestRates",
+      "level": 3,
+      "seed": 7,
+      "input": "196.16",
+      "label": "correct"
+    },
+    {
+      "skill": "interestRates",
+      "level": 3,
+      "seed": 7,
+      "input": "1250/9",
+      "label": "wrong",
+      "mistake": "paymentNoInterest"
+    },
+    {
+      "skill": "interestRates",
+      "level": 3,
+      "seed": 7,
+      "input": "96.16426298899064",
+      "label": "wrong",
+      "mistake": "sinkingFundForLoan"
+    },
+    {
+      "skill": "interestRates",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 1,
+      "seed": 7,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 1,
+      "seed": 7,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "riskNeutralNoRate"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "2/5",
+      "label": "correct"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "priceNotDiscounted"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "8/25",
+      "label": "wrong",
+      "mistake": "realWorldProbability"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 3,
+      "seed": 7,
+      "input": "1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "deltaInverted"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 3,
+      "seed": 7,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "deltaOverStockPrice"
+    },
+    {
+      "skill": "binomialPricing",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 1,
+      "seed": 7,
+      "input": "4/25",
+      "label": "correct"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 1,
+      "seed": 7,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "discountedOnce"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 1,
+      "seed": 7,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "expectedPricePayoff"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "17/5",
+      "label": "wrong",
+      "mistake": "parityNotDiscounted"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "-6/5",
+      "label": "wrong",
+      "mistake": "paritySignSwapped"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 3,
+      "seed": 7,
+      "input": "36/25",
+      "label": "wrong",
+      "mistake": "americanAsEuropean"
+    },
+    {
+      "skill": "optionPricing",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
