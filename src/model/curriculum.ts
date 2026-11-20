@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "norms", "operatorNorms", "hilbertSpaces", "markov", "randomWalks", "poissonProcess", "brownian",
   "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -152,6 +152,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   inclusionExclusion: ["counting", "sets"],
   pigeonhole: ["counting", "proofs"],
   graphTheory: ["spanningTree", "counting"],
+  normalForms: ["logic"],
+  structures: ["quantifiers", "relations"],
+  ordinalArith: ["cardinality", "induction"],
   conditional: ["probability"],
   distributions: ["expectation", "counting"],
   correlation: ["expectation"],
@@ -418,6 +421,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   inclusionExclusion: [13, 13, 13], // inclusion–exclusion, divisibility counts, derangements (Rosen)
   pigeonhole: [13, 13, 13], // the pigeonhole principle and its generalised form (Rosen; Levin)
   graphTheory: [13, 13, 13], // the handshake lemma, trees, Kₙ, Euler circuits, Euler's formula, matchings (Wilson)
+  normalForms: [13, 13, 13], // models, full DNF and CNF, tautologies, resolution (Enderton, Logic ch. 1)
+  structures: [13, 13, 13], // truth in a finite structure, free variables, models of axioms (Enderton, Logic ch. 2)
+  ordinalArith: [13, 13, 13], // ordinal sums and products, cardinal arithmetic, the axioms of ZFC (Enderton, Set Theory ch. 2, 6, 8)
   conditional: [12, 12, 12], // conditional probability (H2)
   distributions: [12, 12, 12], // the binomial and normal distributions (H2)
   correlation: [12, 12, 13], // the product-moment correlation coefficient (H2); covariance from a joint distribution is past it
