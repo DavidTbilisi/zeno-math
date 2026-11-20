@@ -8,6 +8,7 @@ import type { LogicWords } from "./logicSets";
 import type { CalcTwoWords } from "./calculusTwo";
 import type { LinAlgWords } from "./linearAlgebra";
 import type { ComplexWords } from "./complexPractice";
+import type { VecCalcWords } from "./vectorCalculus";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -37,7 +38,7 @@ export type SolutionKind = "compare" | "fractionBars" | "model" | "algebra" | "p
 
 export type Format =
   | "number" | "exact" | "fraction" | "dp2" | "dp3" | "roots" | "point" | "vector" | "interval" | "line" | "expr" | "factors" | "antiderivative" | "primes"
-  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec" | "nullvec" | "singular" | "complex" | "complexPolar" | "complexList"
+  | "inequality" | "standard" | "sign" | "shape" | "pin" | "target" | "near" | "order" | "shade" | "pick" | "divisors" | "ratio" | "matrix" | "pair" | "xyz" | "eigvec" | "nullvec" | "singular" | "complex" | "complexPolar" | "complexList" | "plane"
   | "clock" | "duration" | "measure" | "algFraction" | "formula" | "base" | "lines" | "counter" | "decide" | "elements" | "bits";
 
 /** A larger unit and the smaller one it is made of, f of them to one (1 m = 100 cm). */
@@ -197,6 +198,8 @@ export type PracticeWords = {
   linalg: LinAlgWords;
   /** Complex numbers: arithmetic, the polar form, De Moivre, roots and loci (src/math/complexPractice.ts). */
   cxq: ComplexWords;
+  /** Partial derivatives, multiple integrals, line integrals and the theorems of Green, Gauss and Stokes (src/math/vectorCalculus.ts). */
+  vcalc: VecCalcWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
