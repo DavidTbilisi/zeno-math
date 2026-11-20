@@ -25,6 +25,7 @@ import type { MeasureWords } from "./measureTheory";
 import type { FunctionalWords } from "./functionalAnalysis";
 import type { FoundationsWords } from "./foundations";
 import type { DynamicsWords } from "./dynamics";
+import type { FinanceWords } from "./finance";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -263,6 +264,8 @@ export type PracticeWords = {
   fo: FoundationsWords;
   /** Bifurcations, iterated maps, Lyapunov exponents (src/math/dynamics.ts). */
   dyn: DynamicsWords;
+  /** Interest, the binomial model, option pricing (src/math/finance.ts). */
+  fin: FinanceWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

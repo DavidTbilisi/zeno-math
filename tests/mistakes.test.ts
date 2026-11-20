@@ -865,6 +865,30 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   deltaMultiplied: ["lyapunov", [3]],
   equalSpacing: ["lyapunov", [3]],
   ratioInverted: ["lyapunov", [3]],
+  simpleForCompound: ["interestRates", [1]],
+  rateNotDividedByN: ["interestRates", [1]],
+  periodsNotMultiplied: ["interestRates", [1]],
+  continuousAsAnnual: ["interestRates", [2]],
+  discountedForward: ["interestRates", [2]],
+  simpleDiscount: ["interestRates", [2]],
+  paymentNoInterest: ["interestRates", [3]],
+  sinkingFundForLoan: ["interestRates", [3]],
+  annuityNotDiscounted: ["interestRates", [3]],
+  annuityFutureForPresent: ["interestRates", [3]],
+  riskNeutralNoRate: ["binomialPricing", [1]],
+  riskNeutralDownMove: ["binomialPricing", [1]],
+  priceNotDiscounted: ["binomialPricing", [2]],
+  realWorldProbability: ["binomialPricing", [2]],
+  deltaInverted: ["binomialPricing", [3]],
+  deltaOverStockPrice: ["binomialPricing", [3]],
+  arbitrageDirectionSwapped: ["binomialPricing", [3]],
+  arbitrageMissed: ["binomialPricing", [3]],
+  discountedOnce: ["optionPricing", [1]],
+  expectedPricePayoff: ["optionPricing", [1]],
+  parityNotDiscounted: ["optionPricing", [2]],
+  paritySignSwapped: ["optionPricing", [2]],
+  americanAsEuropean: ["optionPricing", [3]],
+  intrinsicValueOnly: ["optionPricing", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -908,7 +932,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "densities", "jointDist", "mgf", "limitTheorems", "markov", "randomWalks", "poissonProcess", "brownian", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "norms", "operatorNorms", "hilbertSpaces", "curves", "surfaces", "nonEuclidean", "projective", "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "densities", "jointDist", "mgf", "limitTheorems", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "binomialPricing", "optionPricing", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "norms", "operatorNorms", "hilbertSpaces", "curves", "surfaces", "nonEuclidean", "projective", "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {
