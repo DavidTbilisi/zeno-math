@@ -18,6 +18,8 @@ const MOVED: Partial<Record<SkillId, StageId>> = {
   projection: "linear", matrices: "linear", determinant: "linear", elimination: "linear", eigen: "linear",
   subspaces: "linear", basis: "linear", rankNullity: "linear", linearMaps: "linear", innerProducts: "linear", spectral: "linear", svd: "linear",
   linearSolvers: "linear", odeSystems: "linear", stability: "linear",
+  // Functional analysis needs inner products and the spectral theorem (Kreyszig).
+  norms: "linear", operatorNorms: "linear", hilbertSpaces: "linear",
   // The number theory of a degree is taught beside group theory, not with primary-school number.
   bezout: "algebra", congruences: "algebra", crt: "algebra", fermatEuler: "algebra", rsa: "algebra", residues: "algebra",
   // So is the cryptography built on it (Hoffstein, Pipher & Silverman).

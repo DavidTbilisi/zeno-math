@@ -22,6 +22,7 @@ import type { StochasticWords } from "./stochastic";
 import type { GameWords } from "./gameTheory";
 import type { CryptoWords } from "./crypto";
 import type { MeasureWords } from "./measureTheory";
+import type { FunctionalWords } from "./functionalAnalysis";
 import type { PdeWords } from "./pdes";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
@@ -254,6 +255,8 @@ export type PracticeWords = {
   cr: CryptoWords;
   /** Lebesgue measure, Lebesgue integrals, convergence theorems and Lᵖ norms (src/math/measureTheory.ts). */
   mt: MeasureWords;
+  /** Norms, operator norms and Hilbert spaces (src/math/functionalAnalysis.ts). */
+  fa: FunctionalWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

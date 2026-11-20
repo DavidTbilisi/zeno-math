@@ -11,7 +11,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
-  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "markov", "randomWalks", "poissonProcess", "brownian",
+  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "norms", "operatorNorms", "hilbertSpaces", "markov", "randomWalks", "poissonProcess", "brownian",
   "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
@@ -220,6 +220,9 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   lebesgueMeasure: ["riemann", "convergence"],
   simpleIntegrals: ["lebesgueMeasure"],
   convergenceTheorems: ["simpleIntegrals", "uniform"],
+  norms: ["innerProducts", "convergenceTheorems"],
+  operatorNorms: ["norms", "spectral"],
+  hilbertSpaces: ["norms", "fourier"],
   curves: ["intApplications", "vectors"],
   surfaces: ["partials", "curves"],
   nonEuclidean: ["trigRules", "circles"],
@@ -482,6 +485,9 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   lebesgueMeasure: [13, 13, 13], // outer measure, null sets, Cantor sets, countable additivity, continuity of measure (Axler MIRA ch. 2)
   simpleIntegrals: [13, 13, 13], // integrals of simple functions, almost everywhere, other measures (Axler MIRA ch. 3)
   convergenceTheorems: [13, 13, 13], // monotone and dominated convergence, mass that escapes, Lᵖ norms (Axler MIRA ch. 3, 7)
+  norms: [13, 13, 13], // 1-, 2- and ∞-norms of vectors and functions, equivalence constants (Kreyszig ch. 2)
+  operatorNorms: [13, 13, 13], // matrix norms, integral and multiplication operators (Kreyszig ch. 2)
+  hilbertSpaces: [13, 13, 13], // projection, best approximation, Parseval (Kreyszig ch. 3)
   curves: [13, 13, 13], // speed, arc length, curvature and torsion of space curves (Pressley; do Carmo)
   surfaces: [13, 13, 13], // tangent planes, the first fundamental form, Gaussian curvature (Pressley; do Carmo)
   nonEuclidean: [13, 13, 13], // angle sums, Girard's theorem, hyperbolic area, regular tilings (Greenberg; Stillwell)

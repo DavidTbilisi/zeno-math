@@ -201,6 +201,9 @@ import ellipticCurves from "./ellipticCurves";
 import lebesgueMeasure from "./lebesgueMeasure";
 import simpleIntegrals from "./simpleIntegrals";
 import convergenceTheorems from "./convergenceTheorems";
+import norms from "./norms";
+import operatorNorms from "./operatorNorms";
+import hilbertSpaces from "./hilbertSpaces";
 import randomWalks from "./randomWalks";
 import poissonProcess from "./poissonProcess";
 import brownian from "./brownian";
@@ -424,6 +427,9 @@ export const GENS: Record<SkillId, Gen> = {
   lebesgueMeasure,
   simpleIntegrals,
   convergenceTheorems,
+  norms,
+  operatorNorms,
+  hilbertSpaces,
   randomWalks,
   poissonProcess,
   brownian,
