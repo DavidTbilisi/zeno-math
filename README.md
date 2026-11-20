@@ -1118,6 +1118,18 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     out or no overlaps subtracted, the complement not taken, n!/2 for Dₙ, the others not deranged, the + 1 left out,
     the floor for the ceiling, the degree sum not halved, n edges in a tree, n(n − 1) for Kₙ, odd degrees ignored, the
     outer face forgotten, the pairs ordered.
+  - Complex analysis (Needham, Visual Complex Analysis; Brown & Churchill, Complex Variables and Applications; Stein &
+    Shakarchi, Complex Analysis), four skills in calculus after uniform convergence: analytic functions (the k that
+    makes u + iv satisfy the Cauchy–Riemann equations, f′(z₀) = uₓ − i u_y from u alone, a harmonic conjugate at a
+    point), contour integrals (a polynomial between two points by its antiderivative, Cauchy's theorem round a circle
+    with poles inside and out, Cauchy's integral formula for f(z)/(z − a)ⁿ⁺¹), Laurent series (removable, a pole of
+    which order or essential, the coefficient of z⁻¹ of e^{az}/zᵐ, sin(az)/z⁴ or cos(az)/zᵐ, a coefficient of
+    1/((z − a)(z − b)) on the annulus between its poles) and the residue theorem (residues at simple and double
+    poles, real integrals over the line or round the unit circle). Answers with π are typed as pi: 2πi is 2pi i. The
+    named slips: the second Cauchy–Riemann sign lost, + i u_y, −v, the ends swapped, the power not divided, the pole
+    outside counted, 2πi left off, f(a) for the derivative, n! left out, the numerator's zero ignored, an essential
+    singularity called a pole, the next term, n! dropped, 1/(z − a) expanded in powers of z, the partial fractions'
+    sign, 1/(b − a), the numerator dropped, no derivative at a double pole, πi for 2πi, every pole counted.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

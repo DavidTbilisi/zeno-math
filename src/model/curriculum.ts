@@ -9,7 +9,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "times", "money", "time", "measure", "barModels", "shapeArea", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "vectors", "dotangle", "differentiate", "tangent",
-  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
+  "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability", "markov",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
@@ -133,6 +133,10 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   mvt: ["epsilonDelta", "taylor"],
   riemann: ["supInf", "definite"],
   uniform: ["seqLimits", "powerSeries"],
+  analytic: ["deMoivre", "partials"],
+  contour: ["analytic", "lineIntegrals"],
+  laurent: ["contour", "powerSeries"],
+  residueCalc: ["laurent", "improper"],
   ci: ["average"],
   expectation: ["probability", "average"],
   proofs: ["parity", "primes", "expand"],
@@ -349,6 +353,10 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   mvt: [13, 13, 13], // Rolle, the mean value theorem, Taylor's remainder (Lebl Basic Analysis, Rudin)
   riemann: [13, 13, 13], // Darboux sums and Riemann integrability (Abbott, Lebl Basic Analysis)
   uniform: [13, 13, 13], // pointwise against uniform convergence, the Weierstrass M-test (Abbott, Rudin)
+  analytic: [13, 13, 13], // the Cauchy–Riemann equations, f′ from u, harmonic conjugates (Needham; Brown & Churchill)
+  contour: [13, 13, 13], // contour integrals, Cauchy's theorem and integral formula (Brown & Churchill; Stein & Shakarchi)
+  laurent: [13, 13, 13], // singularities, Laurent coefficients, a Laurent series on an annulus (Brown & Churchill)
+  residueCalc: [13, 13, 13], // residues at simple and double poles, real integrals by residues (Stein & Shakarchi)
   ci: [13, 13, 13],
   expectation: [12, 12, 12], // discrete random variables, E(X) and Var(X) (H2)
   proofs: [13, 13, 13], // ordering a proof and its reasons, a faulty proof, counterexamples (Velleman, Hammack)
