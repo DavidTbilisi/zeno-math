@@ -2,7 +2,7 @@
 
 *A complete walk through the repository at the level of files, functions, data structures and invariants. Written from the source on 2026-10-08 (commit e1edf9c), brought up to date on 2026-10-12 (the practice page and the panel docked beside the board, mental division, divisibility and reciprocals, the mastery study, H1 and the moving average), and checked claim by claim against it. Line references are `path:line` as of this revision.*
 
-The existing documents describe Zeno from above: `README.md` (features), `docs/architecture.md` (why it is built this way), `docs/api.md` (the routes), `docs/study.md` (the research side) and the thesis chapters. This document goes underneath them. It follows every folder and every file, names every exported function and every non-trivial internal one, and states the rule each piece keeps for the others. Read section 1 first; after that the sections are independent and can be read in any order.
+The existing documents describe Zeno from above: `README.md` (a short tour), `docs/features.md` (every feature), `docs/architecture.md` (why it is built this way), `docs/api.md` (the routes), `docs/study.md` (the research side) and the thesis chapters. This document goes underneath them. It follows every folder and every file, names every exported function and every non-trivial internal one, and states the rule each piece keeps for the others. Read section 1 first; after that the sections are independent and can be read in any order.
 
 ## Contents
 
@@ -4418,5 +4418,5 @@ This section collects the rules that hold across folders. Each one is enforced s
 - The header comment of `scripts/thesis-figures.ts` says Mermaid is loaded from jsDelivr and needs the network; the code loads it from `node_modules/mermaid/dist/mermaid.min.js`, a transitive dependency of `@excalidraw/mermaid-to-excalidraw`. The comment is stale; the behaviour is the offline one.
 - A real bug, cosmetic: the Pascal row caption in `src/math/combinatorics.ts:339` turns the row number into superscript digits with `String(n).replace(/d/g, …)`. The pattern matches the letter d, not a digit, so nothing is replaced and the caption reads `25` where it means `2⁵`. The fix is `/\d/g`.
 - The field comment on `unfold` in `src/three/spec.ts:23` says nets exist for the cuboid and pyramid only; `canUnfold` at `src/three/spec.ts:117` also allows the prism, cylinder and cone, and `build.ts` draws all five nets. The comment is stale.
-- The README counts 72 shapes; the `SHAPES` table has 82 entries because the live previews share it. Both numbers are right about different things.
+- The feature list (`docs/features.md`) counts 72 shapes; the `SHAPES` table has 82 entries because the live previews share it. Both numbers are right about different things.
 - The checker credits two inputs a teacher would not (`13*17` for a product question, an integral without `+ C`) and refuses `50%` as a probability. These are measured in `docs/study.md` and pinned by `tests/checker.test.ts` so the agreement rate cannot fall silently.
