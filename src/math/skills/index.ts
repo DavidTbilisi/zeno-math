@@ -166,6 +166,11 @@ import polyRings from "./polyRings";
 import fieldExt from "./fieldExt";
 import finiteFields from "./finiteFields";
 import galois from "./galois";
+import metrics from "./metrics";
+import openClosed from "./openClosed";
+import compactness from "./compactness";
+import connected from "./connected";
+import topologies from "./topologies";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -351,6 +356,11 @@ export const GENS: Record<SkillId, Gen> = {
   fieldExt,
   finiteFields,
   galois,
+  metrics,
+  openClosed,
+  compactness,
+  connected,
+  topologies,
   bezout,
   congruences,
   crt,

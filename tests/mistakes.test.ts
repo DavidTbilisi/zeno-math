@@ -527,6 +527,44 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   discriminantCoefficientsSwapped: ["galois", [3]],
   discriminantIgnored: ["galois", [3]],
   realRootsMeansCyclic: ["galois", [3]],
+  otherMetric: ["metrics", [1]],
+  metricRejected: ["metrics", [2]],
+  identityNotChecked: ["metrics", [2]],
+  symmetryNotChecked: ["metrics", [2]],
+  triangleNotChecked: ["metrics", [2]],
+  ballShapesSwapped: ["metrics", [3]],
+  discreteBallRadius: ["metrics", [3]],
+  notOpenMeansClosed: ["openClosed", [1]],
+  clopenMissed: ["openClosed", [1]],
+  limitPointMissed: ["openClosed", [1]],
+  unboundedNotClosed: ["openClosed", [1]],
+  endpointsInInterior: ["openClosed", [2]],
+  limitPointsLeftOut: ["openClosed", [2]],
+  boundaryGapMissed: ["openClosed", [3]],
+  isolatedPointBoundary: ["openClosed", [3]],
+  boundedMeansCompact: ["compactness", [1]],
+  closedMeansCompact: ["compactness", [1]],
+  fencepostSubcover: ["compactness", [2]],
+  subsequenceLimitMissed: ["compactness", [2]],
+  openEndIncluded: ["compactness", [3]],
+  extremeAtEndsOnly: ["compactness", [3]],
+  gapPointIgnored: ["connected", [1]],
+  unionAlwaysDisconnected: ["connected", [1]],
+  denseMeansConnected: ["connected", [1]],
+  planeMinusPointSplit: ["connected", [1, 2]],
+  touchingPiecesCounted: ["connected", [2]],
+  componentsFencepost: ["connected", [2]],
+  connectedMeansPathConnected: ["connected", [3]],
+  tangentOpenDiscsJoin: ["connected", [3]],
+  countableRemovalDisconnects: ["connected", [3]],
+  emptyOrWholeMissing: ["topologies", [1]],
+  unionsNotChecked: ["topologies", [1]],
+  intersectionsNotChecked: ["topologies", [1]],
+  subbasisIsTopology: ["topologies", [2]],
+  intersectionsSkipped: ["topologies", [2]],
+  imageForPreimage: ["topologies", [3]],
+  boundednessNotTopological: ["topologies", [3]],
+  cutPointIgnored: ["topologies", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -570,7 +608,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {
