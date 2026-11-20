@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1088,6 +1088,22 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     φ(p − 1), every non-residue a primitive root, Wilson's sign, an e sharing a factor with φ(n), d mod n, m · e for
     mᵉ, the other key, the squares not reduced, 0 counted, a^(p − 1) for Euler's criterion, only perfect squares as
     residues, the reciprocity sign left out or put in.
+  - Probability theory, the degree course after school statistics (Ross, A First Course in Probability; Grimmett &
+    Welsh, Probability: An Introduction; Blitzstein & Hwang), five skills in probability & statistics: densities
+    (the constant k that makes f a density, a probability from a uniform, power or exponential density, the mean),
+    joint distributions (a marginal and a conditional from a joint table, the covariance, independent or not), moment
+    generating functions (E(X) and Var(X) from M(t) of a binomial, Poisson, exponential or normal, the variance of
+    aX ± bY, the parameter of a sum), the limit theorems (Var(X̄) and SD(X̄), the central limit theorem for a mean and
+    for a sum, the normal approximation to a binomial with continuity correction, to three decimals) and Markov chains
+    (a two-step transition probability, the distribution after one step, the stationary distribution, the mean return
+    time; after the matrices). The named slips: k making the highest point 1 or not inverted, the interval's length
+    alone, f(c) for F(c), 1 − e^(−λt) for e^(−λt), the density's value for a probability, the midpoint for the mean,
+    ∫ f for ∫ x f, λ for 1/λ, one cell for a marginal, the joint probability undivided or divided by the other
+    marginal, E(XY) alone or the subtraction turned round, independence from one cell, M(0) for M′(0), E(X²) for the
+    variance, the variances subtracted or a and b not squared, the parameters multiplied, one value's spread for the
+    mean's, n and √n swapped, σ for σ/√n, nσ for σ√n, the other tail, the continuity correction left out, pᵢⱼ squared,
+    the column for the row, P times π₀ as a column, the stationary parts swapped or the stay-probabilities normalised,
+    πᵢ for 1/πᵢ.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),

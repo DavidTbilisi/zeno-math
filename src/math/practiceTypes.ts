@@ -13,6 +13,7 @@ import type { OdeWords } from "./odes";
 import type { RealWords } from "./realAnalysis";
 import type { GroupWords } from "./groups";
 import type { NtWords } from "./numberTheoryTwo";
+import type { ProbWords } from "./probTheory";
 import type { ClaimId, ProofWords } from "./proofs";
 import type { Bench } from "./benchmark";
 import type { StemWords } from "./dataGraphs";
@@ -212,6 +213,8 @@ export type PracticeWords = {
   group: GroupWords;
   /** Extended Euclid, linear congruences, the CRT, Fermat and Euler, RSA, quadratic residues (src/math/numberTheoryTwo.ts). */
   nt: NtWords;
+  /** Densities, joint distributions, MGFs, the limit theorems and Markov chains (src/math/probTheory.ts). */
+  pt: ProbWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

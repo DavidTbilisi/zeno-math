@@ -167,6 +167,11 @@ import crt from "./crt";
 import fermatEuler from "./fermatEuler";
 import rsa from "./rsa";
 import residues from "./residues";
+import densities from "./densities";
+import jointDist from "./jointDist";
+import mgf from "./mgf";
+import limitTheorems from "./limitTheorems";
+import markov from "./markov";
 
 export const GENS: Record<SkillId, Gen> = {
   compare,
@@ -333,4 +338,9 @@ export const GENS: Record<SkillId, Gen> = {
   fermatEuler,
   rsa,
   residues,
+  densities,
+  jointDist,
+  mgf,
+  limitTheorems,
+  markov,
 };

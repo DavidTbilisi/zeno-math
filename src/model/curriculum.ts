@@ -10,8 +10,8 @@ export const CURRICULUM: readonly SkillId[] = [
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "vectors", "dotangle", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality",
-  "expectation", "conditional", "distributions", "correlation", "hypothesis",
-  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability",
+  "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems",
+  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "odeSystems", "stability", "markov",
   "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
@@ -147,6 +147,11 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   distributions: ["expectation", "counting"],
   correlation: ["expectation"],
   hypothesis: ["distributions", "ci"],
+  densities: ["distributions", "integrate"],
+  jointDist: ["conditional", "expectation"],
+  mgf: ["densities", "expectation"],
+  limitTheorems: ["mgf", "distributions"],
+  markov: ["conditional", "matrices"],
   projection: ["dotangle"],
   matrices: ["dotangle"],
   determinant: ["matrices"],
@@ -353,6 +358,11 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   distributions: [12, 12, 12], // the binomial and normal distributions (H2)
   correlation: [12, 12, 13], // the product-moment correlation coefficient (H2); covariance from a joint distribution is past it
   hypothesis: [12, 12, 12], // p-values and z tests of a mean (H2)
+  densities: [13, 13, 13], // densities, distribution functions, uniform and exponential (Ross; Blitzstein & Hwang)
+  jointDist: [13, 13, 13], // joint tables, marginals, conditionals, covariance and independence (Ross; Blitzstein & Hwang)
+  mgf: [13, 13, 13], // moment generating functions and sums of independent variables (Ross; Blitzstein & Hwang)
+  limitTheorems: [13, 13, 13], // the law of large numbers, the central limit theorem, the normal approximation (Ross; Grinstead & Snell)
+  markov: [13, 13, 13], // transition matrices, n-step probabilities, stationary distributions, return times (Norris; Grinstead & Snell)
   projection: [12, 12, 12], // the length of a projection |a · n̂|, the foot of the perpendicular from a point to a line (H2)
   matrices: [10, 13, 13], // multiplying matrices (Sec 3/4); the transpose and A² = aA + bI are past school
   determinant: [13, 13, 13],
