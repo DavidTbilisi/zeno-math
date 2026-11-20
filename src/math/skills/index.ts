@@ -182,6 +182,9 @@ import interpolation from "./interpolation";
 import numericalOde from "./numericalOde";
 import linearSolvers from "./linearSolvers";
 import convergenceOrder from "./convergenceOrder";
+import fourier from "./fourier";
+import pdeClassify from "./pdeClassify";
+import separation from "./separation";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -383,6 +386,9 @@ export const GENS: Record<SkillId, Gen> = {
   numericalOde,
   linearSolvers,
   convergenceOrder,
+  fourier,
+  pdeClassify,
+  separation,
   bezout,
   congruences,
   crt,

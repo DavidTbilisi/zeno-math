@@ -633,6 +633,37 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   derivativeSignKept: ["convergenceOrder", [3]],
   negativeDerivativeDiverges: ["convergenceOrder", [3]],
   fixedPointAlwaysConverges: ["convergenceOrder", [3]],
+  doubleAngleNotHalved: ["fourier", [1]],
+  constantTermNotDoubled: ["fourier", [1]],
+  sinSquaredSignKept: ["fourier", [1]],
+  evenOddSwapped: ["fourier", [1]],
+  parityMissed: ["fourier", [1]],
+  parityAssumed: ["fourier", [1]],
+  fourierHalfPeriod: ["fourier", [2]],
+  cosNPiAsOne: ["fourier", [2]],
+  alternatingSignDropped: ["fourier", [2]],
+  jumpOneSidedValue: ["fourier", [3]],
+  parsevalConstantWeight: ["fourier", [3]],
+  parsevalNotSquared: ["fourier", [3]],
+  orderFromPower: ["pdeClassify", [1]],
+  orderCountsVariables: ["pdeClassify", [1]],
+  variableCoefficientNonlinear: ["pdeClassify", [1]],
+  sourceTermHomogeneous: ["pdeClassify", [1]],
+  productNonlinearMissed: ["pdeClassify", [1]],
+  discriminantSignSwapped: ["pdeClassify", [2, 3]],
+  discriminantNoFour: ["pdeClassify", [2, 3]],
+  characteristicSignFlip: ["pdeClassify", [3]],
+  characteristicInverted: ["pdeClassify", [3]],
+  heatRateNotSquared: ["separation", [1]],
+  heatRateNoK: ["separation", [1]],
+  waveFrequencySquared: ["separation", [1]],
+  waveFrequencyNoC: ["separation", [1]],
+  timeFactorDropped: ["separation", [2]],
+  modesSameFrequency: ["separation", [2]],
+  steadyStateAverage: ["separation", [2]],
+  steadyStateZero: ["separation", [2]],
+  radialPowerOne: ["separation", [3]],
+  boundaryValueTaken: ["separation", [3]],
 };
 
 test("every mistake is named in a question that can produce it, and still counts as wrong", () => {
@@ -676,7 +707,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "densities", "jointDist", "mgf", "limitTheorems", "markov", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

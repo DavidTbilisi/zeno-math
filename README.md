@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, numerical analysis (rounding error, interpolation, Runge–Kutta steps, LU and iterative solvers, orders of convergence), statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, estimators, maximum likelihood, regression, χ² tests, ANOVA and Bayesian inference, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, metric spaces and topology, derivatives, integration techniques and their applications, differential equations, numerical methods, numerical analysis (rounding error, interpolation, Runge–Kutta steps, LU and iterative solvers, orders of convergence), Fourier series and partial differential equations (the type of a PDE, separation of variables for the heat, wave and Laplace equations), statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, estimators, maximum likelihood, regression, χ² tests, ANOVA and Bayesian inference, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1202,6 +1202,21 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     for Gauss–Seidel, dominance taken as necessary or one dominant row as enough, bisection one step short or one step
     per digit, Newton's rate 1/m or quadratic at a multiple root, the sign of g′(r) kept, a negative g′(r) taken to
     diverge, every fixed point taken to attract.
+  - PDEs and Fourier series (Strauss, Partial Differential Equations: An Introduction; Haberman, Applied Partial
+    Differential Equations; Lebl, Notes on Diffy Qs), three skills in calculus after orders of convergence: Fourier
+    series (a₀ or a₂ₖ of p + q cos²(kx) or p + q sin²(kx), which terms an even, odd or neither function can have, bₙ of
+    a square wave or of cx, the value the series converges to at a jump, (1/π)∫f² by Parseval), classifying PDEs (the
+    order, linear homogeneous, linear inhomogeneous or nonlinear, elliptic, parabolic or hyperbolic by b² − 4ac, also
+    at a point for variable coefficients, the larger slope of straight characteristics) and separation of variables
+    (the decay rate k(nπ/L)² of a heat mode, the frequency cnπ/L of a wave mode, a plucked string Σ aₙ sin(nx) cos(nt)
+    at a point, the steady state of a rod, the harmonic function in the unit disc with given boundary values). The
+    named slips: the double-angle half missed, a₀ not doubled, the sign of sin² kept, even and odd swapped, the parity
+    missed or assumed, half the period integrated, cos nπ taken as 1, the alternating sign dropped, one side's value at
+    a jump, the constant's weight in Parseval or the coefficients not squared, the order from a power or from the
+    number of variables, variable coefficients taken as nonlinear, a source term missed, a product of u missed, the
+    discriminant's sign read backwards or without the 4, the characteristic sign flipped or the slope inverted, nπ/L
+    not squared or k left out, ω squared or c left out, the time factor dropped, every mode at frequency 1, the
+    average of the ends or decay to 0, r for every power of r, the boundary value taken inside.
   - Linear algebra, the third course of a maths degree (Axler; Strang), seven skills on the linear stage after
     eigenvalues: subspaces and spans (is a set a subspace, w as a·v₁ + b·v₂ or not in the span, the dimension of a
     span), bases (independent or not, coordinates in a basis, the dimension of a space of polynomials or matrices),
