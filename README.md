@@ -4,7 +4,7 @@
 
 Zeno's paradox says you need infinitely many small steps to cross a room — and yet you get there.
 Zeno is a free, open-source, self-hostable **math whiteboard for learning on your own**, from
-counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
+counting with bar models and fractions all the way to graph theory, combinatorics, number theory, functions and curve sketching, polynomials and the binomial theorem, logarithms, sequences and series, circle theorems, similarity, transformations, surface area and volume, constructions and loci, coordinate geometry, vectors, lines and planes, trigonometry and trig identities, the Chinese remainder theorem, RSA and quadratic residues, group theory, rings, fields and Galois groups, real analysis, derivatives, integration techniques and their applications, differential equations, numerical methods, statistics with confidence intervals and hypothesis tests, densities, moment generating functions, the central limit theorem and Markov chains, linear algebra, tensors for AI, algorithms & data structures and 3D geometry — with practice questions that check your answers and worksheets for the board.
 UI in English, Russian and Georgian.
 Practical trigonometry practice includes ladders, ramps and support cables: use a labelled right-triangle diagram to find a height, distance, sloping length or angle, with checked answers and worked solutions (Practice → Geometry & trigonometry → Practical trigonometry).
 The front page for schools is published at **[davidtbilisi.github.io/zeno-math](https://davidtbilisi.github.io/zeno-math/)**, with free practice beside it at **[/practice](https://davidtbilisi.github.io/zeno-math/practice/)** (built by `npm run build:landing`, deployed by the Pages workflow; no server there, so no class study).
@@ -1073,6 +1073,23 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     the number of cosets, the sum of the cycle lengths, σ applied first, a k-cycle counted as k transpositions, every
     starting point of a cycle counted, a subtraction for the isomorphism theorem, the image for the kernel, the order
     in ℤₙ for the order in the quotient, a subgroup taken to be normal or a normal one missed
+  - Rings and fields (Pinter, A Book of Abstract Algebra; Judson; Gallian; Stewart, Galois Theory), five skills in
+    algebra after homomorphisms: rings (the units or zero divisors of ℤₙ, field, integral domain or neither, the
+    generator of a sum, intersection or product of ideals of ℤ, the size of ℤₚ[x]/(f)), polynomial rings (the
+    remainder on division by x − a in ℤₚ[x], the prime for Eisenstein's criterion, irreducible over ℤₚ or not),
+    field extensions (a degree by the tower law, the minimal polynomial of c + √d, √a + √b or ∛a + c, the inverse of
+    a + b√d), finite fields (an inverse or a power in GF(p), the order of GF(pⁿ)'s multiplicative group, its
+    generators, its subfields, a product in ℤₚ[x]/(f)) and Galois groups (the order for a splitting field, which
+    group, the discriminant of x³ + px + q and the cubic's group from it). Polynomials are typed as x^2 + 8x + 9,
+    surds as 3sqrt(2), groups as Z4 or Z2 x Z2. The named slips: units and zero divisors swapped, 0 counted as a zero
+    divisor, a domain called a field, a field's inverses or a zero divisor missed, gcd and lcm swapped, intersection
+    and product mixed, generators added, p times the degree, f(−a), the square of the prime ignored, a root missed, a
+    quartic with no root called irreducible, degrees added, a dependent root counted, the minimal polynomial's sign or
+    constant, the cross term dropped, the norm not divided, no conjugate, −a for a⁻¹, the exponent mod p, the field's
+    size for its group, every element a generator, every m ≤ n a subfield, xⁿ or the coefficients not reduced, the
+    polynomial's degree or p for the group's order, the Klein group or the Frobenius group called the other one, the
+    complex roots ignored, every permutation assumed, the discriminant's sign or 4 and 27 swapped, a square
+    discriminant ignored, three real roots taken to make the group cyclic.
   - Number theory (Burton, Elementary Number Theory; Stein, Elementary Number Theory: Primes, Congruences, and
     Secrets; Niven, Zuckerman & Montgomery), six skills in number, taught after De Moivre beside group theory: the
     extended Euclidean algorithm (the gcd by Euclid, whether ax + by = c has integer solutions, the Bézout pair, the

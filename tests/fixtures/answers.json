@@ -13677,6 +13677,377 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "rings",
+      "level": 1,
+      "seed": 7,
+      "input": "1; 3; 5; 7",
+      "label": "correct"
+    },
+    {
+      "skill": "rings",
+      "level": 1,
+      "seed": 7,
+      "input": "2; 4; 6",
+      "label": "wrong",
+      "mistake": "unitsZeroDivisorsSwapped"
+    },
+    {
+      "skill": "rings",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "rings",
+      "level": 2,
+      "seed": 7,
+      "input": "neither (it has zero divisors)",
+      "label": "correct"
+    },
+    {
+      "skill": "rings",
+      "level": 2,
+      "seed": 7,
+      "input": "an integral domain, not a field",
+      "label": "wrong",
+      "mistake": "zeroDivisorMissed"
+    },
+    {
+      "skill": "rings",
+      "level": 2,
+      "seed": 7,
+      "input": "a field",
+      "label": "wrong"
+    },
+    {
+      "skill": "rings",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "rings",
+      "level": 3,
+      "seed": 7,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "idealGcdLcmSwapped"
+    },
+    {
+      "skill": "rings",
+      "level": 3,
+      "seed": 7,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "idealGeneratorsAdded"
+    },
+    {
+      "skill": "rings",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyRings",
+      "level": 1,
+      "seed": 7,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "polyRings",
+      "level": 1,
+      "seed": 7,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "notReducedMod"
+    },
+    {
+      "skill": "polyRings",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "remainderAtMinusA"
+    },
+    {
+      "skill": "polyRings",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyRings",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "polyRings",
+      "level": 2,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "eisensteinSquareIgnored"
+    },
+    {
+      "skill": "polyRings",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyRings",
+      "level": 3,
+      "seed": 7,
+      "input": "reducible",
+      "label": "correct"
+    },
+    {
+      "skill": "polyRings",
+      "level": 3,
+      "seed": 7,
+      "input": "irreducible",
+      "label": "wrong",
+      "mistake": "noRootMeansIrreducible"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "degreesAdded"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 2,
+      "seed": 7,
+      "input": "x^2 + 8x + 9",
+      "label": "correct"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 2,
+      "seed": 7,
+      "input": "x^2 - 8x + 9",
+      "label": "wrong",
+      "mistake": "minimalSignSlip"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 2,
+      "seed": 7,
+      "input": "x^2 + 8x + 23",
+      "label": "wrong",
+      "mistake": "minimalConstantSlip"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 3,
+      "seed": 7,
+      "input": "(-5 - 3sqrt(2))/7",
+      "label": "correct"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 3,
+      "seed": 7,
+      "input": "-5 - 3sqrt(2)",
+      "label": "wrong",
+      "mistake": "normNotDivided"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 3,
+      "seed": 7,
+      "input": "(-5 + 3sqrt(2))/7",
+      "label": "wrong",
+      "mistake": "conjugateNotTaken"
+    },
+    {
+      "skill": "fieldExt",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "inverseAsNegative"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "groupOrderIsFieldSize"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 3,
+      "seed": 7,
+      "input": "x^2 + x",
+      "label": "wrong",
+      "mistake": "powerNotReduced"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 3,
+      "seed": 7,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "notReducedMod"
+    },
+    {
+      "skill": "finiteFields",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "galois",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "galois",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "galoisDegreeIsPolyDegree"
+    },
+    {
+      "skill": "galois",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "galois",
+      "level": 2,
+      "seed": 7,
+      "input": "Z4",
+      "label": "correct"
+    },
+    {
+      "skill": "galois",
+      "level": 2,
+      "seed": 7,
+      "input": "Z2 x Z2",
+      "label": "wrong",
+      "mistake": "frobeniusNotCyclic"
+    },
+    {
+      "skill": "galois",
+      "level": 2,
+      "seed": 7,
+      "input": "Z2",
+      "label": "wrong"
+    },
+    {
+      "skill": "galois",
+      "level": 3,
+      "seed": 7,
+      "input": "189",
+      "label": "correct"
+    },
+    {
+      "skill": "galois",
+      "level": 3,
+      "seed": 7,
+      "input": "-189",
+      "label": "wrong",
+      "mistake": "discriminantSignSlip"
+    },
+    {
+      "skill": "galois",
+      "level": 3,
+      "seed": 7,
+      "input": "5732",
+      "label": "wrong",
+      "mistake": "discriminantCoefficientsSwapped"
+    },
+    {
+      "skill": "galois",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }

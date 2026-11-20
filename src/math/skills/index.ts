@@ -161,6 +161,11 @@ import elementOrder from "./elementOrder";
 import subgroups from "./subgroups";
 import permutations from "./permutations";
 import homomorphisms from "./homomorphisms";
+import rings from "./rings";
+import polyRings from "./polyRings";
+import fieldExt from "./fieldExt";
+import finiteFields from "./finiteFields";
+import galois from "./galois";
 import bezout from "./bezout";
 import congruences from "./congruences";
 import crt from "./crt";
@@ -341,6 +346,11 @@ export const GENS: Record<SkillId, Gen> = {
   subgroups,
   permutations,
   homomorphisms,
+  rings,
+  polyRings,
+  fieldExt,
+  finiteFields,
+  galois,
   bezout,
   congruences,
   crt,

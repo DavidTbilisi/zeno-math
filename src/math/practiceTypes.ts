@@ -12,6 +12,7 @@ import type { VecCalcWords } from "./vectorCalculus";
 import type { OdeWords } from "./odes";
 import type { RealWords } from "./realAnalysis";
 import type { GroupWords } from "./groups";
+import type { RingsFieldsWords } from "./ringsFields";
 import type { NtWords } from "./numberTheoryTwo";
 import type { ProbWords } from "./probTheory";
 import type { DiscreteWords } from "./discrete";
@@ -219,7 +220,10 @@ export type PracticeWords = {
   pt: ProbWords;
   /** Recurrences, generating functions, inclusion–exclusion, the pigeonhole principle, graph theory (src/math/discrete.ts). */
   dm: DiscreteWords;
+  /** Analytic functions, contour integrals, Laurent series and residues (src/math/complexAnalysis.ts). */
   ca: ComplexAnalysisWords;
+  /** Rings and ideals, polynomial rings, field extensions, finite fields, Galois groups (src/math/ringsFields.ts). */
+  rf: RingsFieldsWords;
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
