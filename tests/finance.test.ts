@@ -1,7 +1,7 @@
 // The maths of the financial mathematics elective (src/math/finance.ts) and its three skills.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { amortBalance, annuityPV, callPay, compound, MODELS, npvAt, payment, paymentsToClear, price, putPay, riskNeutral, STEPS, value } from "../src/math/finance.ts";
+import { amortBalance, annuityPV, bondPrice, callPay, compound, MODELS, npvAt, payment, paymentsToClear, price, putPay, riskNeutral, STEPS, value } from "../src/math/finance.ts";
 import { Frac } from "../src/math/fraction.ts";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, trapInputs, type SkillId } from "../src/math/practice.ts";
@@ -81,9 +81,26 @@ test("NPV: a level annuity's NPV is its present value less the cost, and every h
   }
 });
 
+test("bonds: at the coupon rate a bond sells at par, above it at a discount, below at a premium, and every hard yield prices the bond (#457)", () => {
+  for (const c of [0.04, 0.05, 0.06, 0.08])
+    for (const n of [1, 2, 3, 5]) {
+      assert.ok(Math.abs(bondPrice(1000, c, c, n) - 1000) < 1e-9, `par at ${c}, ${n} years`);
+      assert.ok(bondPrice(1000, c, c + 0.01, n) < 1000 && bondPrice(1000, c, c - 0.01, n) > 1000);
+    }
+  // The price is the coupons and the face value, each discounted for its own year.
+  assert.ok(Math.abs(bondPrice(1000, 0.06, 0.08, 2) - (60 / 1.08 + 1060 / 1.08 ** 2)) < 1e-9);
+  for (let seed = 1; seed <= 80; seed++) {
+    const ex = exercise("bonds", 3, seed, en.pracWords);
+    if (ex.format !== "number") continue;
+    const [c, n, P] = [/c = ([\d.]+)/, /n = (\d+)/, /P = ([\d.]+)/].map((re) => Number(ex.q.match(re)![1]));
+    const y = (ex.answer as { v: number }).v / 100;
+    assert.ok(Math.abs(bondPrice(1000, c / 100, y, n) - P) <= 0.005, `${ex.q} at ${y}`);
+  }
+});
+
 test("every financial mathematics question accepts its answer and names each trap", () => {
   const w = en.pracWords;
-  for (const s of ["interestRates", "amortisation", "npv", "binomialPricing", "optionPricing"] as SkillId[])
+  for (const s of ["interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"] as SkillId[])
     for (const L of [1, 2, 3] as const)
       for (let seed = 0; seed < 40; seed++) {
         const e = exercise(s, L, seed, w);

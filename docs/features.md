@@ -1168,6 +1168,11 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     internal rate of return of a two-year project. The named slips: growing the payment forward, discounting for
     one year only, adding the flows undiscounted, discounting every flow a year too many, the total return, and the
     total return spread over the two years.
+  - Bonds and yield (#457), after interest and annuities, on the finance and banking roadmaps: a bond's coupon and
+    current yield, its price at the market yield, whether it sells above, at or below its face value, and the yield
+    to maturity of a one- or two-year bond. The named slips: the coupon taken on the price, the coupon rate given as
+    the current yield, the face value left undiscounted, the coupon rate used to discount, premium and discount
+    swapped, and the current yield or the coupon rate given as the yield to maturity.
   - Discrete mathematics past the school counting puzzles (Rosen, Discrete Mathematics and Its Applications; Levin,
     Discrete Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory),
     five skills in probability & statistics after the logic course: linear recurrences (a term of aₙ = p aₙ₋₁ +

@@ -17996,6 +17996,80 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "bonds",
+      "level": 1,
+      "seed": 7,
+      "input": "40.00",
+      "label": "correct"
+    },
+    {
+      "skill": "bonds",
+      "level": 1,
+      "seed": 7,
+      "input": "44",
+      "label": "wrong",
+      "mistake": "couponOnPrice"
+    },
+    {
+      "skill": "bonds",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "bonds",
+      "level": 2,
+      "seed": 7,
+      "input": "1045.80",
+      "label": "correct"
+    },
+    {
+      "skill": "bonds",
+      "level": 2,
+      "seed": 7,
+      "input": "1183.1882874877815",
+      "label": "wrong",
+      "mistake": "faceUndiscounted"
+    },
+    {
+      "skill": "bonds",
+      "level": 2,
+      "seed": 7,
+      "input": "1000",
+      "label": "wrong",
+      "mistake": "couponRateDiscount"
+    },
+    {
+      "skill": "bonds",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "bonds",
+      "level": 3,
+      "seed": 7,
+      "input": "below F (a discount)",
+      "label": "correct"
+    },
+    {
+      "skill": "bonds",
+      "level": 3,
+      "seed": 7,
+      "input": "above F (a premium)",
+      "label": "wrong",
+      "mistake": "premiumDiscountSwapped"
+    },
+    {
+      "skill": "bonds",
+      "level": 3,
+      "seed": 7,
+      "input": "exactly F (at par)",
+      "label": "wrong"
     }
   ]
 }
