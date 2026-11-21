@@ -1509,8 +1509,8 @@ span.board-home:hover { background: none; }
 /* The sum's + / − is one switch of two halves, so it doesn't read as another stepper. */
 /* "Put out a zero pair": a + chip and a − chip side by side. */
 .chip-move { transition: transform 0.28s ease-out; }
-.counters-mat [role]:focus { outline: none; }
-.counters-mat [role]:focus-visible { outline: 2px solid #1971c2; outline-offset: 2px; }
+.hand-pic [role]:focus { outline: none; }
+.hand-pic [role]:focus-visible { outline: 2px solid #1971c2; outline-offset: 2px; }
 .chip-pop { transform-box: fill-box; transform-origin: center; animation: chip-pop 0.55s ease-in forwards; pointer-events: none; }
 .chip-zero { animation: chip-zero 0.7s ease-out forwards; pointer-events: none; }
 @keyframes chip-pop { 0% { transform: scale(1); opacity: 1; } 35% { transform: scale(1.2); opacity: 0.95; } 100% { transform: scale(0); opacity: 0; } }
