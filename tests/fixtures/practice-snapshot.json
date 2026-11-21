@@ -211,6 +211,7 @@
   "brownian": "7cf025fa11fdc832",
   "interestRates": "a705bd75c73d6d7f",
   "amortisation": "cd079f15ee9c4c2a",
+  "npv": "a263aaa905dd1ee9",
   "binomialPricing": "34bafe4e62bb89f0",
   "optionPricing": "55d79f0036d4c12f",
   "softmax": "38e5700fd0b23674",

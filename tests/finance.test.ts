@@ -1,7 +1,7 @@
 // The maths of the financial mathematics elective (src/math/finance.ts) and its three skills.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { amortBalance, annuityPV, callPay, compound, MODELS, payment, paymentsToClear, price, putPay, riskNeutral, STEPS, value } from "../src/math/finance.ts";
+import { amortBalance, annuityPV, callPay, compound, MODELS, npvAt, payment, paymentsToClear, price, putPay, riskNeutral, STEPS, value } from "../src/math/finance.ts";
 import { Frac } from "../src/math/fraction.ts";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, trapInputs, type SkillId } from "../src/math/practice.ts";
@@ -67,9 +67,23 @@ test("put–call parity holds in every model, and the American call is the Europ
       }
 });
 
+test("NPV: a level annuity's NPV is its present value less the cost, and every hard project's NPV is zero at its IRR (#456)", () => {
+  assert.ok(Math.abs(npvAt([-10000, 4000, 4000, 4000], 0.08) - (annuityPV(4000, 0.08, 3) - 10000)) < 1e-9);
+  assert.equal(npvAt([-5000, 3000, 3000], 0), 1000); // no discounting: the flows just add up
+  // NPV falls as the rate rises, so a project is taken below its IRR and turned down above it.
+  for (const r of [0.04, 0.05, 0.08, 0.1, 0.12]) assert.ok(npvAt([-10000, 4000, 4000, 4000], r) > npvAt([-10000, 4000, 4000, 4000], r + 0.01));
+  for (let seed = 1; seed <= 60; seed++) {
+    const ex = exercise("npv", 3, seed, en.pracWords);
+    const [P, C1, C2] = [...ex.q.matchAll(/C_\d = (-?\d+)/g)].map((m) => Number(m[1]));
+    const x = (ex.answer as { v: number }).v / 100;
+    assert.ok(Math.abs(npvAt([P, C1, C2], x)) < 1e-6, `${ex.q} at ${x}`);
+    assert.ok(npvAt([P, C1, C2], x - 0.01) > 0 && npvAt([P, C1, C2], x + 0.01) < 0);
+  }
+});
+
 test("every financial mathematics question accepts its answer and names each trap", () => {
   const w = en.pracWords;
-  for (const s of ["interestRates", "amortisation", "binomialPricing", "optionPricing"] as SkillId[])
+  for (const s of ["interestRates", "amortisation", "npv", "binomialPricing", "optionPricing"] as SkillId[])
     for (const L of [1, 2, 3] as const)
       for (let seed = 0; seed < 40; seed++) {
         const e = exercise(s, L, seed, w);

@@ -5167,7 +5167,7 @@ export const en = {
     algebra: "Balance puzzles, finding the rule, growing patterns, equal expressions, graph stories, linear equations, inequalities, expanding, factorising, quadratics, simultaneous equations, polynomials, indices, logarithms, surds, matrices, determinants, systems and rank, eigenvalues, subspaces and bases, rank–nullity, linear maps and change of basis, inner products, Gram–Schmidt and least squares, diagonalisation, the singular value decomposition, complex numbers, the polar form, De Moivre and n-th roots, loci in the Argand diagram, groups, orders and cyclic groups, subgroups, cosets and Lagrange's theorem, permutations, homomorphisms and quotient groups, then rings and ideals, polynomial rings, field extensions, finite fields and Galois groups; linear programming, the simplex method and convex optimisation; games in normal form, mixed equilibria and backward induction.",
     geometry: "Estimating angles, missing angles, the triangle inequality, lines of symmetry, nets of a cube, coordinates, gradients, equations of lines, distances and midpoints, exact trigonometric values, right triangles, the sine and cosine rules, bearings and elevation, circle theorems, chords, secants and tangents, similar shapes, surface area and volume, trig identities, vectors and projections, then metric spaces, open and closed sets, compactness, connectedness and topological spaces, and the geometry of a degree: the curvature and torsion of curves, tangent planes and Gaussian curvature of surfaces, spherical and hyperbolic geometry, and projective geometry with homogeneous coordinates and the cross-ratio.",
     calculus: "Derivatives, gradients and tangents, stationary points, integrals, numerical methods, gradient descent, backpropagation, limits, implicit differentiation and related rates, substitution, integration by parts and partial fractions, improper integrals, area, volume and arc length, Taylor and power series, convergence tests, partial derivatives and gradients, the multivariable chain rule, extrema and Lagrange multipliers, double and triple integrals, polar, cylindrical and spherical coordinates, line integrals, and the theorems of Green, Gauss and Stokes, differential equations: separable, linear and exact equations, second-order equations, linear systems and phase portraits, the Laplace transform, equilibria and stability, and real analysis: suprema, limits by ε and N, continuity by ε and δ, the mean value theorem, Darboux sums and uniform convergence, and complex analysis: the Cauchy–Riemann equations, contour integrals and Cauchy's formula, Laurent series and residues, and numerical analysis: rounding error and conditioning, interpolation, Euler and Runge–Kutta steps, LU and iterative solvers, orders of convergence, and partial differential equations: Fourier series, the order, linearity and type of a PDE, and separation of variables for the heat, wave and Laplace equations, and measure theory: Lebesgue measure, Lebesgue integrals, the monotone and dominated convergence theorems and Lᵖ norms, and functional analysis: norms of vectors, functions and operators, orthogonal projection and Parseval's identity, and dynamical systems: bifurcations, iterated maps and their cycles, Lyapunov exponents and period doubling.",
-    data: "Reading bar charts, picture graphs, line graphs, pie charts and stem-and-leaf plots, graphs and networks (one stroke, colouring, shortest routes, connecting towns), parity and swaps to sort, averages, probability, counting, confidence intervals, expected value and variance, conditional probability, binomial and normal distributions, covariance and correlation, hypothesis tests, densities, joint distributions, moment generating functions, the central limit theorem, Markov chains, random walks, Poisson processes, Brownian motion, estimators and maximum likelihood, regression, χ² tests, ANOVA, Bayesian inference, recurrences, generating functions, inclusion–exclusion, the pigeonhole principle, graph theory, normal forms and resolution, first-order structures, ordinal and cardinal arithmetic, interest, annuities, loan repayment and option pricing in the binomial model, softmax and cross-entropy, overfitting, precision and recall, nearest neighbours and k-means.",
+    data: "Reading bar charts, picture graphs, line graphs, pie charts and stem-and-leaf plots, graphs and networks (one stroke, colouring, shortest routes, connecting towns), parity and swaps to sort, averages, probability, counting, confidence intervals, expected value and variance, conditional probability, binomial and normal distributions, covariance and correlation, hypothesis tests, densities, joint distributions, moment generating functions, the central limit theorem, Markov chains, random walks, Poisson processes, Brownian motion, estimators and maximum likelihood, regression, χ² tests, ANOVA, Bayesian inference, recurrences, generating functions, inclusion–exclusion, the pigeonhole principle, graph theory, normal forms and resolution, first-order structures, ordinal and cardinal arithmetic, interest, annuities, loan repayment, net present value and option pricing in the binomial model, softmax and cross-entropy, overfitting, precision and recall, nearest neighbours and k-means.",
   },
   // The board's paper (#453).
   paper: {
@@ -10196,12 +10196,17 @@ export const en = {
         amortBalance: "A loan L at the monthly rate i is repaid in equal monthly payments R, the first a month from now. How much is still owed just after the k-th payment? Give it to 2 decimal places.",
         amortTotal: "A loan L at the monthly rate i is repaid in n monthly payments of R. How much interest is paid over the whole loan? Give it to 2 decimal places.",
         amortPayments: "A balance B at the monthly rate i is repaid at R a month, the first payment a month from now; the last may be smaller. How many payments does it take?",
+        npvPV: "A payment C arrives k years from now. What is it worth today at the yearly rate r? Answer to 2 decimal places.",
+        npvValue: "A project costs C₀ now (a negative flow) and pays C₁, C₂, C₃ at the end of years 1, 2 and 3. What is its net present value at the yearly rate r? Answer to 2 decimal places.",
+        npvAccept: "A project costs C₀ now and pays C₁, C₂, C₃ at the end of years 1, 2 and 3. At the yearly rate r, should it be taken on?",
+        npvIrr: "A project costs C₀ now and pays C₁ after one year and C₂ after two. What is its internal rate of return, the yearly rate x that makes its net present value zero? Answer in percent.",
       },
       arb: {
         none: "no arbitrage",
         buy: "arbitrage: borrow and buy the stock",
         short: "arbitrage: short the stock and put the money in the bank",
       },
+      npv: { accept: "accept: its NPV is positive", reject: "reject: its NPV is negative" },
     },
     fo: {
       prompt: {
@@ -10537,6 +10542,7 @@ export const en = {
       brownian: "Brownian motion",
       interestRates: "Interest and annuities",
       amortisation: "Loan amortisation",
+      npv: "Net present value and IRR",
       binomialPricing: "The binomial model",
       optionPricing: "Option pricing",
       recurrences: "Linear recurrences",
@@ -11895,6 +11901,12 @@ export const en = {
       totalPaidForInterest: "nR is everything paid, the loan included. The interest is what is paid on top of it: nR − L.",
       paymentsNoInterest: "B/R leaves out the interest each month adds. Solve R(1 − (1 + i)^{−n})/i ≥ B: n ≥ −ln(1 − Bi/R)/ln(1 + i).",
       paymentsRoundedDown: "That many payments still leaves a little owed: round n up to the next whole payment.",
+      pvGrownForward: "C(1 + r)^k is what C today grows to. A payment that comes later is worth less today: divide, C / (1 + r)^k.",
+      pvDiscountedOnce: "Dividing by (1 + r) once discounts for one year only. A payment k years away is divided by (1 + r)^k.",
+      npvUndiscounted: "Adding the flows as they are treats money next year as money today. Discount each one first: C_t / (1 + r)^t, then add.",
+      npvFirstDiscounted: "C₀ is paid now and is not discounted; C_t is divided by (1 + r)^t, not (1 + r)^{t+1}.",
+      irrTotalReturn: "(C₁ + C₂ − C₀)/C₀ is the total gain over both years, with no time value. The IRR is the yearly rate x with −C₀ + C₁/(1 + x) + C₂/(1 + x)² = 0.",
+      irrAveraged: "Half the total gain ignores that C₁ comes a year earlier than C₂. Solve −C₀ + C₁/(1 + x) + C₂/(1 + x)² = 0, a quadratic in 1 + x.",
       riskNeutralNoRate: "The bank pays r too: p̃ = (1 + r − d)/(u − d), so that the stock grows on average like money in the bank.",
       riskNeutralDownMove: "That is q̃ = (u − 1 − r)/(u − d), the down chance. The up chance is p̃ = (1 + r − d)/(u − d).",
       priceNotDiscounted: "The payoff comes one period later: divide the risk-neutral average by 1 + r.",

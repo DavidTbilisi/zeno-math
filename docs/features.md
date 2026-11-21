@@ -1163,6 +1163,11 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     whole payment taken as principal, the payments subtracted with no interest, the first month's interest charged
     every month, simple interest on the whole loan, the total paid taken for the interest, the interest left out of
     the count of payments, the count rounded down.
+  - Net present value and IRR (#456), after interest and annuities, on the finance and banking roadmaps: what one
+    payment years away is worth today, a project's NPV, whether to take it on by the sign of its NPV, and the
+    internal rate of return of a two-year project. The named slips: growing the payment forward, discounting for
+    one year only, adding the flows undiscounted, discounting every flow a year too many, the total return, and the
+    total return spread over the two years.
   - Discrete mathematics past the school counting puzzles (Rosen, Discrete Mathematics and Its Applications; Levin,
     Discrete Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory),
     five skills in probability & statistics after the logic course: linear recurrences (a term of aₙ = p aₙ₋₁ +
