@@ -11,7 +11,7 @@ export const SOFTWARE: Roadmap = {
     { id: "logic", items: [...reads("logic"), ...skills("logic", "quantifiers", "proofs", "sets", "mappings", "relations")] },
     { id: "counting", items: [...reads("discrete"), ...skills("sequences", "series", "induction", "recurrences", "counting", "inclusionExclusion", "pigeonhole")] },
     { id: "graphs", items: [...skills("oneStroke", "shortestPath", "spanningTree", "colouring", "graphTheory"), ...games("connectTowns", "shortestPath")] },
-    { id: "algorithms", items: [...reads("algorithms"), ...skills("inversions"), ...games("beSort", "beSearch", "beBinary", "bePointers", "beWindow", "beStack", "beHeap", "beTree", "beUnion", "beTopo", "beDp", "beBacktrack")] },
+    { id: "algorithms", items: [...reads("algorithms"), ...skills("growth", "inversions"), ...games("beSort", "beSearch", "beBinary", "bePointers", "beWindow", "beStack", "beHeap", "beTree", "beUnion", "beTopo", "beDp", "beBacktrack")] },
     { id: "chance", items: [...reads("probability"), ...skills("probability", "conditional", "expectation", "distributions")] },
     { id: "graphics", items: [...reads("vectors"), ...skills("coordinates", "vectors", "dotangle", "matrices", "determinant", "linearMaps")] },
     { id: "crypto", items: skills("congruences", "crt", "fermatEuler", "rsa", "discreteLog") },

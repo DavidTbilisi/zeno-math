@@ -18202,6 +18202,72 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "growth",
+      "level": 1,
+      "seed": 7,
+      "input": "1.5^n",
+      "label": "correct"
+    },
+    {
+      "skill": "growth",
+      "level": 1,
+      "seed": 7,
+      "input": "n^10",
+      "label": "wrong",
+      "mistake": "polyOverExp"
+    },
+    {
+      "skill": "growth",
+      "level": 1,
+      "seed": 7,
+      "input": "n log n",
+      "label": "wrong"
+    },
+    {
+      "skill": "growth",
+      "level": 2,
+      "seed": 7,
+      "input": "O(n)",
+      "label": "correct"
+    },
+    {
+      "skill": "growth",
+      "level": 2,
+      "seed": 7,
+      "input": "O(n^2)",
+      "label": "wrong",
+      "mistake": "loopsMultiplied"
+    },
+    {
+      "skill": "growth",
+      "level": 2,
+      "seed": 7,
+      "input": "O(1)",
+      "label": "wrong"
+    },
+    {
+      "skill": "growth",
+      "level": 3,
+      "seed": 7,
+      "input": "O(n log n)",
+      "label": "correct"
+    },
+    {
+      "skill": "growth",
+      "level": 3,
+      "seed": 7,
+      "input": "O(n)",
+      "label": "wrong",
+      "mistake": "logFactorDropped"
+    },
+    {
+      "skill": "growth",
+      "level": 3,
+      "seed": 7,
+      "input": "O(n^3)",
+      "label": "wrong"
     }
   ]
 }

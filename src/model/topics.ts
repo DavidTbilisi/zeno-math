@@ -64,7 +64,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "discrete", shelf: "beyond", icon: "⬡",
-    skills: ["oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory"],
+    skills: ["oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory"],
     sections: ["secDiscrete", "secProblemSolving", "senseGraph"],
   },
   { id: "algorithms", shelf: "beyond", icon: "⇅", skills: ["inversions"], sections: ["secAlgorithms", "senseAlgo", "senseData", "senseSystem"] },

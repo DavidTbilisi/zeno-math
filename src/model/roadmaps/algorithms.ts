@@ -9,7 +9,7 @@ export const ALGORITHMS: Roadmap = {
     { id: "steps", items: [...reads("logic"), ...skills("logic", "proofs", "sequences", "series", "induction", "recurrences")] },
     { id: "counting", items: [...reads("discrete"), ...skills("counting", "generating", "pigeonhole", "inclusionExclusion", "probability", "expectation")] },
     { id: "graphs", items: [...skills("graphTheory", "shortestPath", "spanningTree"), ...games("connectTowns", "shortestPath")] },
-    { id: "search", items: [...reads("algorithms"), ...skills("inversions"), ...games("beSearch", "beBinary", "beSort")] },
+    { id: "search", items: [...reads("algorithms"), ...skills("growth", "inversions"), ...games("beSearch", "beBinary", "beSort")] },
     { id: "patterns", items: games("bePointers", "beWindow", "beStack", "beHeap", "beTree", "beUnion", "beTopo", "beDp", "beBacktrack", "beName") },
     { id: "systems", items: games("beCache", "beBalance", "beRing", "beLimit", "beQuorum", "beQueue", "beComp") },
   ],

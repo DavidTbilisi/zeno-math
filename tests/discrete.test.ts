@@ -9,7 +9,7 @@ import { check, exercise, trapInputs, type SkillId } from "../src/math/practice.
 import type { Level } from "../src/math/practiceTypes.ts";
 
 const w = en.pracWords;
-const SKILLS: SkillId[] = ["recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory"];
+const SKILLS: SkillId[] = ["recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory"];
 
 test("recurrence terms and their closed form", () => {
   assert.deepEqual(recurrenceTerms(1, 1, 0, 1, 10), [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55]);
@@ -63,4 +63,43 @@ test("every discrete-mathematics question accepts its own answer and names its s
       }
       assert.ok(named.size > 0, `${skill} ${level} names a slip`);
     }
+});
+
+test("growth: every recurrence's order is what T(n) does when run, and every loop count is what the loop counts (#460)", () => {
+  const G: Record<string, (n: number) => number> = {
+    "O(1)": () => 1,
+    "O(log n)": (n) => Math.log(n),
+    "O(n)": (n) => n,
+    "O(n log n)": (n) => n * Math.log(n),
+    "O(n^2)": (n) => n * n,
+    "O(n^2 log n)": (n) => n * n * Math.log(n),
+    "O(n^3)": (n) => n ** 3,
+  };
+  const seen = new Set<string>();
+  for (let seed = 1; seed <= 200; seed++) {
+    const ex = exercise("growth", 3, seed, w);
+    const m = ex.q.match(/T\(n\) = (\d*)T\(n\/(\d)\) \+ (?:n\^\{(\d)\}|(n)|1)/);
+    if (!m) continue;
+    seen.add(ex.q);
+    const [a, b, d] = [Number(m[1] || 1), Number(m[2]), m[3] ? Number(m[3]) : m[4] ? 1 : 0];
+    // T(1) = 1, T(n) = aT(n/b) + n^d at n = b^k: the ratio to the right order settles; to the named slip it does not.
+    const T = (k: number): number => (k === 0 ? 1 : a * T(k - 1) + b ** (k * d));
+    const ratio = (g: (n: number) => number, k: number) => T(k) / g(b ** k);
+    const right = G[ex.plain]!;
+    const [k1, k2] = b === 2 ? [10, 20] : [6, 12];
+    assert.ok(ratio(right, k2) / ratio(right, k1) < 1.6 && ratio(right, k2) / ratio(right, k1) > 0.6, ex.q);
+    for (const t of trapInputs(ex)) {
+      const r = ratio(G[t.input]!, k2) / ratio(G[t.input]!, k1);
+      assert.ok(r > 1.6 || r < 0.6, `${ex.q}: ${t.id}`);
+    }
+  }
+  assert.equal(seen.size, 9, "every recurrence comes up");
+  for (let seed = 1; seed <= 60; seed++) {
+    const ex = exercise("growth", 1, seed, w);
+    if (ex.format !== "number") continue;
+    const [n, inner] = [...ex.q.matchAll(/1 \\ldots (\w+)/g)].map((x) => x[1]);
+    let s = 0;
+    for (let i = 1; i <= Number(n); i++) for (let j = 1; j <= (inner === "i" ? i : Number(inner)); j++) s++;
+    assert.equal(String(s), ex.plain, ex.q);
+  }
 });

@@ -230,6 +230,7 @@
   "induction": "20eaad7561f4aa02",
   "cardinality": "e06348729a46e5e8",
   "recurrences": "db1dac8731827e05",
+  "growth": "2e91a3afa8c8e280",
   "generating": "23582775cb1bd2cc",
   "inclusionExclusion": "82285f59279ec3c5",
   "pigeonhole": "d47191cb77112210",
