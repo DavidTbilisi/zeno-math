@@ -5126,6 +5126,22 @@ export const en = {
     calculus: "Derivatives, gradients and tangents, stationary points, integrals, numerical methods, gradient descent, backpropagation, limits, implicit differentiation and related rates, substitution, integration by parts and partial fractions, improper integrals, area, volume and arc length, Taylor and power series, convergence tests, partial derivatives and gradients, the multivariable chain rule, extrema and Lagrange multipliers, double and triple integrals, polar, cylindrical and spherical coordinates, line integrals, and the theorems of Green, Gauss and Stokes, differential equations: separable, linear and exact equations, second-order equations, linear systems and phase portraits, the Laplace transform, equilibria and stability, and real analysis: suprema, limits by ε and N, continuity by ε and δ, the mean value theorem, Darboux sums and uniform convergence, and complex analysis: the Cauchy–Riemann equations, contour integrals and Cauchy's formula, Laurent series and residues, and numerical analysis: rounding error and conditioning, interpolation, Euler and Runge–Kutta steps, LU and iterative solvers, orders of convergence, and partial differential equations: Fourier series, the order, linearity and type of a PDE, and separation of variables for the heat, wave and Laplace equations, and measure theory: Lebesgue measure, Lebesgue integrals, the monotone and dominated convergence theorems and Lᵖ norms, and functional analysis: norms of vectors, functions and operators, orthogonal projection and Parseval's identity, and dynamical systems: bifurcations, iterated maps and their cycles, Lyapunov exponents and period doubling.",
     data: "Reading bar charts, picture graphs, line graphs, pie charts and stem-and-leaf plots, graphs and networks (one stroke, colouring, shortest routes, connecting towns), parity and swaps to sort, averages, probability, counting, confidence intervals, expected value and variance, conditional probability, binomial and normal distributions, covariance and correlation, hypothesis tests, densities, joint distributions, moment generating functions, the central limit theorem, Markov chains, random walks, Poisson processes, Brownian motion, estimators and maximum likelihood, regression, χ² tests, ANOVA, Bayesian inference, recurrences, generating functions, inclusion–exclusion, the pigeonhole principle, graph theory, normal forms and resolution, first-order structures, ordinal and cardinal arithmetic, interest, annuities and option pricing in the binomial model, softmax and cross-entropy, overfitting, precision and recall, nearest neighbours and k-means.",
   },
+  // The board's paper (#453).
+  paper: {
+    title: "Paper",
+    snap: "Snap to the paper",
+    names: {
+      plain: "Plain",
+      squares: "Squares",
+      graph: "Graph paper",
+      dots: "Dotted",
+      isoDots: "Isometric dots (3D)",
+      isoLines: "Isometric lines (3D)",
+      axes: "Coordinate plane",
+      polar: "Polar",
+      lined: "Lined",
+    },
+  },
   shapes: {
     button: "Shapes",
     title: "Maths shapes",

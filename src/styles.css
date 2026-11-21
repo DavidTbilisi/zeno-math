@@ -143,6 +143,11 @@ input.invalid { border-color: var(--danger); }
 .tool-menu-icon { flex: none; width: 28px; text-align: center; color: var(--accent); font-weight: 600; }
 .board-body { flex: 1; display: flex; min-height: 0; }
 .canvas-wrap { flex: 1; position: relative; min-height: 0; min-width: 0; }
+/* The board's paper, in Excalidraw's main menu (#453). */
+.paper-pick { display: flex; flex-direction: column; gap: 6px; padding: 4px 2px; width: 100%; font-size: 0.875rem; }
+.paper-pick label { display: flex; align-items: center; gap: 8px; }
+.paper-pick select { flex: 1; min-width: 0; min-height: 32px; font: inherit; color: inherit; background: var(--island-bg-color, transparent); border: 1px solid var(--default-border-color, #ccc); border-radius: 6px; padding: 2px 6px; }
+.paper-pick .paper-snap { cursor: pointer; }
 /* A tool docked beside the board (practice): the board stays in use next to it. */
 .dock {
   width: clamp(360px, 34vw, 540px); flex: none; display: flex; flex-direction: column; min-height: 0;

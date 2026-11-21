@@ -1,6 +1,8 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
+# npm ci runs this (postinstall): it lets the board's paper into Excalidraw.
+COPY scripts/patch-excalidraw.mjs ./scripts/
 RUN npm ci
 COPY . .
 RUN npm run build && npm run build:checker
