@@ -650,7 +650,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   numberShapes: [640, 620],
   algebraTiles: [680, 640],
   baseTen: [830, 660],
-  cubes: [720, 640],
+  cubes: [720, 700],
   counters: [680, 600],
   signArrow: [680, 680],
   signPattern: [680, 600],

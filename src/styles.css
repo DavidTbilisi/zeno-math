@@ -373,9 +373,6 @@ input.invalid { border-color: var(--danger); }
 .pv-status { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 30px; }
 .pv-total { font-size: 22px; font-weight: 700; }
 .pv-message { color: var(--danger); font-size: 14px; font-weight: 600; }
-/* Linking cubes (live/Cubes.tsx): the colour to paint with, as a swatch. */
-.cube-swatch { width: 26px; height: 26px; padding: 0; border-width: 2px; }
-.cube-swatch.on { outline: 2px solid #1e1e1e; outline-offset: 1px; }
 /* Geometry lab (live/GeoLab.tsx): the plane beside the list of what the chosen shape measures. */
 .glab-row { display: flex; gap: 10px; align-items: flex-start; }
 .glab-plane { border: 1px solid #dee2e6; border-radius: 6px; }

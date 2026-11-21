@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  addCube, breakAt, colourParts, cubeTotal, join, joinAll, MAX_LEN, MAX_TRAINS, newTrain, paint, removeCube, says,
+  addCube, breakAt, colourParts, cubeTotal, join, joinAll, MAX_LEN, MAX_TRAINS, moveTail, newTrain, paint, removeCube, says,
   shareInto, sortByLength,
 } from "../src/math/cubes.ts";
 
@@ -52,4 +52,19 @@ test("the words: one train by colour, trains added, two compared", () => {
 
 test("sorting puts the longest first and keeps ties in order", () => {
   assert.deepEqual(sortByLength([[1], [2, 2, 2], [3, 3], [4, 4, 4]]), [[2, 2, 2], [4, 4, 4], [3, 3], [1]]);
+});
+
+test("a train's end lifted by hand: onto another train, as a new train, or away", () => {
+  assert.deepEqual(moveTail(mat, 0, 4, 1), [[0, 0, 0, 0], [2, 2, 2, 2, 2, 1, 1, 1]]);
+  assert.deepEqual(moveTail(mat, 0, 4, "new"), [[0, 0, 0, 0], [2, 2, 2, 2, 2], [1, 1, 1]]);
+  assert.deepEqual(moveTail(mat, 0, 4, null), [[0, 0, 0, 0], [2, 2, 2, 2, 2]]);
+  assert.deepEqual(moveTail(mat, 1, 0, 0), [[0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2]], "the whole train joins on");
+  assert.deepEqual(moveTail(mat, 0, 0, "new"), [[2, 2, 2, 2, 2], [0, 0, 0, 0, 1, 1, 1]], "the whole train moves down");
+  assert.deepEqual(moveTail(mat, 1, 0, null), [mat[0]], "the whole train put away");
+  assert.deepEqual(moveTail(mat, 0, 2, 0), mat, "onto itself: nothing");
+  const long = [Array(15).fill(0), Array(6).fill(1)];
+  assert.deepEqual(moveTail(long, 1, 0, 0), long, "too long to join");
+  const full = Array.from({ length: MAX_TRAINS }, () => [0, 1]);
+  assert.deepEqual(moveTail(full, 0, 1, "new"), full, "no room for another train");
+  assert.equal(cubeTotal(moveTail(mat, 0, 3, 1)), cubeTotal(mat));
 });
