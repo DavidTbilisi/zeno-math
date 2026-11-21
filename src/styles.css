@@ -1783,9 +1783,16 @@ span.board-home:hover { background: none; }
   .explainer-what .topic-pic { max-width: 200px; margin: 0 auto; }
 }
 /* The class's roadmap goal on the teacher page (#461): the pick, then one row per student. */
+.class-goal-pick { display: block; margin-top: 12px; }
 .class-goal-pick select { max-width: 100%; }
-.class-goal-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
-.class-goal-list li { display: grid; grid-template-columns: minmax(0, 9rem) minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+/* The name column is as wide as the longest name, up to 9rem (codes and names wrap); every row shares it (subgrid). */
+.class-goal-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: fit-content(9rem) minmax(0, 1fr) auto; gap: 6px 10px; }
+.class-goal-list li { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; }
+.class-goal-hint { display: flex; align-items: flex-start; gap: 8px; }
+.class-goal-hint > .hint { margin: 0; flex: 0 1 auto; }
+.class-goal-how { flex: none; width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 1.5px solid currentColor; background: none; display: grid; place-items: center; font-family: inherit; font-size: 13px; font-weight: 700; line-height: 1; color: var(--muted, inherit); cursor: pointer; }
+.class-goal-how[aria-expanded="true"] { background: var(--z-marker); color: var(--z-ink); border-color: transparent; }
+.class-goal-how-text { margin: 8px 0 0; padding: 8px 12px; border-radius: 6px; background: color-mix(in srgb, var(--z-marker) 14%, transparent); }
 .class-goal-who { overflow-wrap: anywhere; font-size: 14px; }
 .class-goal-count { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted, inherit); }
 .road-class-note { margin: 0 0 8px; padding: 8px 12px; border-left: 3px solid var(--z-marker); background: color-mix(in srgb, var(--z-marker) 14%, transparent); border-radius: 4px; }
