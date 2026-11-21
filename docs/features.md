@@ -1157,6 +1157,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     rate, the down chance, the price undiscounted, the real-world p, Δ₀ inverted or over S₀, the arbitrage the wrong
     way round or missed at a boundary, discounting once for two periods, the payoff of the average price, the strike
     undiscounted in parity, the sign of S₀ swapped, the European price for the American, the payoff now.
+  - Loan amortisation (#455), after interest and annuities, on the finance and banking roadmaps: how much of this
+    month's payment is interest and how much repays the loan, the balance after k payments, the total interest over
+    a loan, and the payments it takes to clear a balance. The named slips: the yearly rate charged for a month, the
+    whole payment taken as principal, the payments subtracted with no interest, the first month's interest charged
+    every month, simple interest on the whole loan, the total paid taken for the interest, the interest left out of
+    the count of payments, the count rounded down.
   - Discrete mathematics past the school counting puzzles (Rosen, Discrete Mathematics and Its Applications; Levin,
     Discrete Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory),
     five skills in probability & statistics after the logic course: linear recurrences (a term of aₙ = p aₙ₋₁ +

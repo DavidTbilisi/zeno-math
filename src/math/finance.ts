@@ -1,7 +1,7 @@
 // Financial mathematics as a degree's elective teaches it (Shreve, Stochastic Calculus for Finance I: The Binomial
 // Asset Pricing Model): interest, present value and annuities, then the binomial model, risk-neutral pricing,
 // replication, arbitrage, European and American options and put–call parity. The words, the data and the rules; the
-// questions are in src/math/skills/{interestRates,binomialPricing,optionPricing}.ts.
+// questions are in src/math/skills/{interestRates,amortisation,binomialPricing,optionPricing}.ts.
 import { Frac } from "./fraction";
 import { numTraps, type NumSlip } from "./calculusTwo";
 import { dp, num } from "./practiceKit";
@@ -24,6 +24,11 @@ export type FinanceWords = {
     put2: string;
     parity: string;
     american: string;
+    amortInterest: string;
+    amortPrincipal: string;
+    amortBalance: string;
+    amortTotal: string;
+    amortPayments: string;
   };
   arb: { none: string; buy: string; short: string };
 };
@@ -36,6 +41,15 @@ export const compound = (P: number, r: number, n: number, t: number) => P * (1 +
 export const payment = (L: number, i: number, n: number) => (L * i) / (1 - (1 + i) ** -n);
 /** The present value of n payments R at the rate i a period, the first one period away: R (1 − (1 + i)^{−n}) / i. */
 export const annuityPV = (R: number, i: number, n: number) => (R * (1 - (1 + i) ** -n)) / i;
+
+/** What is still owed on a loan L at the rate i a period after k payments R: L(1 + i)^k − R((1 + i)^k − 1)/i. */
+export const amortBalance = (L: number, i: number, R: number, k: number) => L * (1 + i) ** k - (R * ((1 + i) ** k - 1)) / i;
+/** The payments R at the rate i a period it takes to clear a balance B: the smallest whole n with annuityPV ≥ B. */
+export function paymentsToClear(B: number, i: number, R: number): number {
+  if (R <= B * i) return Infinity;
+  const n = Math.ceil(-Math.log(1 - (B * i) / R) / Math.log(1 + i) - 1e-9);
+  return annuityPV(R, i, n) >= B - 1e-9 ? n : n + 1;
+}
 
 /** A sum of money to the cent, with slips judged at the same tolerance and dropped when they round alike. */
 export function money(v: number, slips: NumSlip[] = []): { answer: Answer; show: string; plain: string; format: Format } {

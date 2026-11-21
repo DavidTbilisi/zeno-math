@@ -32,3 +32,16 @@ test("option pricing: the European price for an American put is named, then earl
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("loan amortisation: the payments subtracted without interest are named, then the balance is correct (#455)", async ({ page, request }) => {
+  const r = 0.01;
+  const ex = exercise("amortisation", 2, seedOf(r), w);
+  const slip = trapInputs(ex).find((t) => t.id === "balanceNoInterest")!;
+  await practise(page, request, { tab: "Probability & statistics", skill: w.skills.amortisation, level: "medium", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(slip.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Interest is added every month too")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});

@@ -12,6 +12,6 @@ export const FINANCE: Roadmap = {
     { id: "change", items: [...reads("calculus"), ...skills("differentiate", "stationary", "integrate", "partials")] },
     { id: "chance", items: [...reads("probability"), ...skills("probability", "conditional", "expectation", "distributions", "randomWalks")] },
     { id: "data", items: [...reads("statistics"), ...skills("correlation", "regression", "hypothesis", "ci")] },
-    { id: "pricing", items: [...reads("finance"), ...skills("interestRates", "binomialPricing", "brownian", "optionPricing")] },
+    { id: "pricing", items: [...reads("finance"), ...skills("interestRates", "amortisation", "binomialPricing", "brownian", "optionPricing")] },
   ],
 };
