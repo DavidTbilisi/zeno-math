@@ -1,7 +1,7 @@
 // Financial mathematics as a degree's elective teaches it (Shreve, Stochastic Calculus for Finance I: The Binomial
 // Asset Pricing Model): interest, present value and annuities, then the binomial model, risk-neutral pricing,
 // replication, arbitrage, European and American options and put–call parity. The words, the data and the rules; the
-// questions are in src/math/skills/{interestRates,amortisation,npv,bonds,binomialPricing,optionPricing}.ts.
+// questions are in src/math/skills/{inflation,interestRates,amortisation,npv,bonds,binomialPricing,optionPricing}.ts.
 import { Frac } from "./fraction";
 import { numTraps, type NumSlip } from "./calculusTwo";
 import { dp, num } from "./practiceKit";
@@ -38,6 +38,11 @@ export type FinanceWords = {
     bondPrice: string;
     bondPremium: string;
     bondYtm: string;
+    inflPrice: string;
+    inflChange: string;
+    inflReal: string;
+    inflToday: string;
+    inflWipe: string;
   };
   arb: { none: string; buy: string; short: string };
   npv: { accept: string; reject: string };

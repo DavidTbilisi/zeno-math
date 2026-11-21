@@ -100,11 +100,32 @@ test("bonds: at the coupon rate a bond sells at par, above it at a discount, bel
 
 test("every financial mathematics question accepts its answer and names each trap", () => {
   const w = en.pracWords;
-  for (const s of ["interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"] as SkillId[])
+  for (const s of ["inflation", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"] as SkillId[])
     for (const L of [1, 2, 3] as const)
       for (let seed = 0; seed < 40; seed++) {
         const e = exercise(s, L, seed, w);
         assert.ok(check(e, e.plain, w).ok, `${s} ${L} ${seed}`);
         for (const t of trapInputs(e)) assert.equal(check(e, t.input, w).mistake, t.id, `${s} ${L} ${seed} ${t.id}`);
       }
+});
+
+test("inflation: the exact real rate is a little smaller than i − π, money later is worth less today, and taxed interest is wiped out at i(1 − t) (#458)", () => {
+  for (let seed = 1; seed <= 60; seed++) {
+    const ex = exercise("inflation", 2, seed, en.pracWords);
+    const [i, p] = [/i = ([\d.]+)/, /pi = ([\d.]+)/].map((re) => Number(ex.q.match(re)![1]) / 100);
+    const real = (ex.answer as { v: number }).v / 100;
+    // (1 + i) = (1 + π)(1 + real), to the rounding of the answer; and the rough i − π overstates its size.
+    assert.ok(Math.abs((1 + p) * (1 + real) - (1 + i)) < 1e-4, ex.q);
+    assert.ok(Math.abs(real) < Math.abs(i - p), ex.q);
+  }
+  for (let seed = 1; seed <= 60; seed++) {
+    const ex = exercise("inflation", 3, seed, en.pracWords);
+    const v = (ex.answer as { v: number }).v;
+    if (ex.q.startsWith("A")) assert.ok(v < Number(ex.q.match(/A = (\d+)/)![1]), ex.q);
+    else {
+      const [i, t] = [/i = ([\d.]+)/, /t = ([\d.]+)/].map((re) => Number(ex.q.match(re)![1]) / 100);
+      // At π = i(1 − t) the deposit after tax just keeps up with prices.
+      assert.ok(Math.abs((1 + i * (1 - t)) / (1 + v / 100) - 1) < 1e-9, ex.q);
+    }
+  }
 });
