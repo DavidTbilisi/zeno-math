@@ -14,6 +14,9 @@ import {
   halfSign,
   viaHalf,
   counters,
+  sectionAt,
+  spinTurn,
+  tallyUp,
   dotsUpTo,
   firstEmpty,
   flipCounter,
@@ -313,4 +316,15 @@ test("dot multiplication by hand: a drag along a row fills through the square un
   assert.equal(dotsUpTo(12, 10, 50, 5), 1);
   assert.equal(dotsUpTo(159, 10, 50, 5), 3);
   assert.equal(dotsUpTo(900, 10, 50, 5), 5);
+});
+
+test("chance by hand: the section under the pointer, how far a flick turns, a tally", () => {
+  assert.equal(sectionAt(10, 4), 0);
+  assert.equal(sectionAt(359, 4), 3);
+  assert.equal(sectionAt(-30, 4), 3);
+  assert.equal(sectionAt(725, 3), 0);
+  assert.equal(spinTurn(0, 0), 720);
+  assert.equal(spinTurn(-0.1, 0.5), -(720 + 180));
+  assert.equal(spinTurn(5, 0), 6 * 360);
+  assert.deepEqual(tallyUp([1, 0, 2], 1), [1, 1, 2]);
 });
