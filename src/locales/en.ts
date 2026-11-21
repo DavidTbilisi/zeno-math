@@ -5914,7 +5914,7 @@ export const en = {
       again: "Start again",
       hint: "Drag a chip onto one of the other colour: a + and a − cancel. Tap a chip to take it off.",
       onMat: "On the mat: {p} × (+1) and {n} × (−1)",
-      cancel: "Zero pairs (dashed) cancel, {z} of them: the mat is worth {v}",
+      cancel: "{z} zero pairs cancel: the mat is worth {v}",
       worth: "The mat is worth {v}",
       steps: {
         start: "Start with {a}: put out {n} × ({c}).",

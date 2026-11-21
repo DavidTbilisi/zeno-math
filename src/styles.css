@@ -1507,9 +1507,16 @@ span.board-home:hover { background: none; }
 .live-views3d .views-difficulty .live-btn.on { background: #fff; border-color: #cfddc5; }
 /* Integer counters (live/Counters.tsx) and algebra tiles: a + and a − that cancel pop and fade, a 0 rising where they were. */
 .live-btn.chip-btn { font-weight: 700; min-width: 40px; }
-.chip-ops { display: inline-flex; gap: 2px; margin: 0 8px; }
-.chip-ops .live-btn { min-width: 32px; font-size: 17px; font-weight: 700; }
-.chip-sum { margin-left: 4px; }
+/* The sum's + / − is one switch of two halves, so it doesn't read as another stepper. */
+.chip-ops { display: inline-flex; margin: 0 10px; border: 1px solid #adb5bd; border-radius: 999px; overflow: hidden; }
+.chip-ops .live-btn { min-width: 34px; font-size: 17px; font-weight: 700; border: 0; border-radius: 0; margin: 0; }
+.chip-ops .live-btn + .live-btn { border-left: 1px solid #adb5bd; }
+.chip-ops .live-btn.on { background: #1971c2; color: #fff; }
+/* "Put out a zero pair": a + chip and a − chip side by side. */
+.live-btn.chip-pair { display: inline-flex; gap: 3px; align-items: center; }
+.chip-pair span { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-weight: 700; font-size: 14px; line-height: 1; }
+.chip-pair .pos { background: #ffe066; border: 1.5px solid #e67700; color: #a35200; }
+.chip-pair .neg { background: #ff8787; border: 1.5px solid #c92a2a; color: #7d1a1a; }
 .live-btn.chip-btn.pos { background: #ffe066; border-color: #e67700; color: #a35200; }
 .live-btn.chip-btn.neg { background: #ff8787; border-color: #c92a2a; color: #7d1a1a; }
 .chip-pop { transform-box: fill-box; transform-origin: center; animation: chip-pop 0.55s ease-in forwards; pointer-events: none; }
