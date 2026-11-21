@@ -27,6 +27,8 @@ import {
   hundredJump,
   hundredPath,
   hundredSum,
+  jumpsTo,
+  paintMarks,
   multiplesOf,
   outcomes,
   runTrials,
@@ -290,4 +292,14 @@ test("comparing with a half: n + n against d, and the half decides only when the
           const c = viaHalf({ n, d }, { n: m, d: e });
           if (c) assert.equal(c.includes("<") ? "<" : c.includes(">") ? ">" : "=", fracSign({ n, d }, { n: m, d: e }), `${n}/${d} ${m}/${e}`);
         }
+});
+
+test("hundred square by hand: a drag jumps by tens then ones, and paints marks", () => {
+  assert.deepEqual(jumpsTo(23, 56), [10, 10, 10, 1, 1, 1]);
+  assert.deepEqual(jumpsTo(41, 38), [-1, -1, -1]);
+  assert.deepEqual(jumpsTo(100, 79), [-10, -10, -1]);
+  assert.deepEqual(jumpsTo(5, 5), []);
+  assert.deepEqual(hundredPath(29, jumpsTo(29, 41)).at(-1), 41);
+  assert.deepEqual(paintMarks([3], 4, [4, 5, 4, 6]).sort((a, b) => a - b), [3, 4, 5, 6]);
+  assert.deepEqual(paintMarks([3, 4, 5], 4, [4, 5]), [3]);
 });

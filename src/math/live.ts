@@ -242,6 +242,23 @@ export const HUNDRED_STEPS = [1, 10, -1, -10] as const;
 export const hundredJump = (at: number, step: number) => (at + step >= 1 && at + step <= 100 ? at + step : null);
 /** Every square a walk visits, the start first. */
 export const hundredPath = (start: number, steps: number[]) => steps.reduce((p, s) => [...p, p[p.length - 1] + s], [start]);
+/**
+ * The jumps from one square to another by tens, then ones: 23 to 56 is +10 +10 +10 +1 +1 +1, and 41 to 38 is −1 −1 −1.
+ */
+export function jumpsTo(from: number, to: number): number[] {
+  const d = to - from;
+  const sign = Math.sign(d);
+  const tens = Math.trunc(Math.abs(d) / 10);
+  return [...Array(tens).fill(10 * sign), ...Array(Math.abs(d) - 10 * tens).fill(sign)];
+}
+
+/** Squares a mark-mode drag paints: every one passed over takes the opposite of the first one's mark. */
+export function paintMarks(marked: number[], first: number, over: number[]): number[] {
+  const on = !marked.includes(first);
+  const rest = marked.filter((m) => !over.includes(m));
+  return on ? [...rest, ...over.filter((v, i) => over.indexOf(v) === i)] : rest;
+}
+
 const signed = (n: number) => (n < 0 ? `− ${-n}` : `+ ${n}`);
 /** A walk written out jump by jump (100 − 10 − 10 − 1 = 79) and as one sum (100 − 21 = 79). */
 export function hundredSum(start: number, steps: number[]): { long: string; short: string } | null {
@@ -531,7 +548,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   coin: [260, 300],
   fractions: [320, 372],
   tenFrame: [340, 300],
-  hundred: [400, 650],
+  hundred: [400, 610],
   dots: [520, 600],
   graph: [640, 560],
   chance: [680, 500],
