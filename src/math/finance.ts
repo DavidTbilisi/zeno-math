@@ -1,7 +1,7 @@
 // Financial mathematics as a degree's elective teaches it (Shreve, Stochastic Calculus for Finance I: The Binomial
 // Asset Pricing Model): interest, present value and annuities, then the binomial model, risk-neutral pricing,
 // replication, arbitrage, European and American options and put–call parity. The words, the data and the rules; the
-// questions are in src/math/skills/{interestRates,amortisation,npv,binomialPricing,optionPricing}.ts.
+// questions are in src/math/skills/{interestRates,amortisation,npv,bonds,binomialPricing,optionPricing}.ts.
 import { Frac } from "./fraction";
 import { numTraps, type NumSlip } from "./calculusTwo";
 import { dp, num } from "./practiceKit";
@@ -33,9 +33,15 @@ export type FinanceWords = {
     npvValue: string;
     npvAccept: string;
     npvIrr: string;
+    bondCoupon: string;
+    bondCurrentYield: string;
+    bondPrice: string;
+    bondPremium: string;
+    bondYtm: string;
   };
   arb: { none: string; buy: string; short: string };
   npv: { accept: string; reject: string };
+  bond: { premium: string; par: string; discount: string };
 };
 
 // ---------- interest ----------
@@ -52,6 +58,9 @@ export const amortBalance = (L: number, i: number, R: number, k: number) => L * 
 /** The payments R at the rate i a period it takes to clear a balance B: the smallest whole n with annuityPV ≥ B. */
 /** A project's net present value at the rate r a period: Σ C_t/(1 + r)^t, C_0 now. */
 export const npvAt = (flows: number[], r: number) => flows.reduce((s, c, t) => s + c / (1 + r) ** t, 0);
+
+/** A bond's price: face F, a coupon c·F at the end of each of n years and F back at the end, at the yield y. */
+export const bondPrice = (F: number, c: number, y: number, n: number) => annuityPV(c * F, y, n) + F / (1 + y) ** n;
 
 export function paymentsToClear(B: number, i: number, R: number): number {
   if (R <= B * i) return Infinity;

@@ -11,7 +11,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
-  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "norms", "operatorNorms", "hilbertSpaces", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "amortisation", "npv", "binomialPricing", "optionPricing",
+  "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "norms", "operatorNorms", "hilbertSpaces", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing",
   "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
 
@@ -179,6 +179,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   interestRates: ["percent", "series", "logs"],
   amortisation: ["interestRates"],
   npv: ["interestRates"],
+  bonds: ["interestRates"],
   binomialPricing: ["expectation", "interestRates"],
   optionPricing: ["binomialPricing"],
   projection: ["dotangle"],
@@ -456,6 +457,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   interestRates: [13, 13, 13], // compound and continuous interest, present value, loans and annuities (Shreve I, ch. 1)
   amortisation: [13, 13, 13], // a loan's schedule: interest and principal, the balance, total interest, payments to clear (#455)
   npv: [13, 13, 13], // present value of one flow, a project's NPV and whether to take it, a two-period IRR (#456)
+  bonds: [13, 13, 13], // the coupon and current yield, a bond's price at a market yield, premium or discount, a one- or two-year yield to maturity (#457)
   binomialPricing: [13, 13, 13], // the one-period binomial model: p̃, replication, arbitrage (Shreve I, ch. 1)
   optionPricing: [13, 13, 13], // multi-period European and American options, put–call parity (Shreve I, ch. 1, 4)
   projection: [12, 12, 12], // the length of a projection |a · n̂|, the foot of the perpendicular from a point to a line (H2)

@@ -59,3 +59,16 @@ test("NPV: the flows added undiscounted are named, then the net present value is
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("bonds: the face value left undiscounted is named, then the price is correct (#457)", async ({ page, request }) => {
+  const r = 0.01;
+  const ex = exercise("bonds", 2, seedOf(r), w);
+  const slip = trapInputs(ex).find((t) => t.id === "faceUndiscounted")!;
+  await practise(page, request, { tab: "Probability & statistics", skill: w.skills.bonds, level: "medium", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(slip.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("F comes back only after n years")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
