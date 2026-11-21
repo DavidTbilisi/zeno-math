@@ -85,3 +85,16 @@ test("inflation: the rough real rate i − π is named, then the exact rate is c
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("currency: the bank's other rate is named, then the change is correct (#459)", async ({ page, request }) => {
+  const r = 0.01;
+  const ex = exercise("currency", 2, seedOf(r), w);
+  const slip = trapInputs(ex).find((t) => t.id === "spreadWrongSide")!;
+  await practise(page, request, { tab: "Number", skill: w.skills.currency, level: "medium", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(slip.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("That is the bank's other rate")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});

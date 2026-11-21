@@ -1179,6 +1179,11 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     deposit's interest. The named slips: the increase alone, the change divided by the new price, the change in money,
     the real rate the wrong way round, the rough i − π, inflation taken off simply, the amount grown instead of
     shrunk, and the tax forgotten.
+  - Currency conversion (#459), in the number area after money and rates, on the banking roadmap: changing an amount
+    at a rate in lari, a bank's buying and selling rates, a cross rate of the euro in dollars, the lari lost on a
+    round trip through the bank, and the rate without a fee that matches one with a fee. The named slips:
+    multiplying where it should divide and the other way round, the bank's other rate, the cross rate upside down,
+    the spread taken on the amount, and the fee added.
   - Discrete mathematics past the school counting puzzles (Rosen, Discrete Mathematics and Its Applications; Levin,
     Discrete Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory),
     five skills in probability & statistics after the logic course: linear recurrences (a term of aₙ = p aₙ₋₁ +

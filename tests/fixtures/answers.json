@@ -18136,6 +18136,72 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "currency",
+      "level": 1,
+      "seed": 7,
+      "input": "662.50",
+      "label": "correct"
+    },
+    {
+      "skill": "currency",
+      "level": 1,
+      "seed": 7,
+      "input": "94.33962264150944",
+      "label": "wrong",
+      "mistake": "rateDivided"
+    },
+    {
+      "skill": "currency",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "currency",
+      "level": 2,
+      "seed": 7,
+      "input": "825.00",
+      "label": "correct"
+    },
+    {
+      "skill": "currency",
+      "level": 2,
+      "seed": 7,
+      "input": "854.9999999999999",
+      "label": "wrong",
+      "mistake": "spreadWrongSide"
+    },
+    {
+      "skill": "currency",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "currency",
+      "level": 3,
+      "seed": 7,
+      "input": "56.34",
+      "label": "correct"
+    },
+    {
+      "skill": "currency",
+      "level": 3,
+      "seed": 7,
+      "input": "160.00000000000014",
+      "label": "wrong",
+      "mistake": "spreadOnAmount"
+    },
+    {
+      "skill": "currency",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
