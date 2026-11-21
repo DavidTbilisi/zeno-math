@@ -1,13 +1,13 @@
-// The words for a roadmap's parts, shared by the roadmaps, the home page and the topic pages: a game's name, an item's
-// (a "What is…?" item is named by its question), a stage's.
+// The words for a roadmap's parts, shared by the roadmaps, the home page and the topic pages: a game's or a lab's name,
+// an item's (a "What is…?" item is named by its question), a stage's.
 import { gradeName } from "./components/GradeCard";
 import type { Dict } from "./locales/en";
 import type { Grade } from "./model/curriculum";
-import { isRead, isSkill, type GameId, type GoalId, type Item, type RoadStage } from "./model/roadmap";
+import { isLab, isRead, isSkill, type GameId, type GoalId, type Item, type LabId, type RoadStage } from "./model/roadmap";
 
-export const gameName = (t: Dict, g: GameId) => (t.shapes.names as Record<string, string>)[`live${g[0].toUpperCase()}${g.slice(1)}`] ?? g;
+export const gameName = (t: Dict, g: GameId | LabId) => (t.shapes.names as Record<string, string>)[`live${g[0].toUpperCase()}${g.slice(1)}`] ?? g;
 export const itemName = (t: Dict, i: Item) =>
-  isSkill(i) ? t.pracWords.skills[i.skill] : isRead(i) ? t.site.explain.topics[i.read].q : gameName(t, i.game);
+  isSkill(i) ? t.pracWords.skills[i.skill] : isRead(i) ? t.site.explain.topics[i.read].q : gameName(t, isLab(i) ? i.lab : i.game);
 export function stageName(t: Dict, lang: string, goal: GoalId, st: RoadStage) {
   if (goal === "ml") return t.course.stages[st.id as keyof Dict["course"]["stages"]];
   if (goal === "school") {

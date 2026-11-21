@@ -1,7 +1,7 @@
 // Software engineer: the discrete maths a programmer leans on (logic, sets and relations, counting, recurrences,
 // graphs), how computers hold numbers, the algorithm games, the probability behind hashing and testing, the vectors
 // and matrices of graphics, and the number theory of cryptography.
-import { games, reads, skills, type Roadmap } from "../roadmap.ts";
+import { games, labs, reads, skills, type Roadmap } from "../roadmap.ts";
 
 export const SOFTWARE: Roadmap = {
   id: "software",
@@ -13,7 +13,7 @@ export const SOFTWARE: Roadmap = {
     { id: "graphs", items: [...skills("oneStroke", "shortestPath", "spanningTree", "colouring", "graphTheory"), ...games("connectTowns", "shortestPath")] },
     { id: "algorithms", items: [...reads("algorithms"), ...skills("growth", "inversions"), ...games("beSort", "beSearch", "beBinary", "bePointers", "beWindow", "beStack", "beHeap", "beTree", "beUnion", "beTopo", "beDp", "beBacktrack")] },
     { id: "chance", items: [...reads("probability"), ...skills("probability", "conditional", "expectation", "distributions")] },
-    { id: "graphics", items: [...reads("vectors"), ...skills("coordinates", "vectors", "dotangle", "matrices", "determinant", "linearMaps")] },
+    { id: "graphics", items: [...reads("vectors"), ...skills("coordinates", "vectors", "dotangle", "matrices", "determinant", "linearMaps"), ...labs("geoLab")] },
     { id: "crypto", items: skills("congruences", "crt", "fermatEuler", "rsa", "discreteLog") },
   ],
 };

@@ -138,7 +138,7 @@ test("a student signs back in with their code, typed loosely", async () => {
   const loose = joined.code.toLowerCase().replace("-", " ");
   const back = await call("GET", `/api/students/${encodeURIComponent(loose)}`);
   assert.equal(back.status, 200);
-  assert.deepEqual(back.body, { ...joined, answered: 0 });
+  assert.deepEqual(back.body, { ...joined, answered: 0, goal: null });
   assert.equal((await call("GET", "/api/students/AAAA-BBBB")).status, 404);
 });
 
@@ -1207,4 +1207,19 @@ test("a class out of the study (issue #299): homework at any time but during a t
   assert.equal((await call("GET", `/api/students/${s}/plan`)).body.homework, null);
   assert.equal((await out(true)).status, 409);
   assert.equal((await listed()).study, false);
+});
+
+test("a class's roadmap goal (#461): the teacher's to pick, in the class list and on the student", async () => {
+  const { code, goal } = (await call("POST", "/api/classes", { name: "Goal", skills: ["fractions"] }, TEACHER)).body;
+  assert.equal(goal, null, "a new class has no goal");
+  const s = (await call("POST", "/api/students", { class: code })).body.code;
+  const pick = (to: unknown, as: Record<string, string> = TEACHER) => call("POST", `/api/classes/${code}/goal`, { goal: to }, as);
+  const listed = async () => (await call("GET", "/api/classes", undefined, TEACHER)).body.find((c: { code: string }) => c.code === code).goal;
+  assert.equal((await pick("finance", {})).status, 403, "the teacher's");
+  assert.equal((await pick("astrology")).status, 400);
+  assert.equal((await call("POST", "/api/classes/NOPE99/goal", { goal: "finance" }, TEACHER)).status, 404);
+  assert.equal((await call("GET", `/api/students/${s}`)).body.goal, null);
+  assert.deepEqual([(await pick("finance")).body, await listed()], [{ goal: "finance" }, "finance"]);
+  assert.equal((await call("GET", `/api/students/${s}`)).body.goal, "finance");
+  assert.deepEqual([(await pick(null)).status, await listed()], [200, null]);
 });

@@ -52,7 +52,7 @@ test("the library search folds case and needs every word", () => {
 });
 
 test("a topic's progress counts secure and behind levels, and with nothing done its next is its first skill", () => {
-  const w = { s: standing({}, null), passed: () => false, read: () => false };
+  const w = { s: standing({}, null), passed: () => false, read: () => false, tried: () => false };
   const t = TOPICS.find((x) => x.id === "fractions")!;
   const p = topicProgress(t, w);
   assert.equal(p.total, 3 * t.skills.length);

@@ -27,6 +27,8 @@ import { DEFAULT_TEST_LENGTH, MAX_TEST_LENGTH, MIN_TEST_LENGTH, TEST_PHASES } fr
 import { ARMS, FEATURES, type Feature } from "../model/arms";
 import { MASTERED_AT } from "../model/policy";
 import { classTopics, topicOf, type TopicId } from "../model/topics";
+import { classRoad } from "../model/classRoad";
+import { GOALS, isGoal, type GoalId } from "../model/roadmap";
 import { openOnStageBoard } from "../stageBoards";
 import { TEACHER_KEY } from "../teacherMode";
 
@@ -490,6 +492,9 @@ export function TeacherPage() {
                       <p className="muted">{w.noStudents}</p>
                     ) : (
                       <>
+                        {current && (
+                          <ClassGoalCard key={current.code} klass={current} data={data} api={api} pct={pct} showCodes={showCodes} onChanged={() => void api.classes().then(setClasses, () => setFailed(true))} />
+                        )}
                         <ClassTopicsCard data={data} pick={shownTopic} onPick={setTopic} pct={pct} />
                           <section className="card">
                             <h3>{w.mastery}</h3>
@@ -685,6 +690,59 @@ function ClassTopicsCard({ data, pick, onPick, pct }: { data: Dashboard; pick: T
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+/**
+ * The class's roadmap goal (#461): the teacher picks one, its students' site opens on it until they choose their own,
+ * and each student shows on the roadmap's skills the class practises, as the learner model counts them mastered.
+ */
+function ClassGoalCard({ klass, data, api, pct, showCodes, onChanged }: {
+  klass: ClassSummary; data: Dashboard; api: ReturnType<typeof teacherApi>; pct: (v: number) => string; showCodes: boolean; onChanged: () => void;
+}) {
+  const { t } = useI18n();
+  const tw = t.site.teach;
+  const [goal, setGoal] = useState<GoalId | null>(klass.goal);
+  const [saving, setSaving] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const pick = async (g: GoalId | null) => {
+    setSaving(true);
+    setFailed(false);
+    try {
+      setGoal((await api.goal(klass.code, g)).goal);
+      onChanged();
+    } catch {
+      setFailed(true);
+    } finally {
+      setSaving(false);
+    }
+  };
+  const road = goal ? classRoad(goal, data.class.skills, data.students, MASTERED_AT) : null;
+  return (
+    <section className="card class-goal">
+      <h3>{tw.goal}</h3>
+      <p className="hint">{fill(tw.goalHint, { at: pct(MASTERED_AT) })}</p>
+      <label className="class-goal-pick">
+        <span className="sr-only">{tw.goal}</span>
+        <select value={goal ?? ""} disabled={saving} onChange={(e) => void pick(isGoal(e.target.value) ? e.target.value : null)}>
+          <option value="">{tw.goalNone}</option>
+          {GOALS.map((g) => <option key={g} value={g}>{t.roadmap.goals[g].name}</option>)}
+        </select>
+      </label>
+      {failed && <p className="error" role="alert">{tw.goalFailed}</p>}
+      {road && !road.total && <p className="muted">{tw.goalNoSkills}</p>}
+      {road && !!road.total && (
+        <ul className="class-goal-list">
+          {data.students.map((s, n) => (
+            <li key={s.id}>
+              <span className="class-goal-who">{studentName(s.id, s.number, showCodes ? s.code : undefined)}</span>
+              <Track p={{ done: road.done[n], behind: 0, total: road.total }} />
+              <span className="class-goal-count">{fill(tw.goalCount, { done: road.done[n], total: road.total })}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

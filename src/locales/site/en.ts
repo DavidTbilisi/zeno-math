@@ -138,6 +138,12 @@ export const site = {
     behind: "{n} well behind",
     behindHint: "a quarter or more below the class average",
     allTopics: "All topics",
+    goal: "Class goal",
+    goalHint: "Pick a roadmap for the class: each student's site opens on it until they choose a goal of their own. Below, each student on the roadmap's skills this class practises, counted done once every level is mastered (a right first answer at least {at} likely). Games, intros and labs are kept in each student's own browser, so they aren't counted here.",
+    goalNone: "No goal",
+    goalCount: "{done} of {total}",
+    goalNoSkills: "None of this roadmap's skills is in the class's skill list.",
+    goalFailed: "Couldn't save the goal. Check the connection and try again.",
     feature: "Testing: {feature}",
   },
 };

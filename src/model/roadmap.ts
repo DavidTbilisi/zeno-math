@@ -2,7 +2,7 @@
 // finance, banking, machine learning, school), in stages. An item is a skill's levels made secure in free practice or
 // a game's ladder passed (2★ on every puzzle), so it ticks itself from the learner's own work, and because skills are
 // shared, a tick counts on every roadmap that has it. A hand-made roadmap also asks for a topic's intro to be read
-// (#450). The machine-learning roadmap is the course map (course.ts).
+// (#450), and a lab to be tried (#461). The machine-learning roadmap is the course map (course.ts), with its labs.
 import type { LiveKind } from "../math/live.ts";
 import type { SkillId } from "../math/practiceSkills.ts";
 import { gradeOf, GRADES, PREREQUISITES, type Grade } from "./curriculum.ts";
@@ -28,12 +28,22 @@ export const GAME_KEYS = {
 } as const satisfies Partial<Record<LiveKind, string>>;
 export type GameId = keyof typeof GAME_KEYS;
 
+/** The labs a roadmap can ask to be tried: tried once the learner has used one on its page (#/library/live/<lab>). */
+export const LABS = [
+  "tensorLab", "pcaLab", "embedLab", "softmaxLab", "rocLab", "descentLab", "batchLab", "fitLab", "knnLab", "treeLab", "kmeansLab",
+  "nnLab", "backpropLab", "convLab", "rnnLab", "attnLab", "rlLab", "geoLab",
+] as const satisfies readonly LiveKind[];
+export type LabId = (typeof LABS)[number];
+export const isLabKind = (k: string): k is LabId => (LABS as readonly string[]).includes(k);
+
 const ALL_LEVELS: readonly Level[] = [1, 2, 3];
 export type SkillItem = { skill: SkillId; levels: readonly Level[] };
 export type GameItem = { game: GameId };
 /** A topic's intro explainer read (#450): "What is geometry?" at the top of its topic page. */
 export type ReadItem = { read: TopicId };
-export type Item = SkillItem | GameItem | ReadItem;
+/** A lab tried (#461): used at least once on its page. */
+export type LabItem = { lab: LabId };
+export type Item = SkillItem | GameItem | ReadItem | LabItem;
 export type RoadStage = { id: string; items: readonly Item[] };
 /**
  * A goal's roadmap. `order` is how Next is found: "list" walks the items in the order written (a roadmap made by hand),
@@ -43,25 +53,29 @@ export type Roadmap = { id: GoalId; order: "list" | "grade"; stages: readonly Ro
 
 export const isSkill = (i: Item): i is SkillItem => "skill" in i;
 export const isRead = (i: Item): i is ReadItem => "read" in i;
+export const isLab = (i: Item): i is LabItem => "lab" in i;
+export const isGame = (i: Item): i is GameItem => "game" in i;
 /** Skills with all three levels. */
 export const skills = (...ks: SkillId[]): SkillItem[] => ks.map((skill) => ({ skill, levels: ALL_LEVELS }));
 export const games = (...gs: GameId[]): GameItem[] => gs.map((game) => ({ game }));
 export const reads = (...ts: TopicId[]): ReadItem[] => ts.map((read) => ({ read }));
+export const labs = (...ls: LabId[]): LabItem[] => ls.map((lab) => ({ lab }));
 /** One id for an item, the same on every roadmap: what its achieved date is kept under. */
 export const itemId = (i: Item) =>
-  isSkill(i) ? `skill:${i.skill}${i.levels.length === 3 ? "" : `.${i.levels.join("")}`}` : isRead(i) ? `read:${i.read}` : `game:${i.game}`;
+  isSkill(i) ? `skill:${i.skill}${i.levels.length === 3 ? "" : `.${i.levels.join("")}`}` : isRead(i) ? `read:${i.read}` : isLab(i) ? `lab:${i.lab}` : `game:${i.game}`;
 
 /**
- * Where an item is: done (every level secure, the game passed or the intro read), behind (every level secure or below the learner's
+ * Where an item is: done (every level secure, the game passed, the intro read or the lab tried), behind (every level secure or below the learner's
  * grade, so taken as known), part (some level secure) or open.
  */
 export type ItemState = "done" | "behind" | "part" | "open";
-/** What the learner has done, read once: their standing in free practice, whether a game's ladder is passed and whether
- * a topic's intro has been read. */
-export type Work = { s: Standing; passed: (game: GameId) => boolean; read: (topic: TopicId) => boolean };
+/** What the learner has done, read once: their standing in free practice, whether a game's ladder is passed, whether
+ * a topic's intro has been read and whether a lab has been tried. */
+export type Work = { s: Standing; passed: (game: GameId) => boolean; read: (topic: TopicId) => boolean; tried: (lab: LabId) => boolean };
 
 export function itemState(i: Item, w: Work): ItemState {
   if (isRead(i)) return w.read(i.read) ? "done" : "open";
+  if (isLab(i)) return w.tried(i.lab) ? "done" : "open";
   if (!isSkill(i)) return w.passed(i.game) ? "done" : "open";
   const st = i.levels.map((L) => w.s.level(i.skill, L));
   if (st.every((x) => x === "secure")) return "done";
@@ -125,11 +139,11 @@ export function roadNext(r: Pick<Roadmap, "order" | "stages">, w: Work): Next | 
 
 /**
  * When an item was achieved, from the dates kept as levels were secured and ladders passed (achieved.ts): for a skill
- * the day its last level was secured; for an intro, the day it was read. Undefined when it isn't done, or was done
+ * the day its last level was secured; for an intro, the day it was read; for a lab, the day it was first tried. Undefined when it isn't done, or was done
  * before dates were kept.
  */
 export function achievedAt(i: Item, dates: Readonly<Record<string, number>>): number | undefined {
-  if (isRead(i)) return dates[itemId(i)];
+  if (isRead(i) || isLab(i)) return dates[itemId(i)];
   if (!isSkill(i)) return dates[`ladder:${GAME_KEYS[i.game]}`];
   const ds = i.levels.map((L) => dates[`cell:${cellKey({ skill: i.skill, level: L })}`]);
   return ds.every((d) => d !== undefined) ? Math.max(...(ds as number[])) : undefined;

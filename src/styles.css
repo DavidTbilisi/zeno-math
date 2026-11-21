@@ -1782,3 +1782,10 @@ span.board-home:hover { background: none; }
   .explainer-what { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .explainer-what .topic-pic { max-width: 200px; margin: 0 auto; }
 }
+/* The class's roadmap goal on the teacher page (#461): the pick, then one row per student. */
+.class-goal-pick select { max-width: 100%; }
+.class-goal-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.class-goal-list li { display: grid; grid-template-columns: minmax(0, 9rem) minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.class-goal-who { overflow-wrap: anywhere; font-size: 14px; }
+.class-goal-count { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted, inherit); }
+.road-class-note { margin: 0 0 8px; padding: 8px 12px; border-left: 3px solid var(--z-marker); background: color-mix(in srgb, var(--z-marker) 14%, transparent); border-radius: 4px; }
