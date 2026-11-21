@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   clockTime,
   COMPARE_SIGNS,
-  counters,
   dotProduct,
   dragHand,
   type Frac,
@@ -332,40 +331,6 @@ export function Fractions({ state, set, w, svgRef }: PieceProps<"fractions">) {
         <Toggle on={state.shape === "bar"} onClick={() => set({ ...state, shape: "bar" })}>{w.fractions.bar}</Toggle>
         <Stepper value={n} min={1} max={12} onChange={setParts} less={w.fractions.fewer} more={w.fractions.more} />
       </div>
-    </>
-  );
-}
-
-// ——— Ten frame ———
-
-export function TenFrame({ state, set, w, svgRef }: PieceProps<"tenFrame">) {
-  const s = 58;
-  const frames = state.double ? 2 : 1;
-  const cells = state.cells.slice(0, 10 * frames);
-  const { a, b, n } = counters(cells);
-  const height = frames * 2 * s + (frames - 1) * 18 + 60;
-  const cycle = (i: number) => set({ ...state, cells: state.cells.map((c, j) => (j === i ? (c + 1) % 3 : c)) });
-  return (
-    <>
-      <svg ref={svgRef} width={310} height={height} viewBox={`0 0 310 ${height}`} fontFamily={FONT}>
-        {cells.map((c, i) => {
-          const f = Math.floor(i / 10);
-          const x = 10 + (i % 5) * s;
-          const y = 4 + f * (2 * s + 18) + Math.floor((i % 10) / 5) * s;
-          return (
-            <g key={i} style={{ cursor: "pointer" }} onClick={() => cycle(i)}>
-              <rect x={x} y={y} width={s} height={s} fill="#fff" stroke={INK} strokeWidth={2.5} />
-              {c > 0 && <circle cx={x + s / 2} cy={y + s / 2} r={21} fill={c === 1 ? "#ff8787" : "#ffd43b"} stroke={INK} strokeWidth={2} />}
-            </g>
-          );
-        })}
-        <text x={155} y={height - 14} fontSize={30} textAnchor="middle" fill={INK}>{b ? `${a} + ${b} = ${n}` : n}</text>
-      </svg>
-      <div className="live-bar">
-        <Toggle on={state.double} onClick={() => set({ ...state, double: !state.double })}>{w.tenFrame.twenty}</Toggle>
-        <button className="live-btn" onClick={() => set({ ...state, cells: Array(20).fill(0) })}>{w.tenFrame.clear}</button>
-      </div>
-      <p className="live-hint">{w.tenFrame.hint}</p>
     </>
   );
 }
