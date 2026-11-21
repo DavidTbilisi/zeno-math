@@ -32,6 +32,8 @@ import {
   hundredJump,
   hundredPath,
   hundredSum,
+  jumpsTo,
+  paintMarks,
   multiplesOf,
   outcomes,
   runTrials,
@@ -307,6 +309,17 @@ test("ten frame by hand: a tray fills the first empty square, a counter moves, s
   assert.deepEqual(moveCounter(cells, 2, null).slice(0, 3), [1, 0, 0]);
   assert.deepEqual([0, 1, 2].map(flipCounter), [0, 2, 1]);
 });
+
+test("hundred square by hand: a drag jumps by tens then ones, and paints marks", () => {
+  assert.deepEqual(jumpsTo(23, 56), [10, 10, 10, 1, 1, 1]);
+  assert.deepEqual(jumpsTo(41, 38), [-1, -1, -1]);
+  assert.deepEqual(jumpsTo(100, 79), [-10, -10, -1]);
+  assert.deepEqual(jumpsTo(5, 5), []);
+  assert.deepEqual(hundredPath(29, jumpsTo(29, 41)).at(-1), 41);
+  assert.deepEqual(paintMarks([3], 4, [4, 5, 4, 6]).sort((a, b) => a - b), [3, 4, 5, 6]);
+  assert.deepEqual(paintMarks([3, 4, 5], 4, [4, 5]), [3]);
+});
+
 
 test("compare by hand: a block from the pile, from tower to tower, and off", () => {
   assert.deepEqual(moveBlock({ a: 5, b: 2 }, "pile", "b"), { a: 5, b: 3 });
