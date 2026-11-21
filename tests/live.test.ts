@@ -17,6 +17,7 @@ import {
   dotsUpTo,
   firstEmpty,
   flipCounter,
+  moveBlock,
   moveCounter,
   DIE_SIDES,
   divisionAsk,
@@ -305,6 +306,15 @@ test("ten frame by hand: a tray fills the first empty square, a counter moves, s
   assert.deepEqual(moveCounter(cells, 0, 2).slice(0, 3), [2, 0, 1]);
   assert.deepEqual(moveCounter(cells, 2, null).slice(0, 3), [1, 0, 0]);
   assert.deepEqual([0, 1, 2].map(flipCounter), [0, 2, 1]);
+});
+
+test("compare by hand: a block from the pile, from tower to tower, and off", () => {
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "pile", "b"), { a: 5, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "a", "b"), { a: 4, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "b", null), { a: 5, b: 1 });
+  assert.deepEqual(moveBlock({ a: 0, b: 2 }, "a", "b"), { a: 0, b: 2 });
+  assert.deepEqual(moveBlock({ a: 3, b: 10 }, "a", "b"), { a: 3, b: 10 });
+  assert.deepEqual(moveBlock({ a: 3, b: 4 }, "a", "a"), { a: 3, b: 4 });
 });
 
 test("dot multiplication by hand: a drag along a row fills through the square under it", () => {

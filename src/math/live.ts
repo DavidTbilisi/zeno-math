@@ -299,6 +299,19 @@ export function towerSpan(n: number, block: number, floor: number, mid: number, 
   return [bottom - n * block, bottom];
 }
 
+export type Tower = "a" | "b";
+/**
+ * A block taken from `from` (a tower's top, or the pile) and put on `to` (a tower, or null: taken away). A tower
+ * holds 0 to COMPARE_MAX blocks; a move that cannot be made leaves the towers as they were.
+ */
+export function moveBlock(t: { a: number; b: number }, from: Tower | "pile", to: Tower | null): { a: number; b: number } {
+  if (from === to || (from !== "pile" && !t[from]) || (to && t[to] >= COMPARE_MAX)) return { a: t.a, b: t.b };
+  const next = { a: t.a, b: t.b };
+  if (from !== "pile") next[from]--;
+  if (to) next[to]++;
+  return next;
+}
+
 // ——— Comparing two fractions with bars ———
 
 /** n of d equal parts: a fraction from 0 to 1, as a bar cut into d parts with n shaded. */
