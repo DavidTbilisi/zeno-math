@@ -21,7 +21,7 @@ test("a student's board is theirs: another student doesn't see it, and the teach
 
   // The first student makes a board and names it.
   const a = await browserOf(browser, first);
-  await a.goto("/");
+  await a.goto("/#/boards");
   await a.getByRole("button", { name: /New board/ }).first().click();
   await a.waitForURL(/#\/b\/[0-9a-f-]+$/);
   const id = a.url().split("/").pop()!;
@@ -29,12 +29,12 @@ test("a student's board is theirs: another student doesn't see it, and the teach
   await a.getByLabel(en.rename).fill(title);
   await a.getByLabel(en.rename).press("Enter");
   await expect(a.locator(".save-state")).toHaveText(en.saved);
-  await a.goto("/");
+  await a.goto("/#/boards");
   await expect(a.locator(".board-card")).toHaveText(new RegExp(title));
 
   // The second student sees none of it, not even by the board's address.
   const b = await browserOf(browser, second);
-  await b.goto("/");
+  await b.goto("/#/boards");
   await expect(b.getByText(en.noBoards)).toBeVisible();
   await expect(b.getByText(title)).toHaveCount(0);
   await b.goto(`/#/b/${id}`);
@@ -42,7 +42,7 @@ test("a student's board is theirs: another student doesn't see it, and the teach
 
   // A browser that is neither a student's nor a teacher's has no boards, and is told how to get them.
   const visitor = await browserOf(browser);
-  await visitor.goto("/");
+  await visitor.goto("/#/boards");
   await expect(visitor.getByText(en.boardsNeedOwner)).toBeVisible();
   await expect(visitor.getByRole("button", { name: /New board/ })).toHaveCount(0);
 

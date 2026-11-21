@@ -32,7 +32,7 @@ async function dropPin(page: Page, svg: Locator, play: PinPlay, v: number, [x0, 
 test("a round of the estimation game with every pin on its number earns three stars and opens the next", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   await page.locator(".excalidraw").waitFor();
@@ -98,7 +98,7 @@ test("a practice question answered by putting the pin on the line", async ({ pag
 
 /** A new board with one live piece from the Shapes panel, ready to use (clicked in its middle). */
 async function boardWith(page: Page, name: string, piece: string): Promise<Locator> {
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   await page.locator(".excalidraw").waitFor();

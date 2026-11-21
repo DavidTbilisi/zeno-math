@@ -1,7 +1,7 @@
-import { lazy, StrictMode, Suspense, useEffect, useState } from "react";
+import { lazy, StrictMode, Suspense, useEffect, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { I18nProvider } from "./i18n";
-import { HomePage } from "./pages/HomePage";
+import { SiteHome } from "./pages/SiteHome";
 import "./styles.css";
 
 // Excalidraw + MathJax are heavy; load them only when a board is opened.
@@ -11,6 +11,10 @@ const SharedBoardPage = lazy(() => import("./pages/SharedBoardPage").then((m) =>
 const AboutPage = lazy(() => import("./pages/AboutPage").then((m) => ({ default: m.AboutPage })));
 const PracticePage = lazy(() => import("./pages/PracticePage").then((m) => ({ default: m.PracticePage })));
 const RoadmapPage = lazy(() => import("./pages/RoadmapPage").then((m) => ({ default: m.RoadmapPage })));
+const BoardsPage = lazy(() => import("./pages/BoardsPage").then((m) => ({ default: m.BoardsPage })));
+const LearnPage = lazy(() => import("./pages/LearnPage").then((m) => ({ default: m.LearnPage })));
+const LibraryPage = lazy(() => import("./pages/LibraryPage").then((m) => ({ default: m.LibraryPage })));
+const ProgressPage = lazy(() => import("./pages/ProgressPage").then((m) => ({ default: m.ProgressPage })));
 const CoursePage = lazy(() => import("./pages/CoursePage").then((m) => ({ default: m.CoursePage })));
 
 function useHashRoute(): string {
@@ -57,6 +61,14 @@ function App() {
         <RoadmapPage key={roadmap[1] ?? ""} goal={roadmap[1]} />
       </Suspense>
     );
+  // The site (#448): the boards, the topics, the library of tools and games, and the learner's progress.
+  const site = (page: ReactNode) => <Suspense fallback={<div className="center-msg">…</div>}>{page}</Suspense>;
+  if (hash === "#/boards") return site(<BoardsPage />);
+  const learn = hash.match(/^#\/learn(?:\/([a-zA-Z]+))?$/);
+  if (learn) return site(<LearnPage key={learn[1] ?? ""} topic={learn[1]} />);
+  const library = hash.match(/^#\/library(?:\/((?:live|tool)\/[\w-]+(?:\/[\w.-]+)?))?$/);
+  if (library) return site(<LibraryPage key={library[1] ?? ""} path={library[1]} />);
+  if (hash === "#/progress") return site(<ProgressPage />);
   if (hash === "#/course")
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>
@@ -81,7 +93,7 @@ function App() {
       <BoardPage key={boardId} id={boardId} />
     </Suspense>
   ) : (
-    <HomePage />
+    <SiteHome />
   );
 }
 

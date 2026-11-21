@@ -4,6 +4,7 @@
 // (practice-site.tsx) it has no server: no class to join, and its links lead back to the front page rather than to
 // the boards.
 import { BrandBar } from "../components/BrandBar";
+import { SiteBar } from "../components/SiteBar";
 import { PracticeDialog } from "../components/PracticeDialog";
 import { useI18n } from "../i18n";
 
@@ -11,9 +12,11 @@ export function PracticePage({ start, invite, standalone }: { start?: string; in
   const { t } = useI18n();
   return (
     <div className="z z-wide">
-      <BrandBar home={standalone ? "../" : undefined}>
-        {standalone ? <a href="../">{t.aboutLink}</a> : <><a href="#/roadmaps">{t.roadmap.link}</a><a href="#/course">{t.course.link}</a><a href="#/">{t.myBoards}</a></>}
-      </BrandBar>
+      {standalone ? (
+        <BrandBar home="../"><a href="../">{t.aboutLink}</a></BrandBar>
+      ) : (
+        <SiteBar here="practice" />
+      )}
       <div className="z-page practice-page">
         <h1 className="z-page-title">{t.practice}</h1>
         <main>

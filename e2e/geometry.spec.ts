@@ -20,7 +20,7 @@ async function tapDots(page: Page, svg: Locator, pts: GeoPt[], cell: number) {
 test("a geoboard puzzle done first time earns three stars and opens the next one, after a reload too", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   await page.locator(".excalidraw").waitFor();

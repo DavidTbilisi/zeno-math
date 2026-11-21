@@ -3,48 +3,19 @@
 // what has been achieved, newest first. The goal last opened is remembered for this browser.
 import { useState } from "react";
 import { ApiError } from "../api";
-import { ladderPassedHere, loadAchieved, storedGoal, storeGoal } from "../achieved";
-import { BrandBar } from "../components/BrandBar";
-import { gradeName } from "../components/GradeCard";
+import { loadAchieved, storedGoal, storeGoal } from "../achieved";
+import { SiteBar } from "../components/SiteBar";
+import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
-import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
-import { standing } from "../model/course";
-import type { Grade } from "../model/curriculum";
 import {
-  achievedAt, GAME_KEYS, GOALS, isGoal, isSkill, itemId, itemsOf, itemState, progressOf, roadNext,
-  type GameId, type GoalId, type Item, type ItemState, type RoadStage, type Work,
+  achievedAt, GOALS, isGoal, isSkill, itemId, itemsOf, itemState, progressOf, roadNext,
+  type GameId, type GoalId, type Item, type ItemState, type Work,
 } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
-import { loadProgress } from "../practiceProgress";
 import { openOnStageBoard } from "../stageBoards";
-
-function readWork(): Work {
-  const p = loadProgress();
-  return { s: standing(p.cells ?? {}, p.placed ?? null), passed: (g) => ladderPassedHere(GAME_KEYS[g]) };
-}
-
-const gameName = (t: Dict, g: GameId) => (t.shapes.names as Record<string, string>)[`live${g[0].toUpperCase()}${g.slice(1)}`] ?? g;
-const itemName = (t: Dict, i: Item) => (isSkill(i) ? t.pracWords.skills[i.skill] : gameName(t, i.game));
-function stageName(t: Dict, lang: string, goal: GoalId, st: RoadStage) {
-  if (goal === "ml") return t.course.stages[st.id as keyof Dict["course"]["stages"]];
-  if (goal === "school") {
-    const g = gradeName(Number(st.id) as Grade, t.pracWords.grades);
-    // Georgian has no capitals in running text (upper-casing it gives Mtavruli).
-    return lang === "ka" ? g : g[0].toLocaleUpperCase(lang) + g.slice(1);
-  }
-  return (t.roadmap.stages as Record<string, Record<string, string>>)[goal][st.id];
-}
-
-/** Done, and behind the learner, as two parts of one bar. */
-function Track({ p }: { p: { done: number; behind: number; total: number } }) {
-  return (
-    <div className="course-track" aria-hidden="true">
-      <span className="secure" style={{ width: `${(100 * p.done) / p.total}%` }} />
-      <span className="behind" style={{ width: `${(100 * p.behind) / p.total}%` }} />
-    </div>
-  );
-}
+import { itemName, stageName } from "../roadWords";
+import { readWork } from "../work";
 
 export function RoadmapPage({ goal }: { goal?: string }) {
   const { t } = useI18n();
@@ -54,10 +25,7 @@ export function RoadmapPage({ goal }: { goal?: string }) {
   const mine = storedGoal();
   return (
     <div className="z">
-      <BrandBar>
-        <a href="#/practice">{t.practice}</a>
-        <a href="#/">{t.myBoards}</a>
-      </BrandBar>
+      <SiteBar here="roadmaps" />
       <div className="z-page road-page">
         <h1 className="z-page-title">{r.title}</h1>
         <p className="course-lede">{r.lede}</p>
@@ -115,12 +83,9 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
 
   return (
     <div className="z">
-      <BrandBar>
-        <a href="#/roadmaps">{r.change}</a>
-        <a href="#/practice">{t.practice}</a>
-        <a href="#/">{t.myBoards}</a>
-      </BrandBar>
+      <SiteBar here="roadmaps" />
       <div className="z-page road-page">
+        <a className="site-back" href="#/roadmaps">← {r.change}</a>
         <h1 className="z-page-title">{r.goals[goal].name}</h1>
         <p className="course-lede">
           {r.goals[goal].about}

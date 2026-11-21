@@ -123,6 +123,6 @@ The GIFs above are recorded by `scripts/readme-media.mjs` against a running buil
 
 Copyright © 2026 David Chincharashvili. Free software under the
 [GNU Affero General Public License v3.0 or later](LICENSE). If you run a modified Zeno for other people over a
-network, offer them your source: point `SOURCE_URL` in `src/pages/HomePage.tsx` at your copy. Versions up to the tag
+network, offer them your source: point `SOURCE_URL` in `src/components/SiteBar.tsx` at your copy. Versions up to the tag
 `mit-final` stay MIT. Bundled libraries keep their own licenses (Excalidraw, React and three.js MIT; MathJax and
 math.js Apache-2.0).

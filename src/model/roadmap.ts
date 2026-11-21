@@ -66,7 +66,7 @@ export function progressOf(items: readonly Item[], w: Work) {
   const st = items.map((i) => itemState(i, w));
   return { done: st.filter((x) => x === "done").length, behind: st.filter((x) => x === "behind").length, total: st.length };
 }
-export const itemsOf = (r: Roadmap) => r.stages.flatMap((s) => s.items);
+export const itemsOf = (r: Pick<Roadmap, "stages">) => r.stages.flatMap((s) => s.items);
 
 const rank = (g: Grade | null) => (g === null ? Infinity : GRADES.indexOf(g));
 
@@ -89,7 +89,7 @@ export function unblock(skill: SkillId, L: Level, s: Standing): { skill: SkillId
  * course's nextStep). Null once every item is done or behind.
  */
 export type Next = { item: Item; level?: Level; via?: { skill: SkillId; level: Level } };
-export function roadNext(r: Roadmap, w: Work): Next | null {
+export function roadNext(r: Pick<Roadmap, "order" | "stages">, w: Work): Next | null {
   const items = itemsOf(r);
   if (r.order === "grade") {
     let best: (Next & { key: number }) | null = null;

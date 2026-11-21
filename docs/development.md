@@ -136,7 +136,10 @@ docs/api.md               every HTTP route (checked against the server by tests/
 docs/thesis/              a chapter plan mapping the thesis to the code and evidence; references.bib
 docs/evaluation/          the usability study protocol (tasks, SUS in three languages, results template)
 docs/results/             the simulation results docs/study.md quotes, as CSV
-src/pages/HomePage.tsx    board list
+src/pages/SiteHome.tsx    the site's home (#448): hero, goals, topics, practice; LearnPage, LibraryPage, ProgressPage
+                          are #/learn (topics), #/library (tools and games), #/progress (each topic's bar)
+src/model/topics.ts       the topics: their skills, Shapes sections and shelf; src/library.ts the menus as a library
+src/pages/BoardsPage.tsx  board list (#/boards)
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
 src/components/ui.tsx     shared dialog controls: Tabs, Segmented, startOr

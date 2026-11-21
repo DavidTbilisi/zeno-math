@@ -1,0 +1,12 @@
+// What the learner has done in this browser, read once for a page: their standing in free practice (secure levels and
+// the grade they found) and the games whose ladders they have passed. The roadmaps, the topics and My progress all
+// tick from this one reading, so they always agree.
+import { ladderPassedHere } from "./achieved";
+import { standing } from "./model/course";
+import { GAME_KEYS, type Work } from "./model/roadmap";
+import { loadProgress } from "./practiceProgress";
+
+export function readWork(): Work {
+  const p = loadProgress();
+  return { s: standing(p.cells ?? {}, p.placed ?? null), passed: (g) => ladderPassedHere(GAME_KEYS[g]) };
+}

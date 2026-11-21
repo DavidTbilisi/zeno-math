@@ -4,7 +4,7 @@ import { expect, type Locator, type Page, type APIRequestContext } from "@playwr
 
 /** A new board with one live piece from the Shapes panel, clicked in a corner so it answers clicks (a click on a control would also press it). */
 export async function boardWith(page: Page, name: string, piece: string): Promise<Locator> {
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   await page.locator(".excalidraw").waitFor();

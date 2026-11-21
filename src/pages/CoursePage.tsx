@@ -3,7 +3,7 @@
 // try. "Next" is the lowest-grade level whose prerequisites are met; a tool or lab opens on the stage's own board.
 import { useState } from "react";
 import { ApiError } from "../api";
-import { BrandBar } from "../components/BrandBar";
+import { SiteBar } from "../components/SiteBar";
 import { gradeName } from "../components/GradeCard";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
@@ -63,11 +63,7 @@ export function CoursePage() {
 
   return (
     <div className="z">
-      <BrandBar>
-        <a href="#/roadmaps">{t.roadmap.link}</a>
-        <a href="#/practice">{t.practice}</a>
-        <a href="#/">{t.myBoards}</a>
-      </BrandBar>
+      <SiteBar here="roadmaps" />
       <div className="z-page course-page">
         <h1 className="z-page-title">{c.title}</h1>
         <p className="course-lede">{c.lede}</p>

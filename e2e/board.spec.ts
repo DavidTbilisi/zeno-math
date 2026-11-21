@@ -7,7 +7,7 @@ import { boardWith } from "./helpers.ts";
 test("a board keeps a shape and a live piece's state across a reload", async ({ page, request }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   const id = page.url().split("/").pop()!;
@@ -59,7 +59,7 @@ test("a piece changed in the 100 ms before Excalidraw starts it still answers cl
 for (const [w, h] of [[1366, 768], [1024, 700], [390, 760]])
   test(`the board's bar and every menu fit on a ${w} × ${h} window, in English and Georgian`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: h });
-    await page.goto("/");
+    await page.goto("/#/boards");
     await page.getByRole("button", { name: /New board/ }).first().click();
     await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
     await page.locator(".excalidraw").waitFor();
