@@ -42,6 +42,8 @@ export const MENUS: MenuGroup[] = [
           { live: "dots", icon: "⁘" },
           { live: "numberLine", icon: "↔" },
           { live: "counters", icon: "±" },
+          { live: "signArrow", icon: "↻" },
+          { live: "signPattern", icon: "⟋" },
           { live: "division", icon: "÷" },
         ], shapes: ["numberLine", "barModel", "partWhole", "multiplicationSquare"],
       },

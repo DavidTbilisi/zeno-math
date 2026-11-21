@@ -1518,6 +1518,15 @@ span.board-home:hover { background: none; }
 @keyframes chip-zero { 0% { opacity: 0; transform: translateY(4px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px); } }
 @media (prefers-reduced-motion: reduce) { .chip-pop, .chip-zero { display: none; } }
 :root[data-feel="calm"] .chip-pop, :root[data-feel="calm"] .chip-zero { display: none; }
+/* The turning arrow (SignArrow.tsx): a minus swings the arrow round over 0, more arrows join it one by one, and the
+   tip's number comes once the swing is over. */
+.sign-swing { transition: transform 0.9s ease-in-out; }
+.sign-seg { animation: sign-in 0.3s ease-out both; }
+.sign-tip { animation: sign-in 0.3s 0.75s ease-out both; }
+@keyframes sign-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sign-swing { transition: none; } .sign-seg, .sign-tip { animation: none; } }
+:root[data-feel="calm"] .sign-swing { transition: none; }
+:root[data-feel="calm"] .sign-seg, :root[data-feel="calm"] .sign-tip { animation: none; }
 
 /* The site (#448): a traditional maths site around the boards. One top bar with the sections (folded under Menu on a
    phone), a hero, goal and topic cards with the learner's bars, topic pages with skills ticked level by level, hands-on

@@ -1777,6 +1777,33 @@ function countersPreview(): Piece[] {
   ];
 }
 
+function signArrowPreview(): Piece[] {
+  // A number line; an arrow to −3 swings over the top of 0, dashed, to +3 on the other side.
+  const ticks = [-4, -3, -2, -1, 0, 1, 2, 3, 4].map((n) => seg([100 + n * 20, 76], [100 + n * 20, 84], { color: MUTED, width: n ? 1 : 2 }));
+  return [
+    seg([10, 80], [190, 80], { width: 2 }),
+    ...ticks,
+    path(arc(100, 72, 60, 60, 180, 0), { color: MUTED, dashed: true, width: 1.5 }),
+    arrow([100, 72], [40, 72], false, { color: BLUE, width: 3 }),
+    arrow([100, 72], [160, 72], false, { color: "#2f9e44", width: 3 }),
+    text(40, 100, "−3", 14, "center", BLUE),
+    text(160, 100, "+3", 14, "center", "#2f9e44"),
+    text(100, 22, "↻", 22, "center", MUTED),
+  ];
+}
+
+function signPatternPreview(): Piece[] {
+  // Axes, and the dots of a × (−2) for a from 3 down to −3 on one line: the ones past 0 (green) come out above.
+  const at = (a: number): Pt => [90 + a * 24, 80 - a * -2 * 10];
+  return [
+    seg([10, 80], [170, 80], { color: MUTED }),
+    seg([90, 10], [90, 150], { color: MUTED }),
+    seg(at(-3), at(3), { color: BLUE, width: 2.5 }),
+    ...[3, 2, 1, 0].map((a) => dot(at(a), 5)),
+    ...[-1, -2, -3].map((a) => ellipse(at(a)[0], at(a)[1], 5, 5, { fill: "#2f9e44", color: "#2f9e44", width: 1 })),
+  ];
+}
+
 function kakoomaPreview(): Piece[] {
   // Four numbers in a square, two by two; 7 = 3 + 4 is green, with its two parts outlined.
   return [
@@ -2004,6 +2031,8 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBaseTen", build: baseTenPreview, live: "baseTen" },
   { id: "liveCubes", build: cubesPreview, live: "cubes" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
+  { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
+  { id: "liveSignPattern", build: signPatternPreview, live: "signPattern" },
   { id: "liveExprMatch", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoLab", build: geoLabPreview, live: "geoLab" },
   { id: "liveGeoboard", build: geoboardPreview, live: "geoboard" },

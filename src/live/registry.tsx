@@ -28,6 +28,8 @@ import { AlgebraTiles } from "./AlgebraTiles";
 import { BaseTen } from "./BaseTen";
 import { Cubes } from "./Cubes";
 import { Counters } from "./Counters";
+import { SignArrow } from "./SignArrow";
+import { SignPattern } from "./SignPattern";
 import { Cards } from "./Cards";
 import { GeoLab } from "./GeoLab";
 import { ExprMatch } from "./ExprMatch";
@@ -139,6 +141,8 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   baseTen: BaseTen,
   cubes: Cubes,
   counters: Counters,
+  signArrow: SignArrow,
+  signPattern: SignPattern,
   cards: Cards,
   geoLab: GeoLab,
   exprMatch: ExprMatch,

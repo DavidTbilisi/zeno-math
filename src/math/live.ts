@@ -24,6 +24,7 @@ import { TILES_START, type LiveAlgebraTiles } from "./algebraTiles";
 import type { PlaceValueSpec } from "./placeValue";
 import { CUBES_START, type LiveCubes } from "./cubes";
 import { COUNTERS_START, type LiveCounters } from "./counters";
+import { SIGN_ARROW_START, SIGN_PATTERN_START, type LiveSignArrow, type LiveSignPattern } from "./signs";
 import { CARDS_START, type LiveCards } from "./cards";
 import { GEO_START, type LiveGeoLab } from "./geoLab";
 import type { LiveExprMatch } from "./exprMatch";
@@ -457,6 +458,8 @@ export type LiveStates = {
   baseTen: PlaceValueSpec;
   cubes: LiveCubes;
   counters: LiveCounters;
+  signArrow: LiveSignArrow;
+  signPattern: LiveSignPattern;
   geoLab: LiveGeoLab;
   exprMatch: LiveExprMatch;
   angleGuess: LiveAngleGuess;
@@ -562,6 +565,8 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   baseTen: [830, 660],
   cubes: [720, 640],
   counters: [680, 640],
+  signArrow: [680, 680],
+  signPattern: [680, 600],
   geoLab: [990, 710],
   exprMatch: [780, 400],
   angleGuess: [600, 620],
@@ -669,6 +674,8 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     baseTen: { type: "placeValue", th: 0, h: 1, t: 2, o: 3, showTotal: true },
     cubes: CUBES_START,
     counters: COUNTERS_START,
+    signArrow: SIGN_ARROW_START,
+    signPattern: SIGN_PATTERN_START,
     geoLab: GEO_START,
     exprMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     angleGuess: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], typed: "", guess: null, streak: 0, said: null },
