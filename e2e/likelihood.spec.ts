@@ -1,13 +1,14 @@
 // Likelihood, from the Discrete menu: log loss explains a chance of 1, an example fills the fields, the picture goes on
 // the board, and it opens again for editing with the same chances.
 import { expect, test } from "@playwright/test";
+import { insertGroup, insertPanel } from "./helpers.ts";
 
 test("likelihood: a chance of 1 says why, an example inserts and opens again", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Likelihood" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /Discrete/ }).click();
-  await page.getByRole("menuitem", { name: /Likelihood/ }).click();
+  await insertGroup(page, /Discrete/);
+  await insertPanel(page).getByRole("button", { name: /Likelihood/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Likelihood" })).toBeVisible();

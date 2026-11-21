@@ -1,13 +1,14 @@
 // Hand trick, from the Geometry menu: the tab draws the hand, an example fills the angle, the user's own peg replaces
 // the default in the picture, and it opens again with the peg kept. (Angles off the hand: tests/trigHand.test.ts.)
 import { expect, test } from "@playwright/test";
+import { insertGroup, insertPanel } from "./helpers.ts";
 
 test("hand trick: an example fills the angle, a peg of your own is drawn and kept", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Hand trick" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /Geometry/ }).click();
-  await page.getByRole("menuitem", { name: /Trigonometry/ }).click();
+  await insertGroup(page, /Geometry/);
+  await insertPanel(page).getByRole("button", { name: /Trigonometry/ }).click();
 
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("tab", { name: "Hand trick" }).click();

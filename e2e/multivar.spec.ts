@@ -2,13 +2,14 @@
 // example fills the fields, the picture goes on the board, and it opens again for editing with the same function. The
 // Lagrange tab asks for the constraint's c when it is missing, and draws one of its examples.
 import { expect, test } from "@playwright/test";
+import { insertGroup, insertPanel } from "./helpers.ts";
 
 test("several variables: the gradient explains a bad point, inserts, and opens again", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Several variables" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /Algebra/ }).click();
-  await page.getByRole("menuitem", { name: /Several variables/ }).click();
+  await insertGroup(page, /Algebra/);
+  await insertPanel(page).getByRole("button", { name: /Several variables/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Several variables" })).toBeVisible();
@@ -35,8 +36,8 @@ test("several variables: Lagrange multipliers ask for c, and an example draws", 
   const made = await (await request.post("/api/boards", { data: { title: "Lagrange" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /Algebra/ }).click();
-  await page.getByRole("menuitem", { name: /Several variables/ }).click();
+  await insertGroup(page, /Algebra/);
+  await insertPanel(page).getByRole("button", { name: /Several variables/ }).click();
 
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("tab", { name: "Lagrange multipliers" }).click();

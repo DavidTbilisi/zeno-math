@@ -7,14 +7,14 @@
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { exercise } from "../src/math/practice.ts";
-import { practise, seedOf } from "./helpers.ts";
+import { insertGroup, insertPanel, practise, seedOf } from "./helpers.ts";
 
 test("tactics: parity explains an impossible target, finds the signs for a possible one, and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tactics" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bDiscrete\b/ }).click();
-  await page.getByRole("menuitem", { name: /Problem-solving tactics/ }).click();
+  await insertGroup(page, /\bDiscrete\b/);
+  await insertPanel(page).getByRole("button", { name: /Problem-solving tactics/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Problem-solving tactics" })).toBeVisible();
@@ -40,8 +40,8 @@ test("strategies: Pólya's card takes your problem, and the lockers follow n", a
   const made = await (await request.post("/api/boards", { data: { title: "Strategies" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bDiscrete\b/ }).click();
-  await page.getByRole("menuitem", { name: /Problem-solving strategies/ }).click();
+  await insertGroup(page, /\bDiscrete\b/);
+  await insertPanel(page).getByRole("button", { name: /Problem-solving strategies/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Problem-solving strategies" })).toBeVisible();

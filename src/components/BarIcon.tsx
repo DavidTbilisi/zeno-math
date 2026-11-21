@@ -10,6 +10,7 @@ const PATHS = {
   practice: <g fill="currentColor" stroke="none"><rect x="2" y="7" width="8" height="6" rx="1" /><rect x="11" y="7" width="4" height="6" rx="1" /><rect x="16" y="7" width="2" height="6" rx=".6" /></g>,
   games: <path d="m10 2.8 2.1 4.6 5 .5-3.8 3.4 1.1 4.9L10 13.7l-4.4 2.5 1.1-4.9-3.8-3.4 5-.5z" />,
   share: <path d="M8.3 11.7l3.4-3.4M9 6.5l1.4-1.4a3 3 0 0 1 4.3 4.3L13.3 10.8M11 13.5l-1.4 1.4a3 3 0 0 1-4.3-4.3L6.7 9.2" />,
+  insert: <><rect x="3" y="3" width="14" height="14" rx="2.5" /><path d="M10 6.5v7M6.5 10h7" /></>,
   edit: <path d="M4 16l1-4 8-8 3 3-8 8zM11.5 5.5l3 3" />,
 };
 export type BarIconName = keyof typeof PATHS;

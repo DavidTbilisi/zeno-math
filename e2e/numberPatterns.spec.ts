@@ -1,7 +1,7 @@
 // Number patterns as dots: the piece draws as many dots as the number, "Why?" explains the rule, primes make one row,
 // and the games menu has a Number patterns section that holds it.
 import { expect, test } from "@playwright/test";
-import { boardWith } from "./helpers";
+import { boardWith, insertGroup, insertPanel } from "./helpers.ts";
 
 const SHOTS = process.env.SHOTS_DIR;
 
@@ -42,9 +42,9 @@ test("the games menu has a Number patterns section", async ({ page }) => {
   await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: "Games" }).click();
+  await insertGroup(page, "Games");
   await expect(page.getByText("Number patterns", { exact: true })).toBeVisible();
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/menu.png` });
-  await page.getByRole("menuitem", { name: /Growing patterns/ }).click();
+  await insertPanel(page).getByRole("button", { name: /Growing patterns/ }).click();
   await expect(page.locator(".live-growing")).toBeVisible();
 });

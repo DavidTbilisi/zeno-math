@@ -1,7 +1,7 @@
 // Why Pythagoras: SOH CAH TOA's hard puzzle opens its hint at the squares on the third side's step, and the geometry
 // dialog's Pythagoras tool steps through the same explanation, from the squares to a missing shorter side.
 import { expect, test } from "@playwright/test";
-import { boardWith } from "./helpers.ts";
+import { boardWith, insertGroup, insertPanel } from "./helpers.ts";
 
 test("sohcahtoa: on the third side the hint opens at why Pythagoras holds", async ({ page }) => {
   // Puzzles 1 to 6 passed, so the first hard one (tan θ = 6/8) is open.
@@ -35,8 +35,8 @@ test("geometry dialog: the Pythagoras tool steps through why a² + b² = c²", a
   const made = await (await request.post("/api/boards", { data: { title: "Pythagoras" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /Geometry/ }).click();
-  await page.getByRole("menuitem", { name: /^📐\s*Geometry$/ }).click();
+  await insertGroup(page, /Geometry/);
+  await insertPanel(page).getByRole("button", { name: /^📐\s*Geometry$/ }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("radio", { name: "Pythagoras" }).click();
   await expect(dialog.getByRole("note")).toHaveCount(0);

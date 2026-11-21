@@ -1,13 +1,14 @@
 // Random variables, from the Discrete menu: the joint table explains a table of the wrong shape, an example fills the
 // fields, the picture goes on the board, and it opens again for editing with the same table.
 import { expect, test } from "@playwright/test";
+import { insertGroup, insertPanel } from "./helpers.ts";
 
 test("random variables: a joint table of the wrong shape says why, an example inserts and opens again", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Random variables" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /Discrete/ }).click();
-  await page.getByRole("menuitem", { name: /Random variables/ }).click();
+  await insertGroup(page, /Discrete/);
+  await insertPanel(page).getByRole("button", { name: /Random variables/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Random variables" })).toBeVisible();

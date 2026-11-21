@@ -18,13 +18,25 @@
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
 
-Zeno's paradox says you need infinitely many small steps to cross a room, and yet you get there. Zeno is an
-infinite whiteboard where every picture is a live object you can change, with practice that checks your answers
-and notices the mistake you made.
+Zeno's paradox says you need infinitely many small steps to cross a room, and yet you get there. Zeno is a maths
+website with topics, goal roadmaps and practice, built around an infinite whiteboard where every picture is a live
+object you can change. Practice checks your answers and notices the mistake you made.
 
 ## See it work
 
 <table>
+<tr>
+<td width="50%" valign="top">
+<img src="docs/media/site.gif" alt="Opening the geometry topic and switching between its lessons, worked through on the page"><br>
+<b>A maths site first.</b> Pick a topic and work through its lessons right on the page; open any of them on a
+board when you want to keep it.
+</td>
+<td width="50%" valign="top">
+<img src="docs/media/insert.gif" alt="The board's Insert panel: browsing groups, searching for fractions and placing a piece"><br>
+<b>One Insert button.</b> On a board, the whole library is one panel: browse by group or search, and the piece
+lands in the middle of the board.
+</td>
+</tr>
 <tr>
 <td width="50%" valign="top">
 <img src="docs/media/practice.gif" alt="A fraction question answered with the add-across mistake, which Zeno names, then solved step by step"><br>

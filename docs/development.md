@@ -141,6 +141,8 @@ src/pages/SiteHome.tsx    the site's home (#448): hero, goals, topics, practice;
 src/model/topics.ts       the topics: their skills, Shapes sections and shelf; src/library.ts the menus as a library
 src/pages/BoardsPage.tsx  board list (#/boards)
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
+src/components/InsertPanel.tsx  the board's Insert button: the src/menus.ts groups, their sections and a search
+src/components/ToolOnPage.tsx   a tool's dialog drawn into a page (library entry, a topic's lessons)
 src/tools.tsx             every tool in one table: dialog (loaded on demand), menu entry, edit label, search topics
 src/components/ui.tsx     shared dialog controls: Tabs, Segmented, startOr
 src/components/CommandPalette.tsx  the tool search (Ctrl+K or /)

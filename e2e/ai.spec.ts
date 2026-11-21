@@ -36,13 +36,14 @@ import { KNN_PLOT, toPx as knnPx } from "../src/math/knnLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
 import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 import { TN_PLOT, tnLayout, tnSetup, viewOf } from "../src/math/tensorLab.ts";
+import { insertGroup, insertPanel } from "./helpers.ts";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Tensors(?! lab)/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Tensors(?! lab)/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Math for AI" })).toBeVisible();
@@ -68,8 +69,8 @@ test("tensor operations: a mismatch says why, and a matrix product inserts", asy
   const made = await (await request.post("/api/boards", { data: { title: "Tensor operations" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Tensor operations/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Tensor operations/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("tab", { name: "Operations" })).toHaveAttribute("aria-selected", "true");
@@ -95,8 +96,8 @@ test("gradient descent: three rates, a wrong rate refused, a valley inserted", a
   const made = await (await request.post("/api/boards", { data: { title: "Gradient descent" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Gradient descent$/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Gradient descent$/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("tab", { name: "Gradient descent" })).toHaveAttribute("aria-selected", "true");
@@ -122,8 +123,8 @@ test("backprop: a missing value is named, and a step of gradient descent inserts
   const made = await (await request.post("/api/boards", { data: { title: "Backprop" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Backpropagation/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Backpropagation/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("tab", { name: "Backprop" })).toHaveAttribute("aria-selected", "true");
@@ -149,8 +150,8 @@ test("softmax: a wrong target is refused, and three temperatures insert", async 
   const made = await (await request.post("/api/boards", { data: { title: "Softmax" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Softmax & cross-entropy/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Softmax & cross-entropy/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("tab", { name: "Softmax" })).toHaveAttribute("aria-selected", "true");
@@ -176,8 +177,8 @@ test("embeddings: an unknown name is refused, and an analogy inserts", async ({ 
   const made = await (await request.post("/api/boards", { data: { title: "Embeddings" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Embeddings & cosine similarity/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Embeddings & cosine similarity/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("tab", { name: "Embeddings" })).toHaveAttribute("aria-selected", "true");
@@ -203,8 +204,8 @@ test("SVD & PCA: a rank too large is refused, and PCA of points inserts", async 
   const made = await (await request.post("/api/boards", { data: { title: "SVD" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /SVD & PCA/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /SVD & PCA/ }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("tab", { name: "SVD & PCA" })).toHaveAttribute("aria-selected", "true");
@@ -231,8 +232,8 @@ test("the gradient descent lab: too small a rate runs out of steps, a better one
   const made = await (await request.post("/api/boards", { data: { title: "Descent lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Gradient descent lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Gradient descent lab/ }).click();
   const lab = page.locator(".live-descentLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -257,8 +258,8 @@ test("the PCA lab: a line across the cloud is not the best, turned along it is P
   const made = await (await request.post("/api/boards", { data: { title: "PCA lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /PCA lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /PCA lab/ }).click();
   const lab = page.locator(".live-pcaLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -284,8 +285,8 @@ test("the overfitting lab: degree 1 misses the points, degree 9 goes through the
   const made = await (await request.post("/api/boards", { data: { title: "Overfitting lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Overfitting lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Overfitting lab/ }).click();
   const lab = page.locator(".live-fitLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -310,8 +311,8 @@ test("the batch training lab: too small a rate is slow, 0.2 settles at the best 
   const made = await (await request.post("/api/boards", { data: { title: "Batch lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Batch training lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Batch training lab/ }).click();
   const lab = page.locator(".live-batchLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -337,8 +338,8 @@ test("the threshold lab: a high threshold misses positives, a lower one catches 
   const made = await (await request.post("/api/boards", { data: { title: "Threshold lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Threshold lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Threshold lab/ }).click();
   const lab = page.locator(".live-rocLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -362,8 +363,8 @@ test("the softmax lab: cat's probability is short, its bar dragged up gets it ov
   const made = await (await request.post("/api/boards", { data: { title: "Softmax lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Softmax lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Softmax lab/ }).click();
   const lab = page.locator(".live-softmaxLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -393,8 +394,8 @@ test("the embeddings lab: dog at right angles to cat is not alike, beside it it 
   const made = await (await request.post("/api/boards", { data: { title: "Embeddings lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Embeddings lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Embeddings lab/ }).click();
   const lab = page.locator(".live-embedLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -423,8 +424,8 @@ test("the backprop lab goes on the board from the AI menu, and its boxes are fil
   const made = await (await request.post("/api/boards", { data: { title: "Backprop lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Backprop lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Backprop lab/ }).click();
   const lab = page.locator(".live-backpropLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -456,8 +457,8 @@ test("the tensors lab goes on the board from the AI menu, and its entries and pl
   const made = await (await request.post("/api/boards", { data: { title: "Tensors lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Tensors lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Tensors lab/ }).click();
   const lab = page.locator(".live-tensorLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -505,8 +506,8 @@ test("the k-NN lab: the point among the blue is called blue, dragged into the or
   const made = await (await request.post("/api/boards", { data: { title: "k-NN lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Nearest neighbours lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Nearest neighbours lab/ }).click();
   const lab = page.locator(".live-knnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -536,8 +537,8 @@ test("the decision-tree lab: no split yet says so, a cut at x < 0.6 makes both s
   const made = await (await request.post("/api/boards", { data: { title: "Decision-tree lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Decision-tree lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Decision-tree lab/ }).click();
   const lab = page.locator(".live-treeLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -564,8 +565,8 @@ test("the k-means lab: unfinished says so, assign and move until nothing changes
   const made = await (await request.post("/api/boards", { data: { title: "k-means lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /k-means lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /k-means lab/ }).click();
   const lab = page.locator(".live-kmeansLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -590,8 +591,8 @@ test("the network lab: the perceptron's mistakes are counted, and updates turn i
   const made = await (await request.post("/api/boards", { data: { title: "Network lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Network lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Network lab/ }).click();
   const lab = page.locator(".live-nnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -615,8 +616,8 @@ test("the convolution lab: no cell picked says so, the cell where the signal ste
   const made = await (await request.post("/api/boards", { data: { title: "Convolution lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Convolution lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Convolution lab/ }).click();
   const lab = page.locator(".live-convLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -642,8 +643,8 @@ test("the attention lab: the query away from cat gives it little weight, pointed
   const made = await (await request.post("/api/boards", { data: { title: "Attention lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Attention lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Attention lab/ }).click();
   const lab = page.locator(".live-attnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -671,8 +672,8 @@ test("the recurrent-network lab: w = 0.5 forgets the pulse, w = 1.3 keeps it", a
   const made = await (await request.post("/api/boards", { data: { title: "Recurrent lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Recurrent network lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Recurrent network lab/ }).click();
   const lab = page.locator(".live-rnnLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;
@@ -696,8 +697,8 @@ test("the reinforcement-learning lab: the weather's shares settle after enough d
   const made = await (await request.post("/api/boards", { data: { title: "RL lab" } })).json();
   await page.goto(`/#/b/${made.id}`);
   await page.locator(".excalidraw").waitFor();
-  await page.getByRole("button", { name: /\bAI\b/ }).click();
-  await page.getByRole("menuitem", { name: /Reinforcement learning lab/ }).click();
+  await insertGroup(page, /\bAI\b/);
+  await insertPanel(page).getByRole("button", { name: /Reinforcement learning lab/ }).click();
   const lab = page.locator(".live-rlLab");
   await lab.waitFor();
   const box = (await lab.boundingBox())!;

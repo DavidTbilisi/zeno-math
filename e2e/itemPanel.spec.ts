@@ -1,6 +1,7 @@
 // The right-click panel: a tool's picture changes in place, its controls beside it and no modal; Escape closes it,
 // one undo takes back everything it did; anything else on the board still gets Excalidraw's own menu.
 import { expect, test, type Page } from "@playwright/test";
+import { insertGroup, insertPanel } from "./helpers.ts";
 
 const SHOTS = process.env.SHOTS_DIR;
 
@@ -25,8 +26,8 @@ async function rightClickMiddle(page: Page) {
 
 test("a formula changes in the panel beside it, and one undo takes it back", async ({ page }) => {
   await newBoard(page);
-  await page.getByRole("button", { name: /Algebra/ }).click();
-  await page.getByRole("menuitem", { name: /Formula/ }).click();
+  await insertGroup(page, /Algebra/);
+  await insertPanel(page).getByRole("button", { name: /Formula/ }).click();
   const modal = page.getByRole("dialog");
   await modal.getByRole("textbox").fill("x^2");
   await modal.getByRole("button", { name: "Insert" }).click();
@@ -64,8 +65,8 @@ test("a formula changes in the panel beside it, and one undo takes it back", asy
 
 test("a number theory picture follows its slider; a rectangle keeps Excalidraw's menu", async ({ page }) => {
   await newBoard(page);
-  await page.getByRole("button", { name: /Discrete/ }).click();
-  await page.getByRole("menuitem", { name: /Number theory/ }).click();
+  await insertGroup(page, /Discrete/);
+  await insertPanel(page).getByRole("button", { name: /Number theory/ }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
   await page.waitForTimeout(600);
 
@@ -101,8 +102,8 @@ test("a number theory picture follows its slider; a rectangle keeps Excalidraw's
 
 test("one click on a piece reaches its button; its right-click panel holds only actions", async ({ page }) => {
   await newBoard(page);
-  await page.getByRole("button", { name: "Arithmetic" }).click();
-  await page.getByRole("menuitem", { name: /Number patterns as dots/ }).click();
+  await insertGroup(page, "Arithmetic");
+  await insertPanel(page).getByRole("button", { name: /Number patterns as dots/ }).click();
   const piece = page.locator(".live-numberShapes");
   await expect(piece).toHaveCount(1);
   await page.waitForTimeout(600);

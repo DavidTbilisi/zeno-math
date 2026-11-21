@@ -7,7 +7,7 @@ import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
 import { fill } from "../src/math/text.ts";
 import { usesOf } from "../src/model/ideaState.ts";
-import { boardWith } from "./helpers.ts";
+import { boardWith, insertGroup, insertPanel } from "./helpers.ts";
 
 const w = en.pracWords;
 const seedOf = (r: number) => Math.floor(r * 2 ** 31);
@@ -324,8 +324,8 @@ test("on a board, practice opens beside it and stays while other tools are used"
   await expect(page.getByRole("button", { name: /Edit practice sheet/ })).toBeVisible();
   await expect(dock).toBeVisible();
   // Another tool opens as a dialog while practice stays docked.
-  await page.getByRole("button", { name: /^Algebra\b/ }).click();
-  await page.getByRole("menuitem", { name: /Formula/ }).click();
+  await insertGroup(page, /^Algebra\b/);
+  await insertPanel(page).getByRole("button", { name: /Formula/ }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(dock).toBeVisible();
   await page.keyboard.press("Escape");

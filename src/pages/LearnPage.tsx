@@ -4,10 +4,12 @@
 import { useState } from "react";
 import { OpenOnBoard } from "../components/OpenOnBoard";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
+import { ToolOnPage } from "../components/ToolOnPage";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { entriesOf, entryName, type LibEntry } from "../library";
 import { InlinePiece } from "../live/InlinePiece";
+import { isLiveEntry } from "../menus";
 import { fill } from "../math/text";
 import { isTopic, SHELVES, TOPICS, topicOf, topicProgress, type TopicId } from "../model/topics";
 import { readWork } from "../work";
@@ -51,7 +53,8 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
   const entries = entriesOf(topic);
   const pieces = entries.filter((e) => e.kind === "piece");
   const shown = pieces.slice(0, INLINE);
-  const tools = [...entries.filter((e) => e.kind === "tool"), ...pieces.slice(INLINE)];
+  const lessons = entries.filter((e) => e.kind === "tool");
+  const more = pieces.slice(INLINE);
   const games = entries.filter((e) => e.kind === "game");
   const boardName = fill(s.boardName, { topic: name });
 
@@ -123,11 +126,43 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
           </section>
         )}
 
-        {tools.length > 0 && <EntryCards id="topic-tools" head={s.toolsHead} entries={tools} />}
+        {lessons.length > 0 && <Lessons slot={id} lessons={lessons} boardName={boardName} />}
+        {more.length > 0 && <EntryCards id="topic-more" head={s.moreHead} entries={more} />}
         {games.length > 0 && <EntryCards id="topic-games" head={s.gamesHead} entries={games} />}
       </main>
       <SiteFoot />
     </div>
+  );
+}
+
+/** The topic's tools, which are lessons as much as tools (#448): chips to choose one, and the chosen one's dialog drawn
+ *  right into the page with the picture it makes, a way onto a board and to its own page. The first is open to start. */
+function Lessons({ slot, lessons, boardName }: { slot: TopicId; lessons: readonly LibEntry[]; boardName: string }) {
+  const { t } = useI18n();
+  const s = t.site;
+  const [open, setOpen] = useState<string | null>(lessons[0]?.path ?? null);
+  const on = lessons.find((e) => e.path === open);
+  return (
+    <section className="site-section" aria-labelledby="topic-lessons">
+      <h2 id="topic-lessons">{s.lessonsHead}</h2>
+      <p className="course-count">{s.lessonsLede}</p>
+      <div className="site-lesson-chips" role="group" aria-label={s.lessonsHead}>
+        {lessons.map((e) => (
+          <button key={e.path} className={`btn small${e.path === open ? " on" : " ghost"}`} aria-pressed={e.path === open} onClick={() => setOpen(e.path === open ? null : e.path)}>
+            <span aria-hidden="true">{e.icon}</span> {entryName(t, e)}
+          </button>
+        ))}
+      </div>
+      {on && !isLiveEntry(on.entry) && (
+        <div className="site-lesson">
+          <ToolOnPage key={on.path} entry={on.entry} name={entryName(t, on)} onClose={() => setOpen(null)} />
+          <div className="site-entry-go">
+            <OpenOnBoard slot={slot} name={boardName} path={on.path} className="z-btn z-btn-line small" />
+            <a href={`#/library/${on.path}`}>{s.ownPage} →</a>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 

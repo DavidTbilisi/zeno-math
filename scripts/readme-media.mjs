@@ -1,7 +1,7 @@
 // Records the README's GIFs: each scene runs in its own browser context with video on, then ffmpeg crops the
 // video to the part that matters and turns it into a GIF in docs/media.
 //   npm run build && PORT=8797 DATA_DIR=$(mktemp -d) node server/index.ts &
-//   npm run readme-media -- [scene…]   (BASE=http://localhost:8797 by default; scenes: geolab practice solids sort primes)
+//   npm run readme-media -- [scene…]   (BASE=http://localhost:8797 by default; scenes: site insert geolab practice solids sort primes)
 import { chromium } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs } from "../src/math/practice.ts";
@@ -15,13 +15,13 @@ const BASE = process.env.BASE ?? "http://localhost:8797";
 const OUT = "docs/media";
 const VIEW = { width: 1280, height: 800 };
 /** Scenes filmed in a window of their own size (the whole window is the picture). */
-const VIEWS = { practice: { width: 700, height: 820 }, solids: { width: 1100, height: 1000 } };
+const VIEWS = { practice: { width: 700, height: 820 }, solids: { width: 1100, height: 1000 }, site: { width: 1100, height: 760 }, insert: { width: 1100, height: 760 } };
 let startAt = 0; // when the scene's first useful frame is on screen
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** A new board with one live piece from the Shapes panel, put in use by a click in its corner. */
 async function boardWith(page, name, piece) {
-  await page.goto(BASE + "/");
+  await page.goto(BASE + "/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   await page.locator(".excalidraw").waitFor();
@@ -51,6 +51,48 @@ async function glide(page, from, to, steps = 25) {
 }
 
 const SCENES = {
+  async site(page) {
+    // A learner's way in: the topics, one topic's page, and its lesson worked through on the page itself.
+    await page.goto(BASE + "/#/learn");
+    await page.locator('a[href="#/learn/geometry"]').first().waitFor();
+    startAt = Date.now();
+    await wait(1200);
+    await page.locator('a[href="#/learn/geometry"]').first().click();
+    await wait(1500);
+    const lessons = page.locator("section", { has: page.locator(".site-lesson-chips") });
+    for (let i = 0; i < 12; i++) { await page.mouse.wheel(0, 90); await wait(60); }
+    await lessons.scrollIntoViewIfNeeded();
+    await wait(1000);
+    await lessons.getByRole("button", { name: /School geometry/ }).click();
+    await wait(1800);
+    await lessons.getByRole("button", { name: /Geometry/ }).first().click();
+    await wait(1800);
+    const view = VIEWS.site;
+    return { box: { x: 0, y: 0, width: view.width, height: view.height }, width: 640 };
+  },
+
+  async insert(page) {
+    // A teacher's way in: one Insert button on the board opens the whole library, by group or by search.
+    await page.goto(BASE + "/#/boards");
+    await page.getByRole("button", { name: /New board/ }).first().click();
+    await page.locator(".excalidraw").waitFor();
+    await wait(800);
+    startAt = Date.now();
+    await page.locator(".insert-btn").click();
+    const panel = page.locator(".insert");
+    for (const g of ["Arithmetic", "Geometry", "Games"]) {
+      await panel.getByRole("tab", { name: g }).click();
+      await wait(1100);
+    }
+    await panel.getByRole("searchbox").pressSequentially("fractions", { delay: 90 });
+    await wait(1000);
+    await panel.getByRole("button", { name: /Comparing fractions/ }).click();
+    await page.locator(".live-compareFractions").waitFor();
+    await wait(1800);
+    const view = VIEWS.insert;
+    return { box: { x: 0, y: 0, width: view.width, height: view.height }, width: 640 };
+  },
+
   async geolab(page) {
     const piece = await boardWith(page, "Geometry lab: any shape, measured", ".live-geoLab");
     const plane = piece.locator("svg.glab-plane");
@@ -112,11 +154,12 @@ const SCENES = {
   },
 
   async solids(page) {
-    await page.goto(BASE + "/");
+    await page.goto(BASE + "/#/boards");
     await page.getByRole("button", { name: /New board/ }).first().click();
     await page.locator(".excalidraw").waitFor();
-    await page.getByRole("button", { name: /Geometry/ }).first().click();
-    await page.getByRole("menuitem", { name: /3D$/ }).click();
+    await page.locator(".insert-btn").click();
+    await page.locator(".insert").getByRole("tab", { name: "Geometry" }).click();
+    await page.locator(".insert").getByRole("button", { name: /3D$/ }).click();
     const dialog = page.getByRole("dialog");
     await dialog.waitFor();
     await dialog.getByRole("radio", { name: "Cylinder", exact: true }).click();
