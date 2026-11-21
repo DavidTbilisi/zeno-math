@@ -12,6 +12,7 @@ const AboutPage = lazy(() => import("./pages/AboutPage").then((m) => ({ default:
 const PracticePage = lazy(() => import("./pages/PracticePage").then((m) => ({ default: m.PracticePage })));
 const RoadmapPage = lazy(() => import("./pages/RoadmapPage").then((m) => ({ default: m.RoadmapPage })));
 const BoardsPage = lazy(() => import("./pages/BoardsPage").then((m) => ({ default: m.BoardsPage })));
+const ExplainPage = lazy(() => import("./pages/ExplainPage").then((m) => ({ default: m.ExplainPage })));
 const LearnPage = lazy(() => import("./pages/LearnPage").then((m) => ({ default: m.LearnPage })));
 const LibraryPage = lazy(() => import("./pages/LibraryPage").then((m) => ({ default: m.LibraryPage })));
 const ProgressPage = lazy(() => import("./pages/ProgressPage").then((m) => ({ default: m.ProgressPage })));
@@ -66,6 +67,7 @@ function App() {
   if (hash === "#/boards") return site(<BoardsPage />);
   const learn = hash.match(/^#\/learn(?:\/([a-zA-Z]+))?$/);
   if (learn) return site(<LearnPage key={learn[1] ?? ""} topic={learn[1]} />);
+  if (hash === "#/explain") return site(<ExplainPage />);
   const library = hash.match(/^#\/library(?:\/((?:live|tool)\/[\w-]+(?:\/[\w.-]+)?))?$/);
   if (library) return site(<LibraryPage key={library[1] ?? ""} path={library[1]} />);
   if (hash === "#/progress") return site(<ProgressPage />);

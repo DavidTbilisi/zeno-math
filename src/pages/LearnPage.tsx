@@ -1,16 +1,19 @@
 // Learn (#448): #/learn lists every topic on its shelf, from first steps to university, each with the learner's bar;
-// #/learn/<topic> is one topic's page: how far the learner is and their next level, what they will learn (each skill
-// with its three levels ticked), hands-on pieces to try right on the page, and the topic's tools and games.
+// #/learn/<topic> is one topic's page: what the topic is and where it is used (#450), how far the learner is and their
+// next level, what they will learn (each skill with its three levels ticked), hands-on pieces to try right on the page,
+// and the topic's tools and games. #/learn links to #/explain, every topic's intro on one page.
 import { useState } from "react";
+import { Explainer } from "../components/Explainer";
 import { OpenOnBoard } from "../components/OpenOnBoard";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { ToolOnPage } from "../components/ToolOnPage";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
-import { entriesOf, entryName, type LibEntry } from "../library";
+import { entriesOf, entryName, libEntry, type LibEntry } from "../library";
 import { InlinePiece } from "../live/InlinePiece";
 import { isLiveEntry } from "../menus";
 import { fill } from "../math/text";
+import { EXPLAINERS } from "../model/explainers";
 import { isTopic, SHELVES, TOPICS, topicOf, topicProgress, type TopicId } from "../model/topics";
 import { readWork } from "../work";
 import { nextHref, TopicTile } from "./SiteHome";
@@ -26,6 +29,7 @@ export function LearnPage({ topic }: { topic?: string }) {
       <main className="z-page site-learn">
         <h1 className="z-page-title">{s.learnTitle}</h1>
         <p className="course-lede">{s.learnLede}</p>
+        <p><a className="site-explain-link" href="#/explain">{s.explain.indexLink} →</a></p>
         {SHELVES.map((shelf) => (
           <section key={shelf} className="site-section" aria-labelledby={`shelf-${shelf}`}>
             <h2 id={`shelf-${shelf}`} className="site-shelf">{s.shelves[shelf]}</h2>
@@ -51,11 +55,13 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
   const name = s.topics[id].name;
   const p = topicProgress(topic, work);
   const entries = entriesOf(topic);
-  const pieces = entries.filter((e) => e.kind === "piece");
+  // The intro's piece comes first (it may be a game, or from another topic's shelf), then the topic's own pieces.
+  const first = libEntry(`live/${EXPLAINERS[id].try}`);
+  const pieces = [...(first ? [first] : []), ...entries.filter((e) => e.kind === "piece" && e !== first)];
   const shown = pieces.slice(0, INLINE);
   const lessons = entries.filter((e) => e.kind === "tool");
   const more = pieces.slice(INLINE);
-  const games = entries.filter((e) => e.kind === "game");
+  const games = entries.filter((e) => e.kind === "game" && e !== first);
   const boardName = fill(s.boardName, { topic: name });
 
   return (
@@ -65,6 +71,7 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
         <a className="site-back" href="#/learn">← {s.otherTopics}</a>
         <h1 className="z-page-title"><span className="site-topic-icon" aria-hidden="true">{topic.icon}</span> {name}</h1>
         <p className="course-lede">{s.topics[id].about}</p>
+        <Explainer id={id} />
 
         {p.total > 0 ? (
           <section className="course-next" aria-label={t.roadmap.next}>

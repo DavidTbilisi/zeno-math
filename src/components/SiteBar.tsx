@@ -47,11 +47,12 @@ export function SiteBar({ here, teacher, children }: { here?: Section; teacher?:
   );
 }
 
-/** The foot of every site page: about, teachers, and the source (AGPL-3.0 §13). */
+/** The foot of every site page: "What is…?", about, teachers, and the source (AGPL-3.0 §13). */
 export function SiteFoot() {
   const { t } = useI18n();
   return (
     <footer className="site-foot">
+      <a href="#/explain">{t.site.explain.index}</a>
       <a href="#/about">{t.aboutLink}</a>
       <a href="#/teacher">{t.forTeachers}</a>
       <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">{t.sourceCode}</a>
