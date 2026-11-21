@@ -9,15 +9,16 @@ import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 import { currentGrade } from "../model/placement";
-import { GOALS, itemsOf, progressOf, roadNext, type GameId, type Next } from "../model/roadmap";
+import { GOALS, isRead, itemsOf, progressOf, roadNext, type GameId, type Next } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
 import { FEATURED, topicOf, topicProgress } from "../model/topics";
 import { loadProgress } from "../practiceProgress";
 import { itemName, stageName } from "../roadWords";
 import { readWork } from "../work";
 
-/** Where a roadmap's or a topic's next step is done: a practice level, or the game's own page. */
-export const nextHref = (n: Next) => (n.via ? `#/practice/${n.via.skill}.${n.via.level}` : `#/library/live/${(n.item as { game: GameId }).game}`);
+/** Where a roadmap's or a topic's next step is done: a practice level, the topic's page for a "What is…?" read, or the game's own page. */
+export const nextHref = (n: Next) =>
+  n.via ? `#/practice/${n.via.skill}.${n.via.level}` : isRead(n.item) ? `#/learn/${n.item.read}` : `#/library/live/${(n.item as { game: GameId }).game}`;
 
 /** Zeno's picture: each step covers half of what is left, so the squares halve and never quite reach the end. */
 function Halving() {

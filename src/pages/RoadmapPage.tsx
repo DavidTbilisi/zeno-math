@@ -9,7 +9,7 @@ import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 import {
-  achievedAt, GOALS, isGoal, isSkill, itemId, itemsOf, itemState, progressOf, roadNext,
+  achievedAt, GOALS, isGoal, isRead, isSkill, itemId, itemsOf, itemState, progressOf, roadNext,
   type GameId, type GoalId, type Item, type ItemState, type Work,
 } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
@@ -75,7 +75,8 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
       setOpening(false);
     }
   };
-  const levelsNote = (i: Item) => (isSkill(i) && i.levels.length < 3 ? fill(r.levels, { levels: i.levels.join(", ") }) : !isSkill(i) ? r.game : "");
+  const levelsNote = (i: Item) =>
+    isSkill(i) ? (i.levels.length < 3 ? fill(r.levels, { levels: i.levels.join(", ") }) : "") : isRead(i) ? t.site.explain.readNote : r.game;
   const achieved = itemsOf(map)
     .filter((i) => itemState(i, work) === "done")
     .map((i) => ({ i, at: achievedAt(i, dates) }))
@@ -104,6 +105,8 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
               </div>
               {next.via ? (
                 <a className="z-btn z-btn-marker" href={`#/practice/${next.via.skill}.${next.via.level}`}>{r.practise}</a>
+              ) : isRead(next.item) ? (
+                <a className="z-btn z-btn-marker" href={`#/learn/${next.item.read}`}>{t.site.explain.read}</a>
               ) : (
                 <button className="z-btn z-btn-marker" disabled={opening} onClick={() => play((next.item as { game: GameId }).game)}>{r.play}</button>
               )}
@@ -149,6 +152,8 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
                         <li key={itemId(i)}>
                           {isSkill(i) ? (
                             <a className={cls} aria-label={label} href={`#/practice/${i.skill}.${i.levels.find((L) => work.s.level(i.skill, L) === "open") ?? i.levels[0]}`}>{body}</a>
+                          ) : isRead(i) ? (
+                            <a className={cls} aria-label={label} href={`#/learn/${i.read}`}>{body}</a>
                           ) : (
                             <button className={cls} aria-label={label} disabled={opening} onClick={() => play(i.game)}>{body}</button>
                           )}

@@ -139,6 +139,8 @@ docs/results/             the simulation results docs/study.md quotes, as CSV
 src/pages/SiteHome.tsx    the site's home (#448): hero, goals, topics, practice; LearnPage, LibraryPage, ProgressPage
                           are #/learn (topics), #/library (tools and games), #/progress (each topic's bar)
 src/model/topics.ts       the topics: their skills, Shapes sections and shelf; src/library.ts the menus as a library
+src/model/explainers.ts   each topic's intro (#450): use icons and its piece; words in src/locales/site, pictures in
+                          src/components/TopicPicture.tsx, shown by Explainer.tsx and #/explain (ExplainPage)
 src/pages/BoardsPage.tsx  board list (#/boards)
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/components/InsertPanel.tsx  the board's Insert button: the src/menus.ts groups, their sections and a search

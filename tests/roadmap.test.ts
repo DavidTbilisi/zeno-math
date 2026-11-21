@@ -1,4 +1,4 @@
-// Roadmaps by goal (#449): every item is a real skill or game, nothing comes before what it builds on, the ML roadmap
+// Roadmaps by goal (#449): every item is a real skill, game or "What is…?" read (#450), nothing comes before what it builds on, the ML roadmap
 // is the course map, items tick themselves from practice and passed games, and Next walks a roadmap to the end.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -7,11 +7,16 @@ import { ALL_SKILLS, type SkillId } from "../src/math/practiceSkills.ts";
 import { nextStep, STAGES, standing } from "../src/model/course.ts";
 import { gradeOf, PREREQUISITES } from "../src/model/curriculum.ts";
 import { cellKey, type Cells } from "../src/model/placement.ts";
-import { achievedAt, GAME_KEYS, GOALS, isSkill, itemId, itemsOf, itemState, progressOf, roadNext, type GameId, type Item, type Work } from "../src/model/roadmap.ts";
+import { achievedAt, GAME_KEYS, GOALS, isRead, isSkill, itemId, itemsOf, itemState, progressOf, roadNext, type GameId, type Item, type Work } from "../src/model/roadmap.ts";
 import { ROADMAPS } from "../src/model/roadmaps/index.ts";
+import type { TopicId } from "../src/model/topics.ts";
 
 const secure = { seen: 3, right: 3, run: 3 };
-const work = (cells: Cells, placed: Parameters<typeof standing>[1] = null, won: GameId[] = []): Work => ({ s: standing(cells, placed), passed: (g) => won.includes(g) });
+const work = (cells: Cells, placed: Parameters<typeof standing>[1] = null, won: GameId[] = [], read: TopicId[] = []): Work => ({
+  s: standing(cells, placed),
+  passed: (g) => won.includes(g),
+  read: (topic) => read.includes(topic),
+});
 
 test("every goal has a roadmap of real skills and games, each item once", () => {
   assert.deepEqual(Object.keys(ROADMAPS), [...GOALS]);
@@ -23,10 +28,10 @@ test("every goal has a roadmap of real skills and games, each item once", () => 
     for (const s of r.stages) assert.ok(s.items.length > 0, `${r.id}/${s.id} is empty`);
     for (const i of itemsOf(r)) if (isSkill(i)) assert.ok(ALL_SKILLS.includes(i.skill), `${r.id}: no skill ${i.skill}`);
   }
-  // The hand-made roadmaps are a checklist of about 30 to 60 items.
+  // The hand-made roadmaps are a checklist of about 30 to 70 items.
   for (const id of ["software", "algorithms", "finance", "banking"] as const) {
     const n = itemsOf(ROADMAPS[id]).length;
-    assert.ok(n >= 25 && n <= 60, `${id} has ${n} items`);
+    assert.ok(n >= 25 && n <= 70, `${id} has ${n} items`);
   }
 });
 
@@ -79,13 +84,14 @@ test("an item ticks when all its levels are secure or its game is passed; below 
   assert.equal(itemState({ game: "beSort" }, work({}, null, ["beSort"])), "done");
   assert.equal(itemState({ game: "beSort" }, work({})), "open");
   const f = ROADMAPS.finance;
-  assert.deepEqual(progressOf(f.stages[0].items, work({ ...cells, "percent.2": secure, "percent.3": secure })), { done: 1, behind: 0, total: 9 });
+  assert.deepEqual(progressOf(f.stages[0].items, work({ ...cells, "percent.2": secure, "percent.3": secure })), { done: 1, behind: 0, total: 10 });
 });
 
 test("Next on a hand-made roadmap is its first item not done, opened by the practice it waits for", () => {
   const f = ROADMAPS.finance;
-  // A newcomer starts finance at decimals, by the first practice decimals wait for.
-  const n = roadNext(f, work({}))!;
+  // A newcomer starts finance with its first stage's "What is…?" (#450), then decimals, by the first practice they wait for.
+  assert.deepEqual(roadNext(f, work({})), { item: { read: "fractions" } });
+  const n = roadNext(f, work({}, null, [], ["fractions"]))!;
   assert.deepEqual([(n.item as { skill: string }).skill, n.level], ["decimals", 1]);
   assert.ok(n.via && work({}).s.ready(n.via.skill, n.via.level), "the step offered can be done now");
   // Placed in grade 12, the school maths is behind: Next is a level of grade 12 or later, or one no syllabus grades.
@@ -96,7 +102,7 @@ test("Next on a hand-made roadmap is its first item not done, opened by the prac
   const a = ROADMAPS.algorithms;
   const all: Cells = {};
   for (const i of itemsOf(a)) if (isSkill(i)) for (const L of i.levels) all[cellKey({ skill: i.skill, level: L })] = secure;
-  assert.deepEqual(roadNext(a, work(all, 13, ["connectTowns", "shortestPath", "beSearch"])), { item: { game: "beBinary" } });
+  assert.deepEqual(roadNext(a, work(all, 13, ["connectTowns", "shortestPath", "beSearch"], ["logic", "discrete", "algorithms"])), { item: { game: "beBinary" } });
 });
 
 test("following Next walks every roadmap to the end", () => {
@@ -104,14 +110,17 @@ test("following Next walks every roadmap to the end", () => {
     for (const placed of [null, 8] as const) {
       const cells: Cells = {};
       const won: GameId[] = [];
-      for (let steps = 0, n = roadNext(r, work(cells, placed, won)); n; n = roadNext(r, work(cells, placed, won)), steps++) {
+      const read: TopicId[] = [];
+      const w0 = () => work(cells, placed, won, read);
+      for (let steps = 0, n = roadNext(r, w0()); n; n = roadNext(r, w0()), steps++) {
         assert.ok(steps < 2000, `${r.id} goes round in circles`);
         if (n.via) {
           assert.equal(cells[cellKey(n.via)], undefined, `${r.id}: ${cellKey(n.via)} came twice`);
           cells[cellKey(n.via)] = secure;
-        } else won.push((n.item as { game: GameId }).game);
+        } else if (isRead(n.item)) read.push(n.item.read);
+        else won.push((n.item as { game: GameId }).game);
       }
-      const w = work(cells, placed, won);
+      const w = w0();
       for (const i of itemsOf(r)) {
         // The grade roadmaps leave a level no syllabus grades (the puzzles) to the learner, as the course does.
         if (r.order === "grade" && isSkill(i) && i.levels.some((L) => gradeOf(i.skill, L) === null)) continue;

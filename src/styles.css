@@ -1716,3 +1716,35 @@ span.board-home:hover { background: none; }
   .insert-groups { flex-direction: row; overflow-x: auto; overflow-y: hidden; border-right: none; border-bottom: 1px solid var(--border); padding: 8px; }
   .insert-group { flex: none; }
 }
+
+/* Topic intros (#450): what a topic is beside its picture, where it is used, and the "What is…?" page. */
+.topic-pic { display: block; width: 100%; max-width: 240px; height: auto; color: var(--z-ink); }
+.topic-pic .tp-text { fill: currentColor; stroke: none; font-family: inherit; font-weight: 700; }
+.topic-pic .tp-mark { fill: var(--z-marker); }
+.topic-pic .tp-mark-line { stroke: var(--z-marker); stroke-width: 4; }
+.topic-pic .tp-soft { fill: var(--z-grid); }
+.topic-pic .tp-paper { fill: var(--z-paper); }
+.topic-pic .tp-dot { fill: currentColor; stroke: none; }
+.topic-pic .tp-grid { stroke: var(--z-grid); stroke-width: 1.5; }
+.topic-pic .tp-thin { stroke-width: 1.5; opacity: 0.55; }
+.explainer { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 24px; }
+.explainer-what { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 20px; align-items: center; }
+.explainer-what h2 { margin: 0 0 6px; }
+.explainer-what p { margin: 0; line-height: 1.55; }
+.explainer-read { margin-top: 10px !important; color: var(--z-right); font-weight: 700; font-size: 0.9375rem; }
+.explainer-use-head { margin: 18px 0 10px; font-size: 1rem; }
+.explainer-uses { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 10px; }
+.explainer-uses li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--chip); line-height: 1.35; }
+.explainer-icon { flex: none; display: inline-grid; place-items: center; width: 36px; height: 36px; font-size: 1.4rem; font-weight: 700; }
+.site-explain-link { font-weight: 700; }
+.explain-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 14px; }
+.explain-card { display: flex; flex-direction: column; gap: 8px; height: 100%; box-sizing: border-box; padding: 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; color: var(--z-ink); text-decoration: none; line-height: 1.45; }
+.explain-card:hover, .explain-card:focus-visible { border-color: var(--z-ink); }
+.explain-card .topic-pic { max-width: 180px; align-self: center; }
+.explain-card span { color: var(--z-graphite); font-size: 0.9375rem; }
+.explain-card .explain-done { color: var(--z-right); }
+@media (max-width: 600px) {
+  .explainer { padding: 14px; }
+  .explainer-what { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .explainer-what .topic-pic { max-width: 200px; margin: 0 auto; }
+}

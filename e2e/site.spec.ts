@@ -1,5 +1,6 @@
 // The maths site around the boards (#448): a learner gets from the home page to a topic and works through its lesson
-// without a board, and a teacher on a board inserts anything from the library with one button.
+// without a board, a teacher on a board inserts anything from the library with one button, and every topic opens with
+// an intro that counts as read on the roadmaps (#450).
 import { expect, test } from "@playwright/test";
 import { insertGroup } from "./helpers.ts";
 
@@ -36,4 +37,40 @@ test("Insert puts a piece on the board, finds by search and links each section t
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
   await expect(page.locator(".insert-btn")).toBeFocused();
+});
+
+test("a topic's intro counts as read after a few seconds in view and ticks its roadmap item (#450)", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto("/#/roadmaps/finance");
+  const item = page.locator(".road-item", { hasText: "What are fractions?" });
+  await expect(item).toHaveAttribute("href", "#/learn/fractions");
+  await expect(item).not.toHaveClass(/done/);
+  await item.click();
+  const intro = page.locator(".explainer");
+  await expect(intro.getByRole("heading", { name: "What are fractions?" })).toBeVisible();
+  await expect(intro.locator(".topic-pic")).toBeVisible();
+  await expect(intro.locator(".explainer-uses li")).toHaveCount(4);
+  // The intro's piece is the first one to try.
+  await expect(page.locator(".site-try").first().locator(".live-fractionWall")).toBeVisible();
+  await page.clock.runFor(5500);
+  await expect(intro.locator(".explainer-read")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+  await page.goto("/#/roadmaps/finance");
+  await expect(page.locator(".road-item", { hasText: "What are fractions?" })).toHaveClass(/done/);
+});
+
+test("\"What is…?\" lists every topic's intro, fits a phone in every language, and Georgian is not capitalised", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  for (const lang of ["en", "ka", "ru"]) {
+    await page.goto("/#/");
+    await page.evaluate((l) => localStorage.setItem("lang", l), lang);
+    for (const h of ["#/explain", "#/learn/numberTheory", "#/learn/ai"]) {
+      await page.goto(`/${h}`);
+      await page.locator(".topic-pic").first().waitFor();
+      if (h === "#/explain") await expect(page.locator(".explain-card")).toHaveCount(20);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), `${lang} ${h}`).toBe(0);
+      expect(await page.evaluate(() => /[Ა-Ჿ]/.test(document.body.innerText)), `${lang} ${h}`).toBe(false);
+    }
+  }
 });
