@@ -1,7 +1,7 @@
 // The maths of the financial mathematics elective (src/math/finance.ts) and its three skills.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { annuityPV, callPay, compound, MODELS, payment, price, putPay, riskNeutral, STEPS, value } from "../src/math/finance.ts";
+import { amortBalance, annuityPV, callPay, compound, MODELS, payment, paymentsToClear, price, putPay, riskNeutral, STEPS, value } from "../src/math/finance.ts";
 import { Frac } from "../src/math/fraction.ts";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, trapInputs, type SkillId } from "../src/math/practice.ts";
@@ -17,6 +17,24 @@ test("compounding more often tends to e^{rt}, and a loan's payments are worth th
   let bal = 10000;
   for (let k = 0; k < 36; k++) bal = bal * 1.01 - R;
   assert.ok(Math.abs(bal) < 1e-6);
+});
+
+test("a loan's schedule: the balance month by month, nothing left after n payments, and the payments to clear it (#455)", () => {
+  const R = payment(10000, 0.01, 36);
+  let bal = 10000;
+  for (let k = 1; k <= 36; k++) {
+    bal = bal * 1.01 - R;
+    assert.ok(Math.abs(amortBalance(10000, 0.01, R, k) - bal) < 1e-6, `after ${k}`);
+  }
+  assert.ok(Math.abs(amortBalance(10000, 0.01, R, 36)) < 1e-6);
+  // A payment that clears the loan in exactly 36 months takes 36; a cent less takes one more, a larger one fewer.
+  assert.equal(paymentsToClear(10000, 0.01, R), 36);
+  assert.equal(paymentsToClear(10000, 0.01, R - 0.01), 37);
+  assert.equal(paymentsToClear(10000, 0.01, 100), Infinity); // no more than the interest: never cleared
+  for (const [B, i, x] of [[8000, 0.005, 300], [5000, 0.0075, 200], [12000, 0.01, 500]]) {
+    const n = paymentsToClear(B, i, x);
+    assert.ok(annuityPV(x, i, n) >= B && annuityPV(x, i, n - 1) < B, `${B} ${i} ${x}`);
+  }
 });
 
 test("every model is free of arbitrage, and p̃ makes the discounted stock a martingale", () => {
@@ -51,7 +69,7 @@ test("put–call parity holds in every model, and the American call is the Europ
 
 test("every financial mathematics question accepts its answer and names each trap", () => {
   const w = en.pracWords;
-  for (const s of ["interestRates", "binomialPricing", "optionPricing"] as SkillId[])
+  for (const s of ["interestRates", "amortisation", "binomialPricing", "optionPricing"] as SkillId[])
     for (const L of [1, 2, 3] as const)
       for (let seed = 0; seed < 40; seed++) {
         const e = exercise(s, L, seed, w);

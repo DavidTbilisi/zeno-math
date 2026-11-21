@@ -17824,6 +17824,88 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "amortisation",
+      "level": 1,
+      "seed": 7,
+      "input": "60.00",
+      "label": "correct"
+    },
+    {
+      "skill": "amortisation",
+      "level": 1,
+      "seed": 7,
+      "input": "720",
+      "label": "wrong",
+      "mistake": "yearlyRateMonthly"
+    },
+    {
+      "skill": "amortisation",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "amortisation",
+      "level": 2,
+      "seed": 7,
+      "input": "3653.81",
+      "label": "correct"
+    },
+    {
+      "skill": "amortisation",
+      "level": 2,
+      "seed": 7,
+      "input": "3260.12",
+      "label": "wrong",
+      "mistake": "balanceNoInterest"
+    },
+    {
+      "skill": "amortisation",
+      "level": 2,
+      "seed": 7,
+      "input": "3710.12",
+      "label": "wrong",
+      "mistake": "balanceFirstInterest"
+    },
+    {
+      "skill": "amortisation",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "amortisation",
+      "level": 3,
+      "seed": 7,
+      "input": "1320.16",
+      "label": "correct"
+    },
+    {
+      "skill": "amortisation",
+      "level": 3,
+      "seed": 7,
+      "input": "2400",
+      "label": "wrong",
+      "mistake": "interestOnWholeLoan"
+    },
+    {
+      "skill": "amortisation",
+      "level": 3,
+      "seed": 7,
+      "input": "6320.16",
+      "label": "wrong",
+      "mistake": "totalPaidForInterest"
+    },
+    {
+      "skill": "amortisation",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
