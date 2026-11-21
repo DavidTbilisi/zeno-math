@@ -1743,6 +1743,40 @@ span.board-home:hover { background: none; }
 .explain-card .topic-pic { max-width: 180px; align-self: center; }
 .explain-card span { color: var(--z-graphite); font-size: 0.9375rem; }
 .explain-card .explain-done { color: var(--z-right); }
+/* Maths symbols (#451): #/symbols tiles and the card, also opened under a practice question. Global tokens only, so
+   the card looks the same inside the practice dialog as on the site. */
+.site-explain-links { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.sym-search input { width: 100%; box-sizing: border-box; font-size: 1.0625rem; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); }
+.sym-tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 10px; }
+.sym-tile { display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; box-sizing: border-box; padding: 12px 8px; text-align: center; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); text-decoration: none; line-height: 1.3; }
+.sym-tile:hover, .sym-tile:focus-visible, .sym-tile.on { border-color: var(--accent); }
+.sym-tile-glyph { font-size: 1.9rem; font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", serif; white-space: nowrap; }
+.sym-tile-name { font-size: 0.875rem; color: var(--muted); overflow-wrap: anywhere; }
+.sym-open { margin: 0 0 18px; }
+.sym-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; padding: 16px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); text-align: left; }
+.sym-glyph { display: grid; place-items: center; min-height: 96px; border-radius: 8px; background: var(--chip); font-size: 2.6rem; font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", serif; overflow-wrap: anywhere; text-align: center; line-height: 1.1; padding: 4px; }
+.sym-name { margin: 0; font-size: 1.25rem; }
+.sym-group { margin: 2px 0 10px; color: var(--muted); font-size: 0.875rem; }
+.sym-facts { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; line-height: 1.45; }
+.sym-facts dt { font-weight: 700; color: var(--muted); font-size: 0.875rem; padding-top: 2px; }
+.sym-facts dd { margin: 0; overflow-wrap: anywhere; }
+.sym-example { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", serif; font-size: 1.125rem; white-space: nowrap; }
+.sym-reading { color: var(--muted); }
+.sym-listen { margin-left: 8px; }
+.sym-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sym-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border: 1.5px solid var(--border); border-radius: 999px; background: var(--chip); color: var(--text); font: inherit; font-size: 0.875rem; text-decoration: none; cursor: pointer; }
+.sym-chip:hover, .sym-chip:focus-visible, .sym-chip.on { border-color: var(--accent); }
+.q-symbols { margin-top: 10px; text-align: left; }
+.q-symbols-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.q-symbols-label { color: var(--muted); font-size: 0.875rem; }
+.q-symbols-card { margin-top: 8px; }
+.q-symbols-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 6px; font-size: 0.875rem; }
+@media (max-width: 600px) {
+  .sym-card { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+  .sym-glyph { min-height: 72px; }
+  .sym-facts { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .sym-facts dd { margin-bottom: 8px; }
+}
 @media (max-width: 600px) {
   .explainer { padding: 14px; }
   .explainer-what { grid-template-columns: minmax(0, 1fr); gap: 12px; }

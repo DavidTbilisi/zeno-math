@@ -1,6 +1,7 @@
 import type { Dict } from "./en";
 import { about } from "./about/ru";
 import { site } from "./site/ru";
+import { symbols } from "./symbols/ru";
 import { problems } from "./problems/ru/index";
 import { solver } from "./solver/ru";
 
@@ -21,6 +22,7 @@ export const ru: Dict = {
   aboutLink: "О Zeno",
   about,
   site,
+  symbols,
   sourceCode: "Исходный код (AGPL-3.0)",
   updated: "Изменено",
   secLearn: "Учиться",
