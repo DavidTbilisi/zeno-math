@@ -39,7 +39,7 @@ test("number patterns: dots, why, primes and Fibonacci", async ({ page }) => {
 });
 
 test("the games menu has a Number patterns section", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.locator(".excalidraw").waitFor();
   await page.getByRole("button", { name: "Games" }).click();

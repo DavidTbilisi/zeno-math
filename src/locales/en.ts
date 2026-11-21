@@ -1,5 +1,6 @@
 // English UI strings. ru.ts and ka.ts must have exactly the same keys (checked by the type below and by npm test).
 import { about } from "./about/en";
+import { site } from "./site/en";
 import { problems } from "./problems/en/index";
 import { solver } from "./solver/en";
 export const en = {
@@ -18,6 +19,7 @@ export const en = {
   backupAll: "Download a backup of all boards",
   aboutLink: "About Zeno",
   about,
+  site,
   sourceCode: "Source code (AGPL-3.0)",
   updated: "Updated",
   secLearn: "Learn",

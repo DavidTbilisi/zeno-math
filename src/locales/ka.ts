@@ -1,5 +1,6 @@
 import type { Dict } from "./en";
 import { about } from "./about/ka";
+import { site } from "./site/ka";
 import { problems } from "./problems/ka/index";
 import { solver } from "./solver/ka";
 
@@ -19,6 +20,7 @@ export const ka: Dict = {
   backupAll: "ყველა დაფის სარეზერვო ასლის ჩამოტვირთვა",
   aboutLink: "Zeno-ს შესახებ",
   about,
+  site,
   sourceCode: "საწყისი კოდი (AGPL-3.0)",
   updated: "განახლდა",
   secLearn: "სწავლა",

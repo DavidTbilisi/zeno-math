@@ -1,16 +1,11 @@
+// The boards page (#448): the learner's or teacher's own whiteboards, which used to be the home page. The site's home
+// now starts from learning; boards are one section of it.
 import { useEffect, useState } from "react";
 import { api, ApiError, boardOwner, type BoardSummary } from "../api";
-import { storedGoal } from "../achieved";
-import { BrandBar } from "../components/BrandBar";
-import { gradeName } from "../components/GradeCard";
+import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { useI18n } from "../i18n";
-import { fill } from "../math/text";
-import { currentGrade } from "../model/placement";
-import { loadProgress } from "../practiceProgress";
 import { BOARD_SORTS, isBoardSort, sortBoards, type BoardAge, type BoardSort } from "../boardSort";
 
-// AGPL-3.0 §13: whoever runs Zeno for others must offer them its source. A modified copy points this at its own code.
-const SOURCE_URL = "https://github.com/DavidTbilisi/zeno-math";
 // The board order this browser picked last; only a convenience, so a browser without storage just starts from "recent".
 const SORT_KEY = "zeno.boardSort";
 const savedSort = (): BoardSort => {
@@ -24,16 +19,12 @@ const savedSort = (): BoardSort => {
 const SORT_WORD = { recent: "sortRecent", created: "sortCreated", name: "sortName" } as const;
 const AGE_WORD: Record<BoardAge, "ageToday" | "ageWeek" | "ageMonth" | "ageOlder"> = { today: "ageToday", week: "ageWeek", month: "ageMonth", older: "ageOlder" };
 
-export function HomePage() {
+export function BoardsPage() {
   const { t, lang } = useI18n();
   const [boards, setBoards] = useState<BoardSummary[] | null>(null);
   const [failed, setFailed] = useState(false);
   // 403: this browser is neither a teacher's nor a joined student's, so it has no boards (server/research.ts boardUser).
   const [refused, setRefused] = useState(false);
-  // Where the learner is in the course, once they have practised or found their grade in this browser.
-  const [progress] = useState(loadProgress);
-  const grade = progress.placed || progress.cells ? currentGrade(progress.placed ?? null, progress.cells ?? {}) : null;
-  const goal = storedGoal();
 
   const load = () => api.list().then(setBoards, (e) => {
     setRefused(e instanceof ApiError && e.status === 403);
@@ -142,43 +133,12 @@ export function HomePage() {
   return (
     <div className="z">
       <div className="home">
-        <BrandBar home="#/about">
-          <a href="#/roadmaps">{t.roadmap.link}</a>
-          <a href="#/course">{t.course.link}</a>
-          <a href="#/about">{t.aboutLink}</a>
-        </BrandBar>
+        <SiteBar here="boards" />
 
         <main className="home-main">
-          {/* Learn, then the learner's own boards, then what only teachers need; the page's small print last. */}
-          <section className="home-section" aria-labelledby="home-learn">
-            <h2 id="home-learn" className="home-head">{t.secLearn}</h2>
-            <a className="z-practice" href="#/practice">
-              <span className="z-practice-text">
-                <strong>{t.practice}</strong>
-                <span>{t.practiceIntro}</span>
-                {grade && <span className="z-practice-grade">{fill(t.pracWords.grades.here, { grade: gradeName(grade, t.pracWords.grades) })}</span>}
-              </span>
-              <span className="z-btn z-btn-marker">{t.practiceStart}</span>
-            </a>
-            <a className="home-course" href={goal ? `#/roadmaps/${goal}` : "#/roadmaps"}>
-              <span className="home-course-text">
-                <strong>{goal ? t.roadmap.goals[goal].name : t.roadmap.link}</strong>
-                <span>{goal ? t.roadmap.yours : t.roadmap.title}</span>
-              </span>
-              <span className="z-btn">{t.roadmap.open} →</span>
-            </a>
-            <a className="home-course" href="#/course">
-              <span className="home-course-text">
-                <strong>{t.course.link}</strong>
-                <span>{t.course.title}</span>
-              </span>
-              <span className="z-btn">{t.courseOpen} →</span>
-            </a>
-          </section>
-
           <section className="home-section" aria-labelledby="home-boards">
             <div className="section-head">
-              <h2 id="home-boards" className="home-head">{t.myBoards}</h2>
+              <h1 id="home-boards" className="z-page-title home-head">{t.myBoards}</h1>
               <div className="home-tools">
                 {!!boards?.length && (
                   <div className="home-sort" role="group" aria-label={t.boardsSort}>
@@ -226,9 +186,7 @@ export function HomePage() {
             </section>
           )}
         </main>
-        <footer className="home-foot muted small">
-          <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">{t.sourceCode}</a>
-        </footer>
+        <SiteFoot />
       </div>
     </div>
   );

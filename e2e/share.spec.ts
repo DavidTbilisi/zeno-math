@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 const elementsIn = async (body: string) => (JSON.parse(body).scene?.elements ?? []).length as number;
 
 test("a read-only link follows the board as it changes, then stops when sharing stops", async ({ page, browser, request }) => {
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   await page.locator(".excalidraw").waitFor();

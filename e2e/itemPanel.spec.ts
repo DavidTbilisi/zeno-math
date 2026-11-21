@@ -5,7 +5,7 @@ import { expect, test, type Page } from "@playwright/test";
 const SHOTS = process.env.SHOTS_DIR;
 
 async function newBoard(page: Page) {
-  await page.goto("/");
+  await page.goto("/#/boards");
   await page.getByRole("button", { name: /New board/ }).first().click();
   await page.waitForURL(/#\/b\/[0-9a-f-]+$/);
   await page.locator(".excalidraw").waitFor();
