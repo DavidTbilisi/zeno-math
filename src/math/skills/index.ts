@@ -230,6 +230,7 @@ import mgf from "./mgf";
 import limitTheorems from "./limitTheorems";
 import markov from "./markov";
 import recurrences from "./recurrences";
+import growth from "./growth";
 import generating from "./generating";
 import inclusionExclusion from "./inclusionExclusion";
 import pigeonhole from "./pigeonhole";
@@ -470,6 +471,7 @@ export const GENS: Record<SkillId, Gen> = {
   limitTheorems,
   markov,
   recurrences,
+  growth,
   generating,
   inclusionExclusion,
   pigeonhole,

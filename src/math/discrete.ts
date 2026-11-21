@@ -2,7 +2,7 @@
 // Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory), past the
 // counting and graph puzzles of school: linear recurrences, generating functions, inclusion–exclusion and
 // derangements, the pigeonhole principle, graph theory. The words, and the exact maths the answers are made of; the
-// questions are in src/math/skills/{recurrences,generating,inclusionExclusion,pigeonhole,graphTheory}.ts.
+// questions are in src/math/skills/{recurrences,growth,generating,inclusionExclusion,pigeonhole,graphTheory}.ts.
 
 /** The words of these questions (the locale's `dm` block). */
 export type DiscreteWords = {
@@ -31,6 +31,11 @@ export type DiscreteWords = {
     eulerCircuit: string;
     faces: string;
     matchings: string;
+    growthFastest: string;
+    growthCount: string;
+    growthLoop: string;
+    growthRecurrence: string;
+    growthTime: string;
   };
 };
 

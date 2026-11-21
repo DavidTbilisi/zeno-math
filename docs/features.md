@@ -1198,6 +1198,13 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     out or no overlaps subtracted, the complement not taken, n!/2 for Dₙ, the others not deranged, the + 1 left out,
     the floor for the ceiling, the degree sum not halved, n edges in a tree, n(n − 1) for Kₙ, odd degrees ignored, the
     outer face forgotten, the pairs ordered.
+  - Growth rates and big-O (#460), after logarithms and linear recurrences, on the software engineer roadmap's
+    algorithms stage and the algorithms and interviews roadmap's search stage: the fastest-growing of four functions,
+    the steps of two nested loops, the order of a loop (two in a row, a halving loop, a halving loop inside a loop),
+    the order of T(n) = aT(n/b) + nᵈ by comparing a with bᵈ, and the seconds nᵏ steps take at 10ᴿ a second. The
+    named slips: a big power over an exponential, a constant kept, the triangle counted as the square, nested loops
+    added, loops in a row multiplied, log n taken as n, the log factor dropped or added, only the top level's work,
+    and the powers added instead of multiplied.
   - Logic and set theory, an elective of the degree (Enderton, A Mathematical Introduction to Logic; Elements of Set
     Theory), three skills in probability & statistics after graph theory: normal forms (the rows of P, Q, R that make a
     statement true; the terms of its full DNF or the clauses of its full CNF; tautology, satisfiable or unsatisfiable,
