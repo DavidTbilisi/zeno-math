@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, ApiError, boardOwner, type BoardSummary } from "../api";
+import { storedGoal } from "../achieved";
 import { BrandBar } from "../components/BrandBar";
 import { gradeName } from "../components/GradeCard";
 import { useI18n } from "../i18n";
@@ -32,6 +33,7 @@ export function HomePage() {
   // Where the learner is in the course, once they have practised or found their grade in this browser.
   const [progress] = useState(loadProgress);
   const grade = progress.placed || progress.cells ? currentGrade(progress.placed ?? null, progress.cells ?? {}) : null;
+  const goal = storedGoal();
 
   const load = () => api.list().then(setBoards, (e) => {
     setRefused(e instanceof ApiError && e.status === 403);
@@ -141,6 +143,7 @@ export function HomePage() {
     <div className="z">
       <div className="home">
         <BrandBar home="#/about">
+          <a href="#/roadmaps">{t.roadmap.link}</a>
           <a href="#/course">{t.course.link}</a>
           <a href="#/about">{t.aboutLink}</a>
         </BrandBar>
@@ -156,6 +159,13 @@ export function HomePage() {
                 {grade && <span className="z-practice-grade">{fill(t.pracWords.grades.here, { grade: gradeName(grade, t.pracWords.grades) })}</span>}
               </span>
               <span className="z-btn z-btn-marker">{t.practiceStart}</span>
+            </a>
+            <a className="home-course" href={goal ? `#/roadmaps/${goal}` : "#/roadmaps"}>
+              <span className="home-course-text">
+                <strong>{goal ? t.roadmap.goals[goal].name : t.roadmap.link}</strong>
+                <span>{goal ? t.roadmap.yours : t.roadmap.title}</span>
+              </span>
+              <span className="z-btn">{t.roadmap.open} →</span>
             </a>
             <a className="home-course" href="#/course">
               <span className="home-course-text">

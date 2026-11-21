@@ -9,7 +9,8 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
-import { burst, clockOpen, GAME_LEVELS, isOpen, levelOpen, PASS_STREAK, readLadder, type GameLevel, type Ladder } from "../math/ladder";
+import { noteAchieved } from "../achieved";
+import { burst, clockOpen, GAME_LEVELS, isOpen, ladderPassed, levelOpen, PASS_STREAK, readLadder, type GameLevel, type Ladder } from "../math/ladder";
 import { useFeel, setFeel } from "./feel";
 import { muted, setMuted } from "./juice";
 import { isTeacher } from "../teacherMode";
@@ -33,6 +34,8 @@ export function useLadder<K extends string>(key: string, size: number, keys: rea
     }
   });
   const keep = (next: Ladder<K>) => {
+    // The day the ladder is first passed, for the roadmaps' achieved list.
+    if (!ladderPassed(ladder.stars) && ladderPassed(next.stars)) noteAchieved(`ladder:${key}`);
     setLadder(next);
     try {
       localStorage.setItem(key, JSON.stringify(next));
