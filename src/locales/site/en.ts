@@ -7,6 +7,7 @@ export const site = {
   library: "Tools & games",
   boards: "Boards",
   progress: "My progress",
+  toolsGames: "Tools & games",
 
   heroTitle: "Maths from zero to advanced, one small step at a time",
   heroLede: "Read what a topic is and where it is used, follow a roadmap to your goal, and practise until it sticks.",
@@ -85,5 +86,17 @@ export const site = {
   pct: "{pct} %",
   nextShort: "Next: {skill}, level {level}",
   filterNone: "No topic here yet.",
+  teach: {
+    tabs: { today: "Today", progress: "Progress", homework: "Homework", study: "Study" },
+    classBoard: "Open the class board",
+    classBoardName: "Class {name}",
+    boardFailed: "Couldn't open the board. Try again.",
+    topics: "Topics",
+    topicsHint: "The class average on each topic: the share of its levels the learner model counts as mastered (a right first answer at least {at} likely). Choose a topic to see only its skills in the table below.",
+    behind: "{n} well behind",
+    behindHint: "a quarter or more below the class average",
+    allTopics: "All topics",
+    feature: "Testing: {feature}",
+  },
 };
 export type Site = typeof site;

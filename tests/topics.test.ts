@@ -9,7 +9,7 @@ import { ru } from "../src/locales/ru.ts";
 import { LIBRARY, entriesOf, searchLibrary } from "../src/library.ts";
 import { MENUS } from "../src/menus.ts";
 import { ALL_SKILLS } from "../src/math/practiceSkills.ts";
-import { FEATURED, SHELVES, TOPICS, topicProgress } from "../src/model/topics.ts";
+import { classTopics, FEATURED, SHELVES, TOPICS, topicOf, topicProgress } from "../src/model/topics.ts";
 import { standing } from "../src/model/course.ts";
 
 const TWICE = new Set(["senseChart"]);
@@ -58,4 +58,20 @@ test("a topic's progress counts secure and behind levels, and with nothing done 
   assert.equal(p.total, 3 * t.skills.length);
   assert.equal(p.secure + p.behind, 0);
   assert.ok(p.next);
+});
+
+test("a class's topics: shares of mastered levels, the mean, and who is well behind", () => {
+  const ks = topicOf("fractions").skills.slice(0, 2);
+  const at = (p: number[], n = 5) => ({ p, n });
+  const students = [
+    { mastery: { [ks[0]]: at([0.9, 0.9, 0.9]), [ks[1]]: at([0.9, 0.9, 0.9]) } }, // 6 of 6
+    { mastery: { [ks[0]]: at([0.9, 0.9, 0.2]), [ks[1]]: at([0.9, 0.9, 0.9], 0) } }, // 2 of 6: no answers on the second
+    { mastery: {} }, // 0 of 6
+  ];
+  const [f, ...rest] = classTopics(ks, students, 0.8);
+  assert.equal(rest.length, 0, "only topics the class's skills reach");
+  assert.equal(f.id, "fractions");
+  assert.ok(Math.abs(f.mean - (1 + 2 / 6 + 0) / 3) < 1e-9);
+  assert.equal(f.behind, 1, "nothing is a quarter or more below the mean of 4/9; a third is not");
+  assert.deepEqual(classTopics(ks, [], 0.8)[0].mean, 0);
 });

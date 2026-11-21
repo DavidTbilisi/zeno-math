@@ -130,3 +130,29 @@ export function topicProgress(t: Topic, w: Work): TopicProgress {
 export type TopicStatus = "finished" | "started" | "new";
 export const topicStatus = (p: TopicProgress): TopicStatus =>
   p.secure + p.behind >= p.total ? "finished" : p.secure > 0 ? "started" : "new";
+
+/** A student as the class model sees them: the chance of a right first answer at each level of a skill, and on how many answers it rests. */
+type ModelStudent = { mastery: Partial<Record<SkillId, { p: readonly number[]; n: number }>> };
+/** How far below the class mean a student's share of a topic must be to count as well behind. */
+export const WELL_BEHIND = 0.25;
+export type ClassTopic = { id: TopicId; skills: readonly SkillId[]; mean: number; behind: number };
+/**
+ * A class on each topic its skills reach (#448, the teacher's Progress tab), in the units of My progress: each
+ * student's share of the topic's levels, a level counting once the learner model's chance of a right first answer
+ * reaches `masteredAt` (policy.ts MASTERED_AT); the class mean of those shares, and how many students are WELL_BEHIND
+ * or more below it. Only the skills the class practises count.
+ */
+export function classTopics(classSkills: readonly SkillId[], students: readonly ModelStudent[], masteredAt: number): ClassTopic[] {
+  return TOPICS.flatMap((t) => {
+    const ks = t.skills.filter((k) => classSkills.includes(k));
+    if (!ks.length) return [];
+    const levels = (s: ModelStudent) =>
+      ks.reduce((sum, k) => {
+        const m = s.mastery[k];
+        return sum + (m && m.n > 0 ? m.p.filter((p) => p >= masteredAt).length : 0);
+      }, 0);
+    const shares = students.map((s) => levels(s) / (3 * ks.length));
+    const mean = shares.length ? shares.reduce((a, b) => a + b, 0) / shares.length : 0;
+    return [{ id: t.id, skills: ks, mean, behind: shares.filter((x) => x <= mean - WELL_BEHIND).length }];
+  });
+}

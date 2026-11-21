@@ -139,6 +139,7 @@ test("the join link fills the class code in; a number given twice is caught, and
   }
 
   await teacher.getByRole("button", { name: "Refresh" }).click();
+  await teacher.getByRole("tab", { name: "Progress" }).click();
   const find = teacher.locator(".find-code");
   await find.locator("summary").click();
   for (const c of codes) await expect(find.getByRole("row", { name: new RegExp(c) })).toContainText("Same number twice");
@@ -156,6 +157,7 @@ test("a test written on paper is typed in on the teacher page, marked, and expor
   await page.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
   await page.goto("/#/teacher");
   await page.locator(".class-item", { hasText: name }).click();
+  await page.getByRole("tab", { name: "Study" }).click();
   const card = page.locator(".paper-card");
   await card.locator("summary").click();
   await card.getByRole("combobox", { name: "Student", exact: true }).selectOption({ label: `№ 3 · ${student}` });
@@ -404,6 +406,7 @@ test("a teacher tests spaced review in a class: two arms, the delayed post-test 
   await sit(off[0].code, "delayed", 4, 1);
   await teacher.getByRole("button", { name: "Refresh" }).click();
   await expect(teacher.locator(".delayed-when")).toHaveText("Taken 0 days after the post-test.");
+  await teacher.getByRole("tab", { name: "Study" }).click();
   const card = teacher.locator(".tests-card");
   await expect(card.locator("thead th")).toHaveText(["", "Spaced review", "No spaced review", "d"]);
   await expect(card.locator("tr[data-test]")).toHaveCount(2); // no pre-test in this class
@@ -417,6 +420,7 @@ test("a teacher tests spaced review in a class: two arms, the delayed post-test 
   await expect(delayed.nth(0)).toContainText("38% (SD 53, n = 2)");
   await expect(delayed.nth(1)).toContainText("13% (SD 17.7, n = 2)");
   await expect(delayed.nth(1)).toContainText("1 of 2 finished");
+  await teacher.getByRole("tab", { name: "Progress" }).click();
   await expect(teacher.locator(".heat thead")).toContainText("Delayed post-test");
   await expect(teacher.locator(".heat .heat-group").first()).toContainText("Spaced review (2)");
   await teacher.close();
@@ -514,10 +518,12 @@ test("a skill mastered, then kept by a right review days later: the student's pa
   await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
   await teacher.goto("/#/teacher");
   await teacher.locator(".class-item", { hasText: name }).click();
+  await teacher.getByRole("tab", { name: "Progress" }).click();
   await expect(teacher.locator(".heat-legend")).toContainText(en.teacher.holds.kept);
   const row = teacher.locator(".heat tbody tr").nth(1);
   await expect(row.locator(".heat-kept .heat-hold")).toHaveText("★");
   await expect(row.locator(".heat-mastered .heat-hold")).toHaveText("✓");
+  await teacher.getByRole("tab", { name: "Study" }).click();
   await expect(teacher.locator(".teacher").getByText(en.teacher.metrics.kept)).toBeVisible();
 });
 

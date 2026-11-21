@@ -25,16 +25,18 @@ const bin = (p: number) => Math.min(4, Math.floor(p * 5));
 /** The mark of how a mastered skill holds. */
 export const HOLD_MARK: Record<Hold, string> = { mastered: "✓", kept: "★", again: "↺" };
 
-export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showCodes }: {
+/** `only`: the skills to show (a topic chosen on the teacher's Progress tab); all the class practises otherwise. */
+export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showCodes, only }: {
   data: Dashboard;
   words: Words;
   skillName: (k: SkillId) => string;
   pct: (x: number) => string;
   showNumbers: boolean;
   showCodes: boolean;
+  only?: readonly SkillId[];
 }) {
   const { bind, view } = useChartTip();
-  const skills = data.class.skills;
+  const skills = only ? data.class.skills.filter((k) => only.includes(k)) : data.class.skills;
 
   const cell = (who: string, k: SkillId, c: Cell, key: string, hold?: Hold) => {
     const detail = (d: string) => (hold ? `${d} · ${HOLD_MARK[hold]} ${words.holds[hold]}` : d);

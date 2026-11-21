@@ -1,6 +1,6 @@
 // The site's top bar (#448): Zeno's mark and name, the sections of the site with the one being read marked, and the
 // language. On a phone the sections fold under a Menu button, so the bar never runs off the side of the page.
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { LangSelect, useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
 import { ZenoMark } from "./ZenoMark";
@@ -8,7 +8,7 @@ import { ZenoMark } from "./ZenoMark";
 /** Where this copy's source is (AGPL-3.0 §13): a modified Zeno run for others points this at its own copy. */
 export const SOURCE_URL = "https://github.com/DavidTbilisi/zeno-math";
 
-export type Section = "learn" | "roadmaps" | "practice" | "library" | "boards" | "progress";
+export type Section = "learn" | "roadmaps" | "practice" | "library" | "boards" | "progress" | "teacher";
 const LINKS: { id: Section; href: string; word: (t: Dict) => string }[] = [
   { id: "learn", href: "#/learn", word: (t) => t.site.learn },
   { id: "roadmaps", href: "#/roadmaps", word: (t) => t.roadmap.link },
@@ -17,8 +17,17 @@ const LINKS: { id: Section; href: string; word: (t: Dict) => string }[] = [
   { id: "boards", href: "#/boards", word: (t) => t.site.boards },
   { id: "progress", href: "#/progress", word: (t) => t.site.progress },
 ];
+/** A teacher's sections: their classes first, then what they teach with. */
+const TEACHER_LINKS: typeof LINKS = [
+  { id: "teacher", href: "#/teacher", word: (t) => t.teacher.classes },
+  { id: "boards", href: "#/boards", word: (t) => t.site.boards },
+  { id: "library", href: "#/library", word: (t) => t.site.toolsGames },
+  { id: "learn", href: "#/learn", word: (t) => t.site.learn },
+  { id: "roadmaps", href: "#/roadmaps", word: (t) => t.roadmap.link },
+];
 
-export function SiteBar({ here }: { here?: Section }) {
+/** `teacher` gives the teacher's sections; `children` (a button such as + New board) go before the language. */
+export function SiteBar({ here, teacher, children }: { here?: Section; teacher?: boolean; children?: ReactNode }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   return (
@@ -28,9 +37,10 @@ export function SiteBar({ here }: { here?: Section }) {
         {t.site.menu}
       </button>
       <nav id="site-nav" className="z-nav site-nav" aria-label={t.site.nav}>
-        {LINKS.map((l) => (
+        {(teacher ? TEACHER_LINKS : LINKS).map((l) => (
           <a key={l.id} href={l.href} aria-current={l.id === here ? "page" : undefined} onClick={() => setOpen(false)}>{l.word(t)}</a>
         ))}
+        {children}
         <LangSelect />
       </nav>
     </header>
