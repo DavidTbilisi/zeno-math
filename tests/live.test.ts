@@ -14,6 +14,7 @@ import {
   halfSign,
   viaHalf,
   counters,
+  dotsUpTo,
   firstEmpty,
   flipCounter,
   moveCounter,
@@ -304,4 +305,12 @@ test("ten frame by hand: a tray fills the first empty square, a counter moves, s
   assert.deepEqual(moveCounter(cells, 0, 2).slice(0, 3), [2, 0, 1]);
   assert.deepEqual(moveCounter(cells, 2, null).slice(0, 3), [1, 0, 0]);
   assert.deepEqual([0, 1, 2].map(flipCounter), [0, 2, 1]);
+});
+
+test("dot multiplication by hand: a drag along a row fills through the square under it", () => {
+  // 5 squares, 50 apart, from x = 10.
+  assert.equal(dotsUpTo(0, 10, 50, 5), 0);
+  assert.equal(dotsUpTo(12, 10, 50, 5), 1);
+  assert.equal(dotsUpTo(159, 10, 50, 5), 3);
+  assert.equal(dotsUpTo(900, 10, 50, 5), 5);
 });
