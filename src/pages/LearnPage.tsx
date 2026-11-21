@@ -1,17 +1,20 @@
 // Learn (#448): #/learn lists every topic on its shelf, from first steps to university, each with the learner's bar;
 // #/learn/<topic> is one topic's page: what the topic is and where it is used (#450), how far the learner is and their
 // next level, what they will learn (each skill with its three levels ticked), hands-on pieces to try right on the page,
-// and the topic's tools and games. #/learn links to #/explain, every topic's intro on one page.
+// the topic's tools and games, and the symbols it uses (#451). #/learn links to #/explain, every topic's intro on one
+// page, and to #/symbols.
 import { useState } from "react";
 import { Explainer } from "../components/Explainer";
 import { OpenOnBoard } from "../components/OpenOnBoard";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
+import { symWords } from "../components/SymbolCard";
 import { ToolOnPage } from "../components/ToolOnPage";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { entriesOf, entryName, libEntry, type LibEntry } from "../library";
 import { InlinePiece } from "../live/InlinePiece";
 import { isLiveEntry } from "../menus";
+import { SYMBOLS } from "../math/symbols";
 import { fill } from "../math/text";
 import { EXPLAINERS } from "../model/explainers";
 import { isTopic, SHELVES, TOPICS, topicOf, topicProgress, type TopicId } from "../model/topics";
@@ -29,7 +32,10 @@ export function LearnPage({ topic }: { topic?: string }) {
       <main className="z-page site-learn">
         <h1 className="z-page-title">{s.learnTitle}</h1>
         <p className="course-lede">{s.learnLede}</p>
-        <p><a className="site-explain-link" href="#/explain">{s.explain.indexLink} →</a></p>
+        <p className="site-explain-links">
+          <a className="site-explain-link" href="#/explain">{s.explain.indexLink} →</a>
+          <a className="site-explain-link" href="#/symbols">{t.symbols.title} →</a>
+        </p>
         {SHELVES.map((shelf) => (
           <section key={shelf} className="site-section" aria-labelledby={`shelf-${shelf}`}>
             <h2 id={`shelf-${shelf}`} className="site-shelf">{s.shelves[shelf]}</h2>
@@ -63,6 +69,7 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
   const more = pieces.slice(INLINE);
   const games = entries.filter((e) => e.kind === "game" && e !== first);
   const boardName = fill(s.boardName, { topic: name });
+  const symbols = SYMBOLS.filter((x) => x.topics.includes(id));
 
   return (
     <div className="z site">
@@ -136,6 +143,16 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
         {lessons.length > 0 && <Lessons slot={id} lessons={lessons} boardName={boardName} />}
         {more.length > 0 && <EntryCards id="topic-more" head={s.moreHead} entries={more} />}
         {games.length > 0 && <EntryCards id="topic-games" head={s.gamesHead} entries={games} />}
+        {symbols.length > 0 && (
+          <section className="site-section" aria-labelledby="topic-symbols">
+            <h2 id="topic-symbols">{t.symbols.title}</h2>
+            <div className="sym-chips">
+              {symbols.map((x) => (
+                <a key={x.id} className="sym-chip" href={`#/symbols/${x.id}`}><span aria-hidden="true">{x.glyph}</span> {symWords(t, x.id).name}</a>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
       <SiteFoot />
     </div>

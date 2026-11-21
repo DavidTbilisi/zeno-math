@@ -74,3 +74,33 @@ test("\"What is…?\" lists every topic's intro, fits a phone in every language,
     }
   }
 });
+
+test("a symbol met in a question is a tap from its card, and #/symbols finds it by the sign pasted in (#451)", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  await page.goto("/#/practice/quantifiers.1");
+  const chip = page.locator(".q-symbols-row .sym-chip", { hasText: /for all|there exists/ }).first();
+  await chip.click();
+  const card = page.locator(".q-symbols-card .sym-card");
+  await expect(card.locator(".sym-name")).toHaveText(/for all|there exists/);
+  await expect(card).toContainText(/What follows is true for every value|At least one value makes/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+
+  await page.goto("/#/symbols");
+  await page.getByRole("searchbox", { name: "Search symbols" }).fill("∀");
+  await expect(page.locator(".sym-tile")).toHaveCount(1);
+  await page.locator(".sym-tile").click();
+  await expect(page).toHaveURL(/#\/symbols\/forall$/);
+  await expect(page.locator(".sym-open .sym-name")).toHaveText("for all");
+  // Its look-alike is one tap away, and its topic links to the topic's page.
+  await page.locator(".sym-open .sym-chip", { hasText: "there exists" }).click();
+  await expect(page.locator(".sym-open .sym-name")).toHaveText("there exists");
+  for (const lang of ["en", "ka", "ru"]) {
+    await page.evaluate((l) => localStorage.setItem("lang", l), lang);
+    await page.goto("/#/symbols/sigma");
+    await page.reload();
+    await page.locator(".sym-open .sym-card").waitFor();
+    expect(await page.locator(".sym-tile").count(), lang).toBeGreaterThan(100);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), lang).toBe(0);
+    expect(await page.evaluate(() => /[Ა-Ჿ]/.test(document.body.innerText)), lang).toBe(false);
+  }
+});

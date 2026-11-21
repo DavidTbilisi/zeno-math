@@ -1,4 +1,5 @@
 import { useDeferredValue, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { QuestionSymbols } from "./QuestionSymbols";
 import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
@@ -808,6 +809,7 @@ export function PracticeDialog(props: Props) {
                 </>
               )}
               <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
+              <QuestionSymbols key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`} words={cur.ex.prompt} tex={cur.ex.q} />
             </div>
           ) : (
             <div className="preview">

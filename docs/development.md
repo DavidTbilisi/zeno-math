@@ -141,6 +141,9 @@ src/pages/SiteHome.tsx    the site's home (#448): hero, goals, topics, practice;
 src/model/topics.ts       the topics: their skills, Shapes sections and shelf; src/library.ts the menus as a library
 src/model/explainers.ts   each topic's intro (#450): use icons and its piece; words in src/locales/site, pictures in
                           src/components/TopicPicture.tsx, shown by Explainer.tsx and #/explain (ExplainPage)
+src/math/symbols.ts       maths symbols (#451): sign, LaTeX/character matchers, topics, look-alikes; words in
+                          src/locales/symbols, cards by SymbolCard.tsx on #/symbols (SymbolsPage) and in practice
+                          (QuestionSymbols.tsx)
 src/pages/BoardsPage.tsx  board list (#/boards)
 src/pages/BoardPage.tsx   whiteboard, autosave, inserting & editing pictures, dark pictures, tool search
 src/components/InsertPanel.tsx  the board's Insert button: the src/menus.ts groups, their sections and a search
