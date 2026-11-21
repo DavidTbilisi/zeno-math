@@ -100,7 +100,7 @@ test("bonds: at the coupon rate a bond sells at par, above it at a discount, bel
 
 test("every financial mathematics question accepts its answer and names each trap", () => {
   const w = en.pracWords;
-  for (const s of ["inflation", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"] as SkillId[])
+  for (const s of ["inflation", "currency", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"] as SkillId[])
     for (const L of [1, 2, 3] as const)
       for (let seed = 0; seed < 40; seed++) {
         const e = exercise(s, L, seed, w);
@@ -127,5 +127,27 @@ test("inflation: the exact real rate is a little smaller than i − π, money la
       // At π = i(1 − t) the deposit after tax just keeps up with prices.
       assert.ok(Math.abs((1 + i * (1 - t)) / (1 + v / 100) - 1) < 1e-9, ex.q);
     }
+  }
+});
+
+test("currency: a round trip at the bank loses A(s − b)/s, a cross rate turns the dollar rate into the euro rate, and a fee is matched by R(1 − f) (#459)", () => {
+  const n = (q: string, re: RegExp) => Number(q.match(re)![1]);
+  for (let seed = 1; seed <= 60; seed++) {
+    const ex = exercise("currency", 3, seed, en.pracWords);
+    const v = (ex.answer as { v: number }).v;
+    if (ex.q.startsWith("A")) {
+      const [A, b, s] = [/A = ([\d.]+)/, /b = ([\d.]+)/, /s = ([\d.]+)/].map((re) => n(ex.q, re));
+      assert.ok(v > 0 && Math.abs(v - (A * (s - b)) / s) < 1e-9, ex.q);
+    } else {
+      // Changing A with the fee or at the matched rate with none gives the same lari.
+      const [R, f] = [n(ex.q, /= ([\d.]+) \\text\{ GEL/), n(ex.q, /f = ([\d.]+)/) / 100];
+      assert.ok(Math.abs(1000 * R * (1 - f) - 1000 * v) < 1e-6, ex.q);
+    }
+  }
+  for (let seed = 1; seed <= 60; seed++) {
+    const ex = exercise("currency", 2, seed, en.pracWords);
+    if (!ex.q.startsWith("1")) continue;
+    const [u, e] = [...ex.q.matchAll(/= ([\d.]+) \\text\{ GEL/g)].map((m) => Number(m[1]));
+    assert.ok(Math.abs(Number(ex.plain) * u - e) < 1e-3, ex.q);
   }
 });
