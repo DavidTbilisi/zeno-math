@@ -39,7 +39,7 @@ export function Stepper({ value, min, max, onChange, less, more }: { value: numb
   return (
     <span className="live-stepper">
       <button className="live-btn" disabled={value <= min} title={less} aria-label={less} onClick={() => onChange(value - 1)}>−</button>
-      <b>{value}</b>
+      <b>{value < 0 ? `−${-value}` : value}</b>
       <button className="live-btn" disabled={value >= max} title={more} aria-label={more} onClick={() => onChange(value + 1)}>+</button>
     </span>
   );

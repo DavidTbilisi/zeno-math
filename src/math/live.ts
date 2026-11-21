@@ -564,7 +564,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   algebraTiles: [680, 640],
   baseTen: [830, 660],
   cubes: [720, 640],
-  counters: [680, 640],
+  counters: [680, 480],
   signArrow: [680, 680],
   signPattern: [680, 600],
   geoLab: [990, 710],
