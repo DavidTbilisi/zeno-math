@@ -212,6 +212,7 @@ import poissonProcess from "./poissonProcess";
 import brownian from "./brownian";
 import interestRates from "./interestRates";
 import amortisation from "./amortisation";
+import npv from "./npv";
 import binomialPricing from "./binomialPricing";
 import optionPricing from "./optionPricing";
 import bezout from "./bezout";
@@ -448,6 +449,7 @@ export const GENS: Record<SkillId, Gen> = {
   brownian,
   interestRates,
   amortisation,
+  npv,
   binomialPricing,
   optionPricing,
   bezout,

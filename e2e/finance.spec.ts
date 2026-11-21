@@ -45,3 +45,17 @@ test("loan amortisation: the payments subtracted without interest are named, the
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("NPV: the flows added undiscounted are named, then the net present value is correct (#456)", async ({ page, request }) => {
+  // Medium is a project's NPV or whether to take it on: an r whose question is the NPV.
+  const r = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08].find((x) => exercise("npv", 2, seedOf(x), w).format === "dp2")!;
+  const ex = exercise("npv", 2, seedOf(r), w);
+  const slip = trapInputs(ex).find((t) => t.id === "npvUndiscounted")!;
+  await practise(page, request, { tab: "Probability & statistics", skill: w.skills.npv, level: "medium", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(slip.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Adding the flows as they are")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});

@@ -17906,6 +17906,96 @@
       "seed": 7,
       "input": "99",
       "label": "wrong"
+    },
+    {
+      "skill": "npv",
+      "level": 1,
+      "seed": 7,
+      "input": "821.93",
+      "label": "correct"
+    },
+    {
+      "skill": "npv",
+      "level": 1,
+      "seed": 7,
+      "input": "1216.6529024000001",
+      "label": "wrong",
+      "mistake": "pvGrownForward"
+    },
+    {
+      "skill": "npv",
+      "level": 1,
+      "seed": 7,
+      "input": "961.5384615384615",
+      "label": "wrong",
+      "mistake": "pvDiscountedOnce"
+    },
+    {
+      "skill": "npv",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "npv",
+      "level": 2,
+      "seed": 7,
+      "input": "771.35",
+      "label": "correct"
+    },
+    {
+      "skill": "npv",
+      "level": 2,
+      "seed": 7,
+      "input": "2500",
+      "label": "wrong",
+      "mistake": "npvUndiscounted"
+    },
+    {
+      "skill": "npv",
+      "level": 2,
+      "seed": 7,
+      "input": "714.2138073652568",
+      "label": "wrong",
+      "mistake": "npvFirstDiscounted"
+    },
+    {
+      "skill": "npv",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "npv",
+      "level": 3,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "npv",
+      "level": 3,
+      "seed": 7,
+      "input": "9.25",
+      "label": "wrong",
+      "mistake": "irrTotalReturn"
+    },
+    {
+      "skill": "npv",
+      "level": 3,
+      "seed": 7,
+      "input": "4.625",
+      "label": "wrong",
+      "mistake": "irrAveraged"
+    },
+    {
+      "skill": "npv",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }
