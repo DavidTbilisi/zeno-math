@@ -130,8 +130,9 @@ test("a teacher gives a class a goal: its student's site opens on that roadmap u
   await page.locator(".road-goal.mine").click();
   await expect(page.locator(".road-class-note")).toBeVisible();
   // Following the class's goal isn't choosing it: another goal is the learner's own, and wins.
-  await page.goto("/#/roadmaps");
-  await page.locator('a.road-goal[href="#/roadmaps/software"]').click();
+  // Opened by its address: a click right after the hash changes can race the page's scroll back to the top.
+  await page.goto("/#/roadmaps/software");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Software");
   await page.goto("/#/roadmaps");
   await expect(page.locator(".road-goal.mine")).toContainText("Software");
   await expect(page.locator(".road-goal.mine")).toContainText("your goal");
