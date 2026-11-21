@@ -14,6 +14,9 @@ import {
   halfSign,
   viaHalf,
   counters,
+  paintParts,
+  shadeFirst,
+  sliceAt,
   dotsUpTo,
   firstEmpty,
   flipCounter,
@@ -309,6 +312,18 @@ test("ten frame by hand: a tray fills the first empty square, a counter moves, s
   assert.deepEqual(moveCounter(cells, 2, null).slice(0, 3), [1, 0, 0]);
   assert.deepEqual([0, 1, 2].map(flipCounter), [0, 2, 1]);
 });
+
+test("fractions by hand: the slice under a point, painting parts, shading the first k", () => {
+  assert.equal(sliceAt(0, -10, 4), 0); // twelve o'clock
+  assert.equal(sliceAt(10, 1, 4), 1); // just past three
+  assert.equal(sliceAt(-1, 10, 4), 2); // just past six
+  assert.equal(sliceAt(-10, -1, 4), 3);
+  assert.equal(sliceAt(-0.01, -10, 3), 2);
+  assert.deepEqual(paintParts([true, false, false, true], 1, [1, 2]), [true, true, true, true]);
+  assert.deepEqual(paintParts([true, true, false], 0, [0, 1]), [false, false, false]);
+  assert.deepEqual(shadeFirst(4, 3), [true, true, true, false]);
+});
+
 
 test("hundred square by hand: a drag jumps by tens then ones, and paints marks", () => {
   assert.deepEqual(jumpsTo(23, 56), [10, 10, 10, 1, 1, 1]);
