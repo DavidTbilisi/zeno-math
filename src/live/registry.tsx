@@ -3,7 +3,8 @@
 import { lazy, type ComponentType } from "react";
 import type { LiveKind } from "../math/live";
 import type { PieceProps } from "./ui";
-import { Clock, Coin, CompareFractions, Dice, Spinner } from "./pieces";
+import { Coin, CompareFractions, Dice, Spinner } from "./pieces";
+import { Clock } from "./Clock";
 import { Fractions } from "./Fractions";
 import { Hundred } from "./Hundred";
 import { Compare } from "./Compare";

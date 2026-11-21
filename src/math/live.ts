@@ -593,7 +593,7 @@ export type LiveKind = keyof LiveStates;
 
 /** Design size of each piece in board pixels; a piece that is resized is scaled to fit. */
 export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
-  clock: [300, 432],
+  clock: [320, 470],
   dice: [360, 236],
   spinner: [300, 372],
   coin: [260, 300],

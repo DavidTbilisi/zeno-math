@@ -195,3 +195,17 @@ export function boxOf(d: { x0: number; y0: number; x: number; y: number }) {
 }
 export const inBox = (b: { x: number; y: number; w: number; h: number }, x: number, y: number) =>
   x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
+
+const DIE_PIPS: [number, number][] = [[0.27, 0.27], [0.73, 0.27], [0.5, 0.5], [0.27, 0.73], [0.73, 0.73]];
+
+/** A die to tap for something new at random (new numbers, a time, a roll). */
+export function DieButton({ x, y, s = 38, title, onTap }: { x: number; y: number; s?: number; title: string; onTap: () => void }) {
+  return (
+    <g role="button" tabIndex={0} aria-label={title} style={{ cursor: "pointer" }} onPointerDown={(e) => e.stopPropagation()}
+      onClick={onTap} onKeyDown={(e) => keyTap(e, onTap)}>
+      <title>{title}</title>
+      <rect x={x} y={y} width={s} height={s} rx={s / 5} fill="#fff" stroke={INK} strokeWidth={2} />
+      {DIE_PIPS.map(([fx, fy], i) => <circle key={i} cx={x + fx * s} cy={y + fy * s} r={s / 11} fill={INK} pointerEvents="none" />)}
+    </g>
+  );
+}

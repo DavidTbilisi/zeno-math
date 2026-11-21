@@ -4,30 +4,24 @@
 // mid-way (a drag, a roll) to itself, and hands the result to the board with `set`.
 import { useEffect, useRef, useState } from "react";
 import {
-  clockTime,
   COMPARE_SIGNS,
-  dragHand,
   type Frac,
   FRACTION_FILLS,
   FRACTION_PARTS,
   fracNumbers,
   fracSign,
   halfSign,
-  handAngles,
   PENCIL_COLORS,
   SAME_PIECES_MAX,
   samePieces,
-  snapTo,
   tapSquare,
   towerSpan,
   viaHalf,
-  wrapDay,
 } from "../math/live";
 import { around, sectorPath } from "./sectors";
 import { Pencil, useJoin } from "./pencils";
-import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
 
-const BLUE = "#1971c2";
 const RED = "#e03131";
 export const SECTION_COLORS = ["#ffc9c9", "#ffec99", "#b2f2bb", "#a5d8ff", "#d0bfff", "#ffd8a8", "#eebefa", "#99e9f2", "#c0eb75", "#e9ecef"];
 /** Runs `step(t)` with t from 0 to 1 over `ms`, then `done`; a new run or unmounting stops the old one. */
@@ -45,80 +39,6 @@ function useAnimation() {
     };
     frame.current = requestAnimationFrame(tick);
   };
-}
-
-// ——— Clock ———
-
-export function Clock({ state, set, w, svgRef }: PieceProps<"clock">) {
-  const [drag, setDrag] = useState<{ hand: "hour" | "minute"; minutes: number } | null>(null);
-  const minutes = drag?.minutes ?? state.minutes;
-  const { hour, minute } = handAngles(minutes);
-  const [c, r] = [150, 140];
-  const angleAt = (e: React.PointerEvent) => {
-    const [x, y] = svgPoint(svgRef.current!, e);
-    return ((Math.atan2(x - c, c - y) * 180) / Math.PI + 360) % 360;
-  };
-  const grab = (hand: "hour" | "minute") => (e: React.PointerEvent) => {
-    (e.currentTarget as Element).setPointerCapture(e.pointerId);
-    setDrag({ hand, minutes: state.minutes });
-  };
-  const hand = (which: "hour" | "minute", angle: number, len: number, width: number) => {
-    const [x, y] = around(c, c, len, angle);
-    return (
-      <g style={{ cursor: "grab" }} onPointerDown={grab(which)}>
-        <line x1={c} y1={c} x2={x} y2={y} stroke={which === "hour" ? INK : BLUE} strokeWidth={width} strokeLinecap="round" />
-        <line x1={c} y1={c} x2={x} y2={y} stroke="transparent" strokeWidth={28} strokeLinecap="round" />
-      </g>
-    );
-  };
-  return (
-    <>
-      <svg
-        ref={svgRef}
-        width={300}
-        height={348}
-        viewBox="0 0 300 348"
-        fontFamily={FONT}
-        onPointerMove={(e) => drag && setDrag({ ...drag, minutes: dragHand(drag.minutes, drag.hand, angleAt(e)) })}
-        onPointerUp={() => {
-          if (!drag) return;
-          set({ ...state, minutes: wrapDay(state.snap ? snapTo(drag.minutes, 5) : drag.minutes) });
-          setDrag(null);
-        }}
-      >
-        <circle cx={c} cy={c} r={r} fill="#fff" stroke={INK} strokeWidth={4} />
-        {Array.from({ length: 60 }, (_, m) => {
-          const [x0, y0] = around(c, c, r - 4, m * 6);
-          const [x1, y1] = around(c, c, r - (m % 5 ? 12 : 22), m * 6);
-          return <line key={m} x1={x0} y1={y0} x2={x1} y2={y1} stroke={INK} strokeWidth={m % 5 ? 1.5 : 3.5} />;
-        })}
-        {Array.from({ length: 12 }, (_, i) => {
-          const [x, y] = around(c, c, r - (state.showMinutes ? 56 : 44), (i + 1) * 30);
-          return <text key={i} x={x} y={y + 9} fontSize={26} textAnchor="middle" fill={INK}>{i + 1}</text>;
-        })}
-        {state.showMinutes &&
-          Array.from({ length: 12 }, (_, i) => {
-            const [x, y] = around(c, c, r - 32, (i + 1) * 30);
-            return <text key={i} x={x} y={y + 5} fontSize={14} textAnchor="middle" fill={BLUE}>{(i + 1) * 5}</text>;
-          })}
-        {state.showTime && (
-          <g>
-            <rect x={c - 50} y={306} width={100} height={38} rx={6} fill="#f1f3f5" stroke="#ced4da" />
-            <text x={c} y={334} fontSize={26} textAnchor="middle" fill={INK}>{clockTime(minutes)}</text>
-          </g>
-        )}
-        {hand("hour", hour, 74, 9)}
-        {hand("minute", minute, 112, 5)}
-        <circle cx={c} cy={c} r={8} fill={INK} />
-      </svg>
-      <div className="live-bar">
-        <Toggle on={state.showTime} onClick={() => set({ ...state, showTime: !state.showTime })}>{w.clock.showTime}</Toggle>
-        <Toggle on={!!state.showMinutes} onClick={() => set({ ...state, showMinutes: !state.showMinutes })}>{w.clock.showMinutes}</Toggle>
-        <Toggle on={state.snap} onClick={() => set({ ...state, snap: !state.snap, minutes: state.snap ? state.minutes : snapTo(state.minutes, 5) })}>{w.clock.snap}</Toggle>
-        <button className="live-btn" title={w.clock.random} aria-label={w.clock.random} onClick={() => set({ ...state, minutes: 5 * Math.floor(Math.random() * 144) })}>🎲</button>
-      </div>
-    </>
-  );
 }
 
 // ——— Dice ———
