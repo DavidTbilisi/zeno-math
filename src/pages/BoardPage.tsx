@@ -36,6 +36,7 @@ import { BarIcon } from "../components/BarIcon";
 import { ZenoMark } from "../components/ZenoMark";
 import { isLiveEntry, MENUS } from "../menus";
 import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
+import { hasOrigin, installPaper, isPaper, PAPERS, type Paper } from "../paper";
 
 /** When a change to the scene is recorded for undo (now, with the next recorded change, or never). */
 type CaptureUpdateActionType = (typeof CaptureUpdateAction)[keyof typeof CaptureUpdateAction];
@@ -134,6 +135,11 @@ export function BoardPage({ id }: { id: string }) {
   const [excalidrawApi, setExcalidrawApi] = useState<ExcalidrawImperativeAPI | null>(null);
   // The theme for the shape thumbnails.
   const [boardTheme, setBoardTheme] = useState("light");
+  // The board's paper (#453), and whether points snap to it (Excalidraw's grid mode).
+  const [paper, setPaper] = useState<Paper>("plain");
+  const paperRef = useRef<Paper>("plain");
+  paperRef.current = paper;
+  const [snap, setSnap] = useState(false);
   useHandleLibrary({ excalidrawAPI: excalidrawApi, adapter: libraryStore });
   useEffect(() => {
     // "Browse libraries" sends the chosen library back to the window named here, so it lands on this board.
@@ -150,6 +156,13 @@ export function BoardPage({ id }: { id: string }) {
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, [excalidrawApi]);
+  // The paper is drawn by Excalidraw itself, through the hooks scripts/patch-excalidraw.mjs adds. Put in place while
+  // rendering, so it is there for Excalidraw's first picture, and taken away with the page.
+  useMemo(() => installPaper(paper), [paper]);
+  useEffect(() => {
+    installPaper(paperRef.current);
+    return () => installPaper("plain");
+  }, []);
 
   const lastSaved = useRef({ version: -1, files: 0 });
   const saveTimer = useRef<number | undefined>(undefined);
@@ -169,6 +182,8 @@ export function BoardPage({ id }: { id: string }) {
     api.get(id).then(
       (b) => {
         base.current = b.updatedAt;
+        const p = (b.scene?.appState as { paper?: unknown } | undefined)?.paper;
+        if (isPaper(p)) setPaper(p);
         setBoard(b);
         setTitle(b.title);
       },
@@ -188,7 +203,7 @@ export function BoardPage({ id }: { id: string }) {
 
     setSaveState("saving");
     try {
-      const scene = { elements, files, appState: { viewBackgroundColor, gridModeEnabled, theme } };
+      const scene = { elements, files, appState: { viewBackgroundColor, gridModeEnabled, theme, paper: paperRef.current } };
       const version = getSceneVersion(ex.getSceneElementsIncludingDeleted());
       const saved = await api.save(id, { scene, baseUpdatedAt: overwrite ? undefined : base.current }, keepalive);
       base.current = saved.updatedAt;
@@ -296,6 +311,8 @@ export function BoardPage({ id }: { id: string }) {
       setBoardTheme(appState.theme);
       window.setTimeout(() => retheme(appState.theme), 0);
     }
+    // Grid mode also has Excalidraw's own shortcut (Ctrl+'), so the menu's tick follows it.
+    setSnap(appState.gridModeEnabled);
     // The panel goes when its item is no longer selected (a click elsewhere) or is gone.
     const open = panelRef.current;
     // Looked at again a moment later: a change that moves the selection and puts it back (duplicating) keeps it.
@@ -338,6 +355,30 @@ export function BoardPage({ id }: { id: string }) {
       saveTimer.current = undefined;
       void saveNow();
     }, 800);
+  };
+
+  const choosePaper = (p: Paper) => {
+    const ex = excalidraw.current;
+    paperRef.current = p;
+    setPaper(p);
+    installPaper(p);
+    if (!ex) return;
+    // Excalidraw draws its background again only when the scene changes: hand it the same elements.
+    ex.updateScene({ elements: ex.getSceneElementsIncludingDeleted(), captureUpdate: CaptureUpdateAction.NEVER });
+    // The coordinate plane and polar paper are about their origin: bring it to the middle unless it is well in sight
+    // (a new board has it in its very corner).
+    const st = ex.getAppState();
+    const [x, y] = [st.scrollX * st.zoom.value, st.scrollY * st.zoom.value];
+    const m = Math.min(st.width, st.height) * 0.15;
+    if (hasOrigin(p) && (x < m || y < m || x > st.width - m || y > st.height - m))
+      ex.updateScene({ appState: { scrollX: st.width / 2 / st.zoom.value, scrollY: st.height / 2 / st.zoom.value }, captureUpdate: CaptureUpdateAction.NEVER });
+    void saveNow();
+  };
+  const toggleSnap = () => {
+    const ex = excalidraw.current;
+    if (!ex) return;
+    ex.updateScene({ appState: { gridModeEnabled: !ex.getAppState().gridModeEnabled }, captureUpdate: CaptureUpdateAction.NEVER });
+    void saveNow();
   };
 
   const saveTitle = async () => {
@@ -750,6 +791,20 @@ export function BoardPage({ id }: { id: string }) {
             <MainMenu.Separator />
             <MainMenu.DefaultItems.ToggleTheme />
             <MainMenu.DefaultItems.ChangeCanvasBackground />
+            <MainMenu.ItemCustom>
+              <div className="paper-pick">
+                <label>
+                  <span>{t.paper.title}</span>
+                  <select value={paper} onChange={(e) => isPaper(e.target.value) && choosePaper(e.target.value)}>
+                    {PAPERS.map((p) => <option key={p} value={p}>{t.paper.names[p]}</option>)}
+                  </select>
+                </label>
+                <label className="paper-snap">
+                  <input type="checkbox" checked={snap} onChange={toggleSnap} />
+                  <span>{t.paper.snap}</span>
+                </label>
+              </div>
+            </MainMenu.ItemCustom>
           </MainMenu>
           <DefaultSidebar>
             <DefaultSidebar.TabTriggers>

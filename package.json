@@ -6,6 +6,7 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
+    "postinstall": "node scripts/patch-excalidraw.mjs",
     "dev": "node scripts/copy-assets.mjs && concurrently -n web,api -c blue,green \"vite\" \"node --watch server/index.ts\"",
     "build": "node scripts/copy-assets.mjs && vite build && node scripts/compress.mjs",
     "start": "node server/index.ts",

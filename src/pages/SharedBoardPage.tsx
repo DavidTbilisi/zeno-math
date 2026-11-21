@@ -1,7 +1,8 @@
 // A board seen through its read-only link (#/s/<token>): Excalidraw in view mode, with live pieces shown as they
 // were left, following the board as its owner saves (it asks again every few seconds and redraws when it changed).
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Excalidraw } from "@excalidraw/excalidraw";
+import { installPaper, isPaper } from "../paper";
 import type { AppState, BinaryFileData, BinaryFiles, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
@@ -65,6 +66,14 @@ export function SharedBoardPage({ token }: { token: string }) {
 export function ReadOnlyBoard({ board, back, onApi }: { board: SharedBoard; back?: string; onApi?: (api: ExcalidrawImperativeAPI) => void }) {
   const { t, excalidrawLang } = useI18n();
   const scene = board.scene;
+  const p = (scene.appState as { paper?: unknown } | undefined)?.paper;
+  const paper = isPaper(p) ? p : "plain";
+  useMemo(() => installPaper(paper), [paper]);
+  useEffect(() => {
+    installPaper(paper);
+    return () => installPaper("plain");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className="z board-page shared-board">
       <header className="board-bar">
