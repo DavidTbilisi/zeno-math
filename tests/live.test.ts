@@ -14,6 +14,7 @@ import {
   halfSign,
   viaHalf,
   counters,
+  moveBlock,
   DIE_SIDES,
   divisionAsk,
   divisionCase,
@@ -290,4 +291,13 @@ test("comparing with a half: n + n against d, and the half decides only when the
           const c = viaHalf({ n, d }, { n: m, d: e });
           if (c) assert.equal(c.includes("<") ? "<" : c.includes(">") ? ">" : "=", fracSign({ n, d }, { n: m, d: e }), `${n}/${d} ${m}/${e}`);
         }
+});
+
+test("compare by hand: a block from the pile, from tower to tower, and off", () => {
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "pile", "b"), { a: 5, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "a", "b"), { a: 4, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "b", null), { a: 5, b: 1 });
+  assert.deepEqual(moveBlock({ a: 0, b: 2 }, "a", "b"), { a: 0, b: 2 });
+  assert.deepEqual(moveBlock({ a: 3, b: 10 }, "a", "b"), { a: 3, b: 10 });
+  assert.deepEqual(moveBlock({ a: 3, b: 4 }, "a", "a"), { a: 3, b: 4 });
 });
