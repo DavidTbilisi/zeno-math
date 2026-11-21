@@ -10,6 +10,7 @@ const TeacherPage = lazy(() => import("./pages/TeacherPage").then((m) => ({ defa
 const SharedBoardPage = lazy(() => import("./pages/SharedBoardPage").then((m) => ({ default: m.SharedBoardPage })));
 const AboutPage = lazy(() => import("./pages/AboutPage").then((m) => ({ default: m.AboutPage })));
 const PracticePage = lazy(() => import("./pages/PracticePage").then((m) => ({ default: m.PracticePage })));
+const RoadmapPage = lazy(() => import("./pages/RoadmapPage").then((m) => ({ default: m.RoadmapPage })));
 const CoursePage = lazy(() => import("./pages/CoursePage").then((m) => ({ default: m.CoursePage })));
 
 function useHashRoute(): string {
@@ -47,6 +48,13 @@ function App() {
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>
         <PracticePage key={invite} invite={invite.toUpperCase()} />
+      </Suspense>
+    );
+  const roadmap = hash.match(/^#\/roadmaps(?:\/([a-z]+))?$/);
+  if (roadmap)
+    return (
+      <Suspense fallback={<div className="center-msg">…</div>}>
+        <RoadmapPage key={roadmap[1] ?? ""} goal={roadmap[1]} />
       </Suspense>
     );
   if (hash === "#/course")

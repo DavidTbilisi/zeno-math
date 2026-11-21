@@ -47,6 +47,7 @@ import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
 } from "../model/placement";
 import { GradeCard, gradeName } from "./GradeCard";
+import { noteAchieved } from "../achieved";
 
 type Mode = "practise" | "sheet";
 /** A skill, a mix of the area's skills, the learner's grade, or the placement that finds it. */
@@ -404,6 +405,8 @@ export function PracticeDialog(props: Props) {
     let placed = progress.placed;
     // A level made secure comes back for review a day later, and further apart with each right review (spacing.ts).
     const cell = recordCell(progress.cells?.[key], firstTry);
+    // The day a level is first secure, for the roadmaps' achieved list.
+    if (isSecure(cell) && !isSecure(progress.cells?.[key])) noteAchieved(`cell:${key}`);
     const spacing = { ...progress.spacing };
     learnSpacing(spacing, key, firstTry, isSecure(cell), Date.now());
     if (pick === "place" && placing) {

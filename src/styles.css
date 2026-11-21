@@ -1409,6 +1409,48 @@ span.board-home:hover { background: none; }
 .course-tools > span + .z-btn + span { margin-left: 12px; }
 .course-tools .z-btn { min-height: 36px; padding: 0 14px; font-size: 0.9375rem; }
 
+/* Roadmaps by goal (#449): the goal picker as cards with each goal's bar, then a roadmap in the course map's stages,
+   its items a checklist; a tick in marker yellow is done, a hatched tick is behind the learner's grade, a half one
+   started. */
+.road-pick { margin: 0 0 14px; font-size: 1.25rem; font-weight: 800; }
+.road-goals { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; margin: 0; padding: 0; }
+.road-goal {
+  display: flex; flex-direction: column; gap: 8px; height: 100%; box-sizing: border-box; padding: 20px 22px;
+  background: var(--surface); border: 2px solid var(--border); border-radius: 10px; color: var(--z-ink); text-decoration: none;
+}
+.road-goal:hover, .road-goal:focus-visible { border-color: var(--z-ink); }
+.road-goal.mine { border-color: var(--z-ink); box-shadow: 0 0 0 3px var(--z-marker); }
+.road-goal strong { font-size: 1.125rem; font-weight: 800; }
+.road-mine { align-self: flex-start; padding: 1px 8px; background: var(--z-marker); color: #172350; border-radius: 4px; font-size: 0.8125rem; font-weight: 700; }
+.road-about { flex: 1; color: var(--z-graphite); }
+.road-goal .course-count { margin: 0; }
+.road-all { margin-bottom: 10px; }
+.road-all .course-count { margin-bottom: 8px; }
+.road-page .course-legend { margin-bottom: 8px; }
+.road-tick {
+  display: inline-grid; place-items: center; flex: none; width: 18px; height: 18px; box-sizing: border-box;
+  border: 2px solid var(--z-ink); border-radius: 4px; font-style: normal; font-size: 0.75rem; font-weight: 900; line-height: 1; color: #172350;
+}
+.road-tick.done { background: var(--z-marker); }
+.road-tick.behind { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--z-ink) 35%, transparent) 0 3px, transparent 3px 6px); color: var(--z-ink); }
+.road-tick.part { background: linear-gradient(90deg, var(--z-marker) 50%, transparent 50%); }
+.road-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 8px; margin: 0 0 8px; padding: 0; }
+.road-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; height: 100%; box-sizing: border-box; padding: 8px 12px; text-align: left;
+  background: var(--surface); border: 1.5px solid var(--border); border-radius: 6px; font: inherit; font-size: 0.9375rem; font-weight: 600;
+  color: var(--z-ink); text-decoration: none; cursor: pointer;
+}
+.road-item:hover, .road-item:focus-visible { border-color: var(--z-ink); }
+.road-item.done .road-name, .road-item.behind .road-name { color: var(--z-graphite); }
+.road-item.next { border: 2px solid var(--z-ink); box-shadow: 0 0 0 3px var(--z-marker); }
+.road-name { flex: 1; min-width: 0; }
+.road-note { flex: none; font-size: 0.8125rem; font-weight: 500; color: var(--z-graphite); }
+.road-achieved { margin-top: 24px; padding-top: 24px; border-top: 2px solid var(--z-ink); }
+.road-achieved h2 { margin: 0 0 12px; font-size: 1.5rem; font-weight: 800; }
+.road-achieved ul { list-style: none; margin: 0; padding: 0; }
+.road-achieved li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.road-achieved time { color: var(--z-graphite); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+
 @media (max-width: 860px) {
   .z-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "ask" "line"; row-gap: 40px; padding: 24px 0 56px; }
   .z-facts { grid-template-columns: minmax(0, 1fr); }
@@ -1416,7 +1458,8 @@ span.board-home:hover { background: none; }
 }
 @media (max-width: 560px) {
   .z-bar, .z-main, .z-page, .z .home-main { padding-left: 16px; padding-right: 16px; }
-  .z-nav { gap: 12px; }
+  .z-bar { flex-wrap: wrap; row-gap: 10px; }
+  .z-nav { flex-wrap: wrap; gap: 8px 12px; min-width: 0; }
   .z-ask { padding: 20px; }
   .z-ask-q { font-size: 1.875rem; }
   .z-line { padding: 48px 20px 56px; }

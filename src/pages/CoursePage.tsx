@@ -2,7 +2,7 @@
 // and how far the learner has come on them (from free practice in this browser), a tool to explore it and a lab to
 // try. "Next" is the lowest-grade level whose prerequisites are met; a tool or lab opens on the stage's own board.
 import { useState } from "react";
-import { api, ApiError } from "../api";
+import { ApiError } from "../api";
 import { BrandBar } from "../components/BrandBar";
 import { gradeName } from "../components/GradeCard";
 import { useI18n } from "../i18n";
@@ -13,6 +13,7 @@ import { fill } from "../math/text";
 import { isExtra, nextStep, STAGES, stageProgress, standing, type Stage, type StageId, type Standing } from "../model/course";
 import { gradeOf, GRADES, PREREQUISITES, type Grade } from "../model/curriculum";
 import { loadProgress } from "../practiceProgress";
+import { openOnStageBoard } from "../stageBoards";
 import type { ToolKind } from "../tools";
 
 type Explore = { tool: { kind: ToolKind; start?: string; label: (t: Dict) => string }; lab: { kind: LiveKind; label: (t: Dict) => string } };
@@ -27,23 +28,6 @@ const EXPLORE: Record<StageId, Explore> = {
   classical: { tool: { kind: "statistics", start: "scatter", label: (t) => t.statistics }, lab: { kind: "fitLab", label: (t) => t.shapes.names.liveFitLab } },
   deep: { tool: { kind: "ai", start: "softmax", label: (t) => t.aiSoftmax }, lab: { kind: "backpropLab", label: (t) => t.shapes.names.liveBackpropLab } },
 };
-
-// Each stage's board, made the first time one of its tools is opened, is kept for this browser.
-const BOARDS_KEY = "zeno.course.boards";
-function storedBoards(): Partial<Record<StageId, string>> {
-  try {
-    return JSON.parse(localStorage.getItem(BOARDS_KEY) ?? "{}") ?? {};
-  } catch {
-    return {};
-  }
-}
-function storeBoard(stage: StageId, id: string) {
-  try {
-    localStorage.setItem(BOARDS_KEY, JSON.stringify({ ...storedBoards(), [stage]: id }));
-  } catch {
-    /* storage unavailable: the next tool opens a new board */
-  }
-}
 
 const LEVELS = [1, 2, 3] as const;
 /** The grades a stage's levels span, by their rungs: "1–10", "9–Uni", "Uni". */
@@ -70,15 +54,7 @@ export function CoursePage() {
     setOpening(path);
     setFailed(false);
     try {
-      let id = storedBoards()[stage];
-      // A board this browser can't change any more (gone, someone else's, or a student's opened in a teacher's tab)
-      // is left alone, and the stage gets a new one.
-      if (id) await api.get(id).then((b) => b.readOnly && (id = undefined), () => (id = undefined));
-      if (!id) {
-        id = (await api.create(fill(c.board, { stage: c.stages[stage] }))).id;
-        storeBoard(stage, id);
-      }
-      location.hash = `#/b/${id}/${path}`;
+      await openOnStageBoard("zeno.course.boards", stage, fill(c.board, { stage: c.stages[stage] }), path);
     } catch (e) {
       setFailed(e instanceof ApiError && e.status === 403 ? "refused" : true);
       setOpening(null);
@@ -88,6 +64,7 @@ export function CoursePage() {
   return (
     <div className="z">
       <BrandBar>
+        <a href="#/roadmaps">{t.roadmap.link}</a>
         <a href="#/practice">{t.practice}</a>
         <a href="#/">{t.myBoards}</a>
       </BrandBar>
