@@ -2,17 +2,16 @@
 // are, with a search; #/library/live/<kind> is a piece or game used right on the page, and #/library/tool/<kind>[/<start>]
 // a tool's dialog drawn into the page (as in the board's right-click panel), with the picture it makes. Any of them
 // opens on a board to keep.
-import { Suspense, useState } from "react";
-import { PanelContext } from "../components/ItemPanel";
+import { useState } from "react";
 import { OpenOnBoard } from "../components/OpenOnBoard";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
+import { ToolOnPage } from "../components/ToolOnPage";
 import { useI18n } from "../i18n";
 import { entryName, LIBRARY, libEntry, searchLibrary, sectionName, topicsOf, type LibEntry } from "../library";
 import { InlinePiece } from "../live/InlinePiece";
 import type { LiveKind } from "../math/live";
 import { fill } from "../math/text";
 import { isLiveEntry } from "../menus";
-import { TOOLS, type ToolDialogProps } from "../tools";
 import { EntryCards } from "./LearnPage";
 
 export function LibraryPage({ path }: { path?: string }) {
@@ -57,18 +56,13 @@ function LibraryIndex() {
   );
 }
 
-type Picture = Parameters<ToolDialogProps["onSubmit"]>[1];
-
 function EntryPage({ e }: { e: LibEntry }) {
   const { t } = useI18n();
   const s = t.site;
   const name = entryName(t, e);
   const topics = topicsOf(e);
-  const [pic, setPic] = useState<Picture | null>(null);
   const slot = topics[0]?.id ?? "library";
   const boardName = fill(s.boardName, { topic: topics[0] ? s.topics[topics[0].id].name : s.library });
-  const tool = isLiveEntry(e.entry) ? null : TOOLS[e.entry.kind];
-  const ToolDialog = tool?.Dialog;
   return (
     <div className="z site">
       <SiteBar here="library" />
@@ -86,24 +80,9 @@ function EntryPage({ e }: { e: LibEntry }) {
         </p>
         {isLiveEntry(e.entry) ? (
           <InlinePiece key={e.path} kind={e.entry.live as LiveKind} label={name} />
-        ) : ToolDialog ? (
-          <>
-            <p className="course-count">{s.toolHint}</p>
-            <div className="site-tool">
-              <PanelContext.Provider value={true}>
-                <Suspense fallback={<p className="muted">{t.loading}</p>}>
-                  <ToolDialog key={e.path} start={e.entry.start} onSubmit={(_data, image) => setPic(image)} onClose={() => (location.hash = "#/library")} />
-                </Suspense>
-              </PanelContext.Provider>
-            </div>
-            {pic && (
-              <figure className="site-pic">
-                <figcaption>{s.madeHere}</figcaption>
-                {pic.svg ? <div className="site-pic-svg" dangerouslySetInnerHTML={{ __html: pic.svg }} /> : pic.dataURL && <img src={pic.dataURL} alt={name} />}
-              </figure>
-            )}
-          </>
-        ) : null}
+        ) : (
+          <ToolOnPage key={e.path} entry={e.entry} name={name} onClose={() => (location.hash = "#/library")} />
+        )}
         <div className="site-entry-go">
           <OpenOnBoard slot={slot} name={boardName} path={e.path} />
         </div>

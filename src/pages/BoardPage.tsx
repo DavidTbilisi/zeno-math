@@ -18,7 +18,7 @@ import "@excalidraw/excalidraw/index.css";
 import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
-import { ToolMenu } from "../components/ToolMenu";
+import { InsertPanel } from "../components/InsertPanel";
 import { useCompact } from "../components/useCompact";
 import { ShareBox } from "../components/ShareBox";
 import { ReadOnlyBoard } from "./SharedBoardPage";
@@ -34,7 +34,7 @@ import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { BarIcon } from "../components/BarIcon";
 import { ZenoMark } from "../components/ZenoMark";
-import { isLiveEntry, MENUS } from "../menus";
+import { isLiveEntry } from "../menus";
 import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 import { hasOrigin, installPaper, isPaper, PAPERS, type Paper } from "../paper";
 
@@ -110,6 +110,9 @@ export function BoardPage({ id }: { id: string }) {
   const [title, setTitle] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  // Insert: the library over the board (#448), in place of the old row of tool menus.
+  const [inserting, setInserting] = useState(false);
+  const insertBtn = useRef<HTMLButtonElement>(null);
   const [panel, setPanel] = useState<Panel | null>(null);
   // The panel's node that a live piece puts its settings in.
   const [slotNode, setSlotNode] = useState<HTMLDivElement | null>(null);
@@ -691,17 +694,9 @@ export function BoardPage({ id }: { id: string }) {
         <button className="btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
           <BarIcon name="shapes" /> <span className="btn-label minor">{t.shapes.button}</span>
         </button>
-        {MENUS.map((m) => (
-          <ToolMenu key={m.label} icon={<BarIcon name={m.icon} />} label={t[m.label]} title={m.title && t[m.title]} items={m.sections.flatMap((sec) =>
-            sec.items.map((it) => ({
-              icon: it.icon,
-              section: sec.title && t[sec.title],
-              ...(isLiveEntry(it)
-                ? { label: pieceName(it.live), onPick: () => addLive(it.live) }
-                : { label: t[it.label], onPick: () => open({ kind: it.kind, start: it.start }) }),
-            })),
-          )} />
-        ))}
+        <button ref={insertBtn} className="btn primary insert-btn" onClick={() => setInserting(true)} title={t.site.insert.title} aria-haspopup="dialog">
+          <BarIcon name="insert" /> <span className="btn-label">{t.site.insert.button}</span>
+        </button>
         <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })} />
         <LangSelect />
       </header>
@@ -899,6 +894,21 @@ export function BoardPage({ id }: { id: string }) {
             <p className="hint">{t.panelFullOnly}</p>
           )}
         </ItemPanel>
+      )}
+      {inserting && (
+        <InsertPanel
+          onClose={() => {
+            setInserting(false);
+            insertBtn.current?.focus();
+          }}
+          onPick={(it) => {
+            setInserting(false);
+            // A tool's dialog hands focus back to whatever had it: the Insert button, not the vanishing panel.
+            insertBtn.current?.focus();
+            if (isLiveEntry(it)) addLive(it.live);
+            else open({ kind: it.kind, start: it.start });
+          }}
+        />
       )}
       {palette && (
         <CommandPalette

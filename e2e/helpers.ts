@@ -33,3 +33,12 @@ export async function practise(page: Page, request: APIRequestContext, o: { tab:
 }
 
 export const seedOf = (r: number) => Math.floor(r * 2 ** 31);
+
+/** The board's Insert panel (#448): the library over the board, in any language. */
+export const insertPanel = (page: Page) => page.locator(".insert");
+/** Opens Insert on a group (by its tab's name, as the old menu buttons were named) and returns the panel. */
+export async function insertGroup(page: Page, group: string | RegExp) {
+  await page.locator(".insert-btn").click();
+  await insertPanel(page).getByRole("tab", { name: group }).click();
+  return insertPanel(page);
+}

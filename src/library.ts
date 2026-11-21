@@ -33,11 +33,13 @@ export const LIBRARY: readonly LibEntry[] = MENUS.filter((g) => g.label !== "pra
 export const libEntry = (path: string) => LIBRARY.find((e) => e.path === path);
 
 const pieceId = (kind: LiveKind) => SHAPES.find((s) => s.live === kind)?.id as keyof Dict["shapes"]["names"] | undefined;
-export function entryName(t: Dict, e: LibEntry): string {
-  if (!isLiveEntry(e.entry)) return t[e.entry.label];
-  const id = pieceId(e.entry.live);
-  return id ? t.shapes.names[id] : e.entry.live;
+/** A menu entry's name: a tool's label, or a piece's name from the Shapes panel. */
+export function menuName(t: Dict, entry: MenuEntry | LiveEntry): string {
+  if (!isLiveEntry(entry)) return t[entry.label];
+  const id = pieceId(entry.live);
+  return id ? t.shapes.names[id] : entry.live;
 }
+export const entryName = (t: Dict, e: LibEntry) => menuName(t, e.entry);
 export const sectionName = (t: Dict, s: MenuSection, g: MenuGroup) => t[s.title ?? g.title ?? g.label];
 
 /** The topics a library entry belongs to: those that list its menu section. */
@@ -49,7 +51,7 @@ export function entriesOf(topic: Topic): LibEntry[] {
 }
 
 /** Folds case and accents so that a search finds "Säule" by "saule" and ignores capitals in every script. */
-const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase();
+export const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase();
 /** The entries whose name, section or menu matches every word of the query. */
 export function searchLibrary(t: Dict, q: string): LibEntry[] {
   const words = fold(q).split(/\s+/).filter(Boolean);

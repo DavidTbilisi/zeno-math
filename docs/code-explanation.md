@@ -56,7 +56,8 @@ The existing documents describe Zeno from above: `README.md` (a short tour), `do
   - [src/pages/SharedBoardPage.tsx](#srcpagessharedboardpagetsx)
   - [src/components/Modal.tsx](#srccomponentsmodaltsx)
   - [src/components/ui.tsx](#srccomponentsuitsx)
-  - [src/components/ToolMenu.tsx](#srccomponentstoolmenutsx)
+  - [src/components/InsertPanel.tsx](#srccomponentsinsertpaneltsx)
+  - [src/components/ToolOnPage.tsx](#srccomponentstoolonpagetsx)
   - [src/components/JoinLink.tsx](#srccomponentsjoinlinktsx)
   - [src/components/ShareBox.tsx](#srccomponentsshareboxtsx)
   - [src/components/CommandPalette.tsx](#srccomponentscommandpalettetsx)
@@ -1475,7 +1476,7 @@ Surfaces that hold a rendered maths picture are hard-coded white regardless of t
 
 - `.home` (`:80`) 1040px column; `.board-grid` (`:91`) auto-fill 240px cards.
 - `.board-page` (`:102`) column flex 100% height; `.board-bar` (`:103`) the toolbar, `overflow-x: auto`; `.board-body` (`:130`) the row under the bar, `flex:1; display:flex; min-height:0`; `.canvas-wrap` (`:131`) `flex:1; min-height:0; min-width:0` so Excalidraw fills what the docked panel leaves; `.save-state` and its `.error/.conflict` colouring (`:109-110`); `.conflict-bar` (`:111`) with a 2px danger underline.
-- `.tool-menu` (`:118`) and `.share-box` (`:623`) are `position: fixed; z-index: 90` "so the bar's overflow can't clip it" (`:5-6` in ToolMenu, `:622` in CSS).
+- `.share-box` is `position: fixed; z-index: 90` "so the bar's overflow can't clip it"; the Insert panel's `.insert-backdrop` sits above it at `z-index: 95`.
 - Responsive: `.btn-label` hidden under 1080px (`:234-236`); under 640px the bar tightens, the save state hides unless it is an error, the modal goes full screen (`:237-244`, `:359-363`).
 - The docked panel (`.dock`, `:132-145`), "A tool docked beside the board (practice): the board stays in use next to it" (`:132`): `width: clamp(360px, 34vw, 540px)`, `flex: none`, a column with the surface colour and a left border; inside it `.modal-body` grows and scrolls, `.preview` is at least 120px tall, the answer input is 18px, `.field-row`s wrap, and the area `.tabs` wrap "on as many rows as the panel needs, rather than a strip to scroll" (`:141-142`, overriding the `overflow-x: auto` strip of `.tabs` at `:204`). Under 640px the panel is `position: fixed; inset: 0; z-index: 100`, the whole screen (`:143-145`).
 - `.modal-backdrop` z-index 100 (`:149`), `.palette-backdrop` 110 (`:366`) so the palette can sit over a dialog if ever both were open (they are not; BoardPage blocks the shortcut when a dialog is open).
@@ -1541,9 +1542,13 @@ Backdrop `onMouseDown` closes only when the target is the backdrop itself (`:46`
 
 `startOr(start, items, fallback)` (`:78-79`): the topic to open on, if `start` names one.
 
-### src/components/ToolMenu.tsx
+### src/components/InsertPanel.tsx
 
-A toolbar dropdown. State `open`, `pos`. `useLayoutEffect` on `[open]` (`ToolMenu.tsx:13-19`): measure the button's rect and the list's width, clamp `left` to `[8, innerWidth - w - 8]`, set `top = r.bottom + 4`, focus the first item. `useEffect` on `[open]` (`:21-42`): a capturing `pointerdown` on `document` closes when the target is outside both the list and the button; `Escape` closes and refocuses the button; `resize` closes. `onListKey` (`:44-50`): ArrowUp/Down move focus through the items, wrapping. Picking an item (`:71-76`): close, refocus the button, then `it.onPick()`. Comment: "The dialog returns focus to whatever had it when it opened: the menu button, not this vanishing item." ARIA: `aria-haspopup="menu" aria-expanded`, list `role="menu"`, items `role="menuitem"`.
+The board's one way to add a tool, a hands-on piece or a game (#448): the library laid over the board. `role="dialog"` with a search box (autofocused) and a close button. Down the side the `MENUS` groups of `src/menus.ts` as `role="tab"` buttons; arrow keys move between them and the chosen group is remembered in `localStorage["zeno.insert.group"]` (wrapped in try/catch). Beside them the group's sections, each heading linking to the topic page whose `sections` include it (`TOPICS` in `src/model/topics.ts`). Typing searches every group with `fold` from `src/library.ts`; results are headed "Group · Section", and no match says so. Picking an item calls `onPick`; Escape is caught in the capture phase so Excalidraw never sees it. BoardPage closes the panel, puts focus back on the Insert button, then places the live piece or opens the tool's dialog.
+
+### src/components/ToolOnPage.tsx
+
+A tool's dialog drawn into a page instead of over a board: the library's entry page and a topic page's "Work through it here" both use it. Same dialog as on the board, inside `PanelContext.Provider value={true}`, so it renders inline; `onSubmit` keeps the picture and shows it below.
 
 ### src/components/JoinLink.tsx
 
@@ -1645,7 +1650,7 @@ Effect on `[saveNow]` (`:210-234`). `flush(keepalive)`: if the debounce timer is
 
 `insert(d, tool, data, image)` (`:483-489`), "Puts what a tool made on the board, or in place of the picture it was editing", is shared by the dialog and the panel: if `tool.png`, build a PNG `PlacedImage` from `image.dataURL`; else theme the SVG for the current board theme and build an SVG one; then `placeImage(placed, {kind: d.kind, data, w: image.width, h: image.height}, d.editing)`.
 
-Header (`:492-527`): back link; `title-input` (`aria-label={t.rename}`, `onBlur=saveTitle`, Enter blurs); `save-state` span with one of `t.saving / t.saved / t.saveConflict / t.saveError`; spacer; when `selectedMath` an "✎ Edit …" button whose label is `t[TOOLS[kind].edit]`; 🔍 opens the palette; 📐 toggles the default sidebar on `SHAPES_TAB`; one `ToolMenu` per `MENUS` group (`src/menus.ts`), its sections as headings, tools opening their dialog and live pieces going on the board; `ShareBox` wired to `board.shareToken`; `LangSelect`.
+Header (`:492-527`): back link; `title-input` (`aria-label={t.rename}`, `onBlur=saveTitle`, Enter blurs); `save-state` span with one of `t.saving / t.saved / t.saveConflict / t.saveError`; spacer; when `selectedMath` an "✎ Edit …" button whose label is `t[TOOLS[kind].edit]`; 🔍 opens the palette; 📐 toggles the default sidebar on `SHAPES_TAB`; one Insert button opening `InsertPanel` over the board (the `MENUS` groups of `src/menus.ts`), tools opening their dialog and live pieces going on the board; `ShareBox` wired to `board.shareToken`; `LangSelect`.
 
 Conflict bar (`:528-534`, `role="alert"`): `t.conflictText`, "Reload their version" (`location.reload()`), "Keep mine" (`saveNow(true)` → `baseUpdatedAt: undefined` → the server accepts).
 
@@ -1874,7 +1879,7 @@ Save sends `api.paper(code, student, phase, form, answers)` (`POST /api/classes/
 ### Cross-cutting notes
 
 - **Network errors never throw to React.** Every call site catches and maps to state: `failed` (Home, Teacher), `missing`/`saveState` (Board), `gone` (Shared), `planStatus`/`error` (Practice/StudentPanel), or silent retry (ShareBox, outboxes, polls).
-- **Keyboard shortcuts, complete list.** Ctrl/Cmd+K and `/` open the palette (`BoardPage.tsx:434-449`); Escape closes modal, palette, tool menu, share box; Tab is trapped in a modal; arrows move in tabs, segmented groups, tool menus and the palette; Enter checks/advances a practice question, submits a test answer, submits the join fields, blurs the title; Ctrl/Cmd+Enter inserts a formula; Enter/Space on a tray block adds one; double-click on a math picture edits it.
+- **Keyboard shortcuts, complete list.** Ctrl/Cmd+K and `/` open the palette (`BoardPage.tsx:434-449`); Escape closes modal, palette, Insert panel, share box; Tab is trapped in a modal; arrows move in tabs, segmented groups, the Insert panel's groups and the palette; Enter checks/advances a practice question, submits a test answer, submits the join fields, blurs the title; Ctrl/Cmd+Enter inserts a formula; Enter/Space on a tray block adds one; double-click on a math picture edits it.
 - **Persistence in the browser.** `lang`, `zeno.library`, `zeno.practice.v1`, `zeno.student.v1`, `zeno.outbox.v1`, `zeno.testbox.v1` in `localStorage`; `zeno.teacher` in `sessionStorage`. All reads and writes are wrapped so private mode degrades to "not kept".
 - **Timings.** Practice and test durations use `performance.now()` (`learner.ts:51-52`: "so a clock change doesn't skew them"); `shownAt` for the record is `Date.now()`; session ends are epoch ms from the server and compared with `Date.now()`.
 

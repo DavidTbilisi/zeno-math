@@ -53,11 +53,11 @@ test("a piece changed in the 100 ms before Excalidraw starts it still answers cl
   await game.getByRole("button", { name: "Check" }).click({ timeout: 5000 });
 });
 
-// The bar and its menus fit the window, from a phone to a wide screen and in the longest language: the bar gives up
-// labels, then spacing, then wraps; a menu in sections lays them out in columns, is never taller than the window and
-// never scrolls sideways.
+// The bar and the Insert panel fit the window, from a phone to a wide screen and in the longest language: the bar
+// gives up labels, then spacing, then wraps; the panel's every group stays inside the window and never scrolls
+// sideways (a long group scrolls down inside it).
 for (const [w, h] of [[1366, 768], [1024, 700], [390, 760]])
-  test(`the board's bar and every menu fit on a ${w} × ${h} window, in English and Georgian`, async ({ page }) => {
+  test(`the board's bar and the Insert panel fit on a ${w} × ${h} window, in English and Georgian`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: h });
     await page.goto("/#/boards");
     await page.getByRole("button", { name: /New board/ }).first().click();
@@ -67,15 +67,18 @@ for (const [w, h] of [[1366, 768], [1024, 700], [390, 760]])
       if (lang === "ka") await page.locator(".board-bar .lang-select").selectOption("ka");
       const bar = page.locator(".board-bar");
       await expect.poll(() => bar.evaluate((e) => e.scrollWidth - e.clientWidth)).toBe(0);
-      for (const button of await bar.locator(".tool-menu-btn").all()) {
-        await button.click();
-        const box = (await page.locator(".tool-menu").boundingBox())!;
+      await page.locator(".insert-btn").click();
+      const panel = page.locator(".insert");
+      for (const tab of await panel.getByRole("tab").all()) {
+        await tab.click();
+        await expect(tab).toHaveAttribute("aria-selected", "true");
+        const box = (await panel.boundingBox())!;
         expect(box.x).toBeGreaterThanOrEqual(0);
         expect(box.x + box.width).toBeLessThanOrEqual(w);
         expect(box.y + box.height).toBeLessThanOrEqual(h);
-        // Nothing hides off to the side: a menu too tall for the window scrolls down.
-        expect(await page.locator(".tool-menu").evaluate((e) => e.scrollWidth - e.clientWidth)).toBe(0);
-        await page.keyboard.press("Escape");
+        expect(await panel.locator(".insert-items").evaluate((e) => e.scrollWidth - e.clientWidth)).toBe(0);
       }
+      await page.keyboard.press("Escape");
+      await expect(panel).toHaveCount(0);
     }
   });
