@@ -16,6 +16,7 @@ import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
 import type { Fading } from "../src/model/fading.ts";
 import { learnStepDown, noStepDown, type StepDown } from "../src/model/stepDown.ts";
 import { RATINGS, type Rating } from "../src/model/difficulty.ts";
+import { GOALS, isGoal } from "../src/model/roadmap.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
 import { dashboard, markSeen } from "./dashboard.ts";
 import { initHomework, isHomework, makeHomework, setStudy, studentHomework } from "./homework.ts";
@@ -145,6 +146,9 @@ export function initResearch(db: DatabaseSync) {
   // 0: the class isn't in the study (issue #299), e.g. a pilot: homework at any time, and the all-classes exports
   // leave it out. Every class is in the study unless the teacher takes it out.
   add("classes", "study", "INTEGER NOT NULL DEFAULT 1");
+  // The roadmap the teacher picked for the class (#461): its students' site opens on it until they choose their own.
+  // NULL: no goal.
+  add("classes", "goal", "TEXT");
   stmt(db, "UPDATE students SET arm = CASE condition WHEN 'fixed' THEN 'off' ELSE 'on' END WHERE arm IS NULL").run();
   stmt(db, `UPDATE classes SET block = replace(replace(block, '"adaptive"', '"on"'), '"fixed"', '"off"') WHERE block LIKE '%"adaptive"%' OR block LIKE '%"fixed"%'`).run();
   initProtocol(db);
@@ -481,6 +485,16 @@ export async function handleResearch(
     return setStudy(req, res, db, normalizeCode(decodeURIComponent(id)));
   }
 
+  // The class's roadmap goal ({ goal: GoalId | null }, #461).
+  if (resource === "classes" && id && sub === "goal" && req.method === "POST") {
+    teacher(req);
+    const body = await readJson(req, 4096);
+    if (body.goal !== null && !isGoal(body.goal)) throw new HttpError(400, `goal must be null or one of ${GOALS.join(", ")}`);
+    const code = normalizeCode(decodeURIComponent(id));
+    const done = stmt(db, "UPDATE classes SET goal = ? WHERE code = ?").run(body.goal, code);
+    return done.changes ? send(res, 200, { goal: body.goal }) : send(res, 404, { error: "no such class" });
+  }
+
   // A test written on paper, typed in by the teacher.
   if (resource === "classes" && id && sub === "paper" && req.method === "POST") {
     teacher(req);
@@ -515,7 +529,7 @@ export async function handleResearch(
     if (req.method === "GET") {
       // Each count goes by the students_class index (and from there attempts_student), so no table is scanned.
       const rows = stmt(db, `
-        SELECT c.code, c.name, c.skills, c.feature, c.study = 1 AS study, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength,
+        SELECT c.code, c.name, c.skills, c.feature, c.study = 1 AS study, c.goal, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code) AS students,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.arm = 'on') AS "on",
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.arm = 'off') AS "off",
@@ -537,7 +551,7 @@ export async function handleResearch(
       const stored = skills ?? [...CURRICULUM];
       stmt(db, "INSERT INTO classes (code, name, skills, feature, test_length, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), feature, testLength, now);
       logPhase(db, code, "open", null, now);
-      return send(res, 201, { code, name, skills: stored, feature, study: true, createdAt: now, phase: "open", sessionEnds: null, testLength });
+      return send(res, 201, { code, name, skills: stored, feature, study: true, goal: null, createdAt: now, phase: "open", sessionEnds: null, testLength });
     }
     return send(res, 405, { error: "method not allowed" });
   }
@@ -606,7 +620,8 @@ export async function handleResearch(
     if (sub) return send(res, 404, { error: "not found" });
     if (req.method === "GET") {
       const { n } = stmt(db, "SELECT COUNT(*) AS n FROM attempts WHERE student_id = ?").get(student.id) as { n: number };
-      return send(res, 200, { code: student.code, class: student.class, condition: student.condition, feature: student.feature, arm: student.arm, answered: n });
+      const { goal } = stmt(db, "SELECT goal FROM classes WHERE code = ?").get(student.class) as { goal: string | null };
+      return send(res, 200, { code: student.code, class: student.class, condition: student.condition, feature: student.feature, arm: student.arm, answered: n, goal });
     }
     // Knowing the code is enough to wipe the record: it is all that ties the answers to the student.
     if (req.method === "DELETE") {

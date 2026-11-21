@@ -33,7 +33,7 @@ test("Georgian intros are never capitalised (Mtavruli)", () => {
 });
 
 test("the roadmaps' \"What is…?\" items are real topics, open until read and done after", () => {
-  const read = (ids: string[]): Work => ({ s: standing({}, null), passed: () => false, read: (t) => ids.includes(t) });
+  const read = (ids: string[]): Work => ({ s: standing({}, null), passed: () => false, read: (t) => ids.includes(t), tried: () => false });
   let n = 0;
   for (const r of Object.values(ROADMAPS))
     for (const i of itemsOf(r))

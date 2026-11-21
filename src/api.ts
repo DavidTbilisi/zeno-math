@@ -1,5 +1,6 @@
 import type { Dashboard } from "../server/dashboard";
 import { loadStudent, type Attempt, type Phase, type Plan, type SendResult, type Student, type TestAnswer } from "./learner";
+import type { GoalId } from "./model/roadmap";
 import type { SkillId } from "./math/practiceSkills";
 import type { Feature } from "./model/arms";
 import type { Form, TestPhase } from "./model/testForms";
@@ -80,7 +81,8 @@ export const study = {
   /** number: the student's number in the class list; again: join though someone in the class already gave it (409). */
   join: (classCode: string, number?: number, again = false) =>
     req<Student>("POST", "/api/students", { class: classCode, number, again: again || undefined }),
-  student: (code: string) => req<Student & { answered: number }>("GET", `/api/students/${encodeURIComponent(code)}`),
+  /** The student, and the goal their teacher picked for the class (#461), null for none. */
+  student: (code: string) => req<Student & { answered: number; goal: GoalId | null }>("GET", `/api/students/${encodeURIComponent(code)}`),
   plan: (code: string) => req<Plan>("GET", `/api/students/${encodeURIComponent(code)}/plan`),
   forget: (code: string) => req<void>("DELETE", `/api/students/${encodeURIComponent(code)}`),
   send: (a: Attempt, keepalive: boolean) => upload("/api/attempts", a, keepalive),
@@ -118,6 +120,8 @@ export type ClassSummary = {
   phase: Phase;
   sessionEnds: number | null;
   testLength: number;
+  /** The roadmap the teacher picked for the class (#461), null for none. */
+  goal: GoalId | null;
 };
 export type { Dashboard };
 
@@ -148,6 +152,9 @@ export function teacherApi(password: string) {
       req<{ students: number; length: number; createdAt: number }>("POST", `/api/classes/${encodeURIComponent(code)}/homework`, { length }, false, headers),
     /** Deletes a class nobody has joined (409 once someone has: close it instead). */
     remove: (code: string) => req<void>("DELETE", `/api/classes/${encodeURIComponent(code)}`, undefined, false, headers),
+    /** Picks the class's roadmap goal (#461), or null for none. */
+    goal: (code: string, goal: GoalId | null) =>
+      req<{ goal: GoalId | null }>("POST", `/api/classes/${encodeURIComponent(code)}/goal`, { goal }, false, headers),
     /** Takes the class out of the study or puts it back (409 back in once it has had homework). */
     study: (code: string, study: boolean) =>
       req<{ study: boolean }>("POST", `/api/classes/${encodeURIComponent(code)}/study`, { study }, false, headers),

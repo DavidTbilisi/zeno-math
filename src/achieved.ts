@@ -1,6 +1,6 @@
 // When things were achieved, kept in this browser for the roadmaps' achieved list (#449): the first time a practice
 // level was made secure ("cell:<skill>.<level>"), a game's ladder was passed ("ladder:<its useGame key>") and a topic's
-// intro was read ("read:<topic>", #450). Only the first time counts; what was done before this was kept has no date.
+// intro was read ("read:<topic>", #450) and a lab was first used on its page ("lab:<kind>", #461). Only the first time counts; what was done before this was kept has no date.
 import { PASS_STARS } from "./math/ladder";
 import { isGoal, type GoalId } from "./model/roadmap";
 

@@ -104,3 +104,47 @@ test("a symbol met in a question is a tap from its card, and #/symbols finds it 
     expect(await page.evaluate(() => /[Ა-Ჿ]/.test(document.body.innerText)), lang).toBe(false);
   }
 });
+
+test("a teacher gives a class a goal: its student's site opens on that roadmap until they choose their own (#461)", async ({ browser, request }) => {
+  const headers = { "X-Teacher-Password": "e2e-teacher" };
+  const name = `Goal ${Date.now()}`;
+  const { code } = await (await request.post("/api/classes", { data: { name, skills: ["percent", "interestRates"] }, headers })).json();
+  const student = await (await request.post("/api/students", { data: { class: code, number: 4 } })).json();
+
+  const teacher = await (await browser.newContext({ viewport: { width: 390, height: 800 } })).newPage();
+  await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), headers["X-Teacher-Password"]);
+  await teacher.goto("/#/teacher");
+  await teacher.locator(".class-item", { hasText: name }).click();
+  await teacher.getByRole("tab", { name: "Progress" }).click();
+  const card = teacher.locator(".class-goal");
+  await card.getByRole("combobox", { name: "Class goal" }).selectOption({ label: "Finance" });
+  // Nothing practised yet: the student is on none of the roadmap's skills the class has.
+  await expect(card.locator(".class-goal-list li", { hasText: "№ 4" })).toContainText(/^№ 4\s*0 of 2$/);
+  expect(await teacher.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+
+  const page = await (await browser.newContext({ viewport: { width: 390, height: 800 } })).newPage();
+  await page.addInitScript((s) => localStorage.setItem("zeno.student.v1", s), JSON.stringify(student));
+  await page.goto("/#/roadmaps");
+  await expect(page.locator(".road-goal.mine")).toContainText("your class's goal");
+  await expect(page.locator(".road-goal.mine")).toContainText("Finance");
+  await page.locator(".road-goal.mine").click();
+  await expect(page.locator(".road-class-note")).toBeVisible();
+  // Following the class's goal isn't choosing it: another goal is the learner's own, and wins.
+  await page.goto("/#/roadmaps");
+  await page.locator('a.road-goal[href="#/roadmaps/software"]').click();
+  await page.goto("/#/roadmaps");
+  await expect(page.locator(".road-goal.mine")).toContainText("Software");
+  await expect(page.locator(".road-goal.mine")).toContainText("your goal");
+});
+
+test("a roadmap's lab is done once the learner has tried it (#461)", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto("/#/roadmaps/ml");
+  const item = page.locator(".road-item", { hasText: "Gradient descent lab" });
+  await expect(item).toHaveAttribute("href", "#/library/live/descentLab");
+  await expect(item).not.toHaveClass(/done/);
+  await item.click();
+  await page.locator(".inline-piece .live-descentLab").click({ position: { x: 40, y: 40 } });
+  await page.goto("/#/roadmaps/ml");
+  await expect(page.locator(".road-item", { hasText: "Gradient descent lab" })).toHaveClass(/done/);
+});

@@ -3,13 +3,14 @@
 // what has been achieved, newest first. The goal last opened is remembered for this browser.
 import { useState } from "react";
 import { ApiError } from "../api";
-import { loadAchieved, storedGoal, storeGoal } from "../achieved";
+import { loadAchieved, storedGoal } from "../achieved";
+import { chooseGoal, classGoal, useGoal } from "../classGoal";
 import { SiteBar } from "../components/SiteBar";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 import {
-  achievedAt, GOALS, isGoal, isRead, isSkill, itemId, itemsOf, itemState, progressOf, roadNext,
+  achievedAt, GOALS, isGoal, isLab, isRead, isSkill, itemId, itemsOf, itemState, progressOf, roadNext,
   type GameId, type GoalId, type Item, type ItemState, type Work,
 } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
@@ -20,9 +21,9 @@ import { readWork } from "../work";
 export function RoadmapPage({ goal }: { goal?: string }) {
   const { t } = useI18n();
   const [work] = useState(readWork);
+  const { goal: mine, fromClass } = useGoal();
   if (isGoal(goal)) return <Roadmap goal={goal} work={work} />;
   const r = t.roadmap;
-  const mine = storedGoal();
   return (
     <div className="z">
       <SiteBar here="roadmaps" />
@@ -35,9 +36,9 @@ export function RoadmapPage({ goal }: { goal?: string }) {
             const p = progressOf(itemsOf(ROADMAPS[g]), work);
             return (
               <li key={g}>
-                <a className={`road-goal${g === mine ? " mine" : ""}`} href={`#/roadmaps/${g}`} onClick={() => storeGoal(g)}>
+                <a className={`road-goal${g === mine ? " mine" : ""}`} href={`#/roadmaps/${g}`} onClick={() => chooseGoal(g)}>
                   <strong>{r.goals[g].name}</strong>
-                  {g === mine && <span className="road-mine">{r.yours}</span>}
+                  {g === mine && <span className="road-mine">{fromClass ? r.classGoal : r.yours}</span>}
                   <span className="road-about">{r.goals[g].about}</span>
                   <Track p={p} />
                   <span className="course-count">{fill(r.count, p)}</span>
@@ -60,7 +61,7 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
   const [dates] = useState(loadAchieved);
   const [opening, setOpening] = useState(false);
   const [failed, setFailed] = useState<false | true | "refused">(false);
-  useState(() => storeGoal(goal));
+  useState(() => chooseGoal(goal));
   const next = roadNext(map, work);
   const all = progressOf(itemsOf(map), work);
   const day = new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", year: "numeric" });
@@ -76,7 +77,7 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
     }
   };
   const levelsNote = (i: Item) =>
-    isSkill(i) ? (i.levels.length < 3 ? fill(r.levels, { levels: i.levels.join(", ") }) : "") : isRead(i) ? t.site.explain.readNote : r.game;
+    isSkill(i) ? (i.levels.length < 3 ? fill(r.levels, { levels: i.levels.join(", ") }) : "") : isRead(i) ? t.site.explain.readNote : isLab(i) ? r.lab : r.game;
   const achieved = itemsOf(map)
     .filter((i) => itemState(i, work) === "done")
     .map((i) => ({ i, at: achievedAt(i, dates) }))
@@ -88,6 +89,7 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
       <div className="z-page road-page">
         <a className="site-back" href="#/roadmaps">← {r.change}</a>
         <h1 className="z-page-title">{r.goals[goal].name}</h1>
+        {!storedGoal() && goal === classGoal() && <p className="road-class-note">{r.classGoalNote}</p>}
         <p className="course-lede">
           {r.goals[goal].about}
           {goal === "ml" && <> <a href="#/course">{r.courseMap}</a></>}
@@ -107,6 +109,8 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
                 <a className="z-btn z-btn-marker" href={`#/practice/${next.via.skill}.${next.via.level}`}>{r.practise}</a>
               ) : isRead(next.item) ? (
                 <a className="z-btn z-btn-marker" href={`#/learn/${next.item.read}`}>{t.site.explain.read}</a>
+              ) : isLab(next.item) ? (
+                <a className="z-btn z-btn-marker" href={`#/library/live/${next.item.lab}`}>{r.tryLab}</a>
               ) : (
                 <button className="z-btn z-btn-marker" disabled={opening} onClick={() => play((next.item as { game: GameId }).game)}>{r.play}</button>
               )}
@@ -154,6 +158,8 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
                             <a className={cls} aria-label={label} href={`#/practice/${i.skill}.${i.levels.find((L) => work.s.level(i.skill, L) === "open") ?? i.levels[0]}`}>{body}</a>
                           ) : isRead(i) ? (
                             <a className={cls} aria-label={label} href={`#/learn/${i.read}`}>{body}</a>
+                          ) : isLab(i) ? (
+                            <a className={cls} aria-label={label} href={`#/library/live/${i.lab}`}>{body}</a>
                           ) : (
                             <button className={cls} aria-label={label} disabled={opening} onClick={() => play(i.game)}>{body}</button>
                           )}

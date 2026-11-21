@@ -2,23 +2,23 @@
 // topic), the roadmap they last opened with its next step, every goal with its bar, the featured topics with theirs,
 // and plain practice. The boards are one section of the site now (#/boards).
 import { useState } from "react";
-import { storedGoal, storeGoal } from "../achieved";
+import { chooseGoal, useGoal } from "../classGoal";
 import { gradeName } from "../components/GradeCard";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 import { currentGrade } from "../model/placement";
-import { GOALS, isRead, itemsOf, progressOf, roadNext, type GameId, type Next } from "../model/roadmap";
+import { GOALS, isLab, isRead, itemsOf, progressOf, roadNext, type GameId, type Next } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
 import { FEATURED, topicOf, topicProgress } from "../model/topics";
 import { loadProgress } from "../practiceProgress";
 import { itemName, stageName } from "../roadWords";
 import { readWork } from "../work";
 
-/** Where a roadmap's or a topic's next step is done: a practice level, the topic's page for a "What is…?" read, or the game's own page. */
+/** Where a roadmap's or a topic's next step is done: a practice level, the topic's page for a "What is…?" read, or the game's or lab's own page. */
 export const nextHref = (n: Next) =>
-  n.via ? `#/practice/${n.via.skill}.${n.via.level}` : isRead(n.item) ? `#/learn/${n.item.read}` : `#/library/live/${(n.item as { game: GameId }).game}`;
+  n.via ? `#/practice/${n.via.skill}.${n.via.level}` : isRead(n.item) ? `#/learn/${n.item.read}` : `#/library/live/${isLab(n.item) ? n.item.lab : (n.item as { game: GameId }).game}`;
 
 /** Zeno's picture: each step covers half of what is left, so the squares halve and never quite reach the end. */
 function Halving() {
@@ -44,7 +44,7 @@ export function SiteHome() {
   const [work] = useState(readWork);
   const [progress] = useState(loadProgress);
   const grade = progress.placed || progress.cells ? currentGrade(progress.placed ?? null, progress.cells ?? {}) : null;
-  const goal = storedGoal();
+  const { goal, fromClass } = useGoal();
   const map = goal ? ROADMAPS[goal] : null;
   const next = map ? roadNext(map, work) : null;
   const all = map ? progressOf(itemsOf(map), work) : null;
@@ -99,9 +99,9 @@ export function SiteHome() {
               const p = progressOf(itemsOf(ROADMAPS[g]), work);
               return (
                 <li key={g}>
-                  <a className={`road-goal${g === goal ? " mine" : ""}`} href={`#/roadmaps/${g}`} onClick={() => storeGoal(g)}>
+                  <a className={`road-goal${g === goal ? " mine" : ""}`} href={`#/roadmaps/${g}`} onClick={() => chooseGoal(g)}>
                     <strong>{r.goals[g].name}</strong>
-                    {g === goal && <span className="road-mine">{r.yours}</span>}
+                    {g === goal && <span className="road-mine">{fromClass ? r.classGoal : r.yours}</span>}
                     <span className="road-about">{r.goals[g].about}</span>
                     <Track p={p} />
                     <span className="course-count">{fill(r.count, p)}</span>

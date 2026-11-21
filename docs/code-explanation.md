@@ -1888,6 +1888,12 @@ State: the `student` (a code, picked from the dashboard's students by `studentNa
 
 Save sends `api.paper(code, student, phase, form, answers)` (`POST /api/classes/:code/paper`, `recordPaperTest` in `server/protocol.ts`). The server marks each answer with the same checker (an answer only wrong in its form counts as wrong), keeps online answers (`INSERT OR IGNORE` on student, phase and item) and stores the rest with `paper = 1`. The result puts ✓, ≈, ✗ or – beside each question, so a typo shows, and says how many were stored and right. A 409 means the student has already taken a test on the other form, so the sheet must be theirs (`paperWrongForm`, naming the `planned` form). A `reordered` result means their order was swapped to fit the form they wrote, which is allowed while they have taken neither test.
 
+### Roadmap labs and the class goal (#461)
+
+A roadmap item can be a lab, `{ lab }` with `lab` one of `LABS` in `src/model/roadmap.ts` (the ML labs and the geometry lab, each a live piece the library lists as `live/<lab>`). A lab is done once tried: `InlinePiece` calls `noteAchieved("lab:<kind>")` on the learner's first press or key inside a lab (`onPointerDownCapture`/`onKeyDownCapture`, not a state change, since some pieces set state on mount), and `readWork` reads it back as `tried`. The ML roadmap lists each stage's labs after the course map's skills; software's graphics stage has the geometry lab.
+
+The teacher picks a roadmap for a class on the Progress tab (`ClassGoalCard`, `POST /api/classes/:code/goal` with `{ goal: GoalId | null }`, stored in `classes.goal`). `GET /api/students/:code` returns it, and `useGoal()` in `src/classGoal.ts` keeps it as `zeno.classGoal`: the site opens on the learner's own goal, else their class's, marked "your class's goal". `chooseGoal` doesn't store the class's goal as the learner's own when they open it, so a goal the teacher changes later still reaches them. Under the pick, each student shows the roadmap's skill items in the class's skill list, done when the dashboard's model has every level at `MASTERED_AT` or above with at least one answer (`classRoad` in `src/model/classRoad.ts`). Games, intros and labs are kept in the student's browser, so they aren't counted there.
+
 ### Cross-cutting notes
 
 - **Network errors never throw to React.** Every call site catches and maps to state: `failed` (Home, Teacher), `missing`/`saveState` (Board), `gone` (Shared), `planStatus`/`error` (Practice/StudentPanel), or silent retry (ShareBox, outboxes, polls).

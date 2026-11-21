@@ -7,14 +7,17 @@ import { ALL_SKILLS, type SkillId } from "../src/math/practiceSkills.ts";
 import { nextStep, STAGES, standing } from "../src/model/course.ts";
 import { gradeOf, PREREQUISITES } from "../src/model/curriculum.ts";
 import { cellKey, type Cells } from "../src/model/placement.ts";
-import { achievedAt, GAME_KEYS, GOALS, isRead, isSkill, itemId, itemsOf, itemState, progressOf, roadNext, type GameId, type Item, type Work } from "../src/model/roadmap.ts";
+import { libEntry } from "../src/library.ts";
+import { classRoad } from "../src/model/classRoad.ts";
+import { achievedAt, GAME_KEYS, GOALS, isLab, isRead, isSkill, itemId, itemsOf, itemState, LABS, progressOf, roadNext, type GameId, type Item, type LabId, type Work } from "../src/model/roadmap.ts";
 import { ROADMAPS } from "../src/model/roadmaps/index.ts";
 import type { TopicId } from "../src/model/topics.ts";
 
 const secure = { seen: 3, right: 3, run: 3 };
-const work = (cells: Cells, placed: Parameters<typeof standing>[1] = null, won: GameId[] = [], read: TopicId[] = []): Work => ({
+const work = (cells: Cells, placed: Parameters<typeof standing>[1] = null, won: GameId[] = [], read: TopicId[] = [], labs: LabId[] = []): Work => ({
   s: standing(cells, placed),
   passed: (g) => won.includes(g),
+  tried: (lab) => labs.includes(lab),
   read: (topic) => read.includes(topic),
 });
 
@@ -64,7 +67,8 @@ test("on every roadmap, a level comes after the levels it builds on that the roa
 });
 
 test("the ML roadmap is the course map, and school is grades 1 to 12 level by level", () => {
-  assert.deepEqual(ROADMAPS.ml.stages.map((s) => [s.id, s.items.map((i) => isSkill(i) && i.skill)]), STAGES.map((s) => [s.id, [...s.skills]]));
+  // Its skills are the course map's, stage by stage; the labs (#461) come after them.
+  assert.deepEqual(ROADMAPS.ml.stages.map((s) => [s.id, s.items.filter(isSkill).map((i) => i.skill)]), STAGES.map((s) => [s.id, [...s.skills]]));
   const school = ROADMAPS.school;
   assert.deepEqual(school.stages.map((s) => s.id), ["1", "2", "3", "4", "5", "6", "7", "8", "10", "12"]);
   for (const s of school.stages) for (const i of s.items) if (isSkill(i)) for (const L of i.levels) assert.equal(String(gradeOf(i.skill, L)), s.id);
@@ -111,13 +115,15 @@ test("following Next walks every roadmap to the end", () => {
       const cells: Cells = {};
       const won: GameId[] = [];
       const read: TopicId[] = [];
-      const w0 = () => work(cells, placed, won, read);
+      const labs: LabId[] = [];
+      const w0 = () => work(cells, placed, won, read, labs);
       for (let steps = 0, n = roadNext(r, w0()); n; n = roadNext(r, w0()), steps++) {
         assert.ok(steps < 2000, `${r.id} goes round in circles`);
         if (n.via) {
           assert.equal(cells[cellKey(n.via)], undefined, `${r.id}: ${cellKey(n.via)} came twice`);
           cells[cellKey(n.via)] = secure;
         } else if (isRead(n.item)) read.push(n.item.read);
+        else if (isLab(n.item)) labs.push(n.item.lab);
         else won.push((n.item as { game: GameId }).game);
       }
       const w = w0();
@@ -143,4 +149,31 @@ test("an item's achieved date is the day its last level was secured, or its game
   assert.equal(achievedAt({ game: "beDp" }, { "ladder:zeno.bedp.v1": 3 }), 3);
   assert.equal(itemId(item), "skill:ratio.12");
   assert.equal(itemId({ skill: "ratio", levels: [1, 2, 3] }), "skill:ratio");
+});
+
+test("a lab item (#461) is a live piece of the library, done once tried, dated the day it was", () => {
+  for (const lab of LABS) assert.ok(libEntry(`live/${lab}`), `the library has no ${lab}`);
+  const used = new Set(Object.values(ROADMAPS).flatMap((r) => itemsOf(r).filter(isLab).map((i) => i.lab)));
+  assert.deepEqual([...LABS].filter((l) => !used.has(l)), [], "every lab is on a roadmap");
+  assert.equal(itemState({ lab: "descentLab" }, work({})), "open");
+  assert.equal(itemState({ lab: "descentLab" }, work({}, null, [], [], ["descentLab"])), "done");
+  assert.equal(itemId({ lab: "descentLab" }), "lab:descentLab");
+  assert.equal(achievedAt({ lab: "descentLab" }, { "lab:descentLab": 7 }), 7);
+});
+
+test("a class's goal on the teacher page counts the roadmap's skills the class practises, done when every level is mastered", () => {
+  const goal = "finance" as const;
+  const skills = itemsOf(ROADMAPS[goal]).filter(isSkill);
+  const [a, b] = [...new Set(skills.map((i) => i.skill))];
+  const of = (k: SkillId) => skills.filter((i) => i.skill === k).length;
+  const at = (p: number, n = 5) => ({ p: [p, p, p], n });
+  const r = classRoad(goal, [a, b, "times"], [
+    { mastery: { [a]: at(0.99), [b]: { p: [0.99, 0.99, 0.2], n: 5 } } },
+    { mastery: {} },
+    // A model never fed an answer is no evidence, however high its prior.
+    { mastery: { [a]: at(1, 0) } },
+  ], 0.95);
+  const bDone = skills.filter((i) => i.skill === b && i.levels.every((L) => L < 3)).length;
+  assert.deepEqual(r, { total: of(a) + of(b) + of("times"), done: [of(a) + bDone, 0, 0] });
+  assert.deepEqual(classRoad(goal, [], [{ mastery: {} }], 0.95), { total: 0, done: [0] });
 });

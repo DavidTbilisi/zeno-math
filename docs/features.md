@@ -2122,6 +2122,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
 - On a dark board the pictures turn dark too (and back again), and Georgian text in them uses the system's Georgian font
 - Formulas and graphs stay editable: double-click one (or use the *Edit* button) to change it
 - Boards autosave to SQLite on your own server; works fully offline (no CDNs)
+- Roadmaps by goal tick themselves from practice, passed games, read intros and tried labs (the ML labs, the geometry
+  lab); a teacher can give a class a goal, so its students' site opens on that roadmap, and see each student on its skills
 
 ## Screenshots
 
