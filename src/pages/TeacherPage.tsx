@@ -706,6 +706,8 @@ function ClassGoalCard({ klass, data, api, pct, showCodes, onChanged }: {
   const [goal, setGoal] = useState<GoalId | null>(klass.goal);
   const [saving, setSaving] = useState(false);
   const [failed, setFailed] = useState(false);
+  // How the bars count, kept behind a "?" so the card opens on the picker, not a paragraph.
+  const [how, setHow] = useState(false);
   const pick = async (g: GoalId | null) => {
     setSaving(true);
     setFailed(false);
@@ -722,7 +724,11 @@ function ClassGoalCard({ klass, data, api, pct, showCodes, onChanged }: {
   return (
     <section className="card class-goal">
       <h3>{tw.goal}</h3>
-      <p className="hint">{fill(tw.goalHint, { at: pct(MASTERED_AT) })}</p>
+      <div className="class-goal-hint">
+        <p className="hint">{tw.goalHint}</p>
+        <button type="button" className="class-goal-how" aria-expanded={how} aria-controls="class-goal-how" aria-label={tw.goalHowLabel} title={tw.goalHowLabel} onClick={() => setHow(!how)}>?</button>
+      </div>
+      {how && <p id="class-goal-how" className="hint class-goal-how-text">{fill(tw.goalHow, { at: pct(MASTERED_AT) })}</p>}
       <label className="class-goal-pick">
         <span className="sr-only">{tw.goal}</span>
         <select value={goal ?? ""} disabled={saving} onChange={(e) => void pick(isGoal(e.target.value) ? e.target.value : null)}>
