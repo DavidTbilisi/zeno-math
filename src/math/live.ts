@@ -234,6 +234,26 @@ export function counters(cells: number[]): { a: number; b: number; n: number } {
   return { a, b, n: a + b };
 }
 
+/** The first empty square of the frames shown (10 or 20 squares), or null when they are full. */
+export function firstEmpty(cells: number[], frames: number): number | null {
+  const i = cells.slice(0, 10 * frames).indexOf(0);
+  return i < 0 ? null : i;
+}
+
+/**
+ * A counter dragged from square `from` and let go on square `to` (null: off the frames, so it is taken away). On an
+ * empty square it moves; on a full one the two counters swap.
+ */
+export function moveCounter(cells: number[], from: number, to: number | null): number[] {
+  const next = [...cells];
+  if (to === null) next[from] = 0;
+  else [next[from], next[to]] = [cells[to], cells[from]];
+  return next;
+}
+
+/** A two-coloured counter turned over: red to yellow and back. */
+export const flipCounter = (c: number) => (c === 1 ? 2 : c === 2 ? 1 : 0);
+
 export const multiplesOf = (n: number, upTo = 100) => Array.from({ length: Math.floor(upTo / n) }, (_, i) => n * (i + 1));
 
 /** The jumps on the hundred square: one along a row, ten down a column, and back. */
@@ -547,7 +567,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   spinner: [300, 372],
   coin: [260, 300],
   fractions: [320, 372],
-  tenFrame: [340, 300],
+  tenFrame: [400, 370],
   hundred: [400, 610],
   dots: [520, 600],
   graph: [640, 560],

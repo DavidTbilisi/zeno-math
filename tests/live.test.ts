@@ -14,6 +14,9 @@ import {
   halfSign,
   viaHalf,
   counters,
+  firstEmpty,
+  flipCounter,
+  moveCounter,
   DIE_SIDES,
   divisionAsk,
   divisionCase,
@@ -292,6 +295,17 @@ test("comparing with a half: n + n against d, and the half decides only when the
           const c = viaHalf({ n, d }, { n: m, d: e });
           if (c) assert.equal(c.includes("<") ? "<" : c.includes(">") ? ">" : "=", fracSign({ n, d }, { n: m, d: e }), `${n}/${d} ${m}/${e}`);
         }
+});
+
+test("ten frame by hand: a tray fills the first empty square, a counter moves, swaps, turns over and goes", () => {
+  const cells = [1, 0, 2, ...Array(17).fill(0)];
+  assert.equal(firstEmpty(cells, 1), 1);
+  assert.equal(firstEmpty([...Array(10).fill(1), ...Array(10).fill(0)], 1), null);
+  assert.equal(firstEmpty([...Array(10).fill(1), ...Array(10).fill(0)], 2), 10);
+  assert.deepEqual(moveCounter(cells, 0, 5).slice(0, 6), [0, 0, 2, 0, 0, 1]);
+  assert.deepEqual(moveCounter(cells, 0, 2).slice(0, 3), [2, 0, 1]);
+  assert.deepEqual(moveCounter(cells, 2, null).slice(0, 3), [1, 0, 0]);
+  assert.deepEqual([0, 1, 2].map(flipCounter), [0, 2, 1]);
 });
 
 test("hundred square by hand: a drag jumps by tens then ones, and paints marks", () => {
