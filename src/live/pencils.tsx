@@ -56,3 +56,16 @@ export const Pencil = ({
       strokeLinecap="round"
     />
   ) : null;
+
+/** The two pencils lying in their box, faded once they are laid on the towers. */
+export const PencilBox = ({ x, y, w, h, joined, colors, on }: { x: number; y: number; w: number; h: number; joined: boolean; colors: readonly string[]; on: string }) => (
+  <>
+    <rect x={x} y={y} width={w} height={h} rx={8} fill={joined ? "#e7f5ff" : "#fff"} stroke={joined ? on : "#ced4da"} strokeDasharray={joined ? undefined : "5 4"} />
+    {colors.map((c, i) => (
+      <g key={c} opacity={joined ? 0.3 : 1}>
+        <line x1={x + 12} y1={y + 12 + i * 11} x2={x + w - 20} y2={y + 12 + i * 11} stroke={c} strokeWidth={7} strokeLinecap="round" />
+        <path d={`M${x + w - 20} ${y + 8.5 + i * 11} l10 3.5 l-10 3.5 z`} fill="#f4d6a0" stroke={c} strokeWidth={1} />
+      </g>
+    ))}
+  </>
+);

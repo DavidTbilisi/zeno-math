@@ -19,6 +19,7 @@ import {
   tallyUp,
   paintParts,
   shadeFirst,
+  shadeUpTo,
   sliceAt,
   dotsUpTo,
   firstEmpty,
@@ -365,4 +366,15 @@ test("chance by hand: the section under the pointer, how far a flick turns, a ta
   assert.equal(spinTurn(-0.1, 0.5), -(720 + 180));
   assert.equal(spinTurn(5, 0), 6 * 360);
   assert.deepEqual(tallyUp([1, 0, 2], 1), [1, 1, 2]);
+});
+
+test("comparing fractions by hand: painting a bar shades the part under the pointer and every part below it", () => {
+  // A bar 240 high standing on 312, cut into 4 parts of 60.
+  assert.equal(shadeUpTo(312, 312, 240, 4), 0);
+  assert.equal(shadeUpTo(311, 312, 240, 4), 1);
+  assert.equal(shadeUpTo(252, 312, 240, 4), 1);
+  assert.equal(shadeUpTo(251, 312, 240, 4), 2);
+  assert.equal(shadeUpTo(72, 312, 240, 4), 4);
+  assert.equal(shadeUpTo(-50, 312, 240, 4), 4);
+  assert.equal(shadeUpTo(400, 312, 240, 4), 0);
 });

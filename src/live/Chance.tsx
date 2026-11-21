@@ -2,7 +2,7 @@
 // times at a click. The bars show what came up (as counts or relative frequencies) against what theory expects;
 // "Over time" follows one outcome's relative frequency as the trials pile up, on a log scale, settling on p.
 import { BAG_COLORS, DIE_SIDES, emptyTally, MAX_TRIALS, outcomes, runTrials, type Device, type LiveStates } from "../math/live";
-import { SECTION_COLORS } from "./pieces";
+import { SECTION_COLORS } from "./sectors";
 import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
 
 type State = LiveStates["chance"];
