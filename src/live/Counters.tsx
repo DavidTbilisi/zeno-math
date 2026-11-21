@@ -7,20 +7,19 @@
 // sign to change it. "Do it on the mat" clears the mat and asks for the sum's moves one at a time; each is ticked off
 // when the mat holds what it says, however the learner gets there, and "Show me" does the one asked. The moves and
 // the layout come from src/math/counters.ts; "Copy as a picture" copies the mat and the words.
-import { useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
+import { useState, type PointerEvent as ReactPointerEvent } from "react";
 import {
   CHIP_CAP, CHIP_R as R, counterState, freeColumn, freeSpot, keepOn, landsOn, MAT, MAT_LINE, matOf, num, NUM_RANGE,
   onMat, pairs, signed, stackedPairs, sumSteps, sumText, taskStep, tidy, toMat, value,
   type CounterStep, type LiveCounters, type MatChip,
 } from "../math/counters";
+import { Bin, BLUE, GREEN, keyTap, NumBox, Pill, TAP, wrapWords } from "./hand";
 import { usePops } from "./pops";
 import { fill, FONT, INK, svgPoint, type PieceProps } from "./ui";
 
 const W = 640;
 const POS = { fill: "#ffe066", stroke: "#e67700" };
 const NEG = { fill: "#ff8787", stroke: "#c92a2a" };
-const GREEN = "#2f9e44";
-const BLUE = "#1971c2";
 /** The trays, left of the mat: where each pile is, and the bin under them. */
 const TX = 56;
 const TRAY = { pos: 112, neg: 176, pair: 244 } as const;
@@ -33,10 +32,6 @@ const CARD_Y = 12;
 const SAY_Y = MAT.y + MAT.h + 30;
 const SAY = 27;
 const WRAP = 70;
-/** A press that moves less than this is a tap. */
-const TAP = 5;
-/** How far a drag up or down moves a number by one. */
-const SCRUB = 14;
 
 type Words = PieceProps<"counters">["w"]["counters"];
 type Tray = keyof typeof TRAY;
@@ -45,7 +40,6 @@ type Drag = { x0: number; y0: number; x: number; y: number; moved: boolean } & (
   | { from: "mat"; ids: number[] }
   | { from: Tray }
   | { from: "box" }
-  | { from: Num; v0: number; top: boolean }
 );
 type Ghost = { x: number; y: number; neg?: boolean; zero?: boolean };
 
@@ -85,17 +79,6 @@ function cancels(moving: MatChip[], others: MatChip[]): [MatChip, MatChip][] {
       used.push(hit.id);
       out.push([m, hit]);
     }
-  }
-  return out;
-}
-
-/** A line of words wrapped at spaces. */
-function wrap(s: string): string[] {
-  const out: string[] = [];
-  for (const word of s.split(" ")) {
-    const last = out[out.length - 1];
-    if (last !== undefined && last.length + 1 + word.length <= WRAP) out[out.length - 1] = `${last} ${word}`;
-    else out.push(word);
   }
   return out;
 }
@@ -184,31 +167,26 @@ export function Counters({ state: saved, set, w: words, svgRef }: PieceProps<"co
     const [x, y] = point(e);
     begin(e, { from: "box", x0: x, y0: y, x, y, moved: false });
   };
-  const pressNum = (e: ReactPointerEvent, n: Num, top: boolean) => {
-    const [x, y] = point(e);
-    begin(e, { from: n, v0: n === "a" ? a : b, top, x0: x, y0: y, x, y, moved: false });
-  };
 
-  const setNum = (n: Num, v: number) => {
-    const c = Math.max(NUM_RANGE[0], Math.min(NUM_RANGE[1], v));
-    if (c !== (n === "a" ? a : b)) set({ ...state, [n]: c, task: null });
-  };
+  const setNum = (n: Num, v: number) => set({ ...state, [n]: v, task: null });
+  const numBox = (n: Num, x: number, width: number) => (
+    <NumBox x={x} y={CARD_Y} w={width} value={n === "a" ? a : b} min={NUM_RANGE[0]} max={NUM_RANGE[1]} label={n === "a" ? w.first : w.second}
+      onChange={(v) => setNum(n, v)} show={n === "b" ? signed : num} />
+  );
+  const pill = (x: number, y: number, width: number, text: string, act: () => void, strong = false, title?: string) => (
+    <Pill x={x} y={y} w={width} text={text} onTap={act} strong={strong} title={title} />
+  );
   const move = (e: ReactPointerEvent<SVGSVGElement>) => {
     if (!drag) return;
     const [x, y] = svgPoint(e.currentTarget, e);
     const moved = drag.moved || Math.hypot(x - drag.x0, y - drag.y0) > TAP;
     setDrag({ ...drag, x, y, moved });
-    if (moved && (drag.from === "a" || drag.from === "b")) setNum(drag.from, drag.v0 + Math.round((drag.y0 - y) / SCRUB));
   };
 
   const up = () => {
     if (!drag) return;
     setDrag(null);
     const d = drag;
-    if (d.from === "a" || d.from === "b") {
-      if (!d.moved) setNum(d.from, d.v0 + (d.top ? 1 : -1));
-      return;
-    }
     if (d.from === "box") {
       setPicked(d.moved ? chips.filter(inBox).map((c) => c.id) : []);
       return;
@@ -271,17 +249,6 @@ export function Counters({ state: saved, set, w: words, svgRef }: PieceProps<"co
     setPicked([]);
     put(r.chips, { next: r.next });
   };
-  const keyNum = (e: KeyboardEvent, n: Num) => {
-    const by = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[e.key];
-    if (!by) return;
-    e.preventDefault();
-    setNum(n, (n === "a" ? a : b) + by);
-  };
-  const keyTap = (e: KeyboardEvent, act: () => void) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    e.preventDefault();
-    act();
-  };
 
   const z = pairs(mat);
   const lines: Line[] = [{ text: z ? fill(w.cancel, { z, v: num(value(mat)) }) : fill(w.worth, { v: num(value(mat)) }), tone: "main" }];
@@ -290,7 +257,7 @@ export function Counters({ state: saved, set, w: words, svgRef }: PieceProps<"co
     steps.slice(0, Math.min(task, steps.length - 1)).forEach((s) => lines.push({ text: `✓ ${stepLine(s, w, false)}`, tone: "done" }));
     lines.push(done ? { text: stepLine(steps[steps.length - 1], w, false), tone: "answer" } : { text: `→ ${stepLine(steps[task], w, true)}`, tone: "now" });
   } else lines.push({ text: w.hint, tone: "done" });
-  const drawn = lines.flatMap((l, i) => wrap(l.text).map((text) => ({ text, tone: l.tone, gap: i > 0 ? 8 : 0 })));
+  const drawn = lines.flatMap((l, i) => wrapWords(l.text, WRAP).map((text) => ({ text, tone: l.tone, gap: i > 0 ? 8 : 0 })));
   let y = SAY_Y;
   const placedLines = drawn.map((l, i) => {
     if (i > 0 && l.gap && drawn[i - 1].tone === "main") y += l.gap;
@@ -311,37 +278,12 @@ export function Counters({ state: saved, set, w: words, svgRef }: PieceProps<"co
   const sel = new Set(box ? chips.filter(inBox).map((c) => c.id) : picked);
   const counts = { pos: mat.pos, neg: mat.neg };
 
-  /** A number of the sum: drag it up or down, tap its top half for one more and its bottom half for one less. */
-  const numBox = (n: Num, x: number, width: number) => {
-    const v = n === "a" ? a : b;
-    return (
-      <g role="slider" tabIndex={0} aria-label={n === "a" ? w.first : w.second} aria-valuemin={NUM_RANGE[0]} aria-valuemax={NUM_RANGE[1]}
-        aria-valuenow={v} aria-valuetext={num(v)} onKeyDown={(e) => keyNum(e, n)} style={{ cursor: "ns-resize" }}>
-        <rect x={x} y={CARD_Y} width={width} height={44} rx={8} fill="#fff" stroke="#adb5bd" />
-        <text x={x + width / 2} y={CARD_Y + 30} fontSize={22} fontWeight={700} textAnchor="middle" fill={INK} pointerEvents="none">{n === "b" ? signed(v) : num(v)}</text>
-        <text x={x + width / 2} y={CARD_Y + 9} fontSize={9} textAnchor="middle" fill="#adb5bd" pointerEvents="none">▲</text>
-        <text x={x + width / 2} y={CARD_Y + 42} fontSize={9} textAnchor="middle" fill="#adb5bd" pointerEvents="none">▼</text>
-        <rect x={x} y={CARD_Y} width={width} height={22} fill="transparent" onPointerDown={(e) => pressNum(e, n, true)} />
-        <rect x={x} y={CARD_Y + 22} width={width} height={22} fill="transparent" onPointerDown={(e) => pressNum(e, n, false)} />
-      </g>
-    );
-  };
-  /** A word or two to tap, drawn as a pill. */
-  const pill = (x: number, yy: number, width: number, text: string, act: () => void, strong = false, title?: string) => (
-    <g role="button" tabIndex={0} aria-label={title ?? text} style={{ cursor: "pointer" }}
-      onPointerDown={(e) => e.stopPropagation()} onClick={act} onKeyDown={(e) => keyTap(e, act)}>
-      {title && <title>{title}</title>}
-      <rect x={x} y={yy} width={width} height={30} rx={15} fill={strong ? BLUE : "#fff"} stroke={strong ? BLUE : "#adb5bd"} />
-      <text x={x + width / 2} y={yy + 20} fontSize={15} fontWeight={600} textAnchor="middle" fill={strong ? "#fff" : INK} pointerEvents="none">{text}</text>
-    </g>
-  );
-
   const bBox = 64;
   const opX = 24 + 52 + 8;
   const bX = opX + 36 + 8;
   const actX = bX + bBox + 18;
   return (
-    <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="counters-mat" fontFamily={FONT} role="group" aria-label={label}
+    <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="hand-pic" fontFamily={FONT} role="group" aria-label={label}
       onPointerMove={move} onPointerUp={up} onPointerCancel={() => setDrag(null)} style={{ touchAction: "none", userSelect: "none" }}>
       <rect width={W} height={H} fill="#fff" />
 
@@ -400,15 +342,7 @@ export function Counters({ state: saved, set, w: words, svgRef }: PieceProps<"co
         <g style={at(TX, TRAY.pair + PAIR_DY)}><ChipDisc neg /></g>
         <text x={TX + 30} y={TRAY.pair + 6} fontSize={15} fill="#868e96" pointerEvents="none">= 0</text>
       </g>
-      <g role="button" tabIndex={0} aria-label={w.binTitle} style={{ cursor: "pointer" }} onPointerDown={(e) => e.stopPropagation()}
-        onClick={clearMat} onKeyDown={(e) => keyTap(e, clearMat)}>
-        <title>{w.binTitle}</title>
-        <rect x={BIN.x} y={BIN.y} width={BIN.w} height={BIN.h} rx={10} fill={overBin ? "#fff5f5" : "#fff"} stroke={overBin ? NEG.stroke : "#ced4da"}
-          strokeDasharray={overBin ? undefined : "5 4"} strokeWidth={overBin ? 2.5 : 1.5} />
-        <path d={`M${BIN.x + 38} ${BIN.y + 14} h24 M${BIN.x + 46} ${BIN.y + 14} v-3 h8 v3 M${BIN.x + 40} ${BIN.y + 17} l2 20 h16 l2 -20`}
-          fill="none" stroke={overBin ? NEG.stroke : "#868e96"} strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />
-        <text x={BIN.x + BIN.w / 2} y={BIN.y + 56} fontSize={13} textAnchor="middle" fill={overBin ? NEG.stroke : "#868e96"} pointerEvents="none">{w.bin}</text>
-      </g>
+      <Bin x={BIN.x} y={BIN.y} w={BIN.w} h={BIN.h} hot={overBin} label={w.bin} title={w.binTitle} onTap={clearMat} />
 
       {ghosts?.items.map((g, i) =>
         g.zero ? (

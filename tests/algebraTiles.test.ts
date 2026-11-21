@@ -3,8 +3,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  clampFactors, FACTOR_TARGETS, factorings, matText, net, partsText, poly, product, rectangle, removePairs, rows, same, side,
-  X_LEN, zeroPairs, type Counts, type Factors,
+  clampFactors, countsOf, FACTOR_TARGETS, factorings, freeTileSpot, keepTileOn, lineUp, matFrom, matText, net, onTileMat, partsText,
+  poly, product, rectangle, removePairs, rows, same, side, sideAdd, sideTake, TILE_CAP, TILE_KINDS, TILE_MAT, TILES_START, tilesState,
+  tileSize, tileUnder, X_LEN, zeroPairs, type Counts, type Factors, type MatTile,
 } from "../src/math/algebraTiles.ts";
 
 test("polynomials are written as people write them", () => {
@@ -76,4 +77,72 @@ test("the combine mat lays every tile out without overlap", () => {
     for (const q of tiles.slice(i + 1))
       assert.ok(p.x + p.w <= q.x + 1e-9 || q.x + q.w <= p.x + 1e-9 || p.y + p.h <= q.y + 1e-9 || q.y + q.h <= p.y + 1e-9);
   assert.ok(tiles.every((t) => t.x + t.w <= 14 + 1e-9));
+});
+
+const onMat = (t: MatTile) => {
+  const [w, h] = tileSize(t.kind);
+  return onTileMat(t.x, t.y) && onTileMat(t.x + w, t.y + h);
+};
+const apart = (ts: MatTile[]) =>
+  ts.every((p, i) => ts.every((q, j) => {
+    if (j <= i) return true;
+    const [pw, ph] = tileSize(p.kind);
+    const [qw, qh] = tileSize(q.kind);
+    return p.x + pw <= q.x || q.x + qw <= p.x || p.y + ph <= q.y || q.y + qh <= p.y;
+  }));
+
+test("tiles placed by hand: lined up, a full mat fits with none on another, and ids are kept", () => {
+  assert.deepEqual(countsOf(TILES_START.tiles), { pos: [1, 3, 2], neg: [0, 1, 4] });
+  const full = matFrom(TILE_CAP, TILE_CAP);
+  assert.ok(full.every(onMat), "every tile of a full mat is on it");
+  assert.ok(apart(full));
+  const messy = TILES_START.tiles.map((t, i) => ({ ...t, x: 300 + 11 * i, y: 90 + 7 * i }));
+  assert.deepEqual(lineUp(messy), TILES_START.tiles);
+  assert.deepEqual(keepTileOn("x2", 9999, -50), { x: TILE_MAT.x + TILE_MAT.w - 4 - tileSize("x2")[0], y: TILE_MAT.y + 4 });
+});
+
+test("a tile dropped on its negative finds it; a tap's tile goes where nothing is", () => {
+  const t = (id: number, kind: MatTile["kind"], neg: boolean, x: number, y: number): MatTile => ({ id, kind, neg, x, y });
+  const tiles = [t(0, "x", false, 200, 100), t(1, "x", true, 260, 100), t(2, "one", true, 205, 110)];
+  assert.equal(tileUnder(tiles, 210, 120, "x", true)?.id, 0, "a −x dropped on the x");
+  assert.equal(tileUnder(tiles, 210, 120, "x", false)?.id, undefined, "an x over an x: no cancel");
+  assert.equal(tileUnder(tiles, 210, 115, "one", false)?.id, 2, "a 1 on the −1");
+  assert.equal(tileUnder(tiles, 210, 115, "one", false, [2]), null, "that −1 already taken");
+  for (const kind of TILE_KINDS) {
+    const s = freeTileSpot(TILES_START.tiles, kind)!;
+    assert.ok(apart([...TILES_START.tiles, { id: 99, kind, neg: false, ...s }]), kind);
+  }
+  // Taps fill the mat until there is no room left, none on another.
+  const filled: MatTile[] = [];
+  for (let s = freeTileSpot(filled, "x2"); s; s = freeTileSpot(filled, "x2")) filled.push({ id: filled.length, kind: "x2", neg: false, ...s });
+  assert.ok(filled.length >= 12 && filled.every(onMat) && apart(filled), `${filled.length} x² tiles`);
+});
+
+test("a saved mat of counts comes back as tiles", () => {
+  const s = tilesState({ mode: "combine", pos: [1, 2, 0], neg: [0, 0, 3], f: [1, 0, 1, 0], target: 2 } as never);
+  assert.deepEqual(countsOf(s.tiles), { pos: [1, 2, 0], neg: [0, 0, 3] });
+  assert.equal(s.next, 6);
+  assert.equal(s.target, 2);
+  assert.equal(tilesState(TILES_START), TILES_START);
+});
+
+test("sides built by hand: a 1 on a side of −1s cancels one, and nothing goes past the ranges", () => {
+  assert.deepEqual(sideAdd([1, 2, 1, 3], 0, "x"), [2, 2, 1, 3]);
+  assert.deepEqual(sideAdd([1, -2, 1, 3], 0, "one"), [1, -1, 1, 3]);
+  assert.deepEqual(sideAdd([1, 2, 1, 3], 1, "neg"), [1, 2, 1, 2]);
+  assert.deepEqual(sideAdd([3, 6, 0, 0], 0, "x"), [3, 6, 0, 0]);
+  assert.deepEqual(sideAdd([3, 6, 0, 0], 0, "one"), [3, 6, 0, 0]);
+  assert.deepEqual(sideTake([1, -2, 1, 3], 0, "one"), [1, -1, 1, 3]);
+  assert.deepEqual(sideTake([0, 0, 1, 3], 0, "x"), [0, 0, 1, 3]);
+  assert.deepEqual(sideTake([0, 0, 1, 3], 1, "x"), [0, 0, 0, 3]);
+  // Every factoring puzzle can be built from nothing by drops alone.
+  for (const target of FACTOR_TARGETS) {
+    const [a, b, c, d] = factorings(target)[0];
+    let f: Factors = [0, 0, 0, 0];
+    for (let i = 0; i < a; i++) f = sideAdd(f, 0, "x");
+    for (let i = 0; i < Math.abs(b); i++) f = sideAdd(f, 0, b < 0 ? "neg" : "one");
+    for (let i = 0; i < c; i++) f = sideAdd(f, 1, "x");
+    for (let i = 0; i < Math.abs(d); i++) f = sideAdd(f, 1, d < 0 ? "neg" : "one");
+    assert.ok(same(product(f), target), poly(target));
+  }
 });
