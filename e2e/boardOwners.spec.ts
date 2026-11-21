@@ -51,6 +51,7 @@ test("a student's board is theirs: another student doesn't see it, and the teach
   await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
   await teacher.goto("/#/teacher");
   await teacher.locator(".class-item", { hasText: name }).click();
+  await teacher.getByRole("tab", { name: en.site.teach.tabs.progress }).click();
   await teacher.getByRole("heading", { name: en.teacher.studentBoards }).click();
   await teacher.getByRole("link", { name: title }).click();
   await expect(teacher.locator(".shared-title")).toHaveText(title);

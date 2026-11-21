@@ -110,7 +110,7 @@ server/protocol.ts        the study protocol: class phases (logged), timed sessi
 server/marking.ts, checker.ts  every answer marked again on the server with the browser's checker (bundled for Docker)
 src/model/testForms.ts    the test forms A and B (pre- and post-test) and C (delayed post-test), built from the class code
 src/components/TestRunner.tsx  taking a test: one question at a time, no marks, form messages only
-src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes and what they test, codes, who is stuck, arms, tests, mastery heatmap, calibration
+src/pages/TeacherPage.tsx the teacher's page (#/teacher): classes in a side list, the class header (code, join link, class board), then tabs: Today (phase steps, stuck, pace), Progress (class per topic, mastery heatmap), Homework, Study (arms, tests, paper test, calibration)
 src/components/MasteryHeatmap.tsx, CalibrationChart.tsx, ChartTip.tsx  the dashboard's charts and their readouts
 src/model/datasets.ts     public data sets (ASSISTments) as observations, read as a stream
 src/model/analysis.ts     the study's planned analysis: ANCOVA, Welch's test, least squares, scores from the export
