@@ -33,22 +33,12 @@ import {
   viaHalf,
   wrapDay,
 } from "../math/live";
+import { around, sectorPath } from "./sectors";
 import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
 
 const BLUE = "#1971c2";
 const RED = "#e03131";
 export const SECTION_COLORS = ["#ffc9c9", "#ffec99", "#b2f2bb", "#a5d8ff", "#d0bfff", "#ffd8a8", "#eebefa", "#99e9f2", "#c0eb75", "#e9ecef"];
-const rad = (deg: number) => (deg * Math.PI) / 180;
-/** A point at `deg` clockwise from twelve, as on a clock face or a spinner. */
-const around = (cx: number, cy: number, r: number, deg: number): [number, number] => [cx + r * Math.sin(rad(deg)), cy - r * Math.cos(rad(deg))];
-const sectorPath = (cx: number, cy: number, r: number, from: number, to: number) => {
-  const [x0, y0] = around(cx, cy, r, from);
-  const [x1, y1] = around(cx, cy, r, to);
-  return to - from >= 359.999
-    ? `M${cx - r},${cy}a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`
-    : `M${cx},${cy}L${x0},${y0}A${r},${r} 0 ${to - from > 180 ? 1 : 0},1 ${x1},${y1}Z`;
-};
-
 /** Runs `step(t)` with t from 0 to 1 over `ms`, then `done`; a new run or unmounting stops the old one. */
 function useAnimation() {
   const frame = useRef(0);
@@ -303,39 +293,6 @@ export function Coin({ state, set, w, svgRef }: PieceProps<"coin">) {
 }
 
 // ——— Fractions ———
-
-export function Fractions({ state, set, w, svgRef }: PieceProps<"fractions">) {
-  const n = state.parts;
-  const k = state.shaded.filter(Boolean).length;
-  const toggle = (i: number) => set({ ...state, shaded: state.shaded.map((s, j) => (j === i ? !s : s)) });
-  const setParts = (parts: number) => set({ ...state, parts, shaded: Array.from({ length: parts }, (_, i) => i < Math.min(k, parts)) });
-  const piece = (i: number) => ({
-    fill: state.shaded[i] ? "#a5d8ff" : "#fff",
-    stroke: INK,
-    strokeWidth: 2.5,
-    style: { cursor: "pointer" },
-    onClick: () => toggle(i),
-  });
-  return (
-    <>
-      <svg ref={svgRef} width={300} height={290} viewBox="0 0 300 290" fontFamily={FONT}>
-        {state.shape === "circle"
-          ? Array.from({ length: n }, (_, i) =>
-              n === 1 ? <circle key={i} cx={150} cy={112} r={104} {...piece(i)} /> : <path key={i} d={sectorPath(150, 112, 104, (i * 360) / n, ((i + 1) * 360) / n)} {...piece(i)} />,
-            )
-          : Array.from({ length: n }, (_, i) => <rect key={i} x={10 + (i * 280) / n} y={70} width={280 / n} height={84} {...piece(i)} />)}
-        <text x={150} y={250} fontSize={30} textAnchor="middle" fill={INK}>{k}</text>
-        <line x1={128} y1={259} x2={172} y2={259} stroke={INK} strokeWidth={2.5} />
-        <text x={150} y={286} fontSize={30} textAnchor="middle" fill={INK}>{n}</text>
-      </svg>
-      <div className="live-bar">
-        <Toggle on={state.shape === "circle"} onClick={() => set({ ...state, shape: "circle" })}>{w.fractions.circle}</Toggle>
-        <Toggle on={state.shape === "bar"} onClick={() => set({ ...state, shape: "bar" })}>{w.fractions.bar}</Toggle>
-        <Stepper value={n} min={1} max={12} onChange={setParts} less={w.fractions.fewer} more={w.fractions.more} />
-      </div>
-    </>
-  );
-}
 
 // ——— Ten frame ———
 

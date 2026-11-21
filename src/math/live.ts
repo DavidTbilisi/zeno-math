@@ -225,6 +225,18 @@ export function dotProduct(k: number, top: number, bottom: number) {
 /** Tapping square i (0-based) fills through it; tapping the last dot again takes it away. */
 export const tapSquare = (dots: number, i: number) => (i + 1 === dots ? i : i + 1);
 
+/** Which of n equal slices of a circle a point (dx, dy) from its centre is in, the slices counted clockwise from twelve. */
+export function sliceAt(dx: number, dy: number, n: number): number {
+  const deg = ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
+  return Math.min(n - 1, Math.floor(deg / (360 / n)));
+}
+
+/** Parts a drag paints: every one passed over takes the opposite of the first one's shading. */
+export const paintParts = (shaded: boolean[], first: number, over: number[]) => shaded.map((s, i) => (over.includes(i) ? !shaded[first] : s));
+
+/** The first k of n parts shaded: the numerator set by hand. */
+export const shadeFirst = (n: number, k: number) => Array.from({ length: n }, (_, i) => i < k);
+
 // ——— Ten frame and hundred square ———
 
 /** The two colours of counters in a ten frame (0 empty, 1 and 2 the colours), counted for "a + b = n". */
@@ -549,7 +561,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   dice: [360, 236],
   spinner: [300, 372],
   coin: [260, 300],
-  fractions: [320, 372],
+  fractions: [320, 446],
   tenFrame: [400, 370],
   hundred: [400, 650],
   dots: [520, 600],

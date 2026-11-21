@@ -5412,8 +5412,14 @@ export const en = {
     fractions: {
       circle: "Circle",
       bar: "Bar",
-      fewer: "Fewer parts",
-      more: "More parts",
+      part: "Part {n} of {d}: {s}",
+      shaded: "shaded",
+      plain: "not shaded",
+      top: "Shaded parts: {k} of {n}",
+      bottom: "Parts: {n}",
+      shadedParts: "shaded",
+      allParts: "parts",
+      hint: "Tap a part to shade it, or drag across parts to paint them. Drag or tap the numbers: the top shades parts, the bottom cuts the shape.",
     },
     tenFrame: {
       one: "One frame",
