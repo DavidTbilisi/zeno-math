@@ -84,7 +84,7 @@ test("an item ticks when all its levels are secure or its game is passed; below 
   assert.equal(itemState({ game: "beSort" }, work({}, null, ["beSort"])), "done");
   assert.equal(itemState({ game: "beSort" }, work({})), "open");
   const f = ROADMAPS.finance;
-  assert.deepEqual(progressOf(f.stages[0].items, work({ ...cells, "percent.2": secure, "percent.3": secure })), { done: 1, behind: 0, total: 10 });
+  assert.deepEqual(progressOf(f.stages[0].items, work({ ...cells, "percent.2": secure, "percent.3": secure })), { done: 1, behind: 0, total: 11 });
 });
 
 test("Next on a hand-made roadmap is its first item not done, opened by the practice it waits for", () => {

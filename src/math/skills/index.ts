@@ -214,6 +214,7 @@ import interestRates from "./interestRates";
 import amortisation from "./amortisation";
 import npv from "./npv";
 import bonds from "./bonds";
+import inflation from "./inflation";
 import binomialPricing from "./binomialPricing";
 import optionPricing from "./optionPricing";
 import bezout from "./bezout";
@@ -452,6 +453,7 @@ export const GENS: Record<SkillId, Gen> = {
   amortisation,
   npv,
   bonds,
+  inflation,
   binomialPricing,
   optionPricing,
   bezout,

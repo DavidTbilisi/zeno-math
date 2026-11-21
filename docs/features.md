@@ -1173,6 +1173,12 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     to maturity of a one- or two-year bond. The named slips: the coupon taken on the price, the coupon rate given as
     the current yield, the face value left undiscounted, the coupon rate used to discount, premium and discount
     swapped, and the current yield or the coupon rate given as the yield to maturity.
+  - Inflation and real rates (#458), in the number area after percentages and rates, on the finance and banking
+    roadmaps: a price after a year of inflation, inflation as a percentage change, the exact real rate
+    (1 + i)/(1 + π) − 1, what a later amount is worth in today's prices, and the inflation that wipes out a taxed
+    deposit's interest. The named slips: the increase alone, the change divided by the new price, the change in money,
+    the real rate the wrong way round, the rough i − π, inflation taken off simply, the amount grown instead of
+    shrunk, and the tax forgotten.
   - Discrete mathematics past the school counting puzzles (Rosen, Discrete Mathematics and Its Applications; Levin,
     Discrete Mathematics: An Open Introduction; Wilf, generatingfunctionology; Wilson, Introduction to Graph Theory),
     five skills in probability & statistics after the logic course: linear recurrences (a term of aₙ = p aₙ₋₁ +

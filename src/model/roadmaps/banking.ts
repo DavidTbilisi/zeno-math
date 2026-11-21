@@ -6,7 +6,7 @@ export const BANKING: Roadmap = {
   id: "banking",
   order: "list",
   stages: [
-    { id: "money", items: [...reads("numbers"), ...skills("money", "integers", "decimals", "rounding", "percent", "ratio", "rate"), ...games("estimate")] },
+    { id: "money", items: [...reads("numbers"), ...skills("money", "integers", "decimals", "rounding", "percent", "ratio", "rate", "inflation"), ...games("estimate")] },
     { id: "formulae", items: [...reads("algebra"), ...skills("formulae", "linear", "proportion", "indices", "logs"), ...games("balance")] },
     { id: "interest", items: [...reads("finance"), ...skills("sequences", "series", "interestRates", "amortisation", "npv", "bonds")] },
     { id: "charts", items: [...reads("statistics"), ...skills("readChart", "diagrams", "graphStory", "average"), ...games("barChart", "graphStory")] },

@@ -18070,6 +18070,72 @@
       "seed": 7,
       "input": "exactly F (at par)",
       "label": "wrong"
+    },
+    {
+      "skill": "inflation",
+      "level": 1,
+      "seed": 7,
+      "input": "2.64",
+      "label": "correct"
+    },
+    {
+      "skill": "inflation",
+      "level": 1,
+      "seed": 7,
+      "input": "0.24",
+      "label": "wrong",
+      "mistake": "increaseOnly"
+    },
+    {
+      "skill": "inflation",
+      "level": 1,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "inflation",
+      "level": 2,
+      "seed": 7,
+      "input": "3.92",
+      "label": "correct"
+    },
+    {
+      "skill": "inflation",
+      "level": 2,
+      "seed": 7,
+      "input": "-3.7735849056603765",
+      "label": "wrong",
+      "mistake": "realRateSwapped"
+    },
+    {
+      "skill": "inflation",
+      "level": 2,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "inflation",
+      "level": 3,
+      "seed": 7,
+      "input": "148.64",
+      "label": "correct"
+    },
+    {
+      "skill": "inflation",
+      "level": 3,
+      "seed": 7,
+      "input": "6727.499949325611",
+      "label": "wrong",
+      "mistake": "inflationGrown"
+    },
+    {
+      "skill": "inflation",
+      "level": 3,
+      "seed": 7,
+      "input": "99",
+      "label": "wrong"
     }
   ]
 }

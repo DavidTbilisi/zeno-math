@@ -72,3 +72,16 @@ test("bonds: the face value left undiscounted is named, then the price is correc
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("inflation: the rough real rate i − π is named, then the exact rate is correct (#458)", async ({ page, request }) => {
+  const r = 0.01;
+  const ex = exercise("inflation", 2, seedOf(r), w);
+  const slip = trapInputs(ex).find((t) => t.id === "realRateApprox")!;
+  await practise(page, request, { tab: "Number", skill: w.skills.inflation, level: "medium", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(slip.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("i − π is the rough real rate")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
