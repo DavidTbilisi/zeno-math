@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   clockTime,
   COMPARE_SIGNS,
-  dotProduct,
   dragHand,
   type Frac,
   FRACTION_FILLS,
@@ -458,65 +457,6 @@ export function Hundred({ state, set, w, svgRef }: PieceProps<"hundred">) {
 }
 
 // ——— Dot multiplication ———
-
-export const DOT_ROWS = [3, 4, 5, 6, 10];
-
-export function Dots({ state, set, w, svgRef }: PieceProps<"dots">) {
-  const { k, top, bottom } = state;
-  const r = dotProduct(k, top, bottom);
-  const W = 500;
-  const gap = 6;
-  const s = Math.min(92, (W - 20 - (k - 1) * gap) / k);
-  const x0 = (W - (k * s + (k - 1) * gap)) / 2;
-  const row = (y: number, dots: number, which: "top" | "bottom") =>
-    Array.from({ length: k }, (_, i) => {
-      const x = x0 + i * (s + gap);
-      return (
-        <g key={`${which}${i}`} style={{ cursor: "pointer" }} onClick={() => set({ ...state, [which]: tapSquare(dots, i) })}>
-          <rect x={x} y={y} width={s} height={s} fill="#fff" stroke="#adb5bd" strokeWidth={1.5} />
-          {i < dots && <circle cx={x + s / 2} cy={y + s / 2} r={s * 0.32} fill="#40c057" />}
-        </g>
-      );
-    });
-  const rowsTop = 62;
-  const y2 = rowsTop + s + 46;
-  const steps = y2 + s + 40;
-  const line = (i: number, label: string, v: Record<string, number>) => (
-    <text key={i} x={x0} y={steps + i * 34} fontSize={19} fill={INK}>
-      <tspan fontWeight={700}>{"①②③④"[i]}</tspan> {fill(label, { ...v, r: "" })}
-      <tspan fontWeight={700}>{v.r}</tspan>
-    </text>
-  );
-  return (
-    <>
-      <div className="live-bar">
-        <label className="live-select">
-          <span>{w.dots.perRow}</span>
-          <select value={k} onChange={(e) => set({ k: Number(e.target.value), top: 0, bottom: 0 })}>
-            {DOT_ROWS.map((n) => <option key={n} value={n}>{fill(w.dots.option, { k: n, k2: 2 * n })}</option>)}
-          </select>
-        </label>
-        <button className="live-btn" onClick={() => set({ ...state, top: 0, bottom: 0 })}>{w.dots.clear}</button>
-      </div>
-      <p className="live-hint">{w.dots.hint}</p>
-      <svg ref={svgRef} width={W} height={steps + 4 * 34 + 20} viewBox={`0 0 ${W} ${steps + 4 * 34 + 20}`} fontFamily={FONT}>
-        {Array.from({ length: k }, (_, i) => (
-          <text key={i} x={x0 + i * (s + gap) + s / 2} y={20} fontSize={18} textAnchor="middle" fill={INK}>{k + i + 1}</text>
-        ))}
-        <text x={x0} y={rowsTop - 10} fontSize={17} fill={INK}>{fill(w.dots.top, { n: r.a, d: top, e: r.empty[0] })}</text>
-        {row(rowsTop, top, "top")}
-        <text x={x0} y={y2 - 10} fontSize={17} fill={INK}>{fill(w.dots.bottom, { n: r.b, d: bottom, e: r.empty[1] })}</text>
-        {row(y2, bottom, "bottom")}
-        {line(0, w.dots.step1, { a: top, b: bottom, r: r.dots })}
-        {line(1, w.dots.step2, { a: r.dots, b: r.value, r: r.dotValue })}
-        {line(2, w.dots.step3, { a: r.empty[0], b: r.empty[1], r: r.emptyProduct })}
-        {line(3, w.dots.step4, { a: r.dotValue, b: r.emptyProduct, r: r.product })}
-        <text x={x0} y={steps + 4 * 34 + 8} fontSize={22} fontWeight={700} fill={INK}>{r.a} × {r.b} = {r.product}</text>
-      </svg>
-    </>
-  );
-}
-
 
 // ——— Comparing two numbers ———
 

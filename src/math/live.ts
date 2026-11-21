@@ -222,6 +222,12 @@ export function dotProduct(k: number, top: number, bottom: number) {
   return { a: k + top, b: k + bottom, value, empty, ...parts, product: parts.dotValue + parts.emptyProduct };
 }
 
+/** How many squares a row of dot multiplication can have: numbers from k to 2k. */
+export const DOT_ROWS = [3, 4, 5, 6, 10];
+
+/** A drag along a row of k squares (each `step` wide, the first at x0) fills through the square under x; left of it, none. */
+export const dotsUpTo = (x: number, x0: number, step: number, k: number) => Math.max(0, Math.min(k, Math.floor((x - x0) / step) + 1));
+
 /** Tapping square i (0-based) fills through it; tapping the last dot again takes it away. */
 export const tapSquare = (dots: number, i: number) => (i + 1 === dots ? i : i + 1);
 
@@ -565,7 +571,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   fractions: [320, 372],
   tenFrame: [400, 370],
   hundred: [400, 650],
-  dots: [520, 600],
+  dots: [520, 620],
   graph: [640, 560],
   chance: [680, 500],
   cards: [690, 610],

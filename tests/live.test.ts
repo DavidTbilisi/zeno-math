@@ -14,6 +14,7 @@ import {
   halfSign,
   viaHalf,
   counters,
+  dotsUpTo,
   firstEmpty,
   flipCounter,
   moveBlock,
@@ -314,4 +315,12 @@ test("compare by hand: a block from the pile, from tower to tower, and off", () 
   assert.deepEqual(moveBlock({ a: 0, b: 2 }, "a", "b"), { a: 0, b: 2 });
   assert.deepEqual(moveBlock({ a: 3, b: 10 }, "a", "b"), { a: 3, b: 10 });
   assert.deepEqual(moveBlock({ a: 3, b: 4 }, "a", "a"), { a: 3, b: 4 });
+});
+
+test("dot multiplication by hand: a drag along a row fills through the square under it", () => {
+  // 5 squares, 50 apart, from x = 10.
+  assert.equal(dotsUpTo(0, 10, 50, 5), 0);
+  assert.equal(dotsUpTo(12, 10, 50, 5), 1);
+  assert.equal(dotsUpTo(159, 10, 50, 5), 3);
+  assert.equal(dotsUpTo(900, 10, 50, 5), 5);
 });
