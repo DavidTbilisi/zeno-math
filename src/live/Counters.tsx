@@ -15,45 +15,50 @@ const W = 640;
 const PAD = 24;
 const R = 15;
 const GAP = 39;
-const TOP = 34;
 const PER_ROW = 10;
-/** Rows for each sign: CHIP_CAP chips, PER_ROW to a row. */
-const ROWS = Math.ceil(CHIP_CAP / PER_ROW);
-const LINE_Y = TOP + ROWS * GAP + 2;
-const NEG_TOP = LINE_Y + 22;
-const MAT_H = NEG_TOP + ROWS * GAP;
-const SAY = 30;
-/** The most lines of words: the mat's two and a sum's five steps. */
-const MAX_LINES = 7;
+/** The mat's top; the + rows rise from the line and the − rows hang under it, the first row of each next to it. */
+const MAT_Y = 6;
+/** Half the room between the first + row and the first − row, across the line. */
+const HALF = 13;
+const SAY = 28;
 const POS = { fill: "#ffe066", stroke: "#e67700" };
 const NEG = { fill: "#ff8787", stroke: "#c92a2a" };
 
 type Words = PieceProps<"counters">["w"]["counters"];
-/** A chip where it is drawn; `k` is its place in the list of chips, which says which chip is which. */
-type Chip = { negative: boolean; slot: number; x: number; y: number; paired: boolean; k: number };
+/** A chip in its slot; `k` is its place in the list of chips, which says which chip is which. */
+type Slotted = { negative: boolean; slot: number };
+type Chip = Slotted & { x: number; y: number; paired: boolean; k: number };
 type Drag = { chip: Chip; x0: number; y0: number; dx: number; dy: number; moved: boolean };
 type Ghost = { x: number; y: number; negative?: boolean; zero?: boolean };
 
-const where = (slot: number, negative: boolean) => ({
-  x: PAD + 46 + (slot % PER_ROW) * GAP + R,
-  y: (negative ? NEG_TOP : TOP) + Math.floor(slot / PER_ROW) * GAP + R,
-});
+/** Where things are on a mat of `rows` rows a side (1, or 2 once a side has more than PER_ROW chips). */
+function layout(rows: number) {
+  const lineY = MAT_Y + 12 + 2 * R + HALF + (rows - 1) * GAP;
+  const bottom = lineY + HALF + 2 * R + (rows - 1) * GAP + 12;
+  const at = ({ slot, negative }: Slotted) => {
+    const row = Math.floor(slot / PER_ROW);
+    return {
+      x: PAD + 20 + (slot % PER_ROW) * GAP + R,
+      y: negative ? lineY + HALF + R + row * GAP : lineY - HALF - R - row * GAP,
+    };
+  };
+  return { lineY, bottom, at };
+}
 
-type Placed = Omit<Chip, "paired" | "k">;
 const keyOf = (m: Mat) => `${m.pos}/${m.neg}`;
 
 /** The chips of a mat in their slots, + first. */
-function placed(m: Mat): Placed[] {
+function placed(m: Mat): Slotted[] {
   const s = slots(m);
-  return [...s.pos.map((slot) => ({ negative: false, slot, ...where(slot, false) })), ...s.neg.map((slot) => ({ negative: true, slot, ...where(slot, true) }))];
+  return [...s.pos.map((slot) => ({ negative: false, slot })), ...s.neg.map((slot) => ({ negative: true, slot }))];
 }
 
-/** Which of the chips are drawn as zero pairs, wherever they are (src/math/counters.ts, pairUp). */
-function withPairs(list: Placed[]): Chip[] {
+/** The chips where they are drawn, and which of them are zero pairs, wherever they are (src/math/counters.ts, pairUp). */
+function withPairs(list: Slotted[], at: ReturnType<typeof layout>["at"]): Chip[] {
   const sides = [list.filter((c) => !c.negative), list.filter((c) => c.negative)];
   const p = pairUp(sides[0].map((c) => c.slot), sides[1].map((c) => c.slot));
   const counters = { pos: 0, neg: 0 };
-  return list.map((c, k) => ({ ...c, k, paired: c.negative ? p.neg[counters.neg++] : p.pos[counters.pos++] }));
+  return list.map((c, k) => ({ ...c, ...at(c), k, paired: c.negative ? p.neg[counters.neg++] : p.pos[counters.pos++] }));
 }
 
 function stepLine(s: CounterStep, w: Words): string {
@@ -68,23 +73,61 @@ function stepLine(s: CounterStep, w: Words): string {
   }
 }
 
-/** One chip: a disc with its sign; dashed when it is half of a zero pair. */
-function ChipDisc({ x, y, negative, paired, lift }: { x: number; y: number; negative: boolean; paired?: boolean; lift?: boolean }) {
+/** One chip: a disc with its sign. */
+function ChipDisc({ x, y, negative, lift }: { x: number; y: number; negative: boolean; lift?: boolean }) {
   const c = negative ? NEG : POS;
   return (
     <>
-      <circle cx={x} cy={y} r={R} fill={c.fill} stroke={c.stroke} strokeWidth={lift ? 3 : 2} strokeDasharray={paired ? "5 3" : undefined} />
+      <circle cx={x} cy={y} r={R} fill={c.fill} stroke={c.stroke} strokeWidth={lift ? 3 : 2} />
       <text x={x} y={y + 7} fontSize={21} fontWeight={700} textAnchor="middle" fill={c.stroke} pointerEvents="none">{negative ? "−" : "+"}</text>
     </>
   );
 }
 
+/** A soft band behind each + and − of a zero pair that sit one above the other, joining them across the line. */
+function pairBands(chips: Chip[]) {
+  const cols = new Map<number, { top: number; bottom: number; pos: boolean; neg: boolean }>();
+  for (const c of chips.filter((c) => c.paired)) {
+    const b = cols.get(c.x) ?? { top: c.y, bottom: c.y, pos: false, neg: false };
+    cols.set(c.x, { top: Math.min(b.top, c.y), bottom: Math.max(b.bottom, c.y), pos: b.pos || !c.negative, neg: b.neg || c.negative });
+  }
+  return [...cols].filter(([, b]) => b.pos && b.neg).map(([x, b]) => ({ x, top: b.top - R - 3, bottom: b.bottom + R + 3 }));
+}
+
+/** The words under the mat: what it is worth, then the sum's heading and its steps; the first line is the main one. */
+type Line = { text: string; strong?: boolean };
+/** The most characters to a drawn line; a longer one goes on over the next. */
+const WRAP = 68;
+/** Room between what the mat is worth and the sum's steps under it. */
+const SPLIT = 10;
+
+/** The lines as drawn: each wrapped at spaces, with where it goes down the page. */
+function drawn(lines: Line[]): (Line & { main: boolean; y: number })[] {
+  const out: (Line & { main: boolean; y: number })[] = [];
+  let y = 0;
+  lines.forEach((l, i) => {
+    if (i === 1) y += SPLIT;
+    const parts: string[] = [];
+    for (const word of l.text.split(" ")) {
+      const last = parts[parts.length - 1];
+      if (last !== undefined && last.length + 1 + word.length <= WRAP) parts[parts.length - 1] = `${last} ${word}`;
+      else parts.push(word);
+    }
+    for (const text of parts) {
+      out.push({ text, strong: l.strong, main: i === 0, y });
+      y += SAY;
+    }
+  });
+  return out;
+}
+
 /** The mat, its chips and the words; with `on` set, what a tap or a drag does and the chips popping too. */
-function Picture({ mat, chips, lines, height, svgRef, drag, target, ghosts, on }: {
+function Picture({ mat, chips, rows, lines, label, svgRef, drag, target, ghosts, on }: {
   mat: Mat;
   chips: Chip[];
-  lines: string[];
-  height: number;
+  rows: number;
+  lines: Line[];
+  label: string;
   svgRef?: React.Ref<SVGSVGElement>;
   drag?: Drag | null;
   target?: Chip | null;
@@ -96,21 +139,28 @@ function Picture({ mat, chips, lines, height, svgRef, drag, target, ghosts, on }
     up: () => void;
   };
 }) {
-  const H = height;
+  const { lineY, bottom } = layout(rows);
+  const words = drawn(lines);
+  const H = bottom + 14 + (words.at(-1)?.y ?? 0) + SAY;
   const same = (c: Chip, d?: Chip | null) => !!d && d.k === c.k;
+  const countX = W - PAD - 16;
   return (
-    <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}
+    <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={label}
       onPointerMove={on?.move} onPointerUp={on?.up} onPointerCancel={on?.up} style={on ? { touchAction: "none" } : undefined}>
-      <rect x={PAD} y={TOP - 14} width={W - 2 * PAD} height={MAT_H - TOP + 8} rx={10} fill="#f8f9fa" stroke="#dee2e6" />
-      <line x1={PAD + 8} y1={LINE_Y + 10} x2={W - PAD - 8} y2={LINE_Y + 10} stroke="#ced4da" strokeWidth={2} />
-      <text x={PAD + 22} y={TOP + R + 7} fontSize={20} fontWeight={700} textAnchor="middle" fill={POS.stroke}>{mat.pos}</text>
-      <text x={PAD + 22} y={NEG_TOP + R + 7} fontSize={20} fontWeight={700} textAnchor="middle" fill={NEG.stroke}>{mat.neg}</text>
+      <rect x={PAD} y={MAT_Y} width={W - 2 * PAD} height={bottom - MAT_Y} rx={12} fill="#f8f9fa" stroke="#dee2e6" />
+      <line x1={PAD + 10} y1={lineY} x2={W - PAD - 10} y2={lineY} stroke="#ced4da" strokeWidth={2} />
+      {pairBands(chips).map((b) => (
+        <rect key={b.x} x={b.x - R - 3} y={b.top} width={2 * R + 6} height={b.bottom - b.top} rx={R + 3} fill="#e9ecef" stroke="#ced4da" />
+      ))}
+      {/* How many of each: + over the line, − under it. */}
+      <text x={countX} y={lineY - HALF - R + 7} fontSize={20} fontWeight={700} textAnchor="end" fill={POS.stroke}>{mat.pos ? `+${mat.pos}` : 0}</text>
+      <text x={countX} y={lineY + HALF + R + 7} fontSize={20} fontWeight={700} textAnchor="end" fill={NEG.stroke}>{mat.neg ? num(-mat.neg) : 0}</text>
       {chips.map((c) => {
-        const label = on && fill(on.w.chip, { s: c.negative ? "−1" : "+1" });
+        const chipLabel = on && fill(on.w.chip, { s: c.negative ? "−1" : "+1" });
         return (
-          <g key={`${c.negative ? "n" : "p"}${c.slot}`} opacity={drag?.moved && same(c, drag.chip) ? 0.25 : 1} role={on ? "button" : undefined} aria-label={label || undefined}
+          <g key={`${c.negative ? "n" : "p"}${c.slot}`} opacity={drag?.moved && same(c, drag.chip) ? 0.25 : 1} role={on ? "button" : undefined} aria-label={chipLabel || undefined}
             style={on ? { cursor: "grab" } : undefined} onPointerDown={on && ((e) => on.press(e, c))}>
-            <ChipDisc x={c.x} y={c.y} negative={c.negative} paired={c.paired} lift={same(c, target)} />
+            <ChipDisc x={c.x} y={c.y} negative={c.negative} lift={same(c, target)} />
             {same(c, target) && <circle cx={c.x} cy={c.y} r={R + 5} fill="none" stroke="#2f9e44" strokeWidth={2.5} />}
           </g>
         );
@@ -125,8 +175,8 @@ function Picture({ mat, chips, lines, height, svgRef, drag, target, ghosts, on }
       {drag?.moved && (
         <g pointerEvents="none"><ChipDisc x={drag.chip.x + drag.dx} y={drag.chip.y + drag.dy} negative={drag.chip.negative} lift /></g>
       )}
-      {lines.map((l, i) => (
-        <text key={i} x={PAD} y={MAT_H + 22 + i * SAY} fontSize={l.length > 60 ? (19 * 60) / l.length : 19} fill={i ? "#495057" : INK} fontWeight={i ? 400 : 700}>{l}</text>
+      {words.map((l, i) => (
+        <text key={i} x={PAD} y={bottom + 26 + l.y} fontSize={17} fill={l.strong || l.main ? INK : "#495057"} fontWeight={l.strong ? 700 : l.main ? 600 : 400}>{l.text}</text>
       ))}
     </svg>
   );
@@ -141,7 +191,9 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
   const steps = sumSteps(a, op, b);
   // The chips hold their places when some are taken away (gaps where they were) until the mat changes another way.
   const [held, drop] = useHeld(keyOf(mat), placed(mat));
-  const chips = withPairs(held);
+  const rows = held.some((c) => c.slot >= PER_ROW) ? 2 : 1;
+  const { lineY, at } = layout(rows);
+  const chips = withPairs(held, at);
 
   /** A new mat by hand: the walk through the sum stops. */
   const setMat = (m: Mat) => set({ ...state, ...m, step: 0 });
@@ -149,7 +201,7 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
   const popPairs = (next: Mat) => {
     const paired = chips.filter((c) => c.paired);
     const xs = [...new Set(paired.map((c) => c.x))];
-    pop([...paired.map((c) => ({ x: c.x, y: c.y, negative: c.negative })), ...xs.map((x) => ({ x, y: LINE_Y + 17, zero: true }))]);
+    pop([...paired.map((c) => ({ x: c.x, y: c.y, negative: c.negative })), ...xs.map((x) => ({ x, y: lineY + 8, zero: true }))]);
     drop(paired.map((c) => c.k), keyOf(next));
   };
 
@@ -198,16 +250,18 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
   };
 
   const z = pairs(mat);
-  const lines = [fill(w.onMat, { p: mat.pos, n: mat.neg })];
-  lines.push(z ? fill(w.cancel, { z, v: num(value(mat)) }) : fill(w.worth, { v: num(value(mat)) }));
-  if (step) lines.push(...steps.slice(0, step).map((s) => stepLine(s, w)));
+  const lines: Line[] = [{ text: z ? fill(w.cancel, { z, v: num(value(mat)) }) : fill(w.worth, { v: num(value(mat)) }) }];
+  if (step) lines.push({ text: sumText(a, op, b), strong: true }, ...steps.slice(0, step).map((s) => ({ text: stepLine(s, w) })));
+  const label = [fill(w.onMat, { p: mat.pos, n: mat.neg }), ...lines.map((l) => l.text)].join(". ");
 
   return (
     <>
       <div className="live-bar">
         <button className="live-btn chip-btn pos" disabled={mat.pos >= CHIP_CAP} title={w.putPos} aria-label={w.putPos} onClick={() => setMat(put(mat, false))}>+1</button>
         <button className="live-btn chip-btn neg" disabled={mat.neg >= CHIP_CAP} title={w.putNeg} aria-label={w.putNeg} onClick={() => setMat(put(mat, true))}>−1</button>
-        <button className="live-btn" disabled={mat.pos >= CHIP_CAP || mat.neg >= CHIP_CAP} onClick={() => setMat(put(put(mat, false), true))}>{w.putPair}</button>
+        <button className="live-btn chip-pair" disabled={mat.pos >= CHIP_CAP || mat.neg >= CHIP_CAP} title={w.putPair} aria-label={w.putPair} onClick={() => setMat(put(put(mat, false), true))}>
+          <span className="pos">+</span><span className="neg">−</span>
+        </button>
         <button className="live-btn" disabled={!z} onClick={() => { popPairs(cancelPairs(mat)); setMat(cancelPairs(mat)); }}>{w.removePairs}</button>
         <button className="live-btn" onClick={() => setMat({ pos: 0, neg: 0 })}>{w.clear}</button>
       </div>
@@ -215,23 +269,19 @@ export function Counters({ state, set, w: words, svgRef }: PieceProps<"counters"
         <span>{w.sum}</span>
         <i>a</i>
         <Stepper value={a} min={NUM_RANGE[0]} max={NUM_RANGE[1]} onChange={(v) => set({ ...state, a: v, step: 0 })} less={w.less} more={w.more} />
-        <span className="chip-ops">
-        {COUNTER_OPS.map((o) => (
-          <button key={o} className={`live-btn${op === o ? " on" : ""}`} aria-pressed={op === o} title={w.ops[o]} aria-label={w.ops[o]} onClick={() => set({ ...state, op: o, step: 0 })}>
-            {o === "add" ? "+" : "−"}
-          </button>
-        ))}
+        <span className="chip-ops" role="group">
+          {COUNTER_OPS.map((o) => (
+            <button key={o} className={`live-btn${op === o ? " on" : ""}`} aria-pressed={op === o} title={w.ops[o]} aria-label={w.ops[o]} onClick={() => set({ ...state, op: o, step: 0 })}>
+              {o === "add" ? "+" : "−"}
+            </button>
+          ))}
         </span>
         <i>b</i>
         <Stepper value={b} min={NUM_RANGE[0]} max={NUM_RANGE[1]} onChange={(v) => set({ ...state, b: v, step: 0 })} less={w.less} more={w.more} />
-        <b className="chip-sum">{sumText(a, op, b)}</b>
-        <button className="live-btn" onClick={nextStep}>{step >= steps.length ? w.again : step ? w.next : w.show}</button>
+        <button className="live-btn on" onClick={nextStep}>{step >= steps.length ? w.again : step ? w.next : w.show}</button>
       </div>
       <p className="live-hint">{w.hint}</p>
-      <Picture mat={mat} chips={chips} lines={lines} height={MAT_H + 16 + MAX_LINES * SAY} drag={drag} target={target} ghosts={ghosts} on={{ w, press, move, up }} />
-      <div hidden>
-        <Picture mat={mat} chips={chips} lines={lines} height={MAT_H + 16 + lines.length * SAY} svgRef={svgRef} />
-      </div>
+      <Picture mat={mat} chips={chips} rows={rows} lines={lines} label={label} svgRef={svgRef} drag={drag} target={target} ghosts={ghosts} on={{ w, press, move, up }} />
     </>
   );
 }
