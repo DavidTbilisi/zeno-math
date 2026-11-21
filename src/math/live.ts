@@ -247,6 +247,18 @@ export const dotsUpTo = (x: number, x0: number, step: number, k: number) => Math
 /** Tapping square i (0-based) fills through it; tapping the last dot again takes it away. */
 export const tapSquare = (dots: number, i: number) => (i + 1 === dots ? i : i + 1);
 
+/** Which of n equal slices of a circle a point (dx, dy) from its centre is in, the slices counted clockwise from twelve. */
+export function sliceAt(dx: number, dy: number, n: number): number {
+  const deg = ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
+  return Math.min(n - 1, Math.floor(deg / (360 / n)));
+}
+
+/** Parts a drag paints: every one passed over takes the opposite of the first one's shading. */
+export const paintParts = (shaded: boolean[], first: number, over: number[]) => shaded.map((s, i) => (over.includes(i) ? !shaded[first] : s));
+
+/** The first k of n parts shaded: the numerator set by hand. */
+export const shadeFirst = (n: number, k: number) => Array.from({ length: n }, (_, i) => i < k);
+
 // ——— Ten frame and hundred square ———
 
 /** The two colours of counters in a ten frame (0 empty, 1 and 2 the colours), counted for "a + b = n". */
@@ -284,6 +296,23 @@ export const HUNDRED_STEPS = [1, 10, -1, -10] as const;
 export const hundredJump = (at: number, step: number) => (at + step >= 1 && at + step <= 100 ? at + step : null);
 /** Every square a walk visits, the start first. */
 export const hundredPath = (start: number, steps: number[]) => steps.reduce((p, s) => [...p, p[p.length - 1] + s], [start]);
+/**
+ * The jumps from one square to another by tens, then ones: 23 to 56 is +10 +10 +10 +1 +1 +1, and 41 to 38 is −1 −1 −1.
+ */
+export function jumpsTo(from: number, to: number): number[] {
+  const d = to - from;
+  const sign = Math.sign(d);
+  const tens = Math.trunc(Math.abs(d) / 10);
+  return [...Array(tens).fill(10 * sign), ...Array(Math.abs(d) - 10 * tens).fill(sign)];
+}
+
+/** Squares a mark-mode drag paints: every one passed over takes the opposite of the first one's mark. */
+export function paintMarks(marked: number[], first: number, over: number[]): number[] {
+  const on = !marked.includes(first);
+  const rest = marked.filter((m) => !over.includes(m));
+  return on ? [...rest, ...over.filter((v, i) => over.indexOf(v) === i)] : rest;
+}
+
 const signed = (n: number) => (n < 0 ? `− ${-n}` : `+ ${n}`);
 /** A walk written out jump by jump (100 − 10 − 10 − 1 = 79) and as one sum (100 − 21 = 79). */
 export function hundredSum(start: number, steps: number[]): { long: string; short: string } | null {
@@ -313,6 +342,19 @@ export const compareSign = (a: number, b: number): CompareSign => (a < b ? "<" :
 export function towerSpan(n: number, block: number, floor: number, mid: number, centred: number): [number, number] {
   const bottom = floor + (mid + (n * block) / 2 - floor) * centred;
   return [bottom - n * block, bottom];
+}
+
+export type Tower = "a" | "b";
+/**
+ * A block taken from `from` (a tower's top, or the pile) and put on `to` (a tower, or null: taken away). A tower
+ * holds 0 to COMPARE_MAX blocks; a move that cannot be made leaves the towers as they were.
+ */
+export function moveBlock(t: { a: number; b: number }, from: Tower | "pile", to: Tower | null): { a: number; b: number } {
+  if (from === to || (from !== "pile" && !t[from]) || (to && t[to] >= COMPARE_MAX)) return { a: t.a, b: t.b };
+  const next = { a: t.a, b: t.b };
+  if (from !== "pile") next[from]--;
+  if (to) next[to]++;
+  return next;
 }
 
 // ——— Comparing two fractions with bars ———
@@ -567,13 +609,13 @@ export type LiveKind = keyof LiveStates;
 
 /** Design size of each piece in board pixels; a piece that is resized is scaled to fit. */
 export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
-  clock: [300, 432],
+  clock: [320, 470],
   dice: [360, 330],
   spinner: [300, 470],
   coin: [280, 390],
-  fractions: [320, 372],
+  fractions: [320, 446],
   tenFrame: [400, 370],
-  hundred: [400, 650],
+  hundred: [400, 610],
   dots: [520, 620],
   graph: [640, 560],
   chance: [680, 500],

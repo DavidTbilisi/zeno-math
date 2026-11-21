@@ -17,9 +17,13 @@ import {
   sectionAt,
   spinTurn,
   tallyUp,
+  paintParts,
+  shadeFirst,
+  sliceAt,
   dotsUpTo,
   firstEmpty,
   flipCounter,
+  moveBlock,
   moveCounter,
   DIE_SIDES,
   divisionAsk,
@@ -34,6 +38,8 @@ import {
   hundredJump,
   hundredPath,
   hundredSum,
+  jumpsTo,
+  paintMarks,
   multiplesOf,
   outcomes,
   runTrials,
@@ -308,6 +314,38 @@ test("ten frame by hand: a tray fills the first empty square, a counter moves, s
   assert.deepEqual(moveCounter(cells, 0, 2).slice(0, 3), [2, 0, 1]);
   assert.deepEqual(moveCounter(cells, 2, null).slice(0, 3), [1, 0, 0]);
   assert.deepEqual([0, 1, 2].map(flipCounter), [0, 2, 1]);
+});
+
+test("fractions by hand: the slice under a point, painting parts, shading the first k", () => {
+  assert.equal(sliceAt(0, -10, 4), 0); // twelve o'clock
+  assert.equal(sliceAt(10, 1, 4), 1); // just past three
+  assert.equal(sliceAt(-1, 10, 4), 2); // just past six
+  assert.equal(sliceAt(-10, -1, 4), 3);
+  assert.equal(sliceAt(-0.01, -10, 3), 2);
+  assert.deepEqual(paintParts([true, false, false, true], 1, [1, 2]), [true, true, true, true]);
+  assert.deepEqual(paintParts([true, true, false], 0, [0, 1]), [false, false, false]);
+  assert.deepEqual(shadeFirst(4, 3), [true, true, true, false]);
+});
+
+
+test("hundred square by hand: a drag jumps by tens then ones, and paints marks", () => {
+  assert.deepEqual(jumpsTo(23, 56), [10, 10, 10, 1, 1, 1]);
+  assert.deepEqual(jumpsTo(41, 38), [-1, -1, -1]);
+  assert.deepEqual(jumpsTo(100, 79), [-10, -10, -1]);
+  assert.deepEqual(jumpsTo(5, 5), []);
+  assert.deepEqual(hundredPath(29, jumpsTo(29, 41)).at(-1), 41);
+  assert.deepEqual(paintMarks([3], 4, [4, 5, 4, 6]).sort((a, b) => a - b), [3, 4, 5, 6]);
+  assert.deepEqual(paintMarks([3, 4, 5], 4, [4, 5]), [3]);
+});
+
+
+test("compare by hand: a block from the pile, from tower to tower, and off", () => {
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "pile", "b"), { a: 5, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "a", "b"), { a: 4, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "b", null), { a: 5, b: 1 });
+  assert.deepEqual(moveBlock({ a: 0, b: 2 }, "a", "b"), { a: 0, b: 2 });
+  assert.deepEqual(moveBlock({ a: 3, b: 10 }, "a", "b"), { a: 3, b: 10 });
+  assert.deepEqual(moveBlock({ a: 3, b: 4 }, "a", "a"), { a: 3, b: 4 });
 });
 
 test("dot multiplication by hand: a drag along a row fills through the square under it", () => {
