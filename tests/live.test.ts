@@ -14,8 +14,10 @@ import {
   halfSign,
   viaHalf,
   counters,
+  dotsUpTo,
   firstEmpty,
   flipCounter,
+  moveBlock,
   moveCounter,
   DIE_SIDES,
   divisionAsk,
@@ -316,4 +318,22 @@ test("hundred square by hand: a drag jumps by tens then ones, and paints marks",
   assert.deepEqual(hundredPath(29, jumpsTo(29, 41)).at(-1), 41);
   assert.deepEqual(paintMarks([3], 4, [4, 5, 4, 6]).sort((a, b) => a - b), [3, 4, 5, 6]);
   assert.deepEqual(paintMarks([3, 4, 5], 4, [4, 5]), [3]);
+});
+
+
+test("compare by hand: a block from the pile, from tower to tower, and off", () => {
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "pile", "b"), { a: 5, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "a", "b"), { a: 4, b: 3 });
+  assert.deepEqual(moveBlock({ a: 5, b: 2 }, "b", null), { a: 5, b: 1 });
+  assert.deepEqual(moveBlock({ a: 0, b: 2 }, "a", "b"), { a: 0, b: 2 });
+  assert.deepEqual(moveBlock({ a: 3, b: 10 }, "a", "b"), { a: 3, b: 10 });
+  assert.deepEqual(moveBlock({ a: 3, b: 4 }, "a", "a"), { a: 3, b: 4 });
+});
+
+test("dot multiplication by hand: a drag along a row fills through the square under it", () => {
+  // 5 squares, 50 apart, from x = 10.
+  assert.equal(dotsUpTo(0, 10, 50, 5), 0);
+  assert.equal(dotsUpTo(12, 10, 50, 5), 1);
+  assert.equal(dotsUpTo(159, 10, 50, 5), 3);
+  assert.equal(dotsUpTo(900, 10, 50, 5), 5);
 });
