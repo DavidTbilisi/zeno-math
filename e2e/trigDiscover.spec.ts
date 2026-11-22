@@ -82,3 +82,47 @@ test("trigDiscover: a side too far to measure, from a small triangle with the sa
   await game.getByRole("button", { name: "12", exact: true }).click();
   await expect(game.getByText("Right! opposite = 20 × 3/5 = 12. Measure one small triangle and every triangle with that angle follows: that's trigonometry. ★★☆")).toBeVisible();
 });
+
+test("trigDiscover by hand: the triangle dragged into the table, a side dragged into its slot, a swipe through Why?", async ({ page }) => {
+  const game = await open(page, [0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const handle = game.getByRole("slider", { name: "The triangle's size" });
+  const pic = game.locator("svg.hand-pic").first();
+  const drag = async (from: Locator, to: Locator | [number, number], down = 0) => {
+    const a = (await from.boundingBox())!;
+    const b = Array.isArray(to) ? { x: to[0], y: to[1], width: 0, height: 0 } : (await to.boundingBox())!;
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2 + down);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+    await page.mouse.up();
+  };
+  const tri = pic.locator("polygon").first();
+  const p = (await pic.boundingBox())!;
+  const table: [number, number] = [p.x + 470, p.y + 120];
+  for (const n of [0, 4, 4]) {
+    await press(handle, "ArrowUp", n);
+    await drag(tri, table, 20);
+  }
+  await expect(game.getByText(/^Make a new column from two sides/)).toBeVisible();
+  // opp dragged into the first slot, ÷ and hyp tapped.
+  await drag(pic.getByRole("group", { name: "First side" }).getByRole("button", { name: "opp", exact: true }), pic.getByRole("button", { name: "First side: ?" }));
+  await expect(pic.getByRole("button", { name: "First side: opp" })).toBeVisible();
+  await pic.getByRole("group", { name: "Combine with" }).getByRole("button", { name: "÷", exact: true }).click();
+  await pic.getByRole("group", { name: "Second side" }).getByRole("button", { name: "hyp", exact: true }).click();
+  await shot(page, "discover-hand.png");
+  await pic.getByRole("button", { name: "✓ Stays the same!" }).click();
+  await expect(game.getByText(/opp ÷ hyp = 0\.6 in every row/)).toBeVisible();
+  // Why?: a tap goes on, a swipe to the right goes back.
+  await pic.getByRole("button", { name: "💡 Why?" }).click();
+  const note = game.getByRole("note");
+  await note.getByRole("button", { name: "Next step" }).click();
+  await expect(note).toContainText("2/4 ");
+  const box = (await note.boundingBox())!;
+  await page.mouse.move(box.x + 200, box.y + 30);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 320, box.y + 30, { steps: 5 });
+  await page.mouse.up();
+  await expect(note).toContainText("1/4 ");
+  await note.getByRole("button", { name: "3/4" }).click();
+  await expect(note).toContainText("3/4 ");
+  await shot(page, "discover-why.png");
+});

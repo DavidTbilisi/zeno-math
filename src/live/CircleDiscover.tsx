@@ -42,11 +42,12 @@ import {
   type Mirror,
 } from "../math/circleDiscover";
 import { starText } from "./ladderUi";
-import { Choice } from "./TrigDiscover";
 import type { P } from "./TrigBuild";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { WhySteps } from "./WhySteps";
+import { barHeight, DiscoverBar, type BarGroup, type BarPill } from "./DiscoverBar";
+import { pointIn, useDrag } from "./hand";
 
 const FRESH: Partial<LiveCircleDiscover> = { n: null, rows: [], qa: null, qx: null, qy: null, tried: [], misses: 0, done: false, said: null };
 const W = 600;
@@ -305,6 +306,30 @@ export function CircleDiscover({ state: d, set, w: words, svgRef }: PieceProps<"
       })
     : [];
 
+  // ---------- the hands under the picture ----------
+
+  const canMeasure = !d.done && task.level !== 3 && !(task.level === 1 && d.rows.length >= ROWS_MAX);
+  // The circle dragged into the table (or tapped) is measured into it; P keeps its own drag.
+  const tri = useDrag<object>((e) => canMeasure && (!e.moved || e.x > TABLE_X - 20) && measure());
+  const startMeasure = (e: PointerEvent<SVGSVGElement>) => {
+    if (!canMeasure || (e.target as Element).closest("[role=slider]")) return;
+    const [x, y] = pointIn(e);
+    if (x < TABLE_X - 12 && y < H) tri.begin(e, {});
+  };
+  const pills: BarPill[] = d.done ? [] : [
+    ...(task.level !== 3 ? [{ text: `📏 ${w.measure}`, onTap: measure, disabled: !canMeasure }] : []),
+    ...(task.level === 2 ? [{ text: `✓ ${w.here}`, onTap: here, strong: true }] : []),
+    ...(enough ? [{ text: `✓ ${w.claim}`, onTap: claim, strong: true, disabled: !rule }] : []),
+  ];
+  const cards = !d.done && task.level === 3 ? { values: task.choices, text: numText, off: (v: number) => d.said?.kind === "pick" && d.said.v === v, pick } : undefined;
+  const coord = (c: string) => (c.includes("x") ? X_COLOR : Y_COLOR);
+  const groups: BarGroup[] | null = !d.done && enough ? [
+    { label: w.qAngle, options: ANGLE_RULES, on: d.qa, text: (a) => angleText(a as AngleRule), pick: (a) => choose({ qa: a as AngleRule | null }) },
+    { label: w.qAcross, options: X_COORDS, on: d.qx, text: (c) => c, color: coord, pick: (c) => choose({ qx: c as Coord | null }) },
+    { label: w.qUp, options: Y_COORDS, on: d.qy, text: (c) => c, color: coord, pick: (c) => choose({ qy: c as Coord | null }) },
+  ] : null;
+  const barH = barHeight(W, groups);
+
   return (
     <>
       <GameHead game={game} g={g}>
@@ -312,8 +337,10 @@ export function CircleDiscover({ state: d, set, w: words, svgRef }: PieceProps<"
       </GameHead>
       <Said line={{ tone: "prompt", text: prompt }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={prompt} style={{ touchAction: "none" }}>
-          <rect width={W} height={H} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={W} height={H + barH} viewBox={`0 0 ${W} ${H + barH}`} fontFamily={FONT} aria-label={prompt} style={{ touchAction: "none", cursor: tri.drag?.moved ? "grabbing" : undefined }}
+          {...tri.svgProps} onPointerDown={startMeasure}>
+          <rect width={W} height={H + barH} fill="#fff" />
+          {canMeasure && <rect x={0} y={0} width={TABLE_X - 12} height={H} fill="transparent" style={{ cursor: "grab" }}><title>{w.measureDrag}</title></rect>}
           {/* The axes and the circle of radius 1. */}
           <line x1={CX - R - 20} y1={CY} x2={CX + R + 20} y2={CY} stroke="#ced4da" strokeWidth={1.5} />
           <line x1={CX} y1={CY - R - 20} x2={CX} y2={CY + R + 20} stroke="#ced4da" strokeWidth={1.5} />
@@ -405,43 +432,14 @@ export function CircleDiscover({ state: d, set, w: words, svgRef }: PieceProps<"
               })}
             </g>
           )}
+          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={{ text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) }} />
+          {tri.drag?.moved && <text x={tri.drag.x} y={tri.drag.y} fontSize={24} textAnchor="middle" pointerEvents="none">📏</text>}
         </svg>
       </Stage>
       {explain !== null && (
         <WhySteps at={explain} of={whys.length} text={w.whyText[whys[explain]]} back={w.whyBack} next={w.whyNext} onStep={setExplain} picture={<CirclePicture step={whys[explain]} />} />
       )}
-      {!d.done && enough && (
-        <div className="live-bar disc-build">
-          <Choice label={w.qAngle} options={ANGLE_RULES} on={d.qa} text={(a: AngleRule) => angleText(a)} pick={(qa) => choose({ qa })} />
-          <Choice label={w.qAcross} options={X_COORDS} on={d.qx} text={(c: Coord) => c} color={(c) => (c.includes("x") ? X_COLOR : Y_COLOR)} pick={(qx) => choose({ qx })} />
-          <Choice label={w.qUp} options={Y_COORDS} on={d.qy} text={(c: Coord) => c} color={(c) => (c.includes("x") ? X_COLOR : Y_COLOR)} pick={(qy) => choose({ qy })} />
-          <button className="live-btn on" disabled={!rule} onClick={claim}>
-            ✓ {w.claim}
-          </button>
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {!d.done && task.level !== 3 && (
-          <button className="live-btn" disabled={task.level === 1 && d.rows.length >= ROWS_MAX} onClick={measure}>
-            📏 {w.measure}
-          </button>
-        )}
-        {!d.done && task.level === 2 && (
-          <button className="live-btn on" onClick={here}>
-            ✓ {w.here}
-          </button>
-        )}
-        {!d.done &&
-          task.level === 3 &&
-          task.choices.map((v) => (
-            <button key={v} className="live-btn on" disabled={d.said?.kind === "pick" && d.said.v === v} onClick={() => pick(v)}>
-              {numText(v)}
-            </button>
-          ))}
-        <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain !== null ? null : 0)}>
-          💡 {w.why}
-        </button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} always />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

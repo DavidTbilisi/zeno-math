@@ -43,11 +43,12 @@ import {
 } from "../math/pythDiscover";
 import { starText } from "./ladderUi";
 import { isPythStep, PythPicture, type PythStep } from "./PythagorasWhy";
-import { Choice } from "./TrigDiscover";
 import { arcAt, type P } from "./TrigBuild";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { WhySteps } from "./WhySteps";
+import { barHeight, DiscoverBar, type BarGroup, type BarPill } from "./DiscoverBar";
+import { useDrag } from "./hand";
 
 const FRESH: Partial<LivePythDiscover> = { n: null, rows: [], p1: null, op: null, p2: null, pr: null, tried: [], misses: 0, done: false, said: null };
 const W = 600;
@@ -348,6 +349,29 @@ export function PythDiscover({ state: d, set, w: words, svgRef }: PieceProps<"py
       })
     : [];
 
+  // ---------- the hands under the picture ----------
+
+  const canMeasure = !d.done && task.level !== 3 && !(task.level === 1 && d.rows.length >= ROWS_MAX);
+  const tri = useDrag<object>((e) => canMeasure && (!e.moved || e.x > TABLE_X - 20) && measure());
+  const building = !d.done && task.level === 1 && enoughRows(rowsL1);
+  const pills: BarPill[] = d.done ? [] : [
+    ...(task.level !== 3 ? [{ text: `📏 ${w.measure}`, onTap: measure, disabled: !canMeasure }] : []),
+    ...(task.level === 2 ? [{ text: `✓ ${w.here}`, onTap: here, strong: true }] : []),
+    ...(building ? [{ text: `✓ ${w.claim}`, onTap: claim, strong: true, disabled: !rule }] : []),
+  ];
+  const cards = !d.done && task.level === 3 ? { values: task.choices, text: numText, off: (v: number) => d.said?.kind === "pick" && d.said.v === v, pick } : undefined;
+  const powGroup = (label: string, side: Side, on: Pow | null, key: "p1" | "p2" | "pr", before?: string): BarGroup => ({
+    label, options: ["1", "2"], on: on ? String(on) : null, text: (p) => termText(side, Number(p) as Pow), color: () => COLOR[side],
+    pick: (p) => choose({ [key]: p ? (Number(p) as Pow) : null }), before,
+  });
+  const groups: BarGroup[] | null = building ? [
+    powGroup(w.first, x, d.p1, "p1"),
+    { label: w.opLabel, options: P_OPS, on: d.op, text: (o) => o, pick: (o) => choose({ op: o as POp | null }) },
+    powGroup(w.second, y, d.p2, "p2"),
+    powGroup(w.equals, z, d.pr, "pr", "="),
+  ] : null;
+  const barH = barHeight(W, groups);
+
   return (
     <>
       <GameHead game={game} g={g}>
@@ -355,9 +379,12 @@ export function PythDiscover({ state: d, set, w: words, svgRef }: PieceProps<"py
       </GameHead>
       <Said line={{ tone: "prompt", text: prompt }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={prompt} style={{ touchAction: "none" }}>
-          <rect width={W} height={H} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={W} height={H + barH} viewBox={`0 0 ${W} ${H + barH}`} fontFamily={FONT} aria-label={prompt} style={{ touchAction: "none" }} {...tri.svgProps}>
+          <rect width={W} height={H + barH} fill="#fff" />
           {gridLines}
+          {/* The drawing dragged into the table (or tapped) is measured into it; its corners keep their own drags. */}
+          <g style={{ cursor: canMeasure ? "grab" : undefined }} onPointerDown={(e) => canMeasure && !(e.target as Element).closest("[role=slider]") && tri.begin(e, {})}>
+          {canMeasure && <rect x={0} y={0} width={TABLE_X - 12} height={H} fill="transparent"><title>{w.measureDrag}</title></rect>}
           {task.level === 1 && (
             <>
               {withSquares(legsNow, 20, [110, 220], (s) => String(s === "c" ? s2(legsNow) : legsNow[s] ** 2), () => "", null)}
@@ -379,9 +406,10 @@ export function PythDiscover({ state: d, set, w: words, svgRef }: PieceProps<"py
               {text([(CORNER[0] + M.B[0]) / 2 - 14, (CORNER[1] + M.B[1]) / 2], `b ${task.legs.b}`, COLOR.b, 14, "end")}
               {text([(M.A[0] + M.B[0]) / 2 + 12, (M.A[1] + M.B[1]) / 2 - 8], `c ${numText(Math.sqrt(c2At(task.legs, corner)))}`, COLOR.c, 14, "start")}
               {!d.done && handle("corner", M.B, w.cornerLabel, corner, CORNER_RANGE, deg(corner))}
-              <text x={TABLE_X} y={214} fontSize={16} fontWeight={700} fill="#f08c00">{w.goalTag[task.goal]}</text>
             </g>
           )}
+          </g>
+          {task.level === 2 && <text x={TABLE_X} y={214} fontSize={16} fontWeight={700} fill="#f08c00">{w.goalTag[task.goal]}</text>}
           {task.level === 3 &&
             (() => {
               const l = { a: task.sides.a, b: task.sides.b };
@@ -445,6 +473,8 @@ export function PythDiscover({ state: d, set, w: words, svgRef }: PieceProps<"py
               })}
             </g>
           )}
+          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={{ text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) }} />
+          {tri.drag?.moved && <text x={tri.drag.x} y={tri.drag.y} fontSize={24} textAnchor="middle" pointerEvents="none">📏</text>}
         </svg>
       </Stage>
       {explain !== null && (
@@ -458,40 +488,7 @@ export function PythDiscover({ state: d, set, w: words, svgRef }: PieceProps<"py
           picture={isPythStep(whys[explain]) ? <PythPicture step={whys[explain] as PythStep} /> : <OwnPicture step={whys[explain] as OwnWhy} />}
         />
       )}
-      {!d.done && task.level === 1 && enoughRows(rowsL1) && (
-        <div className="live-bar disc-build">
-          <Choice label={w.first} options={["1", "2"] as const} on={d.p1 ? (String(d.p1) as "1" | "2") : null} text={(p) => termText(x, Number(p) as Pow)} color={() => COLOR[x]} pick={(p) => choose({ p1: Number(p) as Pow })} />
-          <Choice label={w.opLabel} options={P_OPS} on={d.op} text={(o: POp) => o} pick={(op) => choose({ op })} />
-          <Choice label={w.second} options={["1", "2"] as const} on={d.p2 ? (String(d.p2) as "1" | "2") : null} text={(p) => termText(y, Number(p) as Pow)} color={() => COLOR[y]} pick={(p) => choose({ p2: Number(p) as Pow })} />
-          <span aria-hidden>=</span>
-          <Choice label={w.equals} options={["1", "2"] as const} on={d.pr ? (String(d.pr) as "1" | "2") : null} text={(p) => termText(z, Number(p) as Pow)} color={() => COLOR[z]} pick={(p) => choose({ pr: Number(p) as Pow })} />
-          <button className="live-btn on" disabled={!rule} onClick={claim}>
-            ✓ {w.claim}
-          </button>
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {!d.done && task.level !== 3 && (
-          <button className="live-btn" disabled={task.level === 1 && d.rows.length >= ROWS_MAX} onClick={measure}>
-            📏 {w.measure}
-          </button>
-        )}
-        {!d.done && task.level === 2 && (
-          <button className="live-btn on" onClick={here}>
-            ✓ {w.here}
-          </button>
-        )}
-        {!d.done &&
-          task.level === 3 &&
-          task.choices.map((v) => (
-            <button key={v} className="live-btn on" disabled={d.said?.kind === "pick" && d.said.v === v} onClick={() => pick(v)}>
-              {numText(v)}
-            </button>
-          ))}
-        <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain !== null ? null : 0)}>
-          💡 {w.why}
-        </button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} always />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

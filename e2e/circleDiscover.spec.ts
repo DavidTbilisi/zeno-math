@@ -25,7 +25,7 @@ test("circleDiscover: measure P and its mirror and find the rule that holds in e
   await press(p, "ArrowUp", 2);
   await measure.click();
   // P to 60° by dragging it round the circle.
-  const box = (await game.locator("svg[role=img]").first().boundingBox())!;
+  const box = (await game.locator("svg.hand-pic").first().boundingBox())!;
   const k = box.width / 600;
   const from = (await p.locator("circle").last().boundingBox())!;
   await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
