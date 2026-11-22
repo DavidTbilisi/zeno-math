@@ -24,7 +24,7 @@ test("a board keeps a shape and a live piece's state across a reload", async ({ 
   await dice.waitFor();
   const box = (await dice.boundingBox())!;
   await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
-  await dice.getByRole("button", { name: "Roll" }).click();
+  await dice.getByRole("button", { name: /^Die 1/ }).click();
 
   // The board saves itself: the server soon has the triangle and the dice with one roll in their history.
   const saved = async () => {
@@ -40,7 +40,7 @@ test("a board keeps a shape and a live piece's state across a reload", async ({ 
   await page.reload();
   await page.locator(".live-dice").waitFor();
   // The roll is still there: one total in the piece's history.
-  await expect(page.locator(".live-dice .live-history .live-chip")).toHaveCount(1);
+  await expect(page.locator(".live-dice text.dice-history")).toHaveAttribute("data-rolls", "1");
   expect(await saved()).toEqual(before);
   expect(errors).toEqual([]);
 });
