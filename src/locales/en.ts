@@ -6187,10 +6187,8 @@ export const en = {
       kinds: { square: "Square numbers", triangle: "Triangle numbers", oblong: "Rectangle numbers", cube: "Cube numbers", prime: "Primes", fibonacci: "Fibonacci numbers" },
       figure: "Figure",
       number: "Number",
-      less: "One less",
-      more: "One more",
       why: "Why?",
-      hint: "Change the number, or tap one in the row. Why? shows where the rule comes from.",
+      hint: "Tap a pattern. Drag the picture sideways, turn the number, or tap one in the row to change it. Why? shows where the rule comes from.",
       rule: { square: "n × n", triangle: "1 + 2 + … + n = n(n + 1) ÷ 2", oblong: "n × (n + 1)", cube: "n × n × n", prime: "only 1 and itself divide it", fibonacci: "each is the two before it added" },
       says: { square: "{n} rows of {n}: {t} dots", triangle: "Rows of 1, 2, … up to {n}: {t} dots", oblong: "{n} rows of {m}: {t} dots", cube: "{n} layers of {n} × {n}: {t} dots", fibonacci: "{a} + {b} = {t}" },
       whys: {

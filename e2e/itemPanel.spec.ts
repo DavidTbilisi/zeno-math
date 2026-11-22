@@ -107,16 +107,16 @@ test("one click on a piece reaches its button; its right-click panel holds only 
   const piece = page.locator(".live-numberShapes");
   await expect(piece).toHaveCount(1);
   await page.waitForTimeout(600);
-  const n = piece.locator(".live-stepper b");
-  await expect(n).toHaveText("4");
+  const n = piece.getByRole("slider", { name: "Figure" });
+  await expect(n).toHaveAttribute("aria-valuenow", "4");
 
-  // The piece is not in use yet: one click on its "+" (by where it is on screen) does what "+" does.
-  const more = (await piece.getByRole("button", { name: "One more" }).boundingBox())!;
-  await page.mouse.click(more.x + more.width / 2, more.y + more.height / 2);
-  await expect(n).toHaveText("5");
+  // The piece is not in use yet: one click on the top of its number (by where it is on screen) makes it one more.
+  const box = (await n.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 4);
+  await expect(n).toHaveAttribute("aria-valuenow", "5");
   // In use now: the next click goes straight to it.
-  await piece.getByRole("button", { name: "One more" }).click();
-  await expect(n).toHaveText("6");
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 4);
+  await expect(n).toHaveAttribute("aria-valuenow", "6");
 
   // Its settings stay on the piece: the panel has no copy of them, only what to do with the piece.
   await page.keyboard.press("Escape");
@@ -129,7 +129,7 @@ test("one click on a piece reaches its button; its right-click panel holds only 
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/panel-piece.png` });
 
   await panel.getByRole("button", { name: /Reset/ }).click();
-  await expect(n).toHaveText("4");
+  await expect(n).toHaveAttribute("aria-valuenow", "4");
   await panel.getByRole("button", { name: "Duplicate" }).click();
   await expect(page.locator(".live-numberShapes")).toHaveCount(2);
   await panel.getByRole("button", { name: "Delete" }).click();

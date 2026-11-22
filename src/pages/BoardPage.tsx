@@ -750,10 +750,16 @@ export function BoardPage({ id }: { id: string }) {
               appState: { selectedElementIds: { [el.id]: true }, activeEmbeddable: { element: now as NonDeletedExcalidrawElement, state: "active" } },
               captureUpdate: CaptureUpdateAction.NEVER,
             });
-            // Once the piece takes pointer events, the click goes to the control under it.
+            // Once the piece takes pointer events, the press goes to the control under it: down, up and click, since
+            // pieces worked by hand act on the press and the let-go, buttons on the click.
             requestAnimationFrame(() => requestAnimationFrame(() => {
               const target = document.elementFromPoint(cx, cy);
-              if (target?.closest(".live")) target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: cx, clientY: cy, view: window }));
+              if (!target?.closest(".live")) return;
+              const at = { bubbles: true, cancelable: true, composed: true, clientX: cx, clientY: cy, view: window, button: 0 };
+              const pointer = { ...at, pointerId: 1, pointerType: "mouse", isPrimary: true };
+              target.dispatchEvent(new PointerEvent("pointerdown", { ...pointer, buttons: 1 }));
+              target.dispatchEvent(new PointerEvent("pointerup", { ...pointer, buttons: 0 }));
+              target.dispatchEvent(new MouseEvent("click", at));
             }));
           }, 0);
         }}

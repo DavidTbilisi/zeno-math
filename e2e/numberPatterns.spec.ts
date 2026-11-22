@@ -1,40 +1,50 @@
-// Number patterns as dots: the piece draws as many dots as the number, "Why?" explains the rule, primes make one row,
+// Number patterns as dots, by hand: pills pick the pattern, a drag across the picture or a tap in the row changes the
+// number. The piece draws as many dots as the number, "Why?" explains the rule, primes make one row,
 // and the games menu has a Number patterns section that holds it.
 import { expect, test } from "@playwright/test";
 import { boardWith, insertGroup, insertPanel } from "./helpers.ts";
 
 const SHOTS = process.env.SHOTS_DIR;
 
-test("number patterns: dots, why, primes and Fibonacci", async ({ page }) => {
+test("number patterns: dots, why, primes and Fibonacci, by hand", async ({ page }) => {
   const piece = await boardWith(page, "Number patterns as dots", ".live-numberShapes");
+  const pic = piece.locator("svg").first();
+  const dots = pic.locator("circle");
   const shot = async (name: string) => SHOTS && (await piece.screenshot({ path: `${SHOTS}/${name}.png` }));
   // Square number 4: 16 dots, and the odd L-shapes.
-  await expect(piece.locator("svg circle")).toHaveCount(16);
+  await expect(dots).toHaveCount(16);
   await expect(piece).toContainText("4 rows of 4: 16 dots");
-  await piece.getByRole("button", { name: "Why?" }).click();
+  await pic.getByRole("button", { name: "Why?" }).click();
   await expect(piece).toContainText("1 + 3 + 5 + 7 = 16");
   await shot("square");
   // Tapping 49 in the row picks figure 7.
-  await piece.locator("svg text", { hasText: /^49$/ }).click();
-  await expect(piece.locator("svg circle")).toHaveCount(49);
+  await pic.getByRole("button", { name: "Figure 49" }).click();
+  await expect(dots).toHaveCount(49);
+  // The picture dragged two figures to the left: 5 × 5.
+  const area = (await pic.locator("circle").first().boundingBox())!;
+  await page.mouse.move(area.x + 200, area.y + 40);
+  await page.mouse.down();
+  await page.mouse.move(area.x + 120, area.y + 40, { steps: 8 });
+  await page.mouse.up();
+  await expect(dots).toHaveCount(25);
   // Triangle 4 with its copy: 4 rows of 5.
-  await piece.getByRole("combobox").selectOption("triangle");
-  await expect(piece.locator("svg circle")).toHaveCount(20);
+  await pic.getByRole("button", { name: "Triangle numbers" }).click();
+  await expect(dots).toHaveCount(20);
   await expect(piece).toContainText("20 ÷ 2 = 10");
   await shot("triangle");
-  await piece.getByRole("combobox").selectOption("cube");
+  await pic.getByRole("button", { name: "Cube numbers" }).click();
   await shot("cube");
   // 12 makes three rectangles; 13 only the one row.
-  await piece.getByRole("combobox").selectOption("prime");
+  await pic.getByRole("button", { name: "Primes" }).click();
   await expect(piece).toContainText("12 isn't prime: 1 × 12, 2 × 6, 3 × 4");
   await shot("composite");
-  await piece.getByRole("button", { name: "One more" }).click();
+  await pic.getByRole("slider", { name: "Number" }).press("ArrowUp");
   await expect(piece).toContainText("13 is prime");
   await expect(piece).toContainText("3 × 4 + 1");
   await shot("prime");
-  await piece.getByRole("combobox").selectOption("fibonacci");
+  await pic.getByRole("button", { name: "Fibonacci numbers" }).click();
   await expect(piece).toContainText("3 + 5 = 8");
-  await expect(piece.locator("svg rect")).toHaveCount(6 + 9);
+  await expect(pic.locator("g[data-tile]")).toHaveCount(6);
   await shot("fibonacci");
 });
 
