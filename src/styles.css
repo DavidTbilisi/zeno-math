@@ -899,9 +899,6 @@ input.invalid { border-color: var(--danger); }
 @keyframes live-beat { 40% { transform: scale(1.03); filter: drop-shadow(0 0 6px #2f9e44); } }
 @keyframes live-flash { from { opacity: 0.25; } to { opacity: 0; } }
 @keyframes said-in { from { transform: translateX(-4px); } 50% { transform: translateX(4px); } }
-.target-cards .live-btn.target-card { min-width: 2.4em; padding: 10px 14px; font-size: 26px; font-weight: 700; background: #fff3bf; border-color: #fab005; }
-.target-cards .live-btn.target-card.used { background: #f1f3f5; border-color: #dee2e6; }
-.target-ops .live-btn { min-width: 2.2em; font-size: 20px; font-weight: 700; }
 .target-picks .target-card { background: #fff3bf; font-weight: 700; }
 .near-clock { width: 360px; height: 6px; border-radius: 3px; background: #f1f3f5; overflow: hidden; }
 .near-clock i { display: block; height: 100%; background: #f08c00; animation: near-clock linear forwards; }

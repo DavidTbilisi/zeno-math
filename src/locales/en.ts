@@ -5736,7 +5736,7 @@ export const en = {
     },
     target: {
       make: "Make {t}",
-      hint: "Tap cards and signs to build a sum that makes the target. Each card once.",
+      hint: "Drag cards and signs into the row (or tap them) to build a sum that makes the target. Each card once.",
       useAll: "Use all {n} cards, each once.",
       made: "Made it! {stars} Can you find another way?",
       twoWays: "Two ways! {stars}",
@@ -5749,7 +5749,9 @@ export const en = {
         2: "Look for a times fact near {t} and make up the difference with the other cards, or split {t} into parts the cards can make.",
         3: "Choose the last step: two numbers that make {t}, such as a factor pair. Then make each from its own group of cards.",
       },
-      back: "Take the last piece back",
+      card: "Card {n}",
+      takeOut: "Take out {p}",
+      clearTitle: "Tap to clear the sum; drop a piece here to take it out",
       skip: "Skip",
       notices: {
         twoWays: "Two different ways to the same number!",
