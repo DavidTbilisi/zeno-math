@@ -1,8 +1,7 @@
 // A number made by hand inside a picture, for the games whose answer is a number too big for a row of choices: digit
 // tiles (and a minus tile) dragged into the answer slot or tapped, the last digit dragged back out of the slot or tapped
 // to take it back, and a pill beside the slot to check once there is a number. Typing works too while the slot has the
-// focus. It is its own small svg, so its drags are followed here and not by the picture it sits in. Takes the place of
-// the bar of buttons in Keypad.tsx.
+// focus. It is its own small svg, so its drags are followed here and not by the picture it sits in.
 import type { KeyboardEvent } from "react";
 import { BLUE, inBox, keyTap, MUTED, Pill, RED, useDrag } from "./hand";
 import { INK } from "./ui";

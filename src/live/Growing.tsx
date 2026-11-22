@@ -1,12 +1,13 @@
 // Growing patterns: figures 1, 2 and 3 of a pattern of squares, and what comes next. Build figure 4 by tapping squares
-// on a grid, then check (anywhere on the grid will do, as long as it is the shape); or say how many squares figure 10,
+// on a grid, then tap the Check pill under it (anywhere on the grid will do, as long as it is the shape); or say how many squares figure 10,
 // 20 or 50 has, or which figure has so many. Right first time earns three stars, after one miss two. Nine puzzles open
 // in turn — figure 4 built, big figures counted, squares and rectangles and which figure — and the endless run keeps a
 // streak right first time. Once it is right, the figures colour the part that stays and the part that grows. Built on
 // the game shell (useGame), which does the ladder, the sounds and the cheer.
 import { buildGrid, figuresSvg, GROW_LADDER, GROW_NOTICES, growAnswer, growNotice, growNow, growStars, judgeBuilt, type LiveGrow } from "../math/growing";
 import { readWhole } from "../math/machine";
-import { Keypad } from "./Keypad";
+import { DigitPad, PAD_H } from "./DigitPad";
+import { Pill } from "./hand";
 import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
@@ -24,7 +25,9 @@ export function Growing({ state: d, set, w: words, svgRef }: PieceProps<"growing
   const grid = buildGrid(task.kind);
   const figs = figuresSvg(task.kind, d.done, W - 20, (n) => fill(w.figure, { n }));
   const gridY = figs.h + 24;
-  const H = building ? gridY + grid.rows * CELL + 8 : figs.h + 16;
+  // Under the grid, the Clear and Check pills; under the figures in a counting puzzle, the digit pad and its Check.
+  const pillsY = gridY + grid.rows * CELL + 12;
+  const H = d.done ? (building ? pillsY : figs.h + 16) : building ? pillsY + 42 : figs.h + 16 + PAD_H + 8;
   const gridX = (W - grid.cols * CELL) / 2;
   const stars = growStars(d.misses);
 
@@ -60,7 +63,7 @@ export function Growing({ state: d, set, w: words, svgRef }: PieceProps<"growing
       </GameHead>
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={ask}>
+        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} className="hand-pic" aria-label={ask}>
           <rect width={W} height={H} fill="#fff" />
           <g transform="translate(10 8)" dangerouslySetInnerHTML={{ __html: figs.body }} />
           {building &&
@@ -82,13 +85,19 @@ export function Growing({ state: d, set, w: words, svgRef }: PieceProps<"growing
                 onClick={() => tap(i)}
               />
             ))}
+          {building && !d.done && (
+            <>
+              <Pill x={W / 2 - 130} y={pillsY} w={120} text={`🗑 ${g.clear}`} title={g.clear} disabled={!d.built.length} onTap={() => set({ ...d, built: [], said: null })} />
+              <Pill x={W / 2 + 10} y={pillsY} w={120} text={`✓ ${g.check}`} title={g.check} strong disabled={!d.built.length} onTap={check} />
+            </>
+          )}
+          {!building && !d.done && (
+            <DigitPad x={(W - 440) / 2} y={figs.h + 16} value={d.typed} onChange={(typed) => set({ ...d, typed, said: null })} label={ask} erase={w.erase}
+              check={readWhole(d.typed) === null ? undefined : { text: g.check, onTap: check }} />
+          )}
         </svg>
       </Stage>
-      {!building && !d.done && <Keypad value={d.typed} onChange={(typed) => set({ ...d, typed, said: null })} erase={w.erase} />}
-      <GameActions game={game} g={g} done={d.done}>
-        {building && <button className="live-btn" disabled={!d.built.length} onClick={() => set({ ...d, built: [], said: null })}>{g.clear}</button>}
-        <button className="live-btn on" disabled={building ? !d.built.length : readWhole(d.typed) === null} onClick={check}>{g.check}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
