@@ -15,7 +15,7 @@ export type BalanceTask = { level: BalanceLevel; scales: Scale[]; values: number
 
 export const SHAPE_GLYPHS = ["■", "●"] as const;
 export const SHAPE_TEX = ["\\blacksquare", "\\bullet"] as const;
-const SHAPE_COLORS = ["#1971c2", "#e8590c"];
+export const SHAPE_COLORS = ["#1971c2", "#e8590c"];
 /** The most a shape can be set to on the board. */
 export const MAX_GUESS = 20;
 
