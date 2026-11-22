@@ -4,15 +4,21 @@
 // one divisor applied to this number (its last digits, its digit sum), as the Divisibility tab writes it — costs one.
 // Nine puzzles open in turn (2, 5 and 10; then 3 and 9; then 4, 6 and 8), and the endless run keeps a streak of numbers
 // right at the first check without the hint. Built on the game shell (useGame), which does the ladder, the sounds and
-// the cheer.
+// the cheer. Worked by hand: the divisors are tiles in a tray, dragged (or tapped) into the box under the number; the
+// number itself is tapped to check, and a bulb in the corner gives the hint.
 import { useI18n } from "../i18n";
 import { divide, DIV_LADDER, DIV_NOTICES, divNotice, divNow, divStars, hintDivisor, ruleTest, type LiveDivisible } from "../math/divisible";
 import { starText } from "./ladderUi";
+import { inBox, keyTap, useDrag, type DragAt } from "./hand";
 import { fill, FONT, INK, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const W = 560;
-const H = 210;
+const H = 300;
+/** The box the divisors go in, and the tray they wait in. */
+const BOX = { x: 20, y: 112, w: W - 40, h: 92 };
+const TRAY = { x: 20, y: 216, w: W - 40, h: 76 };
+const T = 50;
 const GREEN = "#2f9e44";
 const RED = "#e03131";
 
@@ -50,44 +56,69 @@ export function Divisible({ state: d, set, w: words, svgRef }: PieceProps<"divis
     : d.said?.kind === "wrong" ? { tone: "wrong", text: d.said.more ? w.more : w.wrongOff }
     : { tone: "hint", text: d.chosen.length ? fill(w.chosen, { n: d.chosen.length }) : fill(w.hint, { n: task.n }) };
   const hintText = d.hint !== null && !d.done && fill(w.hintText, { d: d.hint, rule: (t.mentalWords.rules.rule as Record<string, string>)[String(d.hint)] ?? "", test: ruleTest(task.n, d.hint) });
-  // Under the number: each divisor with what it gives once done, or the red ones with what is left over.
-  const sums = d.done
-    ? task.right.map((k) => ({ k, text: `÷ ${k} = ${divide(task.n, k).q}`, color: GREEN }))
-    : d.wrong.map((k) => ({ k, text: `÷ ${k} = ${fill(w.remainder, divide(task.n, k))}`, color: RED }));
-  const perRow = 4;
+  const { drag, begin, svgProps } = useDrag<{ k: number }>((g: DragAt<{ k: number }>) => {
+    if (!g.moved) return tap(g.k);
+    const into = inBox(BOX, g.x, g.y);
+    if (into !== d.chosen.includes(g.k) && (into || inBox(TRAY, g.x, g.y))) tap(g.k);
+  });
+  // Each tile's place: in the box (in the order chosen) or in the tray (in the order offered), centred in its row.
+  const inside = d.done ? task.right : d.chosen;
+  const row = (ks: number[], y: number) => new Map(ks.map((k, i) => [k, { x: W / 2 + (i - (ks.length - 1) / 2) * (T + 12) - T / 2, y }]));
+  const at = new Map([...row(task.offered.filter((k) => !inside.includes(k)), TRAY.y + 13), ...row(inside, BOX.y + 12)]);
+  const note = (k: number) =>
+    d.done ? divides(k) && { text: `÷ ${k} = ${divide(task.n, k).q}`, color: GREEN }
+    : d.wrong.includes(k) && { text: fill(w.remainder, divide(task.n, k)), color: RED };
+  const canCheck = !d.done && d.chosen.length > 0;
+  const check1 = () => canCheck && check();
+  const hintOn = d.hint === null && !d.done;
+  const giveHint = () => set({ ...d, hint: hintDivisor(task, d.chosen) });
   return (
     <>
       <GameHead game={game} g={g}>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={fill(w.which, { n: task.n })}>
+        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} className="hand-pic" aria-label={fill(w.which, { n: task.n })}
+          style={{ touchAction: "none" }} {...svgProps}>
           <rect width={W} height={H} fill="#fff" />
-          <text x={W / 2} y={96} fontSize={72} fontWeight={700} textAnchor="middle" fill={d.done ? GREEN : INK}>{task.n}</text>
-          {sums.map((s, i) => {
-            const row = Math.floor(i / perRow);
-            const inRow = Math.min(perRow, sums.length - row * perRow);
-            const x = W / 2 + ((i % perRow) - (inRow - 1) / 2) * (W / perRow);
+          {/* Every number divides by one of them at least, so there is nothing to check before one is chosen. */}
+          <g role="button" tabIndex={canCheck ? 0 : -1} aria-label={fill(w.checkTap, { n: task.n })} aria-disabled={!canCheck || undefined}
+            style={{ cursor: canCheck ? "pointer" : "default" }} onPointerDown={(e) => e.stopPropagation()} onClick={check1} onKeyDown={(e) => keyTap(e, check1)}>
+            {canCheck && <title>{fill(w.checkTap, { n: task.n })}</title>}
+            <rect x={W / 2 - 150} y={14} width={300} height={90} rx={14} fill={canCheck ? "#f1f8ff" : "transparent"} />
+            <text x={W / 2} y={86} fontSize={72} fontWeight={700} textAnchor="middle" fill={d.done ? GREEN : INK}>{task.n}</text>
+          </g>
+          {hintOn && (
+            <g role="button" tabIndex={0} aria-label={`${w.hintBtn}: ${w.hintCost}`} style={{ cursor: "pointer" }} onPointerDown={(e) => e.stopPropagation()}
+              onClick={giveHint} onKeyDown={(e) => keyTap(e, giveHint)}>
+              <title>{w.hintCost}</title>
+              <circle cx={W - 34} cy={34} r={22} fill="#fff9db" stroke="#fab005" strokeWidth={1.5} />
+              <text x={W - 34} y={43} fontSize={24} textAnchor="middle" pointerEvents="none">💡</text>
+            </g>
+          )}
+          <rect {...{ x: BOX.x, y: BOX.y, width: BOX.w, height: BOX.h }} rx={12} fill={drag?.moved && inBox(BOX, drag.x, drag.y) ? "#e7f5ff" : "#f8f9fa"}
+            stroke={d.done ? GREEN : "#74c0fc"} strokeWidth={2} strokeDasharray={d.done ? undefined : "7 5"} />
+          <text x={BOX.x + 4} y={BOX.y - 5} fontSize={12} fill="#868e96">{fill(w.box, { n: task.n })}</text>
+          {task.offered.map((k) => {
+            const p = at.get(k)!;
+            const moving = drag?.k === k && drag.moved;
+            const [x, y] = moving ? [drag.x - T / 2, drag.y - T / 2] : [p.x, p.y];
+            const n = note(k);
+            const wrong = d.wrong.includes(k);
+            const tone = d.done ? (divides(k) ? GREEN : "#ced4da") : wrong ? RED : inside.includes(k) ? "#1971c2" : "#adb5bd";
             return (
-              <text key={s.k} x={x} y={146 + row * 32} fontSize={20} fontWeight={700} textAnchor="middle" fill={s.color}>{s.text}</text>
+              <g key={k} role="button" tabIndex={d.done ? -1 : 0} aria-label={String(k)} aria-pressed={d.chosen.includes(k)}
+                style={{ cursor: d.done ? "default" : moving ? "grabbing" : "grab" }}
+                onPointerDown={(e) => !d.done && begin(e, { k })} onKeyDown={(e) => !d.done && keyTap(e, () => tap(k))}>
+                <rect x={x} y={y} width={T} height={T} rx={9} fill={wrong ? "#fff5f5" : d.done && divides(k) ? "#ebfbee" : "#fff"} stroke={tone} strokeWidth={2.5} />
+                <text x={x + T / 2} y={y + T / 2 + 9} fontSize={26} fontWeight={700} textAnchor="middle" fill={d.done && !divides(k) ? "#adb5bd" : INK} pointerEvents="none">{k}</text>
+                {n && !moving && <text x={x + T / 2} y={y + T + 18} fontSize={14} fontWeight={700} textAnchor="middle" fill={n.color} pointerEvents="none">{n.text}</text>}
+              </g>
             );
           })}
         </svg>
       </Stage>
-      <div className="live-bar div-options">
-        {task.offered.map((k) => {
-          const on = d.chosen.includes(k);
-          const state = d.done ? (divides(k) ? " right" : "") : d.wrong.includes(k) ? " wrong" : on ? " on" : "";
-          return (
-            <button key={k} className={`live-btn${state}`} aria-pressed={on} disabled={d.done} onClick={() => tap(k)}>{k}</button>
-          );
-        })}
-      </div>
-      <GameActions game={game} g={g} done={d.done}>
-        {d.hint === null && <button className="live-btn" title={w.hintCost} onClick={() => set({ ...d, hint: hintDivisor(task, d.chosen) })}>💡 {w.hintBtn}</button>}
-        {/* Every number divides by one of them at least, so there is nothing to check before one is chosen. */}
-        <button className="live-btn on" disabled={!d.chosen.length} onClick={check}>{g.check}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
       {hintText && <p className="live-hint">💡 {hintText}</p>}
     </>

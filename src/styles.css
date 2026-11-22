@@ -909,9 +909,6 @@ input.invalid { border-color: var(--danger); }
 .near-options .live-btn { min-width: 4em; padding: 10px 16px; font-size: 24px; font-weight: 700; }
 .near-options .live-btn.right { background: #d3f9d8; border-color: #2f9e44; opacity: 1; }
 .near-options .live-btn.wrong { background: #ffe3e3; border-color: #e03131; opacity: 1; }
-.div-options .live-btn { min-width: 2.6em; padding: 8px 12px; font-size: 24px; font-weight: 700; }
-.div-options .live-btn.right { background: #d3f9d8; border-color: #2f9e44; opacity: 1; }
-.div-options .live-btn.wrong { background: #ffe3e3; border-color: #e03131; }
 .near-clock { width: 360px; height: 6px; border-radius: 3px; background: #f1f3f5; overflow: hidden; }
 .near-clock i { display: block; height: 100%; background: #f08c00; animation: near-clock linear forwards; }
 @keyframes near-clock { from { width: 100%; } to { width: 0; } }

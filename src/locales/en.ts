@@ -5776,8 +5776,10 @@ export const en = {
     },
     divisible: {
       which: "Which of these divide {n}?",
-      hint: "Tap every number that divides {n} exactly, then check.",
-      chosen: "{n} chosen. Tap one again to take it off, then check.",
+      hint: "Drag every number that divides {n} exactly into the box (or tap it), then tap {n} to check.",
+      chosen: "{n} in the box. Tap one to take it out again; tap the big number to check.",
+      checkTap: "{n}: tap it to check the box",
+      box: "divides {n}",
       wrongOff: "The red ones don't divide it: see what's left over?",
       more: "Those divide it, but more do.",
       right: "Right! {n} is divisible by {list}. {stars}",

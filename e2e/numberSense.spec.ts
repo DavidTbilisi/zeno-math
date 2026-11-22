@@ -227,9 +227,9 @@ test("a practice benchmark picked from its buttons", async ({ page, request }) =
 test("divisible by?: every divisor tapped and checked earns three stars and opens the next", async ({ page }) => {
   const game = await boardWith(page, "Divisible by? Tap every divisor", ".live-divisible");
   const t = divTask(DIV_LADDER[0].level, rng(DIV_LADDER[0].seed));
-  await expect(game.getByRole("img", { name: `Which of these divide ${t.n}?` })).toBeVisible();
-  for (const d of t.right) await game.locator(".div-options").getByRole("button", { name: String(d), exact: true }).click();
-  await game.getByRole("button", { name: "Check" }).click();
+  await expect(game.getByLabel(`Which of these divide ${t.n}?`)).toBeVisible();
+  for (const d of t.right) await game.getByRole("button", { name: String(d), exact: true }).click();
+  await game.getByRole("button", { name: `${t.n}: tap it to check the box` }).click();
   await expect(game.getByText(`Right! ${t.n} is divisible by ${t.right.join(", ")}. ★★★`)).toBeVisible();
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
