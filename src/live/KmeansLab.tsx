@@ -34,6 +34,7 @@ import {
 import { play } from "./juice";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveKmeans> = { tries: 0, done: false, said: null };
@@ -126,6 +127,17 @@ export function KmeansLab({ state, set, w: words, svgRef }: PieceProps<"kmeansLa
     : { tone: "hint", text: hint };
   const read = fill(w.read, { k: d.k, n: d.steps, e: num(labels ? sse(ps, labels, d.centres) : NaN) });
 
+  const newData = { labels: null, errs: [], steps: 0 };
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(can.includes("step") ? [{ text: w.assign, disabled: d.done, onTap: assign }, { text: w.move, disabled: d.done || !d.labels, onTap: move }] : []),
+    ...(can.includes("run") ? [{ text: w.runAll, disabled: d.done, onTap: runAll }] : []),
+    ...(can.includes("starts") ? [{ text: w.plus, disabled: d.done, onTap: () => restart("plus") }, { text: w.random, disabled: d.done, onTap: () => restart("random") }] : []),
+    ...(!p ? [...FREE_DATA.map((id, i) => ({ text: w.datas[id], brk: i === 0, on: d.data === id, onTap: () => commit({ data: id, ...newData }) })), { text: w.newSample, onTap: () => commit({ seed: d.seed + 1, ...newData }) }] : []),
+  ];
+  const dialH = can.includes("k") ? 44 : 0;
+  const strip = dialH + pillRowsH(moves, KM_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
@@ -133,11 +145,11 @@ export function KmeansLab({ state, set, w: words, svgRef }: PieceProps<"kmeansLa
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={KM_PLOT.w}
-          height={KM_PLOT.h}
-          viewBox={`0 0 ${KM_PLOT.w} ${KM_PLOT.h}`}
+          height={KM_PLOT.h + strip}
+          viewBox={`0 0 ${KM_PLOT.w} ${KM_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: drag !== null ? "grabbing" : can.includes("drag") ? "grab" : "default", touchAction: "none" }}
           onPointerDown={down}
@@ -145,49 +157,19 @@ export function KmeansLab({ state, set, w: words, svgRef }: PieceProps<"kmeansLa
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={KM_PLOT.w} height={KM_PLOT.h} fill="#fff" />
+          <rect width={KM_PLOT.w} height={KM_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: kmSvg(d, w.chart) }} />
+          {can.includes("k") && (
+            <Track x={8} y={KM_PLOT.h + 4} w={KM_PLOT.w - 16} value={d.k} min={1} max={K_MAX} label={w.k} disabled={d.done} show={(v) => `k = ${v}`}
+              onChange={(v, done) => (done ? commit(fresh(setK(v))) : setDraft(fresh(setK(v))))} />
+          )}
+          <PillRows w={KM_PLOT.w} y={KM_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      {can.includes("k") && (
-        <div className="live-bar descent-dials">
-          <label className="live-slider">
-            <b>k = {d.k}</b>
-            <input
-              type="range"
-              min={1}
-              max={K_MAX}
-              value={d.k}
-              disabled={d.done}
-              aria-label={w.k}
-              onChange={(e) => setDraft(fresh(setK(Number(e.target.value))))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {can.includes("step") && (
-          <>
-            <button className="live-btn" disabled={d.done} onClick={assign}>{w.assign}</button>
-            <button className="live-btn" disabled={d.done || !d.labels} onClick={move}>{w.move}</button>
-          </>
-        )}
-        {can.includes("run") && <button className="live-btn" disabled={d.done} onClick={runAll}>{w.runAll}</button>}
-        {can.includes("starts") && (
-          <>
-            <button className="live-btn" disabled={d.done} onClick={() => restart("plus")}>{w.plus}</button>
-            <button className="live-btn" disabled={d.done} onClick={() => restart("random")}>{w.random}</button>
-          </>
-        )}
-        {!p && FREE_DATA.map((id) => <button key={id} className={`live-btn${d.data === id ? " on" : ""}`} aria-pressed={d.data === id} onClick={() => commit({ data: id, labels: null, errs: [], steps: 0 })}>{w.datas[id]}</button>)}
-        {!p && <button className="live-btn" onClick={() => commit({ seed: d.seed + 1, labels: null, errs: [], steps: 0 })}>{w.newSample}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

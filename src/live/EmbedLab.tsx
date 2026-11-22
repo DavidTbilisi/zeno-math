@@ -24,6 +24,7 @@ import {
   toPage,
   type LiveEmbed,
 } from "../math/embedLab";
+import { PillRows, pillRowsH, type RowItem } from "./hand";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
@@ -78,6 +79,7 @@ export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab"
   };
   const down = (e: PointerEvent<SVGSVGElement>) => {
     const [px, py] = svgPoint(e.currentTarget, e);
+    if (py > EMBED_PLOT.h) return;
     const id = tipAt(px, py);
     if (!id) return;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -114,6 +116,12 @@ export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab"
     : wrong ? { tone: "wrong", text: fill(w.why[wrong.why], { have: num(wrong.have), want: num(wrong.want), names: (wrong.names ?? []).map(n).join(", ") }) }
     : { tone: "hint", text: p ? w.hint : w.freeHint };
 
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    { text: `↺ ${g.reset}`, title: g.reset, onTap: () => commit(fresh({ vecs: embedStart(p) })) },
+  ];
+  const strip = pillRowsH(moves, EMBED_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
@@ -121,11 +129,11 @@ export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab"
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={EMBED_PLOT.w}
-          height={EMBED_PLOT.h}
-          viewBox={`0 0 ${EMBED_PLOT.w} ${EMBED_PLOT.h}`}
+          height={EMBED_PLOT.h + strip}
+          viewBox={`0 0 ${EMBED_PLOT.w} ${EMBED_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: grab ? "grabbing" : "default", touchAction: "none" }}
           onPointerDown={down}
@@ -133,14 +141,12 @@ export function EmbedLab({ state, set, w: words, svgRef }: PieceProps<"embedLab"
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={EMBED_PLOT.w} height={EMBED_PLOT.h} fill="#fff" />
+          <rect width={EMBED_PLOT.w} height={EMBED_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: embedSvg(d.vecs, { drag: p ? drag : [], sel: p ? [] : d.sel, pair, analogies: analogiesOf(p, d.sel), readout, names }) }} />
+          <PillRows w={EMBED_PLOT.w} y={EMBED_PLOT.h} items={moves} />
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        <button className="live-btn" onClick={() => commit(fresh({ vecs: embedStart(p) }))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

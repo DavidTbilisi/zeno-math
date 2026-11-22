@@ -30,8 +30,9 @@ import {
   type Knob,
   type LiveBatch,
 } from "../math/batchLab";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { starText } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** A new try of a puzzle starts from no steps; a puzzle of the ladder sets its dials, free play its own. */
@@ -119,14 +120,37 @@ export function BatchLab({ state, set, w: words, svgRef }: PieceProps<"batchLab"
     : freeEnd ? { tone: full.away ? "wrong" : "hint", text: freeEnd }
     : { tone: "hint", text: p ? w.hints[p.knob] : w.freeHint };
 
+  const moves: RowItem[] = [
+    { text: w.batch },
+    ...BATCHES.map((b) => ({ text: b === pts.length ? fill(w.all, { n: b }) : String(b), on: s.batch === b, disabled: !may("batch"), onTap: () => turn({ batch: b }) })),
+    { text: w.schedule, brk: true },
+    ...SCHEDULES.map((sc) => ({ text: w.schedules[sc], on: s.schedule === sc, disabled: !may("schedule"), onTap: () => turn({ schedule: sc }) })),
+    { text: w.opt, brk: true },
+    ...OPTIMISERS.map((o) => ({ text: w.opts[o], on: s.opt === o, disabled: !may("opt"), onTap: () => turn({ opt: o }) })),
+    ...(!p
+      ? [
+          ...DATA_IDS.map((id, i) => ({ text: w.datas[id], brk: i === 0, on: d.data === id, disabled: busy, onTap: () => turn({ data: id }) })),
+          { text: w.newSample, disabled: busy, onTap: () => turn({ seed: d.seed + 1 }) },
+        ]
+      : []),
+    { text: w.step, brk: true, disabled: !canStep, onTap: () => finish(k + 1) },
+    { text: w.epoch, disabled: !canStep, onTap: () => setRun({ at: k, to: toEpochEnd }) },
+    { text: `▶ ${w.run}`, title: w.run, strong: true, disabled: !canStep, onTap: () => setRun({ at: k, to: total }) },
+    { text: `↺ ${g.reset}`, title: g.reset, disabled: busy || k === 0, onTap: () => commit(fresh({})) },
+  ];
+  const strip = 44 + pillRowsH(moves, BATCH_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={BATCH_PLOT.w} height={BATCH_PLOT.h} viewBox={`0 0 ${BATCH_PLOT.w} ${BATCH_PLOT.h}`} fontFamily={FONT} role="img" aria-label={w.picture}>
-          <rect width={BATCH_PLOT.w} height={BATCH_PLOT.h} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={BATCH_PLOT.w} height={BATCH_PLOT.h + strip} viewBox={`0 0 ${BATCH_PLOT.w} ${BATCH_PLOT.h + strip}`} fontFamily={FONT} aria-label={w.picture}>
+          <rect width={BATCH_PLOT.w} height={BATCH_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: batchSvg(pts, s, full, k, { tol, words: w.chart }) }} />
+          <Track x={8} y={BATCH_PLOT.h + 4} w={BATCH_PLOT.w - 16} value={ei} min={0} max={ETAS.length - 1} label={w.eta} disabled={!may("eta")}
+            show={(i) => `η₀ = ${num(ETAS[i])}`} onChange={(i, done) => turn({ eta: ETAS[i] }, done)} />
+          <PillRows w={BATCH_PLOT.w} y={BATCH_PLOT.h + 44} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
@@ -135,52 +159,7 @@ export function BatchLab({ state, set, w: words, svgRef }: PieceProps<"batchLab"
           {fill(w.count, { e: epochNow, E: s.epochs, k, n: total })} · η = {num(rateAt(s.eta, s.schedule, Math.min(s.epochs - 1, epochNow)))} · {fill(w.read, { g: num(gap), w: num(pw), b: num(pb) })}
         </span>
       </div>
-      <div className="live-bar descent-dials">
-        <label className="live-slider">
-          <b>η₀ = {num(s.eta)}</b>
-          <input
-            type="range"
-            min={0}
-            max={ETAS.length - 1}
-            value={ei}
-            disabled={!may("eta")}
-            aria-label={w.eta}
-            onChange={(e) => turn({ eta: ETAS[Number(e.target.value)] }, false)}
-            onPointerUp={() => commit()}
-            onKeyUp={() => commit()}
-          />
-        </label>
-      </div>
-      <div className="live-bar batch-dials">
-        <span>{w.batch}</span>
-        {BATCHES.map((b) => (
-          <Toggle key={b} on={s.batch === b} disabled={!may("batch")} onClick={() => turn({ batch: b })}>{b === pts.length ? fill(w.all, { n: b }) : b}</Toggle>
-        ))}
-      </div>
-      <div className="live-bar batch-dials">
-        <span>{w.schedule}</span>
-        {SCHEDULES.map((sc) => (
-          <Toggle key={sc} on={s.schedule === sc} disabled={!may("schedule")} onClick={() => turn({ schedule: sc })}>{w.schedules[sc]}</Toggle>
-        ))}
-        <span>{w.opt}</span>
-        {OPTIMISERS.map((o) => (
-          <Toggle key={o} on={s.opt === o} disabled={!may("opt")} onClick={() => turn({ opt: o })}>{w.opts[o]}</Toggle>
-        ))}
-      </div>
-      {!p && (
-        <div className="live-bar batch-dials">
-          {DATA_IDS.map((id) => (
-            <Toggle key={id} on={d.data === id} disabled={busy} onClick={() => turn({ data: id })}>{w.datas[id]}</Toggle>
-          ))}
-          <button className="live-btn" disabled={busy} onClick={() => turn({ seed: d.seed + 1 })}>{w.newSample}</button>
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        <button className="live-btn" disabled={!canStep} onClick={() => finish(k + 1)}>{w.step}</button>
-        <button className="live-btn" disabled={!canStep} onClick={() => setRun({ at: k, to: toEpochEnd })}>{w.epoch}</button>
-        <button className="live-btn on" disabled={!canStep} onClick={() => setRun({ at: k, to: total })}>▶ {w.run}</button>
-        <button className="live-btn" disabled={busy || k === 0} onClick={() => commit(fresh({}))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

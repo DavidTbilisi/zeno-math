@@ -121,15 +121,16 @@ export function CheckRow({ w, y, check, clear }: { w: number; y: number; check: 
 }
 
 /** A pill of a PillRows: `on` makes it a switch (aria-pressed). */
-export type RowItem = { text: string; onTap: () => void; title?: string; strong?: boolean; on?: boolean; disabled?: boolean };
+/** A pill in PillRows; without `onTap` it is a muted word naming the pills after it, and `brk` starts a new row. */
+export type RowItem = { text: string; onTap?: () => void; title?: string; strong?: boolean; on?: boolean; disabled?: boolean; brk?: boolean };
 const ROWS_H = 40;
-const rowPw = (t: string) => 34 + [...t].length * 8.4;
+const rowPw = (it: RowItem) => (it.onTap ? 34 : 6) + [...it.text].length * (it.onTap ? 8.4 : 7.4);
 function layRows(items: RowItem[], w: number) {
   const rows: RowItem[][] = [[]];
   let used = 0;
   for (const it of items) {
-    const pw = rowPw(it.text);
-    if (used + pw > w - 24 && rows.at(-1)!.length) {
+    const pw = rowPw(it);
+    if ((it.brk || used + pw > w - 24) && rows.at(-1)!.length) {
       rows.push([]);
       used = 0;
     }
@@ -146,11 +147,16 @@ export function PillRows({ items, w, y }: { items: RowItem[]; w: number; y: numb
   return (
     <g>
       {layRows(items, w).map((row, r) => {
-        let px = (w - row.reduce((a, it) => a + rowPw(it.text) + 10, -10)) / 2;
-        return row.map((it) => {
+        let px = (w - row.reduce((a, it) => a + rowPw(it) + 10, -10)) / 2;
+        const py = y + 5 + r * ROWS_H;
+        return row.map((it, i) => {
           const x0 = px;
-          px += rowPw(it.text) + 10;
-          return <Pill key={it.text} x={x0} y={y + 5 + r * ROWS_H} w={rowPw(it.text)} text={it.text} title={it.title} strong={it.strong} on={it.on} disabled={it.disabled} onTap={it.onTap} />;
+          px += rowPw(it) + 10;
+          return it.onTap ? (
+            <Pill key={`${r}.${i}`} x={x0} y={py} w={rowPw(it)} text={it.text} title={it.title} strong={it.strong} on={it.on} disabled={it.disabled} onTap={it.onTap} />
+          ) : (
+            <text key={`${r}.${i}`} x={x0 + rowPw(it)} y={py + 20} fontSize={14} textAnchor="end" fill={MUTED}>{it.text}</text>
+          );
         });
       })}
     </g>
