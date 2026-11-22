@@ -1,17 +1,24 @@
-// Number patterns as dots: pick square, triangle, rectangle or cube numbers, primes or Fibonacci numbers, change n
-// (or tap a number in the row) and see its picture. "Why?" colours what the rule comes from: odd or even L-shapes,
+// Number patterns as dots, worked by hand: tap square, triangle, rectangle or cube numbers, primes or Fibonacci numbers
+// on the pills, then drag the picture sideways to grow or shrink it, turn the number, or tap one in the row, and see
+// its picture. "Why?" colours what the rule comes from: odd or even L-shapes,
 // a second triangle, the layers, the rows that leave dots over, the two squares each new one is built on.
 // The shapes themselves come from src/math/numberShapes.ts.
 import type { ReactNode } from "react";
+import { NumBox, Pill, Tabs, keyTap, useDrag } from "./hand";
 import {
   arrangements, clampN, dotPicture, fib, fibTiles, isPrime, N_RANGE, N_START, row, SHAPE_KINDS, sumText, term, whyParts,
   type ShapeKind,
 } from "../math/numberShapes";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 
 const W = 600;
 const PAD = 20;
-const PIC_TOP = 44;
+/** The pills for the patterns take two rows, the number and "Why?" a third; the title is under them, the picture under that. */
+const TOOLS_Y = 76;
+const TITLE_Y = 136;
+const PIC_TOP = TITLE_Y + 18;
+/** How far a drag across the picture goes for one figure more. */
+const STRETCH = 40;
 const PIC_W = W - 2 * PAD;
 const PIC_H = 320;
 const BLUE = "#1971c2";
@@ -70,7 +77,7 @@ export function NumberShapes({ state, set, w: words, svgRef }: PieceProps<"numbe
     picture = (
       <>
         {tiles.map((q, k) => (
-          <g key={k}>
+          <g key={k} data-tile={q.s}>
             <rect x={ox + q.x * s} y={oy + q.y * s} width={q.s * s} height={q.s * s} fill={tint(k)} stroke={INK} strokeWidth={1.2} />
             {q.s * s >= 18 && (
               <text x={ox + (q.x + q.s / 2) * s} y={oy + (q.y + q.s / 2) * s + 6} fontSize={Math.min(28, q.s * s * 0.4)} textAnchor="middle" fill={INK}>{q.s}</text>
@@ -100,28 +107,33 @@ export function NumberShapes({ state, set, w: words, svgRef }: PieceProps<"numbe
   const chipW = PIC_W / chips.length;
   const chipY = PIC_TOP + PIC_H + 24 + lines.length * 26 + 8;
   const H = chipY + 44;
-  const pick = (k: ShapeKind) => set({ kind: k, n: N_START[k], why });
+  const pick = (k: ShapeKind) => k !== kind && set({ kind: k, n: N_START[k], why });
+  const setN = (v: number) => {
+    const c = clampN(kind, v);
+    if (c !== n) set({ ...state, n: c });
+  };
+  const { svgProps, begin, drag } = useDrag<{ n0: number }>(() => {}, (d) => d.moved && setN(d.n0 + Math.round((d.x - d.x0) / STRETCH)));
+  const names = Object.fromEntries(SHAPE_KINDS.map((k) => [k, w.kinds[k]])) as Record<ShapeKind, string>;
 
+  const what = kind === "prime" ? w.number : w.figure;
   return (
     <>
-      <div className="live-bar">
-        <label className="live-select">
-          <span>{w.pattern}</span>
-          <select value={kind} onChange={(e) => pick(e.target.value as ShapeKind)}>
-            {SHAPE_KINDS.map((k) => <option key={k} value={k}>{w.kinds[k]}</option>)}
-          </select>
-        </label>
-        <span>{kind === "prime" ? w.number : w.figure}</span>
-        <Stepper value={n} min={N_RANGE[kind][0]} max={N_RANGE[kind][1]} onChange={(v) => set({ ...state, n: v })} less={w.less} more={w.more} />
-        <Toggle on={why} onClick={() => set({ ...state, n, why: !why })}>{w.why}</Toggle>
-      </div>
-      <p className="live-hint">{w.hint}</p>
-      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
-        <text x={PAD} y={26} fontSize={20} fill={INK}>
+      <svg className="hand-pic" width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} {...svgProps}
+        style={{ touchAction: "none", userSelect: "none" }}>
+        <g aria-label={w.pattern} role="group">
+          <Tabs x={PAD} y={6} keys={SHAPE_KINDS.slice(0, 3)} on={kind} names={names} onPick={pick} size={13} />
+          <Tabs x={PAD} y={40} keys={SHAPE_KINDS.slice(3)} on={kind} names={names} onPick={pick} size={13} />
+        </g>
+        <text x={PAD + 70} y={TOOLS_Y + 24} fontSize={14} textAnchor="end" fill="#495057">{what}</text>
+        <NumBox x={PAD + 78} y={TOOLS_Y + 2} w={56} h={36} size={18} value={n} min={N_RANGE[kind][0]} max={N_RANGE[kind][1]} label={what} onChange={setN} />
+        <Pill x={PAD + 146} y={TOOLS_Y + 6} w={84} h={28} size={14} text={w.why} on={why} onTap={() => set({ ...state, n, why: !why })} />
+        <text x={PAD} y={TITLE_Y} fontSize={18} fill={INK}>
           <tspan fontWeight={700}>{w.kinds[kind]}</tspan>
           <tspan fill="#495057">{`  ·  ${w.rule[kind]}`}</tspan>
         </text>
-        {picture}
+        <rect x={PAD} y={PIC_TOP} width={PIC_W} height={PIC_H} fill="transparent" style={{ cursor: drag ? "grabbing" : "ew-resize" }}
+          onPointerDown={(e) => begin(e, { n0: n })} />
+        <g pointerEvents="none">{picture}</g>
         {lines.map((l, i) => (
           <text key={i} x={PAD} y={PIC_TOP + PIC_H + 24 + i * 26} fontSize={l.length > 62 ? (17 * 62) / l.length : 17} fill={i ? "#495057" : INK} fontWeight={i ? 400 : 700}>{l}</text>
         ))}
@@ -129,15 +141,29 @@ export function NumberShapes({ state, set, w: words, svgRef }: PieceProps<"numbe
           const on = c.n === n;
           const prime = kind === "prime" && isPrime(c.v);
           return (
-            <g key={c.n} style={{ cursor: "pointer" }} onClick={() => set({ ...state, n: c.n })}>
+            <g key={c.n} role="button" tabIndex={0} aria-label={`${what} ${c.v}`} aria-pressed={on} style={{ cursor: "pointer" }}
+              onPointerDown={(e) => e.stopPropagation()} onClick={() => setN(c.n)} onKeyDown={(e) => keyTap(e, () => setN(c.n))}>
               <rect x={PAD + i * chipW + 2} y={chipY} width={chipW - 4} height={34} rx={6}
                 fill={on ? BLUE : prime ? "#d3f9d8" : "#f1f3f5"} stroke={on ? BLUE : prime ? GREEN : "#dee2e6"} />
               <text x={PAD + (i + 0.5) * chipW} y={chipY + 23} fontSize={c.v >= 100 ? 14 : 17} textAnchor="middle"
-                fill={on ? "#fff" : INK} fontWeight={on || prime ? 700 : 400}>{c.v}</text>
+                fill={on ? "#fff" : INK} fontWeight={on || prime ? 700 : 400} pointerEvents="none">{c.v}</text>
             </g>
           );
         })}
       </svg>
+      <p className="live-hint">{w.hint}</p>
+      <div hidden>
+        <svg ref={svgRef} width={W} height={H - TITLE_Y + 26} viewBox={`0 ${TITLE_Y - 26} ${W} ${H - TITLE_Y + 26}`} fontFamily={FONT}>
+          <text x={PAD} y={TITLE_Y} fontSize={18} fill={INK}>
+            <tspan fontWeight={700}>{w.kinds[kind]}</tspan>
+            <tspan fill="#495057">{`  ·  ${w.rule[kind]}`}</tspan>
+          </text>
+          {picture}
+          {lines.map((l, i) => (
+            <text key={i} x={PAD} y={PIC_TOP + PIC_H + 24 + i * 26} fontSize={l.length > 62 ? (17 * 62) / l.length : 17} fill={i ? "#495057" : INK} fontWeight={i ? 400 : 700}>{l}</text>
+          ))}
+        </svg>
+      </div>
     </>
   );
 }

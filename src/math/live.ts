@@ -647,7 +647,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   balance: [680, 560],
   machine: [600, 560],
   growing: [600, 660],
-  numberShapes: [640, 620],
+  numberShapes: [640, 740],
   algebraTiles: [680, 640],
   baseTen: [830, 660],
   cubes: [720, 700],

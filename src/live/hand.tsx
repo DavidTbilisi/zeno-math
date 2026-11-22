@@ -28,6 +28,16 @@ export const pointIn = (e: ReactPointerEvent) => svgPoint(ownerSvg(e.currentTarg
 
 export type DragAt<T> = T & { x0: number; y0: number; x: number; y: number; moved: boolean };
 
+/** Keeps the pointer's moves coming here; a press the board passes on (the click that brought the piece into use) has no
+ * pointer to keep, and that is fine. */
+export function capture(el: Element, pointerId: number) {
+  try {
+    el.setPointerCapture(pointerId);
+  } catch {
+    // No such pointer is down: the moves still come by bubbling.
+  }
+}
+
 /**
  * A drag that starts on any part of the picture and is followed by the picture itself: `begin` it from a part's
  * pointer-down with what is being dragged, spread `svgProps` on the svg, and `end` gets it when the pointer is let go,
@@ -48,7 +58,7 @@ export function useDrag<T>(end: (d: DragAt<T>) => void, onMove?: (d: DragAt<T>) 
   const begin = (e: ReactPointerEvent, data: T) => {
     if (e.button !== 0) return;
     e.stopPropagation();
-    ownerSvg(e.currentTarget).setPointerCapture(e.pointerId);
+    capture(ownerSvg(e.currentTarget), e.pointerId);
     const [x, y] = pointIn(e);
     to({ ...data, x0: x, y0: y, x, y, moved: false });
   };
@@ -113,7 +123,14 @@ export function NumBox({ x, y, w, h = 44, value, min, max, label, onChange, show
   x: number; y: number; w: number; h?: number; value: number; min: number; max: number; label: string; onChange: (v: number) => void;
   show?: (v: number) => string; size?: number;
 }) {
-  const [press, setPress] = useState<{ y0: number; v0: number; top: boolean; moved: boolean } | null>(null);
+  type Press = { y0: number; v0: number; top: boolean; moved: boolean };
+  const [press, setPressState] = useState<Press | null>(null);
+  // The press as it is now: a let-go can come before the picture draws again (in one frame), so it reads this.
+  const live = useRef<Press | null>(null);
+  const setPress = (p: Press | null) => {
+    live.current = p;
+    setPressState(p);
+  };
   const to = (v: number) => {
     const c = Math.max(min, Math.min(max, v));
     if (c !== value) onChange(c);
@@ -121,10 +138,11 @@ export function NumBox({ x, y, w, h = 44, value, min, max, label, onChange, show
   const down = (e: ReactPointerEvent<SVGRectElement>, top: boolean) => {
     if (e.button !== 0) return;
     e.stopPropagation();
-    e.currentTarget.setPointerCapture(e.pointerId);
+    capture(e.currentTarget, e.pointerId);
     setPress({ y0: pointIn(e)[1], v0: value, top, moved: false });
   };
   const move = (e: ReactPointerEvent<SVGRectElement>) => {
+    const press = live.current;
     if (!press) return;
     const dy = press.y0 - pointIn(e)[1];
     const moved = press.moved || Math.abs(dy) > TAP;
@@ -133,6 +151,7 @@ export function NumBox({ x, y, w, h = 44, value, min, max, label, onChange, show
   };
   const up = (e: ReactPointerEvent<SVGRectElement>) => {
     // Read the let-go's own place too: a move just before it may not have been drawn yet.
+    const press = live.current;
     if (press && !press.moved && Math.abs(press.y0 - pointIn(e)[1]) <= TAP) to(press.v0 + (press.top ? 1 : -1));
     setPress(null);
   };
