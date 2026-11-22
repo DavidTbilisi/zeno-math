@@ -260,6 +260,7 @@ export const MENUS: MenuGroup[] = [
           { live: "fitTiles", icon: "📏" },
           { live: "findWhole", icon: "🧩" },
           { live: "overflowBars", icon: "🫗" },
+          { live: "shareBags", icon: "🍬" },
         ],
       },
       {

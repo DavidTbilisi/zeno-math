@@ -21,6 +21,7 @@ import { FOLD_START, type LiveFold } from "./fold";
 import { FIT_TILES_START, type LiveFitTiles } from "./fitTiles";
 import { WHOLE_START, type LiveFindWhole } from "./findWhole";
 import { OVERFLOW_START, type LiveOverflow } from "./overflowBars";
+import { SHARE_START, type LiveShare } from "./shareBags";
 import type { LiveBalance } from "./balance";
 import type { LiveMachine } from "./machine";
 import type { LiveGrow } from "./growing";
@@ -547,6 +548,7 @@ export type LiveStates = {
   fitTiles: LiveFitTiles;
   findWhole: LiveFindWhole;
   overflowBars: LiveOverflow;
+  shareBags: LiveShare;
   balance: LiveBalance;
   machine: LiveMachine;
   growing: LiveGrow;
@@ -659,6 +661,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   fitTiles: [660, 560],
   findWhole: [660, 520],
   overflowBars: [660, 560],
+  shareBags: [660, 580],
   balance: [680, 560],
   machine: [600, 610],
   growing: [600, 660],
@@ -773,6 +776,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     fitTiles: FIT_TILES_START,
     findWhole: WHOLE_START,
     overflowBars: OVERFLOW_START,
+    shareBags: SHARE_START,
     balance: { mode: "puzzle", stage: 0, level: 1, seed: 1, guess: [], weighed: false, misses: 0, done: false, streak: 0, said: null },
     machine: { mode: "puzzle", stage: 0, level: 1, seed: 1, tried: [], typed: "", misses: 0, done: false, streak: 0, said: null },
     growing: { mode: "puzzle", stage: 0, level: 1, seed: 1, built: [], typed: "", misses: 0, done: false, streak: 0, said: null },
