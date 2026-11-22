@@ -4,19 +4,24 @@
 // a perimeter, each the practice question of its level, marked by the same checker. Up to three stars each — a miss
 // or a peek at the numbers costs one — and a puzzle opens once the one before it has a star. Stars and discoveries
 // are kept in this browser. Built on the game shell (useGame): a shape marked right wins the puzzle, one marked wrong
-// is a miss, and what free play notices is a discovery with no judging.
+// is a miss, and what free play notices is a discovery with no judging. Worked by hand: a puzzle's shape is checked by
+// closing the band (the first corner tapped again); pills over the grid show the area and the perimeter, a bin takes
+// the whole shape off, and a corner tapped is taken off.
 import { useI18n } from "../i18n";
 import { areaText, encodePoly, GEO_COLS, GEO_LADDER, GEO_ROWS, judgePoly, ladderTask, measurePoly, notice, NOTICES, shapeProblem, starsFor, type GeoPt, type LiveGeoboard } from "../math/geoPlay";
 import { ladderDone } from "../math/ladder";
 import { GeoGrid } from "./GeoGrid";
 import { starText } from "./ladderUi";
-import { fill, Toggle, type PieceProps } from "./ui";
+import { Bin, Pill } from "./hand";
+import { fill, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** A puzzle starts with an empty grid and the numbers hidden; free play shows them and keeps the shape there is. */
 const FRESH: Partial<LiveGeoboard> = { misses: 0, peeked: false, said: null };
 const stagePatch = (): Partial<LiveGeoboard> => ({ pts: [], area: false, perim: false });
 const FREE_PATCH: Partial<LiveGeoboard> = { area: true, perim: true };
+/** The strip over the grid is as wide as the grid: 10 squares of 44 and a margin of 28 each side. */
+const SW = 2 * 28 + 10 * 44;
 
 export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboard">) {
   const [w, g] = [words.geoboard, words.game];
@@ -65,13 +70,22 @@ export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboa
     : s?.kind === "problem" ? { tone: "wrong", text: pw.reasons.shape[s.problem] }
     : s?.kind === "notice" ? { tone: "notice", text: w.notices[s.key] }
     : s?.kind === "wrong" ? { tone: "wrong", text: !m ? w.wrongShape : goal?.perim !== undefined && m.perim !== null ? fill(w.wrongBoth, { a: areaText(m.area2), p: m.perim }) : fill(w.wrong, { a: areaText(m.area2) }) }
-    : { tone: "hint", text: d.mode === "puzzle" ? w.hint : ladderDone(game.ladder.stars) ? w.allDone : w.hint };
+    : { tone: "hint", text: d.mode === "puzzle" ? w.closeHint : ladderDone(game.ladder.stars) ? w.allDone : w.hint };
+  const peek = d.mode === "puzzle" ? w.peek : undefined;
+  const pillW = (t: string) => Math.max(80, t.length * 15 * 0.6 + 34);
 
   return (
     <>
       <GameHead game={game} g={g} />
       <Said line={{ tone: "prompt", text: prompt }} />
       <Stage game={game} stars={stars} done={done} g={g} notices={w.notices}>
+        <svg width={SW} height={72} viewBox={`0 0 ${SW} 72`} className="hand-pic" fontFamily="inherit" style={{ display: "block", margin: "0 auto" }}>
+          <Pill x={28} y={22} w={pillW(w.area)} h={32} text={`▦ ${w.area}`} on={d.area} title={peek} onTap={() => toggle("area")} />
+          <Pill x={36 + pillW(w.area)} y={22} w={pillW(w.perimeter)} h={32} text={`⬚ ${w.perimeter}`} on={d.perim} title={peek} onTap={() => toggle("perim")} />
+          {!done && (
+            <Bin x={SW - 28 - 84} y={4} w={84} h={64} hot={false} label={w.clear} title={w.clearTitle} onTap={() => d.pts.length && change([])} />
+          )}
+        </svg>
         <GeoGrid
           cols={GEO_COLS}
           rows={GEO_ROWS}
@@ -83,15 +97,10 @@ export function Geoboard({ state: d, set, w: words, svgRef }: PieceProps<"geoboa
           tone={done ? "right" : d.said?.kind === "wrong" ? "wrong" : null}
           label={prompt}
           disabled={done}
+          onClose={d.mode === "puzzle" ? { label: w.close, close: check } : undefined}
         />
       </Stage>
-      <GameActions game={game} g={g} done={done} always>
-        <Toggle on={d.area} onClick={() => toggle("area")} title={d.mode === "puzzle" ? w.peek : undefined}>▦ {w.area}</Toggle>
-        <Toggle on={d.perim} onClick={() => toggle("perim")} title={d.mode === "puzzle" ? w.peek : undefined}>⬚ {w.perimeter}</Toggle>
-        <button className="live-btn" disabled={!d.pts.length || done} onClick={() => change(d.pts.slice(0, -1))}>↶ {w.undo}</button>
-        <button className="live-btn" disabled={!d.pts.length || done} onClick={() => change([])}>{g.clear}</button>
-        {d.mode === "puzzle" && !done && <button className="live-btn on" disabled={d.pts.length < 3} onClick={check}>{g.check}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

@@ -1,6 +1,7 @@
 // A dot grid to make a shape on, shared by the geoboard on the board and the practice questions answered with a
 // shape. Tapping a dot puts a corner there (the shape closes itself from the last corner back to the first); a corner
-// can be dragged to another dot, or tapped to take it off. The parent holds the corners: a drag is drawn here as it
+// can be dragged to another dot, or tapped to take it off. With `onClose`, the first corner (the ring) tapped again
+// closes the band instead, and the parent checks the shape. The parent holds the corners: a drag is drawn here as it
 // goes and handed over when it is let go.
 import { useState, type RefObject } from "react";
 import { areaText, gridSides, measurePoly, moveCorner, shapeProblem, snapPt, tapDot, type GeoPt } from "../math/geoPlay";
@@ -25,9 +26,11 @@ export type GeoGridProps = {
   tone?: "right" | "wrong" | null;
   label: string;
   disabled?: boolean;
+  /** The first corner tapped again, with three corners or more: the band closed (its name for the keyboard). */
+  onClose?: { label: string; close: () => void };
 };
 
-export function GeoGrid({ cols, rows, pts: given, onChange, svgRef, cell, readouts, tone, label, disabled }: GeoGridProps) {
+export function GeoGrid({ cols, rows, pts: given, onChange, svgRef, cell, readouts, tone, label, disabled, onClose }: GeoGridProps) {
   const [drag, setDrag] = useState<{ i: number; p: GeoPt; moved: boolean } | null>(null);
   const pts = drag ? moveCorner(given, drag.i, drag.p) : given;
   const X = (v: number) => PAD + v * cell;
@@ -60,9 +63,14 @@ export function GeoGrid({ cols, rows, pts: given, onChange, svgRef, cell, readou
     if (!given.some((q, j) => j !== drag.i && q[0] === p[0] && q[1] === p[1])) play("snap");
     setDrag({ ...drag, p, moved: true });
   };
+  const closable = !!onClose && !disabled && given.length >= 3;
   const up = () => {
     if (!drag) return;
     const back = drag.p[0] === given[drag.i][0] && drag.p[1] === given[drag.i][1];
+    if (closable && drag.i === 0 && (!drag.moved || back)) {
+      setDrag(null);
+      return onClose.close();
+    }
     // Let go where it started: a tap on the corner, which takes it off.
     onChange(drag.moved && !back ? moveCorner(given, drag.i, drag.p) : tapDot(given, given[drag.i]));
     setDrag(null);
@@ -120,7 +128,13 @@ export function GeoGrid({ cols, rows, pts: given, onChange, svgRef, cell, readou
       {sideLabels()}
       {pts.map(([x, y], i) => (
         <g key={i}>
-          {i === 0 && pts.length > 1 && <circle cx={X(x)} cy={X(y)} r={11} fill="none" stroke={color} strokeWidth={2} />}
+          {i === 0 && closable ? (
+            <g role="button" tabIndex={0} aria-label={onClose.label} className="geo-close"
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), onClose.close())}>
+              <title>{onClose.label}</title>
+              <circle cx={X(x)} cy={X(y)} r={15} fill="#fff" fillOpacity={0.6} stroke={GREEN} strokeWidth={2.5} strokeDasharray="4 3" />
+            </g>
+          ) : i === 0 && pts.length > 1 && <circle cx={X(x)} cy={X(y)} r={11} fill="none" stroke={color} strokeWidth={2} />}
           <circle cx={X(x)} cy={X(y)} r={drag?.i === i ? 9 : 7} fill={color} style={{ cursor: disabled ? "default" : "grab" }} />
         </g>
       ))}
