@@ -8,7 +8,8 @@ import {
   patternTrace, TRAVERSALS, writeGrid, writeTree, type Frame, type PatternId, type Trace,
 } from "../math/patternSteps";
 import { cellsScene, gridScene, listScene, Markers, rowsScene, spansScene, SW, treeScene, type Scene, type Spot } from "./scenes";
-import { fill, FONT, Stepper, Toggle, type PieceProps } from "./ui";
+import { FONT, Stepper, Toggle, type PieceProps } from "./ui";
+import { StepBar } from "./stepper";
 
 /** A box on the picture to type into, and what to do with what is typed. */
 type Edit = { x: number; y: number; w: number; h: number; value: string; commit: (v: string) => void };
@@ -275,26 +276,7 @@ export function Patterns({ state, set, w: words, svgRef }: PieceProps<"patterns"
           />
         )}
       </div>
-      <div className="live-bar">
-        <button className="live-btn" disabled={k === 0} title={w.first} aria-label={w.first} onClick={() => go(0)}>⏮</button>
-        <button className="live-btn" disabled={k === 0} title={w.prev} aria-label={w.prev} onClick={() => go(k - 1)}>◀</button>
-        <button
-          className="live-btn primary"
-          disabled={!frames.length || asking}
-          title={playing ? w.pause : w.play}
-          aria-label={playing ? w.pause : w.play}
-          onClick={() => {
-            if (playing) return setPlaying(false);
-            if (k >= last) go(0);
-            setPlaying(true);
-          }}
-        >
-          {playing ? "⏸" : "⏵"} {playing ? w.pause : w.play}
-        </button>
-        <button className="live-btn" disabled={k >= last || asking} title={w.next} aria-label={w.next} onClick={() => go(k + 1)}>▶</button>
-        <button className="live-btn" disabled={k >= last} title={w.last} aria-label={w.last} onClick={() => go(last)}>⏭</button>
-        {frames.length > 0 && <span className="live-note">{fill(w.step, { k, n: last })}</span>}
-      </div>
+      <StepBar s={{ k, last, asking, playing, setPlaying, go }} w={w} frames={frames} />
       {"error" in result ? (
         <p className="live-said">{result.error}</p>
       ) : (

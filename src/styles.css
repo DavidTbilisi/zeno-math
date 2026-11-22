@@ -1471,6 +1471,8 @@ span.board-home:hover { background: none; }
 .chip-move { transition: transform 0.28s ease-out; }
 .hand-pic [role]:focus { outline: none; }
 .hand-pic [role]:focus-visible { outline: 2px solid #1971c2; outline-offset: 2px; }
+.live-steps { display: block; margin: 2px auto; max-width: 100%; touch-action: none; }
+.live-steps + .live-note { display: block; text-align: center; }
 .chip-pop { transform-box: fill-box; transform-origin: center; animation: chip-pop 0.55s ease-in forwards; pointer-events: none; }
 .chip-zero { animation: chip-zero 0.7s ease-out forwards; pointer-events: none; }
 @keyframes chip-pop { 0% { transform: scale(1); opacity: 1; } 35% { transform: scale(1.2); opacity: 0.95; } 100% { transform: scale(0); opacity: 0; } }
