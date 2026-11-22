@@ -6868,7 +6868,7 @@ export const en = {
       },
     },
     oneStroke: {
-      ask: "Draw every edge in one stroke: tap a vertex to start, then the next one along an edge, never going over an edge twice.",
+      ask: "Draw every edge in one stroke: tap a vertex to start, then the next one along an edge (or draw through them without lifting), never going over an edge twice.",
       askHard: "Draw every edge in one stroke — or, if it can't be done, say so.",
       hint: "Tap a vertex to start.",
       left: "Edges to go: {n}.",

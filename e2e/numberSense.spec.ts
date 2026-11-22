@@ -259,6 +259,7 @@ test("prime slice: every number that isn't prime tapped as it flies, and no prim
   const { throws } = sliceNow({ mode: "puzzle", stage: 0, level: 1, seed: 1 });
   const spared = throws.filter((t) => isPrime(t.n)).length;
   await expect(game.getByText(`Wave over: ${cutsIn(throws)} cut, ${spared} primes let fall, 0 slips. ★★★`)).toBeVisible();
+  await game.locator("svg.hand-pic").first().screenshot({ path: `${process.env.SHOTS_DIR ?? "test-results"}/prime-slice-done.png` });
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
 

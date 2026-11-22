@@ -673,7 +673,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   pythDiscover: [640, 720],
   circleDiscover: [640, 720],
   tessellate: [640, 700],
-  oneStroke: [560, 500],
+  oneStroke: [560, 550],
   colourMap: [580, 580],
   shortestPath: [560, 590],
   connectTowns: [560, 550],
