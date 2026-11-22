@@ -39,7 +39,7 @@ test("playing cards by hand: deal, gather, wheels, two cards, sample means", asy
   await piece.getByRole("button", { name: "Put each card back" }).click();
   await deck.click();
   await expect(piece).toContainText("Cards drawn: 1");
-  await hold(page, deck, () => expect(piece).toContainText("0 left", { timeout: 10000 }));
+  await hold(page, deck, () => expect(piece).toContainText(/(?<!\d)0 left/, { timeout: 10000 }));
   await expect(piece).toContainText("Cards drawn: 52");
   await expect(piece).toContainText("♥: 13 of 52 = 0.250");
   await expect(piece).toContainText("A whole deck drawn: every count is exactly the deck's.");
