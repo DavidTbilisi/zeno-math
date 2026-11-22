@@ -639,7 +639,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   closerTo: [640, 520],
   divisible: [600, 510],
   primeSlice: [640, 560],
-  kakooma: [600, 590],
+  kakooma: [600, 600],
   fractionWall: [660, 380],
   equivMatch: [620, 480],
   fracOrder: [720, 470],
