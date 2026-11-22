@@ -184,7 +184,7 @@ export function Dice({ state, set, w: words, svgRef }: PieceProps<"dice">) {
         <Bin {...BIN} hot={typeof held?.from === "number" && inBox(BIN, held.x, held.y)} label={w.bin} title={w.binTitle}
           onTap={() => set({ ...state, history: [] })} />
         <text x={10} y={240} fontSize={13} fill="#868e96">{w.history}</text>
-        <text x={10} y={262} fontSize={17} fill={INK}>{state.history.join("  ") || "—"}</text>
+        <text className="dice-history" data-rolls={state.history.length} x={10} y={262} fontSize={17} fill={INK}>{state.history.join("  ") || "—"}</text>
       </svg>
       <p className="live-hint">{w.hint}</p>
     </>
