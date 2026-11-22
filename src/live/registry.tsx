@@ -31,6 +31,7 @@ import { Stripes } from "./Stripes";
 import { FoldStrip } from "./FoldStrip";
 import { FitTiles } from "./FitTiles";
 import { FindWhole } from "./FindWhole";
+import { OverflowBars } from "./OverflowBars";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
@@ -148,6 +149,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   foldStrip: FoldStrip,
   fitTiles: FitTiles,
   findWhole: FindWhole,
+  overflowBars: OverflowBars,
   balance: Balance,
   machine: Machine,
   growing: Growing,
