@@ -38,6 +38,9 @@ import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 import { TN_PLOT, tnLayout, tnSetup, viewOf } from "../src/math/tensorLab.ts";
 import { insertGroup, insertPanel, setDial } from "./helpers.ts";
 
+// The labs are tall pictures with their dials and pills drawn under the plots: a tall window keeps them on screen.
+test.use({ viewport: { width: 1280, height: 1150 } });
+
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
   await page.goto(`/#/b/${made.id}`);
