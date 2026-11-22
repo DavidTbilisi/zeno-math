@@ -1,25 +1,81 @@
-import { useRef, useState } from 'react';
+// Build a solid from its three views, by hand: drag the floor to look round it, tap a cube (or a floor square) to stack
+// one more there, drag a cube onto another stack to move it or into the bin to take it away, and drag a new cube in
+// from the tray. The puzzle's pills (undo, show the solution, check, the next one) and the difficulty sit in the picture.
+import { useState, type PointerEvent } from 'react';
 import { project, cameraPoint, solidMatches, viewsPuzzle, viewEdges, viewMatches, type View } from '../math/views3d';
-import { FONT, svgPoint, type PieceProps } from './ui';
+import { BLUE, Bin, inBox, MUTED, Pill, Tabs, useDrag } from './hand';
+import { FONT, type PieceProps } from './ui';
+
+const [W, H] = [760, 700];
+const TRAY = { x: 22, y: 232, w: 104, h: 104 };
+const BIN = { x: 24, y: 470, w: 100, h: 66 };
+const [ROW1, ROW2] = [608, 654];
+const LEVELS = ['easy', 'medium', 'hard'] as const;
+const pillW = (s: string) => 30 + 8.2 * [...s].length;
+/** Where each pill of a row starts so the row is centred on the picture. */
+const centred = (ws: number[], gap = 10) => {
+  let at = (W - ws.reduce((a, b) => a + b, 0) - gap * (ws.length - 1)) / 2;
+  return ws.map(w => { const x = at; at += w + gap; return x; });
+};
+
+type Grab = { kind: 'look'; rotation: number; tilt: number; roll: number; rolling: boolean } | { kind: 'cube'; i: number } | { kind: 'new' };
+
+/** A small cube drawn at (x, y): the tray's cube and the one following a drag. */
+function CubeIcon({ x, y, s = 22, ghost }: { x: number; y: number; s?: number; ghost?: boolean }) {
+  const [a, b] = [s * 0.87, s * 0.5];
+  return <g opacity={ghost ? 0.85 : 1} pointerEvents="none" stroke={ghost ? BLUE : '#6c8976'} strokeWidth={ghost ? 2 : 1.2} strokeLinejoin="round">
+    <polygon points={`${x},${y - s} ${x + a},${y - b} ${x},${y} ${x - a},${y - b}`} fill="#e0edda" />
+    <polygon points={`${x - a},${y - b} ${x},${y} ${x},${y + s} ${x - a},${y + b}`} fill="#c0d8c2" />
+    <polygon points={`${x + a},${y - b} ${x},${y} ${x},${y + s} ${x + a},${y + b}`} fill="#a6c6ae" />
+  </g>;
+}
 
 export function Views3d({ state: d, set, w: words, svgRef }: PieceProps<'views3d'>) {
   const w = words.views3d;
-  const [remove, setRemove] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [tilt, setTilt] = useState(35.264);
   const [roll, setRoll] = useState(0);
-  const drag = useRef<{ pointer: number; x: number; y: number; rotation: number; tilt: number; roll: number; moved: boolean; rolling: boolean } | null>(null);
   const target = viewsPuzzle(d.stage, d.seed, d.difficulty);
   const difficulty = d.difficulty ?? (Math.max(...target) <= 1 ? 'easy' : Math.max(...target) <= 2 ? 'medium' : 'hard');
   const heights = d.revealed ? target : d.heights;
   const won = d.checked && solidMatches(d.heights, target);
-  const change = (i: number, delta: number) => {
-    if (d.revealed) return;
-    const h = Math.max(0, Math.min(3, d.heights[i] + delta));
-    if (h === d.heights[i]) return;
-    set({ ...d, heights: d.heights.map((v,k) => k === i ? h : v), history: [...d.history.slice(-49), d.heights], checked: false });
+  const put = (next: number[]) => {
+    if (d.revealed || next.every((h, k) => h === d.heights[k])) return;
+    set({ ...d, heights: next, history: [...d.history.slice(-49), d.heights], checked: false });
   };
+  const bump = (hs: number[], i: number, delta: number) => hs.map((v, k) => k === i ? Math.max(0, Math.min(3, v + delta)) : v);
   const reset = (stage = d.stage) => set({ stage, difficulty: d.difficulty, seed: d.seed, heights: Array(9).fill(0), history: [], checked: false, revealed: false });
+  const pickLevel = (mode: typeof LEVELS[number]) => {
+    if (mode === difficulty) return;
+    set({ stage: 0, seed: d.seed, difficulty: mode, heights: Array(9).fill(0), history: [], checked: false, revealed: false });
+    setRotation(0); setTilt(35.264); setRoll(0);
+  };
+  /** The stack whose cube or floor square is drawn under a point of the picture. */
+  const stackUnder = (x: number, y: number): number | undefined => {
+    const ctm = svgRef.current?.getScreenCTM();
+    if (!ctm) return undefined;
+    const p = new DOMPoint(x, y).matrixTransform(ctm);
+    const id = document.elementFromPoint(p.x, p.y)?.closest('[data-col]')?.getAttribute('data-col');
+    return id == null ? undefined : Number(id);
+  };
+  const { drag, begin, svgProps } = useDrag<Grab>(g => {
+    if (g.kind === 'look') return;
+    const to = g.moved ? stackUnder(g.x, g.y) : undefined;
+    if (g.kind === 'new') {
+      if (to !== undefined) put(bump(d.heights, to, 1));
+    } else if (!g.moved) put(bump(d.heights, g.i, 1));
+    else if (inBox(BIN, g.x, g.y)) put(bump(d.heights, g.i, -1));
+    else if (to !== undefined && to !== g.i && d.heights[to] < 3) put(bump(bump(d.heights, g.i, -1), to, 1));
+  }, g => {
+    if (g.kind !== 'look' || !g.moved) return;
+    const [dx, dy] = [g.x - g.x0, g.y - g.y0];
+    if (g.rolling) setRoll(g.roll + dx * .6);
+    else { setRotation(g.rotation - dx / 140); setTilt(g.tilt + dy * .6); }
+  });
+  const look = (e: PointerEvent) => begin(e, { kind: 'look', rotation, tilt, roll, rolling: e.shiftKey });
+  const carrying = drag?.moved && drag.kind !== 'look';
+  const overBin = !!(drag?.moved && drag.kind === 'cube' && inBox(BIN, drag.x, drag.y));
+
   const camera = (x: number, y: number, z: number) => cameraPoint(x,y,z,rotation,tilt,roll);
   const iso = (x: number, y: number, z: number) => {
     const [px,py] = camera(x,y,z);
@@ -53,39 +109,20 @@ export function Views3d({ state: d, set, w: words, svgRef }: PieceProps<'views3d
     }
   });
   faces.sort((a,b)=>a.depth-b.depth);
+
+  // The pills along the bottom: take a turn back, show (or hide) the solution, and check, or the next puzzle once it's right.
+  const [revealText, checkText] = [d.revealed ? `⟲ ${w.retry}` : `👁 ${w.reveal}`, won ? `${w.next} →` : `✓ ${w.check}`];
+  const row1 = centred([44, pillW(revealText), pillW(checkText) + 16]);
+  const levelW = LEVELS.map(k => Math.max(60, w[k].length * 14 * 0.6 + 24));
+  const levelX = (W - levelW.reduce((a, b) => a + b, 0) - 6 * (LEVELS.length - 1)) / 2;
+  const puzzleText = `${w.puzzle} ${d.stage + 1}`;
+
   return <>
-    <div className="views-heading"><b>{w.title}</b><span className="views-badge">{w.puzzle} {d.stage + 1}</span></div>
-    <div className="views-difficulty" role="group" aria-label={w.difficulty}>
-      {(['easy','medium','hard'] as const).map(mode=><button key={mode} className={`live-btn${difficulty===mode?' on':''}`} aria-pressed={difficulty===mode} onClick={()=>{
-        if(mode===difficulty) return;
-        set({ stage:0, seed:d.seed, difficulty:mode, heights:Array(9).fill(0), history:[], checked:false, revealed:false });
-        setRotation(0);setTilt(35.264);setRoll(0);
-      }}>{w[mode]}</button>)}
-    </div>
+    <div className="views-heading"><b>{w.title}</b></div>
     <p className="views-intro">{w.prompt}</p>
-    <svg ref={svgRef} width="720" height="587" viewBox="0 0 760 620" fontFamily={FONT} role="group" aria-label={w.title}
-      onPointerDown={e=>{
-        if (!e.isPrimary || e.button !== 0 || svgPoint(e.currentTarget,e)[1] < 190) return;
-        const [x,y]=svgPoint(e.currentTarget,e);
-        drag.current = { pointer:e.pointerId, x, y, rotation, tilt, roll, moved:false, rolling:e.shiftKey };
-      }}
-      onPointerMove={e=>{
-        const start=drag.current;
-        if (!start || start.pointer!==e.pointerId || !(e.buttons & 1)) return;
-        const [x,y]=svgPoint(e.currentTarget,e), dx=x-start.x, dy=y-start.y;
-        if (Math.hypot(dx,dy)>5) { start.moved=true; e.currentTarget.setPointerCapture(e.pointerId); }
-        if (start.moved) {
-          if(start.rolling) setRoll(start.roll+dx*.6);
-          else { setRotation(start.rotation-dx/140); setTilt(start.tilt+dy*.6); }
-        }
-      }}
-      onPointerUp={e=>{
-        if (drag.current) drag.current.pointer=-1;
-        if(e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
-      }}
-      onPointerCancel={()=>{drag.current=null;}}
-    >
-      <rect width="760" height="620" rx="12" fill="#fafbf7"/>
+    <svg ref={svgRef} className="hand-pic" width="720" height={Math.round(H * 720 / W)} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} aria-label={w.title}
+      style={{ touchAction: 'none' }} {...svgProps}>
+      <rect width={W} height={H} rx="12" fill="#fafbf7" style={{ cursor: 'grab' }} onPointerDown={look}/>
       {(['top','front','side'] as View[]).map((view,k) => {
         const clue = project(target,view), actual = project(d.heights,view);
         const edges = viewEdges(clue), currentEdges = new Set(viewEdges(actual));
@@ -104,37 +141,54 @@ export function Views3d({ state: d, set, w: words, svgRef }: PieceProps<'views3d
           {d.checked && [...currentEdges].filter(e=>!edges.includes(e)).map(edge=>{const [x,y,u,v]=edge.split(',').map(Number);return <line key={'extra'+edge} x1={x*44} y1={y*44} x2={u*44} y2={v*44} stroke="#e87924" strokeWidth="3" strokeDasharray="4 3"/>;})}
         </g>;
       })}
-      <ellipse cx="380" cy="530" rx="184" ry="24" fill="#eaf0e3" opacity=".65"/>
+      <ellipse cx="380" cy="530" rx="184" ry="24" fill="#eaf0e3" opacity=".65" pointerEvents="none"/>
       {faces.map((face,k)=>{
-        return <g key={k} onClick={()=>{if(!drag.current?.moved) change(face.i,remove?-1:1);}} style={{cursor:d.revealed?'grab':'pointer'}}>
+        const lifting = carrying && drag.kind === 'cube' && drag.i === face.i && heights[face.i] > 0;
+        return <g key={k} data-col={face.i} style={{cursor:d.revealed?'grab':'pointer'}}
+          onPointerDown={e => d.revealed ? look(e) : begin(e, { kind: 'cube', i: face.i })}>
           <title>{face.i+1}: {heights[face.i]}</title>
-          <polygon points={points(face.vertices)} fill={face.color} stroke="#6c8976" strokeWidth="1"/>
+          <polygon points={points(face.vertices)} fill={face.color} stroke={lifting ? BLUE : '#6c8976'} strokeWidth={lifting ? 2 : 1} opacity={lifting ? .6 : 1}/>
         </g>;
       })}
       {([[1.5,3.7,w.front]] as const).map(([x,y,label]) => {
         const [px,py] = direction(x,y);
         const [ex,ey] = direction(1.5+(x-1.5)*.72,1.5+(y-1.5)*.72);
-        return <g key={label} fill="#6c8070">
+        return <g key={label} fill="#6c8070" pointerEvents="none">
           <line x1={px} y1={py-14} x2={ex} y2={ey-14} stroke="#91a18e" strokeWidth="2"/>
           <circle cx={ex} cy={ey-14} r="3"/>
           <text x={px} y={py+5} textAnchor="middle" fontSize="14">{label}</text>
         </g>;
       })}
+
+      {/* The tray a new cube is dragged from, and the bin a cube is dragged into (tap the bin to clear the floor). */}
+      {!d.revealed && <g style={{ cursor: 'grab' }} onPointerDown={e => begin(e, { kind: 'new' })}>
+        <title>{w.trayTitle}</title>
+        <rect {...TRAY} width={TRAY.w} height={TRAY.h} rx={10} fill="#fff" stroke="#cfddc5" strokeWidth={1.5}/>
+        <CubeIcon x={TRAY.x + TRAY.w / 2} y={TRAY.y + 42}/>
+        <text x={TRAY.x + TRAY.w / 2} y={TRAY.y + TRAY.h - 12} fontSize={13} textAnchor="middle" fill="#58695c" pointerEvents="none">{w.add}</text>
+      </g>}
+      {!d.revealed && <Bin {...BIN} hot={overBin} label={w.clear} title={w.clearTitle} onTap={() => put(Array(9).fill(0))}/>}
+
+      {/* Which puzzle: the one before and the one after. */}
+      <Pill x={598} y={194} w={34} text="‹" title={w.previous} disabled={d.stage === 0} onTap={() => reset(d.stage - 1)}/>
+      <text x={674} y={214} fontSize={14} textAnchor="middle" fill="#52694e">{puzzleText}</text>
+      <Pill x={716} y={194} w={34} text="›" title={w.next} onTap={() => reset(d.stage + 1)}/>
+
+      <Pill x={row1[0]} y={ROW1} w={44} text="↶" title={w.undo} disabled={!d.history.length || d.revealed}
+        onTap={() => set({ ...d, heights: d.history.at(-1)!, history: d.history.slice(0, -1), checked: false })}/>
+      <Pill x={row1[1]} y={ROW1} w={pillW(revealText)} text={revealText} title={d.revealed ? w.retry : w.reveal}
+        onTap={() => set({ ...d, revealed: !d.revealed, checked: false })}/>
+      <Pill x={row1[2]} y={ROW1} w={pillW(checkText) + 16} text={checkText} title={won ? w.next : w.check} strong disabled={d.revealed}
+        onTap={() => won ? reset(d.stage + 1) : set({ ...d, checked: true })}/>
+      <Tabs x={levelX} y={ROW2} keys={LEVELS} on={difficulty} names={w} onPick={pickLevel}/>
+      <line x1={40} x2={W - 40} y1={ROW1 - 14} y2={ROW1 - 14} stroke="#e3e9de" pointerEvents="none"/>
+
+      {carrying && <g pointerEvents="none">
+        <CubeIcon x={drag.x} y={drag.y} ghost/>
+        {drag.kind === 'cube' && overBin && <text x={drag.x} y={drag.y - 30} fontSize={13} textAnchor="middle" fill={MUTED}>−1</text>}
+      </g>}
     </svg>
     <p className="views-gesture">{w.simpleDrag}</p>
-    <div className="live-bar views-build-tools">
-      <button className={`live-btn${!remove?' on':''}`} aria-pressed={!remove} onClick={()=>setRemove(false)}>＋ {w.add}</button>
-      <button className={`live-btn${remove?' on':''}`} aria-pressed={remove} onClick={()=>setRemove(true)}>− {w.remove}</button>
-      <button className="live-btn" disabled={!d.history.length||d.revealed} onClick={()=>set({...d,heights:d.history.at(-1)!,history:d.history.slice(0,-1),checked:false})}>↶ {w.undo}</button>
-    </div>
     <p role="status" className={`views-feedback${won?' success':''}`}>{d.revealed?w.shown:d.checked?won?w.win:w.wrong:w.simpleHelp}</p>
-    <div className="live-bar views-actions">
-      <button className="live-btn views-check" disabled={d.revealed} onClick={()=>set({...d,checked:true})}>{w.check}</button>
-      <button className="live-btn" onClick={()=>reset(d.stage+1)}>{w.next} →</button>
-    </div>
-    <div className="live-bar views-secondary">
-      <button className="live-btn" onClick={()=>set({...d,revealed:!d.revealed,checked:false})}>{d.revealed?w.retry:w.reveal}</button>
-      <button className="live-btn" disabled={d.stage===0} onClick={()=>reset(d.stage-1)}>← {w.previous}</button>
-    </div>
   </>;
 }
