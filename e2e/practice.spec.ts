@@ -294,9 +294,9 @@ test("calm hides the sound switch and stills the page, is remembered, and the ga
   // A game on a board is calm too, with no sound switch; turning calm off there brings the sound switch back.
   const game = await boardWith(page, "Make the target: cards and signs", ".live-target");
   const g = en.live.game;
-  await expect(game.getByRole("button", { name: `🌙 ${g.calm}` })).toHaveAttribute("aria-pressed", "true");
+  await expect(game.getByRole("button", { name: g.calm, exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(game.getByTitle(g.sound)).toHaveCount(0);
-  await game.getByRole("button", { name: `🌙 ${g.calm}` }).click();
+  await game.getByRole("button", { name: g.calm, exact: true }).click();
   await expect(game.getByTitle(g.sound)).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-feel", "arcade");
 });
