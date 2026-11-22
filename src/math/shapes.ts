@@ -950,6 +950,14 @@ function tileDropPreview(): Piece[] {
   ];
 }
 
+function pizzaSlicePreview(): Piece[] {
+  // A pizza cut into four equal slices for the four guests coming to the table.
+  const out: Piece[] = [ellipse(70, 70, 60, 60, { fill: FILL.yellow, width: 2.5 })];
+  for (let j = 0; j < 4; j++) out.push(seg([70, 70], [70 + 60 * Math.sin((j * Math.PI) / 2), 70 - 60 * Math.cos((j * Math.PI) / 2)], { width: 2.5 }));
+  for (let j = 0; j < 4; j++) out.push(text(170 + (j % 2) * 34, 44 + Math.floor(j / 2) * 40, "🙂", 24));
+  return [...out, text(190, 128, "1/4", 18)];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2121,6 +2129,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFrogJumps", build: frogJumpsPreview, live: "frogJumps" },
   { id: "liveMakeOne", build: makeOnePreview, live: "makeOne" },
   { id: "liveTileDrop", build: tileDropPreview, live: "tileDrop" },
+  { id: "livePizzaSlice", build: pizzaSlicePreview, live: "pizzaSlice" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },
