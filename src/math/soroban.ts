@@ -31,6 +31,23 @@ export function clickBead(value: number, place: number, bead: "five" | number): 
 }
 
 /**
+ * The value after a bead is pushed by hand towards the beam or away from it: the beads between it and the beam (or
+ * beyond it) go with it, and a bead already there stays.
+ */
+export function pushBead(value: number, place: number, bead: "five" | number, toBeam: boolean): number {
+  const digit = digitAt(value, place);
+  const { five, ones } = beadsOf(digit);
+  const next = bead === "five" ? (toBeam ? 5 : 0) + ones : (five ? 5 : 0) + (toBeam ? Math.max(ones, bead + 1) : Math.min(ones, bead));
+  return value + (next - digit) * 10 ** place;
+}
+
+/** The digit in `place` (0 for the ones). */
+export const digitAt = (value: number, place: number) => Math.floor(value / 10 ** place) % 10;
+
+/** `value` with the digit in `place` changed to `d`. */
+export const withDigit = (value: number, place: number, d: number) => value + (d - digitAt(value, place)) * 10 ** place;
+
+/**
  * How a rod takes on or gives up d: straight on or off; with the friend of 5 (+d = +5 − c, or −d = −5 + c); with the
  * friend of 10 (+d = +10 − c, the 10 carried to the next rod, or −d = −10 + c, the 10 borrowed); or with both
  * ("mixed": the c of the friend of 10 itself needs the five bead, +d = +10 − 5 + e).
