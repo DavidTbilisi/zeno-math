@@ -2,7 +2,7 @@
 // up or down (or tap, or use the arrow keys), a pill of a word or two to tap, a row of pills of which one is on, a bin
 // to drop things in, and a drag that tells a tap from a move. Each is keyboard-usable with a role and a label, so a
 // piece without buttons is still one a screen reader and a keyboard can work. First used by src/live/Counters.tsx.
-import { useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { INK, svgPoint } from "./ui";
 
 export const BLUE = "#1971c2";
@@ -227,4 +227,81 @@ export function DieButton({ x, y, s = 38, title, onTap }: { x: number; y: number
       {DIE_PIPS.map(([fx, fy], i) => <circle key={i} cx={x + fx * s} cy={y + fy * s} r={s / 11} fill={INK} pointerEvents="none" />)}
     </g>
   );
+}
+
+/** How many a tick deals while the deck is held: slowly at first, then faster and faster. */
+const RATE = [1, 1, 1, 1, 2, 2, 3, 5, 5, 10, 10, 20, 50, 100, 200, 500];
+const rate = (t: number) => (t < RATE.length ? RATE[t] : 1000);
+/** How long a press is a tap before it starts dealing, and the time between deals. */
+const HOLD = 350;
+const TICK = 70;
+
+export type HoldHand = { label: string; hot: boolean; props: Record<string, unknown> };
+
+/**
+ * Something tapped for one more go and held for many (a deck dealt, a die thrown): a tap (or Enter) does one, a press
+ * held (or the key held) does more and more each tick until it is let go, `room` saying how many more there can be.
+ * What is done while held is shown at once and handed to the board when it is let go, one step to undo. Spread
+ * `hand.props` on the thing's group, which also takes `role="button"` and `hand.label`.
+ */
+export function useHold<T>(cur: T, deal: (s: T, m: number) => T, room: (s: T) => number, put: (s: T) => void, label: string) {
+  const [held, setHeldState] = useState<T | null>(null);
+  const live = useRef<T | null>(null);
+  const timers = useRef<{ wait?: number; tick?: number; t: number }>({ t: 0 });
+  const setHeld = (s: T | null) => {
+    live.current = s;
+    setHeldState(s);
+  };
+  const more = () => {
+    const s = live.current ?? cur;
+    const m = Math.min(rate(timers.current.t++), room(s));
+    if (m > 0) setHeld(deal(s, m));
+  };
+  const stop = () => {
+    window.clearTimeout(timers.current.wait);
+    window.clearInterval(timers.current.tick);
+    const dealt = timers.current.t > 0;
+    timers.current = { t: 0 };
+    const s = live.current;
+    setHeld(null);
+    if (s) put(s);
+    return dealt;
+  };
+  useEffect(() => () => {
+    window.clearTimeout(timers.current.wait);
+    window.clearInterval(timers.current.tick);
+  }, []);
+  const down = (e: ReactPointerEvent<SVGGElement>) => {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+    capture(e.currentTarget, e.pointerId);
+    stop();
+    timers.current.wait = window.setTimeout(() => {
+      more();
+      timers.current.tick = window.setInterval(more, TICK);
+    }, HOLD);
+  };
+  const up = () => {
+    const holding = timers.current.wait !== undefined;
+    // Let go before it started dealing: a tap, one more (the deck shuffled full again if it was used up).
+    if (!stop() && holding) put(deal(cur, 1));
+  };
+  const key = (e: KeyboardEvent) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    if (!e.repeat) {
+      timers.current.t = 0;
+      return setHeld(deal(cur, 1));
+    }
+    more();
+  };
+  const hand: HoldHand = {
+    label,
+    hot: held !== null,
+    props: {
+      onPointerDown: down, onPointerUp: up, onPointerCancel: () => void stop(),
+      onKeyDown: key, onKeyUp: () => void stop(), onBlur: () => void stop(),
+    },
+  };
+  return { shown: held ?? cur, hand };
 }

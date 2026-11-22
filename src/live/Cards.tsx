@@ -8,14 +8,14 @@
 // drawn are dragged back onto it to shuffle them in. The events A and B and the sample's size are wheels turned by
 // dragging up or down; the ways of counting and of putting back are pills in the strip above the picture.
 // The pictures are public/cards/*.svg; they are fetched once and drawn as data URLs, so "Copy as a picture" keeps them.
-import { useEffect, useReducer, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useReducer, type ReactNode } from "react";
 import {
   ALL_CARDS, CARD_MODES, cardFile, cardName, conditional, CONDITIONS, decimal, DECK, drawMore, drawPairs, drawSamples,
   EVENTS, fracText, fracValue, freshDraw, freshMeans, groupCounts, GROUPS, inEvent, MAX_DRAWS, MAX_SAMPLE, meanBins, meanSd,
   meanStats, nextChance, POP_SD, RANK_LABELS, reduce, sumDistribution, SUIT_SIGNS, twoCards, valueOf,
   type Condition, type Frac, type LiveCards,
 } from "../math/cards";
-import { capture, inBox, keyTap, NumBox, Pill, Tabs, useDrag } from "./hand";
+import { inBox, keyTap, NumBox, Pill, Tabs, useDrag, useHold, type HoldHand } from "./hand";
 import { fill, FONT, INK, type PieceProps } from "./ui";
 
 const W = 660;
@@ -67,7 +67,7 @@ function Card({ id, x, y, w, faded, ring, label }: { id: number; x: number; y: n
 }
 
 /** The back of the deck, with how many cards are in it (or another caption); tapped and held through `hand`. */
-function Deck({ x, y, w, left, caption, hand }: { x: number; y: number; w: number; left: number; caption?: string; hand: DeckHand }) {
+function Deck({ x, y, w, left, caption, hand }: { x: number; y: number; w: number; left: number; caption?: string; hand: HoldHand }) {
   const h = w * TALL;
   const layers = Math.min(4, Math.ceil(left / 13));
   return (
@@ -156,84 +156,6 @@ function Lines({ lines, x, y, w = W - 2 * x, gap = 25 }: { lines: string[]; x: n
 }
 
 
-// ——— Dealing by hand ———
-
-/** How many a tick deals while the deck is held: slowly at first, then faster and faster. */
-const RATE = [1, 1, 1, 1, 2, 2, 3, 5, 5, 10, 10, 20, 50, 100, 200, 500];
-const rate = (t: number) => (t < RATE.length ? RATE[t] : 1000);
-/** How long a press is a tap before it starts dealing, and the time between deals. */
-const HOLD = 350;
-const TICK = 70;
-
-type DeckHand = { label: string; hot: boolean; props: Record<string, unknown> };
-
-/**
- * The deck worked by hand: a tap (or Enter) deals one, a press held (or the key held) deals faster and faster until it
- * is let go, `room` saying how many more there can be. What is dealt while held is shown at once and handed to the
- * board when it is let go, one step to undo.
- */
-function useDeal<T>(cur: T, deal: (s: T, m: number) => T, room: (s: T) => number, put: (s: T) => void, label: string) {
-  const [held, setHeldState] = useState<T | null>(null);
-  const live = useRef<T | null>(null);
-  const timers = useRef<{ wait?: number; tick?: number; t: number }>({ t: 0 });
-  const setHeld = (s: T | null) => {
-    live.current = s;
-    setHeldState(s);
-  };
-  const more = () => {
-    const s = live.current ?? cur;
-    const m = Math.min(rate(timers.current.t++), room(s));
-    if (m > 0) setHeld(deal(s, m));
-  };
-  const stop = () => {
-    window.clearTimeout(timers.current.wait);
-    window.clearInterval(timers.current.tick);
-    const dealt = timers.current.t > 0;
-    timers.current = { t: 0 };
-    const s = live.current;
-    setHeld(null);
-    if (s) put(s);
-    return dealt;
-  };
-  useEffect(() => () => {
-    window.clearTimeout(timers.current.wait);
-    window.clearInterval(timers.current.tick);
-  }, []);
-  const down = (e: ReactPointerEvent<SVGGElement>) => {
-    if (e.button !== 0) return;
-    e.stopPropagation();
-    capture(e.currentTarget, e.pointerId);
-    stop();
-    timers.current.wait = window.setTimeout(() => {
-      more();
-      timers.current.tick = window.setInterval(more, TICK);
-    }, HOLD);
-  };
-  const up = () => {
-    const holding = timers.current.wait !== undefined;
-    // Let go before it started dealing: a tap, one more (the deck shuffled full again if it was used up).
-    if (!stop() && holding) put(deal(cur, 1));
-  };
-  const key = (e: KeyboardEvent) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    e.preventDefault();
-    if (!e.repeat) {
-      timers.current.t = 0;
-      return setHeld(deal(cur, 1));
-    }
-    more();
-  };
-  const hand: DeckHand = {
-    label,
-    hot: held !== null,
-    props: {
-      onPointerDown: down, onPointerUp: up, onPointerCancel: () => void stop(),
-      onKeyDown: key, onKeyUp: () => void stop(), onBlur: () => void stop(),
-    },
-  };
-  return { shown: held ?? cur, hand };
-}
-
 /** Cards dealt out, to drag back onto the deck (or Delete) to start again; a ghost follows the pointer while dragged. */
 function useGather(deck: { x: number; y: number; w: number; h: number }, again: () => void) {
   const { drag, begin, svgProps } = useDrag<{ id: number }>((d) => {
@@ -315,7 +237,7 @@ function groupLook(g: LiveCards["draw"]["group"], w: Words): { labels: string[];
 
 function DrawMode({ state, set, w, svgRef }: ModeProps) {
   const put = (draw: LiveCards["draw"]) => set({ ...state, draw });
-  const { shown: d, hand } = useDeal(
+  const { shown: d, hand } = useHold(
     state.draw, (s, m) => drawMore(s, m, Math.random), (s) => (s.replace ? MAX_DRAWS - s.n : Math.min(s.left.length, MAX_DRAWS - s.n)), put,
     w.deck,
   );
@@ -415,7 +337,7 @@ function TwoMode({ state, set, w, svgRef }: ModeProps) {
   const put = (two: Partial<LiveCards["two"]>, keep = false) =>
     set({ ...state, two: { ...t0, ...two, ...(keep ? {} : { tally: { n: 0, firstHits: 0, both: 0 }, last: null }) } });
   type Drawn = { tally: LiveCards["two"]["tally"]; last: LiveCards["two"]["last"] };
-  const { shown, hand } = useDeal<Drawn>(
+  const { shown, hand } = useHold<Drawn>(
     { tally: t0.tally, last: t0.last }, (s, m) => drawPairs(s.tally, t0.a, t0.b, t0.replace, m, Math.random), (s) => MAX_DRAWS - s.tally.n,
     (s) => put(s, true), w.deckTwo,
   );
@@ -489,7 +411,7 @@ function TwoMode({ state, set, w, svgRef }: ModeProps) {
 
 function MeansMode({ state, set, w, svgRef }: ModeProps) {
   const put = (means: LiveCards["means"]) => set({ ...state, means });
-  const { shown: s, hand } = useDeal(state.means, (m0, m) => drawSamples(m0, m, Math.random), (m0) => MAX_DRAWS - m0.samples, put, w.deckMeans);
+  const { shown: s, hand } = useHold(state.means, (m0, m) => drawSamples(m0, m, Math.random), (m0) => MAX_DRAWS - m0.samples, put, w.deckMeans);
   usePictures(s.last);
   const DW = 52;
   const deckBox = { x: 16, y: 8, w: DW, h: DW * TALL };
