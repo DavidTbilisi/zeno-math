@@ -5,22 +5,25 @@
 // diagonal, the perimeter and the area by the shape's own formula, a triangle's heights, medians, bisectors and
 // centres, a circle's circumference and equation; pointing at a line of it lights up what it is about on the plane.
 // The maths is in src/math/geoLab.ts. "Copy as a picture" copies the plane without the handles, with the main numbers.
-import { useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import {
-  angleOf, CANVAS, dist, enlarge, offAxis, sweepBetween, fitView, fromPx, gridStep, insertPoint, make, MAKE_PARAMS, MAKES, MAX_FIGS, MAX_PTS,
+  angleOf, bounds, CANVAS, dist, enlarge, offAxis, sweepBetween, fitView, fromPx, gridStep, insertPoint, make, MAKE_PARAMS, MAKES, MAX_FIGS, MAX_PTS,
   measureFig, moveFig, num, placeBeside, pointNames, removePoint, rounded, setSide, SHOWS, snapTo, toPx, UNITS,
-  zoomView, type GeoFig, type GeoShow, type GeoTool, type GeoView, type LiveGeoLab, type MakeKind, type MakeProblem,
+  zoomView, type GeoFig, type GeoShow, type GeoTool, type GeoView, type LiveGeoLab, type MakeKind, type MakeProblem, type ParamKey,
   type Mark, type Measured, type Pt, type SectionKey, type Val, wontClose,
 } from "../math/geoLab";
-import { fill, FONT, INK, svgPoint, Toggle, type PieceProps } from "./ui";
+import { Bin, capture, inBox, keyTap, NumBox, Pill, TAP } from "./hand";
+import { fill, FONT, INK, svgPoint, type PieceProps } from "./ui";
 
 type Words = PieceProps<"geoLab">["w"]["geoLab"];
 type Drag =
   | { type: "vertex"; f: number; i: number; moved: boolean }
   | { type: "fig"; f: number; p0: Pt; orig: GeoFig; moved: boolean }
   | { type: "handle"; f: number; key: string; moved: boolean }
-  | { type: "pan"; px0: Pt; view0: GeoView; moved: boolean };
-type Temp = { figs: GeoFig[]; view: GeoView; sel: number };
+  | { type: "pan"; px0: Pt; view0: GeoView; moved: boolean }
+  | { type: "scale"; f: number; c: Pt; g: Pt; p0: Pt; orig: GeoFig; moved: boolean };
+/** The plane while a drag is under way; `bin` while a shape is held over the bin, `k` while one is being enlarged. */
+type Temp = { figs: GeoFig[]; view: GeoView; sel: number; bin?: boolean; k?: number };
 
 const BLUE = "#1971c2";
 const HL = "#f08c00";
@@ -73,6 +76,12 @@ type PlaneProps = {
   cursor?: Pt | null;
   hl?: Mark[] | null;
   caption?: string[];
+  /** A shape carried in from the tray or copied, where it would land. */
+  ghost?: GeoFig | null;
+  /** The scale factor while the ⤢ corner is dragged. */
+  scaleK?: number | null;
+  /** The plane's own tools, zoom lever and bin, drawn over it. */
+  overlay?: ReactNode;
   svgRef?: React.Ref<SVGSVGElement>;
   on?: {
     down: (e: ReactPointerEvent<SVGSVGElement>) => void;
@@ -179,7 +188,16 @@ function roundShape(view: GeoView, g: Exclude<GeoFig, { kind: "poly" }>, props: 
   return <path d={`M${x} ${y} L${p[0]} ${p[1]} A${rs} ${rs} 0 ${g.sweep > 180 ? 1 : 0} 0 ${q[0]} ${q[1]} Z`} strokeLinejoin="round" {...props} />;
 }
 
-function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move", draft = [], cursor, hl, caption = [], svgRef, on }: PlaneProps) {
+/** Where a shape is enlarged from (the centre `enlarge` uses) and the ⤢ corner that does it, before it moves. */
+export function scaleGrip(f: GeoFig): { c: Pt; g: Pt } | null {
+  const b = bounds([f]);
+  if (!b) return null;
+  const c: Pt = f.kind === "poly" ? [f.pts.reduce((t, p) => t + p[0], 0) / f.pts.length, f.pts.reduce((t, p) => t + p[1], 0) / f.pts.length] : f.c;
+  const g: Pt = [b[2], b[3]];
+  return dist(c, g) > 1e-12 ? { c, g } : null;
+}
+
+function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move", draft = [], cursor, hl, caption = [], ghost, scaleK, overlay, svgRef, on }: PlaneProps) {
   const has = (k: GeoShow) => show.includes(k);
   const px = (p: Pt) => toPx(view, p);
   const f = figs[sel];
@@ -379,6 +397,18 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
         handles.push(<circle key={key} data-h={`k-${sel}-${key}`} cx={gx} cy={gy} r={6.5} fill={BLUE} stroke="#fff" strokeWidth={2} style={{ cursor: "pointer" }} />);
       });
     }
+    const grip = scaleGrip(f);
+    if (grip) {
+      const [gx, gy] = px(grip.g);
+      handles.push(
+        <g key="scale" data-h={`s-${sel}`} style={{ cursor: "nesw-resize" }}>
+          <title>{w.scaleGrip}</title>
+          <rect x={gx + 4} y={gy - 22} width={18} height={18} rx={4} fill="#fff" stroke={BLUE} strokeWidth={1.6} />
+          <text x={gx + 13} y={gy - 8.5} fontSize={13} textAnchor="middle" fill={BLUE} fontWeight={700}>⤢</text>
+          {scaleK != null && <text x={gx + 26} y={gy - 8} fontSize={13} fill={BLUE} fontWeight={700} {...halo}>× {num(scaleK)}</text>}
+        </g>,
+      );
+    }
   }
 
   return (
@@ -411,6 +441,13 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
         <g pointerEvents="none">{labels}</g>
         {handles}
         {hl && <Highlight view={view} marks={hl} />}
+        {ghost && (
+          <g pointerEvents="none" opacity={0.75}>
+            {ghost.kind === "poly"
+              ? <path d={path(view, ghost.pts)} fill="#d0ebff" fillOpacity={0.5} stroke={BLUE} strokeWidth={2} strokeDasharray="6 4" strokeLinejoin="round" />
+              : roundShape(view, ghost, { fill: "#d0ebff", fillOpacity: 0.5, stroke: BLUE, strokeWidth: 2, strokeDasharray: "6 4" })}
+          </g>
+        )}
         {!clean && draft.length > 0 && (
           <g pointerEvents="none">
             {tool === "poly" && <path d={path(view, cursor ? [...draft, cursor] : draft, false)} fill="none" stroke={BLUE} strokeWidth={2} strokeDasharray="5 3" />}
@@ -435,6 +472,7 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
           </g>
         )}
       </g>
+      {overlay}
       {caption.map((c, i) => (
         <text key={i} x={10} y={CANVAS.h + 24 + i * 22} fontSize={i ? 15 : 16} fontWeight={i ? 400 : 700} fill={INK}>{c}</text>
       ))}
@@ -474,13 +512,58 @@ function NoClose({ open, w }: { open: NonNullable<ReturnType<typeof wontClose>>;
   );
 }
 
-function Facts({ m, w, unit, setHl, editSide, sides }: {
+/**
+ * A side's length in the list: dragged left or right it changes by `step`, tapped (or Enter) it opens for typing,
+ * the arrow keys change it by a step.
+ */
+function Scrub({ text, label, value, step, onSet, onType }: {
+  text: string; label: string; value: number; step: number; onSet: (l: number) => void; onType: () => void;
+}) {
+  const press = useRef<{ x0: number; v0: number; moved: boolean } | null>(null);
+  const to = (l: number) => onSet(Math.max(step, Math.round(l / step) * step));
+  return (
+    <button className="glab-edit" title={label} aria-label={label} style={{ cursor: "ew-resize", touchAction: "none" }}
+      onPointerDown={(e) => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+        capture(e.currentTarget, e.pointerId);
+        press.current = { x0: e.clientX, v0: value, moved: false };
+      }}
+      onPointerMove={(e) => {
+        const p = press.current;
+        if (!p) return;
+        const dx = e.clientX - p.x0;
+        if (!p.moved && Math.abs(dx) <= TAP) return;
+        p.moved = true;
+        to(p.v0 + Math.round(dx / 12) * step);
+      }}
+      onPointerUp={() => {
+        const p = press.current;
+        press.current = null;
+        if (p && !p.moved) onType();
+      }}
+      onPointerCancel={() => (press.current = null)}
+      onKeyDown={(e) => {
+        const by = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[e.key];
+        if (by) {
+          e.preventDefault();
+          return to(value + by * step);
+        }
+        keyTap(e, onType);
+      }}>
+      {text} ↔
+    </button>
+  );
+}
+
+function Facts({ m, w, unit, setHl, editSide, sides, step }: {
   m: Measured;
   w: Words;
   unit: string;
   setHl: (marks: Mark[] | null) => void;
   editSide?: (i: number, l: number) => void;
   sides?: number;
+  step: number;
 }) {
   const [editing, setEditing] = useState<{ i: number; text: string } | null>(null);
   const sections = [...m.sections].sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
@@ -505,6 +588,7 @@ function Facts({ m, w, unit, setHl, editSide, sides }: {
                       onChange={(e) => setEditing({ i, text: e.target.value })}
                       onBlur={() => setEditing(null)}
                       onKeyDown={(e) => {
+                        e.stopPropagation();
                         if (e.key === "Escape") setEditing(null);
                         if (e.key !== "Enter") return;
                         const l = readNum(editing.text);
@@ -513,9 +597,8 @@ function Facts({ m, w, unit, setHl, editSide, sides }: {
                       }}
                     />
                   ) : canEdit ? (
-                    <button className="glab-edit" title={fill(w.setLength, { name: f.name ?? "" })} onClick={() => setEditing({ i, text: num(f.v!.n).replace("−", "-") })}>
-                      {fmtVal(f.v!, w, unit)} ✎
-                    </button>
+                    <Scrub text={fmtVal(f.v!, w, unit)} label={fill(w.setLength, { name: f.name ?? "" })} value={f.v!.n} step={step}
+                      onSet={(l) => editSide!(i, l)} onType={() => setEditing({ i, text: num(f.v!.n).replace("−", "-") })} />
                   ) : (
                     f.v && <b>{fmtVal(f.v, w, unit)}</b>
                   )}
@@ -530,7 +613,66 @@ function Facts({ m, w, unit, setHl, editSide, sides }: {
   );
 }
 
+// ---------- the tray, the wheels and the switches above the plane ----------
+
+const STRIP_W = 950;
+const TRAY = { x: 8, y: 6, size: 50, step: 56 };
+const ROW2 = 64;
+const ROW3 = 114;
+const PILL_H = 28;
+/** The tools on the plane's left edge, the zoom lever on its right, the bin in its bottom left corner. */
+const PALETTE = { x: 10, y: 10, r: 17, step: 42 };
+const TOOLS: GeoTool[] = ["move", "poly", "circle", "ellipse", "sector"];
+const TOOL_ICON: Record<GeoTool, string> = { move: "✋", poly: "⬠", circle: "◯", ellipse: "⬭", sector: "◔" };
+const LEVER = { x: CANVAS.w - 36, y: 12, w: 26, h: 150 };
+const BIN = { x: 10, y: CANVAS.h - 66, w: 84, h: 56 };
+/** How far the lever is pulled to zoom twice as far in. */
+const LEVER_TWICE = 45;
+
+/** Which numbers a measurement's wheel turns through. */
+function wheelRange(key: ParamKey): [number, number] {
+  if (key === "n") return [3, MAX_PTS];
+  if (key === "sweep") return [1, 360];
+  if (key === "angle" || key === "angleA" || key === "angleB") return [1, 179];
+  return [1, 99];
+}
+
+/** The shape centred on (0, 0), to be carried and put down anywhere. */
+function centred(f: GeoFig): GeoFig {
+  const b = bounds([f]);
+  return b ? moveFig(f, [-(b[0] + b[2]) / 2, -(b[1] + b[3]) / 2]) : f;
+}
+
+/** A shape drawn small inside a box: the tray's pictures. */
+function Mini({ fig, x, y, size, faded }: { fig: GeoFig | null; x: number; y: number; size: number; faded?: boolean }) {
+  const b = fig && bounds([fig]);
+  if (!fig || !b) return <text x={x + size / 2} y={y + size / 2 + 6} fontSize={18} textAnchor="middle" fill="#e03131">✕</text>;
+  const s = (size - 12) / Math.max(b[2] - b[0], b[3] - b[1], 1e-9);
+  const view = { cx: (b[0] + b[2]) / 2, cy: (b[1] + b[3]) / 2, s };
+  const style = { fill: faded ? "#f1f3f5" : "#d0ebff", stroke: faded ? "#adb5bd" : BLUE, strokeWidth: 1.6 };
+  return (
+    <g transform={`translate(${x + size / 2 - CANVAS.w / 2} ${y + size / 2 - CANVAS.h / 2})`} pointerEvents="none">
+      {fig.kind === "poly" ? <path d={path(view, fig.pts)} strokeLinejoin="round" {...style} /> : roundShape(view, fig, style)}
+    </g>
+  );
+}
+
+/** Pills laid out left to right, onto a new line when the line is full. */
+function flow(items: { key: string; text: string; title?: string; on: boolean; tap: () => void; gapBefore?: number }[], x0: number, y0: number, width: number) {
+  let [x, y] = [x0, y0];
+  return items.map((it) => {
+    const w = Math.max(44, it.text.length * 13 * 0.58 + 22);
+    x += it.gapBefore ?? 0;
+    if (x + w > x0 + width) [x, y] = [x0, y + PILL_H + 6];
+    const pill = <Pill key={it.key} x={x} y={y} w={w} h={PILL_H} size={13} text={it.text} title={it.title} on={it.on} onTap={it.tap} />;
+    x += w + 5;
+    return { pill, bottom: y + PILL_H };
+  });
+}
+
 // ---------- the piece ----------
+
+type Carry = { fig: GeoFig | null; x0: number; y0: number; moved: boolean; at: Pt | null };
 
 export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
   const w = words.geoLab;
@@ -540,11 +682,15 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
   const [cursor, setCursor] = useState<Pt | null>(null);
   const [hl, setHl] = useState<Mark[] | null>(null);
   const [makeKind, setMakeKind] = useState<MakeKind>("sss");
-  const [vals, setVals] = useState<string[]>(MAKE_PARAMS.sss.start.map(String));
-  const [problem, setProblem] = useState<MakeProblem | null>(null);
-  // The sides of a triangle that would not close, to show why.
-  const [open, setOpen] = useState<ReturnType<typeof wontClose>>(null);
-  const [k, setK] = useState("2");
+  const [vals, setVals] = useState<number[]>(MAKE_PARAMS.sss.start);
+  const [carry, setCarryState] = useState<Carry | null>(null);
+  const carryNow = useRef<Carry | null>(null);
+  const setCarry = (c: Carry | null) => {
+    carryNow.current = c;
+    setCarryState(c);
+  };
+  const [lever, setLever] = useState<{ y0: number; view0: GeoView; dy: number } | null>(null);
+  const planeRef = useRef<SVGSVGElement>(null);
 
   const figs = temp?.figs ?? state.figs;
   const view = temp?.view ?? state.view;
@@ -556,9 +702,19 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
   const snapP = (p: Pt) => (state.snap ? snapTo(p, step) : p);
   const snapLen = (l: number) => (state.snap ? Math.max(step, Math.round(l / step) * step) : Math.max(l, 1e-9));
   const put = (patch: Partial<LiveGeoLab>) => set({ ...state, ...patch });
+  const full = state.figs.length >= MAX_FIGS;
+
+  // The shape the wheels make now, or what is wrong with them; the triangle that won't close, to show why.
+  const made = make(makeKind, vals);
+  const problem: MakeProblem | null = "problem" in made ? made.problem : null;
+  const open = problem === "triangle" ? wontClose(makeKind === "isosceles" ? [vals[0], vals[0], vals[1]] : vals) : null;
+  const trayFig = (kind: MakeKind): GeoFig | null => {
+    const r = kind === makeKind ? made : make(kind, MAKE_PARAMS[kind].start);
+    return "fig" in r ? r.fig : null;
+  };
 
   const addFig = (fig: GeoFig, fit: boolean) => {
-    if (state.figs.length >= MAX_FIGS) return;
+    if (full) return;
     const next = [...state.figs, fig];
     put({ figs: next, sel: next.length - 1, tool: "move", ...(fit ? { view: fitView(next) } : {}) });
   };
@@ -568,8 +724,47 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
   };
   const setTool = (tool: GeoTool) => {
     setDraft([]);
-    put({ tool });
+    if (tool !== state.tool) put({ tool });
   };
+  const removeFig = (f: number) => put({ figs: state.figs.filter((_, j) => j !== f), sel: -1 });
+  const chooseMake = (kind: MakeKind) => {
+    if (kind === makeKind) return;
+    setMakeKind(kind);
+    setVals(MAKE_PARAMS[kind].start);
+  };
+
+  // Carrying a shape in from the tray (or a copy from the list): put down where it is let go on the plane.
+  const planeAt = (e: { clientX: number; clientY: number }): Pt | null => {
+    const svg = planeRef.current;
+    if (!svg) return null;
+    const [x, y] = svgPoint(svg, e);
+    return x >= 0 && y >= 0 && x <= CANVAS.w && y <= CANVAS.h ? fromPx(state.view, [x, y]) : null;
+  };
+  const carryProps = (take: () => GeoFig | null, tap: () => void) => ({
+    onPointerDown: (e: ReactPointerEvent<Element>) => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      capture(e.currentTarget, e.pointerId);
+      const fig = take();
+      setCarry({ fig: fig && centred(fig), x0: e.clientX, y0: e.clientY, moved: false, at: null });
+    },
+    onPointerMove: (e: ReactPointerEvent<Element>) => {
+      const c = carryNow.current;
+      if (!c) return;
+      setCarry({ ...c, moved: c.moved || Math.hypot(e.clientX - c.x0, e.clientY - c.y0) > TAP, at: planeAt(e) });
+    },
+    onPointerUp: (e: ReactPointerEvent<Element>) => {
+      const c = carryNow.current;
+      setCarry(null);
+      if (!c) return;
+      if (!c.moved) return tap();
+      const at = planeAt(e);
+      if (at && c.fig) addFig(moveFig(c.fig, snapP(at)), false);
+    },
+    onPointerCancel: () => setCarry(null),
+    style: { cursor: carry?.moved ? "grabbing" : "grab", touchAction: "none" } as const,
+  });
+  const ghost = carry?.moved && carry.at && carry.fig && !full ? moveFig(carry.fig, snapP(carry.at)) : null;
 
   const worldAt = (e: { clientX: number; clientY: number }, svg: SVGSVGElement, v = view): Pt => fromPx(v, svgPoint(svg, e) as Pt);
   const down = (e: ReactPointerEvent<SVGSVGElement>) => {
@@ -617,7 +812,11 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
       base.sel = f;
       drag.current = { type: "fig", f, p0: p, orig: state.figs[f], moved: false };
     } else if (h?.[0] === "k") drag.current = { type: "handle", f: +h[1], key: h[2], moved: false };
-    else drag.current = { type: "pan", px0: svgPoint(svg, e) as Pt, view0: state.view, moved: false };
+    else if (h?.[0] === "s") {
+      const grip = scaleGrip(state.figs[+h[1]]);
+      if (!grip) return;
+      drag.current = { type: "scale", f: +h[1], ...grip, p0: p, orig: state.figs[+h[1]], moved: false };
+    } else drag.current = { type: "pan", px0: svgPoint(svg, e) as Pt, view0: state.view, moved: false };
     setTemp(base);
   };
   const move = (e: ReactPointerEvent<SVGSVGElement>) => {
@@ -633,7 +832,7 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
       return setTemp({ ...temp, view: { ...d.view0, cx: d.view0.cx - dx / d.view0.s, cy: d.view0.cy + dy / d.view0.s } });
     }
     const p = worldAt(e, svg, temp.view);
-    const replace = (g: GeoFig) => setTemp({ ...temp, figs: temp.figs.map((x, j) => (j === d.f ? g : x)) });
+    const replace = (g: GeoFig, more?: Partial<Temp>) => setTemp({ ...temp, ...more, figs: temp.figs.map((x, j) => (j === d.f ? g : x)) });
     const fig = temp.figs[d.f];
     if (d.type === "vertex" && fig.kind === "poly") {
       const q = snapP(p);
@@ -645,7 +844,17 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
       const raw: Pt = [p[0] - d.p0[0], p[1] - d.p0[1]];
       if (!d.moved && Math.hypot(raw[0], raw[1]) * view.s < 4) return;
       d.moved = true;
-      return replace(moveFig(d.orig, state.snap ? snapTo(raw, step) : raw));
+      const [x, y] = svgPoint(svg, e);
+      return replace(moveFig(d.orig, state.snap ? snapTo(raw, step) : raw), { bin: inBox(BIN, x, y) });
+    }
+    if (d.type === "scale") {
+      const [gx, gy] = [d.g[0] - d.c[0], d.g[1] - d.c[1]];
+      // As far out from the centre as the pointer is now, against where it was pressed.
+      const along = (q: Pt) => (q[0] - d.c[0]) * gx + (q[1] - d.c[1]) * gy;
+      const raw = along(p) / Math.max(along(d.p0), 1e-9);
+      const k = state.snap ? Math.max(0.25, Math.round(raw * 4) / 4) : Math.max(0.05, raw);
+      d.moved = true;
+      return replace(enlarge(d.orig, k), { k });
     }
     if (d.type === "handle" && fig.kind !== "poly") {
       d.moved = true;
@@ -661,35 +870,56 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
     drag.current = null;
     if (!d || !temp) return;
     setTemp(null);
-    if (d.moved) put({ figs: temp.figs, view: temp.view, sel: temp.sel });
+    if (d.type === "fig" && d.moved && temp.bin) removeFig(d.f);
+    else if (d.moved) put({ figs: temp.figs, view: temp.view, sel: temp.sel });
     else if (d.type === "pan" && state.sel !== -1) put({ sel: -1 });
     else if (temp.sel !== state.sel) put({ sel: temp.sel });
   };
   const dbl = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (state.tool !== "move") return;
     const h = (e.target as Element).closest("[data-h]")?.getAttribute("data-h")?.split("-");
-    if (state.tool !== "move" || h?.[0] !== "v") return;
+    // A double-click on the empty plane brings every shape into view.
+    if (!h) return state.figs.length && put({ view: fitView(state.figs) });
+    if (h[0] !== "v") return;
     const [f, i] = [+h[1], +h[2]];
     const fig = state.figs[f];
     if (fig.kind === "poly" && fig.pts.length > 3) put({ figs: state.figs.map((g, j) => (j === f ? { ...fig, pts: removePoint(fig.pts, i) } : g)) });
   };
 
-  const build = () => {
-    const r = make(makeKind, vals.map(readNum));
-    const sides = vals.map(readNum);
-    setOpen("problem" in r && r.problem === "triangle" ? wontClose(makeKind === "isosceles" ? [sides[0], sides[0], sides[1]] : sides) : null);
-    if ("problem" in r) return setProblem(r.problem);
-    setProblem(null);
-    addFig(placeBeside(state.figs, r.fig), true);
+  // The zoom lever: pulled up the plane zooms in, down it zooms out, as far as it is pulled; let go it springs back.
+  // A tap above or below the knob is one step.
+  const LEVER_MID = LEVER.y + LEVER.h / 2;
+  const leverDown = (e: ReactPointerEvent<SVGGElement>) => {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+    capture(e.currentTarget, e.pointerId);
+    setLever({ y0: svgPoint(planeRef.current!, e)[1], view0: state.view, dy: 0 });
   };
-  const chooseMake = (kind: MakeKind) => {
-    setMakeKind(kind);
-    setVals(MAKE_PARAMS[kind].start.map(String));
-    setProblem(null);
-    setOpen(null);
+  const leverMove = (e: ReactPointerEvent<SVGGElement>) => {
+    if (!lever) return;
+    e.stopPropagation();
+    const dy = Math.max(-LEVER.h / 2 + 12, Math.min(LEVER.h / 2 - 12, svgPoint(planeRef.current!, e)[1] - lever.y0));
+    setLever({ ...lever, dy });
+    if (Math.abs(dy) > TAP) setTemp({ figs: state.figs, sel: state.sel, view: zoomView(lever.view0, 2 ** (-dy / LEVER_TWICE)) });
   };
+  const leverUp = (e: ReactPointerEvent<SVGGElement>) => {
+    if (!lever) return;
+    e.stopPropagation();
+    setLever(null);
+    setTemp(null);
+    if (Math.abs(lever.dy) > TAP) return put({ view: zoomView(lever.view0, 2 ** (-lever.dy / LEVER_TWICE)) });
+    put({ view: zoomView(state.view, lever.y0 < LEVER_MID ? 1.6 : 1 / 1.6) });
+  };
+  const leverKey = (e: KeyboardEvent<SVGGElement>) => {
+    const k = { ArrowUp: 1.6, ArrowRight: 1.6, ArrowDown: 1 / 1.6, ArrowLeft: 1 / 1.6 }[e.key];
+    if (k) put({ view: zoomView(state.view, k) });
+    else if (e.key === "Home" && state.figs.length) put({ view: fitView(state.figs) });
+    else return;
+    e.preventDefault();
+  };
+
   const selFig = state.figs[state.sel];
   const replaceSel = (g: GeoFig) => put({ figs: state.figs.map((x, j) => (j === state.sel ? g : x)) });
-  const kNum = readNum(k);
 
   const caption = m
     ? [
@@ -706,77 +936,120 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
     : state.tool === "move" ? w.hints.move
     : w.hints[state.tool];
 
+  // The strip: the tray of shapes, the wheels of the one picked, the switches.
+  const keys = MAKE_PARAMS[makeKind].keys;
+  const nameW = w.makes[makeKind].length * 7.8 + 18;
+  let wx = TRAY.x + nameW;
+  const wheels = keys.map((key, i) => {
+    const label = w.params[key];
+    const lx = wx;
+    const bx = lx + label.length * 7 + 6;
+    wx = bx + 56 + 16;
+    const [lo, hi] = wheelRange(key);
+    return (
+      <g key={key}>
+        <text x={lx} y={ROW2 + 26} fontSize={13} fill="#495057">{label}</text>
+        <NumBox x={bx} y={ROW2} w={56} h={40} size={18} value={vals[i]} min={lo} max={hi} label={`${w.makes[makeKind]}: ${label}`}
+          onChange={(v) => setVals(vals.map((x, j) => (j === i ? v : x)))} />
+      </g>
+    );
+  });
+  const pills = flow(
+    [
+      { key: "snap", text: w.snap, on: state.snap, tap: () => put({ snap: !state.snap }) },
+      ...UNITS.map((u, i) => ({
+        key: `u${u}`, text: u ? w.units[u] : w.noUnit, title: `${w.unit}: ${u ? w.units[u] : w.noUnit}`, on: state.unit === u,
+        tap: () => put({ unit: u }), gapBefore: i ? 0 : 10,
+      })),
+      ...SHOWS.map((s, i) => ({
+        key: s, text: w.shows[s], on: state.show.includes(s), gapBefore: i ? 0 : 10,
+        tap: () => put({ show: state.show.includes(s) ? state.show.filter((x) => x !== s) : [...state.show, s] }),
+      })),
+    ],
+    TRAY.x, ROW3, STRIP_W - 2 * TRAY.x,
+  );
+  const stripH = Math.max(...pills.map((p) => p.bottom)) + 6;
+
+  const overlay = (
+    <g>
+      {TOOLS.map((t, i) => {
+        const [cx, cy] = [PALETTE.x + PALETTE.r, PALETTE.y + PALETTE.r + i * PALETTE.step];
+        const on = state.tool === t;
+        return (
+          <g key={t} role="button" tabIndex={0} aria-label={w.tools[t]} aria-pressed={on} style={{ cursor: "pointer" }}
+            onPointerDown={(e) => {
+              if (e.button !== 0) return;
+              e.stopPropagation();
+              setTool(t);
+            }}
+            onKeyDown={(e) => keyTap(e, () => setTool(t))}>
+            <title>{w.tools[t]}</title>
+            <circle cx={cx} cy={cy} r={PALETTE.r} fill={on ? BLUE : "#fff"} stroke={on ? BLUE : "#adb5bd"} strokeWidth={1.4} />
+            <text x={cx} y={cy + 6} fontSize={17} textAnchor="middle" fill={on ? "#fff" : INK} pointerEvents="none">{TOOL_ICON[t]}</text>
+          </g>
+        );
+      })}
+      <g role="slider" tabIndex={0} aria-label={w.zoom} aria-valuemin={-20} aria-valuemax={24} aria-valuenow={Math.round(Math.log2(view.s) * 10) / 10}
+        aria-valuetext={fill(w.zoomText, { step: num(step) + (unit ? ` ${unit}` : "") })}
+        style={{ cursor: "ns-resize" }} onPointerDown={leverDown} onPointerMove={leverMove} onPointerUp={leverUp} onPointerCancel={() => setLever(null)}
+        onKeyDown={leverKey}>
+        <title>{w.zoom}</title>
+        <rect x={LEVER.x} y={LEVER.y} width={LEVER.w} height={LEVER.h} rx={LEVER.w / 2} fill="#fff" stroke="#ced4da" />
+        <text x={LEVER.x + LEVER.w / 2} y={LEVER.y + 18} fontSize={17} fontWeight={700} textAnchor="middle" fill="#868e96" pointerEvents="none">+</text>
+        <text x={LEVER.x + LEVER.w / 2} y={LEVER.y + LEVER.h - 7} fontSize={17} fontWeight={700} textAnchor="middle" fill="#868e96" pointerEvents="none">−</text>
+        <circle cx={LEVER.x + LEVER.w / 2} cy={LEVER_MID + (lever?.dy ?? 0)} r={10} fill={lever ? BLUE : "#fff"} stroke={BLUE} strokeWidth={2} pointerEvents="none" />
+      </g>
+      {state.tool === "move" && (
+        <Bin {...BIN} hot={!!temp?.bin} label={w.bin} title={w.binTitle} onTap={() => selFig && removeFig(state.sel)} />
+      )}
+    </g>
+  );
+
   return (
     <>
-      <div className="live-bar">
-        {(["move", "poly", "circle", "ellipse", "sector"] as GeoTool[]).map((t) => (
-          <Toggle key={t} on={state.tool === t} onClick={() => setTool(t)}>{w.tools[t]}</Toggle>
-        ))}
-        {state.tool === "poly" && draft.length >= 3 && <button className="live-btn primary" onClick={() => finish()}>{w.finish}</button>}
-        {state.tool !== "move" && draft.length > 0 && <button className="live-btn" onClick={() => setDraft([])}>{w.cancel}</button>}
-        <span className="glab-sep" />
-        <button className="live-btn" title={w.zoomOut} aria-label={w.zoomOut} onClick={() => put({ view: zoomView(state.view, 1 / 1.6) })}>−</button>
-        <button className="live-btn" title={w.zoomIn} aria-label={w.zoomIn} onClick={() => put({ view: zoomView(state.view, 1.6) })}>+</button>
-        <button className="live-btn" disabled={!state.figs.length} onClick={() => put({ view: fitView(state.figs) })}>{w.fit}</button>
-        <Toggle on={state.snap} onClick={() => put({ snap: !state.snap })}>{w.snap}</Toggle>
-        <label className="live-select">
-          {w.unit}
-          <select value={state.unit} onChange={(e) => put({ unit: e.target.value as LiveGeoLab["unit"] })}>
-            {UNITS.map((u) => <option key={u} value={u}>{u ? w.units[u] : w.noUnit}</option>)}
-          </select>
-        </label>
-      </div>
-      <div className="live-bar glab-make">
-        <label className="live-select">
-          {w.make}
-          <select value={makeKind} onChange={(e) => chooseMake(e.target.value as MakeKind)}>
-            {MAKES.map((kind) => <option key={kind} value={kind}>{w.makes[kind]}</option>)}
-          </select>
-        </label>
-        {MAKE_PARAMS[makeKind].keys.map((key, i) => (
-          <label key={key} className="live-field">
-            {w.params[key]}
-            <input
-              className={`live-num${Number.isFinite(readNum(vals[i])) && readNum(vals[i]) > 0 ? "" : " invalid"}`}
-              inputMode="decimal"
-              value={vals[i]}
-              onChange={(e) => setVals(vals.map((v, j) => (j === i ? e.target.value : v)))}
-              onKeyDown={(e) => e.key === "Enter" && build()}
-            />
-          </label>
-        ))}
-        <button className="live-btn primary" disabled={state.figs.length >= MAX_FIGS} onClick={build}>{w.add}</button>
-      </div>
-      {problem && <p className="live-said">{w.problems[problem]}</p>}
-      {problem === "triangle" && open && <NoClose open={open} w={w} />}
-      <div className="live-bar">
-        {SHOWS.map((s) => (
-          <Toggle key={s} on={state.show.includes(s)} onClick={() => put({ show: state.show.includes(s) ? state.show.filter((x) => x !== s) : [...state.show, s] })}>
-            {w.shows[s]}
-          </Toggle>
-        ))}
-      </div>
+      <svg className="hand-pic" width={STRIP_W} height={stripH} viewBox={`0 0 ${STRIP_W} ${stripH}`} fontFamily={FONT}
+        style={{ touchAction: "none", userSelect: "none", display: "block" }}>
+        {MAKES.map((kind, i) => {
+          const x = TRAY.x + i * TRAY.step;
+          const on = kind === makeKind;
+          const fig = trayFig(kind);
+          return (
+            <g key={kind} role="button" tabIndex={0} aria-label={fill(w.trayItem, { name: w.makes[kind] })} aria-pressed={on}
+              {...carryProps(() => (chooseMake(kind), fig), () => chooseMake(kind))}
+              onKeyDown={(e) => keyTap(e, () => fig && addFig(placeBeside(state.figs, fig), true))}>
+              <title>{w.makes[kind]}</title>
+              <rect x={x} y={TRAY.y} width={TRAY.size} height={TRAY.size} rx={8} fill={on ? "#e7f5ff" : "#fff"} stroke={on ? BLUE : "#dee2e6"} strokeWidth={on ? 2 : 1} />
+              <Mini fig={fig} x={x} y={TRAY.y} size={TRAY.size} faded={full} />
+            </g>
+          );
+        })}
+        <text x={TRAY.x} y={ROW2 + 26} fontSize={14} fontWeight={700} fill={problem ? "#e03131" : INK}>{w.makes[makeKind]}</text>
+        {wheels}
+        {pills.map((p) => p.pill)}
+      </svg>
       <div className="glab-row">
         <Plane
           figs={figs} sel={sel} m={m} names={names} view={view} show={state.show} unit={unit} w={w}
-          tool={state.tool} draft={draft} cursor={cursor} hl={hl}
-          on={{ down, move, up, dbl }}
+          tool={state.tool} draft={draft} cursor={cursor} hl={hl} ghost={ghost} scaleK={temp?.k ?? null} overlay={overlay}
+          svgRef={planeRef} on={{ down, move, up, dbl }}
         />
         <div className="glab-facts" onWheel={(e) => e.stopPropagation()}>
+          {problem && <p className="live-said">{w.problems[problem]}</p>}
+          {open && <NoClose open={open} w={w} />}
           {m && selFig ? (
             <>
-              <div className="glab-name">{shapeName(m, w)}</div>
-              <div className="glab-actions">
-                <button className="live-btn" disabled={state.figs.length >= MAX_FIGS} onClick={() => addFig(placeBeside(state.figs, selFig), true)}>{w.duplicate}</button>
-                <button className="live-btn" onClick={() => put({ figs: state.figs.filter((_, j) => j !== state.sel), sel: -1 })}>{w.remove}</button>
-                <span className="live-field">
-                  <button className="live-btn" disabled={!(kNum > 0) || kNum === 1} onClick={() => replaceSel(enlarge(selFig, kNum))}>{w.enlarge}</button>
-                  ×
-                  <input className={`live-num glab-k${kNum > 0 ? "" : " invalid"}`} inputMode="decimal" value={k} aria-label={w.factor} onChange={(e) => setK(e.target.value)} />
-                </span>
+              <div className="glab-head">
+                <div className="glab-name">{shapeName(m, w)}</div>
+                {!full && (
+                  <span className="glab-copy" role="button" tabIndex={0} aria-label={w.copyTitle} title={w.copyTitle}
+                    {...carryProps(() => selFig, () => addFig(placeBeside(state.figs, selFig), true))}
+                    onKeyDown={(e) => keyTap(e, () => addFig(placeBeside(state.figs, selFig), true))}>
+                    {w.copy}
+                  </span>
+                )}
               </div>
               <Facts
-                m={m} w={w} unit={unit} setHl={setHl}
+                m={m} w={w} unit={unit} setHl={setHl} step={state.snap ? step : step / 10}
                 sides={selFig.kind === "poly" ? selFig.pts.length : undefined}
                 editSide={selFig.kind === "poly" ? (i, l) => replaceSel({ ...selFig, pts: setSide(selFig.pts, i, l) }) : undefined}
               />
