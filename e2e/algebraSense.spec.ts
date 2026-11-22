@@ -39,14 +39,16 @@ test("balance in practice: what one square weighs, typed", async ({ page, reques
 test("guess my rule: 0 and 1 put in, the answer typed right first time earns three stars and shows the rule", async ({ page }) => {
   const game = await boardWith(page, "Guess my rule: the function machine", ".live-machine");
   const t = machineTask(MACHINE_LADDER[0].level, rng(MACHINE_LADDER[0].seed));
-  const input = (n: number) => game.locator(".machine-inputs").getByRole("button", { name: String(n), exact: true });
+  const pic = game.locator("svg").first();
+  const input = (n: number) => pic.getByRole("group", { name: "Put in:" }).getByRole("button", { name: String(n), exact: true });
   await expect(async () => {
     await input(0).click();
-    await expect(input(0)).toHaveClass(/\bon\b/, { timeout: 1000 });
+    await expect(input(0)).toHaveAttribute("aria-pressed", "true", { timeout: 1000 });
   }).toPass();
   await input(1).click();
-  for (const digit of String(machineAnswer(t))) await game.locator(".keypad").getByRole("button", { name: digit, exact: true }).click();
-  await expect(game.locator(".keypad-shown")).toHaveText(String(machineAnswer(t)));
+  const ask = `What comes out when ${t.ask.dir === "out" ? t.ask.n : ""} goes in?`;
+  for (const digit of String(machineAnswer(t))) await pic.getByRole("group", { name: ask }).getByRole("button", { name: digit, exact: true }).click();
+  await expect(pic.getByRole("textbox", { name: ask })).toHaveText(String(machineAnswer(t)));
   await game.getByRole("button", { name: "Check" }).click();
   await expect(game.getByText(new RegExp(`Right! The rule is n \\+ ${t.rule.add}\\. ★★★`))).toBeVisible();
   await expect(game.getByText("Putting 0 in shows what the machine adds!")).toBeVisible();

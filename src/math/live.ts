@@ -645,7 +645,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   fracOrder: [720, 470],
   shadeFrac: [600, 560],
   balance: [680, 560],
-  machine: [600, 560],
+  machine: [600, 610],
   growing: [600, 660],
   numberShapes: [640, 740],
   algebraTiles: [680, 640],

@@ -5935,8 +5935,8 @@ export const en = {
     machine: {
       askOut: "What comes out when {n} goes in?",
       askIn: "{out} came out. What went in?",
-      hint: "The machine does the same to every number. Put numbers in to find its rule.",
-      more: "Try more numbers, or type the answer and check.",
+      hint: "The machine does the same to every number. Drag numbers into it (or tap them) to find its rule.",
+      more: "Try more numbers, or drag digits into the answer and check.",
       putIn: "Put in:",
       in: "in",
       out: "out",
