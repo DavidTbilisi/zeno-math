@@ -897,6 +897,16 @@ function overflowBarsPreview(): Piece[] {
   return [...out, text(80, 92, "7/4 = 1 3/4", 16)];
 }
 
+function shareBagsPreview(): Piece[] {
+  // 3/5 of 20: five bags of four sweets, three of them taken.
+  const out: Piece[] = [];
+  for (let j = 0; j < 5; j++) {
+    out.push(rect(j * 40, 0, 32, 44, { fill: j < 3 ? FILL.green : FILL.yellow, width: j < 3 ? 2.5 : 1.5 }));
+    for (let i = 0; i < 4; i++) out.push(ellipse(j * 40 + 9 + (i % 2) * 14, 14 + Math.floor(i / 2) * 14, 5, 5, { fill: FILL.pink, width: 1 }));
+  }
+  return [...out, text(98, 70, "3/5 of 20 = 12", 16)];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2064,6 +2074,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFitTiles", build: fitTilesPreview, live: "fitTiles" },
   { id: "liveFindWhole", build: findWholePreview, live: "findWhole" },
   { id: "liveOverflowBars", build: overflowBarsPreview, live: "overflowBars" },
+  { id: "liveShareBags", build: shareBagsPreview, live: "shareBags" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },
