@@ -73,7 +73,7 @@ test("colour the graph: every vertex coloured right first time", async ({ page }
         await expect(pen(0)).toHaveAttribute("aria-checked", "true", { timeout: 1000 });
       }).toPass();
     else await pen(c).click();
-    for (const [v, cv] of col.entries()) if (cv === c) await vertex(v).dispatchEvent("click");
+    for (const [v, cv] of col.entries()) if (cv === c) await vertex(v).click();
   }
   await game.getByRole("button", { name: "Check" }).click();
   await expect(game.getByText(/Right! 2 colours, and no edge joins two alike\. ★★★/)).toBeVisible();

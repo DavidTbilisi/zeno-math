@@ -674,7 +674,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   circleDiscover: [640, 720],
   tessellate: [640, 700],
   oneStroke: [560, 500],
-  colourMap: [560, 540],
+  colourMap: [580, 580],
   shortestPath: [560, 540],
   connectTowns: [560, 500],
   beSort: [620, 440],
