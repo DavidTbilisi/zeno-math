@@ -1,10 +1,10 @@
 // Backpropagation by hand: a computational graph with each node's value, and under each node a box for its gradient
 // ∂L/∂node, filled in going back from L. Eight puzzles open in turn, each checked with Check, stars for doing one at
-// the first try; tapping a box in the picture goes to its field. In free play any of the graphs is taken, its inputs
-// changed by hand with every gradient shown, and a nudge of 0.01 to the chosen input shows what its gradient means.
-// What is mid-way (a number being typed) stays here until the field is left, so each change is one step to undo. Built
+// the first try; a box tapped in the picture (or its pill) is the one the digit pad under it fills. In free play any of
+// the graphs is taken as a pill, the chosen input stepped with − and +, every gradient shown, and a nudge of 0.01 to it
+// shows what its gradient means. Each tile put in or taken out is one step to undo. Built
 // on the game shell (useGame): a check with every gradient right wins the puzzle, one with a slip is a miss.
-import { useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 import {
   backward,
   BP_GRAPHS,
@@ -29,8 +29,10 @@ import {
   type BpGraphId,
   type LiveBackprop,
 } from "../math/backpropLab";
+import { DigitPad, PAD_H } from "./DigitPad";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** A new try starts from empty boxes; free play starts from the first graph with its first input chosen. */
@@ -44,7 +46,6 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
   const [w, g] = [words.backpropLab, words.game];
   const [draft, setDraft] = useState<Partial<LiveBackprop> | null>(null);
   const [focus, setFocus] = useState<string | null>(null);
-  const fields = useRef<Record<string, HTMLInputElement | null>>({});
   const d: LiveBackprop = { ...state, ...draft };
   const p = bpPuzzle(d);
   const graph = graphOf(d);
@@ -80,22 +81,17 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
     game.miss({ tries: d.tries + 1, said: { kind: "wrong", why: verdict.why } });
   };
 
-  // Typing stays a draft until the field is left; Enter goes on to the next box. The last box typed in stays marked,
-  // with its hint, so that nothing moves under the pointer on the way to Check.
-  const type = (id: string, text: string) => setDraft(fresh({ answers: { ...d.answers, [id]: text } }));
-  const leave = () => draft && commit();
-  const onKey = (e: KeyboardEvent<HTMLInputElement>, i: number) => {
-    if (e.key !== "Enter" || !p) return;
-    const next = p.blanks[i + 1];
-    if (next) fields.current[next]?.focus();
-    else e.currentTarget.blur();
-  };
+  // The pad fills the box being filled in: a tap on another box (in the picture or its pill) moves to it.
+  const at = p ? (focus && p.blanks.includes(focus) ? focus : p.blanks[0]) : null;
+  const type = (id: string, text: string) => commit(fresh({ answers: { ...d.answers, [id]: text } }));
   // A tap on a box goes to its field; in free play a tap on an input chooses it.
   const tap = (e: MouseEvent<SVGSVGElement>) => {
     const [x, y] = svgPoint(e.currentTarget, e);
     const id = bpHit(graph, x, y);
     if (!id) return;
-    if (p) fields.current[id]?.focus();
+    if (p) {
+      if (p.blanks.includes(id)) setFocus(id);
+    }
     else if (inputsOf(graph).includes(id)) commit({ sel: id });
   };
 
@@ -119,8 +115,27 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
     : { tone: "hint", text: p ? w.hint : w.freeHint };
   const ask = p ? w.asks[`p${d.stage + 1}` as keyof typeof w.asks] : w.freeAsk;
   // The hint for the box being typed in: the arrows out of its node, each with its local slope.
-  const uses = p && focus ? usesOf(graph, focus, w.reluRule) : [];
+  const uses = p && at ? usesOf(graph, at, w.reluRule) : [];
   const n = sel ? nudge(graph, values, sel) : null;
+
+  const reset = { text: `↺ ${g.reset}`, title: g.reset, onTap: () => commit(fresh(p ? { answers: {} } : { values: { ...graph.values } })) };
+  const moves: RowItem[] = p
+    ? [...p.blanks.map((id) => ({ text: `∂L/∂${id} = ${d.answers[id] || "?"}`, title: `∂L/∂${id}`, on: id === at, onTap: () => setFocus(id) })), reset]
+    : [
+        { text: w.graph },
+        ...BP_GRAPHS.map((x) => ({ text: x.formula, on: x.id === graph.id, onTap: () => pickGraph(x.id) })),
+        ...(sel !== null
+          ? [
+              { text: "−", title: w.less, brk: true, disabled: stepped(values[sel], -VALUE_STEP) === null, onTap: () => step(-VALUE_STEP) },
+              { text: `${sel} = ${num(values[sel])}` },
+              { text: "+", title: w.more, disabled: stepped(values[sel], VALUE_STEP) === null, onTap: () => step(VALUE_STEP) },
+            ]
+          : []),
+        { ...reset, brk: sel === null },
+      ];
+  const dialH = 0;
+  const rowsH = pillRowsH(moves, BP_PLOT.w);
+  const strip = rowsH + (p ? PAD_H + 8 : 0) + 8;
 
   return (
     <>
@@ -128,72 +143,33 @@ export function BackpropLab({ state, set, w: words, svgRef }: PieceProps<"backpr
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
-          ref={svgRef}
+          ref={svgRef} className="hand-pic"
           width={BP_PLOT.w}
-          height={BP_PLOT.h}
-          viewBox={`0 0 ${BP_PLOT.w} ${BP_PLOT.h}`}
+          height={BP_PLOT.h + strip}
+          viewBox={`0 0 ${BP_PLOT.w} ${BP_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           onClick={tap}
         >
-          <rect width={BP_PLOT.w} height={BP_PLOT.h} fill="#fff" />
+          <rect width={BP_PLOT.w} height={BP_PLOT.h + strip} fill="#fff" />
           <g
             dangerouslySetInnerHTML={{
-              __html: bpSvg(graph, values, { blanks: p?.blanks ?? [], answers: d.answers, hide: p?.hide ?? [], focus, wrong: wrong?.node ?? null, done: d.done, sel, caption: `${graph.formula} · ${w.caption}` }),
+              __html: bpSvg(graph, values, { blanks: p?.blanks ?? [], answers: d.answers, hide: p?.hide ?? [], focus: at, wrong: wrong?.node ?? null, done: d.done, sel, caption: `${graph.formula} · ${w.caption}` }),
             }}
           />
+          {p && at && (
+            <DigitPad x={8} y={BP_PLOT.h + rowsH + 4} w={BP_PLOT.w - 16} value={d.answers[at] ?? ""} onChange={(t) => type(at, t)} label={`∂L/∂${at}`} erase={words.machine.erase}
+              minus dot disabled={d.done} check={d.done ? undefined : { text: `✓ ${g.check}`, onTap: check }} />
+          )}
+          <PillRows w={BP_PLOT.w} y={BP_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
-      {p ? (
-        <div className="live-bar">
-          {p.blanks.map((id, i) => (
-            <label key={id} className="live-field">
-              ∂L/∂{id} =
-              <input
-                ref={(el) => {
-                  fields.current[id] = el;
-                }}
-                className="live-num"
-                inputMode="decimal"
-                spellCheck={false}
-                value={d.answers[id] ?? ""}
-                disabled={d.done}
-                aria-label={`∂L/∂${id}`}
-                onFocus={() => setFocus(id)}
-                onChange={(e) => type(id, e.target.value)}
-                onBlur={leave}
-                onKeyDown={(e) => onKey(e, i)}
-              />
-            </label>
-          ))}
-        </div>
-      ) : (
-        <div className="live-bar">
-          <label className="live-select">
-            <span>{w.graph}</span>
-            <select value={graph.id} onChange={(e) => pickGraph(e.target.value as BpGraphId)}>
-              {BP_GRAPHS.map((x) => <option key={x.id} value={x.id}>{x.formula}</option>)}
-            </select>
-          </label>
-          {sel !== null && (
-            <span className="live-field">
-              <button className="live-btn" disabled={stepped(values[sel], -VALUE_STEP) === null} title={w.less} aria-label={w.less} onClick={() => step(-VALUE_STEP)}>−</button>
-              <b>{sel} = {num(values[sel])}</b>
-              <button className="live-btn" disabled={stepped(values[sel], VALUE_STEP) === null} title={w.more} aria-label={w.more} onClick={() => step(VALUE_STEP)}>+</button>
-            </span>
-          )}
-        </div>
-      )}
       <div className="descent-read">
         <span className="descent-rule">{w.rule}</span>
-        {uses.length > 0 && focus && <span className="descent-next">{fill(w.feeds, { n: focus, uses: uses.map((u) => fill(w.use, { p: u.to, e: u.expr, r: u.slope })).join("; ") })}</span>}
+        {uses.length > 0 && at && <span className="descent-next">{fill(w.feeds, { n: at, uses: uses.map((u) => fill(w.use, { p: u.to, e: u.expr, r: u.slope })).join("; ") })}</span>}
         {n && sel && <span className="descent-next">{fill(w.nudge, { n: sel, a: num4(n.before), b: num4(n.after), d: num4(n.after - n.before), g: num4(grad[sel] * 0.01) })}</span>}
       </div>
-      <GameActions game={game} g={g} done={d.done} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        <button className="live-btn" onClick={() => commit(fresh(p ? { answers: {} } : { values: { ...graph.values } }))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

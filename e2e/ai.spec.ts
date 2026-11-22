@@ -442,18 +442,23 @@ test("the backprop lab goes on the board from the AI menu, and its boxes are fil
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText("The box for ∂L/∂q is empty.")).toBeVisible();
 
-  // A tap on q's box, under its circle, goes to its field; Enter goes on to z's.
-  const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
+  // A tap on q's box, under its circle, makes it the box the pad fills; its tiles make −4. z's pill goes on to z.
+  const svg = (await lab.locator("svg.hand-pic").first().boundingBox())!;
   const k = svg.width / BP_PLOT.w;
   const [qx, qy] = bpPos(bpGraph("classic")).q;
+  await lab.getByRole("button", { name: "∂L/∂z" }).click();
   await page.mouse.click(svg.x + qx * k, svg.y + (qy + 36) * k);
-  await expect(lab.getByLabel("∂L/∂q")).toBeFocused();
-  await page.keyboard.type("−4");
-  await page.keyboard.press("Enter");
-  await expect(lab.getByLabel("∂L/∂z")).toBeFocused();
+  await expect(lab.getByRole("button", { name: "∂L/∂q" })).toHaveAttribute("aria-pressed", "true");
+  const tile = (t: string) => lab.getByRole("button", { name: t, exact: true });
+  await tile("−").click();
+  await tile("4").click();
+  await expect(lab.getByRole("textbox", { name: "∂L/∂q" })).toContainText("−4");
+  await lab.getByRole("button", { name: "∂L/∂z" }).click();
   await expect(lab.getByText(/z goes into L = q × z, with local slope q/)).toBeVisible();
+  // Typed works too, once the slot has the focus.
+  await lab.getByRole("textbox", { name: "∂L/∂z" }).focus();
   await page.keyboard.type("3");
-  await page.keyboard.press("Enter");
+  await expect(lab.getByRole("textbox", { name: "∂L/∂z" })).toContainText("3");
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/A × gate swaps its inputs.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("backprop-lab.png") });

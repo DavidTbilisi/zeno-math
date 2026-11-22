@@ -8356,7 +8356,7 @@ export const en = {
       use: "{p} = {e}, with local slope {r}",
       reluRule: "1 if {a} > 0, else 0",
       nudge: "{n} + 0.01 takes L from {a} to {b}: a change of {d}, about ∂L/∂{n} × 0.01 = {g}.",
-      hint: "Type a number in each box, such as −4, 0.25 or 1/4. Tap a box to go to it, Enter for the next.",
+      hint: "Tap a box (in the picture or its pill), then drag or tap the tiles to make its number, such as −4 or 0.25.",
       freeHint: "Tap an input in the picture to choose it, then change it with − and +.",
       right: "Done! {stars}",
       why: {
@@ -8402,7 +8402,7 @@ export const en = {
       contiguous: "Shape ({shape}), strides ({s}): contiguous, read straight through memory.",
       jumps: "Shape ({shape}), strides ({s}): not contiguous, one step along the last axis jumps {j} places.",
       hint: "Tap your answer in the picture, then Check.",
-      typeHint: "Type a whole number in each box; Enter goes on to the next.",
+      typeHint: "Drag each stride's wheel up or down, or tap its top or bottom half, then Check.",
       freeHint: "Tap any entry or place: the dashed line joins an entry to its place in memory.",
       right: "Done! {stars}",
       why: {
