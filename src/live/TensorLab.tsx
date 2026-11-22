@@ -1,11 +1,10 @@
 // Tensors by hand: a tensor's entries as slices, rows and columns, and under them the one line of memory they live in.
 // Eight puzzles open in turn, each checked with Check, stars for doing one at the first try: an entry tapped by its
-// indices, its place in memory tapped, the entry at a place found, the strides typed, and the same for a reshape and a
+// indices, its place in memory tapped, the entry at a place found, the strides set on wheels, and the same for a reshape and a
 // transpose. In free play any shape or view is taken, a tap on an entry or a place shows the other with the sum that
-// links them, and a walk goes through the view in its own order. What is mid-way (a stride being typed) stays here
-// until the field is left, so each change is one step to undo. Built on the game shell (useGame): a check that meets
+// links them, and a walk goes through the view in its own order. Each turn of a stride wheel is one step to undo. Built on the game shell (useGame): a check that meets
 // the puzzle's goal wins it, one that does not is a miss.
-import { useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 import {
   entryText,
   isContiguous,
@@ -27,10 +26,10 @@ import {
   viewOf,
   walk,
   type LiveTensor,
-  type TnSetupId,
 } from "../math/tensorLab";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { fill, FONT, INK, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, NumBox, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const SUB = "₀₁₂₃";
@@ -41,7 +40,6 @@ const FREE_PATCH: Partial<LiveTensor> = { setup: "t234" };
 export function TensorLab({ state, set, w: words, svgRef }: PieceProps<"tensorLab">) {
   const [w, g] = [words.tensorLab, words.game];
   const [draft, setDraft] = useState<Partial<LiveTensor> | null>(null);
-  const fields = useRef<(HTMLInputElement | null)[]>([]);
   const d: LiveTensor = { ...state, ...draft };
   const p = tnPuzzle(d);
   const setup = setupOf(d);
@@ -69,16 +67,8 @@ export function TensorLab({ state, set, w: words, svgRef }: PieceProps<"tensorLa
     const hit = tnHit(v, x, y);
     if (hit && tapsOn(p).includes(hit.at)) commit(fresh({ sel: hit }));
   };
-  // The strides are typed as a draft until the field is left; Enter goes on to the next one.
-  const type = (k: number, text: string) => setDraft(fresh({ answers: v.shape.map((_, j) => (j === k ? text : (d.answers[j] ?? ""))) }));
-  const leave = () => draft && commit();
-  const onKey = (e: KeyboardEvent<HTMLInputElement>, k: number) => {
-    if (e.key !== "Enter") return;
-    const next = fields.current[k + 1];
-    if (next && k + 1 < v.shape.length) next.focus();
-    else e.currentTarget.blur();
-  };
-
+  // A stride wheel turned sets that axis's stride; below 0 it is not chosen yet (shown as ?).
+  const setStride = (k: number, n: number) => commit(fresh({ answers: v.shape.map((_, j) => (j === k ? (n < 0 ? "" : String(n)) : (d.answers[j] ?? ""))) }));
   const verdict = p && d.said?.kind === "wrong" ? judgeTn(p, d.sel, d.answers) : null;
   const wrong = verdict?.state === "lost" ? verdict : null;
   const why = wrong && fill(w.why[wrong.why], { have: wrong.have, k: wrong.k, s: `s${SUB[wrong.k]}`, v: v.name });
@@ -99,68 +89,59 @@ export function TensorLab({ state, set, w: words, svgRef }: PieceProps<"tensorLa
     : fill(w.tapPlace, { p: at.place });
   const layout = fill(isContiguous(v) ? w.contiguous : w.jumps, { shape: v.shape.join(", "), s: v.strides.join(", "), j: v.strides[v.strides.length - 1] });
 
+  const strides = p?.kind === "strides";
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(!p
+      ? [
+          { text: w.setup },
+          ...TN_SETUPS.map((s) => ({ text: setupLabel(s), on: s.id === setup.id, onTap: () => commit(fresh({ setup: s.id, sel: null })) })),
+          { text: `${w.next} →`, title: w.next, brk: true, onTap: () => commit({ sel: walk(v, d.sel) }) },
+        ]
+      : []),
+    { text: `↺ ${g.reset}`, title: g.reset, onTap: () => commit(fresh({ sel: null, answers: [] })) },
+  ];
+  const dialH = strides ? 56 : 0;
+  const total = v.shape.reduce((a, b) => a * b, 1);
+  const strip = dialH + pillRowsH(moves, TN_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
-          ref={svgRef}
+          ref={svgRef} className="hand-pic"
           width={TN_PLOT.w}
-          height={TN_PLOT.h}
-          viewBox={`0 0 ${TN_PLOT.w} ${TN_PLOT.h}`}
+          height={TN_PLOT.h + strip}
+          viewBox={`0 0 ${TN_PLOT.w} ${TN_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           onClick={tap}
         >
-          <rect width={TN_PLOT.w} height={TN_PLOT.h} fill="#fff" />
+          <rect width={TN_PLOT.w} height={TN_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: tnSvg(setup, { sel: d.sel, reveal, wrong: !!wrong, memory: w.memory, caption: tnCaption(setup) }) }} />
+          {strides &&
+            v.shape.map((_, k) => {
+              const x = (TN_PLOT.w - v.shape.length * 150 + 30) / 2 + k * 150;
+              const typed = d.answers[k] ?? "";
+              return (
+                <g key={k}>
+                  <text x={x + 44} y={TN_PLOT.h + 33} fontSize={18} fontWeight={700} textAnchor="end" fill={INK}>s{SUB[k]} =</text>
+                  <NumBox x={x + 50} y={TN_PLOT.h + 8} w={70} value={typed === "" ? -1 : Number(typed)} min={-1} max={total} label={fill(w.stride, { k })}
+                    show={(n) => (n < 0 ? "?" : String(n))} onChange={(n) => !d.done && setStride(k, n)} />
+                </g>
+              );
+            })}
+          <PillRows w={TN_PLOT.w} y={TN_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
-      {p?.kind === "strides" && (
-        <div className="live-bar">
-          {v.shape.map((_, k) => (
-            <label key={k} className="live-field">
-              s{SUB[k]} =
-              <input
-                ref={(el) => {
-                  fields.current[k] = el;
-                }}
-                className="live-num"
-                inputMode="numeric"
-                spellCheck={false}
-                value={d.answers[k] ?? ""}
-                disabled={d.done}
-                aria-label={fill(w.stride, { k })}
-                onChange={(e) => type(k, e.target.value)}
-                onBlur={leave}
-                onKeyDown={(e) => onKey(e, k)}
-              />
-            </label>
-          ))}
-        </div>
-      )}
-      {!p && (
-        <div className="live-bar">
-          <label className="live-select">
-            <span>{w.setup}</span>
-            <select value={setup.id} onChange={(e) => commit(fresh({ setup: e.target.value as TnSetupId, sel: null }))}>
-              {TN_SETUPS.map((s) => <option key={s.id} value={s.id}>{setupLabel(s)}</option>)}
-            </select>
-          </label>
-          <button className="live-btn" onClick={() => commit({ sel: walk(v, d.sel) })}>{w.next} →</button>
-        </div>
-      )}
       <div className="descent-read">
         <span className="descent-rule">{w.rule}</span>
         {reading && <span className="descent-next">{reading}</span>}
         {reveal && <span className="descent-next">{layout}</span>}
       </div>
-      <GameActions game={game} g={g} done={d.done} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        <button className="live-btn" onClick={() => commit(fresh({ sel: null, answers: [] }))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

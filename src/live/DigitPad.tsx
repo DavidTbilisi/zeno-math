@@ -11,14 +11,17 @@ const [SLOT_W, SLOT_H, TILE, GAP, ROW_Y] = [170, 50, 36, 4, 62];
 export const PAD_H = ROW_Y + 42;
 const MAX = 6;
 
-export function DigitPad({ x, y, w = 440, value, onChange, label, erase, minus = false, check, disabled }: {
+export function DigitPad({ x, y, w = 440, value, onChange, label, erase, minus = false, dot = false, check, disabled }: {
   x: number; y: number; w?: number; value: string; onChange: (v: string) => void; label: string; erase: string; minus?: boolean;
+  /** A decimal point tile too, for an answer that need not be whole. */
+  dot?: boolean;
   /** The pill beside the slot: shown when given (the caller decides when there is a number to check). */
   check?: { text: string; onTap: () => void };
   disabled?: boolean;
 }) {
-  const keys = [..."1234567890", ...(minus ? ["−"] : [])];
-  const can = (k: string) => !disabled && (k === "−" ? value === "" : value.replace("−", "").length < MAX);
+  const keys = [..."1234567890", ...(dot ? ["."] : []), ...(minus ? ["−"] : [])];
+  const can = (k: string) =>
+    !disabled && (k === "−" ? value === "" : k === "." ? !value.includes(".") && value.replace("−", "").length < MAX : value.replace(/[−.]/g, "").length < MAX);
   const add = (k: string) => can(k) && onChange(value + k);
   const back = () => !disabled && value && onChange(value.slice(0, -1));
   const slot = { x: 0, y: 0, w: SLOT_W, h: SLOT_H };
@@ -32,9 +35,12 @@ export function DigitPad({ x, y, w = 440, value, onChange, label, erase, minus =
   const key = (e: KeyboardEvent) => {
     if (/^[0-9]$/.test(e.key)) add(e.key);
     else if (e.key === "-" || e.key === "−") add("−");
+    else if (dot && (e.key === "." || e.key === ",")) add(".");
     else if (e.key === "Backspace" || e.key === "Delete") back();
     else return;
+    // The board around would take a digit for a tool of its own.
     e.preventDefault();
+    e.stopPropagation();
   };
   const chars = [...value];
   const cw = 22;
