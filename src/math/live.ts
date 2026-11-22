@@ -16,6 +16,7 @@ import type { LiveWall } from "./fractionWall";
 import type { LiveEquiv } from "./equivMatch";
 import type { LiveOrder } from "./fracOrder";
 import type { LiveShade } from "./shadeFrac";
+import { STRIPES_START, type LiveStripes } from "./stripes";
 import type { LiveBalance } from "./balance";
 import type { LiveMachine } from "./machine";
 import type { LiveGrow } from "./growing";
@@ -537,6 +538,7 @@ export type LiveStates = {
   equivMatch: LiveEquiv;
   fracOrder: LiveOrder;
   shadeFrac: LiveShade;
+  stripes: LiveStripes;
   balance: LiveBalance;
   machine: LiveMachine;
   growing: LiveGrow;
@@ -644,6 +646,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   equivMatch: [620, 480],
   fracOrder: [720, 470],
   shadeFrac: [600, 610],
+  stripes: [660, 680],
   balance: [680, 560],
   machine: [600, 610],
   growing: [600, 660],
@@ -753,6 +756,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     fracOrder: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], sel: 0, checked: false, streak: 0, said: null },
     shadeFrac: { mode: "puzzle", stage: 0, level: 1, seed: 1, shaded: [], misses: 0, done: false, streak: 0, said: null },
+    stripes: STRIPES_START,
     balance: { mode: "puzzle", stage: 0, level: 1, seed: 1, guess: [], weighed: false, misses: 0, done: false, streak: 0, said: null },
     machine: { mode: "puzzle", stage: 0, level: 1, seed: 1, tried: [], typed: "", misses: 0, done: false, streak: 0, said: null },
     growing: { mode: "puzzle", stage: 0, level: 1, seed: 1, built: [], typed: "", misses: 0, done: false, streak: 0, said: null },

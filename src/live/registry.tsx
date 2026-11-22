@@ -27,6 +27,7 @@ import { Patterns } from "./Patterns";
 import { QuickLook } from "./QuickLook";
 import { Rubik } from "./Rubik";
 import { ShadeGame } from "./ShadeGame";
+import { Stripes } from "./Stripes";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
@@ -140,6 +141,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   equivMatch: EquivMatch,
   fracOrder: FracOrder,
   shadeFrac: ShadeGame,
+  stripes: Stripes,
   balance: Balance,
   machine: Machine,
   growing: Growing,
