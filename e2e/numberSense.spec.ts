@@ -47,7 +47,7 @@ test("a round of the estimation game with every pin on its number earns three st
 
   const round = roundTasks(ESTIMATE_LADDER[0].level, ESTIMATE_LADDER[0].seed);
   for (const [i, t] of round.entries()) {
-    await expect(game.getByRole("img", { name: `Where does ${t.text} go?` })).toBeVisible();
+    await expect(game.getByLabel(`Where does ${t.text} go?`)).toBeVisible();
     // The first click may still be waking the piece up on a slow machine: drop again until the number shows.
     await expect(async () => {
       await dropPin(page, game.locator("svg").first(), t.play, t.v, [50, 650, 700, 130]);
