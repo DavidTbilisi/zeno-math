@@ -915,6 +915,24 @@ function frogJumpsPreview(): Piece[] {
   return [...out, text(0, 78, "0", 14), text(116, 78, "1", 14), text(140, 14, "4 × 1/3", 15)];
 }
 
+function makeOnePreview(): Piece[] {
+  // A half and a quarter falling toward a basket that already holds a quarter: 1/4 + 1/2 + 1/4 = 1.
+  const wedge = (cx: number, cy: number, r: number, a0: number, a1: number): Pt[] => {
+    const pts: Pt[] = [[cx, cy]];
+    for (let k = 0; k <= 8; k++) { const a = a0 + ((a1 - a0) * k) / 8; pts.push([cx + r * Math.sin(a), cy - r * Math.cos(a)]); }
+    return pts;
+  };
+  return [
+    poly(wedge(50, 40, 26, 0, Math.PI), { fill: FILL.blue, width: 2 }),
+    text(50, 40, "1/2", 15),
+    poly(wedge(170, 30, 26, 0, Math.PI / 2), { fill: FILL.yellow, width: 2 }),
+    text(170, 34, "1/4", 15),
+    ellipse(110, 110, 34, 34, { width: 2 }),
+    poly(wedge(110, 110, 34, 0, Math.PI / 2), { fill: FILL.yellow, width: 1.5 }),
+    arrow([60, 66], [90, 92], false, { width: 1.5 }),
+  ];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2084,6 +2102,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveOverflowBars", build: overflowBarsPreview, live: "overflowBars" },
   { id: "liveShareBags", build: shareBagsPreview, live: "shareBags" },
   { id: "liveFrogJumps", build: frogJumpsPreview, live: "frogJumps" },
+  { id: "liveMakeOne", build: makeOnePreview, live: "makeOne" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },
