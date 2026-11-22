@@ -907,6 +907,14 @@ function shareBagsPreview(): Piece[] {
   return [...out, text(98, 70, "3/5 of 20 = 12", 16)];
 }
 
+function frogJumpsPreview(): Piece[] {
+  // Four jumps of 1/3 along a line from 0 to 2, landing on 4/3.
+  const out: Piece[] = [seg([0, 60], [240, 60], { width: 2 })];
+  for (let k = 0; k <= 6; k++) out.push(seg([k * 40, k % 3 ? 54 : 50], [k * 40, k % 3 ? 66 : 70], { width: k % 3 ? 1 : 2 }));
+  for (let k = 0; k < 4; k++) out.push(ellipse(k * 40 + 20, 52, 20, 14, { fill: FILL.green, width: 1.5 }));
+  return [...out, text(0, 78, "0", 14), text(116, 78, "1", 14), text(140, 14, "4 × 1/3", 15)];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2075,6 +2083,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFindWhole", build: findWholePreview, live: "findWhole" },
   { id: "liveOverflowBars", build: overflowBarsPreview, live: "overflowBars" },
   { id: "liveShareBags", build: shareBagsPreview, live: "shareBags" },
+  { id: "liveFrogJumps", build: frogJumpsPreview, live: "frogJumps" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },

@@ -33,6 +33,7 @@ import { FitTiles } from "./FitTiles";
 import { FindWhole } from "./FindWhole";
 import { OverflowBars } from "./OverflowBars";
 import { ShareBags } from "./ShareBags";
+import { FrogJumps } from "./FrogJumps";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
@@ -152,6 +153,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   findWhole: FindWhole,
   overflowBars: OverflowBars,
   shareBags: ShareBags,
+  frogJumps: FrogJumps,
   balance: Balance,
   machine: Machine,
   growing: Growing,
