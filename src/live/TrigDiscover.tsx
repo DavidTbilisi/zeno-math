@@ -47,6 +47,8 @@ import { arcAt, mid, NAME_COLOR, outward, type P } from "./TrigBuild";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { WhySteps } from "./WhySteps";
+import { barHeight, DiscoverBar, type BarGroup, type BarPill } from "./DiscoverBar";
+import { useDrag } from "./hand";
 
 const FRESH: Partial<LiveDiscover> = { n: null, rows: [], a: null, op: null, b: null, tried: [], flipped: false, misses: 0, done: false, said: null };
 const W = 600;
@@ -274,6 +276,28 @@ export function TrigDiscover({ state: d, set, w: words, svgRef }: PieceProps<"tr
     shownCol ? numText(valueOf(shownCol, r)) : "",
   ];
 
+  // ---------- the hands under the picture ----------
+
+  const canMeasure = !d.done && task.level !== 3 && !(task.level === 1 && d.rows.length >= ROWS_MAX);
+  // The triangle dragged into the table (or tapped) is measured into it.
+  const tri = useDrag<object>((e) => canMeasure && (!e.moved || e.x > TABLE_X - 20) && measure());
+  const pills: BarPill[] = d.done ? [] : [
+    ...(task.level !== 3 ? [{ text: `📏 ${w.measure}`, onTap: measure, disabled: !canMeasure }] : []),
+    ...(task.level === 2 ? [{ text: `✓ ${w.here}`, onTap: here, strong: true }] : []),
+    ...(task.level === 1 && d.rows.length >= ROWS_NEEDED ? [{ text: `✓ ${w.claim}`, onTap: claim, strong: true, disabled: !col }] : []),
+  ];
+  const cards = !d.done && task.level === 3 ? { values: task.choices, text: numText, off: (v: number) => d.said?.kind === "pick" && d.said.v === v, pick } : undefined;
+  const sideGroup = (label: string, on: TrigName | null, key: "a" | "b"): BarGroup => ({
+    label, options: SIDE_NAMES, on, text: (n) => short[n as TrigName], color: (n) => NAME_COLOR[n as TrigName],
+    off: key === "b" ? (n) => n === d.a : undefined, pick: (n) => choose({ [key]: n as TrigName | null }),
+  });
+  const groups: BarGroup[] | null = !d.done && task.level === 1 && d.rows.length >= ROWS_NEEDED ? [
+    sideGroup(w.first, d.a, "a"),
+    { label: w.opLabel, options: OPS, on: d.op, text: (o) => o, pick: (o) => choose({ op: o as Op | null }) },
+    sideGroup(w.second, d.b, "b"),
+  ] : null;
+  const barH = barHeight(W, groups);
+
   return (
     <>
       <GameHead game={game} g={g}>
@@ -281,11 +305,14 @@ export function TrigDiscover({ state: d, set, w: words, svgRef }: PieceProps<"tr
       </GameHead>
       <Said line={{ tone: "prompt", text: prompt }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={prompt} style={{ touchAction: "none" }}>
-          <rect width={W} height={H} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={W} height={H + barH} viewBox={`0 0 ${W} ${H + barH}`} fontFamily={FONT} aria-label={prompt} style={{ touchAction: "none" }} {...tri.svgProps}>
+          <rect width={W} height={H + barH} fill="#fff" />
           {gridLines}
           {task.level === 2 && <path d={`M${O[0] + 10 * u},${O[1]} A${10 * u},${10 * u} 0 0 0 ${O[0]},${O[1] - 10 * u}`} fill="none" stroke="#ced4da" strokeDasharray="4 5" />}
-          <polygon points={`${K.A.join(",")} ${K.B.join(",")} ${K.C.join(",")}`} fill="#f8f9fa" fillOpacity={0.8} />
+          <polygon points={`${K.A.join(",")} ${K.B.join(",")} ${K.C.join(",")}`} fill={tri.drag?.moved ? "#e7f5ff" : "#f8f9fa"} fillOpacity={0.8}
+            style={{ cursor: canMeasure ? "grab" : undefined }} onPointerDown={(e) => canMeasure && tri.begin(e, {})}>
+            {canMeasure && <title>{w.measureDrag}</title>}
+          </polygon>
           {SIDE_NAMES.map((n) => {
             const [p, q] = ends[n];
             return <line key={n} x1={p[0]} y1={p[1]} x2={q[0]} y2={q[1]} stroke={NAME_COLOR[n]} strokeWidth={3.5} strokeLinecap="round" />;
@@ -375,57 +402,16 @@ export function TrigDiscover({ state: d, set, w: words, svgRef }: PieceProps<"tr
           )}
           {/* Hard: the small triangle with the same angle, measured, and its three ratios. */}
           {task.level === 3 && small && <SmallTriangle small={small} short={short} tag={w.smallTag} ratios={(["sin", "cos", "tan"] as const).map((r) => `${short[RATIO_PARTS[r][0]]} ÷ ${short[RATIO_PARTS[r][1]]} = ${numText(valueOf({ a: RATIO_PARTS[r][0], op: "÷", b: RATIO_PARTS[r][1] }, small))} = ${ratioName(r)}`)} />}
+          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={{ text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) }} />
+          {tri.drag?.moved && <text x={tri.drag.x} y={tri.drag.y} fontSize={24} textAnchor="middle" pointerEvents="none">📏</text>}
         </svg>
       </Stage>
       {explain !== null && (
         <WhySteps at={explain} of={whys.length} text={whyText(whys[explain])} back={w.whyBack} next={w.whyNext} onStep={setExplain} picture={<DiscoverPicture step={whys[explain]} short={short} />} />
       )}
-      {/* Easy: the column to make, once three rows are in. */}
-      {!d.done && task.level === 1 && d.rows.length >= ROWS_NEEDED && (
-        <div className="live-bar disc-build">
-          <Choice label={w.first} options={SIDE_NAMES} on={d.a} text={(n) => short[n]} color={(n) => NAME_COLOR[n]} pick={(a) => choose({ a })} />
-          <Choice label={w.opLabel} options={OPS} on={d.op} text={(o: Op) => o} pick={(op) => choose({ op })} />
-          <Choice label={w.second} options={SIDE_NAMES} on={d.b} text={(n) => short[n]} color={(n) => NAME_COLOR[n]} off={(n) => n === d.a} pick={(b) => choose({ b })} />
-          <button className="live-btn on" disabled={!col} onClick={claim}>
-            ✓ {w.claim}
-          </button>
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {!d.done && task.level !== 3 && (
-          <button className="live-btn" disabled={task.level === 1 && d.rows.length >= ROWS_MAX} onClick={measure}>
-            📏 {w.measure}
-          </button>
-        )}
-        {!d.done && task.level === 2 && (
-          <button className="live-btn on" onClick={here}>
-            ✓ {w.here}
-          </button>
-        )}
-        {!d.done && task.level === 3 && task.choices.map((v) => (
-          <button key={v} className="live-btn on" disabled={d.said?.kind === "pick" && d.said.v === v} onClick={() => pick(v)}>
-            {numText(v)}
-          </button>
-        ))}
-        <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain !== null ? null : 0)}>
-          💡 {w.why}
-        </button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} always />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
-  );
-}
-
-/** A row of buttons, one of them chosen. */
-export function Choice<T extends string>({ label, options, on, text, color, off, pick }: { label: string; options: readonly T[]; on: T | null; text: (t: T) => string; color?: (t: T) => string; off?: (t: T) => boolean; pick: (t: T) => void }) {
-  return (
-    <span className="disc-choice" role="group" aria-label={label}>
-      {options.map((o) => (
-        <button key={o} className={`live-btn${on === o ? " on" : ""}`} aria-pressed={on === o} disabled={off?.(o)} style={color && on !== o ? { color: color(o) } : undefined} onClick={() => pick(o)}>
-          {text(o)}
-        </button>
-      ))}
-    </span>
   );
 }
 
