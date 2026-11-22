@@ -17,15 +17,12 @@ const w = en.pracWords;
 test("balance: the shape's weight set and weighed right first time earns three stars", async ({ page }) => {
   const game = await boardWith(page, "Balance the scales", ".live-balance");
   const t = balanceTask(BALANCE_LADDER[0].level, rng(BALANCE_LADDER[0].seed));
-  const heavier = game.getByRole("button", { name: "■ heavier" });
-  const shown = game.locator(".live-stepper b");
-  await expect(async () => {
-    await heavier.click();
-    await expect(shown).toHaveText("2", { timeout: 1000 });
-  }).toPass();
-  for (let v = 2; v < t.values[0]; v++) await heavier.click();
-  await expect(shown).toHaveText(String(t.values[0]));
-  await game.getByRole("button", { name: /Weigh/ }).click();
+  // The ■'s wheel turned up to its weight, then the scales tapped to weigh.
+  const wheel = game.getByRole("slider", { name: "What ■ weighs" });
+  await expect(wheel).toHaveAttribute("aria-valuenow", "1");
+  for (let v = 1; v < t.values[0]; v++) await wheel.press("ArrowUp");
+  await expect(wheel).toHaveAttribute("aria-valuenow", String(t.values[0]));
+  await game.getByRole("button", { name: "Tap the scales to weigh" }).click();
   await expect(game.getByText(/Balanced! ★★★/)).toBeVisible();
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });

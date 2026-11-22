@@ -5913,11 +5913,10 @@ export const en = {
       }
     },
     balance: {
-      hint: "The scales balance. What does the ■ weigh? Set it, then weigh.",
-      hintTwo: "Both scales balance. What do the ■ and the ● weigh? Set them, then weigh.",
-      weigh: "Weigh",
-      lighter: "{s} lighter",
-      heavier: "{s} heavier",
+      hint: "The scales balance. What does the ■ weigh? Turn its wheel, then tap the scales to weigh.",
+      hintTwo: "Both scales balance. What do the ■ and the ● weigh? Turn their wheels, then tap the scales to weigh.",
+      weigh: "Tap the scales to weigh",
+      weight: "What {s} weighs",
       notYet: "Not yet — with those weights the scales tip. The totals are under the pans.",
       right: "Balanced! {stars}",
       notices: {
