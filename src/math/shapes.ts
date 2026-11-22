@@ -933,6 +933,23 @@ function makeOnePreview(): Piece[] {
   ];
 }
 
+function tileDropPreview(): Piece[] {
+  // A quarter falling toward a row that holds 1/2 + 1/4: it will clear at one whole. Below, a row with a third.
+  return [
+    rect(150, 6, 60, 26, { fill: FILL.yellow, width: 2 }),
+    text(180, 19, "1/4", 13),
+    arrow([180, 36], [180, 58], false, { width: 1.5 }),
+    rect(0, 62, 240, 34, { width: 2 }),
+    rect(0, 62, 120, 34, { fill: FILL.blue, width: 2 }),
+    text(60, 79, "1/2", 14),
+    rect(120, 62, 60, 34, { fill: FILL.yellow, width: 2 }),
+    text(150, 79, "1/4", 13),
+    rect(0, 104, 240, 34, { width: 2 }),
+    rect(0, 104, 80, 34, { fill: FILL.green, width: 2 }),
+    text(40, 121, "1/3", 14),
+  ];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2103,6 +2120,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveShareBags", build: shareBagsPreview, live: "shareBags" },
   { id: "liveFrogJumps", build: frogJumpsPreview, live: "frogJumps" },
   { id: "liveMakeOne", build: makeOnePreview, live: "makeOne" },
+  { id: "liveTileDrop", build: tileDropPreview, live: "tileDrop" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },

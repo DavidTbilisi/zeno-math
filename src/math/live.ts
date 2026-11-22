@@ -24,6 +24,7 @@ import { OVERFLOW_START, type LiveOverflow } from "./overflowBars";
 import { SHARE_START, type LiveShare } from "./shareBags";
 import { FROG_START, type LiveFrog } from "./frogJumps";
 import { MAKE_START, type LiveMakeOne } from "./makeOne";
+import { TILE_START, type LiveTileDrop } from "./tileDrop";
 import type { LiveBalance } from "./balance";
 import type { LiveMachine } from "./machine";
 import type { LiveGrow } from "./growing";
@@ -553,6 +554,7 @@ export type LiveStates = {
   shareBags: LiveShare;
   frogJumps: LiveFrog;
   makeOne: LiveMakeOne;
+  tileDrop: LiveTileDrop;
   balance: LiveBalance;
   machine: LiveMachine;
   growing: LiveGrow;
@@ -668,6 +670,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   shareBags: [660, 580],
   frogJumps: [660, 500],
   makeOne: [640, 560],
+  tileDrop: [640, 580],
   balance: [680, 560],
   machine: [600, 610],
   growing: [600, 660],
@@ -785,6 +788,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     shareBags: SHARE_START,
     frogJumps: FROG_START,
     makeOne: MAKE_START,
+    tileDrop: TILE_START,
     balance: { mode: "puzzle", stage: 0, level: 1, seed: 1, guess: [], weighed: false, misses: 0, done: false, streak: 0, said: null },
     machine: { mode: "puzzle", stage: 0, level: 1, seed: 1, tried: [], typed: "", misses: 0, done: false, streak: 0, said: null },
     growing: { mode: "puzzle", stage: 0, level: 1, seed: 1, built: [], typed: "", misses: 0, done: false, streak: 0, said: null },

@@ -35,6 +35,7 @@ import { OverflowBars } from "./OverflowBars";
 import { ShareBags } from "./ShareBags";
 import { FrogJumps } from "./FrogJumps";
 import { MakeOne } from "./MakeOne";
+import { TileDrop } from "./TileDrop";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
@@ -156,6 +157,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   shareBags: ShareBags,
   frogJumps: FrogJumps,
   makeOne: MakeOne,
+  tileDrop: TileDrop,
   balance: Balance,
   machine: Machine,
   growing: Growing,
