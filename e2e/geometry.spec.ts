@@ -35,8 +35,10 @@ test("a geoboard puzzle done first time earns three stars and opens the next one
   await expect(board.getByText(/Make a rectangle with an area of \d+ squares/)).toBeVisible();
   await expect(board.getByRole("button", { name: /^Puzzle 2/ })).toHaveCount(0);
 
-  await tapDots(page, board.locator("svg.geo-grid"), ladderTask(0).sample, 44);
-  await board.getByRole("button", { name: "Check" }).click();
+  // The shape's corners tapped, then the first corner again: the band closed and checked.
+  const sample = ladderTask(0).sample;
+  await tapDots(page, board.locator("svg.geo-grid"), sample, 44);
+  await tapDots(page, board.locator("svg.geo-grid"), sample.slice(0, 1), 44);
   await expect(board.getByText("Done! ★★★")).toBeVisible();
   await expect(board.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 

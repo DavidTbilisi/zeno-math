@@ -632,7 +632,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   problems: [800, 700],
   solver: [800, 760],
   numberLine: [800, 440],
-  geoboard: [600, 660],
+  geoboard: [600, 700],
   estimate: [720, 390],
   quickLook: [620, 580],
   target: [640, 430],
