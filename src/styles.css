@@ -379,15 +379,20 @@ input.invalid { border-color: var(--danger); }
 .glab-noclose { margin: 0 0 6px; }
 .glab-noclose svg { max-width: 100%; height: auto; display: block; }
 .glab-noclose figcaption { font-size: 13px; color: #495057; max-width: 340px; }
-.glab-sep { width: 1px; height: 22px; background: #dee2e6; margin: 0 4px; }
-.live .glab-make .live-num { width: 4.2em; }
 .glab-facts {
   width: 340px; height: 542px; overflow-y: auto; box-sizing: border-box; padding: 8px 10px; text-align: left;
   border: 1px solid #dee2e6; border-radius: 6px; font-size: 13px; user-select: text;
 }
 .glab-name { font-size: 16px; font-weight: 700; line-height: 1.25; }
-.glab-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 2px; }
-.live .glab-actions .glab-k { width: 3.5em; }
+.glab-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; position: sticky; top: -8px; z-index: 1;
+  background: #fff; margin-top: -8px; padding: 8px 0 4px;
+}
+.glab-copy {
+  flex: none; font-size: 13px; font-weight: 600; color: #1971c2; padding: 3px 8px; border: 1.5px dashed #74c0fc; border-radius: 8px;
+  background: #e7f5ff; user-select: none;
+}
+.glab-copy:focus:not(:focus-visible) { outline: none; }
 .glab-facts h4 { margin: 10px 0 3px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #868e96; }
 .glab-fact { padding: 2px 5px; border-radius: 4px; }
 .glab-fact:hover { background: #fff4e6; }
