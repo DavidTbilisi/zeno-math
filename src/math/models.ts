@@ -22,7 +22,10 @@ export type BarModelSpec = { type: "bar"; rows: BarRow[]; grandTotal: string; sh
 export type FractionRow = { n: number; d: number };
 export type FractionSpec = { type: "fraction"; rows: FractionRow[]; shape: "bar" | "circle"; unitLabels: boolean };
 export type PercentSpec = { type: "percent"; percent: number; of: number | null; style: "grid" | "bar" };
-export type BondSpec = { type: "bond"; whole: string; parts: string[] };
+/** A part of a number bond: a number, or a number split again into its own parts (to any depth). */
+export type BondPart = string | BondNode;
+export type BondNode = { whole: string; parts: BondPart[] };
+export type BondSpec = { type: "bond" } & BondNode;
 export type ModelSpec = BarModelSpec | FractionSpec | PercentSpec | BondSpec | PlaceValueSpec | AddSpec | SubSpec | MultiplySpec | DivisionSpec | FracOpSpec | PercRatioSpec;
 export type ModelType = ModelSpec["type"];
 
@@ -343,35 +346,69 @@ function renderPercent(spec: PercentSpec): RenderedSvg {
 
 // ---------- Number bond ----------
 
-function renderBond(spec: BondSpec): RenderedSvg {
-  const parts0 = spec.parts.map((p) => p.trim());
-  const radius = (s: string) => Math.max(34, textWidth(s, 20) / 2 + 14);
-  const RW = radius(spec.whole);
-  const radii = parts0.map(radius);
-  const spacing = Math.max(120, ...radii.map((r) => 2 * r + 24));
-  const span = spacing * (parts0.length - 1);
-  const width = Math.max(span + 2 * Math.max(...radii), 2 * RW) + 2 * PAD;
-  const cx = width / 2;
-  const wy = PAD + RW;
-  const py = wy + RW + 80;
-  const out: string[] = [];
+/** The number a part shows: its own label, or the whole it splits. */
+export const bondLabel = (p: BondPart): string => (typeof p === "string" ? p : p.whole);
 
-  parts0.forEach((_, i) => {
-    const x = cx - span / 2 + i * spacing;
-    const ang = Math.atan2(py - wy, x - cx);
+type BondLaid = { label: string; r: number; w: number; depth: number; kids: BondLaid[] };
+
+function renderBond(spec: BondSpec): RenderedSvg {
+  const radius = (s: string) => Math.max(34, textWidth(s, 20) / 2 + 14);
+  // Each circle takes a slot at least 120 wide (the spacing of a one-level bond); a split part takes the width of its parts.
+  const lay = (label: string, parts: BondPart[], depth: number): BondLaid => {
+    const r = radius(label);
+    const kids = parts.map((p) => (typeof p === "string" ? lay(p.trim(), [], depth + 1) : lay(p.whole.trim(), p.parts, depth + 1)));
+    const kidsW = kids.reduce((a, k) => a + k.w, 0);
+    return { label, r, w: Math.max(120, 2 * r + 24, kidsW), depth, kids };
+  };
+  const root = lay(spec.whole.trim(), spec.parts, 0);
+  const rowR: number[] = [];
+  const walk = (n: BondLaid) => {
+    rowR[n.depth] = Math.max(rowR[n.depth] ?? 0, n.r);
+    n.kids.forEach(walk);
+  };
+  walk(root);
+  // A row's centre sits 80 below the bottom of the widest circle in the row above.
+  const rowY: number[] = [PAD + rowR[0]];
+  for (let d = 1; d < rowR.length; d++) rowY[d] = rowY[d - 1] + rowR[d - 1] + 80;
+
+  const placed: { x: number; y: number; n: BondLaid }[] = [];
+  const lines: { x1: number; y1: number; r1: number; x2: number; y2: number; r2: number }[] = [];
+  const place = (n: BondLaid, left: number): number => {
+    const x = left + n.w / 2;
+    const y = rowY[n.depth];
+    placed.push({ x, y, n });
+    let kl = left + (n.w - n.kids.reduce((a, k) => a + k.w, 0)) / 2;
+    for (const k of n.kids) {
+      const kx = place(k, kl);
+      lines.push({ x1: x, y1: y, r1: n.r, x2: kx, y2: rowY[k.depth], r2: k.r });
+      kl += k.w;
+    }
+    return x;
+  };
+  place(root, 0);
+  const minX = Math.min(...placed.map((p) => p.x - p.n.r));
+  const maxX = Math.max(...placed.map((p) => p.x + p.n.r));
+  const dx = PAD - minX;
+  const out: string[] = [];
+  for (const l of lines) {
+    const ang = Math.atan2(l.y2 - l.y1, l.x2 - l.x1);
     out.push(
-      `<line x1="${r2(cx + RW * Math.cos(ang))}" y1="${r2(wy + RW * Math.sin(ang))}" x2="${r2(x - radii[i] * Math.cos(ang))}" y2="${r2(
-        py - radii[i] * Math.sin(ang),
+      `<line x1="${r2(l.x1 + dx + l.r1 * Math.cos(ang))}" y1="${r2(l.y1 + l.r1 * Math.sin(ang))}" x2="${r2(l.x2 + dx - l.r2 * Math.cos(ang))}" y2="${r2(
+        l.y2 - l.r2 * Math.sin(ang),
       )}" stroke="${INK}" stroke-width="2"/>`,
     );
-  });
-  const circle = (x: number, y: number, r: number, label: string, c: (typeof MODEL_COLORS)[number]) =>
-    `<circle cx="${r2(x)}" cy="${r2(y)}" r="${r2(r)}" fill="${label.includes("?") ? "#ffffff" : c.fill}" stroke="${c.stroke}" stroke-width="2.5"${
-      label.includes("?") ? ` stroke-dasharray="6 4"` : ""
-    }/>` + text(x, y + 7, label, { size: 20, bold: true });
-  out.push(circle(cx, wy, RW, spec.whole.trim(), MODEL_COLORS[0]));
-  parts0.forEach((p, i) => out.push(circle(cx - span / 2 + i * spacing, py, radii[i], p, MODEL_COLORS[1])));
-  return wrap(width, py + Math.max(...radii) + PAD, out.join(""));
+  }
+  for (const { x, y, n } of placed) {
+    const c = MODEL_COLORS[n.depth % MODEL_COLORS.length];
+    const blank = n.label.includes("?");
+    out.push(
+      `<circle cx="${r2(x + dx)}" cy="${r2(y)}" r="${r2(n.r)}" fill="${blank ? "#ffffff" : c.fill}" stroke="${c.stroke}" stroke-width="2.5"${
+        blank ? ` stroke-dasharray="6 4"` : ""
+      }/>` + text(x + dx, y + 7, n.label, { size: 20, bold: true }),
+    );
+  }
+  const last = rowR.length - 1;
+  return wrap(maxX - minX + 2 * PAD, rowY[last] + rowR[last] + PAD, out.join(""));
 }
 
 export function renderModel(spec: ModelSpec): RenderedSvg {
@@ -536,5 +573,7 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "bond10", spec: DEFAULT_MODELS.bond },
     { key: "bondThree", spec: { type: "bond", whole: "100", parts: ["45", "30", "?"] } },
     { key: "bondFraction", spec: { type: "bond", whole: "1", parts: ["1/4", "3/4"] } },
+    { key: "bondLevels", spec: { type: "bond", whole: "13", parts: [{ whole: "10", parts: ["8", "2"] }, "3"] } },
+    { key: "bondDeep", spec: { type: "bond", whole: "100", parts: [{ whole: "60", parts: [{ whole: "30", parts: ["15", "?"] }, "30"] }, { whole: "40", parts: ["?", "20"] }] } },
   ],
 };

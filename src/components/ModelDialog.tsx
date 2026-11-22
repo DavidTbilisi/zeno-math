@@ -7,6 +7,8 @@ import {
   PRESETS,
   renderModel,
   type BarModelSpec,
+  bondLabel,
+  type BondPart,
   type BondSpec,
   type DialogModelType,
   type FractionSpec,
@@ -497,34 +499,63 @@ function PercentEditor({ spec, onChange }: { spec: PercentSpec; onChange: (s: Pe
 function BondEditor({ spec, onChange }: { spec: BondSpec; onChange: (s: BondSpec) => void }) {
   const { t } = useI18n();
   return (
-    <div className="range-grid">
+    <div className="range-grid bond-grid">
       <label>
         <span>{t.whole}</span>
         <input className="bond-input" value={spec.whole} onChange={(e) => onChange({ ...spec, whole: e.target.value })} />
       </label>
-      <label>
+      <div className="bond-field">
         <span>{t.parts}</span>
-        <div>
-          {spec.parts.map((p, i) => (
+        <BondParts parts={spec.parts} onChange={(parts) => onChange({ ...spec, parts })} />
+      </div>
+    </div>
+  );
+}
+
+/** The parts of one split; a part can be split again (⑂) into parts of its own, to any depth, or joined back (×). */
+function BondParts({ parts, onChange }: { parts: BondPart[]; onChange: (parts: BondPart[]) => void }) {
+  const { t } = useI18n();
+  const set = (i: number, p: BondPart) => onChange(parts.map((q, j) => (j === i ? p : q)));
+  return (
+    <div className="bond-parts">
+      <div className="bond-row">
+        {parts.map((p, i) => (
+          <span key={i} className="bond-part">
             <input
-              key={i}
               className="bond-input"
-              value={p}
-              onChange={(e) => onChange({ ...spec, parts: spec.parts.map((q, j) => (j === i ? e.target.value : q)) })}
+              value={bondLabel(p)}
+              onChange={(e) => set(i, typeof p === "string" ? e.target.value : { ...p, whole: e.target.value })}
             />
-          ))}
-          {spec.parts.length < 4 && (
-            <button className="btn small" title={t.addPart} onClick={() => onChange({ ...spec, parts: [...spec.parts, "?"] })}>
-              +
-            </button>
-          )}
-          {spec.parts.length > 2 && (
-            <button className="icon-btn" aria-label={t.remove} onClick={() => onChange({ ...spec, parts: spec.parts.slice(0, -1) })}>
-              ×
-            </button>
-          )}
-        </div>
-      </label>
+            {typeof p === "string" ? (
+              <button className="icon-btn" title={t.splitPart} aria-label={t.splitPart} onClick={() => set(i, { whole: p, parts: ["?", "?"] })}>
+                ⑂
+              </button>
+            ) : (
+              <button className="icon-btn" title={t.joinParts} aria-label={t.joinParts} onClick={() => set(i, p.whole)}>
+                ⤒
+              </button>
+            )}
+          </span>
+        ))}
+        {parts.length < 4 && (
+          <button className="btn small" title={t.addPart} onClick={() => onChange([...parts, "?"])}>
+            +
+          </button>
+        )}
+        {parts.length > 2 && (
+          <button className="icon-btn" aria-label={t.remove} onClick={() => onChange(parts.slice(0, -1))}>
+            ×
+          </button>
+        )}
+      </div>
+      {parts.map((p, i) =>
+        typeof p === "string" ? null : (
+          <div key={i} className="bond-sub">
+            <span className="bond-sub-of">{p.whole.trim() || "?"} =</span>
+            <BondParts parts={p.parts} onChange={(sub) => set(i, { ...p, parts: sub })} />
+          </div>
+        ),
+      )}
     </div>
   );
 }
