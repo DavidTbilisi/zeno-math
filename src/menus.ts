@@ -256,6 +256,7 @@ export const MENUS: MenuGroup[] = [
           { live: "equivMatch", icon: "🃏" },
           { live: "fracOrder", icon: "⇢" },
           { live: "stripes", icon: "▦" },
+          { live: "foldStrip", icon: "🗞" },
         ],
       },
       {
