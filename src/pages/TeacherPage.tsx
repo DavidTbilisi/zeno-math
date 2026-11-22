@@ -159,7 +159,10 @@ export function TeacherPage() {
     setLoading(true);
     setFailed(false);
     try {
-      setData(await api.dashboard(code));
+      // The class list too: its counts of students (in the header and the side list) change as students join.
+      const [dashboard, list] = await Promise.all([api.dashboard(code), api.classes()]);
+      setData(dashboard);
+      setClasses(list);
     } catch {
       setFailed(true);
     } finally {
