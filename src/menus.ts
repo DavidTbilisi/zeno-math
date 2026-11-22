@@ -259,6 +259,7 @@ export const MENUS: MenuGroup[] = [
           { live: "foldStrip", icon: "🗞" },
           { live: "fitTiles", icon: "📏" },
           { live: "findWhole", icon: "🧩" },
+          { live: "overflowBars", icon: "🫗" },
         ],
       },
       {

@@ -890,6 +890,13 @@ function findWholePreview(): Piece[] {
   return [...out, text(75, 96, "= 1", 16)];
 }
 
+function overflowBarsPreview(): Piece[] {
+  // 7/4 shaded: one full bar of quarters and three quarters of the next, the same as 1 3/4.
+  const out: Piece[] = [];
+  for (let b = 0; b < 2; b++) for (let k = 0; k < 4; k++) out.push(rect(k * 40, b * 36, 40, 28, { fill: b * 4 + k < 7 ? FILL.yellow : undefined, width: 1.5 }));
+  return [...out, text(80, 92, "7/4 = 1 3/4", 16)];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2056,6 +2063,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFoldStrip", build: foldStripPreview, live: "foldStrip" },
   { id: "liveFitTiles", build: fitTilesPreview, live: "fitTiles" },
   { id: "liveFindWhole", build: findWholePreview, live: "findWhole" },
+  { id: "liveOverflowBars", build: overflowBarsPreview, live: "overflowBars" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },
