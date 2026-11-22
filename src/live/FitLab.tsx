@@ -37,13 +37,16 @@ import {
   type LiveFit,
   type Pt,
 } from "../math/fitLab";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** The most points free play takes. */
 const MAX_PTS = 80;
+/** A dial's row under the plot, and the width of one of two side by side. */
+const [DIAL_H, HALF] = [40, (FIT_PLOT.w - 24) / 2];
 type Grab = { i: number; moved: boolean };
 
 const keepIn = (v: number, lim: number) => Math.round(Math.min(lim - 0.05, Math.max(-(lim - 0.05), v)) * 1000) / 1000;
@@ -97,7 +100,7 @@ export function FitLab({ state, set, w: words, svgRef }: PieceProps<"fitLab">) {
   const down = (e: PointerEvent<SVGSVGElement>) => {
     if (p) return;
     const [px, py] = svgPoint(e.currentTarget, e);
-    if (px > FIT_PLOT.left + FIT_PLOT.size + 4) return;
+    if (px > FIT_PLOT.left + FIT_PLOT.size + 4 || py > FIT_PLOT.h) return;
     const q = fromPage([px, py]);
     const i = d.pts.findIndex((r) => Math.hypot(toPage(r)[0] - px, toPage(r)[1] - py) <= 11);
     let gr: Grab;
@@ -148,28 +151,28 @@ export function FitLab({ state, set, w: words, svgRef }: PieceProps<"fitLab">) {
     : test ? fill(w.read.test, { tr: num(sc.train), te: num(sc.test) })
     : fill(w.read.train, { tr: num(sc.train) });
 
-  // A slider over a knob's settings, by index.
-  const slider = (k: Knob) => {
+  // A dial over a knob's settings, by index.
+  const dial = (k: Knob, x: number, y: number, tw: number) => {
     const vals = knobValues(k);
-    const at = knobAt(d, k);
-    const shown = k === "degree" ? `d = ${DEGREES[at]}` : k === "n" ? `n = ${p ? SIZES[at] : d.pts.length}` : `λ = ${lambdaText(LAMBDAS[at])}`;
-    return (
-      <label className="live-slider" key={k}>
-        <b>{shown}</b>
-        <input
-          type="range"
-          min={0}
-          max={vals.length - 1}
-          value={at}
-          aria-label={w.knobs[k]}
-          onChange={(e) => turn(k, Number(e.target.value), false)}
-          onPointerUp={(e) => turn(k, Number(e.currentTarget.value), true)}
-          onKeyUp={(e) => turn(k, Number(e.currentTarget.value), true)}
-        />
-      </label>
-    );
+    const shown = (at: number) => (k === "degree" ? `d = ${DEGREES[at]}` : k === "n" ? `n = ${p ? SIZES[at] : d.pts.length}` : `λ = ${lambdaText(LAMBDAS[at])}`);
+    return <Track key={k} x={x} y={y} w={tw} value={knobAt(d, k)} min={0} max={vals.length - 1} label={w.knobs[k]} show={shown} onChange={(i, done) => turn(k, i, done)} />;
   };
   const noiseAt = Math.max(0, NOISES.indexOf(d.noise));
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(!p
+      ? [
+          { text: fill(w.curve, { c: w.truths[d.truth] }), onTap: () => redraw({ truth: TRUTH_IDS[(TRUTH_IDS.indexOf(d.truth) + 1) % TRUTH_IDS.length] }) },
+          { text: w.newSample, onTap: () => redraw({ seed: d.seed + 1 }) },
+          { text: w.showTest, on: d.showTest, onTap: () => commit({ showTest: !d.showTest }) },
+          { text: w.showFresh, on: d.showFresh, onTap: () => commit({ showFresh: !d.showFresh }) },
+          { text: w.showTruth, on: d.showTruth, onTap: () => commit({ showTruth: !d.showTruth }) },
+        ]
+      : []),
+    { text: `↺ ${g.reset}`, title: g.reset, onTap: () => commit(fresh0(fitStart(p))) },
+  ];
+  const dials = p ? 1 : 2;
+  const strip = dials * DIAL_H + pillRowsH(moves, FIT_PLOT.w) + 8;
 
   return (
     <>
@@ -178,11 +181,11 @@ export function FitLab({ state, set, w: words, svgRef }: PieceProps<"fitLab">) {
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={FIT_PLOT.w}
-          height={FIT_PLOT.h}
-          viewBox={`0 0 ${FIT_PLOT.w} ${FIT_PLOT.h}`}
+          height={FIT_PLOT.h + strip}
+          viewBox={`0 0 ${FIT_PLOT.w} ${FIT_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: p ? "default" : grab ? "grabbing" : "crosshair", touchAction: "none" }}
           onPointerDown={down}
@@ -190,7 +193,7 @@ export function FitLab({ state, set, w: words, svgRef }: PieceProps<"fitLab">) {
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={FIT_PLOT.w} height={FIT_PLOT.h} fill="#fff" />
+          <rect width={FIT_PLOT.w} height={FIT_PLOT.h + strip} fill="#fff" />
           {enough && (
             <g
               dangerouslySetInnerHTML={{
@@ -198,42 +201,24 @@ export function FitLab({ state, set, w: words, svgRef }: PieceProps<"fitLab">) {
               }}
             />
           )}
+          {p ? (
+            dial(knob, 8, FIT_PLOT.h + 4, FIT_PLOT.w - 16)
+          ) : (
+            <>
+              {dial("degree", 8, FIT_PLOT.h + 4, HALF)}
+              {dial("lambda", HALF + 16, FIT_PLOT.h + 4, HALF)}
+              {dial("n", 8, FIT_PLOT.h + 4 + DIAL_H, HALF)}
+              <Track x={HALF + 16} y={FIT_PLOT.h + 4 + DIAL_H} w={HALF} value={noiseAt} min={0} max={NOISES.length - 1} label={w.noise} show={(i) => `σ = ${NOISES[i]}`} color="#e8590c"
+                onChange={(i, done) => (done ? redraw({ noise: NOISES[i] }) : setDraft({ ...draft, noise: NOISES[i] }))} />
+            </>
+          )}
+          <PillRows w={FIT_PLOT.w} y={FIT_PLOT.h + dials * DIAL_H + 4} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <div className="live-bar descent-dials">
-        {p ? slider(knob) : (["degree", "lambda", "n"] as Knob[]).map(slider)}
-        {!p && (
-          <label className="live-slider">
-            <b>σ = {NOISES[noiseAt]}</b>
-            <input
-              type="range"
-              min={0}
-              max={NOISES.length - 1}
-              value={noiseAt}
-              aria-label={w.noise}
-              onChange={(e) => setDraft({ ...draft, noise: NOISES[Number(e.target.value)] })}
-              onPointerUp={(e) => redraw({ noise: NOISES[Number(e.currentTarget.value)] })}
-              onKeyUp={(e) => redraw({ noise: NOISES[Number(e.currentTarget.value)] })}
-            />
-          </label>
-        )}
-      </div>
-      <GameActions game={game} g={g} done={d.done} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {!p && (
-          <>
-            <button className="live-btn" onClick={() => redraw({ truth: TRUTH_IDS[(TRUTH_IDS.indexOf(d.truth) + 1) % TRUTH_IDS.length] })}>{fill(w.curve, { c: w.truths[d.truth] })}</button>
-            <button className="live-btn" onClick={() => redraw({ seed: d.seed + 1 })}>{w.newSample}</button>
-            <Toggle on={d.showTest} onClick={() => commit({ showTest: !d.showTest })}>{w.showTest}</Toggle>
-            <Toggle on={d.showFresh} onClick={() => commit({ showFresh: !d.showFresh })}>{w.showFresh}</Toggle>
-            <Toggle on={d.showTruth} onClick={() => commit({ showTruth: !d.showTruth })}>{w.showTruth}</Toggle>
-          </>
-        )}
-        <button className="live-btn" onClick={() => commit(fresh0(fitStart(p)))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={said} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
