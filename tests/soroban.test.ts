@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { rng } from "../src/math/random.ts";
-import { beadsOf, clickBead, rodDigits, ruleFor, sorobanFits, sorobanMax, sorobanSteps, sorobanTarget } from "../src/math/soroban.ts";
+import { beadsOf, clickBead, digitAt, pushBead, rodDigits, withDigit, ruleFor, sorobanFits, sorobanMax, sorobanSteps, sorobanTarget } from "../src/math/soroban.ts";
 
 test("rods show the digits, the five bead and the ones", () => {
   assert.deepEqual(rodDigits(2026, 6), [0, 0, 2, 0, 2, 6]);
@@ -115,4 +115,16 @@ test("sums that don't fit are caught, and targets fit the rods", () => {
     const t = sorobanTarget(rods, r);
     assert.ok(t >= 10 && t <= sorobanMax(Math.min(rods, 4)), String(t));
   }
+});
+
+test("beads pushed by hand: towards the beam they count, away they don't, and the others go with them", () => {
+  assert.equal(pushBead(0, 0, 2, true), 3, "the third one bead up takes the two between it and the beam");
+  assert.equal(pushBead(3, 0, 0, false), 0, "the one next to the beam pushed away takes the rest");
+  assert.equal(pushBead(3, 0, 3, false), 3, "a bead already away stays");
+  assert.equal(pushBead(2, 1, "five", true), 52);
+  assert.equal(pushBead(52, 1, "five", false), 2);
+  assert.equal(pushBead(70, 1, 3, true), 90);
+  assert.equal(digitAt(2026, 1), 2);
+  assert.equal(withDigit(2026, 2, 7), 2726);
+  assert.equal(withDigit(38, 0, 0), 30);
 });
