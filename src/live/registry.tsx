@@ -29,6 +29,7 @@ import { Rubik } from "./Rubik";
 import { ShadeGame } from "./ShadeGame";
 import { Stripes } from "./Stripes";
 import { FoldStrip } from "./FoldStrip";
+import { FitTiles } from "./FitTiles";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
@@ -144,6 +145,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   shadeFrac: ShadeGame,
   stripes: Stripes,
   foldStrip: FoldStrip,
+  fitTiles: FitTiles,
   balance: Balance,
   machine: Machine,
   growing: Growing,
