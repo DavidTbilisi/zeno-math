@@ -153,15 +153,16 @@ test("a practice question whose dots flash: look, then type how many", async ({ 
 test("make the target: tapping the cards and signs of a sum that makes it", async ({ page }) => {
   const game = await boardWith(page, "Make the target: cards and signs", ".live-target");
   const p = targetPuzzle(TARGET_LADDER[0].level, rng(TARGET_LADDER[0].seed));
-  await expect(game.getByRole("img", { name: `Make ${p.target}` })).toBeVisible();
+  const pic = game.locator("svg").first();
+  await expect(pic).toHaveAttribute("aria-label", `Make ${p.target}`);
   // The level's way of thinking stays in view next to the hint's first step.
   await expect(game.getByText(`Think of ${p.target} as two parts`)).toBeVisible();
   await game.getByRole("button", { name: /Hint/ }).click();
   await expect(game.getByText(new RegExp(`Think of ${p.target} as two parts.*Try starting with`))).toBeVisible();
   const sign: Record<string, string> = { "+": "+", "-": "−", "*": "×", "/": "÷" };
   for (const t of tokens(p.sample)!) {
-    if (typeof t === "number") await game.locator(".target-cards button:not([disabled])", { hasText: new RegExp(`^${t}$`) }).first().click();
-    else await game.locator(".target-ops").getByRole("button", { name: sign[t] ?? t, exact: true }).click();
+    if (typeof t === "number") await pic.locator(`[role=button][aria-label="Card ${t}"]:not([aria-disabled])`).first().click();
+    else await pic.getByRole("button", { name: sign[t] ?? t, exact: true }).click();
   }
   await expect(game.getByText(/Made it! ★☆☆ Can you find another way\?/)).toBeVisible();
   // A hint leaves one star, and only two pass a puzzle: the next stays locked (the drill ladder's accuracy first).
