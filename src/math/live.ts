@@ -710,9 +710,9 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   treeLab: [660, 860],
   kmeansLab: [660, 830],
   nnLab: [660, 780],
-  convLab: [660, 700],
-  attnLab: [660, 720],
-  rnnLab: [660, 700],
+  convLab: [660, 830],
+  attnLab: [660, 790],
+  rnnLab: [660, 800],
   rlLab: [660, 770],
 };
 

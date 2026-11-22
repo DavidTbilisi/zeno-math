@@ -29,7 +29,8 @@ import {
 } from "../math/attnLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveAttn> = { tries: 0, done: false, said: null };
@@ -100,18 +101,26 @@ export function AttnLab({ state, set, w: words, svgRef }: PieceProps<"attnLab">)
   const top = weights.indexOf(Math.max(...weights));
   const read = view === "order" ? fill(w.readGap, { g: num(orderOutputs(d).gap) }) : fill(w.read, { w: num(weights[top]), word: w.tokens[ts[top].id] });
 
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(can.includes("scale") ? [{ text: w.scale, on: d.scaled, disabled: d.done, onTap: () => commit(fresh({ scaled: !d.scaled })) }] : []),
+    ...(can.includes("positions") ? [{ text: w.positions, on: d.pos, disabled: d.done, onTap: () => commit(fresh({ pos: !d.pos })) }] : []),
+    ...(!p ? VIEWS.map((v, i) => ({ text: w.views[v], brk: i === 0, on: d.view === v, onTap: () => commit({ view: v, sel: null }) })) : []),
+  ];
+  const dialH = can.includes("dims") ? 44 : 0;
+  const strip = dialH + pillRowsH(moves, ATTN_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
-          ref={svgRef}
+          ref={svgRef} className="hand-pic"
           width={ATTN_PLOT.w}
-          height={ATTN_PLOT.h}
-          viewBox={`0 0 ${ATTN_PLOT.w} ${ATTN_PLOT.h}`}
+          height={ATTN_PLOT.h + strip}
+          viewBox={`0 0 ${ATTN_PLOT.w} ${ATTN_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: can.includes("drag") ? (dragging ? "grabbing" : "crosshair") : view === "matrix" ? "pointer" : "default", touchAction: "none" }}
           onPointerDown={down}
@@ -119,37 +128,19 @@ export function AttnLab({ state, set, w: words, svgRef }: PieceProps<"attnLab">)
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={ATTN_PLOT.w} height={ATTN_PLOT.h} fill="#fff" />
+          <rect width={ATTN_PLOT.w} height={ATTN_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: attnSvg(d, { ...w.chart, tokens: w.tokens }) }} />
+          {can.includes("dims") && (
+            <Track x={8} y={ATTN_PLOT.h + 4} w={ATTN_PLOT.w - 16} value={Math.max(0, DIMS.indexOf(d.d))} min={0} max={DIMS.length - 1} label={w.dims} disabled={d.done} show={(v) => `d = ${DIMS[v]}`}
+              onChange={(v, done) => (done ? commit(fresh({ d: DIMS[v] })) : setDraft(fresh({ d: DIMS[v] })))} />
+          )}
+          <PillRows w={ATTN_PLOT.w} y={ATTN_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      {can.includes("dims") && (
-        <div className="live-bar descent-dials">
-          <label className="live-slider">
-            <b>d = {d.d}</b>
-            <input
-              type="range"
-              min={0}
-              max={DIMS.length - 1}
-              value={Math.max(0, DIMS.indexOf(d.d))}
-              disabled={d.done}
-              aria-label={w.dims}
-              onChange={(e) => setDraft(fresh({ d: DIMS[Number(e.target.value)] }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {can.includes("scale") && <Toggle on={d.scaled} disabled={d.done} onClick={() => commit(fresh({ scaled: !d.scaled }))}>{w.scale}</Toggle>}
-        {can.includes("positions") && <Toggle on={d.pos} disabled={d.done} onClick={() => commit(fresh({ pos: !d.pos }))}>{w.positions}</Toggle>}
-        {!p && VIEWS.map((v) => <Toggle key={v} on={d.view === v} onClick={() => commit({ view: v, sel: null })}>{w.views[v]}</Toggle>)}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

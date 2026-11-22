@@ -23,7 +23,8 @@ import {
 } from "../math/convLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveConv> = { tries: 0, done: false, said: null };
@@ -93,18 +94,29 @@ export function ConvLab({ state, set, w: words, svgRef }: PieceProps<"convLab">)
     : { tone: "hint", text: p ? w.hint : w.freeHint };
   const read = fill(w.read, { h: out.length, w: out[0]?.length ?? 0, top: String(Math.round(Math.max(...out.flat()) * 100) / 100).replace("-", "−") });
 
+  const fresh0 = { sel: null };
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(can.includes("kernel") ? PICKABLE.map((k, i) => ({ text: w.kernels[k], brk: i === 0 && !!p, on: d.kernel === k, disabled: d.done, onTap: () => commit(fresh({ kernel: k, ...fresh0 })) })) : []),
+    ...(can.includes("stride") ? [1, 2, 3].map((s, i) => ({ text: fill(w.stride, { s }), brk: i === 0, on: d.stride === s, disabled: d.done, onTap: () => commit(fresh({ stride: s, ...fresh0 })) })) : []),
+    ...(can.includes("pad") ? [0, 1, 2].map((q) => ({ text: fill(w.pad, { p: q }), on: d.pad === q, disabled: d.done, onTap: () => commit(fresh({ pad: q, ...fresh0 })) })) : []),
+    ...(can.includes("pool") ? [{ text: w.pool, brk: true, on: d.pool, onTap: () => commit({ pool: !d.pool }) }] : []),
+    ...(can.includes("paint") ? [{ text: w.clear, disabled: d.done, onTap: () => commit(fresh({ img: blank(d.img.length, d.img[0].length), ...fresh0 })) }] : []),
+  ];
+  const dialH = 0;
+  const strip = pillRowsH(moves, CONV_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
-          ref={svgRef}
+          ref={svgRef} className="hand-pic"
           width={CONV_PLOT.w}
-          height={CONV_PLOT.h}
-          viewBox={`0 0 ${CONV_PLOT.w} ${CONV_PLOT.h}`}
+          height={CONV_PLOT.h + strip}
+          viewBox={`0 0 ${CONV_PLOT.w} ${CONV_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: can.includes("paint") || can.includes("select") ? "pointer" : "default", touchAction: "none" }}
           onPointerDown={down}
@@ -112,21 +124,15 @@ export function ConvLab({ state, set, w: words, svgRef }: PieceProps<"convLab">)
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={CONV_PLOT.w} height={CONV_PLOT.h} fill="#fff" />
+          <rect width={CONV_PLOT.w} height={CONV_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: convSvg(d, w.chart) }} />
+          <PillRows w={CONV_PLOT.w} y={CONV_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {can.includes("kernel") && PICKABLE.map((k) => <Toggle key={k} on={d.kernel === k} disabled={d.done} onClick={() => commit(fresh({ kernel: k, sel: null }))}>{w.kernels[k]}</Toggle>)}
-        {can.includes("stride") && [1, 2, 3].map((s) => <Toggle key={`s${s}`} on={d.stride === s} disabled={d.done} onClick={() => commit(fresh({ stride: s, sel: null }))}>{fill(w.stride, { s })}</Toggle>)}
-        {can.includes("pad") && [0, 1, 2].map((q) => <Toggle key={`p${q}`} on={d.pad === q} disabled={d.done} onClick={() => commit(fresh({ pad: q, sel: null }))}>{fill(w.pad, { p: q })}</Toggle>)}
-        {can.includes("pool") && <Toggle on={d.pool} onClick={() => commit({ pool: !d.pool })}>{w.pool}</Toggle>}
-        {can.includes("paint") && <button className="live-btn" disabled={d.done} onClick={() => commit(fresh({ img: blank(d.img.length, d.img[0].length), sel: null }))}>{w.clear}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
