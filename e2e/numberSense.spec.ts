@@ -114,9 +114,10 @@ async function boardWith(page: Page, name: string, piece: string): Promise<Locat
 test("a round of quick look, every flash counted right, earns three stars", async ({ page }) => {
   const game = await boardWith(page, "Quick look: how many dots?", ".live-quickLook");
   const round = lookRound(LOOK_LADDER[0].level, LOOK_LADDER[0].seed);
-  await game.getByRole("button", { name: "👀 Look!" }).click();
+  await game.getByRole("button", { name: "Look!" }).click();
   for (const [i, t] of round.entries()) {
-    // The dots hide, and the buttons to answer with come up.
+    // The dots hide, and the tiles to answer with wake up.
+    await expect(game.getByRole("button", { name: String(t.n), exact: true })).not.toHaveAttribute("aria-disabled");
     await game.getByRole("button", { name: String(t.n), exact: true }).click();
     if (i < round.length - 1) await game.getByRole("button", { name: "Next →" }).click();
   }
