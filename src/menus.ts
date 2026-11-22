@@ -262,6 +262,7 @@ export const MENUS: MenuGroup[] = [
           { live: "overflowBars", icon: "🫗" },
           { live: "shareBags", icon: "🍬" },
           { live: "frogJumps", icon: "🐸" },
+          { live: "makeOne", icon: "🥧" },
         ],
       },
       {
