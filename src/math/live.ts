@@ -659,7 +659,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   angleGuess: [600, 620],
   angleHunt: [600, 620],
   mirror: [560, 620],
-  views3d: [760, 980],
+  views3d: [760, 840],
   cubeNet: [700, 600],
   plotPoint: [560, 700],
   barChart: [560, 600],
