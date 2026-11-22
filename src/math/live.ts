@@ -129,6 +129,22 @@ export function clockTime(minutes: number): string {
 
 // ——— Chance ———
 
+/** Which of n equal sections a pointer at `angle` (degrees clockwise from twelve) is in. */
+export const sectionAt = (angle: number, n: number) => Math.floor((((angle % 360) + 360) % 360) / (360 / n)) % n;
+
+/**
+ * How far a flicked spinner turns, in degrees: 2 whole turns for a gentle flick up to 6 for a hard one (`speed` in
+ * degrees a millisecond), plus `r` of a turn (0 to 1, at random), the way it was flicked. A tap (speed 0) turns forward.
+ */
+export function spinTurn(speed: number, r: number): number {
+  const turns = Math.max(2, Math.min(6, 2 + Math.abs(speed) * 2));
+  return (speed < 0 ? -1 : 1) * (360 * Math.floor(turns) + 360 * r);
+}
+
+/** One more in the tally of outcome i. */
+export const tallyUp = <T extends number[]>(counts: T, i: number) => counts.map((k, j) => (j === i ? k + 1 : k)) as T;
+
+
 export const BAG_COLORS = ["#e03131", "#1971c2", "#2f9e44", "#f08c00"] as const;
 
 export type Device =
@@ -594,9 +610,9 @@ export type LiveKind = keyof LiveStates;
 /** Design size of each piece in board pixels; a piece that is resized is scaled to fit. */
 export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   clock: [320, 470],
-  dice: [360, 236],
-  spinner: [300, 372],
-  coin: [260, 300],
+  dice: [360, 330],
+  spinner: [300, 470],
+  coin: [280, 390],
   fractions: [320, 446],
   tenFrame: [400, 370],
   hundred: [400, 610],
