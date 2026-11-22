@@ -42,3 +42,18 @@ export async function insertGroup(page: Page, group: string | RegExp) {
   await insertPanel(page).getByRole("tab", { name: group }).click();
   return insertPanel(page);
 }
+
+/** Sets a dial drawn in a picture (role=slider) to `value` with its keys: Page Up/Down for tens, then the arrows. */
+export async function setDial(dial: Locator, value: number) {
+  await dial.focus();
+  let now = Number(await dial.getAttribute("aria-valuenow"));
+  while (Math.abs(value - now) >= 10) {
+    await dial.press(value > now ? "PageUp" : "PageDown");
+    now += value > now ? 10 : -10;
+  }
+  while (now !== value) {
+    await dial.press(value > now ? "ArrowRight" : "ArrowLeft");
+    now += value > now ? 1 : -1;
+  }
+  await expect(dial).toHaveAttribute("aria-valuenow", String(value));
+}

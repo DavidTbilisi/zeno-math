@@ -36,7 +36,7 @@ import { KNN_PLOT, toPx as knnPx } from "../src/math/knnLab.ts";
 import { moments, PCA_LADDER, principal } from "../src/math/pcaLab.ts";
 import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 import { TN_PLOT, tnLayout, tnSetup, viewOf } from "../src/math/tensorLab.ts";
-import { insertGroup, insertPanel } from "./helpers.ts";
+import { insertGroup, insertPanel, setDial } from "./helpers.ts";
 
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
@@ -244,13 +244,21 @@ test("the gradient descent lab: too small a rate runs out of steps, a better one
   await expect(lab.getByText(/Out of steps: the ball crept towards the bottom/)).toBeVisible();
 
   const eta = lab.getByRole("slider", { name: "Learning rate η" });
-  await eta.fill(String(etaIndex(0.4)));
-  await eta.dispatchEvent("pointerup");
-  await expect(lab.getByText("η = 0.4")).toBeVisible();
+  // By hand: back to the start, then the dashed hop's end dragged along the curve sets another rate.
+  await lab.getByRole("button", { name: "Start again" }).click();
+  const before = Number(await eta.getAttribute("aria-valuenow"));
+  const hop = (await lab.locator('circle[fill="#9c36b5"]').boundingBox())!;
+  await page.mouse.move(hop.x + hop.width / 2, hop.y + hop.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(hop.x + hop.width / 2 - 60, hop.y + hop.height / 2, { steps: 4 });
+  await page.mouse.up();
+  await expect.poll(async () => Number(await eta.getAttribute("aria-valuenow"))).not.toBe(before);
+  await setDial(eta, etaIndex(0.4));
+  await expect(eta).toHaveAttribute("aria-valuetext", "η = 0.4");
   await expect(lab.getByText(/The next step, −η · f′\(x\), is 2\.4/)).toBeVisible();
   await lab.getByRole("button", { name: /Run/ }).click();
   await expect(lab.getByText(/Done! Steps: \d+\. ★★☆/)).toBeVisible();
-  await page.screenshot({ path: test.info().outputPath("descent-lab.png") });
+  await lab.locator("svg.hand-pic").first().screenshot({ path: `${process.env.SHOTS_DIR ?? "test-results"}/descent-lab-hand.png` });
   await expect(lab.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
 

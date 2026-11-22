@@ -28,11 +28,14 @@ import {
   type DescentVerdict,
   type LiveDescent,
 } from "../math/descentLab";
+import { Pill, Track } from "./hand";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
+/** The dials and the moves, drawn under the plot. */
+const STRIP = 96;
 /** How many steps Run plays at a time in free play. */
 const FREE_RUN = 25;
 /** A new try of a puzzle starts from no steps; a puzzle of the ladder sets the ball and the dials, free play its own. */
@@ -45,7 +48,7 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
   const [draft, setDraft] = useState<Partial<LiveDescent> | null>(null);
   const [typed, setTyped] = useState<string | null>(null);
   const [run, setRun] = useState<{ at: number; to: number } | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const [dragging, setDragging] = useState<"ball" | "hop" | false>(false);
   const d: LiveDescent = { ...state, ...draft };
   const p = descentPuzzle(d);
   const fn = useMemo(() => (p ? DESCENT_FNS[p.fn] : freeFn(d.expr)), [p, d.expr]);
@@ -135,8 +138,8 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
 
   // Dragging the ball picks where it starts.
   const scale = plotScale(fn);
-  const ballAt = (): [number, number] => {
-    const cx = Math.min(scale.x1, Math.max(scale.x0, x));
+  const ballAt = (at = x): [number, number] => {
+    const cx = Math.min(scale.x1, Math.max(scale.x0, at));
     return [scale.X(cx), Math.min(PLOT.h - PLOT.bottom, Math.max(PLOT.top, scale.Y(fn.f(cx))))];
   };
   const startAt = (e: PointerEvent<SVGSVGElement>) => {
@@ -144,16 +147,41 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
     const v = Math.min(scale.x1, Math.max(scale.x0, scale.toX(px)));
     return Math.round(v * 100) / 100;
   };
+  // Dragging the dashed hop's landing picks the rate: the stop whose first step from the start lands nearest.
+  const hopFree = !p?.fixedEta && k === 0 && !run && !d.done && next !== null;
+  const etaFor = (e: PointerEvent<SVGSVGElement>) => {
+    const want = scale.toX(svgPoint(e.currentTarget, e)[0]);
+    let [best, bd] = [ei, Infinity];
+    ETAS.forEach((eta, i) => {
+      const n = descentPath(fn.df, d.start, eta, d.beta, 1);
+      const dd = n.away ? Infinity : Math.abs(n.xs[1] - want);
+      if (dd < bd) [best, bd] = [i, dd];
+    });
+    return ETAS[best];
+  };
   const down = (e: PointerEvent<SVGSVGElement>) => {
-    if (!draggable || run) return;
+    if (run) return;
     const [px, py] = svgPoint(e.currentTarget, e);
+    if (py > PLOT.h) return;
+    if (hopFree) {
+      const [hx, hy] = ballAt(next!);
+      if (Math.hypot(px - hx, py - hy) <= 18) {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        setDragging("hop");
+        return;
+      }
+    }
+    if (!draggable) return;
     const [bx, by] = ballAt();
     if (Math.hypot(px - bx, py - by) > 24 && k > 0) return;
     e.currentTarget.setPointerCapture(e.pointerId);
-    setDragging(true);
+    setDragging("ball");
     setDraft(fresh({ start: startAt(e) }));
   };
-  const move = (e: PointerEvent<SVGSVGElement>) => dragging && setDraft(fresh({ start: startAt(e) }));
+  const move = (e: PointerEvent<SVGSVGElement>) => {
+    if (dragging === "ball") setDraft(fresh({ start: startAt(e) }));
+    else if (dragging === "hop") setDraft(fresh({ eta: etaFor(e) }));
+  };
   const up = () => {
     if (!dragging) return;
     setDragging(false);
@@ -192,21 +220,50 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={PLOT.w}
-          height={PLOT.h}
-          viewBox={`0 0 ${PLOT.w} ${PLOT.h}`}
+          height={PLOT.h + STRIP}
+          viewBox={`0 0 ${PLOT.w} ${PLOT.h + STRIP}`}
           fontFamily={FONT}
-          role="img"
           aria-label={`f(x) = ${fn.text}`}
-          style={{ cursor: draggable ? (dragging ? "grabbing" : "grab") : "default", touchAction: "none" }}
+          style={{ cursor: dragging ? "grabbing" : draggable ? "grab" : "default", touchAction: "none" }}
           onPointerDown={down}
           onPointerMove={move}
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={PLOT.w} height={PLOT.h} fill="#fff" />
+          <rect width={PLOT.w} height={PLOT.h + STRIP} fill="#fff" />
           <text x={PLOT.left} y={18} fontSize={14} fontWeight={700} fill="#1971c2">f(x) = {fn.text}</text>
           <g dangerouslySetInnerHTML={{ __html: descentSvg(fn, xs, { next: run || d.done || verdict.state === "lost" ? null : next, targets: p?.targets, away, drag: draggable && k === 0 && !run }) }} />
+          {hopFree && (() => {
+            const [hx, hy] = ballAt(next!);
+            return (
+              <g pointerEvents="none">
+                <circle cx={hx} cy={hy} r={dragging === "hop" ? 12 : 9} fill="#9c36b5" opacity={0.15} />
+                <text x={hx} y={hy - 14} fontSize={12} fontWeight={700} textAnchor="middle" fill="#9c36b5">↔ η</text>
+              </g>
+            );
+          })()}
+          <Track x={8} y={PLOT.h + 6} w={momentum ? 300 : PLOT.w - 16} value={ei} min={0} max={ETAS.length - 1} label={w.eta} show={(i) => `η = ${num(ETAS[i])}`}
+            disabled={!!p?.fixedEta || !!run} onChange={(i, done) => setEta(i, done)} />
+          {momentum && (
+            <Track x={316} y={PLOT.h + 6} w={PLOT.w - 324} value={Math.round(d.beta * 20)} min={0} max={BETAS.length - 1} label={w.momentum} show={(i) => `β = ${num(BETAS[i])}`}
+              disabled={!!run} color="#e8590c" onChange={(i, done) => setBeta(i, done)} />
+          )}
+          {(() => {
+            const items = [
+              { text: w.step, disabled: !canStep, onTap: () => finish(k + 1) },
+              { text: `▶ ${w.run}`, title: w.run, strong: true, disabled: !canStep, onTap: runTo },
+              { text: `↺ ${g.reset}`, title: g.reset, disabled: !!run || k === 0, onTap: () => commit(fresh({})) },
+            ];
+            const pw = (t: string) => 34 + [...t].length * 8.4;
+            let px = (PLOT.w - items.reduce((a, it) => a + pw(it.text) + 10, -10)) / 2;
+            return items.map((it) => {
+              const x0 = px;
+              px += pw(it.text) + 10;
+              return <Pill key={it.text} x={x0} y={PLOT.h + 52} w={pw(it.text)} text={it.text} title={it.title} strong={it.strong} disabled={it.disabled} onTap={it.onTap} />;
+            });
+          })()}
         </svg>
       </Stage>
       <div className="descent-read">
@@ -217,45 +274,7 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
         </span>
         {nextText && !d.done && verdict.state === "going" && <span className="descent-next">{nextText}</span>}
       </div>
-      <div className="live-bar descent-dials">
-        <label className="live-slider">
-          <b>η = {num(d.eta)}</b>
-          <button className="live-btn" disabled={!!p?.fixedEta || ei === 0 || !!run} title={w.less} aria-label={w.less} onClick={() => setEta(ei - 1, true)}>−</button>
-          <input
-            type="range"
-            min={0}
-            max={ETAS.length - 1}
-            value={ei}
-            disabled={!!p?.fixedEta || !!run}
-            aria-label={w.eta}
-            onChange={(e) => setEta(Number(e.target.value), false)}
-            onPointerUp={() => commit()}
-            onKeyUp={() => commit()}
-          />
-          <button className="live-btn" disabled={!!p?.fixedEta || ei === ETAS.length - 1 || !!run} title={w.more} aria-label={w.more} onClick={() => setEta(ei + 1, true)}>+</button>
-        </label>
-        {momentum && (
-          <label className="live-slider">
-            <b>β = {num(d.beta)}</b>
-            <input
-              type="range"
-              min={0}
-              max={BETAS.length - 1}
-              value={Math.round(d.beta * 20)}
-              disabled={!!run}
-              aria-label={w.momentum}
-              onChange={(e) => setBeta(Number(e.target.value), false)}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-      </div>
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        <button className="live-btn" disabled={!canStep} onClick={() => finish(k + 1)}>{w.step}</button>
-        <button className="live-btn on" disabled={!canStep} onClick={runTo}>▶ {w.run}</button>
-        <button className="live-btn" disabled={!!run || k === 0} onClick={() => commit(fresh({}))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

@@ -8163,8 +8163,8 @@ export const en = {
       last: "last step {s}",
       next: "The next step, −η · f′(x), is {s}: the dashed hop.",
       nextMomentum: "The next step, β · v − η · f′(x), is {s}: the dashed hop.",
-      dragHint: "Drag the ball to where it starts; the dashed hop shows where the first step lands.",
-      hint: "Move the η slider and watch the dashed hop change before you step.",
+      dragHint: "Drag the ball to where it starts; the dashed hop shows where the first step lands; drag its end to set η.",
+      hint: "Drag the end of the dashed hop (or the η dial) and watch where the step lands before you take it.",
       right: "Done! Steps: {k}. {stars}",
       flewOff: "The ball flew off: η is too large for this curve. Make it smaller and start again.",
       why: {

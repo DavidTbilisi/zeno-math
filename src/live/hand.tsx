@@ -200,6 +200,63 @@ export function NumBox({ x, y, w, h = 44, value, min, max, label, onChange, show
   );
 }
 
+/**
+ * A dial drawn as a line with a knob, for a value with many stops (a rate on a log scale, an angle): the knob dragged
+ * along the line, or the line tapped where the value should go; the arrow keys move a stop, Page Up and Down ten, Home
+ * and End to the ends. `onChange(v, done)`: done is false while the knob is still held, so the caller can keep the
+ * move as a draft and make it one step to undo when let go. Its name and value are written to its left.
+ */
+export function Track({ x, y, w, value, min, max, label, show, onChange, disabled, color = BLUE, lead = 92 }: {
+  x: number; y: number; w: number; value: number; min: number; max: number; label: string; show: (v: number) => string;
+  onChange: (v: number, done: boolean) => void; disabled?: boolean; color?: string;
+  /** How wide the written value is, before the line. */
+  lead?: number;
+}) {
+  const held = useRef(false);
+  const [hold, setHold] = useState(false);
+  const [x0, x1] = [x + lead + 20, x + w - 10];
+  const at = (v: number) => x0 + ((v - min) / Math.max(1, max - min)) * (x1 - x0);
+  const of = (px: number) => Math.max(min, Math.min(max, Math.round(min + ((px - x0) / (x1 - x0)) * (max - min))));
+  const down = (e: ReactPointerEvent<SVGRectElement>) => {
+    if (disabled || e.button !== 0) return;
+    e.stopPropagation();
+    capture(e.currentTarget, e.pointerId);
+    held.current = true;
+    setHold(true);
+    onChange(of(pointIn(e)[0]), false);
+  };
+  const move = (e: ReactPointerEvent<SVGRectElement>) => held.current && onChange(of(pointIn(e)[0]), false);
+  const up = (e: ReactPointerEvent<SVGRectElement>) => {
+    if (!held.current) return;
+    held.current = false;
+    setHold(false);
+    onChange(of(pointIn(e)[0]), true);
+  };
+  const key = (e: KeyboardEvent) => {
+    if (disabled) return;
+    const span = max - min;
+    const to = { ArrowRight: value + 1, ArrowUp: value + 1, ArrowLeft: value - 1, ArrowDown: value - 1, PageUp: value + 10, PageDown: value - 10, Home: min, End: max }[e.key];
+    if (to === undefined || span <= 0) return;
+    // Kept here: the board would scroll on Page Up and Down, and move what is selected on the arrows.
+    e.preventDefault();
+    e.stopPropagation();
+    onChange(Math.max(min, Math.min(max, to)), true);
+  };
+  const kx = at(value);
+  return (
+    <g role="slider" tabIndex={disabled ? -1 : 0} aria-label={label} aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-valuetext={show(value)}
+      aria-disabled={disabled || undefined} onKeyDown={key} opacity={disabled ? 0.55 : 1} style={{ cursor: disabled ? "default" : "ew-resize" }}>
+      <title>{label}</title>
+      <text x={x + lead} y={y + 20} fontSize={15} fontWeight={700} textAnchor="end" fill={color} pointerEvents="none">{show(value)}</text>
+      <line x1={x0} y1={y + 15} x2={x1} y2={y + 15} stroke="#dee2e6" strokeWidth={6} strokeLinecap="round" pointerEvents="none" />
+      <line x1={x0} y1={y + 15} x2={kx} y2={y + 15} stroke={color} strokeWidth={6} strokeLinecap="round" opacity={0.35} pointerEvents="none" />
+      <circle cx={kx} cy={y + 15} r={hold ? 11 : 9} fill="#fff" stroke={color} strokeWidth={3} pointerEvents="none" />
+      <rect x={x0 - 12} y={y} width={x1 - x0 + 24} height={30} fill="transparent" onPointerDown={down} onPointerMove={move} onPointerUp={up}
+        onPointerCancel={() => { held.current = false; setHold(false); }} />
+    </g>
+  );
+}
+
 /** A bin to drop things in: red while something is held over it; a tap empties what it is for. */
 export function Bin({ x, y, w = 100, h = 66, hot, label, title, onTap }: {
   x: number; y: number; w?: number; h?: number; hot: boolean; label: string; title: string; onTap: () => void;
