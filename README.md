@@ -103,6 +103,11 @@ A teacher makes a class at `#/teacher`; students join with a code (no names or e
 level, and the teacher sees who is stuck and why. Zeno can also run a study that compares adaptive practice with a
 fixed sequence, with pre-, post- and delayed tests. See [docs/study.md](docs/study.md).
 
+[![A student joins a class on a phone while the teacher watches](docs/media/workflows/join.png)](docs/teacher-guide.md)
+
+Six short videos show it step by step: making a class, students joining, running a lesson, homework, progress and
+tests on paper. [The teacher's guide →](docs/teacher-guide.md)
+
 ## Run with Docker
 
 ```bash
@@ -124,12 +129,14 @@ npm run dev                                 # hot reload on :5173
 | | |
 |---|---|
 | [Features](docs/features.md) | everything Zeno can draw, check and play |
+| [Teacher's guide](docs/teacher-guide.md) | videos: classes, joining, lessons, homework, progress, paper tests |
 | [Self-hosting](docs/self-hosting.md) | Docker, passwords, HTTPS, backups, the class study |
 | [Development](docs/development.md) | tests, project layout, ideas for later |
 | [Architecture](docs/architecture.md) · [API](docs/api.md) · [The code, explained](docs/code-explanation.md) | how it is built |
 | [Study](docs/study.md) | the research side |
 
-The GIFs above are recorded by `scripts/readme-media.mjs` against a running build.
+The GIFs above are recorded by `scripts/readme-media.mjs` against a running build, the teacher videos by
+`scripts/workflow-videos.mjs`.
 
 ## License
 
