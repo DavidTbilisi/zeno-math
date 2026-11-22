@@ -75,12 +75,12 @@ test("fractions on the line: every card put at its place earns three stars", asy
   const put = async (v: number) => {
     const b = (await line.boundingBox())!;
     const k = b.width / 680;
-    await page.mouse.click(b.x + (40 + (v / t.to) * 600) * k, b.y + 120 * k);
+    await page.mouse.click(b.x + (40 + (v / t.to) * 600) * k, b.y + 176 * k);
   };
   // The cards are picked up one after another; the first click may still be waking the piece up.
   await expect(async () => {
     await put(t.items[0].v);
-    await expect(game.locator(".order-card").first()).toHaveClass(/placed/, { timeout: 1000 });
+    await expect(game.getByRole("button", { name: t.items[1].text, exact: true })).toHaveAttribute("aria-pressed", "true", { timeout: 1000 });
   }).toPass();
   for (const it of t.items.slice(1)) await put(it.v);
   await game.getByRole("button", { name: "Check" }).click();

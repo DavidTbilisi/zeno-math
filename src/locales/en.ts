@@ -5887,9 +5887,9 @@ export const en = {
     fracOrder: {
       puzzle: "Line {n}",
       locked: "Get two stars on the line before to open this one",
-      hint: "Tap a card, then tap the line where it goes.",
+      hint: "Drag each card down onto the line where it goes (or tap a card, then the line).",
       place: "Where does {f} go? Tap the line.",
-      ready: "All on the line — move any you like, then check.",
+      ready: "All on the line — drag any along, or back up to take it off, then check.",
       retry: "Try again",
       inOrder: "In order! {stars} Get each one closer to its place for three stars.",
       sharp: "In order, and every one close to its place! {stars}",
