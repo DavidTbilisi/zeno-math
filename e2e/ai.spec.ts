@@ -38,6 +38,9 @@ import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 import { TN_PLOT, tnLayout, tnSetup, viewOf } from "../src/math/tensorLab.ts";
 import { insertGroup, insertPanel, setDial } from "./helpers.ts";
 
+// The labs are tall pictures with their dials and pills drawn under the plots: a tall window keeps them on screen.
+test.use({ viewport: { width: 1280, height: 1150 } });
+
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
   await page.goto(`/#/b/${made.id}`);
@@ -279,9 +282,8 @@ test("the PCA lab: a line across the cloud is not the best, turned along it is P
 
   const angle = lab.getByRole("slider", { name: "Angle of the line" });
   const a1 = Math.round(principal(moments(PCA_LADDER[0].pts)).angle);
-  await angle.fill(String(a1));
-  await angle.dispatchEvent("pointerup");
-  await expect(lab.getByText(`θ = ${a1}°`)).toBeVisible();
+  await setDial(angle, a1);
+  await expect(angle).toHaveAttribute("aria-valuetext", `θ = ${a1}°`);
   await expect(lab.getByText(/kept \+ lost = .* = 4\.21/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/PC1, the first principal component.*Done! ★★☆/)).toBeVisible();
@@ -305,9 +307,8 @@ test("the overfitting lab: degree 1 misses the points, degree 9 goes through the
   await expect(lab.getByText(/The training error is 0\.26, more than 0\.001/)).toBeVisible();
 
   const degree = lab.getByRole("slider", { name: "Degree of the curve" });
-  await degree.fill("9");
-  await degree.dispatchEvent("pointerup");
-  await expect(lab.getByText("d = 9")).toBeVisible();
+  await setDial(degree, 9);
+  await expect(degree).toHaveAttribute("aria-valuetext", "d = 9");
   await expect(lab.getByText(/^training error 0$/)).toBeVisible();
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/it has memorised the points, noise and all!.*Done! ★★☆/)).toBeVisible();
@@ -358,9 +359,8 @@ test("the threshold lab: a high threshold misses positives, a lower one catches 
   await expect(lab.getByText(/Recall is 0\.\d+: the positives left of the threshold are missed/)).toBeVisible();
 
   const t = lab.getByRole("slider", { name: "Threshold t" });
-  await t.fill("30");
-  await t.dispatchEvent("pointerup");
-  await expect(lab.getByText("t = 0.30")).toBeVisible();
+  await setDial(t, 30);
+  await expect(t).toHaveAttribute("aria-valuetext", "t = 0.30");
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/recall rises, but so do the false alarms!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("roc-lab.png") });

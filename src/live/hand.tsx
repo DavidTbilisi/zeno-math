@@ -120,6 +120,43 @@ export function CheckRow({ w, y, check, clear }: { w: number; y: number; check: 
   );
 }
 
+/** A pill of a PillRows: `on` makes it a switch (aria-pressed). */
+export type RowItem = { text: string; onTap: () => void; title?: string; strong?: boolean; on?: boolean; disabled?: boolean };
+const ROWS_H = 40;
+const rowPw = (t: string) => 34 + [...t].length * 8.4;
+function layRows(items: RowItem[], w: number) {
+  const rows: RowItem[][] = [[]];
+  let used = 0;
+  for (const it of items) {
+    const pw = rowPw(it.text);
+    if (used + pw > w - 24 && rows.at(-1)!.length) {
+      rows.push([]);
+      used = 0;
+    }
+    rows.at(-1)!.push(it);
+    used += pw + 10;
+  }
+  return rows;
+}
+/** How tall PillRows draws these pills across a picture `w` wide. */
+export const pillRowsH = (items: RowItem[], w: number) => layRows(items, w).length * ROWS_H;
+
+/** A piece's moves and switches as pills, centred in rows across a picture `w` wide from `y`, onto another row when the width runs out. */
+export function PillRows({ items, w, y }: { items: RowItem[]; w: number; y: number }) {
+  return (
+    <g>
+      {layRows(items, w).map((row, r) => {
+        let px = (w - row.reduce((a, it) => a + rowPw(it.text) + 10, -10)) / 2;
+        return row.map((it) => {
+          const x0 = px;
+          px += rowPw(it.text) + 10;
+          return <Pill key={it.text} x={x0} y={y + 5 + r * ROWS_H} w={rowPw(it.text)} text={it.text} title={it.title} strong={it.strong} on={it.on} disabled={it.disabled} onTap={it.onTap} />;
+        });
+      })}
+    </g>
+  );
+}
+
 /** A row of pills, one of them on: tabs for a piece's ways of working. Returns the width it took. */
 export function Tabs<K extends string>({ x, y, keys, on, names, onPick, gap = 6, size = 14 }: {
   x: number; y: number; keys: readonly K[]; on: K; names: Record<K, string>; onPick: (k: K) => void; gap?: number; size?: number;

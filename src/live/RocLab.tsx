@@ -24,9 +24,10 @@ import {
   xToT,
   type LiveRoc,
 } from "../math/rocLab";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveRoc> = { tries: 0, done: false, said: null };
@@ -58,7 +59,7 @@ export function RocLab({ state, set, w: words, svgRef }: PieceProps<"rocLab">) {
   // Dragging the threshold: anywhere on the strip picks it up.
   const down = (e: PointerEvent<SVGSVGElement>) => {
     const [, py] = svgPoint(e.currentTarget, e);
-    if (py < STRIP.top - 12 || py > STRIP.top + STRIP.h + 6 || d.done) return;
+    if (py < STRIP.top - 12 || py > STRIP.top + STRIP.h + 6 || py > ROC_PLOT.h || d.done) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     setDragging(true);
     setDraft(fresh({ t: xToT(svgPoint(e.currentTarget, e)[0]) }));
@@ -83,6 +84,12 @@ export function RocLab({ state, set, w: words, svgRef }: PieceProps<"rocLab">) {
     : wrong ? { tone: "wrong", text: fill(w.why[wrong.why], { have: num(wrong.have), want: num(wrong.want) }) }
     : { tone: "hint", text: p ? w.hint : w.freeHint };
 
+  const moves: RowItem[] = p
+    ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }]
+    : [...DATA_IDS.map((id) => ({ text: w.datas[id], on: d.data === id, onTap: () => commit({ data: id }) })), { text: w.newSample, onTap: () => commit({ seed: d.seed + 1 }) }];
+  const strip = 44 + pillRowsH(moves, ROC_PLOT.w) + 8;
+  const HALF = (ROC_PLOT.w - 24) / 2;
+
   return (
     <>
       <GameHead game={game} g={g} />
@@ -90,11 +97,11 @@ export function RocLab({ state, set, w: words, svgRef }: PieceProps<"rocLab">) {
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={ROC_PLOT.w}
-          height={ROC_PLOT.h}
-          viewBox={`0 0 ${ROC_PLOT.w} ${ROC_PLOT.h}`}
+          height={ROC_PLOT.h + strip}
+          viewBox={`0 0 ${ROC_PLOT.w} ${ROC_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: dragging ? "grabbing" : "ew-resize", touchAction: "none" }}
           onPointerDown={down}
@@ -102,49 +109,21 @@ export function RocLab({ state, set, w: words, svgRef }: PieceProps<"rocLab">) {
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={ROC_PLOT.w} height={ROC_PLOT.h} fill="#fff" />
+          <rect width={ROC_PLOT.w} height={ROC_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: rocSvg(xs, d.t, w.chart) }} />
+          <Track x={8} y={ROC_PLOT.h + 4} w={p ? ROC_PLOT.w - 16 : HALF} value={Math.round(d.t * 100)} min={0} max={101} label={w.threshold} disabled={d.done}
+            show={(v) => `t = ${v > 100 ? "> 1" : (v / 100).toFixed(2)}`} onChange={(v, done) => (done ? commit(fresh({ t: snap(v / 100) })) : setDraft(fresh({ t: snap(v / 100) })))} />
+          {!p && (
+            <Track x={HALF + 16} y={ROC_PLOT.h + 4} w={HALF} value={Math.max(0, GAPS.indexOf(d.gap))} min={0} max={GAPS.length - 1} label={w.gapName} color="#e8590c" lead={110}
+              show={(i) => fill(w.gap, { g: GAPS[i] })} onChange={(i, done) => (done ? commit({ gap: GAPS[i] }) : setDraft({ ...draft, gap: GAPS[i] }))} />
+          )}
+          <PillRows w={ROC_PLOT.w} y={ROC_PLOT.h + 44} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{fill(w.read, { tp: c.tp, fp: c.fp, fn: c.fn, tn: c.tn, a: num(m.accuracy), p: num(m.precision), r: num(m.recall) })}</span>
       </div>
-      <div className="live-bar descent-dials">
-        <label className="live-slider">
-          <b>t = {d.t > 1 ? "> 1" : d.t.toFixed(2)}</b>
-          <input
-            type="range"
-            min={0}
-            max={101}
-            value={Math.round(d.t * 100)}
-            disabled={d.done}
-            aria-label={w.threshold}
-            onChange={(e) => setDraft(fresh({ t: snap(Number(e.target.value) / 100) }))}
-            onPointerUp={() => commit()}
-            onKeyUp={() => commit()}
-          />
-        </label>
-        {!p && (
-          <label className="live-slider">
-            <b>{fill(w.gap, { g: d.gap })}</b>
-            <input
-              type="range"
-              min={0}
-              max={GAPS.length - 1}
-              value={Math.max(0, GAPS.indexOf(d.gap))}
-              aria-label={w.gapName}
-              onChange={(e) => setDraft({ ...draft, gap: GAPS[Number(e.target.value)] })}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-      </div>
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {!p && DATA_IDS.map((id) => <Toggle key={id} on={d.data === id} onClick={() => commit({ data: id })}>{w.datas[id]}</Toggle>)}
-        {!p && <button className="live-btn" onClick={() => commit({ seed: d.seed + 1 })}>{w.newSample}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

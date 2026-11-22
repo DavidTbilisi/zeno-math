@@ -28,7 +28,7 @@ import {
   type DescentVerdict,
   type LiveDescent,
 } from "../math/descentLab";
-import { Pill, Track } from "./hand";
+import { PillRows, Track } from "./hand";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
@@ -250,20 +250,11 @@ export function DescentLab({ state, set, w: words, svgRef }: PieceProps<"descent
             <Track x={316} y={PLOT.h + 6} w={PLOT.w - 324} value={Math.round(d.beta * 20)} min={0} max={BETAS.length - 1} label={w.momentum} show={(i) => `β = ${num(BETAS[i])}`}
               disabled={!!run} color="#e8590c" onChange={(i, done) => setBeta(i, done)} />
           )}
-          {(() => {
-            const items = [
-              { text: w.step, disabled: !canStep, onTap: () => finish(k + 1) },
-              { text: `▶ ${w.run}`, title: w.run, strong: true, disabled: !canStep, onTap: runTo },
-              { text: `↺ ${g.reset}`, title: g.reset, disabled: !!run || k === 0, onTap: () => commit(fresh({})) },
-            ];
-            const pw = (t: string) => 34 + [...t].length * 8.4;
-            let px = (PLOT.w - items.reduce((a, it) => a + pw(it.text) + 10, -10)) / 2;
-            return items.map((it) => {
-              const x0 = px;
-              px += pw(it.text) + 10;
-              return <Pill key={it.text} x={x0} y={PLOT.h + 52} w={pw(it.text)} text={it.text} title={it.title} strong={it.strong} disabled={it.disabled} onTap={it.onTap} />;
-            });
-          })()}
+          <PillRows w={PLOT.w} y={PLOT.h + 47} items={[
+            { text: w.step, disabled: !canStep, onTap: () => finish(k + 1) },
+            { text: `▶ ${w.run}`, title: w.run, strong: true, disabled: !canStep, onTap: runTo },
+            { text: `↺ ${g.reset}`, title: g.reset, disabled: !!run || k === 0, onTap: () => commit(fresh({})) },
+          ]} />
         </svg>
       </Stage>
       <div className="descent-read">

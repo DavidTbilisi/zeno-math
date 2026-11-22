@@ -31,9 +31,10 @@ import {
   type LivePca,
   type Pt,
 } from "../math/pcaLab";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** The most points free play takes. */
@@ -95,7 +96,7 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
   };
   const down = (e: PointerEvent<SVGSVGElement>) => {
     const [px, py] = svgPoint(e.currentTarget, e);
-    if (px > PCA_PLOT.left + PCA_PLOT.size + 4) return;
+    if (px > PCA_PLOT.left + PCA_PLOT.size + 4 || py > PCA_PLOT.h) return;
     const q = fromPage([px, py]);
     const i = d.pts.findIndex((r, k) => (drag === "all" || drag.includes(k)) && near(r, px, py, 13));
     let gr: Grab | null = null;
@@ -148,6 +149,20 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
     : score ? fill(w.markAt, { t: num(d.mark) })
     : fill(w.pc1At, { a: Math.round(pr!.angle), p: pct(pr!.l1 / (total || 1)) });
 
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(!p
+      ? [
+          { text: w.showBest, on: d.showBest, onTap: () => commit({ showBest: !d.showBest }) },
+          { text: w.vertical, on: d.errors === "vertical", onTap: () => commit({ errors: d.errors === "vertical" ? "perp" : "vertical" }) },
+          { text: w.clear, disabled: d.pts.length === 0, onTap: () => commit({ pts: [] }) },
+        ]
+      : []),
+    { text: `↺ ${g.reset}`, title: g.reset, onTap: () => commit(fresh(pcaStart(p))) },
+  ];
+  const dialH = own || score ? 40 : 0;
+  const strip = dialH + pillRowsH(moves, PCA_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
@@ -155,11 +170,11 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={PCA_PLOT.w}
-          height={PCA_PLOT.h}
-          viewBox={`0 0 ${PCA_PLOT.w} ${PCA_PLOT.h}`}
+          height={PCA_PLOT.h + strip}
+          viewBox={`0 0 ${PCA_PLOT.w} ${PCA_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: grab ? "grabbing" : "crosshair", touchAction: "none" }}
           onPointerDown={down}
@@ -167,61 +182,26 @@ export function PcaLab({ state, set, w: words, svgRef }: PieceProps<"pcaLab">) {
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={PCA_PLOT.w} height={PCA_PLOT.h} fill="#fff" />
+          <rect width={PCA_PLOT.w} height={PCA_PLOT.h + strip} fill="#fff" />
           <g
             dangerouslySetInnerHTML={{
               __html: pcaSvg(d, line, { errors, best, drag, special: p?.special, hideMean: !!p?.hideMean && !d.done, score, move, own, words: w.bars }),
             }}
           />
+          {own ? (
+            <Track x={8} y={PCA_PLOT.h + 4} w={PCA_PLOT.w - 16} value={Math.round(d.angle) % 180} min={0} max={179} label={w.angle} show={(v) => `θ = ${v}°`}
+              onChange={(v, done) => change({ angle: v }, done)} />
+          ) : score ? (
+            <Track x={8} y={PCA_PLOT.h + 4} w={PCA_PLOT.w - 16} value={Math.round(d.mark * 20)} min={-90} max={90} label={w.mark} show={(v) => `t = ${num(v / 20)}`}
+              onChange={(v, done) => change({ mark: v / 20 }, done)} />
+          ) : null}
+          <PillRows w={PCA_PLOT.w} y={PCA_PLOT.h + dialH + 4} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      {(own || score) && (
-        <div className="live-bar descent-dials">
-          {own ? (
-            <label className="live-slider">
-              <b>θ = {Math.round(line.angle)}°</b>
-              <input
-                type="range"
-                min={0}
-                max={179}
-                value={Math.round(d.angle) % 180}
-                aria-label={w.angle}
-                onChange={(e) => change({ angle: Number(e.target.value) }, false)}
-                onPointerUp={() => commit()}
-                onKeyUp={() => commit()}
-              />
-            </label>
-          ) : (
-            <label className="live-slider">
-              <b>t = {num(d.mark)}</b>
-              <input
-                type="range"
-                min={-90}
-                max={90}
-                value={Math.round(d.mark * 20)}
-                aria-label={w.mark}
-                onChange={(e) => change({ mark: Number(e.target.value) / 20 }, false)}
-                onPointerUp={() => commit()}
-                onKeyUp={() => commit()}
-              />
-            </label>
-          )}
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {!p && (
-          <>
-            <Toggle on={d.showBest} onClick={() => commit({ showBest: !d.showBest })}>{w.showBest}</Toggle>
-            <Toggle on={d.errors === "vertical"} onClick={() => commit({ errors: d.errors === "vertical" ? "perp" : "vertical" })}>{w.vertical}</Toggle>
-            <button className="live-btn" disabled={d.pts.length === 0} onClick={() => commit({ pts: [] })}>{w.clear}</button>
-          </>
-        )}
-        <button className="live-btn" onClick={() => commit(fresh(pcaStart(p)))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={said} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
