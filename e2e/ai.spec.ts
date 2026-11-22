@@ -38,6 +38,9 @@ import { SM_PLOT, zToY } from "../src/math/softmaxLab.ts";
 import { TN_PLOT, tnLayout, tnSetup, viewOf } from "../src/math/tensorLab.ts";
 import { insertGroup, insertPanel, setDial } from "./helpers.ts";
 
+// The labs are tall pictures with their dials and pills drawn under the plots: a tall window keeps them on screen.
+test.use({ viewport: { width: 1280, height: 1150 } });
+
 test("the tensor tool draws, explains a ragged list and inserts", async ({ page, request }) => {
   const made = await (await request.post("/api/boards", { data: { title: "Tensors" } })).json();
   await page.goto(`/#/b/${made.id}`);
@@ -330,9 +333,8 @@ test("the batch training lab: too small a rate is slow, 0.2 settles at the best 
   await expect(lab.getByText(/Out of epochs, still [\d.]+ above the best and coming down steadily/)).toBeVisible();
 
   const eta = lab.getByRole("slider", { name: "Learning rate η" });
-  await eta.fill(String(ETAS.indexOf(0.2)));
-  await eta.dispatchEvent("pointerup");
-  await expect(lab.getByText("η₀ = 0.2")).toBeVisible();
+  await setDial(eta, ETAS.indexOf(0.2));
+  await expect(eta).toHaveAttribute("aria-valuetext", "η₀ = 0.2");
   await lab.getByRole("button", { name: /Run/ }).click();
   await expect(lab.getByText(/0\.5 already blows up!.*Done! ★★☆/)).toBeVisible();
   await expect(lab.getByText(/Epoch 20 of 20 · step 20 of 20/)).toBeVisible();
@@ -380,7 +382,7 @@ test("the softmax lab: cat's probability is short, its bar dragged up gets it ov
   await expect(lab.getByText(/p\(cat\) is 0\.31, short of 0\.8/)).toBeVisible();
 
   // Drag cat's bar from 0.5 up to 4.
-  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
   const k = svg.width / SM_PLOT.w;
   const x = svg.x + (SM_PLOT.zLeft + (SM_PLOT.zRight - SM_PLOT.zLeft) / 6) * k;
   await page.mouse.move(x, svg.y + zToY(0.5) * k);
@@ -411,7 +413,7 @@ test("the embeddings lab: dog at right angles to cat is not alike, beside it it 
   await expect(lab.getByText(/The cosine is 0\. Turn the arrow/)).toBeVisible();
 
   // Drag dog's tip from (−1, 2.5) to (2.4, 1.3), beside cat's.
-  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
   const k = svg.width / EMBED_PLOT.w;
   const at = (x: number, y: number) => embedPage([x, y]).map((v, i) => (i ? svg.y : svg.x) + v * k) as [number, number];
   await page.mouse.move(...at(-1, 2.5));
@@ -441,7 +443,7 @@ test("the backprop lab goes on the board from the AI menu, and its boxes are fil
   await expect(lab.getByText("The box for ∂L/∂q is empty.")).toBeVisible();
 
   // A tap on q's box, under its circle, goes to its field; Enter goes on to z's.
-  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
   const k = svg.width / BP_PLOT.w;
   const [qx, qy] = bpPos(bpGraph("classic")).q;
   await page.mouse.click(svg.x + qx * k, svg.y + (qy + 36) * k);
@@ -477,7 +479,7 @@ test("the tensors lab goes on the board from the AI menu, and its entries and pl
   // for each tap, since a longer prompt above it moves it down.
   const { cells, mem } = tnLayout(viewOf(tnSetup("m34")));
   const tap = async (b: { x: number; y: number; cs: number }) => {
-    const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+    const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
     const k = svg.width / TN_PLOT.w;
     await page.mouse.click(svg.x + (b.x + b.cs / 2) * k, svg.y + (b.y + b.cs / 2) * k);
   };
@@ -523,7 +525,7 @@ test("the k-NN lab: the point among the blue is called blue, dragged into the or
   await expect(lab.getByText("The point is called blue, and you want orange.")).toBeVisible();
 
   // Drag the new point from (0.3, 0.42) to (0.75, 0.75).
-  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
   const k = svg.width / KNN_PLOT.w;
   const [x0, y0] = knnPx(0.3, 0.42);
   const [x1, y1] = knnPx(0.75, 0.75);
@@ -633,11 +635,11 @@ test("the convolution lab: no cell picked says so, the cell where the signal ste
   await expect(lab.getByText("Tap a cell of the output first.")).toBeVisible();
 
   // The output is 1 × 9; its third cell is where 0, 0, 0 steps up to 1.
-  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
   const k = svg.width / CONV_PLOT.w;
   const c = 220 / 9;
   await page.mouse.click(svg.x + (CONV_OUT.left + 2.5 * c) * k, svg.y + (CONV_OUT.top + c / 2) * k);
-  await expect(lab.locator("svg[role=img]")).toContainText("sum: 1·1 = 1");
+  await expect(lab.locator("svg.hand-pic, svg[role=img]").first()).toContainText("sum: 1·1 = 1");
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/the output is large only where the signal changes!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("conv-lab.png") });
@@ -660,7 +662,7 @@ test("the attention lab: the query away from cat gives it little weight, pointed
   await expect(lab.getByText(/cat gets .* of the attention; you want at least 0\.6/)).toBeVisible();
 
   // Put the query's tip at (2.4, 2), along cat's key.
-  const svg = (await lab.locator("svg[role=img]").boundingBox())!;
+  const svg = (await lab.locator("svg.hand-pic, svg[role=img]").first().boundingBox())!;
   const k = svg.width / ATTN_PLOT.w;
   const [x, y] = attnPage([2.4, 2]);
   await page.mouse.move(svg.x + x * k, svg.y + y * k);

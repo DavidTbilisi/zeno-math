@@ -30,7 +30,8 @@ import {
 } from "../math/knnLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveKnn> = { tries: 0, done: false, said: null };
@@ -94,6 +95,18 @@ export function KnnLab({ state, set, w: words, svgRef }: PieceProps<"knnLab">) {
     : { tone: "hint", text: !p ? w.freeHint : can.includes("drag") && can.length === 1 ? w.dragHint : w.hint };
   const read = fill(w.read, { k: d.k, o: v.votes[1], b: v.votes[0], c: classes[v.c] }) + (tests.length ? fill(w.readTest, { t: num(accuracy(tests, trainOf(ps), s)) }) : "");
 
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(can.includes("metric") ? METRICS.map((m) => ({ text: w.metrics[m], on: d.metric === m, disabled: d.done, onTap: () => commit(fresh({ metric: m })) })) : []),
+    ...(can.includes("scale") ? [{ text: w.scaled, on: d.scaled, disabled: d.done, onTap: () => commit(fresh({ scaled: !d.scaled })) }] : []),
+    { text: w.regions, on: d.regions, onTap: () => commit({ regions: !d.regions }) },
+    ...(!p ? [...FREE_DATA.map((id, i) => ({ text: w.datas[id], brk: i === 0, on: d.data === id, onTap: () => commit({ data: id }) })), { text: w.newSample, onTap: () => commit({ seed: d.seed + 1 }) }] : []),
+  ];
+  const dials = (["k", "dims"] as const).filter((k) => can.includes(k));
+  const DW = dials.length > 1 ? (KNN_PLOT.w - 24) / 2 : KNN_PLOT.w - 16;
+  const dialH = dials.length ? 44 : 0;
+  const strip = dialH + pillRowsH(moves, KNN_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
@@ -101,11 +114,11 @@ export function KnnLab({ state, set, w: words, svgRef }: PieceProps<"knnLab">) {
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={KNN_PLOT.w}
-          height={KNN_PLOT.h}
-          viewBox={`0 0 ${KNN_PLOT.w} ${KNN_PLOT.h}`}
+          height={KNN_PLOT.h + strip}
+          viewBox={`0 0 ${KNN_PLOT.w} ${KNN_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: !can.includes("drag") ? "default" : dragging ? "grabbing" : "crosshair", touchAction: "none" }}
           onPointerDown={down}
@@ -113,55 +126,25 @@ export function KnnLab({ state, set, w: words, svgRef }: PieceProps<"knnLab">) {
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={KNN_PLOT.w} height={KNN_PLOT.h} fill="#fff" />
+          <rect width={KNN_PLOT.w} height={KNN_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: knnSvg(d, w.chart) }} />
+          {dials.map((k, i) => {
+            const x = 8 + i * (DW + 8);
+            return k === "k" ? (
+              <Track key={k} x={x} y={KNN_PLOT.h + 4} w={DW} value={d.k} min={1} max={K_MAX} label={w.k} disabled={d.done} show={(v) => `k = ${v}`}
+                onChange={(v, done) => (done ? commit(fresh({ k: v })) : setDraft(fresh({ k: v })))} />
+            ) : (
+              <Track key={k} x={x} y={KNN_PLOT.h + 4} w={DW} value={Math.max(0, DIMS.indexOf(d.dims))} min={0} max={DIMS.length - 1} label={w.dims} disabled={d.done} color="#e8590c" show={(v) => `d = ${DIMS[v]}`}
+                onChange={(v, done) => (done ? commit(fresh({ dims: DIMS[v] })) : setDraft(fresh({ dims: DIMS[v] })))} />
+            );
+          })}
+          <PillRows w={KNN_PLOT.w} y={KNN_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <div className="live-bar descent-dials">
-        {can.includes("k") && (
-          <label className="live-slider">
-            <b>k = {d.k}</b>
-            <input
-              type="range"
-              min={1}
-              max={K_MAX}
-              value={d.k}
-              disabled={d.done}
-              aria-label={w.k}
-              onChange={(e) => setDraft(fresh({ k: Number(e.target.value) }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-        {can.includes("dims") && (
-          <label className="live-slider">
-            <b>d = {d.dims}</b>
-            <input
-              type="range"
-              min={0}
-              max={DIMS.length - 1}
-              value={Math.max(0, DIMS.indexOf(d.dims))}
-              disabled={d.done}
-              aria-label={w.dims}
-              onChange={(e) => setDraft(fresh({ dims: DIMS[Number(e.target.value)] }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-      </div>
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {can.includes("metric") && METRICS.map((m) => <Toggle key={m} on={d.metric === m} disabled={d.done} onClick={() => commit(fresh({ metric: m }))}>{w.metrics[m]}</Toggle>)}
-        {can.includes("scale") && <Toggle on={d.scaled} disabled={d.done} onClick={() => commit(fresh({ scaled: !d.scaled }))}>{w.scaled}</Toggle>}
-        <Toggle on={d.regions} onClick={() => commit({ regions: !d.regions })}>{w.regions}</Toggle>
-        {!p && FREE_DATA.map((id) => <Toggle key={id} on={d.data === id} onClick={() => commit({ data: id })}>{w.datas[id]}</Toggle>)}
-        {!p && <button className="live-btn" onClick={() => commit({ seed: d.seed + 1 })}>{w.newSample}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
