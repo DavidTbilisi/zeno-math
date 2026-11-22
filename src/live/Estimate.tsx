@@ -3,10 +3,12 @@
 // stars for how close they come on average, showing the half-way mark caps them at two, and a round opens once the
 // one before it has a star; the endless run keeps a streak of pins within 5 %, and the best streak is kept. Built on
 // the game shell (useGame): a pin within 5 % is a step, one further off a miss, and the fifth of a round finishes it.
+// Worked by hand: the half-way mark is a pill in the picture's corner, tapped on and off.
 import { useState } from "react";
 import { currentTask, ESTIMATE_LADDER, ESTIMATE_NOTICES, estimateNotice, judgePin, numText, offText, pinError, ROUND, roundStars, shareAlong, type LiveEstimate } from "../math/estimate";
 import { newSeed, RoundDots, starText } from "./ladderUi";
-import { fill, FONT, INK, svgPoint, Toggle, type PieceProps } from "./ui";
+import { Pill } from "./hand";
+import { fill, FONT, INK, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const W = 700;
@@ -89,7 +91,7 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
           height={H}
           viewBox={`0 0 ${W} ${H}`}
           fontFamily={FONT}
-          role="img"
+          className="hand-pic"
           aria-label={fill(w.place, { n: task.text })}
           onPointerDown={down}
           onPointerMove={move}
@@ -98,6 +100,7 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
           style={{ cursor: placed ? "default" : "pointer", touchAction: "none" }}
         >
           <rect width={W} height={H} fill="#fff" />
+          <Pill x={12} y={12} w={156} h={32} on={d.half} text={`½ ${w.half}`} title={d.mode === "puzzle" ? `½ ${w.half}: ${w.peek}` : undefined} onTap={toggleHalf} />
           <text x={W / 2} y={44} fontSize={34} fontWeight={700} textAnchor="middle" fill={INK}>{task.text}</text>
           <line x1={X0} y1={Y} x2={X1} y2={Y} stroke={INK} strokeWidth={3} />
           {[from, to].map((v) => (
@@ -122,9 +125,7 @@ export function Estimate({ state: d, set, w: words, svgRef }: PieceProps<"estima
           )}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={placed} finished={roundDone} rounds onward={next} always>
-        <Toggle on={d.half} onClick={toggleHalf} title={d.mode === "puzzle" ? w.peek : undefined}>½ {w.half}</Toggle>
-      </GameActions>
+      <GameActions game={game} g={g} done={placed} finished={roundDone} rounds onward={next} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
