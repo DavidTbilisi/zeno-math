@@ -28,6 +28,7 @@ import { QuickLook } from "./QuickLook";
 import { Rubik } from "./Rubik";
 import { ShadeGame } from "./ShadeGame";
 import { Stripes } from "./Stripes";
+import { FoldStrip } from "./FoldStrip";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
@@ -142,6 +143,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   fracOrder: FracOrder,
   shadeFrac: ShadeGame,
   stripes: Stripes,
+  foldStrip: FoldStrip,
   balance: Balance,
   machine: Machine,
   growing: Growing,
