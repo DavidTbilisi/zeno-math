@@ -8,6 +8,7 @@
 import { foldedPath, lineEnds, mirrorsOf, shapePath, SYM_LADDER, SYM_NOTICES, SYM_SIDE, symNotice, symNow, symStars, type LiveMirror } from "../math/symmetry";
 import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const S = SYM_SIDE;
@@ -41,14 +42,15 @@ export function Mirror({ state: d, set, w: words, svgRef }: PieceProps<"mirror">
     : d.done ? { tone: "ok", text: right }
     : d.said?.kind === "wrong" ? { tone: "wrong", text: d.said.more ? w.more : w.wrongFold }
     : { tone: "hint", text: d.chosen.length ? fill(w.chosen, { n: d.chosen.length }) : w.hint };
+  const row = d.done ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={S} height={S} viewBox={`0 0 ${S} ${S}`} fontFamily={FONT} role="group" aria-label={w.hint}>
-          <rect width={S} height={S} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={S} height={S + row} viewBox={`0 0 ${S} ${S + row}`} fontFamily={FONT} aria-label={w.hint}>
+          <rect width={S} height={S + row} fill="#fff" />
           <path d={shapePath(task, S)} fill={d.done ? "#d3f9d8" : "#a5d8ff"} stroke={d.done ? "#2f9e44" : "#1971c2"} strokeWidth={3} strokeLinejoin="round" />
           {d.wrong.map((k) => (
             <path key={`fold${k}`} d={foldedPath(task, lines[k], S)} fill="none" stroke="#e03131" strokeWidth={2.5} strokeDasharray="7 5" />
@@ -69,11 +71,10 @@ export function Mirror({ state: d, set, w: words, svgRef }: PieceProps<"mirror">
               </g>
             );
           })}
+          {row > 0 && <CheckRow w={S} y={S} check={{ text: g.check, onTap: check }} />}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        <button className="live-btn on" onClick={check}>{g.check}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

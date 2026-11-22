@@ -6,6 +6,7 @@
 import { TOWN_LADDER, TOWN_NOTICES, townNotice, townNow, townProblem, townStars, townSvg, type LiveTowns } from "../math/connectTowns";
 import { edgeName } from "../math/graphPlay";
 import { fill, FONT, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { starText } from "./ladderUi";
 
@@ -34,6 +35,7 @@ export function ConnectTowns({ state: d, set, w: words, svgRef }: PieceProps<"co
     : d.said?.kind === "loop" ? { tone: "wrong", text: w.loop }
     : d.said?.kind === "dearer" ? { tone: "wrong", text: fill(w.dearer, { d: d.said.by }) }
     : { tone: "hint", text: d.chosen.length ? fill(w.total, { n: d.chosen.length, v: total }) : w.hint };
+  const row = d.done ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
@@ -41,8 +43,8 @@ export function ConnectTowns({ state: d, set, w: words, svgRef }: PieceProps<"co
       </GameHead>
       <Said line={{ tone: "prompt", text: w.ask }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={pic.w} height={pic.h} viewBox={`0 0 ${pic.w} ${pic.h}`} fontFamily={FONT} role="group" aria-label={w.hint}>
-          <rect width={pic.w} height={pic.h} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={pic.w} height={pic.h + row} viewBox={`0 0 ${pic.w} ${pic.h + row}`} fontFamily={FONT} aria-label={w.hint}>
+          <rect width={pic.w} height={pic.h + row} fill="#fff" />
           {task.g.edges.map(([a, b], e) => (
             <line
               key={e}
@@ -60,12 +62,10 @@ export function ConnectTowns({ state: d, set, w: words, svgRef }: PieceProps<"co
             />
           ))}
           <g dangerouslySetInnerHTML={{ __html: pic.body }} style={{ pointerEvents: "none" }} />
+          {row > 0 && <CheckRow w={pic.w} y={pic.h} check={{ text: g.check, disabled: !d.chosen.length, onTap: check }} clear={{ text: g.clear, disabled: !d.chosen.length, onTap: () => set({ ...d, chosen: [], said: null }) }} />}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        <button className="live-btn on" disabled={!d.chosen.length} onClick={check}>{g.check}</button>
-        <button className="live-btn" disabled={!d.chosen.length} onClick={() => set({ ...d, chosen: [], said: null })}>{g.clear}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

@@ -9,6 +9,7 @@ import { gridSnap, samePt } from "../math/plotPoint";
 import { gradText, onLine, SLOPE_CELL, SLOPE_LADDER, SLOPE_NOTICES, slopeNotice, slopeNow, slopeRange, slopeSlip, slopeStars, slopeSvg, type LiveSlope } from "../math/slope";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveSlope> = { b: null, misses: 0, done: false, said: null };
@@ -44,6 +45,7 @@ export function SlopeLine({ state: d, set, w: words, svgRef }: PieceProps<"slope
     : d.said?.kind === "wrong" ? { tone: "wrong", text: fill(w.why[d.said.why], { g: drawn, m }) }
     : { tone: "hint", text: d.b ? w.moved : w.hint };
   const ask = fill(task.level === 1 ? w.askUp : w.ask, { m, n: task.rise });
+  const row = d.done ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
@@ -51,14 +53,13 @@ export function SlopeLine({ state: d, set, w: words, svgRef }: PieceProps<"slope
       </GameHead>
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} className="plot-grid" width={pic.w} height={pic.h} viewBox={`0 0 ${pic.w} ${pic.h}`} fontFamily={FONT} role="img" aria-label={ask} style={{ cursor: d.done ? "default" : "crosshair", touchAction: "none" }} onPointerDown={tap}>
-          <rect width={pic.w} height={pic.h} fill="#fff" />
+        <svg ref={svgRef} className="plot-grid hand-pic" width={pic.w} height={pic.h + row} viewBox={`0 0 ${pic.w} ${pic.h + row}`} fontFamily={FONT} aria-label={ask} style={{ cursor: d.done ? "default" : "crosshair", touchAction: "none" }} onPointerDown={tap}>
+          <rect width={pic.w} height={pic.h + row} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: pic.body }} />
+          {row > 0 && <CheckRow w={pic.w} y={pic.h} check={{ text: g.check, disabled: !d.b || wrong, onTap: check }} />}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        <button className="live-btn on" disabled={!d.b || wrong} onClick={check}>{g.check}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
