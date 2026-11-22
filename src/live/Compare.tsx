@@ -21,7 +21,7 @@ import {
   type Tower,
 } from "../math/live";
 import { BLUE, keyTap, useDrag } from "./hand";
-import { Pencil, useJoin } from "./pencils";
+import { Pencil, PencilBox, useJoin } from "./pencils";
 import { usePops } from "./pops";
 import { fill, FONT, INK, type PieceProps } from "./ui";
 
@@ -102,7 +102,7 @@ function Block({
   );
 }
 
-function SignCard({
+export function SignCard({
   cx,
   y,
   s,
@@ -299,35 +299,7 @@ export function Compare({
           }
         >
           <title>{state.joined ? w.pencilsOff : w.pencils}</title>
-          <rect
-            x={PENCILS.x}
-            y={PENCILS.y}
-            width={PENCILS.w}
-            height={PENCILS.h}
-            rx={8}
-            fill={state.joined ? "#e7f5ff" : "#fff"}
-            stroke={state.joined ? BLUE : "#ced4da"}
-            strokeDasharray={state.joined ? undefined : "5 4"}
-          />
-          {PENCIL_COLORS.map((c, i) => (
-            <g key={c} opacity={state.joined ? 0.3 : 1}>
-              <line
-                x1={PENCILS.x + 12}
-                y1={PENCILS.y + 12 + i * 11}
-                x2={PENCILS.x + PENCILS.w - 20}
-                y2={PENCILS.y + 12 + i * 11}
-                stroke={c}
-                strokeWidth={7}
-                strokeLinecap="round"
-              />
-              <path
-                d={`M${PENCILS.x + PENCILS.w - 20} ${PENCILS.y + 8.5 + i * 11} l10 3.5 l-10 3.5 z`}
-                fill="#f4d6a0"
-                stroke={c}
-                strokeWidth={1}
-              />
-            </g>
-          ))}
+          <PencilBox {...PENCILS} joined={state.joined} colors={PENCIL_COLORS} on={BLUE} />
         </g>
         <g
           role="button"

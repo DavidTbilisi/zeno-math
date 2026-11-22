@@ -12,3 +12,6 @@ export const sectorPath = (cx: number, cy: number, r: number, from: number, to: 
     : `M${cx},${cy}L${x0},${y0}A${r},${r} 0 ${to - from > 180 ? 1 : 0},1 ${x1},${y1}Z`;
 };
 
+
+/** The colours of a spinner's sections and of the bars that count them. */
+export const SECTION_COLORS = ["#ffc9c9", "#ffec99", "#b2f2bb", "#a5d8ff", "#d0bfff", "#ffd8a8", "#eebefa", "#99e9f2", "#c0eb75", "#e9ecef"];

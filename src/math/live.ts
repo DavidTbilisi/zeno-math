@@ -375,6 +375,9 @@ export function fracNumbers({ n, d }: Frac): Frac {
   return { n: Math.max(0, Math.min(parts, Math.round(n) || 0)), d: parts };
 }
 
+/** The parts shaded when a bar `whole` high, standing on `floor` and cut into d parts, is painted up to height y: the part under y and every part below it. */
+export const shadeUpTo = (y: number, floor: number, whole: number, d: number) => Math.max(0, Math.min(d, Math.ceil(((floor - y) / whole) * d - 1e-9)));
+
 /** n/d against m/e by cross-multiplying: n·e against m·d. */
 export const fracSign = (a: Frac, b: Frac): CompareSign => compareSign(a.n * b.d, b.n * a.d);
 
@@ -621,7 +624,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   chance: [680, 500],
   cards: [690, 610],
   compare: [380, 530],
-  compareFractions: [400, 680],
+  compareFractions: [400, 640],
   division: [760, 820],
   rubik: [780, 1000],
   soroban: [820, 540],

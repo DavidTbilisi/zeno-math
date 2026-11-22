@@ -4,8 +4,7 @@
 import { useRef, useState, type PointerEvent } from "react";
 import { sectionAt, spinTurn, tallyUp } from "../math/live";
 import { Bin, BLUE, inBox, keyTap, NumBox, pointIn, useDrag } from "./hand";
-import { SECTION_COLORS } from "./pieces";
-import { around, sectorPath } from "./sectors";
+import { around, SECTION_COLORS, sectorPath } from "./sectors";
 import { useAnimation } from "./useAnimation";
 import { fill, FONT, INK, type PieceProps } from "./ui";
 
