@@ -107,7 +107,7 @@ export function BeBinary({ state: d, set, w: words, svgRef }: PieceProps<"beBina
   const log = m.log.slice(-7);
   return (
     <>
-      <GameHead game={game} g={g}>
+      <GameHead game={game} g={g} code>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Said line={{ tone: "prompt", text: `${w.names[task.algo]}: ${fill(w.ask[task.algo], { x: task.x, n: task.a.length })}` }} />

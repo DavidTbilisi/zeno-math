@@ -36,7 +36,7 @@ import { useCodeNames, useCodeView } from "./codeView";
 import { useFeel } from "./feel";
 import { play } from "./juice";
 import { CalmToggle, Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder, type GameWords } from "./ladderUi";
-import { fill } from "./ui";
+import { fill, Toggle } from "./ui";
 
 /** What a line of feedback is: a hint in grey, the prompt in bold, a miss in red, a near miss in orange, a right answer in green, a notice in purple. */
 export type Tone = "hint" | "prompt" | "wrong" | "near" | "ok" | "notice";
@@ -240,9 +240,11 @@ export type AnyGame = Game<string, GameBase<string, unknown>>;
 export const isFinale = (game: AnyGame, done: boolean) => done && game.state.mode === "puzzle" && game.state.stage === game.size - 1 && ladderPassed(game.ladder.stars);
 
 /** The top of a game: the puzzles with their stars and the way out of them, and under it the round's dots or the stars at stake. */
-export function GameHead({ game, g, words, pace, children }: {
+export function GameHead({ game, g, words, pace, code, children }: {
   game: AnyGame;
   g: GameWords;
+  /** An algorithm game: the code view switch joins sound and calm (pointers and variables written out instead of colours). */
+  code?: boolean;
   /** A game's own names for its puzzles ("Round {n}") and its lock, where they differ from every game's. */
   words?: { puzzle?: string; locked?: string; free?: string };
   pace?: ReactNode;
@@ -279,6 +281,7 @@ export function GameHead({ game, g, words, pace, children }: {
         <>
           <SoundToggle title={g.sound} />
           <CalmToggle label={g.calm} title={g.calmWhy} />
+          {code && <CodeViewSwitch label={g.codeView} />}
         </>
       }
       pace={
@@ -294,13 +297,13 @@ export function GameHead({ game, g, words, pace, children }: {
   );
 }
 
-/** The code view on or off, for every algorithm game at once. */
+/** The code view on or off, for every algorithm game at once: a quiet </> beside sound and calm. */
 function CodeViewSwitch({ label }: { label: string }) {
   const [on, setOn] = useCodeView();
   return (
-    <button type="button" className={`live-btn live-codeview${on ? " on" : ""}`} aria-pressed={on} onClick={() => setOn(!on)}>
-      {"</>"} {label}
-    </button>
+    <Toggle on={on} title={label} label={label} onClick={() => setOn(!on)}>
+      <span className="live-codeview">{"</>"}</span>
+    </Toggle>
   );
 }
 
@@ -309,9 +312,7 @@ function CodeViewSwitch({ label }: { label: string }) {
  * every game's code takes them up together; a part that is not a pair of names marks the field until it is mended.
  */
 function CodeNamesField({ label, hint }: { label: string; hint: string }) {
-  const [on] = useCodeView();
   const { text, bad, set } = useCodeNames();
-  if (!on) return null;
   return (
     <label className={`live-codenames${bad !== undefined ? " bad" : ""}`} title={bad}>
       <span>{label}</span>
@@ -371,7 +372,7 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
   game: AnyGame;
   g: GameWords;
   done: boolean;
-  /** An algorithm game: offer the code view (pointers and variables written out instead of colours). */
+  /** An algorithm game: while the code view is on, the names its variables go by can be typed here. */
   code?: boolean;
   finished?: boolean;
   rounds?: boolean;
@@ -384,8 +385,10 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
   const back = game.back;
   const own = (always || !done) && children;
   const onwardShown = done && !isFinale(game, done && finished);
-  // Nothing to do here: no bar (the sound and calm switches are up in the puzzles' row).
-  if (!own && !onwardShown && !(!done && back) && !code) return null;
+  const [codeOn] = useCodeView();
+  const names = code && codeOn;
+  // Nothing to do here: no bar (the sound, calm and code switches are up in the puzzles' row).
+  if (!own && !onwardShown && !(!done && back) && !names) return null;
   return (
     <div className="live-bar">
       {own}
@@ -395,8 +398,7 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
           ↩ {g.stepBack}
         </button>
       )}
-      {code && <CodeViewSwitch label={g.codeView} />}
-      {code && <CodeNamesField label={g.codeNames} hint={g.codeNamesHint} />}
+      {names && <CodeNamesField label={g.codeNames} hint={g.codeNamesHint} />}
     </div>
   );
 }

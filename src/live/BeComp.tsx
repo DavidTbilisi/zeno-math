@@ -4,10 +4,11 @@
 // away, and adds what it is for to a sheet beside the board. No miss earns three stars, one two. Nine rounds open in
 // turn, the later ones with look-alikes (two requirements for faster reads, or two for more machines), and the endless
 // run keeps a streak of rounds named without a miss. A requirement named whose component has a game of its own can be
-// played by hand: a button opens that game beside this one. Built on the game shell (useGame), which does the ladder,
+// played by hand: a pill under the picture opens that game beside this one. Built on the game shell (useGame), which does the ladder,
 // the sounds and the cheer.
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { apply, checkOp, COMP_LADDER, COMP_NOTICES, compNotice, compNow, compStars, compSvg, COMPONENTS, expect, GAMES, PLAY, replay, REQS, type LiveBeComp } from "../math/beComp";
+import { Pill } from "./hand";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
@@ -102,14 +103,13 @@ export function BeComp({ state: d, set, w: words, svgRef, open }: PieceProps<"be
   // The requirement named last, tried by hand where its component has a game: it opens beside this one, at the puzzle of its kind.
   const named = last >= 0 ? items[last].id : null;
   const its = named ? GAMES[REQS[named]] : undefined;
-  const play = named && its && open && (
-    <button className="live-btn" title={fill(w.playTip, { name: w.tiles[REQS[named]] })} onClick={() => open(its, { stage: PLAY[named] })}>
-      {fill(w.play, { name: w.tiles[REQS[named]] })}
-    </button>
-  );
+  // As a pill under the picture: the component's own game opened beside this one.
+  const play = named && its && open ? { text: `▶ ${fill(w.play, { name: w.tiles[REQS[named]] })}`, title: fill(w.playTip, { name: w.tiles[REQS[named]] }), onTap: () => open(its, { stage: PLAY[named] }) } : null;
+  const playW = play ? 30 + [...play.text].length * 8.4 : 0;
+  const picH = pic.h + (play ? 46 : 0);
   return (
     <>
-      <GameHead game={game} g={g}>
+      <GameHead game={game} g={g} code>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Said line={{ tone: "prompt", text: w.ask }} />
@@ -118,8 +118,8 @@ export function BeComp({ state: d, set, w: words, svgRef, open }: PieceProps<"be
           <svg
             ref={svgRef}
             width={pic.w}
-            height={pic.h}
-            viewBox={`0 0 ${pic.w} ${pic.h}`}
+            height={picH}
+            viewBox={`0 0 ${pic.w} ${picH}`}
             fontFamily={FONT}
             role="group"
             aria-label={w.ask}
@@ -132,7 +132,7 @@ export function BeComp({ state: d, set, w: words, svgRef, open }: PieceProps<"be
               setHot(null);
             }}
           >
-            <rect width={pic.w} height={pic.h} fill="#fff" />
+            <rect width={pic.w} height={picH} fill="#fff" />
             <g dangerouslySetInnerHTML={{ __html: pic.body }} />
             {pic.spots.map((s) => (
               <rect
@@ -157,6 +157,7 @@ export function BeComp({ state: d, set, w: words, svgRef, open }: PieceProps<"be
                 <text x={drag.x} y={drag.y + 5} fontSize={13} fontWeight={700} textAnchor="middle">{`${m.k + 1} / ${items.length}`}</text>
               </g>
             )}
+            {play && <Pill x={(pic.w - playW) / 2} y={pic.h + 6} w={playW} text={play.text} title={play.title} onTap={play.onTap} />}
           </svg>
           <div className="search-side">
             <div className="search-code" role="group" aria-label={w.sheet}>
@@ -174,9 +175,7 @@ export function BeComp({ state: d, set, w: words, svgRef, open }: PieceProps<"be
         </div>
       </Stage>
       <p className="live-said info">{fill(w.moves, { k: d.ops.length, n: items.length })}</p>
-      <GameActions game={game} g={g} code done={d.done} always>
-        {play}
-      </GameActions>
+      <GameActions game={game} g={g} code done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

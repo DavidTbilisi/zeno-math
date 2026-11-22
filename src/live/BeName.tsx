@@ -3,11 +3,12 @@
 // the line says what that pattern needs, to check the problem against. A right one moves on, shows the clue that gave
 // the pattern away, and adds what the pattern needs to a cheat sheet beside the board. No miss earns three stars, one
 // two. Nine rounds open in turn, the later ones with look-alikes (two problems with a sorted list, or two graphs), and
-// the endless run keeps a streak of rounds named without a miss. The problem named last can be played by hand: a button
-// opens its pattern's game beside this one, at the puzzle of its kind. Built on the game shell (useGame), which does the
+// the endless run keeps a streak of rounds named without a miss. The problem named last can be played by hand: a pill
+// under the picture opens its pattern's game beside this one, at the puzzle of its kind. Built on the game shell (useGame), which does the
 // ladder, the sounds and the cheer.
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { apply, checkOp, expect, GAMES, NAME_LADDER, NAME_NOTICES, nameNotice, nameNow, nameStars, nameSvg, PATTERNS, PLAY, PROBLEMS, replay, type LiveBeName } from "../math/beName";
+import { Pill } from "./hand";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
@@ -101,14 +102,13 @@ export function BeName({ state: d, set, w: words, svgRef, open }: PieceProps<"be
   const log = m.answered.map((p, k) => `“${clueOf(k)}” → ${w.tiles[p]}`).slice(-7);
   // The problem named last, played by hand: its pattern's game opens beside this one, at the puzzle of its kind.
   const named = last >= 0 ? items[last].id : null;
-  const play = named && open && (
-    <button className="live-btn" title={fill(w.playTip, { name: w.tiles[PROBLEMS[named]] })} onClick={() => open(GAMES[PROBLEMS[named]], { stage: PLAY[named] })}>
-      {fill(w.play, { name: w.tiles[PROBLEMS[named]] })}
-    </button>
-  );
+  // As a pill under the picture: the pattern's own game opened beside this one.
+  const play = named && open ? { text: `▶ ${fill(w.play, { name: w.tiles[PROBLEMS[named]] })}`, title: fill(w.playTip, { name: w.tiles[PROBLEMS[named]] }), onTap: () => open(GAMES[PROBLEMS[named]], { stage: PLAY[named] }) } : null;
+  const playW = play ? 30 + [...play.text].length * 8.4 : 0;
+  const picH = pic.h + (play ? 46 : 0);
   return (
     <>
-      <GameHead game={game} g={g}>
+      <GameHead game={game} g={g} code>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Said line={{ tone: "prompt", text: w.ask }} />
@@ -117,8 +117,8 @@ export function BeName({ state: d, set, w: words, svgRef, open }: PieceProps<"be
           <svg
             ref={svgRef}
             width={pic.w}
-            height={pic.h}
-            viewBox={`0 0 ${pic.w} ${pic.h}`}
+            height={picH}
+            viewBox={`0 0 ${pic.w} ${picH}`}
             fontFamily={FONT}
             role="group"
             aria-label={w.ask}
@@ -131,7 +131,7 @@ export function BeName({ state: d, set, w: words, svgRef, open }: PieceProps<"be
               setHot(null);
             }}
           >
-            <rect width={pic.w} height={pic.h} fill="#fff" />
+            <rect width={pic.w} height={picH} fill="#fff" />
             <g dangerouslySetInnerHTML={{ __html: pic.body }} />
             {pic.spots.map((s) => (
               <rect
@@ -156,6 +156,7 @@ export function BeName({ state: d, set, w: words, svgRef, open }: PieceProps<"be
                 <text x={drag.x} y={drag.y + 5} fontSize={13} fontWeight={700} textAnchor="middle">{`${m.k + 1} / ${items.length}`}</text>
               </g>
             )}
+            {play && <Pill x={(pic.w - playW) / 2} y={pic.h + 6} w={playW} text={play.text} title={play.title} onTap={play.onTap} />}
           </svg>
           <div className="search-side">
             <div className="search-code" role="group" aria-label={w.sheet}>
@@ -173,9 +174,7 @@ export function BeName({ state: d, set, w: words, svgRef, open }: PieceProps<"be
         </div>
       </Stage>
       <p className="live-said info">{fill(w.moves, { k: d.ops.length, n: items.length })}</p>
-      <GameActions game={game} g={g} code done={d.done} always>
-        {play}
-      </GameActions>
+      <GameActions game={game} g={g} code done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
