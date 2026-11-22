@@ -401,7 +401,7 @@ test("name the component: a requirement whose component has a game opens it besi
   }).toPass();
   for (let i = 1; i <= k; i++) await tap("requirement").then(() => tap(compTile(i)));
   const id = compTask.items[k].id;
-  await game.getByRole("button", { name: fill(en.live.beComp.play, { name: compTile(k) }) }).dispatchEvent("click");
+  await game.getByRole("button", { name: fill(en.live.beComp.playTip, { name: compTile(k) }) }).dispatchEvent("click");
   const opened = page.locator(`.live-${COMP_GAMES[REQS[id]]}`);
   await expect(opened).toBeVisible();
   await expect(opened.locator(".geo-stage.on")).toHaveText(new RegExp(`^${COMP_PLAY[id] + 1}`));

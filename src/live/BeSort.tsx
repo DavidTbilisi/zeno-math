@@ -52,7 +52,7 @@ export function BeSort({ state: d, set, w: words, svgRef }: PieceProps<"beSort">
     t.kind === "gap" ? fill(w.gap, { i: t.move + 1 }) : t.kind === "head" ? fill(t.move === 0 ? w.leftHead : w.rightHead, { v: t.v! }) : fill(w.place, { i: t.move + 1, v: t.v! });
   return (
     <>
-      <GameHead game={game} g={g}>
+      <GameHead game={game} g={g} code>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Said line={{ tone: "prompt", text: `${w.names[algo]}: ${code ? rename(fill(w.codeAsk[algo], vars), names) : fill(w.ask[algo], vars)}` }} />

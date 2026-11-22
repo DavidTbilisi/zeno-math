@@ -109,7 +109,7 @@ export function BeTree({ state: d, set, w: words, svgRef }: PieceProps<"beTree">
   const log = m.log.slice(-7);
   return (
     <>
-      <GameHead game={game} g={g}>
+      <GameHead game={game} g={g} code>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Said line={{ tone: "prompt", text: `${w.names[task.algo]}: ${fill(w.ask[task.algo], { n: task.a.length, a: task.a.join(", "), q: task.q.join(", ") })}` }} />

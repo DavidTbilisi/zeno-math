@@ -121,7 +121,7 @@ export function BeDp({ state: d, set, w: words, svgRef }: PieceProps<"beDp">) {
   const log = m.log.slice(-7);
   return (
     <>
-      <GameHead game={game} g={g}>
+      <GameHead game={game} g={g} code>
         <Stake stars={stars} tries={d.misses} g={g} />
       </GameHead>
       <Said line={{ tone: "prompt", text: `${w.names[task.p]}: ${fill(w.ask[task.p], vars)}` }} />

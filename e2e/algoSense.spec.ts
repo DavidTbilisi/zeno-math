@@ -653,7 +653,7 @@ test("name the pattern: the problem named opens its pattern's game beside it, at
     await expect(game.getByText(`Named: 1 of ${nameTask.items.length}`)).toBeVisible({ timeout: 1000 });
   }).toPass();
   const id = nameTask.items[0].id;
-  await game.getByRole("button", { name: fill(en.live.beName.play, { name: tileOf(0) }) }).dispatchEvent("click");
+  await game.getByRole("button", { name: fill(en.live.beName.playTip, { name: tileOf(0) }) }).dispatchEvent("click");
   const opened = page.locator(`.live-${GAMES[PROBLEMS[id]]}`);
   await expect(opened).toBeVisible();
   await expect(opened.locator(".geo-stage.on")).toHaveText(new RegExp(`^${PLAY[id] + 1}`));
