@@ -5856,11 +5856,13 @@ export const en = {
     },
     fractionWall: {
       make: "Fill the bar to {t}",
-      hint: "Tap tiles to fill the gap exactly. Tap a tile in the bar to take it out.",
+      hint: "Drag tiles (or tap them) into the gap to fill it exactly. Drag a tile out of the bar, or tap it, to take it out.",
       short: "{n} in so far — keep filling the gap.",
       exact: "Exactly! {stars} Can you fill it with fewer tiles?",
       fewest: "Exactly, with the fewest tiles! {stars}",
-      over: "Too much — tap a tile in the bar to take it out.",
+      over: "Too much — drag a tile out of the bar (or tap it) to take it out.",
+      takeOut: "Take out {f}",
+      clearTitle: "Tap to take every tile out; drop a tile here to take it out",
       notices: {
         oneTile: "One tile fits the gap exactly!",
         threeSizes: "Three different sizes, one exact fill!",

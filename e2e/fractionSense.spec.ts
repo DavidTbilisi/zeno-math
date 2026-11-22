@@ -18,10 +18,10 @@ test("make a whole: a gap filled with the fewest tiles earns three stars and ope
   const t = wallTask(WALL_LADDER[0].level, rng(WALL_LADDER[0].seed));
   // The first tap may still be waking the piece up on a slow machine: tap until the tile is in.
   await expect(async () => {
-    await game.locator(".wall-tray").getByRole("button", { name: `1/${t.fewest[0]}`, exact: true }).click();
+    await game.locator("svg").first().getByRole("button", { name: `1/${t.fewest[0]}`, exact: true }).click();
     await expect(game.getByText(/in so far|Exactly/)).toBeVisible({ timeout: 1000 });
   }).toPass();
-  for (const d of t.fewest.slice(1)) await game.locator(".wall-tray").getByRole("button", { name: `1/${d}`, exact: true }).click();
+  for (const d of t.fewest.slice(1)) await game.locator("svg").first().getByRole("button", { name: `1/${d}`, exact: true }).click();
   await expect(game.getByText(/Exactly, with the fewest tiles! ★★★/)).toBeVisible();
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
