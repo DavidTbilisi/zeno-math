@@ -5,6 +5,8 @@
 // one of the two parts ringed in blue, costs one. In a grid each corner's answer goes into the middle, which is solved
 // last. Nine puzzles open in turn (two sets and a grid at each level), and the endless run keeps a streak of sets done
 // with no miss and no hint. Built on the game shell (useGame), which does the ladder, the sounds and the cheer.
+// Worked by hand: the numbers are tapped in the picture, the hint is a bulb in its corner and the endless run's signs
+// are pills over the sets.
 import {
   isFact,
   KAK_LADDER,
@@ -24,12 +26,15 @@ import {
   type KakSign,
   type LiveKakooma,
 } from "../math/kakooma";
-import { fill, FONT, INK, Toggle, type PieceProps } from "./ui";
+import { keyTap, Pill } from "./hand";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 import { starText } from "./ladderUi";
 
 const W = 560;
 const H = 380;
+/** The strip over the sets: the endless run's signs on the left, the hint's bulb on the right. */
+const TOP = 50;
 const GREEN = "#2f9e44";
 const RED = "#e03131";
 const BLUE = "#1971c2";
@@ -149,19 +154,22 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
       <GameHead game={game} g={g}>
         <span className="est-streak">{fill(w.misses, { n: d.misses })}</span>
       </GameHead>
-      {/* The endless run's sign: a new set of it, at the same level. */}
-      {d.mode === "endless" && (
-        <div className="live-bar">
-          {KAK_SIGNS.map((k) => (
-            <Toggle key={k} on={task.sign === k} title={w.signs[k]} onClick={() => game.endless(d.level, { sign: k })}>
-              {SIGN_TEXT[k]}
-            </Toggle>
-          ))}
-        </div>
-      )}
       <Stage game={game} stars={stars} done={done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={ask}>
-          <rect width={W} height={H} fill="#fff" />
+        <svg ref={svgRef} width={W} height={H + TOP} viewBox={`0 0 ${W} ${H + TOP}`} fontFamily={FONT} role="group" aria-label={ask}>
+          <rect width={W} height={H + TOP} fill="#fff" />
+          {/* The endless run's sign: a new set of it, at the same level. */}
+          {d.mode === "endless" && KAK_SIGNS.map((k, i) => (
+            <Pill key={k} x={14 + i * 50} y={10} w={42} h={32} size={20} text={SIGN_TEXT[k]} title={w.signs[k]} on={task.sign === k} onTap={() => game.endless(d.level, { sign: k })} />
+          ))}
+          {!d.hinted && !done && (
+            <g role="button" tabIndex={0} aria-label={`${w.hintBtn}: ${w.hintCost}`} style={{ cursor: "pointer" }}
+              onClick={() => set({ ...d, hinted: true })} onKeyDown={(e) => keyTap(e, () => set({ ...d, hinted: true }))}>
+              <title>{w.hintCost}</title>
+              <circle cx={W - 30} cy={26} r={20} fill="#fff9db" stroke="#fab005" strokeWidth={1.5} />
+              <text x={W - 30} y={34} fontSize={22} textAnchor="middle" pointerEvents="none">💡</text>
+            </g>
+          )}
+          <g transform={`translate(0 ${TOP})`}>
           {/* In a grid, a line from each corner to its place in the middle. */}
           {grid &&
             spots(4, MIDDLE, 52, true).map(([x, y], k) => (
@@ -170,11 +178,10 @@ export function Kakooma({ state: d, set, w: words, svgRef }: PieceProps<"kakooma
           {task.sets.map(drawSet)}
           {/* The sum, once found, under the square. */}
           {!grid && done && <text x={W / 2} y={H - 14} fontSize={22} fontWeight={700} textAnchor="middle" fill={GREEN}>{kakFact(task.sets[0], task.sign)}</text>}
+          </g>
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={done} onward={onward}>
-        {!d.hinted && <button className="live-btn" title={w.hintCost} onClick={() => set({ ...d, hinted: true })}>💡 {w.hintBtn}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={done} onward={onward} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
       {d.hinted && !done && <p className="live-hint">💡 {fact ? w.hintShownFact : w.hintShown}</p>}
     </>
