@@ -1,9 +1,12 @@
-// What the pieces that step through frames share: the step and the play timer, the row of step buttons, the caption
+// What the pieces that step through frames share: the step and the play timer, the drawn line of steps, the caption
 // with its question when the pupil takes a turn, and the scenes stacked into one picture.
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Frame } from "../math/patternSteps";
 import type { Scene } from "./scenes";
-import { fill } from "./ui";
+import { Pill, Track } from "./hand";
+import { fill, FONT } from "./ui";
+
+const STEPS_W = 460;
 
 export const PLAY_MS = 1100;
 export type StepWords = { play: string; pause: string; first: string; prev: string; next: string; last: string; step: string; right: string; wrong: string };
@@ -40,30 +43,35 @@ export function useStepper(frames: Frame[], step: number, quiz: boolean, setStep
 }
 export type Stepper = ReturnType<typeof useStepper>;
 
-/** ⏮ ◀ ⏵ ▶ ⏭ and "Step k of n"; with `lockLast` an open question can't be skipped to the end either. */
-export function StepBar({ s, w, frames, lockLast }: { s: Stepper; w: StepWords; frames: Frame[]; lockLast?: boolean }) {
+/**
+ * The steps as a line to drag along (or tap where to go; the arrow keys step one, Home and End go to the ends), with a
+ * play pill before it and a pill to the end after it, all drawn. An open question is as far as the line goes, and with
+ * `lockLast` it can't be skipped to the end either.
+ */
+export function StepBar({ s, w, frames, lockLast }: { s: Pick<Stepper, "k" | "last" | "asking" | "playing" | "setPlaying" | "go">; w: StepWords; frames: Frame[]; lockLast?: boolean }) {
   const { k, last, asking, playing, setPlaying, go } = s;
+  const play = () => {
+    if (playing) return setPlaying(false);
+    if (k >= last) go(0);
+    setPlaying(true);
+  };
+  // What the line's numbers mean, when the piece says more than "Step k of n", stays written under it.
+  const note = frames.length > 0 && /[:：]/.test(w.step) ? fill(w.step, { k, n: last }) : null;
   return (
-    <div className="live-bar">
-      <button className="live-btn" disabled={k === 0} title={w.first} aria-label={w.first} onClick={() => go(0)}>⏮</button>
-      <button className="live-btn" disabled={k === 0} title={w.prev} aria-label={w.prev} onClick={() => go(k - 1)}>◀</button>
-      <button
-        className="live-btn primary"
-        disabled={!frames.length || asking}
-        title={playing ? w.pause : w.play}
-        aria-label={playing ? w.pause : w.play}
-        onClick={() => {
-          if (playing) return setPlaying(false);
-          if (k >= last) go(0);
-          setPlaying(true);
-        }}
-      >
-        {playing ? "⏸" : "⏵"} {playing ? w.pause : w.play}
-      </button>
-      <button className="live-btn" disabled={k >= last || asking} title={w.next} aria-label={w.next} onClick={() => go(k + 1)}>▶</button>
-      <button className="live-btn" disabled={k >= last || (!!lockLast && asking)} title={w.last} aria-label={w.last} onClick={() => go(last)}>⏭</button>
-      {frames.length > 0 && <span className="live-note">{fill(w.step, { k, n: last })}</span>}
-    </div>
+    <>
+      <svg className="hand-pic live-steps" width={STEPS_W} height={44} viewBox={`0 0 ${STEPS_W} 44`} fontFamily={FONT}>
+        <Pill x={0} y={7} w={100} text={`${playing ? "⏸" : "⏵"} ${playing ? w.pause : w.play}`} title={playing ? w.pause : w.play} strong disabled={!frames.length || asking} onTap={play} />
+        <Track x={104} y={2} w={STEPS_W - 156} value={k} min={0} max={asking ? k : last} label={frames.length ? fill(w.step, { k, n: last }) : w.step} lead={64}
+          disabled={!frames.length} show={(v) => (frames.length ? `${v} / ${last}` : "")}
+          onChange={(v, done) => {
+            if (!done && v === k) return;
+            setPlaying(false);
+            go(v);
+          }} />
+        <Pill x={STEPS_W - 48} y={7} w={48} text="⏭" title={w.last} disabled={k >= last || (!!lockLast && asking)} onTap={() => go(last)} />
+      </svg>
+      {note && <span className="live-note">{note}</span>}
+    </>
   );
 }
 

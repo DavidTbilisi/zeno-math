@@ -13,7 +13,7 @@ test("interview problems: step to an answer, a bad input says why, and system de
 
   await piece.getByRole("button", { name: "To the answer" }).click();
   await expect(piece.locator(".live-said.ok")).toHaveText("9 + 1 = 10");
-  await piece.getByRole("button", { name: "Step back" }).click();
+  await piece.getByRole("slider", { name: /^Step \d+ of \d+/ }).press("ArrowLeft");
   await expect(piece.locator(".live-said.info").first()).toHaveText("1: is 10 − 1 = 9 in the set? Yes!");
 
   await piece.getByRole("textbox", { name: "Target sum" }).fill("ten");
@@ -24,7 +24,7 @@ test("interview problems: step to an answer, a bad input says why, and system de
 
   await piece.getByRole("combobox", { name: "Category" }).selectOption("lists");
   await expect(piece.getByRole("combobox", { name: "Problem" })).not.toHaveValue("twoNumberSum");
-  await expect(piece.locator("svg")).toBeVisible();
+  await expect(piece.locator("svg:not(.live-steps)").first()).toBeVisible();
 
   await piece.getByRole("combobox", { name: "Category" }).selectOption("sysDesigns");
   await piece.getByRole("combobox", { name: "Problem" }).selectOption("designSlack");
