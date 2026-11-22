@@ -30,7 +30,8 @@ import {
 } from "../math/nnLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveNn> = { tries: 0, done: false, said: null };
@@ -93,67 +94,51 @@ export function NnLab({ state, set, w: words, svgRef }: PieceProps<"nnLab">) {
   const read = fill(w.read, { a: num(accuracy(call, train)) }) + (test.length ? fill(w.readTest, { t: num(accuracy(call, test)) }) : "");
   const perceptron = d.hidden === 0;
 
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(perceptron && can.includes("update")
+      ? [{ text: w.update, disabled: d.done || !nextUpdate, onTap: () => update(1) }, { text: w.updates10, disabled: d.done || !nextUpdate, onTap: () => update(10) }]
+      : []),
+    ...(!perceptron && can.includes("train") ? [{ text: fill(w.train, { n: TRAIN_STEPS }), disabled: d.done, onTap: trainSome }] : []),
+    ...(can.includes("act") && !perceptron ? ACTS.map((a) => ({ text: w.acts[a], on: d.act === a, disabled: d.done, onTap: () => commit(fresh({ ...UNTRAINED, act: a })) })) : []),
+    ...(can.includes("train") || can.includes("update") ? [{ text: w.newStart, disabled: d.done, onTap: () => commit(fresh({ ...UNTRAINED, start: d.start + 1 })) }] : []),
+    ...(!p
+      ? [
+          ...FREE_DATA.map((id, i) => ({ text: w.datas[id], brk: i === 0, on: d.data === id, onTap: () => commit({ ...UNTRAINED, data: id }) })),
+          { text: w.newSample, onTap: () => commit({ ...UNTRAINED, seed: d.seed + 1 }) },
+        ]
+      : []),
+  ];
+  const dials = [...(can.includes("hidden") ? ["hidden" as const] : []), ...(can.includes("eta") && !perceptron ? ["eta" as const] : [])];
+  const DW = (NN_PLOT.w - 16 - (dials.length - 1) * 8) / Math.max(1, dials.length);
+  const dialH = dials.length ? 44 : 0;
+  const strip = dialH + pillRowsH(moves, NN_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={NN_PLOT.w} height={NN_PLOT.h} viewBox={`0 0 ${NN_PLOT.w} ${NN_PLOT.h}`} fontFamily={FONT} role="img" aria-label={w.picture}>
-          <rect width={NN_PLOT.w} height={NN_PLOT.h} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={NN_PLOT.w} height={NN_PLOT.h + strip} viewBox={`0 0 ${NN_PLOT.w} ${NN_PLOT.h + strip}`} fontFamily={FONT} aria-label={w.picture}>
+          <rect width={NN_PLOT.w} height={NN_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: nnSvg(d, w.chart) }} />
+          {dials.map((k, i) => {
+            const x = 8 + i * (DW + 8);
+            return k === "hidden" ? (
+              <Track key={k} x={x} y={NN_PLOT.h + 4} w={DW} value={Math.max(0, HIDDEN.indexOf(d.hidden))} min={0} max={HIDDEN.length - 1} label={w.hidden} disabled={d.done} lead={110} show={(v) => `${w.hidden}: ${HIDDEN[v]}`}
+                onChange={(v, done) => (done ? commit(fresh({ ...UNTRAINED, hidden: HIDDEN[v] })) : setDraft(fresh({ ...UNTRAINED, hidden: HIDDEN[v] })))} />
+            ) : (
+              <Track key={k} x={x} y={NN_PLOT.h + 4} w={DW} value={Math.max(0, ETAS.indexOf(d.eta))} min={0} max={ETAS.length - 1} label={w.eta} disabled={d.done} color="#e8590c" show={(v) => `η = ${ETAS[v]}`}
+                onChange={(v, done) => (done ? commit(fresh({ eta: ETAS[v] })) : setDraft(fresh({ eta: ETAS[v] })))} />
+            );
+          })}
+          <PillRows w={NN_PLOT.w} y={NN_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <div className="live-bar descent-dials">
-        {can.includes("hidden") && (
-          <label className="live-slider">
-            <b>{w.hidden}: {d.hidden}</b>
-            <input
-              type="range"
-              min={0}
-              max={HIDDEN.length - 1}
-              value={Math.max(0, HIDDEN.indexOf(d.hidden))}
-              disabled={d.done}
-              aria-label={w.hidden}
-              onChange={(e) => setDraft(fresh({ ...UNTRAINED, hidden: HIDDEN[Number(e.target.value)] }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-        {can.includes("eta") && !perceptron && (
-          <label className="live-slider">
-            <b>η = {d.eta}</b>
-            <input
-              type="range"
-              min={0}
-              max={ETAS.length - 1}
-              value={Math.max(0, ETAS.indexOf(d.eta))}
-              disabled={d.done}
-              aria-label={w.eta}
-              onChange={(e) => setDraft(fresh({ eta: ETAS[Number(e.target.value)] }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-      </div>
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {perceptron && can.includes("update") && (
-          <>
-            <button className="live-btn" disabled={d.done || !nextUpdate} onClick={() => update(1)}>{w.update}</button>
-            <button className="live-btn" disabled={d.done || !nextUpdate} onClick={() => update(10)}>{w.updates10}</button>
-          </>
-        )}
-        {!perceptron && can.includes("train") && <button className="live-btn" disabled={d.done} onClick={trainSome}>{fill(w.train, { n: TRAIN_STEPS })}</button>}
-        {can.includes("act") && !perceptron && ACTS.map((a) => <Toggle key={a} on={d.act === a} disabled={d.done} onClick={() => commit(fresh({ ...UNTRAINED, act: a }))}>{w.acts[a]}</Toggle>)}
-        {(can.includes("train") || can.includes("update")) && <button className="live-btn" disabled={d.done} onClick={() => commit(fresh({ ...UNTRAINED, start: d.start + 1 }))}>{w.newStart}</button>}
-        {!p && FREE_DATA.map((id) => <Toggle key={id} on={d.data === id} onClick={() => commit({ ...UNTRAINED, data: id })}>{w.datas[id]}</Toggle>)}
-        {!p && <button className="live-btn" onClick={() => commit({ ...UNTRAINED, seed: d.seed + 1 })}>{w.newSample}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
