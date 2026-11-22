@@ -35,6 +35,7 @@ import { starText } from "./ladderUi";
 import { isPythStep, PYTH_STEPS, PythPicture, type PythStep } from "./PythagorasWhy";
 import { arcAt, mid, NAME_COLOR, outward, WhyPicture, type P, type WhyStep } from "./TrigBuild";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { barHeight, DiscoverBar } from "./DiscoverBar";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { WhySteps } from "./WhySteps";
 
@@ -259,6 +260,11 @@ export function SohCahToa({ state: d, set, w: words, svgRef }: PieceProps<"sohca
   const whyText = (s: WhyStep | PythStep) => (isPythStep(s) ? words.pythWhy.steps[s] : fill(w.whyText[s as keyof typeof w.whyText], { s: rn.sin, c: rn.cos, t: rn.tan, o: tw.short.opp, a: tw.short.adj, h: tw.short.hyp }));
   const dragChip = drag && !(Math.hypot(drag.at[0] - drag.start[0], drag.at[1] - drag.start[1]) < 6) ? (drag.from === "chip" ? String(placing) : lenOf(drag.from)) : null;
 
+  // On hard, the third side's length chosen from four cards, dragged up into the picture (or tapped).
+  const cards = cur?.kind === "third" ? { values: task.thirds, text: rootText, off: (sq: number) => d.said?.kind === "third" && d.said.sq === sq, pick: pickThird } : undefined;
+  const whyPill = { text: `💡 ${cur?.kind === "third" ? words.pythWhy.whyHere : w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : Math.max(0, openAt)) };
+  const barH = barHeight({ w: W, pills: [], cards, groups: null, why: whyPill });
+
   return (
     <>
       <GameHead game={game} g={g}>
@@ -266,8 +272,8 @@ export function SohCahToa({ state: d, set, w: words, svgRef }: PieceProps<"sohca
       </GameHead>
       <Said line={{ tone: "prompt", text: prompt }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={prompt} style={{ touchAction: "none" }}>
-          <rect width={W} height={H} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={W} height={H + barH} viewBox={`0 0 ${W} ${H + barH}`} fontFamily={FONT} aria-label={prompt} style={{ touchAction: "none" }}>
+          <rect width={W} height={H + barH} fill="#fff" />
           <polygon points={`${L.A.join(",")} ${L.B.join(",")} ${L.C.join(",")}`} fill="#f8f9fa" stroke="none" />
           {SOH_SIDES.map((s) => {
             const [p, q] = L.ends[s];
@@ -379,6 +385,7 @@ export function SohCahToa({ state: d, set, w: words, svgRef }: PieceProps<"sohca
               <text x={drag.at[0]} y={drag.at[1] + 7} textAnchor="middle" fontSize={20} fontWeight={700} fill="#1e1e1e">{dragChip}</text>
             </g>
           )}
+          <DiscoverBar y={H} w={W} pills={[]} cards={cards} groups={null} why={whyPill} />
         </svg>
       </Stage>
       {explain !== null && (
@@ -392,17 +399,7 @@ export function SohCahToa({ state: d, set, w: words, svgRef }: PieceProps<"sohca
           picture={isPythStep(whys[explain]) ? <PythPicture step={whys[explain] as PythStep} /> : <WhyPicture step={whys[explain] as WhyStep} short={tw.short} />}
         />
       )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {cur?.kind === "third" &&
-          task.thirds.map((sq) => (
-            <button key={sq} className="live-btn on" disabled={d.said?.kind === "third" && d.said.sq === sq} onClick={() => pickThird(sq)}>
-              {rootText(sq)}
-            </button>
-          ))}
-        <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain !== null ? null : Math.max(0, openAt))}>
-          💡 {cur?.kind === "third" ? words.pythWhy.whyHere : w.why}
-        </button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} always />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

@@ -370,7 +370,8 @@ export function PythDiscover({ state: d, set, w: words, svgRef }: PieceProps<"py
     powGroup(w.second, y, d.p2, "p2"),
     powGroup(w.equals, z, d.pr, "pr", "="),
   ] : null;
-  const barH = barHeight(W, groups);
+  const whyPill = { text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) };
+  const barH = barHeight({ w: W, pills, cards, groups, why: whyPill });
 
   return (
     <>
@@ -473,7 +474,7 @@ export function PythDiscover({ state: d, set, w: words, svgRef }: PieceProps<"py
               })}
             </g>
           )}
-          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={{ text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) }} />
+          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={whyPill} />
           {tri.drag?.moved && <text x={tri.drag.x} y={tri.drag.y} fontSize={24} textAnchor="middle" pointerEvents="none">📏</text>}
         </svg>
       </Stage>
