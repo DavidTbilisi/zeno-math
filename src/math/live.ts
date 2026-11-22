@@ -620,7 +620,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   tenFrame: [400, 370],
   hundred: [400, 610],
   dots: [520, 620],
-  graph: [640, 560],
+  graph: [640, 600],
   chance: [680, 500],
   cards: [690, 610],
   compare: [380, 530],
