@@ -30,6 +30,7 @@ import { ShadeGame } from "./ShadeGame";
 import { Stripes } from "./Stripes";
 import { FoldStrip } from "./FoldStrip";
 import { FitTiles } from "./FitTiles";
+import { FindWhole } from "./FindWhole";
 import { Balance } from "./Balance";
 import { Machine } from "./Machine";
 import { Growing } from "./Growing";
@@ -146,6 +147,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   stripes: Stripes,
   foldStrip: FoldStrip,
   fitTiles: FitTiles,
+  findWhole: FindWhole,
   balance: Balance,
   machine: Machine,
   growing: Growing,

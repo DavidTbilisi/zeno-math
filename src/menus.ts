@@ -258,6 +258,7 @@ export const MENUS: MenuGroup[] = [
           { live: "stripes", icon: "▦" },
           { live: "foldStrip", icon: "🗞" },
           { live: "fitTiles", icon: "📏" },
+          { live: "findWhole", icon: "🧩" },
         ],
       },
       {
