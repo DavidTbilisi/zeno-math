@@ -3,7 +3,8 @@
 // turn slides the twelve dots beside the face along one circle and turns the face's own dots about its pole (dragging
 // the cube or the ball turns both, any way up); the same bands flat, as in the paper's circle picture; and the net.
 // Below them the moves made, and moves to repeat with their order: how many times they must be done before the cube
-// comes back. The colours of a real cube can be painted in, sticker by sticker, and the cube solved a turn at a time.
+// comes back. The colours of a real cube can be painted in, sticker by sticker (a colour tapped, or dragged onto a
+// sticker), and the cube solved a turn at a time. Every control is a pill along the bottom of the picture.
 import { useEffect, useMemo, useRef, useState, type PointerEvent, type RefObject } from "react";
 import {
   axisOf,
@@ -43,6 +44,7 @@ import {
   type V3,
 } from "../math/rubik";
 import { type CubeError, type Cubies, readCube } from "../math/rubikSolve";
+import { BLUE, inBox, keyTap, NumBox, Pill, useDrag } from "./hand";
 import { fill, INK, type PieceProps } from "./ui";
 
 export const FACE_COLORS: Record<Face, string> = { U: "#ffffff", D: "#ffd43b", F: "#2f9e44", B: "#1971c2", R: "#e03131", L: "#f76707" };
@@ -64,6 +66,18 @@ const [BALL_X, BALL_Y, BALL_K, DOT] = [565, 200, 150, 9];
 const rad = (deg: number) => (deg * Math.PI) / 180;
 /** How the circles round the back of the ball are dashed. */
 const BACK_DASH = "4 5";
+/** The picture: the four views, then two rows of pills. */
+const [PIC_W, PIC_H, ROW1, ROW2] = [760, 900, 812, 856];
+/** How wide a pill must be for its words. */
+const pillW = (s: string) => Math.round(28 + 8.6 * [...s].length);
+type PillSpec = { text: string; title?: string; onTap: () => void; disabled?: boolean; on?: boolean; strong?: boolean };
+/** Pills side by side from `x0`. */
+function pillRow(y: number, x0: number, ps: PillSpec[]) {
+  const xs = ps.map((_, i) => ps.slice(0, i).reduce((x, p) => x + pillW(p.text) + 8, x0));
+  return ps.map((p, i) => (
+    <Pill key={`${y}-${i}`} x={xs[i]} y={y} w={pillW(p.text)} text={p.text} title={p.title} onTap={p.onTap} disabled={p.disabled} on={p.on} strong={p.strong} />
+  ));
+}
 
 // ——— Turning and looking ———
 
@@ -200,7 +214,27 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
     // The worker makes its tables while the colours go in.
     void solveAway(null);
   };
-  const paintAt = (i: number) => paint && i % 9 !== 4 && set({ ...state, paint: paint.map((c, j) => (j === i ? brush : c)).join("") });
+  const paintAt = (i: number, color: Face = brush) => paint && i % 9 !== 4 && set({ ...state, paint: paint.map((c, j) => (j === i ? color : c)).join("") });
+  /** The sticker under a spot of the picture: one of the net's, or one of the cube's drawn there. */
+  const stickerUnder = (x: number, y: number): number | undefined => {
+    const onNet = STICKERS.findIndex((_, i) => {
+      const [cx, cy] = netCell(i);
+      return inBox({ x: NET_X + cx * CELL, y: NET_Y + cy * CELL, w: CELL, h: CELL }, x, y);
+    });
+    if (onNet >= 0) return onNet;
+    const ctm = svgRef.current?.getScreenCTM();
+    if (!ctm) return undefined;
+    const p = new DOMPoint(x, y).matrixTransform(ctm);
+    const id = document.elementFromPoint(p.x, p.y)?.getAttribute("data-sticker");
+    return id == null ? undefined : Number(id);
+  };
+  // A colour tapped becomes the brush; dragged onto a sticker, it paints it too.
+  const { drag: swatch, begin: grabSwatch, svgProps } = useDrag<{ f: Face }>((d) => {
+    setBrush(d.f);
+    if (!d.moved) return;
+    const i = stickerUnder(d.x, d.y);
+    if (i !== undefined) paintAt(i, d.f);
+  });
   const solution = parseMoves(state.solution ?? "") ?? [];
   const onPath = common(made, solution) === made.length;
   const solveNow = async () => {
@@ -375,7 +409,8 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
       if (z >= 0 !== front) return [];
       const [px, py] = onScreen(NORMAL[f]);
       return [
-        <g key={f} style={{ cursor: "pointer" }} onPointerDown={() => (pressed.current = f)} onPointerEnter={() => enter(f)} onPointerLeave={() => setHover(null)}>
+        <g key={f} role="button" tabIndex={front ? 0 : -1} aria-label={faceTitle(f)} style={{ cursor: "pointer" }} onPointerDown={() => (pressed.current = f)}
+          onKeyDown={(e) => keyTap(e, () => turn(f))} onPointerEnter={() => enter(f)} onPointerLeave={() => setHover(null)}>
           <title>{faceTitle(f)}</title>
           {front && <circle cx={px} cy={py} r={BALL_K * 0.3} fill="transparent" />}
           <text x={x} y={y + 8} textAnchor="middle" fontSize={22} fontWeight={700} fill={INK} opacity={front ? 1 : 0.35}>
@@ -498,10 +533,65 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
   const digits = POSITIONS.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   const shownMoves = made.length > 30 ? `… ${movesText(made.slice(-30))}` : movesText(made);
 
+  // ——— The pills along the bottom ———
+  const nextMove = onPath && made.length < solution.length ? moveText(solution[made.length]) : "";
+  const firstRow: PillSpec[] = [
+    { text: "↻", title: w.clockwiseTurns, on: !state.prime, onTap: () => set({ ...state, prime: false }), disabled: !!paint },
+    { text: "↺ ′", title: w.prime, on: state.prime, onTap: () => set({ ...state, prime: true }), disabled: !!paint },
+    { text: "↶", title: w.undo, onTap: () => set({ ...state, moves: movesText(made.slice(0, -1)), reps: 0 }), disabled: !!paint || !made.length },
+    { text: "🎲", title: w.scramble, onTap: () => set({ ...state, scramble: movesText(scramble(20, Math.random)), moves: "", reps: 0, solution: "" }), disabled: !!paint },
+    { text: w.reset, onTap: () => set({ ...state, scramble: "", moves: "", reps: 0, solution: "" }), disabled: !!paint || !target.length },
+    { text: `🎨 ${w.paint}`, title: w.paintTitle, on: !!paint, onTap: () => (paint ? set({ ...state, paint: "" }) : startPaint()) },
+    ...(paint ? [] : [{ text: `🧩 ${w.solve}`, title: w.solveTitle, onTap: () => void solveNow(), disabled: solving || solved }]),
+  ];
+  const secondRow: PillSpec[] = paint
+    ? [
+        { text: `🧩 ${w.solve}`, strong: true, onTap: () => void solveNow(), disabled: solving || !check || !("cubies" in check) },
+        { text: w.cancel, onTap: () => set({ ...state, paint: "" }) },
+      ]
+    : solution.length > 0
+      ? [
+          { text: `▶ ${fill(w.next, { move: nextMove })}`, strong: true, onTap: () => nextTurn(false), disabled: !nextMove },
+          { text: `⏭ ${w.rest}`, onTap: () => nextTurn(true), disabled: !nextMove },
+          { text: "✕", title: w.closeSolution, onTap: () => set({ ...state, solution: "" }) },
+        ]
+      : [
+          { text: `▶ ${w.play}`, strong: true, onTap: () => repeat(1), disabled: !alg?.length || !room(alg.length) },
+          { text: `⟳ ${w.untilBack}`, onTap: () => repeat(algOrder - (state.reps % algOrder)), disabled: !algOrder || !room(alg!.length * (algOrder - (state.reps % algOrder))) },
+        ];
+  const SW = 34;
+  const swatchesW = paint ? FACES.length * SW + 8 : 0;
+  const strip = (
+    <>
+      <line x1={16} x2={PIC_W - 16} y1={ROW1 - 10} y2={ROW1 - 10} stroke="#e9ecef" />
+      {pillRow(ROW1, 16, firstRow)}
+      {paint && (
+        <g role="group" aria-label={w.paint}>
+          {FACES.map((f, i) => {
+            const [cx, cy] = [16 + SW / 2 + i * SW, ROW2 + 15];
+            return (
+              <g key={f} role="button" tabIndex={0} aria-label={w.colors[f]} aria-pressed={brush === f} style={{ cursor: "grab" }}
+                onPointerDown={(e) => grabSwatch(e, { f })} onKeyDown={(e) => keyTap(e, () => setBrush(f))}>
+                <title>{w.colors[f]}</title>
+                <circle cx={cx} cy={cy} r={14} fill={FACE_COLORS[f]} stroke={brush === f ? BLUE : "#495057"} strokeWidth={brush === f ? 4 : 1.5} />
+              </g>
+            );
+          })}
+        </g>
+      )}
+      {pillRow(ROW2, 16 + swatchesW, secondRow)}
+      <text x={PIC_W - 104} y={ROW2 + 20} fontSize={14} textAnchor="end" fill={INK}>{w.speed}</text>
+      <NumBox x={PIC_W - 96} y={ROW2} w={80} h={30} size={15} value={speed} min={0} max={SPEEDS.length - 1} label={w.speed} onChange={setSpeed} show={(v) => `×${SPEEDS[v]}`} />
+      {swatch?.moved && (
+        <circle cx={swatch.x} cy={swatch.y} r={14} fill={FACE_COLORS[swatch.f]} stroke={BLUE} strokeWidth={2} opacity={0.9} pointerEvents="none" />
+      )}
+    </>
+  );
+
   return (
     <>
-      <svg ref={svgRef} width={760} height={800} viewBox="0 0 760 800" fontFamily="Georgia, 'Times New Roman', serif">
-        <rect width={760} height={800} fill="#fff" />
+      <svg ref={svgRef} className="hand-pic" width={PIC_W} height={PIC_H} viewBox={`0 0 ${PIC_W} ${PIC_H}`} fontFamily="Georgia, 'Times New Roman', serif" {...svgProps}>
+        <rect width={PIC_W} height={PIC_H} fill="#fff" />
         <g style={{ cursor: "grab" }} onPointerDown={grab} onPointerMove={drag} onPointerUp={drop} onPointerCancel={drop}>
           <rect width={370} height={410} fill="transparent" />
           {groups.map((g) => g.map((c) => <g key={c.join()}>{cubie(c)}</g>))}
@@ -537,73 +627,13 @@ export function Rubik({ state, set, w: words, svgRef }: PieceProps<"rubik">) {
         </g>
         {rings()}
         {net()}
+        {strip}
       </svg>
-      <div className="live-bar">
-        {FACES.map((f) => (
-          <button key={f} className="live-btn live-face" title={faceTitle(f)} aria-label={faceTitle(f)} disabled={!!paint || !room(1)} onClick={() => turn(f)} onPointerEnter={() => enter(f)} onPointerLeave={() => setHover(null)}>
-            {f}{state.prime ? "′" : ""}
-          </button>
-        ))}
-        <button className={`live-btn${state.prime ? " on" : ""}`} aria-pressed={state.prime} title={w.prime} aria-label={w.prime} disabled={!!paint} onClick={() => set({ ...state, prime: !state.prime })}>
-          ↺ ′
-        </button>
-        <button className="live-btn" title={w.undo} aria-label={w.undo} disabled={!!paint || !made.length} onClick={() => set({ ...state, moves: movesText(made.slice(0, -1)), reps: 0 })}>↶</button>
-        <button className="live-btn" title={w.scramble} aria-label={w.scramble} disabled={!!paint} onClick={() => set({ ...state, scramble: movesText(scramble(20, Math.random)), moves: "", reps: 0, solution: "" })}>🎲</button>
-        <button className="live-btn" disabled={!!paint || !target.length} onClick={() => set({ ...state, scramble: "", moves: "", reps: 0, solution: "" })}>{w.reset}</button>
-        <button className={`live-btn${paint ? " on" : ""}`} aria-pressed={!!paint} title={w.paintTitle} onClick={() => (paint ? set({ ...state, paint: "" }) : startPaint())}>
-          🎨 {w.paint}
-        </button>
-        {!paint && (
-          <button className="live-btn" title={w.solveTitle} disabled={solving || solved} onClick={solveNow}>
-            🧩 {w.solve}
-          </button>
-        )}
-      </div>
-      {paint ? (
-        <div className="live-bar">
-          {FACES.map((f) => (
-            <button
-              key={f}
-              className={`live-btn live-rubik-swatch${brush === f ? " on" : ""}`}
-              aria-pressed={brush === f}
-              title={w.colors[f]}
-              aria-label={w.colors[f]}
-              style={{ background: FACE_COLORS[f] }}
-              onClick={() => setBrush(f)}
-            />
-          ))}
-          <button className="live-btn primary" disabled={solving || !check || !("cubies" in check)} onClick={solveNow}>
-            🧩 {w.solve}
-          </button>
-          <button className="live-btn" onClick={() => set({ ...state, paint: "" })}>{w.cancel}</button>
-        </div>
-      ) : (
-        <div className="live-bar">
-          {solution.length > 0 ? (
-            <>
-              <button className="live-btn primary" disabled={!onPath || made.length >= solution.length} onClick={() => nextTurn(false)}>
-                ▶ {fill(w.next, { move: onPath && made.length < solution.length ? moveText(solution[made.length]) : "" })}
-              </button>
-              <button className="live-btn" disabled={!onPath || made.length >= solution.length} onClick={() => nextTurn(true)}>⏭ {w.rest}</button>
-              <button className="live-btn" title={w.closeSolution} aria-label={w.closeSolution} onClick={() => set({ ...state, solution: "" })}>✕</button>
-            </>
-          ) : (
-            <>
-              <label className="live-rubik-alg">
-                {w.alg}
-                <input className={alg ? undefined : "invalid"} spellCheck={false} value={state.alg} title={alg ? undefined : w.badAlg} onChange={(e) => set({ ...state, alg: e.target.value, reps: 0 })} />
-              </label>
-              <button className="live-btn primary" disabled={!alg?.length || !room(alg.length)} onClick={() => repeat(1)}>▶ {w.play}</button>
-              <button className="live-btn" disabled={!algOrder || !room(alg!.length * (algOrder - (state.reps % algOrder)))} onClick={() => repeat(algOrder - (state.reps % algOrder))}>
-                ⟳ {w.untilBack}
-              </button>
-            </>
-          )}
-          <label className="live-slider live-rubik-speed" title={w.speed}>
-            <b>{w.speed} ×{SPEEDS[speed]}</b>
-            <input type="range" min={0} max={SPEEDS.length - 1} value={speed} aria-label={w.speed} onChange={(e) => setSpeed(Number(e.target.value))} />
-          </label>
-        </div>
+      {!paint && solution.length === 0 && (
+        <label className="live-rubik-alg">
+          {w.alg}
+          <input className={alg ? undefined : "invalid"} spellCheck={false} value={state.alg} title={alg ? undefined : w.badAlg} onChange={(e) => set({ ...state, alg: e.target.value, reps: 0 })} />
+        </label>
       )}
       {paint ? (
         <>

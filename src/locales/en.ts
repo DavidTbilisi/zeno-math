@@ -9254,6 +9254,7 @@ export const en = {
       faces: { U: "top", D: "bottom", L: "left", R: "right", F: "front", B: "back" },
       clockwise: "Turn the {face} face clockwise",
       anticlockwise: "Turn the {face} face anticlockwise",
+      clockwiseTurns: "Clockwise turns: R",
       prime: "Anticlockwise turns, written with a dash: R′",
       undo: "Take back the last turn",
       scramble: "Scramble",
@@ -9264,7 +9265,7 @@ export const en = {
       speed: "Speed",
       paint: "Your cube",
       paintTitle: "Paint in the colours of a real cube, to solve it",
-      paintHint: "Hold your cube with the white centre on top and the green one facing you. Pick a colour, then click the stickers of the cube or the net to match yours (drag the cube to see round it). The middle stickers stay as they are.",
+      paintHint: "Hold your cube with the white centre on top and the green one facing you. Tap a colour, then tap the stickers of the cube or the net to match yours, or drag a colour onto a sticker (drag the cube to see round it). The middle stickers stay as they are.",
       colors: { U: "white", D: "yellow", F: "green", B: "blue", R: "red", L: "orange" },
       counts: "Each colour needs nine stickers: {list}.",
       problems: {
