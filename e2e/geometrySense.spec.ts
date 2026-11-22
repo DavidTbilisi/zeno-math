@@ -18,13 +18,13 @@ const TAB = "Geometry & trigonometry";
 test("guess the angle: a round guessed spot on earns three stars", async ({ page }) => {
   const game = await boardWith(page, "Guess the angle", ".live-angleGuess");
   const round = guessRound(GUESS_LADDER[0].level, GUESS_LADDER[0].seed);
-  const key = (k: string) => game.locator(".keypad").getByRole("button", { name: k, exact: true });
+  const key = (k: string) => game.locator(".hand-pic").getByRole("button", { name: k, exact: true });
   for (const [i, t] of round.entries()) {
     const digits = String(t.size);
     if (i === 0)
       await expect(async () => {
         await key(digits[0]).click();
-        await expect(game.locator(".keypad-shown")).toHaveText(digits[0], { timeout: 1000 });
+        await expect(game.locator(".hand-pic").getByRole("textbox")).toHaveText(digits[0], { timeout: 1000 });
       }).toPass();
     else await key(digits[0]).click();
     for (const k of digits.slice(1)) await key(k).click();
@@ -49,13 +49,14 @@ test("estimating angles in practice: the nearest size picked from the buttons", 
 test("missing angles: the angle typed right first time earns three stars", async ({ page }) => {
   const game = await boardWith(page, "Missing angles", ".live-angleHunt");
   const t = huntTask(HUNT_LADDER[0].level, rng(HUNT_LADDER[0].seed));
-  const key = (k: string) => game.locator(".keypad").getByRole("button", { name: k, exact: true });
+  const key = (k: string) => game.locator(".hand-pic").getByRole("button", { name: k, exact: true });
   const digits = String(t.v);
   await expect(async () => {
     await key(digits[0]).click();
-    await expect(game.locator(".keypad-shown")).toHaveText(digits[0], { timeout: 1000 });
+    await expect(game.locator(".hand-pic").getByRole("textbox")).toHaveText(digits[0], { timeout: 1000 });
   }).toPass();
   for (const k of digits.slice(1)) await key(k).click();
+  await page.screenshot({ path: test.info().outputPath("angle-hunt.png") });
   await game.getByRole("button", { name: "Check" }).click();
   await expect(game.getByText(new RegExp(`Right! ${t.v}°\\. ★★★`))).toBeVisible();
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
