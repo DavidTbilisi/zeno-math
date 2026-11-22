@@ -690,9 +690,8 @@ test("the recurrent-network lab: w = 0.5 forgets the pulse, w = 1.3 keeps it", a
   await expect(lab.getByText(/The state ends at .*; you want at least 0\.5\./)).toBeVisible();
 
   const w = lab.getByRole("slider", { name: "Recurrent weight w" });
-  await w.fill("13");
-  await w.dispatchEvent("pointerup");
-  await expect(lab.getByText("w = 1.3")).toBeVisible();
+  await setDial(w, 13);
+  await expect(w).toHaveAttribute("aria-valuetext", "w = 1.3");
   await lab.getByRole("button", { name: /Check/ }).click();
   await expect(lab.getByText(/the state is the network's memory!.*Done! ★★☆/)).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("rnn-lab.png") });
