@@ -3,9 +3,11 @@
 // orange and an overlap red, and only a polygon whose angle goes into 360° exactly tiles on its own. Medium fills the
 // gap left by polygons already at a point from a palette (triangle, square, hexagon, octagon, twelve-gon), won when
 // the angles make 360° exactly; one that would go past it is shown red and costs a star. Hard is the tangram: drag
-// the pieces from the tray onto a grey outline, pick one to turn it a quarter or flip it (or move it with the arrow
-// keys, R to turn, F to flip), and the outline is made when the pieces cover it exactly, each part once; parts covered
-// twice show red. "Why?" steps through the level's idea with a picture and costs no stars.
+// the pieces from the tray onto a grey outline, tap one to pick it and again to turn it a quarter, or flip it (or move
+// it with the arrow keys, R to turn, F to flip), and the outline is made when the pieces cover it exactly, each part
+// once; parts covered twice show red. "Why?" steps through the level's idea with a picture and costs no stars.
+// All by hand in the picture: copies dragged from the side to the point (or tapped), the last one dragged off or into
+// the bin to take it back, and the claims, turn, flip and "Why?" as pills along the bottom.
 import { useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import {
   angleOf,
@@ -31,6 +33,7 @@ import {
   type Placed,
   type Sides,
 } from "../math/tessellate";
+import { BLUE, Bin, inBox, keyTap, Pill, RED, useDrag } from "./hand";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
@@ -38,7 +41,11 @@ import { WhySteps } from "./WhySteps";
 
 const FRESH: Partial<LiveTessellate> = { count: 1, added: [], pieces: [], picked: null, misses: 0, done: false, said: null };
 const W = 600;
-const H = 340;
+const H = 384;
+/** The row of pills along the bottom. */
+const STRIP_Y = H - 38;
+const BIN = { x: 16, y: 262, w: 100, h: 66 };
+const TRAY_X = 530;
 const [CX, CY] = [300, 172];
 /** The space round the point: a polygon reaches at most this far from it. */
 const REACH = 150;
@@ -61,6 +68,19 @@ const polyPoints = (n: number, from: number, s: number) =>
   polygonAt(n, from, s)
     .map(([x, y]) => `${r1(CX + x)},${r1(CY - y)}`)
     .join(" ");
+/** A regular polygon centred on a spot, for the ones at the side to drag in. */
+const centred = (n: number, cx: number, cy: number, r: number) =>
+  Array.from({ length: n }, (_, k) => {
+    const t = (2 * Math.PI * k) / n - Math.PI / 2;
+    return `${r1(cx + r * Math.cos(t))},${r1(cy + r * Math.sin(t))}`;
+  }).join(" ");
+/** Near enough the point that a polygon let go there goes in. */
+const nearPoint = (x: number, y: number) => Math.hypot(x - CX, y - CY) <= REACH + 10;
+/** How wide a pill must be for its words. */
+const pillW = (s: string) => Math.round(30 + 8.2 * [...s].length);
+/** What is being dragged by hand: a polygon from the side, or the last one at the point. */
+type Grab = { from: "side"; n: Sides } | { from: "point"; n: Sides };
+
 /** A wedge round the point from one angle to another, for a gap or an overlap. */
 function wedge(a: number, b: number, r: number) {
   const p = (t: number) => `${r1(CX + r * Math.cos(t * RAD))},${r1(CY - r * Math.sin(t * RAD))}`;
@@ -102,6 +122,31 @@ export function Tessellate({ state: d, set, w: words, svgRef }: PieceProps<"tess
     game.tap({ added: [...d.added, n], said: null });
   };
 
+  // ---------- easy and medium by hand: polygons dragged to the point and off it ----------
+
+  const canPut = !d.done && (task.level === 2 || (task.level === 1 && d.count < aloneMax));
+  const canTake = !d.done && (task.level === 1 ? d.count > 1 : task.level === 2 && d.added.length > 0);
+  const put = (n: Sides) => {
+    if (!canPut) return;
+    if (task.level === 1) game.tap({ count: d.count + 1, said: null });
+    else add(n);
+  };
+  const takeLast = () => {
+    if (!canTake) return;
+    game.tap(task.level === 1 ? { count: d.count - 1, said: null } : { added: d.added.slice(0, -1), said: null });
+  };
+  const takeAll = () => {
+    if (!canTake) return;
+    game.tap(task.level === 1 ? { count: 1, said: null } : { added: [], said: null });
+  };
+  // A polygon from the side let go near the point (or tapped) goes in; the last one let go away from it (or tapped) comes off.
+  const { drag: hand, begin, svgProps } = useDrag<Grab>((h) => {
+    if (h.from === "side") {
+      if (!h.moved || nearPoint(h.x, h.y)) put(h.n);
+    } else if (!h.moved || !nearPoint(h.x, h.y)) takeLast();
+  });
+  const taking = !!hand?.moved && hand.from === "point" && !nearPoint(hand.x, hand.y);
+
   // ---------- hard: the tangram ----------
 
   const pieces = task.level === 3 ? piecesNow(task, d.pieces) : [];
@@ -141,6 +186,8 @@ export function Tessellate({ state: d, set, w: words, svgRef }: PieceProps<"tess
     if (!drag) return;
     setDrag(null);
     if (drag.moved) putPieces(pieces.map((p, i) => (i === drag.i ? drag.at : p)), drag.i);
+    // A tap picks a piece; a tap on the piece already picked turns it.
+    else if (d.picked === drag.i) turn(drag.i);
     else game.tap({ pieces, picked: drag.i, said: null });
   };
   const turn = (i: number) => change(i, { rot: (pieces[i].rot + 1) % 4 });
@@ -210,7 +257,7 @@ export function Tessellate({ state: d, set, w: words, svgRef }: PieceProps<"tess
     </text>
   );
   /** Polygons round the point, each starting where the one before ends; the last past 360° drawn red. */
-  const roundPoint = (ns: readonly Sides[], given: number, s: number, ghost: Sides | null) => {
+  const roundPoint = (ns: readonly Sides[], given: number, s: number, ghost: Sides | null, take: boolean) => {
     let from = 0;
     const out = ns.map((n, i) => {
       const a = angleOf(n);
@@ -229,6 +276,16 @@ export function Tessellate({ state: d, set, w: words, svgRef }: PieceProps<"tess
       const mid = from + a / 2;
       const tag = label(CX + 30 * Math.cos(mid * RAD), CY - 30 * Math.sin(mid * RAD) + 5, degText(a), over ? OVER : "#1e1e1e", 11);
       from += a;
+      // The last one put there can be taken back: dragged off the point, into the bin, or tapped.
+      if (take && i === ns.length - 1)
+        return (
+          <g key={i} role="button" tabIndex={0} aria-label={fill(w.takeOff, { name: name(n) })} style={{ cursor: "grab" }}
+            opacity={taking ? 0.3 : 1} onPointerDown={(e) => begin(e, { from: "point", n })} onKeyDown={(e) => keyTap(e, takeLast)}>
+            <title>{fill(w.takeOff, { name: name(n) })}</title>
+            {el}
+            {tag}
+          </g>
+        );
       return (
         <g key={i}>
           {el}
@@ -288,6 +345,51 @@ export function Tessellate({ state: d, set, w: words, svgRef }: PieceProps<"tess
   };
 
   const shapeS = (ns: readonly number[]) => REACH / Math.max(...ns.map(reachOf));
+
+  /** One polygon at the side to drag to the point (or tap). */
+  const sideOne = (n: Sides, cx: number, cy: number, r: number, size: number) => (
+    <g key={n} role="button" tabIndex={canPut ? 0 : -1} aria-label={name(n)} aria-disabled={!canPut || undefined} opacity={canPut ? 1 : 0.35}
+      style={{ cursor: canPut ? "grab" : "default" }} onPointerDown={(e) => canPut && begin(e, { from: "side", n })} onKeyDown={(e) => keyTap(e, () => put(n))}>
+      <circle cx={cx} cy={cy} r={r + 8} fill="transparent" />
+      <polygon points={centred(n, cx, cy, r)} fill={POLY_FILL} stroke={POLY_LINE} strokeWidth={2} strokeLinejoin="round" />
+      {label(cx, cy + r + 6 + size, name(n), "#495057", size)}
+    </g>
+  );
+  const ghostR = task.level === 1 ? 40 : 22;
+  const sideAndBin = (
+    <>
+      <g role="group" aria-label={w.paletteLabel}>
+        {task.level === 1 ? sideOne(task.n, TRAY_X, 120, 40, 13) : PALETTE.map((n, i) => sideOne(n, TRAY_X, 36 + i * 62, 20, 11))}
+      </g>
+      <Bin {...BIN} hot={taking && inBox(BIN, hand!.x, hand!.y)} label={g.clear} title={w.clearTitle} onTap={takeAll} />
+      {hand?.moved && hand.from === "side" && nearPoint(hand.x, hand.y) && (
+        <circle cx={CX} cy={CY} r={REACH} fill="none" stroke={BLUE} strokeWidth={2} strokeDasharray="8 6" pointerEvents="none" />
+      )}
+      {hand?.moved && (
+        <polygon points={centred(hand.n, hand.x, hand.y, ghostR)} fill={taking ? "#ffc9c9" : POLY_FILL} fillOpacity={0.85}
+          stroke={taking ? RED : POLY_LINE} strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />
+      )}
+    </>
+  );
+  // Along the bottom: the claims (easy) or turn and flip (hard) on the left, "Why?" on the right.
+  const pills: { text: string; onTap: () => void; disabled?: boolean }[] =
+    d.done ? []
+    : task.level === 1 ? [{ text: `✓ ${w.tiles}`, onTap: () => claim(true) }, { text: `✗ ${w.notTiles}`, onTap: () => claim(false) }]
+    : task.level === 3 ? [
+        { text: `⟳ ${w.turn}`, onTap: () => d.picked !== null && turn(d.picked), disabled: d.picked === null },
+        { text: `⇋ ${w.flip}`, onTap: () => d.picked !== null && flip(d.picked), disabled: d.picked === null },
+      ]
+    : [];
+  const whyText = `💡 ${w.why}`;
+  const pillX = pills.map((_, i) => pills.slice(0, i).reduce((x, p) => x + pillW(p.text) + 10, 16));
+  const strip = (
+    <>
+      {pills.map((p, i) => (
+        <Pill key={p.text} x={pillX[i]} y={STRIP_Y} w={pillW(p.text)} size={14} strong={task.level === 1} text={p.text} onTap={p.onTap} disabled={p.disabled} />
+      ))}
+      <Pill x={W - 16 - pillW(whyText)} y={STRIP_Y} w={pillW(whyText)} size={14} on={explain !== null} text={whyText} onTap={() => setExplain(explain !== null ? null : 0)} />
+    </>
+  );
   return (
     <>
       <GameHead game={game} g={g}>
@@ -295,18 +397,18 @@ export function Tessellate({ state: d, set, w: words, svgRef }: PieceProps<"tess
       </GameHead>
       <Said line={{ tone: "prompt", text: prompt }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={prompt} style={{ touchAction: "none" }}>
+        <svg ref={svgRef} className="hand-pic" width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} aria-label={prompt} style={{ touchAction: "none" }} {...svgProps}>
           <rect width={W} height={H} fill="#fff" />
           {task.level === 1 && (
             <>
-              {roundPoint(Array<Sides>(d.count).fill(task.n), 0, shapeS([task.n]), null)}
+              {roundPoint(Array<Sides>(d.count).fill(task.n), 0, shapeS([task.n]), null, canTake)}
               {tagOf(sumOf(Array<Sides>(d.count).fill(task.n)))}
               {label(16, 54, sumLine(Array<Sides>(d.count).fill(task.n)), "#1e1e1e", 14, "start")}
             </>
           )}
           {task.level === 2 && (
             <>
-              {roundPoint(around, task.given.length, shapeS([...PALETTE]), d.said?.kind === "over" ? d.said.n : null)}
+              {roundPoint(around, task.given.length, shapeS([...PALETTE]), d.said?.kind === "over" ? d.said.n : null, canTake)}
               {tagOf(sumOf(around))}
               {label(16, 54, sumLine(around), "#1e1e1e", 14, "start")}
             </>
@@ -325,62 +427,17 @@ export function Tessellate({ state: d, set, w: words, svgRef }: PieceProps<"tess
               <g fill={OVER} fillOpacity={0.55} pointerEvents="none">
                 {cover.twice.map((k) => <polygon key={k} points={quarter(k)} />)}
               </g>
-              {label(GX, H - 8, fill(w.coverTag, { n: cover.covered, of: task.target.length }), cover.made ? "#2f9e44" : "#495057", 13, "start")}
+              {label(GX, GY + BOARD.rows * U + 18, fill(w.coverTag, { n: cover.covered, of: task.target.length }), cover.made ? "#2f9e44" : "#495057", 13, "start")}
             </>
           )}
+          {task.level !== 3 && !d.done && sideAndBin}
+          {strip}
         </svg>
       </Stage>
       {explain !== null && (
         <WhySteps at={explain} of={whys.length} text={w.whyText[whys[explain]]} back={w.whyBack} next={w.whyNext} onStep={setExplain} picture={<TilePicture step={whys[explain]} />} />
       )}
-      {!d.done && task.level === 2 && (
-        <div className="live-bar" role="group" aria-label={w.paletteLabel}>
-          {PALETTE.map((n) => (
-            <button key={n} className="live-btn" onClick={() => add(n)}>
-              <svg width={18} height={18} viewBox="-10 -10 20 20" aria-hidden style={{ verticalAlign: "-4px", marginRight: 4 }}>
-                <polygon points={Array.from({ length: n }, (_, k) => `${r1(8 * Math.cos((2 * Math.PI * k) / n - Math.PI / 2))},${r1(8 * Math.sin((2 * Math.PI * k) / n - Math.PI / 2))}`).join(" ")} fill={POLY_FILL} stroke={POLY_LINE} strokeWidth={1.5} />
-              </svg>
-              {name(n)}
-            </button>
-          ))}
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {!d.done && task.level === 1 && (
-          <>
-            <button className="live-btn" disabled={d.count >= aloneMax} onClick={() => game.tap({ count: d.count + 1, said: null })}>
-              ➕ {w.more}
-            </button>
-            <button className="live-btn" disabled={d.count <= 1} onClick={() => game.tap({ count: d.count - 1, said: null })}>
-              ➖ {w.fewer}
-            </button>
-            <button className="live-btn on" onClick={() => claim(true)}>
-              ✓ {w.tiles}
-            </button>
-            <button className="live-btn on" onClick={() => claim(false)}>
-              ✗ {w.notTiles}
-            </button>
-          </>
-        )}
-        {!d.done && task.level === 2 && (
-          <button className="live-btn" disabled={d.added.length === 0} onClick={() => game.tap({ added: d.added.slice(0, -1), said: null })}>
-            ↩ {w.takeBack}
-          </button>
-        )}
-        {!d.done && task.level === 3 && (
-          <>
-            <button className="live-btn" disabled={d.picked === null} onClick={() => d.picked !== null && turn(d.picked)}>
-              ⟳ {w.turn}
-            </button>
-            <button className="live-btn" disabled={d.picked === null} onClick={() => d.picked !== null && flip(d.picked)}>
-              ⇋ {w.flip}
-            </button>
-          </>
-        )}
-        <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain !== null ? null : 0)}>
-          💡 {w.why}
-        </button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
