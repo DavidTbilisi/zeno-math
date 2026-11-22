@@ -6391,9 +6391,10 @@ export const en = {
       },
     },
     graphStory: {
-      hint: "Draw the walk: tap a piece for each part, in order, then check. Up is further from home.",
+      hint: "Draw the walk: drag a piece onto the graph for each part, in order (or tap it), then check. Up is further from home.",
       ready: "Every part drawn: check it.",
-      undo: "Undo",
+      last: "Last part: {p} — drag it into the bin to take it off",
+      clearTitle: "Tap to clear the graph; drop its last part here to take it off",
       right: "Right! The graph tells the walk. {stars}",
       why: {
         flat: "A red part is wrong: a flat line means the distance from home stays the same — standing still.",

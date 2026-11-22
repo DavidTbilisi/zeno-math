@@ -1037,7 +1037,6 @@ input.invalid { border-color: var(--danger); }
 .story-parts li::before { content: counter(part) " "; font-weight: 700; color: #1971c2; }
 .story-parts li.now { border-color: #1971c2; }
 .story-parts li.off { border-color: #e03131; color: #c92a2a; }
-.story-piece { padding: 2px 6px; line-height: 0; }
 /* The graph-theory games: the colours to colour with, and a route's roads added up. */
 .route-sum { min-height: 1.3em; font-weight: 600; }
 /* Be the search: the machine (graph and arrays) beside its code, the lines just run lit, and the log of operations. */

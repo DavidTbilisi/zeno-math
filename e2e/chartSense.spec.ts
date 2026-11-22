@@ -103,10 +103,10 @@ test("graph stories: a walk's graph built piece by piece, right first time", asy
   const game = await boardWith(page, "Graph stories: draw the walk", ".live-graphStory");
   const t = storyTask(STORY_LADDER[0].level, rng(STORY_LADDER[0].seed));
   const pieces = en.live.graphStory.pieces;
-  const piece = (p: (typeof t.parts)[number]) => game.getByRole("button", { name: pieces[p], exact: true });
+  const piece = (p: (typeof t.parts)[number]) => game.locator("svg").first().getByRole("button", { name: pieces[p], exact: true });
   await expect(async () => {
     await piece(t.parts[0]).click();
-    await expect(game.getByRole("button", { name: /Undo/ })).toBeEnabled({ timeout: 1000 });
+    await expect(game.getByRole("button", { name: /^Last part/ })).toBeVisible({ timeout: 1000 });
   }).toPass();
   for (const p of t.parts.slice(1)) await piece(p).click();
   await game.getByRole("button", { name: "Check" }).click();
