@@ -328,7 +328,8 @@ export function CircleDiscover({ state: d, set, w: words, svgRef }: PieceProps<"
     { label: w.qAcross, options: X_COORDS, on: d.qx, text: (c) => c, color: coord, pick: (c) => choose({ qx: c as Coord | null }) },
     { label: w.qUp, options: Y_COORDS, on: d.qy, text: (c) => c, color: coord, pick: (c) => choose({ qy: c as Coord | null }) },
   ] : null;
-  const barH = barHeight(W, groups);
+  const whyPill = { text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) };
+  const barH = barHeight({ w: W, pills, cards, groups, why: whyPill });
 
   return (
     <>
@@ -432,7 +433,7 @@ export function CircleDiscover({ state: d, set, w: words, svgRef }: PieceProps<"
               })}
             </g>
           )}
-          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={{ text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) }} />
+          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={whyPill} />
           {tri.drag?.moved && <text x={tri.drag.x} y={tri.drag.y} fontSize={24} textAnchor="middle" pointerEvents="none">📏</text>}
         </svg>
       </Stage>

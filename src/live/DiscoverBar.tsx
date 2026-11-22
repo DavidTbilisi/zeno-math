@@ -16,7 +16,7 @@ export type BarGroup = {
   /** A sign drawn before the group's slot, like the = before a rule's answer. */
   before?: string;
 };
-export type BarPill = { text: string; onTap: () => void; strong?: boolean; on?: boolean; disabled?: boolean };
+export type BarPill = { text: string; onTap: () => void; strong?: boolean; on?: boolean; disabled?: boolean; title?: string };
 
 const [ROW, SLOT_H, CHIP_H, GAP, SIGN] = [44, 36, 32, 18, 22];
 const chipW = (s: string) => Math.max(36, 18 + [...s].length * 9);
@@ -24,9 +24,27 @@ const pillW = (s: string) => 30 + [...s].length * 8.4;
 
 type Grab = { g: number; o: string } | { card: number };
 
-/** How tall the bar is drawn for these groups in width `w`. */
-export function barHeight(w: number, groups: BarGroup[] | null) {
-  return ROW + (groups ? lay(w, groups).lines * (SLOT_H + CHIP_H + 20) : 0);
+type Cards<V> = { values: readonly V[]; text: (v: V) => string; off: (v: V) => boolean; pick: (v: V) => void };
+type BarProps<V> = { w: number; pills: BarPill[]; cards?: Cards<V>; groups: BarGroup[] | null; why: BarPill };
+
+/** Where the pills and cards go along the top: across, onto another row when the width runs out (Why? keeps the right end of the first). */
+function topRow<V>({ w, pills, cards, why }: BarProps<V>) {
+  const items = [...pills.map((p) => p.text), ...(cards?.values.map((v) => cards.text(v)) ?? [])];
+  let [x, row] = [16, 0];
+  const at = items.map((t) => {
+    const room = row === 0 ? w - 28 - pillW(why.text) : w - 16;
+    if (x + pillW(t) > room && x > 16) [x, row] = [16, row + 1];
+    const p = { x, y: 7 + row * ROW };
+    x += pillW(t) + 8;
+    return p;
+  });
+  return { at, rows: row + 1 };
+}
+
+/** How tall the bar is drawn. */
+export function barHeight<V>(props: BarProps<V>) {
+  const top = topRow(props).rows * ROW;
+  return top + (props.groups ? lay(props.w, props.groups).lines * (SLOT_H + CHIP_H + 20) : 0);
 }
 
 /** Where each group goes: across, then onto a new line when the width runs out. */
@@ -44,17 +62,12 @@ function lay(w: number, groups: BarGroup[]) {
   return { at, lines: line + 1 };
 }
 
-export function DiscoverBar({ y, w, pills, cards, groups, why }: {
-  y: number;
-  w: number;
-  pills: BarPill[];
-  /** The answers to choose from: dragged into the picture above the bar, or tapped. */
-  cards?: { values: number[]; text: (v: number) => string; off: (v: number) => boolean; pick: (v: number) => void };
-  groups: BarGroup[] | null;
-  why: BarPill;
-}) {
+/** The bar at height `y` of the picture; `cards` are the answers to choose from, dragged up into the picture or tapped. */
+export function DiscoverBar<V extends string | number>(props: BarProps<V> & { y: number }) {
+  const { y, w, pills, cards, groups, why } = props;
   const laid = groups ? lay(w, groups) : null;
-  const top = (line: number) => ROW + 6 + line * (SLOT_H + CHIP_H + 20);
+  const tops = topRow(props);
+  const top = (line: number) => tops.rows * ROW + 6 + line * (SLOT_H + CHIP_H + 20);
   const slotBox = (i: number) => {
     const b = laid!.at[i];
     return { x: b.x, y: top(b.line), w: b.w, h: SLOT_H };
@@ -70,29 +83,23 @@ export function DiscoverBar({ y, w, pills, cards, groups, why }: {
     const b = slotBox(d.g);
     if (!d.moved || inBox({ x: b.x - 10, y: b.y - 10, w: b.w + 20, h: b.h + 20 }, d.x, d.y)) gr.pick(d.o);
   });
-  let px = 16;
-  const pillAt = (s: string) => {
-    const x = px;
-    px += pillW(s) + 8;
-    return x;
-  };
-  const height = barHeight(w, groups);
+  const height = barHeight(props);
   return (
     <svg x={0} y={y} width={w} height={height} overflow="visible" style={{ touchAction: "none" }} {...svgProps}>
       <rect width={w} height={height} fill="#fff" />
-      {pills.map((p) => (
-        <Pill key={p.text} x={pillAt(p.text)} y={7} w={pillW(p.text)} text={p.text} strong={p.strong} on={p.on} disabled={p.disabled} onTap={p.onTap} />
+      {pills.map((p, i) => (
+        <Pill key={p.text} x={tops.at[i].x} y={tops.at[i].y} w={pillW(p.text)} text={p.text} title={p.title} strong={p.strong} on={p.on} disabled={p.disabled} onTap={p.onTap} />
       ))}
       {cards?.values.map((v, i) => {
         const t = cards.text(v);
-        const x = pillAt(t);
+        const { x, y: cy } = tops.at[pills.length + i];
         const off = cards.off(v);
         const away = drag && "card" in drag && drag.card === i && drag.moved;
         return (
-          <g key={v} role="button" tabIndex={off ? -1 : 0} aria-label={t} aria-disabled={off || undefined} opacity={off ? 0.4 : away ? 0.3 : 1}
+          <g key={String(v)} role="button" tabIndex={off ? -1 : 0} aria-label={t} aria-disabled={off || undefined} opacity={off ? 0.4 : away ? 0.3 : 1}
             style={{ cursor: off ? "default" : "grab" }} onPointerDown={(e) => !off && begin(e, { card: i })} onKeyDown={(e) => keyTap(e, () => !off && cards.pick(v))}>
-            <rect x={x} y={7} width={pillW(t)} height={30} rx={8} fill="#fff" stroke={BLUE} strokeWidth={1.5} />
-            <text x={x + pillW(t) / 2} y={27} fontSize={16} fontWeight={700} textAnchor="middle" fill={INK} pointerEvents="none">{t}</text>
+            <rect x={x} y={cy} width={pillW(t)} height={30} rx={8} fill="#fff" stroke={BLUE} strokeWidth={1.5} />
+            <text x={x + pillW(t) / 2} y={cy + 20} fontSize={16} fontWeight={700} textAnchor="middle" fill={INK} pointerEvents="none">{t}</text>
           </g>
         );
       })}

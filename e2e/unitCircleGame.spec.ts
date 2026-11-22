@@ -25,7 +25,14 @@ test("unit circle: P put at 120° with the arrow keys, then its coordinates pick
   await expect(game.getByText(/^P is at 120°\. Which are its coordinates/)).toBeVisible();
   await game.getByRole("button", { name: "(√3/2, −½)" }).or(game.getByRole("button", { name: "(−√3/2, ½)" })).first().click();
   await expect(game.getByText(/is the point at \d+° \(in orange\)/)).toBeVisible();
-  await game.getByRole("button", { name: "(−½, √3/2)" }).click();
+  // The right pair dragged up out of the bar onto the circle.
+  const card = (await game.getByRole("button", { name: "(−½, √3/2)" }).boundingBox())!;
+  const pic = (await handle.boundingBox())!;
+  await page.mouse.move(card.x + card.width / 2, card.y + card.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(card.x + card.width / 2, card.y - 60, { steps: 5 });
+  await page.mouse.move(pic.x + 40, pic.y + 60, { steps: 5 });
+  await page.mouse.up();
   await expect(game.getByText(/^Right! P at 120° is \(−½, √3\/2\)\. ★☆☆/)).toBeVisible();
   // The explanation, open after the puzzle too: why the up is sin and the across cos.
   // A step at a time: the triangle first, then why the up is sin.
@@ -35,4 +42,5 @@ test("unit circle: P put at 120° with the arrow keys, then its coordinates pick
   await expect(game.getByRole("note")).toContainText("2/5 sin θ = opposite ÷ hypotenuse = opposite ÷ 1. So the up, the purple side, is sin θ.");
   await game.getByRole("button", { name: "💡 Why cos and sin?" }).click();
   await expect(game.getByRole("note")).toHaveCount(0);
+  await game.locator("svg.hand-pic").first().screenshot({ path: `${process.env.SHOTS_DIR ?? "test-results"}/unit-circle-hand.png` });
 });

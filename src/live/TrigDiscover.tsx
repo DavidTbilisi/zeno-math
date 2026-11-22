@@ -296,7 +296,8 @@ export function TrigDiscover({ state: d, set, w: words, svgRef }: PieceProps<"tr
     { label: w.opLabel, options: OPS, on: d.op, text: (o) => o, pick: (o) => choose({ op: o as Op | null }) },
     sideGroup(w.second, d.b, "b"),
   ] : null;
-  const barH = barHeight(W, groups);
+  const whyPill = { text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) };
+  const barH = barHeight({ w: W, pills, cards, groups, why: whyPill });
 
   return (
     <>
@@ -402,7 +403,7 @@ export function TrigDiscover({ state: d, set, w: words, svgRef }: PieceProps<"tr
           )}
           {/* Hard: the small triangle with the same angle, measured, and its three ratios. */}
           {task.level === 3 && small && <SmallTriangle small={small} short={short} tag={w.smallTag} ratios={(["sin", "cos", "tan"] as const).map((r) => `${short[RATIO_PARTS[r][0]]} ÷ ${short[RATIO_PARTS[r][1]]} = ${numText(valueOf({ a: RATIO_PARTS[r][0], op: "÷", b: RATIO_PARTS[r][1] }, small))} = ${ratioName(r)}`)} />}
-          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={{ text: `💡 ${w.why}`, on: explain !== null, onTap: () => setExplain(explain !== null ? null : 0) }} />
+          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={groups} why={whyPill} />
           {tri.drag?.moved && <text x={tri.drag.x} y={tri.drag.y} fontSize={24} textAnchor="middle" pointerEvents="none">📏</text>}
         </svg>
       </Stage>

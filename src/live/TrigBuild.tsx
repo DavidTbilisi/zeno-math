@@ -39,6 +39,7 @@ import {
 } from "../math/trigBuild";
 import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
+import { barHeight, DiscoverBar } from "./DiscoverBar";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { WhySteps } from "./WhySteps";
 
@@ -252,6 +253,19 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
     : d.said ? { tone: "wrong", text: `${why()} ${stepHint}` }
     : { tone: "hint", text: stepHint };
 
+  // The ratio or the rearrangement to choose, as cards dragged up into the picture (or tapped).
+  const ratioCard = (r: TrigRatio) => (task.level === 3 ? rn[r] : `${rn[r]} = ${w.short[RATIO_PARTS[r][0]]} / ${w.short[RATIO_PARTS[r][1]]}`);
+  const cards =
+    cur?.kind === "ratio" ? { values: RATIOS as string[], text: (r: string) => ratioCard(r as TrigRatio), off: () => false, pick: (r: string) => pickRatio(r as TrigRatio) }
+    : cur?.kind === "op" ? { values: task.ops as string[], text: (op: string) => opText(task, op as TrigOp, rn), off: (op: string) => op === wrongOp, pick: (op: string) => pickOp(op as TrigOp) }
+    : undefined;
+  const whyPill = {
+    text: `💡 ${w.why}`,
+    on: explain !== null,
+    onTap: () => setExplain(explain !== null ? null : WHY.indexOf(cur?.kind === "name" ? cur.n : cur?.kind === "ratio" ? "soh" : cur?.kind === "op" ? "solve" : "hyp")),
+  };
+  const barH = barHeight({ w: W, pills: [], cards, groups: null, why: whyPill });
+
   return (
     <>
       <GameHead game={game} g={g}>
@@ -259,8 +273,8 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
       </GameHead>
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={ask}>
-          <rect width={W} height={H} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={W} height={H + barH} viewBox={`0 0 ${W} ${H + barH}`} fontFamily={FONT} aria-label={ask}>
+          <rect width={W} height={H + barH} fill="#fff" />
           <line x1={10} y1={GROUND} x2={W - 10} y2={GROUND} stroke="#868e96" strokeWidth={2} />
           {scene}
           {(["base", "up", "hyp"] as const).map((s) => {
@@ -302,6 +316,7 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
                 />
               );
             })}
+          <DiscoverBar y={H} w={W} pills={[]} cards={cards} groups={null} why={whyPill} />
         </svg>
       </Stage>
       {ratioDone && (
@@ -321,27 +336,7 @@ export function TrigBuild({ state: d, set, w: words, svgRef }: PieceProps<"trigB
           picture={<WhyPicture step={WHY[explain]} short={w.short} />}
         />
       )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {cur?.kind === "ratio" &&
-          RATIOS.map((r) => (
-            <button key={r} className="live-btn on" onClick={() => pickRatio(r)}>
-              {task.level === 3 ? rn[r] : `${rn[r]} = ${w.short[RATIO_PARTS[r][0]]} / ${w.short[RATIO_PARTS[r][1]]}`}
-            </button>
-          ))}
-        {cur?.kind === "op" &&
-          task.ops.map((op) => (
-            <button key={op} className="live-btn on" disabled={op === wrongOp} onClick={() => pickOp(op)}>
-              {opText(task, op, rn)}
-            </button>
-          ))}
-        <button
-          className={`live-btn${explain !== null ? " on" : ""}`}
-          aria-pressed={explain !== null}
-          onClick={() => setExplain(explain !== null ? null : WHY.indexOf(cur?.kind === "name" ? cur.n : cur?.kind === "ratio" ? "soh" : cur?.kind === "op" ? "solve" : "hyp"))}
-        >
-          💡 {w.why}
-        </button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} always />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

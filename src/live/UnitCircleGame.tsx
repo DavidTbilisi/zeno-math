@@ -24,6 +24,7 @@ import {
 } from "../math/unitCircleGame";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { barHeight, DiscoverBar } from "./DiscoverBar";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { WhySteps } from "./WhySteps";
 
@@ -53,7 +54,8 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
     return snap(Math.atan2(CY - y, x - CX) / RAD);
   };
   const down = (e: PointerEvent<SVGSVGElement>) => {
-    if (!moving || e.button > 0) return;
+    // The bar under the circle keeps its own taps.
+    if (!moving || e.button > 0 || svgPoint(e.currentTarget, e)[1] > H) return;
     e.currentTarget.setPointerCapture?.(e.pointerId);
     setDrag(angleAt(e));
   };
@@ -128,6 +130,11 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
   const ghost = d.said?.kind === "coords" ? d.said.b : null;
   const wrongAt = d.said?.kind === "solve" && d.said.why !== "again" && d.said.a === p;
   const arcR = 30;
+  const choosing = task.kind === "place" && d.placed && !d.done;
+  const pills = !d.done && !choosing ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, onTap: check }] : [];
+  const cards = choosing && task.kind === "place" ? { values: task.choices, text: coordText, off: (b: number) => b === ghost, pick: pickCoords } : undefined;
+  const whyPill = { text: `💡 ${fill(w.why, { s: rn.sin, c: rn.cos })}`, on: explain !== null, onTap: () => setExplain(explain === null ? 0 : null) };
+  const barH = barHeight({ w: W, pills, cards, groups: null, why: whyPill });
   const [ax, ay] = at(p, arcR);
 
   return (
@@ -139,11 +146,11 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={W}
-          height={H}
-          viewBox={`0 0 ${W} ${H}`}
+          height={H + barH}
+          viewBox={`0 0 ${W} ${H + barH}`}
           fontFamily={FONT}
-          role="img"
           aria-label={prompt}
           style={{ cursor: moving ? "grab" : "default", touchAction: "none" }}
           onPointerDown={down}
@@ -151,7 +158,7 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={W} height={H} fill="#fff" />
+          <rect width={W} height={H + barH} fill="#fff" />
           <line x1={CX - R - 34} y1={CY} x2={CX + R + 34} y2={CY} stroke="#adb5bd" strokeWidth={1.5} />
           <line x1={CX} y1={CY - R - 34} x2={CX} y2={CY + R + 34} stroke="#adb5bd" strokeWidth={1.5} />
           <circle cx={CX} cy={CY} r={R} fill="none" stroke="#1e1e1e" strokeWidth={2} />
@@ -231,24 +238,13 @@ export function UnitCircleGame({ state: d, set, w: words, svgRef }: PieceProps<"
           <text x={px + (px >= CX ? 14 : -14)} y={py + (py <= CY ? -10 : 20)} fontSize={15} fontWeight={700} textAnchor={px >= CX ? "start" : "end"} fill="#1e1e1e" stroke="#fff" strokeWidth={4} paintOrder="stroke">
             {d.done && task.kind === "place" ? `P ${coordText(p)}` : "P"}
           </text>
+          <DiscoverBar y={H} w={W} pills={pills} cards={cards} groups={null} why={whyPill} />
         </svg>
       </Stage>
       {explain !== null && (
         <WhySteps at={explain} of={whySteps.length} text={fill(w.whyText[whySteps[explain]], { s: rn.sin, c: rn.cos, t: rn.tan })} back={w.whyBack} next={w.whyNext} onStep={setExplain} />
       )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {!d.done &&
-          (task.kind === "place" && d.placed
-            ? task.choices.map((b) => (
-                <button key={b} className="live-btn on" disabled={b === ghost} onClick={() => pickCoords(b)}>
-                  {coordText(b)}
-                </button>
-              ))
-            : <button className="live-btn on" onClick={check}>{g.check}</button>)}
-        <button className={`live-btn${explain !== null ? " on" : ""}`} aria-pressed={explain !== null} onClick={() => setExplain(explain === null ? 0 : null)}>
-          💡 {fill(w.why, { s: rn.sin, c: rn.cos })}
-        </button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} always />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
