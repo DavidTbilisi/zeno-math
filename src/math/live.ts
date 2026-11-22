@@ -636,7 +636,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   estimate: [720, 390],
   quickLook: [620, 580],
   target: [640, 430],
-  closerTo: [640, 470],
+  closerTo: [640, 520],
   divisible: [600, 510],
   primeSlice: [640, 560],
   kakooma: [600, 590],

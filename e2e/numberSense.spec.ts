@@ -194,8 +194,8 @@ test("closer to?: a round of eight picked right earns three stars", async ({ pag
   const game = await boardWith(page, "Closer to? Benchmarks against the clock", ".live-closerTo");
   const round = nearRound(NEAR_LADDER[0].level, NEAR_LADDER[0].seed);
   for (const [i, t] of round.entries()) {
-    await expect(game.getByRole("img", { name: `Which is ${t.text} closest to?` })).toBeVisible();
-    await game.locator(".near-options").getByRole("button", { name: t.options[t.right].text, exact: true }).click();
+    await expect(game.getByLabel(`Which is ${t.text} closest to?`)).toBeVisible();
+    await game.locator("svg").first().getByRole("button", { name: t.options[t.right].text, exact: true }).click();
     if (i < round.length - 1) await game.getByRole("button", { name: "Next →" }).click();
   }
   await expect(game.getByText(/Round done! ★★★|A perfect round/)).toBeVisible();

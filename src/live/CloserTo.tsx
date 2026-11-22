@@ -2,15 +2,20 @@
 // shows where the number really is between them. Nine rounds of eight earn stars for how many were right; in the
 // endless run a bar runs down for every question, four seconds at first and a tenth less with every right answer in a
 // row, and when it runs out the question counts as missed. Built on the game shell (useGame): a right pick is a step,
-// a wrong one (or the time running out) a miss, and the last of a round finishes it.
+// a wrong one (or the time running out) a miss, and the last of a round finishes it. Worked by hand: the number is a
+// card dragged onto the benchmark it is closest to, or a benchmark is tapped.
 import { useEffect, useRef } from "react";
 import { NEAR_LADDER, NEAR_NOTICES, nearLimit, nearNotice, nearNow, nearStars, placeOn, ROUND, type LiveNear } from "../math/benchmark";
+import { inBox, keyTap, useDrag } from "./hand";
 import { newSeed, RoundDots, starText } from "./ladderUi";
 import { fill, FONT, INK, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const W = 600;
-const [X0, X1, Y] = [80, 520, 150];
+const [X0, X1, Y] = [80, 520, 236];
+const H = 290;
+/** The benchmarks' tiles, in a row under the number. */
+const [TW, TH, TY] = [120, 66, 112];
 const GREEN = "#2f9e44";
 const RED = "#e03131";
 const FRESH: Partial<LiveNear> = { i: 0, results: [], picked: null, said: null };
@@ -54,6 +59,13 @@ export function CloserTo({ state: d, set, w: words, svgRef }: PieceProps<"closer
     set({ ...d, i: d.i + 1, picked: null, said: null });
   };
 
+  const tiles = task.options.map((_, k) => ({ x: W / 2 + (k - (task.options.length - 1) / 2) * (TW + 24) - TW / 2, y: TY, w: TW, h: TH }));
+  const under = (x: number, y: number) => tiles.findIndex((b) => inBox(b, x, y));
+  const { drag, begin, svgProps } = useDrag<object>((g) => {
+    const k = under(g.x, g.y);
+    if (g.moved && k >= 0) pick(k);
+  });
+  const hover = drag?.moved ? under(drag.x, drag.y) : -1;
   const X = (f: number) => X0 + f * (X1 - X0);
   const right = d.picked === task.right;
   const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
@@ -74,9 +86,35 @@ export function CloserTo({ state: d, set, w: words, svgRef }: PieceProps<"closer
         </div>
       )}
       <Stage game={game} stars={stars} done={roundDone} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={200} viewBox={`0 0 ${W} 200`} fontFamily={FONT} role="img" aria-label={fill(w.which, { x: task.text })}>
-          <rect width={W} height={200} fill="#fff" />
-          <text x={W / 2} y={70} fontSize={48} fontWeight={700} textAnchor="middle" fill={INK}>{task.text}</text>
+        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} className="hand-pic" aria-label={fill(w.which, { x: task.text })}
+          style={{ touchAction: "none" }} {...svgProps}>
+          <rect width={W} height={H} fill="#fff" />
+          {tiles.map((b, k) => {
+            const o = task.options[k];
+            const tone = answered && k === task.right ? GREEN : answered && k === d.picked ? RED : hover === k ? "#1971c2" : "#adb5bd";
+            const act = () => pick(k);
+            return (
+              <g key={k} role="button" tabIndex={answered ? -1 : 0} aria-label={o.text} aria-disabled={answered || undefined}
+                style={{ cursor: answered ? "default" : "pointer" }} onPointerDown={(e) => e.stopPropagation()} onClick={act} onKeyDown={(e) => keyTap(e, act)}>
+                <rect x={b.x} y={b.y} width={b.w} height={b.h} rx={12} strokeWidth={hover === k || (answered && tone !== "#adb5bd") ? 3 : 2}
+                  fill={answered && k === task.right ? "#ebfbee" : answered && k === d.picked ? "#fff5f5" : hover === k ? "#e7f5ff" : "#f8f9fa"} stroke={tone} />
+                <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 10} fontSize={28} fontWeight={700} textAnchor="middle" fill={INK} pointerEvents="none">{o.text}</text>
+              </g>
+            );
+          })}
+          {/* The number, a card to drag onto a benchmark; once picked it sits back in its place. */}
+          {(() => {
+            const moving = !!drag?.moved;
+            const [cx, cy] = moving ? [drag.x, drag.y] : [W / 2, 52];
+            const cw = Math.max(110, task.text.length * 27 + 40);
+            return (
+              <g style={{ cursor: answered ? "default" : moving ? "grabbing" : "grab" }} opacity={moving ? 0.9 : 1}
+                onPointerDown={(e) => !answered && begin(e, {})}>
+                <rect x={cx - cw / 2} y={cy - 38} width={cw} height={76} rx={14} fill={answered ? "#fff" : "#fff3bf"} stroke={answered ? "#fff" : "#fab005"} strokeWidth={2} />
+                <text x={cx} y={cy + 17} fontSize={48} fontWeight={700} textAnchor="middle" fill={INK} pointerEvents="none">{task.text}</text>
+              </g>
+            );
+          })()}
           {answered && (
             <g className="est-reveal">
               <line x1={X(0)} y1={Y} x2={X(1)} y2={Y} stroke={INK} strokeWidth={2} />
@@ -95,18 +133,6 @@ export function CloserTo({ state: d, set, w: words, svgRef }: PieceProps<"closer
           )}
         </svg>
       </Stage>
-      <div className="live-bar near-options">
-        {task.options.map((o, k) => (
-          <button
-            key={k}
-            className={`live-btn${answered && k === task.right ? " right" : answered && k === d.picked ? " wrong" : ""}`}
-            disabled={answered}
-            onClick={() => pick(k)}
-          >
-            {o.text}
-          </button>
-        ))}
-      </div>
       <GameActions game={game} g={g} done={answered} finished={roundDone} rounds onward={onward} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>

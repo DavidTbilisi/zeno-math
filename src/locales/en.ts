@@ -5762,7 +5762,7 @@ export const en = {
       puzzle: "Round {n}",
       locked: "Get two stars in the round before to open this one",
       which: "Which is {x} closest to?",
-      ask: "Which is it closest to? Tap it.",
+      ask: "Which is it closest to? Drag the number onto it, or tap it.",
       right: "Right!",
       wrong: "It's closer to {b} — see where it is?",
       timeUp: "Time's up! It's closest to {b}.",
