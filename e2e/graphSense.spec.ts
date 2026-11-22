@@ -54,6 +54,26 @@ test("one stroke: the graph drawn along its Euler trail, no misses", async ({ pa
   await expect(game.getByRole("button", { name: /^Puzzle 2/ })).toBeEnabled();
 });
 
+test("one stroke by hand: the whole trail drawn without lifting", async ({ page }) => {
+  const game = await boardWith(page, "One stroke", ".live-oneStroke");
+  const { g } = strokeTask(STROKE_LADDER[0].level, rng(STROKE_LADDER[0].seed));
+  const trail = eulerTrail(g)!;
+  const centre = async (v: number) => {
+    const b = (await game.getByRole("button", { name: name(v), exact: true }).boundingBox())!;
+    return [b.x + b.width / 2, b.y + b.height / 2] as const;
+  };
+  const pts = [];
+  for (const v of trail) pts.push(await centre(v));
+  await page.mouse.move(...pts[0]);
+  await page.mouse.down();
+  for (const p of pts.slice(1, -1)) await page.mouse.move(...p);
+  await expect(game.getByText("Edges to go: 1.")).toBeVisible();
+  await game.locator("svg.hand-pic").first().screenshot({ path: `${process.env.SHOTS_DIR ?? "test-results"}/one-stroke-hand.png` });
+  await page.mouse.move(...pts.at(-1)!);
+  await page.mouse.up();
+  await expect(game.getByText(/Drawn in one stroke! ★★★/)).toBeVisible();
+});
+
 test("one stroke in practice: the even vertices counted are named, then the odd ones", async ({ page, request }) => {
   const { r, ex, slip } = withTrap("oneStroke", 1, "countedEven");
   await practise(page, request, { tab: TAB, skill: "One stroke (Euler)", level: "easy", r, prompt: ex.prompt });

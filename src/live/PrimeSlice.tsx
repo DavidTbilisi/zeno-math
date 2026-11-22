@@ -33,6 +33,7 @@ import {
   type SliceMark,
   type Sim,
 } from "../math/primeSlice";
+import { Pill } from "./hand";
 import { starText } from "./ladderUi";
 import { fill, FONT, INK, svgPoint, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
@@ -191,7 +192,7 @@ export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"prim
           height={SLICE_H}
           viewBox={`0 0 ${SLICE_W} ${SLICE_H}`}
           fontFamily={FONT}
-          role="img"
+          className="hand-pic"
           aria-label={fill(w.label, { from: spec.from, to: spec.to })}
           onPointerDown={down}
           onPointerMove={move}
@@ -219,13 +220,13 @@ export function PrimeSlice({ state: d, set, w: words, svgRef }: PieceProps<"prim
           {phase === "paused" && (
             <text x={SLICE_W / 2} y={SLICE_H / 2} fontSize={48} fontWeight={700} textAnchor="middle" fill={GRAY}>⏸</text>
           )}
+          {/* Start, pause and go on, in the picture: a pill keeps its press from cutting. */}
+          {phase === "idle" && <Pill x={SLICE_W / 2 - 60} y={d.done && d.marks?.length ? SLICE_H - 44 : SLICE_H / 2 + 56} w={120} h={36} size={17} strong text={`▶ ${w.start}`} onTap={begin} />}
+          {phase === "play" && <Pill x={SLICE_W - 46} y={8} w={38} h={30} text="⏸" title={w.pause} onTap={() => setPhase("paused")} />}
+          {phase === "paused" && <Pill x={SLICE_W / 2 - 60} y={SLICE_H / 2 + 24} w={120} h={36} size={17} strong text={`▶ ${w.resume}`} onTap={() => setPhase("play")} />}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        {phase === "idle" && <button className="live-btn on" onClick={begin}>▶ {w.start}</button>}
-        {phase === "play" && <button className="live-btn" onClick={() => setPhase("paused")}>⏸ {w.pause}</button>}
-        {phase === "paused" && <button className="live-btn on" onClick={() => setPhase("play")}>▶ {w.resume}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );
