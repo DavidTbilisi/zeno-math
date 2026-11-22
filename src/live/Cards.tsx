@@ -4,15 +4,19 @@
 //   Given that…     all 52 cards; the ones outside B fade, and P(A | B) is A counted among what is left.
 //   Two cards       the tree of P(A first) × P(B second | A first), with or without putting back, and pairs drawn.
 //   Sample means    samples of n cards: the histogram of their means piles up round 7 and narrows as n grows.
+// Worked by hand: the deck is tapped for a card (two cards, a sample) and held to deal faster and faster; the cards
+// drawn are dragged back onto it to shuffle them in. The events A and B and the sample's size are wheels turned by
+// dragging up or down; the ways of counting and of putting back are pills in the strip above the picture.
 // The pictures are public/cards/*.svg; they are fetched once and drawn as data URLs, so "Copy as a picture" keeps them.
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import {
   ALL_CARDS, CARD_MODES, cardFile, cardName, conditional, CONDITIONS, decimal, DECK, drawMore, drawPairs, drawSamples,
   EVENTS, fracText, fracValue, freshDraw, freshMeans, groupCounts, GROUPS, inEvent, MAX_DRAWS, MAX_SAMPLE, meanBins, meanSd,
   meanStats, nextChance, POP_SD, RANK_LABELS, reduce, sumDistribution, SUIT_SIGNS, twoCards, valueOf,
-  type CardEvent, type Condition, type Frac, type Group, type LiveCards,
+  type Condition, type Frac, type LiveCards,
 } from "../math/cards";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
+import { capture, inBox, keyTap, NumBox, Pill, Tabs, useDrag } from "./hand";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 
 const W = 660;
 const H = 420;
@@ -62,17 +66,19 @@ function Card({ id, x, y, w, faded, ring, label }: { id: number; x: number; y: n
   );
 }
 
-/** The back of the deck, with how many cards are in it. */
-function Deck({ x, y, w, left, words }: { x: number; y: number; w: number; left: number; words: Words }) {
+/** The back of the deck, with how many cards are in it (or another caption); tapped and held through `hand`. */
+function Deck({ x, y, w, left, caption, hand }: { x: number; y: number; w: number; left: number; caption?: string; hand: DeckHand }) {
   const h = w * TALL;
   const layers = Math.min(4, Math.ceil(left / 13));
   return (
-    <g>
+    <g role="button" tabIndex={0} aria-label={hand.label} style={{ cursor: "pointer" }} {...hand.props}>
+      <title>{hand.label}</title>
       {Array.from({ length: layers }, (_, i) => (
         <rect key={i} x={x + i * 2} y={y - i * 2} width={w} height={h} rx={w * 0.06} fill="#1971c2" stroke="#fff" strokeWidth={1.5} />
       ))}
-      {!left && <rect x={x} y={y} width={w} height={h} rx={w * 0.06} fill="none" stroke="#adb5bd" strokeDasharray="5 4" />}
-      <text x={x + w / 2} y={y + h + 18} fontSize={14} textAnchor="middle" fill={INK}>{fill(words.left, { n: left })}</text>
+      {!left && <rect x={x} y={y} width={w} height={h} rx={w * 0.06} fill="#fff" stroke="#adb5bd" strokeDasharray="5 4" />}
+      {hand.hot && <rect x={x - 4} y={y - 10} width={w + 14} height={h + 14} rx={w * 0.1} fill="none" stroke={GREEN} strokeWidth={3} />}
+      {caption && <text x={x + w / 2} y={y + h + 18} fontSize={14} textAnchor="middle" fill={INK}>{caption}</text>}
     </g>
   );
 }
@@ -149,42 +155,155 @@ function Lines({ lines, x, y, w = W - 2 * x, gap = 25 }: { lines: string[]; x: n
   );
 }
 
-const TIMES = [1, 10, 100, 1000];
+
+// ——— Dealing by hand ———
+
+/** How many a tick deals while the deck is held: slowly at first, then faster and faster. */
+const RATE = [1, 1, 1, 1, 2, 2, 3, 5, 5, 10, 10, 20, 50, 100, 200, 500];
+const rate = (t: number) => (t < RATE.length ? RATE[t] : 1000);
+/** How long a press is a tap before it starts dealing, and the time between deals. */
+const HOLD = 350;
+const TICK = 70;
+
+type DeckHand = { label: string; hot: boolean; props: Record<string, unknown> };
+
+/**
+ * The deck worked by hand: a tap (or Enter) deals one, a press held (or the key held) deals faster and faster until it
+ * is let go, `room` saying how many more there can be. What is dealt while held is shown at once and handed to the
+ * board when it is let go, one step to undo.
+ */
+function useDeal<T>(cur: T, deal: (s: T, m: number) => T, room: (s: T) => number, put: (s: T) => void, label: string) {
+  const [held, setHeldState] = useState<T | null>(null);
+  const live = useRef<T | null>(null);
+  const timers = useRef<{ wait?: number; tick?: number; t: number }>({ t: 0 });
+  const setHeld = (s: T | null) => {
+    live.current = s;
+    setHeldState(s);
+  };
+  const more = () => {
+    const s = live.current ?? cur;
+    const m = Math.min(rate(timers.current.t++), room(s));
+    if (m > 0) setHeld(deal(s, m));
+  };
+  const stop = () => {
+    window.clearTimeout(timers.current.wait);
+    window.clearInterval(timers.current.tick);
+    const dealt = timers.current.t > 0;
+    timers.current = { t: 0 };
+    const s = live.current;
+    setHeld(null);
+    if (s) put(s);
+    return dealt;
+  };
+  useEffect(() => () => {
+    window.clearTimeout(timers.current.wait);
+    window.clearInterval(timers.current.tick);
+  }, []);
+  const down = (e: ReactPointerEvent<SVGGElement>) => {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+    capture(e.currentTarget, e.pointerId);
+    stop();
+    timers.current.wait = window.setTimeout(() => {
+      more();
+      timers.current.tick = window.setInterval(more, TICK);
+    }, HOLD);
+  };
+  const up = () => {
+    const holding = timers.current.wait !== undefined;
+    // Let go before it started dealing: a tap, one more (the deck shuffled full again if it was used up).
+    if (!stop() && holding) put(deal(cur, 1));
+  };
+  const key = (e: KeyboardEvent) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    if (!e.repeat) {
+      timers.current.t = 0;
+      return setHeld(deal(cur, 1));
+    }
+    more();
+  };
+  const hand: DeckHand = {
+    label,
+    hot: held !== null,
+    props: {
+      onPointerDown: down, onPointerUp: up, onPointerCancel: () => void stop(),
+      onKeyDown: key, onKeyUp: () => void stop(), onBlur: () => void stop(),
+    },
+  };
+  return { shown: held ?? cur, hand };
+}
+
+/** Cards dealt out, to drag back onto the deck (or Delete) to start again; a ghost follows the pointer while dragged. */
+function useGather(deck: { x: number; y: number; w: number; h: number }, again: () => void) {
+  const { drag, begin, svgProps } = useDrag<{ id: number }>((d) => {
+    if (d.moved && inBox(deck, d.x, d.y)) again();
+  });
+  const over = !!drag?.moved && inBox(deck, drag.x, drag.y);
+  const pile = (label: string, n: number, children: ReactNode, id: number) => (
+    <g role="button" tabIndex={0} aria-label={label} style={{ cursor: n ? "grab" : "default" }}
+      onPointerDown={(e) => n && begin(e, { id })}
+      onKeyDown={(e) => (e.key === "Delete" || e.key === "Backspace" ? again() : keyTap(e, again))}>
+      <title>{label}</title>
+      {children}
+    </g>
+  );
+  const ghost = (w: number) =>
+    drag?.moved ? <Card id={drag.id} x={drag.x - w / 2} y={drag.y - (w * TALL) / 2} w={w} ring={over ? GREEN : undefined} /> : null;
+  return { svgProps, pile, ghost, over };
+}
 
 // ——— The piece ———
+
+const SW = W;
+const SH = 96;
 
 export function Cards({ state, set, w: words, svgRef }: Props) {
   const w = words.cards;
   const mode = state.mode;
+  const props = { state, set, w, svgRef };
   return (
     <>
-      <div className="live-bar">
-        {CARD_MODES.map((m) => <Toggle key={m} on={mode === m} onClick={() => set({ ...state, mode: m })}>{w.modes[m]}</Toggle>)}
-      </div>
-      {mode === "draw" && <DrawMode state={state} set={set} w={w} reset={words.reset} svgRef={svgRef} />}
-      {mode === "given" && <GivenMode state={state} set={set} w={w} svgRef={svgRef} />}
-      {mode === "two" && <TwoMode state={state} set={set} w={w} reset={words.reset} svgRef={svgRef} />}
-      {mode === "means" && <MeansMode state={state} set={set} w={w} reset={words.reset} svgRef={svgRef} />}
+      {mode === "draw" && <DrawMode {...props} />}
+      {mode === "given" && <GivenMode {...props} />}
+      {mode === "two" && <TwoMode {...props} />}
+      {mode === "means" && <MeansMode {...props} />}
       <p className="live-hint">{w.hints[mode]}</p>
     </>
   );
 }
 
-type ModeProps = { state: LiveCards; set: (s: LiveCards) => void; w: Words; svgRef: Props["svgRef"]; reset?: string };
+type ModeProps = { state: LiveCards; set: (s: LiveCards) => void; w: Words; svgRef: Props["svgRef"] };
 
-function EventSelect<E extends string>({ value, options, onChange, label, w }: { value: E; options: readonly E[]; onChange: (e: E) => void; label: string; w: Words }) {
+/** The strip above the picture: the ways of working as tabs, then the mode's own wheels and pills. */
+function Strip({ state, set, w, children }: Omit<ModeProps, "svgRef"> & { children: ReactNode }) {
   return (
-    <label className="live-select">
-      <span>{label}</span>
-      <select value={value} aria-label={label} onChange={(e) => onChange(e.target.value as E)}>
-        {options.map((e) => <option key={e} value={e}>{w.events[e as Condition]}</option>)}
-      </select>
-    </label>
+    <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`} className="hand-pic" fontFamily={FONT}>
+      <Tabs x={8} y={4} keys={CARD_MODES} on={state.mode} names={w.modes} onPick={(mode) => set({ ...state, mode })} />
+      {children}
+    </svg>
+  );
+}
+
+/** Width of a pill holding `text`. */
+const pillW = (text: string, size = 14) => Math.max(60, text.length * size * 0.6 + 24);
+
+/** A wheel of events with its name above it: drag up or down, tap its top or bottom half, or the arrow keys. */
+function EventWheel<E extends Condition>({ x, label, value, options, onChange, w }: {
+  x: number; label: string; value: E; options: readonly E[]; onChange: (e: E) => void; w: Words;
+}) {
+  const bw = 196;
+  return (
+    <g>
+      <text x={x + 4} y={52} fontSize={12} fill="#495057">{label}</text>
+      <NumBox x={x} y={56} w={bw} h={38} size={14} value={options.indexOf(value)} min={0} max={options.length - 1}
+        label={label} show={(i) => w.events[options[i]]} onChange={(i) => onChange(options[i])} />
+    </g>
   );
 }
 
 /** The bar labels and colours of a grouping. */
-function groupLook(g: Group, w: Words): { labels: string[]; colors: string[] } {
+function groupLook(g: LiveCards["draw"]["group"], w: Words): { labels: string[]; colors: string[] } {
   const pale = { red: "#ffa8a8", black: "#adb5bd", blue: "#74c0fc" };
   switch (g) {
     case "suit": return { labels: [...SUIT_SIGNS], colors: [pale.black, pale.red, pale.red, pale.black] };
@@ -194,10 +313,16 @@ function groupLook(g: Group, w: Words): { labels: string[]; colors: string[] } {
   }
 }
 
-function DrawMode({ state, set, w, reset, svgRef }: ModeProps) {
-  const d = state.draw;
-  usePictures(d.shown);
+function DrawMode({ state, set, w, svgRef }: ModeProps) {
   const put = (draw: LiveCards["draw"]) => set({ ...state, draw });
+  const { shown: d, hand } = useDeal(
+    state.draw, (s, m) => drawMore(s, m, Math.random), (s) => (s.replace ? MAX_DRAWS - s.n : Math.min(s.left.length, MAX_DRAWS - s.n)), put,
+    w.deck,
+  );
+  usePictures(d.shown);
+  const CW = 58;
+  const deckBox = { x: 16, y: 12, w: CW, h: CW * TALL };
+  const gather = useGather(deckBox, () => put(freshDraw(d.group, d.replace, d.focus)));
   const { labels, colors } = groupLook(d.group, w);
   const deck = groupCounts(d.group);
   const name = labels[d.focus];
@@ -211,28 +336,21 @@ function DrawMode({ state, set, w, reset, svgRef }: ModeProps) {
   else if (!d.left.length) lines.push(fill(w.nextShuffled, { name, p: fracText(next) }));
   else lines.push(fill(w.nextLeft, { d: next.d, k: next.n, name, p: fracText(next) }));
   if (!d.replace && d.n && d.n % DECK === 0) lines.push(w.whole);
-  const CW = 58;
+  const back = pillW(w.replace);
   return (
     <>
-      <div className="live-bar">
-        <select value={d.group} aria-label={w.groupBy} onChange={(e) => put(freshDraw(e.target.value as Group, d.replace, d.focus))}>
-          {GROUPS.map((g) => <option key={g} value={g}>{w.groups[g]}</option>)}
-        </select>
-        <Toggle on={d.replace} onClick={() => put(freshDraw(d.group, !d.replace, d.focus))}>{w.replace}</Toggle>
-      </div>
-      <div className="live-bar">
-        {TIMES.map((m) => (
-          <button key={m} className="live-btn primary" disabled={d.n >= MAX_DRAWS} onClick={() => put(drawMore(d, m, Math.random))}>
-            {m === 1 ? w.drawOne : `×${m}`}
-          </button>
-        ))}
-        <button className="live-btn" onClick={() => put(freshDraw(d.group, d.replace, d.focus))}>{reset}</button>
-      </div>
-      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
+      <Strip state={state} set={set} w={w}>
+        <Tabs x={8} y={58} keys={GROUPS} on={d.group} names={w.groups} size={13} onPick={(g) => put(freshDraw(g, d.replace, d.focus))} />
+        <Pill x={SW - 8 - back} y={58} w={back} h={28} size={13} text={w.replace} on={d.replace}
+          onTap={() => put(freshDraw(d.group, !d.replace, d.focus))} />
+      </Strip>
+      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} className="hand-pic" {...gather.svgProps}>
         <rect width={W} height={H} fill="#fff" />
-        <Deck x={16} y={12} w={CW} left={d.replace ? DECK : d.left.length} words={w} />
-        {d.shown.map((id, i) => <Card key={`${i}-${id}`} id={id} x={104 + i * (CW + 10)} y={12} w={CW} ring={i === d.shown.length - 1 ? GREEN : undefined} />)}
-        {!d.shown.length && <text x={104} y={60} fontSize={15} fill={GREY}>{w.noneYet}</text>}
+        <Deck x={deckBox.x} y={deckBox.y} w={CW} left={d.replace ? DECK : d.left.length} caption={fill(w.left, { n: d.replace ? DECK : d.left.length })}
+          hand={{ ...hand, hot: hand.hot || gather.over }} />
+        {d.shown.length ? gather.pile(w.gather, d.n, d.shown.map((id, i) => (
+          <Card key={`${i}-${id}`} id={id} x={104 + i * (CW + 10)} y={12} w={CW} ring={i === d.shown.length - 1 ? GREEN : undefined} />
+        )), d.shown[d.shown.length - 1]) : <text x={104} y={60} fontSize={15} fill={GREY}>{w.noneYet}</text>}
         <Bars
           box={{ x: 52, y: 136, w: W - 66, h: 150 }}
           values={d.counts.map((c) => (d.n ? c / d.n : 0))}
@@ -244,6 +362,7 @@ function DrawMode({ state, set, w, reset, svgRef }: ModeProps) {
           legend={w.expected}
         />
         <Lines lines={lines} x={16} y={330} />
+        {gather.ghost(CW)}
       </svg>
     </>
   );
@@ -270,10 +389,10 @@ function GivenMode({ state, set, w, svgRef }: ModeProps) {
   const x0 = (W - 13 * CW - 12 * GAP) / 2;
   return (
     <>
-      <div className="live-bar">
-        <EventSelect value={a} options={EVENTS} onChange={(e: CardEvent) => put({ a: e, b })} label={w.eventA} w={w} />
-        <EventSelect value={b} options={CONDITIONS} onChange={(e: Condition) => put({ a, b: e })} label={w.eventB} w={w} />
-      </div>
+      <Strip state={state} set={set} w={w}>
+        <EventWheel x={8} label={w.eventA} value={a} options={EVENTS} onChange={(e) => put({ a: e, b })} w={w} />
+        <EventWheel x={220} label={w.eventB} value={b} options={CONDITIONS} onChange={(e) => put({ a, b: e })} w={w} />
+      </Strip>
       <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
         <rect width={W} height={H} fill="#fff" />
         {rows.map((suit, r) =>
@@ -291,11 +410,20 @@ function GivenMode({ state, set, w, svgRef }: ModeProps) {
   );
 }
 
-function TwoMode({ state, set, w, reset, svgRef }: ModeProps) {
-  const t = state.two;
-  usePictures(t.last ?? []);
+function TwoMode({ state, set, w, svgRef }: ModeProps) {
+  const t0 = state.two;
   const put = (two: Partial<LiveCards["two"]>, keep = false) =>
-    set({ ...state, two: { ...t, ...two, ...(keep ? {} : { tally: { n: 0, firstHits: 0, both: 0 }, last: null }) } });
+    set({ ...state, two: { ...t0, ...two, ...(keep ? {} : { tally: { n: 0, firstHits: 0, both: 0 }, last: null }) } });
+  type Drawn = { tally: LiveCards["two"]["tally"]; last: LiveCards["two"]["last"] };
+  const { shown, hand } = useDeal<Drawn>(
+    { tally: t0.tally, last: t0.last }, (s, m) => drawPairs(s.tally, t0.a, t0.b, t0.replace, m, Math.random), (s) => MAX_DRAWS - s.tally.n,
+    (s) => put(s, true), w.deckTwo,
+  );
+  const t = { ...t0, ...shown };
+  usePictures(t.last ?? []);
+  const DW = 40;
+  const deckBox = { x: 8, y: 131 - (DW * TALL) / 2, w: DW, h: DW * TALL };
+  const gather = useGather(deckBox, () => put({}));
   const tree = twoCards(t.a, t.b, t.replace);
   const A = w.events[t.a];
   const B = w.events[t.b];
@@ -324,27 +452,20 @@ function TwoMode({ state, set, w, reset, svgRef }: ModeProps) {
     if (firstHits) lines.push(fill(w.afterA, { k: firstHits.toLocaleString(), m: both.toLocaleString(), f: decimal(both / firstHits), p: `${tree.yes.n}/${tree.yes.d}` }));
   }
   const CW = 54;
+  const back = pillW(w.replaceFirst, 13);
   return (
     <>
-      <div className="live-bar">
-        <EventSelect value={t.a} options={EVENTS} onChange={(a: CardEvent) => put({ a })} label={w.first} w={w} />
-        <EventSelect value={t.b} options={EVENTS} onChange={(b: CardEvent) => put({ b })} label={w.second} w={w} />
-        <Toggle on={t.replace} onClick={() => put({ replace: !t.replace })}>{w.replaceFirst}</Toggle>
-      </div>
-      <div className="live-bar">
-        {TIMES.map((m) => (
-          <button key={m} className="live-btn primary" disabled={n >= MAX_DRAWS} onClick={() => put(drawPairs(t.tally, t.a, t.b, t.replace, m, Math.random), true)}>
-            {m === 1 ? w.drawTwo : `×${m}`}
-          </button>
-        ))}
-        <button className="live-btn" onClick={() => put({})}>{reset}</button>
-      </div>
-      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
+      <Strip state={state} set={set} w={w}>
+        <EventWheel x={8} label={w.first} value={t.a} options={EVENTS} onChange={(a) => put({ a })} w={w} />
+        <EventWheel x={214} label={w.second} value={t.b} options={EVENTS} onChange={(b) => put({ b })} w={w} />
+        <Pill x={SW - 8 - back} y={60} w={back} h={30} size={13} text={w.replaceFirst} on={t.replace} onTap={() => put({ replace: !t.replace })} />
+      </Strip>
+      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} className="hand-pic" {...gather.svgProps}>
         <rect width={W} height={H} fill="#fff" />
         <text x={16} y={20} fontSize={14} fill={GREY}>{fill(w.key, { a: A, b: B })}</text>
-        {mids.map((m, i) => branch(40, 131, 230, m.y, i ? tree.firstNot : tree.first, `m${i}`, !i))}
+        {mids.map((m, i) => branch(54, 131, 230, m.y, i ? tree.firstNot : tree.first, `m${i}`, !i))}
         {leaves.map((l, i) => branch(250, mids[i < 2 ? 0 : 1].y, 400, l.y, i % 2 ? not(i < 2 ? tree.yes : tree.no) : i < 2 ? tree.yes : tree.no, `l${i}`, i === 0))}
-        <circle cx={34} cy={131} r={6} fill={INK} />
+        <Deck x={deckBox.x} y={deckBox.y} w={DW} left={DECK} hand={{ ...hand, hot: hand.hot || gather.over }} />
         {mids.map((m, i) => <text key={i} x={240} y={m.y + 5} fontSize={16} fontWeight={700} textAnchor="middle" fill={i ? INK : GREEN}>{m.label}</text>)}
         {leaves.map((l, i) => (
           <g key={i}>
@@ -353,20 +474,26 @@ function TwoMode({ state, set, w, reset, svgRef }: ModeProps) {
           </g>
         ))}
         {t.last ? (
-          t.last.map((id, i) => <Card key={`${i}-${id}`} id={id} x={16 + i * (CW + 8)} y={272} w={CW} ring={inEvent(i ? t.b : t.a, id) ? GREEN : undefined} />)
+          gather.pile(w.gatherTwo, n, t.last.map((id, i) => (
+            <Card key={`${i}-${id}`} id={id} x={16 + i * (CW + 8)} y={272} w={CW} ring={inEvent(i ? t.b : t.a, id) ? GREEN : undefined} />
+          )), t.last[1])
         ) : (
           <text x={16} y={300} fontSize={15} fill={GREY}>{w.noneYet}</text>
         )}
         <Lines lines={[fill(w.pairs, { n: n.toLocaleString() }), ...lines]} x={150} y={286} w={W - 160} gap={24} />
+        {gather.ghost(CW)}
       </svg>
     </>
   );
 }
 
-function MeansMode({ state, set, w, reset, svgRef }: ModeProps) {
-  const s = state.means;
-  usePictures(s.last);
+function MeansMode({ state, set, w, svgRef }: ModeProps) {
   const put = (means: LiveCards["means"]) => set({ ...state, means });
+  const { shown: s, hand } = useDeal(state.means, (m0, m) => drawSamples(m0, m, Math.random), (m0) => MAX_DRAWS - m0.samples, put, w.deckMeans);
+  usePictures(s.last);
+  const DW = 52;
+  const deckBox = { x: 16, y: 8, w: DW, h: DW * TALL };
+  const gather = useGather(deckBox, () => put(freshMeans(s.size)));
   const bins = meanBins(s.size);
   const seen = Array(bins.count).fill(0);
   s.sums.forEach((k, i) => (seen[bins.binOf(i)] += k));
@@ -380,28 +507,22 @@ function MeansMode({ state, set, w, reset, svgRef }: ModeProps) {
   lines.push(fill(w.pop, { s: round2(POP_SD) }));
   if (stats) lines.push(fill(w.yours, { m: round2(stats.mean), s: round2(stats.sd) }));
   lines.push(fill(w.spread, { n: s.size, s: round2(meanSd(s.size)) }));
-  const CW = Math.min(52, (W - 32) / s.size - 6);
+  const x0 = 16 + DW + 20;
+  const CW = Math.min(50, (W - x0 - 16) / s.size - 6);
   return (
     <>
-      <div className="live-bar">
-        <span>{w.size}</span>
-        <Stepper value={s.size} min={1} max={MAX_SAMPLE} onChange={(size) => put(freshMeans(size))} less={w.fewer} more={w.moreCards} />
-        <span className="live-note">{w.values}</span>
-      </div>
-      <div className="live-bar">
-        {TIMES.map((m) => (
-          <button key={m} className="live-btn primary" disabled={s.samples >= MAX_DRAWS} onClick={() => put(drawSamples(s, m, Math.random))}>
-            {m === 1 ? w.drawSample : `×${m}`}
-          </button>
-        ))}
-        <button className="live-btn" onClick={() => put(freshMeans(s.size))}>{reset}</button>
-      </div>
-      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT}>
+      <Strip state={state} set={set} w={w}>
+        <text x={12} y={52} fontSize={12} fill="#495057">{w.size}</text>
+        <NumBox x={8} y={56} w={84} h={38} size={18} value={s.size} min={1} max={MAX_SAMPLE} label={w.size} onChange={(size) => put(freshMeans(size))} />
+        <text x={106} y={80} fontSize={13} fill={GREY}>{w.values}</text>
+      </Strip>
+      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} className="hand-pic" {...gather.svgProps}>
         <rect width={W} height={H} fill="#fff" />
+        <Deck x={deckBox.x} y={deckBox.y} w={DW} left={DECK} hand={{ ...hand, hot: hand.hot || gather.over }} />
         {s.last.length ? (
-          s.last.map((id, i) => <Card key={`${i}-${id}`} id={id} x={16 + i * (CW + 6)} y={8} w={CW} />)
+          gather.pile(w.gatherMeans, s.samples, s.last.map((id, i) => <Card key={`${i}-${id}`} id={id} x={x0 + i * (CW + 6)} y={8} w={CW} />), s.last[0])
         ) : (
-          <text x={16} y={50} fontSize={15} fill={GREY}>{w.noneYet}</text>
+          <text x={x0} y={50} fontSize={15} fill={GREY}>{w.noneYet}</text>
         )}
         <Bars
           box={{ x: 52, y: 106, w: W - 66, h: 150 }}
@@ -413,10 +534,10 @@ function MeansMode({ state, set, w, reset, svgRef }: ModeProps) {
           legend={w.expected}
         />
         <Lines lines={lines} x={16} y={300} gap={24} />
+        {gather.ghost(CW)}
       </svg>
     </>
   );
 }
 
 const round2 = (v: number) => (Math.round(v * 100) / 100).toString();
-
