@@ -1,7 +1,7 @@
 // The live number line: numbers typed any way, any range and step, labels that fit, marks and the sum the jumps write.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { formatJump, formatNumber, jumpSum, labelEvery, moveMark, moveTogether, nearestTick, NUMBER_LINE_RANGES, parseNumber, rangeProblem, ticksOf, toFraction, toggleMark, withRange } from "../src/math/numberLine.ts";
+import { formatJump, formatNumber, jumpSum, labelEvery, moveMark, moveTogether, nearestTick, NUMBER_LINE_RANGES, parseNumber, rangeProblem, slideRange, stepsLong, stretchEnd, ticksOf, toFraction, toggleMark, withRange, withStep } from "../src/math/numberLine.ts";
 
 test("numbers can be typed as whole numbers, decimals with a point or a comma, fractions and mixed numbers", () => {
   assert.equal(parseNumber("3"), 3);
@@ -109,4 +109,20 @@ test("the jumps are signed and write the sum from the first mark to the last", (
   assert.equal(jumpSum([-3, 2], o), "−3 + 5 = 2");
   assert.equal(jumpSum([4], o), null);
   assert.equal(jumpSum([0.25, 1, 0.5], { fractions: true, step: 0.25, from: 0 }), "1/4 + 3/4 − 1/2 = 1/2");
+});
+
+test("the line by hand: ends stretched, the line slid, the step turned", () => {
+  const d = { from: 0, to: 10, step: 1, fractions: false, marks: [3, 9], jumps: true, together: false };
+  assert.deepEqual([stretchEnd(d, "to", 5).to, stretchEnd(d, "from", 3).from], [15, -3]);
+  // At least one step long, at most NUMBER_LINE_MAX_TICKS; marks off the line go.
+  assert.equal(stretchEnd(d, "to", -20).to, 1);
+  assert.deepEqual(stretchEnd(d, "to", -20).marks, []);
+  assert.equal(stretchEnd(d, "from", 500).from, -90);
+  const slid = slideRange(d, -4);
+  assert.deepEqual([slid.from, slid.to, slid.marks], [-4, 6, [3]]);
+  assert.equal(slideRange(d, 0), d);
+  // A step of 10 keeps the ten steps: 0 to 100; quarters are fractions.
+  assert.deepEqual([withStep(d, 10).to, withStep(d, 0.25).to, withStep(d, 0.25).fractions], [100, 2.5, true]);
+  assert.equal(withStep({ ...d, from: -3 }, 10).from, -10);
+  assert.equal(stepsLong(withStep(d, 0.1)), 10);
 });

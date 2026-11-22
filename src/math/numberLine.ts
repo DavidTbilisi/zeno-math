@@ -155,3 +155,34 @@ export function jumpSum(marks: number[], o: { fractions: boolean; step: number; 
   const hops = marks.slice(1).map((m, i) => formatJump(marks[i], m, o).replace(/^([+−])/, "$1 "));
   return `${formatNumber(marks[0], o)} ${hops.join(" ")} = ${formatNumber(marks[marks.length - 1], o)}`;
 }
+
+/** The steps the step wheel turns through. */
+export const NUMBER_LINE_STEPS = [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100];
+
+/** How many steps the line is long. */
+export const stepsLong = (d: { from: number; to: number; step: number }) => Math.round((d.to - d.from) / d.step);
+
+/** One end of the line dragged `k` steps out (or in): at least one step long, at most NUMBER_LINE_MAX_TICKS. */
+export function stretchEnd(d: LiveNumberLine, end: "from" | "to", k: number): LiveNumberLine {
+  const n = stepsLong(d);
+  const by = Math.max(1 - n, Math.min(NUMBER_LINE_MAX_TICKS - n, k));
+  if (!by) return d;
+  return end === "to" ? withRange(d, { from: d.from, to: clean(d.to + by * d.step), step: d.step }) : withRange(d, { from: clean(d.from - by * d.step), to: d.to, step: d.step });
+}
+
+/** The line slid `k` steps along: the numbers move under the marks, so marks that fall off the ends go. */
+export function slideRange(d: LiveNumberLine, k: number): LiveNumberLine {
+  return k ? withRange(d, { from: clean(d.from + k * d.step), to: clean(d.to + k * d.step), step: d.step }) : d;
+}
+
+/**
+ * A new step from the wheel: the line keeps how many steps it is long (as many as fit), starts at the step before its
+ * old start, and quarters and halves are written as fractions, tenths as decimals.
+ */
+export function withStep(d: LiveNumberLine, step: number): LiveNumberLine {
+  if (step === d.step) return d;
+  const n = Math.min(NUMBER_LINE_MAX_TICKS, stepsLong(d));
+  const from = clean(Math.floor(d.from / step + 1e-9) * step);
+  const fractions = step === 0.25 || step === 0.5 ? true : step === 0.1 || step >= 1 ? false : d.fractions;
+  return withRange(d, { from, to: clean(from + n * step), step, fractions });
+}
