@@ -111,7 +111,7 @@ export function Cheer({ text, small, stars, streak }: { text: string; small?: bo
  * before it, such as the clock's bar or how long the dots show); in a puzzle, `children` (the round's dots, the misses
  * so far), if any. What is not open yet is shown locked, with what opens it.
  */
-export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPuzzle, onEndless, onClock, onFree, words, g, pace, children }: {
+export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPuzzle, onEndless, onClock, onFree, words, g, pace, tools, children }: {
   ladder: Ladder<string>;
   mode: "puzzle" | "endless" | "free";
   stage: number;
@@ -127,6 +127,8 @@ export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPu
   words: { puzzle?: string; locked?: string; free?: string };
   g: GameWords;
   pace?: ReactNode;
+  /** The game's small switches, at the end of the puzzles' row. */
+  tools?: ReactNode;
   children?: ReactNode;
 }) {
   const { t } = useI18n();
@@ -171,6 +173,12 @@ export function GameNav({ ladder, mode, stage, level, streak, timed, marks, onPu
             </Toggle>
           )}
           <span className="est-streak">{pace}{fill(g.streak, { n: streak ?? 0, best: ladder.best })}</span>
+          {tools && <span className="geo-tools">{tools}</span>}
+        </div>
+      ) : tools ? (
+        <div className="geo-under">
+          {children}
+          <span className="geo-tools">{tools}</span>
         </div>
       ) : (
         children
@@ -233,8 +241,8 @@ export function SoundToggle({ title }: { title: string }) {
 export function CalmToggle({ label, title }: { label: string; title: string }) {
   const calm = useFeel() === "calm";
   return (
-    <Toggle on={calm} title={title} onClick={() => setFeel(calm ? "arcade" : "calm")}>
-      🌙 {label}
+    <Toggle on={calm} title={title} label={label} onClick={() => setFeel(calm ? "arcade" : "calm")}>
+      🌙
     </Toggle>
   );
 }

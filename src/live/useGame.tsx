@@ -275,6 +275,12 @@ export function GameHead({ game, g, words, pace, children }: {
       onFree={game.modes.includes("free") ? () => game.free() : undefined}
       words={words ?? {}}
       g={g}
+      tools={
+        <>
+          <SoundToggle title={g.sound} />
+          <CalmToggle label={g.calm} title={g.calmWhy} />
+        </>
+      }
       pace={
         <>
           {clock}
@@ -376,17 +382,19 @@ export function GameActions({ game, g, done, finished = true, rounds, always, on
   const d = game.state;
   const retry = d.mode === "puzzle" && finished && !passed(game.ladder.stars, d.stage);
   const back = game.back;
+  const own = (always || !done) && children;
+  const onwardShown = done && !isFinale(game, done && finished);
+  // Nothing to do here: no bar (the sound and calm switches are up in the puzzles' row).
+  if (!own && !onwardShown && !(!done && back) && !code) return null;
   return (
     <div className="live-bar">
-      {(always || !done) && children}
-      {done && !isFinale(game, done && finished) && <Onward mode={d.mode} stage={d.stage} size={game.size} rounds={rounds} finished={finished} retry={retry} onClick={onward ?? game.onward} g={g} />}
+      {own}
+      {onwardShown && <Onward mode={d.mode} stage={d.stage} size={game.size} rounds={rounds} finished={finished} retry={retry} onClick={onward ?? game.onward} g={g} />}
       {!done && back && (
         <button className="live-btn" title={g.stepBackWhy} onClick={() => game.drill(back)}>
           ↩ {g.stepBack}
         </button>
       )}
-      <SoundToggle title={g.sound} />
-      <CalmToggle label={g.calm} title={g.calmWhy} />
       {code && <CodeViewSwitch label={g.codeView} />}
       {code && <CodeNamesField label={g.codeNames} hint={g.codeNamesHint} />}
     </div>

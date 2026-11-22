@@ -765,6 +765,11 @@ input.invalid { border-color: var(--danger); }
 }
 .live svg { flex: none; touch-action: none; }
 .live-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; }
+/* A game's sound and calm switches, at the end of its puzzles' row. */
+.geo-under { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.geo-tools { display: inline-flex; gap: 2px; }
+.geo-tools .live-btn, .geo-tools .live-btn.on { padding: 1px 5px; font-size: 13px; background: transparent; border-color: transparent; }
+.geo-tools .live-btn[aria-pressed="false"] { opacity: 0.5; }
 .live-btn {
   font: inherit; font-size: 13px; padding: 4px 10px; border: 1px solid #ced4da; border-radius: 6px;
   background: #f8f9fa; color: inherit; cursor: pointer;
