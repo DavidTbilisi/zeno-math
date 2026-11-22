@@ -8,6 +8,7 @@ import { DOT_R, edgeOf, name, routeLength } from "../math/graphPlay";
 import { fewestRoads, PATH_LADDER, PATH_NOTICES, pathNotice, pathNow, pathStars, pathSvg, type LivePath } from "../math/shortestPath";
 import { starText } from "./ladderUi";
 import { fill, FONT, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LivePath> = { route: [], misses: 0, done: false, said: null };
@@ -45,6 +46,7 @@ export function ShortestPath({ state: d, set, w: words, svgRef }: PieceProps<"sh
     : d.done ? { tone: "ok", text: right }
     : d.said?.kind === "longer" ? { tone: "wrong", text: fill(d.said.fewest ? w.fewest : w.longer, { v: d.said.len, d: d.said.len - task.best }) }
     : { tone: "hint", text: arrived ? w.arrived : w.hint };
+  const row = d.done ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
@@ -52,19 +54,17 @@ export function ShortestPath({ state: d, set, w: words, svgRef }: PieceProps<"sh
       </GameHead>
       <Said line={{ tone: "prompt", text: fill(w.ask, { a: name(task.a), b: name(task.b) }) }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={pic.w} height={pic.h} viewBox={`0 0 ${pic.w} ${pic.h}`} fontFamily={FONT} role="group" aria-label={w.hint}>
-          <rect width={pic.w} height={pic.h} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={pic.w} height={pic.h + row} viewBox={`0 0 ${pic.w} ${pic.h + row}`} fontFamily={FONT} aria-label={w.hint}>
+          <rect width={pic.w} height={pic.h + row} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: pic.body }} />
           {task.g.pts.map(([x, y], v) => (
             <circle key={v} cx={x} cy={y} r={DOT_R + 8} fill="transparent" role="button" aria-label={name(v)} style={{ cursor: d.done ? "default" : "pointer" }} onClick={() => tap(v)} />
           ))}
+          {row > 0 && <CheckRow w={pic.w} y={pic.h} check={{ text: g.check, disabled: !arrived, onTap: check }} clear={{ text: g.clear, disabled: !d.route.length, onTap: () => set({ ...d, route: [], said: null }) }} />}
         </svg>
       </Stage>
       <p className="live-said info route-sum" aria-live="polite">{sum || " "}</p>
-      <GameActions game={game} g={g} done={d.done}>
-        <button className="live-btn on" disabled={!arrived} onClick={check}>{g.check}</button>
-        <button className="live-btn" disabled={!d.route.length} onClick={() => set({ ...d, route: [], said: null })}>{g.clear}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

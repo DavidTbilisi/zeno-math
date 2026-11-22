@@ -7,6 +7,7 @@
 import type { ReactNode } from "react";
 import { clashes, fold, isNet, NET_LADDER, NET_NOTICES, netNotice, netNow, netStars, PAIR_FILL, type Cell, type LiveCubeNet } from "../math/cubeNets";
 import { fill, FONT, INK, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 import { starText } from "./ladderUi";
 
@@ -92,6 +93,7 @@ export function CubeNet({ state: d, set, w: words, svgRef }: PieceProps<"cubeNet
       );
     });
   }
+  const row = d.done || board.level === 3 ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
@@ -99,14 +101,13 @@ export function CubeNet({ state: d, set, w: words, svgRef }: PieceProps<"cubeNet
       </GameHead>
       <Said line={{ tone: "prompt", text: hint }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="group" aria-label={hint}>
-          <rect width={W} height={H} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={W} height={H + row} viewBox={`0 0 ${W} ${H + row}`} fontFamily={FONT} aria-label={hint}>
+          <rect width={W} height={H + row} fill="#fff" />
           {body}
+          {row > 0 && <CheckRow w={W} y={H} check={{ text: g.check, onTap: check }} />}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        {board.level !== 3 && <button className="live-btn on" onClick={check}>{g.check}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

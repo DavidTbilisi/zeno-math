@@ -10,6 +10,7 @@ import { hourText } from "../math/dataGraphs";
 import { drawnOf, halves, lineGeom, MAKE_LADDER, MAKE_NOTICES, makeNotice, makeNow, makeStars, makeSvg, moveEnd, PIE_STEP, pieChildren, pieEnds, pieGeom, pictoGeom, slipAt, SLOTS, wrongParts, type LiveMakeDiagram } from "../math/makeDiagram";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveMakeDiagram> = { drawn: [], wrong: [], misses: 0, done: false, said: null };
@@ -123,6 +124,7 @@ export function MakeDiagram({ state: d, set, w: words, svgRef }: PieceProps<"mak
       return { label: s.icon, now: now[i], max: 360, x: x - 14, y: y - 14, w: 28, h: 28 };
     });
   })();
+  const row = d.done ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
@@ -135,8 +137,8 @@ export function MakeDiagram({ state: d, set, w: words, svgRef }: PieceProps<"mak
         ))}
       </p>
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={pic.w} height={pic.h} viewBox={`0 0 ${pic.w} ${pic.h}`} fontFamily={FONT} role="group" aria-label={w.hint[m.kind]} style={{ touchAction: "none" }} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
-          <rect width={pic.w} height={pic.h} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={pic.w} height={pic.h + row} viewBox={`0 0 ${pic.w} ${pic.h + row}`} fontFamily={FONT} aria-label={w.hint[m.kind]} style={{ touchAction: "none" }} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
+          <rect width={pic.w} height={pic.h + row} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: pic.body }} />
           {sliders.map((s, i) => (
             <rect
@@ -156,12 +158,10 @@ export function MakeDiagram({ state: d, set, w: words, svgRef }: PieceProps<"mak
               onKeyDown={key(i)}
             />
           ))}
+          {row > 0 && <CheckRow w={pic.w} y={pic.h} check={{ text: g.check, onTap: check }} clear={{ text: g.clear, disabled: !d.drawn.length, onTap: () => set({ ...d, drawn: [], wrong: [], said: null }) }} />}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        <button className="live-btn on" onClick={check}>{g.check}</button>
-        <button className="live-btn" disabled={!d.drawn.length} onClick={() => set({ ...d, drawn: [], wrong: [], said: null })}>{g.clear}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

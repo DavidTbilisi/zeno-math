@@ -7,6 +7,7 @@ import { encodeShade, judgeShade, piecesOf, SHADE_LADDER, SHADE_NOTICES, shadeNo
 import { starText } from "./ladderUi";
 import { ShadePieces } from "./ShadePieces";
 import { fill, FONT, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const SIZE = 300;
@@ -37,6 +38,7 @@ export function ShadeGame({ state: d, set, w: words, svgRef }: PieceProps<"shade
     : d.done ? { tone: "ok", text: done }
     : d.said?.kind === "wrong" ? { tone: "wrong", text: fill(w.wrong, { k: d.said.shaded }) }
     : { tone: "hint", text: fill(w.count, { k: d.shaded.length, p: task.play.pieces }) };
+  const row = d.done ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
@@ -44,15 +46,13 @@ export function ShadeGame({ state: d, set, w: words, svgRef }: PieceProps<"shade
       </GameHead>
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={box.w + 8} height={box.h + 8} viewBox={`-4 -4 ${box.w + 8} ${box.h + 8}`} fontFamily={FONT} role="group" aria-label={ask}>
-          <rect x={-4} y={-4} width={box.w + 8} height={box.h + 8} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={box.w + 8} height={box.h + 8 + row} viewBox={`-4 -4 ${box.w + 8} ${box.h + 8 + row}`} fontFamily={FONT} aria-label={ask}>
+          <rect x={-4} y={-4} width={box.w + 8} height={box.h + 8 + row} fill="#fff" />
           <ShadePieces pieces={piecesOf(task.play, SIZE)} shaded={d.shaded} onTap={tap} disabled={d.done} tone={d.done ? "right" : null} />
+          {row > 0 && <g transform="translate(-4 0)"><CheckRow w={box.w + 8} y={box.h + 8 - 4} check={{ text: g.check, disabled: !d.shaded.length, onTap: check }} clear={{ text: g.clear, disabled: !d.shaded.length, onTap: () => set({ ...d, shaded: [], said: null }) }} /></g>}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        <button className="live-btn" disabled={!d.shaded.length} onClick={() => set({ ...d, shaded: [], said: null })}>{g.clear}</button>
-        <button className="live-btn on" disabled={!d.shaded.length} onClick={check}>{g.check}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

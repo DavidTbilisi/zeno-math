@@ -8,6 +8,7 @@ import type { KeyboardEvent, PointerEvent } from "react";
 import { CHART_LADDER, CHART_NOTICES, chartGeom, chartNotice, chartNow, chartStars, chartSvg, chartTop, linesCounted, wrongBars, type LiveBarChart } from "../math/barChart";
 import { starText } from "./ladderUi";
 import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { CHECK_H, CheckRow } from "./hand";
 import { GameActions, GameHead, Said, Stage, Stake, useGame, type Line } from "./useGame";
 
 const GAP = 28;
@@ -52,6 +53,7 @@ export function BarChart({ state: d, set, w: words, svgRef }: PieceProps<"barCha
     : slip ? { tone: "wrong", text: fill(w.lines, { s: task.step, f: slip.icon, h: slip.v * task.step, v: slip.v }) }
     : d.said?.kind === "wrong" ? { tone: "wrong", text: fill(w.wrong, { n: d.wrong.length }) }
     : { tone: "hint", text: w.hint };
+  const row = d.done ? 0 : CHECK_H;
   return (
     <>
       <GameHead game={game} g={g}>
@@ -63,8 +65,8 @@ export function BarChart({ state: d, set, w: words, svgRef }: PieceProps<"barCha
         ))}
       </p>
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={pic.w} height={pic.h} viewBox={`0 0 ${pic.w} ${pic.h}`} fontFamily={FONT} role="group" aria-label={w.hint} style={{ touchAction: "none" }} onPointerDown={tap}>
-          <rect width={pic.w} height={pic.h} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={pic.w} height={pic.h + row} viewBox={`0 0 ${pic.w} ${pic.h + row}`} fontFamily={FONT} aria-label={w.hint} style={{ touchAction: "none" }} onPointerDown={tap}>
+          <rect width={pic.w} height={pic.h + row} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: pic.body }} />
           {task.items.map((it, k) => (
             <rect
@@ -84,12 +86,10 @@ export function BarChart({ state: d, set, w: words, svgRef }: PieceProps<"barCha
               onKeyDown={key(k)}
             />
           ))}
+          {row > 0 && <CheckRow w={pic.w} y={pic.h} check={{ text: g.check, onTap: check }} clear={{ text: g.clear, disabled: bars.every((b) => !b), onTap: () => set({ ...d, bars: [], wrong: [], said: null }) }} />}
         </svg>
       </Stage>
-      <GameActions game={game} g={g} done={d.done}>
-        <button className="live-btn on" onClick={check}>{g.check}</button>
-        <button className="live-btn" disabled={bars.every((b) => !b)} onClick={() => set({ ...d, bars: [], wrong: [], said: null })}>{g.clear}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

@@ -98,6 +98,28 @@ export function Pill({ x, y, w, h = 30, text, onTap, strong, on, title, disabled
   );
 }
 
+/** How much taller a game's picture grows for its CheckRow. */
+export const CHECK_H = 50;
+type RowPill = { text: string; onTap: () => void; disabled?: boolean };
+
+/**
+ * A game's ✓ Check pill, with a 🗑 Clear pill before it when given, along the bottom of its picture: from `y`, CHECK_H
+ * tall, centred on a picture `w` wide. The row's own strip keeps a tap beside the pills from reaching the picture.
+ */
+export function CheckRow({ w, y, check, clear }: { w: number; y: number; check: RowPill; clear?: RowPill }) {
+  const pw = (s: string) => 34 + [...s].length * 8.6;
+  const [ct, kt] = [clear ? `🗑 ${clear.text}` : "", `✓ ${check.text}`];
+  const lead = clear ? pw(ct) + 12 : 0;
+  const x0 = (w - lead - pw(kt)) / 2;
+  return (
+    <g>
+      <rect x={0} y={y} width={w} height={CHECK_H} fill="transparent" onPointerDown={(e) => e.stopPropagation()} />
+      {clear && <Pill x={x0} y={y + 10} w={pw(ct)} text={ct} title={clear.text} disabled={clear.disabled} onTap={clear.onTap} />}
+      <Pill x={x0 + lead} y={y + 10} w={pw(kt)} text={kt} title={check.text} strong disabled={check.disabled} onTap={check.onTap} />
+    </g>
+  );
+}
+
 /** A row of pills, one of them on: tabs for a piece's ways of working. Returns the width it took. */
 export function Tabs<K extends string>({ x, y, keys, on, names, onPick, gap = 6, size = 14 }: {
   x: number; y: number; keys: readonly K[]; on: K; names: Record<K, string>; onPick: (k: K) => void; gap?: number; size?: number;
