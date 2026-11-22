@@ -3,17 +3,21 @@
 // answered with the multiplication or the subtraction that shows why. With blocks (small whole numbers), the pupil
 // shares hundreds, tens and ones into the groups by hand, and the working fills in as each place is shared out.
 // The special cases are named under the working (0 ÷ n, n ÷ 1, n ÷ n), and n ÷ 0 shows why it has no working at all.
-import { useMemo, useState } from "react";
-import { DIVISION_STYLES, divisionStepCount, planDivision, renderDivision, type DivisionSpec } from "../math/division";
+// Worked by hand: the numbers are digit wheels (one more, faded, on the left for a longer number), the decimal places a
+// wheel and the layouts pills; a tap on the working takes the next step and the steps under it are a track to drag
+// along; with "Your turn" the next digit is tapped from a row of tiles (or typed).
+import { useMemo, useState, type KeyboardEvent } from "react";
+import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, planDivision, renderDivision, type DivisionSpec } from "../math/division";
 import { blocksFit } from "../math/divisionBlocks";
 import { divisionAsk, divisionCase, divisionNumbers, judgeDigit, type LiveDivision } from "../math/live";
 import { shareStatus, sharingAt, stepsShared } from "../math/sharing";
 import { SharingBoard } from "./SharingBoard";
-import { fill, FONT, INK, Stepper, Toggle, type PieceProps } from "./ui";
+import { BLUE, keyTap, NumBox, Pill, Tabs, useDrag } from "./hand";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 
 // The room the working has in the piece (less beside the blocks); it is scaled to fit, the same scale at every step.
 const PW = 740;
-const PH = { alone: 620, blocks: 330 };
+const PH = { alone: 340, blocks: 240 };
 const NOTE_H = 50; // the stage gives up this much when a special case is named under it
 
 const specOf = (d: LiveDivision, step: number): DivisionSpec => ({ type: "division", style: d.style, a: d.a, b: d.b, decimals: d.decimals, step });
@@ -23,32 +27,49 @@ export function LongDivision(props: PieceProps<"division">) {
   return props.state.b === 0 ? <ByZero {...props} /> : <Working {...props} />;
 }
 
-/** The numbers to divide, the decimal places and the layout: the same bar whatever the numbers are. */
-function NumberBar({ state: d, set, w }: PieceProps<"division">) {
+const WHEEL = 34;
+const HEAD_H = 100;
+/** The step track under the working: its two ends, and the row of digit tiles under it for "Your turn". */
+const TRACK = { x0: 130, x1: PW - 12, y: 22 };
+const TILE = 44;
+
+/** A number as a wheel for each digit, and a faded one on its left for one digit more (up to `most` digits). */
+function digitWheels(x: number, y: number, value: number, most: number, what: string, word: string, onChange: (v: number) => void) {
+  const len = String(value).length;
+  const places = len + (len < most ? 1 : 0);
+  const out = Array.from({ length: places }, (_, i) => {
+    const p = 10 ** (places - 1 - i);
+    const digit = Math.floor(value / p) % 10;
+    const lead = i === 0 && places > len;
+    return (
+      <NumBox key={p} x={x + i * (WHEEL + 3)} y={y} w={WHEEL} h={44} size={20} value={digit} min={0} max={9}
+        label={fill(word, { what, place: p })} show={(v) => (lead && !v ? "·" : `${v}`)} onChange={(v) => onChange(value + (v - digit) * p)} />
+    );
+  });
+  return { wheels: out, end: x + places * (WHEEL + 3) };
+}
+
+/** The numbers to divide, the decimal places and the layout, and the two ways of working: the same whatever the numbers are. */
+function Head({ state: d, set, w, hands, fits }: PieceProps<"division"> & { hands: boolean; fits: boolean }) {
   const wd = w.division;
   const numbers = (patch: Partial<LiveDivision>) => set({ ...d, ...divisionNumbers({ ...d, ...patch }), step: 0, share: null });
-  const number = (key: "a" | "b", label: string) => (
-    <input
-      className="live-num"
-      key={`${key}${d[key]}`}
-      type="number"
-      defaultValue={d[key]}
-      aria-label={label}
-      onBlur={(e) => Number(e.target.value) !== d[key] && numbers({ [key]: Number(e.target.value) })}
-      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-    />
-  );
+  const A = digitWheels(0, 6, d.a, String(DIVISION_LIMITS.a).length, wd.dividend, wd.digit, (a) => numbers({ a }));
+  const B = digitWheels(A.end + 32, 6, d.b, String(DIVISION_LIMITS.b).length, wd.divisor, wd.digit, (b) => numbers({ b }));
+  const tabsW = DIVISION_STYLES.reduce((s, k) => s + Math.max(60, wd.styles[k].length * 13 * 0.6 + 24) + 6, 0);
   return (
-    <div className="live-bar">
-      {number("a", wd.dividend)}
-      <b>{d.style === "corner" ? ":" : "÷"}</b>
-      {number("b", wd.divisor)}
-      <span className="live-note">{wd.decimals}</span>
-      <Stepper value={d.decimals} min={0} max={10} onChange={(v) => numbers({ decimals: v })} less="−" more="+" />
-      {DIVISION_STYLES.map((s) => (
-        <Toggle key={s} on={d.style === s} onClick={() => set({ ...d, style: s })}>{wd.styles[s]}</Toggle>
-      ))}
-    </div>
+    <svg className="hand-pic" width={PW} height={HEAD_H} viewBox={`0 0 ${PW} ${HEAD_H}`} fontFamily={FONT} style={{ touchAction: "none", userSelect: "none" }}>
+      {A.wheels}
+      <text x={A.end + 13} y={36} fontSize={26} fontWeight={700} textAnchor="middle" fill={INK}>{d.style === "corner" ? ":" : "÷"}</text>
+      {B.wheels}
+      <text x={PW - 60} y={34} fontSize={13} textAnchor="end" fill={INK}>{wd.decimals}</text>
+      <NumBox x={PW - 52} y={6} w={52} h={44} size={20} value={d.decimals} min={0} max={DIVISION_LIMITS.decimals} label={wd.decimals}
+        onChange={(v) => numbers({ decimals: v })} />
+      <Tabs x={0} y={62} keys={DIVISION_STYLES} on={d.style} names={wd.styles} size={13} onPick={(s) => set({ ...d, style: s })} />
+      <Pill x={tabsW + 14} y={62} w={140} h={28} size={13} text={`✋ ${wd.turn}`} title={wd.turn} on={d.turn && !hands} disabled={hands}
+        onTap={() => set({ ...d, turn: !d.turn })} />
+      <Pill x={tabsW + 162} y={62} w={110} h={28} size={13} text={`🧱 ${wd.blocks}`} title={fits ? wd.blocks : wd.blocksOff} on={hands} disabled={!fits}
+        onTap={() => set({ ...d, blocks: !d.blocks, share: null })} />
+    </svg>
   );
 }
 
@@ -59,8 +80,8 @@ function ByZero(props: PieceProps<"division">) {
   const [sw, sh] = [PW, 300];
   return (
     <>
-      <NumberBar {...props} />
-      <div className="live-stage" style={{ width: PW, height: PH.alone - NOTE_H }}>
+      <Head {...props} hands={false} fits={false} />
+      <div className="live-stage" style={{ width: PW, height: 300 }}>
         <svg ref={svgRef} width={sw} height={sh} viewBox={`0 0 ${sw} ${sh}`}>
           <rect width={sw} height={sh} fill="#fff" />
           <text x={sw / 2} y={130} fontFamily="Consolas, 'Courier New', monospace" fontSize={64} textAnchor="middle" fill={INK}>
@@ -70,6 +91,7 @@ function ByZero(props: PieceProps<"division">) {
         </svg>
       </div>
       <p className="live-said info"><b>{fill(wd.cases.byZero.rule, { a: d.a })}</b> {wd.cases.byZero.why}</p>
+      <p className="live-hint">{wd.hint}</p>
     </>
   );
 }
@@ -114,12 +136,32 @@ function Working(props: PieceProps<"division">) {
     } else setSaid({ step: k, text: fill(wd[verdict], { g, b: ask.b, p, cur: ask.cur, r: ask.cur - p }), ok: false });
   };
   const status = share && shareStatus(share);
+  const trackX = (i: number) => TRACK.x0 + (n ? (i / n) * (TRACK.x1 - TRACK.x0) : 0);
+  const stepAt = (x: number) => Math.round(((x - TRACK.x0) / (TRACK.x1 - TRACK.x0)) * n);
+  const { drag, begin, svgProps } = useDrag<object>((h) => !h.moved && go(stepAt(h.x)), (h) => h.moved && stepAt(h.x) !== k && go(stepAt(h.x)));
+  const trackKey = (e: KeyboardEvent) => {
+    const to = { ArrowRight: k + 1, ArrowUp: k + 1, ArrowLeft: k - 1, ArrowDown: k - 1, Home: 0, End: n }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    go(to);
+  };
+  const tapWorking = () => !ask && k < n && go(k + 1);
+  const typeDigit = (e: KeyboardEvent) => {
+    if (ask && /^[0-9]$/.test(e.key)) {
+      // The board's own keys are digits too (its tools): this one is an answer, not a tool.
+      e.preventDefault();
+      e.stopPropagation();
+      return guess(Number(e.key));
+    }
+    keyTap(e, tapWorking);
+  };
   const place = (p: "h" | "t" | "o") => wd.places[p];
 
   return (
     <>
-      <NumberBar {...props} />
-      <div className="live-stage" style={{ width: PW, height: ph }}>
+      <Head {...props} hands={hands} fits={fits} />
+      <div className="live-stage" style={{ width: PW, height: box.h * box.s, cursor: !ask && k < n ? "pointer" : undefined }} role="button" tabIndex={0}
+        aria-label={wd.next} aria-disabled={!!ask || k >= n} onClick={tapWorking} onKeyDown={typeDigit}>
         <svg ref={svgRef} width={box.w * box.s} height={box.h * box.s} viewBox={`0 0 ${box.w} ${box.h}`}>
           <rect width={box.w} height={box.h} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: inner(pic.svg) }} />
@@ -129,15 +171,32 @@ function Working(props: PieceProps<"division">) {
         <p className="live-said info"><b>{fill(wd.cases[special].rule, { a, b })}</b> {wd.cases[special].why}</p>
       )}
       {share && <SharingBoard share={share} onChange={(s) => set({ ...d, share: s })} change={wd.change} />}
-      <div className="live-bar">
-        <button className="live-btn" disabled={k === 0} title={wd.first} aria-label={wd.first} onClick={() => go(0)}>⏮</button>
-        <button className="live-btn" disabled={k === 0} title={wd.prev} aria-label={wd.prev} onClick={() => go(k - 1)}>◀</button>
-        <span className="live-note">{fill(wd.step, { k, n })}</span>
-        <button className="live-btn" disabled={k >= n} title={wd.next} aria-label={wd.next} onClick={() => go(k + 1)}>▶</button>
-        <button className="live-btn" disabled={k >= n} title={wd.all} aria-label={wd.all} onClick={() => go(n)}>⏭</button>
-        {!hands && <Toggle on={d.turn} onClick={() => set({ ...d, turn: !d.turn })}>✋ {wd.turn}</Toggle>}
-        <Toggle on={hands} title={fits ? undefined : wd.blocksOff} onClick={() => fits && set({ ...d, blocks: !d.blocks, share: null })}>🧱 {wd.blocks}</Toggle>
-      </div>
+      <svg className="hand-pic" width={PW} height={ask ? 112 : 44} viewBox={`0 0 ${PW} ${ask ? 112 : 44}`} fontFamily={FONT} {...svgProps}
+        style={{ touchAction: "none", userSelect: "none" }}>
+        <text x={0} y={TRACK.y + 5} fontSize={14} fill="#495057">{fill(wd.step, { k, n })}</text>
+        <g role="slider" tabIndex={0} aria-label={wd.steps} aria-valuemin={0} aria-valuemax={n} aria-valuenow={k} onKeyDown={trackKey}
+          style={{ cursor: "ew-resize" }} onPointerDown={(e) => begin(e, {})}>
+          <rect x={TRACK.x0 - 12} y={TRACK.y - 16} width={TRACK.x1 - TRACK.x0 + 24} height={32} fill="transparent" />
+          <line x1={TRACK.x0} y1={TRACK.y} x2={TRACK.x1} y2={TRACK.y} stroke="#dee2e6" strokeWidth={6} strokeLinecap="round" />
+          <line x1={TRACK.x0} y1={TRACK.y} x2={trackX(k)} y2={TRACK.y} stroke="#a5d8ff" strokeWidth={6} strokeLinecap="round" />
+          {n <= 60 && Array.from({ length: n + 1 }, (_, i) => (
+            <circle key={i} cx={trackX(i)} cy={TRACK.y} r={2.5} fill={i <= k ? BLUE : "#adb5bd"} pointerEvents="none" />
+          ))}
+          <circle cx={trackX(k)} cy={TRACK.y} r={drag ? 12 : 10} fill={BLUE} stroke="#fff" strokeWidth={2} pointerEvents="none" />
+        </g>
+        {ask && (
+          <g>
+            <text x={0} y={TRACK.y + 46} fontSize={15} fontWeight={700} fill={INK}>{fill(wd.ask, { b: ask.b, cur: ask.cur })}</text>
+            {Array.from({ length: 10 }, (_, g) => (
+              <g key={g} role="button" tabIndex={0} aria-label={`${g}`} style={{ cursor: "pointer" }} onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => guess(g)} onKeyDown={(e) => keyTap(e, () => guess(g))}>
+                <rect x={g * (TILE + 6)} y={TRACK.y + 56} width={TILE} height={TILE - 12} rx={7} fill="#fff9db" stroke="#e67700" />
+                <text x={g * (TILE + 6) + TILE / 2} y={TRACK.y + 79} fontSize={20} fontWeight={700} textAnchor="middle" fill={INK} pointerEvents="none">{g}</text>
+              </g>
+            ))}
+          </g>
+        )}
+      </svg>
       {status ? (
         <p className={`live-said${status.kind === "done" ? " ok" : " info"}`}>
           {status.kind === "unfair"
@@ -148,19 +207,11 @@ function Working(props: PieceProps<"division">) {
                 ? fill(wd.trade, { n: status.n, place: place(status.place), b })
                 : fill(status.left ? wd.shared : wd.sharedExact, { each: status.each, left: status.left })}
         </p>
-      ) : ask ? (
-        <div className="live-bar">
-          <span>{fill(wd.ask, { b: ask.b, cur: ask.cur })}</span>
-          <span className="live-digits">
-            {Array.from({ length: 10 }, (_, g) => (
-              <button key={g} className="live-btn" onClick={() => guess(g)}>{g}</button>
-            ))}
-          </span>
-        </div>
       ) : (
         d.turn && k >= n && <p className="live-hint">{wd.done}</p>
       )}
       {!hands && said && said.step === k && <p className={`live-said${said.ok ? " ok" : ""}`}>{said.text}</p>}
+      <p className="live-hint">{wd.hint}</p>
     </>
   );
 }
