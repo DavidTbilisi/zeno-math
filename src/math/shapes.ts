@@ -876,6 +876,13 @@ function foldStripPreview(): Piece[] {
   return [...out, rect(0, 0, 160, 46, { width: 2 }), text(80, 76, "2/3 = 4/6", 18)];
 }
 
+function fitTilesPreview(): Piece[] {
+  // A 3/4 bar with 1/3 tiles laid under it: two whole, the third cut at the bar's end.
+  const out: Piece[] = [rect(0, 0, 150, 30, { fill: FILL.red, width: 2 })];
+  for (let i = 0; i < 3; i++) out.push(rect(i * 66.7, 38, 66.7, 30, { fill: FILL.green, width: 1.5, dashed: i === 2 }));
+  return [...out, seg([150, -6], [150, 74], { width: 2, dashed: true }), text(100, 96, "3/4 ÷ 1/3 = 2¼", 16)];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2040,6 +2047,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveShadeFrac", build: shadeFracPreview, live: "shadeFrac" },
   { id: "liveStripes", build: stripesPreview, live: "stripes" },
   { id: "liveFoldStrip", build: foldStripPreview, live: "foldStrip" },
+  { id: "liveFitTiles", build: fitTilesPreview, live: "fitTiles" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },
