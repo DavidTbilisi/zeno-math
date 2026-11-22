@@ -6881,7 +6881,8 @@ export const en = {
     colourMap: {
       ask: "Colour every vertex with {k} colours so that no edge joins two of the same colour.",
       askFewest: "Colour every vertex so that no edge joins two of the same colour, with as few colours as you can.",
-      hint: "Pick a colour, then tap the vertices to give it to them.",
+      hint: "Drag a paint pot onto a vertex to paint it, or tap a pot and then the vertices. Drag a vertex into the bin to take its colour off.",
+      clearTitle: "Tap to clear every colour; drop a vertex here to clear its own",
       pen: "Colours",
       colour: "Colour {n}",
       left: "Vertices left to colour: {n}.",
