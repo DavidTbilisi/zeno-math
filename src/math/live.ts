@@ -625,7 +625,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   cards: [690, 610],
   compare: [380, 530],
   compareFractions: [400, 640],
-  division: [760, 820],
+  division: [760, 640],
   rubik: [780, 1000],
   soroban: [820, 640],
   patterns: [800, 600],
