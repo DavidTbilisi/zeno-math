@@ -5719,7 +5719,7 @@ export const en = {
     quickLook: {
       puzzle: "Round {n}",
       locked: "Get two stars in the round before to open this one",
-      ready: "Press Look: the dots show for a moment, then hide.",
+      ready: "Tap the card: the dots show for a moment, then hide.",
       look: "Look!",
       lookAgain: "Look again",
       peek: "Looking again caps the round at two stars",

@@ -2,13 +2,18 @@
 // flashes (up to 6, up to 10 as frames, dice and groups, then up to 20) earn stars for how many were right, a second
 // look capping them at two; the endless run's flash gets an eighth shorter with every right answer in the streak.
 // After each answer the dots come back coloured by group, so 7 can be seen as 4 and 3. Built on the game shell
-// (useGame): a right answer is a step, a wrong one a miss, and the fifth of a round finishes it.
+// (useGame): a right answer is a step, a wrong one a miss, and the fifth of a round finishes it. Worked by hand: the
+// card is tapped to look (and, in a round, to look again), and the number tiles under it are tapped to answer.
 import { useEffect, useRef } from "react";
 import { dotsHeight, dotsSvg, FLASH_MS, flashFor, LOOK_LADDER, LOOK_NOTICES, LOOK_W, lookNotice, lookNow, lookStars, padMax, ROUND, type LiveQuickLook } from "../math/quickLook";
 import { newSeed, RoundDots, starText } from "./ladderUi";
-import { fill, FONT, type PieceProps } from "./ui";
+import { BLUE, GREEN, keyTap, RED } from "./hand";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
+/** The number tiles under the card: up to ten a row. */
+const [TILE, GAP, PAD_Y] = [28, 4, 250];
+const VH = PAD_Y + 2 * (TILE + GAP) + 4;
 const FRESH: Partial<LiveQuickLook> = { i: 0, results: [], phase: "ready", answer: null, relooked: false, said: null };
 
 export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quickLook">) {
@@ -53,6 +58,10 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
   };
 
   const h = dotsHeight(task);
+  const max = padMax(level);
+  // The card is tapped to look, and (in a round, the dots hidden) to look again, which caps the round at two stars.
+  const canLook = d.phase === "ready" || (d.mode === "puzzle" && d.phase === "answer");
+  const tapCard = () => canLook && look(d.phase === "ready" ? d : { ...d, relooked: true });
   const shown = d.phase === "look" || d.phase === "shown";
   const right = d.phase === "shown" && d.answer === task.n;
   const notice = d.said?.kind === "notice" ? w.notices[d.said.key] : null;
@@ -69,28 +78,41 @@ export function QuickLook({ state: d, set, w: words, svgRef }: PieceProps<"quick
         <RoundDots results={d.results} i={d.i} size={ROUND} />
       </GameHead>
       <Stage game={game} stars={stars} done={roundDone} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={480} height={360} viewBox={`0 0 ${LOOK_W} 240`} fontFamily={FONT} role="img" aria-label={w.howMany}>
-          <rect x={1} y={1} width={LOOK_W - 2} height={238} rx={12} fill={shown ? "#fff" : "#f1f3f5"} stroke="#dee2e6" strokeWidth={2} />
-          {shown ? (
-            <g transform={`translate(0 ${(240 - h) / 2})`} dangerouslySetInnerHTML={{ __html: dotsSvg(task, d.phase === "shown") }} />
-          ) : (
-            <text x={LOOK_W / 2} y={140} fontSize={60} textAnchor="middle" fill="#adb5bd">{d.phase === "ready" ? "👀" : "?"}</text>
-          )}
+        <svg ref={svgRef} width={480} height={(480 * VH) / LOOK_W} viewBox={`0 0 ${LOOK_W} ${VH}`} fontFamily={FONT} className="hand-pic" aria-label={w.howMany}>
+          <rect width={LOOK_W} height={VH} fill="#fff" />
+          <g role={canLook ? "button" : undefined} tabIndex={canLook ? 0 : undefined} aria-label={canLook ? (d.phase === "ready" ? w.look : `${w.lookAgain}: ${w.peek}`) : undefined}
+            style={{ cursor: canLook ? "pointer" : "default" }} onClick={tapCard} onKeyDown={(e) => keyTap(e, tapCard)}>
+            {canLook && d.phase === "answer" && <title>{w.peek}</title>}
+            <rect x={1} y={1} width={LOOK_W - 2} height={238} rx={12} fill={shown ? "#fff" : d.phase === "ready" ? "#e7f5ff" : "#f1f3f5"} stroke={d.phase === "ready" ? BLUE : "#dee2e6"} strokeWidth={2} />
+            {shown ? (
+              <g transform={`translate(0 ${(240 - h) / 2})`} dangerouslySetInnerHTML={{ __html: dotsSvg(task, d.phase === "shown") }} />
+            ) : (
+              <>
+                <text x={LOOK_W / 2} y={140} fontSize={60} textAnchor="middle" fill="#adb5bd">{d.phase === "ready" ? "👀" : "?"}</text>
+                {d.phase === "ready" && <text x={LOOK_W / 2} y={190} fontSize={16} fontWeight={700} textAnchor="middle" fill={BLUE}>{w.look}</text>}
+                {d.phase === "answer" && d.mode === "puzzle" && <text x={LOOK_W / 2} y={190} fontSize={12} textAnchor="middle" fill="#868e96">👀 {w.lookAgain}</text>}
+              </>
+            )}
+          </g>
+          {Array.from({ length: max }, (_, k) => {
+            const n = k + 1;
+            const per = Math.min(10, max);
+            const [col, row] = [k % per, Math.floor(k / per)];
+            const x = (LOOK_W - per * TILE - (per - 1) * GAP) / 2 + col * (TILE + GAP);
+            const y = PAD_Y + row * (TILE + GAP);
+            const live = d.phase === "answer";
+            const mark = d.phase === "shown" && n === task.n ? GREEN : d.phase === "shown" && n === d.answer ? RED : null;
+            return (
+              <g key={n} role="button" tabIndex={live ? 0 : -1} aria-label={String(n)} aria-disabled={!live || undefined} opacity={live || mark ? 1 : 0.35}
+                style={{ cursor: live ? "pointer" : "default" }} onClick={() => answer(n)} onKeyDown={(e) => keyTap(e, () => answer(n))}>
+                <rect x={x} y={y} width={TILE} height={TILE} rx={6} fill={mark === GREEN ? "#ebfbee" : mark === RED ? "#fff5f5" : "#f8f9fa"} stroke={mark ?? "#adb5bd"} strokeWidth={mark ? 2 : 1} />
+                <text x={x + TILE / 2} y={y + TILE / 2 + 5} fontSize={14} fontWeight={700} textAnchor="middle" fill={INK} pointerEvents="none">{n}</text>
+              </g>
+            );
+          })}
         </svg>
       </Stage>
-      {d.phase === "answer" && (
-        <div className="live-bar look-pad">
-          {Array.from({ length: padMax(level) }, (_, k) => (
-            <button key={k} className="live-btn" onClick={() => answer(k + 1)}>{k + 1}</button>
-          ))}
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.phase === "shown"} finished={roundDone} rounds onward={onward} always>
-        {d.phase === "ready" && <button className="live-btn on look-go" onClick={() => look(d)}>👀 {w.look}</button>}
-        {d.mode === "puzzle" && d.phase === "answer" && (
-          <button className="live-btn" title={w.peek} onClick={() => look({ ...d, relooked: true })}>👀 {w.lookAgain}</button>
-        )}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.phase === "shown"} finished={roundDone} rounds onward={onward} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

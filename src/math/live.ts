@@ -634,7 +634,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   numberLine: [800, 440],
   geoboard: [600, 700],
   estimate: [720, 390],
-  quickLook: [620, 580],
+  quickLook: [620, 700],
   target: [640, 430],
   closerTo: [640, 520],
   divisible: [600, 510],
