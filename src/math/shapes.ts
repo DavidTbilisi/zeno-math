@@ -861,6 +861,14 @@ function shadeFracPreview(): Piece[] {
   return [...out, text(160, 50, "3/4", 22)];
 }
 
+function stripesPreview(): Piece[] {
+  // 2/3 × 3/4: a square in thirds down and quarters across, the six cells shaded both ways in violet.
+  const out: Piece[] = [];
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 4; j++) out.push(rect(i * 40, j * 30, 40, 30, { fill: i < 2 && j < 3 ? FILL.violet : i < 2 ? FILL.blue : j < 3 ? FILL.red : "#ffffff", width: 1.5 }));
+  return [...out, text(190, 64, "6/12", 22)];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2023,6 +2031,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveEquivMatch", build: equivMatchPreview, live: "equivMatch" },
   { id: "liveFracOrder", build: fracOrderPreview, live: "fracOrder" },
   { id: "liveShadeFrac", build: shadeFracPreview, live: "shadeFrac" },
+  { id: "liveStripes", build: stripesPreview, live: "stripes" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
   { id: "liveGrowing", build: growingPreview, live: "growing" },

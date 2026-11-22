@@ -255,6 +255,7 @@ export const MENUS: MenuGroup[] = [
           { live: "fractionWall", icon: "▤" },
           { live: "equivMatch", icon: "🃏" },
           { live: "fracOrder", icon: "⇢" },
+          { live: "stripes", icon: "▦" },
         ],
       },
       {
