@@ -3,16 +3,19 @@
 // Each row down the answer moves by the same step, so the dots stay on one straight line, and the line can't bend at
 // 0: past it, the products of two negatives come out above the axis. A wrong tap is drawn orange with a hint, and
 // from then on the line through the dots so far is carried on, dashed, to follow. The rows are in src/math/signs.ts;
-// `PatternPicture` is the small graph the turning arrow's Why? steps show.
-import type { PointerEvent } from "react";
+// `PatternPicture` is the small graph the turning arrow's Why? steps show. Worked by hand: the dot is pressed onto the
+// graph and dragged up or down the yellow column, and put in where it is let go; b is a wheel at the top.
+import { useState, type KeyboardEvent } from "react";
 import {
   factor, num, PATTERN_AS, PATTERN_GIVEN, PATTERN_Y, patternJump, patternKnown, patternRow, patternSlip, patternTap,
   SIGN_PATTERN_START, SIGN_RANGE, stepPast0,
 } from "../math/signs";
-import { fill, FONT, INK, Stepper, svgPoint, type PieceProps } from "./ui";
+import { NumBox, Pill, useDrag } from "./hand";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 
 const W = 640;
-const TOP = 26;
+/** Under the wheel for b and "Start again". */
+const TOP = 80;
 const CELL_Y = 15;
 const COL = 50;
 const G_LEFT = 262;
@@ -56,12 +59,28 @@ export function SignPattern({ state: d, set, w: words, svgRef }: PieceProps<"sig
   const n = Math.abs(b);
   const last = known[known.length - 1];
 
-  const tap = (e: PointerEvent<SVGSVGElement>) => {
+  /** The answer at a height on the graph, kept to the graph. */
+  const yAt = (py: number) => Math.max(-PATTERN_Y, Math.min(PATTERN_Y, Math.round((Y0 - py) / CELL_Y)));
+  const { drag, begin, svgProps } = useDrag<object>((h) => row !== null && set(patternTap(d, yAt(h.y))));
+  /** The dot moved from the keyboard, before Enter puts it in. */
+  const [keyY, setKeyY] = useState<number | null>(null);
+  const key = (e: KeyboardEvent) => {
     if (row === null) return;
-    const [, py] = svgPoint(e.currentTarget, e);
-    const y = Math.round((Y0 - py) / CELL_Y);
-    if (Math.abs(y) > PATTERN_Y) return;
-    set(patternTap(d, y));
+    const at = keyY ?? last[1];
+    const by = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[e.key];
+    if (by) {
+      e.preventDefault();
+      setKeyY(Math.max(-PATTERN_Y, Math.min(PATTERN_Y, at + by)));
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      set(patternTap(d, at));
+      setKeyY(null);
+    }
+  };
+  const ghost = row === null ? null : drag ? yAt(drag.y) : keyY;
+  const restart = (nb: number) => {
+    setKeyY(null);
+    set({ ...SIGN_PATTERN_START, b: nb });
   };
 
   const ask = row === null ? "" : rowText(PATTERN_AS[row], b);
@@ -83,74 +102,98 @@ export function SignPattern({ state: d, set, w: words, svgRef }: PieceProps<"sig
 
   const lineFrom = known[0];
   const dashed = row !== null && d.misses > 0;
+  const drawing = (live: boolean) => (
+    <>
+    {/* The table: a, a × b, and the jump from each row to the next. */}
+    <text x={T_LEFT} y={TOP + 4} fontSize={14} fill="#868e96">{w.table}</text>
+    {PATTERN_AS.map((a, i) => {
+      const y = TOP + 32 + i * ROW_H;
+      const isKnown = i < known.length;
+      const isNow = i === row;
+      const neg = a < 0;
+      return (
+        <g key={a}>
+          {live && isNow && <rect x={T_LEFT - 8} y={y - 24} width={214} height={36} rx={6} fill="#fff3bf" />}
+          <text x={T_LEFT} y={y} fontSize={20} fontWeight={isNow ? 700 : 400} fill={isKnown || isNow ? (neg && isKnown ? GREEN : INK) : "#adb5bd"}>
+            {rowText(a, b)} = {isKnown ? num(a * b) : "?"}
+          </text>
+          {i > 0 && i < known.length && (
+            <text x={T_LEFT + 196} y={y - ROW_H / 2 + 4} fontSize={13} fontWeight={700} textAnchor="end" fill={BLUE}>{up ? "+" : "−"}{n}</text>
+          )}
+        </g>
+      );
+    })}
+    {/* The graph: a column for each a, a × b up the side. */}
+    <rect x={G_LEFT} y={TOP} width={7 * COL} height={G_H} fill="#f8f9fa" stroke="#dee2e6" />
+    {live && row !== null && <rect x={gx(PATTERN_AS[row]) - COL / 2} y={TOP} width={COL} height={G_H} fill="#fff3bf" />}
+    {Array.from({ length: 2 * PATTERN_Y + 1 }, (_, k) => k - PATTERN_Y).map((y) => (
+      <g key={y}>
+        <line x1={G_LEFT} y1={gy(y)} x2={G_LEFT + 7 * COL} y2={gy(y)} stroke={y === 0 ? "#495057" : "#e9ecef"} strokeWidth={y === 0 ? 2 : 1} />
+        {y % 2 === 0 && <text x={G_LEFT - 6} y={gy(y) + 4} fontSize={11} textAnchor="end" fill="#868e96">{num(y)}</text>}
+      </g>
+    ))}
+    <line x1={X0} y1={TOP} x2={X0} y2={TOP + G_H} stroke="#495057" strokeWidth={2} />
+    {PATTERN_AS.map((a) => (
+      <text key={a} x={gx(a)} y={TOP + G_H + 18} fontSize={13} textAnchor="middle" fill="#495057">{num(a)}</text>
+    ))}
+    <text x={G_LEFT + 7 * COL} y={TOP + G_H + 34} fontSize={12} textAnchor="end" fill="#868e96">a</text>
+    <text x={G_LEFT + 4} y={TOP - 8} fontSize={12} fill="#868e96">a × {factor(b)}</text>
+    {dashed && (
+      <line x1={gx(-3.5)} y1={gy(-3.5 * b)} x2={gx(3.5)} y2={gy(3.5 * b)} stroke={BLUE} strokeWidth={2} strokeDasharray="7 6" opacity={0.6} />
+    )}
+    <line x1={gx(lineFrom[0])} y1={gy(lineFrom[1])} x2={gx(last[0])} y2={gy(last[1])} stroke={row === null ? GREEN : BLUE} strokeWidth={3} />
+    {known.map(([a, y], i) => (
+      <g key={a}>
+        <circle cx={gx(a)} cy={gy(y)} r={7} fill={i < PATTERN_GIVEN ? INK : a < 0 ? GREEN : BLUE} stroke="#fff" strokeWidth={2} />
+        {(a < 0 || i === known.length - 1) && <text x={gx(a) + 10} y={gy(y) - 8} fontSize={13} fontWeight={700} fill={a < 0 ? GREEN : BLUE}>{num(y)}</text>}
+      </g>
+    ))}
+    {row !== null && d.wrong !== null && (
+      <g>
+        <circle cx={gx(PATTERN_AS[row])} cy={gy(d.wrong)} r={7} fill={ORANGE} stroke="#fff" strokeWidth={2} />
+        <text x={gx(PATTERN_AS[row]) + 10} y={gy(d.wrong) - 8} fontSize={13} fontWeight={700} fill={ORANGE}>{num(d.wrong)}</text>
+      </g>
+    )}
+    {lines(say).map((l, i) => (
+      <text key={i} x={W / 2} y={SAY_Y + i * 24} fontSize={17} fontWeight={row === null ? 700 : 400} textAnchor="middle" fill={tone}>{l}</text>
+    ))}
+    </>
+  );
   return (
     <>
-      <div className="live-bar">
-        <span>{w.times}</span>
-        <Stepper value={b} min={SIGN_RANGE[0]} max={SIGN_RANGE[1]} onChange={(v) => set({ ...SIGN_PATTERN_START, b: stepPast0(v, b) })} less={w.less} more={w.more} />
-        <button className="live-btn" disabled={!d.placed.length && d.wrong === null} onClick={() => set({ ...SIGN_PATTERN_START, b })}>{w.again}</button>
-      </div>
-      <p className="live-hint">{w.hint}</p>
-      <svg ref={svgRef} width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} role="img" aria-label={say}
-        onPointerDown={tap} style={{ cursor: row === null ? "default" : "crosshair", touchAction: "none" }}>
+      <svg className="hand-pic" width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} {...svgProps} role="group" aria-label={say}
+        style={{ touchAction: "none", userSelect: "none" }}>
         <rect width={W} height={H} fill="#fff" />
-        {/* The table: a, a × b, and the jump from each row to the next. */}
-        <text x={T_LEFT} y={TOP + 4} fontSize={14} fill="#868e96">{w.table}</text>
-        {PATTERN_AS.map((a, i) => {
-          const y = TOP + 32 + i * ROW_H;
-          const isKnown = i < known.length;
-          const isNow = i === row;
-          const neg = a < 0;
-          return (
-            <g key={a}>
-              {isNow && <rect x={T_LEFT - 8} y={y - 24} width={214} height={36} rx={6} fill="#fff3bf" />}
-              <text x={T_LEFT} y={y} fontSize={20} fontWeight={isNow ? 700 : 400} fill={isKnown || isNow ? (neg && isKnown ? GREEN : INK) : "#adb5bd"}>
-                {rowText(a, b)} = {isKnown ? num(a * b) : "?"}
-              </text>
-              {i > 0 && i < known.length && (
-                <text x={T_LEFT + 196} y={y - ROW_H / 2 + 4} fontSize={13} fontWeight={700} textAnchor="end" fill={BLUE}>{up ? "+" : "−"}{n}</text>
-              )}
-            </g>
-          );
-        })}
-        {/* The graph: a column for each a, a × b up the side. */}
-        <rect x={G_LEFT} y={TOP} width={7 * COL} height={G_H} fill="#f8f9fa" stroke="#dee2e6" />
-        {row !== null && <rect x={gx(PATTERN_AS[row]) - COL / 2} y={TOP} width={COL} height={G_H} fill="#fff3bf" />}
-        {Array.from({ length: 2 * PATTERN_Y + 1 }, (_, k) => k - PATTERN_Y).map((y) => (
-          <g key={y}>
-            <line x1={G_LEFT} y1={gy(y)} x2={G_LEFT + 7 * COL} y2={gy(y)} stroke={y === 0 ? "#495057" : "#e9ecef"} strokeWidth={y === 0 ? 2 : 1} />
-            {y % 2 === 0 && <text x={G_LEFT - 6} y={gy(y) + 4} fontSize={11} textAnchor="end" fill="#868e96">{num(y)}</text>}
-          </g>
-        ))}
-        <line x1={X0} y1={TOP} x2={X0} y2={TOP + G_H} stroke="#495057" strokeWidth={2} />
-        {PATTERN_AS.map((a) => (
-          <text key={a} x={gx(a)} y={TOP + G_H + 18} fontSize={13} textAnchor="middle" fill="#495057">{num(a)}</text>
-        ))}
-        <text x={G_LEFT + 7 * COL} y={TOP + G_H + 34} fontSize={12} textAnchor="end" fill="#868e96">a</text>
-        <text x={G_LEFT + 4} y={TOP - 8} fontSize={12} fill="#868e96">a × {factor(b)}</text>
-        {dashed && (
-          <line x1={gx(-3.5)} y1={gy(-3.5 * b)} x2={gx(3.5)} y2={gy(3.5 * b)} stroke={BLUE} strokeWidth={2} strokeDasharray="7 6" opacity={0.6} />
+        <text x={T_LEFT} y={36} fontSize={20} fontStyle="italic" fill={INK}>{w.times}</text>
+        <NumBox x={T_LEFT + 18} y={8} w={58} h={42} value={b} min={SIGN_RANGE[0]} max={SIGN_RANGE[1]} label={w.times}
+          onChange={(v) => restart(stepPast0(v, b))} />
+        <Pill x={T_LEFT + 94} y={14} w={130} h={30} size={14} text={`↺ ${w.again}`} title={w.again}
+          disabled={!d.placed.length && d.wrong === null} onTap={() => restart(b)} />
+        {drawing(true)}
+        {row !== null && (
+          <rect x={G_LEFT} y={TOP} width={7 * COL} height={G_H} fill="transparent" role="slider" tabIndex={0}
+            aria-label={fill(w.column, { p: ask })} aria-valuemin={-PATTERN_Y} aria-valuemax={PATTERN_Y} aria-valuenow={ghost ?? last[1]}
+            style={{ cursor: "ns-resize" }} onPointerDown={(e) => begin(e, {})} onKeyDown={key} onBlur={() => setKeyY(null)} />
         )}
-        <line x1={gx(lineFrom[0])} y1={gy(lineFrom[1])} x2={gx(last[0])} y2={gy(last[1])} stroke={row === null ? GREEN : BLUE} strokeWidth={3} />
-        {known.map(([a, y], i) => (
-          <g key={a}>
-            <circle cx={gx(a)} cy={gy(y)} r={7} fill={i < PATTERN_GIVEN ? INK : a < 0 ? GREEN : BLUE} stroke="#fff" strokeWidth={2} />
-            {(a < 0 || i === known.length - 1) && <text x={gx(a) + 10} y={gy(y) - 8} fontSize={13} fontWeight={700} fill={a < 0 ? GREEN : BLUE}>{num(y)}</text>}
-          </g>
-        ))}
-        {row !== null && d.wrong !== null && (
-          <g>
-            <circle cx={gx(PATTERN_AS[row])} cy={gy(d.wrong)} r={7} fill={ORANGE} stroke="#fff" strokeWidth={2} />
-            <text x={gx(PATTERN_AS[row]) + 10} y={gy(d.wrong) - 8} fontSize={13} fontWeight={700} fill={ORANGE}>{num(d.wrong)}</text>
+        {ghost !== null && row !== null && (
+          <g pointerEvents="none" opacity={0.75}>
+            <line x1={gx(PATTERN_AS[row]) - COL / 2 + 4} y1={gy(ghost)} x2={gx(PATTERN_AS[row]) + COL / 2 - 4} y2={gy(ghost)} stroke={BLUE} strokeDasharray="3 3" />
+            <circle cx={gx(PATTERN_AS[row])} cy={gy(ghost)} r={9} fill={BLUE} stroke="#fff" strokeWidth={2} />
+            <text x={gx(PATTERN_AS[row]) - 14} y={gy(ghost) + 5} fontSize={14} fontWeight={700} textAnchor="end" fill={BLUE}>{num(ghost)}</text>
           </g>
         )}
-        {lines(say).map((l, i) => (
-          <text key={i} x={W / 2} y={SAY_Y + i * 24} fontSize={17} fontWeight={row === null ? 700 : 400} textAnchor="middle" fill={tone}>{l}</text>
-        ))}
       </svg>
+      <p className="live-hint">{w.hint}</p>
+      <div hidden>
+        <svg ref={svgRef} width={W} height={H - TOP + 26} viewBox={`0 ${TOP - 26} ${W} ${H - TOP + 26}`} fontFamily={FONT}>
+          <rect y={TOP - 26} width={W} height={H - TOP + 26} fill="#fff" />
+          {drawing(false)}
+        </svg>
+      </div>
     </>
   );
 }
+
 
 /**
  * The small graph of the pattern for the turning arrow's Why? steps: the dots for 3, 2, 1 and 0 lots of b (stage 0),
