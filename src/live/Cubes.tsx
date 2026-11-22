@@ -1,21 +1,32 @@
-// Linking cubes on the board: trains of coloured cubes. Tap a cube to paint it, drag a train onto another to join it
-// on, tap a dot between two cubes to break the train there, + and − at a train's end to add or take off a cube.
-// "Share into trains of k" lays every cube out again in trains of k, to see a division and what is left over. The
-// words under the trains come from src/math/cubes.ts. "Copy as a picture" copies the trains without the controls.
-import { useState, type PointerEvent as ReactPointerEvent } from "react";
+// Linking cubes on the board, worked by hand: cubes are dragged from the tray onto the end of a train, or below the
+// trains to start a new one. A cube in a train lifts with every cube after it: dropped on another train it joins on
+// at the end, dropped below the trains it becomes a train of its own (a break), dropped in the bin it is taken off.
+// A tap on a tray cube picks the paint, a tap on a train's cube paints it. The number on the right shares every cube
+// out into trains of that length; "Join all" and "Longest first" lay the trains out again. The words under the trains
+// come from src/math/cubes.ts. "Copy as a picture" copies the trains without the tray and the tools.
+import type { PointerEvent as ReactPointerEvent } from "react";
 import {
-  addCube, breakAt, CUBE_COLORS, join, joinAll, K_RANGE, MAX_LEN, MAX_TRAINS, newTrain, paint, removeCube, says,
-  shareInto, sortByLength, type CubeSay, type LiveCubes,
+  addCube, CUBE_COLORS, joinAll, K_RANGE, MAX_LEN, MAX_TRAINS, moveTail, newTrain, paint, says, shareInto, sortByLength,
+  type CubeSay, type LiveCubes,
 } from "../math/cubes";
-import { fill, FONT, INK, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
+import { BLUE, Bin, inBox, keyTap, NumBox, Pill, useDrag, type DragAt } from "./hand";
+import { fill, FONT, INK, type PieceProps } from "./ui";
 
 const W = 700;
 const PAD = 16;
 const LABEL = 36;
 const S = 27;
 const ROW = 40;
-const TOP = 14;
 const LINE = 28;
+/** Where the first train is: under the tray and the tools. */
+const TOP = 104;
+const TRAY = { x: PAD, y: 12, step: 36 };
+const BIN = { x: W - PAD - 96, y: 6, w: 96, h: 60 };
+const TOOLS_Y = 62;
+/** The number to share by: its words end just before it. */
+const SHARE_X = 330;
+/** The mat the trains lie on: every row a train could be in. */
+const MAT = { x: PAD, y: TOP - 8, w: W - 2 * PAD, h: MAX_TRAINS * ROW };
 const COLORS = [
   { fill: "#ff8787", stroke: "#c92a2a" },
   { fill: "#74c0fc", stroke: "#1864ab" },
@@ -24,11 +35,14 @@ const COLORS = [
   { fill: "#b197fc", stroke: "#5f3dc4" },
   { fill: "#ffa94d", stroke: "#d9480f" },
 ];
-const rowY = (t: number) => TOP + t * ROW + 6;
+const rowY = (t: number) => TOP + t * ROW;
 const cubeX = (i: number) => PAD + LABEL + i * S;
+const trayX = (c: number) => TRAY.x + c * TRAY.step;
 
-type Drag = { t: number; x0: number; y0: number; dx: number; dy: number; moved: boolean; cube: number };
+type Hold = { from: "train"; t: number; i: number } | { from: "tray"; c: number };
 type Words = PieceProps<"cubes">["w"]["cubes"];
+/** Where a held cube would go if let go here. */
+type Spot = { to: "train"; t: number } | { to: "new" } | { to: "bin" } | null;
 
 function sayLine(s: CubeSay, w: Words): string {
   switch (s.kind) {
@@ -58,142 +72,119 @@ function Cube({ x, y, color, n }: { x: number; y: number; color: number; n?: num
   );
 }
 
-/** The trains and the words; with `on` set, the controls and what a tap or drag does too. */
-function Picture({ state, lines, on, drag, svgRef, height }: {
-  state: LiveCubes;
-  lines: string[];
-  height: number;
-  svgRef?: React.Ref<SVGSVGElement>;
-  drag?: Drag | null;
-  on?: {
-    w: Words;
-    press: (e: ReactPointerEvent, t: number, cube: number) => void;
-    move: (e: ReactPointerEvent<SVGSVGElement>) => void;
-    up: (e: ReactPointerEvent<SVGSVGElement>) => void;
-    add: (t: number) => void;
-    remove: (t: number) => void;
-    cut: (t: number, at: number) => void;
-    target: number | null;
-  };
+/** The trains and the words under them, as "Copy as a picture" takes them. */
+function Trains({ state, lines, hold, spot, begin }: {
+  state: LiveCubes; lines: string[]; hold?: DragAt<Hold> | null; spot?: Spot; begin?: (e: ReactPointerEvent, h: Hold) => void;
 }) {
   const { trains, numbers } = state;
-  // The words right under the last train; the picture keeps room for all ten, so the piece doesn't change size.
-  const capY = TOP + Math.max(1, trains.length) * ROW + 26;
+  const capY = rowY(Math.max(1, trains.length)) + 22;
+  const lifted = hold?.moved && hold.from === "train" ? hold : null;
   return (
-    <svg ref={svgRef} width={W} height={height} viewBox={`0 0 ${W} ${height}`} fontFamily={FONT}
-      onPointerMove={on?.move} onPointerUp={on?.up} onPointerCancel={on?.up} style={on ? { touchAction: "none" } : undefined}>
+    <>
       {trains.map((train, t) => {
         const y = rowY(t);
-        const dragging = drag?.moved && drag.t === t;
-        const end = cubeX(train.length);
         return (
           <g key={t}>
-            {on?.target === t && <rect x={PAD + LABEL - 4} y={y - 8} width={W - 2 * PAD - LABEL + 4} height={S + 12} rx={6} fill="#e7f5ff" />}
+            {spot?.to === "train" && spot.t === t && (
+              <rect x={PAD + LABEL - 4} y={y - 8} width={W - 2 * PAD - LABEL + 4} height={S + 12} rx={6} fill="#e7f5ff" />
+            )}
             <text x={PAD + LABEL / 2 - 4} y={y + S / 2 + 6} fontSize={17} textAnchor="middle" fill="#495057" fontWeight={700}>{train.length}</text>
-            <g transform={dragging ? `translate(${drag.dx} ${drag.dy})` : undefined} opacity={dragging ? 0.8 : 1}>
-              {train.map((c, i) => (
-                <g key={i} style={on ? { cursor: "grab" } : undefined} onPointerDown={on && ((e) => on.press(e, t, i))}>
+            {train.map((c, i) => {
+              const up = lifted && lifted.t === t && i >= lifted.i;
+              return (
+                <g key={i} data-cube={`${t}-${i}`} style={begin ? { cursor: "grab" } : undefined} opacity={up ? 0.25 : 1}
+                  onPointerDown={begin && ((e) => begin(e, { from: "train", t, i }))}>
                   <Cube x={cubeX(i)} y={y} color={c} n={numbers ? i + 1 : undefined} />
                 </g>
-              ))}
-            </g>
-            {on && !dragging && (
-              <>
-                {train.slice(1).map((_, i) => (
-                  <circle key={i} cx={cubeX(i + 1)} cy={y + S + 4} r={4.5} fill="#ced4da" style={{ cursor: "pointer" }} onClick={() => on.cut(t, i + 1)}>
-                    <title>{on.w.cut}</title>
-                  </circle>
-                ))}
-                {train.length < MAX_LEN && (
-                  <g style={{ cursor: "pointer" }} onClick={() => on.add(t)} role="button" aria-label={on.w.add}>
-                    <rect x={end + 4} y={y} width={S - 2} height={S - 2} rx={4} fill="#fff" stroke="#adb5bd" strokeDasharray="4 3" />
-                    <text x={end + 4 + (S - 2) / 2} y={y + S / 2 + 5} fontSize={18} textAnchor="middle" fill="#868e96">+</text>
-                  </g>
-                )}
-                <g style={{ cursor: "pointer" }} onClick={() => on.remove(t)} role="button" aria-label={on.w.remove}>
-                  <circle cx={end + (train.length < MAX_LEN ? S + 18 : 18)} cy={y + S / 2 - 1} r={10} fill="#fff" stroke="#adb5bd" />
-                  <text x={end + (train.length < MAX_LEN ? S + 18 : 18)} y={y + S / 2 + 4} fontSize={16} textAnchor="middle" fill="#868e96">−</text>
-                </g>
-              </>
-            )}
+              );
+            })}
           </g>
         );
       })}
+      {spot?.to === "new" && (
+        <rect x={PAD + LABEL - 4} y={rowY(trains.length) - 8} width={W - 2 * PAD - LABEL + 4} height={S + 12} rx={6} fill="none"
+          stroke={BLUE} strokeDasharray="6 4" />
+      )}
       {lines.map((l, i) => (
         <text key={i} x={PAD} y={capY + i * LINE} fontSize={l.length > 64 ? (19 * 64) / l.length : 19} fill={i ? "#495057" : INK} fontWeight={i ? 400 : 700}>{l}</text>
       ))}
-    </svg>
+    </>
   );
 }
 
 export function Cubes({ state, set, w: words, svgRef }: PieceProps<"cubes">) {
   const w = words.cubes;
   const { trains, color, k } = state;
-  const [drag, setDrag] = useState<Drag | null>(null);
   const lines = says(trains).map((s) => sayLine(s, w));
-  const put = (next: number[][]) => set({ ...state, trains: next });
-  const rowAt = (y: number) => {
-    const t = Math.floor((y - TOP) / ROW);
-    return t >= 0 && t < trains.length ? t : null;
-  };
-  const target = drag?.moved ? rowAt(rowY(drag.t) + S / 2 + drag.dy) : null;
+  const put = (next: number[][]) => next !== trains && set({ ...state, trains: next });
 
-  const press = (e: ReactPointerEvent, t: number, cube: number) => {
-    if (e.button !== 0) return;
-    const svg = (e.currentTarget as SVGElement).ownerSVGElement;
-    if (!svg) return;
-    svg.setPointerCapture(e.pointerId);
-    const [x, y] = svgPoint(svg, e);
-    setDrag({ t, cube, x0: x, y0: y, dx: 0, dy: 0, moved: false });
+  const spotAt = (x: number, y: number): Spot => {
+    if (inBox(BIN, x, y)) return { to: "bin" };
+    if (!inBox(MAT, x, y)) return null;
+    const t = Math.floor((y - MAT.y) / ROW);
+    return t < trains.length ? { to: "train", t } : { to: "new" };
   };
-  const move = (e: ReactPointerEvent<SVGSVGElement>) => {
-    if (!drag) return;
-    const [x, y] = svgPoint(e.currentTarget, e);
-    const [dx, dy] = [x - drag.x0, y - drag.y0];
-    setDrag({ ...drag, dx, dy, moved: drag.moved || Math.hypot(dx, dy) > 5 });
+  const dropOf = (d: DragAt<Hold>): Spot => {
+    const s = spotAt(d.x, d.y);
+    if (d.from === "tray") return s?.to === "bin" ? null : s;
+    return s?.to === "train" && s.t === d.t ? null : s;
   };
-  const up = () => {
-    if (!drag) return;
-    setDrag(null);
-    if (!drag.moved) return trains[drag.t][drag.cube] !== color && put(paint(trains, drag.t, drag.cube, color));
-    if (target !== null && target !== drag.t) put(join(trains, drag.t, target));
-  };
+  const { drag, begin, svgProps } = useDrag<Hold>((d) => {
+    if (!d.moved) {
+      if (d.from === "tray") return d.c !== color && set({ ...state, color: d.c });
+      return trains[d.t][d.i] !== color && put(paint(trains, d.t, d.i, color));
+    }
+    const s = dropOf(d);
+    if (!s) return;
+    if (d.from === "tray") return put(s.to === "train" ? addCube(trains, s.t, d.c) : newTrain(trains, d.c));
+    put(moveTail(trains, d.t, d.i, s.to === "train" ? s.t : s.to === "new" ? "new" : null));
+  });
+  const spot = drag?.moved ? dropOf(drag) : null;
 
-  const pictureH = TOP + MAX_TRAINS * ROW + 26 + lines.length * LINE;
-  const cleanH = TOP + Math.max(1, trains.length) * ROW + 26 + lines.length * LINE;
+  // What the hand holds, drawn under the pointer: the cubes lifted off a train, or one from the tray.
+  const held = drag?.moved ? (drag.from === "tray" ? [drag.c] : trains[drag.t].slice(drag.i)) : [];
+  const heldX = drag ? (drag.from === "tray" ? trayX(drag.c) : cubeX(drag.i)) + drag.x - drag.x0 : 0;
+  const heldY = drag ? (drag.from === "tray" ? TRAY.y : rowY(drag.t)) + drag.y - drag.y0 : 0;
+
+  const H = MAT.y + MAT.h + 22 + 2 * LINE;
+  const cleanH = rowY(Math.max(1, trains.length)) + 22 + lines.length * LINE;
   return (
     <>
-      <div className="live-bar">
+      <svg className="hand-pic" width={W} height={H} viewBox={`0 0 ${W} ${H}`} fontFamily={FONT} {...svgProps}
+        style={{ touchAction: "none", userSelect: "none" }}>
         {Array.from({ length: CUBE_COLORS }, (_, c) => (
-          <button key={c} className={`live-btn cube-swatch${c === color ? " on" : ""}`} aria-pressed={c === color} title={w.colour} aria-label={`${w.colour} ${c + 1}`}
-            style={{ background: COLORS[c].fill, borderColor: c === color ? INK : COLORS[c].stroke }} onClick={() => set({ ...state, color: c })} />
+          <g key={c} role="button" tabIndex={0} aria-label={`${w.colour} ${c + 1}`} aria-pressed={c === color} style={{ cursor: "grab" }}
+            onPointerDown={(e) => begin(e, { from: "tray", c })} onKeyDown={(e) => keyTap(e, () => set({ ...state, color: c }))}>
+            <title>{w.tray}</title>
+            {c === color && <rect x={trayX(c) - 3} y={TRAY.y - 8} width={S + 6} height={S + 10} rx={6} fill="none" stroke={INK} strokeWidth={2} />}
+            <Cube x={trayX(c)} y={TRAY.y} color={c} />
+          </g>
         ))}
-        <button className="live-btn" disabled={trains.length >= MAX_TRAINS} onClick={() => put(newTrain(trains, color))}>{w.newTrain}</button>
-        <Toggle on={state.numbers} onClick={() => set({ ...state, numbers: !state.numbers })}>{w.numbers}</Toggle>
-      </div>
-      <div className="live-bar">
-        <span>{w.shareInto}</span>
-        <Stepper value={k} min={K_RANGE[0]} max={K_RANGE[1]} onChange={(v) => set({ ...state, k: v })} less={w.less} more={w.more} />
-        <button className="live-btn" disabled={shareInto(trains, k) === trains} onClick={() => put(shareInto(trains, k))}>{w.share}</button>
-        <button className="live-btn" disabled={joinAll(trains) === trains} onClick={() => put(joinAll(trains))}>{w.joinAll}</button>
-        <button className="live-btn" disabled={trains.length < 2} onClick={() => put(sortByLength(trains))}>{w.sort}</button>
-        <button className="live-btn" onClick={() => put([])}>{w.clear}</button>
-      </div>
+        <Pill x={PAD} y={TOOLS_Y} w={92} h={28} size={14} text={w.numbers} on={state.numbers} onTap={() => set({ ...state, numbers: !state.numbers })} />
+        <text x={SHARE_X - 8} y={TOOLS_Y + 19} fontSize={13} textAnchor="end" fill={INK}>{w.shareInto}</text>
+        <NumBox x={SHARE_X} y={TOOLS_Y - 4} w={44} h={36} size={18} value={k} min={K_RANGE[0]} max={Math.min(K_RANGE[1], MAX_LEN)}
+          label={w.shareInto} onChange={(v) => set({ ...state, k: v })} />
+        <Pill x={SHARE_X + 54} y={TOOLS_Y} w={90} h={28} size={14} text={w.share} strong
+          disabled={shareInto(trains, k) === trains} onTap={() => put(shareInto(trains, k))} />
+        <Pill x={BIN.x - 232} y={TRAY.y - 2} w={96} h={28} size={14} text={w.joinAll} disabled={joinAll(trains) === trains} onTap={() => put(joinAll(trains))} />
+        <Pill x={BIN.x - 128} y={TRAY.y - 2} w={120} h={28} size={14} text={w.sort} disabled={trains.length < 2} onTap={() => put(sortByLength(trains))} />
+        <Bin {...BIN} hot={spot?.to === "bin"} label={w.bin} title={w.binTitle} onTap={() => put([])} />
+        <rect x={MAT.x} y={MAT.y} width={MAT.w} height={MAT.h} rx={10} fill="none" stroke="#f1f3f5" />
+        <Trains state={state} lines={lines} hold={drag} spot={spot} begin={begin} />
+        {!trains.length && !drag && (
+          <text x={cubeX(0)} y={rowY(0) + S / 2 + 5} fontSize={15} fill="#adb5bd">{w.dropHere}</text>
+        )}
+        {held.length > 0 && (
+          <g pointerEvents="none" opacity={0.85}>
+            {held.map((c, j) => <Cube key={j} x={heldX + j * S} y={heldY} color={c} />)}
+          </g>
+        )}
+      </svg>
       <p className="live-hint">{w.hint}</p>
-      <Picture
-        state={state}
-        lines={lines}
-        height={pictureH}
-        drag={drag}
-        on={{
-          w, press, move, up, target,
-          add: (t) => put(addCube(trains, t, color)),
-          remove: (t) => put(removeCube(trains, t)),
-          cut: (t, at) => put(breakAt(trains, t, at)),
-        }}
-      />
       <div hidden>
-        <Picture state={state} lines={lines} height={cleanH} svgRef={svgRef} />
+        <svg ref={svgRef} width={W} height={cleanH - TOP + 20} viewBox={`0 ${TOP - 14} ${W} ${cleanH - TOP + 20}`} fontFamily={FONT}>
+          <Trains state={state} lines={lines} />
+        </svg>
       </div>
     </>
   );

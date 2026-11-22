@@ -44,6 +44,21 @@ export function breakAt(trains: number[][], t: number, at: number): number[][] {
   return [...trains.slice(0, t), train.slice(0, at), train.slice(at), ...trains.slice(t + 1)];
 }
 
+/**
+ * The cubes of train `t` from cube `i` on, taken off and put on the end of train `to`, laid as a new train under the
+ * others ("new"), or put away (null): a hand lifting the end of a train. A move that would not fit leaves the trains
+ * as they were.
+ */
+export function moveTail(trains: number[][], t: number, i: number, to: number | "new" | null): number[][] {
+  const train = trains[t];
+  if (!train || i < 0 || i >= train.length || to === t) return trains;
+  const tail = train.slice(i);
+  if (typeof to === "number" && (!trains[to] || trains[to].length + tail.length > MAX_LEN)) return trains;
+  if (to === "new" && i > 0 && trains.length >= MAX_TRAINS) return trains;
+  const next = trains.map((tr, j) => (j === t ? tr.slice(0, i) : j === to ? [...tr, ...tail] : tr));
+  return tidy(to === "new" ? [...next, tail] : next);
+}
+
 export function paint(trains: number[][], t: number, i: number, color: number): number[][] {
   return trains.map((train, j) => (j === t ? train.map((c, k) => (k === i ? color : c)) : train));
 }
