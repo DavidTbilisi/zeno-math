@@ -30,7 +30,8 @@ import {
 } from "../math/softmaxLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, Stepper, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 /** e^x for the readout: two decimals, or a power of ten once it is large. */
@@ -100,7 +101,7 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
     if (z) commit(fresh({ z }));
   };
   const setCount = (n: number) => {
-    const z = n > d.z.length ? [...d.z, 0] : d.z.slice(0, n);
+    const z = n > d.z.length ? [...d.z, ...Array<number>(n - d.z.length).fill(0)] : d.z.slice(0, n);
     commit(fresh({ z, target: d.target !== null && d.target >= n ? null : d.target }));
   };
 
@@ -127,6 +128,29 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
   const sum = exps.reduce((a, b) => a + b, 0);
   const ti = tempIndex(d.T);
 
+  const moves: RowItem[] = [
+    ...(q ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(canShift
+      ? [
+          { text: w.shift },
+          { text: `−${SHIFT_STEP}`, disabled: !shifted(d.z, -SHIFT_STEP), onTap: () => shift(-SHIFT_STEP) },
+          { text: `+${SHIFT_STEP}`, disabled: !shifted(d.z, SHIFT_STEP), onTap: () => shift(SHIFT_STEP) },
+        ]
+      : []),
+    ...(!q
+      ? [
+          { text: w.classCount, brk: true },
+          ...[2, 3, 4, 5].map((n) => ({ text: String(n), on: d.z.length === n, onTap: () => setCount(n) })),
+          { text: w.target, brk: true },
+          { text: w.noTarget, on: d.target === null, onTap: () => commit({ target: null }) },
+          ...d.z.map((_, i) => ({ text: `★ ${name(i)}`, on: d.target === i, onTap: () => commit({ target: i }) })),
+        ]
+      : []),
+    { text: `↺ ${g.reset}`, title: g.reset, brk: !q, onTap: () => commit(fresh(q ? { z: [...q.z], T: q.T } : { z: [...FREE_Z, 0, 0].slice(0, d.z.length), T: 1 })) },
+  ];
+  const dialH = 44;
+  const strip = dialH + pillRowsH(moves, SM_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
@@ -134,11 +158,11 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
       <Stage game={game} stars={stars} done={d.done} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={SM_PLOT.w}
-          height={SM_PLOT.h}
-          viewBox={`0 0 ${SM_PLOT.w} ${SM_PLOT.h}`}
+          height={SM_PLOT.h + strip}
+          viewBox={`0 0 ${SM_PLOT.w} ${SM_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: lockZ ? "default" : grab !== null ? "grabbing" : "ns-resize", touchAction: "none" }}
           onPointerDown={down}
@@ -146,8 +170,11 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={SM_PLOT.w} height={SM_PLOT.h} fill="#fff" />
+          <rect width={SM_PLOT.w} height={SM_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: softmaxSvg(d.z, d.T, { target, locked: lockZ, words: { scores: w.scores, probs: w.probs, classes: w.classes } }) }} />
+          <Track x={8} y={SM_PLOT.h + 4} w={SM_PLOT.w - 16} value={ti} min={0} max={TEMPS.length - 1} label={w.temp} disabled={lockT} color="#e8590c" show={(i) => `T = ${num(TEMPS[i])}`}
+            onChange={(i, done) => setT(i, done)} />
+          <PillRows w={SM_PLOT.w} y={SM_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
@@ -155,37 +182,7 @@ export function SoftmaxLab({ state, set, w: words, svgRef }: PieceProps<"softmax
         <span>{fill(w.sum, { e: exps.map(big).join(" + "), s: big(sum) })}</span>
         {target !== null && <span className="descent-next">{fill(w.loss, { t: name(target), p: prob(p[target]), l: num(crossEntropy(p, target)) })}</span>}
       </div>
-      <div className="live-bar descent-dials">
-        <label className="live-slider">
-          <b>T = {num(d.T)}</b>
-          <button className="live-btn" disabled={lockT || ti === 0} title={w.colder} aria-label={w.colder} onClick={() => setT(ti - 1, true)}>−</button>
-          <input type="range" min={0} max={TEMPS.length - 1} value={ti} disabled={lockT} aria-label={w.temp} onChange={(e) => setT(Number(e.target.value), false)} onPointerUp={() => commit()} onKeyUp={() => commit()} />
-          <button className="live-btn" disabled={lockT || ti === TEMPS.length - 1} title={w.hotter} aria-label={w.hotter} onClick={() => setT(ti + 1, true)}>+</button>
-        </label>
-        {canShift && (
-          <span className="live-field">
-            {w.shift}
-            <button className="live-btn" disabled={!shifted(d.z, -SHIFT_STEP)} onClick={() => shift(-SHIFT_STEP)}>−{SHIFT_STEP}</button>
-            <button className="live-btn" disabled={!shifted(d.z, SHIFT_STEP)} onClick={() => shift(SHIFT_STEP)}>+{SHIFT_STEP}</button>
-          </span>
-        )}
-      </div>
-      {!q && (
-        <div className="live-bar">
-          <span className="live-field">
-            {w.classCount} <Stepper value={d.z.length} min={2} max={5} onChange={setCount} less={w.fewer} more={w.more} />
-          </span>
-          <span className="live-field">{w.target}</span>
-          <Toggle on={d.target === null} onClick={() => commit({ target: null })}>{w.noTarget}</Toggle>
-          {d.z.map((_, i) => (
-            <Toggle key={i} on={d.target === i} onClick={() => commit({ target: i })}>★ {name(i)}</Toggle>
-          ))}
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done} always>
-        {q && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        <button className="live-btn" onClick={() => commit(fresh(q ? { z: [...q.z], T: q.T } : { z: [...FREE_Z, 0, 0].slice(0, d.z.length), T: 1 }))}>↺ {g.reset}</button>
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

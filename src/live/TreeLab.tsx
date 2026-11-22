@@ -39,7 +39,8 @@ import {
 } from "../math/treeLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, svgPoint, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, svgPoint, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveTree> = { tries: 0, done: false, said: null };
@@ -128,6 +129,30 @@ export function TreeLab({ state, set, w: words, svgRef }: PieceProps<"treeLab">)
   const read = ("tree" in mdl ? fill(w.read, { leaves: leaves(mdl.tree).length, a }) : fill(w.readForest, { n: d.trees, a })) + (test.length ? fill(w.readTest, { t: num(accuracy(mdl, test)) }) : "");
   const depthMin = p ? 1 : 0;
 
+  const handCuts = byHand && can.includes("split");
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(handCuts
+      ? [
+          ...([0, 1] as Axis[]).map((ax) => ({ text: ax ? w.axes.y : w.axes.x, on: d.axis === ax, disabled: d.done, onTap: () => commit(fresh({ axis: ax })) })),
+          { text: w.split, disabled: !canSplit, onTap: split },
+          { text: w.unsplit, disabled: !d.splits.length || d.done, onTap: unsplit },
+          ...(!p ? [{ text: w.bestCut, disabled: !leaf, onTap: best }] : []),
+        ]
+      : []),
+    ...(can.includes("measure") ? MEASURES.map((m, i) => ({ text: w.measures[m], brk: i === 0 && handCuts, on: d.measure === m, onTap: () => commit({ measure: m }) })) : []),
+    ...(!p
+      ? [
+          ...FREE_DATA.map((id, i) => ({ text: w.datas[id], brk: i === 0, on: d.data === id, onTap: () => commit({ data: id, splits: [], sel: "" }) })),
+          { text: w.newSample, onTap: () => commit({ seed: d.seed + 1, splits: [], sel: "" }) },
+        ]
+      : []),
+  ];
+  const dials = [...(handCuts ? ["cut" as const] : []), ...(can.includes("depth") ? ["depth" as const] : []), ...(can.includes("forest") && !byHand ? ["trees" as const] : [])];
+  const DW = (TREE_PLOT.w - 16 - (dials.length - 1) * 8) / Math.max(1, dials.length);
+  const dialH = dials.length ? 44 : 0;
+  const strip = dialH + pillRowsH(moves, TREE_PLOT.w) + 8;
+
   return (
     <>
       <GameHead game={game} g={g} />
@@ -135,11 +160,11 @@ export function TreeLab({ state, set, w: words, svgRef }: PieceProps<"treeLab">)
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
         <svg
           ref={svgRef}
+          className="hand-pic"
           width={TREE_PLOT.w}
-          height={TREE_PLOT.h}
-          viewBox={`0 0 ${TREE_PLOT.w} ${TREE_PLOT.h}`}
+          height={TREE_PLOT.h + strip}
+          viewBox={`0 0 ${TREE_PLOT.w} ${TREE_PLOT.h + strip}`}
           fontFamily={FONT}
-          role="img"
           aria-label={w.picture}
           style={{ cursor: byHand && can.includes("split") ? (dragging ? "grabbing" : d.axis ? "ns-resize" : "ew-resize") : "default", touchAction: "none" }}
           onPointerDown={down}
@@ -147,77 +172,33 @@ export function TreeLab({ state, set, w: words, svgRef }: PieceProps<"treeLab">)
           onPointerUp={up}
           onPointerCancel={up}
         >
-          <rect width={TREE_PLOT.w} height={TREE_PLOT.h} fill="#fff" />
+          <rect width={TREE_PLOT.w} height={TREE_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: treeSvg(d, w.chart, !p) }} />
+          {dials.map((k, i) => {
+            const x = 8 + i * (DW + 8);
+            const y = TREE_PLOT.h + 4;
+            if (k === "cut")
+              return (
+                <Track key={k} x={x} y={y} w={DW} value={Math.round(d.t * 200)} min={0} max={200} label={w.cut} disabled={d.done} show={(v) => `${["x", "y"][d.axis]} < ${(v / 200).toFixed(3)}`}
+                  onChange={(v, done) => (done ? commit(fresh({ t: v / 200, sel: d.sel ?? "" })) : setDraft(fresh({ t: v / 200, sel: d.sel ?? "" })))} />
+              );
+            if (k === "depth")
+              return (
+                <Track key={k} x={x} y={y} w={DW} value={d.depth} min={depthMin} max={DEPTH_MAX} label={w.depth} disabled={d.done} color="#2f9e44" lead={124} show={(v) => `${w.depth}: ${v || w.byHand}`}
+                  onChange={(v, done) => (done ? commit(fresh({ depth: v })) : setDraft(fresh({ depth: v })))} />
+              );
+            return (
+              <Track key={k} x={x} y={y} w={DW} value={Math.max(0, FOREST_SIZES.indexOf(d.trees))} min={0} max={FOREST_SIZES.length - 1} label={w.trees} disabled={d.done} color="#e8590c" show={(v) => `${w.trees}: ${FOREST_SIZES[v]}`}
+                onChange={(v, done) => (done ? commit(fresh({ trees: FOREST_SIZES[v] })) : setDraft(fresh({ trees: FOREST_SIZES[v] })))} />
+            );
+          })}
+          <PillRows w={TREE_PLOT.w} y={TREE_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      <div className="live-bar descent-dials">
-        {byHand && can.includes("split") && (
-          <label className="live-slider">
-            <b>{["x", "y"][d.axis]} &lt; {d.t.toFixed(3)}</b>
-            <input
-              type="range"
-              min={0}
-              max={200}
-              value={Math.round(d.t * 200)}
-              disabled={d.done}
-              aria-label={w.cut}
-              onChange={(e) => setDraft(fresh({ t: Number(e.target.value) / 200, sel: d.sel ?? "" }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-        {can.includes("depth") && (
-          <label className="live-slider">
-            <b>{w.depth}: {d.depth || w.byHand}</b>
-            <input
-              type="range"
-              min={depthMin}
-              max={DEPTH_MAX}
-              value={d.depth}
-              disabled={d.done}
-              aria-label={w.depth}
-              onChange={(e) => setDraft(fresh({ depth: Number(e.target.value) }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-        {can.includes("forest") && !byHand && (
-          <label className="live-slider">
-            <b>{w.trees}: {d.trees}</b>
-            <input
-              type="range"
-              min={0}
-              max={FOREST_SIZES.length - 1}
-              value={Math.max(0, FOREST_SIZES.indexOf(d.trees))}
-              disabled={d.done}
-              aria-label={w.trees}
-              onChange={(e) => setDraft(fresh({ trees: FOREST_SIZES[Number(e.target.value)] }))}
-              onPointerUp={() => commit()}
-              onKeyUp={() => commit()}
-            />
-          </label>
-        )}
-      </div>
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {byHand && can.includes("split") && (
-          <>
-            {([0, 1] as Axis[]).map((ax) => <Toggle key={ax} on={d.axis === ax} disabled={d.done} onClick={() => commit(fresh({ axis: ax }))}>{ax ? w.axes.y : w.axes.x}</Toggle>)}
-            <button className="live-btn" disabled={!canSplit} onClick={split}>{w.split}</button>
-            <button className="live-btn" disabled={!d.splits.length || d.done} onClick={unsplit}>{w.unsplit}</button>
-            {!p && <button className="live-btn" disabled={!leaf} onClick={best}>{w.bestCut}</button>}
-          </>
-        )}
-        {can.includes("measure") && MEASURES.map((m) => <Toggle key={m} on={d.measure === m} onClick={() => commit({ measure: m })}>{w.measures[m]}</Toggle>)}
-        {!p && FREE_DATA.map((id) => <Toggle key={id} on={d.data === id} onClick={() => commit({ data: id, splits: [], sel: "" })}>{w.datas[id]}</Toggle>)}
-        {!p && <button className="live-btn" onClick={() => commit({ seed: d.seed + 1, splits: [], sel: "" })}>{w.newSample}</button>}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

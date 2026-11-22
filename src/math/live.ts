@@ -699,7 +699,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   beName: [1080, 700],
   descentLab: [660, 650],
   pcaLab: [660, 720],
-  softmaxLab: [660, 640],
+  softmaxLab: [660, 780],
   embedLab: [660, 600],
   backpropLab: [660, 560],
   tensorLab: [660, 640],
@@ -707,13 +707,13 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   batchLab: [660, 950],
   rocLab: [660, 870],
   knnLab: [660, 810],
-  treeLab: [660, 740],
+  treeLab: [660, 860],
   kmeansLab: [660, 830],
-  nnLab: [660, 740],
+  nnLab: [660, 780],
   convLab: [660, 700],
   attnLab: [660, 720],
   rnnLab: [660, 700],
-  rlLab: [660, 680],
+  rlLab: [660, 770],
 };
 
 export const LIVE_KINDS = Object.keys(LIVE_SIZES) as LiveKind[];

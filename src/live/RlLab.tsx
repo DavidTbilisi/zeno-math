@@ -31,7 +31,8 @@ import {
 } from "../math/rlLab";
 import { play } from "./juice";
 import { starText } from "./ladderUi";
-import { fill, FONT, Toggle, type PieceProps } from "./ui";
+import { fill, FONT, type PieceProps } from "./ui";
+import { PillRows, pillRowsH, Track, type RowItem } from "./hand";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
 const FRESH: Partial<LiveRl> = { tries: 0, done: false, said: null };
@@ -84,42 +85,44 @@ export function RlLab({ state, set, w: words, svgRef }: PieceProps<"rlLab">) {
     : { tone: "hint", text: p ? w.hint : w.freeHint };
   const end = walkOf(d).reward;
   const read = view === "chain" ? fill(w.read, { state: states[0], share: num(d.pi[0]), n: d.chainSteps }) : fill(w.readWalk, { end: end ? (end > 0 ? `+${end}` : `−${-end}`) : w.nowhere });
-  const slider = (name: string, list: number[], value: number, on: (v: number) => void, label: string) => (
-    <label className="live-slider">
-      <b>{name} = {value}</b>
-      <input type="range" min={0} max={list.length - 1} value={Math.max(0, list.indexOf(value))} disabled={d.done} aria-label={label} onChange={(e) => on(list[Number(e.target.value)])} onPointerUp={() => commit()} onKeyUp={() => commit()} />
-    </label>
-  );
+  const clean = { sweeps: 0, Q: null, episodes: 0 };
+  const moves: RowItem[] = [
+    ...(p ? [{ text: `✓ ${g.check}`, title: g.check, strong: true, disabled: d.done, onTap: check }] : []),
+    ...(can.includes("step") ? [{ text: w.step, disabled: d.done, onTap: nextDay }] : []),
+    ...(can.includes("start") ? states.map((s, i) => ({ text: fill(w.start, { s }), on: d.chainSteps === 0 && d.pi[i] === 1, disabled: d.done, onTap: () => commit(fresh({ pi: one(i), chainSteps: 0, history: [one(i)] })) })) : []),
+    ...(can.includes("sweep") ? [{ text: w.sweep, disabled: d.done, onTap: () => commit(fresh({ sweeps: d.sweeps + 1 })) }] : []),
+    ...(can.includes("episodes") ? [{ text: fill(w.run, { n: EPISODES }), disabled: d.done, onTap: runEpisodes }] : []),
+    ...(can.includes("sweep") || can.includes("episodes") ? [{ text: w.reset, disabled: d.done, onTap: () => commit(fresh(clean)) }] : []),
+    ...(!p ? VIEWS.map((v, i) => ({ text: w.views[v], brk: i === 0, on: d.view === v, onTap: () => commit({ view: v }) })) : []),
+    ...(!p && view !== "chain" ? (Object.keys(WORLDS) as WorldId[]).map((id, i) => ({ text: w.worlds[id], brk: i === 0, on: d.world === id, onTap: () => commit({ world: id, ...clean }) })) : []),
+  ];
+  const dials = [...(can.includes("gamma") ? ["gamma" as const] : []), ...(can.includes("eps") ? ["eps" as const] : [])];
+  const DW = (RL_PLOT.w - 16 - (dials.length - 1) * 8) / Math.max(1, dials.length);
+  const dialH = dials.length ? 44 : 0;
+  const strip = dialH + pillRowsH(moves, RL_PLOT.w) + 8;
 
   return (
     <>
       <GameHead game={game} g={g} />
       <Said line={{ tone: "prompt", text: ask }} />
       <Stage game={game} stars={stars} done={d.done && !!p} g={g} notices={w.notices}>
-        <svg ref={svgRef} width={RL_PLOT.w} height={RL_PLOT.h} viewBox={`0 0 ${RL_PLOT.w} ${RL_PLOT.h}`} fontFamily={FONT} role="img" aria-label={w.picture}>
-          <rect width={RL_PLOT.w} height={RL_PLOT.h} fill="#fff" />
+        <svg ref={svgRef} className="hand-pic" width={RL_PLOT.w} height={RL_PLOT.h + strip} viewBox={`0 0 ${RL_PLOT.w} ${RL_PLOT.h + strip}`} fontFamily={FONT} aria-label={w.picture}>
+          <rect width={RL_PLOT.w} height={RL_PLOT.h + strip} fill="#fff" />
           <g dangerouslySetInnerHTML={{ __html: rlSvg(d, w.chart) }} />
+          {dials.map((k, i) => {
+            const [name, list, value, key, label] = k === "gamma" ? (["γ", GAMMAS, d.gamma, "gamma", w.gamma] as const) : (["ε", EPSILONS, d.eps, "eps", w.eps] as const);
+            return (
+              <Track key={k} x={8 + i * (DW + 8)} y={RL_PLOT.h + 4} w={DW} value={Math.max(0, list.indexOf(value))} min={0} max={list.length - 1} label={label} disabled={d.done} color={i ? "#e8590c" : undefined}
+                show={(v) => `${name} = ${list[v]}`} onChange={(v, done) => (done ? commit(fresh({ [key]: list[v] })) : setDraft(fresh({ [key]: list[v] })))} />
+            );
+          })}
+          <PillRows w={RL_PLOT.w} y={RL_PLOT.h + dialH} items={moves} />
         </svg>
       </Stage>
       <div className="descent-read">
         <span>{read}</span>
       </div>
-      {(can.includes("gamma") || can.includes("eps")) && (
-        <div className="live-bar descent-dials">
-          {can.includes("gamma") && slider("γ", GAMMAS, d.gamma, (v) => setDraft(fresh({ gamma: v })), w.gamma)}
-          {can.includes("eps") && slider("ε", EPSILONS, d.eps, (v) => setDraft(fresh({ eps: v })), w.eps)}
-        </div>
-      )}
-      <GameActions game={game} g={g} done={d.done && !!p} always>
-        {p && <button className="live-btn on" disabled={d.done} onClick={check}>✓ {g.check}</button>}
-        {can.includes("step") && <button className="live-btn" disabled={d.done} onClick={nextDay}>{w.step}</button>}
-        {can.includes("start") && states.map((s, i) => <Toggle key={s} on={d.chainSteps === 0 && d.pi[i] === 1} disabled={d.done} onClick={() => commit(fresh({ pi: one(i), chainSteps: 0, history: [one(i)] }))}>{fill(w.start, { s })}</Toggle>)}
-        {can.includes("sweep") && <button className="live-btn" disabled={d.done} onClick={() => commit(fresh({ sweeps: d.sweeps + 1 }))}>{w.sweep}</button>}
-        {can.includes("episodes") && <button className="live-btn" disabled={d.done} onClick={runEpisodes}>{fill(w.run, { n: EPISODES })}</button>}
-        {(can.includes("sweep") || can.includes("episodes")) && <button className="live-btn" disabled={d.done} onClick={() => commit(fresh({ sweeps: 0, Q: null, episodes: 0 }))}>{w.reset}</button>}
-        {!p && VIEWS.map((v) => <Toggle key={v} on={d.view === v} onClick={() => commit({ view: v })}>{w.views[v]}</Toggle>)}
-        {!p && view !== "chain" && (Object.keys(WORLDS) as WorldId[]).map((id) => <Toggle key={id} on={d.world === id} onClick={() => commit({ world: id, sweeps: 0, Q: null, episodes: 0 })}>{w.worlds[id]}</Toggle>)}
-      </GameActions>
+      <GameActions game={game} g={g} done={d.done && !!p} />
       <Said line={line} pulse={game.fx.pulse} found={{ game, notices: w.notices, g }} />
     </>
   );

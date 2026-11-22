@@ -557,9 +557,8 @@ test("the decision-tree lab: no split yet says so, a cut at x < 0.6 makes both s
 
   await lab.getByRole("button", { name: "cut on x" }).click();
   const cut = lab.getByRole("slider", { name: "Cut t" });
-  await cut.fill("120");
-  await cut.dispatchEvent("pointerup");
-  await expect(lab.getByText("x < 0.600")).toBeVisible();
+  await setDial(cut, 120);
+  await expect(cut).toHaveAttribute("aria-valuetext", "x < 0.600");
   await lab.getByRole("button", { name: "Split", exact: true }).click();
   await expect(lab.locator(".descent-read")).toHaveText(/2 boxes · training accuracy 1/);
   await lab.getByRole("button", { name: /Check/ }).click();
