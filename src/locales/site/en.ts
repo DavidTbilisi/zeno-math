@@ -72,6 +72,7 @@ export const site = {
   libraryTitle: "Tools and games",
   libraryLede: "Every tool, hands-on piece and game in Zeno, in the same order as the board's menus. Each opens on its own page; teachers can put any of them on a board.",
   search: "Find a tool or a game",
+  gradeAll: "All grades",
   searchNone: "Nothing matches “{q}”.",
   kindTool: "tool",
   kindPiece: "hands-on",
@@ -127,6 +128,8 @@ export const site = {
     hint: "Choose a tool, a hands-on piece or a game; it goes in the middle of the board. Right-click it there to change it.",
     topic: "Topic: {topic}",
     library: "Open the library page",
+    byTopic: "By topic",
+    byGrade: "By grade",
   },
   teach: {
     tabs: { today: "Today", progress: "Progress", homework: "Homework", study: "Study" },

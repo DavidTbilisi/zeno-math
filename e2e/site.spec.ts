@@ -2,7 +2,7 @@
 // without a board, a teacher on a board inserts anything from the library with one button, and every topic opens with
 // an intro that counts as read on the roadmaps (#450).
 import { expect, test } from "@playwright/test";
-import { insertGroup } from "./helpers.ts";
+import { insertGroup, insertPanel } from "./helpers.ts";
 
 test("a learner goes from the home page to a topic and works through its lesson on the page", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
@@ -37,6 +37,30 @@ test("Insert puts a piece on the board, finds by search and links each section t
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
   await expect(page.locator(".insert-btn")).toBeFocused();
+});
+
+test("Insert by grade shows one grade's tools, pieces and games from every menu, and the library filters by grade", async ({ page }) => {
+  await page.goto("/#/boards");
+  await page.getByRole("button", { name: /New board/ }).first().click();
+  await page.locator(".excalidraw").waitFor();
+  await page.locator(".insert-btn").click();
+  const panel = insertPanel(page);
+  await panel.getByRole("button", { name: "By grade" }).click();
+  await panel.getByRole("tab", { name: "Grade 6" }).click();
+  // Fractions, algebra and charts side by side; nothing from grade 1 or university.
+  await expect(panel.getByRole("button", { name: /How many fit\?/ })).toBeVisible();
+  await expect(panel.getByRole("button", { name: /Algebra tiles/ })).toBeVisible();
+  await expect(panel.getByRole("button", { name: /Make the diagram/ })).toBeVisible();
+  await expect(panel.getByRole("button", { name: /Ten frame/ })).toHaveCount(0);
+  await expect(panel.getByRole("button", { name: /Be the cache/ })).toHaveCount(0);
+  // It remembers the grade view.
+  await page.keyboard.press("Escape");
+  await page.locator(".insert-btn").click();
+  await expect(panel.getByRole("tab", { name: "Grade 6" })).toHaveAttribute("aria-selected", "true");
+  await page.goto("/#/library");
+  await page.getByRole("button", { name: "grade 6", exact: true }).click();
+  await expect(page.getByRole("link", { name: /How many fit\?/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Ten frame/ })).toHaveCount(0);
 });
 
 test("a topic's intro counts as read after a few seconds in view and ticks its roadmap item (#450)", async ({ page }) => {
