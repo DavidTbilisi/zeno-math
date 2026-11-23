@@ -2,6 +2,7 @@
 import { about } from "./about/en";
 import { site } from "./site/en";
 import { symbols } from "./symbols/en";
+import { cards } from "./cards/en";
 import { problems } from "./problems/en/index";
 import { solver } from "./solver/en";
 export const en = {
@@ -25,6 +26,7 @@ export const en = {
   about,
   site,
   symbols,
+  cards,
   sourceCode: "Source code (AGPL-3.0)",
   updated: "Updated",
   secLearn: "Learn",
@@ -9945,6 +9947,7 @@ export const en = {
       hard: { name: "Asking what was hard", on: "Asked", off: "Not asked", hint: "After a miss on a skill made of ideas (times, hcf, fractions, negative numbers, order of operations, rounding, powers, brackets), the student ticks the idea that was hard." },
       faded: { name: "Worked examples that fade", on: "Fading examples", off: "No worked examples", hint: "After a miss on a skill worked in steps (calculus, fractions operations), a worked example; then each next question of its kind leaves one more step to the student, until they solve it alone." },
       stepdown: { name: "Targeted step-down", on: "Step-down", off: "No step-down", hint: "On a skill made of ideas (times, hcf, fractions, negative numbers, order of operations, rounding, powers, brackets), 2 wrong of the first 3 bring 3 questions on the one idea the student most likely lacks, then back to the skill. Untested: only this arm of this class gets it." },
+      cards: { name: "Idea cards before a review", on: "Idea card", off: "No idea card", hint: "A spaced review on a skill made of ideas (times, hcf, fractions, negative numbers, order of operations, rounding, powers, brackets) opens with the card of its weakest idea, one corner covered, for the student to fill from three choices. The pick counts for nothing. Untested: only this arm of this class gets it." },
     },
     metrics: {
       students: "Students",

@@ -43,7 +43,9 @@ import { homeworkIndex, nextHomework } from "../model/homework";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
 import { keepClassLit, loadClassLit } from "../classIdeaMap";
 import { lightUp, newlyLit, type LitMap } from "../model/ideaMap";
-import { hasIdeas, SKILL_IDEAS, type IdeaState } from "../model/ideaState";
+import { hasIdeas, SKILL_IDEAS, weakestIdea, type IdeaState } from "../model/ideaState";
+import { coveredCard, type Covered } from "../model/ideaCards";
+import { IdeaCardReview } from "./IdeaCard";
 import { IdeaMap } from "./IdeaMap";
 import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
@@ -168,6 +170,13 @@ export function PracticeDialog(props: Props) {
    * plan says, or before it comes, what was kept when they signed in.
    */
   const has = (f: Feature) => studentHas(planRef.current ?? loadStudent(), f);
+  /**
+   * The idea card a question opens with (#579): a spaced review on a skill made of ideas starts with the card of the
+   * student's weakest idea there, one corner covered. It is on trial (arms.ts), so a signed-in student has it only in
+   * the arm of a class testing it; a learner nobody has signed in is in no study and always has it.
+   */
+  const ideaCardFor = (c: Current, signedIn: boolean, ideas: IdeaState | undefined): Covered | null =>
+    c.policy === "spaced" && hasIdeas(c.ex.skill) && (!signedIn || has("cards")) ? coveredCard(c.ex.skill, weakestIdea(ideas ?? {}, c.ex.skill)) : null;
   /** The skill of the question on screen, so that a spaced review is on another skill when one is due. */
   const shownSkill = useRef<SkillId | undefined>(undefined);
   const menu = useRef<HTMLDivElement>(null);
@@ -225,6 +234,8 @@ export function PracticeDialog(props: Props) {
       ? { ex: exercise(initial.skill, initial.level, initial.seed, w), ...freeOrigin }
       : nextExercise(area, pick, level, progress, null),
   );
+  /** The covered idea card before the question, until the student has filled its corner. */
+  const [ideaCard, setIdeaCard] = useState<Covered | null>(() => ideaCardFor(cur, !!loadStudent(), progress.ideas));
   const [input, setInput] = useState("");
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [wrongs, setWrongs] = useState(0);
@@ -490,6 +501,7 @@ export function PracticeDialog(props: Props) {
     log.current.faded = g || undefined;
     log.current.steps = Array.from({ length: g }, () => ({ answers: [], shown: true }));
     setCur(c);
+    setIdeaCard(ideaCardFor(c, !!live.current.student, live.current.student && planRef.current ? planRef.current.ideas : live.current.progress.ideas));
     setInput("");
     setVerdict(null);
     setWrongs(0);
@@ -825,6 +837,19 @@ export function PracticeDialog(props: Props) {
           ) : (
             classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
           )}
+          {ideaCard ? (
+            <IdeaCardReview
+              key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
+              covered={ideaCard}
+              onDone={() => {
+                // The card moved nothing; the question's own clock starts now, as if it had just been shown.
+                log.current = startLog();
+                setIdeaCard(null);
+                setTimeout(() => inputRef.current?.focus());
+              }}
+            />
+          ) : (
+          <>
           {question ? (
             <div className="preview practice-question">
               {!classOn && !cur.review && (
@@ -1123,6 +1148,8 @@ export function PracticeDialog(props: Props) {
               </summary>
               <IdeaMap skill={cur.ex.skill} lit={classMap.current.lit} fresh={classMap.current.fresh} w={w} />
             </details>
+          )}
+          </>
           )}
           {!page && studentPanel}
           {!page && resetButton}
