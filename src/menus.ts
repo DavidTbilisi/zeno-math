@@ -84,6 +84,7 @@ export const MENUS: MenuGroup[] = [
         title: "secTrig", items: [
           { kind: "trig", icon: "θ", label: "trig" },
           { kind: "identities", icon: "≡", label: "identitiesTool" },
+          { live: "slopeWalk", icon: "🚶" },
         ], shapes: ["trigTriangle", "unitCircle"],
       },
     ],

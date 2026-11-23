@@ -63,6 +63,7 @@ import { GraphStory } from "./GraphStory";
 import { SlopeLine } from "./SlopeLine";
 import { TrigBuild } from "./TrigBuild";
 import { UnitCircleGame } from "./UnitCircleGame";
+import { SlopeWalk } from "./SlopeWalk";
 import { SohCahToa } from "./SohCahToa";
 import { TrigDiscover } from "./TrigDiscover";
 import { PythDiscover } from "./PythDiscover";
@@ -187,6 +188,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   slopeLine: SlopeLine,
   trigBuild: TrigBuild,
   unitCircleGame: UnitCircleGame,
+  slopeWalk: SlopeWalk,
   sohcahtoa: SohCahToa,
   trigDiscover: TrigDiscover,
   pythDiscover: PythDiscover,
