@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { en } from "../src/locales/en.ts";
 import { pretty, revCaption, revolve, type RevInput } from "../src/math/revolution.ts";
-import { REVOLUTION_PRESETS } from "../src/three/spec.ts";
+import { TURNED_PRESETS } from "../src/math/turned.ts";
 
 const w = en.revWords;
 const run = (s: Partial<RevInput>) => revolve({ f: "x^2", g: "", a: "0", b: "2", axis: "x", slices: 0, ...s }, w);
@@ -115,8 +115,8 @@ test("pretty prints what is typed", () => {
 });
 
 test("every preset turns", () => {
-  for (const p of REVOLUTION_PRESETS) {
-    const r = revolve({ ...p.spec, slices: 8 }, w);
+  for (const p of TURNED_PRESETS) {
+    const r = revolve({ ...p, a: String(p.a), b: String(p.b), slices: 8 }, w);
     assert.ok(r.volume > 0 && Number.isFinite(r.volume), p.key);
   }
 });

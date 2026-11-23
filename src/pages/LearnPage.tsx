@@ -1,10 +1,11 @@
 // Learn (#448): #/learn lists every topic on its shelf, from first steps to university, each with the learner's bar;
-// #/learn/<topic> is one topic's page: what the topic is and where it is used (#450), how far the learner is and their
-// next level, what they will learn (each skill with its three levels ticked), hands-on pieces to try right on the page,
-// the topic's tools and games, and the symbols it uses (#451). #/learn links to #/explain, every topic's intro on one
-// page, and to #/symbols.
+// #/learn/<topic> is one topic's page: what the topic is and where it is used (#450), its ideas' cards (#579), how far
+// the learner is and their next level, what they will learn (each skill with its three levels ticked), hands-on pieces
+// to try right on the page, the topic's tools and games, and the symbols it uses (#451). #/learn links to #/explain,
+// every topic's intro on one page, and to #/symbols.
 import { useState } from "react";
 import { Explainer } from "../components/Explainer";
+import { IdeaCards } from "../components/IdeaCard";
 import { OpenOnBoard } from "../components/OpenOnBoard";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { symWords } from "../components/SymbolCard";
@@ -17,6 +18,7 @@ import { isLiveEntry } from "../menus";
 import { SYMBOLS } from "../math/symbols";
 import { fill } from "../math/text";
 import { EXPLAINERS } from "../model/explainers";
+import { cardsOf } from "../model/ideaCards";
 import { isTopic, SHELVES, TOPICS, topicOf, topicProgress, type TopicId } from "../model/topics";
 import { readWork } from "../work";
 import { nextHref, TopicTile } from "./SiteHome";
@@ -70,6 +72,7 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
   const games = entries.filter((e) => e.kind === "game" && e !== first);
   const boardName = fill(s.boardName, { topic: name });
   const symbols = SYMBOLS.filter((x) => x.topics.includes(id));
+  const ideas = cardsOf(topic.skills);
 
   return (
     <div className="z site">
@@ -79,6 +82,7 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
         <h1 className="z-page-title"><span className="site-topic-icon" aria-hidden="true">{topic.icon}</span> {name}</h1>
         <p className="course-lede">{s.topics[id].about}</p>
         <Explainer id={id} />
+        {ideas.length > 0 && <IdeaCards key={id} ideas={ideas} />}
 
         {p.total > 0 ? (
           <section className="course-next" aria-label={t.roadmap.next}>

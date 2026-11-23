@@ -37,13 +37,16 @@ import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
 import { holds, isDue, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
-import { learnStage, type Stages } from "../model/learningStage";
+import { learnStage, learningStageOf, type Stages } from "../model/learningStage";
+import { notePlateau, plateauOf, type Plateaus } from "../model/plateau";
 import type { Feature } from "../model/arms";
 import { homeworkIndex, nextHomework } from "../model/homework";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
 import { keepClassLit, loadClassLit } from "../classIdeaMap";
 import { lightUp, newlyLit, type LitMap } from "../model/ideaMap";
-import { hasIdeas, SKILL_IDEAS, type IdeaState } from "../model/ideaState";
+import { hasIdeas, SKILL_IDEAS, weakestIdea, type IdeaState } from "../model/ideaState";
+import { coveredCard, type Covered } from "../model/ideaCards";
+import { IdeaCardReview } from "./IdeaCard";
 import { IdeaMap } from "./IdeaMap";
 import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
@@ -60,6 +63,9 @@ const MATH_SCALE = 1.4;
 /** Questions answered before a missed one comes back. */
 const REVIEW_AFTER = 3;
 /** Right answers in a row that earn a celebration. */
+/** How long a right answer's feedback stays before the next question comes by itself (#562); the Next button fills in
+ *  that time (.auto-next). */
+const AUTO_NEXT_MS = 2000;
 const CHEER_AT = [3, 5, 10, 15, 20];
 
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
@@ -139,6 +145,9 @@ export function PracticeDialog(props: Props) {
   const [length, setLength] = useState<Length>(sessionLength);
   const [summary, setSummary] = useState(false);
   const [stretch, setStretch] = useState<Stretch | null>(null);
+  // A plateau's stretch (#580): the skills whose offer was put off this visit, and the best day to beat once taken up.
+  const [stretchLater, setStretchLater] = useState<SkillId[]>([]);
+  const [target, setTarget] = useState<{ skill: SkillId; best: number } | null>(null);
   /** The ideas lit on the idea map during this session, marked new on the map after it. */
   const [sessionLit, setSessionLit] = useState<string[]>([]);
   /** A question of the session has ended: it joins the ring and the stretch without a break. */
@@ -165,6 +174,13 @@ export function PracticeDialog(props: Props) {
    * plan says, or before it comes, what was kept when they signed in.
    */
   const has = (f: Feature) => studentHas(planRef.current ?? loadStudent(), f);
+  /**
+   * The idea card a question opens with (#579): a spaced review on a skill made of ideas starts with the card of the
+   * student's weakest idea there, one corner covered. It is on trial (arms.ts), so a signed-in student has it only in
+   * the arm of a class testing it; a learner nobody has signed in is in no study and always has it.
+   */
+  const ideaCardFor = (c: Current, signedIn: boolean, ideas: IdeaState | undefined): Covered | null =>
+    c.policy === "spaced" && hasIdeas(c.ex.skill) && (!signedIn || has("cards")) ? coveredCard(c.ex.skill, weakestIdea(ideas ?? {}, c.ex.skill)) : null;
   /** The skill of the question on screen, so that a spaced review is on another skill when one is due. */
   const shownSkill = useRef<SkillId | undefined>(undefined);
   const menu = useRef<HTMLDivElement>(null);
@@ -222,6 +238,8 @@ export function PracticeDialog(props: Props) {
       ? { ex: exercise(initial.skill, initial.level, initial.seed, w), ...freeOrigin }
       : nextExercise(area, pick, level, progress, null),
   );
+  /** The covered idea card before the question, until the student has filled its corner. */
+  const [ideaCard, setIdeaCard] = useState<Covered | null>(() => ideaCardFor(cur, !!loadStudent(), progress.ideas));
   const [input, setInput] = useState("");
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [wrongs, setWrongs] = useState(0);
@@ -417,6 +435,12 @@ export function PracticeDialog(props: Props) {
     // skill's, and the time to the first answer judges its speed on the top level.
     const stages: Stages = { ...progress.stages };
     if (stages[ex.skill]) stages[ex.skill] = { ...stages[ex.skill] };
+    // A kept skill's days on its top level, to notice when the learner stops getting faster (plateau.ts, #580). The
+    // stage before the answer decides, so the answer that keeps a skill starts its sessions only from the next one.
+    const plateaus: Plateaus = { ...progress.plateaus };
+    if (plateaus[ex.skill]) plateaus[ex.skill] = { sessions: plateaus[ex.skill].sessions.map((d) => ({ ...d, times: [...d.times] })) };
+    const day = new Date(now - new Date(now).getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
+    notePlateau(plateaus, ex.skill, { day, correct: firstTry, top: ex.level === 3, stage: learningStageOf(progress.stages, ex.skill), ms: log.current.answers[0]?.ms });
     learnStage(stages, ex.skill, { level: ex.level, correct: firstTry, mastered: isSecure(cell), review, ms: log.current.answers[0]?.ms });
     if (pick === "place" && placing) {
       const p = placementStep(placing, firstTry);
@@ -432,6 +456,7 @@ export function PracticeDialog(props: Props) {
       cells: { ...progress.cells, [key]: cell },
       spacing,
       stages,
+      plateaus,
       placed,
     });
     setScore((sc) => ({ right: sc.right + (ok ? 1 : 0), total: sc.total + 1, streak: ok ? sc.streak + 1 : 0 }));
@@ -487,6 +512,7 @@ export function PracticeDialog(props: Props) {
     log.current.faded = g || undefined;
     log.current.steps = Array.from({ length: g }, () => ({ answers: [], shown: true }));
     setCur(c);
+    setIdeaCard(ideaCardFor(c, !!live.current.student, live.current.student && planRef.current ? planRef.current.ideas : live.current.progress.ideas));
     setInput("");
     setVerdict(null);
     setWrongs(0);
@@ -646,6 +672,17 @@ export function PracticeDialog(props: Props) {
     if (to.level !== level) setLevel(to.level);
   };
   const levelName = (L: Level) => w.levels[String(L) as "1" | "2" | "3"];
+  // A right answer moves on by itself once its feedback has been read (#562): after the rating when one is asked (so the
+  // tap that rates moves on too), not while the solution is open or after the session's last question, and never in
+  // calm mode, which keeps its own pace. What is recorded does not change: the attempt was saved at the check.
+  const autoNext = done === "solved" && !calm && !sessionOver && !given && !solution && (!rateable || !!rated);
+  const onNextRef = useRef(onNext);
+  onNextRef.current = onNext;
+  useEffect(() => {
+    if (!autoNext) return;
+    const timer = setTimeout(() => onNextRef.current(), AUTO_NEXT_MS);
+    return () => clearTimeout(timer);
+  }, [autoNext]);
   // What the student has kept and mastered of their class's skills, from the plan their answers carry forward.
   const held = planStatus === "ready" && planRef.current ? holds(planRef.current.spacing, planRef.current.skills) : null;
   const skillHolds = held && (Object.fromEntries(Object.entries(held).map(([h, ks]) => [h, ks.map((k) => w.skills[k as SkillId])])) as Record<Hold, string[]>);
@@ -799,6 +836,22 @@ export function PracticeDialog(props: Props) {
           )}
           {sessionOn && breakDue(stretch) && <BreakPrompt w={w} onDismiss={() => setStretch(stretchAfter(null, Date.now()))} />}
           {sessionOn && <SessionRing results={session} n={length} streak={score.streak} w={w} onLength={chooseLength} />}
+          {!classOn && (() => {
+            // Free practice offers a stretch on a kept skill the learner has stopped getting faster on (plateau.ts):
+            // offered, never forced, since on ASSISTments such a plateau could not be shown to last.
+            const skill = cur.ex.skill;
+            const best = (s: number) => (Math.round(s * 10) / 10).toString();
+            if (target?.skill === skill) return <small className="hint practice-review">{fill(w.ui.stretchTarget, { best: best(target.best) })}</small>;
+            const hit = plateauOf(progress.plateaus, skill);
+            if (!hit || stretchLater.includes(skill)) return null;
+            return (
+              <p className="hint practice-stretch" role="status">
+                {fill(w.ui.stretchOffer, { skill: w.skills[skill], best: best(hit.best) })}{" "}
+                <button className="btn small primary" onClick={() => (setTarget({ skill, best: hit.best }), choose(areaOf(skill), skill, 3))}>{w.ui.stretchGo}</button>{" "}
+                <button className="btn small" onClick={() => setStretchLater((l) => [...l, skill])}>{w.ui.stretchLater}</button>
+              </p>
+            );
+          })()}
           {homeworkAt >= 0 && plan?.homework ? (
             <small className="hint practice-review">
               📝 {fill(w.ui.homework, { n: homeworkAt + 1, of: plan.homework.items.length })}
@@ -811,6 +864,19 @@ export function PracticeDialog(props: Props) {
           ) : (
             classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
           )}
+          {ideaCard ? (
+            <IdeaCardReview
+              key={`${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
+              covered={ideaCard}
+              onDone={() => {
+                // The card moved nothing; the question's own clock starts now, as if it had just been shown.
+                log.current = startLog();
+                setIdeaCard(null);
+                setTimeout(() => inputRef.current?.focus());
+              }}
+            />
+          ) : (
+          <>
           {question ? (
             <div className="preview practice-question">
               {!classOn && !cur.review && (
@@ -969,9 +1035,10 @@ export function PracticeDialog(props: Props) {
             </>
           )}
           <div className="field-row practice-actions">
-            {!done && !given && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
+            {/* Enter checks; the button is there for touch. */}
+            {!done && !given && stepping !== "now" && <button className="btn" onClick={onCheck}>{w.ui.check}</button>}
             {!done && !given && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
-            {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
+            {done && <button className={`btn primary${autoNext ? " auto-next" : ""}`} onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
             {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
             {!calm && (
               <button
@@ -1108,6 +1175,8 @@ export function PracticeDialog(props: Props) {
               </summary>
               <IdeaMap skill={cur.ex.skill} lit={classMap.current.lit} fresh={classMap.current.fresh} w={w} />
             </details>
+          )}
+          </>
           )}
           {!page && studentPanel}
           {!page && resetButton}

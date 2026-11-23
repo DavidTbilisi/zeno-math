@@ -2,14 +2,12 @@
 // how they did, and the sheets to print for students without a device. Homework opens only once the class has taken
 // its delayed post-test (server/homework.ts); until then the card says why and the button is off. A class that isn't
 // part of the study (a pilot) can be taken out of it here, and then has homework at any time (issue #299).
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
 import { ApiError, studentName, type ClassSummary, type Dashboard, type teacherApi } from "../api";
 import type { Dict } from "../locales/en";
 import type { SkillId } from "../math/practiceSkills";
 import { fill } from "../math/text";
 import { HOMEWORK_LENGTH, MAX_HOMEWORK, MIN_HOMEWORK } from "../model/homework";
-
-const PrintableHomework = lazy(() => import("./PrintableHomework").then((m) => ({ default: m.PrintableHomework })));
 
 type Row = Dashboard["homework"]["rows"][number];
 
@@ -27,7 +25,6 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onChanged }
   const [length, setLength] = useState(HOMEWORK_LENGTH);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState<string | null>(null);
-  const [printing, setPrinting] = useState(false);
   const { open, study, rows } = data.homework;
   const students = new Map(data.students.map((s) => [s.id, s]));
   const nameOf = (id: string) => studentName(id, students.get(id)?.number, showCodes ? students.get(id)?.code : undefined);
@@ -96,7 +93,7 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onChanged }
             <button className="btn primary small" disabled={busy || !data.students.length} onClick={() => void make()}>
               {rows.length ? w.homeworkRemake : w.homeworkMake}
             </button>
-            {!!rows.length && <button className="btn small" onClick={() => setPrinting(true)}>{w.homeworkPrint}</button>}
+            {!!rows.length && <a className="btn small" href={`#/teacher/${klass.code}/homework/print`}>{w.homeworkPrint}</a>}
           </div>
         </>
       )}
@@ -136,11 +133,6 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onChanged }
           </table>
           <p className="hint">{w.homeworkLegend}</p>
         </>
-      )}
-      {printing && (
-        <Suspense fallback={null}>
-          <PrintableHomework klass={klass} rows={rows} nameOf={(id) => studentName(id, students.get(id)?.number)} w={w} pw={t.pracWords} onClose={() => setPrinting(false)} />
-        </Suspense>
       )}
     </section>
   );
