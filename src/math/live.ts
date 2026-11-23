@@ -25,6 +25,7 @@ import { SHARE_START, type LiveShare } from "./shareBags";
 import { FROG_START, type LiveFrog } from "./frogJumps";
 import { MAKE_START, type LiveMakeOne } from "./makeOne";
 import { TILE_START, type LiveTileDrop } from "./tileDrop";
+import { DOUBLE_START, type LiveDouble } from "./doubleLine";
 import { PIZZA_START, type LivePizza } from "./pizzaSlice";
 import type { LiveBalance } from "./balance";
 import type { LiveMachine } from "./machine";
@@ -556,6 +557,7 @@ export type LiveStates = {
   frogJumps: LiveFrog;
   makeOne: LiveMakeOne;
   tileDrop: LiveTileDrop;
+  doubleLine: LiveDouble;
   pizzaSlice: LivePizza;
   balance: LiveBalance;
   machine: LiveMachine;
@@ -673,6 +675,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   frogJumps: [660, 500],
   makeOne: [640, 560],
   tileDrop: [640, 580],
+  doubleLine: [680, 580],
   pizzaSlice: [640, 560],
   balance: [680, 560],
   machine: [600, 610],
@@ -792,6 +795,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     frogJumps: FROG_START,
     makeOne: MAKE_START,
     tileDrop: TILE_START,
+    doubleLine: DOUBLE_START,
     pizzaSlice: PIZZA_START,
     balance: { mode: "puzzle", stage: 0, level: 1, seed: 1, guess: [], weighed: false, misses: 0, done: false, streak: 0, said: null },
     machine: { mode: "puzzle", stage: 0, level: 1, seed: 1, tried: [], typed: "", misses: 0, done: false, streak: 0, said: null },
