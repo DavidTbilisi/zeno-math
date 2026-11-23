@@ -1976,3 +1976,16 @@ span.board-home:hover { background: none; }
 .predict-verdict.right { color: #2b8a3e; }
 .predict-verdict.wrong { color: #c92a2a; }
 .inline-piece[inert] { opacity: 0.85; }
+/* Today (#585): one session in the order of the four learning stages. */
+.today-parts { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 10px; }
+.today-part { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border: 2px solid var(--z-ink); border-radius: 10px; background: #fff; }
+.today-part > div { display: grid; gap: 2px; min-width: 0; }
+.today-part.done { opacity: 0.7; }
+.today-moved ul { list-style: none; padding: 0; display: grid; gap: 8px; }
+.today-moved li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.today-moved li .road-name { min-width: 10em; }
+.today-moved li.up .road-name { font-weight: 700; }
+@media (max-width: 520px) {
+  .today-part { grid-template-columns: auto 1fr; }
+  .today-part > a { grid-column: 1 / -1; justify-self: start; }
+}
