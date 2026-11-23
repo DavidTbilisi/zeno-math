@@ -84,6 +84,7 @@ import type { LiveBeQueue } from "./beQueue";
 import type { LiveBeComp } from "./beComp";
 import type { LiveBeTopo } from "./beTopo";
 import type { LiveBeName } from "./beName";
+import { whichStart, type LiveWhich } from "./whichTool";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
@@ -623,6 +624,10 @@ export type LiveStates = {
   beComp: LiveBeComp;
   beTopo: LiveBeTopo;
   beName: LiveBeName;
+  whichFrac: LiveWhich;
+  whichWord: LiveWhich;
+  whichEq: LiveWhich;
+  whichQuad: LiveWhich;
   descentLab: LiveDescent;
   surface: LiveSurface;
   pcaLab: LivePca;
@@ -747,6 +752,10 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   beComp: [1080, 720],
   beTopo: [1080, 680],
   beName: [1080, 700],
+  whichFrac: [600, 560],
+  whichWord: [600, 700],
+  whichEq: [600, 560],
+  whichQuad: [600, 560],
   descentLab: [660, 650],
   surface: [680, 790],
   pcaLab: [660, 720],
@@ -873,6 +882,10 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     beComp: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beTopo: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beName: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
+    whichFrac: whichStart("frac"),
+    whichWord: whichStart("word"),
+    whichEq: whichStart("eq"),
+    whichQuad: whichStart("quad"),
     descentLab: DESCENT_START,
     surface: SURFACE_START,
     pcaLab: PCA_START,

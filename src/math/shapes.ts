@@ -1720,6 +1720,24 @@ function beNamePreview(): Piece[] {
   ];
 }
 
+/** Which tool?: a problem on its card over the set's tool tiles, the one that fits lit; the tiles' marks are the tools' first moves. */
+function whichPreview(problem: string, tiles: string[], lit: number): Piece[] {
+  const cols = tiles.length === 4 ? 2 : 3;
+  const tw = cols === 2 ? 96 : 62;
+  return [
+    rect(0, 0, 200, 40, { fill: "#fff4e6", color: "#f08c00", width: 2 }, true),
+    text(100, 20, problem, 15),
+    ...tiles.flatMap((t, i) => {
+      const [x, y] = [(i % cols) * (tw + 8), 52 + Math.floor(i / cols) * 36];
+      return [rect(x, y, tw, 30, { fill: i === lit ? "#ebfbee" : "#f8f9fa", color: i === lit ? "#2f9e44" : "#ced4da", width: 1.5 }, true), text(x + tw / 2, y + 15, t, 13)];
+    }),
+  ];
+}
+const whichFracPreview = () => whichPreview("2/7 ÷ 3/5", ["□/35", "× ×", "÷ → ×"], 2);
+const whichWordPreview = () => whichPreview("▭ + ▭ + 6 = 50", ["− 6", "+ 1", "− 6, ÷ 2", "k + 1", "= n", "2 × g"], 2);
+const whichEqPreview = () => whichPreview("4/(x + 1) = 2/3", ["↶", "x ⇄", "✕"], 2);
+const whichQuadPreview = () => whichPreview("x² − 49 = 0", ["( )( )", "±√", "( )²", "−b ± √"], 1);
+
 function beCachePreview(): Piece[] {
   // A request over a cache list from the head to the tail, the tail on its way to the evict bin.
   const node = (i: number, k: string, v: string, color: string) => [rect(i * 70, 52, 58, 44, { fill: "#f3f0ff", color, width: 2 }), text(i * 70 + 29, 66, k, 16), text(i * 70 + 29, 86, v, 13)];
@@ -2308,6 +2326,10 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeComp", build: beCompPreview, live: "beComp" },
   { id: "liveBeTopo", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", build: beNamePreview, live: "beName" },
+  { id: "liveWhichFrac", build: whichFracPreview, live: "whichFrac" },
+  { id: "liveWhichWord", build: whichWordPreview, live: "whichWord" },
+  { id: "liveWhichEq", build: whichEqPreview, live: "whichEq" },
+  { id: "liveWhichQuad", build: whichQuadPreview, live: "whichQuad" },
   { id: "liveDescentLab", build: descentLabPreview, live: "descentLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },

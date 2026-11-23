@@ -18,6 +18,7 @@
     "e2e": "playwright test",
     "model": "node --disable-warning=ExperimentalWarning scripts/evaluate-model.ts",
     "pace": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/pace.ts",
+    "plateau": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/plateau.ts",
     "import-assistments": "node --disable-warning=ExperimentalWarning scripts/import-assistments.ts",
     "simulate": "node --disable-warning=ExperimentalWarning scripts/simulate-study.ts",
     "mastery": "node --disable-warning=ExperimentalWarning scripts/mastery.ts",
