@@ -143,7 +143,6 @@ export function BoardPage({ id }: { id: string }) {
   // The board's theme as last seen; "" until Excalidraw reports it.
   const theme = useRef("");
   const paletteOpener = useRef<HTMLElement | null>(null);
-  const [selectedMath, setSelectedMath] = useState<ExcalidrawImageElement | undefined>();
   const excalidraw = useRef<ExcalidrawImperativeAPI | null>(null);
   // When the bar doesn't fit it drops the labels its icons already say (1), then every label (2), then tightens its
   // spacing and the title (3), then wraps onto a second row (4) rather than hide buttons past the edge.
@@ -339,11 +338,6 @@ export function BoardPage({ id }: { id: string }) {
         const ex = excalidraw.current;
         if (ex && panelRef.current?.id === open.id && gone(ex.getAppState().selectedElementIds, ex.getSceneElements())) closePanel();
       }, 0);
-    // Track whether the current selection is an editable formula/graph.
-    const ids = Object.keys(appState.selectedElementIds);
-    const sel = ids.length === 1 ? elements.find((e) => e.id === ids[0] && !e.isDeleted) : undefined;
-    const math = mathOf(sel) ? (sel as ExcalidrawImageElement) : undefined;
-    setSelectedMath((prev) => (prev?.id === math?.id && prev?.version === math?.version ? prev : math));
 
     // Excalidraw makes a piece active 100 ms after the click in its middle, with the element as it was at the click.
     // A piece changed in between is a new element by then, so Excalidraw would keep it behind the canvas: point it at
@@ -588,6 +582,12 @@ export function BoardPage({ id }: { id: string }) {
   // goes back quietly, and the last one is then put in as the step: undo goes straight back to before the panel.
   function closePanel() {
     for (const flush of panelFlushes.current) flush();
+    // The keyboard was in the panel: it goes back to the board (Excalidraw hears keys only on its own element), so
+    // Enter opens the picture again, Ctrl+Z undoes and Delete deletes.
+    if (document.activeElement?.closest(".item-panel"))
+      requestAnimationFrame(() => {
+        if (document.activeElement === document.body) document.querySelector<HTMLElement>(".excalidraw-container")?.focus({ preventScroll: true });
+      });
     const open = panelRef.current;
     closedPanel.current = open;
     panelRef.current = null;
@@ -609,12 +609,6 @@ export function BoardPage({ id }: { id: string }) {
     ex.updateScene({ elements: swap({ ...last, fileId: o.fileId, customData: o.customData, width: o.width, height: o.height } as ExcalidrawElement, 1), captureUpdate: CaptureUpdateAction.NEVER });
     ex.updateScene({ elements: swap(last, 2), captureUpdate: CaptureUpdateAction.IMMEDIATELY });
   }
-
-  const openEditor = (el: ExcalidrawImageElement) => {
-    const math = mathOf(el)!;
-    if (inPanel(math.kind)) openPanel(el);
-    else open({ kind: math.kind, editing: el });
-  };
 
   const openPalette = () => {
     paletteOpener.current = document.activeElement as HTMLElement | null;
@@ -639,6 +633,23 @@ export function BoardPage({ id }: { id: string }) {
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
   }, []);
+
+  // Enter on a selected tool's picture opens its panel, the keyboard's way to the click (Excalidraw would crop it). In a
+  // field or on a button, Enter stays theirs.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter" || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || panelRef.current) return;
+      const at = e.target as HTMLElement | null;
+      if (at && at !== document.body && (!at.closest(".excalidraw") || at.closest("input, textarea, select, button, a, [contenteditable]"))) return;
+      const pic = excalidraw.current && selectedMathElement(excalidraw.current);
+      if (!pic) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openPanel(pic);
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const scene = board?.scene;
   const initialData = useMemo(
@@ -722,11 +733,6 @@ export function BoardPage({ id }: { id: string }) {
           {saveState === "saving" ? t.saving : saveState === "saved" ? t.saved : saveState === "conflict" ? t.saveConflict : t.saveError}
         </span>
         <div className="spacer" />
-        {selectedMath && (
-          <button className="btn" onClick={() => openEditor(selectedMath)}>
-            <BarIcon name="edit" /> <span className="btn-label">{t[TOOLS[mathOf(selectedMath)!.kind].edit]}</span>
-          </button>
-        )}
         <button className="btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}><BarIcon name="search" /></button>
         <button className="btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
           <BarIcon name="shapes" /> <span className="btn-label minor">{t.shapes.button}</span>
@@ -776,7 +782,20 @@ export function BoardPage({ id }: { id: string }) {
           const st = ex.getAppState();
           if (st.activeTool.type !== "selection") return;
           const z = st.zoom.value;
-          const el = itemAt(ex.getSceneElements(), (e.clientX - st.offsetLeft) / z - st.scrollX, (e.clientY - st.offsetTop) / z - st.scrollY, (x) => !!liveDataOf(x));
+          const [sx, sy] = [(e.clientX - st.offsetLeft) / z - st.scrollX, (e.clientY - st.offsetTop) / z - st.scrollY];
+          // A tool's picture: one click opens its panel beside it, once Excalidraw has selected it. Not when the click
+          // leaves it among others (a group, or a selection of several), and not again when its panel is open.
+          const pic = itemAt(ex.getSceneElements(), sx, sy, (x) => !!mathOf(x));
+          if (pic) {
+            if (pic.groupIds.length > 0 || panelRef.current?.id === pic.id) return;
+            window.setTimeout(() => {
+              const sel = Object.keys(ex.getAppState().selectedElementIds);
+              const now = ex.getSceneElements().find((x) => x.id === pic.id);
+              if (now && sel.length === 1 && sel[0] === pic.id && panelRef.current?.id !== pic.id) openPanel(now);
+            }, 0);
+            return;
+          }
+          const el = itemAt(ex.getSceneElements(), sx, sy, (x) => !!liveDataOf(x));
           if (!el || (st.activeEmbeddable?.element.id === el.id && st.activeEmbeddable.state === "active")) return;
           const [cx, cy] = [e.clientX, e.clientY];
           // After Excalidraw's own handling of the press, which selects the piece.
@@ -800,13 +819,11 @@ export function BoardPage({ id }: { id: string }) {
             }));
           }, 0);
         }}
-        // Double-clicking a formula/graph opens its editor (instead of Excalidraw's image crop mode).
+        // A double-click on a tool's picture does nothing more than its first click (instead of Excalidraw's crop mode).
         onDoubleClickCapture={(e) => {
-          const el = excalidraw.current && selectedMathElement(excalidraw.current);
-          if (el) {
+          if (excalidraw.current && selectedMathElement(excalidraw.current)) {
             e.stopPropagation();
             e.preventDefault();
-            openEditor(el);
           }
         }}
       >

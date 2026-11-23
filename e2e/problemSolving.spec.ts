@@ -31,7 +31,8 @@ test("tactics: parity explains an impossible target, finds the signs for a possi
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit tactics/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox", { name: "n" })).toHaveValue("8");
 });
 
@@ -61,7 +62,8 @@ test("strategies: Pólya's card takes your problem, and the lockers follow n", a
   await expect(dialog.getByRole("textbox", { name: "Your problem" })).toHaveValue("How many diagonals has a 12-gon?");
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit strategies/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox", { name: "1. Understand" })).toHaveValue("Unknown: the diagonals. Data: 12 corners.");
 });
 

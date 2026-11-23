@@ -26,6 +26,7 @@ test("regression: one label only says why, an example inserts and opens again", 
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit regression/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox", { name: "points (x₁, x₂, label; …):" })).toHaveValue(/^1, 2, 0; 2, 1, 0/);
 });

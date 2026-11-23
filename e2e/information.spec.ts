@@ -25,6 +25,7 @@ test("information: a zero in q says why, an example inserts and opens again", as
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit information/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox", { name: "chances q:" })).toHaveValue("0.9, 0.1");
 });
