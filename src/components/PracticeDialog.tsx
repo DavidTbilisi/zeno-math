@@ -36,7 +36,8 @@ import { RATINGS, rateLevel, type Rating } from "../model/difficulty";
 import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
-import { holds, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
+import { holds, isDue, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
+import { learnStage, type Stages } from "../model/learningStage";
 import type { Feature } from "../model/arms";
 import { homeworkIndex, nextHomework } from "../model/homework";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
@@ -409,7 +410,14 @@ export function PracticeDialog(props: Props) {
     // The day a level is first secure, for the roadmaps' achieved list.
     if (isSecure(cell) && !isSecure(progress.cells?.[key])) noteAchieved(`cell:${key}`);
     const spacing = { ...progress.spacing };
-    learnSpacing(spacing, key, firstTry, isSecure(cell), Date.now());
+    const now = Date.now();
+    const review = isDue(spacing[key], now);
+    learnSpacing(spacing, key, firstTry, isSecure(cell), now);
+    // The skill's learning stage (learningStage.ts): a level secure is the skill mastered, a level's spaced review is the
+    // skill's, and the time to the first answer judges its speed on the top level.
+    const stages: Stages = { ...progress.stages };
+    if (stages[ex.skill]) stages[ex.skill] = { ...stages[ex.skill] };
+    learnStage(stages, ex.skill, { level: ex.level, correct: firstTry, mastered: isSecure(cell), review, ms: log.current.answers[0]?.ms });
     if (pick === "place" && placing) {
       const p = placementStep(placing, firstTry);
       setPlacing(p);
@@ -423,6 +431,7 @@ export function PracticeDialog(props: Props) {
       answered: progress.answered + 1,
       cells: { ...progress.cells, [key]: cell },
       spacing,
+      stages,
       placed,
     });
     setScore((sc) => ({ right: sc.right + (ok ? 1 : 0), total: sc.total + 1, streak: ok ? sc.streak + 1 : 0 }));

@@ -8,6 +8,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 import { gradeOf, GRADES, PREREQUISITES, type Grade } from "./curriculum.ts";
 import type { Level } from "./elo.ts";
 import type { Standing } from "./course.ts";
+import type { LearningStage } from "./learningStage.ts";
 import { cellKey } from "./placement.ts";
 import { GAME_KEYS, type GameId } from "./gameKeys.ts";
 import type { TopicId } from "./topics.ts";
@@ -61,8 +62,12 @@ export const itemId = (i: Item) =>
  */
 export type ItemState = "done" | "behind" | "part" | "open";
 /** What the learner has done, read once: their standing in free practice, whether a game's ladder is passed, whether
- * a topic's intro has been read and whether a lab has been tried. */
-export type Work = { s: Standing; passed: (game: GameId) => boolean; read: (topic: TopicId) => boolean; tried: (lab: LabId) => boolean };
+ * a topic's intro has been read and whether a lab has been tried, and each skill's learning stage (learningStage.ts;
+ * none: 0 for every skill). */
+export type Work = {
+  s: Standing; passed: (game: GameId) => boolean; read: (topic: TopicId) => boolean; tried: (lab: LabId) => boolean;
+  stage?: (skill: SkillId) => LearningStage;
+};
 
 export function itemState(i: Item, w: Work): ItemState {
   if (isRead(i)) return w.read(i.read) ? "done" : "open";

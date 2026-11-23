@@ -40,6 +40,7 @@ The existing documents describe Zeno from above: `README.md` (a short tour), `do
   - [src/model/mastery.ts — mastery rules and how they are judged](#srcmodelmasteryts--mastery-rules-and-how-they-are-judged)
   - [src/model/conceptGraph.ts — a concept's inside, and whether an idea is an atom](#srcmodelconceptgraphts--a-concepts-inside-and-whether-an-idea-is-an-atom)
   - [src/model/atoms.ts — skills made of atoms, and BKT on each](#srcmodelatomsts--skills-made-of-atoms-and-bkt-on-each)
+  - [src/model/learningStage.ts — the four learning stages of a skill (#576)](#srcmodellearningstagets--the-four-learning-stages-of-a-skill-576)
   - [src/model/ideas.ts — skills made of ideas, asked by the real questions](#srcmodelideasts--skills-made-of-ideas-asked-by-the-real-questions)
   - [src/model/grain.ts — the same real answers at several grains](#srcmodelgraints--the-same-real-answers-at-several-grains)
   - [src/learner.ts — the browser-side learner client](#srclearnerts--the-browser-side-learner-client)
@@ -1246,6 +1247,12 @@ The part of the world of ideas the app runs: one P(known) per idea per student, 
 - `bearing(ex, idea)` (`:108-112`): the share of a question's evidence that falls on the idea, `1 / (ideas needed)` when it needs it, else 0: a fractions form scores 0.5 (the idea and `part`), an operation needing it 1/7 or so, a question not needing it 0.
 
 Pinned in `tests/ideaState.test.ts`: the lists; a right answer meets exactly the ideas needed and raises them; `addAcross` blame lands on `addSub` alone at `bktStep(0.5, prior, false)`; a stray mistake or a mistake on a right answer is read as the plain answer; linear says nothing; the weakest idea cases; the bearings; and `exerciseFor` (below).
+
+### src/model/learningStage.ts — the four learning stages of a skill (#576)
+
+A skill's stage, 0 (not yet mastered) or 1 comprehension, 2 encoding, 3 automaticity, 4 problem-solving, worked out from the answers alone, one at a time in order, like `spacing.ts`. `learnStage(stages, key, answer)` takes what the caller's own rules make of an answer: `mastered` (after it), `review` (whether a spaced review was due before it: `isDue` in `spacing.ts`), its `level`, `correct` at the first try, `ms` to the first answer and `transfer` (a question mixing the skill or hiding it in words). In order: a wrong review drops any stage above 0 to 1 and ends the speed run; mastery lifts 0 to 1; a right review lifts 1 to 2; on `TOP_LEVEL` (3) with a usable time, a right answer whose log seconds are at or under the learner's own moving average on that level (`PACE_DECAY` 0.2, judged only after `PACE_MIN` = 3 timed answers) extends the run while the stage is 2 or more, anything else there ends it, and `FAST_RUN` = 3 in a row lift 2 to 3; a right `transfer` answer lifts 3 to 4. So a stage is only reached in order, and only a missed review takes one away. Nothing sets `transfer` yet: the mixed and word questions (#581–#583) will.
+
+Free practice feeds it in `PracticeDialog`'s `settle`, keyed by skill: a level secure is the skill mastered, a level's review is the skill's, and the first answer's time from the question log. It is kept in `Progress.stages` (`zeno.practice.v1`); `readWork` gives `Work.stage`, which *My progress* (`StageSquares`, a 2 × 2 of squares, per skill in a `<details>` under each topic) and the roadmaps (the skill's tick in the stage's colour, `StageBadge` with its number) read. `src/components/LearningStages.tsx` holds the marks and `StageLegend`; the colours are `--ls-1`…`--ls-4` in `styles.css`. Class practice doesn't feed it yet. Pinned in `tests/learningStage.test.ts` with real spacing: each stage reached, in order only, speed judged only on level 3 with a pace to beat, a review failed after gold back to blue and up again, and the same answers giving the same stage.
 
 ### src/model/ideas.ts — skills made of ideas, asked by the real questions
 
