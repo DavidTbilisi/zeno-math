@@ -22,7 +22,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   // fractions and time
   fractions: [2, 7], compareFractions: [2, 6], clock: [1, 4],
   // Geometry
-  geoLab: [3, 12], geometry: [5, 10], euclid: [7, 12], "3d": [10, 13], coord: [6, 12], vectors: [10, 13],
+  geoLab: [3, 12], geometry: [5, 10], euclid: [7, 12], coord: [6, 12], vectors: [10, 13],
   trig: [10, 12], identities: LATE,
   // Algebra
   algebraTiles: [6, 10], formula: [6, 12], algebra: [6, 12], powers: [6, 12], polynomials: [10, 13], sequences: [8, 12],
@@ -52,7 +52,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   // algebra sense
   balance: [6, 8], exprMatch: [6, 8],
   // shape sense
-  geoboard: [3, 7], mirror: [3, 6], angleGuess: [3, 6], angleHunt: [5, 8], trigBuild: [10, 12], unitCircleGame: [10, 12], slopeWalk: [8, 12], solid: [4, 12],
+  geoboard: [3, 7], mirror: [3, 6], angleGuess: [3, 6], angleHunt: [5, 8], trigBuild: [10, 12], unitCircleGame: [10, 12], slopeWalk: [8, 12], solid: [4, 12], turned: [12, 13], cubeMatrix: [10, 13],
   sohcahtoa: [10, 12], trigDiscover: [10, 12], pythDiscover: [8, 10], circleDiscover: [10, 12], tessellate: [3, 7],
   views3d: [4, 8], cubeNet: [4, 7],
   // chart sense
