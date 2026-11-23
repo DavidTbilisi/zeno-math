@@ -85,9 +85,7 @@ export function ComplexDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={CX_TOPICS} value={topic} onChange={setTopic} label={(k) => t.cxTopics[k]} />
-      )}
+      <Tabs items={CX_TOPICS} value={topic} onChange={setTopic} label={(k) => t.cxTopics[k]} />
       <small className="hint">{t.cxHints[topic]}</small>
 
       <div className="field">

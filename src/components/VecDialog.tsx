@@ -49,7 +49,7 @@ export function VecDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={VEC_TOPICS} value={topic} onChange={setTopic} label={(k) => t.vecTopics[k]} />}
+      <Tabs items={VEC_TOPICS} value={topic} onChange={setTopic} label={(k) => t.vecTopics[k]} />
       <small className="hint">{t.vecHints[topic]}</small>
 
       <div className="field">

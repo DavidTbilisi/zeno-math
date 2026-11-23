@@ -86,9 +86,7 @@ export function IntegralDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={INT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.intTopics[k]} />
-      )}
+      <Tabs items={INT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.intTopics[k]} />
       <small className="hint">{t.intHints[topic]}</small>
 
       <div className="field">

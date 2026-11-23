@@ -53,7 +53,7 @@ export function RandvarDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={RV_TOPICS} value={topic} onChange={setTopic} label={(k) => t.randvarTopics[k]} />}
+      <Tabs items={RV_TOPICS} value={topic} onChange={setTopic} label={(k) => t.randvarTopics[k]} />
       <small className="hint">{t.randvarHints[topic]}</small>
 
       <div className="field">

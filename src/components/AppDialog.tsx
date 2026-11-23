@@ -51,7 +51,7 @@ export function AppDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={APP_TOPICS} value={topic} onChange={setTopic} label={(k) => t.appTopics[k]} />}
+      <Tabs items={APP_TOPICS} value={topic} onChange={setTopic} label={(k) => t.appTopics[k]} />
       <small className="hint">{t.appHints[topic]}</small>
 
       {topic === "volume" && (

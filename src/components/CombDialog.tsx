@@ -71,9 +71,7 @@ export function CombDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={COMB_TOPICS} value={topic} onChange={setTopic} label={(k) => t.combTopics[k]} />
-      )}
+      <Tabs items={COMB_TOPICS} value={topic} onChange={setTopic} label={(k) => t.combTopics[k]} />
       <small className="hint">{t.combHints[topic]}</small>
 
       <div className="field">

@@ -53,7 +53,7 @@ export function NaiveBayesDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={NB_TOPICS} value={topic} onChange={setTopic} label={(k) => t.naiveBayesTopics[k]} />}
+      <Tabs items={NB_TOPICS} value={topic} onChange={setTopic} label={(k) => t.naiveBayesTopics[k]} />
       <small className="hint">{t.naiveBayesHints[topic]}</small>
 
       <div className="field">

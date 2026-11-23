@@ -5,7 +5,7 @@ import { Suspense, useState } from "react";
 import { useI18n } from "../i18n";
 import type { MenuEntry } from "../menus";
 import { TOOLS, type ToolDialogProps } from "../tools";
-import { PanelContext } from "./ItemPanel";
+import { PanelContext, PanelFresh } from "./ItemPanel";
 
 type Picture = Parameters<ToolDialogProps["onSubmit"]>[1];
 
@@ -20,9 +20,12 @@ export function ToolOnPage({ entry, name, onClose }: { entry: MenuEntry; name: s
       <p className="course-count">{s.toolHint}</p>
       <div className="site-tool">
         <PanelContext.Provider value={true}>
-          <Suspense fallback={<p className="muted">{t.loading}</p>}>
-            <ToolDialog start={entry.start} onSubmit={(_data, image) => setPic(image)} onClose={onClose} />
-          </Suspense>
+          {/* Fresh: its first example is drawn below at once. */}
+          <PanelFresh.Provider value={true}>
+            <Suspense fallback={<p className="muted">{t.loading}</p>}>
+              <ToolDialog start={entry.start} onSubmit={(_data, image) => setPic(image)} onClose={onClose} />
+            </Suspense>
+          </PanelFresh.Provider>
         </PanelContext.Provider>
       </div>
       {pic && (

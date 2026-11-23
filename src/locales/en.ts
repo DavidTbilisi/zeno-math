@@ -9744,7 +9744,6 @@ export const en = {
     joinCopied: "Copied",
     joinShow: "Show to the class",
     joinShowHint: "Scan with a phone camera, or type the address. Then tick the box, give your number in the class list and press Join.",
-    joinDone: "Done",
     findCode: "Find a student's code",
     findCodeHint: "A student who lost their code tells you their number in the class list; their code is beside it. Don't let them join again: a second record splits their answers, and may put them in the other group.",
     listNo: "No.",

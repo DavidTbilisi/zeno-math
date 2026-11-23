@@ -49,7 +49,7 @@ export function PolyDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={POLY_TOPICS} value={topic} onChange={setTopic} label={(k) => t.polyTopics[k]} />}
+      <Tabs items={POLY_TOPICS} value={topic} onChange={setTopic} label={(k) => t.polyTopics[k]} />
       <small className="hint">{t.polyHints[topic]}</small>
 
       <div className="field">

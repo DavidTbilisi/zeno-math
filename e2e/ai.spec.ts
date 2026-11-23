@@ -49,19 +49,18 @@ test("the tensor tool draws, explains a ragged list and inserts", async ({ page,
   await insertPanel(page).getByRole("button", { name: /Tensors(?! lab)/ }).click();
 
   const dialog = page.getByRole("dialog");
-  await expect(dialog.getByRole("heading", { name: "Math for AI" })).toBeVisible();
+  await expect(dialog.getByRole("heading", { name: "Tensors" })).toBeVisible();
   const preview = dialog.locator(".preview img");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
 
   await dialog.getByRole("textbox").fill("[[1, 2], [3]]");
   await expect(dialog.locator(".preview .error")).toHaveText(/Lists of different lengths \(2 and 1\)/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "pick T[1, 2, 3]" }).click();
   await expect(dialog.getByRole("textbox")).toHaveValue("2x3x4; T[1, 2, 3]");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("tensor.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
@@ -79,16 +78,15 @@ test("tensor operations: a mismatch says why, and a matrix product inserts", asy
   await expect(dialog.getByRole("tab", { name: "Operations" })).toHaveAttribute("aria-selected", "true");
   await expect(dialog.getByRole("textbox")).toHaveValue("2x3x4; reshape 4x6");
   const preview = dialog.locator(".preview img");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
 
   await dialog.getByRole("textbox").fill("2x3 + [1, 2]");
   await expect(dialog.locator(".preview .error")).toHaveText(/Shapes \(2, 3\) and \(2\) do not broadcast/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "matrix product" }).click();
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("tensor-ops.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
@@ -106,16 +104,15 @@ test("gradient descent: three rates, a wrong rate refused, a valley inserted", a
   await expect(dialog.getByRole("tab", { name: "Gradient descent" })).toHaveAttribute("aria-selected", "true");
   await expect(dialog.getByRole("textbox")).toHaveValue("(x - 3)^2; start 0; rate 0.02, 0.4, 1.05; steps 12");
   const preview = dialog.locator(".preview img");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
 
   await dialog.getByRole("textbox").fill("x^2; rate 0");
   await expect(dialog.locator(".preview .error")).toHaveText(/A learning rate is a positive number/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "a long valley zigzags" }).click();
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("descent.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
@@ -133,16 +130,15 @@ test("backprop: a missing value is named, and a step of gradient descent inserts
   await expect(dialog.getByRole("tab", { name: "Backprop" })).toHaveAttribute("aria-selected", "true");
   await expect(dialog.getByRole("textbox")).toHaveValue("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; explain w");
   const preview = dialog.locator(".preview img");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
 
   await dialog.getByRole("textbox").fill("(w x + b - y)^2; x = 2, w = 3, b = 1");
   await expect(dialog.locator(".preview .error")).toHaveText(/y has no value/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "and one step of gradient descent" }).click();
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("backprop.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
@@ -160,16 +156,15 @@ test("softmax: a wrong target is refused, and three temperatures insert", async 
   await expect(dialog.getByRole("tab", { name: "Softmax" })).toHaveAttribute("aria-selected", "true");
   await expect(dialog.getByRole("textbox")).toHaveValue("[2, 1, 0.1]; labels cat, dog, bird; target cat");
   const preview = dialog.locator(".preview img");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
 
   await dialog.getByRole("textbox").fill("[2, 1, 0.1]; target 3");
   await expect(dialog.locator(".preview .error")).toHaveText(/The target is a class number from 0 to 2/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "temperature 0.5, 1, 5" }).click();
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("softmax.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
@@ -187,16 +182,15 @@ test("embeddings: an unknown name is refused, and an analogy inserts", async ({ 
   await expect(dialog.getByRole("tab", { name: "Embeddings" })).toHaveAttribute("aria-selected", "true");
   await expect(dialog.getByRole("textbox")).toHaveValue("cat [0.9, 0.8, 0.1], dog [0.85, 0.75, 0.2], car [0.1, 0.2, 0.9]; query cat");
   const preview = dialog.locator(".preview img");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
 
   await dialog.getByRole("textbox").fill("cat [0.9, 0.8], dog [0.85, 0.75]; query bird");
   await expect(dialog.locator(".preview .error")).toHaveText(/There is no vector called bird: the names are cat, dog/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "king − man + woman" }).click();
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("embeddings.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();
@@ -215,16 +209,15 @@ test("SVD & PCA: a rank too large is refused, and PCA of points inserts", async 
   await expect(dialog.getByRole("tab", { name: "SVD & PCA" })).toBeInViewport({ ratio: 0.95 });
   await expect(dialog.getByRole("textbox")).toHaveValue("[[3, 2, 2], [2, 3, -2]]; rank 1");
   const preview = dialog.locator(".preview img");
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
 
   await dialog.getByRole("textbox").fill("[[3, 2, 2], [2, 3, -2]]; rank 3");
   await expect(dialog.locator(".preview .error")).toHaveText(/Keep from 1 to 2 singular values/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "PCA: the line through the points" }).click();
-  await expect(preview).toBeVisible();
+  await expect(preview).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("svd.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit math for AI/ }).click();

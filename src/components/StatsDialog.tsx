@@ -107,9 +107,7 @@ export function StatsDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={STAT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.statTopics[k]} />
-      )}
+      <Tabs items={STAT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.statTopics[k]} />
       <small className="hint">{t.statHints[topic]}</small>
 
       <div className="field">

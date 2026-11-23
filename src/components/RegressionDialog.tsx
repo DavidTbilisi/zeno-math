@@ -53,7 +53,7 @@ export function RegressionDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={REG_TOPICS} value={topic} onChange={setTopic} label={(k) => t.regressionTopics[k]} />}
+      <Tabs items={REG_TOPICS} value={topic} onChange={setTopic} label={(k) => t.regressionTopics[k]} />
       <small className="hint">{t.regressionHints[topic]}</small>
 
       <div className="field">

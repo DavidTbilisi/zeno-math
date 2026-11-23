@@ -49,7 +49,7 @@ export function NumDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={NUM_TOPICS} value={topic} onChange={setTopic} label={(k) => t.numTopics[k]} />}
+      <Tabs items={NUM_TOPICS} value={topic} onChange={setTopic} label={(k) => t.numTopics[k]} />
       <small className="hint">{t.numHints[topic]}</small>
 
       <div className="field">

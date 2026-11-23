@@ -49,7 +49,7 @@ export function FnDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={FN_TOPICS} value={topic} onChange={setTopic} label={(k) => t.fnTopics[k]} />}
+      <Tabs items={FN_TOPICS} value={topic} onChange={setTopic} label={(k) => t.fnTopics[k]} />
       <small className="hint">{t.fnHints[topic]}</small>
 
       <div className="field">

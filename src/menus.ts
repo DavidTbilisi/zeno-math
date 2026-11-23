@@ -344,3 +344,9 @@ export const MENUS: MenuGroup[] = [
     ],
   },
 ];
+
+/** The menu's name for a tool: its entry on the given topic if it has one of its own, else its plain entry. */
+export function toolLabel(kind: ToolKind, start?: string): Word | undefined {
+  const entries = MENUS.flatMap((g) => g.sections.flatMap((s) => s.items)).filter((e): e is MenuEntry => !isLiveEntry(e) && e.kind === kind);
+  return (entries.find((e) => e.start === start) ?? entries.find((e) => !e.start))?.label;
+}

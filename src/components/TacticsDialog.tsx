@@ -62,9 +62,7 @@ export function TacticsDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={TACTICS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.tacticsTopics[k]} />
-      )}
+      <Tabs items={TACTICS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.tacticsTopics[k]} />
       <small className="hint">{t.tacticsHints[topic]}</small>
 
       <div className="field">

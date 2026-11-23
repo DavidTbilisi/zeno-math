@@ -1,5 +1,5 @@
-// The right-click panel: a tool's picture changes in place, its controls beside it and no modal; Escape closes it,
-// one undo takes back everything it did; anything else on the board still gets Excalidraw's own menu.
+// The item panel: a new tool's picture goes on the board at once and changes in place, its controls beside it and no
+// modal; Escape closes it, one undo takes back everything it did; anything else on the board still gets Excalidraw's own menu.
 import { expect, test, type Page } from "@playwright/test";
 import { insertGroup, insertPanel } from "./helpers.ts";
 
@@ -24,22 +24,24 @@ async function rightClickMiddle(page: Page) {
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: "right" });
 }
 
-test("a formula changes in the panel beside it, and one undo takes it back", async ({ page }) => {
+test("a formula goes on the board at once and changes in the panel beside it; one undo per panel", async ({ page }) => {
   await newBoard(page);
   await insertGroup(page, /Algebra/);
   await insertPanel(page).getByRole("button", { name: /Formula/ }).click();
-  const modal = page.getByRole("dialog");
-  await modal.getByRole("textbox").fill("x^2");
-  await modal.getByRole("button", { name: "Insert" }).click();
-  await expect(modal).toHaveCount(0);
-  await page.waitForTimeout(600); // the board scrolls to the new picture
-
-  await rightClickMiddle(page);
+  // No modal and no Insert: the first example is on the board already, its panel beside it.
   const panel = page.locator(".item-panel");
-  await expect(panel).toBeVisible();
-  await expect(panel.getByRole("heading", { name: "Edit formula" })).toBeVisible();
+  await expect(panel.getByRole("heading", { name: "Formula" })).toBeVisible();
   await expect(page.locator(".modal-backdrop")).toHaveCount(0);
-  await expect(page.locator(".context-menu")).toHaveCount(0);
+  await expect(panel.getByRole("button", { name: "Insert" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Edit formula/ })).toBeVisible();
+  await panel.getByRole("textbox").fill("x^2");
+  // Closed straight after the last change, still typesetting: the change reaches the board all the same.
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  // The picture stays selected: its Edit button opens the panel again.
+  const edit = page.getByRole("button", { name: /Edit formula/ });
+  await edit.click();
+  await expect(panel.getByRole("heading", { name: "Edit formula" })).toBeVisible();
   const source = panel.getByRole("textbox");
   await expect(source).toHaveValue("x^2");
   // Typed a key at a time, with pauses: several changes reach the board, and still one undo takes them all back.
@@ -51,15 +53,14 @@ test("a formula changes in the panel beside it, and one undo takes it back", asy
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/panel-formula.png` });
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
+  await edit.click();
+  await expect(panel.getByRole("textbox")).toHaveValue("y^3 + 1");
+  await page.keyboard.press("Escape");
 
-  // The picture holds the new formula: the full editor opens with it.
-  await page.getByRole("button", { name: /Edit formula/ }).click();
-  await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("y^3 + 1");
-  await page.getByRole("dialog").getByRole("button", { name: "Cancel" }).click();
-
-  // One undo goes back to before the panel.
+  // One undo goes back to before the second panel.
   await page.locator(".undo-button-container button").click();
-  await rightClickMiddle(page);
+  await page.waitForTimeout(300);
+  await edit.click();
   await expect(panel.getByRole("textbox")).toHaveValue("x^2");
 });
 
@@ -67,8 +68,14 @@ test("a number theory picture follows its slider; a rectangle keeps Excalidraw's
   await newBoard(page);
   await insertGroup(page, /Discrete/);
   await insertPanel(page).getByRole("button", { name: /Number theory/ }).click();
-  await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
-  await page.waitForTimeout(600);
+  await expect(page.locator(".item-panel")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Edit number theory/ })).toBeVisible();
+  await page.keyboard.press("Escape");
+  // The new picture is one step: undo takes it away, redo puts it back.
+  await page.locator(".undo-button-container button").click();
+  await expect(page.getByRole("button", { name: /Edit number theory/ })).toHaveCount(0);
+  await page.locator(".redo-button-container button").click();
+  await page.waitForTimeout(300);
 
   await rightClickMiddle(page);
   const panel = page.locator(".item-panel");

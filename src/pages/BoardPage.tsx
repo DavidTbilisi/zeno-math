@@ -23,7 +23,7 @@ import { useCompact } from "../components/useCompact";
 import { ShareBox } from "../components/ShareBox";
 import { ReadOnlyBoard } from "./SharedBoardPage";
 import { CommandPalette } from "../components/CommandPalette";
-import { ItemPanel, PanelSlot, type ScreenBox } from "../components/ItemPanel";
+import { ItemPanel, PanelSlot, type Flushes, type ScreenBox } from "../components/ItemPanel";
 import { SHAPES } from "../math/shapes";
 import { itemAt } from "../live/hit";
 import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
@@ -34,7 +34,7 @@ import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { BarIcon } from "../components/BarIcon";
 import { ZenoMark } from "../components/ZenoMark";
-import { isLiveEntry } from "../menus";
+import { isLiveEntry, toolLabel } from "../menus";
 import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 import { hasOrigin, installPaper, isPaper, PAPERS, type Paper } from "../paper";
 
@@ -55,9 +55,17 @@ const onLinkOpen = (el: { link: string | null }, e: { preventDefault: () => void
 /** The open tool dialog: a new picture (optionally on a given topic), or the picture being edited. */
 type Dialog = { kind: ToolKind; editing?: ExcalidrawImageElement; start?: string };
 
-/** The right-click panel: the item it changes, the item as it was when it opened, and where it was on screen; for a
- *  tool's picture, the tool and what it held, for a live piece its kind. */
-type Panel = { id: string; anchor: ScreenBox; orig: ExcalidrawElement } & ({ tool: ToolKind; initial: unknown; piece?: undefined } | { piece: LiveKind; tool?: undefined });
+/** The item panel: the item it changes (no id and no `orig` yet for a new picture, until its first render is placed),
+ *  the item as it was when it opened, and where it was on screen; for a tool's picture, the tool, what it held and the
+ *  topic it opens on, for a live piece its kind. `key` stays the same for the whole session of one panel. */
+type Panel = { key: string; id: string; anchor: ScreenBox; orig?: ExcalidrawElement } & (
+  | { tool: ToolKind; initial: unknown; start?: string; piece?: undefined }
+  | { piece: LiveKind; tool?: undefined }
+);
+
+/** A tool whose picture is changed in the panel beside it. Three's picture is a WebGL snapshot and practice is not a
+ *  picture to change: they keep their own editors. */
+const inPanel = (kind: ToolKind) => !TOOLS[kind].png && !TOOLS[kind].docked;
 
 // "conflict": someone saved this board elsewhere since we loaded it; autosave pauses until the user picks.
 type SaveState = "saved" | "saving" | "error" | "conflict";
@@ -122,9 +130,15 @@ export function BoardPage({ id }: { id: string }) {
   panelRef.current = panel;
   // Whether the panel has changed its item since it opened: closing it then makes all of it one step to undo.
   const panelChanged = useRef(false);
+  // The panel's changes still waiting to go in (ItemPanel's flushes): sent before it closes.
+  const panelFlushes = useRef<Flushes>(new Set());
+  // The panel just closed: a picture still rendering when it closed (a formula's typesetting) goes in after it, as a
+  // step of its own.
+  const closedPanel = useRef<Panel | null>(null);
   // A docked tool (practice) has its own place beside the board, so a dialog can open while it stays.
   const [dock, setDock] = useState<Dialog | null>(null);
-  const open = (d: Dialog) => (TOOLS[d.kind].docked ? setDock(d) : setDialog(d));
+  // A tool opens its panel with its first example already on the board (#558); 3D keeps its dialog for now.
+  const open = (d: Dialog) => (TOOLS[d.kind].docked ? setDock(d) : inPanel(d.kind) ? openNew(d.kind, d.start) : setDialog(d));
   const [palette, setPalette] = useState(false);
   // The board's theme as last seen; "" until Excalidraw reports it.
   const theme = useRef("");
@@ -320,14 +334,14 @@ export function BoardPage({ id }: { id: string }) {
     const open = panelRef.current;
     // Looked at again a moment later: a change that moves the selection and puts it back (duplicating) keeps it.
     const gone = (sel: AppState["selectedElementIds"], els: readonly ExcalidrawElement[]) => !sel[open!.id] || !els.some((e) => e.id === open!.id && !e.isDeleted);
-    if (open && gone(appState.selectedElementIds, elements))
+    if (open?.id && gone(appState.selectedElementIds, elements))
       window.setTimeout(() => {
         const ex = excalidraw.current;
         if (ex && panelRef.current?.id === open.id && gone(ex.getAppState().selectedElementIds, ex.getSceneElements())) closePanel();
       }, 0);
     // Track whether the current selection is an editable formula/graph.
     const ids = Object.keys(appState.selectedElementIds);
-    const sel = ids.length === 1 ? elements.find((e) => e.id === ids[0]) : undefined;
+    const sel = ids.length === 1 ? elements.find((e) => e.id === ids[0] && !e.isDeleted) : undefined;
     const math = mathOf(sel) ? (sel as ExcalidrawImageElement) : undefined;
     setSelectedMath((prev) => (prev?.id === math?.id && prev?.version === math?.version ? prev : math));
 
@@ -403,7 +417,7 @@ export function BoardPage({ id }: { id: string }) {
    * Adds a rendered image to the canvas (at `at`, or in the middle of the view), or swaps the image of an existing
    * formula/graph/model. Without `math` it's a plain picture, such as a copy of a live piece.
    */
-  const placeImage = (rendered: PlacedImage, math: MathData | undefined, editing?: ExcalidrawImageElement, at?: { x: number; y: number }, capture: CaptureUpdateActionType = CaptureUpdateAction.IMMEDIATELY) => {
+  const placeImage = (rendered: PlacedImage, math: MathData | undefined, editing?: ExcalidrawImageElement, at?: { x: number; y: number }, capture: CaptureUpdateActionType = CaptureUpdateAction.IMMEDIATELY): ExcalidrawElement | undefined => {
     const ex = excalidraw.current!;
     const fileId = crypto.randomUUID() as FileId;
     const file: BinaryFileData = {
@@ -434,7 +448,7 @@ export function BoardPage({ id }: { id: string }) {
           : el,
       );
       ex.updateScene({ elements: updated, captureUpdate: capture });
-      return;
+      return updated.find((el) => el.id === editing.id);
     }
 
     // Start at the viewport center (or where asked), then slide down past anything it would cover.
@@ -455,9 +469,11 @@ export function BoardPage({ id }: { id: string }) {
     ex.updateScene({
       elements: [...elements, withData],
       appState: { selectedElementIds: { [withData.id]: true } },
-      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+      captureUpdate: capture,
     });
-    ex.scrollToContent(withData, { animate: true });
+    // A picture placed from the panel stays still, so the panel can be put beside it at once.
+    ex.scrollToContent(withData, { animate: capture === CaptureUpdateAction.IMMEDIATELY });
+    return withData;
   };
 
   // What a live piece on the board can ask of it: write its new state into its element, put a copy beside it, or
@@ -540,8 +556,20 @@ export function BoardPage({ id }: { id: string }) {
     const selectedElementIds: AppState["selectedElementIds"] = { [el.id]: true };
     if (live) ex.updateScene({ appState: { selectedElementIds, activeEmbeddable: { element: el as NonDeletedExcalidrawElement, state: "active" } }, captureUpdate: CaptureUpdateAction.NEVER });
     else ex.updateScene({ appState: { selectedElementIds }, captureUpdate: CaptureUpdateAction.NEVER });
-    const at = { id: el.id, anchor: screenBox(el), orig: el };
+    const at = { key: el.id, id: el.id, anchor: screenBox(el), orig: el };
     const next: Panel | null = math ? { ...at, tool: math.kind, initial: math.data } : live ? { ...at, piece: live.live } : null;
+    panelRef.current = next;
+    setPanel(next);
+  };
+  /** A new picture: the panel opens in the middle of the view, and the tool's first render is placed there (see
+   *  PanelFresh), with the panel then moving beside it. */
+  const openNew = (kind: ToolKind, start?: string) => {
+    const ex = excalidraw.current;
+    if (!ex) return;
+    if (panelRef.current) closePanel();
+    const { width, height, offsetLeft, offsetTop } = ex.getAppState();
+    const [x, y] = [offsetLeft + width / 2, offsetTop + height / 2];
+    const next: Panel = { key: crypto.randomUUID(), id: "", anchor: { left: x, top: y, right: x, bottom: y }, tool: kind, initial: undefined, start };
     panelRef.current = next;
     setPanel(next);
   };
@@ -559,7 +587,9 @@ export function BoardPage({ id }: { id: string }) {
   // leave the item "uncommitted", and updateScene leaves such items out of the step), so the picture it opened with
   // goes back quietly, and the last one is then put in as the step: undo goes straight back to before the panel.
   function closePanel() {
+    for (const flush of panelFlushes.current) flush();
     const open = panelRef.current;
+    closedPanel.current = open;
     panelRef.current = null;
     setPanel(null);
     const ex = excalidraw.current;
@@ -568,15 +598,22 @@ export function BoardPage({ id }: { id: string }) {
     const now = ex.getSceneElementsIncludingDeleted();
     const last = now.find((e) => e.id === open.id);
     if (!last || last.isDeleted) return;
-    const o = open.orig as ExcalidrawImageElement;
     const swap = (el: ExcalidrawElement, n: number) => now.map((e) => (e.id === open.id ? { ...el, version: last.version + n, versionNonce: Math.floor(Math.random() * 2 ** 31) } : e));
+    // A new picture went in unrecorded too: it is taken away quietly and put back as the step, so one undo removes it.
+    if (!open.orig) {
+      ex.updateScene({ elements: swap({ ...last, isDeleted: true } as ExcalidrawElement, 1), captureUpdate: CaptureUpdateAction.NEVER });
+      ex.updateScene({ elements: swap(last, 2), captureUpdate: CaptureUpdateAction.IMMEDIATELY });
+      return;
+    }
+    const o = open.orig as ExcalidrawImageElement;
     ex.updateScene({ elements: swap({ ...last, fileId: o.fileId, customData: o.customData, width: o.width, height: o.height } as ExcalidrawElement, 1), captureUpdate: CaptureUpdateAction.NEVER });
     ex.updateScene({ elements: swap(last, 2), captureUpdate: CaptureUpdateAction.IMMEDIATELY });
   }
 
   const openEditor = (el: ExcalidrawImageElement) => {
     const math = mathOf(el)!;
-    open({ kind: math.kind, editing: el });
+    if (inPanel(math.kind)) openPanel(el);
+    else open({ kind: math.kind, editing: el });
   };
 
   const openPalette = () => {
@@ -624,11 +661,12 @@ export function BoardPage({ id }: { id: string }) {
     if (!excalidrawApi || !m) return;
     const [, what, kind, start] = m;
     const done = () => history.replaceState(null, "", `#/b/${id}`);
-    if (what === "tool" && isToolKind(kind)) (open({ kind, start }), done());
-    if (what !== "live" || !isLiveKind(kind)) return done();
-    // The scene arrives a moment after the API: a piece placed before would be lost under it.
+    const tool = what === "tool" && isToolKind(kind);
+    if (!tool && (what !== "live" || !isLiveKind(kind))) return done();
+    // The scene arrives a moment after the API: a piece or picture placed before would be lost under it.
     let frame = 0;
-    const place = () => (excalidrawApi.getAppState().isLoading ? (frame = requestAnimationFrame(place)) : (addLive(kind), done()));
+    const go = () => (tool ? open({ kind, start }) : addLive(kind as LiveKind));
+    const place = () => (excalidrawApi.getAppState().isLoading ? (frame = requestAnimationFrame(place)) : (go(), done()));
     frame = requestAnimationFrame(place);
     return () => cancelAnimationFrame(frame);
     // Only when the board is first ready: the address is the board's own afterwards.
@@ -660,11 +698,10 @@ export function BoardPage({ id }: { id: string }) {
     const placed: PlacedImage = tool.png
       ? { dataURL: image.dataURL!, mimeType: "image/png", width: image.width, height: image.height }
       : svgImage({ svg: themedSvg(image.svg!, theme.current), width: image.width, height: image.height });
-    placeImage(placed, { kind: d.kind, data, w: image.width, h: image.height }, d.editing, undefined, capture);
+    return placeImage(placed, { kind: d.kind, data, w: image.width, h: image.height }, d.editing, undefined, capture);
   };
   const panelTool = panel?.tool ? TOOLS[panel.tool] : null;
-  // Three's picture is a WebGL snapshot and practice is not a picture to change: they keep to their full editors.
-  const panelLive = !!panelTool && !panelTool.png && panel?.tool !== "practice";
+  const panelLive = !!panel?.tool && inPanel(panel.tool);
   const pieceName = (kind: LiveKind) => {
     const id = SHAPES.find((s) => s.live === kind)?.id as keyof Dict["shapes"]["names"] | undefined;
     return id ? t.shapes.names[id] : kind;
@@ -852,7 +889,7 @@ export function BoardPage({ id }: { id: string }) {
       </Suspense>
       {panel?.piece && (
         <ItemPanel
-          key={panel.id}
+          key={panel.key}
           title={pieceName(panel.piece)}
           anchor={panel.anchor}
           onClose={closePanel}
@@ -871,28 +908,47 @@ export function BoardPage({ id }: { id: string }) {
       )}
       {panel?.tool && panelTool && (
         <ItemPanel
-          key={panel.id}
-          title={t[panelTool.edit]}
+          key={panel.key}
+          title={t[(!panel.orig && toolLabel(panel.tool, panel.start)) || panelTool.edit]}
           anchor={panel.anchor}
           onClose={closePanel}
+          fresh={!panel.orig}
+          flushes={panelFlushes.current}
           actions={
-            <button className="btn" onClick={() => {
-              const el = elementById(panel.id);
-              closePanel();
-              if (el && mathOf(el)) openEditor(el as ExcalidrawImageElement);
-            }}>{t.fullEditor}</button>
+            !panelLive && (
+              <button className="btn" onClick={() => {
+                const el = elementById(panel.id);
+                closePanel();
+                if (el && mathOf(el)) open({ kind: mathOf(el)!.kind, editing: el as ExcalidrawImageElement });
+              }}>{t.fullEditor}</button>
+            )
           }
         >
           {panelLive ? (
             <Suspense fallback={null}>
               <panelTool.Dialog
                 initial={panel.initial}
+                start={panel.start}
                 onClose={closePanel}
                 onSubmit={(data, image) => {
-                  const el = elementById(panel.id);
-                  if (!el || !mathOf(el)) return;
-                  panelChanged.current = true;
-                  insert({ kind: panel.tool, editing: el as ExcalidrawImageElement }, panelTool, data, image, CaptureUpdateAction.NEVER);
+                  const open = panelRef.current;
+                  const late = open?.key !== panel.key;
+                  const p = late ? (closedPanel.current?.key === panel.key ? closedPanel.current : null) : open;
+                  if (!p?.tool) return;
+                  // A new picture's first render puts it on the board; every later one changes it.
+                  const el = p.id ? elementById(p.id) : undefined;
+                  if (p.id && (!el || !mathOf(el))) return;
+                  if (!late) panelChanged.current = true;
+                  const capture = late ? CaptureUpdateAction.IMMEDIATELY : CaptureUpdateAction.NEVER;
+                  const placed = insert({ kind: p.tool, editing: el as ExcalidrawImageElement | undefined }, panelTool, data, image, capture);
+                  if (!p.id && placed) {
+                    const next: Panel = { ...p, id: placed.id, anchor: screenBox(placed) };
+                    if (late) closedPanel.current = next;
+                    else {
+                      panelRef.current = next;
+                      setPanel(next);
+                    }
+                  }
                 }}
               />
             </Suspense>

@@ -72,9 +72,7 @@ export function ModelDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={TYPES} value={type as DialogModelType} onChange={setType} label={(k) => tabLabel[k]} />
-      )}
+      <Tabs items={TYPES} value={type as DialogModelType} onChange={setType} label={(k) => tabLabel[k]} />
 
       {oldDivision ? (
         <small className="hint">{t.divisionMoved}</small>

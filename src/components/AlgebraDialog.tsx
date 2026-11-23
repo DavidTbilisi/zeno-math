@@ -50,7 +50,7 @@ export function AlgebraDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={ALGEBRA_TOPICS} value={topic} onChange={setTopic} label={(k) => t.algebraTopics[k]} />}
+      <Tabs items={ALGEBRA_TOPICS} value={topic} onChange={setTopic} label={(k) => t.algebraTopics[k]} />
       <small className="hint">{t.algebraHints[topic]}</small>
 
       <div className="field">

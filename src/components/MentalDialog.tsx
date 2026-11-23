@@ -69,9 +69,7 @@ export function MentalDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={MENTAL_TOPICS} value={topic} onChange={setTopic} label={(k) => t.mentalTopics[k]} />
-      )}
+      <Tabs items={MENTAL_TOPICS} value={topic} onChange={setTopic} label={(k) => t.mentalTopics[k]} />
       <small className="hint">{t.mentalHints[topic]}</small>
 
       <div className="field">

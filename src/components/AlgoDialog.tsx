@@ -100,9 +100,7 @@ export function AlgoDialog({ initial: saved, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={ALGO_TOPICS} value={topic} onChange={setTopic} label={(k) => t.algoTopics[k]} />
-      )}
+      <Tabs items={ALGO_TOPICS} value={topic} onChange={setTopic} label={(k) => t.algoTopics[k]} />
       <small className="hint">{t.algoHints[topic]}</small>
 
       <div className="field">

@@ -50,7 +50,7 @@ export function DerivDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={DERIV_TOPICS} value={topic} onChange={setTopic} label={(k) => t.derivTopics[k]} />}
+      <Tabs items={DERIV_TOPICS} value={topic} onChange={setTopic} label={(k) => t.derivTopics[k]} />
       <small className="hint">{t.derivHints[topic]}</small>
 
       <div className="field">

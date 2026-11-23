@@ -85,9 +85,7 @@ export function TrigDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={TRIG_TOPICS} value={topic} onChange={setTopic} label={(k) => t.trigTopics[k]} />
-      )}
+      <Tabs items={TRIG_TOPICS} value={topic} onChange={setTopic} label={(k) => t.trigTopics[k]} />
       <small className="hint">{t.trigHints[topic]}</small>
 
       <div className="field">

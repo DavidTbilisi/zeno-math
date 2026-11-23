@@ -116,9 +116,14 @@ test("the join link fills the class code in; a number given twice is caught, and
   const link = await teacher.getByRole("textbox", { name: "Join link" }).inputValue();
   expect(link).toMatch(new RegExp(`#/join/${code}$`));
   await expect(teacher.getByRole("img", { name: "QR code of the join link" })).toBeVisible();
-  await teacher.getByRole("button", { name: "Show to the class" }).click();
+  // The QR code grows in place for the class to scan, with no dialog over the page, and the same click shrinks it.
+  const show = teacher.getByRole("button", { name: "Show to the class" });
+  await show.click();
   await expect(teacher.locator(".join-show .qr")).toBeVisible();
-  await teacher.getByRole("button", { name: "Done" }).click();
+  await expect(teacher.getByRole("dialog")).toHaveCount(0);
+  await expect(show).toHaveAttribute("aria-pressed", "true");
+  await show.click();
+  await expect(teacher.locator(".join-show")).toHaveCount(0);
 
   // Two students give the same number: the second is asked whether they joined before, and may join anyway.
   const codes: string[] = [];

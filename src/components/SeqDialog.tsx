@@ -49,7 +49,7 @@ export function SeqDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={SEQ_TOPICS} value={topic} onChange={setTopic} label={(k) => t.seqTopics[k]} />}
+      <Tabs items={SEQ_TOPICS} value={topic} onChange={setTopic} label={(k) => t.seqTopics[k]} />
       <small className="hint">{t.seqHints[topic]}</small>
 
       <div className="field">

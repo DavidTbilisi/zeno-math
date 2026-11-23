@@ -56,25 +56,23 @@ export function GtDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <div className="tabs" role="tablist">
-          {GT_TOPICS.map((k) => (
-            <button
-              key={k}
-              role="tab"
-              aria-selected={k === topic}
-              className={`tab${k === topic ? " active" : ""}`}
-              // Keep the graph when switching topics, so one graph can be studied from every side.
-              onClick={() => {
-                setSpecs({ ...specs, [k]: { ...specs[k], edges: spec.edges, layout: spec.layout } });
-                setTopic(k);
-              }}
-            >
-              {t.gtTopics[k]}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="tabs" role="tablist">
+        {GT_TOPICS.map((k) => (
+          <button
+            key={k}
+            role="tab"
+            aria-selected={k === topic}
+            className={`tab${k === topic ? " active" : ""}`}
+            // Keep the graph when switching topics, so one graph can be studied from every side.
+            onClick={() => {
+              setSpecs({ ...specs, [k]: { ...specs[k], edges: spec.edges, layout: spec.layout } });
+              setTopic(k);
+            }}
+          >
+            {t.gtTopics[k]}
+          </button>
+        ))}
+      </div>
       <small className="hint">{t.gtHints[topic]}</small>
 
       <div className="field">
