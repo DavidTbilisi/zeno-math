@@ -13,7 +13,7 @@ import { CX_KEYS } from "../math/complexPractice";
 import { fill } from "../math/text";
 import { latexToSvg, type RenderedSvg } from "../math/latex";
 import {
-  ALL_SKILLS, AREAS, areaOf, check, exampleLike, exercise, LEVELS, preview, renderPractice, renderSteps, SKILLS, stepsOf, STEPS_AFTER_MISS, type Area, type Exercise, type Level, type PracticeSpec,
+  ALL_SKILLS, AREAS, areaOf, check, exampleLike, exercise, groupsOf, LEVELS, preview, renderPractice, renderSteps, SKILLS, stepsOf, STEPS_AFTER_MISS, type Area, type Exercise, type Level, type PracticeSpec,
   type SkillId, type Verdict,
 } from "../math/practice";
 import { renderSolution } from "../math/practiceSolve";
@@ -689,7 +689,15 @@ export function PracticeDialog(props: Props) {
   const homeworkLeft = waiting && nextHomework(waiting) ? waiting.items.length - waiting.done.length : 0;
   const blocked = stopped && homeworkDone ? `${w.ui.homeworkDone} ${stopped}` : stopped;
   const stat = (s: SkillId) => progress.stats[s];
-  const skills = SKILLS[area] as readonly SkillId[];
+  const chip = (s: SkillId | "mixed") => {
+    const st = s === "mixed" ? undefined : stat(s);
+    return (
+      <button key={s} className={`chip text${pick === s ? " selected" : ""}`} aria-pressed={pick === s} onClick={() => (choose(area, s, level), bringUp())}>
+        {s === "mixed" ? w.mixed : w.skills[s]}
+        {st && st.seen > 0 && <span className="practice-stat"> {fill(w.ui.progress, { right: st.right, seen: st.seen })}</span>}
+      </button>
+    );
+  };
   // On a phone the topics can fill the screen: a chosen one brings its question up, the session's ring on top.
   const bringUp = () =>
     requestAnimationFrame(() => {
@@ -718,18 +726,18 @@ export function PracticeDialog(props: Props) {
       ) : !classOn && (
         <>
           <Tabs items={AREAS} value={area} onChange={(a) => choose(a, "mixed", level)} label={(a) => areaLabel(t, a)} />
-          <small className="hint">{t.practiceHints[area]}</small>
-
-          <div className="snippets" ref={menu}>
-            {(["mixed", ...skills] as (SkillId | "mixed")[]).map((s) => {
-              const st = s === "mixed" ? undefined : stat(s);
-              return (
-                <button key={s} className={`chip text${pick === s ? " selected" : ""}`} aria-pressed={pick === s} onClick={() => (choose(area, s, level), bringUp())}>
-                  {s === "mixed" ? w.mixed : w.skills[s]}
-                  {st && st.seen > 0 && <span className="practice-stat"> {fill(w.ui.progress, { right: st.right, seen: st.seen })}</span>}
-                </button>
-              );
-            })}
+          {/* The topics in sections, school first: one row per section, the chosen topic's section open. The
+              long list in practiceHints stays the tool search's words, not the menu's. */}
+          <div className="practice-topics" ref={menu}>
+            <div className="snippets">{chip("mixed")}</div>
+            {groupsOf(area).map(([g, gs]) => (
+              <details key={`${area}.${g}`} className="practice-group" open={gs.includes(pick as SkillId)}>
+                <summary>
+                  {w.groups[g]} <span className="practice-group-count">{gs.length}</span>
+                </summary>
+                <div className="snippets">{gs.map(chip)}</div>
+              </details>
+            ))}
           </div>
           <div className="field-row">
             <Segmented items={LEVELS} value={level} onChange={(L) => choose(area, pick, L)} label={(L) => w.levels[String(L) as "1" | "2" | "3"]} />
