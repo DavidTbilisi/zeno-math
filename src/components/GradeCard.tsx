@@ -11,7 +11,7 @@ type Words = PracticeWords["grades"];
 export const gradeName = (g: Grade, w: Words) =>
   g === 13 ? w.uni : g === 10 || g === 12 ? fill(w.pair, { a: g - 1, b: g }) : fill(w.grade, { n: g });
 /** Its rung on the ladder: "7", "9–10", "Uni". */
-const rung = (g: Grade, w: Words) => (g === 13 ? w.uniShort : g === 10 || g === 12 ? `${g - 1}–${g}` : String(g));
+export const rung = (g: Grade, w: Words) => (g === 13 ? w.uniShort : g === 10 || g === 12 ? `${g - 1}–${g}` : String(g));
 
 type Props = {
   progress: Progress;
