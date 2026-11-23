@@ -100,6 +100,38 @@ test("practice has a page of its own, reached from the home page", async ({ page
   await expect(page.getByText("Correct!")).toBeVisible();
 });
 
+test("a right answer moves on by itself once it is rated; calm keeps its own pace (#562)", async ({ page }) => {
+  const { r, ex } = questionWith("fractions", (e) => stepsOf(e, w).length < 2);
+  await page.goto("/#/practice");
+  await page.evaluate((x) => (Math.random = () => x), r);
+  await page.getByRole("radio", { name: "easy" }).click();
+  await pickTopic(page, "Fractions");
+  const answer = page.getByLabel("Your answer");
+  await answer.fill(ex.plain);
+  // Enter checks: the button is only for touch.
+  await answer.press("Enter");
+  await expect(page.getByText("Correct!")).toBeVisible();
+  // Asked how it felt, it waits for the answer; the tap that rates moves on too.
+  await page.waitForTimeout(2500);
+  await expect(page.getByText("Correct!")).toBeVisible();
+  await page.getByRole("button", { name: `👍 ${w.ui.rate.right}` }).click();
+  await expect(page.locator(".auto-next")).toBeVisible();
+  await expect(page.getByText("Correct!")).toHaveCount(0, { timeout: 4000 });
+  await expect(answer).toHaveValue("");
+  await expect(page.getByRole("region", { name: w.ui.sessionTitle })).toContainText("1 of 10 questions");
+
+  // In calm the next question waits for Next.
+  await page.getByRole("button", { name: `🌙 ${w.ui.calm}` }).click();
+  await answer.fill(ex.plain);
+  await answer.press("Enter");
+  await page.getByRole("button", { name: `👍 ${w.ui.rate.right}` }).click();
+  await page.waitForTimeout(3000);
+  await expect(page.getByText("Correct!")).toBeVisible();
+  await expect(page.locator(".auto-next")).toHaveCount(0);
+  await page.getByRole("button", { name: "Next →" }).click();
+  await expect(answer).toHaveValue("");
+});
+
 test("the practice page counts a session of ten and sums it up", async ({ page }) => {
   // A question without steps, so a miss doesn't start fading worked examples (that has a test of its own).
   const { r } = questionWith("fractions", (e) => stepsOf(e, w).length < 2);
