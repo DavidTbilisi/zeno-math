@@ -138,7 +138,7 @@ test("a student signs back in with their code, typed loosely", async () => {
   const loose = joined.code.toLowerCase().replace("-", " ");
   const back = await call("GET", `/api/students/${encodeURIComponent(loose)}`);
   assert.equal(back.status, 200);
-  assert.deepEqual(back.body, { ...joined, answered: 0, goal: null });
+  assert.deepEqual(back.body, { ...joined, answered: 0, goal: null, games: [] });
   assert.equal((await call("GET", "/api/students/AAAA-BBBB")).status, 404);
 });
 
