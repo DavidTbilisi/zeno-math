@@ -276,6 +276,14 @@ export const MENUS: MenuGroup[] = [
         ],
       },
       {
+        title: "senseWhich", items: [
+          { live: "whichWord", icon: "🧰" },
+          { live: "whichFrac", icon: "🧰" },
+          { live: "whichEq", icon: "🧰" },
+          { live: "whichQuad", icon: "🧰" },
+        ],
+      },
+      {
         title: "senseShape", items: [
           { live: "geoboard", icon: "⬠" },
           { live: "mirror", icon: "🦋" },

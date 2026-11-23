@@ -1573,7 +1573,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, strategies, algorithms, statistics, inference), plus
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
   look, make the target, closer to?, divisible by?, prime slice, Kakooma), fraction sense (make a whole, equal amounts, fractions on the line, shade the
-  fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), shape sense
+  fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), which tool? (word problems, fractions, equations, quadratics), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
   connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas, be the message queue, name the component). In the Shapes tab the games are a group of their own, before the live
@@ -2064,6 +2064,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     (faster reads: a cache, a CDN or an index; more machines: a balancer, replicas or shards; finding: an index or a
     search engine). A requirement whose component has a game of its own gets "▶ Play it", which opens that game
     beside it at the puzzle of its kind (a server dying at round robin with one down, a burst at the token bucket).
+  - *Which tool?*: four games, one for each set of look-alikes: word problems (the nine bar-model forms), fractions (common
+    denominator, multiply across, flip and multiply), equations (undo in order, collect like terms, cross-multiply) and
+    quadratics (factor, take square roots, complete the square, the formula). A problem appears and the player taps the
+    method that fits, or presses its number, without solving it; the problems come from the practice skills' own
+    generators, so each really needs the tool it was made for. A wrong tool is told what it is for, and the problem is
+    shown solved by its own tool in two lines, that tool lit. Where two tools work (x² − 49 = 0 factors and takes roots,
+    6/7 ÷ 2/7 divides the tops) both count, and only the quicker keeps the third star. Six puzzles a set, the endless
+    run, and the clock once the ladder opens it
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a
