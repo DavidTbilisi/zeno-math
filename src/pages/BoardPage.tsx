@@ -8,6 +8,7 @@ import {
   MainMenu,
   Sidebar,
   useHandleLibrary,
+  viewportCoordsToSceneCoords,
 } from "@excalidraw/excalidraw";
 import type { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type {
@@ -18,7 +19,7 @@ import "@excalidraw/excalidraw/index.css";
 import { api, ApiError, type Board } from "../api";
 import { LangSelect, useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
-import { InsertPanel } from "../components/InsertPanel";
+import { fromInsertDrag, INSERT_MIME, InsertPanel } from "../components/InsertPanel";
 import { useCompact } from "../components/useCompact";
 import { ShareBox } from "../components/ShareBox";
 import { ReadOnlyBoard } from "./SharedBoardPage";
@@ -34,7 +35,7 @@ import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { BarIcon } from "../components/BarIcon";
 import { ZenoMark } from "../components/ZenoMark";
-import { isLiveEntry, toolLabel } from "../menus";
+import { isLiveEntry, toolLabel, type LiveEntry, type MenuEntry } from "../menus";
 import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 import { hasOrigin, installPaper, isPaper, PAPERS, type Paper } from "../paper";
 
@@ -59,7 +60,8 @@ type Dialog = { kind: ToolKind; editing?: ExcalidrawImageElement; start?: string
  *  the item as it was when it opened, and where it was on screen; for a tool's picture, the tool, what it held and the
  *  topic it opens on, for a live piece its kind. `key` stays the same for the whole session of one panel. */
 type Panel = { key: string; id: string; anchor: ScreenBox; orig?: ExcalidrawElement } & (
-  | { tool: ToolKind; initial: unknown; start?: string; piece?: undefined }
+  /** `drop`: a new tool's picture dragged in from Insert goes there (its middle, in scene units). */
+  | { tool: ToolKind; initial: unknown; start?: string; drop?: { x: number; y: number }; piece?: undefined }
   | { piece: LiveKind; tool?: undefined }
 );
 
@@ -69,6 +71,9 @@ const inPanel = (kind: ToolKind) => !TOOLS[kind].png && !TOOLS[kind].docked;
 
 // "conflict": someone saved this board elsewhere since we loaded it; autosave pauses until the user picks.
 type SaveState = "saved" | "saving" | "error" | "conflict";
+
+/** Where a new picture goes (its top-left corner): slid down past what it would cover, or `exact`ly there. */
+type Spot = { x: number; y: number; exact?: boolean };
 
 type PlacedImage = { dataURL: string; mimeType: "image/svg+xml" | "image/png"; width: number; height: number };
 
@@ -411,7 +416,7 @@ export function BoardPage({ id }: { id: string }) {
    * Adds a rendered image to the canvas (at `at`, or in the middle of the view), or swaps the image of an existing
    * formula/graph/model. Without `math` it's a plain picture, such as a copy of a live piece.
    */
-  const placeImage = (rendered: PlacedImage, math: MathData | undefined, editing?: ExcalidrawImageElement, at?: { x: number; y: number }, capture: CaptureUpdateActionType = CaptureUpdateAction.IMMEDIATELY): ExcalidrawElement | undefined => {
+  const placeImage = (rendered: PlacedImage, math: MathData | undefined, editing?: ExcalidrawImageElement, at?: Spot, capture: CaptureUpdateActionType = CaptureUpdateAction.IMMEDIATELY): ExcalidrawElement | undefined => {
     const ex = excalidraw.current!;
     const fileId = crypto.randomUUID() as FileId;
     const file: BinaryFileData = {
@@ -448,7 +453,7 @@ export function BoardPage({ id }: { id: string }) {
     // Start at the viewport center (or where asked), then slide down past anything it would cover.
     const { scrollX, scrollY, zoom, width, height } = ex.getAppState();
     const x = at?.x ?? width / 2 / zoom.value - scrollX - rendered.width / 2;
-    const y = freeY(elements, x, at?.y ?? height / 2 / zoom.value - scrollY - rendered.height / 2, rendered.width, rendered.height);
+    const y = at?.exact ? at.y : freeY(elements, x, at?.y ?? height / 2 / zoom.value - scrollY - rendered.height / 2, rendered.width, rendered.height);
     const [el] = convertToExcalidrawElements([
       {
         type: "image",
@@ -465,8 +470,9 @@ export function BoardPage({ id }: { id: string }) {
       appState: { selectedElementIds: { [withData.id]: true } },
       captureUpdate: capture,
     });
-    // A picture placed from the panel stays still, so the panel can be put beside it at once.
-    ex.scrollToContent(withData, { animate: capture === CaptureUpdateAction.IMMEDIATELY });
+    // A picture placed from the panel stays still, so the panel can be put beside it at once; one dropped where it
+    // was wanted is in view already.
+    if (!at?.exact) ex.scrollToContent(withData, { animate: capture === CaptureUpdateAction.IMMEDIATELY });
     return withData;
   };
 
@@ -530,7 +536,25 @@ export function BoardPage({ id }: { id: string }) {
       ex.scrollToContent(el, { animate: true });
     },
   };
-  const addLive = (kind: LiveKind) => excalidraw.current && placeOnBoard(excalidraw.current, [liveElement(kind)]);
+  /** A live piece in the free spot in the middle of the view, or with its middle where it was dropped. */
+  const addLive = (kind: LiveKind, drop?: { x: number; y: number }) => {
+    const ex = excalidraw.current;
+    if (!ex) return;
+    if (!drop) return placeOnBoard(ex, [liveElement(kind)]);
+    const [w, h] = LIVE_SIZES[kind];
+    const el = liveElement(kind, drop.x - w / 2, drop.y - h / 2);
+    ex.updateScene({ elements: [...ex.getSceneElementsIncludingDeleted(), el], appState: { selectedElementIds: { [el.id]: true } }, captureUpdate: CaptureUpdateAction.IMMEDIATELY });
+  };
+  /** What Insert hands over, by a click (the middle of the view) or dropped on the board (`drop`: client and scene points). */
+  const pickInsert = (it: MenuEntry | LiveEntry, drop?: { client: [number, number]; scene: { x: number; y: number } }) => {
+    if (isLiveEntry(it)) {
+      addLive(it.live, drop?.scene);
+      // Insert stays open; the keyboard goes to the board, where the new piece is selected (Delete, Escape, arrows).
+      return document.querySelector<HTMLElement>(".excalidraw-container")?.focus({ preventScroll: true });
+    }
+    if (drop && inPanel(it.kind)) return openNew(it.kind, it.start, drop);
+    open({ kind: it.kind, start: it.start });
+  };
 
   const elementById = (id: string) => excalidraw.current?.getSceneElements().find((e) => e.id === id);
   /** The item's rectangle on screen (unturned), for placing the panel beside it. */
@@ -557,13 +581,13 @@ export function BoardPage({ id }: { id: string }) {
   };
   /** A new picture: the panel opens in the middle of the view, and the tool's first render is placed there (see
    *  PanelFresh), with the panel then moving beside it. */
-  const openNew = (kind: ToolKind, start?: string) => {
+  const openNew = (kind: ToolKind, start?: string, drop?: { client: [number, number]; scene: { x: number; y: number } }) => {
     const ex = excalidraw.current;
     if (!ex) return;
     if (panelRef.current) closePanel();
     const { width, height, offsetLeft, offsetTop } = ex.getAppState();
-    const [x, y] = [offsetLeft + width / 2, offsetTop + height / 2];
-    const next: Panel = { key: crypto.randomUUID(), id: "", anchor: { left: x, top: y, right: x, bottom: y }, tool: kind, initial: undefined, start };
+    const [x, y] = drop?.client ?? [offsetLeft + width / 2, offsetTop + height / 2];
+    const next: Panel = { key: crypto.randomUUID(), id: "", anchor: { left: x, top: y, right: x, bottom: y }, tool: kind, initial: undefined, start, drop: drop?.scene };
     panelRef.current = next;
     setPanel(next);
   };
@@ -705,11 +729,11 @@ export function BoardPage({ id }: { id: string }) {
   const openTool = dialog && TOOLS[dialog.kind];
   const dockTool = dock && TOOLS[dock.kind];
   /** Puts what a tool made on the board, or in place of the picture it was editing. */
-  const insert = (d: Dialog, tool: Tool, data: unknown, image: Parameters<ToolDialogProps["onSubmit"]>[1], capture?: CaptureUpdateActionType) => {
+  const insert = (d: Dialog, tool: Tool, data: unknown, image: Parameters<ToolDialogProps["onSubmit"]>[1], capture?: CaptureUpdateActionType, at?: Spot) => {
     const placed: PlacedImage = tool.png
       ? { dataURL: image.dataURL!, mimeType: "image/png", width: image.width, height: image.height }
       : svgImage({ svg: themedSvg(image.svg!, theme.current), width: image.width, height: image.height });
-    return placeImage(placed, { kind: d.kind, data, w: image.width, h: image.height }, d.editing, undefined, capture);
+    return placeImage(placed, { kind: d.kind, data, w: image.width, h: image.height }, d.editing, at, capture);
   };
   const panelTool = panel?.tool ? TOOLS[panel.tool] : null;
   const panelLive = !!panel?.tool && inPanel(panel.tool);
@@ -737,7 +761,7 @@ export function BoardPage({ id }: { id: string }) {
         <button className="btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
           <BarIcon name="shapes" /> <span className="btn-label minor">{t.shapes.button}</span>
         </button>
-        <button ref={insertBtn} className="btn primary insert-btn" onClick={() => setInserting(true)} title={t.site.insert.title} aria-haspopup="dialog">
+        <button ref={insertBtn} className="btn primary insert-btn" onClick={() => setInserting(!inserting)} title={t.site.insert.title} aria-expanded={inserting}>
           <BarIcon name="insert" /> <span className="btn-label">{t.site.insert.button}</span>
         </button>
         <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })} />
@@ -754,6 +778,21 @@ export function BoardPage({ id }: { id: string }) {
       <div className="board-body">
       <div
         className="canvas-wrap"
+        // Something dragged in from Insert lands where it is dropped (Excalidraw never sees the drop).
+        onDragOverCapture={(e) => {
+          if (!e.dataTransfer.types.includes(INSERT_MIME)) return;
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = "copy";
+        }}
+        onDropCapture={(e) => {
+          const ex = excalidraw.current;
+          const it = fromInsertDrag(e.dataTransfer);
+          if (!ex || !it) return;
+          e.preventDefault();
+          e.stopPropagation();
+          pickInsert(it, { client: [e.clientX, e.clientY], scene: viewportCoordsToSceneCoords({ clientX: e.clientX, clientY: e.clientY }, ex.getAppState()) });
+        }}
         // A right-click on a tool's picture or a live piece opens its panel beside it instead of Excalidraw's menu
         // (Shift keeps the menu).
         onContextMenuCapture={(e) => {
@@ -888,6 +927,15 @@ export function BoardPage({ id }: { id: string }) {
           />
         </Suspense>
       )}
+      {inserting && (
+        <InsertPanel
+          onClose={() => {
+            setInserting(false);
+            insertBtn.current?.focus();
+          }}
+          onPick={(it) => pickInsert(it)}
+        />
+      )}
       </div>
 
       <Suspense fallback={null}>
@@ -957,7 +1005,8 @@ export function BoardPage({ id }: { id: string }) {
                   if (p.id && (!el || !mathOf(el))) return;
                   if (!late) panelChanged.current = true;
                   const capture = late ? CaptureUpdateAction.IMMEDIATELY : CaptureUpdateAction.NEVER;
-                  const placed = insert({ kind: p.tool, editing: el as ExcalidrawImageElement | undefined }, panelTool, data, image, capture);
+                  const at = !p.id && p.drop ? { x: p.drop.x - image.width / 2, y: p.drop.y - image.height / 2, exact: true } : undefined;
+                  const placed = insert({ kind: p.tool, editing: el as ExcalidrawImageElement | undefined }, panelTool, data, image, capture, at);
                   if (!p.id && placed) {
                     const next: Panel = { ...p, id: placed.id, anchor: screenBox(placed) };
                     if (late) closedPanel.current = next;
@@ -973,21 +1022,6 @@ export function BoardPage({ id }: { id: string }) {
             <p className="hint">{t.panelFullOnly}</p>
           )}
         </ItemPanel>
-      )}
-      {inserting && (
-        <InsertPanel
-          onClose={() => {
-            setInserting(false);
-            insertBtn.current?.focus();
-          }}
-          onPick={(it) => {
-            setInserting(false);
-            // A tool's dialog hands focus back to whatever had it: the Insert button, not the vanishing panel.
-            insertBtn.current?.focus();
-            if (isLiveEntry(it)) addLive(it.live);
-            else open({ kind: it.kind, start: it.start });
-          }}
-        />
       )}
       {palette && (
         <CommandPalette
