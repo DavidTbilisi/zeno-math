@@ -30,8 +30,13 @@ test("Insert puts a piece on the board, finds by search and links each section t
   await expect(panel.getByRole("tab")).toHaveCount(0);
   await panel.getByRole("button", { name: /Comparing fractions/ }).click();
   await expect(page.locator(".live-compareFractions")).toBeVisible();
-  // Docked beside the board, it stays open; Escape in it closes it and the keyboard is back on its button.
+  // Docked beside the board, it stays open, and the keyboard is the board's: Escape there leaves Insert alone. Escape in
+  // Insert closes it, and the keyboard is back on its button.
   await expect(panel).toBeVisible();
+  await expect(page.locator(".excalidraw-container")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeVisible();
+  await panel.getByRole("searchbox").focus();
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
   await expect(page.locator(".insert-btn")).toBeFocused();
@@ -41,6 +46,24 @@ test("Insert puts a piece on the board, finds by search and links each section t
   await expect(panel.getByRole("tab", { name: "Geometry" })).toHaveAttribute("aria-selected", "true");
   await page.locator(".insert-btn").click();
   await expect(panel).toHaveCount(0);
+});
+
+test("on a phone Insert is a sheet under the board that never scrolls sideways", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/boards");
+  await page.getByRole("button", { name: /New board/ }).first().click();
+  await page.locator(".excalidraw").waitFor();
+  // A group far along the row: picking it scrolls the row, not the sheet.
+  const panel = await insertGroup(page, "Games");
+  const sheet = (await panel.boundingBox())!;
+  const board = (await page.locator(".canvas-wrap").boundingBox())!;
+  expect(sheet.width).toBeLessThanOrEqual(390);
+  expect(board.y + board.height).toBeLessThanOrEqual(sheet.y + 1);
+  expect(await panel.evaluate((el) => el.scrollLeft + el.querySelector(".insert-body")!.scrollLeft)).toBe(0);
+  const search = (await panel.getByRole("searchbox").boundingBox())!;
+  expect(search.x).toBeGreaterThanOrEqual(0);
+  expect(search.x + search.width).toBeLessThanOrEqual(390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
 test("Insert stays docked beside the board: a tool and a live piece dragged from it land where they are dropped", async ({ page }) => {

@@ -1657,15 +1657,16 @@ span.board-home:hover { background: none; }
    It never scrolls sideways: its lists scroll down inside it. */
 .insert {
   flex: none; width: 360px; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr); /* a long row of groups scrolls in itself, never widens the panel */
   background: var(--surface); color: var(--text); border-left: 1px solid var(--border); overflow: hidden;
 }
 .insert-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
 .insert-head h2 { margin: 0; font-size: 1.05rem; white-space: nowrap; }
 .insert-search { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: inherit; font: inherit; }
 .insert-close { flex: none; }
-.insert-body { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; }
+.insert-body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-height: 0; }
 .insert-body.searching { grid-template-rows: minmax(0, 1fr); }
-.insert-side { display: flex; flex-direction: column; min-height: 0; border-bottom: 1px solid var(--border); }
+.insert-side { display: flex; flex-direction: column; min-height: 0; min-width: 0; border-bottom: 1px solid var(--border); }
 .insert-mode { display: flex; gap: 2px; margin: 10px 8px 0; padding: 2px; border-radius: 9px; background: var(--chip); }
 .insert-mode button {
   flex: 1; min-height: 30px; padding: 4px 6px; border: none; border-radius: 7px; background: transparent; color: inherit;
