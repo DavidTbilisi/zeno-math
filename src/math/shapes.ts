@@ -1162,6 +1162,26 @@ function unitCircleGamePreview(): Piece[] {
   ];
 }
 
+function slopeWalkPreview(): Piece[] {
+  // A slope with a small walker part way up: blue along the ground under them, red up to their feet.
+  const [ox, gy, l, t] = [14, 150, 160, rad(35)];
+  const p: Pt = [ox + 0.6 * l * Math.cos(t), gy - 0.6 * l * Math.sin(t)];
+  const top: Pt = [ox + l * Math.cos(t), gy - l * Math.sin(t)];
+  return [
+    seg([0, gy], [190, gy], { color: MUTED, width: 1.5 }),
+    seg([ox, gy], top, { color: "#495057", width: 3 }),
+    seg([ox, gy], p, { color: "#2f9e44", width: 5 }),
+    seg([ox, gy], [p[0], gy], { color: BLUE, width: 5 }),
+    seg([p[0], gy], p, { color: RED, width: 5 }),
+    seg([p[0], p[1] - 10], [p[0], p[1] - 24], { color: "#f08c00", width: 5 }),
+    seg([p[0], p[1] - 10], [p[0] - 5, p[1]], { width: 2.5 }),
+    seg([p[0], p[1] - 10], [p[0] + 5, p[1] - 3], { width: 2.5 }),
+    ellipse(p[0], p[1] - 30, 5, 5, { fill: "#ffe8cc", width: 1.5 }),
+    seg(top, [top[0], top[1] - 20], { width: 1.5 }),
+    poly([[top[0], top[1] - 20], [top[0] + 12, top[1] - 16], [top[0], top[1] - 12]], { fill: RED, color: RED, width: 1 }),
+  ];
+}
+
 function sohcahtoaPreview(): Piece[] {
   // A 3-4-5 triangle with θ at its foot and sin θ = 3/5 built beside it.
   return [
@@ -2177,6 +2197,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSlopeLine", build: slopeLinePreview, live: "slopeLine" },
   { id: "liveTrigBuild", build: trigBuildPreview, live: "trigBuild" },
   { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
+  { id: "liveSlopeWalk", build: slopeWalkPreview, live: "slopeWalk" },
   { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
   { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
   { id: "livePythDiscover", build: pythDiscoverPreview, live: "pythDiscover" },
