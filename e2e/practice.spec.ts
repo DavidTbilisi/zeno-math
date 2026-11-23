@@ -105,7 +105,7 @@ test("a right answer moves on by itself once it is rated; calm keeps its own pac
   await page.goto("/#/practice");
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   const answer = page.getByLabel("Your answer");
   await answer.fill(ex.plain);
   // Enter checks: the button is only for touch.
