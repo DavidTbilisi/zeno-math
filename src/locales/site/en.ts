@@ -72,7 +72,7 @@ export const site = {
     ideaPredict: "{skill}, level {level}: the next step. Start on the {topic} page, where a piece asks you to predict first.",
     drill: "{skill} on level {level}, at your own pace or faster: nearest to “It's fast”.",
     problemWords: "{skill} hidden in words: {words}.",
-    problemGame: "{skill} in a game where you pick the method.",
+    problemGame: "{skill} in a game where you pick the method: {game}.",
     go: "Start",
     again: "Done · again",
     finish: "End the session",

@@ -52,6 +52,7 @@ test("a full student: reviews, a new idea with its prediction, a drill on the gr
   assert.ok(idea.predict === null || s.toPredict.includes(idea.predict));
   assert.deepEqual(parts[2], { part: "drill", skill: "fractions", level: 3 }, "green, on the top level: nearest to gold");
   const problem = parts[3] as Extract<(typeof parts)[number], { part: "problem" }>;
+  // (fractions is the drill, so the game for fractions is not the problem: times in words is)
   assert.equal(problem.skill, "times", "gold first, in course order");
   assert.equal(problem.setting.via, "words");
   assert.equal(new Set(todaySkills(parts)).size, parts.length, "each part a different skill");
@@ -64,4 +65,10 @@ test("a blue skill only: the drill is its first level not yet secure; no problem
   const drill = parts.find((p) => p.part === "drill");
   assert.deepEqual(drill, { part: "drill", skill: "fractions", level: 2 });
   assert.equal(parts.some((p) => p.part === "problem"), false);
+});
+
+test("a green skill with a Which tool? game gets the game as its problem", () => {
+  const cells = secure("linear.1", "linear.2", "linear.3");
+  const parts = buildToday(input({ cells, standing: standing(cells, null), stages: { linear: { stage: 3 } } }));
+  assert.deepEqual(parts.find((p) => p.part === "problem"), { part: "problem", skill: "linear", setting: { via: "game", game: "whichEq" } });
 });

@@ -3,7 +3,7 @@
 // skill is made of ideas (#579); 2 one new idea, the course's next step, through its topic's "predict, then reveal"
 // when one is still to be guessed (#578); 3 one drill, the top level timed on the skill nearest to gold (a green skill,
 // else a blue one at the edge of what is secure); 4 one problem that puts a green or gold skill in a new setting (a
-// word problem, or a "Which tool?" game, #581/#582). Each part is left out when there is nothing for it.
+// word problem, or a "Which tool?" game, #581). Each part is left out when there is nothing for it.
 //
 // A pure function of the state, so the same state always gives the same session and it can be tested without a page.
 import type { Level } from "./elo.ts";
@@ -14,25 +14,28 @@ import { learningStageOf, TOP_LEVEL, type LearningStage, type Stages } from "./l
 import { isDue, type Spacing } from "./spacing.ts";
 import { TOPICS, type TopicId } from "./topics.ts";
 import type { SkillId } from "../math/practiceSkills.ts";
+import type { LiveKind } from "../math/live.ts";
 import { CURRICULUM } from "./curriculum.ts";
 
 /** At most this many reviews in one session: the rest wait for tomorrow. */
 export const TODAY_REVIEWS = 3;
 
 /** Where a green or gold skill meets something new: a practice skill that hides it in words, or a game. */
-export type Setting = { via: "words"; skill: SkillId; level: Level } | { via: "game"; game: string };
+export type Setting = { via: "words"; skill: SkillId; level: Level } | { via: "game"; game: LiveKind };
 
 /**
- * New settings for a skill. Word problems (bar models and proportion) put number skills in words; the order in each
- * list is the order tried. Games join as they land (#581's "Which tool?" sets, #583's crux).
+ * New settings for a skill, the first one used. Word problems (bar models and proportion) put number skills in words;
+ * the "Which tool?" games (#581) ask for the method among look-alikes without solving.
  */
 export const SETTINGS: Partial<Record<SkillId, readonly Setting[]>> = {
   times: [{ via: "words", skill: "barModels", level: 1 }],
-  fractions: [{ via: "words", skill: "barModels", level: 2 }],
+  fractions: [{ via: "game", game: "whichFrac" }, { via: "words", skill: "barModels", level: 2 }],
   ratio: [{ via: "words", skill: "proportion", level: 1 }, { via: "words", skill: "barModels", level: 3 }],
   rate: [{ via: "words", skill: "proportion", level: 1 }],
   percent: [{ via: "words", skill: "barModels", level: 3 }],
-  linear: [{ via: "words", skill: "barModels", level: 3 }],
+  linear: [{ via: "game", game: "whichEq" }, { via: "words", skill: "barModels", level: 3 }],
+  quadratic: [{ via: "game", game: "whichQuad" }],
+  barModels: [{ via: "game", game: "whichWord" }],
 };
 
 export type TodayPart =

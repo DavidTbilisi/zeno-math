@@ -5,6 +5,7 @@ import { useState } from "react";
 import { StageBadge, StageSquares, useStageLabel } from "../components/LearningStages";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { useI18n } from "../i18n";
+import { menuName } from "../library";
 import { fill } from "../math/text";
 import { standing } from "../model/course";
 import { learningStageOf, type LearningStage } from "../model/learningStage";
@@ -80,7 +81,10 @@ export function TodayPage() {
       case "review": return fill(p.card ? w.reviewCard : w.review, { skill: k, level: p.level });
       case "idea": return fill(p.predict ? w.ideaPredict : w.idea, { skill: k, level: p.level, topic: p.predict ? t.site.topics[p.predict].name : "" });
       case "drill": return fill(w.drill, { skill: k, level: p.level });
-      case "problem": return fill(p.setting.via === "words" ? w.problemWords : w.problemGame, { skill: k, words: skill(p.setting.via === "words" ? p.setting.skill : "") });
+      case "problem":
+        return p.setting.via === "words"
+          ? fill(w.problemWords, { skill: k, words: skill(p.setting.skill) })
+          : fill(w.problemGame, { skill: k, game: menuName(t, { live: p.setting.game, icon: "" }) });
     }
   };
   const finished = ended || (session.parts.length > 0 && session.done.length >= session.parts.length);
