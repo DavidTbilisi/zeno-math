@@ -247,6 +247,7 @@ export const MENUS: MenuGroup[] = [
           { live: "machine", icon: "⚙️" },
           { live: "divisible", icon: "➗" },
           { live: "primeSlice", icon: "✂️" },
+          { live: "doubleLine", icon: "⚌" },
         ],
       },
       {

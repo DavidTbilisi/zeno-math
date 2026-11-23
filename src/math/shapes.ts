@@ -958,6 +958,27 @@ function pizzaSlicePreview(): Piece[] {
   return [...out, text(190, 128, "1/4", 18)];
 }
 
+function doubleLinePreview(): Piece[] {
+  // Two lines tied at 0 and at 3 ↔ 12, the gap split into three (1 ↔ 4), and a flag on 5 with a "?" across from it.
+  const x = (v: number) => 20 + v * 36;
+  const tick = (v: number, top: string, bot: string, size = 14) => [
+    seg([x(v), 30], [x(v), 50], { width: 2 }),
+    seg([x(v), 100], [x(v), 120], { width: 2 }),
+    text(x(v), 16, top, size),
+    text(x(v), 136, bot, size),
+  ];
+  return [
+    seg([10, 40], [250, 40], { width: 2 }),
+    seg([10, 110], [250, 110], { width: 2 }),
+    ...tick(0, "0", "0"),
+    ...tick(1, "1", "4"),
+    ...tick(3, "3", "12", 16),
+    seg([x(5), 18], [x(5), 50], { width: 2, color: "#e03131" }),
+    text(x(5), 8, "5", 14, "center", "#e03131"),
+    text(x(5), 128, "?", 18, "center", "#e03131"),
+  ];
+}
+
 function balancePreview(): Piece[] {
   // A level beam on a stand, three squares and a 2 on one pan, 14 on the other.
   const pan = (x: number) => [seg([x, 20], [x - 36, 90], THIN), seg([x, 20], [x + 36, 90], THIN), seg([x - 42, 90], [x + 42, 90], { width: 3 })];
@@ -2129,6 +2150,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFrogJumps", build: frogJumpsPreview, live: "frogJumps" },
   { id: "liveMakeOne", build: makeOnePreview, live: "makeOne" },
   { id: "liveTileDrop", build: tileDropPreview, live: "tileDrop" },
+  { id: "liveDoubleLine", build: doubleLinePreview, live: "doubleLine" },
   { id: "livePizzaSlice", build: pizzaSlicePreview, live: "pizzaSlice" },
   { id: "liveBalance", build: balancePreview, live: "balance" },
   { id: "liveMachine", build: machinePreview, live: "machine" },
