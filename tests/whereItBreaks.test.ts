@@ -119,7 +119,7 @@ test("a run of right answers in class practice on a skill made of ideas brings o
   assert.equal(s.due, undefined, "the worked answer judged clears it");
 
   assert.ok(ON_TRIAL.includes("breaks"));
-  assert.equal(FEATURES.at(-1), "breaks", "a new feature joins at the end");
+  assert.ok(FEATURES.indexOf("breaks") > FEATURES.indexOf("stepdown"), "joined at the end: the features before it keep their places");
   assert.equal(studentHas(null, "breaks"), false, "nobody signed in");
   assert.equal(hasFeature({ feature: "breaks", arm: "on" }, "breaks"), true);
   assert.equal(hasFeature({ feature: "breaks", arm: "off" }, "breaks"), false);
