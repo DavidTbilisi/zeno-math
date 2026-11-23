@@ -18,7 +18,7 @@ export type ToolDialogProps = {
 };
 
 export type ToolKind =
-  | "formula" | "graph" | "model" | "3d" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
+  | "formula" | "graph" | "model" | "matrix" | "geometry" | "analysis" | "statistics" | "integral" | "ode"
   | "trig" | "algo" | "nt" | "comb" | "gt" | "logic" | "complex" | "mental" | "tactics" | "strategies" | "algebra" | "powers" | "coord" | "deriv" | "multivar" | "randvar" | "likelihood" | "information" | "regression" | "naiveBayes" | "applied" | "inference" | "practice" | "vectors" | "sequences" | "functions" | "identities" | "polynomials" | "euclid" | "numerical" | "ai";
 
 export type Tool = {
@@ -27,8 +27,6 @@ export type Tool = {
   edit: Word;
   /** Opens beside the board instead of over it, and stays open while other tools are used. */
   docked?: boolean;
-  /** The dialog returns a PNG snapshot instead of an SVG. */
-  png?: boolean;
   /** For the tool search: the dialog's tabs (key → label; the key opens that tab), their hints, and more names per tab. */
   topics?: (t: Dict) => Record<string, string>;
   hints?: (t: Dict) => Record<string, string>;
@@ -43,7 +41,6 @@ export const TOOLS: Record<ToolKind, Tool> = {
   formula: { Dialog: load(() => import("./components/FormulaDialog"), "FormulaDialog"), edit: "editFormula" },
   graph: { Dialog: load(() => import("./components/GraphDialog"), "GraphDialog"), edit: "editGraph" },
   model: { Dialog: load(() => import("./components/ModelDialog"), "ModelDialog"), edit: "editModel", topics: (t) => ({ bar: t.barModel, fraction: t.fractions, percent: t.percent, bond: t.numberBond, placeValue: t.placeValue, addition: t.addition, subtraction: t.subtraction, multiply: t.multiplication, fracop: t.fracOps, percratio: t.percRatio }) },
-  "3d": { Dialog: load(() => import("./components/ThreeDialog"), "default"), edit: "edit3d", png: true, topics: (t) => ({ transform3d: t.matrix3d, revolution: t.revolution }), hints: (t) => ({ revolution: t.revHint }) },
   matrix: { Dialog: load(() => import("./components/MatrixDialog"), "MatrixDialog"), edit: "editMatrix", topics: (t) => ({ calc: t.matrixCalc, transform: t.matrixTransform, space: t.matrixSpaces }), hints: (t) => ({ space: Object.values(t.spaceHints).join(" ") }) },
   geometry: { Dialog: load(() => import("./components/GeometryDialog"), "GeometryDialog"), edit: "editGeometry" },
   analysis: { Dialog: load(() => import("./components/AnalysisDialog"), "AnalysisDialog"), edit: "editAnalysis", topics: (t) => t.analysisTopics, hints: (t) => t.analysisHints },

@@ -46,6 +46,8 @@ import type { LiveTrigBuild } from "./trigBuild";
 import type { LiveUnitCircle } from "./unitCircleGame";
 import { SLOPE_WALK_START, type LiveSlopeWalk } from "./slopeWalk";
 import { SOLID_START, type LiveSolid } from "./solid";
+import { TURNED_START, type LiveTurned } from "./turned";
+import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
 import type { LiveSoh } from "./sohcahtoa";
 import type { LiveDiscover } from "./trigDiscover";
 import type { LivePythDiscover } from "./pythDiscover";
@@ -83,6 +85,7 @@ import type { LiveBeComp } from "./beComp";
 import type { LiveBeTopo } from "./beTopo";
 import type { LiveBeName } from "./beName";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
+import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
 import { PCA_START, type LivePca } from "./pcaLab";
 import { FIT_START, type LiveFit } from "./fitLab";
@@ -589,6 +592,8 @@ export type LiveStates = {
   unitCircleGame: LiveUnitCircle;
   slopeWalk: LiveSlopeWalk;
   solid: LiveSolid;
+  turned: LiveTurned;
+  cubeMatrix: LiveCubeMatrix;
   sohcahtoa: LiveSoh;
   trigDiscover: LiveDiscover;
   pythDiscover: LivePythDiscover;
@@ -619,6 +624,7 @@ export type LiveStates = {
   beTopo: LiveBeTopo;
   beName: LiveBeName;
   descentLab: LiveDescent;
+  surface: LiveSurface;
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
   embedLab: LiveEmbed;
@@ -710,6 +716,8 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   unitCircleGame: [520, 760],
   slopeWalk: [680, 820],
   solid: [680, 760],
+  turned: [680, 760],
+  cubeMatrix: [680, 720],
   sohcahtoa: [600, 680],
   trigDiscover: [640, 720],
   pythDiscover: [640, 720],
@@ -740,6 +748,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   beTopo: [1080, 680],
   beName: [1080, 700],
   descentLab: [660, 650],
+  surface: [680, 790],
   pcaLab: [660, 720],
   softmaxLab: [660, 780],
   embedLab: [660, 600],
@@ -833,6 +842,8 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     unitCircleGame: { mode: "puzzle", stage: 0, level: 1, seed: 1, p: 0, placed: false, found: [], misses: 0, done: false, streak: 0, said: null },
     slopeWalk: SLOPE_WALK_START,
     solid: SOLID_START,
+    turned: TURNED_START,
+    cubeMatrix: CUBE_MATRIX_START,
     sohcahtoa: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, top: null, bottom: null, misses: 0, done: false, streak: 0, said: null },
     trigDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], a: null, op: null, b: null, tried: [], flipped: false, misses: 0, done: false, streak: 0, said: null },
     pythDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], p1: null, op: null, p2: null, pr: null, tried: [], misses: 0, done: false, streak: 0, said: null },
@@ -863,6 +874,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     beTopo: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beName: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     descentLab: DESCENT_START,
+    surface: SURFACE_START,
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,
     embedLab: EMBED_START,

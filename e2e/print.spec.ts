@@ -1,4 +1,5 @@
-// The class's tests on paper: all three forms and their answer keys, and nothing else when printed.
+// The class's tests on paper: all three forms and their answer keys, and nothing else when printed. The preview is a
+// page of its own (#562): it has an address, and Back closes it.
 import { expect, test } from "@playwright/test";
 
 test("a teacher prints the three test forms with answer keys", async ({ browser, request }) => {
@@ -9,9 +10,11 @@ test("a teacher prints the three test forms with answer keys", async ({ browser,
   await page.getByLabel("Teacher password").fill("e2e-teacher");
   await page.getByRole("button", { name: "Open" }).click();
   await page.getByRole("button", { name: new RegExp(klass.code) }).click();
-  await page.getByRole("button", { name: "Print the tests" }).click();
+  await page.getByRole("link", { name: "Print the tests" }).click();
+  await expect(page).toHaveURL(new RegExp(`#/teacher/${klass.code}/tests/print$`));
 
-  const sheet = page.getByRole("dialog", { name: "Print the tests" });
+  const sheet = page.getByRole("main", { name: "Print the tests" });
+  await expect(page.locator(".modal-backdrop, [role=dialog]")).toHaveCount(0);
   await expect(sheet.locator('[data-form="A"] .print-items > li')).toHaveCount(6);
   await expect(sheet.locator('[data-form="B"] .print-items > li')).toHaveCount(6);
   await expect(sheet.locator('[data-form="C"] .print-items > li')).toHaveCount(6);
@@ -28,6 +31,14 @@ test("a teacher prints the three test forms with answer keys", async ({ browser,
   const pages = (pdf.toString("latin1").match(/\/Type\s*\/Page[^s]/g) ?? []).length;
   expect(pages).toBeGreaterThanOrEqual(6);
   await page.emulateMedia({ media: "screen" });
-  await sheet.getByRole("button", { name: "Close" }).click();
+  // The browser's Back closes it; its address opens it again, and so does a reload.
+  await page.goBack();
   await expect(sheet).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Paper class" })).toBeVisible();
+  await page.goForward();
+  await page.reload();
+  await expect(sheet.locator('[data-form="C"] .print-items > li')).toHaveCount(6);
+  await sheet.getByRole("link", { name: "← Back to the class" }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Paper class" })).toBeVisible();
 });

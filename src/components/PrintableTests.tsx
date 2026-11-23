@@ -2,7 +2,7 @@
 // question of forms A and B (the pre- and post-test) and C (the delayed post-test) with a line for the answer, then an
 // answer key for each. The forms are the ones the
 // students' browsers build (from the class code), so a paper answer can be typed in later as the same question.
-// The browser's print dialog makes the PDF; on screen this is a preview with Print and Close.
+// The browser's print dialog makes the PDF; on screen it is a page of its own (#562) with Print and Back.
 import { useMemo } from "react";
 import type { ClassSummary } from "../api";
 import type { Dict } from "../locales/en";
@@ -13,7 +13,8 @@ import { svgToDataUrl } from "../math/svg";
 import { testItems, type Form } from "../model/testForms";
 import { SpokenMath } from "./SpokenMath";
 
-export function PrintableTests({ klass, w, pw, onClose }: { klass: ClassSummary; w: Dict["teacher"]; pw: PracticeWords; onClose: () => void }) {
+/** `back`: where its Back link goes (the browser's Back does the same). */
+export function PrintableTests({ klass, w, pw, back }: { klass: ClassSummary; w: Dict["teacher"]; pw: PracticeWords; back: string }) {
   const forms = useMemo(
     () =>
       (["A", "B", "C"] as Form[]).map((form) => ({
@@ -27,10 +28,10 @@ export function PrintableTests({ klass, w, pw, onClose }: { klass: ClassSummary;
     [klass, pw],
   );
   return (
-    <div className="print-overlay" role="dialog" aria-modal="true" aria-label={w.printTests}>
+    <main className="print-view" aria-label={w.printTests}>
       <div className="print-actions field-row">
         <button className="btn primary" onClick={() => window.print()}>🖨 {w.print}</button>
-        <button className="btn" onClick={onClose}>{w.close}</button>
+        <a className="btn" href={back}>{w.close}</a>
       </div>
       <div className="print-sheet">
         {forms.map(({ form, items }) => (
@@ -64,6 +65,6 @@ export function PrintableTests({ klass, w, pw, onClose }: { klass: ClassSummary;
           </section>
         ))}
       </div>
-    </div>
+    </main>
   );
 }
