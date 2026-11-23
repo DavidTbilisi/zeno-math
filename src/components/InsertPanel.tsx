@@ -1,6 +1,8 @@
-// Insert (#448): the board's one way to add a tool, a hands-on piece or a game. It is the library laid over the board:
-// the menu groups of src/menus.ts down the side (still the one source, so a new piece is one MENUS entry), the chosen
-// group's sections beside them, and a search across all of them. Picking one closes the panel and puts it on the board.
+// Insert (#448, docked since #560): the board's one way to add a tool, a hands-on piece or a game. It is the library
+// docked beside the board (a sheet along the bottom on a phone), and it stays open while the board is used: the menu
+// groups of src/menus.ts across its top (still the one source, so a new piece is one MENUS entry), the chosen group's
+// sections under them, and a search across all of them. A click puts the entry in the free spot in the middle of the
+// view; dragged onto the board it lands where it is dropped.
 // "By grade" swaps the groups for the grades (menuGrades.ts): a grade's tools, pieces and games from every menu at once.
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "../i18n";
@@ -14,6 +16,19 @@ import { BarIcon } from "./BarIcon";
 import { gradeName, rung } from "./GradeCard";
 
 type Item = MenuEntry | LiveEntry;
+/** What an entry dragged out of Insert carries: its menu entry, as JSON. */
+export const INSERT_MIME = "application/x-zeno-insert";
+/** The entry a drag from Insert carries, if it is one. */
+export function fromInsertDrag(dt: DataTransfer): Item | null {
+  try {
+    const it = JSON.parse(dt.getData(INSERT_MIME)) as Item;
+    return MENUS.some((g) => g.sections.some((s) => s.items.some((x) => (isLiveEntry(x) ? isLiveEntry(it) && x.live === it.live : !isLiveEntry(it) && x.kind === it.kind && x.start === it.start))))
+      ? it
+      : null;
+  } catch {
+    return null; // not a drag from Insert
+  }
+}
 type Mode = "topic" | "grade";
 const KEY = "zeno.insert.group";
 const MODE_KEY = "zeno.insert.mode";
@@ -58,10 +73,10 @@ export function InsertPanel({ onPick, onClose }: { onPick: (item: Item) => void;
   const setGrade = (g: Grade) => (setGradeState(g), save(GRADE_KEY, String(g)));
   const gw = t.pracWords.grades;
 
-  // Escape closes it, before Excalidraw sees the key.
+  // Escape inside it closes it, before Excalidraw sees the key; on the board Escape is the board's.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
+      if (e.key !== "Escape" || !box.current?.contains(document.activeElement)) return;
       e.stopPropagation();
       e.preventDefault();
       onClose();
@@ -108,88 +123,95 @@ export function InsertPanel({ onPick, onClose }: { onPick: (item: Item) => void;
   const here = tabs.find((x) => x.on) ?? tabs[0];
 
   return (
-    <div className="insert-backdrop" onPointerDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div ref={box} className="insert" role="dialog" aria-modal="true" aria-label={w.title}>
-        <div className="insert-head">
-          <h2>{w.title}</h2>
-          <input
-            className="insert-search"
-            type="search"
-            value={q}
-            autoFocus
-            placeholder={t.site.search}
-            aria-label={t.site.search}
-            onChange={(e) => setQ(e.target.value)}
-          />
-          <button className="btn ghost insert-close" onClick={onClose} aria-label={t.close} title={t.close}>✕</button>
-        </div>
-        <div className={`insert-body${found ? " searching" : ""}`}>
-          {!found && (
-            <div className="insert-side">
-              <div className="insert-mode" role="group" aria-label={w.title}>
-                {(["topic", "grade"] as const).map((m) => (
-                  <button key={m} className={mode === m ? "on" : ""} aria-pressed={mode === m} onClick={() => setMode(m)}>
-                    {m === "topic" ? w.byTopic : w.byGrade}
-                  </button>
-                ))}
-              </div>
-              <div className="insert-groups" role="tablist" aria-label={mode === "grade" ? w.byGrade : w.byTopic} aria-orientation="vertical">
-                {tabs.map((x, i) => (
-                  <button
-                    key={x.id}
-                    role="tab"
-                    data-tab={x.id}
-                    id={`insert-tab-${x.id}`}
-                    aria-selected={x.on}
-                    aria-controls="insert-items"
-                    tabIndex={x.on ? 0 : -1}
-                    className={`insert-group${x.on ? " on" : ""}`}
-                    title={x.title}
-                    onClick={x.pick}
-                    onKeyDown={(e) => onTabKey(e, i)}
-                  >
-                    {x.mark}
-                    <span>{x.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <div
-            id="insert-items"
-            className="insert-items"
-            {...(found ? { role: "region", "aria-label": t.site.search } : { role: "tabpanel", "aria-labelledby": `insert-tab-${here.id}` })}
-          >
-            {sections.length ? (
-              sections.map((sec) => (
-                <section key={sec.key} className="insert-section" aria-label={sec.head || undefined}>
-                  {sec.head && (
-                    <div className="insert-section-head">
-                      <h3>{sec.head}</h3>
-                      {/* The lesson side of it lives on the topic's page now (#448). */}
-                      {sec.topic && <a href={`#/learn/${sec.topic}`}>{fill(w.topic, { topic: t.site.topics[sec.topic].name })} →</a>}
-                    </div>
-                  )}
-                  <div className="insert-grid">
-                    {sec.items.map((it) => (
-                      <button key={isLiveEntry(it) ? it.live : `${it.kind}/${it.start ?? ""}`} className="insert-item" onClick={() => onPick(it)}>
-                        <span className="insert-icon">{it.icon}</span>
-                        {menuName(t, it)}
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              ))
-            ) : (
-              <p className="course-count" role="status">{fill(t.site.searchNone, { q: q.trim() })}</p>
-            )}
-          </div>
-        </div>
-        <p className="insert-foot">
-          <span>{w.hint}</span>
-          <a href="#/library">{w.library} →</a>
-        </p>
+    <aside ref={box} className="insert" aria-label={w.title}>
+      <div className="insert-head">
+        <h2>{w.title}</h2>
+        <input
+          className="insert-search"
+          type="search"
+          value={q}
+          autoFocus
+          placeholder={t.site.search}
+          aria-label={t.site.search}
+          onChange={(e) => setQ(e.target.value)}
+        />
+        <button className="btn ghost insert-close" onClick={onClose} aria-label={t.close} title={t.close}>✕</button>
       </div>
-    </div>
+      <div className={`insert-body${found ? " searching" : ""}`}>
+        {!found && (
+          <div className="insert-side">
+            <div className="insert-mode" role="group" aria-label={w.title}>
+              {(["topic", "grade"] as const).map((m) => (
+                <button key={m} className={mode === m ? "on" : ""} aria-pressed={mode === m} onClick={() => setMode(m)}>
+                  {m === "topic" ? w.byTopic : w.byGrade}
+                </button>
+              ))}
+            </div>
+            <div className="insert-groups" role="tablist" aria-label={mode === "grade" ? w.byGrade : w.byTopic}>
+              {tabs.map((x, i) => (
+                <button
+                  key={x.id}
+                  role="tab"
+                  data-tab={x.id}
+                  id={`insert-tab-${x.id}`}
+                  aria-selected={x.on}
+                  aria-controls="insert-items"
+                  tabIndex={x.on ? 0 : -1}
+                  className={`insert-group${x.on ? " on" : ""}`}
+                  title={x.title}
+                  onClick={x.pick}
+                  onKeyDown={(e) => onTabKey(e, i)}
+                >
+                  {x.mark}
+                  <span>{x.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div
+          id="insert-items"
+          className="insert-items"
+          {...(found ? { role: "region", "aria-label": t.site.search } : { role: "tabpanel", "aria-labelledby": `insert-tab-${here.id}` })}
+        >
+          {sections.length ? (
+            sections.map((sec) => (
+              <section key={sec.key} className="insert-section" aria-label={sec.head || undefined}>
+                {sec.head && (
+                  <div className="insert-section-head">
+                    <h3>{sec.head}</h3>
+                    {/* The lesson side of it lives on the topic's page now (#448). */}
+                    {sec.topic && <a href={`#/learn/${sec.topic}`}>{fill(w.topic, { topic: t.site.topics[sec.topic].name })} →</a>}
+                  </div>
+                )}
+                <div className="insert-grid">
+                  {sec.items.map((it) => (
+                    <button
+                      key={isLiveEntry(it) ? it.live : `${it.kind}/${it.start ?? ""}`}
+                      className="insert-item"
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData(INSERT_MIME, JSON.stringify(it));
+                        e.dataTransfer.effectAllowed = "copy";
+                      }}
+                      onClick={() => onPick(it)}
+                    >
+                      <span className="insert-icon">{it.icon}</span>
+                      {menuName(t, it)}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))
+          ) : (
+            <p className="course-count" role="status">{fill(t.site.searchNone, { q: q.trim() })}</p>
+          )}
+        </div>
+      </div>
+      <p className="insert-foot">
+        <span>{w.hint}</span>
+        <a href="#/library">{w.library} →</a>
+      </p>
+    </aside>
   );
 }

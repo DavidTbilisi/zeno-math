@@ -43,11 +43,11 @@ export async function pickTopic(scope: Page | Locator, name: string) {
 
 export const seedOf = (r: number) => Math.floor(r * 2 ** 31);
 
-/** The board's Insert panel (#448): the library over the board, in any language. */
+/** The board's Insert panel (#448): the library docked beside the board (#560), in any language. */
 export const insertPanel = (page: Page) => page.locator(".insert");
-/** Opens Insert on a group (by its tab's name, as the old menu buttons were named) and returns the panel. */
+/** Opens Insert (unless it is open already: it stays open) on a group, by its tab's name, and returns the panel. */
 export async function insertGroup(page: Page, group: string | RegExp) {
-  await page.locator(".insert-btn").click();
+  if (!(await insertPanel(page).isVisible())) await page.locator(".insert-btn").click();
   await insertPanel(page).getByRole("tab", { name: group }).click();
   return insertPanel(page);
 }
