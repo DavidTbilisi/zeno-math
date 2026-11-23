@@ -1,6 +1,7 @@
 import type { Dashboard } from "../server/dashboard";
 import { loadStudent, type Attempt, type Phase, type Plan, type SendResult, type Student, type TestAnswer } from "./learner";
 import type { GoalId } from "./model/roadmap";
+import type { GameId } from "./model/gameKeys";
 import type { SkillId } from "./math/practiceSkills";
 import type { Feature } from "./model/arms";
 import type { Form, TestPhase } from "./model/testForms";
@@ -81,8 +82,11 @@ export const study = {
   /** number: the student's number in the class list; again: join though someone in the class already gave it (409). */
   join: (classCode: string, number?: number, again = false) =>
     req<Student>("POST", "/api/students", { class: classCode, number, again: again || undefined }),
-  /** The student, and the goal their teacher picked for the class (#461), null for none. */
-  student: (code: string) => req<Student & { answered: number; goal: GoalId | null }>("GET", `/api/students/${encodeURIComponent(code)}`),
+  /** The student, the goal their teacher picked for the class (#461, null for none) and the games assigned to it. */
+  student: (code: string) => req<Student & { answered: number; goal: GoalId | null; games: GameId[] }>("GET", `/api/students/${encodeURIComponent(code)}`),
+  /** The stars of an assigned game's ladder, as this browser has them; the server keeps the best of each puzzle. */
+  stars: (code: string, game: GameId, stars: number[]) =>
+    req<{ stars: number[]; passed: boolean }>("POST", `/api/students/${encodeURIComponent(code)}/games`, { game, stars }, true),
   plan: (code: string) => req<Plan>("GET", `/api/students/${encodeURIComponent(code)}/plan`),
   forget: (code: string) => req<void>("DELETE", `/api/students/${encodeURIComponent(code)}`),
   send: (a: Attempt, keepalive: boolean) => upload("/api/attempts", a, keepalive),
@@ -155,6 +159,9 @@ export function teacherApi(password: string) {
     /** Picks the class's roadmap goal (#461), or null for none. */
     goal: (code: string, goal: GoalId | null) =>
       req<{ goal: GoalId | null }>("POST", `/api/classes/${encodeURIComponent(code)}/goal`, { goal }, false, headers),
+    /** The games assigned to the class ([] for none; 409 before games open, as homework does). */
+    games: (code: string, games: GameId[]) =>
+      req<{ games: GameId[] }>("POST", `/api/classes/${encodeURIComponent(code)}/games`, { games }, false, headers),
     /** Takes the class out of the study or puts it back (409 back in once it has had homework). */
     study: (code: string, study: boolean) =>
       req<{ study: boolean }>("POST", `/api/classes/${encodeURIComponent(code)}/study`, { study }, false, headers),

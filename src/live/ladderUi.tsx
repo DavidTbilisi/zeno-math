@@ -10,6 +10,7 @@ import { useState, type CSSProperties, type ReactNode } from "react";
 import { useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
 import { noteAchieved } from "../achieved";
+import { reportLadder } from "../classGames";
 import { burst, clockOpen, GAME_LEVELS, isOpen, ladderPassed, levelOpen, PASS_STREAK, readLadder, type GameLevel, type Ladder } from "../math/ladder";
 import { useFeel, setFeel } from "./feel";
 import { muted, setMuted } from "./juice";
@@ -42,6 +43,8 @@ export function useLadder<K extends string>(key: string, size: number, keys: rea
     } catch {
       // private mode: the stars last until the page closes
     }
+    // An assigned game's stars go to the teacher (classGames.ts), when they have changed.
+    if (next.stars.some((s, i) => s !== ladder.stars[i])) reportLadder(key, next.stars);
   };
   return [ladder, keep];
 }

@@ -42,9 +42,12 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/classes/:code/paper` | teacher | a test written on paper, typed in: `{ student, phase, form?, answers }`; see *Paper tests* |
 | POST | `/api/classes/:code/homework` | teacher | homework for every student in the class: `{ length? }`, 201; see *Homework* |
 | POST | `/api/classes/:code/study` | teacher | take the class out of the study or put it back: `{ study }`; see *Homework* |
+| POST | `/api/classes/:code/goal` | teacher | the class's roadmap goal: `{ goal }`, a goal id or `null` |
+| POST | `/api/classes/:code/games` | teacher | the games assigned to the class: `{ games }`, a list of game ids (`[]` for none); see *Games* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
 | POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
-| GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered }` |
+| GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered, goal, games }` |
+| POST | `/api/students/:code/games` | student | the stars of an assigned game: `{ game, stars }`; see *Games* |
 | DELETE | `/api/students/:code` | student | delete the student and everything saved under the code: 204 |
 | GET | `/api/students/:code/plan` | student | what the browser needs to choose class practice; see *The plan* |
 | POST | `/api/attempts` | student | one practice question; see *Attempts* |
@@ -209,6 +212,23 @@ A class that isn't part of the study, a pilot say, can be taken out of it: `POST
 running), and the exports of all classes (`attempts.csv` and `tests.csv` without `?class=`) leave it out; its own export
 still has it. `{ study: true }` puts it back, refused with 409 once any of its students has had homework, which has
 already changed their practice. Every class starts in the study.
+
+### Games
+
+`POST /api/classes/:code/games` `{ games }` (teacher) assigns games to the class: up to 30 ids from `GAME_KEYS` in
+`src/model/gameKeys.ts` (each game in the Games menu with a ladder), kept in the order sent, 200 `{ games }`. Games are
+extra practice, so they open as homework does: a non-empty list is refused with 409 until the class has been through
+its delayed post-test (at any time in a class out of the study), and while a test is running. `{ games: [] }` takes
+them off at any time. A class that has had games assigned, or whose students have sent stars, can't go back into the
+study.
+
+`GET /api/students/:code` gives the class's `games`, and the student's site lists them. Whenever the ladder of an
+assigned game changes, and once on each page for every assigned game, the student's browser sends
+`POST /api/students/:code/games` `{ game, stars }`: `stars` is the ladder as kept in that browser, 0–3 for each puzzle
+(at most 40). The server keeps the best stars of each puzzle across sends and answers 200 `{ stars, passed }`; a game
+not assigned to the class is refused with 409. A ladder is passed with at least two stars on every puzzle, and the
+first time it is, `passed_at` is noted. The dashboard's `games` gives `{ assigned, open, stars }`, `stars` keyed by
+student (`s17`) and game: `{ stars, passedAt }`.
 
 ### Attempts
 

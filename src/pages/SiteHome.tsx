@@ -2,18 +2,21 @@
 // topic), the roadmap they last opened with its next step, every goal with its bar, the featured topics with theirs,
 // and plain practice. The boards are one section of the site now (#/boards).
 import { useState } from "react";
+import { starsHere, useClassGames } from "../classGames";
 import { chooseGoal, useGoal } from "../classGoal";
+import { gameIcon } from "../components/GamesCard";
 import { gradeName } from "../components/GradeCard";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { fill } from "../math/text";
+import { ladderDone } from "../model/gameKeys";
 import { currentGrade } from "../model/placement";
 import { GOALS, isLab, isRead, itemsOf, progressOf, roadNext, type GameId, type Next } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
 import { FEATURED, topicOf, topicProgress } from "../model/topics";
 import { loadProgress } from "../practiceProgress";
-import { itemName, stageName } from "../roadWords";
+import { gameName, itemName, stageName } from "../roadWords";
 import { readWork } from "../work";
 
 /** Where a roadmap's or a topic's next step is done: a practice level, the topic's page for a "What is…?" read, or the game's or lab's own page. */
@@ -45,6 +48,7 @@ export function SiteHome() {
   const [progress] = useState(loadProgress);
   const grade = progress.placed || progress.cells ? currentGrade(progress.placed ?? null, progress.cells ?? {}) : null;
   const { goal, fromClass } = useGoal();
+  const games = useClassGames();
   const map = goal ? ROADMAPS[goal] : null;
   const next = map ? roadNext(map, work) : null;
   const all = map ? progressOf(itemsOf(map), work) : null;
@@ -86,6 +90,34 @@ export function SiteHome() {
               {next && <a className="z-btn z-btn-marker" href={nextHref(next)}>{next.via ? s.practiseNow : s.playNow}</a>}
               <a className="z-btn z-btn-line" href={`#/roadmaps/${goal}`}>{r.open} →</a>
             </div>
+          </section>
+        )}
+
+        {games.length > 0 && (
+          <section className="site-section" aria-labelledby="site-class-games">
+            <div className="site-section-head">
+              <h2 id="site-class-games">{s.teacherGames}</h2>
+              <p className="course-count">{s.teacherGamesHint}</p>
+            </div>
+            <ul className="site-cards">
+              {games.map((g) => {
+                const stars = starsHere(g);
+                const won = stars.reduce((a, b) => a + b, 0);
+                return (
+                  <li key={g}>
+                    <a className="site-card" href={`#/library/live/${g}`}>
+                      <span className="site-card-icon" aria-hidden="true">{gameIcon(g)}</span>
+                      <span className="site-card-text">
+                        <strong>{gameName(t, g)}</strong>
+                        <span className="site-kind">
+                          {ladderDone(stars) ? `✓ ${s.gamePassedHere}` : won ? fill(s.gameStarsWon, { n: won, of: 3 * stars.length }) : s.gameNotPlayed}
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         )}
 

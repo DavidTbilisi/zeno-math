@@ -69,7 +69,7 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onChanged }
       {!study && (
         <p className="hint study-off">
           {w.studyOff}{" "}
-          {!rows.length && <button className="btn small" disabled={busy} onClick={() => void switchStudy(true)}>{w.studyBack}</button>}
+          {!rows.length && !data.games.assigned.length && !Object.keys(data.games.stars).length && <button className="btn small" disabled={busy} onClick={() => void switchStudy(true)}>{w.studyBack}</button>}
         </p>
       )}
       {!open ? (

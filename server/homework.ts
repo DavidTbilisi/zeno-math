@@ -59,6 +59,10 @@ export async function setStudy(req: IncomingMessage, res: ServerResponse, db: Da
   if (!stmt(db, "SELECT 1 FROM classes WHERE code = ?").get(classCode)) return send(res, 404, { error: "no such class" });
   if (body.study && stmt(db, "SELECT 1 FROM homework h JOIN students s ON s.id = h.student_id WHERE s.class_code = ? LIMIT 1").get(classCode))
     throw new HttpError(409, "the class has had homework, so it can't go back into the study");
+  // Games assigned or played (classGames.ts) have changed practice too.
+  const games = stmt(db, "SELECT games FROM classes WHERE code = ?").get(classCode) as { games: string | null };
+  if (body.study && (games.games || stmt(db, "SELECT 1 FROM game_stars g JOIN students s ON s.id = g.student_id WHERE s.class_code = ? LIMIT 1").get(classCode)))
+    throw new HttpError(409, "the class has had games assigned, so it can't go back into the study");
   stmt(db, "UPDATE classes SET study = ? WHERE code = ?").run(body.study ? 1 : 0, classCode);
   return send(res, 200, { study: body.study });
 }
