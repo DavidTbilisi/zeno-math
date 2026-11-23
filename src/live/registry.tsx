@@ -97,6 +97,7 @@ import { BeTopo } from "./BeTopo";
 import { BeName } from "./BeName";
 import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
+import { Surface } from "./Surface";
 import { PcaLab } from "./PcaLab";
 import { FitLab } from "./FitLab";
 import { BatchLab } from "./BatchLab";
@@ -225,6 +226,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   beTopo: BeTopo,
   beName: BeName,
   descentLab: DescentLab,
+  surface: Surface,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,
   embedLab: EmbedLab,

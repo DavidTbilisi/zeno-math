@@ -1318,6 +1318,27 @@ function descentLabPreview(): Piece[] {
   ];
 }
 
+function surfacePreview(): Piece[] {
+  // A hill over a floor, its contour rings on the floor under it, a point on both joined by a dashed drop and the
+  // gradient arrow on the map.
+  const hill = (k: number): Pt[] => Array.from({ length: 25 }, (_, i) => {
+    const x = -1 + i / 12;
+    return [100 + 80 * x, 78 - k * 54 * Math.exp(-3 * x * x) - 12 * (1 - k)];
+  });
+  return [
+    poly([[30, 150], [150, 150], [190, 112], [70, 112]], { fill: "#f8f9fa", color: "#adb5bd", width: 1.5 }),
+    ellipse(110, 131, 44, 13, { color: "#ffd43b", width: 2 }),
+    ellipse(110, 131, 26, 8, { color: "#ff922b", width: 2 }),
+    ellipse(110, 131, 9, 3, { color: "#e8590c", width: 2 }),
+    path(hill(1), { color: "#2f9e44", width: 3 }),
+    path(hill(0.6), { color: "#a9e34b", width: 2 }),
+    seg([140, 140], [140, 52], { color: BLUE, width: 1.5, dashed: true }),
+    seg([140, 140], [118, 134], { color: "#c92a2a", width: 3 }),
+    ellipse(140, 52, 5, 5, { fill: BLUE, color: BLUE, width: 2 }),
+    ellipse(140, 140, 5, 5, { fill: "#fff", color: BLUE, width: 3 }),
+  ];
+}
+
 function pcaLabPreview(): Piece[] {
   // A cloud stretched along a line, the line through it, and each point's distance from the line.
   const along: [number, number][] = [[-80, 12], [-55, -16], [-30, 8], [-8, 18], [12, -12], [35, 14], [58, -10], [82, 6]];
@@ -2269,6 +2290,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeTopo", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", build: descentLabPreview, live: "descentLab" },
+  { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
   { id: "liveEmbedLab", build: embedLabPreview, live: "embedLab" },

@@ -84,6 +84,7 @@ import type { LiveBeComp } from "./beComp";
 import type { LiveBeTopo } from "./beTopo";
 import type { LiveBeName } from "./beName";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
+import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
 import { PCA_START, type LivePca } from "./pcaLab";
 import { FIT_START, type LiveFit } from "./fitLab";
@@ -621,6 +622,7 @@ export type LiveStates = {
   beTopo: LiveBeTopo;
   beName: LiveBeName;
   descentLab: LiveDescent;
+  surface: LiveSurface;
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
   embedLab: LiveEmbed;
@@ -743,6 +745,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   beTopo: [1080, 680],
   beName: [1080, 700],
   descentLab: [660, 650],
+  surface: [680, 790],
   pcaLab: [660, 720],
   softmaxLab: [660, 780],
   embedLab: [660, 600],
@@ -867,6 +870,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     beTopo: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     beName: { mode: "puzzle", stage: 0, level: 1, seed: 1, ops: [], misses: 0, done: false, streak: 0, said: null },
     descentLab: DESCENT_START,
+    surface: SURFACE_START,
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,
     embedLab: EMBED_START,
