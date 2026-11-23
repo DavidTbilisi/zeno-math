@@ -74,5 +74,4 @@ export const firstWrong = (sentences: readonly MarkedSentence[], picks: readonly
 
 /** A pick as the attempt records it: the mark, and on a relation whose amount was picked ("relation:0"). */
 export const pickCode = (p: MarkPick): string => (p.mark === "relation" ? `relation:${p.bigger ?? 0}` : p.mark);
-/** Every code a pick can be recorded as. */
-export const PICK_CODES: readonly string[] = ["given", "asked", "notNeeded", "relation:0", "relation:1"];
+export { PICK_CODES } from "../model/pickCodes.ts";

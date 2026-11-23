@@ -24,7 +24,7 @@ import { classGames, initClassGames, recordStars, setGames } from "./classGames.
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
-import { PICK_CODES } from "../src/math/wordMarks.ts";
+import { PICK_CODES } from "../src/model/pickCodes.ts";
 import { mark, markCount, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
 import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordPaperTest, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
