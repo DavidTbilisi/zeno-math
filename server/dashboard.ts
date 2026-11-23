@@ -26,6 +26,7 @@ import { stmt } from "./db.ts";
 import { mistakeOf } from "./marking.ts";
 import { homeworkOverview } from "./homework.ts";
 import { gamesOverview } from "./classGames.ts";
+import { predictionsOverview } from "./predictions.ts";
 import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protocol.ts";
 import { currentIdeas, currentModel, currentSpacing } from "./research.ts";
 
@@ -189,6 +190,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     homework: homeworkOverview(db, classCode, students),
     /** The games assigned to the class and each student's best stars on them. */
     games: gamesOverview(db, classCode, students),
+    /** Predictions made on topic pages and the wrong ones (#578): seen by the teacher, no part of mastery. */
+    predictions: predictionsOverview(db, classCode, students),
     calibration: {
       n: predictions.length,
       logLoss: predictions.length ? logLoss(predictions) : null,

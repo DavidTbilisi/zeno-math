@@ -1059,12 +1059,9 @@ export function PracticeDialog(props: Props) {
           )}
           <div className="field-row practice-actions">
             {/* Enter checks; the button is there for touch. */}
-            {!done && !given && stepping !== "now" && <button className="btn" onClick={onCheck}>{w.ui.check}</button>}
-            {!done && !given && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
-            {done && <button className={`btn primary${autoNext ? " auto-next" : ""}`} onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
-            {!done && !given && stepping !== "now" && marking !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
+            {!done && !given && stepping !== "now" && marking !== "now" && <button className="btn" onClick={onCheck}>{w.ui.check}</button>}
             {!done && !given && marking !== "now" && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
-            {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
+            {done && <button className={`btn primary${autoNext ? " auto-next" : ""}`} onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
             {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
             {!calm && (
               <button

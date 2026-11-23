@@ -63,7 +63,8 @@ export function SiteHome() {
             <h1>{s.heroTitle}</h1>
             <p className="course-lede">{s.heroLede}</p>
             <div className="site-ctas">
-              <a className="z-btn z-btn-marker" href="#/roadmaps">{s.chooseGoal}</a>
+              <a className="z-btn z-btn-marker" href="#/today">{s.today.button}</a>
+              <a className="z-btn z-btn-line" href="#/roadmaps">{s.chooseGoal}</a>
               <a className="z-btn z-btn-line" href="#/learn">{s.browseTopics}</a>
             </div>
           </div>
