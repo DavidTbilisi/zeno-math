@@ -16,6 +16,7 @@ const SymbolsPage = lazy(() => import("./pages/SymbolsPage").then((m) => ({ defa
 const ExplainPage = lazy(() => import("./pages/ExplainPage").then((m) => ({ default: m.ExplainPage })));
 const LearnPage = lazy(() => import("./pages/LearnPage").then((m) => ({ default: m.LearnPage })));
 const LibraryPage = lazy(() => import("./pages/LibraryPage").then((m) => ({ default: m.LibraryPage })));
+const TodayPage = lazy(() => import("./pages/TodayPage").then((m) => ({ default: m.TodayPage })));
 const ProgressPage = lazy(() => import("./pages/ProgressPage").then((m) => ({ default: m.ProgressPage })));
 const CoursePage = lazy(() => import("./pages/CoursePage").then((m) => ({ default: m.CoursePage })));
 
@@ -74,6 +75,7 @@ function App() {
   const library = hash.match(/^#\/library(?:\/((?:live|tool)\/[\w-]+(?:\/[\w.-]+)?))?$/);
   if (library) return site(<LibraryPage key={library[1] ?? ""} path={library[1]} />);
   if (hash === "#/progress") return site(<ProgressPage />);
+  if (hash === "#/today") return site(<TodayPage />);
   if (hash === "#/course")
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>

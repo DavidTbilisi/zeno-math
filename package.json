@@ -36,6 +36,7 @@
     "restore-check": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/restore-check.ts",
     "checker-agreement": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/checker-agreement.ts",
     "mistakes": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/mistakes.ts",
+    "room-layouts": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/room-layouts.ts",
     "snapshot": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/snapshot-practice.ts",
     "dashboard": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/dashboard.ts",
     "figures": "node --disable-warning=ExperimentalWarning --import ./scripts/ts-register.mjs scripts/thesis-figures.ts",

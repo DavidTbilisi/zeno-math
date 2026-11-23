@@ -1457,6 +1457,61 @@ span.board-home:hover { background: none; }
 .road-achieved ul { list-style: none; margin: 0; padding: 0; }
 .road-achieved li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
 .road-achieved time { color: var(--z-graphite); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+/* The roadmap as a walk through rooms (#584): a room per stage, its places marked with glyphs and coloured by learning
+   stage (#576, --ls-1…4); the rooms flow side by side and stack at phone width. */
+.rm-toggle { display: inline-flex; margin: 4px 0 12px; border: 1.5px solid var(--z-ink); border-radius: 8px; overflow: hidden; }
+.rm-view { padding: 6px 16px; border: 0; background: var(--surface); color: var(--z-ink); font: inherit; font-weight: 700; cursor: pointer; }
+.rm-view + .rm-view { border-left: 1.5px solid var(--z-ink); }
+.rm-view.on { background: var(--z-ink); color: var(--z-paper); }
+.rm-view:focus-visible { outline: 3px solid var(--z-marker); outline-offset: -3px; }
+.rm-lede { max-width: 70ch; }
+.rm-map { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 20px; align-items: start; margin: 0 0 8px; padding: 0; }
+.rm-room { min-width: 0; }
+.rm-head { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 1.0625rem; font-weight: 800; }
+.rm-num { display: inline-grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--z-ink); color: var(--z-paper); font-size: 0.875rem; }
+.rm-plan { display: block; width: 100%; max-width: 420px; height: auto; font-family: inherit; }
+.rm-floor { fill: color-mix(in srgb, var(--z-marker) 7%, var(--surface)); }
+.rm-wall { fill: none; stroke: var(--z-ink); stroke-width: 4; stroke-linecap: round; }
+.rm-door { fill: none; stroke: var(--z-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.rm-walk { fill: none; stroke: var(--z-graphite); stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round; opacity: 0.7; }
+.rm-tile { fill: var(--surface); stroke: var(--z-ink); stroke-width: 1.5; }
+.rm-glyph { fill: var(--z-ink); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+.rm-n { fill: var(--z-graphite); font-size: 10px; font-weight: 700; }
+.rm-spot.pick { cursor: pointer; }
+.rm-spot.pick:hover .rm-tile { stroke-width: 2.5; }
+.rm-spot.part .rm-tile { fill: color-mix(in srgb, var(--z-marker) 40%, var(--surface)); }
+.rm-spot.done .rm-tile, .rm-spot.behind .rm-tile { fill: var(--z-marker); }
+.rm-spot.done .rm-glyph, .rm-spot.behind .rm-glyph, .rm-spot.done .rm-n, .rm-spot.behind .rm-n { fill: #172350; }
+.rm-spot.ls-1 .rm-tile, .rm-spot.ls-2 .rm-tile, .rm-spot.ls-3 .rm-tile, .rm-spot.ls-4 .rm-tile { fill: var(--c); stroke: var(--c); }
+.rm-spot.ls-1 .rm-glyph, .rm-spot.ls-2 .rm-glyph, .rm-spot.ls-4 .rm-glyph, .rm-spot.ls-1 .rm-n, .rm-spot.ls-2 .rm-n, .rm-spot.ls-4 .rm-n { fill: #ffffff; }
+.rm-spot.ls-3 .rm-glyph, .rm-spot.ls-3 .rm-n { fill: #172350; }
+.rm-spot.sel .rm-tile { stroke: var(--z-ink); stroke-width: 3.5; }
+.rm-ring { fill: none; stroke: var(--z-marker); stroke-width: 4; }
+.rm-tick circle { fill: var(--z-ink); }
+.rm-tick text { fill: var(--z-paper); font-size: 10px; font-weight: 800; text-anchor: middle; dominant-baseline: central; }
+.rm-empty .rm-tile { fill: none; stroke-dasharray: 5 4; stroke-width: 2; }
+.rm-empty.right .rm-tile { fill: color-mix(in srgb, var(--z-right) 22%, var(--surface)); stroke: var(--z-right); stroke-dasharray: none; }
+.rm-empty.wrong .rm-tile { fill: color-mix(in srgb, var(--z-marker) 30%, var(--surface)); stroke-dasharray: none; }
+.rm-caption { margin: 8px 0 0; max-width: 420px; }
+.rm-caption .road-item { border-color: var(--z-ink); }
+.rm-cap-glyph { flex: none; min-width: 2.2em; padding: 2px 6px; border: 1.5px solid var(--border); border-radius: 6px; text-align: center; font-weight: 700; }
+.rm-walkit { margin-top: 24px; padding-top: 24px; border-top: 2px solid var(--z-ink); }
+.rm-walkit h2 { margin: 0 0 6px; font-size: 1.5rem; font-weight: 800; }
+.rm-walk-q { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 720px) { .rm-walk-q { grid-template-columns: minmax(0, 1fr); } }
+.rm-q { margin: 0 0 10px; }
+.rm-choices { list-style: none; display: grid; gap: 8px; margin: 0 0 12px; padding: 0; }
+.rm-choice {
+  display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; padding: 10px 12px; text-align: left;
+  background: var(--surface); border: 1.5px solid var(--border); border-radius: 8px; font: inherit; font-weight: 600; color: var(--z-ink); cursor: pointer;
+}
+.rm-choice:hover:not(:disabled), .rm-choice:focus-visible { border-color: var(--z-ink); }
+.rm-choice:focus-visible { outline: 3px solid var(--z-marker); outline-offset: 1px; }
+.rm-choice:disabled { cursor: default; }
+.rm-choice.right { border: 2px solid var(--z-right); background: color-mix(in srgb, var(--z-right) 14%, var(--surface)); }
+.rm-choice.wrong { border: 2px solid var(--z-ink); background: color-mix(in srgb, var(--z-marker) 25%, var(--surface)); }
+.rm-said { margin: 0 0 10px; font-weight: 700; }
+.rm-said.right { color: var(--z-right); }
 
 @media (max-width: 860px) {
   .z-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "ask" "line"; row-gap: 40px; padding: 24px 0 56px; }
@@ -1953,3 +2008,16 @@ span.board-home:hover { background: none; }
 .predict-verdict.right { color: #2b8a3e; }
 .predict-verdict.wrong { color: #c92a2a; }
 .inline-piece[inert] { opacity: 0.85; }
+/* Today (#585): one session in the order of the four learning stages. */
+.today-parts { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 10px; }
+.today-part { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border: 2px solid var(--z-ink); border-radius: 10px; background: #fff; }
+.today-part > div { display: grid; gap: 2px; min-width: 0; }
+.today-part.done { opacity: 0.7; }
+.today-moved ul { list-style: none; padding: 0; display: grid; gap: 8px; }
+.today-moved li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.today-moved li .road-name { min-width: 10em; }
+.today-moved li.up .road-name { font-weight: 700; }
+@media (max-width: 520px) {
+  .today-part { grid-template-columns: auto 1fr; }
+  .today-part > a { grid-column: 1 / -1; justify-self: start; }
+}
