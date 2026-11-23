@@ -27,7 +27,7 @@ import { FLIP, fracBars, fracTex, gcd, ineqPlain, ineqTex, mixedTex, num, OP_SIG
 
 export { LEVELS, type Bound, type DayPart, type Exercise, type Format, type FractionForm, type Level, type MeasurePair, type MeasureUnit, type Part, type Play, type PracticeWords, type SolutionKind, type StepForm } from "./practiceTypes";
 export { ineqPlain, ineqTex, plainE, readSign, rngOf } from "./practiceKit";
-export { ALL_SKILLS, AREAS, SKILLS, areaOf, type Area, type SkillId } from "./practiceSkills";
+export { ALL_SKILLS, AREAS, SKILLS, areaOf, groupsOf, type Area, type GroupId, type SkillId } from "./practiceSkills";
 
 // ---------- a question and its steps (the generators are in src/math/skills/) ----------
 

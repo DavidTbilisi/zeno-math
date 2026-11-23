@@ -17,7 +17,7 @@ import { cutsIn, sliceNow } from "../src/math/primeSlice.ts";
 import { rng } from "../src/math/random.ts";
 import { NEAR_LADDER, nearRound } from "../src/math/benchmark.ts";
 import { KAK_LADDER, kakTask } from "../src/math/kakooma.ts";
-import { practise, seedOf } from "./helpers.ts";
+import { pickTopic, practise, seedOf } from "./helpers.ts";
 
 const w = en.pracWords;
 
@@ -80,7 +80,7 @@ test("a practice question answered by putting the pin on the line", async ({ pag
   await page.getByRole("tab", { name: "Number" }).click();
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Number line estimation", exact: true }).click();
+  await pickTopic(page, "Number line estimation");
   await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
 
   const line = page.locator("svg.pin-line");
@@ -137,7 +137,7 @@ test("a practice question whose dots flash: look, then type how many", async ({ 
   await page.getByRole("tab", { name: "Number" }).click();
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Quick look: how many?", exact: true }).click();
+  await pickTopic(page, "Quick look: how many?");
   const box = page.locator(".flash-answer input");
   await expect(box).toBeDisabled();
   await page.getByRole("button", { name: "👀 Look" }).click();
@@ -182,7 +182,7 @@ test("a practice sum typed with the card buttons", async ({ page, request }) => 
   await page.getByRole("tab", { name: "Number" }).click();
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Make the target", exact: true }).click();
+  await pickTopic(page, "Make the target");
   await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
   const picks = page.locator(".target-picks");
   const sign: Record<string, string> = { "+": "+", "-": "−" };
@@ -218,7 +218,7 @@ test("a practice benchmark picked from its buttons", async ({ page, request }) =
   await page.getByRole("tab", { name: "Number" }).click();
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "medium" }).click();
-  await page.getByRole("button", { name: "Closer to?", exact: true }).click();
+  await pickTopic(page, "Closer to?");
   await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
   await page.locator(".sign-picks").getByRole("button", { name: best.text, exact: true }).click();
   await expect(page.getByLabel("Your answer")).toHaveValue(best.plain);
@@ -277,7 +277,7 @@ test("a practice list of divisors tapped from its buttons, in any order", async 
   await page.getByRole("tab", { name: "Number" }).click();
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "hard" }).click();
-  await page.getByRole("button", { name: "Divisible by?", exact: true }).click();
+  await pickTopic(page, "Divisible by?");
   await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
   const picks = page.locator(".sign-picks");
   // A divisor that doesn't divide it, tapped and tapped off again; the right ones in reverse.
