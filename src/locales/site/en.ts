@@ -95,6 +95,21 @@ export const site = {
   pct: "{pct} %",
   nextShort: "Next: {skill}, level {level}",
   filterNone: "No topic here yet.",
+  learning: {
+    title: "Learning stages",
+    lede: "Each skill goes through four stages, in order. A missed review sends it back to the first until you have it again.",
+    names: { 1: "I get it", 2: "I keep it", 3: "It's fast", 4: "I can use it on something new" },
+    kinds: { 1: "Comprehension", 2: "Encoding", 3: "Automaticity", 4: "Problem-solving" },
+    how: {
+      1: "A level made secure in practice.",
+      2: "Right on its review a day or more later.",
+      3: "Then right on the top level, at your own usual pace or faster, three times in a row.",
+      4: "Right when it is mixed with another skill or hidden in words.",
+    },
+    stage: "Learning stage {n} of 4: {name}",
+    none: "Learning stage: not started",
+    perSkill: "Learning stage of each skill",
+  },
   explain: {
     index: "What is…?",
     indexLede: "A short intro to every topic: what it is, one picture, and where you meet it in everyday life. Each one takes about two minutes.",

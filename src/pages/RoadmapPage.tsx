@@ -1,10 +1,12 @@
 // Roadmaps by goal (#449): #/roadmaps picks a goal, #/roadmaps/<goal> shows its roadmap, a checklist in stages that
 // ticks itself from free practice in this browser and the games' ladders, with Next, a bar per stage and in all, and
-// what has been achieved, newest first. The goal last opened is remembered for this browser.
+// what has been achieved, newest first. A skill's mark takes the colour of its learning stage (#576), its number beside
+// it. The goal last opened is remembered for this browser.
 import { useState } from "react";
 import { ApiError } from "../api";
 import { loadAchieved, storedGoal } from "../achieved";
 import { chooseGoal, classGoal, useGoal } from "../classGoal";
+import { StageBadge, StageLegend, useStageLabel } from "../components/LearningStages";
 import { SiteBar } from "../components/SiteBar";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
@@ -57,6 +59,7 @@ const MARK: Record<ItemState, string> = { done: "✓", behind: "✓", part: "", 
 function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
   const { t, lang } = useI18n();
   const r = t.roadmap;
+  const stageLabel = useStageLabel();
   const map = ROADMAPS[goal];
   const [dates] = useState(loadAchieved);
   const [opening, setOpening] = useState(false);
@@ -128,6 +131,10 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
         <p className="course-legend" aria-hidden="true">
           {(["done", "behind", "part", "open"] as const).map((k) => <span key={k}><i className={`road-tick ${k}`}>{MARK[k]}</i>{r.legend[k]}</span>)}
         </p>
+        <details className="road-stages">
+          <summary>{t.site.learning.title}</summary>
+          <StageLegend />
+        </details>
 
         <ol className="course-stages">
           {map.stages.map((st, n) => {
@@ -143,12 +150,14 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
                   <ul className="road-list">
                     {st.items.map((i) => {
                       const state = itemState(i, work);
-                      const label = `${itemName(t, i)}, ${r.legend[state]}`;
+                      const stage = isSkill(i) ? (work.stage?.(i.skill) ?? 0) : 0;
+                      const label = `${itemName(t, i)}, ${r.legend[state]}${stage ? `, ${stageLabel(stage)}` : ""}`;
                       const body = (
                         <>
-                          <i className={`road-tick ${state}`} aria-hidden="true">{MARK[state]}</i>
+                          <i className={`road-tick ${state}${stage ? ` ls-${stage}` : ""}`} aria-hidden="true">{MARK[state]}</i>
                           <span className="road-name">{itemName(t, i)}</span>
                           {levelsNote(i) && <span className="road-note">{levelsNote(i)}</span>}
+                          {stage !== 0 && <StageBadge stage={stage} />}
                         </>
                       );
                       const cls = `road-item ${state}${next?.item === i ? " next" : ""}`;
