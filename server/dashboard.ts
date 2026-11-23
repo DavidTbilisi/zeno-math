@@ -24,6 +24,7 @@ import type { MistakeId } from "../src/math/mistakes.ts";
 import { stmt } from "./db.ts";
 import { mistakeOf } from "./marking.ts";
 import { homeworkOverview } from "./homework.ts";
+import { gamesOverview } from "./classGames.ts";
 import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protocol.ts";
 import { currentIdeas, currentModel, currentSpacing } from "./research.ts";
 
@@ -183,6 +184,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     },
     /** Each student's newest homework and how they did on it, and whether the class may have homework yet (issue #297). */
     homework: homeworkOverview(db, classCode, students),
+    /** The games assigned to the class and each student's best stars on them. */
+    games: gamesOverview(db, classCode, students),
     calibration: {
       n: predictions.length,
       logLoss: predictions.length ? logLoss(predictions) : null,

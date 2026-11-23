@@ -13,6 +13,7 @@ import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
 import { PaceList } from "../components/PaceList";
 import { HomeworkCard } from "../components/HomeworkCard";
+import { GamesCard } from "../components/GamesCard";
 import { JoinLink } from "../components/JoinLink";
 import { SiteBar } from "../components/SiteBar";
 import { Track } from "../components/Track";
@@ -522,10 +523,15 @@ export function TeacherPage() {
                     )
                   )}
                   {tab === "homework" && data && data.class.code === selected && (
-                    <HomeworkCard klass={current} data={data} api={api} t={t} lang={lang} showCodes={showCodes} onChanged={() => {
-                      if (selected) void load(selected);
-                      void api.classes().then(setClasses, () => setFailed(true));
-                    }} />
+                    <>
+                      <HomeworkCard klass={current} data={data} api={api} t={t} lang={lang} showCodes={showCodes} onChanged={() => {
+                        if (selected) void load(selected);
+                        void api.classes().then(setClasses, () => setFailed(true));
+                      }} />
+                      <GamesCard key={current.code} klass={current} data={data} api={api} t={t} showCodes={showCodes} onChanged={() => {
+                        if (selected) void load(selected);
+                      }} />
+                    </>
                   )}
                   {tab === "study" && data && data.class.code === selected && (
                     <>

@@ -2,7 +2,7 @@
 // the goal the site opens on: the learner's own choice once they've made one (achieved.ts), else their class's.
 import { useEffect, useState } from "react";
 import { storedGoal, storeGoal } from "./achieved";
-import { study } from "./api";
+import { classInfo } from "./classGames";
 import { loadStudent } from "./learner";
 import { isGoal, type GoalId } from "./model/roadmap";
 
@@ -40,16 +40,13 @@ export function chooseGoal(g: GoalId) {
 export function useGoal(): { goal: GoalId | null; fromClass: boolean } {
   const [klass, setKlass] = useState(classGoal);
   useEffect(() => {
-    const s = loadStudent();
-    if (!s) return;
+    if (!loadStudent()) return;
     let live = true;
-    study.student(s.code).then(
-      (me) => {
-        storeClassGoal(me.goal);
-        if (live) setKlass(classGoal());
-      },
-      () => {},
-    );
+    void classInfo().then((info) => {
+      if (!info) return;
+      storeClassGoal(info.goal);
+      if (live) setKlass(classGoal());
+    });
     return () => {
       live = false;
     };

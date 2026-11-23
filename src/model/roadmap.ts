@@ -9,24 +9,15 @@ import { gradeOf, GRADES, PREREQUISITES, type Grade } from "./curriculum.ts";
 import type { Level } from "./elo.ts";
 import type { Standing } from "./course.ts";
 import { cellKey } from "./placement.ts";
+import { GAME_KEYS, type GameId } from "./gameKeys.ts";
 import type { TopicId } from "./topics.ts";
 
 export const GOALS = ["software", "algorithms", "finance", "banking", "ml", "school"] as const;
 export type GoalId = (typeof GOALS)[number];
 export const isGoal = (v: unknown): v is GoalId => GOALS.includes(v as GoalId);
 
-/** The games a roadmap can ask for, with where each keeps its ladder in this browser (its useGame key). */
-export const GAME_KEYS = {
-  beSort: "zeno.besort.v1", beSearch: "zeno.besearch.v1", beBinary: "zeno.bebinary.v1", bePointers: "zeno.bepointers.v1",
-  beWindow: "zeno.bewindow.v1", beStack: "zeno.bestack.v1", beHeap: "zeno.beheap.v1", beTree: "zeno.betree.v1",
-  beUnion: "zeno.beunion.v1", beTopo: "zeno.betopo.v1", beDp: "zeno.bedp.v1", beBacktrack: "zeno.bebacktrack.v1", beName: "zeno.bename.v1",
-  beCache: "zeno.becache.v1", beBalance: "zeno.bebalance.v1", beRing: "zeno.bering.v1", beLimit: "zeno.belimit.v1",
-  beQuorum: "zeno.bequorum.v1", beQueue: "zeno.bequeue.v1", beComp: "zeno.becomp.v1",
-  connectTowns: "zeno.connecttowns.v1", shortestPath: "zeno.shortestpath.v1", oneStroke: "zeno.onestroke.v1", colourMap: "zeno.colourmap.v1",
-  primeSlice: "zeno.primeSlice.v1", divisible: "zeno.divisible.v1", barChart: "zeno.barchart.v1", makeDiagram: "zeno.makediagram.v1",
-  graphStory: "zeno.graphstory.v1", estimate: "zeno.estimate.v1", balance: "zeno.balance.v1", slopeLine: "zeno.slopeline.v1",
-} as const satisfies Partial<Record<LiveKind, string>>;
-export type GameId = keyof typeof GAME_KEYS;
+/** The games a roadmap can ask for: any game with a ladder (gameKeys.ts). */
+export { GAME_KEYS, type GameId };
 
 /** The labs a roadmap can ask to be tried: tried once the learner has used one on its page (#/library/live/<lab>). */
 export const LABS = [

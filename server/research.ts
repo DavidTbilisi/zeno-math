@@ -20,6 +20,7 @@ import { GOALS, isGoal } from "../src/model/roadmap.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
 import { dashboard, markSeen } from "./dashboard.ts";
 import { initHomework, isHomework, makeHomework, setStudy, studentHomework } from "./homework.ts";
+import { classGames, initClassGames, recordStars, setGames } from "./classGames.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
@@ -153,6 +154,7 @@ export function initResearch(db: DatabaseSync) {
   stmt(db, `UPDATE classes SET block = replace(replace(block, '"adaptive"', '"on"'), '"fixed"', '"off"') WHERE block LIKE '%"adaptive"%' OR block LIKE '%"fixed"%'`).run();
   initProtocol(db);
   initHomework(db);
+  initClassGames(db);
 }
 
 /**
@@ -485,6 +487,12 @@ export async function handleResearch(
     return setStudy(req, res, db, normalizeCode(decodeURIComponent(id)));
   }
 
+  // The class's games ({ games: GameId[] }): its students' sites list them and send their stars.
+  if (resource === "classes" && id && sub === "games" && req.method === "POST") {
+    teacher(req);
+    return setGames(req, res, db, normalizeCode(decodeURIComponent(id)));
+  }
+
   // The class's roadmap goal ({ goal: GoalId | null }, #461).
   if (resource === "classes" && id && sub === "goal" && req.method === "POST") {
     teacher(req);
@@ -617,11 +625,13 @@ export async function handleResearch(
         homework: studentHomework(db, student),
       });
     }
+    // The stars of an assigned game, from the student's browser ({ game, stars }).
+    if (sub === "games" && req.method === "POST") return recordStars(req, res, db, student);
     if (sub) return send(res, 404, { error: "not found" });
     if (req.method === "GET") {
       const { n } = stmt(db, "SELECT COUNT(*) AS n FROM attempts WHERE student_id = ?").get(student.id) as { n: number };
       const { goal } = stmt(db, "SELECT goal FROM classes WHERE code = ?").get(student.class) as { goal: string | null };
-      return send(res, 200, { code: student.code, class: student.class, condition: student.condition, feature: student.feature, arm: student.arm, answered: n, goal });
+      return send(res, 200, { code: student.code, class: student.class, condition: student.condition, feature: student.feature, arm: student.arm, answered: n, goal, games: classGames(db, student.class) });
     }
     // Knowing the code is enough to wipe the record: it is all that ties the answers to the student.
     if (req.method === "DELETE") {

@@ -1787,3 +1787,13 @@ span.board-home:hover { background: none; }
 .class-goal-who { overflow-wrap: anywhere; font-size: 14px; }
 .class-goal-count { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted, inherit); }
 .road-class-note { margin: 0 0 8px; padding: 8px 12px; border-left: 3px solid var(--z-marker); background: color-mix(in srgb, var(--z-marker) 14%, transparent); border-radius: 4px; }
+
+/* The teacher's games (GamesCard.tsx): the picker by Games-menu section, and each student's stars. */
+.games-pick { margin-top: 10px; }
+.games-pick summary { cursor: pointer; font-weight: 700; }
+.games-pick fieldset { border: 0; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.games-pick legend { font-weight: 700; font-size: 14px; margin-bottom: 4px; padding: 0; }
+.games-save { margin-top: 10px; }
+.games-table td { text-align: center; }
+.games-table td.game-passed { font-weight: 700; color: var(--good, #2a7a3b); }
+.games-table td.game-none { color: var(--muted); }

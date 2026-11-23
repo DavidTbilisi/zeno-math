@@ -36,6 +36,11 @@ they answer, and **Print the homework** gives a sheet for each student without a
 Homework opens once the class has taken its delayed post-test, so it can't change what the study compares. A class
 that isn't part of the study, a pilot say, can be taken out of it on the same tab, and then has homework at any time.
 
+Under the homework, **Games** assigns games from the Games menu, any with a ladder of puzzles. They open when homework
+does. Each student's site lists them under "Games from your teacher", and their stars come back to a table with a
+column per game: ✓ once every puzzle has two stars or more, else the stars won so far. **Take the games off** clears
+the list. A class that has had games assigned can't go back into the study.
+
 [![Homework made for each student, done on a phone, and the results on the teacher's table](media/workflows/homework.png)](media/workflows/homework.mp4)
 
 ## 5. Read the class's progress

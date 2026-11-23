@@ -1223,3 +1223,43 @@ test("a class's roadmap goal (#461): the teacher's to pick, in the class list an
   assert.equal((await call("GET", `/api/students/${s}`)).body.goal, "finance");
   assert.deepEqual([(await pick(null)).status, await listed()], [200, null]);
 });
+
+test("games assigned to a class: the teacher's once games open, the students' best stars kept, on the dashboard", async () => {
+  const { code } = (await call("POST", "/api/classes", { name: "Games", skills: ["fractions"], testLength: 4 }, TEACHER)).body;
+  const s = (await call("POST", "/api/students", { class: code })).body.code;
+  const assign = (games: unknown, as: Record<string, string> = TEACHER) => call("POST", `/api/classes/${code}/games`, { games }, as);
+  const send = (game: unknown, stars: unknown) => call("POST", `/api/students/${s}/games`, { game, stars });
+  const dash = async () => (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body.games;
+
+  assert.equal((await assign(["beSort"], {})).status, 403, "the teacher's");
+  assert.equal((await assign("beSort")).status, 400);
+  assert.equal((await assign(["chess"])).status, 400, "only games with a ladder");
+  assert.equal((await call("POST", "/api/classes/NOPE99/games", { games: [] }, TEACHER)).status, 404);
+  assert.equal((await assign(["beSort"])).status, 409, "in the study: games open with homework");
+  assert.equal((await assign([])).status, 200, "taking them off always works");
+  assert.deepEqual((await call("GET", `/api/students/${s}`)).body.games, []);
+
+  await call("POST", `/api/classes/${code}/study`, { study: false }, TEACHER);
+  assert.deepEqual((await assign(["beSort", "fractionWall", "beSort"])).body, { games: ["beSort", "fractionWall"] }, "each once, in order");
+  assert.deepEqual((await call("GET", `/api/students/${s}`)).body.games, ["beSort", "fractionWall"]);
+
+  assert.equal((await send("beHeap", [3])).status, 409, "not assigned");
+  assert.equal((await send("chess", [3])).status, 400);
+  assert.equal((await send("beSort", [4])).status, 400);
+  assert.equal((await send("beSort", [])).status, 400);
+  assert.deepEqual((await send("beSort", [3, 1, 0])).body, { stars: [3, 1, 0], passed: false });
+  // An older copy from another device never takes a star away; together they pass.
+  assert.deepEqual((await send("beSort", [1, 2, 2])).body, { stars: [3, 2, 2], passed: true });
+  const d = await dash();
+  assert.deepEqual([d.assigned, d.open], [["beSort", "fractionWall"], true]);
+  const id = Object.keys(d.stars)[0];
+  assert.deepEqual(d.stars[id].beSort.stars, [3, 2, 2]);
+  assert.equal(typeof d.stars[id].beSort.passedAt, "number");
+  assert.equal(d.stars[id].fractionWall, undefined);
+
+  // No way back into the study once games have been assigned, nor during a test.
+  assert.equal((await call("POST", `/api/classes/${code}/study`, { study: true }, TEACHER)).status, 409);
+  await call("POST", `/api/classes/${code}/phase`, { phase: "pretest" }, TEACHER);
+  assert.equal((await assign(["beHeap"])).status, 409);
+  assert.equal((await dash()).open, false);
+});
