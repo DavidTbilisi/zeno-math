@@ -50,6 +50,7 @@ import { SignArrow } from "./SignArrow";
 import { SignPattern } from "./SignPattern";
 import { Cards } from "./Cards";
 import { GeoLab } from "./GeoLab";
+import { Space } from "./Space";
 import { ExprMatch } from "./ExprMatch";
 import { AngleGuess } from "./AngleGuess";
 import { AngleHunt } from "./AngleHunt";
@@ -176,6 +177,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   signPattern: SignPattern,
   cards: Cards,
   geoLab: GeoLab,
+  space: Space,
   exprMatch: ExprMatch,
   angleGuess: AngleGuess,
   angleHunt: AngleHunt,

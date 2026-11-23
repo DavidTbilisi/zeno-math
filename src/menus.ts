@@ -78,6 +78,7 @@ export const MENUS: MenuGroup[] = [
         title: "secCoordinates", items: [
           { kind: "coord", icon: "xy", label: "coord" },
           { kind: "vectors", icon: "↗", label: "vectors" },
+          { live: "space", icon: "🧭" },
         ], shapes: ["gridPaper", "axesQ1", "axes", "axes3d"],
       },
       {

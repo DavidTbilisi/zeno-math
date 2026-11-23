@@ -1674,3 +1674,7 @@ export const VEC_PRESETS: { [K in VecTopic]: { label: string; spec: VecSpec }[] 
     { label: "r = a + λu + μv", spec: S("planes", "r = (1, 1, 0) + λ(1, 0, 2) + μ(0, 1, -1)") },
   ],
 };
+
+// The exact arithmetic above, for the space piece (#566), which works the same examples by hand in a view that turns.
+export { F as frac, vadd, vsub, vscale, vdot, vcross, isZeroV, ratioOf, integral, sqrtR, rmul, rdiv, rnum, rational, rplain, rcap, plainF, vecPlain, angleTex, lenOf };
+export type { V as FracV, Root };
