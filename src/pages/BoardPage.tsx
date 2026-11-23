@@ -65,7 +65,7 @@ type Panel = { key: string; id: string; anchor: ScreenBox; orig?: ExcalidrawElem
 
 /** A tool whose picture is changed in the panel beside it. Three's picture is a WebGL snapshot and practice is not a
  *  picture to change: they keep their own editors. */
-const inPanel = (kind: ToolKind) => !TOOLS[kind].png && !TOOLS[kind].docked;
+const inPanel = (kind: ToolKind) => !TOOLS[kind].docked;
 
 // "conflict": someone saved this board elsewhere since we loaded it; autosave pauses until the user picks.
 type SaveState = "saved" | "saving" | "error" | "conflict";
@@ -117,7 +117,6 @@ export function BoardPage({ id }: { id: string }) {
   const [refused, setRefused] = useState(false);
   const [title, setTitle] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("saved");
-  const [dialog, setDialog] = useState<Dialog | null>(null);
   // Insert: the library over the board (#448), in place of the old row of tool menus.
   const [inserting, setInserting] = useState(false);
   const insertBtn = useRef<HTMLButtonElement>(null);
@@ -135,10 +134,10 @@ export function BoardPage({ id }: { id: string }) {
   // The panel just closed: a picture still rendering when it closed (a formula's typesetting) goes in after it, as a
   // step of its own.
   const closedPanel = useRef<Panel | null>(null);
-  // A docked tool (practice) has its own place beside the board, so a dialog can open while it stays.
+  // A docked tool (practice) has its own place beside the board, so a tool's panel can open while it stays.
   const [dock, setDock] = useState<Dialog | null>(null);
-  // A tool opens its panel with its first example already on the board (#558); 3D keeps its dialog for now.
-  const open = (d: Dialog) => (TOOLS[d.kind].docked ? setDock(d) : inPanel(d.kind) ? openNew(d.kind, d.start) : setDialog(d));
+  // A tool opens its panel with its first example already on the board (#558): no tool opens a dialog over it (#567).
+  const open = (d: Dialog) => (TOOLS[d.kind].docked ? setDock(d) : openNew(d.kind, d.start));
   const [palette, setPalette] = useState(false);
   // The board's theme as last seen; "" until Excalidraw reports it.
   const theme = useRef("");
@@ -616,7 +615,7 @@ export function BoardPage({ id }: { id: string }) {
   };
   // Ctrl+K (when nothing is selected — with a selection it's Excalidraw's "add link") or "/" outside a text field.
   const shortcutState = useRef({ open: false });
-  shortcutState.current.open = palette || !!dialog;
+  shortcutState.current.open = palette;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (shortcutState.current.open) return;
@@ -702,13 +701,10 @@ export function BoardPage({ id }: { id: string }) {
   // A teacher opening a student's board: to look at, not to change (the server refuses any save).
   if (board.readOnly) return <ReadOnlyBoard board={board} back="#/teacher" />;
 
-  const openTool = dialog && TOOLS[dialog.kind];
   const dockTool = dock && TOOLS[dock.kind];
   /** Puts what a tool made on the board, or in place of the picture it was editing. */
   const insert = (d: Dialog, tool: Tool, data: unknown, image: Parameters<ToolDialogProps["onSubmit"]>[1], capture?: CaptureUpdateActionType) => {
-    const placed: PlacedImage = tool.png
-      ? { dataURL: image.dataURL!, mimeType: "image/png", width: image.width, height: image.height }
-      : svgImage({ svg: themedSvg(image.svg!, theme.current), width: image.width, height: image.height });
+    const placed = svgImage({ svg: themedSvg(image.svg!, theme.current), width: image.width, height: image.height });
     return placeImage(placed, { kind: d.kind, data, w: image.width, h: image.height }, d.editing, undefined, capture);
   };
   const panelTool = panel?.tool ? TOOLS[panel.tool] : null;
@@ -890,20 +886,6 @@ export function BoardPage({ id }: { id: string }) {
       )}
       </div>
 
-      <Suspense fallback={null}>
-        {openTool && dialog && (
-          <openTool.Dialog
-            key={dialog.editing?.id ?? dialog.kind}
-            initial={dialog.editing && mathOf(dialog.editing)!.data}
-            start={dialog.start}
-            onClose={() => setDialog(null)}
-            onSubmit={(data, image) => {
-              insert(dialog, openTool, data, image);
-              setDialog(null);
-            }}
-          />
-        )}
-      </Suspense>
       {panel?.piece && (
         <ItemPanel
           key={panel.key}

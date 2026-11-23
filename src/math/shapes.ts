@@ -1194,6 +1194,32 @@ function solidPreview(): Piece[] {
   ];
 }
 
+function turnedPreview(): Piece[] {
+  // y = x² on 0..2 turned about the x-axis: the flat blue region, the solid swept round in orange, the axis dashed.
+  const pts: Pt[] = Array.from({ length: 11 }, (_, i) => [30 + i * 12, 100 - (i / 10) ** 2 * 70] as Pt);
+  return [
+    ellipse(150, 100, 14, 70, { fill: "#ffc078" }),
+    poly([[30, 100], ...pts.map(([x, y]): Pt => [x, 200 - y]), [150, 100]], { fill: "#ffd8a8" }),
+    poly([[30, 100], ...pts, [150, 100]], { fill: "#74c0fc" }),
+    seg([14, 100], [176, 100], { dashed: true }),
+    arrow([158, 42], [168, 64], false, { color: "#c92a2a", width: 3 }),
+  ];
+}
+
+function cubeMatrixPreview(): Piece[] {
+  // The unit cube sheared: a slanted orange box with the three column arrows from the corner.
+  const [o, a, b, c]: Pt[] = [[40, 140], [120, 150], [70, 112], [80, 60]];
+  const p = (u: Pt, v: Pt): Pt => [u[0] + v[0] - o[0], u[1] + v[1] - o[1]];
+  return [
+    poly([o, a, p(a, c), c], { fill: "#ffc078" }),
+    poly([a, p(a, b), p(p(a, b), c), p(a, c)], { fill: "#ffa94d" }),
+    poly([c, p(a, c), p(p(a, b), c), p(b, c)], { fill: "#ffd8a8" }),
+    arrow(o, a, false, { color: "#2f9e44", width: 3 }),
+    arrow(o, b, false, { color: "#c92a2a", width: 3 }),
+    arrow(o, c, false, { color: "#1971c2", width: 3 }),
+  ];
+}
+
 function sohcahtoaPreview(): Piece[] {
   // A 3-4-5 triangle with θ at its foot and sin θ = 3/5 built beside it.
   return [
@@ -2211,6 +2237,8 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
   { id: "liveSlopeWalk", build: slopeWalkPreview, live: "slopeWalk" },
   { id: "liveSolid", build: solidPreview, live: "solid" },
+  { id: "liveTurned", build: turnedPreview, live: "turned" },
+  { id: "liveCubeMatrix", build: cubeMatrixPreview, live: "cubeMatrix" },
   { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
   { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
   { id: "livePythDiscover", build: pythDiscoverPreview, live: "pythDiscover" },

@@ -65,6 +65,8 @@ import { TrigBuild } from "./TrigBuild";
 import { UnitCircleGame } from "./UnitCircleGame";
 import { SlopeWalk } from "./SlopeWalk";
 import { Solid } from "./Solid";
+import { Turned } from "./Turned";
+import { CubeMatrix } from "./CubeMatrix";
 import { SohCahToa } from "./SohCahToa";
 import { TrigDiscover } from "./TrigDiscover";
 import { PythDiscover } from "./PythDiscover";
@@ -191,6 +193,8 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   unitCircleGame: UnitCircleGame,
   slopeWalk: SlopeWalk,
   solid: Solid,
+  turned: Turned,
+  cubeMatrix: CubeMatrix,
   sohcahtoa: SohCahToa,
   trigDiscover: TrigDiscover,
   pythDiscover: PythDiscover,
