@@ -1182,6 +1182,18 @@ function slopeWalkPreview(): Piece[] {
   ];
 }
 
+function solidPreview(): Piece[] {
+  // A cuboid seen from a little above, its front blue, its side green and its top paler, one corner cut off in red.
+  const [x, y, w, h, dx, dy] = [20, 60, 110, 80, 50, -34];
+  return [
+    poly([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], { fill: "#a5d8ff" }),
+    poly([[x + w, y], [x + w + dx, y + dy], [x + w + dx, y + dy + h], [x + w, y + h]], { fill: "#b2f2bb" }),
+    poly([[x, y], [x + dx, y + dy], [x + w + dx, y + dy], [x + w, y]], { fill: "#d0ebff" }),
+    poly([[x + w - 30, y], [x + w + 22, y - 15], [x + w, y + 30]], { fill: "#ff8787", color: "#a61e4d", width: 2 }),
+    ellipse(x + w + dx, y + dy + h, 6, 6, { fill: "#fff", color: BLUE, width: 3 }),
+  ];
+}
+
 function sohcahtoaPreview(): Piece[] {
   // A 3-4-5 triangle with θ at its foot and sin θ = 3/5 built beside it.
   return [
@@ -2198,6 +2210,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTrigBuild", build: trigBuildPreview, live: "trigBuild" },
   { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
   { id: "liveSlopeWalk", build: slopeWalkPreview, live: "slopeWalk" },
+  { id: "liveSolid", build: solidPreview, live: "solid" },
   { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
   { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
   { id: "livePythDiscover", build: pythDiscoverPreview, live: "pythDiscover" },
