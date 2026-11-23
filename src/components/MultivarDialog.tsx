@@ -61,7 +61,7 @@ export function MultivarDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={MV_TOPICS} value={topic} onChange={setTopic} label={(k) => t.multivarTopics[k]} />}
+      <Tabs items={MV_TOPICS} value={topic} onChange={setTopic} label={(k) => t.multivarTopics[k]} />
       <small className="hint">{t.multivarHints[topic]}</small>
 
       <div className="field">

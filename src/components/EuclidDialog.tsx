@@ -49,7 +49,7 @@ export function EuclidDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={EUCLID_TOPICS} value={topic} onChange={setTopic} label={(k) => t.euclidTopics[k]} />}
+      <Tabs items={EUCLID_TOPICS} value={topic} onChange={setTopic} label={(k) => t.euclidTopics[k]} />
       <small className="hint">{t.euclidHints[topic]}</small>
 
       <div className="field">

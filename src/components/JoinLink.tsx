@@ -1,9 +1,9 @@
 // A class's join link (#/join/<code>) on the teacher page: the address to copy, and a QR code to put up on the board, so
-// students open Practice with the class code already in its box instead of typing it.
-import { useMemo, useState } from "react";
+// students open Practice with the class code already in its box instead of typing it. A tap on the code shows it large
+// in place, for the projector, and another (or Escape) puts it back.
+import { useEffect, useMemo, useState } from "react";
 import qrcode from "qrcode-generator";
 import type { Dict } from "../locales/en";
-import { Modal } from "./Modal";
 
 export const joinLink = (classCode: string) => `${location.origin}${location.pathname}#/join/${classCode}`;
 
@@ -30,6 +30,12 @@ export function JoinLink({ code, name, w }: { code: string; name: string; w: Dic
   const [copied, setCopied] = useState(false);
   const [showing, setShowing] = useState(false);
   const link = joinLink(code);
+  useEffect(() => {
+    if (!showing) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setShowing(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showing]);
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(link);
@@ -39,27 +45,31 @@ export function JoinLink({ code, name, w }: { code: string; name: string; w: Dic
       // no clipboard (an insecure page): the link is selected in its box for copying by hand
     }
   };
+  const qr = (
+    <button className="qr-toggle" aria-pressed={showing} aria-label={w.joinShow} title={w.joinShow} onClick={() => setShowing(!showing)}>
+      <QrCode text={link} label={w.joinQr} className={showing ? undefined : "small"} />
+    </button>
+  );
+  if (showing)
+    return (
+      <section className="join-show" aria-label={name}>
+        <h3>{name}</h3>
+        {qr}
+        <p className="hint">{w.joinShowHint}</p>
+        <p className="class-code"><span className="muted">{w.code}</span> <strong className="mono">{code}</strong></p>
+        <p className="mono join-show-link">{link}</p>
+      </section>
+    );
   return (
     <div className="join-link">
-      <QrCode text={link} label={w.joinQr} className="small" />
+      {qr}
       <div>
         <span className="muted">{w.joinLink}</span>
         <input className="mono" readOnly value={link} aria-label={w.joinLink} onFocus={(e) => e.target.select()} />
         <div className="field-row wrap">
           <button className="btn small" onClick={() => void copy()}>{copied ? `✓ ${w.joinCopied}` : w.joinCopy}</button>
-          <button className="btn small primary" onClick={() => setShowing(true)}>{w.joinShow}</button>
         </div>
       </div>
-      {showing && (
-        <Modal title={name} onClose={() => setShowing(false)} wide footer={<button className="btn" onClick={() => setShowing(false)}>{w.joinDone}</button>}>
-          <div className="join-show">
-            <QrCode text={link} label={w.joinQr} />
-            <p className="hint">{w.joinShowHint}</p>
-            <p className="class-code"><span className="muted">{w.code}</span> <strong className="mono">{code}</strong></p>
-            <p className="mono join-show-link">{link}</p>
-          </div>
-        </Modal>
-      )}
     </div>
   );
 }

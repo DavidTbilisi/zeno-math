@@ -56,7 +56,7 @@ export function InfDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={INF_TOPICS} value={topic} onChange={setTopic} label={(k) => t.infTopics[k]} />}
+      <Tabs items={INF_TOPICS} value={topic} onChange={setTopic} label={(k) => t.infTopics[k]} />
       <small className="hint">{t.infHints[topic]}</small>
 
       {kinds.length > 0 && (

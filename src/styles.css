@@ -668,7 +668,10 @@ input.invalid { border-color: var(--danger); }
 .join-link > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 16em; }
 .join-link input { width: 100%; }
 .qr.small { width: 96px; height: 96px; flex: none; }
-.join-show { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.qr-toggle { padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 6px; flex: none; }
+.qr-toggle[aria-pressed="true"] { cursor: zoom-out; }
+.qr-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.join-show { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; margin-top: 8px; }
 .join-show .qr { width: min(70vh, 80vw, 520px); height: auto; }
 .join-show-link { word-break: break-all; margin: 0; font-size: 1.25rem; }
 .join-show .hint { font-size: 1.1rem; max-width: 36em; }

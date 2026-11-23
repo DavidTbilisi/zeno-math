@@ -53,7 +53,7 @@ export function LikelihoodDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={LK_TOPICS} value={topic} onChange={setTopic} label={(k) => t.likelihoodTopics[k]} />}
+      <Tabs items={LK_TOPICS} value={topic} onChange={setTopic} label={(k) => t.likelihoodTopics[k]} />
       <small className="hint">{t.likelihoodHints[topic]}</small>
 
       <div className="field">

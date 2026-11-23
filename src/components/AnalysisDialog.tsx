@@ -89,9 +89,7 @@ export function AnalysisDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={ANALYSIS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.analysisTopics[k]} />
-      )}
+      <Tabs items={ANALYSIS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.analysisTopics[k]} />
       <small className="hint">{t.analysisHints[topic]}</small>
 
       <div className="field">

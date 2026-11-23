@@ -192,9 +192,7 @@ export function LogicDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={LOGIC_TOPICS} value={topic} onChange={setTopic} label={(k) => t.logicTopics[k]} />
-      )}
+      <Tabs items={LOGIC_TOPICS} value={topic} onChange={setTopic} label={(k) => t.logicTopics[k]} />
       <small className="hint">{t.logicHints[topic]}</small>
 
       <div className="field">

@@ -49,7 +49,7 @@ export function PowersDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={POWERS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.powersTopics[k]} />}
+      <Tabs items={POWERS_TOPICS} value={topic} onChange={setTopic} label={(k) => t.powersTopics[k]} />
       <small className="hint">{t.powersHints[topic]}</small>
 
       <div className="field">

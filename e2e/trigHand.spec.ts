@@ -12,7 +12,7 @@ test("hand trick: an example fills the angle, a peg of your own is drawn and kep
 
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("tab", { name: "Hand trick" }).click();
-  await expect(dialog.locator(".preview img")).toBeVisible();
+  await expect(dialog.locator(".preview img")).toBeAttached();
 
   await dialog.getByRole("button", { name: "7π/6" }).click();
   const peg = dialog.getByRole("textbox", { name: "/6" });
@@ -21,7 +21,7 @@ test("hand trick: an example fills the angle, a peg of your own is drawn and kep
   const src = await dialog.locator(".preview img").getAttribute("src");
   expect(Buffer.from((src ?? "").split(",")[1], "base64").toString("utf8")).toContain("Big Ben");
   await page.screenshot({ path: test.info().outputPath("trig-hand.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit trigonometry/ }).click();

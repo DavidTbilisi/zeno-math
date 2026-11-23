@@ -76,9 +76,7 @@ export function NtDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={NT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.ntTopics[k]} />
-      )}
+      <Tabs items={NT_TOPICS} value={topic} onChange={setTopic} label={(k) => t.ntTopics[k]} />
       <small className="hint">{t.ntHints[topic]}</small>
 
       <div className="field">

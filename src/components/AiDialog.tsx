@@ -49,7 +49,7 @@ export function AiDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && AI_TOPICS.length > 1 && <Tabs items={AI_TOPICS} value={topic} onChange={setTopic} label={(k) => t.aiTopics[k]} />}
+      {AI_TOPICS.length > 1 && <Tabs items={AI_TOPICS} value={topic} onChange={setTopic} label={(k) => t.aiTopics[k]} />}
       <small className="hint">{t.aiHints[topic]}</small>
 
       <div className="field">

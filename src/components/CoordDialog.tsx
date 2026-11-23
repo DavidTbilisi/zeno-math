@@ -49,7 +49,7 @@ export function CoordDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={COORD_TOPICS} value={topic} onChange={setTopic} label={(k) => t.coordTopics[k]} />}
+      <Tabs items={COORD_TOPICS} value={topic} onChange={setTopic} label={(k) => t.coordTopics[k]} />
       <small className="hint">{t.coordHints[topic]}</small>
 
       <div className="field">

@@ -49,7 +49,7 @@ export function IdDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={ID_TOPICS} value={topic} onChange={setTopic} label={(k) => t.idTopics[k]} />}
+      <Tabs items={ID_TOPICS} value={topic} onChange={setTopic} label={(k) => t.idTopics[k]} />
       <small className="hint">{t.idHints[topic]}</small>
 
       <div className="field">

@@ -53,7 +53,7 @@ export function InformationDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && <Tabs items={INFO_TOPICS} value={topic} onChange={setTopic} label={(k) => t.informationTopics[k]} />}
+      <Tabs items={INFO_TOPICS} value={topic} onChange={setTopic} label={(k) => t.informationTopics[k]} />
       <small className="hint">{t.informationHints[topic]}</small>
 
       <div className="field">

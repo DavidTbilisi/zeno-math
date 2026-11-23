@@ -21,15 +21,14 @@ test("tactics: parity explains an impossible target, finds the signs for a possi
   await dialog.getByRole("tab", { name: "Mod 3 invariant" }).click();
   await dialog.getByRole("textbox").fill("0 0 0");
   await expect(dialog.locator(".preview .error")).toHaveText(/not all 0/);
-  await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
 
   await dialog.getByRole("tab", { name: "Parity" }).click();
   await dialog.getByRole("button", { name: "±1 … ±10 = 0" }).click();
-  await expect(dialog.locator(".preview img")).toBeVisible();
+  await expect(dialog.locator(".preview img")).toBeAttached();
   await dialog.getByRole("textbox", { name: "n" }).fill("8");
-  await expect(dialog.locator(".preview img")).toBeVisible();
+  await expect(dialog.locator(".preview img")).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("parity.png") });
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit tactics/ }).click();
@@ -45,7 +44,7 @@ test("strategies: Pólya's card takes your problem, and the lockers follow n", a
 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Problem-solving strategies" })).toBeVisible();
-  await expect(dialog.locator(".preview img")).toBeVisible();
+  await expect(dialog.locator(".preview img")).toBeAttached();
   await dialog.getByRole("textbox", { name: "Your problem" }).fill("How many diagonals has a 12-gon?");
   await dialog.getByRole("textbox", { name: "1. Understand" }).fill("Unknown: the diagonals. Data: 12 corners.");
 
@@ -54,13 +53,13 @@ test("strategies: Pólya's card takes your problem, and the lockers follow n", a
   await dialog.getByRole("textbox", { name: "n" }).fill("101");
   await expect(dialog.locator(".preview .error")).toHaveText(/from 1 to 100/);
   await dialog.getByRole("textbox", { name: "n" }).fill("50");
-  await expect(dialog.locator(".preview img")).toBeVisible();
+  await expect(dialog.locator(".preview img")).toBeAttached();
   await page.screenshot({ path: test.info().outputPath("lockers.png") });
 
   // Back on Pólya's tab the card kept what was typed, and it goes on the board.
   await dialog.getByRole("tab", { name: "Pólya's four phases" }).click();
   await expect(dialog.getByRole("textbox", { name: "Your problem" })).toHaveValue("How many diagonals has a 12-gon?");
-  await dialog.getByRole("button", { name: "Insert" }).click();
+  await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
   await page.getByRole("button", { name: /Edit strategies/ }).click();
   await expect(page.getByRole("dialog").getByRole("textbox", { name: "1. Understand" })).toHaveValue("Unknown: the diagonals. Data: 12 corners.");

@@ -82,9 +82,7 @@ export function OdeDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={ODE_TOPICS} value={topic} onChange={setTopic} label={(k) => t.odeTopics[k]} />
-      )}
+      <Tabs items={ODE_TOPICS} value={topic} onChange={setTopic} label={(k) => t.odeTopics[k]} />
       <small className="hint">{t.odeHints[topic]}</small>
 
       <div className="field">

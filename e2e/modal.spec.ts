@@ -1,4 +1,5 @@
-// Every dialog can be maximised to the whole window and put back, from its button or a double click on its title.
+// A tool that still opens as a dialog (3D) can be maximised to the whole window and put back, from its button or a
+// double click on its title. Every other tool opens in the panel beside its picture, with no dialog over the board.
 import { expect, test } from "@playwright/test";
 
 test("a dialog maximises and restores", async ({ page, request }) => {
@@ -8,7 +9,14 @@ test("a dialog maximises and restores", async ({ page, request }) => {
   await page.keyboard.press("Control+k");
   await page.keyboard.type("Graph");
   await page.keyboard.press("Enter");
+  await expect(page.locator(".item-panel")).toBeVisible();
+  await expect(page.locator(".modal-backdrop")).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".item-panel")).toHaveCount(0);
 
+  await page.keyboard.press("Control+k");
+  await page.keyboard.type("3D");
+  await page.keyboard.press("Enter");
   const dialog = page.getByRole("dialog");
   const width = async () => (await dialog.boundingBox())!.width;
   const normal = await width();

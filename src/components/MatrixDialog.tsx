@@ -51,9 +51,7 @@ export function MatrixDialog({ initial, start, onSubmit, onClose }: {
         </>
       }
     >
-      {!initial && (
-        <Tabs items={(["calc", "transform", "space"] as const)} value={tab} onChange={setTab} label={(k) => k === "calc" ? t.matrixCalc : k === "transform" ? t.matrixTransform : t.matrixSpaces} />
-      )}
+      <Tabs items={(["calc", "transform", "space"] as const)} value={tab} onChange={setTab} label={(k) => k === "calc" ? t.matrixCalc : k === "transform" ? t.matrixTransform : t.matrixSpaces} />
 
       {tab === "calc" ? (
         <CalcControls spec={calc} onChange={setCalc} />
