@@ -22,6 +22,8 @@ export const FEATURES = [
   "faded",
   // after an early failure on a skill made of ideas, a few questions on its weakest idea, then back (stepDown.ts, #269)
   "stepdown",
+  // a spaced review on a skill made of ideas opens with its weakest idea's card, one corner to fill (ideaCards.ts, #579)
+  "cards",
   // a word problem's sentences marked given, asked, not needed or relation before it is solved (wordMarks.ts, #582)
   "marking",
 ] as const;
@@ -29,9 +31,10 @@ export type Feature = (typeof FEATURES)[number];
 /**
  * Features on trial: nobody has one but the arm with it in a class testing it. Step-down has been tried untargeted, and
  * cost students practice and completion for no gain (ASSISTments PSAYN42), so until a class shows the targeted kind
- * helps, nobody else gets it. Marking a word problem first takes time from solving it, so it waits for a class too.
+ * helps, nobody else gets it. The idea cards add a pick before a review that nothing has tested yet. Marking a word
+ * problem first takes time from solving it, so it waits for a class too.
  */
-export const ON_TRIAL: readonly Feature[] = ["stepdown", "marking"];
+export const ON_TRIAL: readonly Feature[] = ["stepdown", "cards", "marking"];
 export const ARMS = ["on", "off"] as const;
 /** on: the arm with the feature; off: the arm without it. */
 export type Arm = (typeof ARMS)[number];

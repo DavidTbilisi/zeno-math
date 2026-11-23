@@ -1194,6 +1194,32 @@ function solidPreview(): Piece[] {
   ];
 }
 
+function turnedPreview(): Piece[] {
+  // y = x² on 0..2 turned about the x-axis: the flat blue region, the solid swept round in orange, the axis dashed.
+  const pts: Pt[] = Array.from({ length: 11 }, (_, i) => [30 + i * 12, 100 - (i / 10) ** 2 * 70] as Pt);
+  return [
+    ellipse(150, 100, 14, 70, { fill: "#ffc078" }),
+    poly([[30, 100], ...pts.map(([x, y]): Pt => [x, 200 - y]), [150, 100]], { fill: "#ffd8a8" }),
+    poly([[30, 100], ...pts, [150, 100]], { fill: "#74c0fc" }),
+    seg([14, 100], [176, 100], { dashed: true }),
+    arrow([158, 42], [168, 64], false, { color: "#c92a2a", width: 3 }),
+  ];
+}
+
+function cubeMatrixPreview(): Piece[] {
+  // The unit cube sheared: a slanted orange box with the three column arrows from the corner.
+  const [o, a, b, c]: Pt[] = [[40, 140], [120, 150], [70, 112], [80, 60]];
+  const p = (u: Pt, v: Pt): Pt => [u[0] + v[0] - o[0], u[1] + v[1] - o[1]];
+  return [
+    poly([o, a, p(a, c), c], { fill: "#ffc078" }),
+    poly([a, p(a, b), p(p(a, b), c), p(a, c)], { fill: "#ffa94d" }),
+    poly([c, p(a, c), p(p(a, b), c), p(b, c)], { fill: "#ffd8a8" }),
+    arrow(o, a, false, { color: "#2f9e44", width: 3 }),
+    arrow(o, b, false, { color: "#c92a2a", width: 3 }),
+    arrow(o, c, false, { color: "#1971c2", width: 3 }),
+  ];
+}
+
 function sohcahtoaPreview(): Piece[] {
   // A 3-4-5 triangle with θ at its foot and sin θ = 3/5 built beside it.
   return [
@@ -1289,6 +1315,27 @@ function descentLabPreview(): Piece[] {
     dot(at(8), 4),
     dot(at(50), 4),
     dot(at(80), 7),
+  ];
+}
+
+function surfacePreview(): Piece[] {
+  // A hill over a floor, its contour rings on the floor under it, a point on both joined by a dashed drop and the
+  // gradient arrow on the map.
+  const hill = (k: number): Pt[] => Array.from({ length: 25 }, (_, i) => {
+    const x = -1 + i / 12;
+    return [100 + 80 * x, 78 - k * 54 * Math.exp(-3 * x * x) - 12 * (1 - k)];
+  });
+  return [
+    poly([[30, 150], [150, 150], [190, 112], [70, 112]], { fill: "#f8f9fa", color: "#adb5bd", width: 1.5 }),
+    ellipse(110, 131, 44, 13, { color: "#ffd43b", width: 2 }),
+    ellipse(110, 131, 26, 8, { color: "#ff922b", width: 2 }),
+    ellipse(110, 131, 9, 3, { color: "#e8590c", width: 2 }),
+    path(hill(1), { color: "#2f9e44", width: 3 }),
+    path(hill(0.6), { color: "#a9e34b", width: 2 }),
+    seg([140, 140], [140, 52], { color: BLUE, width: 1.5, dashed: true }),
+    seg([140, 140], [118, 134], { color: "#c92a2a", width: 3 }),
+    ellipse(140, 52, 5, 5, { fill: BLUE, color: BLUE, width: 2 }),
+    ellipse(140, 140, 5, 5, { fill: "#fff", color: BLUE, width: 3 }),
   ];
 }
 
@@ -2011,6 +2058,24 @@ function geoboardPreview(): Piece[] {
   return [...dots, poly(corners.map(([x, y]): Pt => [x * s, y * s]), { fill: FILL.blue, color: "#1971c2", width: 2 })];
 }
 
+function spacePreview(): Piece[] {
+  // Three axes from a corner, a blue and a red vector spanning a pale parallelogram, and their cross product standing
+  // up from it in purple, square to both.
+  const O: Pt = [60, 100];
+  const axis = { color: MUTED, width: 1.5 };
+  const [a, b, c]: Pt[] = [[110, 120], [150, 80], [60, 22]];
+  return [
+    arrow(O, [10, 140], false, axis),
+    arrow(O, [170, 112], false, axis),
+    arrow(O, [60, 6], false, axis),
+    poly([O, a, [a[0] + b[0] - O[0], a[1] + b[1] - O[1]], b], { fill: "#d0ebff", color: BLUE, width: 1 }),
+    arrow(O, a, false, { color: BLUE, width: 3 }),
+    arrow(O, b, false, { color: RED, width: 3 }),
+    arrow(O, c, false, { color: "#9c36b5", width: 3 }),
+    path([[60, 88], [70, 92], [70, 104]], { color: "#9c36b5", width: 1.5 }),
+  ];
+}
+
 function geoLabPreview(): Piece[] {
   // A 3-4-5 triangle on a light grid: its sides labelled, the right angle marked, the circle through its corners.
   const s = 22;
@@ -2196,6 +2261,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSignPattern", build: signPatternPreview, live: "signPattern" },
   { id: "liveExprMatch", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoLab", build: geoLabPreview, live: "geoLab" },
+  { id: "liveSpace", build: spacePreview, live: "space" },
   { id: "liveGeoboard", build: geoboardPreview, live: "geoboard" },
   { id: "liveAngleGuess", build: angleGuessPreview, live: "angleGuess" },
   { id: "liveAngleHunt", build: angleHuntPreview, live: "angleHunt" },
@@ -2211,6 +2277,8 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveUnitCircleGame", build: unitCircleGamePreview, live: "unitCircleGame" },
   { id: "liveSlopeWalk", build: slopeWalkPreview, live: "slopeWalk" },
   { id: "liveSolid", build: solidPreview, live: "solid" },
+  { id: "liveTurned", build: turnedPreview, live: "turned" },
+  { id: "liveCubeMatrix", build: cubeMatrixPreview, live: "cubeMatrix" },
   { id: "liveSohcahtoa", build: sohcahtoaPreview, live: "sohcahtoa" },
   { id: "liveTrigDiscover", build: trigDiscoverPreview, live: "trigDiscover" },
   { id: "livePythDiscover", build: pythDiscoverPreview, live: "pythDiscover" },
@@ -2241,6 +2309,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBeTopo", build: beTopoPreview, live: "beTopo" },
   { id: "liveBeName", build: beNamePreview, live: "beName" },
   { id: "liveDescentLab", build: descentLabPreview, live: "descentLab" },
+  { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
   { id: "liveEmbedLab", build: embedLabPreview, live: "embedLab" },

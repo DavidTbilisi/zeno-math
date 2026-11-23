@@ -30,7 +30,7 @@ test("a student's board is theirs: another student doesn't see it, and the teach
   await a.getByLabel(en.rename).press("Enter");
   await expect(a.locator(".save-state")).toHaveText(en.saved);
   await a.goto("/#/boards");
-  await expect(a.locator(".board-card")).toHaveText(new RegExp(title));
+  await expect(a.locator(".board-card .board-title")).toHaveValue(title);
 
   // The second student sees none of it, not even by the board's address.
   const b = await browserOf(browser, second);

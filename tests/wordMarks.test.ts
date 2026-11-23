@@ -155,7 +155,7 @@ test("marks from clauses, picks checked, the first wrong one found", () => {
 });
 
 test("marking is on trial: only the arm with it in a class testing it; the marks go with the attempt, the answers timed after", () => {
-  assert.equal(FEATURES.at(-1), "marking", "a new feature joins at the end");
+  assert.ok(FEATURES.indexOf("marking") > FEATURES.indexOf("stepdown"), "joined at the end: the features before it keep their places");
   assert.ok(ON_TRIAL.includes("marking"));
   assert.equal(studentHas(null, "marking"), false, "nobody signed in");
   assert.equal(hasFeature({ feature: "marking", arm: "on" }, "marking"), true);

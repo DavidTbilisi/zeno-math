@@ -1,7 +1,7 @@
 // Each student's homework on paper (issue #297), for students without a device: one page per student with their own
 // questions and a line for each answer, then an answer key per student for the teacher. The questions are the ones the
 // student's browser would ask (rebuilt from skill, level and seed). The browser's print dialog makes the PDF; on screen
-// this is a preview with Print and Close, as for the tests (PrintableTests).
+// it is a page of its own (#562) with Print and Back, as for the tests (PrintableTests).
 import { useMemo } from "react";
 import type { ClassSummary, Dashboard } from "../api";
 import type { Dict } from "../locales/en";
@@ -11,14 +11,15 @@ import { areaOf, exercise, renderPractice, type PracticeWords } from "../math/pr
 import { svgToDataUrl } from "../math/svg";
 import { SpokenMath } from "./SpokenMath";
 
-export function PrintableHomework({ klass, rows, nameOf, w, pw, onClose }: {
+export function PrintableHomework({ klass, rows, nameOf, w, pw, back }: {
   klass: ClassSummary;
   rows: Dashboard["homework"]["rows"];
   /** How a student is named on their sheet: their number in the class list, else their number in the study. */
   nameOf: (id: string) => string;
   w: Dict["teacher"];
   pw: PracticeWords;
-  onClose: () => void;
+  /** Where its Back link goes (the browser's Back does the same). */
+  back: string;
 }) {
   const sheets = useMemo(
     () =>
@@ -33,10 +34,10 @@ export function PrintableHomework({ klass, rows, nameOf, w, pw, onClose }: {
     [rows, pw],
   );
   return (
-    <div className="print-overlay" role="dialog" aria-modal="true" aria-label={w.homeworkPrint}>
+    <main className="print-view" aria-label={w.homeworkPrint}>
       <div className="print-actions field-row">
         <button className="btn primary" onClick={() => window.print()}>🖨 {w.print}</button>
-        <button className="btn" onClick={onClose}>{w.close}</button>
+        <a className="btn" href={back}>{w.close}</a>
       </div>
       <div className="print-sheet">
         {sheets.map(({ student, items }) => (
@@ -67,6 +68,6 @@ export function PrintableHomework({ klass, rows, nameOf, w, pw, onClose }: {
           </section>
         ))}
       </div>
-    </div>
+    </main>
   );
 }
