@@ -101,6 +101,7 @@ server/dashboard.ts       the teacher's dashboard data: who is stuck, mastery pe
 src/model/fading.ts       worked examples that fade: after a miss, then one step fewer given each time, until solved alone
 src/math/calcSteps.ts     how a calculus question comes apart into steps (terms, u and v, the inside)
 src/model/learningStage.ts  a skill's learning stage (#576): mastered, kept, fast, used on something new; per skill in My progress and on the roadmaps
+src/model/ideaCards.ts    an idea's card (#579): glyph, essence, look-alike, failure; on the topic page, and covered before a spaced review
 src/model/stepDown.ts     targeted step-down: two early misses on a skill made of ideas, three questions on its weakest idea, back
 src/model/arms.ts         what a class tests: the features, the two arms, the condition each arm practises in
 src/model/stuckList.ts    the stuck list: ten questions without three right in a row, the reason (mistake, ticked idea, weakest idea), groups

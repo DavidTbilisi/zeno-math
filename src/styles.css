@@ -1779,6 +1779,40 @@ span.board-home:hover { background: none; }
 .explain-card .topic-pic { max-width: 180px; align-self: center; }
 .explain-card span { color: var(--z-graphite); font-size: 0.9375rem; }
 .explain-card .explain-done { color: var(--z-right); }
+/* Idea cards (#579): four corners on one card, in the encoding stage's green (--ls-2); on the topic page under the
+   intro, and before a spaced review with one corner covered. Global tokens only, as the card also sits in the practice
+   dialog on a board. */
+.idea-card { --ic: var(--ls-2, #15803d); border: 1.5px solid var(--border); border-top: 4px solid var(--ic); border-radius: 10px; background: var(--surface); color: var(--text); padding: 14px; text-align: left; }
+.ic-name { margin: 0 0 10px; font-size: 1.0625rem; }
+.ic-corners { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.ic-corner { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 10px 12px; border-radius: 8px; background: var(--chip); line-height: 1.45; }
+.ic-corner p { margin: 0; overflow-wrap: anywhere; }
+.ic-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ic); }
+.ic-glyph, .ic-pick, .ic-like-glyph, .ic-choices-glyph .ic-choice { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", serif; white-space: nowrap; }
+.ic-glyph { font-size: 2.4rem; line-height: 1.15; }
+.ic-like { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.ic-like-glyph { padding: 0 6px; border-radius: 6px; background: var(--surface); }
+.ic-corner.covered { background: transparent; border: 2px dashed var(--ic); padding: 8px 10px; }
+.ic-hidden { display: grid; place-items: center; flex: 1; min-height: 2.4rem; font-size: 2rem; font-weight: 700; color: var(--ic); }
+.idea-cards .ic-picks { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.ic-pick { min-width: 44px; min-height: 44px; padding: 4px 10px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--chip); color: var(--text); font-size: 1.125rem; cursor: pointer; }
+.ic-pick:hover, .ic-pick:focus-visible { border-color: var(--ls-2, #15803d); }
+.ic-pick.on { border-color: var(--ls-2, #15803d); background: var(--ls-2, #15803d); color: #ffffff; }
+.ic-review { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.ic-review-head { color: var(--ls-2, #15803d); }
+.ic-ask { margin: 0; }
+.ic-choices { display: flex; flex-direction: column; gap: 8px; }
+.ic-choices-glyph { flex-direction: row; flex-wrap: wrap; }
+.ic-choice { height: auto; min-height: 44px; padding: 8px 12px; text-align: left; white-space: normal; line-height: 1.4; font-size: 0.9375rem; }
+.ic-choices-glyph .ic-choice { font-size: 1.375rem; min-width: 64px; justify-content: center; }
+.ic-choice.right { border-color: var(--z-right, #13795b); box-shadow: inset 0 0 0 1.5px var(--z-right, #13795b); }
+.ic-choice.wrong { border-color: var(--danger, #e03131); text-decoration: line-through; }
+.ic-choice:disabled { opacity: 1; cursor: default; }
+@media (max-width: 600px) {
+  .ic-corners { grid-template-columns: minmax(0, 1fr); }
+  .idea-card { padding: 12px; }
+  .ic-glyph { font-size: 2rem; }
+}
 /* Maths symbols (#451): #/symbols tiles and the card, also opened under a practice question. Global tokens only, so
    the card looks the same inside the practice dialog as on the site. */
 .site-explain-links { display: flex; flex-wrap: wrap; gap: 6px 20px; }
