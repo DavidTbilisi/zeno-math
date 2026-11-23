@@ -231,7 +231,7 @@ export function AlgebraTiles({ state: saved, set, w: words, svgRef }: PieceProps
       <>
         <rect x={MAT.x} y={MAT.y} width={MAT.w} height={MAT.h} rx={12} fill={overMat && drag?.from === "tray" ? "#f1f8ff" : "#f8f9fa"}
           stroke={overMat && drag?.from === "tray" ? BLUE : "#dee2e6"} style={{ cursor: "crosshair" }}
-          onPointerDown={(e) => press(e, { from: "box" })} onDoubleClick={() => putTiles(lineUp(tiles))} />
+          onPointerDown={(e) => press(e, { from: "box" })} />
         {!tiles.length && <text x={MAT.x + MAT.w / 2} y={MAT.y + MAT.h / 2} fontSize={16} textAnchor="middle" fill="#868e96" pointerEvents="none">{w.empty}</text>}
         {tiles.map((t) => {
           const [tw, th] = tileSize(t.kind);

@@ -9,7 +9,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerE
 import type { LiveGraphState, LiveParam } from "../math/live";
 import { compileWith, roundTo, sample, slope, stepFor, syncParams, zoomView } from "../math/liveGraph";
 import { niceStep, PLOT_COLORS } from "../math/plot";
-import { BLUE, capture, keyTap, pointIn, TAP } from "./hand";
+import { BLUE, capture, HomeMark, keyTap, pointIn, TAP } from "./hand";
 import { fill, FONT, INK, svgPoint, type PieceProps } from "./ui";
 
 const PW = 620;
@@ -291,8 +291,7 @@ export function LiveGraph({ state, set, w, svgRef }: PieceProps<"graph">) {
       </div>
       <svg ref={plotRef} width={PW} height={PH} viewBox={`0 0 ${PW} ${PH}`} fontFamily={FONT} className="live-plot hand-pic"
         style={{ touchAction: "none", userSelect: "none", cursor: press?.kind === "pan" && press.moved ? "grabbing" : "grab" }}
-        onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={() => (setPress(null), setPending(null))}
-        onDoubleClick={() => set({ ...cur, view: HOME })}>
+        onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={() => (setPress(null), setPending(null))}>
         <PlotBody view={view} fns={fns} compiled={compiled} scope={scope} point={point} tangent={cur.tangent} w={g} faded={press?.kind === "point" && press.off} />
         {point && (
           <circle cx={px(point.x)} cy={py(point.y)} r={14} fill="transparent" role="button" tabIndex={0} aria-label={g.point} style={{ cursor: "grab" }}
@@ -311,13 +310,16 @@ export function LiveGraph({ state, set, w, svgRef }: PieceProps<"graph">) {
         <g role="slider" tabIndex={0} aria-label={g.zoom} aria-valuemin={-10} aria-valuemax={10} aria-valuenow={Math.round(-Math.log2((xMax - xMin) / 20) * 10) / 10}
           aria-valuetext={fill(g.zoomText, { a: fmt(roundTo(xMin, 0.01)), b: fmt(roundTo(xMax, 0.01)) })}
           style={{ cursor: "ns-resize" }} onPointerDown={leverDown} onPointerMove={leverMove} onPointerUp={leverUp} onPointerCancel={() => setLever(null)}
-          onDoubleClick={(e) => e.stopPropagation()} onKeyDown={leverKey}>
+          onKeyDown={leverKey}>
           <title>{g.zoom}</title>
           <rect x={LEVER.x} y={LEVER.y} width={LEVER.w} height={LEVER.h} rx={LEVER.w / 2} fill="#fff" fillOpacity={0.9} stroke="#ced4da" />
           <text x={LEVER.x + LEVER.w / 2} y={LEVER.y + 17} fontSize={16} fontWeight={700} textAnchor="middle" fill="#868e96" pointerEvents="none">+</text>
           <text x={LEVER.x + LEVER.w / 2} y={LEVER.y + LEVER.h - 6} fontSize={16} fontWeight={700} textAnchor="middle" fill="#868e96" pointerEvents="none">−</text>
           <circle cx={LEVER.x + LEVER.w / 2} cy={LEVER_MID + (lever?.dy ?? 0)} r={9} fill={lever ? BLUE : "#fff"} stroke={BLUE} strokeWidth={2} pointerEvents="none" />
         </g>
+        {(["xMin", "xMax", "yMin", "yMax"] as const).some((k) => view[k] !== HOME[k]) && (
+          <HomeMark cx={LEVER.x + LEVER.w / 2} cy={LEVER.y + LEVER.h + 22} title={g.home} onTap={() => set({ ...cur, view: HOME })} />
+        )}
       </svg>
       {names.length === 0 ? (
         <p className="live-hint">{g.noParams}</p>

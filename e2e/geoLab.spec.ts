@@ -1,6 +1,6 @@
 // The geometry lab, worked by hand: the 3-4-5 triangle it starts with is measured and a corner dragged, a rectangle is
-// drawn with the plane's own tools and enlarged by its ⤢ corner, a copy is dragged in from the list and dropped in the
-// bin, a side's length is dragged, an ellipse and a sector get their π values, shapes are dragged in from the tray (or
+// drawn with the plane's own tools and enlarged by its ⤢ corner, a copy is dragged in from the list, a corner of it and then the
+// whole copy dropped in the bin, a side's length is dragged, an ellipse and a sector get their π values, shapes are dragged in from the tray (or
 // refused, with why, when the wheels make none), and the lever zooms.
 import { expect, test, type Page } from "@playwright/test";
 import { boardWith } from "./helpers";
@@ -57,8 +57,13 @@ test("geometry lab by hand: tools on the plane, the ⤢ corner, copy, bin, tray 
   const copy = (await facts.getByRole("button", { name: /^Drag a copy/ }).boundingBox())!;
   await drag(page, { x: copy.x + copy.width / 2, y: copy.y + copy.height / 2 }, at(2, -2));
   await expect(shapes).toHaveCount(4);
+  // Its corner (5, −1) dragged into the bin: the corner goes, a triangle is left; then the whole shape goes in.
   const bin = (await plane.getByRole("button", { name: /^Drag a shape here/ }).boundingBox())!;
-  await drag(page, at(2, -2), { x: bin.x + bin.width / 2, y: bin.y + bin.height / 2 });
+  const into = { x: bin.x + bin.width / 2, y: bin.y + bin.height / 2 };
+  await drag(page, at(5, -1), into);
+  await expect(facts.locator(".glab-name")).toContainText("Triangle");
+  await expect(shapes).toHaveCount(4);
+  await drag(page, at(0, -2), into);
   await expect(shapes).toHaveCount(3);
 
   // The rectangle again: its first side dragged two squares longer.
@@ -109,5 +114,12 @@ test("geometry lab by hand: tools on the plane, the ⤢ corner, copy, bin, tray 
   await drag(page, { x: l.x + l.width / 2, y: l.y + l.height / 2 }, { x: l.x + l.width / 2, y: l.y + l.height / 2 + 50 });
   await expect.poll(async () => Number(await lever.getAttribute("aria-valuenow"))).toBeLessThan(z0);
   await lever.press("ArrowUp");
+  // Away from every shape in view, the house under the lever brings them all in, then is gone.
+  const home = plane.getByRole("button", { name: "Fit every shape in view" });
+  const z1 = await lever.getAttribute("aria-valuenow");
+  const h = (await home.boundingBox())!;
+  await page.mouse.click(h.x + h.width / 2, h.y + h.height / 2);
+  await expect(home).toHaveCount(0);
+  await expect(lever).not.toHaveAttribute("aria-valuenow", z1!);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/geolab.png` });
 });
