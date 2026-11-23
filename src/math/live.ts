@@ -38,6 +38,7 @@ import { COUNTERS_START, type LiveCounters } from "./counters";
 import { SIGN_ARROW_START, SIGN_PATTERN_START, type LiveSignArrow, type LiveSignPattern } from "./signs";
 import { CARDS_START, type LiveCards } from "./cards";
 import { GEO_START, type LiveGeoLab } from "./geoLab";
+import { SPACE_START, type LiveSpace } from "./space";
 import type { LiveExprMatch } from "./exprMatch";
 import type { LiveAngleGuess } from "./angleGuess";
 import type { LiveAngleHunt } from "./missingAngle";
@@ -575,6 +576,7 @@ export type LiveStates = {
   signArrow: LiveSignArrow;
   signPattern: LiveSignPattern;
   geoLab: LiveGeoLab;
+  space: LiveSpace;
   exprMatch: LiveExprMatch;
   angleGuess: LiveAngleGuess;
   angleHunt: LiveAngleHunt;
@@ -698,6 +700,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   signArrow: [680, 720],
   signPattern: [680, 640],
   geoLab: [990, 790],
+  space: [720, 800],
   exprMatch: [780, 400],
   angleGuess: [600, 620],
   angleHunt: [600, 620],
@@ -823,6 +826,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     signArrow: SIGN_ARROW_START,
     signPattern: SIGN_PATTERN_START,
     geoLab: GEO_START,
+    space: SPACE_START,
     exprMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     angleGuess: { mode: "puzzle", stage: 0, level: 1, seed: 1, i: 0, errors: [], typed: "", guess: null, streak: 0, said: null },
     angleHunt: { mode: "puzzle", stage: 0, level: 1, seed: 1, typed: "", misses: 0, done: false, streak: 0, said: null },
