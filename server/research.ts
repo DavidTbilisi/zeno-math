@@ -23,6 +23,7 @@ import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from
 import { dashboard, markSeen } from "./dashboard.ts";
 import { initHomework, isHomework, makeHomework, setStudy, studentHomework } from "./homework.ts";
 import { classGames, initClassGames, recordStars, setGames } from "./classGames.ts";
+import { initPredictions, recordPrediction } from "./predictions.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
@@ -161,6 +162,7 @@ export function initResearch(db: DatabaseSync) {
   initProtocol(db);
   initHomework(db);
   initClassGames(db);
+  initPredictions(db);
 }
 
 /**
@@ -652,6 +654,8 @@ export async function handleResearch(
     }
     // The stars of an assigned game, from the student's browser ({ game, stars }).
     if (sub === "games" && req.method === "POST") return recordStars(req, res, db, student);
+    // The first guess on a topic page's "predict, then reveal" ({ kind, pick }): kept for the teacher, no mastery.
+    if (sub === "predictions" && req.method === "POST") return recordPrediction(req, res, db, student);
     if (sub) return send(res, 404, { error: "not found" });
     if (req.method === "GET") {
       const { n } = stmt(db, "SELECT COUNT(*) AS n FROM attempts WHERE student_id = ?").get(student.id) as { n: number };

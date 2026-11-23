@@ -1265,6 +1265,27 @@ test("games assigned to a class: the teacher's once games open, the students' be
   assert.equal((await dash()).open, false);
 });
 
+test("predictions on topic pages (#578): the first guess kept and marked by the server, the wrong ones on the dashboard, no mastery", async () => {
+  const { code } = (await call("POST", "/api/classes", { name: "Predict", skills: ["fractions"], testLength: 4 }, TEACHER)).body;
+  const a = (await call("POST", "/api/students", { class: code })).body.code;
+  const b = (await call("POST", "/api/students", { class: code })).body.code;
+  const guess = (s: string, kind: unknown, pick: unknown) => call("POST", `/api/students/${s}/predictions`, { kind, pick });
+  const dash = async () => (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+
+  assert.equal((await guess(a, "balance", "up")).status, 400, "only pieces with a prediction");
+  assert.equal((await guess(a, "geoLab", "sideways")).status, 400);
+  assert.equal((await guess("NOPE-NOPE", "geoLab", "up")).status, 404);
+  assert.deepEqual((await guess(a, "geoLab", "up")).body, { pick: "up", right: false });
+  assert.deepEqual((await guess(a, "geoLab", "same")).body, { pick: "up", right: false }, "the first guess stays");
+  assert.deepEqual((await guess(b, "geoLab", "same")).body, { pick: "same", right: true });
+  assert.deepEqual((await guess(b, "fractionWall", "up")).body, { pick: "up", right: false });
+  const d = await dash();
+  assert.equal(d.predictions.made, 3);
+  assert.deepEqual(d.predictions.wrong.map((r: { kind: string; pick: string; outcome: string }) => [r.kind, r.pick, r.outcome]).sort(),
+    [["fractionWall", "up", "down"], ["geoLab", "up", "same"]]);
+  assert.equal(d.students.every((r: { answered: number }) => r.answered === 0), true, "no answers, so no mastery");
+});
+
 test("where it breaks: a run of right answers brings a worked answer to judge, checked against the question, and only the arm with it may send one", async () => {
   const code = (await call("POST", "/api/classes", { name: "Breaks", skills: ["fractions"], feature: "breaks" }, TEACHER)).body.code;
   const joined = [];
