@@ -351,6 +351,20 @@ export function DieButton({ x, y, s = 38, title, onTap }: { x: number; y: number
   );
 }
 
+/** A small house to tap for the first view again, centred at (cx, cy): a plot shows it only once its view has moved. */
+export function HomeMark({ cx, cy, r = 13, title, onTap }: { cx: number; cy: number; r?: number; title: string; onTap: () => void }) {
+  const k = r / 13;
+  return (
+    <g role="button" tabIndex={0} aria-label={title} style={{ cursor: "pointer" }} onPointerDown={(e) => e.stopPropagation()}
+      onClick={onTap} onKeyDown={(e) => keyTap(e, onTap)}>
+      <title>{title}</title>
+      <circle cx={cx} cy={cy} r={r} fill="#fff" fillOpacity={0.95} stroke={BLUE} strokeWidth={1.6} />
+      <path d={`M${cx - 7 * k} ${cy}L${cx} ${cy - 7 * k}L${cx + 7 * k} ${cy}M${cx - 5 * k} ${cy - 1.5 * k}V${cy + 6 * k}H${cx + 5 * k}V${cy - 1.5 * k}`}
+        fill="none" stroke={BLUE} strokeWidth={1.8} strokeLinejoin="round" strokeLinecap="round" pointerEvents="none" />
+    </g>
+  );
+}
+
 /** How many a tick deals while the deck is held: slowly at first, then faster and faster. */
 const RATE = [1, 1, 1, 1, 2, 2, 3, 5, 5, 10, 10, 20, 50, 100, 200, 500];
 const rate = (t: number) => (t < RATE.length ? RATE[t] : 1000);

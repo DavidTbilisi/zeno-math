@@ -304,7 +304,7 @@ export function Counters({ state: saved, set, w: words, svgRef }: PieceProps<"co
 
       {/* The mat: drag round empty mat to pick up several chips. */}
       <rect x={MAT.x} y={MAT.y} width={MAT.w} height={MAT.h} rx={12} fill={overMat && drag?.from !== "mat" ? "#f1f8ff" : "#f8f9fa"}
-        stroke={overMat && drag?.from !== "mat" ? BLUE : "#dee2e6"} onPointerDown={pressMat} onDoubleClick={lineUp} style={{ cursor: "crosshair" }} />
+        stroke={overMat && drag?.from !== "mat" ? BLUE : "#dee2e6"} onPointerDown={pressMat} style={{ cursor: "crosshair" }} />
       <line x1={MAT.x + 10} y1={MAT_LINE} x2={MAT.x + MAT.w - 10} y2={MAT_LINE} stroke="#e9ecef" strokeWidth={2} pointerEvents="none" />
       {bands.map((band) => (
         <rect key={band.key} x={band.x - R - 3} y={band.top - R - 3} width={2 * R + 6} height={band.bottom - band.top + 2 * R + 6} rx={R + 3}

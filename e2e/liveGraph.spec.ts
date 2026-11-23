@@ -73,12 +73,16 @@ test("graph with sliders by hand: point, tangent, knobs, play, range, functions,
   await piece.getByRole("textbox", { name: "y = ", exact: true }).press("Enter");
   await expect(knob("k")).toHaveCount(0);
 
-  // The lever pulled down zooms out; a double-click on the graph puts the view back.
+  // The lever pulled down zooms out; the house under it, there only while the view has moved, puts the view back.
   const lever = plot.getByRole("slider", { name: /^Zoom/ });
+  const home = plot.getByRole("button", { name: "Back to the first view" });
+  await expect(home).toHaveCount(0);
   const l = mid((await lever.boundingBox())!);
   await drag(page, l, { x: l.x, y: l.y + 40 * k });
   await expect(lever).not.toHaveAttribute("aria-valuetext", "x from -10 to 10");
-  await page.mouse.dblclick(at(-8, -4).x, at(-8, -4).y);
+  const h = mid((await home.boundingBox())!);
+  await page.mouse.click(h.x, h.y);
   await expect(lever).toHaveAttribute("aria-valuetext", "x from -10 to 10");
+  await expect(home).toHaveCount(0);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/liveGraph.png` });
 });
