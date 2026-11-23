@@ -27,7 +27,7 @@ import { CommandPalette } from "../components/CommandPalette";
 import { ItemPanel, PanelSlot, type Flushes, type ScreenBox } from "../components/ItemPanel";
 import { SHAPES } from "../math/shapes";
 import { itemAt } from "../live/hit";
-import { freeY, placeOnBoard, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
+import { freeY, midX, placeOnBoard, showClear, ShapesPanel, SHAPES_TAB, shapesIcon } from "../components/ShapesPanel";
 import { isLiveLink, liveDataOf, liveElement } from "../live/element";
 import { LiveView, type LiveHost } from "../live/LiveView";
 import { isLiveKind, LIVE_SIZES, type LiveKind } from "../math/live";
@@ -450,9 +450,9 @@ export function BoardPage({ id }: { id: string }) {
       return updated.find((el) => el.id === editing.id);
     }
 
-    // Start at the viewport center (or where asked), then slide down past anything it would cover.
+    // Start in the middle of the view clear of Excalidraw's panel (or where asked), then slide down past anything it would cover.
     const { scrollX, scrollY, zoom, width, height } = ex.getAppState();
-    const x = at?.x ?? width / 2 / zoom.value - scrollX - rendered.width / 2;
+    const x = at?.x ?? midX(width, zoom.value, rendered.width) / zoom.value - scrollX - rendered.width / 2;
     const y = at?.exact ? at.y : freeY(elements, x, at?.y ?? height / 2 / zoom.value - scrollY - rendered.height / 2, rendered.width, rendered.height);
     const [el] = convertToExcalidrawElements([
       {
@@ -472,7 +472,7 @@ export function BoardPage({ id }: { id: string }) {
     });
     // A picture placed from the panel stays still, so the panel can be put beside it at once; one dropped where it
     // was wanted is in view already.
-    if (!at?.exact) ex.scrollToContent(withData, { animate: capture === CaptureUpdateAction.IMMEDIATELY });
+    if (!at?.exact) showClear(ex, [withData]);
     return withData;
   };
 
@@ -533,7 +533,7 @@ export function BoardPage({ id }: { id: string }) {
       const scene = ex.getSceneElementsIncludingDeleted();
       const el = liveElement(kind, at.x, freeY(scene, at.x, at.y, w, h), patch);
       ex.updateScene({ elements: [...scene, el], appState: { selectedElementIds: { [el.id]: true } }, captureUpdate: CaptureUpdateAction.IMMEDIATELY });
-      ex.scrollToContent(el, { animate: true });
+      showClear(ex, [el]);
     },
   };
   /** A live piece in the free spot in the middle of the view, or with its middle where it was dropped. */

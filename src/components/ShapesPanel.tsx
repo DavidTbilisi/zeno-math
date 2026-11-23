@@ -88,11 +88,34 @@ export function toElements(pieces: Piece[]): NonDeleted<ExcalidrawElement>[] {
  * Adds new elements in the middle of the view, slid down past anything they would cover (as formulas and graphs
  * are), selects them and brings them into view.
  */
+/** How far Excalidraw's own panel (stroke, background, layers…) reaches into the board from the left while
+ *  something is selected. A new picture is centred in the part of the view to its right when it fits there, so the
+ *  panel never covers it (#560: with Insert docked the view is narrower, and a wide piece reached under it). */
+export const LEFT_PANEL = 232;
+
+/** The x on screen where a w-wide picture (in board units) is centred: clear of Excalidraw's panel when it fits. */
+export function midX(width: number, zoom: number, w: number): number {
+  return width - LEFT_PANEL - 16 >= w * zoom ? (LEFT_PANEL + width) / 2 : width / 2;
+}
+
+/** Scroll so the elements sit in the middle of the clear part of the view (see midX). */
+export function showClear(ex: ExcalidrawImperativeAPI, els: readonly ExcalidrawElement[]) {
+  const [x0, y0, x1, y1] = getCommonBounds(els);
+  const { zoom, width, height } = ex.getAppState();
+  ex.updateScene({
+    appState: {
+      scrollX: midX(width, zoom.value, x1 - x0) / zoom.value - (x0 + x1) / 2,
+      scrollY: height / 2 / zoom.value - (y0 + y1) / 2,
+    },
+    captureUpdate: CaptureUpdateAction.NEVER,
+  });
+}
+
 export function placeOnBoard(ex: ExcalidrawImperativeAPI, els: ExcalidrawElement[]) {
   const [x0, y0, x1, y1] = getCommonBounds(els);
   const [w, h] = [x1 - x0, y1 - y0];
   const { scrollX, scrollY, zoom, width, height, defaultSidebarDockedPreference } = ex.getAppState();
-  const x = width / 2 / zoom.value - scrollX - w / 2;
+  const x = midX(width, zoom.value, w) / zoom.value - scrollX - w / 2;
   const scene = ex.getSceneElementsIncludingDeleted();
   const y = freeY(scene, x, height / 2 / zoom.value - scrollY - h / 2, w, h);
   const placed = els.map((el) => ({ ...el, x: el.x + x - x0, y: el.y + y - y0 }));
@@ -108,7 +131,7 @@ export function placeOnBoard(ex: ExcalidrawImperativeAPI, els: ExcalidrawElement
     },
     captureUpdate: CaptureUpdateAction.IMMEDIATELY,
   });
-  ex.scrollToContent(placed, { animate: true });
+  showClear(ex, placed);
 }
 
 function Tile({ shape, words, name, thumb, onInsert }: { shape: ShapeDef; words: ShapeWords; name: string; thumb?: string; onInsert: (s: ShapeDef) => void }) {
