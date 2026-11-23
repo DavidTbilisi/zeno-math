@@ -87,6 +87,9 @@ export const study = {
   /** The stars of an assigned game's ladder, as this browser has them; the server keeps the best of each puzzle. */
   stars: (code: string, game: GameId, stars: number[]) =>
     req<{ stars: number[]; passed: boolean }>("POST", `/api/students/${encodeURIComponent(code)}/games`, { game, stars }, true),
+  /** The first guess on a topic page's "predict, then reveal" (#578). */
+  predict: (code: string, kind: string, pick: string) =>
+    req<{ pick: string; right: boolean }>("POST", `/api/students/${encodeURIComponent(code)}/predictions`, { kind, pick }, true),
   plan: (code: string) => req<Plan>("GET", `/api/students/${encodeURIComponent(code)}/plan`),
   forget: (code: string) => req<void>("DELETE", `/api/students/${encodeURIComponent(code)}`),
   send: (a: Attempt, keepalive: boolean) => upload("/api/attempts", a, keepalive),
