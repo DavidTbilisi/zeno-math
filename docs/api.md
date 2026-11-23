@@ -48,6 +48,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
 | GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered, goal, games }` |
 | POST | `/api/students/:code/games` | student | the stars of an assigned game: `{ game, stars }`; see *Games* |
+| POST | `/api/students/:code/predictions` | student | the first guess on a topic page's "predict, then reveal": `{ kind, pick }`; see *Predictions* |
 | DELETE | `/api/students/:code` | student | delete the student and everything saved under the code: 204 |
 | GET | `/api/students/:code/plan` | student | what the browser needs to choose class practice; see *The plan* |
 | POST | `/api/attempts` | student | one practice question; see *Attempts* |
@@ -360,3 +361,12 @@ used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=
   teacher (its `ms` is 0 and its `created_at` when it was typed in, not when it was written).
 
 `npm run model` reads the first and `npm run analyse` the second.
+
+## Predictions
+
+`POST /api/students/:code/predictions` `{ kind, pick }` (the student's browser) keeps a signed-in student's first guess
+on a topic page's "predict, then reveal" (issue #578, `src/model/predict.ts`): `kind` is `geoLab`, `fractionWall` or
+`slopeWalk`, `pick` is `up`, `down` or `same`. The server marks it against what the change really does (`OUTCOMES` in
+`src/model/predictKinds.ts`) and keeps only the first guess on each piece: 200 `{ pick, right }` with the kept one. An
+unknown piece or pick is 400. The dashboard's `predictions` is `{ made, wrong }`, the wrong ones with the student, the
+piece, the pick and the outcome. Predictions move no mastery: nothing reaches the model, the plan or the tests.

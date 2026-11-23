@@ -133,7 +133,7 @@ function TopicPage({ id, work }: { id: TopicId; work: ReturnType<typeof readWork
               const kind = (e.entry as { live: Parameters<typeof InlinePiece>[0]["kind"] }).live;
               return (
                 <figure key={e.path} className="site-try">
-                  <InlinePiece kind={kind} label={entryName(t, e)} />
+                  <InlinePiece kind={kind} label={entryName(t, e)} predict />
                   <figcaption>
                     <a href={`#/library/${e.path}`}>{entryName(t, e)}</a>
                     <OpenOnBoard slot={id} name={boardName} path={e.path} className="z-btn z-btn-line small" />
