@@ -44,6 +44,7 @@ import type { LiveAngleHunt } from "./missingAngle";
 import type { LiveTrigBuild } from "./trigBuild";
 import type { LiveUnitCircle } from "./unitCircleGame";
 import { SLOPE_WALK_START, type LiveSlopeWalk } from "./slopeWalk";
+import { SOLID_START, type LiveSolid } from "./solid";
 import type { LiveSoh } from "./sohcahtoa";
 import type { LiveDiscover } from "./trigDiscover";
 import type { LivePythDiscover } from "./pythDiscover";
@@ -585,6 +586,7 @@ export type LiveStates = {
   trigBuild: LiveTrigBuild;
   unitCircleGame: LiveUnitCircle;
   slopeWalk: LiveSlopeWalk;
+  solid: LiveSolid;
   sohcahtoa: LiveSoh;
   trigDiscover: LiveDiscover;
   pythDiscover: LivePythDiscover;
@@ -704,6 +706,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   trigBuild: [600, 780],
   unitCircleGame: [520, 760],
   slopeWalk: [680, 820],
+  solid: [680, 760],
   sohcahtoa: [600, 680],
   trigDiscover: [640, 720],
   pythDiscover: [640, 720],
@@ -825,6 +828,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     trigBuild: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, misses: 0, done: false, streak: 0, said: null },
     unitCircleGame: { mode: "puzzle", stage: 0, level: 1, seed: 1, p: 0, placed: false, found: [], misses: 0, done: false, streak: 0, said: null },
     slopeWalk: SLOPE_WALK_START,
+    solid: SOLID_START,
     sohcahtoa: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, top: null, bottom: null, misses: 0, done: false, streak: 0, said: null },
     trigDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], a: null, op: null, b: null, tried: [], flipped: false, misses: 0, done: false, streak: 0, said: null },
     pythDiscover: { mode: "puzzle", stage: 0, level: 1, seed: 1, n: null, rows: [], p1: null, op: null, p2: null, pr: null, tried: [], misses: 0, done: false, streak: 0, said: null },

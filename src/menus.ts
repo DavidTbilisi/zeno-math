@@ -71,7 +71,7 @@ export const MENUS: MenuGroup[] = [
         ],
       },
       {
-        title: "secSolids", items: [{ kind: "3d", icon: "🧊", label: "threeD" }],
+        title: "secSolids", items: [{ live: "solid", icon: "🧊" }, { kind: "3d", icon: "🔄", label: "threeD" }],
         shapes: ["cube", "cuboid", "prism", "cylinder", "pyramid", "cone", "sphere", "netCube", "netCuboid", "netPrism", "netPyramid", "netCylinder", "isometricDots"],
       },
       {

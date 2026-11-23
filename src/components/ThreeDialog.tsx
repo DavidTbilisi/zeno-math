@@ -26,7 +26,9 @@ import { Viewer, type Snapshot } from "../three/viewer";
 import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
 
-const TABS = ["solid", "cubes", "transform3d", "revolution"] as const;
+// A new picture is a 3D transform or a solid of revolution; solids and unit cubes are the live solid piece now (#564).
+// A solid or cubes picture already on a board still opens here to be changed (its tab alone, as every edit does).
+const TABS = ["transform3d", "revolution"] as const;
 const BASIS_COLORS = ["#2f9e44", "#e03131", "#1971c2"];
 const SLICE_CHOICES = [0, 4, 8, 16, MAX_SLICES];
 const fmtEntry = (v: number) => String(Math.round(v * 100) / 100).replace("-", "−");
@@ -45,7 +47,7 @@ export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
   const { t } = useI18n();
   const [solid, setSolid] = useState<SolidSpec>(initial?.type === "solid" ? initial : DEFAULT_SOLID);
   const [cubes, setCubes] = useState<CubesSpec>(initial?.type === "cubes" ? initial : DEFAULT_CUBES);
-  const [tab, setTab] = useState<Spec3D["type"]>(initial?.type ?? startOr(start, TABS, "solid"));
+  const [tab, setTab] = useState<Spec3D["type"]>(initial?.type ?? startOr(start, TABS, "transform3d"));
   const [tf, setTf] = useState<Transform3DSpec>(initial?.type === "transform3d" ? initial : DEFAULT_TRANSFORM3D);
   const [revSpec, setRevSpec] = useState<RevolutionSpec>(initial?.type === "revolution" ? initial : DEFAULT_REVOLUTION);
   const spec: Spec3D = tab === "solid" ? solid : tab === "cubes" ? cubes : tab === "transform3d" ? tf : revSpec;
@@ -123,7 +125,7 @@ export default function ThreeDialog({ initial, start, onSubmit, onClose }: {
       }
     >
       {!initial && (
-        <Tabs items={TABS} value={tab} onChange={setTab} label={(k) => ({ solid: t.solids, cubes: t.unitCubes, transform3d: t.matrix3d, revolution: t.revolution })[k]} />
+        <Tabs items={TABS} value={tab as (typeof TABS)[number]} onChange={setTab} label={(k) => ({ transform3d: t.matrix3d, revolution: t.revolution })[k]} />
       )}
 
       {tab === "solid" && <SolidControls spec={solid} onChange={setSolid} shapeLabel={shapeLabel} />}
