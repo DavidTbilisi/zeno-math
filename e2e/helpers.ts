@@ -28,8 +28,17 @@ export async function practise(page: Page, request: APIRequestContext, o: { tab:
   await page.getByRole("tab", { name: o.tab }).click();
   await page.evaluate((x) => (Math.random = () => x), o.r);
   await page.getByRole("radio", { name: o.level }).click();
-  await page.getByRole("button", { name: o.skill, exact: true }).click();
+  await pickTopic(page, o.skill);
   await expect(page.locator(".practice-prompt")).toHaveText(o.prompt);
+}
+
+/** Picks a practice topic by its name: opens its section of the menu first, since a section starts closed unless it holds the topic already picked. */
+export async function pickTopic(scope: Page | Locator, name: string) {
+  const exact = new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}( |$)`);
+  const page = "page" in scope ? scope.page() : scope;
+  const group = scope.locator(".practice-group").filter({ has: page.locator(".chip").filter({ hasText: exact }) });
+  if (!(await group.evaluate((d) => (d as HTMLDetailsElement).open))) await group.locator("summary").click();
+  await scope.getByRole("button", { name, exact: true }).click();
 }
 
 export const seedOf = (r: number) => Math.floor(r * 2 ** 31);

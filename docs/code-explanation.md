@@ -1806,7 +1806,7 @@ The Insert/Update button (`insertButton`, `:589-593`) is disabled in class pract
 
 Body, in order (`body`, `:401-584`, the same for all three renderings):
 1. If signed in: a `Segmented` Class/Free practice toggle.
-2. If not class: area `Tabs`, hint, skill chips with `{right}/{seen}` stats, level `Segmented`, and, only when there is an `onSubmit` (`:424-426`), the practise/sheet `Segmented`; the page therefore stays in practise mode.
+2. If not class: area `Tabs`, the "Mixed" chip, then the area's skills in named sections (`GROUPS` in `src/math/practiceSkills.ts`, names in `pracWords.groups`), each a `<details>` row that is open when it holds the picked skill, its chips with `{right}/{seen}` stats (the long `practiceHints` text is no longer shown here; it stays the tool search's words), level `Segmented`, and, only when there is an `onSubmit` (`:424-426`), the practise/sheet `Segmented`; the page therefore stays in practise mode.
 3. Then one of:
    - class but plan not ready: `noStudent` (gone), `planError` + Retry, or `loadingPlan`; plus `StudentPanel`.
    - a test phase: `<TestRunner key={testPhase}>` whose `onAnswered` pushes into `plan.tests[phase].answered`, `planChanged()`, `sendQueued()`; plus `StudentPanel`.
