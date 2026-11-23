@@ -55,12 +55,13 @@ test("a session is a day; only right top-level first answers on a kept skill cou
   at("2026-11-01", 50); // too fast to be a real time
   assert.equal(p.fractions, undefined);
   at("2026-11-01", 4000);
+  const days = () => (p as Plateaus).fractions.sessions;
   at("2026-11-01", 6000);
-  assert.equal(p.fractions.sessions.length, 1);
-  assert.equal(p.fractions.sessions[0].times.length, 2);
+  assert.equal(days().length, 1);
+  assert.equal(days()[0].times.length, 2);
   for (let d = 2; d <= 12; d++) at(`2026-11-${String(d).padStart(2, "0")}`, 4000);
-  assert.equal(p.fractions.sessions.length, 2 * PLATEAU_SESSIONS + 1);
-  assert.equal(p.fractions.sessions[0].day, "2026-11-06");
+  assert.equal(days().length, 2 * PLATEAU_SESSIONS + 1);
+  assert.equal(days()[0].day, "2026-11-06");
 });
 
 test("a day needs two timed right answers to count, and the best day is the target", () => {
