@@ -59,6 +59,9 @@ const MATH_SCALE = 1.4;
 /** Questions answered before a missed one comes back. */
 const REVIEW_AFTER = 3;
 /** Right answers in a row that earn a celebration. */
+/** How long a right answer's feedback stays before the next question comes by itself (#562); the Next button fills in
+ *  that time (.auto-next). */
+const AUTO_NEXT_MS = 2000;
 const CHEER_AT = [3, 5, 10, 15, 20];
 
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
@@ -637,6 +640,17 @@ export function PracticeDialog(props: Props) {
     if (to.level !== level) setLevel(to.level);
   };
   const levelName = (L: Level) => w.levels[String(L) as "1" | "2" | "3"];
+  // A right answer moves on by itself once its feedback has been read (#562): after the rating when one is asked (so the
+  // tap that rates moves on too), not while the solution is open or after the session's last question, and never in
+  // calm mode, which keeps its own pace. What is recorded does not change: the attempt was saved at the check.
+  const autoNext = done === "solved" && !calm && !sessionOver && !given && !solution && (!rateable || !!rated);
+  const onNextRef = useRef(onNext);
+  onNextRef.current = onNext;
+  useEffect(() => {
+    if (!autoNext) return;
+    const timer = setTimeout(() => onNextRef.current(), AUTO_NEXT_MS);
+    return () => clearTimeout(timer);
+  }, [autoNext]);
   // What the student has kept and mastered of their class's skills, from the plan their answers carry forward.
   const held = planStatus === "ready" && planRef.current ? holds(planRef.current.spacing, planRef.current.skills) : null;
   const skillHolds = held && (Object.fromEntries(Object.entries(held).map(([h, ks]) => [h, ks.map((k) => w.skills[k as SkillId])])) as Record<Hold, string[]>);
@@ -952,9 +966,10 @@ export function PracticeDialog(props: Props) {
             </>
           )}
           <div className="field-row practice-actions">
-            {!done && !given && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
+            {/* Enter checks; the button is there for touch. */}
+            {!done && !given && stepping !== "now" && <button className="btn" onClick={onCheck}>{w.ui.check}</button>}
             {!done && !given && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
-            {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
+            {done && <button className={`btn primary${autoNext ? " auto-next" : ""}`} onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
             {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
             {!calm && (
               <button

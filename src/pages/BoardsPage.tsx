@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { api, ApiError, boardOwner, type BoardSummary } from "../api";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { useI18n } from "../i18n";
+import { UndoToast, useUndoDelete } from "../components/UndoDelete";
+import { fill } from "../math/text";
 import { BOARD_SORTS, isBoardSort, sortBoards, type BoardAge, type BoardSort } from "../boardSort";
 
 // The board order this browser picked last; only a convenience, so a browser without storage just starts from "recent".
@@ -49,26 +51,23 @@ export function BoardsPage() {
     location.hash = `#/b/${b.id}`;
   });
 
-  // Renaming and deleting happen on the board's card, not in prompt() and confirm(): some browsers and embedded views
-  // block those dialogs, and then they answer "cancel" without showing anything. One card at a time.
-  const [busy, setBusy] = useState<{ id: string; mode: "rename" | "delete"; title: string } | null>(null);
-
-  const rename = (b: BoardSummary, title: string) => {
-    setBusy(null);
-    if (!title.trim() || title === b.title) return;
+  // Renaming and deleting happen on the board's card (#562): its title is a field you type in (Enter or leaving it
+  // saves, Escape puts it back), and Delete takes the board off at once with a few seconds to undo it.
+  const rename = (b: BoardSummary, typed: string) => {
+    const title = typed.trim();
+    if (!title || title === b.title) return;
+    setBoards((list) => list && list.map((x) => (x.id === b.id ? { ...x, title } : x)));
     return attempt(async () => {
       await api.save(b.id, { title });
       await load();
     });
   };
-
-  const remove = (b: BoardSummary) => {
-    setBusy(null);
-    return attempt(async () => {
+  const deleting = useUndoDelete((b: BoardSummary) =>
+    attempt(async () => {
       await api.remove(b.id);
       await load();
-    });
-  };
+    }),
+  );
 
   // The backup holds every board, students' too, so the server gives it to a teacher only.
   const backup = () => attempt(async () => {
@@ -88,45 +87,38 @@ export function BoardsPage() {
       /* not remembered: the page still sorts */
     }
   };
-  const runs = boards ? sortBoards(boards, sort, { now: Date.now(), locale: lang, untitled: t.untitled }) : [];
+  const shown = boards?.filter((b) => b.id !== deleting.pending?.id) ?? null;
+  const runs = shown ? sortBoards(shown, sort, { now: Date.now(), locale: lang, untitled: t.untitled }) : [];
   const student = "X-Student-Code" in boardOwner();
 
   const date = new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeStyle: "short" });
 
   const card = (b: BoardSummary) => (
     <li key={b.id} className="board-card">
+      <input
+        key={b.title}
+        className="board-title"
+        defaultValue={b.title}
+        aria-label={fill(t.renameBoard, { title: b.title })}
+        title={t.rename}
+        onBlur={(e) => void rename(b, e.currentTarget.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+          if (e.key === "Escape") {
+            e.currentTarget.value = b.title;
+            e.currentTarget.blur();
+          }
+        }}
+      />
       <a href={`#/b/${b.id}`} className="board-link">
-        <span className="board-title">{b.title}</span>
         <span className="muted small">
           {sort === "created" ? `${t.created}: ${date.format(b.createdAt)}` : `${t.updated}: ${date.format(b.updatedAt)}`}
         </span>
+        <span className="board-open">{t.open} →</span>
       </a>
-      {busy?.id === b.id && busy.mode === "rename" ? (
-        <form
-          className="board-actions board-ask"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void rename(b, busy.title);
-          }}
-          onKeyDown={(e) => e.key === "Escape" && setBusy(null)}
-        >
-          <input aria-label={t.rename} value={busy.title} autoFocus onFocus={(e) => e.currentTarget.select()}
-            onChange={(e) => setBusy({ ...busy, title: e.target.value })} />
-          <button className="btn small primary" type="submit" disabled={!busy.title.trim()}>{t.rename}</button>
-          <button className="btn small ghost" type="button" onClick={() => setBusy(null)}>{t.cancel}</button>
-        </form>
-      ) : busy?.id === b.id && busy.mode === "delete" ? (
-        <div className="board-actions board-ask" role="alert" onKeyDown={(e) => e.key === "Escape" && setBusy(null)}>
-          <span className="error small">{t.confirmDelete}</span>
-          <button className="btn small danger" autoFocus onClick={() => void remove(b)}>{t.delete}</button>
-          <button className="btn small ghost" onClick={() => setBusy(null)}>{t.cancel}</button>
-        </div>
-      ) : (
-        <div className="board-actions">
-          <button className="btn small ghost" onClick={() => setBusy({ id: b.id, mode: "rename", title: b.title })}>{t.rename}</button>
-          <button className="btn small ghost danger" onClick={() => setBusy({ id: b.id, mode: "delete", title: b.title })}>{t.delete}</button>
-        </div>
-      )}
+      <div className="board-actions">
+        <button className="btn small ghost danger" onClick={() => deleting.start(b)} aria-label={fill(t.deleteBoard, { title: b.title })}>{t.delete}</button>
+      </div>
     </li>
   );
 
@@ -161,7 +153,7 @@ export function BoardsPage() {
               </div>
             ) : boards === null ? (
               <p className="muted">{t.loading}</p>
-            ) : boards.length === 0 ? (
+            ) : shown!.length === 0 ? (
               <div className="empty">
                 <p>{t.noBoards}</p>
                 <button className="btn primary" onClick={create}>+ {t.newBoard}</button>
@@ -174,6 +166,7 @@ export function BoardsPage() {
                 </div>
               ))
             )}
+            {deleting.pending && <UndoToast text={fill(t.deleted, { title: deleting.pending.title })} undo={t.undo} onUndo={deleting.undo} />}
           </section>
 
           {!student && (
