@@ -39,7 +39,8 @@ import { addPiece, dropPiece } from "../math/target";
 import { emptyProgress, loadProgress, saveProgress, type Progress } from "../practiceProgress";
 import { gradeOf } from "../model/curriculum";
 import { holds, isDue, learnSpacing, nextReview, openAgain, type Hold } from "../model/spacing";
-import { learnStage, type Stages } from "../model/learningStage";
+import { learnStage, learningStageOf, type Stages } from "../model/learningStage";
+import { notePlateau, plateauOf, type Plateaus } from "../model/plateau";
 import type { Feature } from "../model/arms";
 import { homeworkIndex, nextHomework } from "../model/homework";
 import { givenSteps, learnFading, type Fading } from "../model/fading";
@@ -146,6 +147,9 @@ export function PracticeDialog(props: Props) {
   const [length, setLength] = useState<Length>(sessionLength);
   const [summary, setSummary] = useState(false);
   const [stretch, setStretch] = useState<Stretch | null>(null);
+  // A plateau's stretch (#580): the skills whose offer was put off this visit, and the best day to beat once taken up.
+  const [stretchLater, setStretchLater] = useState<SkillId[]>([]);
+  const [target, setTarget] = useState<{ skill: SkillId; best: number } | null>(null);
   /** The ideas lit on the idea map during this session, marked new on the map after it. */
   const [sessionLit, setSessionLit] = useState<string[]>([]);
   /** A question of the session has ended: it joins the ring and the stretch without a break. */
@@ -439,6 +443,12 @@ export function PracticeDialog(props: Props) {
     // skill's, and the time to the first answer judges its speed on the top level.
     const stages: Stages = { ...progress.stages };
     if (stages[ex.skill]) stages[ex.skill] = { ...stages[ex.skill] };
+    // A kept skill's days on its top level, to notice when the learner stops getting faster (plateau.ts, #580). The
+    // stage before the answer decides, so the answer that keeps a skill starts its sessions only from the next one.
+    const plateaus: Plateaus = { ...progress.plateaus };
+    if (plateaus[ex.skill]) plateaus[ex.skill] = { sessions: plateaus[ex.skill].sessions.map((d) => ({ ...d, times: [...d.times] })) };
+    const day = new Date(now - new Date(now).getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
+    notePlateau(plateaus, ex.skill, { day, correct: firstTry, top: ex.level === 3, stage: learningStageOf(progress.stages, ex.skill), ms: log.current.answers[0]?.ms });
     learnStage(stages, ex.skill, { level: ex.level, correct: firstTry, mastered: isSecure(cell), review, ms: log.current.answers[0]?.ms });
     if (pick === "place" && placing) {
       const p = placementStep(placing, firstTry);
@@ -454,6 +464,7 @@ export function PracticeDialog(props: Props) {
       cells: { ...progress.cells, [key]: cell },
       spacing,
       stages,
+      plateaus,
       placed,
     });
     setScore((sc) => ({ right: sc.right + (ok ? 1 : 0), total: sc.total + 1, streak: ok ? sc.streak + 1 : 0 }));
@@ -834,6 +845,22 @@ export function PracticeDialog(props: Props) {
           )}
           {sessionOn && breakDue(stretch) && <BreakPrompt w={w} onDismiss={() => setStretch(stretchAfter(null, Date.now()))} />}
           {sessionOn && <SessionRing results={session} n={length} streak={score.streak} w={w} onLength={chooseLength} />}
+          {!classOn && (() => {
+            // Free practice offers a stretch on a kept skill the learner has stopped getting faster on (plateau.ts):
+            // offered, never forced, since on ASSISTments such a plateau could not be shown to last.
+            const skill = cur.ex.skill;
+            const best = (s: number) => (Math.round(s * 10) / 10).toString();
+            if (target?.skill === skill) return <small className="hint practice-review">{fill(w.ui.stretchTarget, { best: best(target.best) })}</small>;
+            const hit = plateauOf(progress.plateaus, skill);
+            if (!hit || stretchLater.includes(skill)) return null;
+            return (
+              <p className="hint practice-stretch" role="status">
+                {fill(w.ui.stretchOffer, { skill: w.skills[skill], best: best(hit.best) })}{" "}
+                <button className="btn small primary" onClick={() => (setTarget({ skill, best: hit.best }), choose(areaOf(skill), skill, 3))}>{w.ui.stretchGo}</button>{" "}
+                <button className="btn small" onClick={() => setStretchLater((l) => [...l, skill])}>{w.ui.stretchLater}</button>
+              </p>
+            );
+          })()}
           {homeworkAt >= 0 && plan?.homework ? (
             <small className="hint practice-review">
               📝 {fill(w.ui.homework, { n: homeworkAt + 1, of: plan.homework.items.length })}

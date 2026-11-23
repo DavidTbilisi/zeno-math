@@ -16,6 +16,7 @@ import { auc, calibration, evidence, logLoss, type Prediction } from "../src/mod
 import { hasIdeas, knownOf, SKILL_IDEAS } from "../src/model/ideaState.ts";
 import { TARGET } from "../src/model/policy.ts";
 import { classPace } from "../src/model/pace.ts";
+import { notePlateau, plateauOf, type Plateaus } from "../src/model/plateau.ts";
 import { holdOf, holds, type Hold } from "../src/model/spacing.ts";
 import type { Arm, Feature } from "../src/model/arms.ts";
 import { TEST_PHASES, type TestPhase } from "../src/model/testForms.ts";
@@ -25,6 +26,7 @@ import { stmt } from "./db.ts";
 import { mistakeOf } from "./marking.ts";
 import { homeworkOverview } from "./homework.ts";
 import { gamesOverview } from "./classGames.ts";
+import { predictionsOverview } from "./predictions.ts";
 import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protocol.ts";
 import { currentIdeas, currentModel, currentSpacing } from "./research.ts";
 
@@ -173,6 +175,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     stuck: stuckList(db, classCode, students, attempts),
     /** Students whose last five timed first answers are at least twice as fast, or as slow, as their own pace before (#63). */
     pace: paceList(students, attempts),
+    /** Students on a plateau on a kept skill: no longer getting faster on its top level (#580). */
+    plateau: plateauList(db, students, attempts),
     class: { code: klass.code, name: klass.name, skills, feature: klass.feature, createdAt: klass.createdAt, ...protocol },
     students: rows,
     arms,
@@ -186,6 +190,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     homework: homeworkOverview(db, classCode, students),
     /** The games assigned to the class and each student's best stars on them. */
     games: gamesOverview(db, classCode, students),
+    /** Predictions made on topic pages and the wrong ones (#578): seen by the teacher, no part of mastery. */
+    predictions: predictionsOverview(db, classCode, students),
     calibration: {
       n: predictions.length,
       logLoss: predictions.length ? logLoss(predictions) : null,
@@ -252,6 +258,29 @@ function paceList(students: readonly { id: number; code: string }[], attempts: r
   return [...jumps]
     .map(([student, j]) => ({ student, code: codes.get(student)!, direction: j.direction, factor: Math.round(j.factor * 10) / 10, answers: j.answers }))
     .sort((a, b) => (a.direction === b.direction ? b.factor - a.factor : a.direction === "faster" ? -1 : 1));
+}
+
+export type PlateauRow = { student: string; code: string; skill: SkillId; best: number };
+/**
+ * The students of a class on a plateau (plateau.ts): on a skill they have kept (right on a review days later), their
+ * last three days of right first answers on the top level are no faster than the three before by more than the noise.
+ * A day is a UTC day here, as the server has no learner's clock.
+ */
+function plateauList(db: DatabaseSync, students: readonly { id: number; code: string }[], attempts: readonly AttemptRow[]): PlateauRow[] {
+  const out: PlateauRow[] = [];
+  for (const s of students) {
+    const spacing = currentSpacing(db, s.id);
+    const p: Plateaus = {};
+    for (const a of attempts) {
+      if (a.student_id !== s.id || holdOf(spacing[a.skill]) !== "kept") continue;
+      notePlateau(p, a.skill, { day: new Date(a.created_at).toISOString().slice(0, 10), correct: a.first_correct === 1, top: a.level === 3, stage: 2, ms: a.ms_first ?? undefined });
+    }
+    for (const skill of Object.keys(p) as SkillId[]) {
+      const hit = plateauOf(p, skill);
+      if (hit) out.push({ student: `s${s.id}`, code: s.code, skill, best: Math.round(hit.best * 10) / 10 });
+    }
+  }
+  return out;
 }
 
 /** The class's stuck students as the teacher's list has them, one row per student and skill (homework's repair, #303). */
