@@ -129,6 +129,8 @@ test("a topic's intro counts as read after a few seconds in view and ticks its r
   await page.clock.install();
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto("/#/roadmaps/finance");
+  // The list view (#584 draws the roadmap as rooms first); the choice is remembered.
+  await page.getByRole("button", { name: "List", exact: true }).click();
   const item = page.locator(".road-item", { hasText: "What are fractions?" });
   await expect(item).toHaveAttribute("href", "#/learn/fractions");
   await expect(item).not.toHaveClass(/done/);
@@ -227,6 +229,8 @@ test("a teacher gives a class a goal: its student's site opens on that roadmap u
 test("a roadmap's lab is done once the learner has tried it (#461)", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto("/#/roadmaps/ml");
+  // The list view (#584 draws the roadmap as rooms first); the choice is remembered.
+  await page.getByRole("button", { name: "List", exact: true }).click();
   const item = page.locator(".road-item", { hasText: "Gradient descent lab" });
   await expect(item).toHaveAttribute("href", "#/library/live/descentLab");
   await expect(item).not.toHaveClass(/done/);
