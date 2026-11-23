@@ -63,8 +63,8 @@ test("early answers: wrong on the third, a skill without ideas, and one step-dow
 });
 
 test("step-down is on trial: only the arm with it in a class testing it has it", () => {
-  assert.deepEqual([...ON_TRIAL], ["stepdown"]);
-  assert.equal(FEATURES.at(-1), "stepdown", "a new feature joins at the end");
+  assert.ok(ON_TRIAL.includes("stepdown"));
+  assert.equal(FEATURES.at(-2), "stepdown", "a new feature joins at the end (marking came after it)");
   assert.equal(studentHas(null, "stepdown"), false, "nobody signed in");
   assert.equal(studentHas({}, "stepdown"), false, "a student from before arms");
   assert.equal(studentHas(null, "spaced"), true);

@@ -90,7 +90,15 @@ export type Attempt = {
   faded?: number;
   /** The student's word on the question once it was over: too easy, about right or too hard, when they gave one. */
   rated?: Rating;
+  /** A word problem marked before it was solved (wordMarks.ts, #582): a mark per sentence, and how long marking took. */
+  marks?: Marks;
 };
+
+/**
+ * The marks a student gave a word problem's sentences, in order ("given", "asked", "notNeeded", or "relation:0" and
+ * "relation:1" with whose amount they picked as bigger), and the milliseconds marking took, before solving began.
+ */
+export type Marks = { picks: string[]; ms: number };
 
 /** One question as the student works on it. Times are from performance.now(), so a clock change doesn't skew them. */
 export type QuestionLog = {
@@ -109,6 +117,8 @@ export type QuestionLog = {
   faded?: number;
   /** How the question felt to the student, asked once it was over (difficulty.ts). */
   rated?: Rating;
+  /** The word problem's marks, once checked; its answers are timed from then (markedLog). */
+  marks?: Marks;
 };
 
 export const startLog = (shownAt = Date.now(), t0 = performance.now()): QuestionLog =>
@@ -124,6 +134,14 @@ export function logStep(log: QuestionLog, i: number, input: string | null, v?: V
   while (log.steps.length <= i) log.steps.push({ answers: [], shown: false });
   if (input === null) log.steps[i].shown = true;
   else log.steps[i].answers.push({ input: input.trim().slice(0, 200), verdict: verdictOf(v!), ms: ms(log, now) });
+}
+/**
+ * The marks checked on a word problem: kept with how long they took, and solving starts now, so the answers' times
+ * (and the pace and speed read from them) are the solving's alone, as on a question that isn't marked.
+ */
+export function markedLog(log: QuestionLog, picks: string[], now = performance.now()) {
+  log.marks = { picks, ms: ms(log, now) };
+  log.t0 = now;
 }
 export function finish(log: QuestionLog, outcome: Exclude<Outcome, "skipped">, now = performance.now()) {
   if (log.outcome) return;
@@ -154,6 +172,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
     ...(log.steps.length ? { steps: log.steps } : {}),
     ...(log.faded ? { faded: log.faded } : {}),
     ...(log.rated ? { rated: log.rated } : {}),
+    ...(log.marks ? { marks: log.marks } : {}),
   };
 }
 

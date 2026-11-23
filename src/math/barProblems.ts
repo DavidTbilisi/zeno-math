@@ -5,6 +5,12 @@
 // amounts compared. Each question has its numbers, the answer, the slip its structure invites (the trap), and the steps
 // it is worked in, each a question of its own with the answer to that step; the bar models are drawn from these by the
 // skill (src/math/skills/barModels.ts), in the learner's language.
+//
+// Each structure is told in sentences (BAR_STORY), each saying what it does: names numbers, compares two people, or
+// asks. Medium and hard questions may carry a sentence more, with a number the answer doesn't use (the noise). The
+// marked version of a question (wordMarks.ts, issue #582) takes every sentence's mark from that: whether the answer,
+// worked by the structure's own working (barAnswer), uses the sentence's numbers.
+import { markSentences, usesOf, type Clause, type MarkedSentence } from "./wordMarks";
 
 export type BarForm = "less" | "posts" | "howMuchMore" | "sumDiff" | "times" | "loop" | "give" | "leftShort" | "three";
 export const BAR_FORMS: Record<1 | 2 | 3, BarForm[]> = {
@@ -25,17 +31,88 @@ export type BarQuestion = {
   trap: { id: BarMistake; v: number; vars: Record<string, number> } | null;
   /** The steps before the answer, in order. */
   steps: BarStep[];
+  /** A sentence with a number z the answer doesn't use, put in before sentence `at`, never first (medium and hard only, not always). */
+  noise?: { kind: NoiseKind; z: number; at: number };
 };
+
+/** The noise sentences: a person's age, a tree's height, the children's age. */
+export type NoiseKind = "age" | "tall" | "ages";
 
 /** The words of the bar-model problems (the locale's `barModels` block). */
 export type BarModelWords = {
   /** The three people's names as they label the bars. */
   names: { a: string; b: string; c: string };
-  prompt: Record<BarForm, string>;
+  /** Each structure's problem in its sentences, one for each of its clauses (BAR_STORY). */
+  prompt: Record<BarForm, readonly string[]>;
+  /** The noise sentences, each with its number {z}. */
+  noise: Record<NoiseKind, string>;
   step: Record<BarStep["ask"], string>;
   /** A unit of a bar: "1 u". */
   unit: string;
 };
+
+/**
+ * What each sentence of a structure's problem does, in order: the numbers it names (keys of the question's numbers),
+ * the two people it compares (a, b, c: Ann, Ben, Cara), or that it asks.
+ */
+export const BAR_STORY: Record<BarForm, readonly Clause[]> = {
+  less: [{ says: ["a"] }, { compares: ["a", "b"], says: ["d"] }, { asks: true }],
+  posts: [{ says: ["g", "L"] }, { asks: true }],
+  howMuchMore: [{ says: ["t"] }, { says: ["a"] }, { asks: true }],
+  sumDiff: [{ says: ["t"] }, { compares: ["a", "b"], says: ["d"] }, { asks: true }],
+  times: [{ compares: ["a", "b"], says: ["k"] }, { says: ["t"] }, { asks: true }],
+  loop: [{ says: ["g", "L"] }, { asks: true }],
+  give: [{ compares: ["a", "b"], says: ["k"] }, { says: ["g"] }, { asks: true }],
+  leftShort: [{ says: ["p", "l"] }, { says: ["q", "s"] }, { asks: true }],
+  three: [{ compares: ["a", "b"] }, { compares: ["c", "b"], says: ["d"] }, { says: ["t"] }, { asks: true }],
+};
+/** The noise sentence each structure can carry, on the medium and hard ones. */
+const NOISE: Partial<Record<BarForm, NoiseKind>> = { sumDiff: "age", times: "age", loop: "tall", give: "age", leftShort: "ages", three: "age" };
+/** The noise number's range for each kind: ages and heights that read naturally (7 to 15 years is "лет" in Russian). */
+const NOISE_RANGE: Record<NoiseKind, [number, number]> = { age: [7, 15], tall: [2, 9], ages: [7, 12] };
+
+/** The answer from the numbers the problem gives, by the structure's own working (the noise is never one of them). */
+export function barAnswer(form: BarForm, v: Record<string, number>): number {
+  switch (form) {
+    case "less": return v.a - v.d;
+    case "posts": return v.L / v.g + 1;
+    case "howMuchMore": return v.a - (v.t - v.a);
+    case "sumDiff": return (v.t - v.d) / 2;
+    case "times": return (v.t / (v.k + 1)) * v.k;
+    case "loop": return v.L / v.g;
+    case "give": return (v.k * (2 * v.g)) / (v.k - 1);
+    case "leftShort": return (v.l + v.s) / (v.q - v.p);
+    case "three": return (v.t - v.d) / 4 + v.d;
+  }
+}
+
+/** Each person's amount (at first, before a gift), on the structures whose sentences compare two of them. */
+export function barAmounts(q: BarQuestion): Record<string, number> {
+  const v = q.vars;
+  switch (q.form) {
+    case "less": return { a: v.a, b: v.a - v.d };
+    case "sumDiff": return { a: v.b + v.d, b: v.b };
+    case "times":
+    case "give": return { a: v.k * v.u, b: v.u };
+    case "three": return { a: 2 * v.u, b: v.u, c: v.u + v.d };
+    default: return {};
+  }
+}
+
+/**
+ * The question's sentences, filled in by `fill` (with its numbers as the learner reads them), the noise sentence in its
+ * place, each with its right mark (wordMarks.ts).
+ */
+export function barSentences(q: BarQuestion, W: BarModelWords, fill: (template: string) => string): MarkedSentence[] {
+  const clauses: Clause[] = [...BAR_STORY[q.form]];
+  const texts = W.prompt[q.form].map(fill);
+  if (q.noise) {
+    clauses.splice(q.noise.at, 0, { says: ["z"] });
+    texts.splice(q.noise.at, 0, fill(W.noise[q.noise.kind]));
+  }
+  const vars = q.noise ? { ...q.vars, z: q.noise.z } : q.vars;
+  return markSentences(clauses, texts, usesOf((v) => barAnswer(q.form, v), vars), barAmounts(q), W.names);
+}
 
 type Next = () => number;
 const intOf = (next: Next) => (lo: number, hi: number) => lo + Math.floor(next() * (hi - lo + 1));
@@ -43,7 +120,24 @@ const round2 = (v: number) => Math.round(v * 100) / 100;
 /** A trap kept only when it is a different, positive answer. */
 const trapOf = (id: BarMistake, v: number, answer: number, vars: Record<string, number>) => (v > 0 && Math.abs(v - answer) > 1e-9 ? { id, v: round2(v), vars: { ...vars, x: round2(v) } } : null);
 
+/**
+ * A question of the structure. On the medium and hard ones, half the time, a noise sentence too: drawn after
+ * everything else, so the numbers are those the question had without it.
+ */
 export function barQuestion(form: BarForm, next: Next): BarQuestion {
+  const q = barNumbers(form, next);
+  const kind = NOISE[form];
+  if (!kind || next() < 0.5) return q;
+  const int = intOf(next);
+  const taken = new Set([...Object.values(q.vars), q.v, ...q.steps.map((s) => s.v)]);
+  // A number of its own, so it can't be read as one the answer or a step uses.
+  const [lo, hi] = NOISE_RANGE[kind];
+  const free = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).filter((n) => !taken.has(n));
+  const z = free[int(0, free.length - 1)];
+  return { ...q, noise: { kind, z, at: int(1, BAR_STORY[form].length - 1) } };
+}
+
+function barNumbers(form: BarForm, next: Next): BarQuestion {
   const int = intOf(next);
   switch (form) {
     case "less": {

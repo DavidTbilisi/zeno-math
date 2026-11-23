@@ -123,13 +123,15 @@ A class tests one feature, `feature` when it is made (`src/model/arms.ts`; 400 f
 - **`faded`**: worked examples that fade (`src/model/fading.ts`), on every skill worked in steps.
 - **`stepdown`**: targeted step-down after an early failure (`src/model/stepDown.ts`). On trial: nobody has it but
   the arm with it in a class testing it.
+- **`marking`**: a bar-model or proportion word problem marked sentence by sentence before it is solved
+  (`src/math/wordMarks.ts`, issue #582). On trial, like `stepdown`.
 
 Students are given an arm in random blocks of four, two of each. In a class testing anything but the policy both
 arms practise with the adaptive policy. Only the feature under test differs: the arm without it goes without it, in
 class practice and free practice alike, and every other feature stays on for both, but for a feature on trial
-(`stepdown`), which nobody else has. An attempt that shows a feature the student's arm hasn't got is refused with
-400: a `spaced` or `stepdown` policy (`invalid policy`), `steps` (`invalid steps`), `hard` (`invalid hard`) or
-`faded` (`invalid faded`). Classes and students from before arms tested the policy; their arm follows from their
+(`stepdown`, `marking`), which nobody else has. An attempt that shows a feature the student's arm hasn't got is refused
+with 400: a `spaced` or `stepdown` policy (`invalid policy`), `steps` (`invalid steps`), `hard` (`invalid hard`),
+`faded` (`invalid faded`) or `marks` (`invalid marks`). Classes and students from before arms tested the policy; their arm follows from their
 condition.
 
 ### The protocol
@@ -253,6 +255,11 @@ student (`s17`) and game: `{ stars, passedAt }`.
   question's own ideas (`part`, `commonDenom`, `minusNeg`, `mulFirst`, …) once. Only on a skill made of ideas
   (times, hcf, fractions, integers, order, rounding, indices, expand: `IDEA_SKILLS` in `src/model/ideaState.ts`), and
   left out when nothing was ticked; it moves the student's ideas in the plan.
+- **`marks`**: a word problem marked before it was solved: `{ picks, ms }`, one pick per sentence of the question's
+  marked version in its order (`given`, `asked`, `notNeeded`, or `relation:0` / `relation:1` with whose amount the
+  student picked as bigger), and the milliseconds marking took. Only on a question with sentences to mark (bar-model
+  problems, proportion word problems), and only from a student with marking; the answers' times start when marking
+  ends. It moves nothing in the plan: it is stored and exported (`marks` in attempts.csv).
 - **`rated`**: how the question felt to the student, asked once it was over: `easy` (too easy), `right` (about
   right) or `hard` (too hard). Left out when they didn't say; refused on a `skipped` question. Every arm is asked
   alike, and it moves nothing in the plan: it is stored and exported (`rated` in attempts.csv) for comparing with

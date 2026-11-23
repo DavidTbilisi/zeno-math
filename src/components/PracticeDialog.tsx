@@ -4,7 +4,7 @@ import { SpokenMath } from "./SpokenMath";
 import { ApiError, study } from "../api";
 import { useI18n } from "../i18n";
 import {
-  applyAttempt, attemptEvidence, classQuestion, fadedOf, finish, learnFromAttempt, localSlot, loadStudent, logAnswer, logStep, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
+  applyAttempt, attemptEvidence, classQuestion, fadedOf, finish, learnFromAttempt, localSlot, loadStudent, logAnswer, logStep, markedLog, ME, Outbox, saveStudent, startLog, studentHas, toAttempt, toClassPlan, whatWasHard, withProtocol,
   type ClassPlan, type Origin, type QuestionLog, type Student, type TestAnswer,
 } from "../learner";
 import { newcomerChance } from "../model/logistic";
@@ -29,6 +29,8 @@ import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
 import { LINE_LETTERS } from "../math/proofs";
 import { WorkInSteps } from "./WorkInSteps";
+import { MarkProblem } from "./MarkProblem";
+import { pickCode } from "../math/wordMarks";
 import { ScratchPad } from "./ScratchPad";
 import { BreakPrompt, ComingBack, SessionRing, SessionSummary, type SessionResult } from "./PracticeSession";
 import { breakDue, keepLength, sessionLength, stretchAfter, type Length, type Stretch } from "../math/sessionPace";
@@ -222,6 +224,12 @@ export function PracticeDialog(props: Props) {
       ? { ex: exercise(initial.skill, initial.level, initial.seed, w), ...freeOrigin }
       : nextExercise(area, pick, level, progress, null),
   );
+  /**
+   * A word problem is marked before it is solved (issue #582), for a student with marking, where the question shows
+   * as text: "now" while its sentences are marked, "done" once checked (the marks stay on them), "no" otherwise.
+   */
+  const marksOn = (ex: Exercise) => !!ex.marked?.length && (!onSubmit || !!docked) && has("marking");
+  const [marking, setMarking] = useState<"no" | "now" | "done">(() => (marksOn(cur.ex) ? "now" : "no"));
   const [input, setInput] = useState("");
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [wrongs, setWrongs] = useState(0);
@@ -487,6 +495,7 @@ export function PracticeDialog(props: Props) {
     log.current.faded = g || undefined;
     log.current.steps = Array.from({ length: g }, () => ({ answers: [], shown: true }));
     setCur(c);
+    setMarking(marksOn(c.ex) ? "now" : "no");
     setInput("");
     setVerdict(null);
     setWrongs(0);
@@ -816,7 +825,21 @@ export function PracticeDialog(props: Props) {
               {!classOn && !cur.review && (
                 <small className="hint">{w.skills[cur.ex.skill]} · {w.levels[String(cur.ex.level) as "1" | "2" | "3"]}</small>
               )}
-              <p className="practice-prompt" aria-hidden="true">{cur.ex.prompt}</p>
+              {marking !== "no" && cur.ex.marked ? (
+                <MarkProblem
+                  key={`marks:${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}`}
+                  sentences={cur.ex.marked}
+                  w={w.ui.mark}
+                  onChecked={(picks) => {
+                    // The marks go with the attempt and move nothing; solving begins, timed from here.
+                    markedLog(log.current, picks.map(pickCode));
+                    setMarking("done");
+                    setTimeout(() => inputRef.current?.focus());
+                  }}
+                />
+              ) : (
+                <p className="practice-prompt" aria-hidden="true">{cur.ex.prompt}</p>
+              )}
               {"error" in question ? (
                 <span className="error">{question.error}</span>
               ) : (
@@ -834,8 +857,8 @@ export function PracticeDialog(props: Props) {
               <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
             </div>
           )}
-          {/* A faded worked example is answered step by step below, not here. */}
-          {!given && (
+          {/* A faded worked example is answered step by step below, not here; a word problem is marked first. */}
+          {!given && marking !== "now" && (
             <>
               {/* A question answered by doing has buttons of its own: in a label, a click anywhere would press the first. */}
               <AnswerField className="field" play={!!cur.ex.play}>
@@ -969,8 +992,8 @@ export function PracticeDialog(props: Props) {
             </>
           )}
           <div className="field-row practice-actions">
-            {!done && !given && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
-            {!done && !given && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
+            {!done && !given && stepping !== "now" && marking !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
+            {!done && !given && marking !== "now" && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
             {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
             {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
             {!calm && (
@@ -1019,7 +1042,7 @@ export function PracticeDialog(props: Props) {
               }}
             />
           )}
-          {given > 0 && (
+          {given > 0 && marking !== "now" && (
             <WorkInSteps
               key={`faded:${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}:${given}`}
               steps={steps}
