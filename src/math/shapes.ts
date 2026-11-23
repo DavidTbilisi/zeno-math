@@ -2058,6 +2058,24 @@ function geoboardPreview(): Piece[] {
   return [...dots, poly(corners.map(([x, y]): Pt => [x * s, y * s]), { fill: FILL.blue, color: "#1971c2", width: 2 })];
 }
 
+function spacePreview(): Piece[] {
+  // Three axes from a corner, a blue and a red vector spanning a pale parallelogram, and their cross product standing
+  // up from it in purple, square to both.
+  const O: Pt = [60, 100];
+  const axis = { color: MUTED, width: 1.5 };
+  const [a, b, c]: Pt[] = [[110, 120], [150, 80], [60, 22]];
+  return [
+    arrow(O, [10, 140], false, axis),
+    arrow(O, [170, 112], false, axis),
+    arrow(O, [60, 6], false, axis),
+    poly([O, a, [a[0] + b[0] - O[0], a[1] + b[1] - O[1]], b], { fill: "#d0ebff", color: BLUE, width: 1 }),
+    arrow(O, a, false, { color: BLUE, width: 3 }),
+    arrow(O, b, false, { color: RED, width: 3 }),
+    arrow(O, c, false, { color: "#9c36b5", width: 3 }),
+    path([[60, 88], [70, 92], [70, 104]], { color: "#9c36b5", width: 1.5 }),
+  ];
+}
+
 function geoLabPreview(): Piece[] {
   // A 3-4-5 triangle on a light grid: its sides labelled, the right angle marked, the circle through its corners.
   const s = 22;
@@ -2243,6 +2261,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSignPattern", build: signPatternPreview, live: "signPattern" },
   { id: "liveExprMatch", build: exprMatchPreview, live: "exprMatch" },
   { id: "liveGeoLab", build: geoLabPreview, live: "geoLab" },
+  { id: "liveSpace", build: spacePreview, live: "space" },
   { id: "liveGeoboard", build: geoboardPreview, live: "geoboard" },
   { id: "liveAngleGuess", build: angleGuessPreview, live: "angleGuess" },
   { id: "liveAngleHunt", build: angleHuntPreview, live: "angleHunt" },

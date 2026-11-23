@@ -525,6 +525,10 @@ test("a level made secure comes back for review a day later, then three days aft
   await page.clock.setFixedTime(T + 2 * DAY);
   await page.getByRole("button", { name: /^Fractions \d+\/\d+$/ }).click();
   await expect(page.locator(".practice-review")).toHaveText(`↻ ${w.ui.spaced}`);
+  // Fractions is made of ideas: the review opens with an idea's card, a corner to fill first (#579, e2e/ideaCards).
+  const card = page.getByRole("region", { name: en.cards.reviewHead });
+  await card.locator(".ic-choice").first().click();
+  await card.getByRole("button", { name: `${en.cards.goOn} →` }).click();
   await answer();
   expect(await spacing()).toEqual({ step: 1, due: T + 5 * DAY });
   await page.getByRole("button", { name: "Next →" }).click();

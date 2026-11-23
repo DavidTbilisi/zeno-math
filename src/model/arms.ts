@@ -22,6 +22,8 @@ export const FEATURES = [
   "faded",
   // after an early failure on a skill made of ideas, a few questions on its weakest idea, then back (stepDown.ts, #269)
   "stepdown",
+  // a spaced review on a skill made of ideas opens with its weakest idea's card, one corner to fill (ideaCards.ts, #579)
+  "cards",
   // after a run of right answers on a skill made of ideas, a worked answer to judge: right, or where and how it breaks
   // (breaks.ts and src/math/whereItBreaks.ts, #577)
   "breaks",
@@ -30,10 +32,10 @@ export type Feature = (typeof FEATURES)[number];
 /**
  * Features on trial: nobody has one but the arm with it in a class testing it. Step-down has been tried untargeted, and
  * cost students practice and completion for no gain (ASSISTments PSAYN42), so until a class shows the targeted kind
- * helps, nobody else gets it. "Where it breaks" takes questions from practice for questions about worked answers, and
- * no class has yet shown that is worth it.
+ * helps, nobody else gets it. The idea cards add a pick before a review that nothing has tested yet. "Where it breaks"
+ * takes questions from practice for questions about worked answers, and no class has yet shown that is worth it.
  */
-export const ON_TRIAL: readonly Feature[] = ["stepdown", "breaks"];
+export const ON_TRIAL: readonly Feature[] = ["stepdown", "cards", "breaks"];
 export const ARMS = ["on", "off"] as const;
 /** on: the arm with the feature; off: the arm without it. */
 export type Arm = (typeof ARMS)[number];

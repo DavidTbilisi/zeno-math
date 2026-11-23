@@ -1467,6 +1467,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     the skill back to blue until it is secure and kept again. *My progress* explains the four at the top and, under
     each topic, lists its skills with four small squares filled to the stage reached and the stage's number and name;
     on a roadmap a skill's tick takes its stage's colour with the number beside it
+  - *Idea cards* (#579): every idea of the skills made of ideas (times, hcf, fractions, negative numbers, order of
+    operations, rounding, powers, brackets) has a card of four corners: its sign (a glyph no other idea or symbol in
+    Zeno has, and that never changes), what it is in one line, what it is easily taken for with the one test that
+    tells the two apart, and how it goes wrong (the named mistake practice blames on it, where there is one). A topic's
+    page shows its ideas' cards under the intro, one at a time by its sign. A spaced review on such a skill opens with
+    the card of the learner's weakest idea there, one corner covered: they pick what goes there from three choices,
+    see the corner, and go on to the review. The pick counts for nothing. In a class study it is on trial: only the arm
+    of a class testing it gets it
   - *Your grade*: every level of every skill belongs to a grade, 1 to 12 or university, by the grade in which
     Singapore's syllabuses teach it (primary, Secondary 1–4 with Additional Mathematics, H2 Mathematics; they teach
     grades 9–10 and 11–12 as blocks, so those are one rung each). *Find my grade* asks questions from the middle of
