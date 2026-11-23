@@ -121,6 +121,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "integral", icon: "∫", label: "integrals" },
           { kind: "applied", icon: "∫⌒", label: "applied" },
           { kind: "multivar", icon: "∇", label: "multivar" },
+          { live: "surface", icon: "⛰" },
           { kind: "ode", icon: "y′", label: "odes" },
           { kind: "numerical", icon: "≈", label: "numericalTool" },
         ],
