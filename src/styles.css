@@ -1703,35 +1703,35 @@ span.board-home:hover { background: none; }
 /* A wide table (the arms in Georgian, say) scrolls inside its card on a phone rather than pushing the page sideways. */
 .teacher-panel .card:has(> .data-table), .teacher-panel .calib-side { overflow-x: auto; min-width: 0; }
 
-/* Insert (#448): the library over the board. Groups down the side, the chosen group's sections beside them; on a
-   phone the groups are a strip along the top. It never scrolls sideways: its lists scroll down inside it. */
-.insert-backdrop { position: fixed; inset: 0; z-index: 95; display: grid; place-items: start center; padding: 56px 12px 12px; background: rgb(0 0 0 / 0.35); }
+/* Insert (#448, docked #560): the library docked beside the board, which stays in use. The groups wrap across its
+   top, the chosen group's sections under them; on a phone it is a sheet along the bottom that leaves the board above.
+   It never scrolls sideways: its lists scroll down inside it. */
 .insert {
-  width: min(980px, 100%); max-height: calc(100dvh - 68px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
-  background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 14px;
-  box-shadow: var(--shadow); overflow: hidden;
+  flex: none; width: 360px; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr); /* a long row of groups scrolls in itself, never widens the panel */
+  background: var(--surface); color: var(--text); border-left: 1px solid var(--border); overflow: hidden;
 }
 .insert-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
 .insert-head h2 { margin: 0; font-size: 1.05rem; white-space: nowrap; }
 .insert-search { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: inherit; font: inherit; }
 .insert-close { flex: none; }
-.insert-body { display: grid; grid-template-columns: 190px minmax(0, 1fr); min-height: 0; }
-.insert-body.searching { grid-template-columns: minmax(0, 1fr); }
-.insert-side { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); }
+.insert-body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-height: 0; }
+.insert-body.searching { grid-template-rows: minmax(0, 1fr); }
+.insert-side { display: flex; flex-direction: column; min-height: 0; min-width: 0; border-bottom: 1px solid var(--border); }
 .insert-mode { display: flex; gap: 2px; margin: 10px 8px 0; padding: 2px; border-radius: 9px; background: var(--chip); }
 .insert-mode button {
   flex: 1; min-height: 30px; padding: 4px 6px; border: none; border-radius: 7px; background: transparent; color: inherit;
   font: inherit; font-size: 13px; cursor: pointer;
 }
 .insert-mode button.on { background: var(--bg); font-weight: 700; box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
-.insert-groups { display: flex; flex-direction: column; gap: 2px; padding: 8px; overflow-y: auto; min-height: 0; }
+.insert-groups { display: flex; flex-wrap: wrap; gap: 2px; padding: 8px; overflow-y: auto; min-height: 0; max-height: 170px; }
 .insert-rung {
   flex: none; min-width: 34px; padding: 1px 4px; border-radius: 6px; border: 1px solid var(--border);
   font-size: 12px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums;
 }
 .insert-group {
-  display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 6px 10px; border: none; border-radius: 8px;
-  background: transparent; color: inherit; font: inherit; font-size: 14px; text-align: left; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 9px; border: none; border-radius: 8px;
+  background: transparent; color: inherit; font: inherit; font-size: 13px; text-align: left; cursor: pointer;
 }
 .insert-group:hover { background: var(--chip); }
 .insert-group.on { background: var(--z-marker); color: #172350; font-weight: 700; }
@@ -1752,14 +1752,14 @@ span.board-home:hover { background: none; }
 .insert-foot { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: space-between; margin: 0; padding: 10px 14px; border-top: 1px solid var(--border); font-size: 0.8125rem; color: var(--muted); }
 .insert-foot a { color: inherit; font-weight: 700; }
 @media (max-width: 640px) {
-  .insert-backdrop { padding: 8px; }
-  .insert { max-height: calc(100dvh - 16px); }
+  .board-body:has(> .insert) { flex-direction: column; }
+  .insert { width: auto; height: 46dvh; border-left: none; border-top: 1px solid var(--border); }
+  .insert-head { padding: 8px 10px; }
   .insert-head h2 { display: none; }
-  .insert-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
-  .insert-side { border-right: none; border-bottom: 1px solid var(--border); }
   .insert-mode { margin: 8px 8px 0; }
-  .insert-groups { flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 8px; }
+  .insert-groups { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 8px; }
   .insert-group { flex: none; }
+  .insert-foot { display: none; }
 }
 
 /* Topic intros (#450): what a topic is beside its picture, where it is used, and the "What is…?" page. */
