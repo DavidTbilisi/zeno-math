@@ -29,14 +29,76 @@ test("Insert puts a piece on the board, finds by search and links each section t
   await panel.getByRole("searchbox").fill("comparing fractions");
   await expect(panel.getByRole("tab")).toHaveCount(0);
   await panel.getByRole("button", { name: /Comparing fractions/ }).click();
-  await expect(panel).toHaveCount(0);
   await expect(page.locator(".live-compareFractions")).toBeVisible();
-  // It remembers the group it was last on.
-  await page.locator(".insert-btn").click();
-  await expect(panel.getByRole("tab", { name: "Geometry" })).toHaveAttribute("aria-selected", "true");
+  // Docked beside the board, it stays open, and the keyboard is the board's: Escape there leaves Insert alone. Escape in
+  // Insert closes it, and the keyboard is back on its button.
+  await expect(panel).toBeVisible();
+  await expect(page.locator(".excalidraw-container")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeVisible();
+  await panel.getByRole("searchbox").focus();
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
   await expect(page.locator(".insert-btn")).toBeFocused();
+  await expect(page.locator(".insert-btn")).toHaveAttribute("aria-expanded", "false");
+  // It remembers the group it was last on; the button closes it again.
+  await page.locator(".insert-btn").click();
+  await expect(panel.getByRole("tab", { name: "Geometry" })).toHaveAttribute("aria-selected", "true");
+  await page.locator(".insert-btn").click();
+  await expect(panel).toHaveCount(0);
+});
+
+test("on a phone Insert is a sheet under the board that never scrolls sideways", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/boards");
+  await page.getByRole("button", { name: /New board/ }).first().click();
+  await page.locator(".excalidraw").waitFor();
+  // A group far along the row: picking it scrolls the row, not the sheet.
+  const panel = await insertGroup(page, "Games");
+  const sheet = (await panel.boundingBox())!;
+  const board = (await page.locator(".canvas-wrap").boundingBox())!;
+  expect(sheet.width).toBeLessThanOrEqual(390);
+  expect(board.y + board.height).toBeLessThanOrEqual(sheet.y + 1);
+  expect(await panel.evaluate((el) => el.scrollLeft + el.querySelector(".insert-body")!.scrollLeft)).toBe(0);
+  const search = (await panel.getByRole("searchbox").boundingBox())!;
+  expect(search.x).toBeGreaterThanOrEqual(0);
+  expect(search.x + search.width).toBeLessThanOrEqual(390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
+test("Insert stays docked beside the board: a tool and a live piece dragged from it land where they are dropped", async ({ page }) => {
+  await page.goto("/#/boards");
+  await page.getByRole("button", { name: /New board/ }).first().click();
+  await page.locator(".excalidraw").waitFor();
+  const panel = await insertGroup(page, /Algebra/);
+  await expect(page.locator(".modal-backdrop, .insert-backdrop")).toHaveCount(0);
+  const wrap = page.locator(".canvas-wrap");
+  const board = (await wrap.boundingBox())!;
+  // Docked: the board ends where the panel starts.
+  expect(board.x + board.width).toBeLessThanOrEqual((await panel.boundingBox())!.x + 1);
+
+  // A formula dropped near the top left: its picture is made there, its panel beside it.
+  const spot = { x: 180, y: 140 };
+  await panel.getByRole("button", { name: /Formula/ }).dragTo(wrap, { targetPosition: spot });
+  const item = page.locator(".item-panel");
+  await expect(item.getByRole("heading", { name: "Formula" })).toBeVisible();
+  await page.waitForTimeout(500); // its first example goes on the board
+  await page.keyboard.press("Escape");
+  await expect(item).toHaveCount(0);
+  await page.mouse.click(board.x + spot.x, board.y + spot.y, { button: "right" });
+  await expect(item.getByRole("heading", { name: "Edit formula" })).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  // A live piece dropped near the bottom: its middle is where it was let go.
+  await insertGroup(page, "Arithmetic");
+  const drop = { x: board.width / 2, y: board.height - 150 };
+  await panel.getByRole("button", { name: /Number patterns as dots/ }).dragTo(wrap, { targetPosition: drop });
+  const piece = page.locator(".live-numberShapes");
+  await expect(piece).toHaveCount(1);
+  const box = (await piece.boundingBox())!;
+  expect(Math.abs(box.x + box.width / 2 - (board.x + drop.x))).toBeLessThan(30);
+  expect(Math.abs(box.y + box.height / 2 - (board.y + drop.y))).toBeLessThan(30);
+  await expect(panel).toBeVisible();
 });
 
 test("Insert by grade shows one grade's tools, pieces and games from every menu, and the library filters by grade", async ({ page }) => {
