@@ -1,12 +1,14 @@
 // Roadmaps by goal (#449): #/roadmaps picks a goal, #/roadmaps/<goal> shows its roadmap, a checklist in stages that
 // ticks itself from free practice in this browser and the games' ladders, with Next, a bar per stage and in all, and
 // what has been achieved, newest first. A skill's mark takes the colour of its learning stage (#576), its number beside
-// it. The goal last opened is remembered for this browser.
-import { useState } from "react";
+// it. The goal last opened is remembered for this browser. The roadmap is drawn as a walk through rooms (#584,
+// RoadRooms.tsx), one click from the list, with a walk-it check under either; the view last chosen is remembered too.
+import { useState, type ReactNode } from "react";
 import { ApiError } from "../api";
 import { loadAchieved, storedGoal } from "../achieved";
 import { chooseGoal, classGoal, useGoal } from "../classGoal";
 import { StageBadge, StageLegend, useStageLabel } from "../components/LearningStages";
+import { RoomMap, WalkIt } from "../components/RoadRooms";
 import { SiteBar } from "../components/SiteBar";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
@@ -16,6 +18,8 @@ import {
   type GameId, type GoalId, type Item, type ItemState, type Work,
 } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
+import { roomsOf } from "../model/roomLayout";
+import { ROOM_LAYOUTS } from "../model/roomLayouts";
 import { openOnStageBoard } from "../stageBoards";
 import { itemName, stageName } from "../roadWords";
 import { readWork } from "../work";
@@ -56,6 +60,23 @@ export function RoadmapPage({ goal }: { goal?: string }) {
 
 const MARK: Record<ItemState, string> = { done: "✓", behind: "✓", part: "", open: "" };
 
+type View = "rooms" | "list";
+const VIEW_KEY = "zeno.roadmap.view";
+function storedView(): View {
+  try {
+    return localStorage.getItem(VIEW_KEY) === "list" ? "list" : "rooms";
+  } catch {
+    return "rooms";
+  }
+}
+function keepView(v: View) {
+  try {
+    localStorage.setItem(VIEW_KEY, v);
+  } catch {
+    // Not kept in this browser: the page still shows it.
+  }
+}
+
 function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
   const { t, lang } = useI18n();
   const r = t.roadmap;
@@ -64,6 +85,8 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
   const [dates] = useState(loadAchieved);
   const [opening, setOpening] = useState(false);
   const [failed, setFailed] = useState<false | true | "refused">(false);
+  const [view, setView] = useState(storedView);
+  const [rooms] = useState(() => roomsOf(map, ROOM_LAYOUTS[goal]));
   useState(() => chooseGoal(goal));
   const next = roadNext(map, work);
   const all = progressOf(itemsOf(map), work);
@@ -81,6 +104,22 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
   };
   const levelsNote = (i: Item) =>
     isSkill(i) ? (i.levels.length < 3 ? fill(r.levels, { levels: i.levels.join(", ") }) : "") : isRead(i) ? t.site.explain.readNote : isLab(i) ? r.lab : r.game;
+  const stageOf = (i: Item) => (isSkill(i) ? (work.stage?.(i.skill) ?? 0) : 0);
+  /** An item's link (its practice, intro or lab) or, for a game, the button that opens it on a board. */
+  const open = (i: Item, body: ReactNode, cls: string, label?: string) =>
+    isSkill(i) ? (
+      <a className={cls} aria-label={label} href={`#/practice/${i.skill}.${i.levels.find((L) => work.s.level(i.skill, L) === "open") ?? i.levels[0]}`}>{body}</a>
+    ) : isRead(i) ? (
+      <a className={cls} aria-label={label} href={`#/learn/${i.read}`}>{body}</a>
+    ) : isLab(i) ? (
+      <a className={cls} aria-label={label} href={`#/library/live/${i.lab}`}>{body}</a>
+    ) : (
+      <button className={cls} aria-label={label} disabled={opening} onClick={() => play(i.game)}>{body}</button>
+    );
+  const pick = (v: View) => {
+    setView(v);
+    keepView(v);
+  };
   const achieved = itemsOf(map)
     .filter((i) => itemState(i, work) === "done")
     .map((i) => ({ i, at: achievedAt(i, dates) }))
@@ -136,51 +175,54 @@ function Roadmap({ goal, work }: { goal: GoalId; work: Work }) {
           <StageLegend />
         </details>
 
-        <ol className="course-stages">
-          {map.stages.map((st, n) => {
-            const p = progressOf(st.items, work);
-            const here = !!next && st.items.includes(next.item);
-            return (
-              <li key={st.id} className={`course-stage${here ? " here" : ""}`}>
-                <span className="course-stage-n" aria-hidden="true">{n + 1}</span>
-                <div className="course-stage-body">
-                  <div className="course-stage-head"><h2>{stageName(t, lang, goal, st)}</h2></div>
-                  <Track p={p} />
-                  <p className="course-count">{fill(r.count, p)}</p>
-                  <ul className="road-list">
-                    {st.items.map((i) => {
-                      const state = itemState(i, work);
-                      const stage = isSkill(i) ? (work.stage?.(i.skill) ?? 0) : 0;
-                      const label = `${itemName(t, i)}, ${r.legend[state]}${stage ? `, ${stageLabel(stage)}` : ""}`;
-                      const body = (
-                        <>
-                          <i className={`road-tick ${state}${stage ? ` ls-${stage}` : ""}`} aria-hidden="true">{MARK[state]}</i>
-                          <span className="road-name">{itemName(t, i)}</span>
-                          {levelsNote(i) && <span className="road-note">{levelsNote(i)}</span>}
-                          {stage !== 0 && <StageBadge stage={stage} />}
-                        </>
-                      );
-                      const cls = `road-item ${state}${next?.item === i ? " next" : ""}`;
-                      return (
-                        <li key={itemId(i)}>
-                          {isSkill(i) ? (
-                            <a className={cls} aria-label={label} href={`#/practice/${i.skill}.${i.levels.find((L) => work.s.level(i.skill, L) === "open") ?? i.levels[0]}`}>{body}</a>
-                          ) : isRead(i) ? (
-                            <a className={cls} aria-label={label} href={`#/learn/${i.read}`}>{body}</a>
-                          ) : isLab(i) ? (
-                            <a className={cls} aria-label={label} href={`#/library/live/${i.lab}`}>{body}</a>
-                          ) : (
-                            <button className={cls} aria-label={label} disabled={opening} onClick={() => play(i.game)}>{body}</button>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+        <div className="rm-toggle" role="group" aria-label={r.rooms.view}>
+          {(["rooms", "list"] as const).map((v) => (
+            <button key={v} type="button" className={`rm-view${view === v ? " on" : ""}`} aria-pressed={view === v} onClick={() => pick(v)}>{r.rooms[v]}</button>
+          ))}
+        </div>
+
+        {view === "rooms" ? (
+          <>
+            <p className="course-count rm-lede">{r.rooms.lede}</p>
+            <RoomMap goal={goal} stages={map.stages} rooms={rooms} open={(i, body) => open(i, body, `road-item ${itemState(i, work)}`)}
+              look={(i) => ({ state: itemState(i, work), stage: stageOf(i), next: next?.item === i })} />
+          </>
+        ) : (
+          <ol className="course-stages">
+            {map.stages.map((st, n) => {
+              const p = progressOf(st.items, work);
+              const here = !!next && st.items.includes(next.item);
+              return (
+                <li key={st.id} className={`course-stage${here ? " here" : ""}`}>
+                  <span className="course-stage-n" aria-hidden="true">{n + 1}</span>
+                  <div className="course-stage-body">
+                    <div className="course-stage-head"><h2>{stageName(t, lang, goal, st)}</h2></div>
+                    <Track p={p} />
+                    <p className="course-count">{fill(r.count, p)}</p>
+                    <ul className="road-list">
+                      {st.items.map((i) => {
+                        const state = itemState(i, work);
+                        const stage = stageOf(i);
+                        const label = `${itemName(t, i)}, ${r.legend[state]}${stage ? `, ${stageLabel(stage)}` : ""}`;
+                        const body = (
+                          <>
+                            <i className={`road-tick ${state}${stage ? ` ls-${stage}` : ""}`} aria-hidden="true">{MARK[state]}</i>
+                            <span className="road-name">{itemName(t, i)}</span>
+                            {levelsNote(i) && <span className="road-note">{levelsNote(i)}</span>}
+                            {stage !== 0 && <StageBadge stage={stage} />}
+                          </>
+                        );
+                        return <li key={itemId(i)}>{open(i, body, `road-item ${state}${next?.item === i ? " next" : ""}`, label)}</li>;
+                      })}
+                    </ul>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+
+        <WalkIt goal={goal} stages={map.stages} rooms={rooms} />
 
         <section className="road-achieved" aria-labelledby="road-achieved">
           <h2 id="road-achieved">{r.achieved}</h2>
