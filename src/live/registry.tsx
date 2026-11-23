@@ -65,6 +65,8 @@ import { TrigBuild } from "./TrigBuild";
 import { UnitCircleGame } from "./UnitCircleGame";
 import { SlopeWalk } from "./SlopeWalk";
 import { Solid } from "./Solid";
+import { Turned } from "./Turned";
+import { CubeMatrix } from "./CubeMatrix";
 import { SohCahToa } from "./SohCahToa";
 import { TrigDiscover } from "./TrigDiscover";
 import { PythDiscover } from "./PythDiscover";
@@ -95,6 +97,7 @@ import { BeTopo } from "./BeTopo";
 import { BeName } from "./BeName";
 import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
+import { Surface } from "./Surface";
 import { PcaLab } from "./PcaLab";
 import { FitLab } from "./FitLab";
 import { BatchLab } from "./BatchLab";
@@ -191,6 +194,8 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   unitCircleGame: UnitCircleGame,
   slopeWalk: SlopeWalk,
   solid: Solid,
+  turned: Turned,
+  cubeMatrix: CubeMatrix,
   sohcahtoa: SohCahToa,
   trigDiscover: TrigDiscover,
   pythDiscover: PythDiscover,
@@ -221,6 +226,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   beTopo: BeTopo,
   beName: BeName,
   descentLab: DescentLab,
+  surface: Surface,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,
   embedLab: EmbedLab,

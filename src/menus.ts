@@ -71,7 +71,7 @@ export const MENUS: MenuGroup[] = [
         ],
       },
       {
-        title: "secSolids", items: [{ live: "solid", icon: "🧊" }, { kind: "3d", icon: "🔄", label: "threeD" }],
+        title: "secSolids", items: [{ live: "solid", icon: "🧊" }, { live: "turned", icon: "🔄" }, { live: "cubeMatrix", icon: "🎲" }],
         shapes: ["cube", "cuboid", "prism", "cylinder", "pyramid", "cone", "sphere", "netCube", "netCuboid", "netPrism", "netPyramid", "netCylinder", "isometricDots"],
       },
       {
@@ -121,6 +121,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "integral", icon: "∫", label: "integrals" },
           { kind: "applied", icon: "∫⌒", label: "applied" },
           { kind: "multivar", icon: "∇", label: "multivar" },
+          { live: "surface", icon: "⛰" },
           { kind: "ode", icon: "y′", label: "odes" },
           { kind: "numerical", icon: "≈", label: "numericalTool" },
         ],

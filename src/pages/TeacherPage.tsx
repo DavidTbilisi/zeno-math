@@ -32,12 +32,17 @@ import { classRoad } from "../model/classRoad";
 import { GOALS, isGoal, type GoalId } from "../model/roadmap";
 import { openOnStageBoard } from "../stageBoards";
 import { TEACHER_KEY } from "../teacherMode";
+import { UndoToast, useUndoDelete } from "../components/UndoDelete";
 
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
 // first shown, so the dashboard itself doesn't carry them.
 const PrintableTests = lazy(() => import("../components/PrintableTests").then((m) => ({ default: m.PrintableTests })));
+const PrintableHomework = lazy(() => import("../components/PrintableHomework").then((m) => ({ default: m.PrintableHomework })));
 const PaperTest = lazy(() => import("../components/PaperTest").then((m) => ({ default: m.PaperTest })));
 const CalibrationChart = lazy(() => import("../components/CalibrationChart").then((m) => ({ default: m.CalibrationChart })));
+
+/** A class's sheets to print are a page of their own (#562), so Back closes them: #/teacher/<code>/tests/print. */
+const printRoute = () => location.hash.match(/^#\/teacher\/([\w-]+)\/(tests|homework)\/print$/);
 
 const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "delayed", "closed"];
 const DAY = 86_400_000;
@@ -90,7 +95,6 @@ export function TeacherPage() {
   const [password, setPassword] = useState(remembered);
   const [typed, setTyped] = useState("");
   const [access, setAccess] = useState<Access>("checking");
-  const [printing, setPrinting] = useState(false);
   const [typingPaper, setTypingPaper] = useState(false);
   const [classes, setClasses] = useState<ClassSummary[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -107,8 +111,6 @@ export function TeacherPage() {
   const [feature, setFeature] = useState<Feature>("policy");
   const [minutes, setMinutes] = useState(20);
   const [askMinutes, setAskMinutes] = useState(false);
-  // The class whose deletion is waiting for a second click (null: none).
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [tab, setTabState] = useState(savedTab);
   const setTab = (k: Tab) => {
     setTabState(k);
@@ -144,7 +146,7 @@ export function TeacherPage() {
       remember(pw);
       setClasses(list);
       setAccess("open");
-      setSelected((s) => s ?? list.at(-1)?.code ?? null);
+      setSelected((s) => s ?? printRoute()?.[1] ?? list.at(-1)?.code ?? null);
     } catch (e) {
       const status = e instanceof ApiError ? e.status : 0;
       setAccess(status === 403 ? (typedIn ? "wrong" : "locked") : status === 429 ? "waiting" : "offline");
@@ -201,21 +203,26 @@ export function TeacherPage() {
     }
   };
   /**
-   * Deletes a class, once confirmed on the page (a native confirm() is blocked in some browsers and embedded views,
-   * where it answers "no" without showing anything); only one nobody has joined, which the server checks too.
+   * Deletes a class at once, with a few seconds to undo it (#562): the server hears of it only when they are up. Only
+   * one nobody has joined, which the server checks too.
    */
-  const removeClass = async (klass: ClassSummary) => {
-    setConfirmDelete(null);
-    if (klass.students > 0) return;
+  const deleting = useUndoDelete(async (klass: ClassSummary) => {
     try {
       await api.remove(klass.code);
-      const list = await api.classes();
-      setClasses(list);
-      setData(null);
-      setSelected(list.at(-1)?.code ?? null);
+      setClasses(await api.classes());
     } catch {
       setFailed(true);
     }
+  });
+  const removeClass = (klass: ClassSummary) => {
+    if (klass.students > 0) return;
+    deleting.start(klass);
+    setData(null);
+    setSelected(classes.filter((c) => c.code !== klass.code).at(-1)?.code ?? null);
+  };
+  const undoRemove = (klass: ClassSummary) => {
+    deleting.undo();
+    setSelected(klass.code);
   };
   /** Takes a stuck student off the list, then shows the class as the server now has it. */
   const seen = async (row: { student: string; skill: string; through: number }) => {
@@ -304,7 +311,32 @@ export function TeacherPage() {
       </div>
     );
 
-  const current = classes.find((c) => c.code === selected);
+  // A class just deleted is gone from the page while its Undo is up.
+  const listed = classes.filter((c) => c.code !== deleting.pending?.code);
+  const current = listed.find((c) => c.code === selected);
+
+  // The sheets to print, as the whole page; the browser's Back (or the link on it) is the way out.
+  const route = printRoute();
+  if (route) {
+    const klass = classes.find((c) => c.code === route[1]);
+    const back = "#/teacher";
+    const wait = <p className="muted">{t.loading}</p>;
+    return (
+      <div className="z z-wide print-view-page">
+        <Suspense fallback={wait}>
+          {!klass ? (
+            <p className="error" role="alert">{w.loadFailed}</p>
+          ) : route[2] === "tests" ? (
+            <PrintableTests klass={klass} w={w} pw={t.pracWords} back={back} />
+          ) : data?.class.code === klass.code ? (
+            <PrintableHomework klass={klass} rows={data.homework.rows} nameOf={(id) => studentName(id, numbers.get(id))} w={w} pw={t.pracWords} back={back} />
+          ) : (
+            wait
+          )}
+        </Suspense>
+      </div>
+    );
+  }
   // A topic chosen for another class may not be one this class practises: then every skill shows.
   const shownTopic = topic && data?.class.skills.some((k) => topicOf(topic).skills.includes(k)) ? topic : null;
   const describe = (g: { n: number; mean: number | null; sd: number | null }) =>
@@ -346,9 +378,9 @@ export function TeacherPage() {
         <div className="teacher-grid">
           <aside className="teacher-side">
             <h2>{w.classes}</h2>
-            {classes.length ? (
+            {listed.length ? (
               <ul className="class-list">
-                {classes.map((c) => (
+                {listed.map((c) => (
                   <li key={c.code}>
                     <button className={`class-item${c.code === selected ? " selected" : ""}`} aria-pressed={c.code === selected} onClick={() => setSelected(c.code)}>
                       <strong>{c.name}</strong>
@@ -426,27 +458,16 @@ export function TeacherPage() {
                   <button className="btn" onClick={() => selected && void load(selected)}>{w.refresh}</button>
                   <button className="btn" onClick={() => void download("attempts")}>⤓ {w.download}</button>
                   <button className="btn" onClick={() => void download("tests")}>⤓ {w.downloadTests}</button>
-                  <button className="btn" onClick={() => setPrinting(true)}>{w.printTests}</button>
-                  {confirmDelete !== current.code && (
-                    <button className="btn danger" disabled={current.students > 0} title={current.students > 0 ? w.deleteClassHasStudents : undefined}
-                      onClick={() => setConfirmDelete(current.code)}>
-                      {w.deleteClass}
-                    </button>
-                  )}
+                  <a className="btn" href={`#/teacher/${current.code}/tests/print`}>{w.printTests}</a>
+                  <button className="btn danger" disabled={current.students > 0} title={current.students > 0 ? w.deleteClassHasStudents : undefined}
+                    onClick={() => removeClass(current)}>
+                    {w.deleteClass}
+                  </button>
                 </div>
-                {confirmDelete === current.code && (
-                  <div className="field-row wrap" role="alert">
-                    <span className="error">{w.deleteClassConfirm}</span>
-                    <button className="btn danger" autoFocus onClick={() => void removeClass(current)}>{w.deleteClass}</button>
-                    <button className="btn" onClick={() => setConfirmDelete(null)}>{t.cancel}</button>
-                  </div>
-                )}
               </section>
             )}
-            {printing && current && (
-              <Suspense fallback={null}>
-                <PrintableTests klass={current} w={w} pw={t.pracWords} onClose={() => setPrinting(false)} />
-              </Suspense>
+            {deleting.pending && (
+              <UndoToast text={fill(w.classDeleted, { name: deleting.pending.name })} undo={t.undo} onUndo={() => undoRemove(deleting.pending!)} />
             )}
 
             {current && (

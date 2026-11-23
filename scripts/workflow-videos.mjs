@@ -417,7 +417,7 @@ const SCENES = {
     await click(teacher, teacher.getByRole("button", { name: "Refresh" }), { hold: 900 });
     await point(teacher, teacher.locator(".homework-table tr", { hasText: "№ 7" }), 2400);
     await say(teacher, "No device at home? Print each student's sheet, with the answers on a page of their own.", 300);
-    await click(teacher, teacher.getByRole("button", { name: "Print the homework" }), { hold: 2400 });
+    await click(teacher, teacher.getByRole("link", { name: "Print the homework" }), { hold: 2400 });
     await teacher.mouse.wheel(0, 500);
     await wait(1600);
   },
@@ -457,11 +457,11 @@ const SCENES = {
     await openClass(page, "6A Paper test");
     film.roll();
     await say(page, "No devices today? Print the tests: three forms, each with its answer key.", 300);
-    await click(page, page.getByRole("button", { name: "Print the tests" }), { hold: 1600 });
-    const sheet = page.getByRole("dialog", { name: "Print the tests" });
+    await click(page, page.getByRole("link", { name: "Print the tests" }), { hold: 1600 });
+    const sheet = page.getByRole("main", { name: "Print the tests" });
     for (let i = 0; i < 6; i++) { await page.mouse.wheel(0, 260); await wait(260); }
     await wait(600);
-    await click(page, sheet.getByRole("button", { name: "Close" }), { hold: 600 });
+    await click(page, sheet.getByRole("link", { name: "← Back to the class" }), { hold: 600 });
     await say(page, "Afterwards, type each sheet in on the Study tab: it is marked as if answered online.", 300);
     await click(page, page.getByRole("tab", { name: "Study" }), { hold: 600 });
     const card = page.locator(".paper-card");
