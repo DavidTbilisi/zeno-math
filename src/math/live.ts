@@ -85,6 +85,7 @@ import type { LiveBeComp } from "./beComp";
 import type { LiveBeTopo } from "./beTopo";
 import type { LiveBeName } from "./beName";
 import { whichStart, type LiveWhich } from "./whichTool";
+import { cruxStart, type LiveCrux } from "./crux";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
@@ -628,6 +629,8 @@ export type LiveStates = {
   whichWord: LiveWhich;
   whichEq: LiveWhich;
   whichQuad: LiveWhich;
+  cruxWord: LiveCrux;
+  cruxEq: LiveCrux;
   descentLab: LiveDescent;
   surface: LiveSurface;
   pcaLab: LivePca;
@@ -756,6 +759,8 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   whichWord: [600, 700],
   whichEq: [600, 560],
   whichQuad: [600, 560],
+  cruxWord: [600, 780],
+  cruxEq: [600, 620],
   descentLab: [660, 650],
   surface: [680, 790],
   pcaLab: [660, 720],
@@ -886,6 +891,8 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     whichWord: whichStart("word"),
     whichEq: whichStart("eq"),
     whichQuad: whichStart("quad"),
+    cruxWord: cruxStart("word"),
+    cruxEq: cruxStart("eq"),
     descentLab: DESCENT_START,
     surface: SURFACE_START,
     pcaLab: PCA_START,

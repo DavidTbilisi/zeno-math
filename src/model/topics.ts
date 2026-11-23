@@ -33,7 +33,7 @@ export const TOPICS: readonly Topic[] = [
   {
     id: "algebra", shelf: "school", icon: "x²",
     skills: ["balance", "shapePatterns", "findRule", "growingPattern", "sameExpression", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series"],
-    sections: ["secExpressions", "senseAlgebra", "senseWhich"],
+    sections: ["secExpressions", "senseAlgebra", "senseWhich", "senseCrux"],
   },
   {
     id: "functions", shelf: "school", icon: "f(x)",

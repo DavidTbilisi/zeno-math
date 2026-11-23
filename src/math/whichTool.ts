@@ -112,7 +112,7 @@ export function coeffsOf(s: string): number[] {
   return cs;
 }
 /** A side of a linear equation as the linear skill writes it: "3x - 4", "5", or "3(x - 2)", as [c0, c1]. */
-function sideOf(s: string): number[] {
+export function sideOf(s: string): number[] {
   const m = /^(\d+)\((.*)\)$/.exec(s.trim());
   if (m) return coeffsOf(m[2]).slice(0, 2).map((c) => c * Number(m[1]));
   return coeffsOf(s).slice(0, 2);

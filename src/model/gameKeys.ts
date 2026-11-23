@@ -65,6 +65,8 @@ export const GAME_KEYS = {
   whichWord: "zeno.whichword.v1",
   whichEq: "zeno.whicheq.v1",
   whichQuad: "zeno.whichquad.v1",
+  cruxWord: "zeno.cruxword.v1",
+  cruxEq: "zeno.cruxeq.v1",
   beStack: "zeno.bestack.v1",
   beHeap: "zeno.beheap.v1",
   beTree: "zeno.betree.v1",
