@@ -27,7 +27,8 @@ test("several variables: the gradient explains a bad point, inserts, and opens a
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit several variables/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox", { name: "f(x, y) =" })).toHaveValue("x^2 - y^2");
 });
 

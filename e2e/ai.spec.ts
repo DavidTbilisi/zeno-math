@@ -63,7 +63,8 @@ test("the tensor tool draws, explains a ragged list and inserts", async ({ page,
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("2x3x4; T[1, 2, 3]");
 });
 
@@ -89,7 +90,8 @@ test("tensor operations: a mismatch says why, and a matrix product inserts", asy
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("[[1, 2, 3], [4, 5, 6]] @ [[7, 8], [9, 10], [11, 12]]; [1, 0]");
 });
 
@@ -115,7 +117,8 @@ test("gradient descent: three rates, a wrong rate refused, a valley inserted", a
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("x^2 + 10y^2; start (8, 1); rate 0.09");
 });
 
@@ -141,7 +144,8 @@ test("backprop: a missing value is named, and a step of gradient descent inserts
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("(w x + b - y)^2; x = 2, w = 3, b = 1, y = 10; learn w b; rate 0.01");
 });
 
@@ -167,7 +171,8 @@ test("softmax: a wrong target is refused, and three temperatures insert", async 
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue("[2, 1, 0.1]; temperature 0.5, 1, 5; target 0");
 });
 
@@ -193,7 +198,8 @@ test("embeddings: an unknown name is refused, and an analogy inserts", async ({ 
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue(/; analogy king - man \+ woman$/);
 });
 
@@ -220,7 +226,8 @@ test("SVD & PCA: a rank too large is refused, and PCA of points inserts", async 
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit math for AI/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox")).toHaveValue(/; pca$/);
 });
 

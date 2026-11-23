@@ -321,7 +321,10 @@ test("on a board, practice opens beside it and stays while other tools are used"
   await expect(dock.getByLabel("Your answer")).toHaveValue("2; -3");
   // Inserting the question puts it on the board and practice goes on.
   await dock.getByRole("button", { name: "Insert" }).click();
-  await expect(page.getByRole("button", { name: /Edit practice sheet/ })).toBeVisible();
+  const wrap = (await page.locator(".canvas-wrap").boundingBox())!;
+  await page.mouse.click(wrap.x + wrap.width / 2, wrap.y + wrap.height / 2, { button: "right" });
+  await expect(page.getByRole("dialog", { name: "Edit practice sheet" })).toBeVisible();
+  await page.keyboard.press("Escape");
   await expect(dock).toBeVisible();
   // Another tool opens in its panel while practice stays docked.
   await insertGroup(page, /^Algebra\b/);

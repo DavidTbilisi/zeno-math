@@ -25,6 +25,7 @@ test("likelihood: a chance of 1 says why, an example inserts and opens again", a
   await page.keyboard.press("Escape");
 
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: /Edit likelihood/ }).click();
+  // The picture is still selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog").getByRole("textbox", { name: "chances q = P(y = 1):" })).toHaveValue("0.9, 0.8, 0.2, 0.02, 0.1, 0.3");
 });
