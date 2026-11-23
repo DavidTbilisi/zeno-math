@@ -12,6 +12,7 @@ import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
 import { PaceList } from "../components/PaceList";
+import { PlateauList } from "../components/PlateauList";
 import { HomeworkCard } from "../components/HomeworkCard";
 import { GamesCard } from "../components/GamesCard";
 import { JoinLink } from "../components/JoinLink";
@@ -488,6 +489,7 @@ export function TeacherPage() {
                             <StuckList stuck={data.stuck} numbers={numbers} t={t} skillName={skillName} showCodes={showCodes} onSeen={(r) => void seen(r)} />
                       )}
                       {data && data.class.code === selected && <PaceList pace={data.pace} numbers={numbers} t={t} showCodes={showCodes} />}
+                      {data && data.class.code === selected && <PlateauList plateau={data.plateau} numbers={numbers} t={t} skillName={skillName} showCodes={showCodes} />}
                       {data && data.class.code === selected && !data.students.length && <p className="muted">{w.noStudents}</p>}
                     </>
                   )}
