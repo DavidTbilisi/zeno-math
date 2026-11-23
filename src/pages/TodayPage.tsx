@@ -9,6 +9,7 @@ import { menuName } from "../library";
 import { fill } from "../math/text";
 import { standing } from "../model/course";
 import { learningStageOf, type LearningStage } from "../model/learningStage";
+import { PREDICTIONS, readGuesses } from "../model/predict";
 import { buildToday, todaySkills, type TodayPart } from "../model/today";
 import type { TopicId } from "../model/topics";
 import { loadProgress } from "../practiceProgress";
@@ -17,8 +18,11 @@ type Session = { day: string; parts: TodayPart[]; before: Record<string, Learnin
 const KEY = "zeno.today.v1";
 const dayOf = (ms: number) => new Date(ms - new Date(ms).getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
 
-/** The topics whose page still asks its "predict, then reveal" (#578); none until that lands. */
-const toPredict = (): TopicId[] => [];
+/** The topics whose page still asks its "predict, then reveal" (#578). */
+const toPredict = (): TopicId[] => {
+  const made = readGuesses();
+  return (Object.keys(PREDICTIONS) as (keyof typeof PREDICTIONS)[]).filter((k) => !made[k]).map((k) => PREDICTIONS[k].topic);
+};
 
 function fresh(now: number): Session {
   const p = loadProgress();

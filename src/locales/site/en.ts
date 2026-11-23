@@ -60,6 +60,32 @@ export const site = {
   levels: "{secure} of {total} levels secure",
   levelsBehind: "{secure} of {total} levels secure, {behind} more below your grade",
   learnHead: "What you'll learn",
+  predict: {
+    title: "Predict first",
+    right: "Right.",
+    wrong: "Not this time.",
+    replay: "Play it again",
+    pieces: {
+      geoLab: {
+        change: "The top corner of the triangle will slide 2 to the right, staying 3 above the base (its height is drawn).",
+        ask: "What will happen to the triangle's area?",
+        options: { up: "It gets bigger", down: "It gets smaller", same: "It stays the same" },
+        why: "The base stays 4 and the height stays 3, so the area stays half of 4 × 3 = 6, however slanted the triangle gets.",
+      },
+      fractionWall: {
+        change: "The ¼ tile in the gap will be swapped for a ⅛ tile.",
+        ask: "What will happen to how much of the bar is filled?",
+        options: { up: "More is filled", down: "Less is filled", same: "The same is filled" },
+        why: "A bigger bottom cuts the whole into more pieces, so each piece is smaller: ⅛ is half of ¼.",
+      },
+      slopeWalk: {
+        change: "The walker stands at the top of the slope. The slope will turn from 30° to 60°, steeper.",
+        ask: "What will happen to how far across the walker is (the blue line)?",
+        options: { up: "Further across", down: "Less far across", same: "Just as far across" },
+        why: "A steeper slope goes more up and less across: the blue line is cos θ, and cos falls from 0.87 to 0.50 as the angle grows.",
+      },
+    },
+  },
   today: {
     button: "Today",
     title: "Today",
