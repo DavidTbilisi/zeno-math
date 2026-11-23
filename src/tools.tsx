@@ -1,4 +1,4 @@
-// Every tool in one table: its dialog (loaded the first time it opens) and its edit label (menus.ts places it in the menus).
+// Every tool in one table: its dialog (loaded the first time it opens) and its edit title (menus.ts places it in the menus).
 // The board page and the tool search open them from here.
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 import type { Dict } from "./locales/en";
@@ -23,7 +23,7 @@ export type ToolKind =
 
 export type Tool = {
   Dialog: LazyExoticComponent<ComponentType<ToolDialogProps>>;
-  /** Label of the edit button when a picture of this kind is selected. */
+  /** Title of the panel when a picture of this kind is opened again. */
   edit: Word;
   /** Opens beside the board instead of over it, and stays open while other tools are used. */
   docked?: boolean;

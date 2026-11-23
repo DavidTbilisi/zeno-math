@@ -11,6 +11,70 @@ export const SKILLS = {
 } as const satisfies Record<Area, readonly string[]>;
 export type SkillId = (typeof SKILLS)[Area][number];
 /**
+ * The practice menu's sections: each area's skills in named groups, from school to university, so the topics read as
+ * a short list of sections rather than one wall of chips. Every skill of an area sits in exactly one of its groups
+ * (checked by npm test); the area a skill belongs to, and so the learner model, is unchanged.
+ */
+export const GROUPS = {
+  number: {
+    counting: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "makeTarget", "kakooma"],
+    arithmetic: ["times", "integers", "order", "rounding"],
+    everyday: ["money", "time", "measure", "currency", "inflation"],
+    fractions: ["makeWhole", "equivalent", "orderFractions", "shadeFraction", "compareFractions", "fractions", "decimals", "percent"],
+    ratio: ["ratio", "rate", "barModels"],
+    factors: ["divisibility", "hcf", "primes", "bases"],
+    numberTheory: ["modular", "bezout", "congruences", "crt", "fermatEuler", "residues"],
+    crypto: ["rsa", "discreteLog", "elGamal", "ellipticCurves"],
+  },
+  algebra: {
+    patterns: ["balance", "shapePatterns", "findRule", "growingPattern", "sameExpression", "graphStory"],
+    equations: ["linear", "proportion", "inequalities", "formulae", "quadratic", "simultaneous"],
+    expressions: ["expand", "factor", "algFractions", "polynomials", "indices", "logs", "surds"],
+    functions: ["sequences", "series", "functions"],
+    complex: ["complex", "polarForm", "deMoivre"],
+    linearAlgebra: ["matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd"],
+    groups: ["groups", "elementOrder", "subgroups", "permutations", "homomorphisms"],
+    rings: ["rings", "polyRings", "fieldExt", "finiteFields", "galois"],
+    optimisation: ["linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction"],
+  },
+  geometry: {
+    shapes: ["shapeArea", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets"],
+    coordinates: ["coordinates", "slope", "line", "distance"],
+    trig: ["trigexact", "righttri", "practicalTrig", "trigRules", "identities"],
+    circles: ["circles", "powerPoint", "arcs", "similarity", "volume"],
+    vectors: ["vectors", "dotangle", "projection"],
+    topology: ["metrics", "openClosed", "compactness", "connected", "topologies"],
+    differential: ["curves", "surfaces", "nonEuclidean", "projective"],
+  },
+  calculus: {
+    differentiation: ["limits", "differentiate", "tangent", "stationary", "implicit"],
+    integration: ["integrate", "definite", "intTechniques", "improper", "intApplications"],
+    series: ["taylor", "powerSeries", "convergence"],
+    multivariable: ["partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems"],
+    ode: ["odeFirst", "odeSecond", "odeSystems", "laplace", "stability"],
+    dynamics: ["bifurcations", "iteratedMaps", "lyapunov"],
+    numerical: ["numroots", "numint", "descent", "backprop", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder"],
+    realAnalysis: ["supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform"],
+    complexAnalysis: ["analytic", "contour", "laurent", "residueCalc"],
+    pde: ["fourier", "pdeClassify", "separation"],
+    measure: ["lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "norms", "operatorNorms", "hilbertSpaces"],
+  },
+  data: {
+    charts: ["readChart", "diagrams", "average"],
+    graphs: ["oneStroke", "colouring", "shortestPath", "spanningTree", "graphTheory"],
+    probability: ["probability", "counting", "conditional", "expectation", "distributions", "densities", "jointDist", "mgf", "limitTheorems"],
+    statistics: ["ci", "correlation", "hypothesis", "estimators", "mle", "regression", "chiSquared", "anova", "bayes"],
+    processes: ["markov", "randomWalks", "poissonProcess", "brownian"],
+    finance: ["interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"],
+    ml: ["softmax", "overfitting", "precision", "clustering"],
+    discrete: ["parity", "inversions", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole"],
+    logic: ["proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "normalForms", "structures", "ordinalArith"],
+  },
+} as const satisfies { [A in Area]: Record<string, readonly (typeof SKILLS)[A][number][]> };
+export type GroupId = { [A in Area]: keyof (typeof GROUPS)[A] }[Area];
+/** An area's groups in menu order, each with its skills. */
+export const groupsOf = (a: Area) => Object.entries(GROUPS[a]) as [GroupId, readonly SkillId[]][];
+/**
  * The skills before negative numbers, order of operations, rounding and inequalities came (October 2026): what the
  * published simulations ran on, and what a class made then without a skill list practised ("all" at the time).
  */

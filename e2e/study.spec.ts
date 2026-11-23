@@ -9,6 +9,7 @@ import { parseCsv } from "../src/model/evaluate.ts";
 import { LIT } from "../src/model/ideaMap.ts";
 import { usesOf, type IdeaState } from "../src/model/ideaState.ts";
 import { testItems } from "../src/model/testForms.ts";
+import { pickTopic } from "./helpers.ts";
 
 const TEACHER = "e2e-teacher";
 
@@ -277,7 +278,7 @@ test("a wrong answer on a fractions operation is worked in steps, and the steps 
   await student.getByRole("tab", { name: "Number" }).click();
   await student.evaluate((x) => (Math.random = () => x), r);
   await student.getByRole("radio", { name: "easy" }).click();
-  await student.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(student, "Fractions");
   await expect(student.locator(".practice-prompt")).toHaveText("Work out, in lowest terms:");
   const steps = student.getByRole("region", { name: "Let's work it out step by step." });
   await student.getByLabel("Your answer").fill("12345");

@@ -12,6 +12,7 @@ export const PanelContext = createContext(false);
 export const useInPanel = () => useContext(PanelContext);
 /** True for a picture not on the board yet: its first value is sent too, which puts it there. */
 export const PanelFresh = createContext(false);
+export const usePanelFresh = () => useContext(PanelFresh);
 /** Sends a change still waiting to go in: the panel calls these before it closes, so nothing made last is lost. */
 export type Flushes = Set<() => void>;
 const PanelFlush = createContext<Flushes | null>(null);

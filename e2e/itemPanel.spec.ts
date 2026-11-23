@@ -1,5 +1,5 @@
 // The item panel: a new tool's picture goes on the board at once and changes in place, its controls beside it and no
-// modal; Escape closes it, one undo takes back everything it did; anything else on the board still gets Excalidraw's own menu.
+// modal; one click on a picture (or Enter) opens it again, Escape closes it, one undo takes back everything it did; anything else on the board still gets Excalidraw's own menu.
 import { expect, test, type Page } from "@playwright/test";
 import { insertGroup, insertPanel } from "./helpers.ts";
 
@@ -18,11 +18,13 @@ async function rightClickPiece(page: Page, piece: ReturnType<Page["locator"]>) {
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: "right" });
 }
 
-/** Right-clicks the middle of the board, where a picture just put on it sits. */
-async function rightClickMiddle(page: Page) {
+/** The middle of the board, where a picture just put on it sits. */
+async function middle(page: Page): Promise<[number, number]> {
   const box = (await page.locator(".canvas-wrap").boundingBox())!;
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: "right" });
+  return [box.x + box.width / 2, box.y + box.height / 2];
 }
+const rightClickMiddle = async (page: Page) => page.mouse.click(...(await middle(page)), { button: "right" });
+const clickMiddle = async (page: Page) => page.mouse.click(...(await middle(page)));
 
 test("a formula goes on the board at once and changes in the panel beside it; one undo per panel", async ({ page }) => {
   await newBoard(page);
@@ -33,14 +35,12 @@ test("a formula goes on the board at once and changes in the panel beside it; on
   await expect(panel.getByRole("heading", { name: "Formula" })).toBeVisible();
   await expect(page.locator(".modal-backdrop")).toHaveCount(0);
   await expect(panel.getByRole("button", { name: "Insert" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Edit formula/ })).toBeVisible();
   await panel.getByRole("textbox").fill("x^2");
   // Closed straight after the last change, still typesetting: the change reaches the board all the same.
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
-  // The picture stays selected: its Edit button opens the panel again.
-  const edit = page.getByRole("button", { name: /Edit formula/ });
-  await edit.click();
+  // The picture stays selected: Enter opens its panel again.
+  await page.keyboard.press("Enter");
   await expect(panel.getByRole("heading", { name: "Edit formula" })).toBeVisible();
   const source = panel.getByRole("textbox");
   await expect(source).toHaveValue("x^2");
@@ -53,47 +53,68 @@ test("a formula goes on the board at once and changes in the panel beside it; on
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/panel-formula.png` });
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
-  await edit.click();
+  await page.keyboard.press("Enter");
   await expect(panel.getByRole("textbox")).toHaveValue("y^3 + 1");
   await page.keyboard.press("Escape");
 
-  // One undo goes back to before the second panel.
-  await page.locator(".undo-button-container button").click();
+  // One undo goes back to before the second panel (all by keyboard: Ctrl+Z, then Enter on the picture).
+  await page.keyboard.press("Control+z");
   await page.waitForTimeout(300);
-  await edit.click();
+  await page.keyboard.press("Enter");
   await expect(panel.getByRole("textbox")).toHaveValue("x^2");
 });
 
-test("a number theory picture follows its slider; a rectangle keeps Excalidraw's menu", async ({ page }) => {
+test("one click on a number theory picture opens its panel, a drag moves it; a rectangle keeps Excalidraw's menu", async ({ page }) => {
   await newBoard(page);
   await insertGroup(page, /Discrete/);
   await insertPanel(page).getByRole("button", { name: /Number theory/ }).click();
-  await expect(page.locator(".item-panel")).toBeVisible();
-  await expect(page.getByRole("button", { name: /Edit number theory/ })).toBeVisible();
+  const panel = page.locator(".item-panel");
+  await expect(panel.getByRole("slider").first()).toBeVisible();
+  // A tool just picked takes the keyboard: the focus is in its panel.
+  await expect(panel.locator(":focus")).toHaveCount(1);
+  await page.waitForTimeout(400); // its first example goes on the board
   await page.keyboard.press("Escape");
-  // The new picture is one step: undo takes it away, redo puts it back.
+  await expect(panel).toHaveCount(0);
+  // No Edit button in the top bar.
+  await expect(page.getByRole("button", { name: /^Edit/ })).toHaveCount(0);
+  // The new picture is one step: undo takes it away (a click there finds nothing), redo puts it back.
   await page.locator(".undo-button-container button").click();
-  await expect(page.getByRole("button", { name: /Edit number theory/ })).toHaveCount(0);
+  await clickMiddle(page);
+  await page.waitForTimeout(300);
+  await expect(panel).toHaveCount(0);
   await page.locator(".redo-button-container button").click();
   await page.waitForTimeout(300);
 
-  await rightClickMiddle(page);
-  const panel = page.locator(".item-panel");
+  // One click on the picture opens its panel; a second (a double-click) leaves it open.
+  await clickMiddle(page);
   await expect(panel).toBeVisible();
+  await page.mouse.dblclick(...(await middle(page)));
+  await expect(panel).toBeVisible();
+  // Opened by a click, the keyboard stays with the board.
+  await expect(panel.locator(":focus")).toHaveCount(0);
   const slider = panel.getByRole("slider").first();
-  await expect(slider).toBeVisible();
   await slider.focus();
   await page.keyboard.press("End");
   await page.waitForTimeout(400);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/panel-nt.png` });
   const moved = await slider.inputValue();
-  // Clicking the empty board closes it; opening again shows the slider where it was left.
+  // Clicking the empty board closes it; a right-click opens it again with the slider where it was left.
   const wrap = (await page.locator(".canvas-wrap").boundingBox())!;
   await page.mouse.click(wrap.x + 30, wrap.y + wrap.height - 60);
   await expect(panel).toHaveCount(0);
   await rightClickMiddle(page);
   await expect(panel.getByRole("slider").first()).toHaveValue(moved);
   await page.keyboard.press("Escape");
+
+  // Dragging the picture moves it and opens nothing.
+  const [mx, my] = await middle(page);
+  await page.mouse.click(wrap.x + 30, wrap.y + wrap.height - 60);
+  await page.mouse.move(mx, my);
+  await page.mouse.down();
+  await page.mouse.move(mx + 15, my - 30, { steps: 5 });
+  await page.mouse.up();
+  await page.waitForTimeout(300);
+  await expect(panel).toHaveCount(0);
 
   // A plain rectangle, away from the picture: Excalidraw's own menu.
   await page.keyboard.press("r");

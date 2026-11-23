@@ -4,8 +4,9 @@ on:
   push:
     branches: [main]
     paths-ignore: ["docs/**", "*.md"]
+  # Every pull request runs the checks, docs-only ones too: main requires check, e2e and docker to pass before a
+  # merge, and a check that never starts would hold the PR (and its auto-merge) forever.
   pull_request:
-    paths-ignore: ["docs/**", "*.md"]
 
 # A newer push to the same branch makes the run in progress moot.
 concurrency:

@@ -1,6 +1,8 @@
 // My progress (#448): every topic with a bar, its share of levels secure, and the next level, from practice in this
-// browser. Filters (in progress, not started, finished) and an order; both are remembered for this browser.
+// browser. Filters (in progress, not started, finished) and an order; both are remembered for this browser. Under each
+// topic, its skills' learning stages (#576), the four squares of each, with what the stages mean at the top.
 import { useState } from "react";
+import { StageLegend, StageSquares } from "../components/LearningStages";
 import { SiteBar, SiteFoot } from "../components/SiteBar";
 import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
@@ -53,6 +55,11 @@ export function ProgressPage() {
       <main className="z-page site-progress">
         <h1 className="z-page-title">{s.progressTitle}</h1>
         <p className="course-lede">{s.progressLede}</p>
+        <section className="ls-intro" aria-labelledby="ls-title">
+          <h2 id="ls-title">{s.learning.title}</h2>
+          <p>{s.learning.lede}</p>
+          <StageLegend />
+        </section>
         <div className="site-filters">
           <div className="home-sort" role="group" aria-label={s.progressTitle}>
             {FILTERS.map((f) => (
@@ -88,6 +95,26 @@ export function ProgressPage() {
                 ) : (
                   <span className="site-row-next done">✓</span>
                 )}
+                <details className="site-row-stages">
+                  <summary>
+                    {s.learning.perSkill}
+                    <span className="ls-strip" aria-hidden="true">
+                      {x.skills.map((k) => <i key={k} className={`ls-sq ls-${work.stage?.(k) ?? 0} on`} />)}
+                    </span>
+                  </summary>
+                  <ul className="ls-skills">
+                    {x.skills.map((k) => {
+                      const stage = work.stage?.(k) ?? 0;
+                      return (
+                        <li key={k}>
+                          <StageSquares stage={stage} />
+                          <a href={`#/practice/${k}.${stage >= 2 ? 3 : 1}`}>{t.pracWords.skills[k]}</a>
+                          {stage !== 0 && <span className="ls-name">{`${stage} · ${s.learning.names[stage]}`}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </details>
               </li>
             ))}
           </ul>

@@ -12,7 +12,7 @@ import {
   zoomView, type GeoFig, type GeoShow, type GeoTool, type GeoView, type LiveGeoLab, type MakeKind, type MakeProblem, type ParamKey,
   type Mark, type Measured, type Pt, type SectionKey, type Val, wontClose,
 } from "../math/geoLab";
-import { Bin, capture, inBox, keyTap, NumBox, Pill, TAP } from "./hand";
+import { Bin, capture, HomeMark, inBox, keyTap, NumBox, Pill, TAP } from "./hand";
 import { fill, FONT, INK, svgPoint, type PieceProps } from "./ui";
 
 type Words = PieceProps<"geoLab">["w"]["geoLab"];
@@ -87,7 +87,6 @@ type PlaneProps = {
     down: (e: ReactPointerEvent<SVGSVGElement>) => void;
     move: (e: ReactPointerEvent<SVGSVGElement>) => void;
     up: (e: ReactPointerEvent<SVGSVGElement>) => void;
-    dbl: (e: React.MouseEvent<SVGSVGElement>) => void;
   };
 };
 
@@ -413,7 +412,7 @@ function Plane({ figs, sel, m, names, view, show, unit, w, clean, tool = "move",
 
   return (
     <svg ref={svgRef} className={clean ? undefined : "glab-plane"} width={CANVAS.w} height={H} viewBox={`0 0 ${CANVAS.w} ${H}`} fontFamily={FONT}
-      onPointerDown={on?.down} onPointerMove={on?.move} onPointerUp={on?.up} onPointerCancel={on?.up} onDoubleClick={on?.dbl}
+      onPointerDown={on?.down} onPointerMove={on?.move} onPointerUp={on?.up} onPointerCancel={on?.up}
       style={{ cursor: tool === "move" ? "default" : "crosshair" }}>
       <defs>
         <clipPath id={clean ? "geo-clip-c" : "geo-clip"}><rect width={CANVAS.w} height={CANVAS.h} /></clipPath>
@@ -838,7 +837,9 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
       const q = snapP(p);
       if (!d.moved && dist(q, fig.pts[d.i]) * view.s < 3) return;
       d.moved = true;
-      return replace({ ...fig, pts: fig.pts.map((r, j) => (j === d.i ? q : r)) });
+      // Over the bin a corner is held to be taken away (a polygon keeps at least three).
+      const [x, y] = svgPoint(svg, e);
+      return replace({ ...fig, pts: fig.pts.map((r, j) => (j === d.i ? q : r)) }, { bin: fig.pts.length > 3 && inBox(BIN, x, y) });
     }
     if (d.type === "fig") {
       const raw: Pt = [p[0] - d.p0[0], p[1] - d.p0[1]];
@@ -871,21 +872,14 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
     if (!d || !temp) return;
     setTemp(null);
     if (d.type === "fig" && d.moved && temp.bin) removeFig(d.f);
+    else if (d.type === "vertex" && d.moved && temp.bin) {
+      const fig = state.figs[d.f];
+      if (fig.kind === "poly") put({ figs: state.figs.map((g, j) => (j === d.f ? { ...fig, pts: removePoint(fig.pts, d.i) } : g)) });
+    }
     else if (d.moved) put({ figs: temp.figs, view: temp.view, sel: temp.sel });
     else if (d.type === "pan" && state.sel !== -1) put({ sel: -1 });
     else if (temp.sel !== state.sel) put({ sel: temp.sel });
   };
-  const dbl = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (state.tool !== "move") return;
-    const h = (e.target as Element).closest("[data-h]")?.getAttribute("data-h")?.split("-");
-    // A double-click on the empty plane brings every shape into view.
-    if (!h) return state.figs.length && put({ view: fitView(state.figs) });
-    if (h[0] !== "v") return;
-    const [f, i] = [+h[1], +h[2]];
-    const fig = state.figs[f];
-    if (fig.kind === "poly" && fig.pts.length > 3) put({ figs: state.figs.map((g, j) => (j === f ? { ...fig, pts: removePoint(fig.pts, i) } : g)) });
-  };
-
   // The zoom lever: pulled up the plane zooms in, down it zooms out, as far as it is pulled; let go it springs back.
   // A tap above or below the knob is one step.
   const LEVER_MID = LEVER.y + LEVER.h / 2;
@@ -919,6 +913,9 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
   };
 
   const selFig = state.figs[state.sel];
+  // Every shape in view: offered (⌂ under the lever) only once the view is somewhere else.
+  const fit = state.figs.length ? fitView(state.figs) : null;
+  const fitted = fit && (Math.abs(fit.s / state.view.s - 1) > 1e-3 || Math.hypot(fit.cx - state.view.cx, fit.cy - state.view.cy) * fit.s > 1) ? fit : null;
   const replaceSel = (g: GeoFig) => put({ figs: state.figs.map((x, j) => (j === state.sel ? g : x)) });
 
   const caption = m
@@ -999,6 +996,9 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
         <text x={LEVER.x + LEVER.w / 2} y={LEVER.y + LEVER.h - 7} fontSize={17} fontWeight={700} textAnchor="middle" fill="#868e96" pointerEvents="none">−</text>
         <circle cx={LEVER.x + LEVER.w / 2} cy={LEVER_MID + (lever?.dy ?? 0)} r={10} fill={lever ? BLUE : "#fff"} stroke={BLUE} strokeWidth={2} pointerEvents="none" />
       </g>
+      {state.tool === "move" && fitted && (
+        <HomeMark cx={LEVER.x + LEVER.w / 2} cy={LEVER.y + LEVER.h + 24} title={w.fit} onTap={() => put({ view: fitted })} />
+      )}
       {state.tool === "move" && (
         <Bin {...BIN} hot={!!temp?.bin} label={w.bin} title={w.binTitle} onTap={() => selFig && removeFig(state.sel)} />
       )}
@@ -1031,7 +1031,7 @@ export function GeoLab({ state, set, w: words, svgRef }: PieceProps<"geoLab">) {
         <Plane
           figs={figs} sel={sel} m={m} names={names} view={view} show={state.show} unit={unit} w={w}
           tool={state.tool} draft={draft} cursor={cursor} hl={hl} ghost={ghost} scaleK={temp?.k ?? null} overlay={overlay}
-          svgRef={planeRef} on={{ down, move, up, dbl }}
+          svgRef={planeRef} on={{ down, move, up }}
         />
         <div className="glab-facts" onWheel={(e) => e.stopPropagation()}>
           {problem && <p className="live-said">{w.problems[problem]}</p>}

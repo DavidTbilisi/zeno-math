@@ -1459,6 +1459,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
     the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
   - Progress per skill is kept in the browser, and a missed question comes back three questions later
+  - *Learning stages* (#576): each skill goes through four, in order, each in its own colour. Blue, comprehension
+    ("I get it"): a level made secure. Green, encoding ("I keep it"): its spaced review a day or more later answered
+    right. Gold, automaticity ("it's fast"): then three right first answers in a row on level 3, each at or under the
+    learner's own usual time there. Purple, problem-solving ("I can use it on something new"): right on a question
+    that mixes the skill with another or hides it in words (reached once such questions exist). A missed review sends
+    the skill back to blue until it is secure and kept again. *My progress* explains the four at the top and, under
+    each topic, lists its skills with four small squares filled to the stage reached and the stage's number and name;
+    on a roadmap a skill's tick takes its stage's colour with the number beside it
   - *Your grade*: every level of every skill belongs to a grade, 1 to 12 or university, by the grade in which
     Singapore's syllabuses teach it (primary, Secondary 1–4 with Additional Mathematics, H2 Mathematics; they teach
     grades 9–10 and 11–12 as blocks, so those are one rung each). *Find my grade* asks questions from the middle of

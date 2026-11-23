@@ -5,6 +5,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { decodePoly, ladderTask, type GeoPt } from "../src/math/geoPlay.ts";
 import { check, exercise, trapInputs } from "../src/math/practice.ts";
+import { pickTopic } from "./helpers.ts";
 
 const w = en.pracWords;
 const PAD = 28;
@@ -67,7 +68,7 @@ test("a practice question answered with a shape: the known mistake is named, the
   await page.getByRole("tab", { name: "Geometry" }).click();
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Area on a grid", exact: true }).click();
+  await pickTopic(page, "Area on a grid");
   await expect(page.locator(".practice-prompt")).toHaveText(ex.prompt);
 
   const grid = page.locator(".geo-answer svg");

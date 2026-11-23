@@ -7,7 +7,7 @@ import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
 import { fill } from "../src/math/text.ts";
 import { usesOf } from "../src/model/ideaState.ts";
-import { boardWith, insertGroup, insertPanel } from "./helpers.ts";
+import { boardWith, insertGroup, insertPanel, pickTopic } from "./helpers.ts";
 
 const w = en.pracWords;
 const seedOf = (r: number) => Math.floor(r * 2 ** 31);
@@ -32,7 +32,7 @@ async function practise(page: Page, request: APIRequestContext, area: string, sk
   await page.getByRole("tab", { name: area }).click();
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: skill, exact: true }).click();
+  await pickTopic(page, skill);
 }
 
 test("a known mistake is named, still counts as a miss, and the question is then worked in steps", async ({ page, request }) => {
@@ -94,7 +94,7 @@ test("practice has a page of its own, reached from the home page", async ({ page
   await expect(page.getByRole("button", { name: "Insert" })).toHaveCount(0);
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   await page.getByLabel("Your answer").fill(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
@@ -138,7 +138,7 @@ test("the practice page counts a session of ten and sums it up", async ({ page }
   await page.goto("/#/practice");
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   const session = page.getByRole("region", { name: w.ui.sessionTitle });
   await expect(session).toContainText("0 of 10 questions");
   for (let i = 1; i <= 10; i++) {
@@ -162,7 +162,7 @@ test("a session of five ends on a full ring, keeps the choice, and waits for a t
   await page.goto("/#/practice");
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   const ring = page.getByRole("region", { name: w.ui.sessionTitle });
   // On a phone the ring is with the question, not below the fold.
   await expect(ring).toBeInViewport();
@@ -195,7 +195,7 @@ test("after about 25 minutes of answering, a word about a break that the student
   await page.goto("/#/practice");
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   const prompt = page.getByRole("status").filter({ hasText: w.ui.breakTime });
   // An answer every four minutes: the stretch reaches 25 minutes at the eighth (0, 4, ... 28).
   for (let i = 1; i <= 8; i++) {
@@ -215,7 +215,7 @@ test("too easy moves the next questions up a level, too hard down, and the ends 
   await page.goto("/#/practice");
   await page.getByRole("radio", { name: "easy" }).click();
   // A topic whose questions have no steps: on fractions two misses in a row bring a worked example instead of a question.
-  await page.getByRole("button", { name: "Percentages", exact: true }).click();
+  await pickTopic(page, "Percentages");
   const rating = page.getByRole("group", { name: w.ui.rateAsk });
   await expect(rating).toHaveCount(0);
   await page.getByRole("button", { name: "Show solution" }).click();
@@ -242,7 +242,7 @@ test("after a session the idea map lights the ideas shown, marks the new ones, a
   await page.goto("/#/practice");
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   await page.getByRole("region", { name: w.ui.sessionTitle }).getByRole("radio", { name: "5 questions" }).click();
   for (let i = 1; i <= 5; i++) {
     await page.getByLabel("Your answer").fill(ex.plain);
@@ -288,7 +288,7 @@ test("on a phone the idea map's rows wrap into bands, and only the picked idea's
   await page.goto("/#/practice");
   await page.evaluate((x) => (Math.random = () => x), r);
   await page.getByRole("radio", { name: "easy" }).click();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   await page.getByRole("region", { name: w.ui.sessionTitle }).getByRole("radio", { name: "5 questions" }).click();
   for (let i = 1; i <= 5; i++) {
     await page.getByLabel("Your answer").fill(ex.plain);
@@ -310,7 +310,7 @@ test("on a phone the idea map's rows wrap into bands, and only the picked idea's
 
 test("calm hides the sound switch and stills the page, is remembered, and the games share it", async ({ page }) => {
   await page.goto("/#/practice");
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   const calm = page.getByRole("button", { name: `🌙 ${w.ui.calm}` });
   await expect(calm).toHaveAttribute("aria-pressed", "false");
   await expect(page.getByRole("button", { name: w.ui.sound })).toBeVisible();
@@ -320,7 +320,7 @@ test("calm hides the sound switch and stills the page, is remembered, and the ga
   await expect(page.locator("html")).toHaveAttribute("data-feel", "calm");
   // Kept in this browser: after a reload practice is still calm.
   await page.reload();
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   await expect(page.getByRole("button", { name: `🌙 ${w.ui.calm}` })).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("html")).toHaveAttribute("data-feel", "calm");
   // A game on a board is calm too, with no sound switch; turning calm off there brings the sound switch back.
@@ -353,7 +353,10 @@ test("on a board, practice opens beside it and stays while other tools are used"
   await expect(dock.getByLabel("Your answer")).toHaveValue("2; -3");
   // Inserting the question puts it on the board and practice goes on.
   await dock.getByRole("button", { name: "Insert" }).click();
-  await expect(page.getByRole("button", { name: /Edit practice sheet/ })).toBeVisible();
+  const wrap = (await page.locator(".canvas-wrap").boundingBox())!;
+  await page.mouse.click(wrap.x + wrap.width / 2, wrap.y + wrap.height / 2, { button: "right" });
+  await expect(page.getByRole("dialog", { name: "Edit practice sheet" })).toBeVisible();
+  await page.keyboard.press("Escape");
   await expect(dock).toBeVisible();
   // Another tool opens in its panel while practice stays docked.
   await insertGroup(page, /^Algebra\b/);
@@ -509,7 +512,7 @@ test("a level made secure comes back for review a day later, then three days aft
   };
   const spacing = () => page.evaluate(() => JSON.parse(localStorage.getItem("zeno.practice.v1")!).spacing?.["fractions.1"] ?? null);
   // Three right at the first try make the level secure: its review falls a day later, and isn't asked before then.
-  await page.getByRole("button", { name: "Fractions", exact: true }).click();
+  await pickTopic(page, "Fractions");
   for (let i = 0; i < 3; i++) {
     if (i) await page.getByRole("button", { name: "Next →" }).click();
     await answer();
