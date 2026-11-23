@@ -322,6 +322,10 @@ export function TeacherPage() {
     [w.metrics.classPractice, (g) => num(g.classPractice)],
     // Only a class testing step-down has any.
     ...(data?.class.feature === "stepdown" ? [[w.metrics.stepDown, (g: Group) => num(g.stepDown)] as const] : []),
+    // Only a class testing "where it breaks" has any.
+    ...(data?.class.feature === "breaks"
+      ? [[w.metrics.breaks, (g: Group) => num(g.breaks)] as const, [w.metrics.breaksRight, (g: Group) => share(g.breaksRight)] as const]
+      : []),
     [w.metrics.kept, (g) => num(g.kept, 1)],
     [w.metrics.mastered, (g) => num(g.mastered, 1)],
     [w.metrics.rightFirst, (g) => share(g.rightFirst)],

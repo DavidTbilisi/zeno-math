@@ -9,6 +9,7 @@ import { learnFading, type Fading } from "../src/model/fading.ts";
 import type { Level } from "../src/model/elo.ts";
 import type { IdeaState } from "../src/model/ideaState.ts";
 import type { MistakeId } from "../src/math/mistakes.ts";
+import { breakOf, judgedRight, type BreakAnswer } from "../src/math/whereItBreaks.ts";
 
 export type Question = { skill: SkillId; level: number; seed: number };
 /** An answer as stored: what was typed and the server's verdict. */
@@ -18,9 +19,9 @@ export type SteppedThrough = { answers: Answered[]; shown: boolean };
 
 /** Moves a student's ideas on by one stored attempt, as the browser does (learnFromAttempt): it rebuilds the question. */
 export function trackIdeas(
-  state: IdeaState, q: Question, outcome: string, answers: readonly Answered[], hard?: string[], steps?: readonly SteppedThrough[], faded?: number,
+  state: IdeaState, q: Question, outcome: string, answers: readonly Answered[], hard?: string[], steps?: readonly SteppedThrough[], faded?: number, breaks?: BreakAnswer,
 ): void {
-  learnFromAttempt(state, { ...asAttempt(q, outcome, answers, steps, faded), hard });
+  learnFromAttempt(state, { ...asAttempt(q, outcome, answers, steps, faded), hard, ...(breaks ? { breaks } : {}) });
 }
 const timed = (list: readonly Answered[]) => list.map((a) => ({ ...a, ms: 0 }));
 const asAttempt = (q: Question, outcome: string, answers: readonly Answered[], steps?: readonly SteppedThrough[], faded?: number) => ({
@@ -41,6 +42,18 @@ export const stepsAfterMiss = (skill: string) => STEPS_AFTER_MISS.includes(skill
 export function mark(q: Question, input: string, step?: number): AnswerVerdict {
   const ex = exercise(q.skill, q.level as Level, q.seed, en.pracWords);
   return verdictOf(check(step === undefined ? ex : stepsOf(ex, en.pracWords)[step], input, en.pracWords));
+}
+
+/**
+ * A worked answer judged ("where it breaks", src/math/whereItBreaks.ts), checked against the question rebuilt: null
+ * when no such working or answer could have been shown (a variant the question hasn't, a line it hasn't, a mistake
+ * not offered), else whether the student judged it rightly.
+ */
+export function judgeBreak(q: Question, a: BreakAnswer): boolean | null {
+  const b = breakOf(exercise(q.skill, q.level as Level, q.seed, en.pracWords), a.variant);
+  if (!b) return null;
+  if (a.said === "wrong" && !(Number.isInteger(a.step) && a.step! >= 0 && a.step! < b.worked.lines.length && b.options.includes(a.picked as never))) return null;
+  return judgedRight(b, a);
 }
 
 /** How many steps the question is worked in after a wrong answer (none for most questions). */

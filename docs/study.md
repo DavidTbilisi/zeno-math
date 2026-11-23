@@ -27,10 +27,12 @@ being given a second record that would split their answers and could put them in
   time, below.
 - *Targeted step-down:* after an early failure on a skill made of ideas, a few questions on its weakest idea, then
   back to the skill, below. It is on trial: nobody has it but the arm with it.
+- *Where it breaks:* after a run of right answers on a skill made of ideas, a worked answer to judge, below. It is on
+  trial too.
 
 In a class testing anything but the choice of question, both arms practise adaptively, and only the feature under
 test differs: the arm without it goes without it, and every other feature stays on for both, but for a feature on
-trial (targeted step-down), which nobody else has. The server refuses an answer that shows a feature the student's
+trial (targeted step-down, where it breaks), which nobody else has. The server refuses an answer that shows a feature the student's
 arm hasn't got, so the arms can't mix. A new feature joins the list at the end, with its switch in the browser and
 its check on the server.
 
@@ -94,6 +96,18 @@ A signed-in student practises in one of two ways:
     The server replays the step-down from the attempts and sends it with the plan. The teacher page counts the
     step-down questions of each arm; the outcomes that judge it are the post-test, the delayed post-test and
     completion, not right answers during practice. Until a class has run it, it is not a win.
+  - **Where it breaks** (issue #577, `src/model/breaks.ts`, `src/math/whereItBreaks.ts`), only in the arm with it of
+    a class testing it. A run of right answers can be habit: a student can add fractions right and still believe that
+    adding the tops and the bottoms is sometimes fine. After three right class-practice answers in a row on a skill
+    made of ideas, the next question is a worked answer on that skill, at the hardest level the model expects the
+    student more likely than not to get right: right a quarter of the time, otherwise with one recognised mistake
+    worked in (a trap of the question's own, so the working comes to exactly the answer the checker names as that
+    mistake, or on times and hcf, which have no traps, a slip such as a times-table fact one row off). The student
+    says whether it is right; if not, taps the line where it goes wrong and picks what went wrong from three named
+    mistakes, all by tapping. It is recorded with policy `breaks` and counts as class practice time; it tells the
+    learner model nothing, and moves only the idea of the mistake shown, by whether the student named it (a BKT step,
+    `learnBreak` in `src/model/ideaState.ts`). The teacher page counts each arm's worked answers and the share judged
+    rightly; as with step-down, the outcomes that judge the feature are the tests and completion.
 
   Everything else is the same for both groups: the feedback, the worked solutions, the steps after a wrong answer on
   a fractions operation, the list of what was hard (asked of both, though only the adaptive policy reads them), the
@@ -456,8 +470,8 @@ The CSVs behind these tables are in [`docs/results/`](results/).
 2. It runs the pre-test, a practice session, the post-test and the delayed post-test. The simulated students don't
    forget, so the delayed post-test checks the plumbing, not forgetting. Each student answers like a browser would:
    - test questions are rebuilt from the class code;
-   - practice is chosen as the browser chooses it (a step-down under way for the arm with it, else the student's
-     condition) from the plan the server sends, carried forward between refreshes;
+   - practice is chosen as the browser chooses it (a step-down under way, or a worked answer to judge, for the arm with
+     it, else the student's condition) from the plan the server sends, carried forward between refreshes;
    - answers are typed and marked by the real checker.
 3. It downloads both exports and runs the analysis on them.
 
@@ -469,7 +483,7 @@ It checks the study's guarantees and fails if one breaks:
 - every test is complete;
 - every practice question is stored, and a retried upload is stored once;
 - class practice follows each student's condition;
-- step-down questions come only from the arm with it, in a class testing it;
+- step-down questions come only from the arm with it, in a class testing it, and so do worked answers to judge;
 - the model's prediction is logged with each question;
 - the planned analysis runs on the export;
 - every wrong test answer could be typed;
@@ -483,6 +497,7 @@ npm run dry-run                                         # 40 students, 30 questi
 npm run dry-run -- --students 60 --world bkt --out dry-run
 npm run dry-run -- --feature spaced                      # a class testing spaced review
 npm run dry-run -- --feature stepdown                    # targeted step-down, on number (times, hcf, fractions)
+npm run dry-run -- --feature breaks                      # where it breaks, on number too
 npm run analyse -- dry-run/tests.csv
 npm run model -- dry-run/attempts.csv
 ```

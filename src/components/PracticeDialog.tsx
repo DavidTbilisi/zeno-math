@@ -29,6 +29,8 @@ import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
 import { LINE_LETTERS } from "../math/proofs";
 import { WorkInSteps } from "./WorkInSteps";
+import { WhereItBreaks } from "./WhereItBreaks";
+import { breakOf } from "../math/whereItBreaks";
 import { ScratchPad } from "./ScratchPad";
 import { BreakPrompt, ComingBack, SessionRing, SessionSummary, type SessionResult } from "./PracticeSession";
 import { breakDue, keepLength, sessionLength, stretchAfter, type Length, type Stretch } from "../math/sessionPace";
@@ -67,7 +69,8 @@ const randomOf = <T,>(xs: readonly T[]): T => xs[Math.floor(Math.random() * xs.l
 const areaLabel = (t: Dict, a: Area) =>
   ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData })[a];
 
-type Current = { ex: Exercise } & Origin;
+/** The question on screen; `breaks`: shown as a worked answer to judge, the question's working of that number (whereItBreaks.ts). */
+type Current = { ex: Exercise; breaks?: number } & Origin;
 const freeOrigin: Origin = { policy: "free", review: false, predicted: null };
 
 /** Finished questions of a student in a class study, on their way to the server. */
@@ -172,7 +175,8 @@ export function PracticeDialog(props: Props) {
    * The next question. In class practice, the student's homework comes first, in its order (homework.ts). Then missed
    * ones come back; then what was mastered days ago and is due for its spaced review
    * (spacing.ts: in class practice a skill, asked hard; in free practice a skill at a level); then, in class practice,
-   * a step-down to one idea after an early failure (for the arm with it), or the student's condition chooses (fixed
+   * a step-down to one idea after an early failure (for the arm with it), a worked answer to judge after a run of right
+   * answers (for the arm with "where it breaks"), or the student's condition chooses (fixed
    * sequence, or adaptive, which on a skill made of ideas aims at the weakest),
    * otherwise the topic and level picked above.
    */
@@ -203,7 +207,9 @@ export function PracticeDialog(props: Props) {
       if (k) return spaced(cellOf(k).skill, cellOf(k).level);
     }
     if (plan) {
-      const { ex, policy } = classQuestion(plan, w, { unlockFloor: newcomerChance(plan.model), again: reviews ? (openAgain(plan.spacing) as SkillId[]) : [] });
+      const { ex, policy, breaks } = classQuestion(plan, w, { unlockFloor: newcomerChance(plan.model), again: reviews ? (openAgain(plan.spacing) as SkillId[]) : [] });
+      // A worked answer to judge isn't the question answered, so the model's chance of a right answer isn't logged with it.
+      if (breaks !== undefined) return { ex, policy, breaks, review: false, predicted: null };
       return { ex, policy, review: false, predicted: predicted(ex.skill, ex.level) };
     }
     if (p === "place" || p === "grade") {
@@ -236,6 +242,8 @@ export function PracticeDialog(props: Props) {
    * it again; and on any skill with steps, worked examples fade (fading.ts).
    */
   const steps = useMemo(() => stepsOf(cur.ex, w), [cur, w]);
+  /** A worked answer to judge, when that is what the question is shown as ("where it breaks"). */
+  const breakQ = useMemo(() => (cur.breaks === undefined ? null : breakOf(cur.ex, cur.breaks)), [cur]);
   const [stepping, setStepping] = useState<"no" | "now" | "done">("no");
   /** A faded worked example: how many of the question's first steps are shown done (0: the question is asked whole). */
   const [given, setGiven] = useState(0);
@@ -482,7 +490,7 @@ export function PracticeDialog(props: Props) {
     // A question of a skill being faded comes with its first steps done; reviews and the placement are asked whole.
     const fading = live.current.student ? planRef.current?.fading : freeFading.current;
     const n = stepsOf(c.ex, w).length;
-    const g = fading && has("faded") && !c.review && c.policy !== "spaced" && live.current.pick !== "place" ? givenSteps(fading, c.ex.skill, n) : 0;
+    const g = fading && has("faded") && !c.review && c.policy !== "spaced" && c.policy !== "breaks" && live.current.pick !== "place" ? givenSteps(fading, c.ex.skill, n) : 0;
     setGiven(g);
     log.current.faded = g || undefined;
     log.current.steps = Array.from({ length: g }, () => ({ answers: [], shown: true }));
@@ -589,12 +597,12 @@ export function PracticeDialog(props: Props) {
   // A question asked whole and missed, on a skill worked in steps: a worked example of the same kind with other numbers
   // (unless the question was just worked in steps), and the fading begins (fading.ts).
   const example = useMemo(() => {
-    if (!done || given || steps.length < 2 || log.current.steps.length || !has("faded")) return null;
+    if (!done || given || breakQ || steps.length < 2 || log.current.steps.length || !has("faded")) return null;
     if (attemptEvidence({ outcome: log.current.outcome ?? "skipped", answers: log.current.answers }) !== false) return null;
     const ex = exampleLike(cur.ex, w);
     return ex && { ex, steps: stepsOf(ex, w) };
-  }, [done, cur, w, given, steps]);
-  const hardChoices = useMemo(() => (done && student && has("hard") ? whatWasHard(cur.ex, log.current) : null), [done, cur, student]);
+  }, [done, cur, w, given, steps, breakQ]);
+  const hardChoices = useMemo(() => (done && student && has("hard") && !breakQ ? whatWasHard(cur.ex, log.current) : null), [done, cur, student, breakQ]);
   const toggleHard = (id: string) => {
     const ticked = (hardChoices ?? []).filter((i) => (i === id) !== hard.includes(i));
     setHard(ticked);
@@ -808,6 +816,8 @@ export function PracticeDialog(props: Props) {
             <small className="hint practice-review">↻ {cur.review ? w.ui.review : w.ui.spaced}</small>
           ) : cur.policy === "stepdown" && plan?.stepDown.now ? (
             <small className="hint practice-review">↓ {fill(w.ui.stepDown, { idea: w.ideas[plan.stepDown.now.idea as keyof typeof w.ideas] })}</small>
+          ) : breakQ ? (
+            <small className="hint practice-review">🔍 {w.breaks.label}</small>
           ) : (
             classOn && <small className="hint">{fill(w.ui.chosen, { skill: w.skills[cur.ex.skill], level: w.levels[String(cur.ex.level) as "1" | "2" | "3"] })}</small>
           )}
@@ -834,8 +844,21 @@ export function PracticeDialog(props: Props) {
               <SpokenMath text={cur.ex.prompt} tex={cur.ex.q} />
             </div>
           )}
-          {/* A faded worked example is answered step by step below, not here. */}
-          {!given && (
+          {/* A faded worked example is answered step by step below, not here; a worked answer to judge by its own buttons. */}
+          {breakQ && (
+            <WhereItBreaks
+              key={`breaks:${cur.ex.skill}:${cur.ex.level}:${cur.ex.seed}:${breakQ.variant}`}
+              b={breakQ}
+              w={w}
+              onDone={(a, right) => {
+                log.current.breaks = a;
+                finish(log.current, right ? "solved" : "revealed");
+                playSound(right ? "good" : "miss");
+                setDone(right ? "solved" : "revealed");
+              }}
+            />
+          )}
+          {!given && !breakQ && (
             <>
               {/* A question answered by doing has buttons of its own: in a label, a click anywhere would press the first. */}
               <AnswerField className="field" play={!!cur.ex.play}>
@@ -969,8 +992,8 @@ export function PracticeDialog(props: Props) {
             </>
           )}
           <div className="field-row practice-actions">
-            {!done && !given && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
-            {!done && !given && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
+            {!done && !given && !breakQ && stepping !== "now" && <button className="btn primary" onClick={onCheck}>{w.ui.check}</button>}
+            {!done && !given && !breakQ && <button className="btn" onClick={reveal}>{w.ui.reveal}</button>}
             {done && <button className="btn primary" onClick={onNext}>{sessionOver ? w.ui.seeSummary : `${w.ui.next} →`}</button>}
             {!sessionOn && <span className="hint">{fill(w.ui.score, score)}</span>}
             {!calm && (
@@ -1036,7 +1059,7 @@ export function PracticeDialog(props: Props) {
               }}
             />
           )}
-          {done === "revealed" && <div className="practice-verdict close" role="status">{w.ui.revealed}</div>}
+          {done === "revealed" && !breakQ && <div className="practice-verdict close" role="status">{w.ui.revealed}</div>}
           {done && rateable && (
             <div className="practice-rate" role="group" aria-label={w.ui.rateAsk}>
               {rated ? (

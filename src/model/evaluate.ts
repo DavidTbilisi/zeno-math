@@ -514,7 +514,7 @@ export function observation(row: Record<string, string>): (Observation & { condi
   const skill = row.skill as SkillId;
   const level = Number(row.level) as Level;
   if (!ALL_SKILLS.includes(skill) || ![1, 2, 3].includes(level)) return null;
-  const correct = evidence(Number(row.n_answers) - Number(row.retries), row.outcome, row.first_correct === "1", !!row.faded);
+  const correct = evidence(Number(row.n_answers) - Number(row.retries), row.outcome, row.first_correct === "1", !!row.faded || !!row.breaks);
   const ms = Number(row.ms_first);
   return correct === null ? null : { student: row.student, skill, level, correct, condition: row.condition, attempt: Number(row.attempt), ...(row.ms_first && usableMs(ms) ? { ms } : {}) };
 }

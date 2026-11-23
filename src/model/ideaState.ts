@@ -154,6 +154,18 @@ export function learnIdeas(
   ids.forEach((id, j) => (state[id] = known[j]));
 }
 
+/**
+ * A "where it breaks" question (issue #577) as evidence on one idea, like a tick on "what was hard": a worked answer
+ * shown with a recognised mistake in it, and whether the student named the mistake (said it was wrong and picked it of
+ * three). Naming it says the idea is known, missing it that it may not be; one BKT step on that idea alone. A student
+ * who doesn't know the idea names it by luck about one time in six (says "wrong" half the time, then picks one of
+ * three), so that is the guess; the rest of the parameters are IDEA_PRIOR's, unfitted like it.
+ */
+export const BREAK_PRIOR: BktParams = { ...IDEA_PRIOR, guess: 1 / 6 };
+export function learnBreak(state: IdeaState, idea: string, named: boolean, params: BktParams = BREAK_PRIOR): void {
+  state[idea] = bktStep(knownOf(state, idea, params), params, named).known;
+}
+
 /** The idea of the skill the student is least likely to know; ties (every idea at the start) are broken at random. */
 export function weakestIdea(state: IdeaState, skill: IdeaSkill, random: () => number = Math.random, params: BktParams = IDEA_PRIOR): IdeaNode {
   const ids = SKILL_IDEAS[skill];

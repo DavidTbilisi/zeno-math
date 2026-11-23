@@ -123,13 +123,15 @@ A class tests one feature, `feature` when it is made (`src/model/arms.ts`; 400 f
 - **`faded`**: worked examples that fade (`src/model/fading.ts`), on every skill worked in steps.
 - **`stepdown`**: targeted step-down after an early failure (`src/model/stepDown.ts`). On trial: nobody has it but
   the arm with it in a class testing it.
+- **`breaks`**: "where it breaks", a worked answer to judge after a run of right answers (`src/model/breaks.ts`,
+  `src/math/whereItBreaks.ts`). On trial, like `stepdown`.
 
 Students are given an arm in random blocks of four, two of each. In a class testing anything but the policy both
 arms practise with the adaptive policy. Only the feature under test differs: the arm without it goes without it, in
 class practice and free practice alike, and every other feature stays on for both, but for a feature on trial
-(`stepdown`), which nobody else has. An attempt that shows a feature the student's arm hasn't got is refused with
-400: a `spaced` or `stepdown` policy (`invalid policy`), `steps` (`invalid steps`), `hard` (`invalid hard`) or
-`faded` (`invalid faded`). Classes and students from before arms tested the policy; their arm follows from their
+(`stepdown`, `breaks`), which nobody else has. An attempt that shows a feature the student's arm hasn't got is refused
+with 400: a `spaced` or `stepdown` policy (`invalid policy`), `steps` (`invalid steps`), `hard` (`invalid hard`),
+`faded` (`invalid faded`) or `breaks` (`invalid breaks`). Classes and students from before arms tested the policy; their arm follows from their
 condition.
 
 ### The protocol
@@ -168,7 +170,7 @@ The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, 
 
 ```text
 { class, condition, feature, arm, skills, position, recent, state,   ← class practice
-  ideas, ema, spacing, fading, stepDown,
+  ideas, ema, spacing, fading, stepDown, breaks,
   phase, sessionEnds, testLength,                                     ← the protocol
   tests: { pre: { form, answered }, post: { form, answered }, delayed: { form, answered } },
   homework }                                                          ← null, or { id, createdAt, items, done }
@@ -185,6 +187,9 @@ The delayed post-test is always C. Answers `201 { form, stored, kept, verdicts, 
 - **`stepDown`**: `{ early: { [skill]: { answered, wrong } }, now?: { skill, idea, left }, back? }` for the arm with
   step-down (`src/model/stepDown.ts`), else `{ early: {} }`: the early class-practice answers on each skill made of
   ideas, the step-down under way (the questions left on its idea), and the skill to go back to once it is over.
+- **`breaks`**: `{ run: { [skill]: n }, due? }` for the arm with "where it breaks" (`src/model/breaks.ts`), else
+  `{ run: {} }`: the right class-practice answers in a row on each skill made of ideas, and the skill whose worked
+  answer to judge comes next.
 - **`tests`**: which form each test uses (A and B counterbalanced within each arm, C for everyone's delayed
   post-test) and which questions are already answered.
 - **`homework`**: the student's newest homework once the class may have it (see *Homework*), else `null`: its
@@ -236,16 +241,17 @@ student (`s17`) and game: `{ stars, passedAt }`.
 
 ```text
 { clientId, student, skill, level, seed, review, outcome, policy?, predicted?, solutionViewed, msTotal, shownAt,
-  answers: [{ input, verdict, ms }], hard?, steps?: [{ answers: [{ input, verdict, ms }], shown }], faded? }
+  answers: [{ input, verdict, ms }], hard?, steps?: [{ answers: [{ input, verdict, ms }], shown }], faded?,
+  breaks?: { variant, said, step?, picked? } }
 ```
 
 - **`clientId`**: made by the browser (8–64 of `A-Za-z0-9-`).
 - **`outcome`**: `solved`, `revealed` or `skipped`.
-- **`policy`**: `adaptive`, `fixed`, `free`, `review`, `spaced`, `stepdown` or `homework`. `review` exactly when
+- **`policy`**: `adaptive`, `fixed`, `free`, `review`, `spaced`, `stepdown`, `homework` or `breaks`. `review` exactly when
   `review` is true; `adaptive` and `fixed` only for a student in that condition; `spaced` only for a student with spaced
   review, `stepdown` only for one with step-down (see *Arms*); `homework` only for a question of the student's own
-  homework (see *Homework*). A `stepdown` question is class practice: it is marked late
-  like one.
+  homework (see *Homework*); `breaks` exactly when `breaks` is sent. A `stepdown` or `breaks` question is class
+  practice: it is marked late like one.
 - **`predicted`**: the model's chance of a right first answer when the question was shown, from 0 to 1.
 - **`answers`**: at most 50. Each `verdict` is `correct`, `close`, `wrong` or `form`; inputs are cut to 200
   characters.
@@ -268,6 +274,13 @@ student (`s17`) and game: `{ stars, passedAt }`.
   student's. It is `solved` or `revealed` by its last step, the question itself, and `skipped` before it. Its steps
   move the ideas and the fading in the plan; it tells the learner model nothing, since part of it was done for the
   student.
+- **`breaks`**: a worked answer judged ("where it breaks", `src/math/whereItBreaks.ts`), only with policy `breaks`
+  and from the arm with it. `variant` is which working of the question was shown (0: the right one); `said` is
+  `right` or `wrong`, and when `wrong`, `step` is the line tapped (from 0) and `picked` the mistake picked, one of the
+  three offered. The server rebuilds the working from the question and the variant and refuses one that couldn't have
+  been shown (`invalid breaks`). `answers` is empty; it is `solved` when judged rightly (right of a right working; of
+  one with a mistake, its line and its name), else `revealed`. It tells the learner model nothing; a working with a
+  mistake moves the idea of that mistake in the plan, by whether the student named it.
 
 The answers must agree with the outcome, or the attempt is refused with 400:
 
@@ -353,7 +366,7 @@ used to sign in. Typed answers are JSON strings, so a spreadsheet never reads `=
 
 - **`attempts.csv`** columns: attempt, student, class, feature, arm, condition, policy, predicted, area, skill, level, seed,
   review, outcome, first_correct, wrongs, retries, solution_viewed, ms_first, ms_total, n_answers, answers, hard,
-  steps, faded, remarked, late, shown_at, created_at.
+  steps, faded, rated, breaks, remarked, late, shown_at, created_at.
 - **`tests.csv`** columns: response, student, class, feature, arm, condition, test_order, phase, form, test_length, item, area,
   skill, level, seed, input, verdict, correct, client_verdict, late, paper, retries, ms, created_at. `test_length` is the
   number of questions on each of the class's tests; `paper` is 1 for an answer written on paper and typed in by the
