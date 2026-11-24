@@ -11,6 +11,9 @@ import "./styles.css";
 const BoardPage = lazy(() => import("./pages/BoardPage").then((m) => ({ default: m.BoardPage })));
 const TeacherPage = lazy(() => import("./pages/TeacherPage").then((m) => ({ default: m.TeacherPage })));
 const SharedBoardPage = lazy(() => import("./pages/SharedBoardPage").then((m) => ({ default: m.SharedBoardPage })));
+const LessonPage = lazy(() => import("./pages/LessonPage").then((m) => ({ default: m.LessonPage })));
+const LessonHostPane = lazy(() => import("./pages/LessonPage").then((m) => ({ default: m.LessonHostPane })));
+const LessonGuestPane = lazy(() => import("./pages/LessonPage").then((m) => ({ default: m.LessonGuestPane })));
 const AboutPage = lazy(() => import("./pages/AboutPage").then((m) => ({ default: m.AboutPage })));
 const PracticePage = lazy(() => import("./pages/PracticePage").then((m) => ({ default: m.PracticePage })));
 const RoadmapPage = lazy(() => import("./pages/RoadmapPage").then((m) => ({ default: m.RoadmapPage })));
@@ -44,12 +47,23 @@ function useHashRoute(): string {
 function App() {
   const hash = useHashRoute();
   const epoch = useEpoch();
-  return <Pages key={/^#\/[bs]\//.test(hash) ? "board" : epoch} hash={hash} />;
+  return <Pages key={/^#\/(?:b|s|l|lv|lw)\//.test(hash) ? "board" : epoch} hash={hash} />;
 }
 
 function Pages({ hash }: { hash: string }) {
   const boardId = hash.match(/^#\/b\/([\w-]+)/)?.[1];
   const shareToken = hash.match(/^#\/s\/([\w-]+)/)?.[1];
+  // A lesson (two boards side by side), and the followers its two sides are shown in.
+  const lesson = hash.match(/^#\/(l|lv)\/([\w-]+)$/);
+  const lessonGuest = hash.match(/^#\/lw\/([\w-]+)\/([\w-]+)$/);
+  if (lesson || lessonGuest)
+    return (
+      <Suspense fallback={<div className="center-msg">…</div>}>
+        {lessonGuest ? <LessonGuestPane key={lessonGuest[2]} token={lessonGuest[1]} board={lessonGuest[2]} />
+          : lesson![1] === "l" ? <LessonPage key={lesson![2]} token={lesson![2]} />
+          : <LessonHostPane key={lesson![2]} token={lesson![2]} />}
+      </Suspense>
+    );
   if (shareToken)
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>

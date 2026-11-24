@@ -13,6 +13,7 @@ import { rawJson, stmt } from "./db.ts";
 import { boardUser, classBoards, forgetModel, handleResearch, initResearch, RESEARCH_RESOURCES, studentIsAccounts, teacher, type BoardUser } from "./research.ts";
 import { handleAccount } from "./accounts.ts";
 import { handleUsage, initUsage } from "./usage.ts";
+import { handleBoardLesson, handleLessons, initLessons, lessonTokenOf } from "./lessons.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
 const DATA_DIR = resolve(process.env.DATA_DIR ?? "data");
@@ -43,6 +44,7 @@ if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some(
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS boards_share_token ON boards(share_token)");
 initResearch(db);
 initUsage(db);
+initLessons(db);
 // Whose board it is: a student's (student_id), or the teachers' (NULL; every board made before boards had owners).
 // Forgetting a student deletes their boards with their answers.
 if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some((c) => c.name === "student_id"))
@@ -55,7 +57,7 @@ if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some(
 db.exec("CREATE INDEX IF NOT EXISTS boards_account ON boards(account_id, updated_at)");
 // The schema this code writes. A database from a newer Zeno is refused rather than half understood; an older one has
 // just been brought up to date by the CREATE / ADD COLUMN steps above.
-const SCHEMA_VERSION = 9;
+const SCHEMA_VERSION = 10;
 const { user_version: found } = db.prepare("PRAGMA user_version").get() as { user_version: number };
 if (found > SCHEMA_VERSION) {
   console.error(`The database in ${DATA_DIR} is from a newer version of Zeno (schema ${found}; this one knows ${SCHEMA_VERSION}). Update Zeno.`);
@@ -176,6 +178,20 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
     }
     return send(res, 405, { error: "method not allowed" });
   }
+  // A lesson (lessons.ts): the host's board and each guest's own, side by side, each followed by the other.
+  if (resource === "lessons") {
+    return handleLessons(req, res, id, sub, query, db, (who, board) => {
+      try {
+        return boardFor(who, board, true).own;
+      } catch {
+        return false;
+      }
+    });
+  }
+  if (resource === "boards" && id && sub === "lesson") {
+    boardFor(boardUser(req, db), id, true);
+    return handleBoardLesson(req, res, db, id);
+  }
   // Nothing below has a third level, and only boards take an id: /api/boards/x/anything is not a board.
   if (sub !== undefined || (id !== undefined && resource !== "boards")) return send(res, 404, { error: "not found" });
   if (resource === "health" && req.method === "GET") {
@@ -234,7 +250,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
       .get(id) as { id: string; title: string; scene: string; updatedAt: number; shareToken: string | null };
     const { scene, shareToken, ...rest } = row;
     // A teacher opening a student's board sees it, and is told it is not theirs to change.
-    return sendJsonText(res, 200, rawJson(own ? { ...rest, shareToken } : { ...rest, readOnly: true }, { scene }));
+    return sendJsonText(res, 200, rawJson(own ? { ...rest, shareToken, lessonToken: lessonTokenOf(db, id) } : { ...rest, readOnly: true }, { scene }));
   }
   boardFor(user, id, true);
   if (req.method === "PUT") {

@@ -14,6 +14,9 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
 *Every picture on the board is a live, editable object — double-click it to change the numbers. See [more screenshots](#screenshots).*
 
 - Infinite whiteboard (Excalidraw): freehand, shapes, text, arrows, images, export to PNG/SVG
+- **Lessons, two boards side by side**: Share → Start a lesson gives a link; whoever opens it sees your board beside a
+  board of their own, and you see theirs as they work (followed within a second or two). Each person draws only on
+  their own board; "Hand out my board" copies yours onto each guest's, beside what they have
 - **🧮 Place-value mat (Singapore method, concrete stage)**, the Place value tab of Models: drag base-ten blocks
   (hundreds, tens, ones) onto a Hundreds | Tens | Ones mat — mouse or touch
   - Trade by dragging: a ten onto Ones breaks into 10 ones; a one onto Tens groups 10 ones into a ten

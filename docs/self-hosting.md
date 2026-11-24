@@ -99,6 +99,15 @@ language is a separate chunk, loaded the first time it is used.
 you save, so a class can follow along on their own devices, and **Stop sharing** ends it. It is for showing, not
 for keeping a board private. Anyone who can open Zeno can open the board itself; see [docs/api.md](api.md).
 
+**Lessons: two boards side by side.** **🔗 Share → Start a lesson** on a board makes a lesson link. Open the lesson
+yourself and send the link: whoever opens it sees your board on the left and a board of their own, made for the
+lesson, on the right, and you see their board beside yours as they work (it follows within a second or two). Each
+person draws only on their own board, so nothing is overwritten. **Hand out my board** copies everything on yours
+onto each guest's board, beside what they have; a guest can also take your board with **Copy the teacher's board to
+mine**. With several guests, a tab for each picks whose board you watch. A guest needs boards of their own (an
+account, or a class joined); without, the link only shows your board. **End the lesson** stops the link; the guests
+keep their boards.
+
 Autosave doesn't silently overwrite: if the board was saved in another tab or on another device since you opened it, Zeno pauses
 saving and asks whether to reload that version or keep yours. Saves go one at a time; a failed one is retried (2 s, 5 s, 15 s,
 30 s, and as soon as the browser is back online), and closing the tab with unsaved changes asks first.
