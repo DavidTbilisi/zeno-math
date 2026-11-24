@@ -165,6 +165,7 @@ The existing documents describe Zeno from above: `README.md` (a short tour), `do
   - [server/db.ts](#serverdbts)
   - [server/limiter.ts](#serverlimiterts)
   - [server/backup.ts](#serverbackupts)
+  - [server/usage.ts](#serverusagets)
   - [server/research.ts](#serverresearchts)
   - [server/protocol.ts](#serverprotocolts)
   - [server/dashboard.ts](#serverdashboardts)
@@ -3745,6 +3746,21 @@ Daily snapshots into `DATA_DIR/backups`, "a consistent snapshot (VACUUM INTO, sa
 - `backupDue(dir, now)` (`server/backup.ts:21-24`): true when there is no backup or the newest's `mtimeMs <= now - DAY`. Modification time, not the name, is the clock (so `utimes` in the test moves it).
 - `backup(db, dir, keep, now): string` (`server/backup.ts:27-36`): `mkdirSync`, compute the file name, `rmSync(file, { force: true })` because "VACUUM INTO won't write over a file", `db.exec("VACUUM INTO '<path>'")` with single quotes doubled, then delete all but the newest `keep` names. Returns the new path. `VACUUM INTO` reads a consistent snapshot under WAL without blocking writers; `busy_timeout` set in index.ts covers the reverse case.
 - `scheduleBackups(db, dataDir, keep)` (`server/backup.ts:39-51`): `keep <= 0` returns (off). Otherwise `run` once synchronously at startup and every hour via an unref'd `setInterval` (it never keeps the process alive). Each `run` backs up only when `backupDue(dir)`, logging `backup: <path>`; it catches and logs failures ("backup failed:") so a full disk never crashes the server. `tests/hardening.test.ts:41-64` pins: nine daily backups with keep 7 leave the newest seven; a backup opens read-only and holds the data; a backup made now is not due until a day later. `tests/hardening.test.ts:112-126` pins that a first backup exists after a cold start and that `BACKUP_KEEP=0` writes none.
+
+### server/usage.ts
+
+The anonymous usage counts (#615) and, with `src/usage.ts`, the only analytics Zeno has: no third party, no cookie, no visitor id. One table, `usage_counts (day, kind, name, hits, visits)`, primary key `(day, kind, name)`, `WITHOUT ROWID`; `day` is the UTC date.
+
+- `USAGE_KINDS`: `visit` (page loads, by site), `page`, `tool` (pieces and pictures put on a board), `skill` (practice skills tried), `step` (account made, signed in, class joined, question tried, board made, and the published front page's two buttons), `from` (the referring host), `screen`, `lang`, `error`. `USAGE_NAME = /^[\w .:'()/-]{1,80}$/` is every name the server takes.
+- `usageEvents(body)`: the countable events in what was sent, at most 40; anything else is passed over without an error, so a sender learns nothing from the answer.
+- `countUsage(db, events, now)`: one transaction. Each event is an `UPDATE … hits + 1, visits + first`; when no row changed, the name is new for the day and is inserted, unless the day already has `NAMES_PER_DAY` (1,000) names of that kind, when it is counted under `(other)`. The first write of a day deletes counts older than `KEEP_DAYS` (730).
+- `allow(client, want, now)`: at most `EVENTS_PER_WINDOW` (3,000) events per address in ten minutes, the address taken by `clientOf` as the password limiter takes it; the address lives in that in-memory map only. The rest of a batch is dropped, still answered 204.
+- `usageReport(db, days, now)`: every day of the range oldest first with its visits, and each kind's names summed over the range, most visits first. `days` is clamped to 1–366, 30 when missing.
+- `handleUsage`: `POST /api/usage` reads at most 8 KB as JSON whatever the content type (a page on another host can only send plain text unasked, which is how the published front page reports), counts and answers 204; `GET /api/usage?days=` calls the `reader` it was given, `teacher` from `research.ts`. In `index.ts` the POST alone is let past the site password, like `/api/health`. `USAGE=off` makes the POST count nothing.
+
+The browser's half, `src/usage.ts`: `startUsage(site, to)` (called in `main.tsx`, `landing.tsx` and `practice-site.tsx`; the two published pages pass `VITE_USAGE_URL`, and count nothing without it) sends the visit, the screen, the language and the referring host, then a `page` on every `hashchange` and an `error` for up to ten script errors. `seen(kind, name)` is what the rest of the app calls: `account.ts` (account made, signed in), `api.ts` (board made, class joined), `PracticeDialog.tsx` `leaveQuestion` (question tried, and the skill), `BoardPage.tsx` (`addLive`, `openNew`, a docked tool). The first time a kind and name happen in a page load is marked `first`, from a `Set` in memory: that mark is how the server counts visits without an id. Events wait three seconds and go together by `navigator.sendBeacon` with a string body, the rest as the page is hidden. `pageName` turns an address into a name with no board id, share token, class code or mailed token in it, and `errorName` takes ids, codes and emails out of an error's message; `tests/usage.test.ts` holds both to that. `navigator.webdriver` (the end-to-end tests, the recordings) sends nothing.
+
+`src/components/UsageReport.tsx` is the page at `#/teacher/usage`: four figures, a column per day, the steps from arriving to practising, and a ranked list with a bar per kind, in the dashboard's one chart colour (`--viz-series`) with the shared `useChartTip` readout.
 
 ### server/research.ts
 

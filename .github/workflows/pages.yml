@@ -37,7 +37,11 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # The Zeno server the published pages report anonymous usage counts to (#615): the repository variable
+      # USAGE_URL, such as https://zeno.example/api/usage. Without it the pages count nothing.
       - run: npm run build:landing
+        env:
+          VITE_USAGE_URL: ${{ vars.USAGE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist-landing

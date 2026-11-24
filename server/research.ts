@@ -270,7 +270,8 @@ export const currentBreaks = (db: DatabaseSync, studentId: number): Breaks => re
 /** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
 export const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
-function teacher(req: IncomingMessage) {
+/** Lets a teacher through: the request carries the teacher password, or the server asks for none. */
+export function teacher(req: IncomingMessage) {
   if (!TEACHER_PASSWORD) return;
   const client = clientOf(req);
   const wait = passwords.retryAfter(client);

@@ -1492,6 +1492,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     roadmap goal and the learner's boards follow them to any device; signing out takes them off a shared one
   - *Class study*: a student signs in and joins a class with its code; the teacher sees them by name, and the
     study's exports never hold the name or the email. Each question they work on is then saved on the server for research — see [Class study](self-hosting.md#class-study) and [docs/study.md](study.md)
+  - *Site usage*: the teacher's page links to anonymous counts of the last 7, 30 or 90 days: visits per day, the
+    steps from arriving to practising, and the pages, board tools, practice skills, referring sites, screens,
+    languages and script errors seen most. Only names and numbers are kept: no cookie, no visitor id, no address —
+    see [Usage counts](self-hosting.md#usage-counts)
   - *Worksheet*: 4–20 questions on one skill or mixed, with an answer key, put on the board in one click (and
     re-opened to change them)
 - **Vector spaces** (in *[ ] Matrices*) — exact fractions, pictures for ℝ² and ℝ³

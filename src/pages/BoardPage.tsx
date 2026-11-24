@@ -38,6 +38,7 @@ import { ZenoMark } from "../components/ZenoMark";
 import { isLiveEntry, toolLabel, type LiveEntry, type MenuEntry } from "../menus";
 import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 import { hasOrigin, installPaper, isPaper, PAPERS, type Paper } from "../paper";
+import { seen } from "../usage";
 
 /** When a change to the scene is recorded for undo (now, with the next recorded change, or never). */
 type CaptureUpdateActionType = (typeof CaptureUpdateAction)[keyof typeof CaptureUpdateAction];
@@ -142,7 +143,11 @@ export function BoardPage({ id }: { id: string }) {
   // A docked tool (practice) has its own place beside the board, so a tool's panel can open while it stays.
   const [dock, setDock] = useState<Dialog | null>(null);
   // A tool opens its panel with its first example already on the board (#558): no tool opens a dialog over it (#567).
-  const open = (d: Dialog) => (TOOLS[d.kind].docked ? setDock(d) : openNew(d.kind, d.start));
+  const open = (d: Dialog) => {
+    if (!TOOLS[d.kind].docked) return openNew(d.kind, d.start);
+    seen("tool", d.kind);
+    setDock(d);
+  };
   const [palette, setPalette] = useState(false);
   // The board's theme as last seen; "" until Excalidraw reports it.
   const theme = useRef("");
@@ -539,6 +544,7 @@ export function BoardPage({ id }: { id: string }) {
   const addLive = (kind: LiveKind, drop?: { x: number; y: number }) => {
     const ex = excalidraw.current;
     if (!ex) return;
+    seen("tool", kind);
     if (!drop) return placeOnBoard(ex, [liveElement(kind)]);
     const [w, h] = LIVE_SIZES[kind];
     const el = liveElement(kind, drop.x - w / 2, drop.y - h / 2);
@@ -583,6 +589,7 @@ export function BoardPage({ id }: { id: string }) {
   const openNew = (kind: ToolKind, start?: string, drop?: { client: [number, number]; scene: { x: number; y: number } }) => {
     const ex = excalidraw.current;
     if (!ex) return;
+    seen("tool", kind);
     if (panelRef.current) closePanel();
     const { width, height, offsetLeft, offsetTop } = ex.getAppState();
     const [x, y] = drop?.client ?? [offsetLeft + width / 2, offsetTop + height / 2];

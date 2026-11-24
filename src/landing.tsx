@@ -9,6 +9,7 @@ import { detectLang, LANGS, type Lang } from "./langs";
 import { about as en } from "./locales/about/en";
 import { about as ka } from "./locales/about/ka";
 import { about as ru } from "./locales/about/ru";
+import { seen, startUsage } from "./usage";
 import "./styles.css";
 
 const WORDS = { en, ka, ru };
@@ -31,7 +32,7 @@ function Page() {
     }
   };
   const a = WORDS[lang];
-  const tryPractice = <a className="z-btn z-btn-ink" href="practice/">{a.tryPractice}</a>;
+  const tryPractice = <a className="z-btn z-btn-ink" href="practice/" onClick={() => seen("step", "try practice")}>{a.tryPractice}</a>;
   return (
     <Landing
       a={a}
@@ -49,13 +50,16 @@ function Page() {
       ctas={
         <>
           {tryPractice}
-          <a className="z-btn z-btn-line" href={INSTALL}>{a.getZeno}</a>
+          <a className="z-btn z-btn-line" href={INSTALL} onClick={() => seen("step", "get Zeno")}>{a.getZeno}</a>
         </>
       }
       endCta={tryPractice}
     />
   );
 }
+
+// Counted only when the build was told which Zeno server to report to (VITE_USAGE_URL, see usage.ts).
+startUsage("front page", import.meta.env.VITE_USAGE_URL as string | undefined);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

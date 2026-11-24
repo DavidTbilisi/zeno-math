@@ -88,6 +88,7 @@ Environment variables:
   the last day is allowed ten times `PASSWORD_ATTEMPTS`, so a class sharing a school's address isn't locked out by
   its typos.
 - `BACKUP_KEEP`: daily backups to keep, 7 by default; 0 turns them off.
+- `USAGE`: `off` stops the anonymous usage counts; see *Usage counts*.
 - `SMTP_HOST`, `MAIL_FROM` and `PUBLIC_URL`: all three turn on mail for accounts; see *Accounts and mail*.
   `SMTP_PORT` (587 by default), `SMTP_USER` and `SMTP_PASSWORD` go with them.
 
@@ -125,8 +126,29 @@ time of the first try as well as the report's, since four timed-out tries take a
 `UPTIME_URL` secret (`gh secret set UPTIME_URL`), so a fork without it checks nothing.
 
 The database records its schema version, and a newer Zeno's database is refused rather than misread. The server sends a Content-Security-Policy and the
-usual security headers, accepts only JSON request bodies (so a form on another site can't post to it) and refuses scenes it
-couldn't load back.
+usual security headers, accepts only JSON request bodies (so a form on another site can't post to it; the usage counts
+apart, which take event names from anyone) and refuses scenes it couldn't load back.
+
+## Usage counts
+
+To show what is worth improving, Zeno counts how it is used, without learning who uses it. The browser sends the
+names of what happens (a page opened, a tool put on a board, a practice skill tried, an account made, a class joined,
+a script error, the site a visitor came from, the size of the screen, the language) and the server adds each to a
+count for the day. That table, `usage_counts` in `boards.db`, holds a day, a kind, a name and two numbers: how many
+times, and in how many visits. A visit is one page load, told apart only inside the browser's memory while the page is
+open, so there is no cookie, no visitor id and no address in it, and nothing goes to any other server. Names that
+could point at someone are never sent: a board is "board", a join link "join", and an error's message loses any id,
+code or email it quoted. Counts older than two years are deleted.
+
+A teacher reads them at `#/teacher/usage` (linked under the class list), behind the teacher password. Sending them
+needs no password, since the front page is open to anyone, so what is taken is bounded: fixed kinds, short plain
+names, a thousand names of a kind a day, three thousand events per address in ten minutes. `USAGE=off` stops the
+counting; what was counted before stays readable. Browsers driven by a program (the tests, the README recordings)
+send nothing.
+
+The front page and practice published on GitHub Pages have no server of their own. They report to a Zeno server only
+when the build is given its address in `VITE_USAGE_URL`, which the Pages workflow takes from the repository variable
+`USAGE_URL` (`gh variable set USAGE_URL --body https://zeno.example/api/usage`); a fork without it counts nothing.
 
 ## Accounts and mail
 
