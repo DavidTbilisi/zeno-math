@@ -16,6 +16,7 @@ import { CloserTo } from "./CloserTo";
 import { Divisible } from "./Divisible";
 import { PrimeSlice } from "./PrimeSlice";
 import { Kakooma } from "./Kakooma";
+import { NumberRain } from "./NumberRain";
 import { LongDivision } from "./LongDivision";
 import { EquivMatch } from "./EquivMatch";
 import { Estimate } from "./Estimate";
@@ -158,6 +159,8 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   divisible: Divisible,
   primeSlice: PrimeSlice,
   kakooma: Kakooma,
+  rainPlus: NumberRain,
+  rainTimes: NumberRain,
   fractionWall: FractionWall,
   equivMatch: EquivMatch,
   fracOrder: FracOrder,

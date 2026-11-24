@@ -2080,6 +2080,23 @@ function kakoomaPreview(): Piece[] {
   ];
 }
 
+/** Number rain: three tiles on their way down, the lowest ringed, and a block landed with its answer. */
+function rainPreview(facts: [string, string, string], landed: string): Piece[] {
+  return [
+    rect(0, 0, 220, 150, { fill: "#ffffff", width: 1.5 }, true),
+    rect(118, 12, 92, 30, { fill: FILL.gray, width: 1.5 }, true),
+    text(164, 27, facts[0], 17),
+    rect(10, 46, 92, 30, { fill: FILL.gray, width: 1.5 }, true),
+    text(56, 61, facts[1], 17),
+    rect(118, 84, 92, 30, { fill: FILL.blue, color: "#1971c2", width: 3 }, true),
+    text(164, 99, facts[2], 17),
+    rect(10, 118, 92, 30, { fill: "#fff5f5", color: "#c92a2a", width: 1.5 }, true),
+    text(56, 133, landed, 15),
+  ];
+}
+const rainPlusPreview = () => rainPreview(["9 − 4", "3 + □ = 10", "8 + 5"], "7 + 6 = 13");
+const rainTimesPreview = () => rainPreview(["56 ÷ 7", "9 × 4", "6 × 7"], "8 × 7 = 56");
+
 function targetPreview(): Piece[] {
   // The target, and four cards beneath it.
   return [
@@ -2302,6 +2319,8 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDivisible", build: divisiblePreview, live: "divisible" },
   { id: "livePrimeSlice", build: primeSlicePreview, live: "primeSlice" },
   { id: "liveKakooma", build: kakoomaPreview, live: "kakooma" },
+  { id: "liveRainPlus", build: rainPlusPreview, live: "rainPlus" },
+  { id: "liveRainTimes", build: rainTimesPreview, live: "rainTimes" },
   { id: "liveFractionWall", build: fractionWallPreview, live: "fractionWall" },
   { id: "liveEquivMatch", build: equivMatchPreview, live: "equivMatch" },
   { id: "liveFracOrder", build: fracOrderPreview, live: "fracOrder" },

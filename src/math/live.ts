@@ -12,6 +12,7 @@ import type { LiveNear } from "./benchmark";
 import type { LiveDivisible } from "./divisible";
 import type { LivePrimeSlice } from "./primeSlice";
 import type { LiveKakooma } from "./kakooma";
+import { rainStart, type LiveRain } from "./numberRain";
 import type { LiveWall } from "./fractionWall";
 import type { LiveEquiv } from "./equivMatch";
 import type { LiveOrder } from "./fracOrder";
@@ -559,6 +560,8 @@ export type LiveStates = {
   divisible: LiveDivisible;
   primeSlice: LivePrimeSlice;
   kakooma: LiveKakooma;
+  rainPlus: LiveRain;
+  rainTimes: LiveRain;
   fractionWall: LiveWall;
   equivMatch: LiveEquiv;
   fracOrder: LiveOrder;
@@ -692,6 +695,8 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   divisible: [600, 510],
   primeSlice: [640, 560],
   kakooma: [600, 600],
+  rainPlus: [640, 680],
+  rainTimes: [640, 680],
   fractionWall: [660, 400],
   equivMatch: [620, 480],
   fracOrder: [720, 470],
@@ -827,6 +832,8 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     divisible: { mode: "puzzle", stage: 0, level: 1, seed: 1, chosen: [], wrong: [], misses: 0, hint: null, done: false, streak: 0, said: null },
     primeSlice: { mode: "puzzle", stage: 0, level: 1, seed: 1, done: false, cuts: 0, spared: 0, slips: 0, marks: [], streak: 0, said: null },
     kakooma: { mode: "puzzle", stage: 0, level: 1, seed: 1, solved: [], wrong: null, misses: 0, hinted: false, streak: 0, said: null },
+    rainPlus: rainStart("plus"),
+    rainTimes: rainStart("times"),
     fractionWall: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], best: 0, streak: 0, said: null },
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     fracOrder: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], sel: 0, checked: false, streak: 0, said: null },

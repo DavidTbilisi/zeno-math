@@ -17,6 +17,8 @@ export const ACHIEVED_KEY = "zeno.achieved.v1";
 export const PREDICTIONS_KEY = "zeno.predictions.v1";
 export const TODAY_KEY = "zeno.today.v1";
 export const GOAL_KEY = "zeno.goal";
+/** The book of number facts the fact games keep (src/math/facts.ts): how each fact has gone. */
+export const FACTS_KEY = "zeno.facts.v1";
 
 /**
  * Keys shaped like progress that stay with the browser: who is signed in and what waits to be sent (the account
@@ -94,6 +96,7 @@ function union(kept: Obj, sent: Obj, pick: (kept: unknown, sent: unknown) => unk
  * - first guesses: every guess of both, the earlier where both made one;
  * - free practice: the copy with more questions answered (its records are one learner model, not to be mixed);
  * - today's session: the later day's, or on one day the copy with more parts done;
+ * - the book of number facts: every fact of both, and where both have one, the copy asked more often;
  * - a ladder: see mergeLadder;
  * - anything else, or a copy that can't be read: the one sent, which is the newer.
  */
@@ -108,7 +111,8 @@ export function mergeState(key: string, kept: string, sent: string): string {
   else if (key === TODAY_KEY) {
     const day = String(a.day ?? "").localeCompare(String(b.day ?? ""));
     return day > 0 || (day === 0 && list(a.done).length > list(b.done).length) ? kept : sent;
-  } else if (Array.isArray(a.stars) && Array.isArray(b.stars)) merged = mergeLadder(a, b);
+  } else if (key === FACTS_KEY) merged = union(a, b, (x, y) => (isObj(x) && isObj(y) ? (num(x.n) > num(y.n) ? x : y) : (y ?? x)));
+  else if (Array.isArray(a.stars) && Array.isArray(b.stars)) merged = mergeLadder(a, b);
   else return sent;
   // When the copy sent already says it all, it is kept as it was sent, so the browser has nothing to take back.
   const text = JSON.stringify(merged);
