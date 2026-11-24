@@ -51,6 +51,7 @@ import type { TriangleSidesWords } from "./sidesAndSecants";
 import type { TargetPuzzle } from "./target";
 import type { DurationStems } from "./timePics";
 import type { TrigRuleWords } from "./trigRules";
+import type { Mark, MarkedSentence } from "./wordMarks";
 
 export type Level = 1 | 2 | 3;
 
@@ -187,10 +188,36 @@ export type Exercise = {
   worked?: Part[];
   /** Answered by doing rather than typing: a shape made on a grid, a pin put on a line (the answer is still text). */
   play?: Play;
+  /**
+   * A word problem in its sentences, each with its right mark (wordMarks.ts): the prompt is these read in order. In
+   * practice the student marks them before solving (issue #582).
+   */
+  marked?: MarkedSentence[];
 };
 
 /** A step of a question: a question without its skill, level and seed, which are the question's. */
 export type Part = Omit<Exercise, "skill" | "level" | "seed" | "worked">;
+
+/** The words of marking a word problem: each mark's name and why a sentence has it, and the steps around them. */
+export type MarkWords = {
+  /** What to do, over the sentences. */
+  intro: string;
+  /** The keys, for the keyboard. */
+  keys: string;
+  /** The sentences' group, and the marks' group, for a screen reader. */
+  sentences: string;
+  marks: string;
+  name: Record<Mark, string>;
+  /** On a relation: whose amount is bigger? */
+  bigger: string;
+  /** A relation's tag with the bigger picked: "Relation · Ann more". */
+  biggerTag: string;
+  check: string;
+  allRight: string;
+  /** One wrong mark pointed out: "this sentence is {mark}." and why. */
+  wrong: string;
+  why: Record<Mark, string>;
+};
 
 export type PracticeWords = {
   practicalTrig: {
@@ -676,6 +703,8 @@ export type PracticeWords = {
     inSteps: string;
     workedExample: string;
     fadedIntro: string;
+    /** Marking a word problem before solving it (MarkProblem.tsx, issue #582). */
+    mark: MarkWords;
     given: string;
     stepOf: string;
     showStep: string;

@@ -866,6 +866,28 @@ test("faded worked examples: checked, stored, replayed into the plan's fading, k
   assert.equal((await call("POST", "/api/attempts", attempt(withIt, example))).status, 201);
 });
 
+test("marking a word problem first (issue #582): one mark per sentence, stored and exported, only from the arm with it", async () => {
+  const { code } = (await call("POST", "/api/classes", { name: "Mark", skills: ["barModels"], feature: "marking" }, TEACHER)).body;
+  const joined = [];
+  for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: code })).body);
+  const withIt = joined.find((j) => j.arm === "on").code;
+  const without = joined.find((j) => j.arm === "off").code;
+  const q = { skill: "barModels", level: 2, seed: 3, policy: "adaptive", answers: [{ verdict: "correct", ms: 9000 }] };
+  const n = exercise("barModels", 2, 3, en.pracWords).marked!.length;
+  const picks = Array.from({ length: n }, (_, i) => (i === n - 1 ? "asked" : i === 0 ? "relation:1" : "given"));
+  const marks = { picks, ms: 21000 };
+  for (const bad of [{ picks: picks.slice(1), ms: 1 }, { picks: [...picks.slice(1), "maybe"], ms: 1 }, { picks, ms: -1 }, { picks }, picks])
+    assert.deepEqual((await call("POST", "/api/attempts", attempt(withIt, { ...q, marks: bad }))).body, { error: "invalid marks" }, JSON.stringify(bad));
+  // Only a word problem has sentences to mark.
+  assert.deepEqual((await call("POST", "/api/attempts", attempt(withIt, { policy: "free", marks }))).body, { error: "invalid marks" });
+  assert.deepEqual((await call("POST", "/api/attempts", attempt(without, { ...q, marks }))).body, { error: "invalid marks" });
+  assert.equal((await call("POST", "/api/attempts", attempt(withIt, { ...q, marks }))).status, 201);
+  assert.equal((await call("POST", "/api/attempts", attempt(without, q))).status, 201);
+  const rows = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
+  assert.deepEqual(rows.map((r) => (r.marks ? JSON.parse(r.marks) : null)), [marks, null]);
+  assert.deepEqual(rows.map((r) => r.arm), ["on", "off"]);
+});
+
 test("targeted step-down: only the arm with it, two early misses step down to the weakest idea, three questions, then back, as the browser has it", async () => {
   const code = (await call("POST", "/api/classes", { name: "Step down", skills: ["fractions"], feature: "stepdown" }, TEACHER)).body.code;
   const joined = [];

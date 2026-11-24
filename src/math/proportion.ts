@@ -4,7 +4,11 @@
 // a table that shows which of the two it is, and a graph through the origin or a curve (medium); y in proportion to
 // x², x³, √x or 1/x², x found back from y, and how y changes when x is scaled (hard). The usual slips are the answers:
 // an inverse case worked as direct, a direct one as inverse, the power left out, and the square root forgotten.
+//
+// The word problems are told in sentences (WORD_STORY), so they can be marked before they are solved (wordMarks.ts,
+// issue #582): what each says follows from the working, the amount for one or the product that stays the same.
 import { C, esc, FONT, r2 } from "./chart";
+import { markSentences, usesOf, type Clause, type MarkedSentence } from "./wordMarks";
 
 type Next = () => number;
 const intOf = (next: Next) => (lo: number, hi: number) => lo + Math.floor(next() * (hi - lo + 1));
@@ -15,14 +19,14 @@ export type ProportionMistake = "inverseAsDirect" | "directAsInverse" | "powerIg
 export type Trap = { id: ProportionMistake; v: number; vars: Record<string, string | number> };
 export type Pic = { body: string; w: number; h: number };
 
-/** The prompts, one per kind of question (the locale's `proportion` block). */
+/** The prompts, one per kind of question (the locale's `proportion` block); a word problem's in its sentences (WORD_STORY). */
 export type ProportionWords = {
-  books: string;
-  dumplings: string;
-  fuel: string;
-  workers: string;
-  pipes: string;
-  speed: string;
+  books: readonly string[];
+  dumplings: readonly string[];
+  fuel: readonly string[];
+  workers: readonly string[];
+  pipes: readonly string[];
+  speed: readonly string[];
   kDirect: string;
   kInverse: string;
   direct: string;
@@ -104,10 +108,29 @@ export function graphSvg(f: GraphFig): Pic {
 
 // ---------- level 1: in words ----------
 
+export const WORD_KINDS = ["books", "dumplings", "fuel", "workers", "pipes", "speed"] as const;
+export type WordKind = (typeof WORD_KINDS)[number];
+/** Two quantities that grow together; the others are inverse. */
+const DIRECT_WORDS: readonly WordKind[] = ["books", "dumplings", "fuel"];
+/** Every word problem's sentences: n of one go with t of the other; m of the first go with how many? */
+export const WORD_STORY: readonly Clause[] = [{ says: ["n", "t"] }, { asks: true, says: ["m"] }];
+export const isWordKind = (k: ProportionKind): k is WordKind => (WORD_KINDS as readonly string[]).includes(k);
+
+/** A word problem's answer from its numbers: through the amount for one (direct) or the product that stays the same. */
+export const wordAnswer = (kind: WordKind, v: Record<string, number>): number => (DIRECT_WORDS.includes(kind) ? (v.t / v.n) * v.m : (v.n * v.t) / v.m);
+
+/** A word problem's sentences filled in, each with its right mark (wordMarks.ts). */
+export function wordSentences(q: ProportionQuestion, words: ProportionWords, fill: (template: string) => string): MarkedSentence[] {
+  if (!isWordKind(q.kind)) return [];
+  const kind = q.kind;
+  const vars = q.vars as Record<string, number>;
+  return markSentences(WORD_STORY, words[kind].map(fill), usesOf((v) => wordAnswer(kind, v), vars));
+}
+
 /** Level 1: a word problem, direct (the amount for one, then times) or inverse (the product, then divided). */
 export function wordQuestion(next: Next): ProportionQuestion {
   const int = intOf(next);
-  const kind = (["books", "dumplings", "fuel", "workers", "pipes", "speed"] as const)[int(0, 5)];
+  const kind = WORD_KINDS[int(0, 5)];
   if (kind === "books" || kind === "dumplings" || kind === "fuel") {
     // n of one for t of the other; m of the first for? The amount for one, u, is whole.
     const [n, u] = kind === "books" ? [int(5, 30), int(2, 4)] : kind === "dumplings" ? [int(2, 6), int(3, 9)] : [int(2, 8), int(8, 16)];

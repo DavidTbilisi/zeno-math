@@ -27,7 +27,8 @@ import { initPredictions, recordPrediction } from "./predictions.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
-import { judgeBreak, mark, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
+import { PICK_CODES } from "../src/model/pickCodes.ts";
+import { judgeBreak, mark, markCount, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
 import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordPaperTest, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
@@ -140,6 +141,8 @@ export function initResearch(db: DatabaseSync) {
   // How the question felt to the student once it was over (easy, right or hard: too easy, about right, too hard), or
   // NULL: they didn't say.
   add("attempts", "rated", "TEXT");
+  // A word problem marked before it was solved (src/math/wordMarks.ts, #582): {picks, ms} as JSON, or NULL: not marked.
+  add("attempts", "marks", "TEXT");
   // A worked answer judged (src/math/whereItBreaks.ts): {variant, said, step?, picked?} as JSON, or NULL: a question
   // answered.
   add("attempts", "breaks", "TEXT");
@@ -353,6 +356,8 @@ export type AttemptRow = {
   faded?: number;
   /** How the question felt to the student once it was over: too easy, about right or too hard. */
   rated?: Rating;
+  /** A word problem's sentences marked before it was solved: a mark per sentence, and how long marking took. */
+  marks?: { picks: string[]; ms: number };
   /** A worked answer judged: which working was shown, and what the student said of it. */
   breaks?: BreakAnswer;
 };
@@ -360,7 +365,7 @@ export type AttemptRow = {
 /** Checks an uploaded attempt and works out the summary columns from its answers, so they can't disagree. */
 export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   const bad = (what: string) => new HttpError(400, `invalid ${what}`);
-  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard, steps, faded, rated, breaks } = body;
+  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard, steps, faded, rated, marks, breaks } = body;
   if (typeof clientId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(clientId)) throw bad("clientId");
   if (!oneOf(ALL_SKILLS, skill)) throw bad("skill");
   if (!isInt(level, 1, 3)) throw bad("level");
@@ -406,6 +411,12 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   if (hard !== undefined && (!hasIdeas(skill) || !Array.isArray(hard) || !hard.length || new Set(hard).size !== hard.length || !hard.every((h) => ideas.includes(h)))) throw bad("hard");
   // The student's word on the difficulty, asked only once the question is over (solved or its answer shown).
   if (rated !== undefined && (!oneOf(RATINGS, rated) || outcome === "skipped")) throw bad("rated");
+  // The marks: one per sentence of the question's marked version, so only on a word problem, each a mark there is.
+  if (marks !== undefined) {
+    const m = marks as { picks?: unknown; ms?: unknown };
+    const n = markCount({ skill, level, seed });
+    if (!m || typeof m !== "object" || !Array.isArray(m.picks) || !n || m.picks.length !== n || !m.picks.every((p) => oneOf(PICK_CODES, p)) || !isInt(m.ms, 0, DAY)) throw bad("marks");
+  }
   // The steps: after a wrong first answer on a skill worked in steps then, no more than the question has, each
   // answered or shown; or a faded worked example's, below.
   let stepList: Step[] | undefined;
@@ -434,6 +445,7 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
     ...(stepList ? { steps: stepList } : {}),
     ...(faded !== undefined ? { faded: faded as number } : {}),
     ...(rated !== undefined ? { rated: rated as Rating } : {}),
+    ...(marks !== undefined ? { marks: { picks: [...(marks as { picks: string[] }).picks], ms: (marks as { ms: number }).ms } } : {}),
     ...(judged ? { breaks: judged } : {}),
   };
 }
@@ -466,7 +478,7 @@ const csvCell = (v: unknown) => {
 };
 const CSV_COLUMNS = [
   "attempt", "student", "class", "feature", "arm", "condition", "policy", "predicted", "area", "skill", "level", "seed", "review", "outcome", "first_correct", "wrongs",
-  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "steps", "faded", "rated", "breaks", "remarked", "late", "shown_at", "created_at",
+  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "steps", "faded", "rated", "marks", "breaks", "remarked", "late", "shown_at", "created_at",
 ] as const;
 
 const TEST_CSV_COLUMNS = [
@@ -688,6 +700,7 @@ export async function handleResearch(
     if (a.steps && !hasFeature(student, "steps")) throw new HttpError(400, "invalid steps");
     if (a.hard && !hasFeature(student, "hard")) throw new HttpError(400, "invalid hard");
     if (a.faded && !hasFeature(student, "faded")) throw new HttpError(400, "invalid faded");
+    if (a.marks && !hasFeature(student, "marking")) throw new HttpError(400, "invalid marks");
     if (a.breaks && !hasFeature(student, "breaks")) throw new HttpError(400, "invalid breaks");
     // Homework is the student's own questions: an answer to anything else isn't homework.
     if (a.policy === "homework" && !isHomework(db, student.id, a)) throw new HttpError(400, "invalid policy");
@@ -696,12 +709,12 @@ export async function handleResearch(
     const late = (classPractice || a.policy === "stepdown" || a.policy === "breaks") && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
     const result = stmt(db, `
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
-        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, faded, rated, breaks, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, faded, rated, marks, breaks, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       a.clientId, student.id, a.skill, a.level, a.seed, Number(a.review), a.outcome, a.policy, a.predicted, Number(a.firstCorrect), a.wrongs, a.retries,
       Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), a.hard ? JSON.stringify(a.hard) : null,
-      a.steps ? JSON.stringify(a.steps) : null, a.faded ?? null, a.rated ?? null, a.breaks ? JSON.stringify(a.breaks) : null, now,
+      a.steps ? JSON.stringify(a.steps) : null, a.faded ?? null, a.rated ?? null, a.marks ? JSON.stringify(a.marks) : null, a.breaks ? JSON.stringify(a.breaks) : null, now,
     );
     // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
     return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
@@ -719,7 +732,7 @@ export async function handleResearch(
     teacher(req);
     const rows = forClass(query.get("class"), `
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, c.feature, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
-        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.faded, a.rated, a.breaks, a.remarked, a.late, a.shown_at, a.created_at,
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.faded, a.rated, a.marks, a.breaks, a.remarked, a.late, a.shown_at, a.created_at,
         json_array_length(a.answers) AS n_answers
       FROM attempts a JOIN students s ON s.id = a.student_id JOIN classes c ON c.code = s.class_code
       {where}

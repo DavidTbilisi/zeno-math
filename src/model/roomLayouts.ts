@@ -1,0 +1,61 @@
+// Written by `npm run room-layouts -- --write` (scripts/room-layouts.ts); see roomLayout.ts. Do not edit by hand.
+import type { GoalId } from "./roadmap.ts";
+import type { GoalRooms } from "./roomLayout.ts";
+
+export const ROOM_LAYOUTS: Readonly<Partial<Record<GoalId, GoalRooms>>> = {
+  software: {
+    "numbers": ["read:numberTheory","skill:bases","skill:divisibility","skill:hcf","skill:primes","skill:modular","skill:rounding","skill:floatingPoint","game:primeSlice"],
+    "logic": ["read:logic","skill:logic","skill:quantifiers","skill:proofs","skill:sets","skill:mappings","skill:relations"],
+    "counting": ["read:discrete","skill:sequences","skill:series","skill:induction","skill:recurrences","skill:counting","skill:inclusionExclusion","skill:pigeonhole"],
+    "graphs": ["skill:oneStroke","skill:shortestPath","skill:spanningTree","skill:colouring","skill:graphTheory","game:connectTowns","game:shortestPath"],
+    "algorithms": ["read:algorithms","skill:growth","skill:inversions","game:beSort","game:beSearch","game:beBinary","game:bePointers","game:beWindow","game:beStack","game:beHeap","game:beTree","game:beUnion","game:beTopo","game:beDp","game:beBacktrack"],
+    "chance": ["read:probability","skill:probability","skill:conditional","skill:expectation","skill:distributions"],
+    "graphics": ["read:vectors","skill:coordinates","skill:vectors","skill:dotangle","skill:matrices","skill:determinant","skill:linearMaps","lab:geoLab"],
+    "crypto": ["skill:congruences","skill:crt","skill:fermatEuler","skill:rsa","skill:discreteLog"],
+  },
+  algorithms: {
+    "steps": ["read:logic","skill:logic","skill:proofs","skill:sequences","skill:series","skill:induction","skill:recurrences"],
+    "counting": ["read:discrete","skill:counting","skill:generating","skill:pigeonhole","skill:inclusionExclusion","skill:probability","skill:expectation"],
+    "graphs": ["skill:graphTheory","skill:shortestPath","skill:spanningTree","game:connectTowns","game:shortestPath"],
+    "search": ["read:algorithms","skill:growth","skill:inversions","game:beSearch","game:beBinary","game:beSort"],
+    "patterns": ["game:bePointers","game:beWindow","game:beStack","game:beHeap","game:beTree","game:beUnion","game:beTopo","game:beDp","game:beBacktrack","game:beName"],
+    "systems": ["game:beCache","game:beBalance","game:beRing","game:beLimit","game:beQuorum","game:beQueue","game:beComp"],
+  },
+  finance: {
+    "number": ["read:fractions","skill:decimals","skill:percent","skill:ratio","skill:rate","skill:inflation","skill:rounding","skill:readChart","skill:diagrams","skill:average","game:barChart"],
+    "growth": ["read:algebra","skill:linear","skill:proportion","skill:formulae","skill:indices","skill:logs","skill:sequences","skill:series","skill:functions"],
+    "change": ["read:calculus","skill:differentiate","skill:stationary","skill:integrate","skill:partials"],
+    "chance": ["read:probability","skill:probability","skill:conditional","skill:expectation","skill:distributions","skill:randomWalks"],
+    "data": ["read:statistics","skill:correlation","skill:regression","skill:hypothesis","skill:ci"],
+    "pricing": ["read:finance","skill:interestRates","skill:amortisation","skill:npv","skill:bonds","skill:binomialPricing","skill:brownian","skill:optionPricing"],
+  },
+  banking: {
+    "money": ["read:numbers","skill:money","skill:integers","skill:decimals","skill:rounding","skill:percent","skill:ratio","skill:rate","skill:currency","skill:inflation","game:estimate"],
+    "formulae": ["read:algebra","skill:formulae","skill:linear","skill:proportion","skill:indices","skill:logs","game:balance"],
+    "interest": ["read:finance","skill:sequences","skill:series","skill:interestRates","skill:amortisation","skill:npv","skill:bonds"],
+    "charts": ["read:statistics","skill:readChart","skill:diagrams","skill:graphStory","skill:average","game:barChart","game:graphStory"],
+    "risk": ["read:probability","skill:probability","skill:conditional","skill:expectation","skill:distributions","skill:correlation"],
+  },
+  ml: {
+    "number": ["skill:quickLook","skill:compare","skill:ordinals","skill:estimateLine","skill:closerTo","skill:times","skill:money","skill:time","skill:measure","skill:barModels","skill:readChart","skill:diagrams","skill:makeTarget","skill:kakooma","skill:oneStroke","skill:colouring","skill:shortestPath","skill:spanningTree","skill:integers","skill:parity","skill:order","skill:inversions","skill:shadeFraction","skill:compareFractions","skill:equivalent","skill:orderFractions","skill:makeWhole","skill:fractions","skill:decimals","skill:percent","skill:ratio","skill:rate","skill:rounding","skill:divisibility","skill:hcf","skill:primes","skill:bases","skill:modular","skill:average","skill:currency","skill:inflation"],
+    "algebra": ["skill:shapePatterns","skill:shapeArea","skill:symmetryLines","skill:estimateAngle","skill:cubeNets","skill:coordinates","skill:missingAngle","skill:triangleInequality","skill:findRule","skill:growingPattern","skill:balance","skill:sameExpression","skill:graphStory","skill:linear","skill:proportion","skill:inequalities","skill:expand","skill:factor","skill:algFractions","skill:formulae","skill:slope","skill:line","skill:distance","skill:righttri","skill:practicalTrig","skill:trigRules","skill:similarity","skill:volume","skill:circles","skill:powerPoint","skill:arcs","skill:indices","skill:simultaneous","skill:quadratic","skill:surds","skill:trigexact","skill:sequences","skill:series","skill:logs","skill:polynomials","skill:functions","skill:identities","skill:complex","skill:polarForm","skill:deMoivre","skill:bezout","skill:congruences","skill:crt","skill:fermatEuler","skill:rsa","skill:residues","skill:discreteLog","skill:elGamal","skill:ellipticCurves","skill:groups","skill:elementOrder","skill:subgroups","skill:permutations","skill:homomorphisms","skill:rings","skill:polyRings","skill:fieldExt","skill:finiteFields","skill:galois","skill:vectors","skill:dotangle","skill:nonEuclidean","skill:projective"],
+    "calculus": ["skill:differentiate","skill:tangent","skill:stationary","skill:integrate","skill:definite","skill:numroots","skill:numint","skill:limits","skill:implicit","skill:intTechniques","skill:improper","skill:intApplications","skill:taylor","skill:powerSeries","skill:convergence","skill:partials","skill:chainMulti","skill:extremaMulti","skill:multipleIntegrals","skill:changeVariables","skill:lineIntegrals","skill:vectorTheorems","skill:odeFirst","skill:odeSecond","skill:laplace","skill:bifurcations","skill:iteratedMaps","skill:lyapunov","skill:supInf","skill:seqLimits","skill:epsilonDelta","skill:mvt","skill:riemann","skill:uniform","skill:analytic","skill:contour","skill:laurent","skill:residueCalc","skill:metrics","skill:openClosed","skill:compactness","skill:connected","skill:topologies","skill:floatingPoint","skill:interpolation","skill:numericalOde","skill:convergenceOrder","skill:fourier","skill:pdeClassify","skill:separation","skill:lebesgueMeasure","skill:simpleIntegrals","skill:convergenceTheorems","skill:curves","skill:surfaces"],
+    "linear": ["skill:projection","skill:matrices","skill:determinant","skill:elimination","skill:eigen","skill:subspaces","skill:basis","skill:rankNullity","skill:linearMaps","skill:innerProducts","skill:spectral","skill:svd","skill:linearSolvers","skill:odeSystems","skill:stability","skill:norms","skill:operatorNorms","skill:hilbertSpaces","lab:tensorLab","lab:pcaLab","lab:embedLab"],
+    "probability": ["skill:probability","skill:counting","skill:ci","skill:proofs","skill:logic","skill:quantifiers","skill:sets","skill:mappings","skill:relations","skill:induction","skill:cardinality","skill:recurrences","skill:growth","skill:generating","skill:inclusionExclusion","skill:pigeonhole","skill:graphTheory","skill:normalForms","skill:structures","skill:ordinalArith","skill:expectation","skill:conditional","skill:distributions","skill:correlation","skill:hypothesis","skill:densities","skill:jointDist","skill:mgf","skill:limitTheorems","skill:estimators","skill:mle","skill:regression","skill:chiSquared","skill:anova","skill:bayes","skill:markov","skill:randomWalks","skill:poissonProcess","skill:brownian","skill:interestRates","skill:amortisation","skill:npv","skill:bonds","skill:binomialPricing","skill:optionPricing","lab:softmaxLab","lab:rocLab"],
+    "optimisation": ["skill:linearProgramming","skill:simplex","skill:convex","skill:normalForm","skill:mixedNash","skill:backwardInduction","skill:descent","lab:descentLab","lab:batchLab","lab:fitLab"],
+    "classical": ["skill:overfitting","skill:precision","skill:clustering","lab:knnLab","lab:treeLab","lab:kmeansLab"],
+    "deep": ["skill:backprop","skill:softmax","lab:nnLab","lab:backpropLab","lab:convLab","lab:rnnLab","lab:attnLab","lab:rlLab"],
+  },
+  school: {
+    "1": ["skill:quickLook","skill:compare.1","skill:ordinals","skill:shapePatterns.12","skill:estimateLine.1","skill:closerTo.1","skill:makeTarget.1","skill:kakooma.12"],
+    "2": ["skill:compare.2","skill:estimateLine.2","skill:money.1","skill:time.1","skill:measure.1","skill:diagrams.1","skill:shadeFraction.1","skill:compareFractions.1","skill:equivalent.1","skill:orderFractions.1","skill:growingPattern.1"],
+    "3": ["skill:shapePatterns.3","skill:times.1","skill:money.2","skill:time.2","skill:measure.23","skill:barModels.1","skill:shapeArea.1","skill:readChart","skill:estimateAngle.1","skill:kakooma.3","skill:shadeFraction.2","skill:compareFractions.23","skill:equivalent.2","skill:orderFractions.2","skill:makeWhole.1","skill:findRule.1"],
+    "4": ["skill:closerTo.23","skill:times.23","skill:money.3","skill:time.3","skill:barModels.2","skill:shapeArea.3","skill:diagrams.2","skill:symmetryLines","skill:estimateAngle.2","skill:cubeNets","skill:shadeFraction.3","skill:orderFractions.3","skill:decimals.1","skill:rounding.1","skill:divisibility","skill:hcf.13","skill:growingPattern.2"],
+    "5": ["skill:barModels.3","skill:shapeArea.2","skill:estimateAngle.3","skill:makeTarget.23","skill:equivalent.3","skill:makeWhole.23","skill:decimals.23","skill:percent.1","skill:rate.1","skill:missingAngle.12"],
+    "6": ["skill:diagrams.3","skill:fractions.12","skill:percent.23","skill:ratio","skill:rate.23","skill:average.1","skill:growingPattern.3","skill:balance.12","skill:sameExpression.1"],
+    "7": ["skill:compare.3","skill:estimateLine.3","skill:integers","skill:coordinates","skill:order","skill:fractions.3","skill:hcf.2","skill:primes","skill:missingAngle.3","skill:findRule.23","skill:sameExpression.23","skill:graphStory","skill:linear","skill:currency.12","skill:inflation.1","skill:slope","skill:volume.1","skill:sequences.1"],
+    "8": ["skill:average.2","skill:balance.3","skill:proportion","skill:currency.3","skill:inflation.2","skill:inequalities.12","skill:expand","skill:factor","skill:algFractions","skill:formulae","skill:righttri","skill:practicalTrig","skill:probability.1","skill:similarity.12","skill:volume.23","skill:simultaneous","skill:quadratic.12"],
+    "10": ["skill:rounding.2","skill:average.3","skill:inflation.3","skill:inequalities.3","skill:line","skill:distance","skill:trigRules","skill:probability.23","skill:similarity.3","skill:circles","skill:arcs","skill:indices","skill:quadratic.3","skill:surds","skill:trigexact","skill:logs","skill:polynomials","skill:identities","skill:vectors.1","skill:differentiate","skill:tangent","skill:stationary","skill:integrate.1","skill:definite.12","skill:matrices.1"],
+    "12": ["skill:counting","skill:sequences.23","skill:series","skill:functions","skill:complex","skill:polarForm","skill:vectors.23","skill:dotangle","skill:integrate.23","skill:definite.3","skill:implicit","skill:intTechniques","skill:intApplications.12","skill:taylor.12","skill:expectation","skill:conditional","skill:distributions","skill:correlation.12","skill:hypothesis","skill:projection"],
+  },
+};
