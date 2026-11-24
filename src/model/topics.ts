@@ -17,7 +17,7 @@ export type Topic = { id: TopicId; shelf: ShelfId; icon: string; skills: readonl
 export const TOPICS: readonly Topic[] = [
   {
     id: "numbers", shelf: "start", icon: "123",
-    skills: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "money", "time", "measure", "makeTarget", "kakooma", "integers", "order", "barModels", "rounding"],
+    skills: ["compare", "quickLook", "ordinals", "skipCount", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "money", "time", "measure", "makeTarget", "kakooma", "integers", "order", "barModels", "rounding"],
     sections: ["secCounting", "secCalculating", "secTime", "senseNumber", "senseFacts"],
   },
   {

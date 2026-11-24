@@ -900,6 +900,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     the left, then the position of the shape under an arrow counted from the left or the right (3, or 3rd), then the
     shape just before or after the 7th, counting from either side. Counting from the other end and the neighbour on the
     wrong side are named
+  - Counting in steps (in "Counting"; grades 1 and 2; #635): a row of numbers going on or back by the same step, with
+    one left out. In ones and in tens within 100 (27, 37, 47, □), and the tens and ones of a number; then in twos,
+    fives and tens with the gap anywhere after the first, and which of four numbers is odd or even; then in threes,
+    fours, twenties, twenty-fives, fifties and hundreds to 1000 with the gap anywhere, the step of a row asked for,
+    whether a count from 3 in fives will say 48, and whether 48 + 37 is odd without adding. One on from the last
+    number where the count goes further, the tens and the ones swapped or added, a number judged odd by its tens
+    digit and the numbers in between given for the step are named. The hundred square is where the steps are seen:
+    marked by hand, a count in tens runs down a column and a count in fives makes two columns
   - Number line estimation, answered by putting a pin on a line with only its ends labelled: 0 to 10 or 20, then 0 to
     100 or 1000, then fractions and decimals on 0 to 1 or negative numbers. Within 5 % of the line's length is right,
     within 10 % close, and a miss says which way the number is; the worked solution shows the number's place, how

@@ -1,6 +1,7 @@
 // The first skills in practice: a times-table fact answered with the sum (named), then the product; a decimal asked
 // for as a fraction and typed back (sent back, not marked), then the fraction; a rectangle's area with its unit; a
-// stacked fraction divided at the short bar (named), then at the long one.
+// stacked fraction divided at the short bar (named), then at the long one; a count in steps carried on by one (named),
+// then by its step.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { exercise, trapInputs, type Exercise, type Level, type SkillId } from "../src/math/practice.ts";
@@ -53,6 +54,17 @@ test("a stacked fraction: dividing at the short bar is named, then the long bar'
   await page.getByLabel("Your answer").fill(trapInputs(ex).find((t) => t.id === "stackWrongBar")!.input);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("divides at a short bar first")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("counting in steps: one on from the last number is named, then the step's answer is correct", async ({ page, request }) => {
+  const { r, ex } = find("skipCount", 2, (e) => trapInputs(e).some((t) => t.id === "stepOfOne"));
+  await practise(page, request, { tab: "Number", skill: w.skills.skipCount, level: "medium", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(trapInputs(ex).find((t) => t.id === "stepOfOne")!.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("This count moves")).toBeVisible();
   await page.getByLabel("Your answer").fill(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
