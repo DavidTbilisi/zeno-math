@@ -1993,6 +1993,18 @@ function rodsPreview(): Piece[] {
   ];
 }
 
+function areaBlocksPreview(): Piece[] {
+  // 12 × 13 as a rectangle of base-ten blocks: a hundred flat, three rods beside it, two rods under it and six cubes.
+  const u = 6;
+  const [h, t, o] = [{ fill: "#a5d8ff", color: "#1971c2", width: 1 }, { fill: "#b2f2bb", color: "#2f9e44", width: 1 }, { fill: "#ffd8a8", color: "#e8590c", width: 1 }];
+  return [
+    rect(0, 0, 10 * u, 10 * u, h),
+    ...[0, 1, 2].map((i) => rect((10 + i) * u, 0, u, 10 * u, t)),
+    ...[0, 1].map((i) => rect(0, (10 + i) * u, 10 * u, u, t)),
+    ...[0, 1, 2].flatMap((i) => [0, 1].map((j) => rect((10 + i) * u, (10 + j) * u, u, u, o))),
+  ];
+}
+
 function cubesPreview(): Piece[] {
   // Two trains of linking cubes, 4 red and 3 blue, then 5 yellow: each cube with the nub that links it on top.
   const cube = (x: number, y: number, fill: string, color: string) => [
@@ -2314,6 +2326,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCubes", build: cubesPreview, live: "cubes" },
   { id: "liveRekenrek", build: rekenrekPreview, live: "rekenrek" },
   { id: "liveRods", build: rodsPreview, live: "rods" },
+  { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
   { id: "liveSignPattern", build: signPatternPreview, live: "signPattern" },
