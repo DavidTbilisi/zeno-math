@@ -2,7 +2,8 @@
 // question of its own, with the bar model drawn as it is built: the bars first with their units, then with the numbers
 // found. Posts and trees are drawn as a fence or a pond with its gaps, and leftover and shortage is worked in lines.
 import { fill } from "../chart";
-import { barLevelQuestion, type BarModelWords, type BarQuestion } from "../barProblems";
+import { barLevelQuestion, barSentences, type BarModelWords, type BarQuestion } from "../barProblems";
+import { textOf } from "../wordMarks";
 import type { BarRow, BarModelSpec } from "../models";
 import { money, num } from "../practiceKit";
 import type { Exercise, Gen, Part, PracticeWords } from "../practiceTypes";
@@ -66,6 +67,8 @@ function linesOf(q: BarQuestion): string[] {
 export function barPart(q: BarQuestion, w: PracticeWords): Part & { worked: Part[] } {
   const W = w.barModels;
   const shown = Object.fromEntries(Object.entries(q.vars).map(([k, v]) => [k, q.money && MONEY_KEYS.has(k) ? money(w, v) : String(v)]));
+  // The problem in its sentences, each with its mark (marked first in practice, issue #582); the noise's number is z.
+  const marked = barSentences(q, W, (s) => fill(s, q.noise ? { ...shown, z: String(q.noise.z) } : shown));
   const stage = barsOf(q, W, false);
   const final = barsOf(q, W, true);
   const pic = q.form === "posts" || q.form === "loop" ? fencePic(q) : undefined;
@@ -79,9 +82,10 @@ export function barPart(q: BarQuestion, w: PracticeWords): Part & { worked: Part
     ...(stage ? { solution: { kind: "model" as const, spec: stage } } : { steps: linesOf(q) }),
   }));
   return {
-    prompt: fill(W.prompt[q.form], shown),
+    prompt: textOf(marked),
     q: "",
     pic,
+    marked,
     answer: { ...num(q.v), traps: q.trap ? [{ id: q.trap.id, a: num(q.trap.v), vars: q.trap.vars }] : [] },
     ...answer(q.v),
     ...(final ? { solution: { kind: "model" as const, spec: final } } : { steps: linesOf(q) }),

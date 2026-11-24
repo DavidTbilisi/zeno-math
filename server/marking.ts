@@ -15,6 +15,7 @@ const checker = (await import(bundled ?? "./checker.ts")) as typeof Checker;
 export type { Answered, Question, SteppedThrough } from "./checker.ts";
 export const mark = checker.mark;
 export const stepCount = checker.stepCount;
+export const markCount = checker.markCount;
 export const trackIdeas = checker.trackIdeas;
 export const trackFading = checker.trackFading;
 export const stepsAfterMiss = checker.stepsAfterMiss;

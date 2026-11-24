@@ -118,7 +118,7 @@ test("a covered corner's choices are different in every language, and the right 
 
 test("the card before a review is on trial: in a study, only the arm with it in a class testing it has it", () => {
   assert.ok(ON_TRIAL.includes("cards"));
-  assert.equal(FEATURES.at(-1), "cards", "a new feature joins at the end");
+  assert.ok(FEATURES.indexOf("cards") > FEATURES.indexOf("stepdown"), "joined at the end: the features before it keep their places");
   assert.equal(hasFeature({ feature: "cards", arm: "on" }, "cards"), true);
   assert.equal(hasFeature({ feature: "cards", arm: "off" }, "cards"), false);
   assert.equal(hasFeature({ feature: "spaced", arm: "on" }, "cards"), false, "not in a class testing something else");

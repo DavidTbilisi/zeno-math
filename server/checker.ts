@@ -44,6 +44,8 @@ export function mark(q: Question, input: string, step?: number): AnswerVerdict {
 }
 
 /** How many steps the question is worked in after a wrong answer (none for most questions). */
+/** How many sentences the question's marked version has (wordMarks.ts): 0 on a question that isn't a word problem. */
+export const markCount = (q: Question) => exercise(q.skill, q.level as Level, q.seed, en.pracWords).marked?.length ?? 0;
 export const stepCount = (q: Question) => stepsOf(exercise(q.skill, q.level as Level, q.seed, en.pracWords), en.pracWords).length;
 
 /** The mistake the checker recognises in a wrong answer (the answer a known mistake gives), if any. */

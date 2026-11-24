@@ -27,10 +27,16 @@ being given a second record that would split their answers and could put them in
   time, below.
 - *Targeted step-down:* after an early failure on a skill made of ideas, a few questions on its weakest idea, then
   back to the skill, below. It is on trial: nobody has it but the arm with it.
+- *Marking the word problem first* (issue #582): before a bar-model or proportion word problem is solved, the student
+  marks each sentence given, asked, not needed or relation (and on a relation, whose amount is bigger). Every mark
+  follows from the problem's structure: a sentence is given when the answer, worked again with its number changed,
+  changes. Medium and hard bar-model problems sometimes carry a sentence whose number the answer doesn't use. One
+  wrong mark is pointed out, then the problem is solved as before; the marks go with the attempt (`marks`) and move
+  nothing. It is on trial too.
 
 In a class testing anything but the choice of question, both arms practise adaptively, and only the feature under
 test differs: the arm without it goes without it, and every other feature stays on for both, but for a feature on
-trial (targeted step-down), which nobody else has. The server refuses an answer that shows a feature the student's
+trial (targeted step-down, marking the word problem first), which nobody else has. The server refuses an answer that shows a feature the student's
 arm hasn't got, so the arms can't mix. A new feature joins the list at the end, with its switch in the browser and
 its check on the server.
 
