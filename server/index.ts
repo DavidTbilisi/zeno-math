@@ -10,7 +10,7 @@ import { HttpError, readJson, send, sendJsonText } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { scheduleBackups } from "./backup.ts";
 import { rawJson, stmt } from "./db.ts";
-import { boardUser, classBoards, forgetModel, handleResearch, initResearch, RESEARCH_RESOURCES, type BoardUser } from "./research.ts";
+import { boardUser, classBoards, forgetModel, handleResearch, initResearch, RESEARCH_RESOURCES, studentIsAccounts, type BoardUser } from "./research.ts";
 import { handleAccount } from "./accounts.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
@@ -46,9 +46,14 @@ initResearch(db);
 if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some((c) => c.name === "student_id"))
   db.exec("ALTER TABLE boards ADD COLUMN student_id INTEGER REFERENCES students(id) ON DELETE CASCADE");
 db.exec("CREATE INDEX IF NOT EXISTS boards_student ON boards(student_id, updated_at)");
+// The account that made the board (#608), for a signed-in learner, in a class or not: a board made in a class carries
+// both, so the teacher still opens it by the student. Deleting the account deletes its boards.
+if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some((c) => c.name === "account_id"))
+  db.exec("ALTER TABLE boards ADD COLUMN account_id INTEGER REFERENCES accounts(id) ON DELETE CASCADE");
+db.exec("CREATE INDEX IF NOT EXISTS boards_account ON boards(account_id, updated_at)");
 // The schema this code writes. A database from a newer Zeno is refused rather than half understood; an older one has
 // just been brought up to date by the CREATE / ADD COLUMN steps above.
-const SCHEMA_VERSION = 7;
+const SCHEMA_VERSION = 8;
 const { user_version: found } = db.prepare("PRAGMA user_version").get() as { user_version: number };
 if (found > SCHEMA_VERSION) {
   console.error(`The database in ${DATA_DIR} is from a newer version of Zeno (schema ${found}; this one knows ${SCHEMA_VERSION}). Update Zeno.`);
@@ -117,14 +122,19 @@ function cleanTitle(value: unknown): string {
 }
 
 /**
- * A board as this user may reach it: their own (a teacher's are the teachers' boards, shared between them), or for a
- * teacher a student's board to read. Anyone else gets 404, as if it weren't there; a teacher changing a student's board
- * gets 403.
+ * A board as this user may reach it: their own (a teacher's are the teachers' boards, shared between them; a learner's
+ * are those made under their class record or their account), or for a teacher a student's board to read. Anyone else
+ * gets 404, as if it weren't there; a teacher changing a student's board gets 403. A board of an account in no class is
+ * nobody's but its owner's: no teacher has that learner in a class.
  */
 function boardFor(user: BoardUser, id: string, write: boolean): { own: boolean } {
-  const row = stmt(db, "SELECT student_id AS studentId FROM boards WHERE id = ?").get(id) as { studentId: number | null } | undefined;
-  const own = !!row && row.studentId === (user.teacher ? null : user.studentId);
-  if (!row || (!own && !user.teacher)) throw new HttpError(404, "no such board");
+  const row = stmt(db, "SELECT student_id AS studentId, account_id AS accountId FROM boards WHERE id = ?").get(id) as
+    { studentId: number | null; accountId: number | null } | undefined;
+  const own = !!row && (user.teacher
+    ? row.studentId === null && row.accountId === null
+    : (row.accountId !== null && row.accountId === user.accountId) ||
+      (row.studentId !== null && (row.studentId === user.studentId || (user.accountId !== null && studentIsAccounts(db, row.studentId, user.accountId)))));
+  if (!row || (!own && !(user.teacher && row.studentId !== null))) throw new HttpError(404, "no such board");
   if (!own && write) throw new HttpError(403, "a student's board is theirs to change");
   return { own };
 }
@@ -182,7 +192,8 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   }
   if (resource !== "boards") return send(res, 404, { error: "not found" });
   const user = boardUser(req, db);
-  const owner = user.teacher ? null : user.studentId;
+  const student = user.teacher ? null : user.studentId;
+  const account = user.teacher ? null : user.accountId;
 
   if (!id) {
     if (req.method === "GET") {
@@ -192,17 +203,22 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
         if (!user.teacher) throw new HttpError(403, "only a teacher sees a class's boards");
         return send(res, 200, classBoards(db, klass));
       }
-      const rows = stmt(db, `
-        SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards WHERE student_id IS ? ORDER BY updated_at DESC
-      `).all(owner);
+      // The teachers' boards are those with no owner; a learner's are those of their class record and of their
+      // account, which holds the boards of every class record it has had.
+      const rows = user.teacher
+        ? stmt(db, "SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards WHERE student_id IS NULL AND account_id IS NULL ORDER BY updated_at DESC").all()
+        : stmt(db, `
+            SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards
+            WHERE student_id = ?1 OR account_id = ?2 OR student_id IN (SELECT id FROM students WHERE account_id = ?2) ORDER BY updated_at DESC
+          `).all(student, account);
       return send(res, 200, rows);
     }
     if (req.method === "POST") {
       const body = await readJson(req);
       const now = Date.now();
       const board = { id: randomUUID(), title: cleanTitle(body.title), createdAt: now, updatedAt: now };
-      stmt(db, "INSERT INTO boards (id, title, scene, created_at, updated_at, student_id) VALUES (?, ?, '{}', ?, ?, ?)")
-        .run(board.id, board.title, now, now, owner);
+      stmt(db, "INSERT INTO boards (id, title, scene, created_at, updated_at, student_id, account_id) VALUES (?, ?, '{}', ?, ?, ?, ?)")
+        .run(board.id, board.title, now, now, student, account);
       return send(res, 201, board);
     }
     return send(res, 405, { error: "method not allowed" });

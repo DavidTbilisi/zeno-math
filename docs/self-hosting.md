@@ -18,11 +18,12 @@ APP_PASSWORD=choose-something docker compose up -d --build
 ```
 
 **Whose boards.** The site password lets people in, but says nothing about who they are, so it doesn't decide whose
-boards they see. A student's boards are theirs: the browser sends the student code they joined their class with, and
-another student can't see, change or delete them. The teachers' boards are shared by every teacher, and need the
-teacher password. A teacher can open a student's board from the class page to look at it, but only the student can
-change it. Someone with neither a student code nor the teacher password gets no boards. Set `TEACHER_PASSWORD`
-whenever students use Zeno: without one, anyone without a student code counts as a teacher.
+boards they see. A learner's boards are theirs: whoever is signed in to an account has the boards it made, in a class
+or not, on any device, and another learner can't see, change or delete them. (A student from before accounts has
+theirs by the student code their browser holds.) The teachers' boards are shared by every teacher, and need the
+teacher password. A teacher can open the board of a student in their class from the class page to look at it, but only
+the student can change it. Someone who is not signed in, with neither a student code nor the teacher password, gets no
+boards. Set `TEACHER_PASSWORD` whenever students use Zeno: without one, anyone not signed in counts as a teacher.
 
 Upgrading from a Zeno without board owners: every board already there becomes the teachers'. Boards weren't tied to
 anyone before, so the server can't tell which a student made.

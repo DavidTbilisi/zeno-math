@@ -12,7 +12,7 @@ export const en = {
   newBoard: "New board",
   untitled: "Untitled board",
   noBoards: "No boards yet. Create one to start solving.",
-  boardsNeedOwner: "Boards are kept for a class. Join your class in Practice with the code your teacher gave you, or sign in on the teacher's page.",
+  boardsNeedOwner: "Boards belong to whoever made them. Sign in to your account to have boards of your own, or sign in on the teacher's page.",
   open: "Open",
   delete: "Delete",
   rename: "Rename",

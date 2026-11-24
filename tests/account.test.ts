@@ -428,6 +428,59 @@ test("two devices keep one progress: each sends what changed and gets what it la
   db.close();
 });
 
+// ---------- boards (#608) ----------
+
+test("a signed-in learner has boards of their own, in a class or not, and nobody else reaches them", async () => {
+  const d = await signUp("boards@school.example", "Board Owner");
+  // In no class: the session alone says whose board it is.
+  const made = await d.call("POST", "/api/boards", { title: "Before any class" });
+  assert.equal(made.status, 201);
+  const own = made.body.id as string;
+  assert.deepEqual((await d.call("GET", "/api/boards")).body.map((b: { title: string }) => b.title), ["Before any class"]);
+  assert.equal((await d.call("PUT", `/api/boards/${own}`, { scene: { elements: [] } })).status, 200);
+
+  // Another device of theirs finds it; another account, and a teacher, don't: by the list or by its address.
+  const second = device();
+  await second.call("POST", "/api/account/session", { email: "boards@school.example", password: "long enough" });
+  assert.equal((await second.call("GET", `/api/boards/${own}`)).body.title, "Before any class");
+  const stranger = await signUp("stranger@school.example", "Stranger");
+  assert.deepEqual((await stranger.call("GET", "/api/boards")).body, []);
+  assert.equal((await stranger.call("GET", `/api/boards/${own}`)).status, 404);
+  assert.equal((await stranger.call("PUT", `/api/boards/${own}`, { title: "Mine now" })).status, 404);
+  assert.equal((await stranger.call("DELETE", `/api/boards/${own}`)).status, 404);
+  const teacher = { "X-Teacher-Password": "" };
+  assert.ok(!(await device().call("GET", "/api/boards", undefined, teacher)).body.some((b: { id: string }) => b.id === own));
+  assert.equal((await device().call("GET", `/api/boards/${own}`, undefined, teacher)).status, 404, "no teacher has this learner in a class");
+  // A teacher's tab is a teacher's even when its browser is signed in to an account.
+  const shared = (await d.call("POST", "/api/boards", { title: "The teachers'" }, teacher)).body.id as string;
+  assert.ok(!(await d.call("GET", "/api/boards")).body.some((b: { id: string }) => b.id === shared));
+  assert.equal((await d.call("GET", `/api/boards/${shared}`)).status, 404);
+
+  // In a class: a new board is made under the class record too, so the teacher opens it, read only, by name.
+  const klass = await newClass("Boards class");
+  const me = (await d.call("POST", "/api/students", { class: klass })).body;
+  const inClass = (await d.call("POST", "/api/boards", { title: "In class" }, { "X-Student-Code": me.code })).body.id as string;
+  assert.deepEqual((await d.call("GET", "/api/boards")).body.map((b: { title: string }) => b.title).sort(), ["Before any class", "In class"]);
+  const seen = (await device().call("GET", `/api/boards?class=${klass}`, undefined, teacher)).body;
+  assert.deepEqual(seen.map((b: { title: string; name: string }) => [b.title, b.name]), [["In class", "Board Owner"]]);
+  assert.equal((await device().call("GET", `/api/boards/${inClass}`, undefined, teacher)).body.readOnly, true);
+  assert.equal((await device().call("PUT", `/api/boards/${inClass}`, { title: "Marked" }, teacher)).status, 403);
+
+  // A record from before the account brings its boards with it, and they stay when the account moves to another class.
+  const old = (await device().call("POST", "/api/students", { class: await newClass("Old class"), number: 2 })).body;
+  await device().call("POST", "/api/boards", { title: "From the old code" }, { "X-Student-Code": old.code });
+  await d.call("POST", "/api/account/student", { code: old.code });
+  await d.call("POST", "/api/students", { class: await newClass("Next year") });
+  assert.deepEqual((await second.call("GET", "/api/boards")).body.map((b: { title: string }) => b.title).sort(), ["Before any class", "From the old code", "In class"]);
+
+  // Deleting the account deletes them all.
+  await d.call("DELETE", "/api/account", { password: "long enough" });
+  for (const id of [own, inClass]) assert.equal((await device().call("GET", `/api/boards/${id}`, undefined, teacher)).status, 404);
+  const db = new DatabaseSync(join(dir, "data", "boards.db"), { readOnly: true });
+  assert.equal((db.prepare("SELECT COUNT(*) AS n FROM boards WHERE title IN ('Before any class', 'In class', 'From the old code')").get() as { n: number }).n, 0);
+  db.close();
+});
+
 test("guessing at one account's password runs into a wait", async () => {
   const owner = device();
   await owner.call("POST", "/api/account", { email: "target@school.example", name: "Target", password: "long enough" });

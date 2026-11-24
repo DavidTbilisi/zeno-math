@@ -37,12 +37,14 @@ export async function req<T>(method: string, url: string, body?: unknown, keepal
 
 /**
  * Whose boards these calls are about (server/research.ts boardUser): the teachers' in a tab signed in on the teacher's
- * page, else this browser's student's, else nobody's (the server then refuses, unless it asks for no teacher password).
+ * page (the header goes even when the server asks for no password, so a teacher's tab is a teacher's whoever is signed
+ * in to an account), else this browser's student's. With neither, the account's session says whose (#608); with no
+ * session either the server refuses, unless it asks for no teacher password.
  */
 export function boardOwner(): Record<string, string> {
   try {
     const password = sessionStorage.getItem(TEACHER_KEY);
-    if (password !== null) return password ? { "X-Teacher-Password": password } : {};
+    if (password !== null) return { "X-Teacher-Password": password };
   } catch {
     // no session storage: not a teacher's tab
   }
