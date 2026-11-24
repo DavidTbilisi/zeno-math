@@ -427,7 +427,11 @@ export function viaHalf(a: Frac, b: Frac): [CompareSign, CompareSign] | null {
  * pupil shares base-ten blocks into the groups by hand: `share` is that arrangement (null: as at the start), and the
  * written working follows it.
  */
-export type LiveDivision = { a: number; b: number; decimals: number; style: DivisionStyle; blocks: boolean; step: number; turn: boolean; share: Sharing | null };
+export type LiveDivision = {
+  a: number; b: number; decimals: number; style: DivisionStyle; blocks: boolean; step: number; turn: boolean; share: Sharing | null;
+  /** The step just done is named beside the working: each group, taken away, what is left. */
+  labels?: boolean;
+};
 
 /**
  * The numbers within the division tool's limits: a whole a ≥ 0, a whole b ≥ 0, 0 to 10 decimal places. b = 0 is let
@@ -802,7 +806,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     chance: { device: { kind: "die", sides: 6 }, tally: emptyTally(6), view: "bars", relative: true, theory: true, focus: 5, last: -1 },
     compare: { a: 5, b: 2, joined: false, guess: null },
     compareFractions: { a: { n: 2, d: 3 }, b: { n: 3, d: 4 }, joined: false, guess: null, same: false, half: false },
-    division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null },
+    division: { a: 624, b: 12, decimals: 0, style: "bracket", blocks: false, step: 0, turn: true, share: null, labels: true },
     rubik: { scramble: "", moves: "", alg: "R U R′ U′", reps: 0, prime: false, yaw: -35, pitch: 28 },
     soroban: { rods: 7, value: 0, showValue: true, showDigits: false, n: 38, work: null, target: null },
     patterns: { pattern: "twoptr", ...PATTERN_EXAMPLES.twoptr, step: 0, quiz: false },
