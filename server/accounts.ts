@@ -15,6 +15,7 @@ import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, FailureLimiter } from "./limiter.ts";
 import { normalizeCode } from "./codes.ts";
+import { follows, KEYS_MAX, mergeState, VALUE_MAX } from "../src/model/accountState.ts";
 import { mailSettings, sendMail } from "./mail.ts";
 import { mailLang, mailWords, type MailLang } from "./mailWords.ts";
 
@@ -29,6 +30,8 @@ export const MIN_PASSWORD = 8;
 const MAX_PASSWORD = 200;
 const MAX_NAME = 60;
 const MAX_BODY = 16 * 1024;
+/** A browser's progress in one request: every key at once the first time it signs in. */
+const MAX_STATE_BODY = 4 * 1024 * 1024;
 const MAIL = mailSettings();
 
 export type Account = { id: number; email: string; name: string; verified: boolean };
@@ -65,6 +68,17 @@ export function initAccounts(db: DatabaseSync) {
       expires_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS account_tokens_account ON account_tokens(account_id, kind);
+    -- the learner's progress as their browsers keep it (#607): one row for each localStorage key that follows the
+    -- account (src/model/accountState.ts); rev is the account's revision when the row was last written
+    CREATE TABLE IF NOT EXISTS account_state (
+      account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+      key TEXT NOT NULL,
+      value TEXT NOT NULL,
+      rev INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY (account_id, key)
+    );
+    CREATE INDEX IF NOT EXISTS account_state_rev ON account_state(account_id, rev);
   `);
   const now = Date.now();
   stmt(db, "DELETE FROM sessions WHERE expires_at <= ?").run(now);
@@ -180,6 +194,50 @@ export const studentOf = (db: DatabaseSync, accountId: number): StudentRow | nul
     WHERE s.account_id = ? ORDER BY s.created_at DESC, s.id DESC LIMIT 1
   `).get(accountId) as StudentRow | undefined) ?? null;
 
+// ---------- progress that follows the account ----------
+
+type State = { rev: number; items: Record<string, string> };
+const revOf = (db: DatabaseSync, accountId: number) =>
+  (stmt(db, "SELECT COALESCE(MAX(rev), 0) AS rev FROM account_state WHERE account_id = ?").get(accountId) as { rev: number }).rev;
+const changedSince = (db: DatabaseSync, accountId: number, since: number) =>
+  stmt(db, "SELECT key, value FROM account_state WHERE account_id = ? AND rev > ?").all(accountId, since) as { key: string; value: string }[];
+/** A revision a browser sent: a whole number, 0 for a browser that has seen nothing (or sends nonsense). */
+const parseRev = (v: unknown) => (Number.isSafeInteger(Number(v)) && Number(v) > 0 ? Number(v) : 0);
+
+/** What changed for the account since the revision a browser last saw. */
+function stateSince(db: DatabaseSync, accountId: number, since: number): State {
+  return { rev: revOf(db, accountId), items: Object.fromEntries(changedSince(db, accountId, since).map((r) => [r.key, r.value])) };
+}
+
+/**
+ * Takes the keys a browser sends and gives back what it lacks. Each key sent is merged with the copy kept
+ * (mergeState), unless the browser says to replace it (a learner who reset their progress means it). The answer holds
+ * every key that changed elsewhere since `since`, and every key sent whose merged value isn't the one sent.
+ */
+function putState(db: DatabaseSync, accountId: number, since: number, items: Record<string, string>, replace: ReadonlySet<string>, now: number): State {
+  return transaction(db, () => {
+    const last = revOf(db, accountId);
+    let rev = last;
+    const back: Record<string, string> = {};
+    for (const [key, sent] of Object.entries(items)) {
+      const kept = stmt(db, "SELECT value FROM account_state WHERE account_id = ? AND key = ?").get(accountId, key) as { value: string } | undefined;
+      const value = kept && !replace.has(key) ? mergeState(key, kept.value, sent) : sent;
+      if (!kept || value !== kept.value) {
+        rev = last + 1;
+        stmt(db, `
+          INSERT INTO account_state (account_id, key, value, rev, updated_at) VALUES (?, ?, ?, ?, ?)
+          ON CONFLICT (account_id, key) DO UPDATE SET value = excluded.value, rev = excluded.rev, updated_at = excluded.updated_at
+        `).run(accountId, key, value, rev, now);
+      }
+      if (value !== sent) back[key] = value;
+    }
+    const { n } = stmt(db, "SELECT COUNT(*) AS n FROM account_state WHERE account_id = ?").get(accountId) as { n: number };
+    if (n > KEYS_MAX) throw new HttpError(413, `an account keeps at most ${KEYS_MAX} keys`);
+    for (const r of changedSince(db, accountId, since)) if (!(r.key in items)) back[r.key] = r.value;
+    return { rev, items: back };
+  });
+}
+
 // ---------- mailed links ----------
 
 /** A fresh link token for the account; an earlier one of the same kind stops working. Returns the token to mail. */
@@ -236,11 +294,11 @@ async function ownPassword(db: DatabaseSync, account: Account, given: unknown) {
 // ---------- routes ----------
 
 /**
- * /api/account and /api/account/{session,reset,verify,student}; see docs/api.md, Accounts. recordsGone is called when
+ * /api/account and /api/account/{session,reset,verify,student,state}; see docs/api.md, Accounts. recordsGone is called when
  * class records were deleted with their account, for the class study to forget what it had learnt from them.
  */
 export async function handleAccount(
-  req: IncomingMessage, res: ServerResponse, id: string | undefined, sub: string | undefined, db: DatabaseSync, recordsGone: () => void = () => {},
+  req: IncomingMessage, res: ServerResponse, id: string | undefined, sub: string | undefined, query: URLSearchParams, db: DatabaseSync, recordsGone: () => void = () => {},
 ) {
   if (sub !== undefined) return send(res, 404, { error: "not found" });
   const client = clientOf(req);
@@ -410,6 +468,23 @@ export async function handleAccount(
     if (result === 404) return send(res, 404, { error: "no such student code" });
     if (result === 409) return send(res, 409, { error: "this code belongs to another account, or the account is already in its class" });
     return send(res, 200, studentOf(db, account.id));
+  }
+
+  if (id === "state") {
+    // The progress that follows the account (#607). GET ?since=REV: what changed since a revision. PUT { since, items,
+    // replace? }: the keys this browser changed, merged with what is kept; the answer is what the browser lacks.
+    if (req.method === "GET") return send(res, 200, stateSince(db, signedIn(req, db).account.id, parseRev(query.get("since"))));
+    if (req.method !== "PUT") return send(res, 405, { error: "method not allowed" });
+    const { account } = signedIn(req, db);
+    const body = await readJson(req, MAX_STATE_BODY);
+    const items = body.items;
+    if (items === null || typeof items !== "object" || Array.isArray(items)) throw new HttpError(400, "items must be an object of keys and their values");
+    for (const [key, value] of Object.entries(items)) {
+      if (!follows(key)) throw new HttpError(400, `this key doesn't follow the account: ${key.slice(0, 60)}`);
+      if (typeof value !== "string" || value.length > VALUE_MAX) throw new HttpError(400, `the value of ${key} must be a string of at most ${VALUE_MAX} characters`);
+    }
+    const replace = new Set<string>(Array.isArray(body.replace) ? body.replace.filter((k: unknown) => typeof k === "string") : []);
+    return send(res, 200, putState(db, account.id, parseRev(body.since), items as Record<string, string>, replace, now));
   }
 
   return send(res, 404, { error: "not found" });

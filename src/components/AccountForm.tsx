@@ -70,7 +70,7 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
-  // A browser that already holds a student's code may be a shared one: whose it is has to be said, not guessed (#606).
+  // A browser that already holds someone's practice may be a shared one: whose it is has to be said, not guessed.
   const [here] = useState(whoIsHere);
   const [mine, setMine] = useState<boolean | null>(null);
   const unsaid = face !== "forgot" && !!here && mine === null;
@@ -141,7 +141,7 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
       )}
       {face !== "forgot" && here && (
         <fieldset className={`acct-here${tried && unsaid ? " bad" : ""}`}>
-          <legend>{fill(w.hereStudent, { code: here.code })}</legend>
+          <legend>{here.code ? fill(w.hereStudent, { code: here.code }) : w.hereAnon}</legend>
           {([true, false] as const).map((v) => (
             <label key={String(v)} className="check inline">
               <input type="radio" name="acct-here" checked={mine === v} onChange={() => setMine(v)} />

@@ -371,6 +371,63 @@ test("no export holds a name or an email, and deleting the account deletes its r
   assert.deepEqual((await device().call("GET", `/api/boards?class=${klass}`)).body, []);
 });
 
+// ---------- progress that follows the account (#607) ----------
+
+test("two devices keep one progress: each sends what changed and gets what it lacks, merged", async () => {
+  const phone = await signUp("two.devices@school.example", "Two Devices");
+  const laptop = device();
+  await laptop.call("POST", "/api/account/session", { email: "two.devices@school.example", password: "long enough" });
+  const ladder = (stars: number[]) => JSON.stringify({ stars, found: [], best: 0, runs: [0, 0, 0], misses: stars.map(() => 0), pace: [0, 0, 0] });
+  const put = async (d: ReturnType<typeof device>, since: number, items: Record<string, string>, replace?: string[]) =>
+    (await d.call("PUT", "/api/account/state", { since, items, replace })).body as { rev: number; items: Record<string, string> };
+
+  assert.deepEqual((await phone.call("GET", "/api/account/state")).body, { rev: 0, items: {} });
+  // The phone plays; nothing comes back, for the server kept what was sent.
+  const first = await put(phone, 0, { "zeno.kakooma.v1": ladder([3, 0, 0]), "zeno.goal": "exam" });
+  assert.deepEqual(first, { rev: 1, items: {} });
+  // The laptop, which has played too, sends its own: it gets the merged ladder and the goal it lacked.
+  const second = await put(laptop, 0, { "zeno.kakooma.v1": ladder([1, 2, 0]) });
+  assert.equal(second.rev, 2);
+  assert.deepEqual(JSON.parse(second.items["zeno.kakooma.v1"]).stars, [3, 2, 0]);
+  assert.equal(second.items["zeno.goal"], "exam");
+  // The phone asks what is new since it last looked: the ladder only.
+  const news = (await phone.call("GET", "/api/account/state?since=1")).body;
+  assert.equal(news.rev, 2);
+  assert.deepEqual(Object.keys(news.items), ["zeno.kakooma.v1"]);
+  assert.deepEqual((await phone.call("GET", "/api/account/state?since=2")).body, { rev: 2, items: {} });
+  // Sending what the server already has changes nothing: no new revision, nothing back.
+  assert.deepEqual(await put(phone, 2, { "zeno.kakooma.v1": news.items["zeno.kakooma.v1"] }), { rev: 2, items: {} });
+
+  // Free practice: the copy that has answered more is the one kept, whoever sends last.
+  const practice = (answered: number) => JSON.stringify({ stats: {}, mistakes: [], answered });
+  await put(laptop, 2, { "zeno.practice.v1": practice(40) });
+  const stale = await put(phone, 2, { "zeno.practice.v1": practice(12) });
+  assert.equal(stale.items["zeno.practice.v1"], practice(40));
+  // A reset is meant: it replaces the account's copy, and the other device hears of it.
+  const reset = await put(phone, stale.rev, { "zeno.practice.v1": practice(0) }, ["zeno.practice.v1"]);
+  assert.deepEqual(reset.items, {});
+  assert.equal((await laptop.call("GET", `/api/account/state?since=${stale.rev}`)).body.items["zeno.practice.v1"], practice(0));
+
+  // Only the account's own devices, and only keys that follow an account.
+  assert.equal((await device().call("GET", "/api/account/state")).status, 401);
+  assert.equal((await device().call("PUT", "/api/account/state", { since: 0, items: {} })).status, 401);
+  const other = await signUp("someone.else@school.example", "Someone Else");
+  assert.deepEqual((await other.call("GET", "/api/account/state")).body, { rev: 0, items: {} });
+  for (const items of [{ "zeno.student.v1": "{}" }, { "zeno.sound.v1": "off" }, { other: "x" }, { "zeno.kakooma.v1": 5 }, { "zeno.kakooma.v1": "x".repeat(256 * 1024 + 1) }])
+    assert.equal((await phone.call("PUT", "/api/account/state", { since: 0, items })).status, 400, Object.keys(items)[0]);
+  assert.equal((await phone.call("PUT", "/api/account/state", { since: 0, items: ["zeno.goal"] })).status, 400);
+  // An account keeps a bounded number of keys, and a refused request keeps none of its own.
+  const many = Object.fromEntries(Array.from({ length: 400 }, (_, i) => [`zeno.flood${i}.v1`, "1"]));
+  assert.equal((await phone.call("PUT", "/api/account/state", { since: 0, items: many })).status, 413);
+  assert.ok(!Object.keys((await phone.call("GET", "/api/account/state")).body.items).some((k) => k.startsWith("zeno.flood")));
+
+  // The progress goes with the account.
+  await phone.call("DELETE", "/api/account", { password: "long enough" });
+  const db = new DatabaseSync(join(dir, "data", "boards.db"), { readOnly: true });
+  assert.equal((db.prepare("SELECT COUNT(*) AS n FROM account_state s WHERE NOT EXISTS (SELECT 1 FROM accounts a WHERE a.id = s.account_id)").get() as { n: number }).n, 0);
+  db.close();
+});
+
 test("guessing at one account's password runs into a wait", async () => {
   const owner = device();
   await owner.call("POST", "/api/account", { email: "target@school.example", name: "Target", password: "long enough" });

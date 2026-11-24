@@ -1,7 +1,8 @@
 // Accounts (#605): making one on the account page, the name in the site's bar, signing out, and signing in on another
 // browser; what a wrong password and a taken email say; and the page at phone width.
-import { expect, test, type Browser } from "@playwright/test";
+import { expect, test, type Browser, type Page } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
+import { KAK_LADDER, kakTask } from "../src/math/kakooma.ts";
 
 const w = en.site.account;
 const PASSWORD = "e2e long enough";
@@ -199,4 +200,79 @@ test("a student from before accounts keeps their code, and adds it when they mak
   expect(await shared.evaluate(() => localStorage.getItem("zeno.student.v1"))).toBeNull();
   const after = await (await request.get(`/api/research/dashboard?class=${code}`, { headers: { "X-Teacher-Password": TEACHER } })).json();
   expect(after.students.find((s: { code: string }) => s.code === other.code).name).toBeNull();
+});
+
+// ---------- progress that follows the account (#607) ----------
+
+/** The answer to the first Kakooma puzzle, played with its hint: two stars. */
+async function playKakooma(page: Page) {
+  await page.goto("/#/library/live/kakooma");
+  const game = page.locator(".live-kakooma");
+  const pic = game.locator("svg").first();
+  const [one] = kakTask(KAK_LADDER[0].level, KAK_LADDER[0].grid, KAK_LADDER[0].seed).sets;
+  await pic.getByRole("button", { name: /^Hint:/ }).click();
+  await pic.getByRole("button", { name: String(one.answer), exact: true }).click();
+  await expect(game.getByText(/★★☆/).first()).toBeVisible();
+  return game;
+}
+const starsOf = (page: Page) =>
+  page.evaluate(() => (JSON.parse(localStorage.getItem("zeno.kakooma.v1") ?? "null") as { stars: number[] } | null)?.stars ?? null);
+/** Leaving the page sends what changed; this waits until the server has it. */
+async function leave(page: Page) {
+  const sent = page.waitForResponse((r) => r.url().endsWith("/api/account/state") && r.request().method() === "PUT");
+  await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+  await sent;
+}
+async function signInOn(page: Page, email: string, whose?: string) {
+  await page.goto("/#/account");
+  await page.getByLabel(w.email).fill(email);
+  await page.getByLabel(w.password, { exact: true }).fill(PASSWORD);
+  if (whose) await page.getByLabel(whose).check();
+  await page.getByRole("button", { name: w.signIn }).last().click();
+  await expect(page.locator(".site-account")).not.toHaveText(w.link);
+}
+
+test("stars won on one browser are there on another, and a shared tablet keeps other people's out", async ({ browser }) => {
+  const email = `stars${Date.now()}@school.example`;
+  const laptop = await fresh(browser);
+  expect((await laptop.request.post("/api/account", { data: { email, name: "Tako Stars", password: PASSWORD } })).status()).toBe(201);
+  await playKakooma(laptop);
+  expect((await starsOf(laptop))![0]).toBe(2);
+  await leave(laptop);
+
+  // The phone has never been used: signing in brings the stars, on the game itself.
+  const phone = await fresh(browser, { width: 390, height: 780 });
+  await signInOn(phone, email);
+  await phone.goto("/#/library/live/kakooma");
+  await expect(phone.locator(".live-kakooma .geo-ladder").getByRole("button", { name: /: 2 ★/ })).toHaveCount(1);
+  expect((await starsOf(phone))![0]).toBe(2);
+
+  // A tablet someone else has played on without signing in: the form asks whose that is.
+  const tablet = await fresh(browser);
+  await tablet.goto("/#/");
+  await tablet.evaluate(() => localStorage.setItem("zeno.kakooma.v1", JSON.stringify({ stars: [3, 3, 3], found: [], best: 9, runs: [9, 0, 0], misses: [0, 0, 0], pace: [0, 0, 0] })));
+  await tablet.goto("/#/account");
+  await expect(tablet.getByText(w.hereAnon)).toBeVisible();
+  await signInOn(tablet, email, w.hereOther);
+  // Someone else's: none of it reaches the account, and the tablet now shows the account's own.
+  expect((await starsOf(tablet))!.slice(0, 3)).toEqual([2, 0, 0]);
+
+  // Their own practice from before they had signed in there is merged in: the best of both.
+  const home = await fresh(browser);
+  await home.goto("/#/");
+  await home.evaluate(() => localStorage.setItem("zeno.kakooma.v1", JSON.stringify({ stars: [1, 3, 0], found: [], best: 2, runs: [2, 0, 0], misses: [0, 0, 0], pace: [0, 0, 0] })));
+  await signInOn(home, email, w.hereMine);
+  await expect.poll(async () => (await starsOf(home))!.slice(0, 3)).toEqual([2, 3, 0]);
+  // And the laptop, opened again, has it too.
+  await laptop.reload();
+  await expect.poll(async () => (await starsOf(laptop))?.slice(0, 3)).toEqual([2, 3, 0]);
+  await expect(laptop.locator(".live-kakooma .geo-ladder").getByRole("button", { name: /: 3 ★/ })).toHaveCount(1);
+
+  // Signing out takes the progress off the browser, so the next person starts clean; signing in brings it back.
+  await tablet.goto("/#/account");
+  await tablet.getByRole("button", { name: w.signOut }).click();
+  await expect(tablet.getByRole("button", { name: w.forgot })).toBeVisible();
+  expect(await starsOf(tablet)).toBeNull();
+  await signInOn(tablet, email);
+  await expect.poll(async () => (await starsOf(tablet))?.slice(0, 3)).toEqual([2, 3, 0]);
 });

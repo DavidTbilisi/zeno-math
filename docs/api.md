@@ -47,6 +47,8 @@ method and path on these resources must answer 404 or 405, so a route added with
 | PUT | `/api/account/reset` | anyone | the link's page: `{ token, password }` sets the password, signs every device out and this one in; 410 for a link used or too old |
 | POST | `/api/account/verify` | anyone | `{ token }` confirms the address from its mailed link (410 for a link used or too old); signed in and without a token, mails the link again |
 | POST | `/api/account/student` | account | add a record from before the account to it: `{ code }` gives the student; 409 when the code is another account's, or the account is already in that class |
+| GET | `/api/account/state[?since=REV]` | account | the progress that follows the account: `{ rev, items }`, the keys changed since revision `REV` (all of them without it); see *Accounts* |
+| PUT | `/api/account/state` | account | `{ since, items, replace? }`: the keys this browser changed, merged with what is kept; answers `{ rev, items }` with what the browser lacks |
 | GET | `/api/classes` | teacher | every class: code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
@@ -424,6 +426,18 @@ Without mail, accounts work the same and the links come from `npm run reset-pass
 joined last as `student`, so a browser that signs in knows which student it is. The teacher's dashboard and list of a
 class's boards carry the account's `name` beside the student; the CSV exports and `/api/export` never do. Deleting the
 account deletes its records with their answers, tests and boards, as `DELETE /api/students/:code` does for one.
+
+**Progress.** Outside class practice a learner's progress is kept by the browser, one `localStorage` key for each
+thing: free practice, each game's ladder, the dates things were achieved, the roadmap goal. Signed in, it follows the
+account (issue #607). A browser sends the keys that changed, as the strings it stores (`items: { "zeno.kakooma.v1":
+"{…}" }`), with the revision it last saw as `since`. The server keeps one copy of each key and never just overwrites
+it: two copies are merged by what the key holds (`src/model/accountState.ts`). A ladder keeps the best stars of each
+puzzle, achieved dates the earliest, free practice the copy with more questions answered, anything else the copy
+sent. A key named in `replace` is stored as sent, for a learner who reset their progress. The answer's `items` are
+the keys that changed elsewhere since `since`, and any key sent whose merged value differs from the one sent; `rev`
+is the account's revision now. Only keys that follow an account are taken (`zeno.<name>.v1` and `zeno.goal`, but not
+who is signed in, what waits to be sent, or a device's settings): any other is 400. A value is at most 256 KB and an
+account keeps at most 400 keys (413).
 
 **Limits.** Each answers 429 with `Retry-After`: 8 wrong passwords for one email in 10 minutes; 30 wrong passwords
 from one client in 10 minutes (300 once that client has signed in to anything in the last day, as for the site

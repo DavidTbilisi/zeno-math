@@ -5,6 +5,7 @@
 import { useSyncExternalStore } from "react";
 import { ApiError, req } from "./api";
 import { loadStudent, saveStudent, type Student } from "./learner";
+import { clearProgress, flushProgress, freshPages, hasWorkHere, progressOwner, startSync, stopSync } from "./sync";
 
 export type Account = { email: string; name: string; verified: boolean };
 /**
@@ -60,11 +61,12 @@ const signedIn = (account: Account) => {
 
 /**
  * Who has been practising on this browser, to ask about before someone signs in: the student whose code it holds, or
- * null when it holds nobody's work. On a shared tablet that student may not be the one signing in.
+ * someone with no code (free practice, games: #607), or null when it holds nobody's work. On a shared tablet that may
+ * not be the one signing in.
  */
-export const whoIsHere = (): { code: string } | null => {
+export const whoIsHere = (): { code: string | null } | null => {
   const s = loadStudent();
-  return s ? { code: s.code } : null;
+  return s ? { code: s.code } : hasWorkHere() ? { code: null } : null;
 };
 
 /** Asks the server who is signed in and under which class record; signed in, that record is this browser's student. */
@@ -75,9 +77,10 @@ async function refresh() {
   return r;
 }
 /**
- * A session has just started on a browser that may hold a student's code. `mine`: the code is the new owner's, so it
- * joins their account (unless it is another account's already: then it stays that account's). Either way the browser
- * goes on with the account's own record, or none.
+ * A session has just started on a browser that may hold someone's practice. `mine`: it is the new owner's, so the
+ * student code joins their account (unless it is another account's already: then it stays that account's) and the
+ * progress is merged into theirs; otherwise the progress is taken off the browser first. Either way the browser goes
+ * on with the account's own record and progress, and the pages open afresh on them.
  */
 async function settle(mine: boolean) {
   const here = loadStudent();
@@ -88,18 +91,34 @@ async function settle(mine: boolean) {
       if (!(e instanceof ApiError && (e.status === 404 || e.status === 409))) throw e;
     }
   }
-  return (await refresh()).account!;
+  if (!mine) clearProgress();
+  const me = (await refresh()).account!;
+  await startSync(me.email);
+  freshPages();
+  return me;
 }
-/** Signed out (or the account is gone): its class record leaves the browser with it. */
+/** Signed out (or the account is gone): its class record and its progress leave the browser with it. */
 function left() {
+  stopSync();
+  clearProgress();
   saveStudent(null);
   set({ account: null, student: null });
+  freshPages();
 }
 
 /** The account calls (server/accounts.ts). Each rejects with an ApiError whose status says why. */
 export const account = {
-  /** Called once as the app starts. */
-  refresh: async () => (await refresh()).account,
+  /**
+   * Called once as the app starts: who is signed in, and then their progress. What the browser holds is theirs (it
+   * was merged in, or cleared, when they signed in), so it is sent; if the account brings anything new, the pages
+   * open afresh on it.
+   */
+  refresh: async () => {
+    const me = (await refresh()).account;
+    if (me) void startSync(me.email).then((news) => news && freshPages());
+    else stopSync();
+    return me;
+  },
   /** mine: whether what this browser holds (whoIsHere) is the new owner's. */
   signUp: async (email: string, name: string, password: string, lang: string, mine = false) => {
     await req<Account>("POST", "/api/account", { email, name, password, lang });
@@ -110,6 +129,8 @@ export const account = {
     return settle(mine);
   },
   signOut: async () => {
+    // The last few seconds of practice go to the account first: signing out takes the progress off this browser.
+    await flushProgress();
     await req<void>("DELETE", "/api/account/session");
     left();
   },
@@ -134,8 +155,9 @@ export const account = {
   askReset: (email: string, lang: string) => req<unknown>("POST", "/api/account/reset", { email, lang }),
   /** The link's page: sets the password and signs in. */
   setPassword: async (token: string, password: string) => {
-    await req<Account>("PUT", "/api/account/reset", { token, password });
-    return settle(false);
+    const me = await req<Account>("PUT", "/api/account/reset", { token, password });
+    // Nobody can be asked whose practice this browser holds: it is kept only if it was this account's all along.
+    return settle(progressOwner() === me.email);
   },
   /** The confirming link's page. */
   confirm: async (token: string) => {
