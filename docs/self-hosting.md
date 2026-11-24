@@ -87,6 +87,8 @@ Environment variables:
   the last day is allowed ten times `PASSWORD_ATTEMPTS`, so a class sharing a school's address isn't locked out by
   its typos.
 - `BACKUP_KEEP`: daily backups to keep, 7 by default; 0 turns them off.
+- `SMTP_HOST`, `MAIL_FROM` and `PUBLIC_URL`: all three turn on mail for accounts; see *Accounts and mail*.
+  `SMTP_PORT` (587 by default), `SMTP_USER` and `SMTP_PASSWORD` go with them.
 
 The build writes `.br` / `.gz` copies of the assets, and the server sends those to browsers that accept them. Each tool and each
 language is a separate chunk, loaded the first time it is used.
@@ -124,6 +126,31 @@ time of the first try as well as the report's, since four timed-out tries take a
 The database records its schema version, and a newer Zeno's database is refused rather than misread. The server sends a Content-Security-Policy and the
 usual security headers, accepts only JSON request bodies (so a form on another site can't post to it) and refuses scenes it
 couldn't load back.
+
+## Accounts and mail
+
+Anyone who can open Zeno can make an account at `#/account`: an email, a name and a password. Passwords are stored as
+salted scrypt hashes, and a session is a cookie scripts can't read. Accounts need no setting.
+
+Mail is optional. With it, a new account is sent a link to confirm its address, and "Forgot your password?" sends a
+link for a new one. Set all three of:
+
+- `SMTP_HOST`: your mail provider's SMTP server. `SMTP_PORT` is 587 by default (the connection starts plain and moves
+  to TLS with STARTTLS); 465 speaks TLS from the start. `SMTP_USER` and `SMTP_PASSWORD` sign in; the password is never
+  sent over a connection that isn't encrypted, except to a relay on the same machine.
+- `MAIL_FROM`: who the mail is from, `zeno@example.org` or `Zeno <zeno@example.org>`. Use an address your provider
+  lets you send from, or the mail lands in spam.
+- `PUBLIC_URL`: the address people open Zeno at, such as `https://zeno.example.org`. The links in a message are built
+  from it and never from the request, so nobody can have a link mailed that leads to another site.
+
+```bash
+SMTP_HOST=smtp.example.org SMTP_USER=zeno SMTP_PASSWORD=… MAIL_FROM='Zeno <zeno@example.org>' \
+PUBLIC_URL=https://zeno.example.org docker compose up -d
+```
+
+Without mail, a forgotten password is yours to fix: `docker compose exec app node server/resetPassword.ts
+someone@example.org` (or `npm run reset-password -- someone@example.org` without Docker) prints a link that sets a new
+password once within the hour. Give it to the account's owner yourself.
 
 ## Class study
 
