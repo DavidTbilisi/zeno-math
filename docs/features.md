@@ -1488,8 +1488,10 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     that fills as they are secured. *Next for you* is the lowest-grade level whose prerequisites are met, one click from
     practice; each stage also has a board tool to explore and a live lab to try, opened on that stage's own board
   - Screen readers hear each question: its words, and its maths as MathML (the picture is hidden from them)
-  - *Class study*: a student joins a class with its code and gets a student code of their own (no name or email);
-    each question they work on is then saved on the server for research — see [Class study](self-hosting.md#class-study) and [docs/study.md](study.md)
+  - *Accounts*: an email, a name and a password at `#/account`. Signed in, free practice, every game's stars, the
+    roadmap goal and the learner's boards follow them to any device; signing out takes them off a shared one
+  - *Class study*: a student signs in and joins a class with its code; the teacher sees them by name, and the
+    study's exports never hold the name or the email. Each question they work on is then saved on the server for research — see [Class study](self-hosting.md#class-study) and [docs/study.md](study.md)
   - *Worksheet*: 4–20 questions on one skill or mixed, with an answer key, put on the board in one click (and
     re-opened to change them)
 - **Vector spaces** (in *[ ] Matrices*) — exact fractions, pictures for ℝ² and ℝ³
