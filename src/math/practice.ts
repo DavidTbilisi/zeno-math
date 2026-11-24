@@ -427,6 +427,8 @@ function judge(a: Answer, input: string, w: PracticeWords): Verdict {
         // The right value in the wrong shape: a mixed number asked for as an improper fraction, or the other way.
         if (a.form === "improper" && !/^\d+\s*\/\s*\d+$/.test(src)) return { ok: false, close: true, why: w.reasons.notImproper };
         if (a.form === "mixed" && !/^\d+\s+\d+\s*\/\s*\d+$/.test(src)) return { ok: false, close: true, why: w.reasons.notMixed };
+        if (a.form === "fraction" && !/^-?\d+\s*\/\s*\d+$/.test(t)) return { ok: false, close: true, why: w.reasons.notFraction };
+        if (a.form === "decimal" && t.includes("/")) return { ok: false, close: true, why: w.reasons.notDecimal };
         if (a.surd && a.tol < 1e-6 && !simplifiedSurd(parseE(t))) return { ok: false, close: true, why: w.reasons.notSimplified };
         return { ok: true };
       }

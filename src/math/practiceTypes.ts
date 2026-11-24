@@ -84,9 +84,11 @@ export type CxVal = { re: number; im: number };
 export type Trap = { id: MistakeId; a: Answer; vars?: Record<string, string | number> };
 
 export type Answer = (
-  /** std: the answer is asked for in standard form, a × 10ⁿ; form: as an improper fraction or a mixed number. */
+  /** std: the answer is asked for in standard form, a × 10ⁿ; form: as an improper fraction or a mixed number, or as
+   *  a fraction at all, or as a decimal (one written as the other: the question typed back is the right value in the
+   *  wrong form). */
   /** `units`: unit signs the answer may end in ("5.64 m"); they are taken off before it is read. */
-  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed"; units?: readonly string[] }
+  | { k: "num"; v: number; tol: number; lowest?: boolean; surd?: boolean; std?: boolean; form?: "improper" | "mixed" | "fraction" | "decimal"; units?: readonly string[] }
   /** `listed`: the elements of a set are listed, so how many there are is part of the answer, not told: a list of the
    *  wrong length is wrong (and may be a named slip), not sent back. */
   | { k: "set"; vs: number[]; tol: number; listed?: boolean }
@@ -296,6 +298,15 @@ export type PracticeWords = {
   dyn: DynamicsWords;
   /** Interest, the binomial model, option pricing (src/math/finance.ts). */
   fin: FinanceWords;
+  /**
+   * The first skills' prompts (addSubtract, tables, divide, placeValue, convert, areaPerimeter): a number missing from
+   * a box, a digit's value, a remainder, one form of a number written as another, a shape's perimeter, area or side.
+   */
+  basics: {
+    missing: string; digitValue: string; remainder: string;
+    toDecimal: string; toPercent: string; toFraction: string;
+    perimeter: string; area: string; sideFromArea: string; sideFromPerimeter: string; circumference: string; circleArea: string;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
@@ -599,6 +610,8 @@ export type PracticeWords = {
     notOneFraction: string;
     notImproper: string;
     notMixed: string;
+    notFraction: string;
+    notDecimal: string;
     notSimplified: string;
     notFactored: string;
     notExpanded: string;

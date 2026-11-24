@@ -17,17 +17,17 @@ export type Topic = { id: TopicId; shelf: ShelfId; icon: string; skills: readonl
 export const TOPICS: readonly Topic[] = [
   {
     id: "numbers", shelf: "start", icon: "123",
-    skills: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "times", "money", "time", "measure", "makeTarget", "kakooma", "integers", "order", "barModels", "rounding"],
+    skills: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "money", "time", "measure", "makeTarget", "kakooma", "integers", "order", "barModels", "rounding"],
     sections: ["secCounting", "secCalculating", "secTime", "senseNumber"],
   },
   {
     id: "fractions", shelf: "start", icon: "½",
-    skills: ["makeWhole", "equivalent", "orderFractions", "shadeFraction", "compareFractions", "fractions", "decimals", "percent", "ratio", "rate"],
+    skills: ["makeWhole", "equivalent", "orderFractions", "shadeFraction", "compareFractions", "fractions", "decimals", "percent", "convert", "ratio", "rate"],
     sections: ["secFractions", "senseFraction"],
   },
   {
     id: "geometry", shelf: "start", icon: "△",
-    skills: ["shapeArea", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets", "circles", "powerPoint", "arcs", "similarity", "volume"],
+    skills: ["shapeArea", "areaPerimeter", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets", "circles", "powerPoint", "arcs", "similarity", "volume"],
     sections: ["secMeasuring", "secPlane", "secSolids", "senseShape"],
   },
   {
@@ -53,7 +53,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "numberTheory", shelf: "beyond", icon: "ℤ",
-    skills: ["divisibility", "hcf", "primes", "bases", "modular", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves"],
+    skills: ["divisibility", "hcf", "primes", "squares", "bases", "modular", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves"],
     sections: ["senseNumberPatterns"],
   },
   { id: "finance", shelf: "beyond", icon: "%", skills: ["currency", "inflation", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"], sections: [] },

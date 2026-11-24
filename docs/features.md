@@ -865,6 +865,30 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - Quick look: dots shown for a moment when Look is pressed, then hidden, and the number typed — a die or scattered
     dots up to 6, then ten frames, two dice or two groups up to 12, then two ten frames or three groups up to 20 (one
     more look after a wrong answer); the worked solution colours the groups and adds them (10 − 2 = 8, 4 + 3 + 5 = 12)
+  - The first skills, each from the facts a class drills to automaticity:
+    - Place value: what a digit is worth (the 9 in 197 is 90), a number put together from its parts (600 + 8) and a
+      number as so many tens (340 = ☐ × 10); then four and five digits with × and ÷ by 10, 100 and 1000; then six
+      digits and decimals. The digit given for its value and an empty place left out (68 for 608) are named
+    - Addition and subtraction: the facts within 20 and the bonds to 10 and 20, worked with counters and a number
+      bond; then two-digit sums and differences in the head and the bonds to 100; then three digits and a number
+      missing from a subtraction. A carry left out, the smaller digit taken from the larger, 37 + 73 for a bond to
+      100 and the sign in the question used instead of its inverse are named
+    - Times tables: the tables of 2, 3, 4, 5 and 10, then 6 to 9 and a missing factor, then 11, 12 and multiples of
+      ten (40 × 60); each fact is worked as its array of dots. The two numbers added and a zero lost are named
+    - Division: the same tables turned round, then a missing number (☐ ÷ 6 = 7), then remainders, quotients past the
+      tables as long division (84 ÷ 6) and multiples of ten (2400 ÷ 60). The quotient given for the remainder is named
+    - Squares, cubes and roots (in "Factors and primes"): the squares to 10² and their roots, a square drawn as its
+      array; then to 20² and the first cubes; then cube roots, multiples of ten, tenths (0.3² = 0.09) and fractions.
+      Doubling for squaring, halving for a root and a tenth squared left in tenths are named
+    - Fractions, decimals, percentages, each written as another and typed: halves, quarters, fifths, tenths and
+      hundredths as decimals and back; then percentages as decimals and fractions and back; then eighths, mixed
+      numbers and percentages over 100 or under 1. A decimal typed back for a fraction (or a fraction for a decimal)
+      is sent back rather than marked right; the fraction's digits read as a decimal, the wrong power of ten on the
+      bottom and the digits moved one place are named
+    - Area and perimeter (geometry) from the measurements on a drawn shape: a rectangle or square's perimeter and
+      area; then a side from the area or the perimeter and a triangle's area; then a circle's circumference and area.
+      A unit may follow the answer (24 cm²). The other measure given, two sides for four, the triangle's half left
+      out, the diameter used as the radius and the other circle formula are named
   - Ordinal numbers (Visible Thinking 1A ch. 6, Dimension Math KB): a row of coloured shapes; which shape is 4th from
     the left, then the position of the shape under an arrow counted from the left or the right (3, or 3rd), then the
     shape just before or after the 7th, counting from either side. Counting from the other end and the neighbour on the

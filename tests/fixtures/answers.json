@@ -18268,6 +18268,444 @@
       "seed": 7,
       "input": "O(n^3)",
       "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 7,
+      "input": "90",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "digitNotValue"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 7,
+      "input": "900",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 7,
+      "input": "700",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "digitNotValue"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 7,
+      "input": "70",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 7,
+      "input": "7000",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "digitNotValue"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 7,
+      "input": "70000",
+      "label": "wrong"
+    },
+    {
+      "skill": "addSubtract",
+      "level": 1,
+      "seed": 7,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "addSubtract",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "addSubtract",
+      "level": 2,
+      "seed": 7,
+      "input": "98",
+      "label": "correct"
+    },
+    {
+      "skill": "addSubtract",
+      "level": 2,
+      "seed": 7,
+      "input": "88",
+      "label": "wrong"
+    },
+    {
+      "skill": "addSubtract",
+      "level": 3,
+      "seed": 7,
+      "input": "983",
+      "label": "correct"
+    },
+    {
+      "skill": "addSubtract",
+      "level": 3,
+      "seed": 7,
+      "input": "973",
+      "label": "wrong",
+      "mistake": "carryDropped"
+    },
+    {
+      "skill": "addSubtract",
+      "level": 3,
+      "seed": 7,
+      "input": "993",
+      "label": "wrong"
+    },
+    {
+      "skill": "tables",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "tables",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "tables",
+      "level": 2,
+      "seed": 7,
+      "input": "54",
+      "label": "correct"
+    },
+    {
+      "skill": "tables",
+      "level": 2,
+      "seed": 7,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "addedNotTimes"
+    },
+    {
+      "skill": "tables",
+      "level": 2,
+      "seed": 7,
+      "input": "56",
+      "label": "wrong"
+    },
+    {
+      "skill": "tables",
+      "level": 3,
+      "seed": 7,
+      "input": "132",
+      "label": "correct"
+    },
+    {
+      "skill": "tables",
+      "level": 3,
+      "seed": 7,
+      "input": "23",
+      "label": "wrong",
+      "mistake": "addedNotTimes"
+    },
+    {
+      "skill": "tables",
+      "level": 3,
+      "seed": 7,
+      "input": "121",
+      "label": "wrong"
+    },
+    {
+      "skill": "divide",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "divide",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "divide",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "divide",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong",
+      "mistake": "quotientForRemainder"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "squares",
+      "level": 1,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "squares",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "squares",
+      "level": 2,
+      "seed": 7,
+      "input": "121",
+      "label": "correct"
+    },
+    {
+      "skill": "squares",
+      "level": 2,
+      "seed": 7,
+      "input": "22",
+      "label": "wrong",
+      "mistake": "timesNotPower"
+    },
+    {
+      "skill": "squares",
+      "level": 2,
+      "seed": 7,
+      "input": "111",
+      "label": "wrong"
+    },
+    {
+      "skill": "squares",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "squares",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 7,
+      "input": "0.5",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 7,
+      "input": "0.12",
+      "label": "wrong",
+      "mistake": "fractionDigits"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 7,
+      "input": "1/2",
+      "label": "form",
+      "note": "the fraction typed back, not a decimal"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 7,
+      "input": "0.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 2,
+      "seed": 7,
+      "input": "0.09",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 2,
+      "seed": 7,
+      "input": "0.9",
+      "label": "wrong",
+      "mistake": "percentPointOnce"
+    },
+    {
+      "skill": "convert",
+      "level": 2,
+      "seed": 7,
+      "input": "9/100",
+      "label": "form",
+      "note": "a fraction, not a decimal"
+    },
+    {
+      "skill": "convert",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 3,
+      "seed": 7,
+      "input": "87.5%",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 3,
+      "seed": 7,
+      "input": "87.5",
+      "label": "correct",
+      "note": "no percent sign"
+    },
+    {
+      "skill": "convert",
+      "level": 3,
+      "seed": 7,
+      "input": "78%",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 7,
+      "input": "38",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 7,
+      "input": "38 cm",
+      "label": "correct",
+      "note": "with its unit"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 7,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "areaNotPerimeter"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 7,
+      "input": "19",
+      "label": "wrong",
+      "mistake": "twoSidesOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 7,
+      "input": "40",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 7,
+      "input": "12.57",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 7,
+      "input": "12.56",
+      "label": "close",
+      "note": "π taken as 3.14"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 7,
+      "input": "12.6",
+      "label": "close",
+      "note": "one decimal place"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 7,
+      "input": "6.28",
+      "label": "wrong"
     }
   ]
 }
