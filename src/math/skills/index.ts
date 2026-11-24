@@ -8,6 +8,10 @@ import quickLook from "./quickLook";
 import ordinals from "./ordinals";
 import estimateLine from "./estimateLine";
 import closerTo from "./closerTo";
+import placeValue from "./placeValue";
+import addSubtract from "./addSubtract";
+import tables from "./tables";
+import divide from "./divide";
 import times from "./times";
 import money from "./money";
 import time from "./time";
@@ -24,6 +28,7 @@ import compareFractions from "./compareFractions";
 import fractions from "./fractions";
 import decimals from "./decimals";
 import percent from "./percent";
+import convert from "./convert";
 import ratio from "./ratio";
 import rate from "./rate";
 import barModels from "./barModels";
@@ -31,6 +36,7 @@ import rounding from "./rounding";
 import divisibility from "./divisibility";
 import hcf from "./hcf";
 import primes from "./primes";
+import squares from "./squares";
 import bases from "./bases";
 import modular from "./modular";
 import balance from "./balance";
@@ -60,6 +66,7 @@ import determinant from "./determinant";
 import elimination from "./elimination";
 import eigen from "./eigen";
 import shapeArea from "./shapeArea";
+import areaPerimeter from "./areaPerimeter";
 import estimateAngle from "./estimateAngle";
 import missingAngle from "./missingAngle";
 import triangleInequality from "./triangleInequality";
@@ -249,6 +256,10 @@ export const GENS: Record<SkillId, Gen> = {
   ordinals,
   estimateLine,
   closerTo,
+  placeValue,
+  addSubtract,
+  tables,
+  divide,
   times,
   money,
   time,
@@ -265,6 +276,7 @@ export const GENS: Record<SkillId, Gen> = {
   fractions,
   decimals,
   percent,
+  convert,
   ratio,
   rate,
   barModels,
@@ -272,6 +284,7 @@ export const GENS: Record<SkillId, Gen> = {
   divisibility,
   hcf,
   primes,
+  squares,
   bases,
   modular,
   balance,
@@ -301,6 +314,7 @@ export const GENS: Record<SkillId, Gen> = {
   elimination,
   eigen,
   shapeArea,
+  areaPerimeter,
   estimateAngle,
   missingAngle,
   triangleInequality,

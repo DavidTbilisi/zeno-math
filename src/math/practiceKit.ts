@@ -83,7 +83,7 @@ export function surdTex(p: Frac, q: Frac, m: number): string {
   return `${p.tex()} ${q.isNeg() ? "-" : "+"} ${root}`;
 }
 
-export const num = (v: number, tol = 1e-9, extra: { lowest?: boolean; surd?: boolean; form?: "improper" | "mixed" } = {}): Answer => ({ k: "num", v, tol, ...extra });
+export const num = (v: number, tol = 1e-9, extra: { lowest?: boolean; surd?: boolean; form?: "improper" | "mixed" | "fraction" | "decimal" } = {}): Answer => ({ k: "num", v, tol, ...extra });
 
 export const dp = (v: number, d: number) => String(Math.round(v * 10 ** d) / 10 ** d);
 

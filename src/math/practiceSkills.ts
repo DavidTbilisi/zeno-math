@@ -3,9 +3,9 @@
 export type Area = "number" | "algebra" | "geometry" | "calculus" | "data";
 export const AREAS: Area[] = ["number", "algebra", "geometry", "calculus", "data"];
 export const SKILLS = {
-  number: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "times", "money", "time", "measure", "makeTarget", "kakooma", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "decimals", "percent", "ratio", "rate", "currency", "inflation", "barModels", "rounding", "divisibility", "hcf", "primes", "bases", "modular", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves"],
+  number: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "money", "time", "measure", "makeTarget", "kakooma", "makeWhole", "equivalent", "orderFractions", "shadeFraction", "integers", "order", "compareFractions", "fractions", "decimals", "percent", "convert", "ratio", "rate", "currency", "inflation", "barModels", "rounding", "divisibility", "hcf", "primes", "squares", "bases", "modular", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves"],
   algebra: ["balance", "shapePatterns", "findRule", "growingPattern", "sameExpression", "graphStory", "linear", "proportion", "inequalities", "expand", "factor", "algFractions", "formulae", "quadratic", "simultaneous", "polynomials", "indices", "logs", "surds", "sequences", "series", "functions", "complex", "polarForm", "deMoivre", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction"],
-  geometry: ["shapeArea", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets", "coordinates", "slope", "line", "distance", "trigexact", "righttri", "practicalTrig", "trigRules", "circles", "powerPoint", "arcs", "similarity", "volume", "identities", "vectors", "dotangle", "projection", "metrics", "openClosed", "compactness", "connected", "topologies", "curves", "surfaces", "nonEuclidean", "projective"],
+  geometry: ["shapeArea", "areaPerimeter", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets", "coordinates", "slope", "line", "distance", "trigexact", "righttri", "practicalTrig", "trigRules", "circles", "powerPoint", "arcs", "similarity", "volume", "identities", "vectors", "dotangle", "projection", "metrics", "openClosed", "compactness", "connected", "topologies", "curves", "surfaces", "nonEuclidean", "projective"],
   calculus: ["differentiate", "tangent", "stationary", "integrate", "definite", "numroots", "numint", "descent", "backprop", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "norms", "operatorNorms", "hilbertSpaces"],
   data: ["readChart", "diagrams", "oneStroke", "colouring", "shortestPath", "spanningTree", "parity", "inversions", "average", "probability", "counting", "ci", "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing", "softmax", "overfitting", "precision", "clustering", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith"],
 } as const satisfies Record<Area, readonly string[]>;
@@ -18,11 +18,11 @@ export type SkillId = (typeof SKILLS)[Area][number];
 export const GROUPS = {
   number: {
     counting: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "makeTarget", "kakooma"],
-    arithmetic: ["times", "integers", "order", "rounding"],
+    arithmetic: ["placeValue", "addSubtract", "tables", "divide", "times", "integers", "order", "rounding"],
     everyday: ["money", "time", "measure", "currency", "inflation"],
-    fractions: ["makeWhole", "equivalent", "orderFractions", "shadeFraction", "compareFractions", "fractions", "decimals", "percent"],
+    fractions: ["makeWhole", "equivalent", "orderFractions", "shadeFraction", "compareFractions", "fractions", "decimals", "percent", "convert"],
     ratio: ["ratio", "rate", "barModels"],
-    factors: ["divisibility", "hcf", "primes", "bases"],
+    factors: ["divisibility", "hcf", "primes", "squares", "bases"],
     numberTheory: ["modular", "bezout", "congruences", "crt", "fermatEuler", "residues"],
     crypto: ["rsa", "discreteLog", "elGamal", "ellipticCurves"],
   },
@@ -38,7 +38,7 @@ export const GROUPS = {
     optimisation: ["linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction"],
   },
   geometry: {
-    shapes: ["shapeArea", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets"],
+    shapes: ["shapeArea", "areaPerimeter", "estimateAngle", "missingAngle", "triangleInequality", "symmetryLines", "cubeNets"],
     coordinates: ["coordinates", "slope", "line", "distance"],
     trig: ["trigexact", "righttri", "practicalTrig", "trigRules", "identities"],
     circles: ["circles", "powerPoint", "arcs", "similarity", "volume"],
