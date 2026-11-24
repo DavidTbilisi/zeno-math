@@ -1970,6 +1970,18 @@ function baseTenPreview(): Piece[] {
   ];
 }
 
+function rekenrekPreview(): Piece[] {
+  // A rack of two rows showing 7 and 3: five red beads and two white on the left of the top rod, three red below.
+  const [d, x0, x1] = [11, 8, 176];
+  const wood = { fill: "#6b4226", color: "#6b4226", width: 1 };
+  const row = (y: number, left: number) => [
+    seg([4, y], [180, y], { color: "#495057", width: 1.5 }),
+    ...Array.from({ length: 10 }, (_, i) =>
+      ellipse(i < left ? x0 + d / 2 + i * d : x1 - (10 - i) * d + d / 2, y, d / 2, d / 2, i < 5 ? { fill: "#ff6b6b", color: "#c92a2a", width: 1 } : { fill: "#ffffff", color: "#868e96", width: 1 })),
+  ];
+  return [...row(12, 7), ...row(34, 3), rect(0, 0, 4, 46, wood), rect(180, 0, 4, 46, wood)];
+}
+
 function cubesPreview(): Piece[] {
   // Two trains of linking cubes, 4 red and 3 blue, then 5 yellow: each cube with the nub that links it on top.
   const cube = (x: number, y: number, fill: string, color: string) => [
@@ -2289,6 +2301,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveAlgebraTiles", build: algebraTilesPreview, live: "algebraTiles" },
   { id: "liveBaseTen", build: baseTenPreview, live: "baseTen" },
   { id: "liveCubes", build: cubesPreview, live: "cubes" },
+  { id: "liveRekenrek", build: rekenrekPreview, live: "rekenrek" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
   { id: "liveSignPattern", build: signPatternPreview, live: "signPattern" },
