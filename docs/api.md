@@ -75,17 +75,25 @@ built app: hashed assets are cached for a year, and the page itself comes with a
 
 ## Whose boards
 
-Every board belongs to one student or to the teachers. A request says whose boards it is about:
+Every board belongs to the learner who made it or to the teachers. A request says whose boards it is about:
 
 - **`X-Teacher-Password`**: the teachers' boards, shared by every teacher. A wrong password is 403 and counts towards
-  the limit above. This header wins when a request carries both.
+  the limit above. This header wins over the others; a teacher's tab sends it even when the server asks for no
+  password (empty), so it stays a teacher's when its browser is signed in to an account.
 - **`X-Student-Code`**: that student's own boards. An unknown code is 403.
-- **Neither**: 403, no boards. With no `TEACHER_PASSWORD` set, such a request is a teacher's, as for classes.
+- **The session of an account** (issue #608): the boards the account made, and those of every class record it holds.
+  A learner in no class has boards this way.
+- **None of them**: 403, no boards. With no `TEACHER_PASSWORD` set, such a request is a teacher's, as for classes.
+
+A new board is stored under both the class record (the code sent, else the account's latest) and the account, when
+the request carries them. So a learner's boards from before they joined a class, from a record they added by its
+code, and from last year's class all stay theirs.
 
 A board that isn't the caller's answers **404** `no such board`, the same as one that doesn't exist. The one exception
-is a teacher and a student's board: the teacher may read it (`readOnly: true`, without its link), and changing,
-deleting or sharing it is **403**. Boards made before boards had owners are the teachers'. Deleting a student
-(`DELETE /api/students/:code`) deletes their boards.
+is a teacher and a board made under a class record: the teacher may read it (`readOnly: true`, without its link), and
+changing, deleting or sharing it is **403**. The board of a learner in no class is nobody's but theirs. Boards made
+before boards had owners are the teachers'. Deleting a student (`DELETE /api/students/:code`) deletes the boards made
+under that record, and deleting an account deletes its boards.
 
 ## Saving a board
 

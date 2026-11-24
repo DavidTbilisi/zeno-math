@@ -91,8 +91,10 @@ erDiagram
     INTEGER created_at
     INTEGER updated_at "optimistic locking"
     TEXT share_token UK "read-only link"
-    INTEGER student_id FK "owner; NULL: the teachers'"
+    INTEGER student_id FK "the class record it was made under"
+    INTEGER account_id FK "the account that made it; both NULL: the teachers'"
   }
+  accounts ||--o{ boards : owns
   students ||--o{ boards : owns
   classes ||--o{ students : has
   classes {

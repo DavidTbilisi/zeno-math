@@ -286,26 +286,38 @@ function teacher(req: IncomingMessage) {
 }
 
 /**
- * Who a board request comes from. Everyone past the site password is the same to the server, so a board belongs to
- * someone only through what the request carries: the teacher password (the teachers' boards), or a student code (that
- * student's own boards). The teacher password wins when both are sent. With no TEACHER_PASSWORD set, a request
- * carrying neither is a teacher's, as for classes; with one set, it gets no boards at all.
+ * Who a board request comes from. A board belongs to someone only through what the request carries: the teacher
+ * password (the teachers' boards), a student code (that student's own boards), or the session of an account (#608: the
+ * boards it made, in a class or not). The teacher password wins when several are sent; a student code or a session
+ * each add to the other. With no TEACHER_PASSWORD set, a request carrying none of them is a teacher's, as for classes;
+ * with one set, it gets no boards at all.
+ *
+ * studentId is the class record boards are made under, so the teacher can open them: the code's, else the account's
+ * latest. accountId is who is signed in.
  */
-export type BoardUser = { teacher: true } | { teacher: false; studentId: number };
+export type BoardUser = { teacher: true } | { teacher: false; studentId: number | null; accountId: number | null };
 export function boardUser(req: IncomingMessage, db: DatabaseSync): BoardUser {
   if (req.headers["x-teacher-password"] !== undefined) {
     teacher(req);
     return { teacher: true };
   }
+  const account = accountOf(req, db);
   const code = req.headers["x-student-code"];
   if (code !== undefined) {
     const row = stmt(db, "SELECT id FROM students WHERE code = ?").get(normalizeCode(code)) as { id: number } | undefined;
     if (!row) throw new HttpError(403, "no such student code");
-    return { teacher: false, studentId: row.id };
+    return { teacher: false, studentId: row.id, accountId: account?.id ?? null };
+  }
+  if (account) {
+    const row = stmt(db, "SELECT id FROM students WHERE account_id = ? ORDER BY created_at DESC, id DESC LIMIT 1").get(account.id) as { id: number } | undefined;
+    return { teacher: false, studentId: row?.id ?? null, accountId: account.id };
   }
   if (!TEACHER_PASSWORD) return { teacher: true };
-  throw new HttpError(403, "boards need a student code or the teacher password");
+  throw new HttpError(403, "boards need an account, a student code or the teacher password");
 }
+/** Whether a class record is this account's: its boards are then the account's too, whichever class it practises in now. */
+export const studentIsAccounts = (db: DatabaseSync, studentId: number, accountId: number) =>
+  !!stmt(db, "SELECT 1 FROM students WHERE id = ? AND account_id = ?").get(studentId, accountId);
 
 /** A class's students' boards, for the teacher to open (read only). */
 export const classBoards = (db: DatabaseSync, klass: string) =>

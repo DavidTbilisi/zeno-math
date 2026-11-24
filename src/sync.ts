@@ -10,7 +10,7 @@
 // the news the next time it opens.
 import { useSyncExternalStore } from "react";
 import { req } from "./api";
-import { follows, hashOf, isWork } from "./model/accountState";
+import { follows, hashOf, isWork, VALUE_MAX } from "./model/accountState";
 
 const META_KEY = "zeno.synced.v1";
 /** How often changed keys are looked for, and after how many such looks the server is asked for news anyway. */
@@ -48,7 +48,10 @@ function saveMeta(m: Meta) {
   }
 }
 
-/** The keys that follow the account, as this browser has them now. */
+/**
+ * The keys that follow the account, as this browser has them now. A value longer than the server takes stays here:
+ * sending it would have the whole request refused, and every other key with it.
+ */
 function localItems(): Record<string, string> {
   const s = store();
   const out: Record<string, string> = {};
@@ -56,7 +59,7 @@ function localItems(): Record<string, string> {
   for (let i = 0; i < s.length; i++) {
     const key = s.key(i);
     const value = key && follows(key) ? s.getItem(key) : null;
-    if (key && value !== null) out[key] = value;
+    if (key && value !== null && value.length <= VALUE_MAX) out[key] = value;
   }
   return out;
 }

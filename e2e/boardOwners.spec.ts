@@ -62,3 +62,38 @@ test("a student's board is theirs: another student doesn't see it, and the teach
   expect(put.status()).toBe(403);
   expect((await (await request.get(`/api/boards/${id}`)).json()).title).toBe(title);
 });
+
+test("a signed-in learner in no class has boards of their own, on any browser, and a visitor is sent to sign in", async ({ browser }) => {
+  const email = `boards${Date.now()}@school.example`;
+  const title = `My own ${Date.now()}`;
+  // A visitor is told boards need someone, and where to become someone.
+  const laptop = await browserOf(browser);
+  await laptop.goto("/#/boards");
+  await expect(laptop.getByText(en.boardsNeedOwner)).toBeVisible();
+  await laptop.locator(".empty").getByRole("link", { name: en.site.account.link }).click();
+  await expect(laptop.getByRole("heading", { name: en.site.account.title })).toBeVisible();
+
+  // With an account (made here through the API) the same page makes and keeps boards.
+  expect((await laptop.request.post("/api/account", { data: { email, name: "Board Maker", password: "e2e long enough" } })).status()).toBe(201);
+  await laptop.goto("/#/boards");
+  await laptop.reload();
+  await laptop.getByRole("button", { name: /New board/ }).first().click();
+  await laptop.waitForURL(/#\/b\/[0-9a-f-]+$/);
+  const id = laptop.url().split("/").pop()!;
+  await laptop.locator(".excalidraw").waitFor();
+  await laptop.getByLabel(en.rename).fill(title);
+  await laptop.getByLabel(en.rename).press("Enter");
+  await expect(laptop.locator(".save-state")).toHaveText(en.saved);
+
+  // Another browser, signed in to the same account, lists it and opens it; a third, signed in to another, can't.
+  const phone = await browserOf(browser);
+  expect((await phone.request.post("/api/account/session", { data: { email, password: "e2e long enough" } })).status()).toBe(200);
+  await phone.goto("/#/boards");
+  await expect(phone.locator(".board-card .board-title")).toHaveValue(title);
+  const other = await browserOf(browser);
+  expect((await other.request.post("/api/account", { data: { email: `x${email}`, name: "Someone Else", password: "e2e long enough" } })).status()).toBe(201);
+  await other.goto("/#/boards");
+  await expect(other.getByText(en.noBoards)).toBeVisible();
+  await other.goto(`/#/b/${id}`);
+  await expect(other.getByText(en.notFound)).toBeVisible();
+});

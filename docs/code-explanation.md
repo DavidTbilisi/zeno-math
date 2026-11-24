@@ -3748,7 +3748,7 @@ Daily snapshots into `DATA_DIR/backups`, "a consistent snapshot (VACUUM INTO, sa
 
 ### server/research.ts
 
-The study API: classes, students randomised to a condition, one `attempts` row per practice question, exports, and the in-memory learner model. "No names or emails are kept: a student is a code they write down. Exports name students by a number ("s17") instead, so a published data set can't be used to sign in."
+The study API: classes, students randomised to a condition, one `attempts` row per practice question, exports, and the in-memory learner model. A student is a code; one who joined signed in belongs to an account, whose name the teacher's page shows. Neither the name nor the email is ever exported: exports name students by a number ("s17").
 
 #### Constants and codes (`server/research.ts:19-48`)
 
@@ -4333,7 +4333,8 @@ This section collects the rules that hold across folders. Each one is enforced s
 
 ### 11.5 Identity and privacy
 
-- A student is an 8-character code from an alphabet without 0/O/1/I/L, normalised by `normalizeCode` so case and the dash do not matter. The code is sufficient to read the plan, upload answers and delete the record.
+- A student is an 8-character code from an alphabet without 0/O/1/I/L, normalised by `normalizeCode` (`server/codes.ts`) so case and the dash do not matter. The code is sufficient to read the plan, upload answers and delete the record.
+- Since accounts (#605–#608, `server/accounts.ts`) a student who joins signed in belongs to an account (`students.account_id`): an email, a name the teacher's page shows, and an scrypt-hashed password. A session is a random token in an `HttpOnly`, `SameSite=Lax` cookie, stored as its SHA-256. Neither the name nor the email is in any export. Progress kept by the browser follows the account through `account_state` (`src/model/accountState.ts`, `src/sync.ts`), and boards through `boards.account_id`.
 - Exports name students `s<id>` and never contain codes. Typed answers are JSON-encoded in CSV so `=1+2` cannot become a spreadsheet formula.
 - The read-only board token is 16 random bytes in base64url and reveals nothing about the board id. The share route returns the scene without the id.
 

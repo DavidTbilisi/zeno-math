@@ -25,7 +25,7 @@ export function BoardsPage() {
   const { t, lang } = useI18n();
   const [boards, setBoards] = useState<BoardSummary[] | null>(null);
   const [failed, setFailed] = useState(false);
-  // 403: this browser is neither a teacher's nor a joined student's, so it has no boards (server/research.ts boardUser).
+  // 403: this browser is neither a teacher's nor a student's, and nobody is signed in, so it has no boards (server/research.ts boardUser).
   const [refused, setRefused] = useState(false);
 
   const load = () => api.list().then(setBoards, (e) => {
@@ -149,7 +149,7 @@ export function BoardsPage() {
             {refused ? (
               <div className="empty">
                 <p>{t.boardsNeedOwner}</p>
-                <a className="btn primary" href="#/practice">{t.practice}</a>
+                <a className="btn primary" href="#/account">{t.site.account.link}</a>
               </div>
             ) : boards === null ? (
               <p className="muted">{t.loading}</p>
