@@ -17,10 +17,16 @@ step-by-step algebra and statistics, and 72 ready-made mathematical shapes. Insi
 questions for 75 skills in five areas, each at three levels of difficulty, checks typed answers, names common mistakes
 behind wrong answers and shows worked solutions. Appendix E sets the skills against a primary syllabus.
 
-Students join a class with a code and need no account. Zeno collects no names, email addresses or other directly
-identifying information. Practice records are stored under pseudonymous student codes, which is still personal data
-in the sense of Georgia's data protection law [@georgia2023pdp] and the GDPR [@gdpr2016], and exports replace the
-codes with study identifiers.
+Students join a class with its code. Until 24 November 2026 they needed no account, and Zeno collected no names or
+email addresses. Since then a student makes an account with an email address, a name and a password, so that the
+teacher can tell the students of a class apart and a student who signs in on another device finds their practice where
+they left it. The email address is used only to sign in and to set a new password, the name is shown only on the
+teacher's page, and the password is kept only as a salted hash. Practice records are still stored
+under pseudonymous student codes, now linked to the account, and exports replace the codes with study identifiers and
+hold neither the name nor the email address. The account and the practice records are both personal data in the sense
+of Georgia's data protection law [@georgia2023pdp] and the GDPR [@gdpr2016]. The text a student agrees to before
+joining says what is kept and who sees it, and a student who deletes the account removes the records kept under it. No
+result in this thesis uses data collected through Zeno.
 
 ![Zeno in its setting: one machine in the school serves the board and the practice to the teacher's and students'
 devices (`docs/architecture.md`, "System context").](figures/context.png)
@@ -57,10 +63,10 @@ blocks").](figures/blocks.png)
 ## A.3 The class study
 
 Zeno also contains a protocol for a randomised class study, prepared for the wider question this thesis began with:
-whether choosing questions with the learner model helps a class learn more than the same questions in a fixed order.
-A teacher creates a class, students consent and join, and each is assigned by randomisation in blocks of four to the
-adaptive or the fixed condition. Both conditions get the same feedback, worked solutions and practice time. A pre-test
-and a post-test in parallel forms, counterbalanced within each condition, measure what was learnt, and the analysis
-was written before any data. A dry run with simulated students rehearses the whole protocol through the real server on
-every change to the code. The design, the simulations behind it and its power analysis are in `docs/study.md` in the
-repository, and the future work in section 3.3 summarises why the study needs several classes.
+whether choosing questions with the learner model helps a class learn more than the same questions in a fixed order. A
+teacher creates a class, students sign in, consent and join, and each is assigned by randomisation in blocks of four
+to the adaptive or the fixed condition. Both conditions get the same feedback, worked solutions and practice time. A
+pre-test and a post-test in parallel forms, counterbalanced within each condition, measure what was learnt, and the
+analysis was written before any data. A dry run with simulated students rehearses the whole protocol through the real
+server on every change to the code. The design, the simulations behind it and its power analysis are in
+`docs/study.md` in the repository, and the future work in section 3.3 summarises why the study needs several classes.
