@@ -1188,8 +1188,9 @@ input.invalid { border-color: var(--danger); }
 .z-lede { margin: 24px 0 32px; max-width: 34em; font-size: 1.1875rem; color: var(--z-graphite); }
 .z-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
 
-.z-ask {
-  grid-area: ask; display: flex; flex-direction: column; gap: 14px; padding: 28px;
+.z-ask { grid-area: ask; }
+.z-ask, .z-try {
+  display: flex; flex-direction: column; gap: 14px; padding: 28px;
   background: var(--surface); border: 2px solid var(--z-ink); border-radius: 10px;
 }
 .z-ask-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--z-graphite); }
@@ -1239,6 +1240,33 @@ input.invalid { border-color: var(--danger); }
 .z-facts > div { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 16px; padding: 20px 0; border-top: 1px solid var(--border); }
 .z-facts dt { font-weight: 800; font-size: 1.0625rem; }
 .z-facts dd { margin: 0; color: var(--z-graphite); max-width: 36em; }
+
+.z-section-lede { margin: -16px 0 40px; max-width: 44em; font-size: 1.125rem; color: var(--z-graphite); }
+
+/* It says what went wrong: the words left, a student's answer to check right */
+.z-mistake { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 56px; align-items: center; }
+.z-mistake h2 { margin-bottom: 24px; }
+.z-mistake p { margin: 0 0 16px; max-width: 34em; font-size: 1.125rem; color: var(--z-graphite); }
+.z-try-sum { display: inline-flex; align-items: center; gap: 12px; }
+.z-frac-big { font-size: 1.5rem; font-weight: 800; }
+.z-frac-big > span:first-child { border-bottom-width: 3px; padding: 0 6px 2px; }
+.z-frac-big > span:last-child { padding-top: 2px; }
+.z .z-try .z-ask-q input { width: 4.2em; }
+.z-try-said { min-height: 6.2em; }
+.z-try-said.across, .z-try-said.wrong { color: var(--z-ink); font-weight: 600; }
+.z-try-said.right { color: var(--z-right); font-weight: 600; }
+
+/* The whole path: one line through four stages, each stage's topics under its stop */
+.z-path { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.z-path > li { position: relative; padding: 28px 24px 0 0; border-top: 4px solid var(--z-ink); }
+.z-path > li::before {
+  content: ""; position: absolute; top: -11px; left: 0; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--z-paper); border: 4px solid var(--z-ink); box-sizing: border-box;
+}
+.z-path > li:first-child::before { background: var(--z-marker); }
+.z-path strong { display: block; margin-bottom: 12px; font-size: 1.1875rem; font-weight: 800; }
+.z-path ul { list-style: none; margin: 0; padding: 0; color: var(--z-graphite); }
+.z-path ul li { padding: 3px 0; }
 
 /* How a class starts: a real sequence, so numbered */
 .z-steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
@@ -1518,6 +1546,8 @@ span.board-home:hover { background: none; }
 @media (max-width: 860px) {
   .z-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "ask" "line"; row-gap: 40px; padding: 24px 0 56px; }
   .z-facts { grid-template-columns: minmax(0, 1fr); }
+  .z-mistake { grid-template-columns: minmax(0, 1fr); row-gap: 32px; }
+  .z-path { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
   .z-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
@@ -1534,6 +1564,12 @@ span.board-home:hover { background: none; }
   .z-line-one { right: 14px; }
   .z-facts > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .z-steps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  /* one column: the line runs down the left, a stop beside each stage */
+  .z-path { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+  .z-path > li { padding: 0 0 28px 28px; border-top: 0; border-left: 4px solid var(--z-ink); }
+  .z-path > li:last-child { padding-bottom: 0; }
+  .z-path > li::before { top: 0; left: -11px; }
+  .z-try { padding: 20px; }
   .z-own { margin: 0 -16px; padding: 48px 16px; border-radius: 0; }
   .z-practice { flex-wrap: wrap; padding: 24px 20px; }
   .z-practice .z-btn { width: 100%; }

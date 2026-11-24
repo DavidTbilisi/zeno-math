@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <b>A free, open-source math whiteboard for learning on your own, from counting to university maths.</b><br>
+  <b>Free, open-source math practice and whiteboards for schools and universities: one system from counting to a degree.</b><br>
   <a href="https://davidtbilisi.github.io/zeno-math/">Website</a> ·
   <a href="https://davidtbilisi.github.io/zeno-math/practice/">Try the practice</a> ·
   <a href="docs/features.md">Every feature</a> ·
@@ -18,9 +18,10 @@
 
 ![A Zeno board: lattice multiplication, the unit circle, a Hamiltonian path in the Petersen graph, fraction division, ε–δ and Pascal's hockey stick](docs/screenshots/board.png)
 
-Zeno's paradox says you need infinitely many small steps to cross a room, and yet you get there. Zeno is a maths
-website with topics, goal roadmaps and practice, built around an infinite whiteboard where every picture is a live
-object you can change. Practice checks your answers and notices the mistake you made.
+Zeno's paradox says you need infinitely many small steps to cross a room, and yet you get there. Zeno is one maths
+system for a school or a university: practice that names the mistake a student made, a teacher's page that shows who
+is stuck and on what, topics and goal roadmaps from first steps to a degree, and an infinite whiteboard where every
+picture is a live object you can change. It works just as well for learning on your own.
 
 ## See it work
 
