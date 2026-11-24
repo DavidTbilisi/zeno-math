@@ -947,5 +947,10 @@ export const MISTAKES = [
   "stackWrongBar",
   "stackNoFlip",
   "stackFlipTop",
+  "stepOfOne",
+  "tensOnesSwapped",
+  "tensOnesAdded",
+  "lastDigitDecides",
+  "gapNotStep",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

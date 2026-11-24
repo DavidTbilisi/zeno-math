@@ -307,6 +307,15 @@ export type PracticeWords = {
     toDecimal: string; toPercent: string; toFraction: string;
     perimeter: string; area: string; sideFromArea: string; sideFromPerimeter: string; circumference: string; circleArea: string;
   };
+  /**
+   * Counting in steps (skipCount): the prompts for a row with a number missing, tens and ones, odd and even, the step
+   * of a row and whether a count says a number; and the words of the answers that are picked.
+   */
+  count: {
+    next: string; missing: string; tensOnes: string; howManyTens: string; whichOdd: string; whichEven: string;
+    step: string; said: string; sumParity: string;
+    words: Record<"yes" | "no" | "odd" | "even", string>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
