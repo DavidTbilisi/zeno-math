@@ -5,9 +5,10 @@
 // The special cases are named under the working (0 ÷ n, n ÷ 1, n ÷ n), and n ÷ 0 shows why it has no working at all.
 // Worked by hand: the numbers are digit wheels (one more, faded, on the left for a longer number), the decimal places a
 // wheel and the layouts pills; a tap on the working takes the next step and the steps under it are a track to drag
-// along; with "Your turn" the next digit is tapped from a row of tiles (or typed).
+// along; with "Your turn" the next digit is tapped from a row of tiles (or typed). With "Labels" the step just done is
+// named beside the working with arrows: what each group gets, what was taken away, what is left.
 import { useMemo, useState, type KeyboardEvent } from "react";
-import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, planDivision, renderDivision, type DivisionSpec } from "../math/division";
+import { DIVISION_LIMITS, DIVISION_STYLES, divisionStepCount, planDivision, renderDivision, type DivisionLabels, type DivisionSpec } from "../math/division";
 import { blocksFit } from "../math/divisionBlocks";
 import { divisionAsk, divisionCase, divisionNumbers, judgeDigit, type LiveDivision } from "../math/live";
 import { shareStatus, sharingAt, stepsShared } from "../math/sharing";
@@ -20,7 +21,7 @@ const PW = 740;
 const PH = { alone: 340, blocks: 240 };
 const NOTE_H = 50; // the stage gives up this much when a special case is named under it
 
-const specOf = (d: LiveDivision, step: number): DivisionSpec => ({ type: "division", style: d.style, a: d.a, b: d.b, decimals: d.decimals, step });
+const specOf = (d: LiveDivision, step: number, labels?: DivisionLabels): DivisionSpec => ({ type: "division", style: d.style, a: d.a, b: d.b, decimals: d.decimals, step, labels });
 const inner = (svg: string) => svg.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 
 export function LongDivision(props: PieceProps<"division">) {
@@ -69,6 +70,8 @@ function Head({ state: d, set, w, hands, fits }: PieceProps<"division"> & { hand
         onTap={() => set({ ...d, turn: !d.turn })} />
       <Pill x={tabsW + 162} y={62} w={110} h={28} size={13} text={`🧱 ${wd.blocks}`} title={fits ? wd.blocks : wd.blocksOff} on={hands} disabled={!fits}
         onTap={() => set({ ...d, blocks: !d.blocks, share: null })} />
+      <Pill x={tabsW + 280} y={62} w={Math.max(100, wd.labels.length * 8 + 44)} h={28} size={13} text={`➜ ${wd.labels}`} title={wd.labelsTitle}
+        on={!!d.labels && d.style !== "short"} disabled={d.style === "short"} onTap={() => set({ ...d, labels: !d.labels })} />
     </svg>
   );
 }
@@ -108,17 +111,21 @@ function Working(props: PieceProps<"division">) {
   const share = hands ? (d.share && d.share.groups.length === b ? d.share : sharingAt(plan, b, 0)) : null;
   const k = share ? stepsShared(plan, b, share) : Math.min(d.step, n);
   const special = divisionCase(a, b);
+  const labels = useMemo<DivisionLabels | undefined>(
+    () => (d.labels ? { each: wd.each, taken: wd.taken, left: wd.leftOf, leftAny: wd.leftAny } : undefined),
+    [d.labels, wd],
+  );
   const ph = (hands ? PH.blocks : PH.alone) - (special ? NOTE_H : 0);
   // The biggest the working gets over all its steps, so it doesn't jump about as it grows.
   const box = useMemo(() => {
     let [bw, bh] = [1, 1];
     for (let i = 0; i <= n; i++) {
-      const r = renderDivision({ type: "division", style, a, b, decimals, step: i });
+      const r = renderDivision({ type: "division", style, a, b, decimals, step: i, labels });
       [bw, bh] = [Math.max(bw, r.width), Math.max(bh, r.height)];
     }
     return { w: bw, h: bh, s: Math.min(1.5, PW / bw, ph / bh) };
-  }, [a, b, decimals, style, n, ph]);
-  const pic = renderDivision(specOf(d, k));
+  }, [a, b, decimals, style, n, ph, labels]);
+  const pic = renderDivision(specOf(d, k, labels));
   const ask = d.turn && !hands ? divisionAsk({ ...d, step: k }) : null;
   const [said, setSaid] = useState<{ step: number; text: string; ok: boolean } | null>(null);
 

@@ -2100,7 +2100,8 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     wrong one with the multiplication or subtraction that shows why. With 🧱 blocks (up to 999 ÷ 9) the pupil shares
     hundreds, tens and ones into the groups by hand: drag a block into a group (or tap it to deal it), drop one that
     can't go round on "1 → 10" to change it for ten of the next place, and the written working fills in as each place
-    is shared out
+    is shared out. "Labels" names the step just done beside the working, with arrows: what each group gets (the
+    quotient digit, ringed), what was taken away, and what is left of that place (hundreds, tens, ones)
   - *Rubik's cube*: a cube to turn, drawn twice — in 3D (click a sticker to turn its face, drag to look round it) and
     on Borromean rings: three bands of three circles, one per axis, each face's nine dots where two bands cross, so a
     turn slides the twelve stickers beside the face along one circle (hover a face to see it). Turn with U D L R F B (↺ for R′), undo, scramble or go back to

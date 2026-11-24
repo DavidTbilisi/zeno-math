@@ -6,13 +6,23 @@
 // Each step is one quotient digit: divide, multiply, subtract, bring down the next digit.
 // With decimals > 0 the division continues past the point, and a repeating decimal is detected
 // when a remainder comes back. For small whole numbers, blocks: true draws base-ten blocks being
-// shared out next to the working (divisionBlocks.ts).
+// shared out next to the working (divisionBlocks.ts). With labels, the step just done is named in the margin with
+// arrows: the quotient digit is what each group gets, the product what was taken away, the remainder what is left of
+// that place.
 import type { RenderedSvg } from "./latex";
 import { blocksFit, renderBlocksPanel } from "./divisionBlocks";
 
 export type DivisionStyle = "bracket" | "corner" | "short";
 export const DIVISION_STYLES: DivisionStyle[] = ["bracket", "corner", "short"];
-export type DivisionSpec = { type: "division"; style: DivisionStyle; a: number; b: number; decimals: number; step: number; blocks?: boolean };
+/**
+ * The words that name the step just done (not drawn for short division, which has no rows to name): what each group
+ * gets, what was taken away, and what is left of a place, `left[0]` for ones, then tens, hundreds, thousands;
+ * `leftAny` for any other place.
+ */
+export type DivisionLabels = { each: string; taken: string; left: string[]; leftAny: string };
+export type DivisionSpec = {
+  type: "division"; style: DivisionStyle; a: number; b: number; decimals: number; step: number; blocks?: boolean; labels?: DivisionLabels;
+};
 export const DIVISION_LIMITS = { a: 99_999_999, b: 9_999, decimals: 10 };
 
 type Step = { pos: number; cur: number; q: number; r: number };
@@ -86,6 +96,17 @@ function quotientText(plan: DivisionPlan, sep: string, upTo = Infinity): string 
   return s;
 }
 
+const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+/** How wide a label is drawn, near enough. */
+const labelWidth = (s: string) => s.length * 14 * 0.6;
+/** An arrow along a row from one x to another, its head at `to`. */
+function arrow(from: number, to: number, y: number, color: string): string {
+  const d = to > from ? -6 : 6;
+  return `<path d="M${r1(from)},${r1(y)}H${r1(to)}M${r1(to + d)},${r1(y - 4)}L${r1(to)},${r1(y)}L${r1(to + d)},${r1(y + 4)}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+const ring = (x: number, y: number, w: number) =>
+  `<rect x="${r1(x)}" y="${r1(y)}" width="${w}" height="28" rx="6" fill="none" stroke="${GREEN}" stroke-width="1.6"/>`;
+
 type TextLine = { s: string; color: string; size: number };
 const textWidth = (lines: TextLine[]) => Math.max(0, ...lines.map((l) => l.s.length * l.size * 0.55 + 32));
 
@@ -135,6 +156,13 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
   let fullWidth = 0; // the width once every step is shown (the corner's quotient box grows)
   const shown = plan.steps.slice(0, k);
   const done = k >= plan.steps.length;
+  // The labels have a margin of their own on the left, as wide as the longest of them and an arrow.
+  const lab = style !== "short" ? (spec.labels ?? null) : null;
+  const labelsW = lab ? Math.max(...[lab.taken, lab.leftAny, ...lab.left, ...(corner ? [] : [lab.each])].map(labelWidth)) : 0;
+  const LX = 12 + labelsW; // where the labels end
+  const margin = lab ? Math.ceil(labelsW + 40) : 0;
+  const named = (text: string, y: number, tip: number, color: string) =>
+    `<text x="${r1(LX)}" y="${r1(y - 2)}" ${SANS} font-size="14" text-anchor="end" fill="${color}">${esc(text)}</text>` + arrow(LX + 6, tip, y - 7, color);
 
   if (style === "short") {
     // Short division: a bracket, quotient digits on top, remainders carried as small digits.
@@ -166,7 +194,7 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
     y0 += 30;
   } else if (!corner) {
     // Bracket layout: divisor ) dividend, quotient above, the working below.
-    x0 = 30 + bStr.length * 14 + 22;
+    x0 = 30 + bStr.length * 14 + 22 + margin;
     y0 = 76;
     const endX = colX(x0, nDig - 1) + cw / 2 + 6;
     out.push(`<text x="${x0 - 16}" y="${y0}" ${FONT} font-size="22" text-anchor="end" fill="${INK}" font-weight="700">${bStr}</text>`);
@@ -175,7 +203,7 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
     width = endX + 20;
   } else {
     // Corner layout: dividend | divisor, a line under the divisor and the quotient below it.
-    x0 = 40;
+    x0 = 40 + margin;
     y0 = 40;
     width = 0;
   }
@@ -229,6 +257,21 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
     }
     const lastRow = Math.max(0, ...lines.filter((l) => l.step < k).map((l) => l.line.row));
     const bottom = rowY(lastRow) + 10;
+    // The step just done, named: what was taken away, and what is left of its place (when that is written: a
+    // remainder of nothing with a digit brought down beside it is not).
+    const last = k > 0 ? plan.steps[k - 1] : null;
+    if (lab && last) {
+      const prod = lines.find((l) => l.step === k - 1 && l.kind === "prod")?.line;
+      const rem = lines.find((l) => l.step === k - 1 && l.kind === "rem")?.line;
+      if (prod) {
+        const startX = colX(x0, prod.end - Math.max(prod.text.length, String(last.cur).length) + 1) - cw / 2 - 2;
+        out.push(named(lab.taken, rowY(prod.row), startX - 20, ORANGE));
+      }
+      if (rem && (last.r > 0 || rem.text === "0")) {
+        const place = plan.intLen - 1 - last.pos;
+        out.push(named(lab.left[place] ?? lab.leftAny, rowY(rem.row), colX(x0, rem.end - rem.text.length + 1) - cw / 2 - 4, "#495057"));
+      }
+    }
     // The quotient.
     if (!corner) {
       shown.forEach((s) => {
@@ -236,6 +279,12 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
         if (!leading) out.push(ch(colX(x0, s.pos), y0 - 38, String(s.q), GREEN, 22, true));
       });
       if (hasDec && shown.some((s) => s.pos >= decAt)) out.push(ch(colX(x0, decAt) - cw / 2 - 4, y0 - 38, sep, GREEN, 22, true));
+      // What each group gets: the arrow runs to the quotient, and the digit just written is ringed.
+      const firstShown = shown.find((s) => !(s.q === 0 && s.pos === plan.first && s.pos < plan.intLen - 1));
+      if (lab && last && firstShown) {
+        out.push(named(lab.each, y0 - 38, colX(x0, firstShown.pos) - cw / 2 - 4, GREEN));
+        out.push(ring(colX(x0, last.pos) - 11, y0 - 59, 22));
+      }
       if (plan.repeatFrom !== null && done)
         out.push(`<line x1="${colX(x0, plan.repeatFrom) - 9}" y1="${y0 - 60}" x2="${colX(x0, plan.steps[plan.steps.length - 1].pos) + 9}" y2="${y0 - 60}" stroke="${GREEN}" stroke-width="2"/>`);
       y0 = bottom;
@@ -263,9 +312,16 @@ export function renderDivision(spec: DivisionSpec): RenderedSvg {
           out.push(`<text x="${x}" y="${y0 + 38}" ${FONT} font-size="22" fill="${GREEN}" font-weight="700">${c}</text>`);
           x += c === sep ? 9 : 13.2;
         }
+        // What each group gets, named on the right of the quotient, its last digit ringed.
+        if (lab) {
+          out.push(ring(x - 15.2, y0 + 17, 17));
+          out.push(arrow(x + 40, x + 10, y0 + 31, GREEN));
+          out.push(`<text x="${r1(x + 46)}" y="${y0 + 36}" ${SANS} font-size="14" fill="${GREEN}">${esc(lab.each)}</text>`);
+        }
       }
-      width = vx + boxW + 20;
-      fullWidth = vx + Math.max(bStr.length, quotientText(plan, sep).replace(/[()]/g, "").length) * 14 + 40;
+      const eachW = lab ? Math.ceil(46 + labelWidth(lab.each)) : 0;
+      width = vx + boxW + 20 + eachW;
+      fullWidth = vx + Math.max(bStr.length, quotientText(plan, sep).replace(/[()]/g, "").length) * 14 + 40 + eachW;
       y0 = Math.max(bottom, y0 + 50);
     }
   }

@@ -19,7 +19,16 @@ test("long division by hand: digit tiles, tap the working, the step track, digit
   await expect(piece).toContainText("How many times does 12 go into 24?");
   await working.press("2");
   await expect(piece).toContainText("Yes: 2 × 12 = 24.");
+  // The step just done is named beside the working; the Labels pill takes the names away and brings them back.
+  await expect(piece).toContainText("Each group");
+  await expect(piece).toContainText("Taken away");
+  await expect(piece).toContainText("Ones left");
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/longDivision.png` });
+  const labels = piece.getByRole("button", { name: "Name the step just done: what each group gets, what was taken away, what is left" });
+  await labels.click();
+  await expect(piece).not.toContainText("Taken away");
+  await labels.click();
+  await expect(piece).toContainText("Taken away");
 
   // Your turn off: back to the start from the keyboard, a tap on the working is one step, the track dragged to the end.
   await piece.getByRole("button", { name: "Your turn", exact: true }).click();
