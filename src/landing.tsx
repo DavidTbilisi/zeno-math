@@ -1,14 +1,15 @@
-// The front page for schools published on its own (GitHub Pages, vite.landing.config.ts): the landing with only its
-// own words in three languages, no server and no app. Its buttons lead to the practice published beside it
-// (practice-site.tsx) and to installing Zeno.
+// The front page for schools and universities published on its own (GitHub Pages, vite.landing.config.ts): the landing
+// with only its own words in three languages, no server and no app. Its buttons lead to the practice published beside
+// it (practice-site.tsx), to the topic pages (topic-prerender.tsx) and to installing Zeno.
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Landing } from "./components/Landing";
 import { ZenoMark } from "./components/ZenoMark";
-import { detectLang, LANGS, type Lang } from "./langs";
+import { detectLang, dropAddressLang, LANGS, type Lang } from "./langs";
 import { about as en } from "./locales/about/en";
 import { about as ka } from "./locales/about/ka";
 import { about as ru } from "./locales/about/ru";
+import { learnPath, practicePath } from "./sitePaths";
 import { seen, startUsage } from "./usage";
 import "./styles.css";
 
@@ -25,6 +26,7 @@ function Page() {
   const choose = (l: Lang) => {
     setLang(l);
     document.documentElement.lang = l;
+    dropAddressLang();
     try {
       localStorage.setItem("lang", l);
     } catch {
@@ -32,7 +34,7 @@ function Page() {
     }
   };
   const a = WORDS[lang];
-  const tryPractice = <a className="z-btn z-btn-ink" href="practice/" onClick={() => seen("step", "try practice")}>{a.tryPractice}</a>;
+  const tryPractice = <a className="z-btn z-btn-ink" href={practicePath(lang)} onClick={() => seen("step", "try practice")}>{a.tryPractice}</a>;
   return (
     <Landing
       a={a}
@@ -40,6 +42,7 @@ function Page() {
         <header className="z-bar">
           <span className="z-brand"><ZenoMark size={18} /><span>Zeno</span></span>
           <nav className="z-nav">
+            <a href={learnPath(lang)}>{a.topics}</a>
             <a href={REPO}>GitHub</a>
             <select className="lang-select" aria-label="Language" value={lang} onChange={(e) => choose(e.target.value as Lang)}>
               {LANGS.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
@@ -54,6 +57,7 @@ function Page() {
         </>
       }
       endCta={tryPractice}
+      topicHref={(id) => learnPath(lang, id)}
     />
   );
 }

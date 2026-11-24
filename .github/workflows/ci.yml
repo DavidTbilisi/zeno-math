@@ -28,6 +28,9 @@ jobs:
       # The whole test suite, failing if coverage of src/math and src/model drops below its thresholds.
       - run: npm run coverage
       - run: npm run build
+      # The site published on GitHub Pages (pages.yml builds it only after the merge): it must build here too, with
+      # every topic page filled in (scripts/landing-layout.mjs throws otherwise).
+      - run: npm run build:landing
 
   e2e:
     runs-on: ubuntu-latest

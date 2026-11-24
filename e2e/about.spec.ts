@@ -69,6 +69,10 @@ test("the path runs from first steps to university, and the counts are filled in
   await expect(path.first()).toContainText("First steps");
   await expect(path.last()).toContainText("Maths for AI");
   await expect(page.locator(".z-main")).not.toContainText(/\{\w+\}/);
+  // each topic of the path leads to its page
+  await path.nth(1).getByRole("link", { name: "Trigonometry" }).click();
+  await expect(page).toHaveURL(/#\/learn\/trigonometry$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Trigonometry");
 });
 
 test("the front page has an address of its own, and its links lead into the app", async ({ page }) => {

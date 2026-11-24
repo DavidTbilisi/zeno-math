@@ -22,6 +22,7 @@ export function AboutPage() {
         </>
       }
       endCta={<a className="z-btn z-btn-ink" href="/#/practice">{a.tryPractice}</a>}
+      topicHref={(id) => `/#/learn/${id}`}
     />
   );
 }

@@ -11,3 +11,12 @@ export const COUNTS = {
   /** Mistakes the checker knows by name (math/mistakes.ts). */
   mistakes: 900,
 } as const;
+
+/** The topics of the page's path (the words' `path`), stage by stage in the same order: what each name links to.
+ *  model/topics.ts has them; they are repeated here for the same reason as the counts, and the same test holds them. */
+export const PATH_TOPICS: readonly (readonly string[])[] = [
+  ["numbers", "fractions", "geometry"],
+  ["algebra", "functions", "trigonometry", "probability", "statistics"],
+  ["numberTheory", "finance", "logic", "discrete", "algorithms"],
+  ["vectors", "calculus", "analysis", "abstract", "optimisation", "topology", "ai"],
+];

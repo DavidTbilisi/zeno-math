@@ -3,7 +3,7 @@
 // class gets, how a class starts, and where the data lives. Its centrepiece is Zeno's own paradox played out: each
 // right answer covers half of the gap that is left. The bar and the calls to action come from the page using it.
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { COUNTS } from "../locales/about/counts";
+import { COUNTS, PATH_TOPICS } from "../locales/about/counts";
 import type { About } from "../locales/about/en";
 import { across, DEMO_SUMS, judge, plain, type DemoVerdict, type Frac } from "../math/fracDemo";
 import { fill } from "../math/text";
@@ -171,9 +171,11 @@ type LandingProps = {
   /** The hero's buttons, and the one at the foot of the page. */
   ctas: ReactNode;
   endCta: ReactNode;
+  /** Where a topic of the path leads: its page in the app, or the one published beside the front page. */
+  topicHref: (id: string) => string;
 };
 
-export function Landing({ a, bar, ctas, endCta }: LandingProps) {
+export function Landing({ a, bar, ctas, endCta, topicHref }: LandingProps) {
   return (
     <div className="z">
       {bar}
@@ -200,11 +202,11 @@ export function Landing({ a, bar, ctas, endCta }: LandingProps) {
           <h2>{a.pathTitle}</h2>
           <p className="z-section-lede">{fill(a.pathLede, COUNTS)}</p>
           <ol className="z-path">
-            {a.path.map(([stage, topics]) => (
+            {a.path.map(([stage, topics], i) => (
               <li key={stage}>
                 <strong>{stage}</strong>
                 <ul>
-                  {topics.map((x) => <li key={x}>{x}</li>)}
+                  {topics.map((x, j) => <li key={x}><a href={topicHref(PATH_TOPICS[i][j])}>{x}</a></li>)}
                 </ul>
               </li>
             ))}

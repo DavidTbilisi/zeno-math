@@ -18,6 +18,8 @@ export const about = {
   again: "Start again",
   line: "mastered",
   lineLabel: "{p} of the way to 1",
+  topics: "Topics",
+  topicsLede: "Every topic of maths Zeno teaches, from counting to topology: what it is, where you meet it, and what there is to learn.",
   mistakeTitle: "It says what went wrong",
   mistakeLede: "A wrong answer is rarely an accident. Zeno knows more than {mistakes} common mistakes by name: it tells the student which one they made, then works the question with them one step at a time.",
   mistakeTeacher: "The teacher sees it too: the class page groups the students who keep making the same mistake.",
