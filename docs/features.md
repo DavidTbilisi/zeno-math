@@ -1728,6 +1728,26 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     three seconds three times in a row, and the endless run draws with the book in hand, the facts last missed four
     times as often as the fast ones. In calm the tiles fall half as fast again more slowly. Four discoveries (five
     quick answers in a row, a block dug out, a whole wave right and quick, ten clean waves in a row)
+  - *Gate run* (two games, *+ and −* and *× and ÷*, each with its own ladder, on the same facts and the same book
+    as Number rain): a road of three lanes seen from behind a runner, a fact on the sign overhead, and a row of
+    three gates coming up the road, a number on each: the answer and two slips a learner might make (36 and 48 for
+    6 × 7). A lane tapped, or 1, 2 or 3 pressed, sends the runner dashing through that gate at once, and the time to
+    that pick is the time the fact took; the arrow keys steer and ↑ dashes. The right gate turns green; a wrong one
+    red with the right one shown, and the fact comes back once after the rest. A row left alone arrives in its own
+    time and the runner goes through the gate of the lane it is in. No slip earns three stars, one or two two; the
+    run's facts are listed at the end, right and still to learn. Four discoveries (five quick gates in a row, a
+    fact missed and then right, a whole run right and quick, ten clean runs in a row)
+  - *Join up* (two games, *sums* and *products*): number tiles on a grid of four by four, slid all together by a
+    swipe or an arrow key. In the sums game two tiles that meet join into their sum while it is no more than the
+    target (3 and 4 make 7), and a pair that makes the target (7 and 3 for 10) is cleared and counted; in the
+    products game two tiles join into their product while it still divides the target (2 and 3 make 6), and a pair
+    that makes it (4 and 6 for 24) is cleared. Tiles that do not belong together only block each other, a new tile
+    comes after every slide, and the line under the grid says what the last slide joined and what that tile still
+    needs. The round ends when the row of dots is full (three stars) or nothing can move (two stars if the ringed
+    dot was reached, else one). Nine rounds a game: 10 from small tiles and from any, 20, 100 in tens and in fives;
+    and 12, 24, 36, 48, 60, 72, 100, 120 and 144 from their factors. The board keeps the slides, so its undo takes
+    one back. Four discoveries (two pairs in one slide, a round in very few slides, a grid never crowded, ten
+    rounds finished in a row)
   - *Make the target*: tap the cards and signs to build a sum, and what it makes shows as it grows. A sum that makes
     the target earns two stars, a second, different way the third (3 + 4 and 4 + 3 are one way), and the hint — the
     first step of one way — leaves one; the endless run keeps a streak of puzzles made without a hint. Under the

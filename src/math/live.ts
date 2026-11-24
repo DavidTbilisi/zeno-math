@@ -13,6 +13,8 @@ import type { LiveDivisible } from "./divisible";
 import type { LivePrimeSlice } from "./primeSlice";
 import type { LiveKakooma } from "./kakooma";
 import { rainStart, type LiveRain } from "./numberRain";
+import { runStart, type LiveRun } from "./gateRun";
+import { joinStart, type LiveJoin } from "./joinUp";
 import type { LiveWall } from "./fractionWall";
 import type { LiveEquiv } from "./equivMatch";
 import type { LiveOrder } from "./fracOrder";
@@ -562,6 +564,10 @@ export type LiveStates = {
   kakooma: LiveKakooma;
   rainPlus: LiveRain;
   rainTimes: LiveRain;
+  runPlus: LiveRun;
+  runTimes: LiveRun;
+  joinSum: LiveJoin;
+  joinProduct: LiveJoin;
   fractionWall: LiveWall;
   equivMatch: LiveEquiv;
   fracOrder: LiveOrder;
@@ -697,6 +703,10 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   kakooma: [600, 600],
   rainPlus: [640, 680],
   rainTimes: [640, 680],
+  runPlus: [640, 580],
+  runTimes: [640, 580],
+  joinSum: [500, 620],
+  joinProduct: [500, 620],
   fractionWall: [660, 400],
   equivMatch: [620, 480],
   fracOrder: [720, 470],
@@ -834,6 +844,10 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     kakooma: { mode: "puzzle", stage: 0, level: 1, seed: 1, solved: [], wrong: null, misses: 0, hinted: false, streak: 0, said: null },
     rainPlus: rainStart("plus"),
     rainTimes: rainStart("times"),
+    runPlus: runStart("plus"),
+    runTimes: runStart("times"),
+    joinSum: joinStart("sum"),
+    joinProduct: joinStart("product"),
     fractionWall: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], best: 0, streak: 0, said: null },
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
     fracOrder: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], sel: 0, checked: false, streak: 0, said: null },

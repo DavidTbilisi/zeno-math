@@ -4,7 +4,9 @@
 // The fact games (number rain first) draw their questions here and tell the book how each went: an answer wrong, right,
 // or right and quick. A fact is fast once it has been right and quick three times in a row, which is what the games
 // rehearse toward; a fact last answered wrong is weak, and a draw with the book in hand brings the weak ones up most
-// often and the fast ones least. All of it is plain arithmetic on plain data, so it is tested without a browser.
+// often and the fast ones least. For a game that offers answers to choose from there are decoys, the wrong answers a
+// learner is likeliest to give, and for the end of a round the marks: every fact of it, right or still to learn.
+// All of it is plain arithmetic on plain data, so it is tested without a browser.
 
 export const TABLES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
 export type Table = (typeof TABLES)[number];
@@ -107,3 +109,34 @@ export function drawFacts(pool: readonly Fact[], count: number, next: () => numb
   }
   return out;
 }
+
+/**
+ * `n` wrong answers to a fact, each different, none the answer: first the slips a learner makes (the next multiple
+ * along either table for a product, one or two out for a quotient or a sum, ten out, the square next door), then
+ * numbers close by until there are enough.
+ */
+export function decoys(fact: Fact, n: number, next: () => number): number[] {
+  const [p, q = 0] = (fact.text.match(/\d+/g) ?? []).map(Number);
+  const a = fact.answer;
+  const near = fact.text.includes("×") ? [a + p, a - p, a + q, a - q]
+    : fact.text.includes("²") ? [(p + 1) ** 2, (p - 1) ** 2, 2 * p, a + 10, a - 10]
+    : fact.text.includes("÷") ? [a + 1, a - 1, a + 2, a - 2]
+    : [a + 1, a - 1, a + 2, a - 2, a + 10, a - 10];
+  for (let i = near.length - 1; i > 0; i--) {
+    const j = Math.floor(next() * (i + 1));
+    [near[i], near[j]] = [near[j], near[i]];
+  }
+  const out: number[] = [];
+  for (const x of [...near, a + 1, a - 1, a + 2, a + 3, a + 4, a + 5]) if (out.length < n && x > 0 && x !== a && !out.includes(x)) out.push(x);
+  return out;
+}
+
+/** How a fact of a round came out: right at once (and quick or not), or missed, and then got right when it came back or not. */
+export type FactMark = { text: string; answer: number; ok: boolean; quick: boolean; mended: boolean };
+/** The marks after one more fact is settled: a fact's first time is its mark; one come back (`again`) and got right is mended. */
+export function markFact(marks: FactMark[], e: { fact: Fact; ok: boolean; quick: boolean; again: boolean }): FactMark[] {
+  if (e.again) return e.ok ? marks.map((m) => (m.text === e.fact.text && !m.ok ? { ...m, mended: true } : m)) : marks;
+  return [...marks, { text: e.fact.text, answer: e.fact.answer, ok: e.ok, quick: e.ok && e.quick, mended: false }];
+}
+/** A fact with its answer in it: 6 × 7 = 42, and 7 + 3 = 10 for 7 + □ = 10. */
+export const shown = (text: string, answer: number) => (text.includes("□") ? text.replace("□", String(answer)) : `${text} = ${answer}`);
