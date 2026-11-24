@@ -31,7 +31,7 @@ import { classProtocol, phaseWindows, TEST_PHASE_OF, testScores } from "./protoc
 import { currentIdeas, currentModel, currentSpacing } from "./research.ts";
 
 type AttemptRow = {
-  id: number; seed: number; answers: string; hard: string | null; faded: number | null;
+  id: number; seed: number; answers: string; hard: string | null; faded: number | null; breaks: string | null;
   student_id: number; arm: Arm; condition: string; policy: string; predicted: number | null; skill: SkillId; level: Level;
   outcome: string; first_correct: number; counted: number; solution_viewed: number; ms_total: number; ms_first: number | null; created_at: number;
 };
@@ -58,12 +58,12 @@ function median(xs: readonly number[]) {
 }
 /** Every attempt of the class's students, in order. */
 const classAttempts = (db: DatabaseSync, classCode: string) => stmt(db, `
-  SELECT a.id, a.seed, a.answers, a.hard, a.faded, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
+  SELECT a.id, a.seed, a.answers, a.hard, a.faded, a.breaks, a.student_id, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.outcome, a.first_correct,
     json_array_length(a.answers) - a.retries AS counted, a.solution_viewed, a.ms_total, a.ms_first, a.created_at
   FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = ? ORDER BY a.id
 `).all(classCode) as AttemptRow[];
 /** Right first time, wrong, or nothing to say, by the rule the model learns by. */
-const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1, a.faded !== null);
+const verdict = (a: AttemptRow) => evidence(a.counted, a.outcome, a.first_correct === 1, a.faded !== null || a.breaks !== null);
 
 export function dashboard(db: DatabaseSync, classCode: string) {
   const klass = stmt(db, "SELECT code, name, skills, feature, created_at AS createdAt FROM classes WHERE code = ?").get(classCode) as
@@ -105,8 +105,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       arm: s.arm,
       condition: s.condition,
       answered: mine.length,
-      /** Minutes spent on questions class practice chose, its step-downs too (what timed sessions keep equal). */
-      practiceMinutes: mine.filter((a) => a.policy === s.condition || a.policy === "stepdown").reduce((sum, a) => sum + a.ms_total, 0) / 60_000,
+      /** Minutes spent on questions class practice chose, its step-downs and worked answers to judge too (what timed sessions keep equal). */
+      practiceMinutes: mine.filter((a) => a.policy === s.condition || a.policy === "stepdown" || a.policy === "breaks").reduce((sum, a) => sum + a.ms_total, 0) / 60_000,
       pre: test.pre ? { ...test.pre, complete: complete(test.pre) } : null,
       post: test.post ? { ...test.post, complete: complete(test.post) } : null,
       delayed: test.delayed ? { ...test.delayed, complete: complete(test.delayed) } : null,
@@ -140,6 +140,9 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       classPractice: chosen.length,
       /** Questions of a step-down to one idea after an early failure (stepDown.ts): only a class testing it has any. */
       stepDown: mine.filter((a) => a.policy === "stepdown").length,
+      /** Worked answers to judge after a run of right answers (breaks.ts), and the share judged rightly: only a class testing it has any. */
+      breaks: mine.filter((a) => a.policy === "breaks").length,
+      breaksRight: share(mine.filter((a) => a.policy === "breaks").map((a) => a.outcome === "solved")),
       rightFirst: share(mine.map(verdict).filter((v) => v !== null)),
       /** What the model expected of the questions class practice chose, and how far that was from the target. */
       predicted: mean(chosen.flatMap((a) => (a.predicted === null ? [] : [a.predicted]))),

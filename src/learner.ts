@@ -7,11 +7,13 @@ import { LogisticModel, type LogisticState } from "./model/logistic";
 import { evidence } from "./model/evaluate";
 import type { IdeaNode } from "./model/conceptGraph";
 import type { Rating } from "./model/difficulty";
-import { asksWhatWasHard, bearing, hasIdeas, IDEA_SKILLS, learnIdeas, SKILL_IDEAS, usesOf, type IdeaState } from "./model/ideaState";
+import { asksWhatWasHard, bearing, hasIdeas, IDEA_SKILLS, learnBreak, learnIdeas, SKILL_IDEAS, usesOf, type IdeaSkill, type IdeaState } from "./model/ideaState";
 import { choose, learnEma, RECENT, type AdaptiveOptions, type Choice, type EmaState } from "./model/policy";
 import { learnClassSpacing, type Spacing } from "./model/spacing";
 import { learnFading, type Faded, type Fading } from "./model/fading";
 import { learnStepDown, noStepDown, type StepDown } from "./model/stepDown";
+import { learnBreaks, noBreaks, type Breaks } from "./model/breaks";
+import { breakIdea, breakOf, namedIt, whereItBreaks, type BreakAnswer } from "./math/whereItBreaks";
 import type { Form, TestPhase } from "./model/testForms";
 import { hasFeature, ON_TRIAL, type Arm, type Feature } from "./model/arms";
 import { homeworkIndex, type Homework } from "./model/homework";
@@ -32,9 +34,9 @@ export type Outcome = "solved" | "revealed" | "skipped";
 /**
  * Who chose the question: the student's condition (class practice), the student (free practice), the review of misses,
  * the spaced review of what was mastered days ago (spacing.ts), a step-down to one idea after an early failure
- * (stepDown.ts), or the student's homework (homework.ts).
+ * (stepDown.ts), the student's homework (homework.ts), or a worked answer to judge after a run of right ones (breaks.ts).
  */
-export type ChosenBy = Condition | "free" | "review" | "spaced" | "stepdown" | "homework";
+export type ChosenBy = Condition | "free" | "review" | "spaced" | "stepdown" | "homework" | "breaks";
 /** How a question came to be asked, recorded with it. */
 export type Origin = { policy: ChosenBy; review: boolean; predicted: number | null };
 /** What the class is doing, set by the teacher (see server/protocol.ts). */
@@ -57,7 +59,7 @@ export type Protocol = {
  */
 export type Plan = Protocol & {
   condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; state: LogisticState; ideas: IdeaState; ema: EmaState;
-  spacing?: Spacing; fading?: Fading; stepDown?: StepDown;
+  spacing?: Spacing; fading?: Fading; stepDown?: StepDown; breaks?: Breaks;
 };
 export type LoggedAnswer = { input: string; verdict: AnswerVerdict; ms: number };
 /** One step of a question worked in steps (stepsOf in practice.ts), in the steps' order: the answers to it, and whether its answer was shown. */
@@ -92,6 +94,11 @@ export type Attempt = {
   rated?: Rating;
   /** A word problem marked before it was solved (wordMarks.ts, #582): a mark per sentence, and how long marking took. */
   marks?: Marks;
+  /**
+   * A worked answer judged ("where it breaks", src/math/whereItBreaks.ts): which working of the question was shown, and
+   * what the student said of it. Answers is empty; nothing was typed.
+   */
+  breaks?: BreakAnswer;
 };
 
 /**
@@ -119,6 +126,8 @@ export type QuestionLog = {
   rated?: Rating;
   /** The word problem's marks, once checked; its answers are timed from then (markedLog). */
   marks?: Marks;
+  /** A worked answer judged, once the student has judged it. */
+  breaks?: BreakAnswer;
 };
 
 export const startLog = (shownAt = Date.now(), t0 = performance.now()): QuestionLog =>
@@ -173,6 +182,7 @@ export function toAttempt(log: QuestionLog, ex: Exercise, origin: Origin, studen
     ...(log.faded ? { faded: log.faded } : {}),
     ...(log.rated ? { rated: log.rated } : {}),
     ...(log.marks ? { marks: log.marks } : {}),
+    ...(log.breaks ? { breaks: log.breaks } : {}),
   };
 }
 
@@ -181,10 +191,10 @@ export const ME = "me";
 /** Class practice as the browser keeps it: the server's plan, carried forward by every question the student leaves. */
 export type ClassPlan = Protocol & {
   condition: Condition; feature: Feature; arm: Arm; skills: SkillId[]; position: number; recent: SkillId[]; model: LogisticModel; ideas: IdeaState; ema: EmaState;
-  spacing: Spacing; fading: Fading; stepDown: StepDown;
+  spacing: Spacing; fading: Fading; stepDown: StepDown; breaks: Breaks;
 };
-export const toClassPlan = ({ state, spacing, fading, stepDown, ...rest }: Plan): ClassPlan =>
-  ({ ...rest, spacing: spacing ?? {}, fading: fading ?? {}, stepDown: stepDown ?? noStepDown(), model: LogisticModel.fromState(state) });
+export const toClassPlan = ({ state, spacing, fading, stepDown, breaks, ...rest }: Plan): ClassPlan =>
+  ({ ...rest, spacing: spacing ?? {}, fading: fading ?? {}, stepDown: stepDown ?? noStepDown(), breaks: breaks ?? noBreaks(), model: LogisticModel.fromState(state) });
 /**
  * A newer plan's protocol (the teacher may have moved the class on, or made homework) over the plan the browser has
  * been carrying forward. Homework questions answered here but not yet on the server stay answered.
@@ -210,7 +220,8 @@ export type TestAnswer = {
 };
 /**
  * What the server will do once it has the attempt: the model, the moving average and the ideas learn from it, the spaced
- * reviews, the fading and (for the arm with it) the step-down move on, the fixed sequence moves on.
+ * reviews, the fading and (for the arm with each) the step-down and the run to a worked answer to judge move on, the
+ * fixed sequence moves on.
  */
 export function applyAttempt(plan: ClassPlan, a: Attempt) {
   const correct = attemptEvidence(a);
@@ -222,6 +233,7 @@ export function applyAttempt(plan: ClassPlan, a: Attempt) {
   if (correct !== null) learnClassSpacing(plan.spacing, plan.model, ME, plan.ema, plan.ideas, a.skill, correct, a.shownAt);
   learnFading(plan.fading, a.skill, fadedOf(a));
   if (studentHas(plan, "stepdown")) learnStepDown(plan.stepDown, { skill: a.skill, policy: a.policy, correct }, plan.ideas);
+  if (studentHas(plan, "breaks")) learnBreaks(plan.breaks, { skill: a.skill, policy: a.policy, correct });
   if (a.policy === "fixed") plan.position++;
   if (a.policy === "homework" && plan.homework) {
     const i = homeworkIndex(plan.homework, a);
@@ -230,16 +242,19 @@ export function applyAttempt(plan: ClassPlan, a: Attempt) {
   plan.recent = [...plan.recent, a.skill].slice(-RECENT);
 }
 
-/** What the attempt tells the learner model, by the same rule the server uses (null: nothing). */
-export function attemptEvidence(a: Pick<Attempt, "outcome" | "answers" | "faded">): boolean | null {
+/**
+ * What the attempt tells the learner model, by the same rule the server uses (null: nothing). A worked answer judged
+ * tells it nothing: judging someone's working is not answering the question.
+ */
+export function attemptEvidence(a: Pick<Attempt, "outcome" | "answers" | "faded" | "breaks">): boolean | null {
   const counted = a.answers.filter((x) => x.verdict !== "form");
-  return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct", !!a.faded);
+  return evidence(counted.length, a.outcome, counted[0]?.verdict === "correct", !!a.faded || !!a.breaks);
 }
 /**
  * What the attempt tells the fading (fading.ts), the same on the server and in the browser: the question is rebuilt to
  * count its steps; a faded one went right when every step the student worked was right at its first counted answer.
  */
-export function fadedOf(a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "steps" | "faded">): Faded {
+export function fadedOf(a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "steps" | "faded" | "breaks">): Faded {
   const steps = stepsOf(exercise(a.skill, a.level, a.seed, en.pracWords), en.pracWords).length;
   const given = a.faded ?? 0;
   const worked = (a.steps ?? []).slice(given);
@@ -258,10 +273,17 @@ const firstMistake = (ex: Exercise, answers: readonly Pick<LoggedAnswer, "input"
  * What the attempt tells the student's ideas (src/model/ideaState.ts), the same on the server and in the browser: the
  * question is rebuilt from its skill, level and seed, the mistake, if the first counted answer made one the checker
  * recognises, is read off that answer, and what the student ticked as hard goes with it. Then each step worked, as a
- * question of its own on the ideas it needs. The words don't matter to either; English rebuilds it everywhere.
+ * question of its own on the ideas it needs. The words don't matter to either; English rebuilds it everywhere. A worked
+ * answer judged with a mistake in it moves only the idea of that mistake, by whether the student named it.
  */
-export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "hard" | "steps" | "faded">) {
+export function learnFromAttempt(state: IdeaState, a: Pick<Attempt, "skill" | "level" | "seed" | "outcome" | "answers" | "hard" | "steps" | "faded" | "breaks">) {
   if (!hasIdeas(a.skill)) return;
+  if (a.breaks) {
+    const b = breakOf(exercise(a.skill, a.level, a.seed, en.pracWords), a.breaks.variant);
+    const named = b && namedIt(b, a.breaks);
+    if (b?.worked.mistake && named !== null) learnBreak(state, breakIdea(b.worked.mistake), named!);
+    return;
+  }
   const correct = attemptEvidence(a);
   // A faded worked example says nothing of the whole question, only of the steps the student worked.
   if (correct === null && !a.faded) return;
@@ -328,15 +350,28 @@ export function stepDownExercise(idea: string, w: PracticeWords, random: () => n
 }
 
 /**
+ * The level of a worked answer to judge on the skill: the hardest the student is more likely than not to get right
+ * (judging working at a level beyond them says little), else the first.
+ */
+export const breakLevel = (plan: ClassPlan, skill: SkillId) =>
+  ([3, 2, 1] as const).find((L) => plan.model.predict({ student: ME, skill, level: L }) >= 0.5) ?? 1;
+
+/**
  * The next class-practice question once the reviews have had their turn: for the arm with step-down, a question of
- * the step-down under way, or then one straight back on the skill it came from; otherwise the student's condition's
- * choice.
+ * the step-down under way, or then one straight back on the skill it came from; for the arm with "where it breaks",
+ * a worked answer to judge once one is due (`breaks`: which working of the question is shown); otherwise the
+ * student's condition's choice.
  */
 export function classQuestion(
   plan: ClassPlan, w: PracticeWords, options: AdaptiveOptions = {}, random: () => number = Math.random,
-): { ex: Exercise; policy: Condition | "stepdown" } {
+): { ex: Exercise; policy: Condition | "stepdown" | "breaks"; breaks?: number } {
   const { now, back } = studentHas(plan, "stepdown") ? plan.stepDown : {};
   if (now) return { ex: stepDownExercise(now.idea, w, random), policy: "stepdown" };
+  const due = studentHas(plan, "breaks") ? plan.breaks.due : undefined;
+  if (due && hasIdeas(due as SkillId)) {
+    const b = whereItBreaks(due as IdeaSkill, breakLevel(plan, due as SkillId), w, random);
+    return { ex: b.ex, policy: "breaks", breaks: b.variant };
+  }
   const skills = back ? [back as SkillId] : plan.skills;
   const c = choose(plan.condition, plan.model, ME, skills, plan.position, { ideas: plan.ideas, ema: plan.ema, recent: back ? [] : plan.recent, random, ...options });
   return { ex: exerciseFor(c, w, random), policy: plan.condition };

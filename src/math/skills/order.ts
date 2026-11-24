@@ -4,7 +4,7 @@ import { num } from "../practiceKit";
 import type { Gen, Level, Trap } from "../practiceTypes";
 
 /** One operation done, the leftmost of those that can be: the next line of working. */
-function orderStep(n: OrderNode): OrderNode {
+export function orderStep(n: OrderNode): OrderNode {
   if ("v" in n) return n;
   if ("op" in n.l) return { ...n, l: orderStep(n.l) };
   if ("op" in n.r) return { ...n, r: orderStep(n.r) };
@@ -12,7 +12,7 @@ function orderStep(n: OrderNode): OrderNode {
 }
 
 /** In LaTeX; a negative number inside the working keeps brackets, so 4 × (−3)² isn't read as 4 × −3². */
-function orderTex(n: OrderNode, whole = true): string {
+export function orderTex(n: OrderNode, whole = true): string {
   if ("v" in n) return n.v < 0 && !whole ? `(${n.v})` : String(n.v);
   const sym: Record<string, string> = { "+": "+", "-": "-", "*": "\\times", "/": "\\div" };
   const inner = n.op === "^" ? `${orderTex(n.l, false)}^{${orderTex(n.r, false)}}` : `${orderTex(n.l, false)} ${sym[n.op]} ${orderTex(n.r, false)}`;

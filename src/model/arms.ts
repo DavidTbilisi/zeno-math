@@ -26,15 +26,19 @@ export const FEATURES = [
   "cards",
   // a word problem's sentences marked given, asked, not needed or relation before it is solved (wordMarks.ts, #582)
   "marking",
+  // after a run of right answers on a skill made of ideas, a worked answer to judge: right, or where and how it breaks
+  // (breaks.ts and src/math/whereItBreaks.ts, #577)
+  "breaks",
 ] as const;
 export type Feature = (typeof FEATURES)[number];
 /**
  * Features on trial: nobody has one but the arm with it in a class testing it. Step-down has been tried untargeted, and
  * cost students practice and completion for no gain (ASSISTments PSAYN42), so until a class shows the targeted kind
  * helps, nobody else gets it. The idea cards add a pick before a review that nothing has tested yet. Marking a word
- * problem first takes time from solving it, so it waits for a class too.
+ * problem first takes time from solving it, so it waits for a class too. "Where it breaks" takes questions from
+ * practice for questions about worked answers, and no class has yet shown that is worth it.
  */
-export const ON_TRIAL: readonly Feature[] = ["stepdown", "cards", "marking"];
+export const ON_TRIAL: readonly Feature[] = ["stepdown", "cards", "marking", "breaks"];
 export const ARMS = ["on", "off"] as const;
 /** on: the arm with the feature; off: the arm without it. */
 export type Arm = (typeof ARMS)[number];

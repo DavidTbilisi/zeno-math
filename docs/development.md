@@ -103,6 +103,8 @@ src/math/calcSteps.ts     how a calculus question comes apart into steps (terms,
 src/model/learningStage.ts  a skill's learning stage (#576): mastered, kept, fast, used on something new; per skill in My progress and on the roadmaps
 src/model/ideaCards.ts    an idea's card (#579): glyph, essence, look-alike, failure; on the topic page, and covered before a spaced review
 src/model/stepDown.ts     targeted step-down: two early misses on a skill made of ideas, three questions on its weakest idea, back
+src/model/breaks.ts       where it breaks: three right in a row on a skill made of ideas bring a worked answer to judge
+src/math/whereItBreaks.ts the worked answers to judge: the right working, or one with a trap or slip worked in, and the mistakes offered
 src/model/arms.ts         what a class tests: the features, the two arms, the condition each arm practises in
 src/model/stuckList.ts    the stuck list: ten questions without three right in a row, the reason (mistake, ticked idea, weakest idea), groups
 src/model/pace.ts         relative response time: question norms, the three-layer pace model, speed-weighted EMA (rejected), a change of pace

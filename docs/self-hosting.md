@@ -129,7 +129,7 @@ couldn't load back.
 
 Zeno can run a study that compares two ways of choosing practice questions: an adaptive learner model (aiming at a
 target chance of a right answer, as in Math Garden) against a fixed curriculum sequence. A class can test another
-feature instead (spaced review, steps after a miss, asking what was hard, worked examples that fade, or a targeted step-down still on trial), with half the class going without it. A teacher makes a class at
+feature instead (spaced review, steps after a miss, asking what was hard, worked examples that fade, or a targeted step-down or "where it breaks", both still on trial), with half the class going without it. A teacher makes a class at
 **`#/teacher`**, choosing the areas it practises or grades of the course (grades 1 to 8, 9–10, 11–12 and university;
 every skill has each of its three levels tagged with the grade that teaches it, from Singapore's syllabuses, in
 `src/model/curriculum.ts`). Students join with its code, are randomised to an arm in balanced blocks and get a code of

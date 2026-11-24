@@ -21,3 +21,4 @@ export const trackFading = checker.trackFading;
 export const stepsAfterMiss = checker.stepsAfterMiss;
 export const mistakeOf = checker.mistakeOf;
 export const homeworkFor = checker.homeworkFor;
+export const judgeBreak = checker.judgeBreak;

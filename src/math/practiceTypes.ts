@@ -3,6 +3,7 @@
 // so any module can name a question without loading the generators.
 import type { ArcWords } from "./arcs";
 import type { BarModelWords } from "./barProblems";
+import type { BreakWords } from "./whereItBreaks";
 import type { RowWords } from "./rowsAndPatterns";
 import type { LogicWords } from "./logicSets";
 import type { CalcTwoWords } from "./calculusTwo";
@@ -235,6 +236,8 @@ export type PracticeWords = {
   triangleSides: TriangleSidesWords;
   /** Bar-model word problems: the names, prompts and steps (src/math/barProblems.ts). */
   barModels: BarModelWords;
+  /** "Where it breaks": a worked answer to judge, and the names of the mistakes in it (src/math/whereItBreaks.ts). */
+  breaks: BreakWords;
   /** Ordinal numbers and repeating patterns: shapes, colours, ordinals, prompts (src/math/rowsAndPatterns.ts). */
   rows: RowWords;
   /** Proofs: their lines, reasons, faulty proofs and claims (src/math/proofs.ts). */

@@ -2021,3 +2021,14 @@ span.board-home:hover { background: none; }
   .today-part { grid-template-columns: auto 1fr; }
   .today-part > a { grid-column: 1 / -1; justify-self: start; }
 }
+/* "Where it breaks" (#577): a worked answer to judge, its lines buttons to tap once "it goes wrong" is said. */
+.practice-breaks { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
+.breaks-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.breaks-line { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border: 1px solid transparent; border-left: 3px solid var(--border); border-radius: 6px; background: none; color: inherit; font: inherit; text-align: left; }
+.breaks-line img { max-width: 100%; height: auto; background: #ffffff; border-radius: 4px; padding: 4px 6px; }
+.breaks-line.tap { cursor: pointer; border-color: var(--border); border-left-color: var(--accent); }
+.breaks-line.tap:hover, .breaks-line.tap:focus-visible { background: var(--chip); }
+.breaks-line.tapped { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.breaks-line.wrong { border-left-color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
+.breaks-n { flex: none; min-width: 1.5em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.breaks-pick .breaks-option { text-align: left; white-space: normal; }

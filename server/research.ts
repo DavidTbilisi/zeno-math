@@ -15,6 +15,8 @@ import { learnEma, RECENT, type EmaState } from "../src/model/policy.ts";
 import { learnClassSpacing, type Spacing } from "../src/model/spacing.ts";
 import type { Fading } from "../src/model/fading.ts";
 import { learnStepDown, noStepDown, type StepDown } from "../src/model/stepDown.ts";
+import { learnBreaks, noBreaks, type Breaks } from "../src/model/breaks.ts";
+import type { BreakAnswer } from "../src/math/whereItBreaks.ts";
 import { RATINGS, type Rating } from "../src/model/difficulty.ts";
 import { GOALS, isGoal } from "../src/model/roadmap.ts";
 import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from "../src/model/arms.ts";
@@ -26,7 +28,7 @@ import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { PICK_CODES } from "../src/model/pickCodes.ts";
-import { mark, markCount, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
+import { judgeBreak, mark, markCount, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
 import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordPaperTest, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
@@ -42,9 +44,10 @@ export type Condition = (typeof CONDITIONS)[number];
 export const OUTCOMES = ["solved", "revealed", "skipped"] as const;
 /**
  * Who chose the question: the student's condition (class practice), the student (free practice), the review of misses,
- * the spaced review, or a step-down to one idea after an early failure (stepDown.ts).
+ * the spaced review, a step-down to one idea after an early failure (stepDown.ts), homework, or a worked answer to
+ * judge after a run of right answers (breaks.ts).
  */
-export const POLICIES = ["adaptive", "fixed", "free", "review", "spaced", "stepdown", "homework"] as const;
+export const POLICIES = ["adaptive", "fixed", "free", "review", "spaced", "stepdown", "homework", "breaks"] as const;
 /** correct; close (nearly); wrong (a named mistake too); form (right idea, wrong form: sent back, not counted). */
 export const VERDICTS = ["correct", "close", "wrong", "form"] as const;
 const MAX_ANSWERS = 50;
@@ -140,6 +143,9 @@ export function initResearch(db: DatabaseSync) {
   add("attempts", "rated", "TEXT");
   // A word problem marked before it was solved (src/math/wordMarks.ts, #582): {picks, ms} as JSON, or NULL: not marked.
   add("attempts", "marks", "TEXT");
+  // A worked answer judged (src/math/whereItBreaks.ts): {variant, said, step?, picked?} as JSON, or NULL: a question
+  // answered.
+  add("attempts", "breaks", "TEXT");
   // The feature a class tests (arms.ts), chosen when it is made; classes from before arms tested the policy.
   add("classes", "feature", "TEXT NOT NULL DEFAULT 'policy'");
   // The student's arm: on (with the feature) or off. Students from before arms take it from their condition, and the
@@ -195,28 +201,28 @@ const classSkills = (json: string | null): SkillId[] => (json ? JSON.parse(json)
 
 type Replay = {
   model: ClassModel; ideas: Map<number, IdeaState>; ema: Map<number, EmaState>; spacing: Map<number, Spacing>; fading: Map<number, Fading>;
-  stepDown: Map<number, StepDown>; lastId: number;
+  stepDown: Map<number, StepDown>; breaks: Map<number, Breaks>; lastId: number;
 };
 const replays = new WeakMap<DatabaseSync, Replay>();
 /**
  * Replays attempts stored since the last call (all of them the first time) into the model and the students' ideas,
- * moving averages, spaced reviews, fading and step-downs.
+ * moving averages, spaced reviews, fading, step-downs and runs to a worked answer to judge.
  */
 function replay(db: DatabaseSync): Replay {
   let cache = replays.get(db);
-  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), ema: new Map(), spacing: new Map(), fading: new Map(), stepDown: new Map(), lastId: 0 }));
+  if (!cache) replays.set(db, (cache = { model: new ClassModel(), ideas: new Map(), ema: new Map(), spacing: new Map(), fading: new Map(), stepDown: new Map(), breaks: new Map(), lastId: 0 }));
   const rows = stmt(db, `
-    SELECT a.id, a.student_id, a.skill, a.level, a.seed, a.outcome, a.first_correct, a.answers, a.hard, a.steps, a.faded, a.shown_at, a.policy, s.arm, c.feature,
+    SELECT a.id, a.student_id, a.skill, a.level, a.seed, a.outcome, a.first_correct, a.answers, a.hard, a.steps, a.faded, a.breaks, a.shown_at, a.policy, s.arm, c.feature,
       json_array_length(a.answers) - a.retries AS counted
     FROM attempts a JOIN students s ON s.id = a.student_id JOIN classes c ON c.code = s.class_code WHERE a.id > ? ORDER BY a.id
   `).all(cache.lastId) as {
     id: number; student_id: number; skill: SkillId; level: Level; seed: number; outcome: string; first_correct: number; answers: string; hard: string | null; steps: string | null;
-    faded: number | null; shown_at: number; policy: string; arm: Arm; feature: Feature; counted: number;
+    faded: number | null; breaks: string | null; shown_at: number; policy: string; arm: Arm; feature: Feature; counted: number;
   }[];
   const json = <T>(v: string | null) => (v ? (JSON.parse(v) as T) : undefined);
   for (const r of rows) {
     // Counted answers are those not sent back for their form, as the export reads them (evaluate.ts, observation).
-    const correct = evidence(r.counted, r.outcome, r.first_correct === 1, r.faded !== null);
+    const correct = evidence(r.counted, r.outcome, r.first_correct === 1, r.faded !== null || r.breaks !== null);
     const q = { skill: r.skill, level: r.level, seed: r.seed };
     const answers = JSON.parse(r.answers) as Answered[];
     const steps = json<SteppedThrough[]>(r.steps);
@@ -227,7 +233,7 @@ function replay(db: DatabaseSync): Replay {
     // On a skill made of ideas, the question is rebuilt and the student's ideas move as the browser's did (learner.ts).
     if (hasIdeas(r.skill)) {
       const ideas = cache.ideas.get(r.student_id) ?? cache.ideas.set(r.student_id, {}).get(r.student_id)!;
-      trackIdeas(ideas, q, r.outcome, answers, json<string[]>(r.hard), steps, r.faded ?? undefined);
+      trackIdeas(ideas, q, r.outcome, answers, json<string[]>(r.hard), steps, r.faded ?? undefined, json<BreakAnswer>(r.breaks));
     }
     // Then the spaced reviews, by the same rule as the browser's (learner.ts), with mastery as it stands after this answer.
     if (correct !== null) {
@@ -242,6 +248,8 @@ function replay(db: DatabaseSync): Replay {
       const stepDown = cache.stepDown.get(r.student_id) ?? cache.stepDown.set(r.student_id, noStepDown()).get(r.student_id)!;
       learnStepDown(stepDown, { skill: r.skill, policy: r.policy, correct }, cache.ideas.get(r.student_id) ?? {});
     }
+    // And, for the arm with it, the run of right answers to a worked answer to judge.
+    if (hasFeature(r, "breaks")) learnBreaks(cache.breaks.get(r.student_id) ?? cache.breaks.set(r.student_id, noBreaks()).get(r.student_id)!, { skill: r.skill, policy: r.policy, correct });
     cache.lastId = r.id;
   }
   return cache;
@@ -257,6 +265,8 @@ export const currentSpacing = (db: DatabaseSync, studentId: number): Spacing => 
 export const currentFading = (db: DatabaseSync, studentId: number): Fading => replay(db).fading.get(studentId) ?? {};
 /** A student's step-down (stepDown.ts): their early answers on each skill made of ideas, and the step-down under way. */
 export const currentStepDown = (db: DatabaseSync, studentId: number): StepDown => replay(db).stepDown.get(studentId) ?? noStepDown();
+/** A student's runs of right answers to a worked answer to judge (breaks.ts), and the skill of the one due. */
+export const currentBreaks = (db: DatabaseSync, studentId: number): Breaks => replay(db).breaks.get(studentId) ?? noBreaks();
 /** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
 const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
@@ -348,12 +358,14 @@ export type AttemptRow = {
   rated?: Rating;
   /** A word problem's sentences marked before it was solved: a mark per sentence, and how long marking took. */
   marks?: { picks: string[]; ms: number };
+  /** A worked answer judged: which working was shown, and what the student said of it. */
+  breaks?: BreakAnswer;
 };
 
 /** Checks an uploaded attempt and works out the summary columns from its answers, so they can't disagree. */
 export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   const bad = (what: string) => new HttpError(400, `invalid ${what}`);
-  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard, steps, faded, rated, marks } = body;
+  const { clientId, skill, level, seed, review, outcome, solutionViewed, msTotal, shownAt, answers, policy = "free", predicted = null, hard, steps, faded, rated, marks, breaks } = body;
   if (typeof clientId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(clientId)) throw bad("clientId");
   if (!oneOf(ALL_SKILLS, skill)) throw bad("skill");
   if (!isInt(level, 1, 3)) throw bad("level");
@@ -378,7 +390,18 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
   };
   const list = answerList(answers, "answers");
   const correctAt = list.findIndex((a) => a.verdict === "correct");
-  if (faded === undefined) {
+  // A worked answer judged ("where it breaks"): asked only as such (its own policy), with nothing typed; solved when
+  // the student judged it rightly, else revealed (what was right is shown).
+  let judged: BreakAnswer | undefined;
+  if (breaks !== undefined || policy === "breaks") {
+    const b = breaks as Partial<BreakAnswer> | undefined;
+    if (policy !== "breaks" || !b || typeof b !== "object" || list.length || faded !== undefined || steps !== undefined || hard !== undefined) throw bad("breaks");
+    if (!isInt(b.variant, 0, 100) || (b.said !== "right" && b.said !== "wrong")) throw bad("breaks");
+    judged = b.said === "right" ? { variant: b.variant!, said: "right" } : { variant: b.variant!, said: "wrong", step: b.step, picked: b.picked };
+    const right = judgeBreak({ skill, level, seed }, judged);
+    if (right === null) throw bad("breaks");
+    if (outcome !== (right ? "solved" : "revealed")) throw bad("outcome");
+  } else if (faded === undefined) {
     // What happened has to match the answers: solved ends on a correct one; a skip had a try.
     if ((outcome === "solved") !== (correctAt >= 0)) throw bad("outcome");
     if (outcome === "skipped" && !list.length) throw bad("outcome");
@@ -423,6 +446,7 @@ export function parseAttempt(body: Record<string, unknown>): AttemptRow {
     ...(faded !== undefined ? { faded: faded as number } : {}),
     ...(rated !== undefined ? { rated: rated as Rating } : {}),
     ...(marks !== undefined ? { marks: { picks: [...(marks as { picks: string[] }).picks], ms: (marks as { ms: number }).ms } } : {}),
+    ...(judged ? { breaks: judged } : {}),
   };
 }
 
@@ -454,7 +478,7 @@ const csvCell = (v: unknown) => {
 };
 const CSV_COLUMNS = [
   "attempt", "student", "class", "feature", "arm", "condition", "policy", "predicted", "area", "skill", "level", "seed", "review", "outcome", "first_correct", "wrongs",
-  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "steps", "faded", "rated", "marks", "remarked", "late", "shown_at", "created_at",
+  "retries", "solution_viewed", "ms_first", "ms_total", "n_answers", "answers", "hard", "steps", "faded", "rated", "marks", "breaks", "remarked", "late", "shown_at", "created_at",
 ] as const;
 
 const TEST_CSV_COLUMNS = [
@@ -634,6 +658,7 @@ export async function handleResearch(
         spacing: currentSpacing(db, student.id),
         fading: currentFading(db, student.id),
         stepDown: currentStepDown(db, student.id),
+        breaks: currentBreaks(db, student.id),
         ...classProtocol(db, student.class),
         tests: studentTests(db, student),
         homework: studentHomework(db, student),
@@ -676,19 +701,20 @@ export async function handleResearch(
     if (a.hard && !hasFeature(student, "hard")) throw new HttpError(400, "invalid hard");
     if (a.faded && !hasFeature(student, "faded")) throw new HttpError(400, "invalid faded");
     if (a.marks && !hasFeature(student, "marking")) throw new HttpError(400, "invalid marks");
+    if (a.breaks && !hasFeature(student, "breaks")) throw new HttpError(400, "invalid breaks");
     // Homework is the student's own questions: an answer to anything else isn't homework.
     if (a.policy === "homework" && !isHomework(db, student.id, a)) throw new HttpError(400, "invalid policy");
     const now = Date.now();
     // Class practice belongs in practice time; arriving long after it ended, it is kept and marked late.
-    const late = (classPractice || a.policy === "stepdown") && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
+    const late = (classPractice || a.policy === "stepdown" || a.policy === "breaks") && !onTime(phaseWindows(db, student.class), PRACTICE_PHASES, now);
     const result = stmt(db, `
       INSERT OR IGNORE INTO attempts (client_id, student_id, skill, level, seed, review, outcome, policy, predicted, first_correct, wrongs,
-        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, faded, rated, marks, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        retries, solution_viewed, ms_first, ms_total, answers, shown_at, remarked, late, hard, steps, faded, rated, marks, breaks, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       a.clientId, student.id, a.skill, a.level, a.seed, Number(a.review), a.outcome, a.policy, a.predicted, Number(a.firstCorrect), a.wrongs, a.retries,
       Number(a.solutionViewed), a.msFirst, a.msTotal, JSON.stringify(a.answers), a.shownAt, a.remarked, Number(late), a.hard ? JSON.stringify(a.hard) : null,
-      a.steps ? JSON.stringify(a.steps) : null, a.faded ?? null, a.rated ?? null, a.marks ? JSON.stringify(a.marks) : null, now,
+      a.steps ? JSON.stringify(a.steps) : null, a.faded ?? null, a.rated ?? null, a.marks ? JSON.stringify(a.marks) : null, a.breaks ? JSON.stringify(a.breaks) : null, now,
     );
     // 200 for a repeat of one already stored: the client can drop it from its outbox either way.
     return send(res, result.changes ? 201 : 200, { stored: result.changes === 1 });
@@ -706,7 +732,7 @@ export async function handleResearch(
     teacher(req);
     const rows = forClass(query.get("class"), `
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, c.feature, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
-        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.faded, a.rated, a.marks, a.remarked, a.late, a.shown_at, a.created_at,
+        a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.faded, a.rated, a.marks, a.breaks, a.remarked, a.late, a.shown_at, a.created_at,
         json_array_length(a.answers) AS n_answers
       FROM attempts a JOIN students s ON s.id = a.student_id JOIN classes c ON c.code = s.class_code
       {where}

@@ -26,6 +26,7 @@ import { testItems } from "../src/model/testForms.ts";
 import { applyAttempt, toClassPlan, verdictOf, type Attempt } from "../src/learner.ts";
 import { en } from "../src/locales/en.ts";
 import { check, exercise, stepsOf, trapInputs, type SkillId } from "../src/math/practice.ts";
+import { breakOf, workingsOf } from "../src/math/whereItBreaks.ts";
 
 const PORT = 20000 + Math.floor(Math.random() * 20000);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -1305,4 +1306,63 @@ test("predictions on topic pages (#578): the first guess kept and marked by the 
   assert.deepEqual(d.predictions.wrong.map((r: { kind: string; pick: string; outcome: string }) => [r.kind, r.pick, r.outcome]).sort(),
     [["fractionWall", "up", "down"], ["geoLab", "up", "same"]]);
   assert.equal(d.students.every((r: { answered: number }) => r.answered === 0), true, "no answers, so no mastery");
+});
+
+test("where it breaks: a run of right answers brings a worked answer to judge, checked against the question, and only the arm with it may send one", async () => {
+  const code = (await call("POST", "/api/classes", { name: "Breaks", skills: ["fractions"], feature: "breaks" }, TEACHER)).body.code;
+  const joined = [];
+  for (let i = 0; i < 4; i++) joined.push((await call("POST", "/api/students", { class: code })).body);
+  const on = joined.find((j) => j.arm === "on").code, off = joined.find((j) => j.arm === "off").code;
+  const plan = async (s: string) => (await call("GET", `/api/students/${s}/plan`)).body;
+  const browser = toClassPlan(await plan(on));
+  assert.deepEqual(browser.breaks, { run: {} });
+  const send = async (s: string, extra: Record<string, unknown>) => {
+    const a = attempt(s, { skill: "fractions", level: 1, policy: "adaptive", predicted: 0.7, ...extra });
+    const res = await call("POST", "/api/attempts", a);
+    if (s === on && res.status === 201) applyAttempt(browser, a as unknown as Attempt);
+    return res;
+  };
+  const right = { answers: [{ verdict: "correct", ms: 9000 }] };
+  for (const seed of [1, 2, 3]) await send(on, { seed, ...right });
+  assert.equal((await plan(on)).breaks.due, "fractions", "three right in a row");
+  assert.deepEqual((await plan(on)).breaks, browser.breaks, "the server replays what the browser has");
+  assert.equal((await plan(off)).breaks.due, undefined);
+
+  // A fractions question that can be worked wrong, with its mistake, judged rightly: named on its line.
+  let seed = 1;
+  while (workingsOf(exercise("fractions", 1, seed, en.pracWords)).length < 2) seed++;
+  const b = breakOf(exercise("fractions", 1, seed, en.pracWords), 1)!;
+  const judged = { policy: "breaks", seed, answers: [], outcome: "solved", breaks: { variant: 1, said: "wrong", step: b.worked.wrong, picked: b.worked.mistake } };
+  // Not from the arm without it, nor from a class testing something else.
+  assert.deepEqual((await send(off, judged)).body, { error: "invalid breaks" });
+  const other = (await call("POST", "/api/classes", { name: "Spaced", skills: ["fractions"], feature: "spaced" }, TEACHER)).body.code;
+  const elsewhere = (await call("POST", "/api/students", { class: other })).body.code;
+  assert.deepEqual((await send(elsewhere, judged)).body, { error: "invalid breaks" });
+  // Not a working the question hasn't, a line it hasn't, a mistake not offered, an outcome that doesn't match, or
+  // anything typed.
+  for (const bad of [
+    { breaks: { variant: 9, said: "right" }, outcome: "solved" },
+    { breaks: { ...judged.breaks, step: 99 } },
+    { breaks: { ...judged.breaks, picked: "sign" } },
+    { outcome: "revealed" },
+    { answers: [{ verdict: "correct", ms: 9000 }] },
+    { policy: "adaptive" },
+  ]) assert.equal((await send(on, { ...judged, ...bad })).status, 400, JSON.stringify(bad));
+  const before = (await plan(on)).ideas;
+  assert.equal((await send(on, judged)).status, 201);
+  const p = await plan(on);
+  assert.equal(p.breaks.due, undefined, "judged: no longer due");
+  assert.deepEqual(p.breaks, browser.breaks);
+  assert.deepEqual(p.ideas, browser.ideas, "the ideas move alike");
+  const idea = Object.keys(p.ideas).find((k) => p.ideas[k] !== before[k]);
+  assert.ok(idea && p.ideas[idea] > (before[idea] ?? 0.5), "named: the mistake's idea more likely known");
+  assert.deepEqual(p.state, (await plan(on)).state);
+
+  // The teacher sees both arms, how many worked answers each judged and how many rightly; the export has what was said.
+  const d = (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
+  assert.deepEqual([d.class.feature, d.arms.on.breaks, d.arms.off.breaks, d.arms.on.breaksRight], ["breaks", 1, 0, 1]);
+  const rows = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body);
+  const row = rows.find((r) => r.policy === "breaks")!;
+  assert.deepEqual(JSON.parse(row.breaks), judged.breaks);
+  assert.equal(observationsFromCsv(csvOf(rows)).length, 3, "the learner model reads the answers, not the judging");
 });
