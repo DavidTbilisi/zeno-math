@@ -1982,6 +1982,17 @@ function rekenrekPreview(): Piece[] {
   return [...row(12, 7), ...row(34, 3), rect(0, 0, 4, 46, wood), rect(180, 0, 4, 46, wood)];
 }
 
+function rodsPreview(): Piece[] {
+  // Number rods: the orange 10 over two ways to make it, 7 + 3 and 5 + 5.
+  const u = 15;
+  const rod = (x: number, y: number, n: number, fill: string, color: string) => [rect(x * u, y, n * u, 20, { fill, color, width: 1.5 }), text((x + n / 2) * u, y + 10, String(n), 12)];
+  return [
+    ...rod(0, 0, 10, "#ff922b", "#d9480f"),
+    ...rod(0, 24, 7, "#ced4da", "#212529"), ...rod(7, 24, 3, "#b2f2bb", "#2f9e44"),
+    ...rod(0, 48, 5, "#ffe066", "#e67700"), ...rod(5, 48, 5, "#ffe066", "#e67700"),
+  ];
+}
+
 function cubesPreview(): Piece[] {
   // Two trains of linking cubes, 4 red and 3 blue, then 5 yellow: each cube with the nub that links it on top.
   const cube = (x: number, y: number, fill: string, color: string) => [
@@ -2302,6 +2313,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBaseTen", build: baseTenPreview, live: "baseTen" },
   { id: "liveCubes", build: cubesPreview, live: "cubes" },
   { id: "liveRekenrek", build: rekenrekPreview, live: "rekenrek" },
+  { id: "liveRods", build: rodsPreview, live: "rods" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
   { id: "liveSignPattern", build: signPatternPreview, live: "signPattern" },

@@ -29,6 +29,7 @@ export const MENUS: MenuGroup[] = [
           { live: "tenFrame", icon: "🔟" },
           { live: "rekenrek", icon: "📿" },
           { live: "cubes", icon: "🟥" },
+          { live: "rods", icon: "📏" },
           { live: "baseTen", icon: "🧊" },
           { live: "hundred", icon: "💯" },
           { live: "soroban", icon: "🧮" },
