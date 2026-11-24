@@ -34,6 +34,7 @@ import { SHAPES_START, type LiveNumberShapes } from "./numberShapes";
 import { TILES_START, type LiveAlgebraTiles } from "./algebraTiles";
 import type { PlaceValueSpec } from "./placeValue";
 import { CUBES_START, type LiveCubes } from "./cubes";
+import { REKENREK_START, type LiveRekenrek } from "./rekenrek";
 import { COUNTERS_START, type LiveCounters } from "./counters";
 import { SIGN_ARROW_START, SIGN_PATTERN_START, type LiveSignArrow, type LiveSignPattern } from "./signs";
 import { CARDS_START, type LiveCards } from "./cards";
@@ -574,6 +575,7 @@ export type LiveStates = {
   algebraTiles: LiveAlgebraTiles;
   baseTen: PlaceValueSpec;
   cubes: LiveCubes;
+  rekenrek: LiveRekenrek;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
   signPattern: LiveSignPattern;
@@ -704,6 +706,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   algebraTiles: [680, 640],
   baseTen: [830, 660],
   cubes: [720, 700],
+  rekenrek: [660, 590],
   counters: [680, 600],
   signArrow: [680, 720],
   signPattern: [680, 640],
@@ -836,6 +839,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     algebraTiles: TILES_START,
     baseTen: { type: "placeValue", th: 0, h: 1, t: 2, o: 3, showTotal: true },
     cubes: CUBES_START,
+    rekenrek: REKENREK_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,
     signPattern: SIGN_PATTERN_START,

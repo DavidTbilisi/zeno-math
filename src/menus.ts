@@ -27,6 +27,7 @@ export const MENUS: MenuGroup[] = [
       {
         title: "secCounting", items: [
           { live: "tenFrame", icon: "🔟" },
+          { live: "rekenrek", icon: "📿" },
           { live: "cubes", icon: "🟥" },
           { live: "baseTen", icon: "🧊" },
           { live: "hundred", icon: "💯" },
