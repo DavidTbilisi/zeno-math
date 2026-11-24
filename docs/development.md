@@ -163,6 +163,9 @@ src/math/rubik.ts         the Rubik's cube: face turns as sticker permutations, 
                           scrambles, and the dots of the Borromean-rings picture
 src/math/soroban.ts       the soroban: digits on the rods, bead clicks, and sums a rod at a time with the friends of 5
                           and 10
+src/math/rekenrek.ts      the rekenrek: beads that slide in groups, what a rack says, a dealt sum's two steps
+src/math/rods.ts          number rods: rows of rods, moves between rows, equal rows and gaps as sentences
+src/math/areaBlocks.ts    the block area model: a × b cut into tens and ones parts, filled by a tap or an answer
 src/math/patternSteps.ts  the algorithm patterns as frames to step through, with the questions for "Your turn"
 src/math/problems/        the interview problems: core.ts (inputs, frame helpers), one file per category, index.ts,
                           and solve.ts (each coding question's techniques and costs, the solve ladder's questions,

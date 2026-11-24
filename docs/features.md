@@ -2111,6 +2111,17 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     if wanted, each rod's digit) is written underneath. "Add" and "Take away" step through a sum a rod at a time from
     the highest place, saying whether the beads go straight on or off or need a friend of 5 (+4 = +5 − 1) or of 10
     (+7 = +10 − 3, carrying 1 to the left), or both; "Show a number" asks for one and says when the beads show it
+  - *Rekenrek*: a counting rack of ten, twenty or a hundred beads, five red and five white a row. Beads wait on the
+    right and count once slid to the left: a bead dragged left pushes the beads on its left along, dragged back it
+    pushes the ones on its right. The words under it read the structure (5 + 4 = 9, 10 + 5 = 15, 3 × 10 + 7 = 37) and
+    what is still to come (9 + 1 = 10); the die deals a + b or a − b, ticked off in two steps by what the beads show
+  - *Number rods*: the ten coloured rods, length = number. A rod dragged from the tray goes into a row where it is let
+    go, or starts a new row; rows of the same length read as equal sums (10 = 9 + 1 = 8 + 2), and a shorter row shows
+    its gap as a dashed space with the question 7 + ? = 10, left for the pupil to fill
+  - *Multiplying with blocks*: a × b (up to 39 × 39) as a rectangle of base-ten blocks beside the box and the written
+    sum. Each side is split into tens and ones; a part tapped is filled with flats, rods or cubes and its product is
+    written into the box and a line of the sum. With "Your turn" each product is given first on digit tiles, a wrong
+    one answered by how the blocks count it, and the parts are added at the end
   - *Algorithm patterns*: the fifteen patterns behind most interview problems (prefix sums, two pointers, a sliding
     window, fast and slow pointers, reversing part of a linked list, a monotonic stack, the top k with a min-heap,
     merging intervals, binary search on a rotated array, tree traversals, depth- and breadth-first search, flood fill,
