@@ -42,6 +42,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "model", icon: "▦", label: "models" },
           { live: "compare", icon: "⚖" },
           { live: "dots", icon: "⁘" },
+          { live: "areaBlocks", icon: "🧱" },
           { live: "numberLine", icon: "↔" },
           { live: "counters", icon: "±" },
           { live: "signArrow", icon: "↻" },

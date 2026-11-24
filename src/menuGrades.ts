@@ -17,7 +17,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   // Arithmetic: counting
   tenFrame: [1, 2], rekenrek: [1, 3], cubes: [1, 3], rods: [1, 4], baseTen: [1, 4], hundred: [1, 3], soroban: [1, 5], numberShapes: [1, 4],
   // calculating
-  mental: [1, 7], model: [2, 6], compare: [1, 7], dots: [2, 5], numberLine: [1, 8], counters: [6, 8],
+  mental: [1, 7], model: [2, 6], compare: [1, 7], dots: [2, 5], areaBlocks: [3, 6], numberLine: [1, 8], counters: [6, 8],
   signArrow: [6, 8], signPattern: [6, 8], division: [3, 6],
   // fractions and time
   fractions: [2, 7], compareFractions: [2, 6], clock: [1, 4],
