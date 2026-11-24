@@ -29,6 +29,7 @@ import fractions from "./fractions";
 import decimals from "./decimals";
 import percent from "./percent";
 import convert from "./convert";
+import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
 import barModels from "./barModels";
@@ -277,6 +278,7 @@ export const GENS: Record<SkillId, Gen> = {
   decimals,
   percent,
   convert,
+  stackedFractions,
   ratio,
   rate,
   barModels,

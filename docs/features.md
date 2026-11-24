@@ -889,6 +889,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       area; then a side from the area or the perimeter and a triangle's area; then a circle's circumference and area.
       A unit may follow the answer (24 cm²). The other measure given, two sides for four, the triangle's half left
       out, the diameter used as the radius and the other circle formula are named
+  - Stacked fractions (in "Fractions"; grade 7), a fraction with a fraction inside it worked out as one number. On one
+    line 1/2/3 doesn't say which bar divides: 1/2 over 3 is 1/6, but 1 over 2/3 is 3/2. So the main bar is drawn the
+    longest, and the working begins by reading it as ÷. A fraction over a whole number or a whole number over a
+    fraction; then a fraction over a fraction; then a sum or a difference above or below the bar, 1 − 1/2 over
+    1 − 1/6, and mixed numbers. Dividing at a short bar first, multiplying the top by the bottom as it stands and
+    turning the top over instead of the bottom are named. The worked solution is the fraction tool's ÷ picture (how
+    many of the bottom fit along the top) under the stacked fraction, or the lines of working when a sum comes first
   - Ordinal numbers (Visible Thinking 1A ch. 6, Dimension Math KB): a row of coloured shapes; which shape is 4th from
     the left, then the position of the shape under an arrow counted from the left or the right (3, or 3rd), then the
     shape just before or after the 7th, counting from either side. Counting from the other end and the neighbour on the

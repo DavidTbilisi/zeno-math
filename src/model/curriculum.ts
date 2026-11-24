@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "convert", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "currency", "inflation", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "ordinals", "shapePatterns", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "convert", "stackedFractions", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "currency", "inflation", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
@@ -58,6 +58,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   decimals: ["fractions", "money"],
   percent: ["fractions"],
   convert: ["decimals", "percent"],
+  stackedFractions: ["fractions"],
   ratio: ["fractions"],
   barModels: ["times", "money"],
   rate: ["decimals"],
@@ -359,6 +360,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   average: [null, 8, 10], // median and mode (Sec 2); standard deviation (Sec 3/4)
   integers: [7, 7, 7],
   primes: [7, 7, 7], // primes and prime factorisation
+  stackedFractions: [7, 7, 7], // a fraction over a fraction is a division of rational numbers (Sec 1)
   squares: [7, 7, 8], // squares and square roots, cubes (Sec 1); cube roots, of decimals and fractions (Sec 2)
   order: [7, 7, 7], // the four operations with negative results, squares
   coordinates: [7, 7, 7],

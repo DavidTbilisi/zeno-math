@@ -161,6 +161,12 @@ export function numberTheoryPart(q: NumberTheoryQuestion, w: PracticeWords): Par
 
 export const mixedTex = (whole: number, n: number, d: number) => `${whole}\\frac{${n}}{${d}}`;
 
+/**
+ * A stacked fraction: one number or fraction over another. Both parts keep their full size and are padded, so the
+ * main bar is plainly the longest one: which bar divides is the whole question (1/2/3 on one line doesn't say).
+ */
+export const overTex = (top: string, bottom: string) => `\\dfrac{\\enspace ${top.replaceAll("\\frac", "\\dfrac")}\\enspace}{\\enspace ${bottom.replaceAll("\\frac", "\\dfrac")}\\enspace}`;
+
 /** A step whose answer is an expression; an antiderivative accepts any constant added. */
 export function exprPart(prompt: string, q: string, e: E, plusC = false): Part {
   return {
