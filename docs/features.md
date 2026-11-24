@@ -1713,6 +1713,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     corners and each answer goes into the middle, solved last. Nine puzzles open in turn (two sets and a grid at each
     level), and the endless run keeps a streak of sets done with no miss and no hint. Four discoveries (a trap seen
     through, a whole grid with no miss, a set within four seconds, ten in a row)
+  - *Number rain* (two games, *+ and −* and *× and ÷*, each with its own ladder): tiles with a number fact on each
+    (8 + 5, 7 + □ = 10, 6 × 7, 56 ÷ 7) fall down the stage, and the ringed one, always the one nearest the floor, is
+    answered on the digit tiles under the stage or on the keyboard before it lands, so no fact can be put off. What
+    is typed is judged digit by digit: 4 could still become 42 and waits, 48 is wrong at once. A right answer clears
+    the tile; a tile that lands stays as a block with its answer on it, and the tiles after it in that column have
+    less far to fall. A fact missed comes back once at the end of the wave, ringed in orange, and got right then its
+    block goes. With nothing in the air the next tile comes at once, so a quick player is not kept waiting. No slip
+    earns three stars, one or two slips two. Nine waves open in turn: sums and differences within 10, the bonds to
+    10, past ten, the bonds to 20 and 100, then mixed and faster; and the tables of 2, 5 and 10, their divisions, 3
+    and 4, 6 to 9, the divisions, 11 and 12 with the squares. When the wave is over its facts are listed, right (a
+    quick one marked ⚡) and still to learn, each with its answer. Every answer goes into the learner's *book of
+    facts*, kept in the browser and following a signed-in account: a fact is fast once it has been right within
+    three seconds three times in a row, and the endless run draws with the book in hand, the facts last missed four
+    times as often as the fast ones. In calm the tiles fall half as fast again more slowly. Four discoveries (five
+    quick answers in a row, a block dug out, a whole wave right and quick, ten clean waves in a row)
   - *Make the target*: tap the cards and signs to build a sum, and what it makes shows as it grows. A sum that makes
     the target earns two stars, a second, different way the third (3 + 4 and 4 + 3 are one way), and the hint — the
     first step of one way — leaves one; the endless run keeps a streak of puzzles made without a hint. Under the

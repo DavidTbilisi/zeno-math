@@ -18,7 +18,7 @@ export const TOPICS: readonly Topic[] = [
   {
     id: "numbers", shelf: "start", icon: "123",
     skills: ["compare", "quickLook", "ordinals", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "money", "time", "measure", "makeTarget", "kakooma", "integers", "order", "barModels", "rounding"],
-    sections: ["secCounting", "secCalculating", "secTime", "senseNumber"],
+    sections: ["secCounting", "secCalculating", "secTime", "senseNumber", "senseFacts"],
   },
   {
     id: "fractions", shelf: "start", icon: "½",

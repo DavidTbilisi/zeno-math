@@ -248,6 +248,12 @@ export const MENUS: MenuGroup[] = [
         ],
       },
       {
+        title: "senseFacts", items: [
+          { live: "rainPlus", icon: "🌧️" },
+          { live: "rainTimes", icon: "🌧️" },
+        ],
+      },
+      {
         title: "senseNumberPatterns", items: [
           { live: "growing", icon: "🧱" },
           { live: "machine", icon: "⚙️" },

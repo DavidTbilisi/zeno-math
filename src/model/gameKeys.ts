@@ -10,6 +10,8 @@ export const GAME_KEYS = {
   closerTo: "zeno.closerto.v1",
   target: "zeno.target.v1",
   kakooma: "zeno.kakooma.v1",
+  rainPlus: "zeno.rainplus.v1",
+  rainTimes: "zeno.raintimes.v1",
   growing: "zeno.growing.v1",
   machine: "zeno.machine.v1",
   divisible: "zeno.divisible.v1",

@@ -1,7 +1,7 @@
 // What follows an account between devices, and how two copies of a key become one (src/model/accountState.ts, #607).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ACHIEVED_KEY, follows, GOAL_KEY, hashOf, isWork, mergeState, PRACTICE_KEY, PREDICTIONS_KEY, TODAY_KEY } from "../src/model/accountState.ts";
+import { ACHIEVED_KEY, FACTS_KEY, follows, GOAL_KEY, hashOf, isWork, mergeState, PRACTICE_KEY, PREDICTIONS_KEY, TODAY_KEY } from "../src/model/accountState.ts";
 import { GAME_KEYS } from "../src/model/gameKeys.ts";
 
 const j = JSON.stringify;
@@ -44,6 +44,14 @@ test("a ladder keeps the best of both devices", () => {
   // A copy that adds nothing leaves the one sent exactly as it was sent.
   const sent = j({ stars: [3, 3], found: ["a"], best: 2, runs: [1, 0, 0], misses: [0, 0], pace: [5, 0, 0] });
   assert.equal(mergeState("zeno.x.v1", j({ stars: [1, 3], found: [], best: 1, runs: [0, 0, 0], misses: [0, 0], pace: [0, 0, 0] }), sent), sent);
+});
+
+test("the book of number facts keeps every fact of both devices, and of a fact on both the copy asked more often", () => {
+  const phone = { "6×7": { n: 5, run: 4, quick: 3, ms: 1400 }, "8+5": { n: 1, run: 0, quick: 0, ms: 0 } };
+  const laptop = { "6×7": { n: 2, run: 0, quick: 0, ms: 3000 }, "9−4": { n: 3, run: 3, quick: 1, ms: 2500 }, "8+5": "broken" };
+  assert.deepEqual(merged(FACTS_KEY, phone, laptop), { "6×7": phone["6×7"], "9−4": laptop["9−4"], "8+5": "broken" });
+  assert.deepEqual(merged(FACTS_KEY, laptop, phone), { "6×7": phone["6×7"], "9−4": laptop["9−4"], "8+5": phone["8+5"] });
+  assert.ok(follows(FACTS_KEY));
 });
 
 test("achieved dates keep the earliest, first guesses the first", () => {
