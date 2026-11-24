@@ -17,6 +17,8 @@ import { Divisible } from "./Divisible";
 import { PrimeSlice } from "./PrimeSlice";
 import { Kakooma } from "./Kakooma";
 import { NumberRain } from "./NumberRain";
+import { GateRun } from "./GateRun";
+import { JoinUp } from "./JoinUp";
 import { LongDivision } from "./LongDivision";
 import { EquivMatch } from "./EquivMatch";
 import { Estimate } from "./Estimate";
@@ -161,6 +163,10 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   kakooma: Kakooma,
   rainPlus: NumberRain,
   rainTimes: NumberRain,
+  runPlus: GateRun,
+  runTimes: GateRun,
+  joinSum: JoinUp,
+  joinProduct: JoinUp,
   fractionWall: FractionWall,
   equivMatch: EquivMatch,
   fracOrder: FracOrder,

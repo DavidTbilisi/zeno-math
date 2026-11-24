@@ -10,7 +10,9 @@
 // the order they are learnt, their divisions, the squares). The facts and how well each is known are math/facts.ts;
 // the endless run draws with that book in hand, so the facts last missed come up most. The fall of a tile, the
 // judging of what is typed and the run of a wave are worked out here, and the board's piece only draws them.
-import { drawFacts, poolOf, QUICK_MS, type Fact, type FactBook, type FactFamily } from "./facts";
+import { drawFacts, markFact, poolOf, QUICK_MS, shown, type Fact, type FactBook, type FactFamily, type FactMark } from "./facts";
+
+export { shown };
 import { rng } from "./random";
 import type { EndlessGame, GameLevel } from "./ladder";
 
@@ -160,19 +162,14 @@ export function answer(sim: Sim, typed: string, spec: Pick<RainSpec, "gap" | "fa
   return { sim: aim(s, spec.fall), events: [{ kind: "right", fact: x.fact, ms, quick: ms <= QUICK_MS, again: x.again, dug }], entry: "" };
 }
 
-/** A fact with its answer in it: 6 × 7 = 42, and 7 + 3 = 10 for 7 + □ = 10. */
-export const shown = (text: string, answer: number) => (text.includes("□") ? text.replace("□", String(answer)) : `${text} = ${answer}`);
-
 /** Every tile has come, and none is in the air. */
 export const waveOver = (sim: Sim) => sim.dropped >= sim.queue.length && !live(sim).length;
 
-/** How a fact of the wave came out: right at once (and quick or not), or missed, and then got right when it came back or not. */
-export type RainMark = { text: string; answer: number; ok: boolean; quick: boolean; mended: boolean };
+export type RainMark = FactMark;
 /** The marks after one more event: a first tile's ending is its fact's mark; a fact come back and got right is mended. */
 export function markUp(marks: RainMark[], e: RainEvent): RainMark[] {
-  if (e.again) return e.kind === "right" ? marks.map((m) => (m.text === e.fact.text && !m.ok ? { ...m, mended: true } : m)) : marks;
-  if (e.kind === "right") return [...marks, { text: e.fact.text, answer: e.fact.answer, ok: true, quick: e.quick, mended: false }];
-  if ((e.kind === "wrong" || e.kind === "landed") && e.slip) return [...marks, { text: e.fact.text, answer: e.fact.answer, ok: false, quick: false, mended: false }];
+  if (e.kind === "right") return markFact(marks, { fact: e.fact, ok: true, quick: e.quick, again: e.again });
+  if ((e.kind === "wrong" || e.kind === "landed") && e.slip && !e.again) return markFact(marks, { fact: e.fact, ok: false, quick: false, again: false });
   return marks;
 }
 

@@ -251,6 +251,10 @@ export const MENUS: MenuGroup[] = [
         title: "senseFacts", items: [
           { live: "rainPlus", icon: "🌧️" },
           { live: "rainTimes", icon: "🌧️" },
+          { live: "runPlus", icon: "🏃" },
+          { live: "runTimes", icon: "🏃" },
+          { live: "joinSum", icon: "🧩" },
+          { live: "joinProduct", icon: "🧩" },
         ],
       },
       {

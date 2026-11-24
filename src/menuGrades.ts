@@ -45,7 +45,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   // Games: number sense and patterns
   quickLook: [1, 2], estimate: [1, 7], closerTo: [1, 5], target: [1, 6], kakooma: [1, 4],
   // facts by heart
-  rainPlus: [1, 4], rainTimes: [2, 7],
+  rainPlus: [1, 4], rainTimes: [2, 7], runPlus: [1, 4], runTimes: [2, 7], joinSum: [1, 5], joinProduct: [3, 7],
   growing: [2, 7], machine: [3, 8], divisible: [4, 7], primeSlice: [4, 7], doubleLine: [5, 8],
   // fraction sense
   shadeFrac: [2, 5], fractionWall: [2, 6], equivMatch: [3, 6], fracOrder: [3, 7], stripes: [3, 6], foldStrip: [3, 6],

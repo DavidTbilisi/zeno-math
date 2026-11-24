@@ -41,6 +41,7 @@ import {
   type Tile,
 } from "../math/numberRain";
 import { DigitPad, PAD_H } from "./DigitPad";
+import { FactMarks } from "./FactMarks";
 import { keepBook, loadBook } from "./factBook";
 import { useFeel } from "./feel";
 import { BLUE, GREEN, MUTED, Pill, RED } from "./hand";
@@ -230,7 +231,7 @@ export function NumberRain({ state: d, set, w: words, svgRef }: RainProps) {
           <rect width={RAIN_W} height={RAIN_H} fill="#fff" />
           <line x1={0} x2={RAIN_W} y1={RAIN_H} y2={RAIN_H} stroke={INK} strokeWidth={2} />
           {!playing && d.done && d.marks?.length ? (
-            <Marks marks={d.marks} w={w} />
+            <FactMarks marks={d.marks} w={w} width={RAIN_W} height={RAIN_H} />
           ) : (
             !playing && (
               <g textAnchor="middle" fill={INK}>
@@ -286,29 +287,6 @@ function Block({ x, y, text }: { x: number; y: number; text: string }) {
     <g data-block="">
       <rect x={x} y={y + 2} width={TILE_W} height={TILE_H - 4} rx={4} fill="#fff5f5" stroke={RED} strokeWidth={1.5} opacity={0.9} />
       <text x={x + TILE_W / 2} y={y + TILE_H / 2 + 6} fontSize={text.length > 12 ? 15 : 17} fontWeight={700} textAnchor="middle" fill={RED}>{text}</text>
-    </g>
-  );
-}
-
-/** The wave's facts, those right at once on the left (a quick one marked ⚡) and those still to learn on the right, each with its answer. */
-function Marks({ marks, w }: { marks: RainMark[]; w: RainProps["w"]["rain"] }) {
-  const cols = [marks.filter((m) => m.ok), marks.filter((m) => !m.ok)];
-  const rowH = Math.min(28, (RAIN_H - 76 - 50) / Math.max(1, ...cols.map((c) => c.length)));
-  return (
-    <g fontWeight={700}>
-      {cols.map((col, k) => (
-        <g key={k} fill={k ? RED : GREEN}>
-          <text x={24 + k * (RAIN_W / 2)} y={40} fontSize={24}>{`${k ? "✗" : "✓"} ${k ? w.wrongCol : w.rightCol}: ${col.length}`}</text>
-          <line x1={24 + k * (RAIN_W / 2)} x2={(k + 1) * (RAIN_W / 2) - 16} y1={52} y2={52} stroke={k ? RED : GREEN} strokeWidth={2} opacity={0.4} />
-          {col.map((m, i) => (
-            <text key={m.text} x={24 + k * (RAIN_W / 2)} y={76 + i * rowH + rowH * 0.4} fontSize={Math.min(20, rowH * 0.78)}>
-              {`${shown(m.text, m.answer)}${m.quick ? "  ⚡" : ""}`}
-              {m.mended && <tspan fontSize={14} fill={GREEN}>{`  · ${w.mended} ✓`}</tspan>}
-            </text>
-          ))}
-          {!col.length && <text x={24 + k * (RAIN_W / 2)} y={90} fontSize={20} fill={MUTED}>—</text>}
-        </g>
-      ))}
     </g>
   );
 }

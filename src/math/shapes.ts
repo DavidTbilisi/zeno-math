@@ -2097,6 +2097,37 @@ function rainPreview(facts: [string, string, string], landed: string): Piece[] {
 const rainPlusPreview = () => rainPreview(["9 − 4", "3 + □ = 10", "8 + 5"], "7 + 6 = 13");
 const rainTimesPreview = () => rainPreview(["56 ÷ 7", "9 × 4", "6 × 7"], "8 × 7 = 56");
 
+/** Gate run: the fact on its sign, the road narrowing away, and three gates across it, the right one green. */
+function runPreview(fact: string, gates: [number, number, number], right: number): Piece[] {
+  return [
+    rect(60, 0, 100, 30, { fill: "#ffffff", color: "#1971c2", width: 2.5 }, true),
+    text(110, 15, fact, 18),
+    seg([70, 44], [0, 150], { width: 1.5 }),
+    seg([150, 44], [220, 150], { width: 1.5 }),
+    ...gates.flatMap((n, i) => [
+      rect(14 + i * 68, 78, 56, 30, i === right ? { fill: FILL.green, color: "#2f9e44", width: 2.5 } : { fill: "#ffffff", width: 1.5 }, true),
+      text(42 + i * 68, 93, String(n), 17),
+    ]),
+    ellipse(42 + right * 68, 134, 9, 9, { fill: FILL.blue, color: "#1971c2", width: 2 }),
+  ];
+}
+const runPlusPreview = () => runPreview("8 + 5", [12, 13, 15], 1);
+const runTimesPreview = () => runPreview("6 × 7", [42, 48, 36], 0);
+/** Join up: a corner of the grid, two tiles that make the target side by side with an arrow pushing them together. */
+function joinPreview(tiles: [number, number, number, number], sign: string, target: number): Piece[] {
+  return [
+    rect(0, 0, 130, 130, { fill: FILL.gray, width: 1.5 }, true),
+    ...tiles.flatMap((n, i) => [
+      rect(8 + (i % 2) * 60, 8 + Math.floor(i / 2) * 60, 54, 54, i < 2 ? { fill: FILL.blue, color: "#1971c2", width: 2.5 } : { fill: "#ffffff", width: 1.5 }, true),
+      text(35 + (i % 2) * 60, 35 + Math.floor(i / 2) * 60, String(n), 22),
+    ]),
+    text(176, 35, `${tiles[0]} ${sign} ${tiles[1]}`, 18),
+    text(176, 62, `= ${target} ✓`, 18),
+  ];
+}
+const joinSumPreview = () => joinPreview([7, 3, 4, 2], "+", 10);
+const joinProductPreview = () => joinPreview([4, 6, 3, 2], "×", 24);
+
 function targetPreview(): Piece[] {
   // The target, and four cards beneath it.
   return [
@@ -2321,6 +2352,10 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveKakooma", build: kakoomaPreview, live: "kakooma" },
   { id: "liveRainPlus", build: rainPlusPreview, live: "rainPlus" },
   { id: "liveRainTimes", build: rainTimesPreview, live: "rainTimes" },
+  { id: "liveRunPlus", build: runPlusPreview, live: "runPlus" },
+  { id: "liveRunTimes", build: runTimesPreview, live: "runTimes" },
+  { id: "liveJoinSum", build: joinSumPreview, live: "joinSum" },
+  { id: "liveJoinProduct", build: joinProductPreview, live: "joinProduct" },
   { id: "liveFractionWall", build: fractionWallPreview, live: "fractionWall" },
   { id: "liveEquivMatch", build: equivMatchPreview, live: "equivMatch" },
   { id: "liveFracOrder", build: fracOrderPreview, live: "fracOrder" },
