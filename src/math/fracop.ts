@@ -5,10 +5,12 @@
 // inside them), the area model on squares of 1 for ×, and "how many times does b fit into a" for ÷.
 import { C, compose, r2, texAt, W } from "./chart";
 import type { RenderedSvg } from "./latex";
+import { overTex } from "./practiceKit";
 
 export type FracOp = "+" | "-" | "×" | "÷";
 export const FRAC_OPS: FracOp[] = ["+", "-", "×", "÷"];
-export type FracOpSpec = { type: "fracop"; op: FracOp; a: string; b: string; step: number };
+/** `over`: a division written as a stacked fraction, a over b. The working begins by reading the long bar as ÷. */
+export type FracOpSpec = { type: "fracop"; op: FracOp; a: string; b: string; step: number; over?: boolean };
 
 type Q = { n: number; d: number }; // not reduced: the numbers as the pupil writes them
 type Parsed = { q: Q; tex: string; convert: string | null };
@@ -80,6 +82,8 @@ export function planFracOp(spec: FracOpSpec) {
   if (!A || !B) throw new Error("parse");
   if (spec.op === "÷" && B.q.n === 0) throw new Error("zero");
   const lines: Line[] = [];
+  const over = spec.over && spec.op === "÷" && B.q.n > 0;
+  if (over) lines.push({ tex: `${overTex(A.tex, B.tex)} = ${A.tex} \\div ${B.tex}` });
   for (const p of [A, B]) if (p.convert) lines.push({ tex: p.convert });
   const { n: n1, d: d1 } = A.q;
   const { n: n2, d: d2 } = B.q;
@@ -134,7 +138,7 @@ export function planFracOp(spec: FracOpSpec) {
     dec = d === 1 && String(value).length <= 10 ? ` = ${value}` : ` \\approx ${Math.round(value * 10000) / 10000}`;
   }
   const opTex = { "+": "+", "-": "-", "×": "\\times", "÷": "\\div" }[spec.op];
-  const problem = `${A.tex} ${opTex} ${B.q.n < 0 ? `\\left(${B.tex}\\right)` : B.tex}`;
+  const problem = over ? overTex(A.tex, B.tex) : `${A.tex} ${opTex} ${B.q.n < 0 ? `\\left(${B.tex}\\right)` : B.tex}`;
   lines.push({ tex: `${problem} = ${res.tex}${dec}` });
   return { A, B, lines, res, L, problem };
 }
@@ -283,7 +287,10 @@ export function renderFracOp(spec: FracOpSpec): RenderedSvg {
   }
   plan.lines.slice(0, k).forEach((l, i) => {
     const cancel = l.tex.includes("\\cancel");
+    // A stacked fraction is two fractions tall: room above it and below.
+    const tall = l.tex.includes("\\dfrac");
     if (cancel) y += 12;
+    if (tall) y += 22;
     const last = i === plan.lines.length - 1;
     const t = texAt(l.tex, 24, y + 14, "start", last ? 1.05 : 0.95, last ? C.green : undefined);
     parts.push(t.svg);
@@ -292,7 +299,7 @@ export function renderFracOp(spec: FracOpSpec): RenderedSvg {
       if (24 + t.w + 26 + nt.w < W - 8) parts.push(nt.svg);
       else parts.push(texAt(l.note, W - 16, y + 14 + 34, "end", 0.75, "#868e96").svg), (y += 30);
     }
-    y += cancel ? 76 : 62;
+    y += cancel ? 76 : tall ? 86 : 62;
   });
   return compose(`${plan.problem} = \\,?`, parts.join(""), y, []);
 }

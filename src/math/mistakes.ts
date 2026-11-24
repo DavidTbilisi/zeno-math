@@ -944,5 +944,8 @@ export const MISTAKES = [
   "noHalf",
   "diameterForRadius",
   "circleFormulaSwapped",
+  "stackWrongBar",
+  "stackNoFlip",
+  "stackFlipTop",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

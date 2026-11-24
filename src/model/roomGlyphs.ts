@@ -22,7 +22,7 @@ export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   // number
   quickLook: "•••", compare: "3<5", ordinals: "№1", estimateLine: "⊢•⊣", closerTo: "≈?", time: "12:30", measure: "cm", money: "🪙",
   barModels: "▭▭?", makeTarget: "→24", kakooma: "+=?", parity: "±±", currency: "€⇄$",
-  placeValue: "3|4|5", addSubtract: "8+5", tables: "6×7", divide: "56÷7", squares: "√49", convert: "½=50%", areaPerimeter: "▭cm²",
+  placeValue: "3|4|5", addSubtract: "8+5", tables: "6×7", divide: "56÷7", squares: "√49", convert: "½=50%", stackedFractions: "½⁄3", areaPerimeter: "▭cm²",
   // fractions, ratio and percentages
   shadeFraction: "◑", compareFractions: "⅓<½", equivalent: "⅔=⁴⁄₆", orderFractions: "<⅓<", makeWhole: "⅓+⅔", decimals: "0.25",
   percent: "25%", ratio: "3:2", rate: "km/h", inflation: "↑%",

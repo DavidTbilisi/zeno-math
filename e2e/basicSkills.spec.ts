@@ -1,5 +1,6 @@
 // The first skills in practice: a times-table fact answered with the sum (named), then the product; a decimal asked
-// for as a fraction and typed back (sent back, not marked), then the fraction; a rectangle's area with its unit.
+// for as a fraction and typed back (sent back, not marked), then the fraction; a rectangle's area with its unit; a
+// stacked fraction divided at the short bar (named), then at the long one.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { exercise, trapInputs, type Exercise, type Level, type SkillId } from "../src/math/practice.ts";
@@ -42,6 +43,17 @@ test("area and perimeter: the drawn rectangle's area is taken with its unit", as
   const unit = ex.show.match(/\\text\{(\w+)\}/)![1];
   await practise(page, request, { tab: "Geometry", skill: w.skills.areaPerimeter, level: "easy", r, prompt: ex.prompt });
   await page.getByLabel("Your answer").fill(`${ex.plain} ${unit}2`);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("a stacked fraction: dividing at the short bar is named, then the long bar's answer is correct", async ({ page, request }) => {
+  const { r, ex } = find("stackedFractions", 1, (e) => trapInputs(e).some((t) => t.id === "stackWrongBar"));
+  await practise(page, request, { tab: "Number", skill: w.skills.stackedFractions, level: "easy", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(trapInputs(ex).find((t) => t.id === "stackWrongBar")!.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("divides at a short bar first")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
