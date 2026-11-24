@@ -2,6 +2,7 @@ import { lazy, StrictMode, Suspense, useEffect, useState, type ReactNode } from 
 import { createRoot } from "react-dom/client";
 import { account } from "./account";
 import { I18nProvider } from "./i18n";
+import { useEpoch } from "./sync";
 import { SiteHome } from "./pages/SiteHome";
 import "./styles.css";
 
@@ -34,8 +35,18 @@ function useHashRoute(): string {
   return hash;
 }
 
+/**
+ * The pages read the learner's progress from the browser as they open. When it changes under them (#607: someone signs
+ * in or out, or the account's progress arrives as the app starts), they are opened afresh. A board is left as it is:
+ * it has work of its own on screen, and its pieces read their progress when they are next opened.
+ */
 function App() {
   const hash = useHashRoute();
+  const epoch = useEpoch();
+  return <Pages key={/^#\/[bs]\//.test(hash) ? "board" : epoch} hash={hash} />;
+}
+
+function Pages({ hash }: { hash: string }) {
   const boardId = hash.match(/^#\/b\/([\w-]+)/)?.[1];
   const shareToken = hash.match(/^#\/s\/([\w-]+)/)?.[1];
   if (shareToken)

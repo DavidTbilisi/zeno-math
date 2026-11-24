@@ -26,6 +26,8 @@ import { Cheer } from "../live/ladderUi";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
 import { account, useAccount } from "../account";
+import { PRACTICE_KEY } from "../model/accountState";
+import { replaceOnSync } from "../sync";
 import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
 import { LINE_LETTERS } from "../math/proofs";
@@ -725,6 +727,8 @@ export function PracticeDialog(props: Props) {
       className="btn small add-fn"
       onClick={() => {
         freeFading.current = {};
+        // Signed in, the reset is the account's: it replaces the copy other devices have instead of merging with it.
+        replaceOnSync(PRACTICE_KEY);
         record(emptyProgress());
         setScore({ right: 0, total: 0, streak: 0 });
       }}

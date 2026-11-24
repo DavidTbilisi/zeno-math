@@ -115,6 +115,13 @@ erDiagram
     INTEGER verified_at
     INTEGER created_at
   }
+  accounts ||--o{ account_state : "keeps progress in"
+  account_state {
+    INTEGER account_id PK
+    TEXT key PK "a localStorage key, e.g. zeno.kakooma.v1"
+    TEXT value "as the browser stores it"
+    INTEGER rev "the account's revision at the last write"
+  }
   sessions {
     TEXT token PK "SHA-256 of the cookie"
     INTEGER account_id FK
@@ -242,6 +249,7 @@ model, so the outcome measure is independent of what the adaptive condition lear
 | Questions chosen and marked in the browser, marked again on the server | Practice survives dropped connections, and the student sees a verdict at once; the stored verdict is the server's. | A modified client could pick its own questions, but only within its own condition. The server needs the checker's dependencies, so the image carries it as one bundled file. |
 | Questions generated from seeds | Reproducible forms and analyses, re-scoring, tiny storage. | Generators must never change what a seed means once a study has started. |
 | Accounts (email, name, password) on top of student codes (2026-11, #605–#608) | A teacher tells students apart by name, and a student signs in on any device and finds their record and progress. Students from before accounts keep their code and add it to an account when they make one. | The server now holds names and emails of children: both stay out of every export, the consent text says what is kept, and a self-hoster who wants a new-password mail has to set up SMTP. The code still opens the record for whoever holds it. |
+| Progress outside class synced as the browser's own keys, merged on the server (`src/model/accountState.ts`, #607) | Every game and page goes on reading and writing localStorage; a new game's ladder follows the account without any code for it. Two devices never undo each other: stars are only ever won. | The server stores values it doesn't check beyond their size, and free practice takes the further-along copy whole rather than mixing two. A page shows another device's news when it is next opened, not live. |
 | SQLite in one file, Node without a framework | One container, no database server, easy backup; few dependencies to audit. | One server process; no horizontal scaling (a school doesn't need it). |
 | Phases judged by when an answer arrives, with five minutes' grace, against a log of the teacher's changes | The browser hears of a change only every 30 s and keeps answers while offline; an answer that comes late is kept and marked, not lost. | Late answers are the analysis's to report; a test not yet started is refused outright. |
 | Optimistic locking for boards (`baseUpdatedAt`, 409) rather than real-time collaboration | Simple and safe: no edit is silently lost. | Two people editing one board take turns rather than seeing each other live. |

@@ -32,7 +32,7 @@ export const site = {
   practiceTitle: "Just practise",
 
   learnTitle: "Topics",
-  learnLede: "Every topic of maths Zeno teaches, from counting to topology. Each bar is your secure levels out of all the topic's levels, from practice in this browser.",
+  learnLede: "Every topic of maths Zeno teaches, from counting to topology. Each bar is your secure levels out of all the topic's levels, from your practice.",
   shelves: { start: "First steps", school: "School maths", beyond: "Beyond the syllabus", university: "University" },
   topics: {
     numbers: { name: "Numbers and calculating", about: "Counting, place value, the four operations, money, time and measures" },
@@ -134,7 +134,7 @@ export const site = {
   toolHint: "Change it here and the picture follows; open it on a board to keep it.",
 
   progressTitle: "My progress",
-  progressLede: "Every topic, with the levels you have made secure in practice in this browser. Levels below your grade count as known.",
+  progressLede: "Every topic, with the levels you have made secure in practice. Levels below your grade count as known. Signed in, your progress follows you to any device; otherwise it stays in this browser.",
   filter: { all: "All", started: "In progress", new: "Not started", finished: "Finished" },
   sortBy: "Sort",
   sort: { order: "Course order", most: "Most done", least: "Least done", name: "Name" },
@@ -276,6 +276,7 @@ export const site = {
     verifying: "Confirming your email…",
     verified: "Your email is confirmed.",
     hereStudent: "Student {code} has been practising on this browser.",
+    hereAnon: "Someone has practised on this browser without signing in.",
     hereMine: "That was me: keep it with my account",
     hereOther: "That was someone else: start clean",
     hereChoose: "Say whose practice this is.",

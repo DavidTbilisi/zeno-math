@@ -135,7 +135,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   if (deeper.length) return send(res, 404, { error: "not found" });
   if (RESEARCH_RESOURCES.has(resource)) return handleResearch(req, res, resource, id, sub, query, db);
   // An account deleted takes its class records with it, so the learner model is replayed without them.
-  if (resource === "account") return handleAccount(req, res, id, sub, db, () => forgetModel(db));
+  if (resource === "account") return handleAccount(req, res, id, sub, query, db, () => forgetModel(db));
   // A board shared read-only, by its token: the scene and title, never the id. Viewers ask every few seconds, so the
   // answer carries the save time as its ETag, and a viewer that sends it back gets 304 and no scene until the next save.
   if (resource === "shared" && id && sub === undefined && req.method === "GET") {
