@@ -10,6 +10,7 @@
     "dev": "node scripts/copy-assets.mjs && concurrently -n web,api -c blue,green \"vite\" \"node --watch server/index.ts\"",
     "build": "node scripts/copy-assets.mjs && vite build && node scripts/compress.mjs",
     "start": "node server/index.ts",
+    "reset-password": "node --disable-warning=ExperimentalWarning server/resetPassword.ts",
     "build:checker": "vite build -c vite.checker.config.ts",
     "build:landing": "vite build -c vite.landing.config.ts && node scripts/landing-layout.mjs",
     "typecheck": "tsc --noEmit",

@@ -1619,6 +1619,40 @@ span.board-home:hover { background: none; }
 .site-foot { display: flex; flex-wrap: wrap; gap: 8px 24px; width: 100%; max-width: var(--z-width); box-sizing: border-box; margin: 0 auto; padding: 24px 24px 40px; border-top: 1px solid var(--border); font-size: 0.875rem; }
 .site-foot a { color: var(--z-graphite); }
 .site-back { display: inline-block; margin: 4px 0 0; color: var(--z-graphite); font-weight: 600; }
+
+/* The account (#605): its place at the end of the bar, and the page's cards and forms. */
+.site-nav a.site-account { max-width: 14em; padding: 6px 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: 2px solid var(--z-ink); border-radius: 6px; color: var(--z-ink); }
+.site-nav a.site-account:hover { background: var(--chip); }
+.site-nav a.site-account[aria-current="page"] { text-decoration: none; background: var(--z-ink); color: var(--z-paper); }
+.acct-page { max-width: 560px; }
+.acct-profile { display: flex; flex-direction: column; gap: 20px; }
+.acct-card { padding: 24px 28px; background: var(--surface); border: 2px solid var(--z-ink); border-radius: 12px; }
+.acct-card h2 { margin: 0 0 12px; font-size: 1.125rem; font-weight: 800; overflow-wrap: anywhere; }
+.acct-who { box-shadow: 6px 6px 0 var(--z-marker); }
+.acct-who .acct-go { margin-top: 16px; }
+.acct-form { display: flex; flex-direction: column; gap: 16px; }
+.acct-form p { margin: 0; }
+.acct-tabs { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--z-ink); border-radius: 8px; overflow: hidden; }
+.acct-tabs button { min-height: 44px; padding: 4px 8px; border: 0; background: transparent; color: var(--z-ink); font: inherit; font-weight: 600; cursor: pointer; }
+.acct-tabs button[aria-pressed="true"] { background: var(--z-ink); color: var(--z-paper); }
+.z .acct-tabs button:focus-visible { outline-offset: -5px; box-shadow: none; }
+.acct-field { display: flex; flex-direction: column; gap: 6px; }
+.acct-field > label:first-child { font-size: 0.875rem; font-weight: 700; }
+.acct-field input:not([type="checkbox"]) { min-height: 46px; padding: 0 12px; font-size: 1rem; border: 2px solid var(--border); border-radius: 6px; }
+.acct-field.bad input:not([type="checkbox"]) { border-color: var(--danger); }
+.acct-field small { font-size: 0.8125rem; }
+.acct-show { font-size: 0.875rem; color: var(--z-graphite); }
+.acct-go { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.acct-link { padding: 0; border: 0; background: none; color: var(--z-graphite); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.acct-link:hover { color: var(--z-ink); }
+.acct-note { margin: 0; color: var(--z-graphite); }
+.acct-ok { margin: 0; color: var(--z-right); font-weight: 600; }
+.acct-banner { margin: 0 0 20px; }
+.acct-email { margin: 0 0 12px; color: var(--z-graphite); overflow-wrap: anywhere; }
+.acct-unconfirmed { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.acct-delete summary { font-weight: 700; cursor: pointer; }
+.acct-delete[open] summary { margin-bottom: 16px; }
+.z-btn.acct-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
 .site-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .site-section { margin: 40px 0 0; }
 .site-section > h2, .site-section-head h2 { margin: 0 0 14px; font-size: 1.5rem; font-weight: 800; }
@@ -1747,6 +1781,8 @@ span.board-home:hover { background: none; }
   .site-bar.open .site-nav { display: flex; }
   .site-nav a { padding: 10px 0; border-top: 1px solid var(--border); }
   .site-nav .lang-select, .site-nav select { align-self: flex-start; margin-top: 10px; }
+  .site-nav a.site-account { align-self: flex-start; margin-top: 10px; padding: 8px 14px; border: 2px solid var(--z-ink); }
+  .acct-card { padding: 20px 18px; }
 }
 @media (max-width: 560px) {
   .site-foot { padding-left: 16px; padding-right: 16px; }

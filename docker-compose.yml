@@ -19,6 +19,14 @@ services:
       TRUST_PROXY: ${TRUST_PROXY:-}
       # Daily copies of the database in the volume's backups/ folder; how many to keep (0: none).
       BACKUP_KEEP: ${BACKUP_KEEP:-7}
+      # Mail for accounts (confirming an email, a new password): all of SMTP_HOST, MAIL_FROM and PUBLIC_URL turn it on.
+      # PUBLIC_URL is the address people open Zeno at, e.g. https://zeno.example.org; the mailed links are built from it.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      PUBLIC_URL: ${PUBLIC_URL:-}
     volumes:
       - data:/data
     healthcheck:

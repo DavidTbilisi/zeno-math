@@ -1,5 +1,6 @@
 import { lazy, StrictMode, Suspense, useEffect, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
+import { account } from "./account";
 import { I18nProvider } from "./i18n";
 import { SiteHome } from "./pages/SiteHome";
 import "./styles.css";
@@ -18,6 +19,7 @@ const LearnPage = lazy(() => import("./pages/LearnPage").then((m) => ({ default:
 const LibraryPage = lazy(() => import("./pages/LibraryPage").then((m) => ({ default: m.LibraryPage })));
 const TodayPage = lazy(() => import("./pages/TodayPage").then((m) => ({ default: m.TodayPage })));
 const ProgressPage = lazy(() => import("./pages/ProgressPage").then((m) => ({ default: m.ProgressPage })));
+const AccountPage = lazy(() => import("./pages/AccountPage").then((m) => ({ default: m.AccountPage })));
 const CoursePage = lazy(() => import("./pages/CoursePage").then((m) => ({ default: m.CoursePage })));
 
 function useHashRoute(): string {
@@ -75,6 +77,9 @@ function App() {
   const library = hash.match(/^#\/library(?:\/((?:live|tool)\/[\w-]+(?:\/[\w.-]+)?))?$/);
   if (library) return site(<LibraryPage key={library[1] ?? ""} path={library[1]} />);
   if (hash === "#/progress") return site(<ProgressPage />);
+  // The account (#605), and the two links the server mails: a new password, and confirming the address.
+  const acct = hash.match(/^#\/account(?:\/(reset|verify)\/([\w-]+))?$/);
+  if (acct) return site(<AccountPage key={acct[2] ?? ""} link={acct[1] ? { kind: acct[1] as "reset" | "verify", token: acct[2] } : undefined} />);
   if (hash === "#/today") return site(<TodayPage />);
   if (hash === "#/course")
     return (
@@ -103,6 +108,9 @@ function App() {
     <SiteHome />
   );
 }
+
+// Who is signed in, asked once as the app starts; until the answer the bar shows the name this browser last knew.
+void account.refresh().catch(() => {});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

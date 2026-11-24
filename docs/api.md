@@ -1,7 +1,7 @@
 # Zeno HTTP API
 
 Everything the browser does goes through these routes, served by `server/index.ts` (boards), `server/research.ts`
-(the class study) and `server/protocol.ts` (its phases and tests). Bodies are JSON (`Content-Type:
+(the class study), `server/protocol.ts` (its phases and tests) and `server/accounts.ts` (accounts). Bodies are JSON (`Content-Type:
 application/json`; anything else is refused with 415, so a cross-site form can't post), at most 25 MB, or 64 KB for
 the study's routes. Errors come back as `{ "error": "…" }` with the status.
 
@@ -18,6 +18,7 @@ already signed in.
 - *student*: anyone holding a student code. The code is the only thing tying answers to a student, so knowing it is
   enough.
 - *owner*: the board's owner; see *Whose boards*.
+- *account*: whoever is signed in to an account, by the session cookie; otherwise 401. See *Accounts*.
 
 `tests/api-docs.test.ts` checks this table against a running server. Every route listed must exist, and every other
 method and path on these resources must answer 404 or 405, so a route added without documenting it fails the tests.
@@ -36,6 +37,15 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/boards/:id/share` | owner | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
 | DELETE | `/api/boards/:id/share` | owner | take the read-only link away: 204; the old link stops working |
 | GET | `/api/shared/:token` | anyone | the shared board, `{ title, scene, updatedAt }`, without its id; 404 once the link is taken away |
+| GET | `/api/account` | anyone | who is signed in: `{ account: { email, name, verified } \| null, mail }`; `mail` says whether the server can mail a new-password link |
+| POST | `/api/account` | anyone | a new account from `{ email, name, password, lang? }`: 201 `{ email, name, verified }` and the session cookie; 409 when the email has one |
+| PUT | `/api/account` | account | `{ name? }` renames; `{ password, current }` changes the password and signs the other devices out |
+| DELETE | `/api/account` | account | `{ password }`: delete the account and everything kept under it: 204 |
+| POST | `/api/account/session` | anyone | sign in with `{ email, password }`: 200 `{ email, name, verified }` and the session cookie; 401 when either is wrong |
+| DELETE | `/api/account/session` | anyone | sign this device out: 204 |
+| POST | `/api/account/reset` | anyone | `{ email, lang? }` mails a link for a new password if the address has an account: 202 either way; 503 when the server sends no mail |
+| PUT | `/api/account/reset` | anyone | the link's page: `{ token, password }` sets the password, signs every device out and this one in; 410 for a link used or too old |
+| POST | `/api/account/verify` | anyone | `{ token }` confirms the address from its mailed link (410 for a link used or too old); signed in and without a token, mails the link again |
 | GET | `/api/classes` | teacher | every class: code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
@@ -390,3 +400,25 @@ on a topic page's "predict, then reveal" (issue #578, `src/model/predict.ts`): `
 `src/model/predictKinds.ts`) and keeps only the first guess on each piece: 200 `{ pick, right }` with the kept one. An
 unknown piece or pick is 400. The dashboard's `predictions` is `{ made, wrong }`, the wrong ones with the student, the
 piece, the pick and the outcome. Predictions move no mastery: nothing reaches the model, the plan or the tests.
+
+## Accounts
+
+An account is an email, a name and a password (issue #605, `server/accounts.ts`); anyone past the site password may
+make one. The email is kept in lower case, the name is 1–60 characters, the password 8–200. The password is stored as
+an scrypt hash with its own salt.
+
+**Sessions.** Signing in (or up, or setting a password from a mailed link) answers with `Set-Cookie: zeno_session=…;
+Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`, plus `Secure` when the request came over HTTPS (here, or at a
+proxy that sends `X-Forwarded-Proto: https`). The browser sends the cookie back by itself; the database keeps only its
+SHA-256. A session lasts a year, until it is signed out, or until the password changes on another device.
+
+**Mailed links.** With `SMTP_HOST`, `MAIL_FROM` and `PUBLIC_URL` set (see [self-hosting.md](self-hosting.md)), a new
+account is mailed a link to confirm its address (`PUBLIC_URL/#/account/verify/TOKEN`, good for seven days), and
+`POST /api/account/reset` mails one for a new password (`…/#/account/reset/TOKEN`, good for one hour). Each link works
+once, and a newer link of the same kind stops the older one. `lang` (`en`, `ka` or `ru`) picks the message's language.
+Without mail, accounts work the same and the links come from `npm run reset-password -- EMAIL` on the server.
+
+**Limits.** Each answers 429 with `Retry-After`: 8 wrong passwords for one email in 10 minutes; 30 wrong passwords
+from one client in 10 minutes (300 once that client has signed in to anything in the last day, as for the site
+password); 60 new accounts from one client in an hour; 20 new-password requests from one client in an hour. One
+address is mailed at most 3 times an hour; further requests still answer 202 and send nothing.

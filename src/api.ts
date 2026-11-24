@@ -22,7 +22,7 @@ export class ApiError extends Error {
   }
 }
 
-async function req<T>(method: string, url: string, body?: unknown, keepalive = false, headers: Record<string, string> = {}): Promise<T> {
+export async function req<T>(method: string, url: string, body?: unknown, keepalive = false, headers: Record<string, string> = {}): Promise<T> {
   const json = body === undefined ? undefined : JSON.stringify(body);
   const res = await fetch(url, {
     method,

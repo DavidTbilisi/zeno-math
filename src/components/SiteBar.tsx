@@ -1,6 +1,7 @@
 // The site's top bar (#448): Zeno's mark and name, the sections of the site with the one being read marked, and the
 // language. On a phone the sections fold under a Menu button, so the bar never runs off the side of the page.
 import { useState, type ReactNode } from "react";
+import { useAccount } from "../account";
 import { LangSelect, useI18n } from "../i18n";
 import type { Dict } from "../locales/en";
 import { ZenoMark } from "./ZenoMark";
@@ -8,7 +9,7 @@ import { ZenoMark } from "./ZenoMark";
 /** Where this copy's source is (AGPL-3.0 §13): a modified Zeno run for others points this at its own copy. */
 export const SOURCE_URL = "https://github.com/DavidTbilisi/zeno-math";
 
-export type Section = "learn" | "roadmaps" | "practice" | "library" | "boards" | "progress" | "teacher";
+export type Section = "learn" | "roadmaps" | "practice" | "library" | "boards" | "progress" | "teacher" | "account";
 const LINKS: { id: Section; href: string; word: (t: Dict) => string }[] = [
   { id: "learn", href: "#/learn", word: (t) => t.site.learn },
   { id: "roadmaps", href: "#/roadmaps", word: (t) => t.roadmap.link },
@@ -26,10 +27,14 @@ const TEACHER_LINKS: typeof LINKS = [
   { id: "roadmaps", href: "#/roadmaps", word: (t) => t.roadmap.link },
 ];
 
-/** `teacher` gives the teacher's sections; `children` (a button such as + New board) go before the language. */
+/**
+ * `teacher` gives the teacher's sections; `children` (a button such as + New board) go before the language. A learner's
+ * bar ends with their account (#605): their name once signed in, "Sign in" until then.
+ */
 export function SiteBar({ here, teacher, children }: { here?: Section; teacher?: boolean; children?: ReactNode }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
+  const { account } = useAccount();
   return (
     <header className={`z-bar site-bar${open ? " open" : ""}`}>
       <a className="z-brand" href="#/"><ZenoMark size={18} /><span>{t.appName}</span></a>
@@ -41,6 +46,11 @@ export function SiteBar({ here, teacher, children }: { here?: Section; teacher?:
           <a key={l.id} href={l.href} aria-current={l.id === here ? "page" : undefined} onClick={() => setOpen(false)}>{l.word(t)}</a>
         ))}
         {children}
+        {!teacher && (
+          <a className="site-account" href="#/account" aria-current={here === "account" ? "page" : undefined} onClick={() => setOpen(false)}>
+            {account ? account.name : t.site.account.link}
+          </a>
+        )}
         <LangSelect />
       </nav>
     </header>
