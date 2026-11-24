@@ -25,8 +25,10 @@ teacher's page, and the password is kept only as a salted hash. Practice records
 under pseudonymous student codes, now linked to the account, and exports replace the codes with study identifiers and
 hold neither the name nor the email address. The account and the practice records are both personal data in the sense
 of Georgia's data protection law [@georgia2023pdp] and the GDPR [@gdpr2016]. The text a student agrees to before
-joining says what is kept and who sees it, and a student who deletes the account removes the records kept under it. No
-result in this thesis uses data collected through Zeno.
+joining says what is kept and who sees it, and a student who deletes the account removes the records kept under it.
+Since the same date the server also counts, for each day, how often each page and tool is opened. These counts hold no
+identifier of a person or a device and nothing is sent to a third party, so they are not personal data. No result in
+this thesis uses data collected through Zeno.
 
 ![Zeno in its setting: one machine in the school serves the board and the practice to the teacher's and students'
 devices (`docs/architecture.md`, "System context").](figures/context.png)

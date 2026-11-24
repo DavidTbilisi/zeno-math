@@ -5,6 +5,7 @@
 import { useSyncExternalStore } from "react";
 import { ApiError, req } from "./api";
 import { loadStudent, saveStudent, type Student } from "./learner";
+import { seen } from "./usage";
 import { clearProgress, flushProgress, freshPages, hasWorkHere, progressOwner, startSync, stopSync } from "./sync";
 
 export type Account = { email: string; name: string; verified: boolean };
@@ -122,10 +123,12 @@ export const account = {
   /** mine: whether what this browser holds (whoIsHere) is the new owner's. */
   signUp: async (email: string, name: string, password: string, lang: string, mine = false) => {
     await req<Account>("POST", "/api/account", { email, name, password, lang });
+    seen("step", "account made");
     return settle(mine);
   },
   signIn: async (email: string, password: string, mine = false) => {
     await req<Account>("POST", "/api/account/session", { email, password });
+    seen("step", "signed in");
     return settle(mine);
   },
   signOut: async () => {

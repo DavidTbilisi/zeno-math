@@ -10,8 +10,9 @@ import { HttpError, readJson, send, sendJsonText } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { scheduleBackups } from "./backup.ts";
 import { rawJson, stmt } from "./db.ts";
-import { boardUser, classBoards, forgetModel, handleResearch, initResearch, RESEARCH_RESOURCES, studentIsAccounts, type BoardUser } from "./research.ts";
+import { boardUser, classBoards, forgetModel, handleResearch, initResearch, RESEARCH_RESOURCES, studentIsAccounts, teacher, type BoardUser } from "./research.ts";
 import { handleAccount } from "./accounts.ts";
+import { handleUsage, initUsage } from "./usage.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
 const DATA_DIR = resolve(process.env.DATA_DIR ?? "data");
@@ -41,6 +42,7 @@ if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some(
   db.exec("ALTER TABLE boards ADD COLUMN share_token TEXT");
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS boards_share_token ON boards(share_token)");
 initResearch(db);
+initUsage(db);
 // Whose board it is: a student's (student_id), or the teachers' (NULL; every board made before boards had owners).
 // Forgetting a student deletes their boards with their answers.
 if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some((c) => c.name === "student_id"))
@@ -53,7 +55,7 @@ if (!(db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some(
 db.exec("CREATE INDEX IF NOT EXISTS boards_account ON boards(account_id, updated_at)");
 // The schema this code writes. A database from a newer Zeno is refused rather than half understood; an older one has
 // just been brought up to date by the CREATE / ADD COLUMN steps above.
-const SCHEMA_VERSION = 8;
+const SCHEMA_VERSION = 9;
 const { user_version: found } = db.prepare("PRAGMA user_version").get() as { user_version: number };
 if (found > SCHEMA_VERSION) {
   console.error(`The database in ${DATA_DIR} is from a newer version of Zeno (schema ${found}; this one knows ${SCHEMA_VERSION}). Update Zeno.`);
@@ -146,6 +148,8 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   if (RESEARCH_RESOURCES.has(resource)) return handleResearch(req, res, resource, id, sub, query, db);
   // An account deleted takes its class records with it, so the learner model is replayed without them.
   if (resource === "account") return handleAccount(req, res, id, sub, query, db, () => forgetModel(db));
+  // The anonymous usage counts (#615): anyone's browser adds to them, a teacher reads them.
+  if (resource === "usage") return id === undefined ? handleUsage(req, res, query, db, teacher) : send(res, 404, { error: "not found" });
   // A board shared read-only, by its token: the scene and title, never the id. Viewers ask every few seconds, so the
   // answer carries the save time as its ETag, and a viewer that sends it back gets 304 and no scene until the next save.
   if (resource === "shared" && id && sub === undefined && req.method === "GET") {
@@ -315,8 +319,10 @@ const server = createServer(async (req, res) => {
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
-  // The health check reveals nothing, so Docker can probe it without the password; the front page is meant for anyone.
-  if (path !== "/api/health" && !isPublic(path) && APP_PASSWORD) {
+  // The health check reveals nothing, so Docker can probe it without the password; the front page is meant for anyone,
+  // and so is adding to the usage counts from it (reading them is not).
+  const counting = path === "/api/usage" && req.method === "POST";
+  if (path !== "/api/health" && !counting && !isPublic(path) && APP_PASSWORD) {
     const client = clientOf(req);
     const wait = passwords.retryAfter(client);
     if (wait) return send(res, 429, { error: "too many wrong passwords; try again later" }, { "Retry-After": String(wait) });

@@ -291,6 +291,9 @@ version is recorded in `PRAGMA user_version`, and a database from a newer Zeno i
   right password in the last day (a school, where a whole class shares one) is allowed 100. Behind a proxy
   (`TRUST_PROXY`), the client is the address the proxy adds last to `X-Forwarded-For`.
 - JSON-only request bodies, so a cross-site form can't post, with size limits.
+- The anonymous usage counts (`server/usage.ts`) are the one route anyone may post to, in any content type, so it is
+  bounded instead: fixed kinds, short plain names, a cap on names per day and on events per address, and it stores
+  nothing about the sender.
 - A strict Content-Security-Policy with no inline scripts, plus `nosniff`, `X-Frame-Options` and `Referrer-Policy`.
 - Path-traversal checks on static files.
 - Exports that never contain sign-in codes, and that can't inject spreadsheet formulas.

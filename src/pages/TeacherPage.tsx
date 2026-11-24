@@ -41,6 +41,7 @@ import { UndoToast, useUndoDelete } from "../components/UndoDelete";
 const PrintableTests = lazy(() => import("../components/PrintableTests").then((m) => ({ default: m.PrintableTests })));
 const PrintableHomework = lazy(() => import("../components/PrintableHomework").then((m) => ({ default: m.PrintableHomework })));
 const PaperTest = lazy(() => import("../components/PaperTest").then((m) => ({ default: m.PaperTest })));
+const UsageReport = lazy(() => import("../components/UsageReport").then((m) => ({ default: m.UsageReport })));
 const CalibrationChart = lazy(() => import("../components/CalibrationChart").then((m) => ({ default: m.CalibrationChart })));
 
 /** A class's sheets to print are a page of their own (#562), so Back closes them: #/teacher/<code>/tests/print. */
@@ -317,6 +318,19 @@ export function TeacherPage() {
   const listed = classes.filter((c) => c.code !== deleting.pending?.code);
   const current = listed.find((c) => c.code === selected);
 
+  // The anonymous usage counts (#615), a page of its own behind the same password.
+  if (location.hash === "#/teacher/usage")
+    return (
+      <div className="z z-wide">
+        {bar}
+        <div className="z-page teacher">
+          <Suspense fallback={<p className="muted">{t.loading}</p>}>
+            <UsageReport api={api} />
+          </Suspense>
+        </div>
+      </div>
+    );
+
   // The sheets to print, as the whole page; the browser's Back (or the link on it) is the way out.
   const route = printRoute();
   if (route) {
@@ -396,6 +410,7 @@ export function TeacherPage() {
             ) : (
               <p className="muted">{w.noClasses}</p>
             )}
+            <a className="small" href="#/teacher/usage">{t.site.usage.title} →</a>
             <form
               className="new-class"
               onSubmit={(e) => {

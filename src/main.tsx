@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { account } from "./account";
 import { I18nProvider } from "./i18n";
 import { useEpoch } from "./sync";
+import { startUsage } from "./usage";
 import { SiteHome } from "./pages/SiteHome";
 import "./styles.css";
 
@@ -120,6 +121,8 @@ function Pages({ hash }: { hash: string }) {
   );
 }
 
+// Anonymous counts of what gets used (#615).
+startUsage("app");
 // Who is signed in, asked once as the app starts; until the answer the bar shows the name this browser last knew.
 void account.refresh().catch(() => {});
 

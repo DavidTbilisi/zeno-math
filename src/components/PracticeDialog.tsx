@@ -60,6 +60,7 @@ import {
 } from "../model/placement";
 import { GradeCard, gradeName } from "./GradeCard";
 import { noteAchieved } from "../achieved";
+import { seen } from "../usage";
 
 type Mode = "practise" | "sheet";
 /** A skill, a mix of the area's skills, the learner's grade, or the placement that finds it. */
@@ -312,6 +313,11 @@ export function PracticeDialog(props: Props) {
     const attempt = student && toAttempt(log.current, cur.ex, cur, student);
     // Nobody signed in: the same record, kept only in this browser.
     const own = !student ? toAttempt(log.current, cur.ex, cur, { code: "", class: "", condition: "adaptive" }) : null;
+    // Counted without the answer or whose it is (#615): that a question was tried, and of which skill.
+    if (attempt || own) {
+      seen("step", "question tried");
+      seen("skill", cur.ex.skill);
+    }
     let p = live.current.progress;
     if (attempt) {
       outbox.add(attempt);
