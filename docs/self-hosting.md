@@ -160,7 +160,7 @@ feature instead (spaced review, steps after a miss, asking what was hard, worked
 **`#/teacher`**, choosing the areas it practises or grades of the course (grades 1 to 8, 9–10, 11–12 and university;
 every skill has each of its three levels tagged with the grade that teaches it, from Singapore's syllabuses, in
 `src/model/curriculum.ts`). Students join with its code, are randomised to an arm in balanced blocks and get a code of
-their own (no names or emails), see what taking part means and agree before they join. The teacher then moves the
+their own (the name on their account is for the teacher, and never exported), see what taking part means and agree before they join. The teacher then moves the
 class through a pre-test, timed practice, a post-test and a delayed post-test a week or more later, with parallel forms
 counterbalanced within each arm. The dashboard shows who is stuck and why, whose pace has changed, the two arms, mastery by skill, the tests
 by intention to treat (every student counts, and finishing is a result of its own) and how well the model predicts; both data sets

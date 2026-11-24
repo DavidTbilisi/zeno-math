@@ -275,6 +275,10 @@ export const site = {
     linkDead: "This link was used already or is too old. Ask for a new one.",
     verifying: "Confirming your email…",
     verified: "Your email is confirmed.",
+    hereStudent: "Student {code} has been practising on this browser.",
+    hereMine: "That was me: keep it with my account",
+    hereOther: "That was someone else: start clean",
+    hereChoose: "Say whose practice this is.",
   },
 };
 export type Site = typeof site;

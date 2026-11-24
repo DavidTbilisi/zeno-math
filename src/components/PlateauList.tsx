@@ -1,14 +1,14 @@
 // A plateau on the teacher page (issue #580, src/model/plateau.ts): students who have kept a skill and stopped getting
 // faster on its top level. Offered as a suggestion: on ASSISTments a flagged plateau could not be shown to stay flat.
 import type { Dashboard } from "../../server/dashboard";
-import { studentName } from "../api";
+import { studentName, type Who } from "../api";
 import type { Dict } from "../locales/en";
 import type { SkillId } from "../math/practiceSkills";
 import { fill } from "../math/text";
 
 export function PlateauList({ plateau, numbers, t, skillName, showCodes }: {
   plateau: Dashboard["plateau"];
-  numbers: ReadonlyMap<string, number | null>;
+  numbers: ReadonlyMap<string, Who>;
   t: Dict;
   skillName: (k: SkillId) => string;
   showCodes: boolean;

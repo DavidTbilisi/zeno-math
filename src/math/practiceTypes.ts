@@ -664,11 +664,6 @@ export type PracticeWords = {
     classCode: string;
     join: string;
     haveCode: string;
-    /** The student's number in the class list (only the teacher sees it), asked for when joining. */
-    listNo: string;
-    /** Joining with a number someone in the class already gave: {n} the number. */
-    numberTaken: string;
-    joinAnyway: string;
     signIn: string;
     joinedAs: string;
     yourSkills: string;
@@ -676,6 +671,13 @@ export type PracticeWords = {
     masteredList: string;
     againList: string;
     keepCode: string;
+    /** Joining needs an account (#606): said above the sign-in form. */
+    needAccount: string;
+    /** Signed in to an account: {name}. */
+    withAccount: string;
+    makeAccount: string;
+    /** A student code that another account holds. */
+    codeTaken: string;
     signOut: string;
     forget: string;
     forgetSure: string;

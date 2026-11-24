@@ -25,6 +25,7 @@ import { muted, play as playSound, setMuted } from "../live/juice";
 import { Cheer } from "../live/ladderUi";
 import { Modal } from "./Modal";
 import { StudentPanel } from "./StudentPanel";
+import { account, useAccount } from "../account";
 import { TestRunner } from "./TestRunner";
 import { ChoicePicks, ListPicks, Segmented, SignPicks, startOr, Tabs, TargetPicks, TogglePicks } from "./ui";
 import { LINE_LETTERS } from "../math/proofs";
@@ -401,6 +402,7 @@ export function PracticeDialog(props: Props) {
     } else leaveQuestion();
     setStudent(s);
     saveStudent(s);
+    account.noteStudent(s);
     setPending(queued());
     live.current.student = s;
     planRef.current = null;
@@ -411,6 +413,19 @@ export function PracticeDialog(props: Props) {
       void loadPlan(s);
     }
   };
+  // The account's record is this browser's student (#606): when the server says who is signed in (as the page opens, or
+  // after signing in or out in another tab), practice follows.
+  const { account: me, student: mine, known } = useAccount();
+  const wasMe = useRef(!!me);
+  useEffect(() => {
+    const signedOut = wasMe.current && !me;
+    wasMe.current = !!me;
+    if (!known) return;
+    const here = live.current.student?.code ?? null;
+    if (me ? (mine?.code ?? null) !== here : signedOut && here !== null) changeStudent(me ? mine : null);
+    // Only when who is signed in, or their record, changes: changeStudent is made anew on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me?.email, mine?.code, known]);
   const switchPractice = (toClass: boolean) => {
     setInClass(toClass);
     live.current.inClass = toClass;

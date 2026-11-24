@@ -29,7 +29,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 |---|---|---|---|
 | GET | `/api/health` | anyone, no password | `{ ok: true }` once the database answers; Docker's health check |
 | GET | `/api/export` | teacher | every board, the teachers' and every student's, with its scene, as a JSON download (`zeno-boards-DATE.json`) |
-| GET | `/api/boards` | owner | the caller's boards: `[{ id, title, createdAt, updatedAt }]`, newest first. A teacher with `?class=CODE` gets that class's students' boards instead, each with `student` (`s17`) and `number` |
+| GET | `/api/boards` | owner | the caller's boards: `[{ id, title, createdAt, updatedAt }]`, newest first. A teacher with `?class=CODE` gets that class's students' boards instead, each with `student` (`s17`), `number` and the account's `name` (`null` without one) |
 | POST | `/api/boards` | owner | a new board, the caller's, from `{ title? }` (trimmed, at most 200 characters): 201 with `{ id, title, createdAt, updatedAt }` |
 | GET | `/api/boards/:id` | owner | `{ id, title, scene, updatedAt, shareToken }`. A teacher may open a student's board too: `{ id, title, scene, updatedAt, readOnly: true }` |
 | PUT | `/api/boards/:id` | owner | save `{ title?, scene?, baseUpdatedAt? }`; see *Saving a board* |
@@ -37,7 +37,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/boards/:id/share` | owner | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
 | DELETE | `/api/boards/:id/share` | owner | take the read-only link away: 204; the old link stops working |
 | GET | `/api/shared/:token` | anyone | the shared board, `{ title, scene, updatedAt }`, without its id; 404 once the link is taken away |
-| GET | `/api/account` | anyone | who is signed in: `{ account: { email, name, verified } \| null, mail }`; `mail` says whether the server can mail a new-password link |
+| GET | `/api/account` | anyone | who is signed in: `{ account: { email, name, verified } \| null, student, mail }`; `student` is the class record the account practises under (`null` for none), `mail` whether the server can mail a new-password link |
 | POST | `/api/account` | anyone | a new account from `{ email, name, password, lang? }`: 201 `{ email, name, verified }` and the session cookie; 409 when the email has one |
 | PUT | `/api/account` | account | `{ name? }` renames; `{ password, current }` changes the password and signs the other devices out |
 | DELETE | `/api/account` | account | `{ password }`: delete the account and everything kept under it: 204 |
@@ -46,6 +46,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/account/reset` | anyone | `{ email, lang? }` mails a link for a new password if the address has an account: 202 either way; 503 when the server sends no mail |
 | PUT | `/api/account/reset` | anyone | the link's page: `{ token, password }` sets the password, signs every device out and this one in; 410 for a link used or too old |
 | POST | `/api/account/verify` | anyone | `{ token }` confirms the address from its mailed link (410 for a link used or too old); signed in and without a token, mails the link again |
+| POST | `/api/account/student` | account | add a record from before the account to it: `{ code }` gives the student; 409 when the code is another account's, or the account is already in that class |
 | GET | `/api/classes` | teacher | every class: code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
@@ -55,7 +56,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/classes/:code/goal` | teacher | the class's roadmap goal: `{ goal }`, a goal id or `null` |
 | POST | `/api/classes/:code/games` | teacher | the games assigned to the class: `{ games }`, a list of game ids (`[]` for none); see *Games* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
-| POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
+| POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; signed in to an account the record is the account's, and joining a class it is already in gives that record again (200); `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
 | GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered, goal, games }` |
 | POST | `/api/students/:code/games` | student | the stars of an assigned game: `{ game, stars }`; see *Games* |
 | POST | `/api/students/:code/predictions` | student | the first guess on a topic page's "predict, then reveal": `{ kind, pick }`; see *Predictions* |
@@ -353,7 +354,8 @@ question: a repeat keeps the first, with 200 `{ stored: false }`.
   takes the row off until ten more questions after `through`; 404 for anything else.
 - **`class`**: the class with its protocol.
 - **`students`**: per student:
-  - export name (`s17`), code, number in the class list (`null` if none was given), arm and condition;
+  - export name (`s17`), code, number in the class list (`null` if none was given), the `name` on their account
+    (`null` for a student without one), arm and condition;
   - questions answered, right first time, and minutes of class practice;
   - each test's form (pre, post, delayed), answers, score (right answers over the test's questions) and whether it
     is complete;
@@ -418,7 +420,12 @@ account is mailed a link to confirm its address (`PUBLIC_URL/#/account/verify/TO
 once, and a newer link of the same kind stops the older one. `lang` (`en`, `ka` or `ru`) picks the message's language.
 Without mail, accounts work the same and the links come from `npm run reset-password -- EMAIL` on the server.
 
+**Classes.** A student who joins signed in belongs to the account (issue #606): `GET /api/account` names the record
+joined last as `student`, so a browser that signs in knows which student it is. The teacher's dashboard and list of a
+class's boards carry the account's `name` beside the student; the CSV exports and `/api/export` never do. Deleting the
+account deletes its records with their answers, tests and boards, as `DELETE /api/students/:code` does for one.
+
 **Limits.** Each answers 429 with `Retry-After`: 8 wrong passwords for one email in 10 minutes; 30 wrong passwords
 from one client in 10 minutes (300 once that client has signed in to anything in the last day, as for the site
-password); 60 new accounts from one client in an hour; 20 new-password requests from one client in an hour. One
+password); 300 new accounts from one client in an hour; 20 new-password requests from one client in an hour. One
 address is mailed at most 3 times an hour; further requests still answer 202 and send nothing.

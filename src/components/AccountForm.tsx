@@ -2,7 +2,7 @@
 // page and wherever else someone has to be signed in first. Each field says what is wrong with it before anything is
 // sent; what the server refuses (a wrong password, an email already taken, too many tries) is said under the button.
 import { useId, useState, type FormEvent, type ReactNode } from "react";
-import { account, looksLikeEmail, MIN_PASSWORD, useAccount, type Account } from "../account";
+import { account, looksLikeEmail, MIN_PASSWORD, useAccount, whoIsHere, type Account } from "../account";
 import { ApiError } from "../api";
 import { useI18n } from "../i18n";
 import type { Site } from "../locales/site/en";
@@ -70,6 +70,10 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  // A browser that already holds a student's code may be a shared one: whose it is has to be said, not guessed (#606).
+  const [here] = useState(whoIsHere);
+  const [mine, setMine] = useState<boolean | null>(null);
+  const unsaid = face !== "forgot" && !!here && mine === null;
 
   const bad = {
     email: !looksLikeEmail(email) ? w.badEmail : "",
@@ -86,7 +90,7 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
     e.preventDefault();
     setTried(true);
     setError("");
-    if (bad.email || bad.name || bad.password || (face === "in" && !password)) return;
+    if (bad.email || bad.name || bad.password || (face === "in" && !password) || unsaid) return;
     setBusy(true);
     try {
       if (face === "forgot") {
@@ -94,7 +98,7 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
         setSent(true);
       } else {
         // Signed in first, then told: an optional call skips its arguments when there is nobody to call.
-        const me = face === "new" ? await account.signUp(email.trim(), name.trim(), password, lang) : await account.signIn(email.trim(), password);
+        const me = face === "new" ? await account.signUp(email.trim(), name.trim(), password, lang, !!mine) : await account.signIn(email.trim(), password, !!mine);
         onDone?.(me);
       }
     } catch (err) {
@@ -134,6 +138,18 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
       {face !== "forgot" && (
         <PasswordField label={w.password} value={password} onChange={setPassword} fresh={face === "new"}
           hint={face === "new" ? fill(w.passwordHint, { n: MIN_PASSWORD }) : undefined} error={tried ? bad.password : ""} />
+      )}
+      {face !== "forgot" && here && (
+        <fieldset className={`acct-here${tried && unsaid ? " bad" : ""}`}>
+          <legend>{fill(w.hereStudent, { code: here.code })}</legend>
+          {([true, false] as const).map((v) => (
+            <label key={String(v)} className="check inline">
+              <input type="radio" name="acct-here" checked={mine === v} onChange={() => setMine(v)} />
+              {v ? w.hereMine : w.hereOther}
+            </label>
+          ))}
+          {tried && unsaid && <small className="error" role="alert">{w.hereChoose}</small>}
+        </fieldset>
       )}
       {error && <p className="error" role="alert">{error}</p>}
       {sent && <p className="acct-ok" role="status">{w.linkSent}</p>}

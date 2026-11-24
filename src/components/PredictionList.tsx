@@ -2,13 +2,13 @@
 // "predict, then reveal", and what really happened. Kept for the teacher only: no part of mastery. Shown once anyone has
 // made a prediction.
 import type { Dashboard } from "../../server/dashboard";
-import { studentName } from "../api";
+import { studentName, type Who } from "../api";
 import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
 
 export function PredictionList({ predictions, numbers, t, showCodes }: {
   predictions: Dashboard["predictions"];
-  numbers: ReadonlyMap<string, number | null>;
+  numbers: ReadonlyMap<string, Who>;
   t: Dict;
   showCodes: boolean;
 }) {

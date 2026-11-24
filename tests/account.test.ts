@@ -283,6 +283,94 @@ test("deleting the account needs the password and removes it", async () => {
   db.close();
 });
 
+// ---------- classes (#606) ----------
+
+const newClass = async (name = "7B") => (await device().call("POST", "/api/classes", { name, skills: ["linear"] })).body.code as string;
+const signUp = async (email: string, name: string) => {
+  const d = device();
+  assert.equal((await d.call("POST", "/api/account", { email, name, password: "long enough" })).status, 201);
+  return d;
+};
+const whoAmI = async (d: ReturnType<typeof device>) => (await d.call("GET", "/api/account")).body as { account: { name: string } | null; student: { code: string; class: string } | null };
+
+test("joined signed in, the record is the account's: any device finds it, and joining again gives the same one", async () => {
+  const klass = await newClass();
+  const tablet = await signUp("mari@school.example", "Mari Beridze");
+  assert.equal((await whoAmI(tablet)).student, null);
+  const joined = await tablet.call("POST", "/api/students", { class: klass });
+  assert.equal(joined.status, 201);
+  assert.deepEqual(Object.keys(joined.body).sort(), ["arm", "class", "code", "condition", "feature"]);
+  assert.deepEqual((await whoAmI(tablet)).student, joined.body);
+
+  // At home: signing in brings the same record, and joining the class again makes no second one.
+  const home = device();
+  await home.call("POST", "/api/account/session", { email: "mari@school.example", password: "long enough" });
+  assert.deepEqual((await whoAmI(home)).student, joined.body);
+  const again = await home.call("POST", "/api/students", { class: klass.toLowerCase() });
+  assert.equal(again.status, 200);
+  assert.deepEqual(again.body, joined.body);
+
+  // A second class: the account practises under the one joined last, and keeps the first.
+  const next = await newClass("8B");
+  const second = (await home.call("POST", "/api/students", { class: next })).body;
+  assert.equal((await whoAmI(tablet)).student?.code, second.code);
+  assert.equal((await tablet.call("POST", "/api/students", { class: klass })).body.code, joined.body.code);
+
+  // The teacher sees the name; a student who joined without an account has none.
+  const plain = (await device().call("POST", "/api/students", { class: klass, number: 7 })).body;
+  const dash = (await device().call("GET", `/api/research/dashboard?class=${klass}`)).body;
+  const rows = dash.students as { code: string; name: string | null; number: number | null }[];
+  assert.equal(rows.length, 2);
+  assert.equal(rows.find((r) => r.code === joined.body.code)?.name, "Mari Beridze");
+  assert.deepEqual(rows.find((r) => r.code === plain.code), { ...rows.find((r) => r.code === plain.code), name: null, number: 7 });
+});
+
+test("a record from before the account is added to it by its code, once", async () => {
+  const klass = await newClass();
+  const old = (await device().call("POST", "/api/students", { class: klass, number: 3 })).body;
+  const d = await signUp("sandro@school.example", "Sandro");
+  assert.equal((await device().call("POST", "/api/account/student", { code: old.code })).status, 401);
+  assert.equal((await d.call("POST", "/api/account/student", { code: "ZZZZ-ZZZZ" })).status, 404);
+  const added = await d.call("POST", "/api/account/student", { code: old.code.toLowerCase().replace("-", " ") });
+  assert.equal(added.status, 200);
+  assert.deepEqual(added.body, old);
+  assert.deepEqual((await whoAmI(d)).student, old);
+  assert.equal((await d.call("POST", "/api/account/student", { code: old.code })).status, 200, "its own already");
+
+  // Nobody else can take it, and an account holds one record in a class.
+  const other = await signUp("thief@school.example", "Other");
+  assert.equal((await other.call("POST", "/api/account/student", { code: old.code })).status, 409);
+  assert.equal((await whoAmI(other)).student, null);
+  const twin = (await device().call("POST", "/api/students", { class: klass, number: 4 })).body;
+  assert.equal((await d.call("POST", "/api/account/student", { code: twin.code })).status, 409);
+});
+
+test("no export holds a name or an email, and deleting the account deletes its records", async () => {
+  const klass = await newClass();
+  const d = await signUp("ana.unmistakable@school.example", "Ana Unmistakable");
+  const me = (await d.call("POST", "/api/students", { class: klass })).body;
+  const posted = await d.call("POST", "/api/attempts", {
+    clientId: `acct-${Date.now()}`, student: me.code, skill: "linear", level: 2, seed: 12345, review: false, outcome: "revealed", solutionViewed: true,
+    msTotal: 9000, shownAt: Date.now() - 9000, answers: [{ input: "12345", verdict: "wrong", ms: 9000 }], policy: "free",
+  });
+  assert.equal(posted.status, 201);
+  await d.call("POST", "/api/boards", { title: "Ana's board" }, { "X-Student-Code": me.code });
+  const text = async (path: string) => (await fetch(BASE + path)).text();
+  for (const path of [`/api/research/attempts.csv?class=${klass}`, `/api/research/tests.csv?class=${klass}`, "/api/research/attempts.csv", "/api/research/tests.csv", "/api/export"]) {
+    const body = await text(path);
+    assert.ok(body.length > 20, path);
+    assert.ok(!/unmistakable/i.test(body), `${path} names the student`);
+  }
+  assert.equal((await text(`/api/research/attempts.csv?class=${klass}`)).trim().split("\n").length, 2);
+  // The teacher's list of the class's boards does carry the name: it never leaves the teacher's page.
+  assert.equal((await device().call("GET", `/api/boards?class=${klass}`)).body[0].name, "Ana Unmistakable");
+
+  assert.equal((await d.call("DELETE", "/api/account", { password: "long enough" })).status, 204);
+  assert.equal((await device().call("GET", `/api/students/${me.code}`)).status, 404);
+  assert.equal((await text(`/api/research/attempts.csv?class=${klass}`)).trim().split("\n").length, 1, "only the header is left");
+  assert.deepEqual((await device().call("GET", `/api/boards?class=${klass}`)).body, []);
+});
+
 test("guessing at one account's password runs into a wait", async () => {
   const owner = device();
   await owner.call("POST", "/api/account", { email: "target@school.example", name: "Target", password: "long enough" });

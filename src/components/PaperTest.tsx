@@ -82,7 +82,7 @@ export function PaperTest({ klass, students, api, w, pw, onSaved }: {
           <span>{w.paperStudent}</span>
           <select value={student} onChange={(e) => setStudent(e.target.value)}>
             <option value="">{w.paperPick}</option>
-            {sorted.map((s) => <option key={s.id} value={s.code}>{studentName(s.id, s.number, s.code)}</option>)}
+            {sorted.map((s) => <option key={s.id} value={s.code}>{studentName(s.id, s, s.code)}</option>)}
           </select>
         </label>
         <label className="field-row">

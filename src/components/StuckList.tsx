@@ -3,7 +3,7 @@
 // until ten more questions on the skill go by without three right in a row.
 import { lazy, Suspense } from "react";
 import type { Dashboard, StuckRow } from "../../server/dashboard";
-import { studentName } from "../api";
+import { studentName, type Who } from "../api";
 import type { Dict } from "../locales/en";
 import type { SkillId } from "../math/practiceSkills";
 import { fill } from "../math/text";
@@ -13,7 +13,7 @@ const MistakeHint = lazy(() => import("./MistakeHint").then((m) => ({ default: m
 export function StuckList({ stuck, numbers, t, skillName, showCodes, onSeen }: {
   stuck: Dashboard["stuck"];
   /** Each student's number in the class list, by their id ("s12"), for those who gave one. */
-  numbers: ReadonlyMap<string, number | null>;
+  numbers: ReadonlyMap<string, Who>;
   t: Dict;
   skillName: (k: SkillId) => string;
   showCodes: boolean;

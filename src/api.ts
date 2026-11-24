@@ -12,7 +12,7 @@ export type BoardScene = { elements?: readonly unknown[]; files?: Record<string,
 /** readOnly: a student's board opened by a teacher, who may look but not change it. */
 export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene; shareToken?: string | null; readOnly?: boolean };
 /** A student's board in a teacher's list of a class's boards: whose it is, as the teacher's page names students. */
-export type ClassBoard = BoardSummary & { student: string; number: number | null };
+export type ClassBoard = BoardSummary & { student: string; number: number | null; name: string | null };
 /** A board seen through its read-only link: no id, so nothing that could edit it. */
 export type SharedBoard = { title: string; updatedAt: number; scene: BoardScene };
 
@@ -80,6 +80,10 @@ export const api = {
 /** The practice study (server/research.ts): joining a class, signing back in, and uploading finished questions. */
 export const study = {
   /** number: the student's number in the class list; again: join though someone in the class already gave it (409). */
+  /**
+   * number: the student's number in the class list; again: join though someone in the class already gave it (409).
+   * Signed in to an account, the record is the account's, and joining the same class again gives the same one.
+   */
   join: (classCode: string, number?: number, again = false) =>
     req<Student>("POST", "/api/students", { class: classCode, number, again: again || undefined }),
   /** The student, the goal their teacher picked for the class (#461, null for none) and the games assigned to it. */
@@ -132,12 +136,15 @@ export type ClassSummary = {
 };
 export type { Dashboard };
 
+/** What the teacher page knows a student by: their number in the class list and the name on their account, when they gave either. */
+export type Who = { number: number | null; name?: string | null };
 /**
- * How the teacher page names a student: by their number in the class list when they gave one ("№ 14"), else by their
- * number in the study ("s12"); with the student code after it when the teacher asks for codes.
+ * How the teacher page names a student: by their number in the class list when they gave one ("№ 14") and the name on
+ * their account when they joined with one ("№ 14 · Nino K.", #606), else by their number in the study ("s12"); with
+ * the student code after it when the teacher asks for codes.
  */
-export const studentName = (id: string, number: number | null | undefined, code?: string) =>
-  [number ? `№ ${number}` : id, code].filter(Boolean).join(" · ");
+export const studentName = (id: string, who: Who | null | undefined, code?: string) =>
+  [who?.number ? `№ ${who.number}` : who?.name ? null : id, who?.name, code].filter(Boolean).join(" · ");
 
 /** What came of a paper test typed in (server/protocol.ts recordPaperTest): each question's verdict, null where the
  * student had answered it online; reordered when the student's form order was swapped to fit the form they wrote. */

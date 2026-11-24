@@ -89,7 +89,7 @@ export function GamesCard({ klass, data, api, t, showCodes, onChanged }: {
                   const done = assigned.filter((g) => ladderDone(starsOf(s.id, g))).length;
                   return (
                     <tr key={s.id}>
-                      <th scope="row">{studentName(s.id, s.number, showCodes ? s.code : undefined)}</th>
+                      <th scope="row">{studentName(s.id, s, showCodes ? s.code : undefined)}</th>
                       {assigned.map((g) => {
                         const st = starsOf(s.id, g);
                         const won = st.reduce((a, b) => a + b, 0);
