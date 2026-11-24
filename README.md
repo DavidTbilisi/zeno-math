@@ -6,6 +6,7 @@
   <b>Free, open-source math practice and whiteboards for schools and universities: one system from counting to a degree.</b><br>
   <a href="https://davidtbilisi.github.io/zeno-math/">Website</a> ·
   <a href="https://davidtbilisi.github.io/zeno-math/practice/">Try the practice</a> ·
+  <a href="https://davidtbilisi.github.io/zeno-math/learn/">Topics</a> ·
   <a href="docs/features.md">Every feature</a> ·
   <a href="#run-with-docker">Self-host</a>
 </p>

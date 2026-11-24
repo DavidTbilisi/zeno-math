@@ -2,6 +2,7 @@ node_modules
 dist
 dist-server
 dist-landing
+dist-prerender
 data
 public/fonts
 *.log

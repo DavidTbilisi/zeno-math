@@ -1,6 +1,6 @@
 name: Pages
 
-# The front page for schools and the practice page on their own (npm run build:landing), published at
+# The front page, the practice page and a page per topic on their own (npm run build:landing), published at
 # https://davidtbilisi.github.io/zeno-math/ whenever main changes what they are built from.
 on:
   push:
@@ -8,6 +8,8 @@ on:
     paths:
       - "landing.html"
       - "practice.html"
+      - "topic.html"
+      - "vite.prerender.config.ts"
       - "landing-public/**"
       - "vite.landing.config.ts"
       - "scripts/landing-layout.mjs"

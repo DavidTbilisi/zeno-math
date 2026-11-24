@@ -7,13 +7,16 @@ import { BrandBar } from "../components/BrandBar";
 import { SiteBar } from "../components/SiteBar";
 import { PracticeDialog } from "../components/PracticeDialog";
 import { useI18n } from "../i18n";
+import { pageLang } from "../langs";
 
 export function PracticePage({ start, invite, standalone }: { start?: string; invite?: string; standalone?: boolean }) {
   const { t } = useI18n();
+  // Reached in a language by its address (?lang=), the way back keeps it.
+  const front = `../${pageLang() ? `?lang=${pageLang()}` : ""}`;
   return (
     <div className="z z-wide">
       {standalone ? (
-        <BrandBar home="../"><a href="../">{t.aboutLink}</a></BrandBar>
+        <BrandBar home={front}><a href={front}>{t.aboutLink}</a></BrandBar>
       ) : (
         <SiteBar here="practice" />
       )}

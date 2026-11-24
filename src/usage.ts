@@ -7,8 +7,8 @@
 import type { UsageKind } from "../server/usage";
 import { detectLang } from "./langs";
 
-/** Which site this is: the app on its server, or the front page and the practice published on their own. */
-export type Site = "app" | "front page" | "practice page";
+/** Which site this is: the app on its server, or the front page, the practice and a topic's page published on their own. */
+export type Site = "app" | "front page" | "practice page" | "topic page";
 
 const WAIT_MS = 3000;
 const BATCH = 40;

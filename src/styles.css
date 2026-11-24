@@ -1166,6 +1166,12 @@ input.invalid { border-color: var(--danger); }
 .z-nav { display: flex; align-items: center; gap: 20px; }
 .z-nav a { color: var(--z-graphite); font-weight: 600; }
 .z-nav a:hover { color: var(--z-ink); }
+/* a page written in one language (a topic's page published on its own): its other languages as links */
+.z-langs { display: inline-flex; gap: 12px; padding-left: 20px; border-left: 1px solid var(--border); font-size: 0.9375rem; }
+.z-langs a[aria-current] { color: var(--z-ink); text-decoration: underline; text-underline-offset: 4px; }
+.site > .z-bar { width: 100%; box-sizing: border-box; flex-wrap: wrap; }
+a.site-skill { color: inherit; }
+a.site-skill:hover, a.site-skill:focus-visible { border-color: var(--z-ink); }
 
 .z-btn {
   display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px;
@@ -1267,6 +1273,8 @@ input.invalid { border-color: var(--danger); }
 .z-path strong { display: block; margin-bottom: 12px; font-size: 1.1875rem; font-weight: 800; }
 .z-path ul { list-style: none; margin: 0; padding: 0; color: var(--z-graphite); }
 .z-path ul li { padding: 3px 0; }
+.z-path a { color: inherit; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.z-path a:hover { color: var(--z-ink); text-decoration-color: var(--z-ink); }
 
 /* How a class starts: a real sequence, so numbered */
 .z-steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
@@ -1555,6 +1563,8 @@ span.board-home:hover { background: none; }
   .z-bar { flex-wrap: wrap; row-gap: 10px; }
   .z-nav { flex-wrap: wrap; gap: 8px 12px; min-width: 0; }
   .z-ask { padding: 20px; }
+  .site > .z-bar .z-nav { flex-wrap: wrap; gap: 8px 16px; }
+  .z-langs { padding-left: 0; border-left: 0; }
   .z-ask-q { font-size: 1.875rem; }
   .z-line { padding: 48px 20px 56px; }
   .z-line-track { height: 24px; }

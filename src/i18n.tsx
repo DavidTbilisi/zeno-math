@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { detectLang, LANGS, type Lang } from "./langs";
+import { detectLang, dropAddressLang, LANGS, type Lang } from "./langs";
 import type { Dict } from "./locales/en";
 
 export { LANGS, type Lang };
@@ -36,6 +36,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, [lang]);
   const setLang = (l: Lang) => {
     setLangState(l);
+    dropAddressLang();
     try {
       localStorage.setItem("lang", l);
     } catch {
