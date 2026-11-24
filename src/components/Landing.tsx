@@ -1,8 +1,11 @@
-// The front page for schools, in the app (pages/AboutPage.tsx) and published on its own (landing.tsx): what Zeno is,
-// what a class gets, how a class starts, and where the data lives. Its centrepiece is Zeno's own paradox played out:
-// each right answer covers half of the gap that is left. The bar and the calls to action come from the page using it.
+// The front page for schools and universities, in the app (pages/AboutPage.tsx) and published on its own (landing.tsx):
+// what Zeno is, a wrong answer named as the practice names it, the whole path from first steps to a degree, what a
+// class gets, how a class starts, and where the data lives. Its centrepiece is Zeno's own paradox played out: each
+// right answer covers half of the gap that is left. The bar and the calls to action come from the page using it.
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { COUNTS } from "../locales/about/counts";
 import type { About } from "../locales/about/en";
+import { across, DEMO_SUMS, judge, plain, type DemoVerdict, type Frac } from "../math/fracDemo";
 import { fill } from "../math/text";
 
 /** A skill counts as mastered past this, as BKT's usual threshold has it (model/mastery.ts). */
@@ -106,6 +109,62 @@ function ZenoDemo({ a }: { a: About }) {
   );
 }
 
+function Stacked({ f }: { f: Frac }) {
+  return (
+    <span className="z-frac z-frac-big" role="img" aria-label={plain(f)}>
+      <span>{f.n}</span>
+      <span>{f.d}</span>
+    </span>
+  );
+}
+
+/** A sum of fractions answered as many students answer it, tops added and bottoms added: the page says so, as the
+ *  practice does. The box starts with that answer in it, so one press shows the mistake named. */
+function MistakeDemo({ a }: { a: About }) {
+  const [at, setAt] = useState(0);
+  const [x, y] = DEMO_SUMS[at % DEMO_SUMS.length];
+  const tempting = plain(across(x, y));
+  const [typed, setTyped] = useState(tempting);
+  const [verdict, setVerdict] = useState<DemoVerdict | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const q = `${plain(x)} + ${plain(y)}`;
+
+  const check = (e: FormEvent) => {
+    e.preventDefault();
+    if (verdict?.kind === "right") {
+      const [nx, ny] = DEMO_SUMS[(at + 1) % DEMO_SUMS.length];
+      setAt(at + 1);
+      setTyped(plain(across(nx, ny)));
+      setVerdict(null);
+      return;
+    }
+    setVerdict(judge(x, y, typed));
+    input.current?.focus();
+  };
+  const said =
+    verdict === null ? fill(a.mistakeHint, { r: tempting })
+    : verdict.kind === "right" ? fill(a.mistakeRight, { q, a: verdict.sum })
+    : verdict.kind === "across" ? fill(a.mistakeAcross, { r: verdict.r, big: verdict.big })
+    : verdict.kind === "wrong" ? fill(a.mistakeWrong, { steps: verdict.steps })
+    : a.mistakeUnread;
+
+  return (
+    <form className="z-try" onSubmit={check}>
+      <h3 className="z-ask-title">{a.mistakeCard}</h3>
+      <label className="z-ask-q">
+        <span className="z-try-sum"><Stacked f={x} /> + <Stacked f={y} /> =</span>
+        <input ref={input} inputMode="text" autoComplete="off" aria-label={a.mistakeAnswer} value={typed} readOnly={verdict?.kind === "right"}
+          onChange={(e) => setTyped(e.target.value.replace(/[^\d/ ]/g, "").slice(0, 7))} />
+      </label>
+      <p className={`z-ask-said z-try-said${verdict ? ` ${verdict.kind}` : ""}`} aria-live="polite">{said}</p>
+      <div className="z-ask-foot">
+        <span />
+        <button className="z-btn z-btn-ink" disabled={!typed.trim()}>{verdict?.kind === "right" ? a.mistakeNext : a.check}</button>
+      </div>
+    </form>
+  );
+}
+
 type LandingProps = {
   a: About;
   bar: ReactNode;
@@ -128,13 +187,37 @@ export function Landing({ a, bar, ctas, endCta }: LandingProps) {
           <ZenoDemo a={a} />
         </section>
 
+        <section className="z-section z-mistake">
+          <div>
+            <h2>{a.mistakeTitle}</h2>
+            <p>{fill(a.mistakeLede, COUNTS)}</p>
+            <p>{a.mistakeTeacher}</p>
+          </div>
+          <MistakeDemo a={a} />
+        </section>
+
+        <section className="z-section">
+          <h2>{a.pathTitle}</h2>
+          <p className="z-section-lede">{fill(a.pathLede, COUNTS)}</p>
+          <ol className="z-path">
+            {a.path.map(([stage, topics]) => (
+              <li key={stage}>
+                <strong>{stage}</strong>
+                <ul>
+                  {topics.map((x) => <li key={x}>{x}</li>)}
+                </ul>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         <section className="z-section">
           <h2>{a.getsTitle}</h2>
           <dl className="z-facts">
             {a.facts.map(([k, v]) => (
               <div key={k}>
                 <dt>{k}</dt>
-                <dd>{v}</dd>
+                <dd>{fill(v, COUNTS)}</dd>
               </div>
             ))}
           </dl>
