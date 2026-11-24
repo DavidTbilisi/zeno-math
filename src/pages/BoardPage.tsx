@@ -39,6 +39,8 @@ import { isLiveEntry, toolLabel, type LiveEntry, type MenuEntry } from "../menus
 import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 import { hasOrigin, installPaper, isPaper, PAPERS, type Paper } from "../paper";
 import { seen } from "../usage";
+import { copyElements, type SceneElement } from "../model/lessonCopy";
+import type { LessonCopied, LessonCopy } from "./LessonPage";
 
 /** When a change to the scene is recorded for undo (now, with the next recorded change, or never). */
 type CaptureUpdateActionType = (typeof CaptureUpdateAction)[keyof typeof CaptureUpdateAction];
@@ -695,6 +697,32 @@ export function BoardPage({ id }: { id: string }) {
     excalidraw.current = a;
     setExcalidrawApi(a);
   }, []);
+  // In a lesson this board is in a frame beside the host's, and the lesson's page around it hands the host's drawing
+  // in: it is copied onto the board here, by the board's own writer, beside what is on it, and saved like any change.
+  // A copy is taken once, however often it is offered (the page asks until it is answered).
+  const copiesTaken = useRef(new Set<string>());
+  useEffect(() => {
+    if (window.parent === window) return;
+    const onMessage = (e: MessageEvent) => {
+      const d = e.data as LessonCopy | undefined;
+      const ex = excalidraw.current;
+      if (e.origin !== location.origin || e.source !== window.parent || d?.type !== "zeno:lesson-copy" || !ex) return;
+      if (!copiesTaken.current.has(d.id)) {
+        copiesTaken.current.add(d.id);
+        const copied = copyElements(d.elements as SceneElement[], ex.getSceneElements() as unknown as SceneElement[], () => crypto.randomUUID()) as unknown as ExcalidrawElement[];
+        if (copied.length) {
+          ex.addFiles(Object.values(d.files) as BinaryFileData[]);
+          ex.updateScene({ elements: [...ex.getSceneElementsIncludingDeleted(), ...copied], captureUpdate: CaptureUpdateAction.IMMEDIATELY });
+          // Everything in view, the board's own work and the copy beside it.
+          ex.scrollToContent(ex.getSceneElements(), { fitToViewport: true, viewportZoomFactor: 0.9, maxZoom: 1, animate: true });
+        }
+      }
+      const answer: LessonCopied = { type: "zeno:lesson-copied", id: d.id };
+      window.parent.postMessage(answer, location.origin);
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
   // The course map opens a tool or a lab on a board: #/b/<id>/tool/<kind>[/<topic>] or #/b/<id>/live/<kind>. Once the
   // board has loaded it is opened, and the address goes back to the board's own (so a reload doesn't add another).
   useEffect(() => {
@@ -767,7 +795,8 @@ export function BoardPage({ id }: { id: string }) {
         <button ref={insertBtn} className="btn primary insert-btn" onClick={() => setInserting(!inserting)} title={t.site.insert.title} aria-expanded={inserting}>
           <BarIcon name="insert" /> <span className="btn-label">{t.site.insert.button}</span>
         </button>
-        <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })} />
+        <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })}
+          lesson={board.lessonToken ?? null} onLesson={(lessonToken) => setBoard({ ...board, lessonToken })} />
         <LangSelect />
       </header>
       {saveState === "conflict" && (

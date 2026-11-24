@@ -12,11 +12,25 @@ import { seen } from "./usage";
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
 export type BoardScene = { elements?: readonly unknown[]; files?: Record<string, unknown>; appState?: Record<string, unknown> };
 /** readOnly: a student's board opened by a teacher, who may look but not change it. */
-export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene; shareToken?: string | null; readOnly?: boolean };
+export type Board = { id: string; title: string; updatedAt: number; scene: BoardScene; shareToken?: string | null; lessonToken?: string | null; readOnly?: boolean };
 /** A student's board in a teacher's list of a class's boards: whose it is, as the teacher's page names students. */
 export type ClassBoard = BoardSummary & { student: string; number: number | null; name: string | null };
 /** A board seen through its read-only link: no id, so nothing that could edit it. */
 export type SharedBoard = { title: string; updatedAt: number; scene: BoardScene };
+
+/** A guest's board in a lesson, as its host is told of it: whose it is only for a teacher (as on the class page). */
+export type LessonGuest = { board: string; updatedAt: number; number: number | null; name: string | null };
+/**
+ * A lesson as this browser stands in it (server/lessons.ts): its host, with the guests' boards to follow; a guest, with
+ * a board of their own (`made` the time it is first made); or a viewer, who only watches the host's board.
+ */
+export type LessonState = { title: string; handoutAt: number } & (
+  | { role: "host"; board: string; guests: LessonGuest[] }
+  | { role: "guest"; board: string; made?: boolean }
+  | { role: "viewer" }
+);
+/** What following a board gives: the board and the etag to send next time, or null while the copy in hand is the latest. */
+export type Followed = { board: SharedBoard; etag: string } | null;
 
 export class ApiError extends Error {
   constructor(message: string, readonly status: number) {
@@ -76,13 +90,35 @@ export const api = {
     return res.blob();
   },
   /** A shared board; with the etag of the copy in hand, null while it is still the latest (the scene isn't sent again). */
-  shared: async (token: string, etag?: string): Promise<{ board: SharedBoard; etag: string } | null> => {
-    const url = `/api/shared/${encodeURIComponent(token)}`;
-    const res = await fetch(url, { headers: etag ? { "If-None-Match": etag } : {} });
-    if (res.status === 304) return null;
-    if (!res.ok) throw new ApiError(`GET ${url}: ${res.status}`, res.status);
-    return { board: await res.json(), etag: res.headers.get("ETag") ?? "" };
+  shared: (token: string, etag?: string) => follow(`/api/shared/${encodeURIComponent(token)}`, etag),
+};
+
+/** A board to follow: with the etag of the copy in hand, the scene is sent again only once it has changed. */
+async function follow(url: string, etag?: string, headers: Record<string, string> = {}): Promise<Followed> {
+  const res = await fetch(url, { headers: etag ? { ...headers, "If-None-Match": etag } : headers });
+  if (res.status === 304) return null;
+  if (!res.ok) throw new ApiError(`GET ${url}: ${res.status}`, res.status);
+  return { board: await res.json(), etag: res.headers.get("ETag") ?? "" };
+}
+
+/** Lessons (server/lessons.ts): two boards side by side, each written by its owner and followed by the other. */
+export const lessons = {
+  /** The lesson a board hosts (made the first time), and ending it. */
+  start: async (id: string) => {
+    const made = await req<{ token: string }>("POST", `/api/boards/${id}/lesson`, {}, false, boardOwner());
+    seen("step", "lesson started");
+    return made;
   },
+  end: (id: string) => req<void>("DELETE", `/api/boards/${id}/lesson`, undefined, false, boardOwner()),
+  /** Coming to a lesson by its link: a learner gets a board of their own for it the first time. */
+  enter: (token: string) => req<LessonState>("POST", `/api/lessons/${encodeURIComponent(token)}`, {}, false, boardOwner()),
+  state: (token: string) => req<LessonState>("GET", `/api/lessons/${encodeURIComponent(token)}`, undefined, false, boardOwner()),
+  /** The host's mark for the guests' pages to copy the host's board into their own. */
+  handOut: (token: string) => req<{ handoutAt: number }>("POST", `/api/lessons/${encodeURIComponent(token)}/handout`, {}, false, boardOwner()),
+  /** The host's board, for anyone with the link; and one guest's, for the host. */
+  board: (token: string, etag?: string) => follow(`/api/lessons/${encodeURIComponent(token)}/board`, etag),
+  guest: (token: string, board: string, etag?: string) =>
+    follow(`/api/lessons/${encodeURIComponent(token)}/guest?board=${encodeURIComponent(board)}`, etag, boardOwner()),
 };
 
 /** The practice study (server/research.ts): joining a class, signing back in, and uploading finished questions. */

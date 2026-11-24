@@ -37,6 +37,13 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/boards/:id/share` | owner | a read-only link: `{ token }`, 201 when new, 200 with the one the board already has |
 | DELETE | `/api/boards/:id/share` | owner | take the read-only link away: 204; the old link stops working |
 | GET | `/api/shared/:token` | anyone | the shared board, `{ title, scene, updatedAt }`, without its id; 404 once the link is taken away |
+| POST | `/api/boards/:id/lesson` | owner | start a lesson on the board: `{ token }`, 201 when new, 200 with the one the board already hosts |
+| DELETE | `/api/boards/:id/lesson` | owner | end the lesson: 204; its link stops working, the guests keep their boards |
+| GET | `/api/lessons/:token` | anyone | the lesson as the caller stands in it: `{ title, handoutAt, role }` with `role: "host"` (plus `board`, the host's board, and `guests: [{ board, updatedAt, number, name }]`, named only for a teacher), `"guest"` (plus `board`, the caller's own board for the lesson) or `"viewer"` |
+| POST | `/api/lessons/:token` | anyone | come to the lesson: the same answer, but a learner who can own boards gets a board of their own for it the first time (201, with `made: true`) |
+| GET | `/api/lessons/:token/board` | anyone | the host's board, `{ title, scene, updatedAt }`, without its id; an `ETag` to send back as `If-None-Match` (304 until the next save) |
+| GET | `/api/lessons/:token/guest?board=ID` | host | one guest's board, the same way; 404 for a board that is not a guest's in this lesson |
+| POST | `/api/lessons/:token/handout` | host | mark the host's board as handed out: `{ handoutAt }`, later each time; each guest's page copies the host's board into its own when it sees a later mark |
 | GET | `/api/account` | anyone | who is signed in: `{ account: { email, name, verified } \| null, student, mail }`; `student` is the class record the account practises under (`null` for none), `mail` whether the server can mail a new-password link |
 | POST | `/api/account` | anyone | a new account from `{ email, name, password, lang? }`: 201 `{ email, name, verified }` and the session cookie; 409 when the email has one |
 | PUT | `/api/account` | account | `{ name? }` renames; `{ password, current }` changes the password and signs the other devices out |
