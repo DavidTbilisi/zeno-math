@@ -5273,6 +5273,7 @@ export const en = {
       liveBaseTen: "Base-ten blocks",
       liveCubes: "Linking cubes",
       liveRekenrek: "Rekenrek: a counting rack",
+      liveRods: "Number rods",
       liveCounters: "Integer counters",
       liveSignArrow: "Minus turns it round: arrows on a line",
       liveSignPattern: "Minus times minus: follow the pattern",
@@ -6484,6 +6485,20 @@ export const en = {
         tens: "{tens} × 10 + {ones} = {n}",
         tensOnly: "{tens} × 10 = {n}",
         rest: "{n} + {rest} = {cap}",
+      },
+    },
+    rods: {
+      numbers: "Numbers",
+      rod: "Rod {n}",
+      rodIn: "Rod {n} in row {r}",
+      tray: "Drag me into a row, or tap to lay me at the end of the last row",
+      bin: "Take off",
+      binTitle: "Drop a rod here to take it off; tap to clear the mat",
+      dropHere: "Drag rods here from the tray",
+      hint: "Drag a rod from the tray into a row, or below the rows for a new one; it goes in where you let it go. Drag a rod to another place or another row, or back to the tray to take it off. A row shorter than the longest shows its gap: which rod fits?",
+      says: {
+        empty: "No rods: drag one in from the tray.",
+        one: "One rod: {n}",
       },
     },
     space: {

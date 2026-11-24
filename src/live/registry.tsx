@@ -46,6 +46,7 @@ import { AlgebraTiles } from "./AlgebraTiles";
 import { BaseTen } from "./BaseTen";
 import { Cubes } from "./Cubes";
 import { Rekenrek } from "./Rekenrek";
+import { Rods } from "./Rods";
 import { Counters } from "./Counters";
 import { SignArrow } from "./SignArrow";
 import { SignPattern } from "./SignPattern";
@@ -179,6 +180,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   baseTen: BaseTen,
   cubes: Cubes,
   rekenrek: Rekenrek,
+  rods: Rods,
   counters: Counters,
   signArrow: SignArrow,
   signPattern: SignPattern,
