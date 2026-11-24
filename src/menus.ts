@@ -286,6 +286,12 @@ export const MENUS: MenuGroup[] = [
         ],
       },
       {
+        title: "senseCrux", items: [
+          { live: "cruxWord", icon: "🔑" },
+          { live: "cruxEq", icon: "🔑" },
+        ],
+      },
+      {
         title: "senseShape", items: [
           { live: "geoboard", icon: "⬠" },
           { live: "mirror", icon: "🦋" },

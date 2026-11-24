@@ -1738,6 +1738,21 @@ const whichWordPreview = () => whichPreview("▭ + ▭ + 6 = 50", ["− 6", "+ 1
 const whichEqPreview = () => whichPreview("4/(x + 1) = 2/3", ["↶", "x ⇄", "✕"], 2);
 const whichQuadPreview = () => whichPreview("x² − 49 = 0", ["( )( )", "±√", "( )²", "−b ± √"], 1);
 
+/** Find the crux: a problem on its card over its steps, their answers hidden, the one it hinges on lit with its key. */
+function cruxPreview(problem: string, steps: string[], crux: number): Piece[] {
+  return [
+    rect(0, 0, 220, 40, { fill: "#fff4e6", color: "#f08c00", width: 2 }, true),
+    text(110, 20, problem, 15),
+    ...steps.flatMap((s, i) => {
+      const y = 50 + i * 34;
+      const on = i === crux;
+      return [rect(0, y, 220, 28, { fill: on ? "#ebfbee" : "#f8f9fa", color: on ? "#2f9e44" : "#ced4da", width: on ? 2.5 : 1.5 }, true), text(on ? 90 : 110, y + 14, s, 13), ...(on ? [text(190, y + 14, "🔑", 14)] : [])];
+    }),
+  ];
+}
+const cruxWordPreview = () => cruxPreview("▭▭▭ − g = ▭ + g", ["gap = 2g = ?", "1 u = ?", "▭▭▭ = ?"], 0);
+const cruxEqPreview = () => cruxPreview("2(x − 4) + 4x = 46", ["2x − 8 + 4x", "6x − 8 = 46", "6x = 54", "x = 9"], 1);
+
 function beCachePreview(): Piece[] {
   // A request over a cache list from the head to the tail, the tail on its way to the evict bin.
   const node = (i: number, k: string, v: string, color: string) => [rect(i * 70, 52, 58, 44, { fill: "#f3f0ff", color, width: 2 }), text(i * 70 + 29, 66, k, 16), text(i * 70 + 29, 86, v, 13)];
@@ -2330,6 +2345,8 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveWhichWord", build: whichWordPreview, live: "whichWord" },
   { id: "liveWhichEq", build: whichEqPreview, live: "whichEq" },
   { id: "liveWhichQuad", build: whichQuadPreview, live: "whichQuad" },
+  { id: "liveCruxWord", build: cruxWordPreview, live: "cruxWord" },
+  { id: "liveCruxEq", build: cruxEqPreview, live: "cruxEq" },
   { id: "liveDescentLab", build: descentLabPreview, live: "descentLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },

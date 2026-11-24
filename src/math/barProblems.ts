@@ -31,9 +31,21 @@ export type BarQuestion = {
   trap: { id: BarMistake; v: number; vars: Record<string, number> } | null;
   /** The steps before the answer, in order. */
   steps: BarStep[];
+  /** The step it all hinges on (BAR_CRUX): an index into the steps, the answer itself as steps.length. */
+  crux: number;
   /** A sentence with a number z the answer doesn't use, put in before sentence `at`, never first (medium and hard only, not always). */
   noise?: { kind: NoiseKind; z: number; at: number };
 };
+
+/**
+ * The step each structure hinges on (issue #583), as an index into its steps with the answer itself last: once it is
+ * seen the rest is routine. Fewer than two items: the one there is. A total and how much more: taking the extra away
+ * (two equal bars, or equal units with a third person). k times with a total: counting k + 1 units. A gift that makes
+ * two amounts equal: the gap before it was two gifts. Leftover and shortage: the bigger share uses up both. Posts and
+ * trees: the gaps are routine, the post more on a line (and none more round a loop) is the crux. How much more with a
+ * total: finding the other part.
+ */
+export const BAR_CRUX: Record<BarForm, number> = { less: 0, posts: 1, howMuchMore: 0, sumDiff: 0, times: 0, loop: 1, give: 0, leftShort: 0, three: 0 };
 
 /** The noise sentences: a person's age, a tree's height, the children's age. */
 export type NoiseKind = "age" | "tall" | "ages";
@@ -125,7 +137,7 @@ const trapOf = (id: BarMistake, v: number, answer: number, vars: Record<string, 
  * everything else, so the numbers are those the question had without it.
  */
 export function barQuestion(form: BarForm, next: Next): BarQuestion {
-  const q = barNumbers(form, next);
+  const q: BarQuestion = { ...barNumbers(form, next), crux: BAR_CRUX[form] };
   const kind = NOISE[form];
   if (!kind || next() < 0.5) return q;
   const int = intOf(next);
@@ -137,7 +149,7 @@ export function barQuestion(form: BarForm, next: Next): BarQuestion {
   return { ...q, noise: { kind, z, at: int(1, BAR_STORY[form].length - 1) } };
 }
 
-function barNumbers(form: BarForm, next: Next): BarQuestion {
+function barNumbers(form: BarForm, next: Next): Omit<BarQuestion, "crux"> {
   const int = intOf(next);
   switch (form) {
     case "less": {

@@ -1581,7 +1581,7 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
   **Discrete** (number theory, combinatorics, graph theory, logic, tactics, strategies, algorithms, statistics, inference), plus
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
   look, make the target, closer to?, divisible by?, prime slice, Kakooma), fraction sense (make a whole, equal amounts, fractions on the line, shade the
-  fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), which tool? (word problems, fractions, equations, quadratics), shape sense
+  fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), which tool? (word problems, fractions, equations, quadratics), find the crux (word problems, equations), shape sense
   (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
   connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas, be the message queue, name the component). In the Shapes tab the games are a group of their own, before the live
@@ -2080,6 +2080,14 @@ The front page for schools is published at **[davidtbilisi.github.io/zeno-math](
     shown solved by its own tool in two lines, that tool lit. Where two tools work (x² − 49 = 0 factors and takes roots,
     6/7 ÷ 2/7 divides the tops) both count, and only the quicker keeps the third star. Six puzzles a set, the endless
     run, and the clock once the ladder opens it
+  - *Find the crux*: two games, word problems (the hard bar-model forms and k times with a total) and equations with x
+    twice. The problem stands over its steps, each shown by what it asks or does with its answer hidden, and the player
+    taps the step the problem hinges on: the gap before a gift that makes two amounts equal is two gifts, the bigger
+    share uses up the leftover and the shortage, the extra taken away leaves equal units, k times with a total is k + 1
+    units, and in an equation the move that leaves x in one place only. A routine step is told it is routine; the
+    crux found, the steps are shown worked, the crux tagged, with a line on why. The later puzzles scramble the steps
+    and ask for the crux first, then the order, a step tapped before the one it needs not taken. Each bar-model
+    question records its crux (`BAR_CRUX`). Six puzzles a set, the endless run, and the clock
   - *Long division, step by step*: any whole number divided by up to 9999, to up to 10 decimal places, in the bracket,
     corner or short layout (remainders as mixed numbers, repeating decimals such as 1 ÷ 7 = 0.(142857)), stepped
     forward and back; "Your turn" asks for each quotient digit first and answers a

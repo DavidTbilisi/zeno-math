@@ -97,6 +97,7 @@ import { BeComp } from "./BeComp";
 import { BeTopo } from "./BeTopo";
 import { BeName } from "./BeName";
 import { WhichTool } from "./WhichTool";
+import { Crux } from "./Crux";
 import { ConnectTowns } from "./ConnectTowns";
 import { DescentLab } from "./DescentLab";
 import { Surface } from "./Surface";
@@ -232,6 +233,8 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   whichWord: WhichTool,
   whichEq: WhichTool,
   whichQuad: WhichTool,
+  cruxWord: Crux,
+  cruxEq: Crux,
   descentLab: DescentLab,
   surface: Surface,
   pcaLab: PcaLab,

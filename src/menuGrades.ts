@@ -64,6 +64,8 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   beDp: LATE, beTopo: LATE, beName: LATE, beStack: LATE, beHeap: LATE, beTree: LATE, beUnion: LATE,
   // which tool?: the method picked, not used
   whichWord: [3, 7], whichFrac: [5, 8], whichEq: [7, 10], whichQuad: [10, 12],
+  // find the crux: the step a problem hinges on
+  cruxWord: [4, 8], cruxEq: [7, 10],
   beCache: UNI, beBalance: UNI, beRing: UNI, beLimit: UNI, beQueue: UNI, beQuorum: UNI, beComp: UNI,
 };
 
