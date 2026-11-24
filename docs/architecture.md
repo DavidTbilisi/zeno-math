@@ -26,8 +26,9 @@ flowchart LR
 
 **Self-hosted, nothing from outside.** A school can run Zeno on one machine, with one Docker container and one
 database file, and no data leaves it. The page loads nothing from a CDN: fonts, MathJax and every library are
-bundled. The one optional exception is the Excalidraw library browser. Students have no accounts: a student is a
-code they write down, and the exports name them `s1`, `s2`, ….
+bundled. The one optional exception is the Excalidraw library browser. A student signs in with an account (an email,
+a name the teacher sees, a password) and finds their record on any device; the exports hold neither the name nor the
+email and name students `s1`, `s2`, ….
 
 ## Building blocks
 
@@ -104,11 +105,27 @@ erDiagram
     INTEGER test_length
     INTEGER created_at
   }
+  accounts ||--o{ students : "practises as"
+  accounts ||--o{ sessions : "is signed in by"
+  accounts {
+    INTEGER id PK
+    TEXT email UK "lower case; never exported"
+    TEXT name "shown to the teacher; never exported"
+    TEXT password "scrypt hash"
+    INTEGER verified_at
+    INTEGER created_at
+  }
+  sessions {
+    TEXT token PK "SHA-256 of the cookie"
+    INTEGER account_id FK
+    INTEGER expires_at
+  }
   students ||--o{ attempts : makes
   students ||--o{ test_responses : gives
   students {
     INTEGER id PK "exported as s<id>"
-    TEXT code UK "XXXX-XXXX, the only identity"
+    TEXT code UK "XXXX-XXXX"
+    INTEGER account_id FK "whose record; NULL: a code alone"
     TEXT class_code FK
     TEXT condition "adaptive|fixed"
     TEXT test_order "AB|BA"
@@ -224,7 +241,7 @@ model, so the outcome measure is independent of what the adaptive condition lear
 | A logistic model (`src/model/logistic.ts`, run as `classModel.ts`), not Elo ratings, BKT or deep knowledge tracing | On real ASSISTments answers it predicts better than the Elo model the app ran before (log-loss 0.5221 against 0.5607 on held-out students; replayed from empty without problem ids, as the app runs, 0.5595 against 0.5667), and better than PFA and BKT (`docs/evaluation/prediction-benchmark.md`). Every answer moves the student's records at once, on the server and in the browser; the weights start from a simulated class and are fitted again on the class's own answers at 200 and whenever they have grown by a fifth. Cheap enough for a phone, and works for skills a student hasn't tried yet (through their area and overall counts). | Its weights move only when fitted again, where Elo's difficulties move with every answer. On simulated learners made the way Elo assumes, Elo predicts better (by 0.006 to 0.010 log-loss); on simulated BKT learners it predicts worse (by 0.02). The thesis's simulation study still runs Elo (`src/model/simulate.ts`). |
 | Questions chosen and marked in the browser, marked again on the server | Practice survives dropped connections, and the student sees a verdict at once; the stored verdict is the server's. | A modified client could pick its own questions, but only within its own condition. The server needs the checker's dependencies, so the image carries it as one bundled file. |
 | Questions generated from seeds | Reproducible forms and analyses, re-scoring, tiny storage. | Generators must never change what a seed means once a study has started. |
-| Codes instead of accounts | No personal data; children can join with a code on paper. | A lost code can't be recovered; anyone with the code can delete the record. |
+| Accounts (email, name, password) on top of student codes (2026-11, #605–#608) | A teacher tells students apart by name, and a student signs in on any device and finds their record and progress. Students from before accounts keep their code and add it to an account when they make one. | The server now holds names and emails of children: both stay out of every export, the consent text says what is kept, and a self-hoster who wants a new-password mail has to set up SMTP. The code still opens the record for whoever holds it. |
 | SQLite in one file, Node without a framework | One container, no database server, easy backup; few dependencies to audit. | One server process; no horizontal scaling (a school doesn't need it). |
 | Phases judged by when an answer arrives, with five minutes' grace, against a log of the teacher's changes | The browser hears of a change only every 30 s and keeps answers while offline; an answer that comes late is kept and marked, not lost. | Late answers are the analysis's to report; a test not yet started is refused outright. |
 | Optimistic locking for boards (`baseUpdatedAt`, 409) rather than real-time collaboration | Simple and safe: no edit is silently lost. | Two people editing one board take turns rather than seeing each other live. |

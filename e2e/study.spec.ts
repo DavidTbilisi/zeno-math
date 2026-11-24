@@ -13,6 +13,13 @@ import { pickTopic } from "./helpers.ts";
 
 const TEACHER = "e2e-teacher";
 
+/** Joining a class takes an account (#606): made through the API, so the page opens signed in. */
+async function withAccount(page: Page, name = "Student") {
+  const email = `s${Date.now()}${Math.random().toString(36).slice(2, 8)}@school.example`;
+  expect((await page.request.post("/api/account", { data: { email, name, password: "e2e long enough" } })).status()).toBe(201);
+  return email;
+}
+
 async function openPractice(page: Page) {
   await page.locator(".excalidraw").waitFor();
   await page.keyboard.press("Control+k");
@@ -64,6 +71,7 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
 
   // The student, in a browser of their own: a board, the practice dialog, the consent, the class code.
   const student = await (await browser.newContext()).newPage();
+  await withAccount(student);
   const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
   await student.goto(`/#/b/${board.id}`);
   await openPractice(student);
@@ -71,7 +79,6 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await student.getByLabel("Class code").fill(code);
   const join = student.locator(".practice-join").getByRole("button", { name: "Join" });
   await expect(join).toBeDisabled();
-  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await join.click();
   await expect(student.locator(".practice-class strong.mono")).toContainText(/Student [A-Z0-9]{4}-[A-Z0-9]{4}/);
@@ -104,7 +111,7 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await expect(student.getByText("No marks during the test", { exact: false })).toBeVisible();
 });
 
-test("the join link fills the class code in; a number given twice is caught, and the teacher finds the code by it", async ({ browser }) => {
+test("the join link fills the class code in; one account is one record on every device, and the teacher finds its code by name", async ({ browser }) => {
   // Without the teacher header the config gives every page, so the teacher page asks for the password.
   const teacher = await browser.newPage({ extraHTTPHeaders: {} });
   await teacher.goto("/#/teacher");
@@ -126,29 +133,31 @@ test("the join link fills the class code in; a number given twice is caught, and
   await show.click();
   await expect(teacher.locator(".join-show")).toHaveCount(0);
 
-  // Two students give the same number: the second is asked whether they joined before, and may join anyway.
+  // One student, two devices, one account: the second device finds the record the first one made.
   const codes: string[] = [];
+  let email = "";
   for (const second of [false, true]) {
-    const student = await (await browser.newContext()).newPage();
+    const student = await (await browser.newContext({ extraHTTPHeaders: {} })).newPage();
+    if (second) expect((await student.request.post("/api/account/session", { data: { email, password: "e2e long enough" } })).status()).toBe(200);
+    else email = await withAccount(student, "Nino Twice");
     await student.goto(link.replace(/^https?:\/\/[^/]+/, ""));
-    await expect(student.getByLabel("Class code")).toHaveValue(code);
-    await student.getByLabel("Your number in the class list").fill("14");
-    await student.getByLabel("I understand and want to take part").check();
-    await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
-    if (second) {
-      await expect(student.locator(".practice-taken")).toContainText("Someone with number 14 has already joined");
-      await student.getByRole("button", { name: "It wasn't me: join" }).click();
+    if (!second) {
+      await expect(student.getByLabel("Class code")).toHaveValue(code);
+      await student.getByLabel("I understand and want to take part").check();
+      await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
     }
     const joined = student.locator(".practice-class strong.mono");
     await expect(joined).toContainText(/Student [A-Z0-9]{4}-[A-Z0-9]{4}/);
     codes.push((await joined.textContent())!.replace("Student ", "").trim());
   }
+  expect(codes[1]).toBe(codes[0]);
 
   await teacher.getByRole("button", { name: "Refresh" }).click();
   await teacher.getByRole("tab", { name: "Progress" }).click();
   const find = teacher.locator(".find-code");
   await find.locator("summary").click();
-  for (const c of codes) await expect(find.getByRole("row", { name: new RegExp(c) })).toContainText("Same number twice");
+  await expect(find.locator("tbody tr")).toHaveCount(1);
+  await expect(find.getByRole("row", { name: new RegExp(codes[0]) })).toContainText("Nino Twice");
 });
 
 test("a test written on paper is typed in on the teacher page, marked, and exported as paper", async ({ browser, request }) => {
@@ -184,12 +193,12 @@ test("after a wrong answer on fractions the student is asked what exactly was ha
   const headers = { "X-Teacher-Password": TEACHER };
   const { code } = await (await request.post("/api/classes", { data: { name: "Fractions", skills: ["fractions"] }, headers })).json();
   const student = await (await browser.newContext()).newPage();
+  await withAccount(student);
   const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
   await student.goto(`/#/b/${board.id}`);
   await openPractice(student);
   await student.locator(".practice-join summary").click();
   await student.getByLabel("Class code").fill(code);
-  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
   await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();
@@ -226,12 +235,12 @@ test("order of operations is made of ideas too: a wrong answer asks which of its
   const headers = { "X-Teacher-Password": TEACHER };
   const { code } = await (await request.post("/api/classes", { data: { name: "Order", skills: ["order"] }, headers })).json();
   const student = await (await browser.newContext()).newPage();
+  await withAccount(student);
   const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
   await student.goto(`/#/b/${board.id}`);
   await openPractice(student);
   await student.locator(".practice-join summary").click();
   await student.getByLabel("Class code").fill(code);
-  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
   await expect(student.getByText(/Chosen for you: Order of operations/)).toBeVisible();
@@ -261,12 +270,12 @@ test("a wrong answer on a fractions operation is worked in steps, and the steps 
   const headers = { "X-Teacher-Password": TEACHER };
   const { code } = await (await request.post("/api/classes", { data: { name: "Steps", skills: ["fractions"] }, headers })).json();
   const student = await (await browser.newContext()).newPage();
+  await withAccount(student);
   const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
   await student.goto(`/#/b/${board.id}`);
   await openPractice(student);
   await student.locator(".practice-join summary").click();
   await student.getByLabel("Class code").fill(code);
-  await student.getByLabel("Your number in the class list").fill("1");
   await student.getByLabel("I understand and want to take part").check();
   await student.locator(".practice-join").getByRole("button", { name: "Join" }).click();
   await expect(student.getByText(/Chosen for you: Fractions/)).toBeVisible();

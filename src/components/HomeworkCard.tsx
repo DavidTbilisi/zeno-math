@@ -27,7 +27,7 @@ export function HomeworkCard({ klass, data, api, t, lang, showCodes, onChanged }
   const [failed, setFailed] = useState<string | null>(null);
   const { open, study, rows } = data.homework;
   const students = new Map(data.students.map((s) => [s.id, s]));
-  const nameOf = (id: string) => studentName(id, students.get(id)?.number, showCodes ? students.get(id)?.code : undefined);
+  const nameOf = (id: string) => studentName(id, students.get(id), showCodes ? students.get(id)?.code : undefined);
   const skillName = (k: SkillId) => t.pracWords.skills[k];
   const ideaName = (idea: string) => (t.pracWords.ideas as Record<string, string>)[idea] ?? idea;
   const made = rows.length ? Math.max(...rows.map((r) => r.createdAt)) : null;

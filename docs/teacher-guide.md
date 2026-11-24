@@ -12,9 +12,10 @@ skill of a grade. The class gets a code, a join link and a QR code to show to th
 
 ## 2. Students join
 
-A student opens the join link or scans the QR code. The class code is already filled in; they type their number in
-the class list, agree to take part and press Join. They get a student code instead of a name, and their first
-question straight away. After **Refresh** the teacher sees them in the class and in the mastery table.
+A student opens the join link or scans the QR code. They make an account (their name, an email and a password), or
+sign in to the one they have. The class code is already filled in; they agree to take part and press Join, and their
+first question comes straight away. From then on signing in on any device brings their record back. After **Refresh**
+the teacher sees them in the class and in the mastery table, by name.
 
 [![A student joins on a phone and answers; the teacher sees them arrive](media/workflows/join.png)](media/workflows/join.mp4)
 

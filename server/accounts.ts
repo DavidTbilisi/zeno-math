@@ -14,6 +14,7 @@ import type { DatabaseSync } from "node:sqlite";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, FailureLimiter } from "./limiter.ts";
+import { normalizeCode } from "./codes.ts";
 import { mailSettings, sendMail } from "./mail.ts";
 import { mailLang, mailWords, type MailLang } from "./mailWords.ts";
 
@@ -165,6 +166,20 @@ function signedIn(req: IncomingMessage, db: DatabaseSync) {
   return session;
 }
 
+// ---------- the account's class record ----------
+
+/** A student as the browser keeps one (Student in src/learner.ts). */
+type StudentRow = { code: string; class: string; condition: string; feature: string; arm: string };
+/**
+ * The class record the account practises under (#606): the one it joined last. The students table is the class
+ * study's (research.ts), which gives each row its account; null for an account in no class.
+ */
+export const studentOf = (db: DatabaseSync, accountId: number): StudentRow | null =>
+  (stmt(db, `
+    SELECT s.code, s.class_code AS class, s.condition, c.feature, s.arm FROM students s JOIN classes c ON c.code = s.class_code
+    WHERE s.account_id = ? ORDER BY s.created_at DESC, s.id DESC LIMIT 1
+  `).get(accountId) as StudentRow | undefined) ?? null;
+
 // ---------- mailed links ----------
 
 /** A fresh link token for the account; an earlier one of the same kind stops working. Returns the token to mail. */
@@ -200,7 +215,8 @@ function mailLink(db: DatabaseSync, account: Account, kind: TokenKind, lang: Mai
 // there has signed in, as for the site password: limiter.ts); the per-email ones are what stops guessing at one account.
 const wrongByClient = new FailureLimiter(30, 10 * MINUTE);
 const wrongByEmail = new FailureLimiter(8, 10 * MINUTE, 10_000, 8);
-const signUps = new FailureLimiter(60, 60 * MINUTE, 10_000, 60);
+// A school's classes may all make their accounts in one lesson, from one address.
+const signUps = new FailureLimiter(300, 60 * MINUTE, 10_000, 300);
 const mailsByClient = new FailureLimiter(20, 60 * MINUTE, 10_000, 20);
 const mailsByEmail = new FailureLimiter(3, 60 * MINUTE, 10_000, 3);
 function limit(limiter: FailureLimiter, key: string) {
@@ -219,17 +235,23 @@ async function ownPassword(db: DatabaseSync, account: Account, given: unknown) {
 
 // ---------- routes ----------
 
-/** /api/account and /api/account/{session,reset,verify}; see docs/api.md, Accounts. */
-export async function handleAccount(req: IncomingMessage, res: ServerResponse, id: string | undefined, sub: string | undefined, db: DatabaseSync) {
+/**
+ * /api/account and /api/account/{session,reset,verify,student}; see docs/api.md, Accounts. recordsGone is called when
+ * class records were deleted with their account, for the class study to forget what it had learnt from them.
+ */
+export async function handleAccount(
+  req: IncomingMessage, res: ServerResponse, id: string | undefined, sub: string | undefined, db: DatabaseSync, recordsGone: () => void = () => {},
+) {
   if (sub !== undefined) return send(res, 404, { error: "not found" });
   const client = clientOf(req);
   const now = Date.now();
 
   if (id === undefined) {
-    // Who is signed in (null for nobody), and whether this server can mail a link for a forgotten password.
+    // Who is signed in (null for nobody) and the class record they practise under (null for none), and whether this
+    // server can mail a link for a forgotten password.
     if (req.method === "GET") {
       const account = accountOf(req, db);
-      return send(res, 200, { account: account && shown(account), mail: !!MAIL });
+      return send(res, 200, { account: account && shown(account), student: account && studentOf(db, account.id), mail: !!MAIL });
     }
     // A new account: { email, name, password, lang? }. Signed in at once; the mail to confirm the address follows.
     if (req.method === "POST") {
@@ -272,7 +294,13 @@ export async function handleAccount(req: IncomingMessage, res: ServerResponse, i
       const { account } = signedIn(req, db);
       const body = await readJson(req, MAX_BODY);
       await ownPassword(db, account, body.password);
-      stmt(db, "DELETE FROM accounts WHERE id = ?").run(account.id);
+      // The class records go too, with their answers, tests and boards (as "Delete my answers" does for one record).
+      const records = transaction(db, () => {
+        const gone = stmt(db, "DELETE FROM students WHERE account_id = ?").run(account.id).changes;
+        stmt(db, "DELETE FROM accounts WHERE id = ?").run(account.id);
+        return Number(gone);
+      });
+      if (records) recordsGone();
       setCookie(req, res, "", 0);
       return send(res, 204);
     }
@@ -360,6 +388,28 @@ export async function handleAccount(req: IncomingMessage, res: ServerResponse, i
     mailsByEmail.fail(account.email);
     mailLink(db, account, "verify", mailLang(body.lang));
     return send(res, 202, {});
+  }
+
+  if (id === "student") {
+    // A record from before the account, added to it by its code: { code }. From then on signing in brings it. A code
+    // that is another account's is refused, and so is a second record in a class the account is already in.
+    if (req.method !== "POST") return send(res, 405, { error: "method not allowed" });
+    const { account } = signedIn(req, db);
+    const body = await readJson(req, MAX_BODY);
+    const code = normalizeCode(body.code);
+    const result = transaction(db, () => {
+      const row = stmt(db, "SELECT id, class_code AS class, account_id AS accountId FROM students WHERE code = ?").get(code) as
+        { id: number; class: string; accountId: number | null } | undefined;
+      if (!row) return 404;
+      if (row.accountId === account.id) return 200;
+      if (row.accountId !== null) return 409;
+      if (stmt(db, "SELECT 1 FROM students WHERE class_code = ? AND account_id = ?").get(row.class, account.id)) return 409;
+      stmt(db, "UPDATE students SET account_id = ? WHERE id = ?").run(account.id, row.id);
+      return 200;
+    });
+    if (result === 404) return send(res, 404, { error: "no such student code" });
+    if (result === 409) return send(res, 409, { error: "this code belongs to another account, or the account is already in its class" });
+    return send(res, 200, studentOf(db, account.id));
   }
 
   return send(res, 404, { error: "not found" });

@@ -90,7 +90,7 @@ export function MasteryHeatmap({ data, words, skillName, pct, showNumbers, showC
                 {skills.map((k) => cell(`${label} · ${words.groupMean}`, k, mean(k), k))}
               </tr>
               {students.map((s) => {
-                const who = studentName(s.id, s.number, showCodes ? s.code : undefined);
+                const who = studentName(s.id, s, showCodes ? s.code : undefined);
                 return (
                   <tr key={s.id}>
                     <th className="heat-name mono" scope="row">{who}</th>

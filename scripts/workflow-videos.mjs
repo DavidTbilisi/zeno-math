@@ -315,14 +315,20 @@ const SCENES = {
     await say(teacher, "The class is ready. A student opens the join link, or scans the QR code.", 2600);
     await say(teacher, "");
     await student.goto(BASE + `/#/join/${klass.code}`);
-    await student.getByLabel("Class code").waitFor();
+    const panel = student.locator(".practice-join");
+    await panel.getByRole("button", { name: "Create an account" }).first().waitFor();
+    await say(student, "Joining takes an account: a name, an email and a password.", 1500);
+    await click(student, panel.getByRole("button", { name: "Create an account" }).first());
+    await type(student, panel.getByLabel("Name"), "Nino Kapanadze", 70);
+    await type(student, panel.getByLabel("Email"), `nino${Date.now() % 100000}@school.example`, 45);
+    await type(student, panel.getByLabel("Password", { exact: true }), "nine green apples", 60);
+    await click(student, panel.getByRole("button", { name: "Create an account" }).last(), { hold: 900 });
+    await panel.getByLabel("Class code").waitFor();
     await say(student, "The class code is already filled in.", 1500);
-    await say(student, "Type your number in the class list.", 300);
-    await type(student, student.getByLabel("Your number in the class list"), "12", 160);
     await say(student, "Read what is kept, and agree.", 900);
     await click(student, student.getByLabel("I understand and want to take part"));
-    await click(student, student.locator(".practice-join").getByRole("button", { name: "Join" }), { hold: 1200 });
-    await say(student, "Joined. Each student gets a code of their own instead of a name.", 2200);
+    await click(student, panel.getByRole("button", { name: "Join" }), { hold: 1200 });
+    await say(student, "Joined. Signing in on any device now brings this record back.", 2200);
     await say(student, "The first question is chosen for them.", 900);
     await answerRight(student, r);
     await say(student, "Right first time. They say how it felt, and go on.", 600);
@@ -333,7 +339,7 @@ const SCENES = {
     await click(teacher, teacher.getByRole("button", { name: "Refresh" }), { hold: 1200 });
     await point(teacher, teacher.locator(".class-head-name .small"), 1800);
     await click(teacher, teacher.getByRole("tab", { name: "Progress" }), { hold: 700 });
-    await say(teacher, "Their answer is already in the mastery table, under their number.", 300);
+    await say(teacher, "Their answer is already in the mastery table, under their name.", 300);
     await point(teacher, mastery(teacher), 2800);
   },
 

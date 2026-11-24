@@ -99,8 +99,8 @@ Every picture is generated and stays editable: double-click it to change the num
 
 ## For classes
 
-A teacher makes a class at `#/teacher`; students join with a code (no names or emails), practise on their own
-level, and the teacher sees who is stuck and why. Zeno can also run a study that compares adaptive practice with a
+A teacher makes a class at `#/teacher`; students make an account, join with the class code, practise on their own
+level on any device, and the teacher sees who is stuck and why. Zeno can also run a study that compares adaptive practice with a
 fixed sequence, with pre-, post- and delayed tests. See [docs/study.md](docs/study.md).
 
 [![A student joins a class on a phone while the teacher watches](docs/media/workflows/join.png)](docs/teacher-guide.md)

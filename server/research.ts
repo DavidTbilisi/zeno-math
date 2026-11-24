@@ -1,6 +1,8 @@
 // Learner records for the class studies: classes, each testing one feature (src/model/arms.ts), students randomised to
-// the arm with it or without it, and one row for each practice question a student works on. No names or emails are kept: a student is a code they write down. Exports name
-// students by a number ("s17") instead, so a published data set can't be used to sign in.
+// the arm with it or without it, and one row for each practice question a student works on. A student is a code; one who
+// joined signed in to an account (accounts.ts, issue #606) belongs to it, and the teacher's page shows the account's name.
+// Neither the name nor the email is ever exported: exports name students by a number ("s17"), so a published data set
+// says nothing of who they are and can't be used to sign in.
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
 import { randomInt, timingSafeEqual } from "node:crypto";
@@ -27,6 +29,8 @@ import { initPredictions, recordPrediction } from "./predictions.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
+import { accountOf, initAccounts } from "./accounts.ts";
+import { CLASS_LEN, normalizeCode, randomCode, STUDENT_LEN } from "./codes.ts";
 import { PICK_CODES } from "../src/model/pickCodes.ts";
 import { judgeBreak, mark, markCount, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
 import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordPaperTest, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
@@ -54,16 +58,7 @@ const MAX_ANSWERS = 50;
 const MAX_INPUT = 200;
 const DAY = 24 * 60 * 60 * 1000;
 
-// No 0/O, 1/I/L: codes are read off paper and typed in by children.
-const ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
-const randomCode = (n: number) => Array.from({ length: n }, () => ALPHABET[randomInt(ALPHABET.length)]).join("");
-const STUDENT_LEN = 8;
-const CLASS_LEN = 6;
-/** Upper case, without spaces and dashes; a student code is shown as XXXX-XXXX. */
-export function normalizeCode(value: unknown): string {
-  const raw = String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-  return raw.length === STUDENT_LEN ? `${raw.slice(0, 4)}-${raw.slice(4)}` : raw;
-}
+export { normalizeCode };
 
 export function initResearch(db: DatabaseSync) {
   db.exec("PRAGMA foreign_keys = ON");
@@ -160,6 +155,11 @@ export function initResearch(db: DatabaseSync) {
   // The roadmap the teacher picked for the class (#461): its students' site opens on it until they choose their own.
   // NULL: no goal.
   add("classes", "goal", "TEXT");
+  // Whose record it is, for a student who joined signed in or added their code to their account (#606); NULL: a code
+  // alone, as every student was before accounts. An account deleted without its records leaves them as codes.
+  initAccounts(db);
+  add("students", "account_id", "INTEGER REFERENCES accounts(id) ON DELETE SET NULL");
+  db.exec("CREATE INDEX IF NOT EXISTS students_account ON students(account_id)");
   stmt(db, "UPDATE students SET arm = CASE condition WHEN 'fixed' THEN 'off' ELSE 'on' END WHERE arm IS NULL").run();
   stmt(db, `UPDATE classes SET block = replace(replace(block, '"adaptive"', '"on"'), '"fixed"', '"off"') WHERE block LIKE '%"adaptive"%' OR block LIKE '%"fixed"%'`).run();
   initProtocol(db);
@@ -268,7 +268,7 @@ export const currentStepDown = (db: DatabaseSync, studentId: number): StepDown =
 /** A student's runs of right answers to a worked answer to judge (breaks.ts), and the skill of the one due. */
 export const currentBreaks = (db: DatabaseSync, studentId: number): Breaks => replay(db).breaks.get(studentId) ?? noBreaks();
 /** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
-const forgetModel = (db: DatabaseSync) => replays.delete(db);
+export const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
 function teacher(req: IncomingMessage) {
   if (!TEACHER_PASSWORD) return;
@@ -310,8 +310,8 @@ export function boardUser(req: IncomingMessage, db: DatabaseSync): BoardUser {
 /** A class's students' boards, for the teacher to open (read only). */
 export const classBoards = (db: DatabaseSync, klass: string) =>
   stmt(db, `
-    SELECT b.id, b.title, b.created_at AS createdAt, b.updated_at AS updatedAt, 's' || s.id AS student, s.list_no AS number
-    FROM boards b JOIN students s ON s.id = b.student_id WHERE s.class_code = ? ORDER BY b.updated_at DESC
+    SELECT b.id, b.title, b.created_at AS createdAt, b.updated_at AS updatedAt, 's' || s.id AS student, s.list_no AS number, a.name
+    FROM boards b JOIN students s ON s.id = b.student_id LEFT JOIN accounts a ON a.id = s.account_id WHERE s.class_code = ? ORDER BY b.updated_at DESC
   `).all(normalizeCode(klass));
 
 function shuffled<T>(items: readonly T[]): T[] {
@@ -607,11 +607,19 @@ export async function handleResearch(
       const body = await readJson(req, MAX_ATTEMPT_BODY);
       const classCode = normalizeCode(body.class);
       const listNo = parseListNo(body.number);
+      // Signed in, the record is the account's: the name tells the student apart, and joining the same class again
+      // (another device, a second click) gives the record they have, never a second one in the other arm.
+      const account = accountOf(req, db);
       // One transaction: the arm leaves the block and the student is stored together, or neither is. (node:sqlite is
       // synchronous, so nothing else runs in between anyway.)
       const joined = transaction(db, () => {
         const klass = stmt(db, "SELECT code, block, feature FROM classes WHERE code = ?").get(classCode) as { code: string; block: string; feature: Feature } | undefined;
         if (!klass) return null;
+        if (account) {
+          const mine = stmt(db, "SELECT code, condition, arm FROM students WHERE class_code = ? AND account_id = ? ORDER BY id LIMIT 1").get(klass.code, account.id) as
+            { code: string; condition: Condition; arm: Arm } | undefined;
+          if (mine) return { again: true as const, code: mine.code, class: klass.code, condition: mine.condition, feature: klass.feature, arm: mine.arm };
+        }
         // Someone in the class already gave this number: most likely the same student on another device, who would
         // split their record (and could land in the other arm). Joined again only when they say it isn't them.
         if (listNo !== null && body.again !== true && stmt(db, "SELECT 1 FROM students WHERE class_code = ? AND list_no = ?").get(klass.code, listNo))
@@ -624,12 +632,17 @@ export async function handleResearch(
         while (findStudent(code)) code = randomCode(STUDENT_LEN);
         code = normalizeCode(code);
         stmt(db, "UPDATE classes SET block = ? WHERE code = ?").run(JSON.stringify(block), klass.code);
-        stmt(db, "INSERT INTO students (code, class_code, condition, arm, test_order, list_no, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
-          .run(code, klass.code, condition, arm, nextTestOrder(db, klass.code, arm), listNo, Date.now());
+        stmt(db, "INSERT INTO students (code, class_code, condition, arm, test_order, list_no, account_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+          .run(code, klass.code, condition, arm, nextTestOrder(db, klass.code, arm), listNo, account?.id ?? null, Date.now());
         return { code, class: klass.code, condition, feature: klass.feature, arm };
       });
       if (joined === "taken") return send(res, 409, { error: "a student in this class already gave that number" });
-      return joined ? send(res, 201, joined) : send(res, 404, { error: "no such class" });
+      if (!joined) return send(res, 404, { error: "no such class" });
+      if ("again" in joined) {
+        const { again: _again, ...student } = joined;
+        return send(res, 200, student);
+      }
+      return send(res, 201, joined);
     }
     if (!id) return send(res, 405, { error: "method not allowed" });
     const student = findStudent(decodeURIComponent(id));

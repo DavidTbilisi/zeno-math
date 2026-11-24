@@ -9,13 +9,17 @@ chapter plan for the thesis in [thesis/outline.md](thesis/outline.md).
 Zeno can record practice for a study that tests one feature of practice in a class. The study it was built for
 compares ways of choosing exercises (an adaptive learner model against a fixed sequence). A teacher makes a class and
 picks what it tests; students join it in the Practice dialog with the class code, or open the class's join link
-(`#/join/<code>`, shown on the teacher page with a QR code for the board), which fills the code in. Each student is
-given a student code to write down (it brings their record back on any device) and is assigned an arm at random, with
-the feature or without it, in blocks of four, so every class is split two-and-two as it fills. Only the codes are
-stored: no names or emails. A student also gives their number in the class list. Only the teacher page shows it, and
-the exports leave it out: a student who loses their code gets it back from the teacher by that number ("find a
-student's code"), and one who gives a number already in the class is asked whether they joined before, instead of
-being given a second record that would split their answers and could put them in the other arm.
+(`#/join/<code>`, shown on the teacher page with a QR code for the board), which fills the code in. Joining takes an
+account (issue #606): an email, a name and a password. The record belongs to the account, so signing in on any device
+brings it back, and joining the same class twice gives the same record rather than a second one that would split the
+answers and could land in the other arm. Each student is assigned an arm at random, with the feature or without it, in
+blocks of four, so every class is split two-and-two as it fills.
+
+The teacher page shows the account's name beside each student. The name and the email are for the teacher and for
+signing in only: no export holds either, and the data knows a student as `s17`. The consent text a student agrees to
+says so. Students who joined before accounts have a student code and, for the teacher to find a lost one, their
+number in the class list; they keep both, come back with the code as before, and add it to an account once they make
+one ("That was me" when signing in on the browser that holds the code, or the code typed into the join panel).
 
 **What a class can test** (`src/model/arms.ts`, issue #268):
 

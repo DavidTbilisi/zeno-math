@@ -661,7 +661,9 @@ input.invalid { border-color: var(--danger); }
 .practice-join[open] summary { margin-bottom: 6px; }
 .practice-class input { flex: 1; min-width: 0; }
 .practice-class input[type="checkbox"] { flex: none; }
-.practice-taken { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+.practice-account { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+.practice-account p { margin: 0; }
+.practice-account .acct-form { gap: 12px; }
 .practice-consent { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
 .practice-consent ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
 
@@ -1642,6 +1644,9 @@ span.board-home:hover { background: none; }
 .acct-field.bad input:not([type="checkbox"]) { border-color: var(--danger); }
 .acct-field small { font-size: 0.8125rem; }
 .acct-show { font-size: 0.875rem; color: var(--z-graphite); }
+.acct-here { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 12px 14px; border: 2px solid var(--border); border-radius: 8px; }
+.acct-here.bad { border-color: var(--danger); }
+.acct-here legend { padding: 0 6px; font-size: 0.875rem; font-weight: 700; }
 .acct-go { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
 .acct-link { padding: 0; border: 0; background: none; color: var(--z-graphite); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
 .acct-link:hover { color: var(--z-ink); }

@@ -7,7 +7,7 @@
 // tabs: Today (the protocol's steps, who is stuck, who rushes), Progress (the class on each topic, mastery by skill),
 // Homework, and Study (the arms, the tests, paper answers, calibration).
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { api as boardApi, ApiError, studentName, teacherApi, type ClassBoard, type ClassSummary, type Dashboard } from "../api";
+import { api as boardApi, ApiError, studentName, teacherApi, type ClassBoard, type ClassSummary, type Dashboard, type Who } from "../api";
 import { Countdown } from "../components/Countdown";
 import { HeatLegend, MasteryHeatmap } from "../components/MasteryHeatmap";
 import { StuckList } from "../components/StuckList";
@@ -127,7 +127,7 @@ export function TeacherPage() {
   const [opening, setOpening] = useState(false);
   const tw = t.site.teach;
   const api = useMemo(() => teacherApi(password), [password]);
-  const numbers = useMemo(() => new Map(data?.students.map((r) => [r.id, r.number]) ?? []), [data]);
+  const numbers = useMemo(() => new Map<string, Who>(data?.students.map((r) => [r.id, { number: r.number, name: r.name }]) ?? []), [data]);
 
   const pct = useMemo(() => {
     const f = new Intl.NumberFormat(lang, { style: "percent", maximumFractionDigits: 0 });
@@ -780,7 +780,7 @@ function ClassGoalCard({ klass, data, api, pct, showCodes, onChanged }: {
         <ul className="class-goal-list">
           {data.students.map((s, n) => (
             <li key={s.id}>
-              <span className="class-goal-who">{studentName(s.id, s.number, showCodes ? s.code : undefined)}</span>
+              <span className="class-goal-who">{studentName(s.id, s, showCodes ? s.code : undefined)}</span>
               <Track p={{ done: road.done[n], behind: 0, total: road.total }} />
               <span className="class-goal-count">{fill(tw.goalCount, { done: road.done[n], total: road.total })}</span>
             </li>
@@ -812,7 +812,7 @@ function StudentBoards({ code, api, w }: { code: string; api: ReturnType<typeof 
         <ul className="student-board-list">
           {boards.map((b) => (
             <li key={b.id}>
-              <a href={`#/b/${b.id}`}>{b.title}</a> <span className="muted small">{studentName(b.student, b.number)}</span>
+              <a href={`#/b/${b.id}`}>{b.title}</a> <span className="muted small">{studentName(b.student, b)}</span>
             </li>
           ))}
         </ul>
@@ -828,7 +828,7 @@ function StudentBoards({ code, api, w }: { code: string; api: ReturnType<typeof 
  */
 function FindCode({ students, w }: { students: Dashboard["students"]; w: Dict["teacher"] }) {
   const twice = new Set(students.map((r) => r.number).filter((n, i, all) => n !== null && all.indexOf(n) !== i));
-  const sorted = [...students].sort((a, b) => (a.number ?? Infinity) - (b.number ?? Infinity));
+  const sorted = [...students].sort((a, b) => (a.number ?? Infinity) - (b.number ?? Infinity) || (a.name ?? "").localeCompare(b.name ?? ""));
   return (
     <details className="card find-code">
       <summary><h3>{w.findCode}</h3></summary>
@@ -837,6 +837,7 @@ function FindCode({ students, w }: { students: Dashboard["students"]; w: Dict["t
         <thead>
           <tr>
             <th scope="col">{w.listNo}</th>
+            <th scope="col">{w.studentNameCol}</th>
             <th scope="col">{w.studentCode}</th>
             <th scope="col">{w.answers}</th>
             <th scope="col" />
@@ -846,6 +847,7 @@ function FindCode({ students, w }: { students: Dashboard["students"]; w: Dict["t
           {sorted.map((r) => (
             <tr key={r.id}>
               <th scope="row">{r.number ?? "—"}</th>
+              <td>{r.name ?? "—"}</td>
               <td className="mono">{r.code}</td>
               <td>{r.answered}</td>
               <td className="hint">{r.number !== null && twice.has(r.number) ? w.sameNumber : ""}</td>

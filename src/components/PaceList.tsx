@@ -1,13 +1,13 @@
 // A change of pace on the teacher page (issue #63, src/model/pace.ts): students whose last five timed answers came at least
 // twice as fast, or as slow, as their own pace before. Shown only when somebody has one; the faster ones come first.
 import type { Dashboard } from "../../server/dashboard";
-import { studentName } from "../api";
+import { studentName, type Who } from "../api";
 import type { Dict } from "../locales/en";
 import { fill } from "../math/text";
 
 export function PaceList({ pace, numbers, t, showCodes }: {
   pace: Dashboard["pace"];
-  numbers: ReadonlyMap<string, number | null>;
+  numbers: ReadonlyMap<string, Who>;
   t: Dict;
   showCodes: boolean;
 }) {

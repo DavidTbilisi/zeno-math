@@ -70,8 +70,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
     { code: string; name: string; skills: string | null; feature: Feature; createdAt: number } | undefined;
   if (!klass) return null;
   const skills: SkillId[] = klass.skills ? JSON.parse(klass.skills) : [...CURRICULUM];
-  const students = stmt(db, "SELECT id, code, arm, condition, list_no FROM students WHERE class_code = ? ORDER BY id").all(classCode) as
-    { id: number; code: string; arm: Arm; condition: string; list_no: number | null }[];
+  const students = stmt(db, "SELECT s.id, s.code, s.arm, s.condition, s.list_no, a.name FROM students s LEFT JOIN accounts a ON a.id = s.account_id WHERE s.class_code = ? ORDER BY s.id")
+    .all(classCode) as { id: number; code: string; arm: Arm; condition: string; list_no: number | null; name: string | null }[];
   const attempts = classAttempts(db, classCode);
 
   const model = currentModel(db);
@@ -102,6 +102,8 @@ export function dashboard(db: DatabaseSync, classCode: string) {
       code: s.code,
       /** The student's number in the class list, if they gave one (for the teacher only: never exported). */
       number: s.list_no,
+      /** The name on the student's account, if they joined with one (#606; for the teacher only: never exported). */
+      name: s.name,
       arm: s.arm,
       condition: s.condition,
       answered: mine.length,
