@@ -335,6 +335,11 @@ export type PracticeWords = {
     when: Record<"always" | "sometimes" | "never", string>;
     family: Record<"squareRect" | "squareRhombus" | "rectPara" | "rhombusPara" | "equiIso" | "rectSquare" | "rhombusSquare" | "paraRect" | "paraRhombus" | "isoEqui" | "rightObtuse" | "twoRight", { s: string; why: string }>;
   };
+  /** Angles on parallel lines (parallelAngles): the prompts and the names of the pairs. */
+  parAngles: {
+    cross: string; rightSplit: string; compOf: string; suppOf: string; find: string; name: string; ext: string; extIn: string; solveX: string; bend: string; through: string;
+    pairs: Record<"vertical" | "line" | "corresponding" | "alternate" | "coInterior", string>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

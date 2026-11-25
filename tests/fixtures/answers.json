@@ -19994,6 +19994,227 @@
       "seed": 9,
       "input": "never",
       "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 1,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 1,
+      "input": "105",
+      "label": "wrong",
+      "mistake": "complementSupplementSwapped"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 1,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 2,
+      "input": "146",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 2,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "complementSupplementSwapped"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 2,
+      "input": "153",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 7,
+      "input": "35",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 7,
+      "input": "145",
+      "label": "wrong",
+      "mistake": "equaledSupplement"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 7,
+      "input": "42",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 17,
+      "input": "65",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 17,
+      "input": "155",
+      "label": "wrong",
+      "mistake": "complementSupplementSwapped"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 1,
+      "seed": 17,
+      "input": "72",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 2,
+      "seed": 1,
+      "input": "115",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 2,
+      "seed": 1,
+      "input": "65",
+      "label": "wrong",
+      "mistake": "supplementedEqual"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 2,
+      "seed": 1,
+      "input": "122",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 2,
+      "seed": 5,
+      "input": "corresponding",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 2,
+      "seed": 5,
+      "input": "alternate",
+      "label": "wrong",
+      "mistake": "pairMisnamed"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 2,
+      "seed": 5,
+      "input": "co-interior",
+      "label": "wrong",
+      "mistake": "pairMisnamed"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 1,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 1,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "supplementedEqual"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 1,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 2,
+      "input": "74",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 2,
+      "input": "106",
+      "label": "wrong",
+      "mistake": "bendAsTriangle"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 2,
+      "input": "81",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 7,
+      "input": "79",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 7,
+      "input": "69",
+      "label": "wrong",
+      "mistake": "exteriorIsInterior"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 7,
+      "input": "86",
+      "label": "wrong"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 15,
+      "input": "101",
+      "label": "correct"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 15,
+      "input": "79",
+      "label": "wrong",
+      "mistake": "exteriorIsInterior"
+    },
+    {
+      "skill": "parallelAngles",
+      "level": 3,
+      "seed": 15,
+      "input": "108",
+      "label": "wrong"
     }
   ]
 }
