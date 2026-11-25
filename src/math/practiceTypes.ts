@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Polynomial graphs (polyGraph): prompts and options. */
+  qpg: { sumQ: string; endsQ: string; upUp: string; downDown: string; downUp: string; upDown: string; touchQ: string; crosses: string; touches: string; signQ: string; positive: string; negative: string; graphQ: string; turnsQ: string; boxQ: string; };
   /** Quadratic graphs (quadraticGraph): prompts. */
   qgr: { rootQ: string; axisQ: string; interceptQ: string; squareQ: string; leastAtQ: string; fromGraphQ: string; rootsQ: string; ballQ: string; };
   /** Exponential growth and decay (exponential): prompts, options and steps. */

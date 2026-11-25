@@ -70,6 +70,7 @@ import { SECANT_START, type LiveSecantRate } from "./readFunction";
 import { TESTPOINTS_START, type LiveTestPoints } from "./regions";
 import { GROWTH_START, type LiveGrowthRace } from "./exponential";
 import { SQUARE_START, type LiveCompleteSquare } from "./quadraticGraph";
+import { POLY_START, type LivePolyShape } from "./polyGraph";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -650,6 +651,7 @@ export type LiveStates = {
   testPoints: LiveTestPoints;
   growthRace: LiveGrowthRace;
   completeSquare: LiveCompleteSquare;
+  polyShape: LivePolyShape;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -808,6 +810,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   testPoints: [700, 500],
   growthRace: [700, 490],
   completeSquare: [700, 500],
+  polyShape: [700, 490],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -968,6 +971,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     testPoints: TESTPOINTS_START,
     growthRace: GROWTH_START,
     completeSquare: SQUARE_START,
+    polyShape: POLY_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

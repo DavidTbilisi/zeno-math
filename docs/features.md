@@ -1134,6 +1134,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     root's sign kept, the square added instead of taken away and b not halved. The piece *Make it a square* (Insert →
     Algebra → Functions, grades 8–10): tap the x strips of x² + bx + c onto two sides of the x² square, fill the
     missing corner of (b/2)² small squares, and read (x + b/2)² + c − (b/2)² and the least value
+  - Polynomial graphs (grades 10 and 12; #659): the zeros from the factorised form and the two ends from the degree
+    and the leading sign; then cross or touch at a zero and the sign between zeros; then the equation of a drawn
+    graph, the most turning points and, in a new setting, the cuts that make a real open box. Ten slips are named,
+    among them a zero's sign kept, the ends by the leading sign alone and the sign changed at a squared zero. The
+    piece *Zeros and ends* (Insert → Algebra → Functions, grades 10–12): tap the zeros at −3, 0 and 2 to raise their
+    powers and the leading sign to turn the graph over; odd powers cross, even ones touch, and arrows show the ends
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

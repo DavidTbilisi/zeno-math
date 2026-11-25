@@ -55,6 +55,7 @@ import readFunction from "./readFunction";
 import regions from "./regions";
 import exponential from "./exponential";
 import quadraticGraph from "./quadraticGraph";
+import polyGraph from "./polyGraph";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -330,6 +331,7 @@ export const GENS: Record<SkillId, Gen> = {
   regions,
   exponential,
   quadraticGraph,
+  polyGraph,
   stackedFractions,
   ratio,
   rate,

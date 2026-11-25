@@ -1148,5 +1148,15 @@ export const MISTAKES = [
   "discriminantPlus",
   "maxTimeForHeight",
   "startHeightLeft",
+  "zeroSignKept",
+  "endsByLeadingOnly",
+  "endsByDegreeOnly",
+  "touchAsCross",
+  "crossAsTouch",
+  "multiplicityDropped",
+  "signBetweenWrong",
+  "turningPointsDegree",
+  "positiveNotReal",
+  "widthLimitMissed",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
