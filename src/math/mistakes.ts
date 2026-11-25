@@ -1263,5 +1263,14 @@ export const MISTAKES = [
   "netAsTotal",
   "totalAsNet",
   "rectangleForTriangle",
+  "xySwapped",
+  "fieldAxisSwapped",
+  "linearForExponential",
+  "constantNotFitted",
+  "equilibriumSign",
+  "constantAddedFreely",
+  "capacityInverted",
+  "fastestAtCapacity",
+  "logisticAsExponential",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

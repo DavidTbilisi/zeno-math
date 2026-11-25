@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Slope fields, exponential and logistic models (slopeFields): prompts and options. */
+  qsf: { slopeQ: string; rowsQ: string; colsQ: string; growQ: string; equilQ: string; checkQ: string; yes: string; no: string; capacityQ: string; fastestQ: string; lakeQ: string; };
   /** Accumulation and the fundamental theorem (accumulation): prompts and options. */
   qac: { tableLeftQ: string; tableRightQ: string; overQ: string; increasing: string; decreasing: string; leftKind: string; rightKind: string; tooMuch: string; tooLittle: string; midQ: string; ftcQ: string; chainQ: string; netQ: string; averageQ: string; distanceQ: string; displacementQ: string; brakeQ: string; };
   /** Derivatives in context (derivContext): prompts and options. */
