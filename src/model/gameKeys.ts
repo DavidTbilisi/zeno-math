@@ -24,6 +24,7 @@ export const GAME_KEYS = {
   shadeFrac: "zeno.shadefrac.v1",
   fractionWall: "zeno.fractionwall.v1",
   equivMatch: "zeno.equivmatch.v1",
+  shapeSort: "zeno.shapesort.v1",
   fracOrder: "zeno.fracorder.v1",
   stripes: "zeno.stripes.v1",
   foldStrip: "zeno.foldstrip.v1",

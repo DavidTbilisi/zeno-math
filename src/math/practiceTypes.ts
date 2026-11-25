@@ -326,6 +326,15 @@ export type PracticeWords = {
   decTimes: { placePoint: string; moreOrLess: string; more: string; less: string; ribbon: string; jug: string };
   /** Fractions before grade 6 (fractionSums): a division as a fraction, a fraction of a number, three stories. */
   fracSums: { asFraction: string; of: string; pizzas: string; cake: string; servings: string };
+  /** Shapes by their properties (shapeKinds): the prompts, the names of shapes and kinds, and the family sentences. */
+  shapes: {
+    sides: string; corners: string; name: string; faces: string; edges: string; vertices: string; angleKind: string; lines: string; lineKind: string;
+    bySides: string; byAngles: string; familyPrompt: string; exact: string; namesFit: string;
+    names: Record<"triangle" | "square" | "rectangle" | "pentagon" | "hexagon" | "octagon" | "circle" | "quadrilateral" | "parallelogram" | "rhombus" | "cube" | "cuboid" | "cylinder" | "cone" | "sphere" | "pyramid" | "prism", string>;
+    kinds: Record<"acute" | "right" | "obtuse" | "parallel" | "perpendicular" | "crossing" | "line" | "ray" | "segment" | "equilateral" | "isosceles" | "scalene" | "acuteTri" | "rightTri" | "obtuseTri", string>;
+    when: Record<"always" | "sometimes" | "never", string>;
+    family: Record<"squareRect" | "squareRhombus" | "rectPara" | "rhombusPara" | "equiIso" | "rectSquare" | "rhombusSquare" | "paraRect" | "paraRhombus" | "isoEqui" | "rightObtuse" | "twoRight", { s: string; why: string }>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

@@ -21,6 +21,7 @@ import { GateRun } from "./GateRun";
 import { JoinUp } from "./JoinUp";
 import { LongDivision } from "./LongDivision";
 import { EquivMatch } from "./EquivMatch";
+import { ShapeSort } from "./ShapeSort";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -169,6 +170,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   joinProduct: JoinUp,
   fractionWall: FractionWall,
   equivMatch: EquivMatch,
+  shapeSort: ShapeSort,
   fracOrder: FracOrder,
   shadeFrac: ShadeGame,
   stripes: Stripes,

@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "ordinals", "skipCount", "shapePatterns", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "columnSums", "longDivide", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractionSums", "fractions", "decimals", "decimalTimes", "percent", "convert", "stackedFractions", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "currency", "inflation", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "ordinals", "skipCount", "shapePatterns", "shapeKinds", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "columnSums", "longDivide", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractionSums", "fractions", "decimals", "decimalTimes", "percent", "convert", "stackedFractions", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "currency", "inflation", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
@@ -28,6 +28,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   areaPerimeter: ["shapeArea"],
   symmetryLines: ["shapeArea"],
   estimateAngle: ["compare"],
+  shapeKinds: ["compare"],
   cubeNets: ["shapeArea"],
   missingAngle: ["estimateAngle", "integers"],
   triangleInequality: ["missingAngle"],
@@ -329,6 +330,7 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
   estimateAngle: [3, 4, 5], // about a right angle, in degrees, angles at a point
   missingAngle: [5, 5, null], // on a line, at a point, in a triangle; any quadrilateral
   symmetryLines: [4, 4, 4],
+  shapeKinds: [1, 4, 5], // flat and solid shapes named, sides, corners and faces counted (P1–2); angles, lines, triangles named (P4); the family of quadrilaterals, always, sometimes or never (P5)
   cubeNets: [4, 4, 4],
   readChart: [3, 3, 3], // bar graphs and their scales
   diagrams: [2, 4, 6], // picture graphs (P2), line graphs (P4), pie charts and stem-and-leaf plots (P6)

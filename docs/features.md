@@ -965,6 +965,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     angle, then around a point or in a triangle, then an isosceles triangle's base angle from its top one, or a
     quadrilateral's last angle. The wrong total (360° for a line, 180° for a whole turn) and an isosceles triangle's
     two base angles not shared out are named; the worked solution draws the figure with the angle filled in
+  - Shapes and their properties (grades 1, 4 and 5; #639): flat shapes and solids named and the sides and corners
+    of a polygon counted, the faces, edges and corners of a cube, cuboid, pyramid or prism; then angles (acute, right,
+    obtuse), a line, a ray or a segment, two lines parallel, perpendicular or crossing, and triangles named by their
+    sides (lengths written on them) and by their angles (written in the corners); then the family of quadrilaterals,
+    turned any way and marked with what is true of them (ticks on equal sides, arrows on parallel ones, squares in
+    right angles): the name that says the most, how many of quadrilateral, parallelogram, rectangle, rhombus and square
+    fit, and whether a sentence such as "a square is a rectangle" is true always, sometimes or never. A solid called
+    by its face, the faces at the back left out, acute and obtuse swapped, any crossing taken for perpendicular, two
+    equal sides missed, a triangle named by one of its acute angles, the names taken to shut each other out, one
+    example taken for always, a wider name for the most exact one and only one name for a shape are named
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked
@@ -1670,7 +1680,7 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   **Practice** by area and **Games**, apart from the tools, by the sense each builds: number sense (estimation, quick
   look, make the target, closer to?, divisible by?, prime slice, Kakooma), fraction sense (make a whole, equal amounts, fractions on the line, shade the
   fraction), algebra sense (balance the scales, guess my rule, growing patterns, equal expressions), which tool? (word problems, fractions, equations, quadratics), find the crux (word problems, equations), shape sense
-  (the geoboard, guess the angle, missing angles, lines of symmetry, cube nets) and graphs & charts (plot the point, make
+  (the geoboard, guess the angle, missing angles, lines of symmetry, sort the shapes, cube nets) and graphs & charts (plot the point, make
   the bar chart, graph stories, draw the gradient) and graph sense (one stroke, colour the graph, shortest route,
   connect the towns) and algorithm sense (be the sort, be the search, be the DP, be the binary search, be the two pointers, be the sliding window, be the backtracking, be the topological sort, name the pattern) and data structure sense (be the heap, be the tree, be the monotonic stack, be the union-find) and system design sense (be the cache, be the load balancer, be the hash ring, be the rate limiter, be the replicas, be the message queue, name the component). In the Shapes tab the games are a group of their own, before the live
   pieces
@@ -1911,6 +1921,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     random. Each piece and outline is a set of quarter cells (grid squares cut by their diagonals), so the check is
     exact. "Why?" steps through the full turn, the angle of a regular polygon, mixed points and area with pictures.
     Four discoveries (only three tile alone, a full turn at every point, area kept by moving, ten in a row)
+  - *Sort the shapes*: two overlapping rings, each asking one thing of a shape (four sides; all sides equal; four
+    right angles; two pairs of parallel sides; a right angle), and a row of six shapes with their marks; tap a shape,
+    then a ring, the middle where they overlap, or outside. A shape put wrong goes back to the row. The middle fills
+    with the shapes that have both, so the rule is found by hand: a square is a rectangle and a rhombus at once.
+    Nine boards over three pairs of rings, no misses for three stars; four discoveries (no misses, under 30 seconds,
+    into the middle first time, ten in a row)
   - *Lines of symmetry*: a shape with six or more lines through its middle, the diagonals among them; tap every line
     it folds onto itself along (none is an answer too), then check. A line chosen wrongly turns red with the shape
     folded over it, dashed, so the halves can be seen not to meet. Right at the first check earns three stars. Four

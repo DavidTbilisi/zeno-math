@@ -381,7 +381,7 @@ test("the practice page finds the learner's grade by halving, then practises it,
     await page.getByRole("button", { name: "Next →" }).click();
   }
   await expect(card).toContainText("You are in grade 1");
-  await expect(card).toContainText("0 of 16 levels secure");
+  await expect(card).toContainText("0 of 17 levels secure");
   await expect(card.locator(".grade-ladder li.here")).toHaveText("1");
   // The grade's own practice: no topics to pick, and a way back to them.
   await expect(page.getByText("Practise grade 1")).toBeVisible();

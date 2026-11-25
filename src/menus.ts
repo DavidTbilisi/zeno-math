@@ -308,6 +308,7 @@ export const MENUS: MenuGroup[] = [
         title: "senseShape", items: [
           { live: "geoboard", icon: "⬠" },
           { live: "mirror", icon: "🦋" },
+          { live: "shapeSort", icon: "◎" },
           { live: "angleGuess", icon: "∠" },
           { live: "angleHunt", icon: "📐" },
           { live: "trigBuild", icon: "🪜" },
