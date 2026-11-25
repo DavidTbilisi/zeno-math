@@ -106,6 +106,7 @@ export const MENUS: MenuGroup[] = [
       {
         title: "secExpressions", items: [
           { live: "algebraTiles", icon: "▦" },
+          { live: "completeSquare", icon: "◰" },
           { kind: "formula", icon: "∑", label: "formula" },
           { kind: "algebra", icon: "⚖", label: "algebra" },
           { kind: "powers", icon: "xⁿ", label: "powers" },

@@ -1128,6 +1128,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     simple growth for compound, the hours used as half-lives and the yearly rate divided by 12. The piece *The
     growth race* (Insert → Algebra → Functions, grades 10–12): a plant adding 40 cm a day against one growing by
     10–50 % a day from 10 cm; drag the day and watch the multiplying plant's steps grow until it overtakes
+  - Quadratic graphs (grades 8 and 10; #658): a root, the axis of symmetry and the y-intercept from the factorised
+    form; then completing the square and where the least value is; then a from a graph, the number of roots by the
+    discriminant and, in a new setting, the greatest height of a thrown ball. Ten slips are named, among them the
+    root's sign kept, the square added instead of taken away and b not halved. The piece *Make it a square* (Insert →
+    Algebra → Functions, grades 8–10): tap the x strips of x² + bx + c onto two sides of the x² square, fill the
+    missing corner of (b/2)² small squares, and read (x + b/2)² + c − (b/2)² and the least value
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

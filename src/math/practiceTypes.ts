@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Quadratic graphs (quadraticGraph): prompts. */
+  qgr: { rootQ: string; axisQ: string; interceptQ: string; squareQ: string; leastAtQ: string; fromGraphQ: string; rootsQ: string; ballQ: string; };
   /** Exponential growth and decay (exponential): prompts, options and steps. */
   exg: { factorQ: string; linear: string; exponential: string; kindQ: string; sameRatio: string; sameDiff: string; bacteria: string; rumour: string; pointsQ: string; townQ: string; carQ: string; halfQ: string; logsQ: string; monthlyQ: string; contQ: string; };
   /** Inequalities in two variables (regions): prompts, options and steps. */

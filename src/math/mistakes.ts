@@ -1138,5 +1138,15 @@ export const MISTAKES = [
   "halvesDivided",
   "monthlyByDivide",
   "yearlyForContinuous",
+  "rootSignKept",
+  "axisNotHalved",
+  "interceptSignDropped",
+  "kAddsSquare",
+  "halfNotTaken",
+  "vertexSignKept",
+  "aFromIntercept",
+  "discriminantPlus",
+  "maxTimeForHeight",
+  "startHeightLeft",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
