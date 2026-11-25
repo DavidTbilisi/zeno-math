@@ -350,6 +350,12 @@ export type PracticeWords = {
     names: Record<"translation" | "reflection" | "rotation" | "enlargement", string>;
     tells: Record<"translation" | "reflection" | "rotation" | "enlargement", string>;
   };
+  /** Congruent triangles (congruence): the prompts, why each set of parts is or is not a test, and the proofs. */
+  congr: {
+    which: string; notEnough: string; side: string; angle: string; order: string;
+    why: Record<"SSS" | "SAS" | "ASA" | "AAS" | "RHS" | "SSA" | "AAA", string>;
+    proofs: Record<"iso" | "para" | "bisector", { claim: string; lines: string[]; wrong: string }>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
