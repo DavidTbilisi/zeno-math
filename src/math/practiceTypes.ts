@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Derivatives in context (derivContext): prompts and options. */
+  qdc: { teaQ: string; teaRight: string; teaValue: string; teaTotal: string; tankQ: string; tankRight: string; tankValue: string; tankTotal: string; velocityQ: string; speedingQ: string; up: string; down: string; linearQ: string; maxQ: string; minQ: string; boxQ: string; fenceQ: string; closedQ: string; };
   /** Continuity and limits from graphs (continuity): prompts and options. */
   qct: { tableQ: string; leftQ: string; existsQ: string; limitIs: string; noLimit: string; hole: string; jump: string; asymptote: string; none: string; kindQ: string; piecesQ: string; kQ: string; yes: string; noBreak: string; noSigns: string; noRising: string; ivtQ: string; wiggles: string; signsDiffer: string; brokenQ: string; breaks: string; swings: string; squeezeQ: string; parkQ: string; };
   /** Parametric and polar curves (parametric): prompts and options. */

@@ -1187,6 +1187,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     zero denominator always called an asymptote and the slopes matched instead of the values. The piece *Close in on
     the break* (Insert → Calculus, grades 12–13): walk two points towards x = 2 on a hole, a jump and an asymptote,
     and drag k until two pieces join
+  - Derivatives in context (grade 12; #667): what f′(a) says in words, a velocity, speeding up or slowing down; then
+    a tangent-line estimate and a local maximum or minimum read from f′; then the largest open box from a sheet,
+    the largest pen against a wall and the greatest value on a closed interval. Ten slips are named, among them the
+    rate read as the amount, the acceleration's sign taken alone and the ends of the interval forgotten. The piece
+    *Fold the box* (Insert → Calculus, grades 12–13): drag the corner cut and watch the volume's tangent flatten at
+    the largest box
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

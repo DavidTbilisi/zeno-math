@@ -1061,6 +1061,12 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function foldBoxPreview(): Piece[] {
+  // A sheet with its four corners cut.
+  return [poly([[40, 30], [200, 30], [200, 190], [40, 190], [40, 30]], { width: 2 }), poly([[70, 30], [70, 60], [40, 60]], { width: 2 }), poly([[170, 30], [170, 60], [200, 60]], { width: 2 }),
+    poly([[40, 160], [70, 160], [70, 190]], { width: 2 }), poly([[200, 160], [170, 160], [170, 190]], { width: 2 })];
+}
+
 function closeInPreview(): Piece[] {
   // Two lines with a jump between them at the middle.
   return [poly([[20, 150], [120, 90]], { width: 3 }), poly([[120, 160], [220, 110]], { width: 3 }), poly([[120, 30], [120, 190]], { width: 1 })];
@@ -2654,6 +2660,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "livePinString", build: pinStringPreview, live: "pinString" },
   { id: "liveTracePath", build: tracePathPreview, live: "tracePath" },
   { id: "liveCloseIn", build: closeInPreview, live: "closeIn" },
+  { id: "liveFoldBox", build: foldBoxPreview, live: "foldBox" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

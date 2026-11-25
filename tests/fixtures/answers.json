@@ -27173,6 +27173,280 @@
       "mistake": "swingNotSqueezed"
     },
     {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 1,
+      "input": "42",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 1,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "positionForVelocity"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 1,
+      "input": "49",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 2,
+      "input": "Slowing down",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 2,
+      "input": "Speeding up",
+      "label": "wrong",
+      "mistake": "accelSignOnly"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 3,
+      "input": "Speeding up",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 3,
+      "input": "Slowing down",
+      "label": "wrong",
+      "mistake": "accelSignOnly"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 5,
+      "input": "Speeding up",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 7,
+      "input": "At 2 minutes the water is rising by about 6 litres per minute",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 7,
+      "input": "After 2 minutes the tank holds 6 litres",
+      "label": "wrong",
+      "mistake": "rateAsValue"
+    },
+    {
+      "skill": "derivContext",
+      "level": 1,
+      "seed": 7,
+      "input": "6 litres came in over the first 2 minutes",
+      "label": "wrong",
+      "mistake": "rateOverInterval"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 1,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 1,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "maxMinSwapped"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 3,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 3,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "maxMinSwapped"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 3,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 5,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 5,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "maxMinSwapped"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 5,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 7,
+      "input": "12.2",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 7,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "stepNotScaled"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 7,
+      "input": "71/5",
+      "label": "wrong",
+      "mistake": "xForStep"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 7,
+      "input": "19.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 9,
+      "input": "-2.4",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 9,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "stepNotScaled"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 9,
+      "input": "108/5",
+      "label": "wrong",
+      "mistake": "xForStep"
+    },
+    {
+      "skill": "derivContext",
+      "level": 2,
+      "seed": 9,
+      "input": "4.6",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 1,
+      "input": "200",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 1,
+      "input": "100",
+      "label": "wrong",
+      "mistake": "fourSidesAssumed"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 1,
+      "input": "207",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 2,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "endpointsIgnored"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 2,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "endpointRootKept"
+    },
+    {
+      "skill": "derivContext",
+      "level": 3,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
       "skill": "continuity",
       "level": 1,
       "seed": 1,
