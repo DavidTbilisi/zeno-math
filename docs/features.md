@@ -62,7 +62,9 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - *Multiplication*, from counting to algebra, each with a step-by-step slider:
     equal groups (3 × 4 = 4 + 4 + 4, with skip counts), arrays (rows with running totals; b × a = a × b),
     number-line jumps, the place-value area model (23 × 14 = 200 + 80 + 30 + 12 = 322), and the
-    lattice (gelosia) method — digit products split by diagonals, bands added with carries, read down and along
+    lattice (gelosia) method — digit products split by diagonals, bands added with carries, read down and along,
+    and the **hundred grid** for decimals: a square is 1, cut into a hundred; b tenths shaded down, a tenths across,
+    and where they cross is the product counted in hundredths (0.3 × 0.4 = 12 × 0.01 = 0.12, up to 3 × 3 squares)
   - *Fraction operations*: + − × ÷ with whole numbers, fractions, mixed numbers and decimals, step by step —
     lowest common denominator (lcm), cross-cancelling (with struck-out factors), keep–change–flip, simplifying by
     the gcd and back to a mixed number; bars on the common denominator, the area model for ×, and
@@ -822,6 +824,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       named), then × and ÷ by 10, 100 or 1000 and by a one-digit number, then measurements from one unit to the other
       (km and m, m and cm, kg and g, ℓ and ml) and a whole number divided by a whole number as a decimal, exact or to 2
       places, with the long division as the worked solution (the digits moved the wrong way named)
+    - *Multiplying and dividing decimals* (grades 5 and 6; #637): tenths times tenths worked on the hundred grid and
+      a decimal times a whole number; then a decimal times a decimal with the point placed by counting places or by
+      an estimate (57 × 49 = 2793, so 5.7 × 4.9 = 27.93), and tenths past one on the grid; then dividing by a decimal
+      by making both numbers whole (4.5 ÷ 0.25 = 450 ÷ 25), powers of ten (10⁴, 1.62 × 10², 0.72 ÷ 10³), a ribbon cut
+      into pieces or a jug poured into glasses, and whether a product or quotient is more or less than the first
+      number without working it out. The places of only one factor, the point left out, the point not checked by an
+      estimate, only the divisor made whole, 10³ read as 10 × 3, zeros tacked on after the point, and "times makes
+      bigger, dividing makes smaller" are named
     - *Ratio*: simplest form and the missing term of two equal ratios, then sharing a total and one part known, then
       three-term ratios and a part as a fraction of the whole; the Percentages & ratios tool's bar models are the
       worked solutions (a term added to instead of multiplied, and m : n taken for m/n, named)

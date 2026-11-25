@@ -6,7 +6,7 @@
 import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
-  "quickLook", "compare", "ordinals", "skipCount", "shapePatterns", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "columnSums", "longDivide", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "percent", "convert", "stackedFractions", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "currency", "inflation", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
+  "quickLook", "compare", "ordinals", "skipCount", "shapePatterns", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "columnSums", "longDivide", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractions", "decimals", "decimalTimes", "percent", "convert", "stackedFractions", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "bases", "modular", "average", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "proportion", "currency", "inflation", "inequalities", "expand", "factor", "algFractions", "formulae", "slope", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "similarity", "volume", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
@@ -56,6 +56,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   measure: ["times"],
   fractions: ["times"],
   decimals: ["fractions", "money"],
+  decimalTimes: ["decimals", "times"],
   percent: ["fractions"],
   convert: ["decimals", "percent"],
   stackedFractions: ["fractions"],
@@ -303,6 +304,7 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
   compareFractions: [2, 3, 3], // like fractions, then unlike
   fractions: [6, 6, null], // reciprocals and ÷ by a fraction (P6); a mixed number ÷ a mixed number
   decimals: [4, 5, 5], // + −, × ÷ by a digit (P4); by 10, 100, 1000 and units in decimal form (P5)
+  decimalTimes: [5, 5, 6], // tenths × tenths on the grid, a decimal × a whole number (P5); a decimal × a decimal, the point by places or an estimate (P5); ÷ a decimal, powers of ten, stories, more or less (P6)
   percent: [5, 6, 6], // a percentage of a whole (P5); increase and decrease, the whole from a part (P6)
   convert: [4, 5, 6], // tenths, hundredths, halves, quarters and fifths as decimals (P4); percentages (P5); eighths, mixed numbers, over 100 % (P6)
   ratio: [6, 6, 6],

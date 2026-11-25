@@ -540,6 +540,8 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "mulBig", spec: { type: "multiply", style: "area", a: 123, b: 45, step: 999 } },
     { key: "mulLattice", spec: { type: "multiply", style: "lattice", a: 234, b: 56, step: 999 } },
     { key: "mulLatticeBig", spec: { type: "multiply", style: "lattice", a: 4567, b: 382, step: 999 } },
+    { key: "mulTenths", spec: { type: "multiply", style: "grid", a: 3, b: 4, step: 0 } },
+    { key: "mulTenthsBig", spec: { type: "multiply", style: "grid", a: 13, b: 24, step: 0 } },
   ],
   percratio: [
     { key: "prOf", spec: { type: "percratio", kind: "of", p: "15", a: "240", b: "1", ratio: "2:3", up: true, step: 999 } },

@@ -19412,6 +19412,183 @@
       "seed": 20,
       "input": "33",
       "label": "wrong"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 1,
+      "seed": 1,
+      "input": "135",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 1,
+      "seed": 1,
+      "input": "1350",
+      "label": "wrong",
+      "mistake": "pointDropped"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 1,
+      "seed": 1,
+      "input": "142",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 2,
+      "seed": 1,
+      "input": "27.93",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 2,
+      "seed": 1,
+      "input": "2793/10",
+      "label": "wrong",
+      "mistake": "pointNotEstimated"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 2,
+      "seed": 1,
+      "input": "2793/1000",
+      "label": "wrong",
+      "mistake": "pointNotEstimated"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 2,
+      "seed": 1,
+      "input": "34.93",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 2,
+      "seed": 2,
+      "input": "1.02",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 2,
+      "seed": 2,
+      "input": "51/5",
+      "label": "wrong",
+      "mistake": "placesNotAdded"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 2,
+      "seed": 2,
+      "input": "8.02",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 1,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 1,
+      "input": "3/10",
+      "label": "wrong",
+      "mistake": "divisorOnlyScaled"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 1,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 4,
+      "input": "less",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 4,
+      "input": "more",
+      "label": "wrong",
+      "mistake": "timesAlwaysBigger"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 5,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 5,
+      "input": "9/100",
+      "label": "wrong",
+      "mistake": "divisorOnlyScaled"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 5,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 7,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 7,
+      "input": "11/5",
+      "label": "wrong",
+      "mistake": "divisorOnlyScaled"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 7,
+      "input": "29",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 12,
+      "input": "10000",
+      "label": "correct"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 12,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "powerTimesExponent"
+    },
+    {
+      "skill": "decimalTimes",
+      "level": 3,
+      "seed": 12,
+      "input": "10007",
+      "label": "wrong"
     }
   ]
 }
