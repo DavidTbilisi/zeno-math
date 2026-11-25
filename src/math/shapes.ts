@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function scalePlanPreview(): Piece[] {
+  // A small room on a plan, and the bigger floor beside it with one square of each shaded.
+  return [
+    poly([[10, 60], [40, 60], [40, 90], [10, 90]], { fill: FILL.yellow, width: 0 }),
+    poly([[10, 60], [100, 60], [100, 120], [10, 120]], { color: "#1971c2", width: 2.5 }),
+    poly([[120, 30], [180, 30], [180, 90], [120, 90]], { fill: FILL.yellow, width: 0 }),
+    poly([[120, 30], [300, 30], [300, 150], [120, 150]], { color: "#1971c2", width: 2.5 }),
+  ];
+}
+
 function constructPreview(): Piece[] {
   // A segment, two compass arcs crossing above and below it, and the bisector through the crossings.
   return [
@@ -2452,6 +2462,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveMoveShape", build: moveShapePreview, live: "moveShape" },
   { id: "liveBuildTriangle", build: buildTrianglePreview, live: "buildTriangle" },
   { id: "liveConstruct", build: constructPreview, live: "construct" },
+  { id: "liveScalePlan", build: scalePlanPreview, live: "scalePlan" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

@@ -69,6 +69,7 @@ export const MENUS: MenuGroup[] = [
           { live: "moveShape", icon: "⇄" },
           { live: "buildTriangle", icon: "≅" },
           { live: "construct", icon: "⌒" },
+          { live: "scalePlan", icon: "📐" },
           { kind: "geometry", icon: "📐", label: "geometry" },
           { kind: "euclid", icon: "⊙", label: "euclidTool" },
         ],

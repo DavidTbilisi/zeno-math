@@ -20968,6 +20968,256 @@
       "input": "E, A, C, D",
       "label": "wrong",
       "mistake": "lookAlikeLine"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 1,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 1,
+      "input": "28",
+      "label": "wrong",
+      "mistake": "scaleInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 1,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 2,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 2,
+      "input": "5/4",
+      "label": "wrong",
+      "mistake": "scaleInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 2,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 7,
+      "input": "48",
+      "label": "wrong",
+      "mistake": "scaleInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 7,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 15,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 15,
+      "input": "6/5",
+      "label": "wrong",
+      "mistake": "scaleInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 15,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 1,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 1,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "scaleUnitsMixed"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 1,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 6,
+      "input": "2.25",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 6,
+      "input": "2250",
+      "label": "wrong",
+      "mistake": "mapUnitSlip"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 6,
+      "input": "225",
+      "label": "wrong",
+      "mistake": "mapUnitSlip"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 6,
+      "input": "9.25",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 1,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 1,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "areaScaledByK"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 1,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 2,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 2,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "areaScaledByK"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 2,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 4,
+      "input": "1.6",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 4,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "rescaleInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 4,
+      "input": "8.6",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 7,
+      "input": "80",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 7,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "areaScaledByK"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 7,
+      "input": "87",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 8,
+      "input": "320",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 8,
+      "input": "80",
+      "label": "wrong",
+      "mistake": "areaScaledByK"
+    },
+    {
+      "skill": "scale",
+      "level": 3,
+      "seed": 8,
+      "input": "327",
+      "label": "wrong"
     }
   ]
 }

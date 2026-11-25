@@ -56,6 +56,7 @@ import { PARALLEL_LAB_START, type LiveParallelLab } from "./parallelAngles";
 import { MOVE_SHAPE_START, type LiveMoveShape } from "./moveShape";
 import { BUILD_START, type LiveBuildTriangle } from "./congruence";
 import { CONSTRUCT_START, type LiveConstruct } from "./compass";
+import { SCALE_PLAN_START, type LiveScalePlan } from "./scaleMaps";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -622,6 +623,7 @@ export type LiveStates = {
   moveShape: LiveMoveShape;
   buildTriangle: LiveBuildTriangle;
   construct: LiveConstruct;
+  scalePlan: LiveScalePlan;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -766,6 +768,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   moveShape: [680, 640],
   buildTriangle: [680, 600],
   construct: [700, 700],
+  scalePlan: [700, 600],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -912,6 +915,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     moveShape: MOVE_SHAPE_START,
     buildTriangle: BUILD_START,
     construct: CONSTRUCT_START,
+    scalePlan: SCALE_PLAN_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,
