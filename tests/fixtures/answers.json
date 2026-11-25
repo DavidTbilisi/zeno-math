@@ -23207,6 +23207,303 @@
       "seed": 11,
       "input": "One-sample t test",
       "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 1,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "readXForY"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 2,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 2,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "readXForY"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 7,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 7,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "oneToManyFunction"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 10,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 10,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "readXForY"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 10,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 11,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 11,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "readXForY"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 11,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 1,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 3,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 3,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 3,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 4,
+      "input": "−5 < x < −1",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 4,
+      "input": "−1 < x < 3",
+      "label": "wrong",
+      "mistake": "positiveVsIncreasing"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 7,
+      "input": "−5 ≤ x ≤ 4",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 7,
+      "input": "−3 ≤ x ≤ 0",
+      "label": "wrong",
+      "mistake": "domainRangeSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 12,
+      "input": "−3 ≤ y ≤ 2",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 12,
+      "input": "−5 ≤ y ≤ 3",
+      "label": "wrong",
+      "mistake": "domainRangeSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 12,
+      "input": "−3 ≤ y ≤ 0",
+      "label": "wrong",
+      "mistake": "rangeFromEnds"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 1,
+      "input": "Not linear",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 1,
+      "input": "Linear",
+      "label": "wrong",
+      "mistake": "linearByIncreasing"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 2,
+      "input": "Plan A",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 2,
+      "input": "Plan B",
+      "label": "wrong",
+      "mistake": "startForRate"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 3,
+      "input": "Plan A",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 3,
+      "input": "Plan B",
+      "label": "wrong",
+      "mistake": "startForRate"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 7,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 7,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "rateNotDivided"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 7,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "rateUpsideDown"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 8,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 8,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "rateNotDivided"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 8,
+      "input": "8",
+      "label": "wrong"
     }
   ]
 }

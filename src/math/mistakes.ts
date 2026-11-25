@@ -1106,5 +1106,17 @@ export const MISTAKES = [
   "slopeDfOne",
   "pairedAsTwoSample",
   "twoSampleAsPaired",
+  "sameOutputNotFunction",
+  "oneToManyFunction",
+  "readXForY",
+  "domainRangeSwapped",
+  "rangeFromEnds",
+  "interceptsSwapped",
+  "positiveVsIncreasing",
+  "rateNotDivided",
+  "rateUpsideDown",
+  "linearByIncreasing",
+  "xGapsIgnored",
+  "startForRate",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

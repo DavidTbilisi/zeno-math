@@ -37,7 +37,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "functions", shelf: "school", icon: "f(x)",
-    skills: ["graphStory", "functions", "coordinates", "slope", "line", "distance"],
+    skills: ["graphStory", "readFunction", "functions", "coordinates", "slope", "line", "distance"],
     sections: ["secFunctions", "senseChart"],
   },
   { id: "trigonometry", shelf: "school", icon: "θ", skills: ["trigexact", "righttri", "practicalTrig", "trigRules", "identities"], sections: ["secTrig"] },

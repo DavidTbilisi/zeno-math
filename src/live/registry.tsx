@@ -36,6 +36,7 @@ import { TableShares } from "./TableShares";
 import { FitLine } from "./FitLine";
 import { SampleField } from "./SampleField";
 import { TTails } from "./TTails";
+import { SecantRate } from "./SecantRate";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -242,6 +243,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   fitLine: FitLine,
   sampleField: SampleField,
   tTails: TTails,
+  secantRate: SecantRate,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,

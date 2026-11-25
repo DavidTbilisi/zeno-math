@@ -118,6 +118,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "functions", icon: "f(x)", label: "functionsTool" },
           { kind: "graph", icon: "📈", label: "graph" },
           { live: "graph", icon: "🎚" },
+          { live: "secantRate", icon: "⌒" },
         ], shapes: ["functionMachine", "axesSketch"],
       },
       {

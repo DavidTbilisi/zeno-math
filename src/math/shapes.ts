@@ -1061,6 +1061,13 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function secantRatePreview(): Piece[] {
+  // A wave with a flat chord between two of its points.
+  const f = (x: number) => 90 - (x * (x - 3) * (x - 6)) * 6;
+  const curve = Array.from({ length: 36 }, (_, i) => [20 + i * 6, f(i * 0.2)] as [number, number]);
+  return [poly(curve, { width: 3 }), poly([[20, f(0)], [200, f(6)]], { width: 2 })];
+}
+
 function tTailsPreview(): Piece[] {
   // A bell curve with fat tails over a thin one.
   const curve = (h: number, k: number) => Array.from({ length: 41 }, (_, i) => {
@@ -2556,6 +2563,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFitLine", build: fitLinePreview, live: "fitLine" },
   { id: "liveSampleField", build: sampleFieldPreview, live: "sampleField" },
   { id: "liveTTails", build: tTailsPreview, live: "tTails" },
+  { id: "liveSecantRate", build: secantRatePreview, live: "secantRate" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
