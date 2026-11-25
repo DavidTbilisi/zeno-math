@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Exponential growth and decay (exponential): prompts, options and steps. */
+  exg: { factorQ: string; linear: string; exponential: string; kindQ: string; sameRatio: string; sameDiff: string; bacteria: string; rumour: string; pointsQ: string; townQ: string; carQ: string; halfQ: string; logsQ: string; monthlyQ: string; contQ: string; };
   /** Inequalities in two variables (regions): prompts, options and steps. */
   rgn: { yes: string; no: string; true: string; false: string; solutionQ: string; solid: string; dashed: string; styleQ: string; styleStep: string; pictureQ: string; pictureStep: string; above: string; below: string; turnQ: string; turnStep: string; standardQ: string; pointSlopeQ: string; systemQ: string; systemStep: string; cornerX: string; cornerY: string; bakeQ: string; craftQ: string; wordsStep: string; };
   /** Reading a function (readFunction): prompts, options and steps. */

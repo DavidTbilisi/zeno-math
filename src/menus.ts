@@ -120,6 +120,7 @@ export const MENUS: MenuGroup[] = [
           { live: "graph", icon: "🎚" },
           { live: "secantRate", icon: "⌒" },
           { live: "testPoints", icon: "◩" },
+          { live: "growthRace", icon: "🌱" },
         ], shapes: ["functionMachine", "axesSketch"],
       },
       {
