@@ -2,6 +2,7 @@
 // serves the built frontend.
 // Runs directly with Node >= 23.6 (native TypeScript type stripping, built-in node:sqlite).
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import type { AddressInfo } from "node:net";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, resolve, sep } from "node:path";
@@ -376,7 +377,8 @@ const server = createServer(async (req, res) => {
     if (!res.headersSent) send(res, 500, { error: "internal error" });
   }
 }).listen(PORT, () => {
-  console.log(`Zeno listening on http://localhost:${PORT} (data: ${DATA_DIR})`);
+  // The port actually taken: PORT=0 asks the system for a free one (the tests do, so parallel servers never collide).
+  console.log(`Zeno listening on http://localhost:${(server.address() as AddressInfo).port} (data: ${DATA_DIR})`);
 });
 // A reverse proxy keeps connections to us open between requests; Node's default (5 s) is shorter than a proxy's idle
 // time, so now and then one would be closed just as the proxy reused it (a 502 for the client). Longer than Caddy's 60 s.

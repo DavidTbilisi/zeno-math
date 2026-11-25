@@ -13,7 +13,7 @@ const dir = mkdtempSync(join(tmpdir(), "zeno-dry-run-test-"));
 after(() => rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }));
 
 test("a dry run of the study through the server keeps every guarantee and can be analysed", async () => {
-  const server = await startServer(join(dir, "data"), 20000 + Math.floor(Math.random() * 20000), "dry");
+  const server = await startServer(join(dir, "data"), "dry");
   try {
     for (const world of ["elo", "bkt"] as const) {
       const result = await dryRun({ base: server.base, teacher: "dry", students: 8, questions: 6, testLength: 4, world, seed: 2, refreshEvery: 3 });

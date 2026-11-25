@@ -78,19 +78,30 @@ export function summariseTimings(times: readonly { kind: string; ms: number }[])
 const kindOf = (method: string, path: string) =>
   `${method} ${path.split("?")[0].replace(/\/[A-Z0-9]{4}-[A-Z0-9]{4}(?=\/|$)/, "/:student").replace(/\/classes\/[A-Z0-9]+/, "/classes/:class")}`;
 
-/** Starts the server on a port of its own, with its own data directory. */
-export async function startServer(dataDir: string, port: number, teacher: string, env: Record<string, string> = {}) {
+/**
+ * Starts the server with its own data directory, on a free port the system picks (PORT=0, so test files running in
+ * parallel never race for one), read back from its "listening" line. A server that exits first fails with its stderr.
+ */
+export async function startServer(dataDir: string, teacher: string, env: Record<string, string> = {}) {
   const server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "server/index.ts"], {
-    env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, STATIC_DIR: join(dataDir, "no-static"), APP_PASSWORD: "", TEACHER_PASSWORD: teacher, BIND_ADDRESS: "127.0.0.1", ...env },
+    env: { ...process.env, PORT: "0", DATA_DIR: dataDir, STATIC_DIR: join(dataDir, "no-static"), APP_PASSWORD: "", TEACHER_PASSWORD: teacher, BIND_ADDRESS: "127.0.0.1", ...env },
     stdio: "pipe",
   });
-  await new Promise<void>((ok, fail) => {
-    server.stdout!.on("data", (d) => String(d).includes("listening") && ok());
-    server.on("exit", (code) => fail(new Error(`server exited with ${code}`)));
+  let stdout = "";
+  let stderr = "";
+  server.stderr!.on("data", (d) => (stderr += String(d)));
+  const port = await new Promise<number>((ok, fail) => {
+    server.stdout!.on("data", (d) => {
+      stdout += String(d);
+      const m = /listening on http:\/\/[^:/]+:(\d+)/.exec(stdout);
+      if (m) ok(Number(m[1]));
+    });
+    server.on("exit", (code, signal) => fail(new Error(`server exited with ${code ?? signal}${stderr.trim() ? `:\n${stderr.trim()}` : ""}`)));
+    server.on("error", fail);
   });
   return {
     base: `http://127.0.0.1:${port}`,
-    stop: () => new Promise<void>((ok) => (server.exitCode !== null ? ok() : (server.once("exit", () => ok()), server.kill()))),
+    stop: () => new Promise<void>((ok) => (server.exitCode !== null || server.signalCode !== null ? ok() : (server.once("exit", () => ok()), server.kill()))),
   };
 }
 
@@ -306,7 +317,7 @@ if (import.meta.main) {
   const teacherPassword = remote ? process.env.ZENO_TEACHER_PASSWORD ?? "" : "dry-run";
   const app = process.env.ZENO_APP_PASSWORD;
   const headers: Record<string, string> = remote && app ? { Authorization: `Basic ${Buffer.from(`dry-run:${app}`).toString("base64")}` } : {};
-  const server = remote ? null : await startServer(join(dir, "data"), 20000 + Math.floor(Math.random() * 20000), teacherPassword);
+  const server = remote ? null : await startServer(join(dir, "data"), teacherPassword);
   let made: string[] = [];
   try {
     const t0 = Date.now();

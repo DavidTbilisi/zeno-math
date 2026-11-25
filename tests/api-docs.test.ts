@@ -9,7 +9,7 @@ import { startServer } from "../scripts/dry-run-study.ts";
 
 const dir = mkdtempSync(join(tmpdir(), "zeno-api-docs-"));
 let server: Awaited<ReturnType<typeof startServer>>;
-before(async () => (server = await startServer(join(dir, "data"), 20000 + Math.floor(Math.random() * 20000), "chalk")));
+before(async () => (server = await startServer(join(dir, "data"), "chalk")));
 after(async () => {
   await server.stop();
   rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
