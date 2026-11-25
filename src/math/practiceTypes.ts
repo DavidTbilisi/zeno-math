@@ -387,6 +387,11 @@ export type PracticeWords = {
     closed: Record<"ratIrr" | "irrIrr" | "ratRat" | "irrTimes" | "ratTimesIrr", string>;
     closedWhy: Record<"ratIrr" | "irrIrr" | "ratRat" | "irrTimes" | "ratTimesIrr", string>;
   };
+  /** Absolute value (absoluteValue): the prompts and the words of the working. */
+  absv: {
+    evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
+    corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

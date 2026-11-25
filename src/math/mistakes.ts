@@ -1036,5 +1036,13 @@ export const MISTAKES = [
   "powersAdded",
   "addedMantissas",
   "irrationalAlwaysClosed",
+  "absKeepsSign",
+  "distanceSubtracted",
+  "absOneRoot",
+  "absCentreSign",
+  "absOneSided",
+  "vertexSignH",
+  "absPieceSwapped",
+  "piecewiseWrongPiece",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
