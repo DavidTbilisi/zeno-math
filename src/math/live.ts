@@ -73,6 +73,7 @@ import { SQUARE_START, type LiveCompleteSquare } from "./quadraticGraph";
 import { POLY_START, type LivePolyShape } from "./polyGraph";
 import { WALK_START, type LiveAsymptoteWalk } from "./rational";
 import { SQUARE_CHECK_START, type LiveSquareCheck } from "./rootEquations";
+import { MOVE_START, type LiveMoveGraph } from "./fnTransform";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -656,6 +657,7 @@ export type LiveStates = {
   polyShape: LivePolyShape;
   asymptoteWalk: LiveAsymptoteWalk;
   squareCheck: LiveSquareCheck;
+  moveGraph: LiveMoveGraph;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -817,6 +819,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   polyShape: [700, 490],
   asymptoteWalk: [700, 500],
   squareCheck: [700, 490],
+  moveGraph: [700, 490],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -980,6 +983,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     polyShape: POLY_START,
     asymptoteWalk: WALK_START,
     squareCheck: SQUARE_CHECK_START,
+    moveGraph: MOVE_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

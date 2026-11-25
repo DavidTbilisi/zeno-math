@@ -25304,6 +25304,321 @@
       "seed": 13,
       "input": "11",
       "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 1,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 2,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 3,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 3,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 3,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 5,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 5,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 5,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 6,
+      "input": "-8",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 6,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 6,
+      "input": "-1",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 1,
+      "input": "-24",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 1,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "stretchWrongAxis"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 1,
+      "input": "-17",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 2,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "reflectionAxesSwapped"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 5,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 5,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "reflectionAxesSwapped"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 5,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 6,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 6,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "reflectionAxesSwapped"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 6,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 7,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 1,
+      "input": "Neither",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 1,
+      "input": "Odd",
+      "label": "wrong",
+      "mistake": "oddWithConstant"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 2,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "insideFactorNotTaken"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 3,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 3,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "insideFactorNotTaken"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 3,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 4,
+      "input": "-9",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 4,
+      "input": "-14",
+      "label": "wrong",
+      "mistake": "stretchAfterShift"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 4,
+      "input": "-2",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 5,
+      "input": "13",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 5,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "stretchAfterShift"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 5,
+      "input": "20",
+      "label": "wrong"
     }
   ]
 }

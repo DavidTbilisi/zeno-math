@@ -1153,6 +1153,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     Nine slips are named, among them the answer that does not fit kept and the excluded value kept. The piece
     *Square and check* (Insert → Algebra → Functions, grades 10–12): tap the equation to square it, see the dashed
     mirror curve squaring lets in, and tap each crossing to check it in the first equation
+  - Transformations of functions (grades 10 and 12; #662): where a point goes under f(x − h), f(x + h) and
+    f(x) + k; then under −f(x), f(−x), a·f(x) and f(bx), and h read from a picture; then several in order, even or
+    odd and, in a new setting, when a heating schedule run later is warmest. Nine slips are named, among them a
+    shift the wrong way, the two reflections swapped and f(bx) multiplied instead of divided. The piece *Move the
+    graph* (Insert → Algebra → Functions, grades 10–12): drag x², |x| or √x by its key point and its stretch point,
+    and the formula y = a·f(x − h) + k follows, with words on why right shows as a minus
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

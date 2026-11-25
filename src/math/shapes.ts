@@ -1061,6 +1061,12 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function moveGraphPreview(): Piece[] {
+  // A parabola and its copy moved right and up.
+  const at = (dx: number, dy: number) => Array.from({ length: 21 }, (_, i) => [40 + dx + i * 6, 170 - dy - 0.03 * (i * 6 - 60) ** 2 * 1.5] as [number, number]).filter(([, y]) => y > 5);
+  return [poly(at(0, 0), { width: 1.5 }), poly(at(110, 60), { width: 3 }), poly([[100, 170], [210, 110]], { width: 1.5 })];
+}
+
 function squareCheckPreview(): Piece[] {
   // A root curve, its dashed mirror and a line meeting each once.
   const up = Array.from({ length: 25 }, (_, i) => [30 + i * 9, 100 - 14 * Math.sqrt(i * 0.6)] as [number, number]);
@@ -2619,6 +2625,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "livePolyShape", build: polyShapePreview, live: "polyShape" },
   { id: "liveAsymptoteWalk", build: asymptoteWalkPreview, live: "asymptoteWalk" },
   { id: "liveSquareCheck", build: squareCheckPreview, live: "squareCheck" },
+  { id: "liveMoveGraph", build: moveGraphPreview, live: "moveGraph" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

@@ -1181,5 +1181,14 @@ export const MISTAKES = [
   "lastSquareForgotten",
   "crossingYGiven",
   "rootDividedNotTimes",
+  "shiftWrongWay",
+  "reflectionAxesSwapped",
+  "stretchWrongAxis",
+  "stretchNotInverted",
+  "stretchAfterShift",
+  "insideFactorNotTaken",
+  "constantBreaksEven",
+  "oddCalledEven",
+  "oddWithConstant",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Transformations of functions (fnTransform): prompts and options. */
+  qft: { xQ: string; yQ: string; pictureQ: string; parityQ: string; even: string; odd: string; neither: string; scheduleQ: string; right: string; left: string; };
   /** Equations with roots and fractions (rootEquations): prompts. */
   qre: { solveQ: string; graphQ: string; stoneQ: string; };
   /** Rational functions (rationalFn): prompts and options. */
