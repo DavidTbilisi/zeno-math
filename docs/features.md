@@ -1167,6 +1167,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     depth the second time. Eight slips are named, among them a calculator's single angle and arccos treated as
     odd. The piece *From the wheel to the wave* (Insert → Geometry → Trigonometry, grades 10–12): a wheel's point
     traces a·sin(bx) + d as the angle is dragged, and a level dragged up and down marks every solution in a turn
+  - Conic sections (grades 10 and 12; #664): a circle's radius and centre, also after completing two squares; then
+    a parabola's focus and its equation from the focus, an ellipse's foci and major axis; then a hyperbola's
+    asymptotes and foci, which conic an equation is and, in a new setting, how far apart the foci of a whispering
+    gallery are. Twelve slips are named, among them the radius not square-rooted, the squares not added when
+    completing them and the foci found by adding for an ellipse. The piece *Pins and a string* (Insert → Geometry →
+    Coordinates, grades 10–12): drag a pencil round two pins on a string 10 long, the two lengths always adding to
+    10, and push the pins together for a circle; or keep a pencil as far from a focus as from a line
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

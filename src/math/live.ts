@@ -75,6 +75,7 @@ import { WALK_START, type LiveAsymptoteWalk } from "./rational";
 import { SQUARE_CHECK_START, type LiveSquareCheck } from "./rootEquations";
 import { MOVE_START, type LiveMoveGraph } from "./fnTransform";
 import { WHEEL_START, type LiveWheelWave } from "./trigWave";
+import { PIN_START, type LivePinString } from "./conics";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -660,6 +661,7 @@ export type LiveStates = {
   squareCheck: LiveSquareCheck;
   moveGraph: LiveMoveGraph;
   wheelWave: LiveWheelWave;
+  pinString: LivePinString;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -823,6 +825,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   squareCheck: [700, 490],
   moveGraph: [700, 490],
   wheelWave: [700, 580],
+  pinString: [700, 510],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -988,6 +991,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     squareCheck: SQUARE_CHECK_START,
     moveGraph: MOVE_START,
     wheelWave: WHEEL_START,
+    pinString: PIN_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,
