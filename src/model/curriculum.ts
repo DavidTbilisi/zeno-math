@@ -7,7 +7,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 
 export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "skipCount", "shapePatterns", "shapeKinds", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "columnSums", "longDivide", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractionSums", "fractions", "decimals", "decimalTimes", "percent", "convert", "stackedFractions", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "realNumbers", "bases", "modular", "average", "spread", "twoWay", "sampling", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "parallelAngles", "pythagoras", "proportion", "currency", "inflation", "moneySense", "inequalities", "absoluteValue", "expand", "factor", "algFractions", "formulae", "slope", "readFunction", "regions", "scatter", "line", "distance", "righttri", "practicalTrig", "trigRules",
-  "probability", "scale", "transformations", "congruence", "constructions", "similarity", "volume", "crossSections", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
+  "probability", "scale", "transformations", "congruence", "constructions", "similarity", "volume", "crossSections", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "quadraticGraph", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "exponential", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "tTests", "twoSample", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
@@ -121,6 +121,7 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   indices: ["times"],
   simultaneous: ["linear"],
   quadratic: ["factor"],
+  quadraticGraph: ["quadratic"],
   surds: ["indices"],
   trigexact: ["righttri"],
   counting: ["times"],
@@ -415,6 +416,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   algFractions: [8, 8, 8], // simplify, then + − × ÷ over linear and over quadratic bottoms (Sec 2)
   formulae: [8, 8, 8], // substitute; change the subject in one or two steps, squared or rooted, or twice (Sec 2)
   quadratic: [8, 8, 10], // by factorisation (Sec 2); by the formula (Sec 3/4)
+  quadraticGraph: [8, 10, 10], // roots, axis, intercept from factors (Sec 2); completing the square (Sec 3/4); a from a graph, the discriminant, a thrown ball (Sec 3/4)
   simultaneous: [8, 8, 8],
   practicalTrig: [8, 8, 8],
   trigRules: [10, 10, 10], // obtuse angles, the sine and cosine rules, bearings, elevation (Sec 3/4)

@@ -24049,6 +24049,280 @@
       "seed": 7,
       "input": "18.91",
       "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 1,
+      "input": "-1.5",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 1,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "axisNotHalved"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 1,
+      "input": "5.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 2,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "rootSignKept"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 7,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "interceptSignDropped"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 1,
+      "input": "-13",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 1,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "kAddsSquare"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 1,
+      "input": "-25",
+      "label": "wrong",
+      "mistake": "halfNotTaken"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 1,
+      "input": "-6",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 5,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 5,
+      "input": "17",
+      "label": "wrong",
+      "mistake": "kAddsSquare"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 5,
+      "input": "-28",
+      "label": "wrong",
+      "mistake": "halfNotTaken"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 5,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 6,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 6,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "vertexSignKept"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 6,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 7,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "vertexSignKept"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 8,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 8,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "kAddsSquare"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 8,
+      "input": "-32",
+      "label": "wrong",
+      "mistake": "halfNotTaken"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 2,
+      "seed": 8,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 1,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "discriminantPlus"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 2,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "maxTimeForHeight"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "startHeightLeft"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 2,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 6,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 7,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 7,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "aFromIntercept"
+    },
+    {
+      "skill": "quadraticGraph",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong"
     }
   ]
 }

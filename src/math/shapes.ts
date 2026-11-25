@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function completeSquarePreview(): Piece[] {
+  // A big square with strips on two sides and the corner dashed.
+  return [
+    poly([[40, 30], [140, 30], [140, 130], [40, 130]], { fill: FILL.blue, width: 1.5 }),
+    poly([[140, 30], [185, 30], [185, 130], [140, 130]], { fill: FILL.green, width: 1.5 }),
+    poly([[40, 130], [140, 130], [140, 175], [40, 175]], { fill: FILL.green, width: 1.5 }),
+    poly([[140, 130], [185, 130], [185, 175], [140, 175]], { fill: FILL.yellow, width: 1.5 }),
+  ];
+}
+
 function growthRacePreview(): Piece[] {
   // A straight line overtaken by a curve that bends upward.
   const curve = Array.from({ length: 23 }, (_, i) => [20 + i * 10, 150 - 4 * 1.17 ** i] as [number, number]);
@@ -2582,6 +2592,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSecantRate", build: secantRatePreview, live: "secantRate" },
   { id: "liveTestPoints", build: testPointsPreview, live: "testPoints" },
   { id: "liveGrowthRace", build: growthRacePreview, live: "growthRace" },
+  { id: "liveCompleteSquare", build: completeSquarePreview, live: "completeSquare" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

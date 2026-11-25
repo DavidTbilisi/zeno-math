@@ -39,6 +39,7 @@ import { TTails } from "./TTails";
 import { SecantRate } from "./SecantRate";
 import { TestPoints } from "./TestPoints";
 import { GrowthRace } from "./GrowthRace";
+import { CompleteSquare } from "./CompleteSquare";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -248,6 +249,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   secantRate: SecantRate,
   testPoints: TestPoints,
   growthRace: GrowthRace,
+  completeSquare: CompleteSquare,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,
