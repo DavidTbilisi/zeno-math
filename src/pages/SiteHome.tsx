@@ -2,7 +2,7 @@
 // topic), the roadmap they last opened with its next step, every goal with its bar, the featured topics with theirs,
 // and plain practice. The boards are one section of the site now (#/boards).
 import { useState } from "react";
-import { starsHere, useClassGames } from "../classGames";
+import { starsHere, useClassGames, useClassPay } from "../classGames";
 import { chooseGoal, useGoal } from "../classGoal";
 import { gameIcon } from "../components/GamesCard";
 import { gradeName } from "../components/GradeCard";
@@ -11,6 +11,7 @@ import { Track } from "../components/Track";
 import { useI18n } from "../i18n";
 import { fill } from "../math/text";
 import { ladderDone } from "../model/gameKeys";
+import { money } from "../model/payments";
 import { currentGrade } from "../model/placement";
 import { GOALS, isLab, isRead, itemsOf, progressOf, roadNext, type GameId, type Next } from "../model/roadmap";
 import { ROADMAPS } from "../model/roadmaps";
@@ -49,6 +50,7 @@ export function SiteHome() {
   const grade = progress.placed || progress.cells ? currentGrade(progress.placed ?? null, progress.cells ?? {}) : null;
   const { goal, fromClass } = useGoal();
   const games = useClassGames();
+  const pay = useClassPay();
   const map = goal ? ROADMAPS[goal] : null;
   const next = map ? roadNext(map, work) : null;
   const all = map ? progressOf(itemsOf(map), work) : null;
@@ -90,6 +92,22 @@ export function SiteHome() {
             <div className="site-continue-go">
               {next && <a className="z-btn z-btn-marker" href={nextHref(next)}>{next.via ? s.practiseNow : s.playNow}</a>}
               <a className="z-btn z-btn-line" href={`#/roadmaps/${goal}`}>{r.open} →</a>
+            </div>
+          </section>
+        )}
+
+        {pay && (
+          <section className="site-section site-pay" aria-labelledby="site-pay">
+            <div className="site-section-head">
+              <h2 id="site-pay">{s.myPay}</h2>
+              <p className={`pay-state ${pay.owed > 0 ? "owed" : "clear"}`}>
+                {pay.owed > 0 ? fill(s.myPayOwed, { amount: money(pay.owed, pay.currency, lang) })
+                  : pay.owed < 0 ? fill(s.myPayAhead, { amount: money(-pay.owed, pay.currency, lang) }) : s.myPayAllPaid}
+              </p>
+              <p className="course-count">
+                {fill(s.myPayLine, { n: pay.attended, due: money(pay.due, pay.currency, lang), paid: money(pay.paid, pay.currency, lang) })}
+                {pay.lastPaid && <> · {fill(s.myPayLast, { day: new Date(`${pay.lastPaid}T12:00:00`).toLocaleDateString(lang, { dateStyle: "medium" }) })}</>}
+              </p>
             </div>
           </section>
         )}

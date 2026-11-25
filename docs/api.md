@@ -74,6 +74,10 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/classes/:code/study` | teacher | take the class out of the study or put it back: `{ study }`; see *Homework* |
 | POST | `/api/classes/:code/goal` | teacher | the class's roadmap goal: `{ goal }`, a goal id or `null` |
 | POST | `/api/classes/:code/games` | teacher | the games assigned to the class: `{ games }`, a list of game ids (`[]` for none); see *Games* |
+| GET | `/api/classes/:code/payments` | teacher | the class's lesson price, register and payments; see *Payments* |
+| POST | `/api/classes/:code/payments` | teacher | a payment: `{ student, amount, day, note? }`, 201; `{ id, remove: true }` takes one out, 204; see *Payments* |
+| POST | `/api/classes/:code/price` | teacher | the price of one lesson: `{ price, currency? }`, in minor units; see *Payments* |
+| POST | `/api/classes/:code/register` | teacher | a lesson in the register: `{ id?, day, present }`; `{ id, remove: true }` takes it out, 204; see *Payments* |
 | POST | `/api/classes/:code/seen` | teacher | take a stuck student off the list: `{ student, skill, through }`, 204; see *Dashboard* |
 | POST | `/api/students` | anyone | join a class: `{ class, number?, again? }` gives 201 `{ code, class, condition, feature, arm }`, randomised in blocks of four; signed in to an account the record is the account's, and joining a class it is already in gives that record again (200); `number` is the student's number in the class list (1–99, shown only on the teacher page, never exported), and 409 when someone in the class already gave it, unless `again: true` |
 | GET | `/api/students/:code` | student | `{ code, class, condition, feature, arm, answered, goal, games }` |
@@ -277,6 +281,30 @@ assigned game changes, and once on each page for every assigned game, the studen
 not assigned to the class is refused with 409. A ladder is passed with at least two stars on every puzzle, and the
 first time it is, `passed_at` is noted. The dashboard's `games` gives `{ assigned, open, stars }`, `stars` keyed by
 student (`s17`) and game: `{ stars, passedAt }`.
+
+### Payments
+
+A teacher who charges per lesson keeps the class's register and the payments students make (#757). Each student owes
+the class's lesson price for every lesson they attended; the price is stored on each lesson as it was when the lesson
+was added, so a new price never changes past lessons. Amounts are whole minor units (tetri, cents): `2500` is 25.00.
+No money passes through Zeno; it only adds up what the teacher records. The sums are `src/model/payments.ts`.
+
+- `POST /api/classes/:code/price` `{ price, currency? }`: the price of one lesson, 0–100 000 000, and a three-letter
+  currency code (`GEL` until one is given). 200 `{ price, currency }`.
+- `POST /api/classes/:code/register` `{ day, present }` adds a lesson held on `day` (`YYYY-MM-DD`) at the class's price,
+  201 with the lesson `{ id, day, price, present }`; 409 until a price is set. `present` lists the students who came,
+  as the dashboard names them (`"s12"`); any other student is 400. `{ id, day, present }` changes a lesson's date and
+  who came (its price stays), 200. `{ id, remove: true }` takes the lesson out, 204.
+- `POST /api/classes/:code/payments` `{ student, amount, day, note? }` records a payment (`amount` more than 0, `note` up
+  to 200 characters), 201 with `{ id, student, amount, day, note }`. `{ id, remove: true }` takes out one entered by
+  mistake, 204.
+- `GET /api/classes/:code/payments`: `{ price, currency, lessons, payments }`, every lesson and payment the class has,
+  oldest first; the teacher's page sums them for a month and over all months, per student and for the class.
+
+Only the class's teacher (or an admin) reads or changes these. `GET /api/students/:code` gives the student their own
+`pay`: `{ attended, due, paid, owed, currency, lastPaid }` over all months (`owed` below 0: paid ahead), or `null`
+while the class keeps no register and they have no payments; their site shows whether they have paid. A student who
+deletes their record (`DELETE /api/students/:code`) takes their attendance and payments with it.
 
 ### Attempts
 

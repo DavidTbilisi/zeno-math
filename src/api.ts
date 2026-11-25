@@ -3,6 +3,7 @@ import type { UsageReport } from "../server/usage";
 import { loadStudent, type Attempt, type Phase, type Plan, type SendResult, type Student, type TestAnswer } from "./learner";
 import type { GoalId } from "./model/roadmap";
 import type { GameId } from "./model/gameKeys";
+import type { Payment, PayLine, RegisterLesson } from "./model/payments";
 import type { SkillId } from "./math/practiceSkills";
 import type { Feature } from "./model/arms";
 import type { Form, TestPhase } from "./model/testForms";
@@ -129,7 +130,7 @@ export const study = {
     return student;
   },
   /** The student, the goal their teacher picked for the class (#461, null for none) and the games assigned to it. */
-  student: (code: string) => req<Student & { answered: number; goal: GoalId | null; games: GameId[] }>("GET", `/api/students/${encodeURIComponent(code)}`),
+  student: (code: string) => req<Student & { answered: number; goal: GoalId | null; games: GameId[]; pay: StudentPay | null }>("GET", `/api/students/${encodeURIComponent(code)}`),
   /** The stars of an assigned game's ladder, as this browser has them; the server keeps the best of each puzzle. */
   stars: (code: string, game: GameId, stars: number[]) =>
     req<{ stars: number[]; passed: boolean }>("POST", `/api/students/${encodeURIComponent(code)}/games`, { game, stars }, true),
@@ -197,6 +198,11 @@ export type PaperResult = { form: Form; stored: number; kept: number; verdicts: 
 /** An account as an admin sees it (#687): fixed, an admin named in the server's ADMIN_EMAILS; classes, how many it has. */
 export type Person = { id: number; email: string; name: string; verified: boolean; role: Role; fixed: boolean; classes: number };
 /** The accounts, the classes with their teachers (owner: an account id, null for nobody), and the admin's own id. */
+/** A class's payments as its teacher sees them (#757): price null until set; amounts in minor units. */
+export type ClassPayments = { price: number | null; currency: string; lessons: RegisterLesson[]; payments: Payment[] };
+/** What a student sees of their own payments: their line over all months, and their last payment's date. */
+export type StudentPay = PayLine & { currency: string; lastPaid: string | null };
+
 export type People = { accounts: Person[]; classes: { code: string; name: string; owner: number | null }[]; me: number | null };
 
 /** The teacher's side of the study: the account's session says who the teacher is (#687), so no header goes with it. */
@@ -221,6 +227,21 @@ export function teacherApi() {
     /** The games assigned to the class ([] for none; 409 before games open, as homework does). */
     games: (code: string, games: GameId[]) =>
       req<{ games: GameId[] }>("POST", `/api/classes/${encodeURIComponent(code)}/games`, { games }, false, headers),
+    /** The class's payments (#757): the lesson price, the register and the payments recorded. */
+    payments: (code: string) => req<ClassPayments>("GET", `/api/classes/${encodeURIComponent(code)}/payments`, undefined, false, headers),
+    /** The price of one lesson, in minor units, and its currency. */
+    price: (code: string, price: number, currency: string) =>
+      req<{ price: number; currency: string }>("POST", `/api/classes/${encodeURIComponent(code)}/price`, { price, currency }, false, headers),
+    /** Adds a lesson to the register (no id) or changes its date and who came. */
+    register: (code: string, lesson: { id?: number; day: string; present: string[] }) =>
+      req<RegisterLesson>("POST", `/api/classes/${encodeURIComponent(code)}/register`, lesson, false, headers),
+    /** Takes a lesson out of the register. */
+    unregister: (code: string, id: number) => req<void>("POST", `/api/classes/${encodeURIComponent(code)}/register`, { id, remove: true }, false, headers),
+    /** Records a payment (amount in minor units). */
+    pay: (code: string, payment: { student: string; amount: number; day: string; note?: string }) =>
+      req<Payment>("POST", `/api/classes/${encodeURIComponent(code)}/payments`, payment, false, headers),
+    /** Takes out a payment entered by mistake. */
+    unpay: (code: string, id: number) => req<void>("POST", `/api/classes/${encodeURIComponent(code)}/payments`, { id, remove: true }, false, headers),
     /** Takes the class out of the study or puts it back (409 back in once it has had homework). */
     study: (code: string, study: boolean) =>
       req<{ study: boolean }>("POST", `/api/classes/${encodeURIComponent(code)}/study`, { study }, false, headers),

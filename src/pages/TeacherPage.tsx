@@ -16,6 +16,7 @@ import { PlateauList } from "../components/PlateauList";
 import { PredictionList } from "../components/PredictionList";
 import { HomeworkCard } from "../components/HomeworkCard";
 import { GamesCard } from "../components/GamesCard";
+import { PaymentsCard } from "../components/PaymentsCard";
 import { JoinLink } from "../components/JoinLink";
 import { SiteBar } from "../components/SiteBar";
 import { Track } from "../components/Track";
@@ -51,7 +52,7 @@ const printRoute = () => location.hash.match(/^#\/teacher\/([\w-]+)\/(tests|home
 const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "delayed", "closed"];
 const DAY = 86_400_000;
 
-const TABS = ["today", "progress", "homework", "study"] as const;
+const TABS = ["today", "progress", "homework", "payments", "study"] as const;
 type Tab = (typeof TABS)[number];
 const TAB_KEY = "zeno.teacher.tab";
 const savedTab = (): Tab => {
@@ -565,6 +566,9 @@ export function TeacherPage() {
                         if (selected) void load(selected);
                       }} />
                     </>
+                  )}
+                  {tab === "payments" && data && data.class.code === selected && (
+                    <PaymentsCard key={current.code} klass={current} data={data} api={api} t={t} lang={lang} showCodes={showCodes} />
                   )}
                   {tab === "study" && data && data.class.code === selected && (
                     <>
