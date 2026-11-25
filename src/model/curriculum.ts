@@ -8,7 +8,7 @@ import type { SkillId } from "../math/practiceSkills.ts";
 export const CURRICULUM: readonly SkillId[] = [
   "quickLook", "compare", "ordinals", "skipCount", "shapePatterns", "shapeKinds", "estimateLine", "closerTo", "placeValue", "addSubtract", "tables", "divide", "times", "columnSums", "longDivide", "money", "time", "measure", "barModels", "shapeArea", "areaPerimeter", "readChart", "diagrams", "symmetryLines", "estimateAngle", "cubeNets", "makeTarget", "kakooma", "oneStroke", "colouring", "shortestPath", "spanningTree", "integers", "parity", "coordinates", "order", "inversions", "shadeFraction", "compareFractions", "equivalent", "orderFractions", "makeWhole", "fractionSums", "fractions", "decimals", "decimalTimes", "percent", "convert", "stackedFractions", "ratio", "rate", "rounding", "divisibility", "hcf", "primes", "squares", "realNumbers", "bases", "modular", "average", "spread", "twoWay", "sampling", "missingAngle", "triangleInequality", "findRule", "growingPattern", "balance", "sameExpression", "graphStory", "linear", "parallelAngles", "pythagoras", "proportion", "currency", "inflation", "moneySense", "inequalities", "absoluteValue", "expand", "factor", "algFractions", "formulae", "slope", "readFunction", "regions", "scatter", "line", "distance", "righttri", "practicalTrig", "trigRules",
   "probability", "scale", "transformations", "congruence", "constructions", "similarity", "volume", "crossSections", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "quadraticGraph", "surds", "trigexact", "counting",
-  "sequences", "series", "logs", "exponential", "polynomials", "polyGraph", "rationalFn", "rootEquations", "fnTransform", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
+  "sequences", "series", "logs", "exponential", "polynomials", "polyGraph", "rationalFn", "rootEquations", "fnTransform", "functions", "identities", "trigGraphs", "trigEquations", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
   "expectation", "conditional", "distributions", "correlation", "hypothesis", "tTests", "twoSample", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "norms", "operatorNorms", "hilbertSpaces", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing",
@@ -136,6 +136,8 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   fnTransform: ["readFunction", "quadraticGraph"],
   functions: ["linear"],
   identities: ["trigexact"],
+  trigGraphs: ["trigexact", "fnTransform"],
+  trigEquations: ["trigexact", "trigGraphs"],
   vectors: ["line"],
   dotangle: ["vectors", "trigexact"],
   differentiate: ["indices", "functions"],
@@ -444,6 +446,8 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   exponential: [10, 10, 12], // the factor, linear or exponential, n steps (Sec 3/4); a·bˣ, r % a year, half-life (Sec 3/4); time by logs, monthly rates, e (H2)
   surds: [10, 10, 10],
   identities: [10, 10, 10], // compound and double angles, R cos(θ − α)
+  trigGraphs: [10, 10, 12], // amplitude, period, midline from a formula (Sec 3/4) and a graph (Sec 3/4); b from a graph, a tide (H2)
+  trigEquations: [10, 12, 12], // both solutions in a turn (Sec 3/4); kx, inverse ranges (H2); a quadratic in sin, radians, a tide (H2)
   differentiate: [10, 10, 10], // powers, eˣ, sin, ln; chain, product and quotient rules
   tangent: [10, 10, 10],
   stationary: [10, 10, 10],

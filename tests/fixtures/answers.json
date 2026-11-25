@@ -25619,6 +25619,662 @@
       "seed": 5,
       "input": "20",
       "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 1,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "midlineFromMax"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 2,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "midlineFromMax"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 3,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 3,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "midlineFromMax"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 3,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 4,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 4,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "amplitudeDoubled"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 4,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 5,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "amplitudeDoubled"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 1,
+      "seed": 5,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 1,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "midlineFromMax"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 4,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 4,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "amplitudeDoubled"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 4,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 6,
+      "input": "360",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 6,
+      "input": "367",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 1,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 1,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "bAsPeriod"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 1,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 2,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "highTideAsMidline"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 2,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 3,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 3,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "bAsPeriod"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 3,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 5,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 5,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "periodAsB"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 5,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 15,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 15,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "bAsPeriod"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 15,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 1,
+      "input": "330",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 1,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "oneSolutionOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 1,
+      "input": "150",
+      "label": "wrong",
+      "mistake": "wrongQuadrant"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 1,
+      "input": "337",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 4,
+      "input": "240",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 4,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "oneSolutionOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 4,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "wrongQuadrant"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 4,
+      "input": "247",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 5,
+      "input": "210",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 5,
+      "input": "150",
+      "label": "wrong",
+      "mistake": "oneSolutionOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 5,
+      "input": "330",
+      "label": "wrong",
+      "mistake": "wrongQuadrant"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 5,
+      "input": "217",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 7,
+      "input": "150",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 7,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "oneSolutionOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 7,
+      "input": "330",
+      "label": "wrong",
+      "mistake": "wrongQuadrant"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 7,
+      "input": "157",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 8,
+      "input": "300",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 8,
+      "input": "-60",
+      "label": "wrong",
+      "mistake": "negativeAngleKept"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 8,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "wrongQuadrant"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 1,
+      "seed": 8,
+      "input": "307",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 1,
+      "input": "-30",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 1,
+      "input": "330",
+      "label": "wrong",
+      "mistake": "inverseRangeIgnored"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 1,
+      "input": "210",
+      "label": "wrong",
+      "mistake": "inverseRangeIgnored"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 1,
+      "input": "-23",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 2,
+      "input": "120",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 2,
+      "input": "-60",
+      "label": "wrong",
+      "mistake": "arccosNegated"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 2,
+      "input": "127",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 5,
+      "input": "150",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 5,
+      "input": "-30",
+      "label": "wrong",
+      "mistake": "arccosNegated"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 5,
+      "input": "157",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 7,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "periodChangeIgnored"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 8,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 8,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "periodChangeIgnored"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 2,
+      "seed": 8,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 1,
+      "input": "2.62",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 1,
+      "input": "150",
+      "label": "wrong",
+      "mistake": "degreesForRadians"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 1,
+      "input": "9.62",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "oneSolutionOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "oneFactorOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 8,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 8,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "oneFactorOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 8,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 9,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 9,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "oneFactorOnly"
+    },
+    {
+      "skill": "trigEquations",
+      "level": 3,
+      "seed": 9,
+      "input": "9",
+      "label": "wrong"
     }
   ]
 }

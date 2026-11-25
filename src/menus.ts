@@ -97,6 +97,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "trig", icon: "θ", label: "trig" },
           { kind: "identities", icon: "≡", label: "identitiesTool" },
           { live: "slopeWalk", icon: "🚶" },
+          { live: "wheelWave", icon: "🎡" },
         ], shapes: ["trigTriangle", "unitCircle"],
       },
     ],

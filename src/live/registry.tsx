@@ -44,6 +44,7 @@ import { PolyShape } from "./PolyShape";
 import { AsymptoteWalk } from "./AsymptoteWalk";
 import { SquareCheck } from "./SquareCheck";
 import { MoveGraph } from "./MoveGraph";
+import { WheelWave } from "./WheelWave";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -258,6 +259,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   asymptoteWalk: AsymptoteWalk,
   squareCheck: SquareCheck,
   moveGraph: MoveGraph,
+  wheelWave: WheelWave,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,
