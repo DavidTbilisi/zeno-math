@@ -1042,6 +1042,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     irrational are named. The piece *Squeeze the root* (Insert → Number → calculating, grades 7–10) cuts the number
     line into ten pieces with each tick's square shown as a blue or red dot; tapping the piece where the colour
     changes zooms in ten times, one more decimal place. √2.25 stops at 1.5; √2 never stops
+  - Absolute value (grades 6, 8 and 10; #648): |−7| and |p − q| worked out, and how far apart two points on a number
+    line are; then |x − a| = b with both answers and |x − a| < b as an inequality; then the corner of
+    y = m|x − h| + k, a piecewise function evaluated on the right piece, and |x − h| written without the bars below h.
+    The sign kept, sizes subtracted across zero, one answer only, the centre read as −a, one side of the inequality,
+    the corner at −h, the wrong piece and the pieces of |x − h| swapped are named. The piece *Both ways from a*
+    (Insert → Number → calculating, grades 6–10): drag x along the number line while an arc shows its distance from
+    a; let go where it is b away and it is kept, and there is always a second one (or only one when b is 0). Once
+    both are found, the numbers between them are shaded: |x − a| < b
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

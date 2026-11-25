@@ -1061,6 +1061,15 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function absLinePreview(): Piece[] {
+  // A number line, the centre a, and the two points the same distance either side of it.
+  const out: Piece[] = [seg([10, 110], [290, 110], { width: 3 })];
+  out.push(poly([[144, 104], [156, 104], [156, 116], [144, 116]], { fill: FILL.yellow, width: 1 }));
+  for (const x of [70, 230]) out.push(poly([[x - 6, 104], [x + 6, 104], [x + 6, 116], [x - 6, 116]], { fill: FILL.green, width: 1 }));
+  out.push(path(arc(110, 102, 40, 30, 0, 180), { width: 2 }), path(arc(190, 102, 40, 30, 0, 180), { width: 2 }));
+  return out;
+}
+
 function rootZoomPreview(): Piece[] {
   // A number line with blue dots turning red, and the piece between them picked out.
   const out: Piece[] = [seg([10, 110], [290, 110], { width: 3 })];
@@ -2483,6 +2492,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveScalePlan", build: scalePlanPreview, live: "scalePlan" },
   { id: "liveCoinStack", build: coinStackPreview, live: "coinStack" },
   { id: "liveRootZoom", build: rootZoomPreview, live: "rootZoom" },
+  { id: "liveAbsLine", build: absLinePreview, live: "absLine" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
