@@ -1061,6 +1061,13 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function asymptoteWalkPreview(): Piece[] {
+  // The two branches of a hyperbola beside a dashed wall.
+  const right = Array.from({ length: 30 }, (_, i) => [130 + (i + 1) * 4, 100 - 600 / ((i + 1) * 4)] as [number, number]).filter(([, y]) => y > 5);
+  const left = Array.from({ length: 30 }, (_, i) => [130 - (i + 1) * 4, 100 + 600 / ((i + 1) * 4)] as [number, number]).filter(([, y]) => y < 195);
+  return [poly([[130, 5], [130, 195]], { width: 1.5 }), poly([[10, 100], [250, 100]], { width: 1.5 }), poly(right, { width: 3 }), poly(left, { width: 3 })];
+}
+
 function polyShapePreview(): Piece[] {
   // A cubic that touches the axis at one zero and crosses at another.
   const curve = Array.from({ length: 41 }, (_, i) => {
@@ -2603,6 +2610,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveGrowthRace", build: growthRacePreview, live: "growthRace" },
   { id: "liveCompleteSquare", build: completeSquarePreview, live: "completeSquare" },
   { id: "livePolyShape", build: polyShapePreview, live: "polyShape" },
+  { id: "liveAsymptoteWalk", build: asymptoteWalkPreview, live: "asymptoteWalk" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

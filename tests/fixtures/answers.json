@@ -24585,6 +24585,347 @@
       "seed": 10,
       "input": "13",
       "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 1,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 1,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "zeroFromDenominator"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 1,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "domainFromNumerator"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "domainNotRooted"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 7,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "vaFromNumerator"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 7,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "vaSignKept"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 7,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 8,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 8,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "vaFromNumerator"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 8,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "vaSignKept"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 8,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 10,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 10,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "zeroFromDenominator"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 1,
+      "seed": 10,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 1,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 1,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "holeAsZero"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 2,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 2,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "holeAsZero"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 3,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 3,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "holeAsZero"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 3,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 4,
+      "input": "-7",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 4,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "holeAsZero"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 5,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 5,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "holeAsZero"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 2,
+      "seed": 5,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 1,
+      "input": "Negative",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 2,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "averageToZero"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 2,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "fixedCostKept"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 6,
+      "input": "Positive",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 7,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "slantSignKept"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 7,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "slantNumeratorOnly"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 8,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 8,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "slantSignKept"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 8,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "slantNumeratorOnly"
+    },
+    {
+      "skill": "rationalFn",
+      "level": 3,
+      "seed": 8,
+      "input": "6",
+      "label": "wrong"
     }
   ]
 }
