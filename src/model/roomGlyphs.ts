@@ -32,7 +32,7 @@ export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   // algebra
   shapePatterns: "○△○△", findRule: "?→", growingPattern: "▪▪▪", balance: "▲=●●", sameExpression: "2x=x+x", linear: "2x=6", proportion: "y∝x",
   formulae: "s=d/t", logs: "log", exponential: "2ˣ", sequences: "a₁,a₂", series: "Σ", inequalities: "x≤3", regions: "y>2x", absoluteValue: "|x|", factor: "x²−1", algFractions: "¹⁄ₓ",
-  quadratic: "x²+bx", quadraticGraph: "(x+h)²", simultaneous: "{x,y}", polynomials: "p(x)", polyGraph: "x³", rationalFn: "1/x", surds: "√2",
+  quadratic: "x²+bx", quadraticGraph: "(x+h)²", simultaneous: "{x,y}", polynomials: "p(x)", polyGraph: "x³", rationalFn: "1/x", rootEquations: "√x=", surds: "√2",
   // functions
   graphStory: "⤴t", readFunction: "f(3)", functions: "x↦y", coordinates: "(x,y)", slope: "↗m", line: "y=mx", distance: "|AB|",
   // geometry and trigonometry

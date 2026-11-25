@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Equations with roots and fractions (rootEquations): prompts. */
+  qre: { solveQ: string; graphQ: string; stoneQ: string; };
   /** Rational functions (rationalFn): prompts and options. */
   qrf: { domainQ: string; wallQ: string; zeroQ: string; flatQ: string; holeQ: string; slantQ: string; signQ: string; positive: string; negative: string; costQ: string; };
   /** Polynomial graphs (polyGraph): prompts and options. */

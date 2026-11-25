@@ -1147,6 +1147,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     y = 0. The piece *Walk to the wall* (Insert → Algebra → Functions, grades 10–12): drag x along three graphs
     and watch the top, the bottom and y; near the wall y shoots off, far out it settles on a flat or slanted line,
     and (x² − 4) ÷ (x − 2) has only a hole
+  - Equations with roots and fractions (grades 10 and 12; #661): √(x + a) = b and a/x = b; then a root equation
+    that squares to a quadratic with one answer that does not fit, and a fraction equation with an excluded value;
+    then two roots, an equation solved where its graphs cross and, in a new setting, the height a stone falls from.
+    Nine slips are named, among them the answer that does not fit kept and the excluded value kept. The piece
+    *Square and check* (Insert → Algebra → Functions, grades 10–12): tap the equation to square it, see the dashed
+    mirror curve squaring lets in, and tap each crossing to check it in the first equation
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

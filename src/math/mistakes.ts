@@ -1172,5 +1172,14 @@ export const MISTAKES = [
   "asymptoteNoSignChange",
   "averageToZero",
   "fixedCostKept",
+  "rootNotSquared",
+  "constantAddedBack",
+  "fractionMultiplied",
+  "fractionUpsideDown",
+  "extraneousKept",
+  "excludedKept",
+  "lastSquareForgotten",
+  "crossingYGiven",
+  "rootDividedNotTimes",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
