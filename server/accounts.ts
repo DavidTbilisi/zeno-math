@@ -34,9 +34,30 @@ const MAX_BODY = 16 * 1024;
 const MAX_STATE_BODY = 4 * 1024 * 1024;
 const MAIL = mailSettings();
 
-export type Account = { id: number; email: string; name: string; verified: boolean };
+/**
+ * What an account may do (#687): a student practises, a teacher also makes classes and follows their own, an admin
+ * does that for every class and sets everyone's role. New accounts are students.
+ */
+export const ROLES = ["student", "teacher", "admin"] as const;
+export type Role = (typeof ROLES)[number];
+/** The admins the server is started with (ADMIN_EMAILS, comma-separated): how the first admin comes to be. */
+export const ADMIN_EMAILS: ReadonlySet<string> = new Set(
+  (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean),
+);
+/**
+ * The role an account has now: an address in ADMIN_EMAILS is an admin's, any other has the role stored for it. While
+ * the server sends mail, an address not yet confirmed has a student's role only, so nobody gets a teacher's or an
+ * admin's role by signing up first with their address. A server without mail can't confirm one, so there it counts.
+ */
+export function roleOf(email: string, verified: boolean, stored: Role): Role {
+  if (MAIL && !verified) return "student";
+  return ADMIN_EMAILS.has(email) ? "admin" : stored;
+}
+
+/** role: the one the account has now (roleOf), not only the one stored. */
+export type Account = { id: number; email: string; name: string; verified: boolean; role: Role };
 /** An account as its owner's browser sees it. */
-const shown = (a: Account) => ({ email: a.email, name: a.name, verified: a.verified });
+const shown = (a: Account) => ({ email: a.email, name: a.name, verified: a.verified, role: a.role });
 
 export function initAccounts(db: DatabaseSync) {
   db.exec(`
@@ -80,6 +101,9 @@ export function initAccounts(db: DatabaseSync) {
     );
     CREATE INDEX IF NOT EXISTS account_state_rev ON account_state(account_id, rev);
   `);
+  // The role stored for the account (#687; roleOf says what it is now). Databases made before it get the column here.
+  if (!(stmt(db, "PRAGMA table_info(accounts)").all() as { name: string }[]).some((c) => c.name === "role"))
+    db.exec("ALTER TABLE accounts ADD COLUMN role TEXT NOT NULL DEFAULT 'student'");
   const now = Date.now();
   stmt(db, "DELETE FROM sessions WHERE expires_at <= ?").run(now);
   stmt(db, "DELETE FROM account_tokens WHERE expires_at <= ?").run(now);
@@ -153,10 +177,13 @@ function startSession(db: DatabaseSync, req: IncomingMessage, res: ServerRespons
   setCookie(req, res, token, SESSION_MS / 1000);
 }
 
-type AccountRow = { id: number; email: string; name: string; verifiedAt: number | null };
-const toAccount = (r: AccountRow): Account => ({ id: r.id, email: r.email, name: r.name, verified: r.verifiedAt !== null });
+type AccountRow = { id: number; email: string; name: string; verifiedAt: number | null; role: Role };
+const toAccount = (r: AccountRow): Account => {
+  const verified = r.verifiedAt !== null;
+  return { id: r.id, email: r.email, name: r.name, verified, role: roleOf(r.email, verified, r.role) };
+};
 const accountById = (db: DatabaseSync, id: number) =>
-  toAccount(stmt(db, "SELECT id, email, name, verified_at AS verifiedAt FROM accounts WHERE id = ?").get(id) as AccountRow);
+  toAccount(stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role FROM accounts WHERE id = ?").get(id) as AccountRow);
 
 /** The request's session, when its cookie names one that hasn't run out: whose it is, and the session's stored key. */
 function sessionOf(req: IncomingMessage, db: DatabaseSync, now = Date.now()): { account: Account; key: string } | null {
@@ -164,7 +191,7 @@ function sessionOf(req: IncomingMessage, db: DatabaseSync, now = Date.now()): { 
   if (!token) return null;
   const key = sha(token);
   const row = stmt(db, `
-    SELECT a.id, a.email, a.name, a.verified_at AS verifiedAt, s.seen_at AS seenAt
+    SELECT a.id, a.email, a.name, a.verified_at AS verifiedAt, a.role, s.seen_at AS seenAt
     FROM sessions s JOIN accounts a ON a.id = s.account_id WHERE s.token = ? AND s.expires_at > ?
   `).get(key, now) as (AccountRow & { seenAt: number }) | undefined;
   if (!row) return null;
@@ -325,7 +352,7 @@ export async function handleAccount(
       if (made === null) return send(res, 409, { error: "an account with this email already exists" });
       signUps.fail(client);
       wrongByClient.succeed(client);
-      const account: Account = { id: made, email, name, verified: false };
+      const account: Account = { id: made, email, name, verified: false, role: roleOf(email, false, "student") };
       startSession(db, req, res, made, now);
       mailLink(db, account, "verify", mailLang(body.lang));
       return send(res, 201, shown(account));
@@ -372,7 +399,7 @@ export async function handleAccount(
       const email = String(body.email ?? "").trim().toLowerCase().slice(0, 254);
       limit(wrongByClient, client);
       limit(wrongByEmail, email);
-      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, password FROM accounts WHERE email = ?").get(email) as
+      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role, password FROM accounts WHERE email = ?").get(email) as
         (AccountRow & { password: string }) | undefined;
       const right = await passwordMatches(String(body.password ?? ""), row?.password ?? (await nobodysHash()));
       if (!row || !right) {
@@ -403,7 +430,7 @@ export async function handleAccount(
       const email = parseEmail(body.email);
       limit(mailsByClient, client);
       mailsByClient.fail(client);
-      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt FROM accounts WHERE email = ?").get(email) as AccountRow | undefined;
+      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role FROM accounts WHERE email = ?").get(email) as AccountRow | undefined;
       if (row && !mailsByEmail.retryAfter(email)) {
         mailsByEmail.fail(email);
         mailLink(db, toAccount(row), "reset", mailLang(body.lang));

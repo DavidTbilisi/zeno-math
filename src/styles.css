@@ -689,6 +689,11 @@ input.invalid { border-color: var(--danger); }
 .teacher h3 { font-size: 15px; margin: 0 0 4px; }
 .teacher-login { display: flex; flex-direction: column; gap: 12px; max-width: 320px; }
 .teacher-login .btn { align-self: flex-start; }
+/* Teachers and roles (#687): the accounts and the classes, each a plain table. */
+.people { display: flex; flex-direction: column; gap: 10px; max-width: 860px; }
+.people-table { border-collapse: collapse; width: 100%; }
+.people-table th, .people-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line, #dee2e6); vertical-align: middle; }
+.people-table th { font-weight: 600; }
 .teacher-grid { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start; }
 @media (max-width: 820px) { .teacher-grid { grid-template-columns: minmax(0, 1fr); } }
 .teacher-side { display: flex; flex-direction: column; gap: 16px; }

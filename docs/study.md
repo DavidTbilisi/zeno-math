@@ -164,8 +164,8 @@ wasn't on its test, and marks the answer itself. A test can't be answered before
 never reach the learner model, so the outcome measure stays independent of what the
 adaptive condition learns from. The test length is set per class (4–30 questions, default 12).
 
-Teachers follow a class at **`#/teacher`** (linked from the home page; it asks for `TEACHER_PASSWORD` when one is
-set). There they can make classes and hand out the codes, and see for each class:
+Teachers follow a class at **`#/teacher`** (linked from the home page), signed in to a teacher's account (an admin
+gives the role; see self-hosting.md, *Teachers and admins*). Each teacher sees the classes they made. There they can make classes and hand out the codes, and see for each class:
 
 - **Who is stuck,** at the top: each student who has had ten questions or more on a skill without three right in a
   row, the way Beck and Gong (2013) define wheel-spinning. The stopping-ceiling check on ASSISTments found that more
@@ -203,7 +203,7 @@ set). There they can make classes and hand out the codes, and see for each class
 The same data is at `/api/research/dashboard?class=CODE`, and the CSV download is on the page.
 
 ```bash
-# make a class (send the header only if TEACHER_PASSWORD is set); skills: skill ids and/or areas, default every skill there is when the class is made (kept if skills are added later)
+# from a script, with TEACHER_PASSWORD (it counts as an admin); make a class; skills: skill ids and/or areas, default every skill there is when the class is made (kept if skills are added later)
 curl -X POST localhost:8787/api/classes -H 'Content-Type: application/json' -H 'X-Teacher-Password: …' \
   -d '{"name":"7B","skills":["algebra","average"]}'
 # classes, with how many students are in each arm
@@ -272,7 +272,7 @@ and on paper, so a student who can't see the picture can still take part.
 
 Students see what taking part means before they join a class: what is saved (and that their number in the class
 list is shown only to the teacher), that the class is split into two groups at random, that taking part is up to them, and how to delete everything. **Join** waits until they tick that
-they agree. Set `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data.
+they agree. Set `ADMIN_EMAILS` or `TEACHER_PASSWORD` whenever students use the server, or any of them could download the class's data.
 Before collecting data from real students, check what consent and ethics approval your school or university
 requires; for children, a parent's consent usually comes first.
 

@@ -5,7 +5,7 @@
 // says nothing of who they are and can't be used to sign in.
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
-import { randomInt, timingSafeEqual } from "node:crypto";
+import { randomInt } from "node:crypto";
 import { ALL_SKILLS, AREAS, FIRST_SKILLS, SKILLS, areaOf, type Area, type SkillId } from "../src/math/practiceSkills.ts";
 import { CURRICULUM, GRADES, inCurriculumOrder, skillsOfGrade, YEARS, type Grade } from "../src/model/curriculum.ts";
 import { ClassModel } from "../src/model/classModel.ts";
@@ -28,14 +28,13 @@ import { classGames, initClassGames, recordStars, setGames } from "./classGames.
 import { initPredictions, recordPrediction } from "./predictions.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
-import { clientOf, passwords } from "./limiter.ts";
 import { accountOf, initAccounts } from "./accounts.ts";
+import { accountStaff, classFor, initRoles, OPEN, ownClasses, seesStudent, setOwner, staff, staffOf, type Staff } from "./roles.ts";
 import { CLASS_LEN, normalizeCode, randomCode, STUDENT_LEN } from "./codes.ts";
 import { PICK_CODES } from "../src/model/pickCodes.ts";
 import { judgeBreak, mark, markCount, stepCount, stepsAfterMiss, trackFading, trackIdeas, type Answered, type SteppedThrough } from "./marking.ts";
 import { classProtocol, initProtocol, logPhase, nextTestOrder, onTime, parseTestLength, phaseWindows, PRACTICE_PHASES, recordPaperTest, recordTestAnswer, setPhase, studentTests } from "./protocol.ts";
 
-const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD ?? "";
 // An attempt is a few hundred bytes; nothing legitimate comes near this.
 const MAX_ATTEMPT_BODY = 64 * 1024;
 
@@ -158,6 +157,7 @@ export function initResearch(db: DatabaseSync) {
   // Whose record it is, for a student who joined signed in or added their code to their account (#606); NULL: a code
   // alone, as every student was before accounts. An account deleted without its records leaves them as codes.
   initAccounts(db);
+  initRoles(db);
   add("students", "account_id", "INTEGER REFERENCES accounts(id) ON DELETE SET NULL");
   db.exec("CREATE INDEX IF NOT EXISTS students_account ON students(account_id)");
   stmt(db, "UPDATE students SET arm = CASE condition WHEN 'fixed' THEN 'off' ELSE 'on' END WHERE arm IS NULL").run();
@@ -270,52 +270,41 @@ export const currentBreaks = (db: DatabaseSync, studentId: number): Breaks => re
 /** Deleted answers can't be taken out of the records and weights one by one: the next request replays what is left. */
 export const forgetModel = (db: DatabaseSync) => replays.delete(db);
 
-/** Lets a teacher through: the request carries the teacher password, or the server asks for none. */
-export function teacher(req: IncomingMessage) {
-  if (!TEACHER_PASSWORD) return;
-  const client = clientOf(req);
-  const wait = passwords.retryAfter(client);
-  if (wait) throw new HttpError(429, "too many wrong passwords; try again later", { "Retry-After": String(wait) });
-  const sent = String(req.headers["x-teacher-password"] ?? "");
-  const given = Buffer.from(sent);
-  const want = Buffer.from(TEACHER_PASSWORD);
-  if (given.length !== want.length || !timingSafeEqual(given, want)) {
-    if (sent) passwords.fail(client);
-    throw new HttpError(403, "teacher password required");
-  }
-  passwords.succeed(client);
-}
-
 /**
  * Who a board request comes from. A board belongs to someone only through what the request carries: the teacher
- * password (the teachers' boards), a student code (that student's own boards), or the session of an account (#608: the
- * boards it made, in a class or not). The teacher password wins when several are sent; a student code or a session
- * each add to the other. With no TEACHER_PASSWORD set, a request carrying none of them is a teacher's, as for classes;
- * with one set, it gets no boards at all.
+ * password (a script's: the teachers' shared boards of before #687), a student code (that student's own boards), or
+ * the session of an account (#608: the boards it made, in a class or not). The teacher password wins when several are
+ * sent; a student code or a session each add to the other. An open server (roles.ts OPEN) takes a request carrying
+ * none of them as the teachers'; otherwise it gets no boards at all.
  *
  * studentId is the class record boards are made under, so the teacher can open them: the code's, else the account's
- * latest. accountId is who is signed in.
+ * latest. accountId is who is signed in, and staff whether that account teaches (#687): a teacher reads the boards of
+ * their classes' students, an admin everyone's and the teachers' shared boards too.
  */
-export type BoardUser = { teacher: true } | { teacher: false; studentId: number | null; accountId: number | null };
+export type BoardUser = { teacher: true } | { teacher: false; studentId: number | null; accountId: number | null; staff: Staff | null };
 export function boardUser(req: IncomingMessage, db: DatabaseSync): BoardUser {
   if (req.headers["x-teacher-password"] !== undefined) {
-    teacher(req);
+    staffOf(req, db);
     return { teacher: true };
   }
   const account = accountOf(req, db);
+  const who = account && accountStaff(account);
   const code = req.headers["x-student-code"];
   if (code !== undefined) {
     const row = stmt(db, "SELECT id FROM students WHERE code = ?").get(normalizeCode(code)) as { id: number } | undefined;
     if (!row) throw new HttpError(403, "no such student code");
-    return { teacher: false, studentId: row.id, accountId: account?.id ?? null };
+    return { teacher: false, studentId: row.id, accountId: account?.id ?? null, staff: who };
   }
   if (account) {
     const row = stmt(db, "SELECT id FROM students WHERE account_id = ? ORDER BY created_at DESC, id DESC LIMIT 1").get(account.id) as { id: number } | undefined;
-    return { teacher: false, studentId: row?.id ?? null, accountId: account.id };
+    return { teacher: false, studentId: row?.id ?? null, accountId: account.id, staff: who };
   }
-  if (!TEACHER_PASSWORD) return { teacher: true };
+  if (OPEN) return { teacher: true };
   throw new HttpError(403, "boards need an account, a student code or the teacher password");
 }
+/** Whether this board user may read a student's boards: the teachers' (a script or an open server), or staff whose class it is. */
+export const readsStudent = (db: DatabaseSync, user: BoardUser, studentId: number) =>
+  user.teacher || (user.staff !== null && seesStudent(db, user.staff, studentId));
 /** Whether a class record is this account's: its boards are then the account's too, whichever class it practises in now. */
 export const studentIsAccounts = (db: DatabaseSync, studentId: number, accountId: number) =>
   !!stmt(db, "SELECT 1 FROM students WHERE id = ? AND account_id = ?").get(studentId, accountId);
@@ -516,63 +505,61 @@ export async function handleResearch(
   // An export of one class or of all of them: two statements, so the one for a class goes by the students_class index
   // (a "? IS NULL OR class_code = ?" condition would make SQLite scan every row either way). The export of all of them
   // is the study's data, so it leaves out the classes not in the study (issue #299); asked for by name, one still comes.
-  const forClass = (klass: string | null, sql: string) =>
-    (klass
-      ? stmt(db, sql.replace("{where}", "WHERE s.class_code = ?")).all(normalizeCode(klass))
-      : stmt(db, sql.replace("{where}", "WHERE c.study = 1")).all()) as Record<string, unknown>[];
+  // A teacher gets only their own classes (#687): one asked for by name must be theirs, and all of them are theirs.
+  const forClass = (who: Staff, klass: string | null, sql: string) => {
+    if (klass) return stmt(db, sql.replace("{where}", "WHERE s.class_code = ?")).all(classFor(db, who, normalizeCode(klass))) as Record<string, unknown>[];
+    const [mine, value] = ownClasses(who);
+    return stmt(db, sql.replace("{where}", `WHERE c.study = 1 AND ${mine}`)).all(value) as Record<string, unknown>[];
+  };
 
   if (resource === "classes" && id && sub === "phase" && req.method === "POST") {
-    teacher(req);
-    return setPhase(req, res, db, normalizeCode(decodeURIComponent(id)));
+    return setPhase(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
   }
 
   // Homework for every student in the class, each made from their own records (issue #297).
   if (resource === "classes" && id && sub === "homework" && req.method === "POST") {
-    teacher(req);
-    return makeHomework(req, res, db, normalizeCode(decodeURIComponent(id)));
+    return makeHomework(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
   }
 
   // In the study or not ({ study: boolean }, issue #299).
   if (resource === "classes" && id && sub === "study" && req.method === "POST") {
-    teacher(req);
-    return setStudy(req, res, db, normalizeCode(decodeURIComponent(id)));
+    return setStudy(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
   }
 
   // The class's games ({ games: GameId[] }): its students' sites list them and send their stars.
   if (resource === "classes" && id && sub === "games" && req.method === "POST") {
-    teacher(req);
-    return setGames(req, res, db, normalizeCode(decodeURIComponent(id)));
+    return setGames(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
   }
 
   // The class's roadmap goal ({ goal: GoalId | null }, #461).
   if (resource === "classes" && id && sub === "goal" && req.method === "POST") {
-    teacher(req);
+    const code = classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id)));
     const body = await readJson(req, 4096);
     if (body.goal !== null && !isGoal(body.goal)) throw new HttpError(400, `goal must be null or one of ${GOALS.join(", ")}`);
-    const code = normalizeCode(decodeURIComponent(id));
     const done = stmt(db, "UPDATE classes SET goal = ? WHERE code = ?").run(body.goal, code);
     return done.changes ? send(res, 200, { goal: body.goal }) : send(res, 404, { error: "no such class" });
   }
 
   // A test written on paper, typed in by the teacher.
   if (resource === "classes" && id && sub === "paper" && req.method === "POST") {
-    teacher(req);
-    return recordPaperTest(req, res, db, normalizeCode(decodeURIComponent(id)), findStudent);
+    return recordPaperTest(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))), findStudent);
   }
 
   // The teacher has seen a stuck student ({ student: "s3", skill, through: attempt id }).
   if (resource === "classes" && id && sub === "seen" && req.method === "POST") {
-    teacher(req);
+    const code = classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id)));
     const body = (await readJson(req)) as Record<string, unknown>;
-    return markSeen(db, normalizeCode(decodeURIComponent(id)), body.student, body.skill, body.through)
+    return markSeen(db, code, body.student, body.skill, body.through)
       ? send(res, 204) : send(res, 404, { error: "no such stuck student" });
   }
 
   // A class deleted: only one nobody has joined, so no student's records or study data can go with it (404 for no
   // such class, 409 once someone has joined; close it instead).
+  // Given to a teacher by an admin (#687).
+  if (resource === "classes" && id && sub === "owner" && req.method === "POST") return setOwner(req, res, db, decodeURIComponent(id));
+
   if (resource === "classes" && id && !sub && req.method === "DELETE") {
-    teacher(req);
-    const code = normalizeCode(decodeURIComponent(id));
+    const code = classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id)));
     const gone = transaction(db, () => {
       if (!stmt(db, "SELECT 1 FROM classes WHERE code = ?").get(code)) return 404;
       if (stmt(db, "SELECT 1 FROM students WHERE class_code = ? LIMIT 1").get(code)) return 409;
@@ -584,17 +571,19 @@ export async function handleResearch(
   }
 
   if (resource === "classes" && !id) {
-    teacher(req);
+    const who = staff(req, db);
     if (req.method === "GET") {
+      // A teacher's own classes; every class for an admin (owner: the teacher's account id, null for none).
+      const [mine, value] = ownClasses(who);
       // Each count goes by the students_class index (and from there attempts_student), so no table is scanned.
       const rows = stmt(db, `
-        SELECT c.code, c.name, c.skills, c.feature, c.study = 1 AS study, c.goal, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength,
+        SELECT c.code, c.name, c.skills, c.feature, c.study = 1 AS study, c.goal, c.created_at AS createdAt, c.phase, c.session_ends AS sessionEnds, c.test_length AS testLength, c.owner_id AS owner,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code) AS students,
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.arm = 'on') AS "on",
           (SELECT COUNT(*) FROM students s WHERE s.class_code = c.code AND s.arm = 'off') AS "off",
           (SELECT COUNT(*) FROM attempts a JOIN students s ON s.id = a.student_id WHERE s.class_code = c.code) AS attempts
-        FROM classes c ORDER BY c.created_at
-      `).all() as { skills: string | null; study: number }[];
+        FROM classes c WHERE ${mine} ORDER BY c.created_at
+      `).all(value) as { skills: string | null; study: number }[];
       return send(res, 200, rows.map((r) => ({ ...r, skills: classSkills(r.skills), study: r.study === 1 })));
     }
     if (req.method === "POST") {
@@ -608,9 +597,10 @@ export async function handleResearch(
       let code = randomCode(CLASS_LEN);
       while (stmt(db, "SELECT 1 FROM classes WHERE code = ?").get(code)) code = randomCode(CLASS_LEN);
       const stored = skills ?? [...CURRICULUM];
-      stmt(db, "INSERT INTO classes (code, name, skills, feature, test_length, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), feature, testLength, now);
+      // The class is the teacher's who made it (a script's, with the teacher password, is nobody's: the admins').
+      stmt(db, "INSERT INTO classes (code, name, skills, feature, test_length, created_at, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)").run(code, name, JSON.stringify(stored), feature, testLength, now, who.accountId);
       logPhase(db, code, "open", null, now);
-      return send(res, 201, { code, name, skills: stored, feature, study: true, goal: null, createdAt: now, phase: "open", sessionEnds: null, testLength });
+      return send(res, 201, { code, name, skills: stored, feature, study: true, goal: null, createdAt: now, phase: "open", sessionEnds: null, testLength, owner: who.accountId });
     }
     return send(res, 405, { error: "method not allowed" });
   }
@@ -748,15 +738,13 @@ export async function handleResearch(
 
   // The teacher's dashboard for one class (?class=CODE).
   if (resource === "research" && id === "dashboard" && req.method === "GET") {
-    teacher(req);
-    const data = dashboard(db, normalizeCode(query.get("class")));
+    const data = dashboard(db, classFor(db, staff(req, db), normalizeCode(query.get("class"))));
     return data ? send(res, 200, data) : send(res, 404, { error: "no such class" });
   }
 
   // Every attempt as CSV, for R / pandas; ?class=CODE for one class.
   if (resource === "research" && id === "attempts.csv" && req.method === "GET") {
-    teacher(req);
-    const rows = forClass(query.get("class"), `
+    const rows = forClass(staff(req, db), query.get("class"), `
       SELECT a.id AS attempt, 's' || s.id AS student, s.class_code AS class, c.feature, s.arm, s.condition, a.policy, a.predicted, a.skill, a.level, a.seed, a.review,
         a.outcome, a.first_correct, a.wrongs, a.retries, a.solution_viewed, a.ms_first, a.ms_total, a.answers, a.hard, a.steps, a.faded, a.rated, a.marks, a.breaks, a.remarked, a.late, a.shown_at, a.created_at,
         json_array_length(a.answers) AS n_answers
@@ -775,8 +763,7 @@ export async function handleResearch(
   // Every test answer as CSV, one row per student, test and question; ?class=CODE for one class. What was typed is a
   // JSON string, so a spreadsheet never reads an answer like "=1+2" as a formula.
   if (resource === "research" && id === "tests.csv" && req.method === "GET") {
-    teacher(req);
-    const rows = forClass(query.get("class"), `
+    const rows = forClass(staff(req, db), query.get("class"), `
       SELECT t.id AS response, 's' || s.id AS student, s.class_code AS class, c.feature, s.arm, s.condition, COALESCE(s.test_order, '') AS test_order,
         t.phase, t.form, c.test_length, t.item, t.skill, t.level, t.seed, t.input, t.verdict, t.verdict = 'correct' AS correct,
         t.client_verdict, t.late, t.paper, t.retries, t.ms, t.created_at

@@ -204,7 +204,7 @@ async function practiceHint(page: Page, base: string) {
   // Tall enough that the panel beside the board holds the question and the verdict without scrolling.
   const size = page.viewportSize()!;
   await page.setViewportSize({ width: size.width, height: 1200 });
-  // A teacher's board: boards belong to a student or to the teachers, and this server asks for a teacher password.
+  // A teacher's board: boards belong to a student or to the teachers; this server is an open one, so the header passes.
   const teacher = { "X-Teacher-Password": TEACHER };
   await page.context().setExtraHTTPHeaders(teacher);
   const board = await (await fetch(`${base}/api/boards`, { method: "POST", headers: { "Content-Type": "application/json", ...teacher }, body: JSON.stringify({ title: "Practice" }) })).json();
@@ -232,8 +232,6 @@ async function practiceHint(page: Page, base: string) {
 async function dashboard(page: Page, base: string) {
   await dryRun({ base, teacher: TEACHER, students: 24, questions: 30, testLength: 12, world: "elo", seed: 1 });
   await page.goto(`${base}/#/teacher`);
-  await page.getByLabel("Teacher password").fill(TEACHER);
-  await page.getByRole("button", { name: "Open" }).click();
   await page.locator(".class-item", { hasText: "Dry run" }).click();
   await page.locator(".class-head h2", { hasText: "Dry run" }).waitFor();
   await page.waitForLoadState("networkidle");
@@ -274,7 +272,7 @@ function run(cmd: string, args: string[]) {
 
 async function startServer(dataDir: string, port: number) {
   const server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "server/index.ts"], {
-    env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, STATIC_DIR: "dist", APP_PASSWORD: "", TEACHER_PASSWORD: TEACHER, BIND_ADDRESS: "127.0.0.1" },
+    env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, STATIC_DIR: "dist", APP_PASSWORD: "", TEACHER_PASSWORD: "", ADMIN_EMAILS: "", BIND_ADDRESS: "127.0.0.1" },
     stdio: "pipe",
   });
   await new Promise<void>((ok, fail) => {

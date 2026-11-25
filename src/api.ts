@@ -6,7 +6,8 @@ import type { GameId } from "./model/gameKeys";
 import type { SkillId } from "./math/practiceSkills";
 import type { Feature } from "./model/arms";
 import type { Form, TestPhase } from "./model/testForms";
-import { TEACHER_KEY } from "./teacherMode";
+import { isTeacher } from "./teacherMode";
+import type { Role } from "./account";
 import { seen } from "./usage";
 
 export type BoardSummary = { id: string; title: string; createdAt: number; updatedAt: number };
@@ -52,18 +53,12 @@ export async function req<T>(method: string, url: string, body?: unknown, keepal
 }
 
 /**
- * Whose boards these calls are about (server/research.ts boardUser): the teachers' in a tab signed in on the teacher's
- * page (the header goes even when the server asks for no password, so a teacher's tab is a teacher's whoever is signed
- * in to an account), else this browser's student's. With neither, the account's session says whose (#608); with no
- * session either the server refuses, unless it asks for no teacher password.
+ * Whose boards these calls are about (server/research.ts boardUser): this browser's student's, by their code, or the
+ * account's when it is signed in (#608). A teacher's account sends no code (#687): its session says whose boards, and
+ * lets it read its classes' students' boards. With neither, the server refuses, unless it is an open one.
  */
 export function boardOwner(): Record<string, string> {
-  try {
-    const password = sessionStorage.getItem(TEACHER_KEY);
-    if (password !== null) return { "X-Teacher-Password": password };
-  } catch {
-    // no session storage: not a teacher's tab
-  }
+  if (isTeacher()) return {};
   const student = loadStudent();
   return student ? { "X-Student-Code": student.code } : {};
 }
@@ -83,7 +78,7 @@ export const api = {
   /** The board's read-only link (made the first time), and taking it away. */
   share: (id: string) => req<{ token: string }>("POST", `/api/boards/${id}/share`, {}, false, boardOwner()),
   unshare: (id: string) => req<void>("DELETE", `/api/boards/${id}/share`, undefined, false, boardOwner()),
-  /** Every board, the teachers' and the students', as one file to save (a teacher's only). */
+  /** Every board, the teachers' and the students', as one file to save (an admin's only). */
   backup: async (): Promise<Blob> => {
     const res = await fetch("/api/export", { headers: boardOwner() });
     if (!res.ok) throw new ApiError(`GET /api/export: ${res.status}`, res.status);
@@ -165,6 +160,8 @@ async function upload(url: string, record: unknown, keepalive: boolean): Promise
 export type ClassSummary = {
   code: string;
   name: string;
+  /** The teacher whose class it is (#687): an account id, null for nobody (only admins see it). */
+  owner: number | null;
   skills: SkillId[];
   /** The feature the class tests (arms.ts), and how many students are in each arm. */
   feature: Feature;
@@ -197,9 +194,14 @@ export const studentName = (id: string, who: Who | null | undefined, code?: stri
  * student had answered it online; reordered when the student's form order was swapped to fit the form they wrote. */
 export type PaperResult = { form: Form; stored: number; kept: number; verdicts: (string | null)[]; reordered: boolean };
 
-/** The teacher's side of the study. The password goes in a header (empty when the server doesn't ask for one). */
-export function teacherApi(password: string) {
-  const headers: Record<string, string> = password ? { "X-Teacher-Password": password } : {};
+/** An account as an admin sees it (#687): fixed, an admin named in the server's ADMIN_EMAILS; classes, how many it has. */
+export type Person = { id: number; email: string; name: string; verified: boolean; role: Role; fixed: boolean; classes: number };
+/** The accounts, the classes with their teachers (owner: an account id, null for nobody), and the admin's own id. */
+export type People = { accounts: Person[]; classes: { code: string; name: string; owner: number | null }[]; me: number | null };
+
+/** The teacher's side of the study: the account's session says who the teacher is (#687), so no header goes with it. */
+export function teacherApi() {
+  const headers: Record<string, string> = {};
   return {
     classes: () => req<ClassSummary[]>("GET", "/api/classes", undefined, false, headers),
     create: (name: string, skills?: string[], testLength?: number, feature?: Feature) =>
@@ -230,9 +232,16 @@ export function teacherApi(password: string) {
     /** The teacher has seen a stuck student: off the stuck list until ten more questions after attempt `through`. */
     seen: (code: string, student: string, skill: string, through: number) =>
       req<void>("POST", `/api/classes/${encodeURIComponent(code)}/seen`, { student, skill, through }, false, headers),
+    /** The accounts and their roles, and the classes' teachers (an admin's, #687). */
+    people: () => req<People>("GET", "/api/people", undefined, false, headers),
+    /** Sets an account's role (an admin's). */
+    setRole: (id: number, role: Role) => req<{ role: Role }>("POST", `/api/people/${id}`, { role }, false, headers),
+    /** Gives a class to a teacher, or to nobody (an admin's). */
+    setOwner: (code: string, owner: number | null) =>
+      req<{ owner: number | null }>("POST", `/api/classes/${encodeURIComponent(code)}/owner`, { owner }, false, headers),
     /** The anonymous usage counts of the last `days` days (#615). */
     usage: (days: number) => req<UsageReport>("GET", `/api/usage?days=${days}`, undefined, false, headers),
-    /** A CSV export as a file to save (a plain link can't send the password header). */
+    /** A CSV export as a file to save. */
     async csv(kind: "attempts" | "tests", code?: string): Promise<Blob> {
       const res = await fetch(`/api/research/${kind}.csv${code ? `?class=${encodeURIComponent(code)}` : ""}`, { headers });
       if (!res.ok) throw new ApiError(`GET ${kind}.csv: ${res.status}`, res.status);

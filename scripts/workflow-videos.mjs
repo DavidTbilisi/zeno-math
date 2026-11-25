@@ -1,8 +1,10 @@
 // Records the teacher workflow demos: short MP4s with a caption for each step and a visible cursor, showing how a
 // teacher makes a class, how students join, how a lesson runs, how homework is given and how progress is read. Scenes
 // with a student in them are filmed side by side: the teacher's laptop on the left, the student's phone on the right.
-//   npm run build && PORT=8797 DATA_DIR=$(mktemp -d) TEACHER_PASSWORD=demo APP_PASSWORD= node server/index.ts &
+//   npm run build && PORT=8797 DATA_DIR=$(mktemp -d) TEACHER_PASSWORD=demo ADMIN_EMAILS=teacher@demo.test APP_PASSWORD= node server/index.ts &
 //   npm run workflow-videos -- [scene…]   (BASE=http://localhost:8797, TEACHER=demo by default)
+// The scenes' setting up goes by the API with the teacher password; the teacher's windows are signed in to the account
+// teacher@demo.test, an admin's by ADMIN_EMAILS (#687).
 // Scenes: class join lesson homework progress paper. Output: docs/media/workflows/<scene>.mp4 and a <scene>.png still.
 // Use an empty DATA_DIR: the scenes add their classes and students by the API, and names repeated from an older run
 // would show in the class list.
@@ -24,6 +26,7 @@ const PHONE = { width: 420, height: 800 };
 const w = en.pracWords;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const headers = { "X-Teacher-Password": TEACHER, "Content-Type": "application/json" };
+const ACCOUNT = { email: "teacher@demo.test", name: "Teacher", password: "demo password" };
 
 // ---------------------------------------------------------------------------------------------------------------
 // The API, for what a scene needs before it starts: classes, students, and their practice.
@@ -129,7 +132,11 @@ class Film {
   async window(role, view, init) {
     const context = await this.browser.newContext({ viewport: view, recordVideo: { dir: this.dir, size: view }, colorScheme: "light", locale: "en-GB" });
     await context.addInitScript(stageScript);
-    if (init) await context.addInitScript(init.fn, init.arg);
+    if (init === signedIn) {
+      // The teacher's account: made the first time, then signed in to; the cookie stays with the window.
+      const made = await context.request.post(BASE + "/api/account", { data: ACCOUNT });
+      if (made.status() === 409) await context.request.post(BASE + "/api/account/session", { data: ACCOUNT });
+    } else if (init) await context.addInitScript(init.fn, init.arg);
     const t0 = Date.now();
     const page = await context.newPage();
     page.demo = { x: view.width / 2, y: view.height / 2, role, film: this };
@@ -247,7 +254,8 @@ async function point(page, target, hold = 900) {
 }
 
 const mastery = (page) => page.locator("section.card", { has: page.getByRole("heading", { name: "Mastery by skill" }) });
-const signedIn = { fn: (pw) => sessionStorage.setItem("zeno.teacher", pw), arg: TEACHER };
+/** A window signed in to the teacher's account (Film.window). */
+const signedIn = { account: true };
 const asStudent = (s) => ({ fn: (j) => localStorage.setItem("zeno.student.v1", j), arg: JSON.stringify(s) });
 
 async function openClass(page, name) {
@@ -276,14 +284,12 @@ async function answerRight(page, r) {
 const SCENES = {
   /** Signing in and making a class: its name, what it practises, its code, join link and QR code. */
   async class(film) {
-    const page = await film.window("Teacher", LAPTOP);
+    const page = await film.window("Teacher", LAPTOP, signedIn);
     await page.goto(BASE + "/#/teacher");
-    await page.getByLabel("Teacher password").waitFor();
-    film.roll();
-    await say(page, "Open the teacher page and type the teacher password.", 1200);
-    await type(page, page.getByLabel("Teacher password"), TEACHER, 140);
-    await click(page, page.getByRole("button", { name: "Open" }), { hold: 900 });
     const form = page.locator(".new-class");
+    await form.waitFor();
+    film.roll();
+    await say(page, "Signed in with your teacher's account, open the teacher page.", 1500);
     await say(page, "Name the new class.", 900);
     await type(page, form.getByLabel("Name"), "Class 7B");
     await say(page, "Choose what it practises: whole topics, or every skill of a grade.", 600);

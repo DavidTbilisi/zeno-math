@@ -1,14 +1,14 @@
 // The class's tests on paper: all three forms and their answer keys, and nothing else when printed. The preview is a
 // page of its own (#562): it has an address, and Back closes it.
 import { expect, test } from "@playwright/test";
+import { signIn } from "./helpers.ts";
 
 test("a teacher prints the three test forms with answer keys", async ({ browser, request }) => {
-  // Without the teacher header the config gives every page, so the teacher page asks for the password.
+  // Without the teacher header the config gives every page, so the teacher signs in with an account (#687).
   const page = await browser.newPage({ extraHTTPHeaders: {} });
+  await signIn(page);
   const klass = await (await request.post("/api/classes", { data: { name: "Paper class", skills: ["algebra"], testLength: 6 }, headers: { "X-Teacher-Password": "e2e-teacher" } })).json();
   await page.goto("/#/teacher");
-  await page.getByLabel("Teacher password").fill("e2e-teacher");
-  await page.getByRole("button", { name: "Open" }).click();
   await page.getByRole("button", { name: new RegExp(klass.code) }).click();
   await page.getByRole("link", { name: "Print the tests" }).click();
   await expect(page).toHaveURL(new RegExp(`#/teacher/${klass.code}/tests/print$`));

@@ -10,7 +10,9 @@ import { HttpError, readJson, send, sendJsonText } from "./http.ts";
 import { clientOf, passwords } from "./limiter.ts";
 import { scheduleBackups } from "./backup.ts";
 import { rawJson, stmt } from "./db.ts";
-import { boardUser, classBoards, forgetModel, handleResearch, initResearch, RESEARCH_RESOURCES, studentIsAccounts, teacher, type BoardUser } from "./research.ts";
+import { boardUser, classBoards, forgetModel, handleResearch, initResearch, readsStudent, RESEARCH_RESOURCES, studentIsAccounts, type BoardUser } from "./research.ts";
+import { admin, classFor, handlePeople } from "./roles.ts";
+import { normalizeCode } from "./codes.ts";
 import { handleAccount } from "./accounts.ts";
 import { handleUsage, initUsage } from "./usage.ts";
 import { handleBoardLesson, handleLessons, initLessons, lessonTokenOf } from "./lessons.ts";
@@ -134,11 +136,14 @@ function cleanTitle(value: unknown): string {
 function boardFor(user: BoardUser, id: string, write: boolean): { own: boolean } {
   const row = stmt(db, "SELECT student_id AS studentId, account_id AS accountId FROM boards WHERE id = ?").get(id) as
     { studentId: number | null; accountId: number | null } | undefined;
+  // The teachers' shared boards (no owner) are a script's with the teacher password, and an admin's (#687).
+  const shared = !!row && row.studentId === null && row.accountId === null;
   const own = !!row && (user.teacher
-    ? row.studentId === null && row.accountId === null
-    : (row.accountId !== null && row.accountId === user.accountId) ||
+    ? shared
+    : (shared && !!user.staff?.admin) ||
+      (row.accountId !== null && row.accountId === user.accountId) ||
       (row.studentId !== null && (row.studentId === user.studentId || (user.accountId !== null && studentIsAccounts(db, row.studentId, user.accountId)))));
-  if (!row || (!own && !(user.teacher && row.studentId !== null))) throw new HttpError(404, "no such board");
+  if (!row || (!own && !(row.studentId !== null && readsStudent(db, user, row.studentId)))) throw new HttpError(404, "no such board");
   if (!own && write) throw new HttpError(403, "a student's board is theirs to change");
   return { own };
 }
@@ -151,7 +156,9 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   // An account deleted takes its class records with it, so the learner model is replayed without them.
   if (resource === "account") return handleAccount(req, res, id, sub, query, db, () => forgetModel(db));
   // The anonymous usage counts (#615): anyone's browser adds to them, a teacher reads them.
-  if (resource === "usage") return id === undefined ? handleUsage(req, res, query, db, teacher) : send(res, 404, { error: "not found" });
+  if (resource === "usage") return id === undefined ? handleUsage(req, res, query, db, (r) => admin(r, db)) : send(res, 404, { error: "not found" });
+  // The accounts and their roles, and the classes' teachers: an admin's (#687).
+  if (resource === "people" && sub === undefined) return handlePeople(req, res, id, db);
   // A board shared read-only, by its token: the scene and title, never the id. Viewers ask every few seconds, so the
   // answer carries the save time as its ETag, and a viewer that sends it back gets 304 and no scene until the next save.
   if (resource === "shared" && id && sub === undefined && req.method === "GET") {
@@ -201,7 +208,8 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
   // Every board in one file, for backups: the teachers' and every student's, so a teacher's only. Scenes are stored as
   // JSON and go out as they are.
   if (resource === "export" && req.method === "GET") {
-    if (!boardUser(req, db).teacher) throw new HttpError(403, "the teacher password is needed for the backup");
+    const user = boardUser(req, db);
+    if (!user.teacher && !user.staff?.admin) throw new HttpError(403, "the backup is an admin's");
     const rows = stmt(db, "SELECT id, title, scene, created_at AS createdAt, updated_at AS updatedAt FROM boards ORDER BY created_at")
       .all() as { id: string; title: string; scene: string; createdAt: number; updatedAt: number }[];
     const stamp = new Date().toISOString().slice(0, 10);
@@ -220,17 +228,21 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, path: string
       // ?class=CODE: that class's students' boards, for a teacher to open.
       const klass = query.get("class");
       if (klass !== null) {
-        if (!user.teacher) throw new HttpError(403, "only a teacher sees a class's boards");
+        if (!user.teacher && !user.staff) throw new HttpError(403, "only a teacher sees a class's boards");
+        // A teacher sees their own classes' boards only (#687); 404 for anyone else's.
+        if (!user.teacher) classFor(db, user.staff!, normalizeCode(klass));
         return send(res, 200, classBoards(db, klass));
       }
-      // The teachers' boards are those with no owner; a learner's are those of their class record and of their
-      // account, which holds the boards of every class record it has had.
+      // The teachers' boards are those with no owner (an admin's too, #687); a learner's are those of their class
+      // record and of their account, which holds the boards of every class record it has had.
       const rows = user.teacher
         ? stmt(db, "SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards WHERE student_id IS NULL AND account_id IS NULL ORDER BY updated_at DESC").all()
         : stmt(db, `
             SELECT id, title, created_at AS createdAt, updated_at AS updatedAt FROM boards
-            WHERE student_id = ?1 OR account_id = ?2 OR student_id IN (SELECT id FROM students WHERE account_id = ?2) ORDER BY updated_at DESC
-          `).all(student, account);
+            WHERE student_id = ?1 OR account_id = ?2 OR student_id IN (SELECT id FROM students WHERE account_id = ?2)
+              OR (?3 = 1 AND student_id IS NULL AND account_id IS NULL)
+            ORDER BY updated_at DESC
+          `).all(student, account, user.staff?.admin ? 1 : 0);
       return send(res, 200, rows);
     }
     if (req.method === "POST") {

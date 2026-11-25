@@ -200,7 +200,6 @@ test("a teacher gives a class a goal: its student's site opens on that roadmap u
   const student = await (await request.post("/api/students", { data: { class: code, number: 4 } })).json();
 
   const teacher = await (await browser.newContext({ viewport: { width: 390, height: 800 } })).newPage();
-  await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), headers["X-Teacher-Password"]);
   await teacher.goto("/#/teacher");
   await teacher.locator(".class-item", { hasText: name }).click();
   await teacher.getByRole("tab", { name: "Progress" }).click();
