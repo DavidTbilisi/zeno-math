@@ -22680,6 +22680,262 @@
       "input": "Yes: the association is strong",
       "label": "wrong",
       "mistake": "correlationCause"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 1,
+      "input": "20 names drawn at random from the school list",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 1,
+      "input": "The first 20 students in the gym at lunch",
+      "label": "wrong",
+      "mistake": "convenienceFair"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 2,
+      "input": "How many hours a week do you spend on homework?",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 2,
+      "input": "Don't you agree that students get too much homework?",
+      "label": "wrong",
+      "mistake": "leadingNeutral"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 7,
+      "input": "Everyone who lives in the town",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 7,
+      "input": "The 200 residents asked",
+      "label": "wrong",
+      "mistake": "sampleAsPopulation"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 8,
+      "input": "The 50 bulbs tested",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 8,
+      "input": "All 5000 bulbs made that day",
+      "label": "wrong",
+      "mistake": "sampleAsPopulation"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 10,
+      "input": "30 names drawn at random from the town's school lists",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 10,
+      "input": "The 30 children in the library's reading club",
+      "label": "wrong",
+      "mistake": "convenienceFair"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 1,
+      "input": "Simple random",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 2,
+      "input": "Stratified",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 2,
+      "input": "Cluster",
+      "label": "wrong",
+      "mistake": "methodClusterStrata"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 5,
+      "input": "Systematic",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 5,
+      "input": "Simple random",
+      "label": "wrong",
+      "mistake": "methodSystematicRandom"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 7,
+      "input": "72",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 7,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "estimateSampleCount"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 7,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "estimateAsPercent"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 7,
+      "input": "79",
+      "label": "wrong"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 11,
+      "input": "Cluster",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 11,
+      "input": "Stratified",
+      "label": "wrong",
+      "mistake": "methodClusterStrata"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 1,
+      "input": "Toss a coin for each student: heads use the app, tails do not, then compare the two groups",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 1,
+      "input": "Let the students who want the app use it, then compare them with the rest",
+      "label": "wrong",
+      "mistake": "volunteerGroups"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 1,
+      "input": "Give the app to every student and see whether their reading improves",
+      "label": "wrong",
+      "mistake": "noControl"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 2,
+      "input": "In that city, adults who own a dog tend to walk more",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 2,
+      "input": "Owning a dog makes people walk more",
+      "label": "wrong",
+      "mistake": "causeFromObservation"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 2,
+      "input": "Dog owners all over the world walk more",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 5,
+      "input": "At that school, students who eat breakfast tend to get higher marks",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 5,
+      "input": "Eating breakfast raises students' marks",
+      "label": "wrong",
+      "mistake": "causeFromObservation"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 5,
+      "input": "Students in every country who eat breakfast get higher marks",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 7,
+      "input": "Observational study",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 7,
+      "input": "Experiment",
+      "label": "wrong",
+      "mistake": "studyKindMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 8,
+      "input": "Experiment",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 8,
+      "input": "Observational study",
+      "label": "wrong",
+      "mistake": "studyKindMixed"
     }
   ]
 }

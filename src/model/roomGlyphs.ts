@@ -51,7 +51,7 @@ export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   // probability and statistics
   probability: "P(A)", conditional: "P(A|B)", expectation: "E[X]", distributions: "B(n,p)", randomWalks: "↝", densities: "∫f", jointDist: "f(x,y)",
   mgf: "M(t)", limitTheorems: "√n", bayes: "P(θ|x)", markov: "Pᵢⱼ", poissonProcess: "λt", brownian: "W(t)", readChart: "▁▃▅",
-  diagrams: "◕", average: "x̄", spread: "IQR", twoWay: "2×2", scatter: "⁘", correlation: "r", regression: "ŷ", hypothesis: "H₀", ci: "95%", estimators: "θ̂", mle: "L(θ)",
+  diagrams: "◕", average: "x̄", spread: "IQR", twoWay: "2×2", scatter: "⁘", sampling: "n/N", correlation: "r", regression: "ŷ", hypothesis: "H₀", ci: "95%", estimators: "θ̂", mle: "L(θ)",
   chiSquared: "χ²", anova: "F",
   // finance
   interestRates: "(1+r)ⁿ", amortisation: "PMT", npv: "NPV", bonds: "YTM", binomialPricing: "↗↘", optionPricing: "S−K",

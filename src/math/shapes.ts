@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function sampleFieldPreview(): Piece[] {
+  // A pond of fish, a few of them circled as a sample.
+  const fish: [number, number, boolean][] = [[40, 40, true], [90, 30, false], [140, 50, false], [190, 35, true], [60, 90, false], [115, 85, true], [170, 95, false], [220, 80, false], [80, 130, false], [150, 130, true], [205, 125, false]];
+  const body = (x: number, y: number, r: number) => poly(Array.from({ length: 10 }, (_, i) => [x + 1.4 * r * Math.cos((i * Math.PI) / 5), y + 0.8 * r * Math.sin((i * Math.PI) / 5)] as [number, number]), { fill: FILL.red, width: 1 });
+  return [
+    poly([[10, 10], [250, 10], [250, 160], [10, 160]], { width: 2 }),
+    ...fish.map(([x, y, red]) => body(x, y, red ? 9 : 6)),
+  ];
+}
+
 function fitLinePreview(): Piece[] {
   // Points about a line, with a square on each gap to it.
   const pts: [number, number, number][] = [[30, 120, 10], [70, 92, -14], [110, 96, 8], [150, 64, -10], [190, 60, 9], [230, 30, -8]];
@@ -2535,6 +2545,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBoxSplit", build: boxSplitPreview, live: "boxSplit" },
   { id: "liveTableShares", build: tableSharesPreview, live: "tableShares" },
   { id: "liveFitLine", build: fitLinePreview, live: "fitLine" },
+  { id: "liveSampleField", build: sampleFieldPreview, live: "sampleField" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

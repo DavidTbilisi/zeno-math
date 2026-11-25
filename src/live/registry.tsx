@@ -34,6 +34,7 @@ import { TwoChanges } from "./TwoChanges";
 import { BoxSplit } from "./BoxSplit";
 import { TableShares } from "./TableShares";
 import { FitLine } from "./FitLine";
+import { SampleField } from "./SampleField";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -238,6 +239,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   boxSplit: BoxSplit,
   tableShares: TableShares,
   fitLine: FitLine,
+  sampleField: SampleField,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,
