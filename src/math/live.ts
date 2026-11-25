@@ -17,6 +17,7 @@ import { runStart, type LiveRun } from "./gateRun";
 import { joinStart, type LiveJoin } from "./joinUp";
 import type { LiveWall } from "./fractionWall";
 import type { LiveEquiv } from "./equivMatch";
+import { SORT_START, type LiveSort } from "./shapeSort";
 import type { LiveOrder } from "./fracOrder";
 import type { LiveShade } from "./shadeFrac";
 import { STRIPES_START, type LiveStripes } from "./stripes";
@@ -570,6 +571,7 @@ export type LiveStates = {
   joinProduct: LiveJoin;
   fractionWall: LiveWall;
   equivMatch: LiveEquiv;
+  shapeSort: LiveSort;
   fracOrder: LiveOrder;
   shadeFrac: LiveShade;
   stripes: LiveStripes;
@@ -709,6 +711,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   joinProduct: [500, 620],
   fractionWall: [660, 400],
   equivMatch: [620, 480],
+  shapeSort: [660, 640],
   fracOrder: [720, 470],
   shadeFrac: [600, 610],
   stripes: [660, 680],
@@ -850,6 +853,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     joinProduct: joinStart("product"),
     fractionWall: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], best: 0, streak: 0, said: null },
     equivMatch: { mode: "puzzle", stage: 0, level: 1, seed: 1, cleared: [], picked: [], misses: 0, streak: 0, said: null },
+    shapeSort: SORT_START,
     fracOrder: { mode: "puzzle", stage: 0, level: 1, seed: 1, placed: [], sel: 0, checked: false, streak: 0, said: null },
     shadeFrac: { mode: "puzzle", stage: 0, level: 1, seed: 1, shaded: [], misses: 0, done: false, streak: 0, said: null },
     stripes: STRIPES_START,

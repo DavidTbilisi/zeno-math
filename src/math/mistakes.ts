@@ -976,5 +976,15 @@ export const MISTAKES = [
   "wholesLeftOut",
   "onlyOnePart",
   "dividedAsTimes",
+  "faceForSolid",
+  "onlyVisibleFaces",
+  "acuteObtuseSwapped",
+  "crossingIsPerpendicular",
+  "equalSidesMissed",
+  "oneAcuteAngle",
+  "namesExclusive",
+  "oneExampleEnough",
+  "nameTooGeneral",
+  "onlyOneName",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

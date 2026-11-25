@@ -19774,6 +19774,226 @@
       "input": "3/4",
       "label": "wrong",
       "mistake": "quotientFlipped"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 1,
+      "input": "cube",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 1,
+      "input": "square",
+      "label": "wrong",
+      "mistake": "faceForSolid"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 4,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "onlyVisibleFaces"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 4,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 7,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 7,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 19,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 19,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 20,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 20,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 1,
+      "input": "isosceles",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 1,
+      "input": "scalene",
+      "label": "wrong",
+      "mistake": "equalSidesMissed"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 4,
+      "input": "acute triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 6,
+      "input": "line",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 7,
+      "input": "acute",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 7,
+      "input": "obtuse",
+      "label": "wrong",
+      "mistake": "acuteObtuseSwapped"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 12,
+      "input": "parallel",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 1,
+      "input": "square",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 1,
+      "input": "parallelogram",
+      "label": "wrong",
+      "mistake": "nameTooGeneral"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 1,
+      "input": "rectangle",
+      "label": "wrong",
+      "mistake": "nameTooGeneral"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 1,
+      "input": "rhombus",
+      "label": "wrong",
+      "mistake": "nameTooGeneral"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "onlyOneName"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 7,
+      "input": "always",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 7,
+      "input": "never",
+      "label": "wrong",
+      "mistake": "namesExclusive"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 8,
+      "input": "sometimes",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 8,
+      "input": "always",
+      "label": "wrong",
+      "mistake": "oneExampleEnough"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 3,
+      "seed": 9,
+      "input": "never",
+      "label": "correct"
     }
   ]
 }

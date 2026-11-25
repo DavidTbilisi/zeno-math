@@ -34,6 +34,7 @@ import columnSums from "./columnSums";
 import longDivide from "./longDivide";
 import decimalTimes from "./decimalTimes";
 import fractionSums from "./fractionSums";
+import shapeKinds from "./shapeKinds";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -288,6 +289,7 @@ export const GENS: Record<SkillId, Gen> = {
   longDivide,
   decimalTimes,
   fractionSums,
+  shapeKinds,
   stackedFractions,
   ratio,
   rate,

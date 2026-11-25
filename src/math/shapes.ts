@@ -1061,6 +1061,17 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function shapeSortPreview(): Piece[] {
+  // Two overlapping rings, a square in the middle where they meet, a rectangle in one and a rhombus in the other.
+  return [
+    ellipse(70, 80, 70, 70, { color: BLUE, width: 2.5 }),
+    ellipse(140, 80, 70, 70, { color: "#e8590c", width: 2.5 }),
+    rect(91, 60, 28, 28, { fill: FILL.green, width: 2 }),
+    rect(18, 66, 40, 24, { fill: FILL.blue, width: 2 }),
+    poly([[160, 64], [192, 64], [182, 94], [150, 94]], { fill: FILL.yellow, width: 2 }),
+  ];
+}
+
 function cubeNetPreview(): Piece[] {
   // A cross of six squares, its opposite faces coloured alike.
   const s = 40;
@@ -2391,6 +2402,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveAngleGuess", build: angleGuessPreview, live: "angleGuess" },
   { id: "liveAngleHunt", build: angleHuntPreview, live: "angleHunt" },
   { id: "liveMirror", build: mirrorPreview, live: "mirror" },
+  { id: "liveShapeSort", build: shapeSortPreview, live: "shapeSort" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
