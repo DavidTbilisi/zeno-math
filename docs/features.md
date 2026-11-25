@@ -1107,6 +1107,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     errors added, n − 1 degrees of freedom for a slope and paired and two-sample designs mixed up are named. The
     piece *Fat tails* (Insert → Discrete & stats → Statistics, grades 12–13): drag the sample size and watch t's
     tails thin and its cut close in on 1.96, with how often a 1.96 interval would really catch the mean
+  - Reading a function (grades 8 and 10; #655): a function or not from an arrow diagram, and f(a) read from a graph
+    or a table; then the domain or range of a graph, an intercept, and where the function is increasing; then the
+    average rate of change, whether a table is linear (equal steps in y are not enough when the x gaps differ), and,
+    in a new setting, two phone plans given by a rule and by a table. Twelve slips are named, among them the graph
+    read backwards, the range read from the ends, positive taken for increasing and the start taken for the rate.
+    The piece *Chords on a curve* (Insert → Algebra → Functions, grades 8–10): drag two points along a curve that
+    rises, falls and rises; the chord shows its run and rise, and a flat chord has rate 0 though the curve moved
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

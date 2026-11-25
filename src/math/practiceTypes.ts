@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Reading a function (readFunction): prompts, options and steps. */
+  rfn: { isFunction: string; yesFn: string; noFn: string; fnStep: string; fGraph: string; fTable: string; rangeQ: string; domainQ: string; rangeStep: string; yIntQ: string; xIntQ: string; intStep: string; riseQ: string; riseStep: string; rateQ: string; linQ: string; linear: string; notLinear: string; linStep: string; planQ: string; planA: string; planB: string; months: string; cost: string; planStep: string; };
   /** t tests and a proportion (tTests): prompts, options and settings. */
   tts: { propQ: string; condQ: string; condYes: string; condNo: string; condStep: string; tQ: string; marginQ: string; pairedQ: string; runSetting: string; runA: string; runB: string; fieldSetting: string; fieldA: string; fieldB: string; };
   /** Two samples, errors and the slope (twoSample): prompts, options and settings. */
