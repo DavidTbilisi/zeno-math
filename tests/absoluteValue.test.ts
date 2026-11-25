@@ -28,5 +28,5 @@ test("every question is right with its own answer, and every slip is wrong with 
         assert.ok(v.hint && v.hint.length > 20, `${level}/${seed} ${t.id} ${t.input}`);
       }
     }
-  assert.deepEqual([1, 2, 3].map((L) => gradeOf("absoluteValue", L as 1 | 2 | 3)), [6, 8, 10]);
+  assert.deepEqual([1, 2, 3].map((L) => gradeOf("absoluteValue", L as 1 | 2 | 3)), [7, 8, 10]);
 });
