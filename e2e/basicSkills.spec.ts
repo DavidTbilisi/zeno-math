@@ -94,3 +94,16 @@ test("long division: the remainder written after the point is named, then the de
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
+
+test("decimals: tenths for the hundredths of a grid product is named, then the hundredths are correct", async ({ page, request }) => {
+  const { r, ex } = find("decimalTimes", 1, (e) => trapInputs(e).some((t) => t.id === "placesNotAdded"));
+  await practise(page, request, { tab: "Number", skill: w.skills.decimalTimes, level: "easy", r, prompt: ex.prompt });
+  // 0.3 × 0.4 answered 1.2: the point placed for one factor's tenths only.
+  const slip = ex.answer.traps!.find((t) => t.id === "placesNotAdded")!.a as { v: number };
+  await page.getByLabel("Your answer").fill(String(slip.v));
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Count the digits after the point in both")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});

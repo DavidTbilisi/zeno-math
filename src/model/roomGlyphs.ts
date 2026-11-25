@@ -20,7 +20,7 @@ const HOME_IDEA: Partial<Record<IdeaSkill, IdeaNode>> = {
 /** A mark for each skill on a roadmap that has no idea card of its own: its notation where it has one. */
 export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   // number
-  quickLook: "•••", compare: "3<5", ordinals: "№1", skipCount: "2·4·6", columnSums: "¹38+47", longDivide: "23)69", estimateLine: "⊢•⊣", closerTo: "≈?", time: "12:30", measure: "cm", money: "🪙",
+  quickLook: "•••", compare: "3<5", ordinals: "№1", skipCount: "2·4·6", columnSums: "¹38+47", longDivide: "23)69", decimalTimes: "0.3×0.4", estimateLine: "⊢•⊣", closerTo: "≈?", time: "12:30", measure: "cm", money: "🪙",
   barModels: "▭▭?", makeTarget: "→24", kakooma: "+=?", parity: "±±", currency: "€⇄$",
   placeValue: "3|4|5", addSubtract: "8+5", tables: "6×7", divide: "56÷7", squares: "√49", convert: "½=50%", stackedFractions: "½⁄3", areaPerimeter: "▭cm²",
   // fractions, ratio and percentages

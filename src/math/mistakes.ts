@@ -963,5 +963,13 @@ export const MISTAKES = [
   "remainderAfterPoint",
   "remainderLeftBehind",
   "partGroupCounted",
+  "placesNotAdded",
+  "pointDropped",
+  "pointNotEstimated",
+  "divisorOnlyScaled",
+  "powerTimesExponent",
+  "zerosTacked",
+  "timesAlwaysBigger",
+  "divideAlwaysSmaller",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

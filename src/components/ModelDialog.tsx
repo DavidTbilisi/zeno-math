@@ -21,7 +21,7 @@ import { Modal } from "./Modal";
 import { Segmented, Tabs, startOr } from "./ui";
 import { PlaceValueMat } from "./PlaceValueMat";
 import { ADD_LIMITS, ADD_STYLES, addCase, addStepCount, SUB_LIMITS, SUB_STYLES, subCase, type AddSpec, type SubSpec } from "../math/addition";
-import { MULTIPLY_LIMITS, MULTIPLY_STYLES, multiplyCase, stepCount, type MultiplySpec } from "../math/multiply";
+import { hundredths, MULTIPLY_LIMITS, MULTIPLY_STYLES, multiplyCase, stepCount, tenths, type MultiplySpec } from "../math/multiply";
 import { FRAC_OPS, fracOpStepCount, type FracOpSpec } from "../math/fracop";
 import { PERCENT_KINDS, percRatioStepCount, RATIO_KINDS, type PercRatioSpec } from "../math/percratio";
 import { useLiveSubmit } from "./ItemPanel";
@@ -326,17 +326,19 @@ function MultiplyEditor({ spec, onChange }: { spec: MultiplySpec; onChange: (s: 
     const l = MULTIPLY_LIMITS[style];
     onChange({ ...spec, style, a: Math.min(spec.a, l.a), b: Math.min(spec.b, l.b), step: 999 });
   };
-  const setNum = (k: "a" | "b", v: string) => onChange({ ...spec, [k]: clampInt(v, 0, lim[k]), step: 999 });
-  const special = multiplyCase(spec.a, spec.b);
+  // The grid counts tenths: 0.3 is typed, 3 is kept.
+  const grid = spec.style === "grid";
+  const setNum = (k: "a" | "b", v: string) => onChange({ ...spec, [k]: grid ? clampInt(String(Math.round(Number(v) * 10)), 0, lim[k]) : clampInt(v, 0, lim[k]), step: 999 });
+  const special = grid ? null : multiplyCase(spec.a, spec.b);
 
   return (
     <>
       <Segmented className="wrap" items={MULTIPLY_STYLES} value={spec.style} onChange={(s) => setStyle(s)} label={(s) => t.multStyles[s]} />
       <div className="range-grid mult-inputs">
-        <input type="number" min={0} max={lim.a} value={spec.a} aria-label="a" onChange={(e) => setNum("a", e.target.value)} />
+        <input type="number" min={0} max={grid ? lim.a / 10 : lim.a} step={grid ? 0.1 : 1} value={grid ? tenths(spec.a) : spec.a} aria-label="a" onChange={(e) => setNum("a", e.target.value)} />
         <span className="mult-sign">×</span>
-        <input type="number" min={0} max={lim.b} value={spec.b} aria-label="b" onChange={(e) => setNum("b", e.target.value)} />
-        <span className="mult-sign">= {spec.a * spec.b}</span>
+        <input type="number" min={0} max={grid ? lim.b / 10 : lim.b} step={grid ? 0.1 : 1} value={grid ? tenths(spec.b) : spec.b} aria-label="b" onChange={(e) => setNum("b", e.target.value)} />
+        <span className="mult-sign">= {grid ? hundredths(spec.a * spec.b) : spec.a * spec.b}</span>
       </div>
       <small className="hint">{t.multHint[spec.style]}</small>
       {special && (

@@ -18,7 +18,8 @@ test("the special cases of multiplication are named: times 0 and times 1, either
 });
 
 test("every style draws 0 and 1 as factors, with the product and the rule once every step is shown", () => {
-  for (const style of MULTIPLY_STYLES) {
+  // The grid counts tenths (3 is 0.3), so it is checked in tests/decimalTimes.test.ts.
+  for (const style of MULTIPLY_STYLES.filter((s) => s !== "grid")) {
     for (const [a, b] of [[0, 4], [3, 0], [0, 0], [1, 6], [5, 1], [3, 4]]) {
       const spec: MultiplySpec = { type: "multiply", style, a, b, step: 999 };
       const r = renderMultiply(spec);

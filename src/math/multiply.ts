@@ -1,11 +1,13 @@
 // Multiplication models, from counting to algebra: equal groups, arrays, number-line jumps
 // the place-value area model and the lattice (gelosia) method. a × b reads "a groups of b". `step` reveals the model
-// one group / row / jump / cell at a time (a large value shows everything). A factor may be 0: a groups of nothing,
+// one group / row / jump / cell at a time (a large value shows everything). In the grid a and b count tenths: unit
+// squares cut into hundredths, b tenths shaded one way and a tenths the other, the overlap is the product in
+// hundredths (0.3 × 0.4 = 12 × 0.01). A factor may be 0: a groups of nothing,
 // or no groups at all. Under a special case (× 0 or × 1) its rule is written in symbols, n × 0 = 0 or n × 1 = n.
 import type { RenderedSvg } from "./latex";
 
-export type MultiplyStyle = "groups" | "array" | "numberline" | "area" | "lattice";
-export const MULTIPLY_STYLES: MultiplyStyle[] = ["groups", "array", "numberline", "area", "lattice"];
+export type MultiplyStyle = "groups" | "array" | "numberline" | "area" | "lattice" | "grid";
+export const MULTIPLY_STYLES: MultiplyStyle[] = ["groups", "array", "numberline", "area", "lattice", "grid"];
 
 export type MultiplySpec = { type: "multiply"; style: MultiplyStyle; a: number; b: number; step: number };
 
@@ -15,7 +17,13 @@ export const MULTIPLY_LIMITS: Record<MultiplyStyle, { a: number; b: number }> = 
   numberline: { a: 10, b: 12 },
   area: { a: 999, b: 999 },
   lattice: { a: 99999, b: 99999 },
+  grid: { a: 30, b: 30 },
 };
+
+/** n tenths as a decimal: 4 → 0.4, 12 → 1.2, 30 → 3. */
+export const tenths = (n: number) => String(n / 10);
+/** n hundredths as a decimal: 12 → 0.12, 150 → 1.5. */
+export const hundredths = (n: number) => String(Number((n / 100).toFixed(2)));
 
 const INK = "#1e1e1e";
 const FONT = `font-family="Segoe UI, Helvetica, Arial, 'Noto Sans Georgian', Sylfaen, sans-serif"`;
@@ -68,6 +76,7 @@ export function multiplyRule(a: number, b: number): string | null {
 
 /** How many reveal steps a model has. */
 export function stepCount(spec: MultiplySpec): number {
+  if (spec.style === "grid") return 3; // b's tenths, a's tenths, the overlap counted
   if (spec.style === "area") return placeParts(spec.a).length * placeParts(spec.b).length;
   if (spec.style === "lattice") {
     const [m, n] = [String(spec.a).length, String(spec.b).length];
@@ -222,6 +231,56 @@ function area({ a, b }: MultiplySpec, k: number) {
 }
 
 /**
+ * Tenths times tenths on unit squares cut into a hundred: b tenths shaded down (blue), a tenths shaded across
+ * (yellow), and where they cross is the product, each small square a hundredth. Steps: b, a, the overlap.
+ */
+function grid({ a, b }: MultiplySpec, k: number) {
+  const [ua, ub] = [Math.max(1, Math.ceil(a / 10)), Math.max(1, Math.ceil(b / 10))];
+  const U = [200, 140, 100][Math.max(ua, ub) - 1];
+  const c = U / 10;
+  const x0 = PAD + 52;
+  const y0 = PAD + 34;
+  const [W, H] = [ub * U, ua * U];
+  const out: string[] = [];
+  const r1 = (v: number) => Math.round(v * 10) / 10;
+  const box = (col: number, row: number, cols: number, rows: number, fill: string, extra = "") =>
+    `<rect x="${r1(x0 + col * c)}" y="${r1(y0 + row * c)}" width="${r1(cols * c)}" height="${r1(rows * c)}" fill="${fill}"${extra}/>`;
+  out.push(box(0, 0, ub * 10, ua * 10, "#ffffff"));
+  if (k >= 1 && b) out.push(box(0, 0, b, ua * 10, "#74c0fc", ' fill-opacity="0.45"'));
+  if (k >= 2 && a) out.push(box(0, 0, ub * 10, a, "#ffd43b", ' fill-opacity="0.5"'));
+  if (k >= 3 && a && b) out.push(box(0, 0, b, a, "#8ce99a", ' stroke="#2f9e44" stroke-width="3"'));
+  // The hundredths, then the unit squares over them.
+  for (let i = 1; i < ub * 10; i++) if (i % 10) out.push(`<line x1="${r1(x0 + i * c)}" y1="${y0}" x2="${r1(x0 + i * c)}" y2="${y0 + H}" stroke="#adb5bd" stroke-width="0.8"/>`);
+  for (let i = 1; i < ua * 10; i++) if (i % 10) out.push(`<line x1="${x0}" y1="${r1(y0 + i * c)}" x2="${x0 + W}" y2="${r1(y0 + i * c)}" stroke="#adb5bd" stroke-width="0.8"/>`);
+  for (let i = 0; i < ua; i++) for (let j = 0; j < ub; j++) out.push(`<rect x="${x0 + j * U}" y="${y0 + i * U}" width="${U}" height="${U}" fill="none" stroke="${INK}" stroke-width="2"/>`);
+  if (k >= 1) {
+    out.push(`<line x1="${x0}" y1="${y0 - 8}" x2="${r1(x0 + b * c)}" y2="${y0 - 8}" stroke="#1971c2" stroke-width="3"/>`);
+    out.push(text(x0 + Math.max(b * c, 24) / 2, y0 - 14, tenths(b), { bold: true, size: 18, color: "#1971c2" }));
+  }
+  if (k >= 2) {
+    out.push(`<line x1="${x0 - 8}" y1="${y0}" x2="${x0 - 8}" y2="${r1(y0 + a * c)}" stroke="#e67700" stroke-width="3"/>`);
+    out.push(text(x0 - 14, y0 + (a * c) / 2 + 6, tenths(a), { anchor: "end", bold: true, size: 18, color: "#e67700" }));
+  }
+  if (k >= 3 && a && b) out.push(text(x0 + (b * c) / 2, y0 + (a * c) / 2 + 7, String(a * b), { bold: true, size: a * c < 22 || b * c < 30 ? 13 : 20, color: "#2b8a3e" }));
+  // One small square, the size of a hundredth, beside the grid.
+  const lx = x0 + W + 18;
+  out.push(`<rect x="${lx}" y="${y0}" width="${r1(c)}" height="${r1(c)}" fill="#8ce99a" stroke="#2f9e44" stroke-width="1.5"/>`);
+  out.push(text(lx + c + 6, y0 + c / 2 + 5, "= 0.01", { anchor: "start", size: 15 }));
+  const lines = [
+    k >= 1 ? { s: `${tenths(b)} = ${b} × 0.1`, color: "#1971c2" } : null,
+    k >= 2 ? { s: `${tenths(a)} = ${a} × 0.1`, color: "#e67700" } : null,
+    { s: k >= 3 ? `${tenths(a)} × ${tenths(b)} = ${a * b} × 0.01 = ${hundredths(a * b)}` : `${tenths(a)} × ${tenths(b)} = ?`, color: k >= 3 ? "#2b8a3e" : INK },
+  ].filter((l): l is { s: string; color: string } => !!l);
+  let y = y0 + H + 34;
+  for (const l of lines) {
+    out.push(text(PAD, y, l.s, { anchor: "start", size: 20, bold: true, color: l.color }));
+    y += 30;
+  }
+  const wide = Math.max(lx + c + 70, ...lines.map((l) => PAD * 2 + width(l.s, 20)));
+  return wrap(wide, y - 10 + PAD, out.join(""));
+}
+
+/**
  * Lattice (gelosia) multiplication: a's digits across the top, b's down the right. Each cell holds
  * the product of its two digits, tens above the diagonal and units below; the diagonal bands are
  * then added from the bottom right, carrying into the next band, and the answer is read down the
@@ -317,7 +376,8 @@ export function renderMultiply(spec: MultiplySpec): RenderedSvg {
   const n = stepCount(spec);
   const k = Math.max(0, Math.min(spec.step, n));
   const pic = drawStyle(spec, k);
-  const rule = k >= n ? multiplyRule(spec.a, spec.b) : null;
+  // In the grid the numbers are tenths, so 1 there is 0.1 and the rule for × 1 does not apply.
+  const rule = k >= n && spec.style !== "grid" ? multiplyRule(spec.a, spec.b) : null;
   return rule ? withRule(pic, rule) : pic;
 }
 
@@ -333,6 +393,8 @@ function drawStyle(spec: MultiplySpec, k: number): RenderedSvg {
       return area(spec, k);
     case "lattice":
       return lattice(spec, k);
+    case "grid":
+      return grid(spec, k);
   }
 }
 
