@@ -26893,6 +26893,562 @@
       "seed": 12,
       "input": "11.71",
       "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 1,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "sidesSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "It is −2",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "It is 1",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 3,
+      "input": "It is 0",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 3,
+      "input": "It is 2",
+      "label": "wrong",
+      "mistake": "limitAsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 3,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "valueBreaksLimit"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "It is −3",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "It is −5",
+      "label": "wrong",
+      "mistake": "limitAsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "valueBreaksLimit"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "It is −3",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "It is −6",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 1,
+      "input": "An asymptote (infinite)",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 2,
+      "input": "A jump",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 2,
+      "input": "A hole (removable)",
+      "label": "wrong",
+      "mistake": "jumpCalledRemovable"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 4,
+      "input": "A hole (removable)",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 4,
+      "input": "An asymptote (infinite)",
+      "label": "wrong",
+      "mistake": "denominatorZeroInfinite"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "kNotDivided"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "slopesMatched"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 7,
+      "input": "No break: continuous",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 7,
+      "input": "A jump",
+      "label": "wrong",
+      "mistake": "piecesAlwaysJump"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 1,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 1,
+      "input": "It does not exist: cos(1 ÷ x) keeps swinging",
+      "label": "wrong",
+      "mistake": "swingNotSqueezed"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "sidesSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 7,
+      "input": "No: f is not continuous there",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 7,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "ivtNoContinuity"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 8,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 8,
+      "input": "No: f does not keep rising or keep falling",
+      "label": "wrong",
+      "mistake": "ivtNeedsMonotone"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 10,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 10,
+      "input": "It does not exist: cos(1 ÷ x) keeps swinging",
+      "label": "wrong",
+      "mistake": "swingNotSqueezed"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 1,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "sidesSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "It is −2",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "It is 1",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 3,
+      "input": "It is 0",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 3,
+      "input": "It is 2",
+      "label": "wrong",
+      "mistake": "limitAsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 3,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "valueBreaksLimit"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "It is −3",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "It is −5",
+      "label": "wrong",
+      "mistake": "limitAsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "valueBreaksLimit"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "It is −3",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "It is −6",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 1,
+      "input": "An asymptote (infinite)",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 2,
+      "input": "A jump",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 2,
+      "input": "A hole (removable)",
+      "label": "wrong",
+      "mistake": "jumpCalledRemovable"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 4,
+      "input": "A hole (removable)",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 4,
+      "input": "An asymptote (infinite)",
+      "label": "wrong",
+      "mistake": "denominatorZeroInfinite"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "kNotDivided"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "slopesMatched"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 7,
+      "input": "No break: continuous",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 7,
+      "input": "A jump",
+      "label": "wrong",
+      "mistake": "piecesAlwaysJump"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 1,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 1,
+      "input": "It does not exist: cos(1 ÷ x) keeps swinging",
+      "label": "wrong",
+      "mistake": "swingNotSqueezed"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "sidesSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 7,
+      "input": "No: f is not continuous there",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 7,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "ivtNoContinuity"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 8,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 8,
+      "input": "No: f does not keep rising or keep falling",
+      "label": "wrong",
+      "mistake": "ivtNeedsMonotone"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 10,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 10,
+      "input": "It does not exist: cos(1 ÷ x) keeps swinging",
+      "label": "wrong",
+      "mistake": "swingNotSqueezed"
     }
   ]
 }

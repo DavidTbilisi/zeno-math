@@ -1228,5 +1228,18 @@ export const MISTAKES = [
   "areaHalfForgotten",
   "accelerationAsVelocity",
   "topForLanding",
+  "limitAsValue",
+  "valueBreaksLimit",
+  "oneSideTaken",
+  "sidesSwapped",
+  "denominatorZeroInfinite",
+  "jumpCalledRemovable",
+  "piecesAlwaysJump",
+  "kNotDivided",
+  "slopesMatched",
+  "ivtNeedsMonotone",
+  "ivtSameSignRoot",
+  "ivtNoContinuity",
+  "swingNotSqueezed",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
