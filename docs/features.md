@@ -1121,6 +1121,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     for chairs and shelves) as an inequality. Ten slips are named. The piece *Test the points* (Insert → Algebra →
     Functions, grades 8–10): tap grid points to test them in y < 2x + 1, x + y ≥ 3 or x − y > 2; green for true,
     red for false, and after eight tests with one on the line the region shades in, its line solid or dashed
+  - Exponential growth and decay (grades 10 and 12; #657): the growth factor from a table, linear or exponential,
+    and the value after n doublings or triplings; then b of a·bˣ from two points, a town or a car after years at
+    r % up or down, and a dose after some half-lives; then the time to reach a value by logs, the monthly rate that
+    matches a yearly one, and, in a new setting, money growing continuously with e. Ten slips are named, among them
+    simple growth for compound, the hours used as half-lives and the yearly rate divided by 12. The piece *The
+    growth race* (Insert → Algebra → Functions, grades 10–12): a plant adding 40 cm a day against one growing by
+    10–50 % a day from 10 cm; drag the day and watch the multiplying plant's steps grow until it overtakes
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

@@ -1128,5 +1128,15 @@ export const MISTAKES = [
   "oneInequalityOnly",
   "atMostAsAtLeast",
   "costsSwapped",
+  "factorAsDifference",
+  "growthKindSwapped",
+  "factorTimesSteps",
+  "ratioNotRooted",
+  "simpleNotCompound",
+  "decayAsGrowth",
+  "halfLifeHours",
+  "halvesDivided",
+  "monthlyByDivide",
+  "yearlyForContinuous",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

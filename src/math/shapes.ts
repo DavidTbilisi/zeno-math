@@ -1061,6 +1061,12 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function growthRacePreview(): Piece[] {
+  // A straight line overtaken by a curve that bends upward.
+  const curve = Array.from({ length: 23 }, (_, i) => [20 + i * 10, 150 - 4 * 1.17 ** i] as [number, number]);
+  return [poly([[20, 120], [240, 60]], { width: 3 }), poly(curve, { width: 3 }), poly([[20, 150], [240, 150]], { width: 1.5 })];
+}
+
 function testPointsPreview(): Piece[] {
   // A dashed boundary with the region below it shaded.
   return [
@@ -2575,6 +2581,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTTails", build: tTailsPreview, live: "tTails" },
   { id: "liveSecantRate", build: secantRatePreview, live: "secantRate" },
   { id: "liveTestPoints", build: testPointsPreview, live: "testPoints" },
+  { id: "liveGrowthRace", build: growthRacePreview, live: "growthRace" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
