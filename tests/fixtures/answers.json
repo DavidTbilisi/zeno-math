@@ -22530,6 +22530,156 @@
       "input": "Yes: the shares who play differ",
       "label": "wrong",
       "mistake": "assocByCounts"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 1,
+      "input": "D",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 1,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "outlierExtreme"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 6,
+      "input": "Positive",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 6,
+      "input": "Negative",
+      "label": "wrong",
+      "mistake": "directionReversed"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 1,
+      "input": "Each extra hour adds about 4 marks",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 1,
+      "input": "With no revision the mark is about 10",
+      "label": "wrong",
+      "mistake": "slopeAsIntercept"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 1,
+      "input": "Each extra mark takes about 4 hours",
+      "label": "wrong",
+      "mistake": "slopePerMark"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 2,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 2,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "predictNoIntercept"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 2,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 1,
+      "input": "Line B: y = x + 3",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 1,
+      "input": "Line A: y = −0.5x + 6.5",
+      "label": "wrong",
+      "mistake": "fitByOnePoint"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 2,
+      "input": "No: both go up on hot days",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 2,
+      "input": "Yes: the association is strong",
+      "label": "wrong",
+      "mistake": "correlationCause"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 5,
+      "input": "No: bigger fires bring more engines and do more damage",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 5,
+      "input": "Yes: the association is strong",
+      "label": "wrong",
+      "mistake": "correlationCause"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 7,
+      "input": "−9",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "residualSign"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 20,
+      "input": "No: older children have bigger feet and read better",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 20,
+      "input": "Yes: the association is strong",
+      "label": "wrong",
+      "mistake": "correlationCause"
     }
   ]
 }

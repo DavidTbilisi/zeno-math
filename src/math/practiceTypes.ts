@@ -392,6 +392,13 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Scatter plots and lines of fit (scatter): the axes, the prompts, the meanings offered and the three causal settings. */
+  scat: {
+    hours: string; mark: string; positive: string; negative: string; none: string; climb: string; fall: string; climbs: string; falls: string;
+    noPattern: string; direction: string; outlier: string; offTrend: string; predict: string; slopeQ: string; interceptQ: string;
+    slopeMeans: string; interceptMeans: string; slopeBackwards: string; residual: string; lineName: string; better: string; iceQ: string;
+    iceNo: string; iceZ: string; shoeQ: string; shoeNo: string; shoeZ: string; fireQ: string; fireNo: string; fireZ: string; yesStrong: string;
+  };
   /** Two-way tables (twoWay): the headings, the prompts and the names of the choices. */
   twy: {
     y7: string; y8: string; sport: string; noSport: string; total: string; walk: string; bus: string; late: string; onTime: string;

@@ -1078,6 +1078,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     Statistics, grades 8–10): tap a count in the table and three bars show it out of its row, its column and
     everyone; under the table each year is a bar split into who plays and who doesn't, and changing Year 8's numbers
     until the two splits line up shows no association though the counts differ
+  - Scatter plots and lines of fit (grades 8 and 10; #652): the direction of an association and the point that does
+    not follow the pattern; then a prediction from the line of fit and what its slope and intercept mean; then a
+    residual, which of two lines fits better by the sum of the squared residuals, and, in a new setting (ice creams
+    and swimmers, shoe size and reading, fire engines and damage), whether a strong association shows a cause. The
+    direction read backwards, the far point taken for the odd one, the intercept left out, the slope and the
+    intercept swapped or the slope read as hours per mark, the residual's sign, the fit judged by one point and
+    cause read from association are named. The piece *Squares on the residuals* (Insert → Discrete & stats →
+    Statistics, grades 8–12): drag the two ends of a line through the points while each residual is drawn as a red
+    square; shrink the total to the least it can be, and that line is the line of best fit, its residuals balancing
+    above and below. A third set has a point far off the pattern, which pulls the line
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

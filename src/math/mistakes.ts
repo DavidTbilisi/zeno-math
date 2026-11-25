@@ -1073,5 +1073,14 @@ export const MISTAKES = [
   "shareOfAll",
   "assocByCounts",
   "likelyByCount",
+  "directionReversed",
+  "outlierExtreme",
+  "predictNoIntercept",
+  "slopeAsIntercept",
+  "slopePerMark",
+  "interceptAsSlope",
+  "residualSign",
+  "fitByOnePoint",
+  "correlationCause",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
