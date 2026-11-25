@@ -1061,6 +1061,19 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function parallelLabPreview(): Piece[] {
+  // Two parallel lines and a transversal, the equal angles at both crossings shaded alike.
+  return [
+    seg([0, 50], [200, 50], { color: BLUE, width: 3 }),
+    seg([0, 130], [200, 130], { color: BLUE, width: 3 }),
+    poly([[116, 50], [146, 50], [136.6, 36.6]], { fill: FILL.violet, width: 1 }),
+    poly([[70, 130], [100, 130], [90.6, 116.6]], { fill: FILL.violet, width: 1 }),
+    poly([[116, 50], [86, 50], [102.8, 64.8]], { fill: FILL.green, width: 1 }),
+    poly([[70, 130], [40, 130], [56.8, 144.8]], { fill: FILL.green, width: 1 }),
+    seg([30, 160], [150, 20], { width: 3 }),
+  ];
+}
+
 function shapeSortPreview(): Piece[] {
   // Two overlapping rings, a square in the middle where they meet, a rectangle in one and a rhombus in the other.
   return [
@@ -2403,6 +2416,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveAngleHunt", build: angleHuntPreview, live: "angleHunt" },
   { id: "liveMirror", build: mirrorPreview, live: "mirror" },
   { id: "liveShapeSort", build: shapeSortPreview, live: "shapeSort" },
+  { id: "liveParallelLab", build: parallelLabPreview, live: "parallelLab" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

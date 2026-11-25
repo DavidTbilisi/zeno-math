@@ -52,6 +52,7 @@ import type { LiveAngleHunt } from "./missingAngle";
 import type { LiveTrigBuild } from "./trigBuild";
 import type { LiveUnitCircle } from "./unitCircleGame";
 import { SLOPE_WALK_START, type LiveSlopeWalk } from "./slopeWalk";
+import { PARALLEL_LAB_START, type LiveParallelLab } from "./parallelAngles";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -614,6 +615,7 @@ export type LiveStates = {
   trigBuild: LiveTrigBuild;
   unitCircleGame: LiveUnitCircle;
   slopeWalk: LiveSlopeWalk;
+  parallelLab: LiveParallelLab;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -754,6 +756,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   trigBuild: [600, 780],
   unitCircleGame: [520, 760],
   slopeWalk: [680, 820],
+  parallelLab: [680, 640],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -896,6 +899,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     trigBuild: { mode: "puzzle", stage: 0, level: 1, seed: 1, at: 0, misses: 0, done: false, streak: 0, said: null },
     unitCircleGame: { mode: "puzzle", stage: 0, level: 1, seed: 1, p: 0, placed: false, found: [], misses: 0, done: false, streak: 0, said: null },
     slopeWalk: SLOPE_WALK_START,
+    parallelLab: PARALLEL_LAB_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

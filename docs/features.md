@@ -965,6 +965,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     angle, then around a point or in a triangle, then an isosceles triangle's base angle from its top one, or a
     quadrilateral's last angle. The wrong total (360° for a line, 180° for a whole turn) and an isosceles triangle's
     two base angles not shared out are named; the worked solution draws the figure with the angle filled in
+  - Angles on parallel lines (grade 7; #640): two lines crossing (vertically opposite, on a line), a right angle
+    split in two and the complement or supplement of an angle; then two parallel lines and a transversal, an angle
+    found at the other crossing (corresponding, alternate, co-interior) or the pair named; then a triangle's outside
+    angle, two angles written with x that give an equation, and a line bent between two parallels, whose bend a
+    parallel through the corner splits in two. Equal angles taken to make 180° (and the other way round), complement
+    and supplement swapped, a pair misnamed, the inside angle given for the outside one and the bend taken for a
+    triangle's corner are named. The piece *Parallel lines* (Insert → Geometry → plane geometry, grades 5–8) turns
+    the transversal by its end: the eight angles stay two sizes in two colours, a tapped angle names its partners;
+    its triangle view slides the top corner along the parallel, and the base angles reappear beside it, filling the
+    straight line with the triangle's three angles
   - Shapes and their properties (grades 1, 4 and 5; #639): flat shapes and solids named and the sides and corners
     of a polygon counted, the faces, edges and corners of a cube, cuboid, pyramid or prism; then angles (acute, right,
     obtuse), a line, a ray or a segment, two lines parallel, perpendicular or crossing, and triangles named by their
