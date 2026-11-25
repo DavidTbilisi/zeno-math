@@ -19589,6 +19589,191 @@
       "seed": 12,
       "input": "10007",
       "label": "wrong"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 1,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 2,
+      "input": "3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 2,
+      "input": "4/3",
+      "label": "wrong",
+      "mistake": "quotientFlipped"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 7,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 7,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "addAcross"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 7,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 2,
+      "seed": 1,
+      "input": "5/4",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 2,
+      "seed": 1,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "wholesLeftOut"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 2,
+      "seed": 2,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 2,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "onlyOnePart"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 2,
+      "seed": 2,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 2,
+      "seed": 7,
+      "input": "14/15",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 2,
+      "seed": 7,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "addAcross"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 1,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "dividedAsTimes"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 1,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 2,
+      "input": "1/12",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 2,
+      "input": "4/3",
+      "label": "wrong",
+      "mistake": "dividedAsTimes"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 3,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 3,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "dividedAsTimes"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 3,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 7,
+      "input": "1/12",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 7,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "dividedAsTimes"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 31,
+      "input": "4/3",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 3,
+      "seed": 31,
+      "input": "3/4",
+      "label": "wrong",
+      "mistake": "quotientFlipped"
     }
   ]
 }

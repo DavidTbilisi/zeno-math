@@ -567,6 +567,8 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "foCancel", spec: { type: "fracop", op: "×", a: "8/15", b: "5/12", step: 999 } },
     { key: "foDiv", spec: { type: "fracop", op: "÷", a: "3/4", b: "1/8", step: 999 } },
     { key: "foDivMixed", spec: { type: "fracop", op: "÷", a: "2 1/2", b: "3/4", step: 999 } },
+    { key: "foShare", spec: { type: "fracop", op: "÷", a: "3", b: "4", step: 0, pic: "share" } },
+    { key: "foOf", spec: { type: "fracop", op: "×", a: "2/3", b: "12", step: 0, pic: "of" } },
   ],
   placeValue: [
     { key: "pvEmpty", spec: { type: "placeValue", h: 0, t: 0, o: 0, showTotal: true } },

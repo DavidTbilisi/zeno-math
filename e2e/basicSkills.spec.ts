@@ -3,7 +3,8 @@
 // stacked fraction divided at the short bar (named), then at the long one; a count in steps carried on by one (named),
 // then by its step; a written difference across zeros with the zero left at ten (named), then the answer typed in
 // threes; a long division with the remainder written after the point (named), then the decimal; a grid product of
-// tenths answered in tenths (named), then in hundredths.
+// tenths answered in tenths (named), then in hundredths; a division written as a fraction upside down (named), then the
+// right way up.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { exercise, trapInputs, type Exercise, type Level, type SkillId } from "../src/math/practice.ts";
@@ -104,6 +105,17 @@ test("decimals: tenths for the hundredths of a grid product is named, then the h
   await page.getByLabel("Your answer").fill(String(slip.v));
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Count the digits after the point in both")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("fractions: 3 ÷ 4 read the wrong way round is named, then the fraction is correct", async ({ page, request }) => {
+  const { r, ex } = find("fractionSums", 1, (e) => e.prompt === w.fracSums.asFraction && trapInputs(e).length > 0);
+  await practise(page, request, { tab: "Number", skill: w.skills.fractionSums, level: "easy", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(trapInputs(ex)[0].input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("would be", { exact: false })).toBeVisible();
   await page.getByLabel("Your answer").fill(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
