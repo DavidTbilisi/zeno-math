@@ -22075,6 +22075,289 @@
       "seed": 7,
       "input": "7007",
       "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 1,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 1,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "modeAsCount"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 2,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "histOneBar"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "histOneBar"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 2,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "dotIncludesEqual"
+    },
+    {
+      "skill": "spread",
+      "level": 1,
+      "seed": 7,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 1,
+      "input": "21",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 1,
+      "input": "28",
+      "label": "wrong",
+      "mistake": "iqrAsRange"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 4,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 4,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "madSigned"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 4,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "madNotDivided"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 4,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 6,
+      "input": "34",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 6,
+      "input": "38",
+      "label": "wrong",
+      "mistake": "iqrAsRange"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 6,
+      "input": "41",
+      "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 7,
+      "input": "17",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 7,
+      "input": "23",
+      "label": "wrong",
+      "mistake": "medianUnsorted"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 7,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "quartileWithMedian"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 7,
+      "input": "24",
+      "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 8,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 8,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "medianUnsorted"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 8,
+      "input": "19/2",
+      "label": "wrong",
+      "mistake": "quartileWithMedian"
+    },
+    {
+      "skill": "spread",
+      "level": 2,
+      "seed": 8,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 1,
+      "input": "It stays the same",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 1,
+      "input": "It goes up",
+      "label": "wrong",
+      "mistake": "medianMoves"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 2,
+      "input": "It stays the same",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 2,
+      "input": "It goes up",
+      "label": "wrong",
+      "mistake": "medianMoves"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 4,
+      "input": "Class A",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 4,
+      "input": "Class B",
+      "label": "wrong",
+      "mistake": "spreadByRange"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 5,
+      "input": "It stays the same",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 5,
+      "input": "It goes up",
+      "label": "wrong",
+      "mistake": "medianMoves"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 7,
+      "input": "55",
+      "label": "correct"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 7,
+      "input": "49",
+      "label": "wrong",
+      "mistake": "fenceFromMedian"
+    },
+    {
+      "skill": "spread",
+      "level": 3,
+      "seed": 7,
+      "input": "62",
+      "label": "wrong"
     }
   ]
 }

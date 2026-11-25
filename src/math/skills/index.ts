@@ -45,6 +45,7 @@ import crossSections from "./crossSections";
 import realNumbers from "./realNumbers";
 import absoluteValue from "./absoluteValue";
 import moneySense from "./moneySense";
+import spread from "./spread";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -310,6 +311,7 @@ export const GENS: Record<SkillId, Gen> = {
   realNumbers,
   absoluteValue,
   moneySense,
+  spread,
   stackedFractions,
   ratio,
   rate,

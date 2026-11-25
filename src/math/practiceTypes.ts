@@ -392,6 +392,12 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Spread (spread): the prompts, the axis labels and the names of the choices. */
+  spr: {
+    hist: string; histAxis: string; dotAxis: string; dotMode: string; dotMore: string; tallest: string; mad: string; boxIqr: string;
+    halves: string; iqrList: string; q1: string; q3: string; fence: string; meanChange: string; medianChange: string; stays: string;
+    goesUp: string; middleStays: string; classA: string; classB: string; compare: string;
+  };
   /** Everyday money (moneySense): the prompts and the names of the choices. */
   shop: {
     discount: string; tip: string; tax: string; interest: string; offOff: string; upDown: string; markup: string; bands: string;

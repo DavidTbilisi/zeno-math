@@ -31,6 +31,7 @@ import { CoinStack } from "./CoinStack";
 import { RootZoom } from "./RootZoom";
 import { AbsLine } from "./AbsLine";
 import { TwoChanges } from "./TwoChanges";
+import { BoxSplit } from "./BoxSplit";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -232,6 +233,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   rootZoom: RootZoom,
   absLine: AbsLine,
   twoChanges: TwoChanges,
+  boxSplit: BoxSplit,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,
