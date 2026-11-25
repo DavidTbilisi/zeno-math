@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function fitLinePreview(): Piece[] {
+  // Points about a line, with a square on each gap to it.
+  const pts: [number, number, number][] = [[30, 120, 10], [70, 92, -14], [110, 96, 8], [150, 64, -10], [190, 60, 9], [230, 30, -8]];
+  const at = (x: number) => 130 - x * 0.45;
+  return [
+    poly([[20, at(20)], [250, at(250)]], { width: 2.5 }),
+    ...pts.map(([x, , d]) => poly([[x, at(x)], [x + Math.abs(d), at(x)], [x + Math.abs(d), at(x) - d], [x, at(x) - d]], { fill: FILL.red, width: 1 })),
+  ];
+}
+
 function tableSharesPreview(): Piece[] {
   // A 3 × 3 table, and under it two bars split at different places.
   const cell = (x: number, y: number, fill?: string): Piece => poly([[x, y], [x + 60, y], [x + 60, y + 26], [x, y + 26]], { fill, width: 1 });
@@ -2524,6 +2534,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTwoChanges", build: twoChangesPreview, live: "twoChanges" },
   { id: "liveBoxSplit", build: boxSplitPreview, live: "boxSplit" },
   { id: "liveTableShares", build: tableSharesPreview, live: "tableShares" },
+  { id: "liveFitLine", build: fitLinePreview, live: "fitLine" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

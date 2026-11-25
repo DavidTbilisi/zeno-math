@@ -48,7 +48,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "statistics", shelf: "school", icon: "📊",
-    skills: ["readChart", "diagrams", "average", "spread", "twoWay", "ci", "correlation", "hypothesis", "estimators", "mle", "regression", "chiSquared", "anova"],
+    skills: ["readChart", "diagrams", "average", "spread", "twoWay", "scatter", "ci", "correlation", "hypothesis", "estimators", "mle", "regression", "chiSquared", "anova"],
     sections: ["secStatistics", "senseChart"],
   },
   {
