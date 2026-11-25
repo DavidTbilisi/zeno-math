@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function constructPreview(): Piece[] {
+  // A segment, two compass arcs crossing above and below it, and the bisector through the crossings.
+  return [
+    path(arc(55, 100, 90, 90, -55, 55), { color: "#e8590c", width: 2 }),
+    path(arc(165, 100, 90, 90, 125, 235), { color: "#e8590c", width: 2 }),
+    seg([55, 100], [165, 100], { width: 4 }),
+    seg([110, 15], [110, 185], { color: "#1971c2", width: 2.5 }),
+  ];
+}
+
 function buildTrianglePreview(): Piece[] {
   // A base, a dashed circle and a dashed ray from its ends, and the triangle where they meet.
   return [
@@ -2441,6 +2451,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveParallelLab", build: parallelLabPreview, live: "parallelLab" },
   { id: "liveMoveShape", build: moveShapePreview, live: "moveShape" },
   { id: "liveBuildTriangle", build: buildTrianglePreview, live: "buildTriangle" },
+  { id: "liveConstruct", build: constructPreview, live: "construct" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

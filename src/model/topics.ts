@@ -27,7 +27,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "geometry", shelf: "start", icon: "△",
-    skills: ["shapeKinds", "shapeArea", "areaPerimeter", "estimateAngle", "missingAngle", "parallelAngles", "pythagoras", "triangleInequality", "symmetryLines", "transformations", "congruence", "cubeNets", "circles", "powerPoint", "arcs", "similarity", "volume"],
+    skills: ["shapeKinds", "shapeArea", "areaPerimeter", "estimateAngle", "missingAngle", "parallelAngles", "pythagoras", "triangleInequality", "symmetryLines", "transformations", "congruence", "constructions", "cubeNets", "circles", "powerPoint", "arcs", "similarity", "volume"],
     sections: ["secMeasuring", "secPlane", "secSolids", "senseShape"],
   },
   {

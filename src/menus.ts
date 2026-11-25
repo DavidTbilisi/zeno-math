@@ -68,6 +68,7 @@ export const MENUS: MenuGroup[] = [
           { live: "parallelLab", icon: "∥" },
           { live: "moveShape", icon: "⇄" },
           { live: "buildTriangle", icon: "≅" },
+          { live: "construct", icon: "⌒" },
           { kind: "geometry", icon: "📐", label: "geometry" },
           { kind: "euclid", icon: "⊙", label: "euclidTool" },
         ],
