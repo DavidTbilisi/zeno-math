@@ -68,7 +68,9 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - *Fraction operations*: + − × ÷ with whole numbers, fractions, mixed numbers and decimals, step by step —
     lowest common denominator (lcm), cross-cancelling (with struck-out factors), keep–change–flip, simplifying by
     the gcd and back to a mixed number; bars on the common denominator, the area model for ×, and
-    "how many times does it fit" for ÷
+    "how many times does it fit" for ÷. Two more pictures for the same working: **sharing** (3 ÷ 4 as three wholes
+    shared among four, each whole cut into quarters and one share, a piece of each, picked out; 1/3 ÷ 4 = 1/12 the
+    same way) and **a fraction of a number** (2/3 of 12 as twelve counters in three equal rows, two rows picked out)
   - *Percentages & ratios*: step-by-step solvers with Singapore bar models — p% of a number (the 1% method),
     what percent, the whole from a part, increase/decrease with a multiplier, percentage change, reverse
     percentages (with the classic mistake shown in red), simple vs compound interest; simplifying ratios (also
@@ -820,6 +822,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       what is left after spending (the smaller digit taken from the larger in each column named), then a few things
       bought and the change (paying for one of each named). Amounts are in dollars in English, lari and tetri in
       Georgian, roubles and kopecks in Russian
+    - *Adding fractions and a fraction of a number* (grades 4 and 5; #638), the staged way in before *fractions*:
+      the same bottoms added and taken away on bars, and a division written as a fraction (3 ÷ 4 = 3/4, shared on
+      bars); then different bottoms, mixed numbers, and a fraction of a whole number on rows of counters (2/3 of 12);
+      then a unit fraction divided by a whole number (1/3 ÷ 4, shared) and a whole number by a unit fraction (6 ÷ 1/2,
+      how many fit), bare and as stories: a piece of cake shared among friends, servings of rice, pizzas shared. The
+      answer is in lowest terms. Tops and bottoms added or taken away, the division read the wrong way round (4/3 for
+      3 ÷ 4), the wholes left out, one part of the number given for all of them, and dividing done as multiplying are
+      named
     - *Decimals*: adding and subtracting with one or two places (the last digits lined up instead of the points
       named), then × and ÷ by 10, 100 or 1000 and by a one-digit number, then measurements from one unit to the other
       (km and m, m and cm, kg and g, ℓ and ml) and a whole number divided by a whole number as a decimal, exact or to 2

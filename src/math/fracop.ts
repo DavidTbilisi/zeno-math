@@ -9,8 +9,13 @@ import { overTex } from "./practiceKit";
 
 export type FracOp = "+" | "-" | "×" | "÷";
 export const FRAC_OPS: FracOp[] = ["+", "-", "×", "÷"];
-/** `over`: a division written as a stacked fraction, a over b. The working begins by reading the long bar as ÷. */
-export type FracOpSpec = { type: "fracop"; op: FracOp; a: string; b: string; step: number; over?: boolean };
+/**
+ * `over`: a division written as a stacked fraction, a over b. The working begins by reading the long bar as ÷.
+ * `pic`: another picture for the same working. "share": a ÷ n as a shared among n, every piece of a cut into n and
+ * one share picked out (3 ÷ 4 = 3/4, 1/3 ÷ 4 = 1/12). "of": a fraction times a whole number as that fraction of so
+ * many counters, put in equal rows (2/3 of 12 = 8).
+ */
+export type FracOpSpec = { type: "fracop"; op: FracOp; a: string; b: string; step: number; over?: boolean; pic?: "share" | "of" };
 
 type Q = { n: number; d: number }; // not reduced: the numbers as the pupil writes them
 type Parsed = { q: Q; tex: string; convert: string | null };
@@ -190,6 +195,48 @@ function bars(x: number, y: number, w: number, h: number, parts: number, runs: {
 /** The most wholes a row of bars may take up before the picture is left out. */
 const MAX_WHOLES = 8;
 
+/**
+ * a ÷ n as sharing: each of a's pieces (or each whole, when a is whole) cut into n, and one share, a piece of each,
+ * picked out in green. The share is a's top count of pieces n times smaller: 3 ÷ 4 = 3 × 1/4, 1/3 ÷ 4 = 1/12.
+ */
+function sharePicture(a: Q, n: number, res: { tex: string }): { svg: string; h: number } | null {
+  const L = a.d * n;
+  const wholes = Math.max(1, Math.ceil(a.n / a.d));
+  if (wholes > 6 || L > 60 || n > 12) return null;
+  const out: string[] = [];
+  // Every small piece of a: the first of each n (one per piece of a) is the share.
+  const runs = Array.from({ length: a.n }, () => [{ count: 1, c: GREEN }, { count: n - 1, c: BLUE }]).flat();
+  const row = bars(24, 8, W - 48, 46, L, runs, wholes, n, wholes);
+  out.push(row.svg);
+  for (let i = 0; i < a.n; i++) {
+    const x = (row.xAt(i * n) + row.xAt(i * n + 1)) / 2;
+    out.push(`<circle cx="${r2(x)}" cy="31" r="5" fill="${C.green}"/>`);
+  }
+  const share = fr(a.n, L);
+  out.push(texAt(`${a.d === 1 ? a.n : fr(a.n, a.d)} \\div ${n}:\\ ${a.n} \\times ${fr(1, L)} = ${share}${res.tex !== share ? ` = ${res.tex}` : ""}`, W / 2, 96, "middle", 0.95, C.green).svg);
+  return { svg: out.join(""), h: 120 };
+}
+
+/** k/d of N counters: N in d equal rows, k rows picked out in green; one row is N ÷ d, k rows k times that. */
+function ofPicture(f: Q, N: number): { svg: string; h: number } | null {
+  if (N % f.d || N > 60 || f.d > 10 || f.n > f.d) return null;
+  const per = N / f.d;
+  const out: string[] = [];
+  const r = Math.min(11, Math.max(6, 200 / Math.max(per, 1) / 2.4));
+  const gapX = r * 2.6;
+  const x0 = 150;
+  let y = 18;
+  for (let i = 0; i < f.d; i++) {
+    const on = i < f.n;
+    for (let j = 0; j < per; j++) out.push(`<circle cx="${r2(x0 + j * gapX)}" cy="${r2(y)}" r="${r2(r)}" fill="${on ? GREEN.f : BLUE.f}" stroke="${on ? GREEN.s : BLUE.s}" stroke-width="1.5"/>`);
+    out.push(texAt(fr(1, f.d), x0 - 26, y + 7, "end", 0.65, on ? C.green : C.blue).svg);
+    y += Math.max(r * 2 + 10, 40);
+  }
+  const one = `${N} \\div ${f.d} = ${per}`;
+  out.push(texAt(f.n === 1 ? one : `${one},\\ ${f.n} \\times ${per} = ${f.n * per}`, W / 2, y + 22, "middle", 0.95, C.green).svg);
+  return { svg: out.join(""), h: y + 46 };
+}
+
 function picture(spec: FracOpSpec, plan: ReturnType<typeof planFracOp>): { svg: string; h: number } {
   const { A, B, res } = plan;
   const [a, b] = [A.q, B.q];
@@ -198,6 +245,14 @@ function picture(spec: FracOpSpec, plan: ReturnType<typeof planFracOp>): { svg: 
   const out: string[] = [defs];
   const x0 = 170;
   const bw = W - x0 - 24;
+  if (spec.pic === "share" && spec.op === "÷" && pos && a.n > 0 && b.d === 1 && b.n > 1) {
+    const p = sharePicture(a, b.n, res);
+    if (p) return p;
+  }
+  if (spec.pic === "of" && spec.op === "×" && pos && a.n > 0 && b.d === 1 && b.n > 0) {
+    const p = ofPicture(a, b.n);
+    if (p) return p;
+  }
   /** A row's label, right-aligned before the bars: the fraction as written, and on the common pieces when that differs. */
   const label = (y: number, tex: string, color?: string) => out.push(texAt(tex, x0 - 12, y + 19, "end", 0.85, color).svg);
   const recut = (p: Parsed, top: number, L: number) => (p.q.d === L && !p.convert ? fr(top, L) : `${p.tex} = ${fr(top, L)}`);

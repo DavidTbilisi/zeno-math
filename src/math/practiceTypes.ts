@@ -324,6 +324,8 @@ export type PracticeWords = {
   written: { missingDigit: string; fits: string; asDecimal: string; asMixed: string; coaches: string; boxes: string; left: string };
   /** Multiplying and dividing decimals (decimalTimes): the point placed from a given product, more or less, two stories. */
   decTimes: { placePoint: string; moreOrLess: string; more: string; less: string; ribbon: string; jug: string };
+  /** Fractions before grade 6 (fractionSums): a division as a fraction, a fraction of a number, three stories. */
+  fracSums: { asFraction: string; of: string; pizzas: string; cake: string; servings: string };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

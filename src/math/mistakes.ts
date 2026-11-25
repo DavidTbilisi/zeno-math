@@ -971,5 +971,10 @@ export const MISTAKES = [
   "zerosTacked",
   "timesAlwaysBigger",
   "divideAlwaysSmaller",
+  "quotientFlipped",
+  "subtractedAcross",
+  "wholesLeftOut",
+  "onlyOnePart",
+  "dividedAsTimes",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
