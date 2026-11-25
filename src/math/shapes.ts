@@ -1061,6 +1061,12 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function twoChangesPreview(): Piece[] {
+  // A price bar, the same bar cut by a fifth, then the new bar cut by a tenth of itself.
+  const bar = (y: number, w: number, fill: string): Piece => poly([[20, y], [20 + w, y], [20 + w, y + 30], [20, y + 30]], { fill, width: 1.5 });
+  return [bar(30, 250, FILL.blue), bar(80, 200, FILL.blue), poly([[220, 80], [270, 80], [270, 110], [220, 110]], { fill: FILL.red, width: 1 }), bar(130, 180, FILL.blue), poly([[200, 130], [220, 130], [220, 160], [200, 160]], { fill: FILL.red, width: 1 })];
+}
+
 function absLinePreview(): Piece[] {
   // A number line, the centre a, and the two points the same distance either side of it.
   const out: Piece[] = [seg([10, 110], [290, 110], { width: 3 })];
@@ -2493,6 +2499,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCoinStack", build: coinStackPreview, live: "coinStack" },
   { id: "liveRootZoom", build: rootZoomPreview, live: "rootZoom" },
   { id: "liveAbsLine", build: absLinePreview, live: "absLine" },
+  { id: "liveTwoChanges", build: twoChangesPreview, live: "twoChanges" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
