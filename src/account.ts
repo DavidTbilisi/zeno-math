@@ -8,7 +8,9 @@ import { loadStudent, saveStudent, type Student } from "./learner";
 import { seen } from "./usage";
 import { clearProgress, flushProgress, freshPages, hasWorkHere, progressOwner, startSync, stopSync } from "./sync";
 
-export type Account = { email: string; name: string; verified: boolean };
+/** role: what the account may do (#687): a student practises, a teacher has classes, an admin has every class and sets roles. */
+export type Role = "student" | "teacher" | "admin";
+export type Account = { email: string; name: string; verified: boolean; role: Role };
 /**
  * student: the class record the account practises under (#606), null for none or when signed out. mail: whether the
  * server can mail a link for a forgotten password. known: the server has answered on this page.
@@ -19,6 +21,7 @@ export const MIN_PASSWORD = 8;
 /** What the server takes as an email address, near enough to say so before sending it. */
 export const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
+// teacherMode.ts reads the role from here too.
 const KEY = "zeno.account.v1";
 function cached(): Account | null {
   try {

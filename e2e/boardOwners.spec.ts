@@ -48,7 +48,6 @@ test("a student's board is theirs: another student doesn't see it, and the teach
 
   // The teacher finds the board on the class page and opens it read only: no title box, no Share, no saving.
   const teacher = await (await browser.newContext()).newPage();
-  await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
   await teacher.goto("/#/teacher");
   await teacher.locator(".class-item", { hasText: name }).click();
   await teacher.getByRole("tab", { name: en.site.teach.tabs.progress }).click();

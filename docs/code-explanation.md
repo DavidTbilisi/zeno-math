@@ -1425,7 +1425,7 @@ Keepalive: the dialog listens for `pagehide` (`PracticeDialog.tsx:199-201`, `onH
 
 #### `ClassSummary`, `teacherApi(password)` (`:76-109`)
 
-The teacher's calls carry `X-Teacher-Password` when a password is set ("empty when the server doesn't ask for one"): `classes`, `create(name, skills?, testLength?)`, `setPhase(code, phase, minutes?)` ("minutes starts a timed session"), `dashboard(code)` → `GET /api/research/dashboard?class=`, and `csv(kind, code?)` which fetches `/api/research/{attempts|tests}.csv` as a `Blob` because "a plain link can't send the password header".
+The teacher's calls go on the account's session (#687), with no header: `classes`, `create(name, skills?, testLength?)`, `setPhase(code, phase, minutes?)` ("minutes starts a timed session"), `dashboard(code)` → `GET /api/research/dashboard?class=`, and `csv(kind, code?)` which fetches `/api/research/{attempts|tests}.csv` as a `Blob` because "a plain link can't send the password header".
 
 
 ## 4. The browser app shell, pages and study UI
@@ -1875,7 +1875,7 @@ Twenty-three lines. Header comment (`PracticePage.tsx:1-3`): "The practice page 
 
 The password is kept in `sessionStorage["zeno.teacher"]` ("for this tab only", `TeacherPage.tsx:4`, `:22-36`). `Access` (`:39`): `checking | locked | wrong | waiting | open | offline`; "waiting: too many wrong passwords; the server won't check another for a few minutes." `unlock(pw, typedIn)` (`:75-87`): `teacherApi(pw).classes()`; success stores the password, the list, `open`, and selects the last class if none is selected; 403 → `wrong` if typed, else `locked` (first visit, nothing typed yet); 429 → `waiting`; other → `offline`. Run once on mount with the remembered password (`:88-92`). The login form (`:169-183`) submits `unlock(typed, true)` and shows `wrongPassword` / `tooManyTries` as alerts.
 
-`api = useMemo(() => teacherApi(password), [password])` (`:61`): every call sends `X-Teacher-Password`.
+`api = useMemo(() => teacherApi(), [])`: every call goes on the account's session cookie (#687); a 403 shows "sign in" when nobody is signed in and "ask an admin" for a student's account.
 
 #### Formatting
 
@@ -4409,3 +4409,23 @@ This section collects the rules that hold across folders. Each one is enforced s
 - A real bug, cosmetic: the Pascal row caption in `src/math/combinatorics.ts:339` turns the row number into superscript digits with `String(n).replace(/d/g, …)`. The pattern matches the letter d, not a digit, so nothing is replaced and the caption reads `25` where it means `2⁵`. The fix is `/\d/g`.
 - The feature list (`docs/features.md`) counts 72 shapes; the `SHAPES` table has 82 entries because the live previews share it. Both numbers are right about different things.
 - The checker credits two inputs a teacher would not (`13*17` for a product question, an integral without `+ C`) and refuses `50%` as a probability. These are measured in `docs/study.md` and pinned by `tests/checker.test.ts` so the agreement rate cannot fall silently.
+
+## Roles (#687): `server/roles.ts`
+
+Teachers sign in with accounts. `accounts.role` (column added by migration, default `student`) holds an account's role;
+`roleOf(email, verified, stored)` gives the one that counts: `student` while the server sends mail and the address is
+unconfirmed, `admin` for an address in `ADMIN_EMAILS`, else the stored one. `classes.owner_id` (added by `initRoles`)
+says whose class it is; NULL is nobody's, seen by admins only.
+
+- `staffOf(req, db)`: the teacher password (a script) is an admin with no account; else the account's role via
+  `accountStaff`; else, on an `OPEN` server (no `TEACHER_PASSWORD`, no `ADMIN_EMAILS`), an admin.
+- `staff` / `admin`: 403 unless a teacher (or admin) / an admin.
+- `classFor(db, who, code)`: 404 for a class that isn't the teacher's, so another teacher's class looks absent.
+  Every class route in `research.ts`, the dashboard, the exports and `?class=` board lists go through it;
+  `ownClasses(who)` filters the class list and the exports.
+- `seesStudent`: an admin reads any student's boards, a teacher those of students in their classes (read only).
+- `handlePeople` (`/api/people`) and `setOwner` (`/api/classes/:code/owner`): the admin's page `#/teacher/people`
+  (`src/components/PeopleCard.tsx`).
+
+On the client, `src/teacherMode.ts` `isTeacher()` reads the cached account's role, and `api.ts` `boardOwner()` then
+sends no student code, so the session says whose boards.

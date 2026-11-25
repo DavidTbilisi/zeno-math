@@ -5,10 +5,10 @@ the teacher's laptop on the left and the student's phone on the right. Click a p
 
 ## 1. Make a class
 
-Open `#/teacher`, type the teacher password, name the class and choose what it practises: whole topics, or every
+Sign in with your teacher's account (an admin makes an account a teacher's), open `#/teacher`, name the class and choose what it practises: whole topics, or every
 skill of a grade. The class gets a code, a join link and a QR code to show to the room.
 
-[![Making a class: password, name, grade, code, join link and QR code](media/workflows/class.png)](media/workflows/class.mp4)
+[![Making a class: name, grade, code, join link and QR code](media/workflows/class.png)](media/workflows/class.mp4)
 
 ## 2. Students join
 
@@ -66,7 +66,7 @@ scene adds its classes and students through the API):
 
 ```bash
 npm run build
-PORT=8797 DATA_DIR=$(mktemp -d) TEACHER_PASSWORD=demo APP_PASSWORD= node server/index.ts &
+PORT=8797 DATA_DIR=$(mktemp -d) TEACHER_PASSWORD=demo ADMIN_EMAILS=teacher@demo.test APP_PASSWORD= node server/index.ts &
 npm run workflow-videos              # or name scenes: class join lesson homework progress paper
 ```
 

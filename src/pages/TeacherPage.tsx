@@ -1,8 +1,8 @@
 // The teacher's page for the class study (#/teacher): make classes, each testing one feature (arms.ts), and hand out
 // their codes, run the protocol (open practice, pre-test, timed sessions, post-test, delayed post-test), then follow
 // each class: the two arms side by side, the tests by intention to treat, mastery by skill for every student, and
-// whether the learner model's predictions come true. The teacher password
-// (TEACHER_PASSWORD on the server) is kept for this tab only.
+// whether the learner model's predictions come true. A teacher signs in with their own account (#687) and sees the
+// classes they made or were given; an admin sees every class, and sets the roles (#/teacher/people).
 // In the site's look (#448): the classes in a side list, the class's header (its code, join link, board), then four
 // tabs: Today (the protocol's steps, who is stuck, who rushes), Progress (the class on each topic, mastery by skill),
 // Homework, and Study (the arms, the tests, paper answers, calibration).
@@ -33,7 +33,7 @@ import { classTopics, topicOf, type TopicId } from "../model/topics";
 import { classRoad } from "../model/classRoad";
 import { GOALS, isGoal, type GoalId } from "../model/roadmap";
 import { openOnStageBoard } from "../stageBoards";
-import { TEACHER_KEY } from "../teacherMode";
+import { useAccount } from "../account";
 import { UndoToast, useUndoDelete } from "../components/UndoDelete";
 
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
@@ -42,6 +42,7 @@ const PrintableTests = lazy(() => import("../components/PrintableTests").then((m
 const PrintableHomework = lazy(() => import("../components/PrintableHomework").then((m) => ({ default: m.PrintableHomework })));
 const PaperTest = lazy(() => import("../components/PaperTest").then((m) => ({ default: m.PaperTest })));
 const UsageReport = lazy(() => import("../components/UsageReport").then((m) => ({ default: m.UsageReport })));
+const PeopleCard = lazy(() => import("../components/PeopleCard").then((m) => ({ default: m.PeopleCard })));
 const CalibrationChart = lazy(() => import("../components/CalibrationChart").then((m) => ({ default: m.CalibrationChart })));
 
 /** A class's sheets to print are a page of their own (#562), so Back closes them: #/teacher/<code>/tests/print. */
@@ -49,22 +50,6 @@ const printRoute = () => location.hash.match(/^#\/teacher\/([\w-]+)\/(tests|home
 
 const PHASES: Phase[] = ["open", "pretest", "session", "posttest", "delayed", "closed"];
 const DAY = 86_400_000;
-
-const KEY = TEACHER_KEY;
-const remembered = () => {
-  try {
-    return sessionStorage.getItem(KEY) ?? "";
-  } catch {
-    return "";
-  }
-};
-const remember = (password: string) => {
-  try {
-    sessionStorage.setItem(KEY, password);
-  } catch {
-    // private mode: the password is asked for again next time
-  }
-};
 
 const TABS = ["today", "progress", "homework", "study"] as const;
 type Tab = (typeof TABS)[number];
@@ -78,8 +63,8 @@ const savedTab = (): Tab => {
   }
 };
 
-/** waiting: too many wrong passwords; the server won't check another for a few minutes. */
-type Access = "checking" | "locked" | "wrong" | "waiting" | "open" | "offline";
+/** signIn: nobody signed in; notTeacher: signed in to a student's account. */
+type Access = "checking" | "signIn" | "notTeacher" | "open" | "offline";
 
 /** An area or a year to practise, on or off. */
 function PickChip({ pick, picks, setPicks, title, children }: { pick: string; picks: string[]; setPicks: (f: (s: string[]) => string[]) => void; title?: string; children: ReactNode }) {
@@ -95,8 +80,7 @@ function PickChip({ pick, picks, setPicks, title, children }: { pick: string; pi
 export function TeacherPage() {
   const { t, lang } = useI18n();
   const w = t.teacher;
-  const [password, setPassword] = useState(remembered);
-  const [typed, setTyped] = useState("");
+  const { account, known } = useAccount();
   const [access, setAccess] = useState<Access>("checking");
   const [typingPaper, setTypingPaper] = useState(false);
   const [classes, setClasses] = useState<ClassSummary[]>([]);
@@ -127,7 +111,9 @@ export function TeacherPage() {
   const [topic, setTopic] = useState<TopicId | null>(null);
   const [opening, setOpening] = useState(false);
   const tw = t.site.teach;
-  const api = useMemo(() => teacherApi(password), [password]);
+  const api = useMemo(() => teacherApi(), []);
+  // An admin's account; nobody signed in and still let in means an open server, where anyone is an admin.
+  const admin = !account || account.role === "admin";
   const numbers = useMemo(() => new Map<string, Who>(data?.students.map((r) => [r.id, { number: r.number, name: r.name }]) ?? []), [data]);
 
   const pct = useMemo(() => {
@@ -141,25 +127,23 @@ export function TeacherPage() {
     ({ number: t.practiceNumber, algebra: t.practiceAlgebra, geometry: t.practiceGeometry, calculus: t.practiceCalculus, data: t.practiceData })[a];
   const skillName = (k: SkillId) => t.pracWords.skills[k];
 
-  /** Opens with a password: the class list loads, or the server says it wants another one. */
-  const unlock = async (pw: string, typedIn: boolean) => {
+  /** Opens on the account's session: the class list loads, or the server says this account doesn't teach. */
+  const unlock = async () => {
     try {
-      const list = await teacherApi(pw).classes();
-      setPassword(pw);
-      remember(pw);
+      const list = await api.classes();
       setClasses(list);
       setAccess("open");
       setSelected((s) => s ?? printRoute()?.[1] ?? list.at(-1)?.code ?? null);
     } catch (e) {
       const status = e instanceof ApiError ? e.status : 0;
-      setAccess(status === 403 ? (typedIn ? "wrong" : "locked") : status === 429 ? "waiting" : "offline");
+      setAccess(status === 403 ? (account ? "notTeacher" : "signIn") : "offline");
     }
   };
   useEffect(() => {
-    void unlock(password, false);
-    // Once, with the password remembered from last time.
+    // Again whenever someone signs in or out (in this tab or another).
+    if (known) void unlock();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [known, account?.email, account?.role]);
 
   const load = async (code: string) => {
     setLoading(true);
@@ -293,22 +277,13 @@ export function TeacherPage() {
             <p className="muted">{t.loading}</p>
           ) : access === "offline" ? (
             <p className="error" role="alert">{w.loadFailed}</p>
+          ) : access === "notTeacher" ? (
+            <p className="teacher-login" role="status">{w.notTeacher}</p>
           ) : (
-            <form
-              className="teacher-login"
-              onSubmit={(e) => {
-                e.preventDefault();
-                void unlock(typed, true);
-              }}
-            >
-              <label className="field">
-                <span>{w.password}</span>
-                <input type="password" autoComplete="current-password" value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus />
-              </label>
-              <button className="btn primary" type="submit">{w.open}</button>
-              {access === "wrong" && <p className="error" role="alert">{w.wrongPassword}</p>}
-              {access === "waiting" && <p className="error" role="alert">{w.tooManyTries}</p>}
-            </form>
+            <div className="teacher-login">
+              <p>{w.signIn}</p>
+              <a className="btn primary" href="#/account">{w.signInLink}</a>
+            </div>
           )}
         </div>
       </div>
@@ -318,7 +293,20 @@ export function TeacherPage() {
   const listed = classes.filter((c) => c.code !== deleting.pending?.code);
   const current = listed.find((c) => c.code === selected);
 
-  // The anonymous usage counts (#615), a page of its own behind the same password.
+  // Who teaches and whose each class is (#687), an admin's page.
+  if (location.hash === "#/teacher/people")
+    return (
+      <div className="z z-wide">
+        {bar}
+        <div className="z-page teacher">
+          <Suspense fallback={<p className="muted">{t.loading}</p>}>
+            <PeopleCard api={api} w={w.people} onChange={() => void unlock()} />
+          </Suspense>
+        </div>
+      </div>
+    );
+
+  // The anonymous usage counts (#615), a page of its own, an admin's.
   if (location.hash === "#/teacher/usage")
     return (
       <div className="z z-wide">
@@ -410,7 +398,8 @@ export function TeacherPage() {
             ) : (
               <p className="muted">{w.noClasses}</p>
             )}
-            <a className="small" href="#/teacher/usage">{t.site.usage.title} →</a>
+            {admin && <a className="small" href="#/teacher/people">{w.people.link} →</a>}
+            {admin && <a className="small" href="#/teacher/usage">{t.site.usage.title} →</a>}
             <form
               className="new-class"
               onSubmit={(e) => {

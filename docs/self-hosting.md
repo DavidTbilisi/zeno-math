@@ -20,10 +20,15 @@ APP_PASSWORD=choose-something docker compose up -d --build
 **Whose boards.** The site password lets people in, but says nothing about who they are, so it doesn't decide whose
 boards they see. A learner's boards are theirs: whoever is signed in to an account has the boards it made, in a class
 or not, on any device, and another learner can't see, change or delete them. (A student from before accounts has
-theirs by the student code their browser holds.) The teachers' boards are shared by every teacher, and need the
-teacher password. A teacher can open the board of a student in their class from the class page to look at it, but only
-the student can change it. Someone who is not signed in, with neither a student code nor the teacher password, gets no
-boards. Set `TEACHER_PASSWORD` whenever students use Zeno: without one, anyone not signed in counts as a teacher.
+theirs by the student code their browser holds.) A teacher's boards are their account's, the same way. A teacher can
+open the board of a student in their class from the class page to look at it, but only the student can change it.
+Someone who is not signed in, with neither a student code nor an account, gets no boards.
+
+**Teachers and admins.** Teachers sign in with accounts too. Every new account is a student's; an admin makes it a
+teacher's on the page *Teachers and roles* (`#/teacher/people`, linked under the class list). A teacher sees only the
+classes they made or an admin gave them; an admin sees every class, the usage counts and the backup, and sets the roles.
+Name the first admins by their account addresses in `ADMIN_EMAILS`. Set it, or `TEACHER_PASSWORD`, whenever students
+use Zeno: with neither, the server is open and anyone counts as an admin.
 
 Upgrading from a Zeno without board owners: every board already there becomes the teachers'. Boards weren't tied to
 anyone before, so the server can't tell which a student made.
@@ -79,10 +84,13 @@ Environment variables:
 - `DATA_DIR`: `./data` by default.
 - `STATIC_DIR`: `./dist` by default.
 - `APP_PASSWORD`: empty means no auth.
-- `TEACHER_PASSWORD`: empty means anyone can create classes, download the study data, and use the teachers' boards
-  (anyone without a student code counts as a teacher); see below. A browser tab
-  signed in on the teacher's page also has every game's endless run open (all three levels and the clock), so a
-  teacher can show a class any of them without first playing through the puzzles; it closes with the tab.
+- `ADMIN_EMAILS`: the admins' account addresses, comma-separated (case doesn't matter). They are admins as soon as
+  they sign up (with mail set up, once they confirm the address), and no one can take the role from them on the page.
+- `TEACHER_PASSWORD`: for scripts (the dry run, the API by `curl`): the header `X-Teacher-Password` counts as an admin.
+  The teacher's page doesn't ask for it. With neither this nor `ADMIN_EMAILS`, anyone can create classes, download the
+  study data and use the teachers' boards; see below. A browser signed in to a teacher's account also has every game's
+  endless run open (all three levels and the clock), so a teacher can show a class any of them without first playing
+  through the puzzles.
 - `TRUST_PROXY`: 1 behind a reverse proxy, as above.
 - `PASSWORD_ATTEMPTS` and `PASSWORD_WINDOW_MINUTES`: 10 and 10 by default. An address that gave a right password in
   the last day is allowed ten times `PASSWORD_ATTEMPTS`, so a class sharing a school's address isn't locked out by
@@ -149,7 +157,7 @@ open, so there is no cookie, no visitor id and no address in it, and nothing goe
 could point at someone are never sent: a board is "board", a join link "join", and an error's message loses any id,
 code or email it quoted. Counts older than two years are deleted.
 
-A teacher reads them at `#/teacher/usage` (linked under the class list), behind the teacher password. Sending them
+An admin reads them at `#/teacher/usage` (linked under the class list). Sending them
 needs no password, since the front page is open to anyone, so what is taken is bounded: fixed kinds, short plain
 names, a thousand names of a kind a day, three thousand events per address in ten minutes. `USAGE=off` stops the
 counting; what was counted before stays readable. Browsers driven by a program (the tests, the README recordings)

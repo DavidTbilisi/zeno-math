@@ -66,3 +66,14 @@ export async function setDial(dial: Locator, value: number) {
   }
   await expect(dial).toHaveAttribute("aria-valuenow", String(value));
 }
+
+/**
+ * Signs the page's browser in to an account, made the first time (#687). head@e2e.test is an admin's (ADMIN_EMAILS in
+ * playwright.config.ts); any other address is a student's until an admin says otherwise. The page should have been
+ * made without the config's teacher header, or that header would decide for it.
+ */
+export async function signIn(page: Page, email = "head@e2e.test", name = "Head") {
+  const made = await page.request.post("/api/account", { data: { email, name, password: "e2e password" } });
+  if (made.status() === 409) expect((await page.request.post("/api/account/session", { data: { email, password: "e2e password" } })).ok()).toBe(true);
+  else expect(made.status()).toBe(201);
+}

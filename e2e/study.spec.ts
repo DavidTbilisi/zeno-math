@@ -9,7 +9,7 @@ import { parseCsv } from "../src/model/evaluate.ts";
 import { LIT } from "../src/model/ideaMap.ts";
 import { usesOf, type IdeaState } from "../src/model/ideaState.ts";
 import { testItems } from "../src/model/testForms.ts";
-import { pickTopic } from "./helpers.ts";
+import { pickTopic, signIn } from "./helpers.ts";
 
 const TEACHER = "e2e-teacher";
 
@@ -55,11 +55,12 @@ async function answerWrong(page: Page): Promise<boolean> {
 
 test("a teacher makes a class, a student joins and practises, and the pre-test reaches the student", async ({ browser, request }) => {
   // The teacher: sign in, make a class of algebra with a four-question test.
-  // Without the teacher header the config gives every page, so the teacher page asks for the password.
+  // Without the teacher header the config gives every page, so the teacher page asks for an account (#687).
   const teacher = await browser.newPage({ extraHTTPHeaders: {} });
   await teacher.goto("/#/teacher");
-  await teacher.getByLabel("Teacher password").fill(TEACHER);
-  await teacher.getByRole("button", { name: "Open" }).click();
+  await expect(teacher.getByText(en.teacher.signIn)).toBeVisible();
+  await signIn(teacher);
+  await teacher.reload();
   await teacher.locator(".new-class").getByLabel("Name").fill("E2E class");
   await teacher.locator(".new-class").getByLabel("Questions per test").fill("4");
   await teacher.locator(".new-class").getByRole("button", { name: "Algebra" }).click();
@@ -112,11 +113,10 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
 });
 
 test("the join link fills the class code in; one account is one record on every device, and the teacher finds its code by name", async ({ browser }) => {
-  // Without the teacher header the config gives every page, so the teacher page asks for the password.
+  // Without the teacher header the config gives every page, so the teacher signs in with an account (#687).
   const teacher = await browser.newPage({ extraHTTPHeaders: {} });
+  await signIn(teacher);
   await teacher.goto("/#/teacher");
-  await teacher.getByLabel("Teacher password").fill(TEACHER);
-  await teacher.getByRole("button", { name: "Open" }).click();
   await teacher.locator(".new-class").getByLabel("Name").fill("Join link class");
   await teacher.getByRole("button", { name: "Create class" }).click();
   await expect(teacher.locator(".class-head h2")).toHaveText("Join link class");
@@ -169,7 +169,6 @@ test("a test written on paper is typed in on the teacher page, marked, and expor
   const items = testItems(code, ["linear"], plan.tests.pre.form, 4).map((q) => exercise(q.skill, q.level, q.seed, en.pracWords));
 
   const page = await (await browser.newContext()).newPage();
-  await page.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
   await page.goto("/#/teacher");
   await page.locator(".class-item", { hasText: name }).click();
   await page.getByRole("tab", { name: "Study" }).click();
@@ -334,7 +333,7 @@ test("the teacher sees who is stuck, grouped by the mistake they repeat, in ever
   for (const L of [en, ru, ka]) {
     const lang = L === en ? "en" : L === ru ? "ru" : "ka";
     const page = await (await browser.newContext()).newPage();
-    await page.addInitScript(([l, pw]) => (localStorage.setItem("lang", l), sessionStorage.setItem("zeno.teacher", pw)), [lang, TEACHER]);
+    await page.addInitScript((l) => localStorage.setItem("lang", l), lang);
     await page.goto("/#/teacher");
     await page.locator(".class-item", { hasText: name }).click();
     const list = page.getByRole("region", { name: L.teacher.stuck });
@@ -362,7 +361,6 @@ test("the teacher sees who is stuck, grouped by the mistake they repeat, in ever
 test("a teacher tests spaced review in a class: two arms, the delayed post-test reaches the students, and every student counts", async ({ browser, request }) => {
   const name = `Kept ${Date.now()}`;
   const teacher = await browser.newPage();
-  await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
   await teacher.goto("/#/teacher");
   const form = teacher.locator(".new-class");
   await form.getByLabel("Name").fill(name);
@@ -530,7 +528,6 @@ test("a skill mastered, then kept by a right review days later: the student's pa
   await expect(holds).toContainText(`Mastered, a review will check it: ${en.pracWords.skills.quadratic}`);
 
   const teacher = await (await browser.newContext()).newPage();
-  await teacher.addInitScript((pw) => sessionStorage.setItem("zeno.teacher", pw), TEACHER);
   await teacher.goto("/#/teacher");
   await teacher.locator(".class-item", { hasText: name }).click();
   await teacher.getByRole("tab", { name: "Progress" }).click();

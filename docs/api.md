@@ -9,7 +9,14 @@ the study's routes. Errors come back as `{ "error": "…" }` with the status.
 
 - *anyone*: anyone who passed the site password. With `APP_PASSWORD` set, every route except `/api/health` needs HTTP
   basic auth (any username).
-- *teacher*: also needs the header `X-Teacher-Password` when `TEACHER_PASSWORD` is set; otherwise 403.
+- *teacher*: the session of an account whose role is a teacher's or an admin's (issue #687), or, from a script, the
+  header `X-Teacher-Password` with `TEACHER_PASSWORD`, which counts as an admin; otherwise 403. A teacher reaches only
+  the classes they made or an admin gave them: any other class answers **404**, as if it weren't there, by every
+  route that names one, and the exports leave it out. A server with neither `TEACHER_PASSWORD` nor `ADMIN_EMAILS` is
+  open, as a home install: every request is an admin's.
+- *admin*: an account whose role is an admin's (or whose address is in `ADMIN_EMAILS`), or the teacher password. Every
+  class, the roles, and the whole backup. While the server sends mail, an account's role counts only once its address
+  is confirmed: anyone could sign up first with a head teacher's address.
 
 After 10 wrong passwords (site or teacher) in 10 minutes, a client gets **429** with `Retry-After`, whatever it
 sends, until the oldest of them leaves the window. A client that gave a right password (site or teacher) in the last
@@ -28,7 +35,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | Method | Path | Who | What it does |
 |---|---|---|---|
 | GET | `/api/health` | anyone, no password | `{ ok: true }` once the database answers; Docker's health check |
-| GET | `/api/export` | teacher | every board, the teachers' and every student's, with its scene, as a JSON download (`zeno-boards-DATE.json`) |
+| GET | `/api/export` | admin | every board, the teachers' and every student's, with its scene, as a JSON download (`zeno-boards-DATE.json`) |
 | GET | `/api/boards` | owner | the caller's boards: `[{ id, title, createdAt, updatedAt }]`, newest first. A teacher with `?class=CODE` gets that class's students' boards instead, each with `student` (`s17`), `number` and the account's `name` (`null` without one) |
 | POST | `/api/boards` | owner | a new board, the caller's, from `{ title? }` (trimmed, at most 200 characters): 201 with `{ id, title, createdAt, updatedAt }` |
 | GET | `/api/boards/:id` | owner | `{ id, title, scene, updatedAt, shareToken }`. A teacher may open a student's board too: `{ id, title, scene, updatedAt, readOnly: true }` |
@@ -56,8 +63,11 @@ method and path on these resources must answer 404 or 405, so a route added with
 | POST | `/api/account/student` | account | add a record from before the account to it: `{ code }` gives the student; 409 when the code is another account's, or the account is already in that class |
 | GET | `/api/account/state[?since=REV]` | account | the progress that follows the account: `{ rev, items }`, the keys changed since revision `REV` (all of them without it); see *Accounts* |
 | PUT | `/api/account/state` | account | `{ since, items, replace? }`: the keys this browser changed, merged with what is kept; answers `{ rev, items }` with what the browser lacks |
-| GET | `/api/classes` | teacher | every class: code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
-| POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms* |
+| GET | `/api/classes` | teacher | the teacher's classes (an admin's: every class): code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
+| POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms*. It is the teacher's own (a script's class is nobody's: admins only) |
+| POST | `/api/classes/:code/owner` | admin | give the class to a teacher or an admin: `{ owner }`, an account id or `null` for nobody; a student's account is 409 |
+| GET | `/api/people` | admin | `{ accounts, classes, me }`: every account with `id, email, name, verified, role, fixed` (an admin by `ADMIN_EMAILS`) and `classes` (how many it has), every class's `code, name, owner`, and the admin's own account id |
+| POST | `/api/people/:id` | admin | set an account's role: `{ role }`, `student`, `teacher` or `admin`; an admin taking away their own role is 409 |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
 | POST | `/api/classes/:code/paper` | teacher | a test written on paper, typed in: `{ student, phase, form?, answers }`; see *Paper tests* |
 | POST | `/api/classes/:code/homework` | teacher | homework for every student in the class: `{ length? }`, 201; see *Homework* |
@@ -84,13 +94,15 @@ built app: hashed assets are cached for a year, and the page itself comes with a
 
 Every board belongs to the learner who made it or to the teachers. A request says whose boards it is about:
 
-- **`X-Teacher-Password`**: the teachers' boards, shared by every teacher. A wrong password is 403 and counts towards
-  the limit above. This header wins over the others; a teacher's tab sends it even when the server asks for no
-  password (empty), so it stays a teacher's when its browser is signed in to an account.
+- **`X-Teacher-Password`**: the teachers' shared boards, from a script. A wrong password is 403 and counts towards
+  the limit above. This header wins over the others.
 - **`X-Student-Code`**: that student's own boards. An unknown code is 403.
 - **The session of an account** (issue #608): the boards the account made, and those of every class record it holds.
-  A learner in no class has boards this way.
-- **None of them**: 403, no boards. With no `TEACHER_PASSWORD` set, such a request is a teacher's, as for classes.
+  A learner in no class has boards this way. A teacher's or admin's account has its own boards the same way, and
+  reads, but never changes, the boards of the students in its classes (an admin's: every student's); an admin's also
+  reaches the shared boards made before accounts.
+- **None of them**: 403, no boards. On an open server (no `TEACHER_PASSWORD`, no `ADMIN_EMAILS`) such a request is a
+  teacher's, as for classes.
 
 A new board is stored under both the class record (the code sent, else the account's latest) and the account, when
 the request carries them. So a learner's boards from before they joined a class, from a record they added by its

@@ -151,7 +151,7 @@ test("sign up, then sign in on another device; the name and password can be chan
   assert.equal(await laptop.me(), null);
   const made = await laptop.call("POST", "/api/account", { email: " Nino@School.Example ", name: "  Nino   K. ", password: "long enough" });
   assert.equal(made.status, 201);
-  assert.deepEqual(made.body, { email: "nino@school.example", name: "Nino K.", verified: false });
+  assert.deepEqual(made.body, { email: "nino@school.example", name: "Nino K.", verified: false, role: "student" });
   assert.match(made.setCookie!, /^zeno_session=[\w-]{40,}; Path=\/; HttpOnly; SameSite=Lax; Max-Age=31536000$/);
   assert.deepEqual(await laptop.me(), made.body);
 
@@ -248,7 +248,7 @@ test("a forgotten password: the mailed link sets a new one, once, and signs the 
   assert.equal((await fresh.call("PUT", "/api/account/reset", { token, password: "short" })).status, 400);
   const set = await fresh.call("PUT", "/api/account/reset", { token, password: "second password" });
   assert.equal(set.status, 200);
-  assert.deepEqual(set.body, { email: "luka@school.example", name: "Luka", verified: true });
+  assert.deepEqual(set.body, { email: "luka@school.example", name: "Luka", verified: true, role: "student" });
   assert.equal((await fresh.me())?.email, "luka@school.example", "signed in by the link");
   assert.equal(await old.me(), null, "the old sessions are gone");
   assert.equal((await device().call("PUT", "/api/account/reset", { token, password: "third password" })).status, 410);
