@@ -3,7 +3,7 @@
 // each page for every assigned game, in case a send was lost. Only a signed-in student's browser sends anything, and
 // only for the games assigned.
 import { useEffect, useState } from "react";
-import { study } from "./api";
+import { study, type StudentPay } from "./api";
 import { loadStudent } from "./learner";
 import { GAME_KEYS, isGameId, type GameId } from "./model/gameKeys";
 
@@ -59,8 +59,9 @@ export function syncClassGames(code: string, games: readonly GameId[]) {
   }
 }
 
-// What the server says about the student's class, asked once per page: the goal (classGoal.ts) and the games.
-type ClassInfo = { goal: unknown; games: GameId[] } | null;
+// What the server says about the student's class, asked once per page: the goal (classGoal.ts), the games, and the
+// student's own lessons and payments (#757; null while the class keeps no register).
+type ClassInfo = { goal: unknown; games: GameId[]; pay: StudentPay | null } | null;
 let asked: Promise<ClassInfo> | null = null;
 export function classInfo(): Promise<ClassInfo> {
   const s = loadStudent();
@@ -69,7 +70,7 @@ export function classInfo(): Promise<ClassInfo> {
     (me) => {
       storeClassGames(me.games);
       syncClassGames(s.code, classGames());
-      return { goal: me.goal, games: classGames() };
+      return { goal: me.goal, games: classGames(), pay: me.pay ?? null };
     },
     () => null,
   );
@@ -89,4 +90,19 @@ export function useClassGames(): GameId[] {
     };
   }, []);
   return games;
+}
+
+/** The signed-in student's own lessons and payments, as the server says (null: none kept, or not in a class). */
+export function useClassPay(): StudentPay | null {
+  const [pay, setPay] = useState<StudentPay | null>(null);
+  useEffect(() => {
+    let live = true;
+    void classInfo().then((info) => {
+      if (live) setPay(info?.pay ?? null);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
+  return pay;
 }

@@ -25,6 +25,7 @@ import { BLOCK, conditionOf, FEATURES, hasFeature, type Arm, type Feature } from
 import { dashboard, markSeen } from "./dashboard.ts";
 import { initHomework, isHomework, makeHomework, setStudy, studentHomework } from "./homework.ts";
 import { classGames, initClassGames, recordStars, setGames } from "./classGames.ts";
+import { classPayments, forgetRegister, initPayments, setPayment, setPrice, setRegister, studentPay } from "./payments.ts";
 import { initPredictions, recordPrediction } from "./predictions.ts";
 import { stmt, transaction } from "./db.ts";
 import { HttpError, readJson, send } from "./http.ts";
@@ -165,6 +166,7 @@ export function initResearch(db: DatabaseSync) {
   initProtocol(db);
   initHomework(db);
   initClassGames(db);
+  initPayments(db);
   initPredictions(db);
 }
 
@@ -531,6 +533,20 @@ export async function handleResearch(
     return setGames(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
   }
 
+  // Payments for lessons (#757): the price, the register of lessons and who came, the payments recorded.
+  if (resource === "classes" && id && sub === "payments" && req.method === "GET") {
+    return classPayments(res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
+  }
+  if (resource === "classes" && id && sub === "payments" && req.method === "POST") {
+    return setPayment(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
+  }
+  if (resource === "classes" && id && sub === "price" && req.method === "POST") {
+    return setPrice(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
+  }
+  if (resource === "classes" && id && sub === "register" && req.method === "POST") {
+    return setRegister(req, res, db, classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id))));
+  }
+
   // The class's roadmap goal ({ goal: GoalId | null }, #461).
   if (resource === "classes" && id && sub === "goal" && req.method === "POST") {
     const code = classFor(db, staff(req, db), normalizeCode(decodeURIComponent(id)));
@@ -564,6 +580,7 @@ export async function handleResearch(
       if (!stmt(db, "SELECT 1 FROM classes WHERE code = ?").get(code)) return 404;
       if (stmt(db, "SELECT 1 FROM students WHERE class_code = ? LIMIT 1").get(code)) return 409;
       stmt(db, "DELETE FROM class_phases WHERE class_code = ?").run(code);
+      forgetRegister(db, code);
       stmt(db, "DELETE FROM classes WHERE code = ?").run(code);
       return 204;
     });
@@ -688,7 +705,7 @@ export async function handleResearch(
     if (req.method === "GET") {
       const { n } = stmt(db, "SELECT COUNT(*) AS n FROM attempts WHERE student_id = ?").get(student.id) as { n: number };
       const { goal } = stmt(db, "SELECT goal FROM classes WHERE code = ?").get(student.class) as { goal: string | null };
-      return send(res, 200, { code: student.code, class: student.class, condition: student.condition, feature: student.feature, arm: student.arm, answered: n, goal, games: classGames(db, student.class) });
+      return send(res, 200, { code: student.code, class: student.class, condition: student.condition, feature: student.feature, arm: student.arm, answered: n, goal, games: classGames(db, student.class), pay: studentPay(db, student) });
     }
     // Knowing the code is enough to wipe the record: it is all that ties the answers to the student.
     if (req.method === "DELETE") {

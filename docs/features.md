@@ -1749,6 +1749,11 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     roadmap goal and the learner's boards follow them to any device; signing out takes them off a shared one
   - *Class study*: a student signs in and joins a class with its code; the teacher sees them by name, and the
     study's exports never hold the name or the email. Each question they work on is then saved on the server for research — see [Class study](self-hosting.md#class-study) and [docs/study.md](study.md)
+  - *Payments* (teacher's page, Payments tab): the class's lesson price, a register with one column per lesson and
+    a tick for each student who came, and the payments the teacher records. Each student owes the price of every lesson
+    they attended (a lesson keeps the price it had when it was added); per student and for the whole class the tab
+    shows the month's lessons, due and paid, and the balance over all months. Each student's site says whether they
+    have paid or what is still to pay. No money passes through Zeno — see [Payments](api.md#payments)
   - *Site usage*: the teacher's page links to anonymous counts of the last 7, 30 or 90 days: visits per day, the
     steps from arriving to practising, and the pages, board tools, practice skills, referring sites, screens,
     languages and script errors seen most. Only names and numbers are kept: no cookie, no visitor id, no address —

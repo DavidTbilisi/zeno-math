@@ -2064,6 +2064,22 @@ span.board-home:hover { background: none; }
 .games-table td { text-align: center; }
 .games-table td.game-passed { font-weight: 700; color: var(--good, #2a7a3b); }
 .games-table td.game-none { color: var(--muted); }
+.pay-table td { text-align: center; white-space: nowrap; }
+.pay-table th.pay-lesson { white-space: nowrap; }
+.pay-table tfoot th, .pay-table tfoot td { font-weight: 700; border-top: 2px solid var(--line, #ccc); }
+.pay-table td.pay-owed { font-weight: 700; color: var(--danger); }
+.pay-table td.pay-clear { color: var(--good, #2a7a3b); }
+.pay-table td.pay-ahead { color: var(--good, #2a7a3b); }
+.pay-x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 0 0 4px; font: inherit; }
+.pay-x:hover { color: var(--danger); }
+.pay-totals { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 12px 0; }
+.pay-totals dt { font-weight: 700; }
+.pay-totals dd { margin: 0; }
+.pay-list { list-style: none; padding: 0; display: grid; gap: 6px; }
+.pay-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.site-pay .pay-state { font-size: 1.15em; font-weight: 700; }
+.site-pay .pay-state.owed { color: var(--danger); }
+.site-pay .pay-state.clear { color: var(--good, #2a7a3b); }
 
 /* Practice (#562): after a right answer the Next button fills while the next question is on its way. */
 .auto-next {
