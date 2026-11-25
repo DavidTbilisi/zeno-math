@@ -1118,5 +1118,15 @@ export const MISTAKES = [
   "linearByIncreasing",
   "xGapsIgnored",
   "startForRate",
+  "boundaryMisread",
+  "coordsSwapped",
+  "lineStyleSwapped",
+  "shadeSideSwapped",
+  "slopeSignKept",
+  "slopeUpsideDown",
+  "pointSignsFlipped",
+  "oneInequalityOnly",
+  "atMostAsAtLeast",
+  "costsSwapped",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

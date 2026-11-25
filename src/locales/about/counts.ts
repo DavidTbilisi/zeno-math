@@ -3,13 +3,13 @@
 // tests/about.test.ts fails when one is above the real count or has fallen far behind it.
 export const COUNTS = {
   /** Practice skills, each with three levels (model/topics.ts). */
-  skills: 230,
+  skills: 250,
   /** Topics on the Learn page. */
   topics: 20,
   /** Tools, hands-on pieces and games in the library (library.ts). */
-  pieces: 170,
+  pieces: 180,
   /** Mistakes the checker knows by name (math/mistakes.ts). */
-  mistakes: 900,
+  mistakes: 1100,
 } as const;
 
 /** The topics of the page's path (the words' `path`), stage by stage in the same order: what each name links to.
