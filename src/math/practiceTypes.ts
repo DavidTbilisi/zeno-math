@@ -392,6 +392,12 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Two-way tables (twoWay): the headings, the prompts and the names of the choices. */
+  twy: {
+    y7: string; y8: string; sport: string; noSport: string; total: string; walk: string; bus: string; late: string; onTime: string;
+    missing: string; everyone: string; rowShare: string; colShare: string; allShare: string; assoc: string; assocYes: string;
+    assocNo: string; likely: string; walkers: string; riders: string;
+  };
   /** Spread (spread): the prompts, the axis labels and the names of the choices. */
   spr: {
     hist: string; histAxis: string; dotAxis: string; dotMode: string; dotMore: string; tallest: string; mad: string; boxIqr: string;

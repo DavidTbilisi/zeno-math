@@ -1066,5 +1066,12 @@ export const MISTAKES = [
   "meanChangeWhole",
   "medianMoves",
   "spreadByRange",
+  "cellWrongTotal",
+  "grandOneRow",
+  "shareOfColumn",
+  "shareOfRow",
+  "shareOfAll",
+  "assocByCounts",
+  "likelyByCount",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

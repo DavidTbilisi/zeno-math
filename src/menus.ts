@@ -178,6 +178,7 @@ export const MENUS: MenuGroup[] = [
       {
         title: "secStatistics", items: [
           { live: "boxSplit", icon: "▭" },
+          { live: "tableShares", icon: "▦" },
           { kind: "statistics", icon: "📊", label: "statistics" },
           { kind: "inference", icon: "H₀", label: "inference" },
           { kind: "regression", icon: "ŷ", label: "regression" },
