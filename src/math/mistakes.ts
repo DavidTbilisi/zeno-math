@@ -952,5 +952,16 @@ export const MISTAKES = [
   "tensOnesAdded",
   "lastDigitDecides",
   "gapNotStep",
+  "carryWritten",
+  "tradeNotPaid",
+  "zeroTradeTen",
+  "digitCarryMissed",
+  "digitTradeMissed",
+  "estimateTooBig",
+  "estimateTooSmall",
+  "quotientZeroDropped",
+  "remainderAfterPoint",
+  "remainderLeftBehind",
+  "partGroupCounted",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

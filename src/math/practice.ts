@@ -183,8 +183,11 @@ function lowestTerms(e: E): boolean {
 /** "x = 2", "θ = 35°", "25%", "$4.05" → the bare value. */
 const bare = (s: string) => s.trim().replace(/^[a-zA-Zθ]\w*\s*=\s*/, "").replace(/[%°$₾₽]/g, "").trim();
 
+/** A whole number typed in threes, as it is printed (248 915): the gaps go. */
+const ungrouped = (t: string) => (/^-?\d{1,3}([ \u00a0\u202f]\d{3})+$/.test(t) ? t.replace(/[ \u00a0\u202f]/g, "") : t);
+
 function value(s: string): number {
-  const t = bare(s);
+  const t = ungrouped(bare(s));
   const mixed = t.match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
   if (mixed) return (mixed[1] ? -1 : 1) * (Number(mixed[2]) + Number(mixed[3]) / Number(mixed[4]));
   const e = parseE(t);

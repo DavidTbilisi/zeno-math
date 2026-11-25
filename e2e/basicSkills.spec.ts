@@ -1,7 +1,8 @@
 // The first skills in practice: a times-table fact answered with the sum (named), then the product; a decimal asked
 // for as a fraction and typed back (sent back, not marked), then the fraction; a rectangle's area with its unit; a
 // stacked fraction divided at the short bar (named), then at the long one; a count in steps carried on by one (named),
-// then by its step.
+// then by its step; a written difference across zeros with the zero left at ten (named), then the answer typed in
+// threes; a long division with the remainder written after the point (named), then the decimal.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { exercise, trapInputs, type Exercise, type Level, type SkillId } from "../src/math/practice.ts";
@@ -65,6 +66,30 @@ test("counting in steps: one on from the last number is named, then the step's a
   await page.getByLabel("Your answer").fill(trapInputs(ex).find((t) => t.id === "stepOfOne")!.input);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("This count moves")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("written subtraction across zeros: the zero left at ten is named, then the answer typed in threes is correct", async ({ page, request }) => {
+  const { r, ex } = find("columnSums", 2, (e) => trapInputs(e).some((t) => t.id === "zeroTradeTen") && Number(e.plain) >= 10_000);
+  await practise(page, request, { tab: "Number", skill: w.skills.columnSums, level: "medium", r, prompt: ex.prompt });
+  await page.getByLabel("Your answer").fill(trapInputs(ex).find((t) => t.id === "zeroTradeTen")!.input);
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("leaves a crossed-out zero at 10")).toBeVisible();
+  await page.getByLabel("Your answer").fill(ex.plain.replace(/\B(?=(\d{3})+$)/g, " "));
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("long division: the remainder written after the point is named, then the decimal is correct", async ({ page, request }) => {
+  const { r, ex } = find("longDivide", 3, (e) => e.prompt === w.written.asDecimal);
+  await practise(page, request, { tab: "Number", skill: w.skills.longDivide, level: "hard", r, prompt: ex.prompt });
+  // The whole quotient, a point, and the remainder: 97.9 for 97 remainder 9.
+  const slip = ex.answer.traps!.find((t) => t.id === "remainderAfterPoint")!.a as { v: number };
+  await page.getByLabel("Your answer").fill(String(slip.v));
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("writes the remainder after the point")).toBeVisible();
   await page.getByLabel("Your answer").fill(ex.plain);
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
