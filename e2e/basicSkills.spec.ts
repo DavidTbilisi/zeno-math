@@ -2,7 +2,8 @@
 // for as a fraction and typed back (sent back, not marked), then the fraction; a rectangle's area with its unit; a
 // stacked fraction divided at the short bar (named), then at the long one; a count in steps carried on by one (named),
 // then by its step; a written difference across zeros with the zero left at ten (named), then the answer typed in
-// threes; a long division with the remainder written after the point (named), then the decimal.
+// threes; a long division with the remainder written after the point (named), then the decimal; a grid product of
+// tenths answered in tenths (named), then in hundredths.
 import { expect, test } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
 import { exercise, trapInputs, type Exercise, type Level, type SkillId } from "../src/math/practice.ts";
