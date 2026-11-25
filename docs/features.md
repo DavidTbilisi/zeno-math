@@ -1193,6 +1193,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     rate read as the amount, the acceleration's sign taken alone and the ends of the interval forgotten. The piece
     *Fold the box* (Insert → Calculus, grades 12–13): drag the corner cut and watch the volume's tangent flatten at
     the largest box
+  - Accumulation and the fundamental theorem (grade 12; #668): left and right sums from a table of rates, whether a
+    sum is too much or too little, midpoint sums; then g′ for g(x) = ∫ f, also with x² as the upper limit, and a
+    tank's water from its rate of flow; then an average value, distance against displacement and, in a new setting,
+    where a braking cyclist stops. Twelve slips are named, among them the width forgotten, the start forgotten and
+    net change given for distance. The piece *Fill under the curve* (Insert → Calculus, grades 12–13): left, right
+    and middle rectangles under a rising curve, against the true area, as their number grows
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

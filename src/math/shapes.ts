@@ -1061,6 +1061,13 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function fillUnderPreview(): Piece[] {
+  // A rising curve with left-end rectangles under it.
+  const c = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 180 - (i * i) / 16 - 30] as [number, number]);
+  const bars = [0, 1, 2, 3].map((i) => poly([[30 + i * 50, 180], [30 + i * 50, 150 - (i * 10) ** 2 / 16], [80 + i * 50, 150 - (i * 10) ** 2 / 16], [80 + i * 50, 180]], { width: 1 }));
+  return [poly(c, { width: 3 }), ...bars];
+}
+
 function foldBoxPreview(): Piece[] {
   // A sheet with its four corners cut.
   return [poly([[40, 30], [200, 30], [200, 190], [40, 190], [40, 30]], { width: 2 }), poly([[70, 30], [70, 60], [40, 60]], { width: 2 }), poly([[170, 30], [170, 60], [200, 60]], { width: 2 }),
@@ -2661,6 +2668,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTracePath", build: tracePathPreview, live: "tracePath" },
   { id: "liveCloseIn", build: closeInPreview, live: "closeIn" },
   { id: "liveFoldBox", build: foldBoxPreview, live: "foldBox" },
+  { id: "liveFillUnder", build: fillUnderPreview, live: "fillUnder" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

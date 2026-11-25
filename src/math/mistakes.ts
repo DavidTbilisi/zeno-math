@@ -1251,5 +1251,17 @@ export const MISTAKES = [
   "endpointRootKept",
   "fourSidesAssumed",
   "endpointsIgnored",
+  "leftForRight",
+  "widthForgotten",
+  "overUnderSwapped",
+  "midpointMissed",
+  "gForGPrime",
+  "ftcChainForgotten",
+  "startForgotten",
+  "rateTimesTime",
+  "averageNotDivided",
+  "netAsTotal",
+  "totalAsNet",
+  "rectangleForTriangle",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
