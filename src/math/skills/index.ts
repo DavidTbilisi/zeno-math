@@ -39,6 +39,7 @@ import parallelAngles from "./parallelAngles";
 import pythagoras from "./pythagoras";
 import transformations from "./transformations";
 import congruence from "./congruence";
+import constructions from "./constructions";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -298,6 +299,7 @@ export const GENS: Record<SkillId, Gen> = {
   pythagoras,
   transformations,
   congruence,
+  constructions,
   stackedFractions,
   ratio,
   rate,

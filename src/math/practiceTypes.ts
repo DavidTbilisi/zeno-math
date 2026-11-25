@@ -356,6 +356,14 @@ export type PracticeWords = {
     why: Record<"SSS" | "SAS" | "ASA" | "AAS" | "RHS" | "SSA" | "AAA", string>;
     proofs: Record<"iso" | "para" | "bisector", { claim: string; lines: string[]; wrong: string }>;
   };
+  /** Ruler-and-compass constructions (constructions): the names, how each is drawn, the prompts and the proofs. */
+  cons: {
+    which: string; half: string; halfAngle: string; equiAngle: string; equidist: string; hexSide: string; hexPerim: string;
+    twice: string; order: string;
+    names: Record<"bisect" | "angle" | "perp" | "equi" | "hexagon", string>;
+    how: Record<"bisect" | "angle" | "perp" | "equi" | "hexagon", string>;
+    proofs: Record<"bisect" | "angle" | "thirty", { claim: string; lines: string[]; wrong: string }>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

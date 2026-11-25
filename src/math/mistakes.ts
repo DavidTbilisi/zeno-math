@@ -1011,5 +1011,10 @@ export const MISTAKES = [
   "ssaIsTest",
   "aaaIsTest",
   "wrongCorrespondence",
+  "perpAsBisector",
+  "bisectorAsPerp",
+  "constructionNotHalved",
+  "hexSideDiameter",
+  "bisectLinear",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
