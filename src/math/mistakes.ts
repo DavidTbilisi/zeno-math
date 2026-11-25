@@ -1008,5 +1008,8 @@ export const MISTAKES = [
   "centreIgnored",
   "negativeScaleIgnored",
   "areaScaledOnce",
+  "ssaIsTest",
+  "aaaIsTest",
+  "wrongCorrespondence",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

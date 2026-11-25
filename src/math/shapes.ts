@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function buildTrianglePreview(): Piece[] {
+  // A base, a dashed circle and a dashed ray from its ends, and the triangle where they meet.
+  return [
+    path(arc(40, 150, 120, 120, 0, 90), { color: "#e8590c", width: 2, dashed: true }),
+    seg([40, 150], [175, 20], { color: "#9c36b5", width: 2, dashed: true }),
+    poly([[40, 150], [190, 150], [124, 69]], { fill: FILL.green, width: 2.5 }),
+    seg([40, 150], [190, 150], { width: 4 }),
+  ];
+}
+
 function moveShapePreview(): Piece[] {
   // An L on a grid, its image turned, and the dashed outline it is moved onto.
   const L = (ox: number, oy: number, s = 22) => [[0, 0], [3, 0], [3, 1], [1, 1], [1, 2], [0, 2]].map(([x, y]) => [ox + x * s, oy - y * s] as Pt);
@@ -2430,6 +2440,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveShapeSort", build: shapeSortPreview, live: "shapeSort" },
   { id: "liveParallelLab", build: parallelLabPreview, live: "parallelLab" },
   { id: "liveMoveShape", build: moveShapePreview, live: "moveShape" },
+  { id: "liveBuildTriangle", build: buildTrianglePreview, live: "buildTriangle" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

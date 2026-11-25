@@ -24,6 +24,7 @@ import { EquivMatch } from "./EquivMatch";
 import { ShapeSort } from "./ShapeSort";
 import { ParallelLab } from "./ParallelLab";
 import { MoveShape } from "./MoveShape";
+import { BuildTriangle } from "./BuildTriangle";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -218,6 +219,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   slopeWalk: SlopeWalk,
   parallelLab: ParallelLab,
   moveShape: MoveShape,
+  buildTriangle: BuildTriangle,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,

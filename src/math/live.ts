@@ -54,6 +54,7 @@ import type { LiveUnitCircle } from "./unitCircleGame";
 import { SLOPE_WALK_START, type LiveSlopeWalk } from "./slopeWalk";
 import { PARALLEL_LAB_START, type LiveParallelLab } from "./parallelAngles";
 import { MOVE_SHAPE_START, type LiveMoveShape } from "./moveShape";
+import { BUILD_START, type LiveBuildTriangle } from "./congruence";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -618,6 +619,7 @@ export type LiveStates = {
   slopeWalk: LiveSlopeWalk;
   parallelLab: LiveParallelLab;
   moveShape: LiveMoveShape;
+  buildTriangle: LiveBuildTriangle;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -760,6 +762,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   slopeWalk: [680, 820],
   parallelLab: [680, 640],
   moveShape: [680, 640],
+  buildTriangle: [680, 600],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -904,6 +907,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     slopeWalk: SLOPE_WALK_START,
     parallelLab: PARALLEL_LAB_START,
     moveShape: MOVE_SHAPE_START,
+    buildTriangle: BUILD_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,
