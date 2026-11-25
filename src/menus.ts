@@ -48,6 +48,7 @@ export const MENUS: MenuGroup[] = [
           { live: "signArrow", icon: "↻" },
           { live: "signPattern", icon: "⟋" },
           { live: "division", icon: "÷" },
+          { live: "rootZoom", icon: "√" },
         ], shapes: ["numberLine", "barModel", "partWhole", "multiplicationSquare"],
       },
       {

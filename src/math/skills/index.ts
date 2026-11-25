@@ -42,6 +42,7 @@ import congruence from "./congruence";
 import constructions from "./constructions";
 import scale from "./scale";
 import crossSections from "./crossSections";
+import realNumbers from "./realNumbers";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -304,6 +305,7 @@ export const GENS: Record<SkillId, Gen> = {
   constructions,
   scale,
   crossSections,
+  realNumbers,
   stackedFractions,
   ratio,
   rate,

@@ -28,6 +28,7 @@ import { BuildTriangle } from "./BuildTriangle";
 import { Construct } from "./Construct";
 import { ScalePlan } from "./ScalePlan";
 import { CoinStack } from "./CoinStack";
+import { RootZoom } from "./RootZoom";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -226,6 +227,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   construct: Construct,
   scalePlan: ScalePlan,
   coinStack: CoinStack,
+  rootZoom: RootZoom,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,

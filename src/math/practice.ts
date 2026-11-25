@@ -357,11 +357,19 @@ function trapsOf(a: Answer): Trap[] {
 }
 
 /** What a student would type to give each of a question's own traps (for the tests and the dry run). */
+/** A number written in standard form as typed, "6.8*10^10". */
+function stdPlain(v: number): string {
+  let e = Math.floor(Math.log10(Math.abs(v)));
+  let m = Number((v / 10 ** e).toFixed(9));
+  if (Math.abs(m) >= 10) [m, e] = [Number((m / 10).toFixed(9)), e + 1];
+  return `${m}*10^${e}`;
+}
+
 export function trapInputs(ex: Exercise): { id: MistakeId; input: string }[] {
   return (ex.answer.traps ?? []).flatMap(({ id, a }) => {
     // A fraction as a student would write it (9/17, not 0.5294…).
     const f = a.k === "num" ? toFrac(a.v) : null;
-    const input = a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "dir" ? `(${a.vs.join(", ")})` : a.k === "complex" ? a.vs.map((z) => (a.polar ? `${Math.hypot(z.re, z.im)}*e^(${Math.atan2(z.im, z.re)}*i)` : `${z.re} + (${z.im})*i`)).join("; ") : a.k === "matrix" ? a.rows.map((r) => r.join(", ")).join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : a.k === "ratio" ? a.vs.join(" : ") : a.k === "clock" ? (a.typed ?? (a.h24 ? clock24(a.t) : clock12(a.t))) : a.k === "dur" ? (a.typed ?? String(a.m)) : a.k === "meas" ? (a.typed ?? String(a.v)) : a.k === "lines" ? linesText(a.seq) : a.k === "decide" ? (a.truth ? "true" : `false: ${CLAIMS[a.claim].example}`) : null;
+    const input = a.k === "num" && a.std ? stdPlain(a.v) : a.k === "num" ? (f && f.d <= 1000 && Math.abs(f.toNumber() - a.v) < 1e-12 ? plainFrac(f) : String(a.v)) : a.k === "set" ? a.vs.join("; ") : a.k === "tuple" ? `(${a.vs.join(", ")})` : a.k === "dir" ? `(${a.vs.join(", ")})` : a.k === "complex" ? a.vs.map((z) => (a.polar ? `${Math.hypot(z.re, z.im)}*e^(${Math.atan2(z.im, z.re)}*i)` : `${z.re} + (${z.im})*i`)).join("; ") : a.k === "matrix" ? a.rows.map((r) => r.join(", ")).join("; ") : a.k === "expr" ? plainE(a.e) : a.k === "ineq" ? ineqPlain(a.lo, a.hi) : a.k === "sign" ? a.v : a.k === "poly" ? a.sample : a.k === "pin" ? encodePin(a.play, a.v) : a.k === "target" ? a.sample : a.k === "near" ? a.options[a.right].plain : a.k === "order" ? a.seq.map((i) => a.items[i].text).join(", ") : a.k === "shade" ? encodeShade(Array.from({ length: a.count }, (_, i) => i)) : a.k === "pick" ? a.options[a.right].plain : a.k === "divisors" ? a.right.join(", ") : a.k === "ratio" ? a.vs.join(" : ") : a.k === "clock" ? (a.typed ?? (a.h24 ? clock24(a.t) : clock12(a.t))) : a.k === "dur" ? (a.typed ?? String(a.m)) : a.k === "meas" ? (a.typed ?? String(a.v)) : a.k === "lines" ? linesText(a.seq) : a.k === "decide" ? (a.truth ? "true" : `false: ${CLAIMS[a.claim].example}`) : null;
     return input === null ? [] : [{ id, input }];
   });
 }
