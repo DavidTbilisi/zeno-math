@@ -37,6 +37,7 @@ import fractionSums from "./fractionSums";
 import shapeKinds from "./shapeKinds";
 import parallelAngles from "./parallelAngles";
 import pythagoras from "./pythagoras";
+import transformations from "./transformations";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -294,6 +295,7 @@ export const GENS: Record<SkillId, Gen> = {
   shapeKinds,
   parallelAngles,
   pythagoras,
+  transformations,
   stackedFractions,
   ratio,
   rate,

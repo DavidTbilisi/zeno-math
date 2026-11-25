@@ -992,6 +992,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     by its face, the faces at the back left out, acute and obtuse swapped, any crossing taken for perpendicular, two
     equal sides missed, a triangle named by one of its acute angles, the names taken to shut each other out, one
     example taken for always, a wider name for the most exact one and only one name for a shape are named
+  - Moving shapes (grades 8 and 9–10; #642): where a point lands under a translation by a vector or a reflection in an
+    axis; then a quarter or half turn about the origin, a reflection in y = x, an enlargement from the origin, and which
+    one move takes a shape onto another; then two moves in a row, a half turn or an enlargement about a centre off the
+    origin, a negative or fractional scale factor, and what an enlargement does to an area. The vector's numbers
+    swapped, the wrong axis, a quarter turn the wrong way or a bare swap, a scale factor added, a half turn taken for
+    a flip, the moves in the other order, the centre ignored, the scale factor's minus dropped and an area scaled like
+    a length are named. The piece *Move the shape* (Insert → Geometry → plane geometry, grades 7–10) gives a shape and
+    the dashed outline of where one move took it: pick Slide, Flip, Turn or Enlarge and set it by hand (drag the copy;
+    drag the mirror line and tap its end to turn it; drag the centre and the turning handle or the scale factor) until
+    the copy covers the outline, which names the move and what stayed the same, congruent or similar
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

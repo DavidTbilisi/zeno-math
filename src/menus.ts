@@ -66,6 +66,7 @@ export const MENUS: MenuGroup[] = [
         title: "secPlane", items: [
           { live: "geoLab", icon: "📐" },
           { live: "parallelLab", icon: "∥" },
+          { live: "moveShape", icon: "⇄" },
           { kind: "geometry", icon: "📐", label: "geometry" },
           { kind: "euclid", icon: "⊙", label: "euclidTool" },
         ],

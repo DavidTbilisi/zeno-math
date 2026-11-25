@@ -1061,6 +1061,18 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function moveShapePreview(): Piece[] {
+  // An L on a grid, its image turned, and the dashed outline it is moved onto.
+  const L = (ox: number, oy: number, s = 22) => [[0, 0], [3, 0], [3, 1], [1, 1], [1, 2], [0, 2]].map(([x, y]) => [ox + x * s, oy - y * s] as Pt);
+  return [
+    ...[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => seg([i * 22, 0], [i * 22, 176], { color: "#dee2e6", width: 1 })),
+    ...[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => seg([0, i * 22], [176, i * 22], { color: "#dee2e6", width: 1 })),
+    poly(L(0, 176), { fill: FILL.blue, color: BLUE, width: 2.5 }),
+    poly(L(88, 66), { color: "#e8590c", width: 2.5, dashed: true }),
+    poly(L(88, 66), { fill: FILL.green, width: 1.5 }),
+  ];
+}
+
 function parallelLabPreview(): Piece[] {
   // Two parallel lines and a transversal, the equal angles at both crossings shaded alike.
   return [
@@ -2417,6 +2429,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveMirror", build: mirrorPreview, live: "mirror" },
   { id: "liveShapeSort", build: shapeSortPreview, live: "shapeSort" },
   { id: "liveParallelLab", build: parallelLabPreview, live: "parallelLab" },
+  { id: "liveMoveShape", build: moveShapePreview, live: "moveShape" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

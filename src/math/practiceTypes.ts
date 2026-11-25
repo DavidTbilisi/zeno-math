@@ -342,6 +342,14 @@ export type PracticeWords = {
   };
   /** Pythagoras' theorem (pythagoras): the prompts and the words of the steps. */
   pyth: { find: string; findExact: string; isRight: string; yes: string; no: string; box: string; floorStep: string; ladder: string; iso: string; halfStep: string };
+  /** Moving shapes (transformations): the prompts, the lines, the moves' names and what each one does. */
+  moves: {
+    translate: string; reflect: string; rotate: string; enlarge: string; name: string; two: string; reflected: string; translated: string;
+    area: string; areaWhy: string; half: string; quarter: string; anti: string; clock: string;
+    lines: Record<"x" | "y" | "yx", string>;
+    names: Record<"translation" | "reflection" | "rotation" | "enlargement", string>;
+    tells: Record<"translation" | "reflection" | "rotation" | "enlargement", string>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

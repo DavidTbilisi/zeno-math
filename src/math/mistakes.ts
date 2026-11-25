@@ -998,5 +998,15 @@ export const MISTAKES = [
   "wrongSideAlone",
   "floorDiagonalOnly",
   "baseNotHalved",
+  "translateSwapped",
+  "reflectWrongAxis",
+  "turnWrongWay",
+  "rotateSwapOnly",
+  "enlargeAdded",
+  "halfTurnIsFlip",
+  "orderSwapped",
+  "centreIgnored",
+  "negativeScaleIgnored",
+  "areaScaledOnce",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
