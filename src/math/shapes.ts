@@ -1061,6 +1061,18 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function boxSplitPreview(): Piece[] {
+  // A row of cards cut in the middle, and the box plot under it.
+  const card = (x: number): Piece => poly([[x, 20], [x + 26, 20], [x + 26, 46], [x, 46]], { fill: FILL.blue, width: 1.5 });
+  return [
+    ...[20, 54, 88, 122, 156, 190, 224].map(card),
+    poly([[143, 10], [143, 56]], { width: 3 }),
+    poly([[20, 110], [70, 110]], { width: 1.5 }), poly([[200, 110], [250, 110]], { width: 1.5 }),
+    poly([[70, 92], [200, 92], [200, 128], [70, 128]], { fill: FILL.blue, width: 2 }),
+    poly([[130, 92], [130, 128]], { width: 3 }),
+  ];
+}
+
 function twoChangesPreview(): Piece[] {
   // A price bar, the same bar cut by a fifth, then the new bar cut by a tenth of itself.
   const bar = (y: number, w: number, fill: string): Piece => poly([[20, y], [20 + w, y], [20 + w, y + 30], [20, y + 30]], { fill, width: 1.5 });
@@ -2500,6 +2512,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveRootZoom", build: rootZoomPreview, live: "rootZoom" },
   { id: "liveAbsLine", build: absLinePreview, live: "absLine" },
   { id: "liveTwoChanges", build: twoChangesPreview, live: "twoChanges" },
+  { id: "liveBoxSplit", build: boxSplitPreview, live: "boxSplit" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

@@ -1060,6 +1060,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     to take a percentage off (or put one on), then the second bar's, whose tenths are tenths of the new price; a
     dashed bar is the one change of the two percentages added, and the gap shows that 20 % off then 10 % off is 72,
     not 70
+  - Spread (grades 7, 8 and 10; #650): a dot plot and a histogram read; then the quartiles and the interquartile
+    range of a list, the IQR read off a box plot, and the mean absolute deviation; then the upper fence for outliers,
+    Q3 + 1.5 × IQR, what one changed value does to the mean and to the median, and which of two box plots is more
+    spread out in its middle half. Counting the value itself as "more than", the stack's height for the most common
+    value, one bar of two, the middle of the unsorted list, the range for the IQR, the median kept in both halves,
+    signed distances, the total distance not shared out, the fence from the median, the whole change for the mean, a
+    median that moves and the range for the spread are named. The piece *Split the row* (Insert → Discrete & stats →
+    Statistics, grades 7–10) lays the values out in order as cards: tap where the row splits into two halves (a card,
+    or the gap between two); a miss says how many cards it leaves on each side, so the rule is found by counting. Then
+    each half is split the same way, and under the row the box plot draws itself from the taps
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

@@ -1054,5 +1054,17 @@ export const MISTAKES = [
   "bandWholePay",
   "loanRateOnly",
   "unitBiggerCheaper",
+  "dotIncludesEqual",
+  "modeAsCount",
+  "histOneBar",
+  "medianUnsorted",
+  "iqrAsRange",
+  "quartileWithMedian",
+  "madSigned",
+  "madNotDivided",
+  "fenceFromMedian",
+  "meanChangeWhole",
+  "medianMoves",
+  "spreadByRange",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
