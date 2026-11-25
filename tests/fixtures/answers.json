@@ -19009,6 +19009,409 @@
       "seed": 12,
       "input": "10",
       "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 1,
+      "input": "148",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 1,
+      "input": "252",
+      "label": "wrong",
+      "mistake": "smallerFromLarger"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 1,
+      "input": "258",
+      "label": "wrong",
+      "mistake": "tradeNotPaid"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 1,
+      "input": "155",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 7,
+      "input": "983",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 7,
+      "input": "973",
+      "label": "wrong",
+      "mistake": "carryDropped"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 7,
+      "input": "9713",
+      "label": "wrong",
+      "mistake": "carryWritten"
+    },
+    {
+      "skill": "columnSums",
+      "level": 1,
+      "seed": 7,
+      "input": "990",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 2,
+      "seed": 1,
+      "input": "10568",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 2,
+      "seed": 1,
+      "input": "10632",
+      "label": "wrong",
+      "mistake": "smallerFromLarger"
+    },
+    {
+      "skill": "columnSums",
+      "level": 2,
+      "seed": 1,
+      "input": "10678",
+      "label": "wrong",
+      "mistake": "tradeNotPaid"
+    },
+    {
+      "skill": "columnSums",
+      "level": 2,
+      "seed": 1,
+      "input": "10575",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 2,
+      "seed": 7,
+      "input": "93823",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 2,
+      "seed": 7,
+      "input": "83713",
+      "label": "wrong",
+      "mistake": "carryDropped"
+    },
+    {
+      "skill": "columnSums",
+      "level": 2,
+      "seed": 7,
+      "input": "93830",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 1,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "digitCarryMissed"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 2,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "digitCarryMissed"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 4,
+      "input": "114573",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 4,
+      "input": "448303",
+      "label": "wrong",
+      "mistake": "inverseMissed"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 4,
+      "input": "114580",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 5,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 5,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "digitTradeMissed"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 5,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 7,
+      "input": "980894",
+      "label": "correct"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 7,
+      "input": "970894",
+      "label": "wrong",
+      "mistake": "carryDropped"
+    },
+    {
+      "skill": "columnSums",
+      "level": 3,
+      "seed": 7,
+      "input": "980901",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 1,
+      "seed": 1,
+      "input": "65",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 1,
+      "seed": 1,
+      "input": "72",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 1,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 1,
+      "seed": 7,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 2,
+      "seed": 1,
+      "input": "394",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 2,
+      "seed": 1,
+      "input": "401",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 2,
+      "seed": 2,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 2,
+      "seed": 2,
+      "input": "117",
+      "label": "wrong",
+      "mistake": "quotientForRemainder"
+    },
+    {
+      "skill": "longDivide",
+      "level": 2,
+      "seed": 2,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 2,
+      "seed": 3,
+      "input": "34",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 2,
+      "seed": 3,
+      "input": "41",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 1,
+      "input": "58 11/12",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 1,
+      "input": "5811/100",
+      "label": "wrong",
+      "mistake": "remainderAfterPoint"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 2,
+      "input": "13",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 2,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "quotientForRemainder"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 2,
+      "input": "20",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 4,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 4,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "remainderLeftBehind"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 4,
+      "input": "21",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 7,
+      "input": "97.75",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 7,
+      "input": "979/10",
+      "label": "wrong",
+      "mistake": "remainderAfterPoint"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 7,
+      "input": "104.75",
+      "label": "wrong"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 20,
+      "input": "26",
+      "label": "correct"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 20,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "partGroupCounted"
+    },
+    {
+      "skill": "longDivide",
+      "level": 3,
+      "seed": 20,
+      "input": "33",
+      "label": "wrong"
     }
   ]
 }

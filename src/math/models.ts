@@ -515,6 +515,7 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "addOne", spec: { type: "addition", style: "numberline", a: 7, b: 1, step: 999 } },
     { key: "addCountOn", spec: { type: "addition", style: "numberline", a: 8, b: 5, step: 999 } },
     { key: "addBig", spec: { type: "addition", style: "numberline", a: 27, b: 15, step: 999 } },
+    { key: "addColumn", spec: { type: "addition", style: "column", a: 367, b: 285, step: 999 } },
   ],
   subtraction: [
     { key: "subTake", spec: { type: "subtraction", style: "takeaway", a: 7, b: 3, step: 999 } },
@@ -525,6 +526,8 @@ export const PRESETS: { [K in DialogModelType]: { key: string; spec: Extract<Mod
     { key: "subBig", spec: { type: "subtraction", style: "numberline", a: 42, b: 15, step: 999 } },
     { key: "subSame", spec: { type: "subtraction", style: "same", a: 63, b: 28, step: 999 } },
     { key: "subSameRound", spec: { type: "subtraction", style: "same", a: 52, b: 19, step: 999 } },
+    { key: "subColumn", spec: { type: "subtraction", style: "column", a: 523, b: 278, step: 999 } },
+    { key: "subZeros", spec: { type: "subtraction", style: "column", a: 4003, b: 1568, step: 999 } },
   ],
   multiply: [
     { key: "mulGroups", spec: { type: "multiply", style: "groups", a: 3, b: 4, step: 999 } },

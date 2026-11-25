@@ -53,6 +53,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - *Fractions*: bars or circles, stacked fraction walls (equivalence, comparison), improper fractions
   - *Percent*: hundred grid, or percent bar in tenths with a double number line ("25% of 80")
   - *Number bonds*: a whole and 2–4 parts
+  - *Addition and subtraction*: counters put together or crossed out, hops along a number line, the same difference
+    slid to a whole ten, and **in columns**: the written method to 999 999, worked a column at a time with the step
+    slider. A carried 1 is written small over the next column; a top digit that is too small takes a ten from the
+    column on its left, which is crossed out and written one less, and a row of zeros is crossed in one go and
+    stands at 9 (4003 − 1568). Each worked column's own sum is written beside it (13 − 8 = 5), and a difference is
+    checked by adding back
   - *Multiplication*, from counting to algebra, each with a step-by-step slider:
     equal groups (3 × 4 = 4 + 4 + 4, with skip counts), arrays (rows with running totals; b × a = a × b),
     number-line jumps, the place-value area model (23 × 14 = 200 + 80 + 30 + 12 = 322), and the
@@ -873,6 +879,20 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       bond; then two-digit sums and differences in the head and the bonds to 100; then three digits and a number
       missing from a subtraction. A carry left out, the smaller digit taken from the larger, 37 + 73 for a bond to
       100 and the sign in the question used instead of its inverse are named
+    - Written addition and subtraction (grades 3 and 4; #636): three-digit sums and differences set out in columns
+      under the question, a ten carried or taken; then four and five digits and taking away across zeros (40 004 −
+      14 827); then six digits to a million, a digit missing from a written sum (4☐58 + 1645 = 6403) and a number
+      missing from one (☐ + 166 865 = 281 438). The worked solution is the sum in columns with every trade. A carry
+      left out or written in its column (51412 for 367 + 285), the smaller digit taken from the larger, a ten taken
+      and never paid for, a crossed zero left at 10, and the trade forgotten when a digit is missing are named. An
+      answer typed in threes (248 915) is read as one number, in every skill
+    - Long division by two digits (grades 5 and 6; #636): how many whole times 63 goes into 477, and three digits
+      divided exactly; then four and five digits, a zero in the quotient (19 047 ÷ 21 = 907), the whole quotient and
+      the remainder; then the remainder carried on as a decimal (1173 ÷ 12 = 97.75) or written as a fraction in
+      lowest terms (70 1/4), and stories in which the remainder decides: one more coach, only the full boxes, the
+      eggs left over. The worked solution is the long division under its bracket. The estimate from the rounded
+      divisor taken unchecked (too big or too small), a zero left out of the quotient, the remainder written after
+      the point (97.9), the people left behind and the box that is not full are named
     - Times tables: the tables of 2, 3, 4, 5 and 10, then 6 to 9 and a missing factor, then 11, 12 and multiples of
       ten (40 × 60); each fact is worked as its array of dots. The two numbers added and a zero lost are named
     - Division: the same tables turned round, then a missing number (☐ ÷ 6 = 7), then remainders, quotients past the

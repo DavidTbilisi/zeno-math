@@ -316,6 +316,12 @@ export type PracticeWords = {
     step: string; said: string; sumParity: string;
     words: Record<"yes" | "no" | "odd" | "even", string>;
   };
+  /**
+   * Written sums and long division (columnSums, longDivide): the prompts for a digit missing from a written sum, how
+   * many times a number goes into another, a quotient as a decimal or a mixed number, and the stories in which the
+   * remainder decides the answer.
+   */
+  written: { missingDigit: string; fits: string; asDecimal: string; asMixed: string; coaches: string; boxes: string; left: string };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
