@@ -22,7 +22,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "fractions", shelf: "start", icon: "½",
-    skills: ["makeWhole", "equivalent", "orderFractions", "shadeFraction", "compareFractions", "fractionSums", "fractions", "decimals", "decimalTimes", "percent", "convert", "stackedFractions", "ratio", "rate"],
+    skills: ["makeWhole", "equivalent", "orderFractions", "shadeFraction", "compareFractions", "fractionSums", "fractions", "decimals", "decimalTimes", "percent", "convert", "stackedFractions", "ratio", "rate", "scale"],
     sections: ["secFractions", "senseFraction"],
   },
   {

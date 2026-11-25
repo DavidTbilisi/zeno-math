@@ -26,6 +26,7 @@ import { ParallelLab } from "./ParallelLab";
 import { MoveShape } from "./MoveShape";
 import { BuildTriangle } from "./BuildTriangle";
 import { Construct } from "./Construct";
+import { ScalePlan } from "./ScalePlan";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -222,6 +223,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   moveShape: MoveShape,
   buildTriangle: BuildTriangle,
   construct: Construct,
+  scalePlan: ScalePlan,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,

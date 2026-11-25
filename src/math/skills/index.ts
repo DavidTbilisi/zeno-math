@@ -40,6 +40,7 @@ import pythagoras from "./pythagoras";
 import transformations from "./transformations";
 import congruence from "./congruence";
 import constructions from "./constructions";
+import scale from "./scale";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -300,6 +301,7 @@ export const GENS: Record<SkillId, Gen> = {
   transformations,
   congruence,
   constructions,
+  scale,
   stackedFractions,
   ratio,
   rate,

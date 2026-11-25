@@ -364,6 +364,11 @@ export type PracticeWords = {
     how: Record<"bisect" | "angle" | "perp" | "equi" | "hexagon", string>;
     proofs: Record<"bisect" | "angle" | "thirty", { claim: string; lines: string[]; wrong: string }>;
   };
+  /** Scale drawings and maps (scale): the units and the prompts. */
+  maps: {
+    m: string; km: string; real: string; onMap: string; ratioMap: string; findScale: string; cmToM: string; area: string;
+    areaBack: string; redraw: string;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

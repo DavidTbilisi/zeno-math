@@ -1016,5 +1016,10 @@ export const MISTAKES = [
   "constructionNotHalved",
   "hexSideDiameter",
   "bisectLinear",
+  "scaleInverted",
+  "mapUnitSlip",
+  "scaleUnitsMixed",
+  "areaScaledByK",
+  "rescaleInverted",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

@@ -852,6 +852,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       a second; then, with a picture of the road, the average speed over two legs (the mean of the two speeds named),
       two vehicles meeting head on and one catching another up (the difference and the sum of the speeds swapped,
       named). The answer may carry its unit: 48 km, 60 km/h, 3 h
+    - *Scale drawings and maps* (grades 7 and 8; #645): a real distance from a map at 1 cm : 5 m or 1 cm : 3 km, and
+      back; then a map at 1 : 50 000 with the change to kilometres, and the scale 1 : n found from a drawing; then a
+      room's real floor area from a plan, the plan's area from the real one, and a drawing redrawn at another scale.
+      Dividing where the scale multiplies, the wrong change of unit, metres and centimetres mixed, an area scaled by
+      k instead of k² and the redrawing turned upside down are named. The piece *The plan and the floor* (Insert →
+      Geometry → plane geometry, grades 6–8) puts a room on a squared plan beside the real floor: drag the room's
+      corner and the scale, and the plan's shaded square centimetre is a k × k block of square metres on the floor
     - *Bar-model word problems* (Singapore Math Challenge Word Problems; Visible Thinking 2A, 3A), one form per
       structure the bar model solves: easy is one amount less than another, posts along a straight fence, how much more
       one has when the total is known; medium a total and a difference, "k times as many" with a total, trees round a
