@@ -1026,6 +1026,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     The piece *Construct* (Insert → Geometry → plane geometry, grades 7–10) has only a compass and a straight edge:
     drag from a point to a point for a circle or a line, and points appear wherever two marks cross. Five tasks in a
     ladder; when one is built, the congruent triangles that make it work are shaded and the reason is written
+  - Slicing solids, and density (grades 7 and 10; #646): the shape of a level or upright slice through a cuboid,
+    prism, pyramid, cylinder, cone or sphere, drawn cut open; then the solid a rectangle, a right-angled triangle, a
+    semicircle or an isosceles triangle sweeps out when it turns, its volume, and a leaning stack of coins; then density
+    from mass and volume, a mass from a cuboid's volume, and people per km². The base taken for an upright slice, the
+    side for a level one, a turned triangle taken for a cylinder, the radius and height swapped, the cone's third left
+    out and density turned upside down are named. The piece *Lean the stack* (Insert → Geometry → solids, grades 8–10)
+    pushes a stack of coins over while a level slice cuts one coin in each stack: the same slices, the same volume
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

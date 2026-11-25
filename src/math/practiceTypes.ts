@@ -369,6 +369,16 @@ export type PracticeWords = {
     m: string; km: string; real: string; onMap: string; ratioMap: string; findScale: string; cmToM: string; area: string;
     areaBack: string; redraw: string;
   };
+  /** Slicing solids, and density (crossSections): the prompts and the names of the shapes and solids. */
+  slices: {
+    which: string; level: string; upright: string; turnWhich: string; stack: string; cavalieri: string; turnCylinder: string;
+    turnCone: string; density: string; mass: string; people: string; areaFrom: string;
+    shapes: Record<"circle" | "triangle" | "square" | "rectangle" | "trapezium" | "hexagon", string>;
+    flat: Record<"rectangle" | "rightTriangle" | "semicircle" | "isosceles", string>;
+    sweeps: Record<"rectangle" | "rightTriangle" | "semicircle" | "isosceles", string>;
+    solids: Record<"cylinder" | "cone" | "sphere" | "twoCones", string>;
+    materials: Record<"aluminium" | "iron" | "ice" | "oak" | "glass", string>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
