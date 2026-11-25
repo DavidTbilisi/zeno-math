@@ -992,5 +992,11 @@ export const MISTAKES = [
   "pairMisnamed",
   "exteriorIsInterior",
   "bendAsTriangle",
+  "sidesAdded",
+  "rootLeftOut",
+  "shorterAsHypotenuse",
+  "wrongSideAlone",
+  "floorDiagonalOnly",
+  "baseNotHalved",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

@@ -340,6 +340,8 @@ export type PracticeWords = {
     cross: string; rightSplit: string; compOf: string; suppOf: string; find: string; name: string; ext: string; extIn: string; solveX: string; bend: string; through: string;
     pairs: Record<"vertical" | "line" | "corresponding" | "alternate" | "coInterior", string>;
   };
+  /** Pythagoras' theorem (pythagoras): the prompts and the words of the steps. */
+  pyth: { find: string; findExact: string; isRight: string; yes: string; no: string; box: string; floorStep: string; ladder: string; iso: string; halfStep: string };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

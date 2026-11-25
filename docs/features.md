@@ -975,6 +975,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     the transversal by its end: the eight angles stay two sizes in two colours, a tapped angle names its partners;
     its triangle view slides the top corner along the parallel, and the base angles reappear beside it, filling the
     straight line with the triangle's three angles
+  - Pythagoras' theorem (grade 8; #641): the hypotenuse of a right triangle from two whole sides (the triples, the
+    triangle turned any way); then a shorter side, a hypotenuse that is a surd (typed exactly or to 2 decimal places),
+    and whether three lengths make a right angle, listed with the longest side anywhere; then two steps or a new
+    setting: the diagonal of a box, a ladder against a wall, the height of an isosceles triangle. The sides added
+    instead of their squares, the square root left out, a shorter side's square added to the longest one's, the
+    longest side not checked alone, only the floor's diagonal and the whole base for its half are named. Why it holds
+    is the *Pythagoras* discovery game in shape sense
   - Shapes and their properties (grades 1, 4 and 5; #639): flat shapes and solids named and the sides and corners
     of a polygon counted, the faces, edges and corners of a cube, cuboid, pyramid or prism; then angles (acute, right,
     obtuse), a line, a ray or a segment, two lines parallel, perpendicular or crossing, and triangles named by their
