@@ -22936,6 +22936,277 @@
       "input": "Observational study",
       "label": "wrong",
       "mistake": "studyKindMixed"
+    },
+    {
+      "skill": "tTests",
+      "level": 1,
+      "seed": 1,
+      "input": "Yes: np₀ = 80 and n(1 − p₀) = 20 are both at least 10",
+      "label": "correct"
+    },
+    {
+      "skill": "tTests",
+      "level": 1,
+      "seed": 7,
+      "input": "-3.27",
+      "label": "correct"
+    },
+    {
+      "skill": "tTests",
+      "level": 1,
+      "seed": 7,
+      "input": "-3.4299717028501777",
+      "label": "wrong",
+      "mistake": "propSeFromPhat"
+    },
+    {
+      "skill": "tTests",
+      "level": 1,
+      "seed": 7,
+      "input": "3.73",
+      "label": "wrong"
+    },
+    {
+      "skill": "tTests",
+      "level": 2,
+      "seed": 1,
+      "input": "24.83",
+      "label": "correct"
+    },
+    {
+      "skill": "tTests",
+      "level": 2,
+      "seed": 1,
+      "input": "17.53077294359835",
+      "label": "wrong",
+      "mistake": "marginWithZ"
+    },
+    {
+      "skill": "tTests",
+      "level": 2,
+      "seed": 1,
+      "input": "22.99572308060784",
+      "label": "wrong",
+      "mistake": "dfIsN"
+    },
+    {
+      "skill": "tTests",
+      "level": 2,
+      "seed": 1,
+      "input": "31.83",
+      "label": "wrong"
+    },
+    {
+      "skill": "tTests",
+      "level": 2,
+      "seed": 7,
+      "input": "1.5",
+      "label": "correct"
+    },
+    {
+      "skill": "tTests",
+      "level": 2,
+      "seed": 7,
+      "input": "9/2",
+      "label": "wrong",
+      "mistake": "seDividedByN"
+    },
+    {
+      "skill": "tTests",
+      "level": 2,
+      "seed": 7,
+      "input": "8.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "tTests",
+      "level": 3,
+      "seed": 1,
+      "input": "2.48",
+      "label": "correct"
+    },
+    {
+      "skill": "tTests",
+      "level": 3,
+      "seed": 1,
+      "input": "0.376250915234247",
+      "label": "wrong",
+      "mistake": "pairedAsIndependent"
+    },
+    {
+      "skill": "tTests",
+      "level": 3,
+      "seed": 1,
+      "input": "9.48",
+      "label": "wrong"
+    },
+    {
+      "skill": "tTests",
+      "level": 3,
+      "seed": 7,
+      "input": "2.08",
+      "label": "correct"
+    },
+    {
+      "skill": "tTests",
+      "level": 3,
+      "seed": 7,
+      "input": "0.3763549647474917",
+      "label": "wrong",
+      "mistake": "pairedAsIndependent"
+    },
+    {
+      "skill": "tTests",
+      "level": 3,
+      "seed": 7,
+      "input": "9.08",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoSample",
+      "level": 1,
+      "seed": 1,
+      "input": "A larger sample",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 1,
+      "seed": 1,
+      "input": "A smaller significance level α",
+      "label": "wrong",
+      "mistake": "powerSmallerAlpha"
+    },
+    {
+      "skill": "twoSample",
+      "level": 1,
+      "seed": 6,
+      "input": "A correct decision",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 1,
+      "seed": 7,
+      "input": "A correct decision",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 1,
+      "seed": 8,
+      "input": "A correct decision",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 1,
+      "seed": 10,
+      "input": "A Type II error",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 1,
+      "seed": 10,
+      "input": "A Type I error",
+      "label": "wrong",
+      "mistake": "errorTypesSwapped"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 1,
+      "input": "11.66",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 1,
+      "input": "15.281795289545382",
+      "label": "wrong",
+      "mistake": "seAdded"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 1,
+      "input": "18.66",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 2,
+      "input": "-2.05",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 2,
+      "input": "-1.5229520301253843",
+      "label": "wrong",
+      "mistake": "seAdded"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 2,
+      "input": "4.95",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 1,
+      "input": "Paired t test",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 1,
+      "input": "Two-sample t test",
+      "label": "wrong",
+      "mistake": "pairedAsTwoSample"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 2,
+      "input": "Two-sample t test",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 2,
+      "input": "Paired t test",
+      "label": "wrong",
+      "mistake": "twoSampleAsPaired"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 5,
+      "input": "One-proportion z test",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 7,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 11,
+      "input": "One-sample t test",
+      "label": "correct"
     }
   ]
 }

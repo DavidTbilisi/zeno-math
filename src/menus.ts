@@ -181,6 +181,7 @@ export const MENUS: MenuGroup[] = [
           { live: "tableShares", icon: "▦" },
           { live: "fitLine", icon: "⟋" },
           { live: "sampleField", icon: "🐟" },
+          { live: "tTails", icon: "t" },
           { kind: "statistics", icon: "📊", label: "statistics" },
           { kind: "inference", icon: "H₀", label: "inference" },
           { kind: "regression", icon: "ŷ", label: "regression" },

@@ -225,6 +225,8 @@
   "distributions": "ff8c1aab56268575",
   "correlation": "3d16ac09fa325063",
   "hypothesis": "11fb5c4961394a2d",
+  "tTests": "451719b1d67e95c6",
+  "twoSample": "917b01d3829156ad",
   "densities": "2fbfa7e04bb729ef",
   "jointDist": "7a9ecdb837f716c1",
   "mgf": "170d74a5e377bdd3",

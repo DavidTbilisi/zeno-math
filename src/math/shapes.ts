@@ -1061,6 +1061,15 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function tTailsPreview(): Piece[] {
+  // A bell curve with fat tails over a thin one.
+  const curve = (h: number, k: number) => Array.from({ length: 41 }, (_, i) => {
+    const x = -4 + i * 0.2;
+    return [130 + x * 30, 140 - h * Math.pow(1 + (x * x) / k, -(k + 1) / 2)] as [number, number];
+  });
+  return [poly([[10, 140], [250, 140]], { width: 2 }), poly(curve(110, 1000), { width: 2 }), poly(curve(85, 2), { width: 3 })];
+}
+
 function sampleFieldPreview(): Piece[] {
   // A pond of fish, a few of them circled as a sample.
   const fish: [number, number, boolean][] = [[40, 40, true], [90, 30, false], [140, 50, false], [190, 35, true], [60, 90, false], [115, 85, true], [170, 95, false], [220, 80, false], [80, 130, false], [150, 130, true], [205, 125, false]];
@@ -2546,6 +2555,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTableShares", build: tableSharesPreview, live: "tableShares" },
   { id: "liveFitLine", build: fitLinePreview, live: "fitLine" },
   { id: "liveSampleField", build: sampleFieldPreview, live: "sampleField" },
+  { id: "liveTTails", build: tTailsPreview, live: "tTails" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

@@ -1096,6 +1096,17 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     from an observation and a sample stretched past the people it could reach. The piece *Fish in a pond* (Insert →
     Discrete & stats → Statistics, grades 7–10): tap ten fish for a sample or tap the die for ten at random; each
     sample's estimate of the red fish lands as a dot on a line, and after five samples the true 30 shows
+  - t tests and a proportion (grades 12 and 13; #654): the z statistic of a one-proportion test and whether its
+    normal model may be used; the t statistic of a mean and the margin of error of a t interval, read from a table
+    that offers both n − 1 and n degrees of freedom; then, in before-and-after settings (runners' shoes, split
+    fields), the paired t test. The spread taken from p̂, one count checked, s divided by n, 1.96 used for t*, n
+    degrees of freedom and paired lists treated as two samples are named.
+  - Two samples, errors and the slope (grades 12 and 13; #654): Type I and Type II errors and what raises power; the
+    two-sample t statistic and the margin of an interval for μ₁ − μ₂; whether a slope is significant on n − 2
+    degrees of freedom, and which test fits a study. The errors swapped, a smaller α taken to raise power, standard
+    errors added, n − 1 degrees of freedom for a slope and paired and two-sample designs mixed up are named. The
+    piece *Fat tails* (Insert → Discrete & stats → Statistics, grades 12–13): drag the sample size and watch t's
+    tails thin and its cut close in on 1.96, with how often a 1.96 interval would really catch the mean
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

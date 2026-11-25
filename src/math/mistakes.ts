@@ -1094,5 +1094,17 @@ export const MISTAKES = [
   "noControl",
   "causeFromObservation",
   "generalizeBeyond",
+  "propSeFromPhat",
+  "conditionsOneSide",
+  "seDividedByN",
+  "marginWithZ",
+  "dfIsN",
+  "pairedAsIndependent",
+  "errorTypesSwapped",
+  "powerSmallerAlpha",
+  "seAdded",
+  "slopeDfOne",
+  "pairedAsTwoSample",
+  "twoSampleAsPaired",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
