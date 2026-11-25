@@ -24323,6 +24323,268 @@
       "seed": 7,
       "input": "6",
       "label": "wrong"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 1,
+      "input": "Down on the left, down on the right",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 1,
+      "input": "Up on the left, up on the right",
+      "label": "wrong",
+      "mistake": "endsByDegreeOnly"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 2,
+      "input": "Down on the left, up on the right",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 2,
+      "input": "Up on the left, up on the right",
+      "label": "wrong",
+      "mistake": "endsByLeadingOnly"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 3,
+      "input": "Up on the left, up on the right",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 4,
+      "input": "Down on the left, up on the right",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 4,
+      "input": "Up on the left, up on the right",
+      "label": "wrong",
+      "mistake": "endsByLeadingOnly"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 5,
+      "input": "Down on the left, up on the right",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 1,
+      "seed": 5,
+      "input": "Up on the left, up on the right",
+      "label": "wrong",
+      "mistake": "endsByLeadingOnly"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 1,
+      "input": "Negative",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 1,
+      "input": "Positive",
+      "label": "wrong",
+      "mistake": "multiplicityDropped"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 2,
+      "input": "Positive",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 2,
+      "input": "Negative",
+      "label": "wrong",
+      "mistake": "signBetweenWrong"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 3,
+      "input": "Positive",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 3,
+      "input": "Negative",
+      "label": "wrong",
+      "mistake": "signBetweenWrong"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 4,
+      "input": "Positive",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 4,
+      "input": "Negative",
+      "label": "wrong",
+      "mistake": "signBetweenWrong"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 5,
+      "input": "Negative",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 2,
+      "seed": 5,
+      "input": "Positive",
+      "label": "wrong",
+      "mistake": "signBetweenWrong"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 1,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "turningPointsDegree"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 2,
+      "input": "0 < x < 6",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 2,
+      "input": "x > 10",
+      "label": "wrong",
+      "mistake": "positiveNotReal"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 2,
+      "input": "0 < x < 10",
+      "label": "wrong",
+      "mistake": "widthLimitMissed"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 6,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 6,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "turningPointsDegree"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 6,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 7,
+      "input": "y = (x − 2)(x − 4)²",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 7,
+      "input": "y = (x + 2)(x + 4)²",
+      "label": "wrong",
+      "mistake": "zeroSignKept"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 7,
+      "input": "y = (x − 2)²(x − 4)",
+      "label": "wrong",
+      "mistake": "multiplicityDropped"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 7,
+      "input": "y = −(x − 2)(x − 4)²",
+      "label": "wrong",
+      "mistake": "endsByDegreeOnly"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 10,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 10,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "turningPointsDegree"
+    },
+    {
+      "skill": "polyGraph",
+      "level": 3,
+      "seed": 10,
+      "input": "13",
+      "label": "wrong"
     }
   ]
 }

@@ -1061,6 +1061,15 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function polyShapePreview(): Piece[] {
+  // A cubic that touches the axis at one zero and crosses at another.
+  const curve = Array.from({ length: 41 }, (_, i) => {
+    const x = -2.2 + i * 0.11;
+    return [120 + x * 45, 100 - 12 * (x + 1) ** 2 * (x - 2)] as [number, number];
+  }).filter(([, y]) => y > 10 && y < 190);
+  return [poly([[10, 100], [240, 100]], { width: 1.5 }), poly(curve, { width: 3 })];
+}
+
 function completeSquarePreview(): Piece[] {
   // A big square with strips on two sides and the corner dashed.
   return [
@@ -2593,6 +2602,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTestPoints", build: testPointsPreview, live: "testPoints" },
   { id: "liveGrowthRace", build: growthRacePreview, live: "growthRace" },
   { id: "liveCompleteSquare", build: completeSquarePreview, live: "completeSquare" },
+  { id: "livePolyShape", build: polyShapePreview, live: "polyShape" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
