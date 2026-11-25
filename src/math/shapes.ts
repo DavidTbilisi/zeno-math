@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function testPointsPreview(): Piece[] {
+  // A dashed boundary with the region below it shaded.
+  return [
+    poly([[20, 150], [240, 150], [240, 40]], { fill: FILL.blue, width: 0 }),
+    poly([[20, 150], [240, 40]], { width: 2.5 }),
+    poly([[60, 60], [70, 60], [70, 70], [60, 70]], { fill: FILL.red, width: 1 }),
+    poly([[180, 120], [190, 120], [190, 130], [180, 130]], { fill: FILL.green, width: 1 }),
+  ];
+}
+
 function secantRatePreview(): Piece[] {
   // A wave with a flat chord between two of its points.
   const f = (x: number) => 90 - (x * (x - 3) * (x - 6)) * 6;
@@ -2564,6 +2574,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSampleField", build: sampleFieldPreview, live: "sampleField" },
   { id: "liveTTails", build: tTailsPreview, live: "tTails" },
   { id: "liveSecantRate", build: secantRatePreview, live: "secantRate" },
+  { id: "liveTestPoints", build: testPointsPreview, live: "testPoints" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

@@ -52,6 +52,7 @@ import sampling from "./sampling";
 import tTests from "./tTests";
 import twoSample from "./twoSample";
 import readFunction from "./readFunction";
+import regions from "./regions";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -324,6 +325,7 @@ export const GENS: Record<SkillId, Gen> = {
   tTests,
   twoSample,
   readFunction,
+  regions,
   stackedFractions,
   ratio,
   rate,

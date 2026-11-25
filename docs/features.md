@@ -1114,6 +1114,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     read backwards, the range read from the ends, positive taken for increasing and the start taken for the rate.
     The piece *Chords on a curve* (Insert → Algebra → Functions, grades 8–10): drag two points along a curve that
     rises, falls and rises; the chord shows its run and rise, and a flat chord has rate 0 though the curve moved
+  - Inequalities in two variables (grades 8 and 10; #656): whether a point is a solution (some on the line itself)
+    and whether the boundary is solid or dashed; then the inequality a picture shows, which side x − y > c shades
+    once the sign turns, the slope of a line in standard form and the point-slope equation; then the point in a
+    system's region, a corner of a region, and, in a new setting, a limit in words (eggs for cakes and pies, wood
+    for chairs and shelves) as an inequality. Ten slips are named. The piece *Test the points* (Insert → Algebra →
+    Functions, grades 8–10): tap grid points to test them in y < 2x + 1, x + y ≥ 3 or x − y > 2; green for true,
+    red for false, and after eight tests with one on the line the region shades in, its line solid or dashed
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

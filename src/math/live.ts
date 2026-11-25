@@ -67,6 +67,7 @@ import { FITLINE_START, type LiveFitLine } from "./scatterFit";
 import { SAMPLE_START, type LiveSampleField } from "./sampling";
 import { TTAILS_START, type LiveTTails } from "./tTails";
 import { SECANT_START, type LiveSecantRate } from "./readFunction";
+import { TESTPOINTS_START, type LiveTestPoints } from "./regions";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -644,6 +645,7 @@ export type LiveStates = {
   sampleField: LiveSampleField;
   tTails: LiveTTails;
   secantRate: LiveSecantRate;
+  testPoints: LiveTestPoints;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -799,6 +801,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   sampleField: [700, 490],
   tTails: [700, 490],
   secantRate: [700, 490],
+  testPoints: [700, 500],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -956,6 +959,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     sampleField: SAMPLE_START,
     tTails: TTAILS_START,
     secantRate: SECANT_START,
+    testPoints: TESTPOINTS_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,
