@@ -25,7 +25,7 @@ export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   placeValue: "3|4|5", addSubtract: "8+5", tables: "6×7", divide: "56÷7", squares: "√49", realNumbers: "ℝ", convert: "½=50%", stackedFractions: "½⁄3", areaPerimeter: "▭cm²",
   // fractions, ratio and percentages
   shadeFraction: "◑", compareFractions: "⅓<½", equivalent: "⅔=⁴⁄₆", orderFractions: "<⅓<", makeWhole: "⅓+⅔", decimals: "0.25",
-  percent: "25%", ratio: "3:2", rate: "km/h", scale: "1:50", inflation: "↑%",
+  percent: "25%", ratio: "3:2", rate: "km/h", scale: "1:50", inflation: "↑%", moneySense: "%off",
   // number theory
   bases: "1011₂", divisibility: "÷3?", primes: "2·3·5", modular: "≡", congruences: "ax≡b", crt: "≡≡", fermatEuler: "aᵖ⁻¹", rsa: "RSA",
   discreteLog: "gˣ=h", bezout: "ax+by", residues: "x²≡a", elGamal: "gᵏ", ellipticCurves: "y²=x³",

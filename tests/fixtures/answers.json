@@ -21861,6 +21861,220 @@
       "input": "(-6, 2)",
       "label": "wrong",
       "mistake": "vertexSignH"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 1,
+      "input": "13.80",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 1,
+      "input": "9/5",
+      "label": "wrong",
+      "mistake": "addOnOnly"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 1,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "percentAsMoney"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 1,
+      "input": "20.8",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 2,
+      "input": "42.40",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 2,
+      "input": "12/5",
+      "label": "wrong",
+      "mistake": "addOnOnly"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 2,
+      "input": "46",
+      "label": "wrong",
+      "mistake": "percentAsMoney"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 2,
+      "input": "49.4",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 7,
+      "input": "6.00",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 7,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 1,
+      "input": "21.00",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 1,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "percentsAdded"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 1,
+      "input": "28",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 2,
+      "input": "25",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 2,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "markupOfSelling"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 2,
+      "input": "32",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 7,
+      "input": "60.00",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 7,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "interestOneYear"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 7,
+      "input": "67.64511552000005",
+      "label": "wrong",
+      "mistake": "interestCompound"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 7,
+      "input": "67",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 13,
+      "input": "79.20",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 13,
+      "input": "80",
+      "label": "wrong",
+      "mistake": "percentsAdded"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 13,
+      "input": "86.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 3,
+      "seed": 1,
+      "input": "Loan B",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 3,
+      "seed": 2,
+      "input": "the 250 g pack",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 3,
+      "seed": 2,
+      "input": "the 500 g pack",
+      "label": "wrong",
+      "mistake": "unitBiggerCheaper"
+    },
+    {
+      "skill": "moneySense",
+      "level": 3,
+      "seed": 7,
+      "input": "7000.00",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 3,
+      "seed": 7,
+      "input": "9000",
+      "label": "wrong",
+      "mistake": "bandWholePay"
+    },
+    {
+      "skill": "moneySense",
+      "level": 3,
+      "seed": 7,
+      "input": "7007",
+      "label": "wrong"
     }
   ]
 }

@@ -392,6 +392,11 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Everyday money (moneySense): the prompts and the names of the choices. */
+  shop: {
+    discount: string; tip: string; tax: string; interest: string; offOff: string; upDown: string; markup: string; bands: string;
+    loans: string; loanA: string; loanB: string; packs: string; packSmall: string; packBig: string; per100: string;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;

@@ -60,6 +60,7 @@ import { SCALE_PLAN_START, type LiveScalePlan } from "./scaleMaps";
 import { COIN_START, type LiveCoinStack } from "./crossSections";
 import { ROOT_START, type LiveRootZoom } from "./realNumbers";
 import { ABS_START, type LiveAbsLine } from "./absValue";
+import { TWO_START, type LiveTwoChanges } from "./moneySense";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -630,6 +631,7 @@ export type LiveStates = {
   coinStack: LiveCoinStack;
   rootZoom: LiveRootZoom;
   absLine: LiveAbsLine;
+  twoChanges: LiveTwoChanges;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -778,6 +780,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   coinStack: [700, 590],
   rootZoom: [700, 520],
   absLine: [700, 520],
+  twoChanges: [700, 520],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -928,6 +931,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     coinStack: COIN_START,
     rootZoom: ROOT_START,
     absLine: ABS_START,
+    twoChanges: TWO_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

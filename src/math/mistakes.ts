@@ -1044,5 +1044,15 @@ export const MISTAKES = [
   "vertexSignH",
   "absPieceSwapped",
   "piecewiseWrongPiece",
+  "discountOnly",
+  "addOnOnly",
+  "percentAsMoney",
+  "interestOneYear",
+  "interestCompound",
+  "percentsAdded",
+  "markupOfSelling",
+  "bandWholePay",
+  "loanRateOnly",
+  "unitBiggerCheaper",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
