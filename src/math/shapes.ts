@@ -1061,6 +1061,13 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function wheelWavePreview(): Piece[] {
+  // A wheel and the wave its point traces.
+  const wheel = Array.from({ length: 33 }, (_, i) => [45 + 30 * Math.cos((i * Math.PI) / 16), 100 + 30 * Math.sin((i * Math.PI) / 16)] as [number, number]);
+  const wave = Array.from({ length: 41 }, (_, i) => [95 + i * 4, 100 - 30 * Math.sin((i * Math.PI) / 10)] as [number, number]);
+  return [poly(wheel, { width: 2 }), poly(wave, { width: 3 }), poly([[95, 100], [255, 100]], { width: 1 })];
+}
+
 function moveGraphPreview(): Piece[] {
   // A parabola and its copy moved right and up.
   const at = (dx: number, dy: number) => Array.from({ length: 21 }, (_, i) => [40 + dx + i * 6, 170 - dy - 0.03 * (i * 6 - 60) ** 2 * 1.5] as [number, number]).filter(([, y]) => y > 5);
@@ -2626,6 +2633,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveAsymptoteWalk", build: asymptoteWalkPreview, live: "asymptoteWalk" },
   { id: "liveSquareCheck", build: squareCheckPreview, live: "squareCheck" },
   { id: "liveMoveGraph", build: moveGraphPreview, live: "moveGraph" },
+  { id: "liveWheelWave", build: wheelWavePreview, live: "wheelWave" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

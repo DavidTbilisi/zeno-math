@@ -40,7 +40,7 @@ export const TOPICS: readonly Topic[] = [
     skills: ["graphStory", "readFunction", "functions", "exponential", "coordinates", "slope", "line", "distance"],
     sections: ["secFunctions", "senseChart"],
   },
-  { id: "trigonometry", shelf: "school", icon: "θ", skills: ["trigexact", "righttri", "practicalTrig", "trigRules", "identities"], sections: ["secTrig"] },
+  { id: "trigonometry", shelf: "school", icon: "θ", skills: ["trigexact", "righttri", "practicalTrig", "trigRules", "identities", "trigGraphs", "trigEquations"], sections: ["secTrig"] },
   {
     id: "probability", shelf: "school", icon: "🎲",
     skills: ["probability", "counting", "expectation", "conditional", "distributions", "bayes", "densities", "jointDist", "mgf", "limitTheorems", "markov", "randomWalks", "poissonProcess", "brownian"],

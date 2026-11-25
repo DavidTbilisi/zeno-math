@@ -392,6 +392,10 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Trigonometric graphs (trigGraphs): prompts. */
+  qtg: { ampQ: string; periodQ: string; midQ: string; ampPicQ: string; periodPicQ: string; midPicQ: string; bPicQ: string; tideHighQ: string; tideGapQ: string; };
+  /** Trigonometric equations (trigEquations): prompts and the quarter rules. */
+  qte: { largerQ: string; countQ: string; inverseQ: string; countAllQ: string; radiansQ: string; tideQ: string; sinRule: string; cosRule: string; tanRule: string; };
   /** Transformations of functions (fnTransform): prompts and options. */
   qft: { xQ: string; yQ: string; pictureQ: string; parityQ: string; even: string; odd: string; neither: string; scheduleQ: string; right: string; left: string; };
   /** Equations with roots and fractions (rootEquations): prompts. */

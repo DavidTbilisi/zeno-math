@@ -1159,6 +1159,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     shift the wrong way, the two reflections swapped and f(bx) multiplied instead of divided. The piece *Move the
     graph* (Insert → Algebra → Functions, grades 10–12): drag x², |x| or √x by its key point and its stretch point,
     and the formula y = a·f(x − h) + k follows, with words on why right shows as a minus
+  - Trigonometric graphs (grades 10 and 12; #663): the amplitude, the period and the midline from a formula, then
+    from a graph, then b from a graph and, in a new setting, a harbour's tide. Six slips are named, among them b
+    given for the period and the top for the midline. Trigonometric equations (grades 10 and 12): the larger
+    solution of sin, cos or tan x = an exact value; how many solutions when the angle is doubled, and the inverse
+    functions' ranges; a quadratic in sin x, a solution in radians and, in a new setting, when the tide reaches a
+    depth the second time. Eight slips are named, among them a calculator's single angle and arccos treated as
+    odd. The piece *From the wheel to the wave* (Insert → Geometry → Trigonometry, grades 10–12): a wheel's point
+    traces a·sin(bx) + d as the angle is dragged, and a level dragged up and down marks every solution in a turn
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked
