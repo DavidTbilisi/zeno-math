@@ -26591,6 +26591,308 @@
       "seed": 12,
       "input": "12",
       "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 1,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "tSolvedWrongSign"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 2,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 2,
+      "input": "173/50",
+      "label": "wrong",
+      "mistake": "polarCosSinSwapped"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 7,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "xForY"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 7,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 8,
+      "input": "13",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 8,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "xForY"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 8,
+      "input": "20",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 10,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 10,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "tSolvedWrongSign"
+    },
+    {
+      "skill": "parametric",
+      "level": 1,
+      "seed": 10,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 1,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 1,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "speedNotRooted"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 1,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "componentsAdded"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 2,
+      "input": "A circle round the origin",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 2,
+      "input": "A line through the origin",
+      "label": "wrong",
+      "mistake": "polarCurveMisnamed"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 5,
+      "input": "A spiral",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 5,
+      "input": "A circle round the origin",
+      "label": "wrong",
+      "mistake": "polarCurveMisnamed"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 7,
+      "input": "3.83",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 7,
+      "input": "13/50",
+      "label": "wrong",
+      "mistake": "dydxUpsideDown"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 7,
+      "input": "10.83",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 8,
+      "input": "2.5",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 8,
+      "input": "2/5",
+      "label": "wrong",
+      "mistake": "dydxUpsideDown"
+    },
+    {
+      "skill": "parametric",
+      "level": 2,
+      "seed": 8,
+      "input": "9.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 1,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "accelerationAsVelocity"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 1,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 4,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 4,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "topForLanding"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 4,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 7,
+      "input": "3.66",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 7,
+      "input": "96/5",
+      "label": "wrong",
+      "mistake": "arcLengthNotRooted"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 7,
+      "input": "10.66",
+      "label": "wrong"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 12,
+      "input": "4.71",
+      "label": "correct"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 12,
+      "input": "471/50",
+      "label": "wrong",
+      "mistake": "areaHalfForgotten"
+    },
+    {
+      "skill": "parametric",
+      "level": 3,
+      "seed": 12,
+      "input": "11.71",
+      "label": "wrong"
     }
   ]
 }

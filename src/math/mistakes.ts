@@ -1216,5 +1216,17 @@ export const MISTAKES = [
   "ellipseAsCircle",
   "hyperbolaSignIgnored",
   "fociHalfOnly",
+  "xForY",
+  "tSolvedWrongSign",
+  "polarCosSinSwapped",
+  "dydxUpsideDown",
+  "speedNotRooted",
+  "componentsAdded",
+  "polarCurveMisnamed",
+  "arcLengthNotRooted",
+  "chordForArc",
+  "areaHalfForgotten",
+  "accelerationAsVelocity",
+  "topForLanding",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

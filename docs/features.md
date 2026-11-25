@@ -1174,6 +1174,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     completing them and the foci found by adding for an ellipse. The piece *Pins and a string* (Insert → Geometry →
     Coordinates, grades 10–12): drag a pencil round two pins on a string 10 long, the two lengths always adding to
     10, and push the pins together for a circle; or keep a pencil as far from a focus as from a line
+  - Parametric and polar curves (grades 12 and 13; #665): the point at t, the parameter removed and a polar point
+    in x; then dy/dx from the two rates, speed and naming a polar curve; then arc length, a cardioid's area, an
+    acceleration component and, in a new setting, where a thrown ball lands. Twelve slips are named, among them
+    dy/dx upside down, the speed's parts added and the ½ forgotten in ½∫r² dθ. The piece *Trace the path* (Insert →
+    Calculus, grades 12–13): drag t along a thrown ball, a circle or a cardioid; the velocity arrow gives the slope
+    as its rise over its run and the speed as its length
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Parametric and polar curves (parametric): prompts and options. */
+  qpm: { pointQ: string; removeQ: string; polarQ: string; slopeQ: string; speedQ: string; nameQ: string; circle: string; line: string; spiral: string; arcQ: string; areaQ: string; accelQ: string; ballQ: string; };
   /** Conic sections (conics): prompts and options. */
   qcn: { radiusQ: string; centreQ: string; focusQ: string; fromFocusQ: string; fociQ: string; axisQ: string; slopeQ: string; whichQ: string; circle: string; ellipse: string; parabola: string; hyperbola: string; galleryQ: string; };
   /** Trigonometric graphs (trigGraphs): prompts. */
