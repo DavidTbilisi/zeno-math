@@ -396,7 +396,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   graphStory: [7, 7, 7], // a graph as a relationship between two variables
   linear: [7, 7, 7], // including fractional answers
   proportion: [8, 8, 8], // direct and inverse proportion, y = kx, y = k/x, y ∝ x² (Sec 2)
-  absoluteValue: [6, 8, 10], // |−7| and distance on the line (Y6); |x − a| = b and < b (Y8); the corner of y = m|x − h| + k, piecewise functions (Sec 3/4)
+  absoluteValue: [7, 8, 10], // |−7| and distance on the line (Y7); |x − a| = b and < b (Y8); the corner of y = m|x − h| + k, piecewise functions (Sec 3/4)
   inequalities: [8, 8, 10], // ax + b < c (Sec 2); simultaneous inequalities (Sec 3/4)
   expand: [8, 8, 8],
   factor: [8, 8, 8],
