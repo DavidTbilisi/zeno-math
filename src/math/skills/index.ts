@@ -58,6 +58,7 @@ import quadraticGraph from "./quadraticGraph";
 import polyGraph from "./polyGraph";
 import rationalFn from "./rationalFn";
 import rootEquations from "./rootEquations";
+import fnTransform from "./fnTransform";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -336,6 +337,7 @@ export const GENS: Record<SkillId, Gen> = {
   polyGraph,
   rationalFn,
   rootEquations,
+  fnTransform,
   stackedFractions,
   ratio,
   rate,
