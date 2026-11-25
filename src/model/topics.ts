@@ -53,7 +53,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "numberTheory", shelf: "beyond", icon: "ℤ",
-    skills: ["divisibility", "hcf", "primes", "squares", "bases", "modular", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves"],
+    skills: ["divisibility", "hcf", "primes", "squares", "realNumbers", "bases", "modular", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves"],
     sections: ["senseNumberPatterns"],
   },
   { id: "finance", shelf: "beyond", icon: "%", skills: ["currency", "inflation", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing"], sections: [] },

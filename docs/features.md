@@ -1033,6 +1033,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     side for a level one, a turned triangle taken for a cylinder, the radius and height swapped, the cone's third left
     out and density turned upside down are named. The piece *Lean the stack* (Insert → Geometry → solids, grades 8–10)
     pushes a stack of coins over while a level slice cuts one coin in each stack: the same slices, the same volume
+  - Real numbers (grades 8 and 10; #647): whether √49, √50, a recurring decimal, π or a fraction is rational, and the
+    two whole numbers a square root lies between; then a recurring decimal as a fraction in lowest terms and the
+    largest of a root, a fraction, decimals and π; then quotients and sums in standard form, and whether a sum or
+    product of rationals and irrationals is always rational, always irrational or can be either. Every root taken for
+    irrational, a recurring decimal for irrational, π for 22/7, √n for half of n or for n itself, a recurring decimal
+    cut off, powers added in a division, front numbers added across different powers and two irrationals always
+    irrational are named. The piece *Squeeze the root* (Insert → Number → calculating, grades 7–10) cuts the number
+    line into ten pieces with each tick's square shown as a blue or red dot; tapping the piece where the colour
+    changes zooms in ten times, one more decimal place. √2.25 stops at 1.5; √2 never stops
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

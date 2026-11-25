@@ -1027,5 +1027,14 @@ export const MISTAKES = [
   "axisSwapped",
   "coneThirdMissing",
   "densityInverted",
+  "rootAlwaysIrrational",
+  "recurringIrrational",
+  "piIsRational",
+  "rootAsHalf",
+  "recurringAsTerminating",
+  "rootReadAsNumber",
+  "powersAdded",
+  "addedMantissas",
+  "irrationalAlwaysClosed",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

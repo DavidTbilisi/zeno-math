@@ -1061,6 +1061,14 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function rootZoomPreview(): Piece[] {
+  // A number line with blue dots turning red, and the piece between them picked out.
+  const out: Piece[] = [seg([10, 110], [290, 110], { width: 3 })];
+  for (let j = 0; j <= 7; j++) out.push(poly([[10 + j * 40 - 6, 86], [10 + j * 40 + 6, 86], [10 + j * 40 + 6, 98], [10 + j * 40 - 6, 98]], { fill: j < 4 ? FILL.blue : FILL.red, width: 1 }));
+  out.push(poly([[130, 80], [170, 80], [170, 130], [130, 130]], { fill: FILL.yellow, width: 1.5 }));
+  return out;
+}
+
 function coinStackPreview(): Piece[] {
   // A straight stack of coins and a leaning one beside it.
   const coins: Piece[] = [];
@@ -2474,6 +2482,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveConstruct", build: constructPreview, live: "construct" },
   { id: "liveScalePlan", build: scalePlanPreview, live: "scalePlan" },
   { id: "liveCoinStack", build: coinStackPreview, live: "coinStack" },
+  { id: "liveRootZoom", build: rootZoomPreview, live: "rootZoom" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

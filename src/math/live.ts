@@ -58,6 +58,7 @@ import { BUILD_START, type LiveBuildTriangle } from "./congruence";
 import { CONSTRUCT_START, type LiveConstruct } from "./compass";
 import { SCALE_PLAN_START, type LiveScalePlan } from "./scaleMaps";
 import { COIN_START, type LiveCoinStack } from "./crossSections";
+import { ROOT_START, type LiveRootZoom } from "./realNumbers";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -626,6 +627,7 @@ export type LiveStates = {
   construct: LiveConstruct;
   scalePlan: LiveScalePlan;
   coinStack: LiveCoinStack;
+  rootZoom: LiveRootZoom;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -772,6 +774,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   construct: [700, 700],
   scalePlan: [700, 600],
   coinStack: [700, 590],
+  rootZoom: [700, 520],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -920,6 +923,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     construct: CONSTRUCT_START,
     scalePlan: SCALE_PLAN_START,
     coinStack: COIN_START,
+    rootZoom: ROOT_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

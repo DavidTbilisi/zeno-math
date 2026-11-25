@@ -379,6 +379,14 @@ export type PracticeWords = {
     solids: Record<"cylinder" | "cone" | "sphere" | "twoCones", string>;
     materials: Record<"aluminium" | "iron" | "ice" | "oak" | "glass", string>;
   };
+  /** Real numbers (realNumbers): the prompts and the words of the choices. */
+  reals: {
+    rational: string; irrational: string; classify: string; rootWhy: string; recurringWhy: string; piWhy: string; fractionWhy: string;
+    between: string; recurring: string; largest: string; alwaysRational: string; alwaysIrrational: string; either: string;
+    stdDivide: string; stdAdd: string;
+    closed: Record<"ratIrr" | "irrIrr" | "ratRat" | "irrTimes" | "ratTimesIrr", string>;
+    closedWhy: Record<"ratIrr" | "irrIrr" | "ratRat" | "irrTimes" | "ratTimesIrr", string>;
+  };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };
   bad: string;
