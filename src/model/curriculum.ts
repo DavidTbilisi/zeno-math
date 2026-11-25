@@ -10,7 +10,7 @@ export const CURRICULUM: readonly SkillId[] = [
   "probability", "scale", "transformations", "congruence", "constructions", "similarity", "volume", "crossSections", "circles", "powerPoint", "arcs", "indices", "simultaneous", "quadratic", "surds", "trigexact", "counting",
   "sequences", "series", "logs", "polynomials", "functions", "identities", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "vectors", "dotangle", "nonEuclidean", "projective", "differentiate", "tangent",
   "stationary", "integrate", "definite", "numroots", "numint", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "laplace", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "metrics", "openClosed", "compactness", "connected", "topologies", "floatingPoint", "interpolation", "numericalOde", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "curves", "surfaces", "ci", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "recurrences", "growth", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith",
-  "expectation", "conditional", "distributions", "correlation", "hypothesis", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
+  "expectation", "conditional", "distributions", "correlation", "hypothesis", "tTests", "twoSample", "densities", "jointDist", "mgf", "limitTheorems", "estimators", "mle", "regression", "chiSquared", "anova", "bayes",
   "projection", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "linearSolvers", "odeSystems", "stability", "norms", "operatorNorms", "hilbertSpaces", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing",
   "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "descent", "backprop", "softmax", "overfitting", "precision", "clustering",
 ];
@@ -193,6 +193,8 @@ export const PREREQUISITES: Readonly<Partial<Record<SkillId, readonly SkillId[]>
   distributions: ["expectation", "counting"],
   correlation: ["expectation"],
   hypothesis: ["distributions", "ci"],
+  tTests: ["hypothesis"],
+  twoSample: ["tTests"],
   densities: ["distributions", "integrate"],
   jointDist: ["conditional", "expectation"],
   mgf: ["densities", "expectation"],
@@ -495,6 +497,8 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   distributions: [12, 12, 12], // the binomial and normal distributions (H2)
   correlation: [12, 12, 13], // the product-moment correlation coefficient (H2); covariance from a joint distribution is past it
   hypothesis: [12, 12, 12], // p-values and z tests of a mean (H2)
+  tTests: [12, 12, 13], // a one-proportion z test and its conditions (H2); t for a mean and the t interval (H2); paired data (AP)
+  twoSample: [12, 13, 13], // the two errors and power (H2); two-sample t (AP); a test for a slope, which test fits (AP)
   densities: [13, 13, 13], // densities, distribution functions, uniform and exponential (Ross; Blitzstein & Hwang)
   jointDist: [13, 13, 13], // joint tables, marginals, conditionals, covariance and independence (Ross; Blitzstein & Hwang)
   mgf: [13, 13, 13], // moment generating functions and sums of independent variables (Ross; Blitzstein & Hwang)
