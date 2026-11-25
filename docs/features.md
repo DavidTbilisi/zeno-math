@@ -1088,6 +1088,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     Statistics, grades 8–12): drag the two ends of a line through the points while each residual is drawn as a red
     square; shrink the total to the least it can be, and that line is the line of best fit, its residuals balancing
     above and below. A third set has a point far off the pattern, which pulls the line
+  - Samples and study design (grades 7, 8 and 10; #653): the population or the sample, a fair sample and a fair
+    question; then an estimate for the population from a random sample and the name of a way of sampling (simple
+    random, stratified, cluster, systematic); then an observational study or an experiment, the plan that can show a
+    cause, and, in a new setting, which conclusion a study allows. Twelve slips are named, among them the sample's
+    own count given for the estimate, cluster and stratified swapped, groups that choose themselves, a cause read
+    from an observation and a sample stretched past the people it could reach. The piece *Fish in a pond* (Insert →
+    Discrete & stats → Statistics, grades 7–10): tap ten fish for a sample or tap the die for ten at random; each
+    sample's estimate of the red fish lands as a dot on a line, and after five samples the true 30 shows
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

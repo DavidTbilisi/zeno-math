@@ -1082,5 +1082,17 @@ export const MISTAKES = [
   "residualSign",
   "fitByOnePoint",
   "correlationCause",
+  "sampleAsPopulation",
+  "convenienceFair",
+  "leadingNeutral",
+  "estimateSampleCount",
+  "estimateAsPercent",
+  "methodClusterStrata",
+  "methodSystematicRandom",
+  "studyKindMixed",
+  "volunteerGroups",
+  "noControl",
+  "causeFromObservation",
+  "generalizeBeyond",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

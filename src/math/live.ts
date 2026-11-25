@@ -64,6 +64,7 @@ import { TWO_START, type LiveTwoChanges } from "./moneySense";
 import { BOX_START, type LiveBoxSplit } from "./spread";
 import { TABLE_START, type LiveTableShares } from "./twoWay";
 import { FITLINE_START, type LiveFitLine } from "./scatterFit";
+import { SAMPLE_START, type LiveSampleField } from "./sampling";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -638,6 +639,7 @@ export type LiveStates = {
   boxSplit: LiveBoxSplit;
   tableShares: LiveTableShares;
   fitLine: LiveFitLine;
+  sampleField: LiveSampleField;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -790,6 +792,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   boxSplit: [700, 460],
   tableShares: [700, 470],
   fitLine: [700, 490],
+  sampleField: [700, 490],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -944,6 +947,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     boxSplit: BOX_START,
     tableShares: TABLE_START,
     fitLine: FITLINE_START,
+    sampleField: SAMPLE_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,
