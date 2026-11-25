@@ -1204,5 +1204,17 @@ export const MISTAKES = [
   "arccosNegated",
   "oneFactorOnly",
   "degreesForRadians",
+  "radiusNotRooted",
+  "centreSignKept",
+  "circleConstantOnly",
+  "focusNotQuartered",
+  "fourPForgotten",
+  "fociAdded",
+  "semiAxisForAxis",
+  "asymptoteSlopeInverted",
+  "fociSubtracted",
+  "ellipseAsCircle",
+  "hyperbolaSignIgnored",
+  "fociHalfOnly",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];

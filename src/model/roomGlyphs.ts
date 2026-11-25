@@ -38,7 +38,7 @@ export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   // geometry and trigonometry
   shapeArea: "cm²", symmetryLines: "◇|", estimateAngle: "∠?", missingAngle: "∠x", parallelAngles: "∥∠", pythagoras: "c²=a²+b²", transformations: "↻⇄", congruence: "≅", constructions: "⌒", triangleInequality: "a+b>c", cubeNets: "✚", circles: "⊙",
   powerPoint: "⊙·P", arcs: "rθ", similarity: "∼", volume: "V=", crossSections: "✂▲", righttri: "a²+b²", practicalTrig: "∠θ", trigRules: "a/sinA",
-  trigexact: "sin30°", identities: "≡θ", trigGraphs: "∿", trigEquations: "sin x=½", nonEuclidean: "∠<π", projective: "ℙ²", curves: "κ,τ", surfaces: "K",
+  trigexact: "sin30°", identities: "≡θ", trigGraphs: "∿", trigEquations: "sin x=½", conics: "x²+y²", nonEuclidean: "∠<π", projective: "ℙ²", curves: "κ,τ", surfaces: "K",
   // vectors and matrices
   vectors: "→v", dotangle: "u·v", matrices: "AB", determinant: "det", linearMaps: "T(v)", projection: "proj", elimination: "rref", eigen: "λv",
   subspaces: "span", basis: "e₁e₂", rankNullity: "r+n", innerProducts: "⟨u,v⟩", spectral: "diag", svd: "UΣVᵀ", complex: "a+bi",

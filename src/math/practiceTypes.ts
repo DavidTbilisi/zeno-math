@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Conic sections (conics): prompts and options. */
+  qcn: { radiusQ: string; centreQ: string; focusQ: string; fromFocusQ: string; fociQ: string; axisQ: string; slopeQ: string; whichQ: string; circle: string; ellipse: string; parabola: string; hyperbola: string; galleryQ: string; };
   /** Trigonometric graphs (trigGraphs): prompts. */
   qtg: { ampQ: string; periodQ: string; midQ: string; ampPicQ: string; periodPicQ: string; midPicQ: string; bPicQ: string; tideHighQ: string; tideGapQ: string; };
   /** Trigonometric equations (trigEquations): prompts and the quarter rules. */

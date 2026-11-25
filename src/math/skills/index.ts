@@ -61,6 +61,7 @@ import rootEquations from "./rootEquations";
 import fnTransform from "./fnTransform";
 import trigGraphs from "./trigGraphs";
 import trigEquations from "./trigEquations";
+import conics from "./conics";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -342,6 +343,7 @@ export const GENS: Record<SkillId, Gen> = {
   fnTransform,
   trigGraphs,
   trigEquations,
+  conics,
   stackedFractions,
   ratio,
   rate,
