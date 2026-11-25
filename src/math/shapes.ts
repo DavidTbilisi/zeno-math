@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function coinStackPreview(): Piece[] {
+  // A straight stack of coins and a leaning one beside it.
+  const coins: Piece[] = [];
+  for (let i = 0; i < 8; i++) {
+    coins.push(poly([[20, 150 - i * 15], [80, 150 - i * 15], [80, 138 - i * 15], [20, 138 - i * 15]], { fill: FILL.yellow, width: 1.5 }));
+    coins.push(poly([[140 + i * 7, 150 - i * 15], [200 + i * 7, 150 - i * 15], [200 + i * 7, 138 - i * 15], [140 + i * 7, 138 - i * 15]], { fill: FILL.yellow, width: 1.5 }));
+  }
+  return coins;
+}
+
 function scalePlanPreview(): Piece[] {
   // A small room on a plan, and the bigger floor beside it with one square of each shaded.
   return [
@@ -2463,6 +2473,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveBuildTriangle", build: buildTrianglePreview, live: "buildTriangle" },
   { id: "liveConstruct", build: constructPreview, live: "construct" },
   { id: "liveScalePlan", build: scalePlanPreview, live: "scalePlan" },
+  { id: "liveCoinStack", build: coinStackPreview, live: "coinStack" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

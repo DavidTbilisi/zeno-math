@@ -1021,5 +1021,11 @@ export const MISTAKES = [
   "scaleUnitsMixed",
   "areaScaledByK",
   "rescaleInverted",
+  "sliceAsBase",
+  "sliceAsSide",
+  "triangleTurnsCylinder",
+  "axisSwapped",
+  "coneThirdMissing",
+  "densityInverted",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
