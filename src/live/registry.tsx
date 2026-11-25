@@ -42,6 +42,7 @@ import { GrowthRace } from "./GrowthRace";
 import { CompleteSquare } from "./CompleteSquare";
 import { PolyShape } from "./PolyShape";
 import { AsymptoteWalk } from "./AsymptoteWalk";
+import { SquareCheck } from "./SquareCheck";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -254,6 +255,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   completeSquare: CompleteSquare,
   polyShape: PolyShape,
   asymptoteWalk: AsymptoteWalk,
+  squareCheck: SquareCheck,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,
