@@ -123,6 +123,7 @@ export const MENUS: MenuGroup[] = [
           { live: "testPoints", icon: "◩" },
           { live: "growthRace", icon: "🌱" },
           { live: "polyShape", icon: "〰" },
+          { live: "asymptoteWalk", icon: "⫲" },
         ], shapes: ["functionMachine", "axesSketch"],
       },
       {

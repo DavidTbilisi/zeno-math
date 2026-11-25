@@ -1140,6 +1140,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     among them a zero's sign kept, the ends by the leading sign alone and the sign changed at a squared zero. The
     piece *Zeros and ends* (Insert → Algebra → Functions, grades 10–12): tap the zeros at −3, 0 and 2 to raise their
     powers and the leading sign to turn the graph over; odd powers cross, even ones touch, and arrows show the ends
+  - Rational functions (grades 10 and 12; #660): the vertical asymptote, the zero and a value left out of the
+    domain; then the horizontal asymptote from the degrees and the y of a hole; then a slant asymptote, the sign
+    between zeros and walls and, in a new setting, the cost per copy of a print run. Fourteen slips are named, among
+    them the asymptote taken from the top, the constants compared instead of the leading terms and a hole read as
+    y = 0. The piece *Walk to the wall* (Insert → Algebra → Functions, grades 10–12): drag x along three graphs
+    and watch the top, the bottom and y; near the wall y shoots off, far out it settles on a flat or slanted line,
+    and (x² − 4) ÷ (x − 2) has only a hole
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

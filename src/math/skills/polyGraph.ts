@@ -7,23 +7,12 @@
 import { fill } from "../chart";
 import { num } from "../practiceKit";
 import type { Gen, Part, Trap } from "../practiceTypes";
-import { endsOf, polyAt, polyText, scaleFor, sup } from "../polyGraph";
+import { endsOf, expanded, polyAt, polyText, scaleFor } from "../polyGraph";
 import { curvePoints } from "../quadraticGraph";
 import { graphSvg, sgn } from "../readFunction";
 import { pickPart } from "../tTails";
 
 const place = (body: string) => (x: number, y: number) => `<g transform="translate(${x} ${y})">${body}</g>`;
-/** Terms c·xⁿ written out, highest power first, zero coefficients left out. */
-function expanded(terms: [number, number][]) {
-  return terms
-    .filter(([c]) => c !== 0)
-    .map(([c, n], i) => {
-      const a = Math.abs(c);
-      const body = n === 0 ? String(a) : `${a === 1 ? "" : a}x${sup(n)}`;
-      return i === 0 ? `${c < 0 ? "−" : ""}${body}` : ` ${c < 0 ? "−" : "+"} ${body}`;
-    })
-    .join("");
-}
 /** Distinct whole numbers from lo to hi, sorted. */
 function distinct(r: Parameters<Gen>[0], n: number, lo: number, hi: number) {
   const out = new Set<number>();

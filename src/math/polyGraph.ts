@@ -29,3 +29,14 @@ export const factorText = (z: number, m: number) => (z === 0 ? `x${sup(m)}` : `(
 /** y = ±(x − z₁)^m₁ … written out. */
 export const polyText = (zeros: readonly number[], m: readonly number[], lead: number) =>
   `y = ${lead < 0 ? "−" : ""}${zeros.map((z, i) => factorText(z, m[i])).join("")}`;
+/** Terms c·xⁿ written out, highest power first, zero coefficients left out. */
+export function expanded(terms: [number, number][]) {
+  return terms
+    .filter(([c]) => c !== 0)
+    .map(([c, n], i) => {
+      const a = Math.abs(c);
+      const body = n === 0 ? String(a) : `${a === 1 ? "" : a}x${sup(n)}`;
+      return i === 0 ? `${c < 0 ? "−" : ""}${body}` : ` ${c < 0 ? "−" : "+"} ${body}`;
+    })
+    .join("");
+}
