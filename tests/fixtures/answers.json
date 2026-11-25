@@ -22358,6 +22358,178 @@
       "seed": 7,
       "input": "62",
       "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "72",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "grandOneRow"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "48",
+      "label": "wrong",
+      "mistake": "grandOneRow"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "79",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 4,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 4,
+      "input": "31",
+      "label": "wrong",
+      "mistake": "cellWrongTotal"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 4,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 1,
+      "input": "92.5",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 1,
+      "input": "3700/67",
+      "label": "wrong",
+      "mistake": "shareOfRow"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 1,
+      "input": "185/4",
+      "label": "wrong",
+      "mistake": "shareOfAll"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 1,
+      "input": "99.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 2,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 2,
+      "input": "500/11",
+      "label": "wrong",
+      "mistake": "shareOfRow"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 2,
+      "input": "750/11",
+      "label": "wrong",
+      "mistake": "shareOfColumn"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 2,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 7,
+      "input": "68",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 7,
+      "input": "200/3",
+      "label": "wrong",
+      "mistake": "shareOfColumn"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 7,
+      "input": "3400/81",
+      "label": "wrong",
+      "mistake": "shareOfAll"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 7,
+      "input": "75",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 1,
+      "input": "Those who walk",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 1,
+      "input": "Those who take the bus",
+      "label": "wrong",
+      "mistake": "likelyByCount"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 7,
+      "input": "No: the shares who play are the same",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 7,
+      "input": "Yes: the shares who play differ",
+      "label": "wrong",
+      "mistake": "assocByCounts"
     }
   ]
 }

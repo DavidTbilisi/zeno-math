@@ -1061,6 +1061,16 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function tableSharesPreview(): Piece[] {
+  // A 3 × 3 table, and under it two bars split at different places.
+  const cell = (x: number, y: number, fill?: string): Piece => poly([[x, y], [x + 60, y], [x + 60, y + 26], [x, y + 26]], { fill, width: 1 });
+  return [
+    ...[0, 1, 2].flatMap((i) => [0, 1, 2].map((j) => cell(20 + j * 60, 10 + i * 26, i === 0 || j === 0 ? FILL.blue : undefined))),
+    poly([[20, 100], [130, 100], [130, 120], [20, 120]], { fill: FILL.blue, width: 1 }), poly([[130, 100], [230, 100], [230, 120], [130, 120]], { width: 1 }),
+    poly([[20, 130], [90, 130], [90, 150], [20, 150]], { fill: FILL.blue, width: 1 }), poly([[90, 130], [230, 130], [230, 150], [90, 150]], { width: 1 }),
+  ];
+}
+
 function boxSplitPreview(): Piece[] {
   // A row of cards cut in the middle, and the box plot under it.
   const card = (x: number): Piece => poly([[x, 20], [x + 26, 20], [x + 26, 46], [x, 46]], { fill: FILL.blue, width: 1.5 });
@@ -2513,6 +2523,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveAbsLine", build: absLinePreview, live: "absLine" },
   { id: "liveTwoChanges", build: twoChangesPreview, live: "twoChanges" },
   { id: "liveBoxSplit", build: boxSplitPreview, live: "boxSplit" },
+  { id: "liveTableShares", build: tableSharesPreview, live: "tableShares" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

@@ -62,6 +62,7 @@ import { ROOT_START, type LiveRootZoom } from "./realNumbers";
 import { ABS_START, type LiveAbsLine } from "./absValue";
 import { TWO_START, type LiveTwoChanges } from "./moneySense";
 import { BOX_START, type LiveBoxSplit } from "./spread";
+import { TABLE_START, type LiveTableShares } from "./twoWay";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -634,6 +635,7 @@ export type LiveStates = {
   absLine: LiveAbsLine;
   twoChanges: LiveTwoChanges;
   boxSplit: LiveBoxSplit;
+  tableShares: LiveTableShares;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -784,6 +786,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   absLine: [700, 520],
   twoChanges: [700, 520],
   boxSplit: [700, 460],
+  tableShares: [700, 470],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -936,6 +939,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     absLine: ABS_START,
     twoChanges: TWO_START,
     boxSplit: BOX_START,
+    tableShares: TABLE_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

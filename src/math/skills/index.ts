@@ -46,6 +46,7 @@ import realNumbers from "./realNumbers";
 import absoluteValue from "./absoluteValue";
 import moneySense from "./moneySense";
 import spread from "./spread";
+import twoWay from "./twoWay";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -312,6 +313,7 @@ export const GENS: Record<SkillId, Gen> = {
   absoluteValue,
   moneySense,
   spread,
+  twoWay,
   stackedFractions,
   ratio,
   rate,

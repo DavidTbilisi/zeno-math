@@ -1070,6 +1070,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     Statistics, grades 7–10) lays the values out in order as cards: tap where the row splits into two halves (a card,
     or the gap between two); a miss says how many cards it leaves on each side, so the rule is found by counting. Then
     each half is split the same way, and under the row the box plot draws itself from the taps
+  - Two-way tables (grades 8 and 10; #651): a missing count from its row's total, and everyone in a table without
+    totals; then the percentage of a row, of a column and of everyone; then whether the year and playing a sport are
+    associated, by the rows' shares, and, in a new setting, who is more likely to be late, walkers or bus riders, when
+    the counts point the other way. The column's total used for the row's, one row taken for everyone, the wrong total
+    for a share, and counts compared for shares are named. The piece *Out of what?* (Insert → Discrete & stats →
+    Statistics, grades 8–10): tap a count in the table and three bars show it out of its row, its column and
+    everyone; under the table each year is a bar split into who plays and who doesn't, and changing Year 8's numbers
+    until the two splits line up shows no association though the counts differ
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked
