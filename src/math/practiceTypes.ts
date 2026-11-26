@@ -308,12 +308,23 @@ export type PracticeWords = {
     perimeter: string; area: string; sideFromArea: string; sideFromPerimeter: string; circumference: string; circleArea: string;
   };
   /**
+   * Addition and subtraction (addSubtract): the stories at each level, the prompts for the equal sign, a related fact,
+   * the sums that make a number, a rounding shortcut and the equation of a two-step story; and what each story does,
+   * for the hint when the other operation is used.
+   */
+  addSub: {
+    together: string; takeAway: string; fewer: string; more: string; howManyMore: string; startUnknown: string;
+    bus: string; addends: string; flight: string; journeys: string; stall: string;
+    equalSign: string; related: string; makes: string; shortcut: string; whichEquation: string;
+    why: Record<"together" | "takeAway" | "fewer" | "more" | "howManyMore" | "startUnknown", string>;
+  };
+  /**
    * Counting in steps (skipCount): the prompts for a row with a number missing, tens and ones, odd and even, the step
    * of a row and whether a count says a number; and the words of the answers that are picked.
    */
   count: {
     next: string; missing: string; tensOnes: string; howManyTens: string; whichOdd: string; whichEven: string;
-    step: string; said: string; sumParity: string;
+    step: string; said: string; sumParity: string; below: string; above: string; inTable: string;
     words: Record<"yes" | "no" | "odd" | "even", string>;
   };
   /**

@@ -1,8 +1,10 @@
 // Practice: Counting in steps. A row of numbers going on or back by the same step, one of them missing: in ones and
-// tens within 100 and the tens and ones of a number, then in twos, fives and tens with odd and even, then in threes,
-// fours, twenties, twenty-fives, fifties and hundreds to 1000, the step itself asked for, whether a count will say a
-// number, and whether a sum is odd without adding. A step of one where the count goes further, the tens and the ones
-// swapped or added, the tens digit read for odd or even and the numbers in between given for the step are the slips.
+// tens within 100 and the tens and ones of a number, then in twos, fives and tens with odd and even and the number
+// above or below on a hundred square, then in threes, fours, twenties, twenty-fives, fifties and hundreds to 1000, the
+// step itself asked for, whether a count will say a number, which number is in a times table, and whether a sum is odd
+// without adding. A step of one where the count goes further, the tens and the ones swapped or added, the tens digit
+// read for odd or even, the numbers in between given for the step, the number beside for the one below and an even
+// number taken for one in an even table are the slips.
 import { fill } from "../chart";
 import { num } from "../practiceKit";
 import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
@@ -134,7 +136,48 @@ const gen: Gen = (r, L, w) => {
     };
   };
 
-  const kind = r.int(0, 3);
+  /** On a hundred square, the number just below or just above n: ten more or ten less. The one beside it is the slip. */
+  const hundredSquare = (n: number, below: boolean): Part => {
+    const v = below ? n + 10 : n - 10;
+    const x = below ? n + 1 : n - 1;
+    const work = below ? `${n} + 10 = ${v}` : `${n} − 10 = ${v}`;
+    return {
+      prompt: fill(below ? W.below : W.above, { n }), q: "", answer: { ...num(v), traps: [{ id: "besideNotBelow", a: num(x), vars: { x, n, work } }] },
+      show: String(v), plain: String(v), format: "number", steps: [below ? `${n} + 10 = ${v}` : `${n} - 10 = ${v}`],
+    };
+  };
+  /**
+   * Which of four numbers is in the s times table (s even): one is, one is even but not in it, two are odd. Every
+   * number in an even table is even, but not every even number is in it; the even one is the slip.
+   */
+  const inTable = (s: number): Part => {
+    const m = r.int(3, 12);
+    const right = s * m;
+    const decoy = right + r.pick([2, -2]);
+    const odd = [right + 1, right + 3].map((n, i) => (i ? n + 2 * r.int(1, 3) : n));
+    const all = [right, decoy, ...odd];
+    for (let i = all.length - 1; i > 0; i--) {
+      const j = r.int(0, i);
+      [all[i], all[j]] = [all[j], all[i]];
+    }
+    const options = all.map((n) => ({ text: String(n), plain: String(n), tex: String(n) }));
+    const [k, rest] = [Math.floor(decoy / s), decoy % s];
+    return {
+      prompt: fill(W.inTable, { s }),
+      q: "",
+      answer: {
+        k: "pick", options, right: all.indexOf(right),
+        traps: [{ id: "evenNotInTable", a: { k: "pick", options, right: all.indexOf(decoy) }, vars: { x: decoy, s, k, rest, v: right, m } }],
+      },
+      show: String(right),
+      plain: String(right),
+      format: "pick",
+      steps: [`${right} = ${m} \\times ${s}`],
+    };
+  };
+
+  // Level 1 draws as it always did; levels 2 and 3 have a fifth kind each.
+  const kind = r.int(0, L === 1 ? 3 : 4);
   if (L === 1) {
     if (kind === 0) return missing(countRow(r, 1, 4, 1, 100, "last"), W.next);
     if (kind === 1) return missing(countRow(r, 10, 4, 1, 100, "last"), W.next);
@@ -144,6 +187,7 @@ const gen: Gen = (r, L, w) => {
   }
   if (L === 2) {
     if (kind === 3) return whichParity();
+    if (kind === 4) return hundredSquare(10 * r.int(1, 8) + r.int(1, 9), r.next() < 0.5);
     const step = [2, 5, 10][kind];
     // Twos from any number (7, 9, 11 are a count in twos as well), fives from a multiple of five, tens from anywhere.
     return missing(countRow(r, step, 5, step === 5 ? 5 : 1, 100, "notFirst", step === 5));
@@ -163,6 +207,7 @@ const gen: Gen = (r, L, w) => {
     const k = r.int(6, 18);
     return willSay(a, s, a + k * s + (said ? 0 : r.int(1, s - 1)));
   }
+  if (kind === 4) return inTable(r.pick([4, 6, 8]));
   return sumParity(r.int(11, 89), r.int(11, 89));
 };
 
