@@ -30,7 +30,7 @@ export type IdeaCard = {
 
 export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   // whole-number arithmetic
-  addWhole: { glyph: "+−", home: "times", like: "multiplyFacts" },
+  addWhole: { glyph: "+−", home: "times", like: "multiplyFacts", trap: "missingAdd" },
   multiplyFacts: { glyph: "7×8", home: "times", like: "addWhole" },
   multiplyLong: { glyph: "23×4", home: "times", like: "multiplyFacts" },
   divideExact: { glyph: "56÷8", home: "hcf" },
@@ -48,10 +48,10 @@ export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   toImproper: { glyph: "2¾→", home: "fractions", like: "toMixed", trap: "wholeTimesTop" },
   toMixed: { glyph: "→2¾", home: "fractions", like: "toImproper" },
   // signed numbers
-  negLine: { glyph: "←0→", home: "integers" },
-  addNeg: { glyph: "+(−)", home: "integers", like: "minusNeg" },
+  negLine: { glyph: "←0→", home: "integers", trap: "riseAdds" },
+  addNeg: { glyph: "+(−)", home: "integers", like: "minusNeg", trap: "sumSign" },
   minusNeg: { glyph: "−(−)", home: "integers", like: "addNeg", trap: "subNeg" },
-  signTimes: { glyph: "−×−", home: "integers", like: "addNeg" },
+  signTimes: { glyph: "−×−", home: "integers", like: "addNeg", trap: "unlikeSigns" },
   // powers
   powValue: { glyph: "2⁵", home: "indices", like: "multiplyFacts" },
   powLaws: { glyph: "aᵐ⁺ⁿ", home: "indices", trap: "powersAddedForDivide" },

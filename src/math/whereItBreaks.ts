@@ -236,6 +236,8 @@ function fractions(ex: Exercise): Version[] {
 
 /** Signed numbers, read from the working's plain text (Exercise.src). */
 function integers(ex: Exercise): Version[] {
+  // A pick (#706: the sign of a sum, the same value, a story) is not worked out to a number.
+  if (ex.format === "pick") return [];
   const src = ex.src ?? "";
   let m: RegExpExecArray | null;
   const subNeg = trapOf(ex, "subNeg");

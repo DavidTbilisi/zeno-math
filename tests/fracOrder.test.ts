@@ -42,8 +42,9 @@ test("every task: the level's fractions, in lowest terms, apart by a twentieth o
 
 test("items are written as fractions or mixed numbers; lists are read however they are typed", () => {
   assert.deepEqual([itemOf(5, 4, true).text, itemOf(5, 4, true).tex, itemOf(5, 4).text, itemOf(3, 4, true).text], ["1 1/4", "1\\frac{1}{4}", "5/4", "3/4"]);
-  for (const [s, v] of [["3/4", 0.75], [" 1 1/4 ", 1.25], ["0.5", 0.5], ["2", 2], ["3 / 4", 0.75]] as const) assert.equal(readItem(s), v, s);
-  for (const bad of ["", "a", "1/0", "1 1/0", "-1/2"]) assert.equal(readItem(bad), null, bad);
+  // A minus in front, typed or real, for negative rationals in order (#706).
+  for (const [s, v] of [["3/4", 0.75], [" 1 1/4 ", 1.25], ["0.5", 0.5], ["2", 2], ["3 / 4", 0.75], ["-1/2", -0.5], ["−0.75", -0.75], ["- 1 1/4", -1.25]] as const) assert.equal(readItem(s), v, s);
+  for (const bad of ["", "a", "1/0", "1 1/0", "-", "--1"]) assert.equal(readItem(bad), null, bad);
   const items = [itemOf(1, 2), itemOf(1, 4), itemOf(3, 4)];
   assert.deepEqual(readOrder(items, "1/4 < 1/2 < 3/4"), { seq: [1, 0, 2] });
   assert.deepEqual(readOrder(items, "0.25; 0.5; 0.75"), { seq: [1, 0, 2] });

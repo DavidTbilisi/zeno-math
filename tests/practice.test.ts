@@ -273,12 +273,14 @@ test("comparing: the sign is read however it is typed, and every question's sign
   assert.equal(check(ex, "7", w).why, w.reasons.notSign);
   // Each side read back from the question on its own: a whole number, a decimal, a negative number or a fraction.
   const side = (t: string) => {
-    const f = t.match(/^\\frac\{(\d+)\}\{(\d+)\}$/);
-    return f ? Number(f[1]) / Number(f[2]) : Number(t);
+    const f = t.match(/^(-?)\\frac\{(\d+)\}\{(\d+)\}$/);
+    return f ? (f[1] ? -1 : 1) * (Number(f[2]) / Number(f[3])) : Number(t);
   };
   for (const level of LEVELS)
     for (let seed = 1; seed <= 300; seed++) {
       const q = exercise("compare", level, seed, w);
+      // The hard level's orders, picks and points read off a line (#706) are checked in their own tests.
+      if (q.format !== "sign" || q.q.startsWith("A ")) continue;
       const [a, b] = q.q.split("\\;\\square\\;").map((t) => side(t.trim()));
       const sign = a < b ? "<" : a > b ? ">" : "=";
       assert.equal(q.plain, sign, `${level} #${seed}: ${q.q}`);
