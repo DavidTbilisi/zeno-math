@@ -1061,6 +1061,13 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function dropPointPreview(): Piece[] {
+  // A few slope dashes and the S-shaped logistic curve through them.
+  const c = Array.from({ length: 41 }, (_, i) => [20 + i * 5, 180 - 140 / (1 + Math.exp(-(i - 20) / 4))] as [number, number]);
+  const dashes = [[50, 160], [110, 120], [170, 50], [80, 60], [200, 130]].map(([x, y]) => poly([[x - 8, y + 4], [x + 8, y - 4]], { width: 2 }));
+  return [poly(c, { width: 3 }), ...dashes];
+}
+
 function fillUnderPreview(): Piece[] {
   // A rising curve with left-end rectangles under it.
   const c = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 180 - (i * i) / 16 - 30] as [number, number]);
@@ -2669,6 +2676,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCloseIn", build: closeInPreview, live: "closeIn" },
   { id: "liveFoldBox", build: foldBoxPreview, live: "foldBox" },
   { id: "liveFillUnder", build: fillUnderPreview, live: "fillUnder" },
+  { id: "liveDropPoint", build: dropPointPreview, live: "dropPoint" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

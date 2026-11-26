@@ -148,6 +148,7 @@ export const MENUS: MenuGroup[] = [
           { live: "closeIn", icon: "⦚" },
           { live: "foldBox", icon: "📦" },
           { live: "fillUnder", icon: "▥" },
+          { live: "dropPoint", icon: "⇗" },
           { kind: "ode", icon: "y′", label: "odes" },
           { kind: "numerical", icon: "≈", label: "numericalTool" },
         ],

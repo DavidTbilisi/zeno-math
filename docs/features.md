@@ -1199,6 +1199,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     where a braking cyclist stops. Twelve slips are named, among them the width forgotten, the start forgotten and
     net change given for distance. The piece *Fill under the curve* (Insert → Calculus, grades 12–13): left, right
     and middle rectangles under a rising curve, against the true area, as their number grows
+  - Slope fields, exponential and logistic models (grade 12; #669): the slope at a point and which equation a field
+    fits; then y(t) for dy/dt = ky, a constant solution and checking a solution; then a logistic model's carrying
+    capacity and where it grows fastest and, in a new setting, how fast the fish in a lake multiply. Nine slips are
+    named, among them growth taken as linear, a constant added freely and the logistic brake left out. The piece
+    *Drop a point* (Insert → Calculus, grades 12–13): tap a slope field of growth, logistic growth or y′ = x − y,
+    and the dropped point traces the solution through it
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

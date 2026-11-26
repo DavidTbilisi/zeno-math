@@ -50,6 +50,7 @@ import { TracePath } from "./TracePath";
 import { CloseIn } from "./CloseIn";
 import { FoldBox } from "./FoldBox";
 import { FillUnder } from "./FillUnder";
+import { DropPoint } from "./DropPoint";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -270,6 +271,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   closeIn: CloseIn,
   foldBox: FoldBox,
   fillUnder: FillUnder,
+  dropPoint: DropPoint,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,
