@@ -115,6 +115,18 @@ function fit(pts: P[], side: number, margin: number) {
 }
 const pathOf = (pts: P[], s: number, c: number) => `M${pts.map(([x, y]) => `${f1(c + s * x)},${f1(c - s * y)}`).join(" L")} Z`;
 /** The end points of the line at `deg` through the middle of a box of side `side`, `len` from it. */
+/** How many times the shape fits onto itself in one whole turn: its order of rotational symmetry (1 when only the whole turn). */
+export function turnOrder(t: Pick<SymTask, "shape" | "turn">): number {
+  const pts = cornersOf(t);
+  const on = (q: P) => pts.some((p) => Math.abs(p[0] - q[0]) < 1e-6 && Math.abs(p[1] - q[1]) < 1e-6);
+  let n = 0;
+  for (let d = 1; d <= 360; d++) {
+    const a = (d * Math.PI) / 180;
+    if (pts.every(([x, y]) => on([Math.cos(a) * x - Math.sin(a) * y, Math.sin(a) * x + Math.cos(a) * y]))) n++;
+  }
+  return n;
+}
+
 export function lineEnds(deg: number, side: number, len: number): [number, number, number, number] {
   const a = (deg * Math.PI) / 180;
   const c = side / 2;

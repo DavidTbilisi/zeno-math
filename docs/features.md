@@ -1129,7 +1129,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     a length are named. The piece *Move the shape* (Insert → Geometry → plane geometry, grades 7–10) gives a shape and
     the dashed outline of where one move took it: pick Slide, Flip, Turn or Enlarge and set it by hand (drag the copy;
     drag the mirror line and tap its end to turn it; drag the centre and the turning handle or the scale factor) until
-    the copy covers the outline, which names the move and what stayed the same, congruent or similar
+    the copy covers the outline, which names the move and what stayed the same, congruent or similar. Also (#713),
+    moves worked backwards and what they keep: the vector of a translation and the mirror of a reflection read off a
+    picture, and a side or an angle after a rigid move (easy); the turn read off a picture, a side or an angle after
+    an enlargement, the scale factor from two lengths, and rotational symmetry, its order or the smallest turn
+    (medium); the centre of an enlargement, a mirror line x = c or y = c, the two moves that map one shape onto
+    another, a photo and a print (similar or not) and what must be true after a reflection or a quarter turn (hard).
+    The vector the wrong way, the turn added to the angle, the angle scaled with the lengths, the scale factor upside
+    down or taken as a difference, the mirror lines for the order, the interior angle for the turn, the midpoint for
+    the centre, the gap for the mirror, the same difference taken for similar and a reflection taken to keep sides
+    parallel are named
   - Congruent triangles (grades 8 and 10; #643): two triangles with the same parts written on them, congruent by SSS,
     SAS, ASA, AAS or RHS, or not necessarily, when the angle is not between the two sides (drawn as the two different
     triangles those parts allow) or only the angles are given (drawn in two sizes); then a side or an angle found by
@@ -1331,7 +1340,10 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked
-    solution draws the lines
+    solution draws the lines. Also (#713): letters drawn in squares at the medium level (S, N and Z fit themselves
+    after a half turn but have no mirror line), and at the hard level a pattern of squares to finish so that a dashed
+    line is a mirror. A half turn taken for a fold, only one side mirrored and squares that already have a partner
+    counted are named. Rotational symmetry is asked in Moving shapes (grade 8), not here (grade 4)
   - Nets of a cube: which of four shapes of six squares folds into a cube (a net with four in a row against shapes
     with a 2 × 2 block and a look-alike, then a net without four in a row against look-alikes), or which face of a net
     is opposite ★, typed or picked as a letter. A look-alike picked, or a face next to ★ in the net, is named; the
