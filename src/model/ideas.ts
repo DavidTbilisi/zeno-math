@@ -19,6 +19,8 @@
 // model's own likelihood (fitIdeasByLikelihood), or by the heuristic the thesis first used (fitIdeas).
 import { en } from "../locales/en.ts";
 import { exercise } from "../math/practice.ts";
+import { num, rngOf } from "../math/practiceKit.ts";
+import type { Exercise } from "../math/practiceTypes.ts";
 import { FRACTIONS, IDEAS, type IdeaNode } from "./conceptGraph.ts";
 import { sigmoid } from "./elo.ts";
 import { conjunctiveStep, gapIdea, IDEA_PRIOR, IDEA_SKILLS, TICK_PRIOR, tickStep, usesOf, type IdeaSkill, type TickRates } from "./ideaState.ts";
@@ -39,6 +41,22 @@ export { conjunctiveStep, gapIdea, IDEA_SKILLS, usesOf, type IdeaSkill, type Tic
  * since (issue #265), but the world stays as it was, so its numbers do too.
  */
 export const WORLD_SKILLS = IDEA_SKILLS.slice(0, 3) as readonly IdeaSkill[];
+
+/**
+ * The world's questions. Times is the generator as it was when the thesis's results were made: a product on the area
+ * model, two digits by one, by two, three digits by two, no named slips. Practice's times has grown since (its
+ * meaning, partial products, estimates and stories, #699 and #700), and the world stays put, as a new practice area
+ * would otherwise shift every number. The other skills are practice's own.
+ */
+export function worldExercise(skill: IdeaSkill, level: 1 | 2 | 3, seed: number): Exercise {
+  if (skill !== "times") return exercise(skill, level, seed, en.pracWords);
+  const r = rngOf(seed);
+  const [a, b] = level === 1 ? [r.int(12, 99), r.int(3, 9)] : level === 2 ? [r.int(12, 99), r.int(12, 99)] : [r.int(101, 999), r.int(12, 99)];
+  return {
+    skill, level, seed, prompt: en.pracWords.prompts.times, q: `${a} \\times ${b}`, answer: num(a * b), show: String(a * b), plain: String(a * b), format: "number",
+    solution: { kind: "model", spec: { type: "multiply", style: "area", a, b, step: 999 } },
+  };
+}
 
 /** Questions generated per level to find which ideas a skill's questions can need. */
 const SAMPLE = 300;
@@ -122,7 +140,6 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
   const { spread } = DEFAULT_SIM;
   const difficulty = new Map(Object.keys(FRACTIONS.nodes).map((id) => [id, r.normal(spread.difficulty)]));
   const learn = Math.min(1, LEARN_PER_RATE * p.learnRate);
-  const words = en.pracWords;
   const out: IdeaPractice[] = [];
   for (let s = 0; s < p.students; s++) {
     const global = r.normal(spread.global);
@@ -138,7 +155,7 @@ export function simulateIdeas(params: Partial<IdeaParams> = {}): IdeaPractice[] 
       for (let i = 0; i < p.length; i++) {
         // A question asking for one idea alone has no recognised mistakes; otherwise the generator's own question.
         const alone = p.isolateRate > 0 && r.next() < p.isolateRate;
-        const ex = alone ? null : exercise(skill, fixedChoice([skill], i).level, Math.floor(r.next() * 2 ** 31) + 1, words);
+        const ex = alone ? null : worldExercise(skill, fixedChoice([skill], i).level, Math.floor(r.next() * 2 ** 31) + 1);
         const needed = ex ? usesOf(ex) : [r.pick(ids)];
         needs.push(needed.map((n) => {
           const j = ids.indexOf(n);

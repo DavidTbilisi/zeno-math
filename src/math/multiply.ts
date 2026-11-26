@@ -15,7 +15,7 @@ export const MULTIPLY_LIMITS: Record<MultiplyStyle, { a: number; b: number }> = 
   groups: { a: 10, b: 12 },
   array: { a: 12, b: 12 },
   numberline: { a: 10, b: 12 },
-  area: { a: 999, b: 999 },
+  area: { a: 9999, b: 9999 }, // four digits: 4 × 2357 split into its places (#699)
   lattice: { a: 99999, b: 99999 },
   grid: { a: 30, b: 30 },
 };

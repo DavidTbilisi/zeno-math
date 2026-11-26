@@ -936,9 +936,24 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       divisor taken unchecked (too big or too small), a zero left out of the quotient, the remainder written after
       the point (97.9), the people left behind and the box that is not full are named
     - Times tables: the tables of 2, 3, 4, 5 and 10, then 6 to 9 and a missing factor, then 11, 12 and multiples of
-      ten (40 × 60); each fact is worked as its array of dots. The two numbers added and a zero lost are named
+      ten (40 × 60); each fact is worked as its array of dots. The two numbers added and a zero lost are named.
+      What multiplying means comes first (#699): equal groups of dots counted or written as a multiplication, an
+      addition of equal numbers (the rows of an array) written as one, jumps on a number line, and bags of apples;
+      then the factors swapped (and the other fact an array shows), a factor split over an array cut in two (7 × 8 =
+      7 × 5 + 7 × ☐), three factors grouped either way and 18 × 5 = 9 × 10, with stories of eggs, rows in a garden
+      and boxes of pencils; then one thing so many times as tall as another. The number added or the product put in
+      the box, the marks counted instead of the jumps, a part's product put for its factor and the 2 taken from 18
+      left out are named
+    - Multiplication: two digits by one, then by two, then three digits by two, on the area model. The places split
+      first (36 × 4 = 30 × 4 + ☐), then the four partial products of two two-digit numbers and those of a three- or
+      four-digit number by one digit, one missing; then stories of rows of seats and train carriages. The tens
+      multiplied as ones, a partial product's zeros left off and only tens by tens and ones by ones are named
     - Division: the same tables turned round, then a missing number (☐ ÷ 6 = 7), then remainders, quotients past the
-      tables as long division (84 ÷ 6) and multiples of ten (2400 ÷ 60). The quotient given for the remainder is named
+      tables as long division (84 ÷ 6) and multiples of ten (2400 ÷ 60). The quotient given for the remainder is named.
+      Strawberries shared onto plates (drawn) and teams made, the multiplication that answers a division (4 × ☐ =
+      20, so 20 ÷ 4 = ☐) and the facts of one family come first; then which equation a sharing story makes and packs
+      of pens; then rolls baked on trays and packed in bags, two steps. The divisor taken away once, the numbers
+      multiplied, the smaller divided by the larger and the first step given as the answer are named
     - Squares, cubes and roots (in "Factors and primes"): the squares to 10² and their roots, a square drawn as its
       array; then to 20² and the first cubes; then cube roots, multiples of ten, tenths (0.3² = 0.09) and fractions.
       Doubling for squaring, halving for a root and a tenth squared left in tenths are named
