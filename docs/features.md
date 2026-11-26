@@ -1017,7 +1017,19 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     - Area and perimeter (geometry) from the measurements on a drawn shape: a rectangle or square's perimeter and
       area; then a side from the area or the perimeter and a triangle's area; then a circle's circumference and area.
       A unit may follow the answer (24 cm²). The other measure given, two sides for four, the triangle's half left
-      out, the diameter used as the radius and the other circle formula are named
+      out, the diameter used as the radius and the other circle formula are named. Also (#709), at the easy level:
+      which of two shapes of unit squares is bigger, a rectangle with only one row and one column of squares drawn,
+      a rectangle split in two (the distributive property, picked as an expression or worked out), an L-shape, a
+      polygon's perimeter and a missing side from it, a fence round a garden and a carpet on a floor, and two
+      rectangles compared by area, or with the same area by perimeter; at the medium level, a fenced pen's width and
+      a triangle with a sloping side marked beside its height; at the hard level, new settings: a parallelogram, a
+      height from the area of a triangle or a parallelogram, a house with a triangle roof, half and quarter circles, a
+      wheel turning, a circle's area from its circumference, a circle in a square and a path round a pool, shaded.
+      The longer shape taken for the bigger, only the drawn squares counted, only the first part multiplied, the
+      whole rectangle round an L-shape, a side left out, the known sides added, "the same" perimeter for the same
+      area, the longer way round taken for more area, the sloping side used as the height, a parallelogram halved,
+      a triangle's height not doubled and a parallelogram's doubled, the roof not halved, only the curved part of a
+      half or quarter circle, the whole circle's area and the shaded shape left whole are named
   - Stacked fractions (in "Fractions"; grade 7), a fraction with a fraction inside it worked out as one number. On one
     line 1/2/3 doesn't say which bar divides: 1/2 over 3 is 1/6, but 1 over 2/3 is 3/2. So the main bar is drawn the
     longest, and the working begins by reading it as ÷. A fraction over a whole number or a whole number over a
