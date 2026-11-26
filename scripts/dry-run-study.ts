@@ -108,9 +108,11 @@ export async function startServer(dataDir: string, teacher: string, env: Record<
 /**
  * A typed answer the checker judges plainly wrong (not "nearly", not sent back for its form), or null if none is found:
  * the answer a known mistake gives when the question has one (or the wrong sign), so the exports hold mistakes to find.
+ * A question answered on tiles takes one of its wrong tiles, as a typed number is no tile at all.
  */
 function wrongInput(ex: Exercise): string | null {
-  for (const input of [...trapInputs(ex).map((t) => t.input), `-(${ex.plain})`, "12345", "x", "-7", "12345; 12345", "12345; 12345; 12345", "(12345, 12345)", "x^7", "2"])
+  const tiles = ex.answer.k === "pick" ? ex.answer.options.map((o) => o.plain) : [];
+  for (const input of [...trapInputs(ex).map((t) => t.input), ...tiles, `-(${ex.plain})`, "12345", "x", "-7", "12345; 12345", "12345; 12345; 12345", "(12345, 12345)", "x^7", "2"])
     if (input !== ex.plain && verdictOf(check(ex, input, w)) === "wrong") return input;
   return null;
 }
