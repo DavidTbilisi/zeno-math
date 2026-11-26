@@ -2566,6 +2566,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - *Number rods*: the ten coloured rods, length = number. A rod dragged from the tray goes into a row where it is let
     go, or starts a new row; rows of the same length read as equal sums (10 = 9 + 1 = 8 + 2), and a shorter row shows
     its gap as a dashed space with the question 7 + ? = 10, left for the pupil to fill
+  - *Hundredths grid* (#704, Fractions, grades 4–6): an amount is asked (0.07, 0.13, 0.3, 0.6, 0.47, 0.85, 1.2, 1.06)
+    and the pupil shades small squares by dragging across them, a drag begun on a shaded square taking squares off.
+    The amount shaded is written under the grids as a decimal all the while, so what a square, a column and a whole
+    grid are worth is found by trying; each rule (a square is 0.01, a column 0.1, a grid 1) is said only once its
+    amount is made, and stays listed. After the eighth the grids are free to shade. Arrow keys add or take away a
+    square, with Shift a column
   - *Multiplying with blocks*: a × b (up to 39 × 39) as a rectangle of base-ten blocks beside the box and the written
     sum. Each side is split into tens and ones; a part tapped is filled with flats, rods or cubes and its product is
     written into the box and a line of the sum. With "Your turn" each product is given first on digit tiles, a wrong

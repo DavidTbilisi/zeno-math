@@ -2249,6 +2249,15 @@ function rodsPreview(): Piece[] {
   ];
 }
 
+function decGridPreview(): Piece[] {
+  // A hundredths grid with 0.47 shaded: four full columns and seven squares of the fifth.
+  const c = 7;
+  const cells: Piece[] = [];
+  for (let i = 0; i < 100; i++)
+    cells.push(rect(Math.floor(i / 10) * c, (i % 10) * c, c, c, { fill: i < 47 ? "#a5d8ff" : "#ffffff", color: "#adb5bd", width: 0.6 }));
+  return [...cells, rect(0, 0, 10 * c, 10 * c, { color: "#1e1e1e", width: 1.5 }), text(5 * c, 10 * c + 14, "0.47", 13)];
+}
+
 function areaBlocksPreview(): Piece[] {
   // 12 × 13 as a rectangle of base-ten blocks: a hundred flat, three rods beside it, two rods under it and six cubes.
   const u = 6;
@@ -2636,6 +2645,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCubes", build: cubesPreview, live: "cubes" },
   { id: "liveRekenrek", build: rekenrekPreview, live: "rekenrek" },
   { id: "liveRods", build: rodsPreview, live: "rods" },
+  { id: "liveDecGrid", build: decGridPreview, live: "decGrid" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

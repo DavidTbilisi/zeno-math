@@ -80,6 +80,7 @@ import { BaseTen } from "./BaseTen";
 import { Cubes } from "./Cubes";
 import { Rekenrek } from "./Rekenrek";
 import { Rods } from "./Rods";
+import { DecGrid } from "./DecGrid";
 import { AreaBlocks } from "./AreaBlocks";
 import { Counters } from "./Counters";
 import { SignArrow } from "./SignArrow";
@@ -222,6 +223,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   cubes: Cubes,
   rekenrek: Rekenrek,
   rods: Rods,
+  decGrid: DecGrid,
   areaBlocks: AreaBlocks,
   counters: Counters,
   signArrow: SignArrow,
