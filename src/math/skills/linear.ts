@@ -17,7 +17,8 @@ import type { Frac } from "../fraction";
 import { bracket, fr, num, plainFrac, polyStr, T } from "../practiceKit";
 import type { Gen, Part, PracticeWords as Words, Rng, Trap } from "../practiceTypes";
 
-function old(r: Rng, L: number, w: Words): Part {
+/** The equations from before #721. src/math/whichTool.ts draws its equations here. */
+export function old(r: Rng, L: number, w: Words): Part {
   let eq: string;
   let x: Frac;
   if (L === 1) {
