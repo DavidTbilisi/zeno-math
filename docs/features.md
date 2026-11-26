@@ -1030,6 +1030,18 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       area, the longer way round taken for more area, the sloping side used as the height, a parallelogram halved,
       a triangle's height not doubled and a parallelogram's doubled, the roof not halved, only the curved part of a
       half or quarter circle, the whole circle's area and the shaded shape left whole are named
+    - Surface area and volume (geometry; #711 gave it a P5 level): at the easy level, a box of unit cubes counted
+      (those at the back and inside too), two solids of cubes compared, a box's volume from its edges, a step-shaped
+      solid of cubes or with its edges marked (worked out, or picked as a sum of two boxes), a fish tank, and a box's
+      height from its volume and base; at the medium level (grade 7), prisms and cylinders as before, a box with half
+      metres on its edges, a sandpit, which solid a net folds into, the surface area from a box's or a triangular
+      prism's net, the expression for a box's surface area, an open box and a cube's surface area from its volume; at
+      the hard level (grade 8), cones, pyramids and spheres and a length from the volume as before, a can, a ball and
+      an ice-cream cone by their diameters, a cone or a ball against the cylinder round it, and the cups a tank fills.
+      Only the visible cubes counted, the longest edge taken for the bigger, the edges added, the base only, the whole
+      box round a step, one edge of the base, a prism for a pyramid, each face once, the volume for the surface, a
+      lid counted, one face of a cube, the cylinder for the cone, the related volume the wrong way round, a cup that
+      cannot be filled and the diameter for the radius are named
   - Stacked fractions (in "Fractions"; grade 7), a fraction with a fraction inside it worked out as one number. On one
     line 1/2/3 doesn't say which bar divides: 1/2 over 3 is 1/6, but 1 over 2/3 is 3/2. So the main bar is drawn the
     longest, and the working begins by reading it as ÷. A fraction over a whole number or a whole number over a
