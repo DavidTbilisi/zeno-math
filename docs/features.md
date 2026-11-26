@@ -1354,7 +1354,10 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - Continuity and limits from graphs (grade 12; #666): a limit from a table, a one-sided limit of two pieces and
     whether a limit exists; then a hole, a jump, an asymptote or no break, and the k that joins two pieces; then
     whether the intermediate value theorem promises a root, a limit squeezed to 0 and, in a new setting, a car park's
-    charge as the time comes down to a whole hour. Thirteen slips are named, among them f(a) taken for the limit, a
+    charge as the time comes down to a whole hour. Since #744 half the questions are read from a drawn graph (a limit
+    at a hole, a one-sided limit at a jump, infinite limits at a vertical asymptote, limits at infinity at a
+    horizontal one, continuity at a point and on an interval), with what a limit says, where roots and logarithms over
+    a line are continuous, and a table that misses an oscillating function's behaviour. Thirteen slips are named, among them f(a) taken for the limit, a
     zero denominator always called an asymptote and the slopes matched instead of the values. The piece *Close in on
     the break* (Insert → Calculus, grades 12–13): walk two points towards x = 2 on a hole, a jump and an asymptote,
     and drag k until two pieces join
@@ -1546,7 +1549,10 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     minimal element, ℚ taken for uncountable, the diagonal left unchanged
   - Single-variable calculus, the second course of a maths degree (Stewart; Spivak; Apostol), eight skills:
     limits (0/0 cancelled by factorising, ratios of polynomials at infinity, the limits that give e, L'Hôpital, a
-    limit whose two sides disagree), implicit differentiation (dy/dx at a point of a circle or of a curve with an
+    limit whose two sides disagree; since #744 also sums, products and compositions of limits, trigonometric limits, a
+    table chosen to estimate a limit, conjugates, trigonometric identities, infinite limits, roots and sine at infinity,
+    the next step after 0/0, L'Hôpital for ∞/∞ and, in a new setting, salt water in a tank and a medicine in the
+    blood in the long run), implicit differentiation (dy/dx at a point of a circle or of a curve with an
     xy term, a related rate: a sliding ladder or a spreading ripple), techniques of integration (a substitution, by parts, partial fractions or a squared
     sine, typed as an antiderivative and judged up to its constant), improper integrals (∫ 1/xᵖ converges or not
     at infinity and at 0, their values, ∫ 1/(1 + x²) to π), area, volume and arc length (between a parabola and a

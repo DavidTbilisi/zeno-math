@@ -515,6 +515,8 @@ export type PracticeWords = {
   ciK: Record<"cLarge" | "sRandomP" | "sTenP" | "sLargeP" | "sAllP" | "whyRandomP" | "whyTenP" | "whyLargeP" | "whyAllP" | "condP" | "condM" | "zStarQ" | "tStarQ" | "sizePQ" | "sizeMQ" | "marginNQ" | "mDivK" | "mDivK2" | "mTimesK" | "marginCQ" | "mWider" | "mNarrower" | "mSame" | "clYes" | "clNo" | "clOpp" | "claimPQ" | "claimMQ" | "claimDMQ" | "claimDPQ", string>;
   ltK: Record<"shYes" | "shNo" | "shThirty" | "st0" | "st1" | "st2" | "st3" | "st0v" | "st1v" | "st2v" | "st3v" | "whoPop" | "whoSample" | "optStat" | "optParam" | "statQ" | "estOpt" | "unbiasedQ" | "phatSdQ" | "shapeQ" | "phatPQ" | "diffShapeQ" | "diffSdQ" | "boltSdQ" | "boltPQ", string>;
   t2K: Record<"cRandom" | "cIndep" | "cNormal" | "cLarge" | "cAll" | "sRandomM" | "sIndepM" | "sNormalM" | "sAllM" | "whyRandomM" | "whyIndepM" | "whyNormalM" | "whyAllM" | "condQM" | "sRandomP" | "sIndepP" | "sLargeP" | "sAllP" | "whyRandomP" | "whyIndepP" | "whyLargeP" | "whyAllP" | "condQP" | "hypVaccine" | "hypTowns" | "marginQ" | "ctxMed" | "claimMed" | "nullMed" | "zQ" | "pQ", string>;
+  liK: Record<"combQ" | "compQ" | "tableQ" | "sFactor" | "sConj" | "sIdent" | "sZero" | "sDne" | "stratQ" | "tankQ" | "drugQ", string>;
+  lgK: Record<"graphQ" | "meanQ" | "mNear" | "mValue" | "mDefined" | "pointQ" | "cYes" | "cNoLim" | "cNoMatch" | "cNoValue" | "intervalQ" | "iYes" | "iNo" | "commonQ" | "oscQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
