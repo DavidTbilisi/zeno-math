@@ -36,3 +36,22 @@ export function pickPart(
   const traps: Trap[] = slips.map((s) => ({ id: s.id, a: { k: "pick", options, right: at(s.tex) }, vars: { x: options[at(s.tex)].text, ...s.vars } }));
   return { prompt, q: "", answer: { k: "pick", options, right: at(right), traps }, show: options[at(right)].tex, plain: options[at(right)].plain, format: "pick", ...more };
 }
+
+/**
+ * A pick among options written as text: numbers ("12", "3, 8", "4 × 6") set as they are, words and letters as text.
+ * Each slip has its mistake id and hint vars ({x} is the option's text unless the vars give it).
+ */
+export function pickText(
+  r: Rng,
+  prompt: string,
+  right: string,
+  slips: { text: string; id: MistakeId; vars: Record<string, string | number> }[],
+  others: string[],
+  more: Pick<Part, "steps" | "solution"> & { pic?: Exercise["pic"]; q?: string },
+): Part {
+  const options = shuffled(r, [right, ...slips.map((s) => s.text), ...others]).map((t) => ({ text: t, plain: t, tex: /^[\d, ×/]+$/.test(t) ? t.replace(/×/g, "\\times") : `\\text{${t}}` }));
+  const at = (t: string) => options.findIndex((o) => o.text === t);
+  const traps: Trap[] = slips.map((s) => ({ id: s.id, a: { k: "pick", options, right: at(s.text) }, vars: { x: s.text, ...s.vars } }));
+  const { q = "", ...rest } = more;
+  return { prompt, q, answer: { k: "pick", options, right: at(right), traps }, show: options[at(right)].tex, plain: right, format: "pick", ...rest };
+}

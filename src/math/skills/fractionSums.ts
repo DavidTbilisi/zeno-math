@@ -3,8 +3,11 @@
 // bottoms, mixed numbers and a fraction of a whole number (2/3 of 12 on rows of counters); then a unit fraction
 // divided by a whole number (shared) and a whole number by a unit fraction (how many fit), each also as a story. Tops
 // and bottoms added or taken away, the division read the wrong way round, the wholes left out, one part of the number
-// taken for all of them, and dividing done as multiplying are the slips.
+// taken for all of them, and dividing done as multiplying are the slips. At P4 a fraction is also broken into parts
+// (5/8 = 2/8 + □/8 on a bar, or which sum makes it); the parts added, and the bottom split too, are named (#702).
 import { fill } from "../chart";
+import { wholeBars } from "../fracLinePics";
+import { pickPart } from "../mulDivKit";
 import { fr, num, plainFrac } from "../practiceKit";
 import type { MistakeId } from "../mistakes";
 import type { Gen, Part, Trap } from "../practiceTypes";
@@ -66,7 +69,29 @@ const gen: Gen = (r, L, w) => {
   };
 
   if (L === 1) {
-    const kind = r.int(0, 2);
+    const kind = r.int(0, 4);
+    if (kind >= 3) {
+      // A fraction broken into parts (#702): a/d = b/d + □/d on a bar, or which sum makes it. The parts added instead
+      // of the part left, and the bottom split as well as the top, are the slips.
+      const d = r.pick([4, 5, 6, 8, 10]);
+      const a = r.int(3, d - 1);
+      const b = r.int(1, a - 1);
+      const right = `${b}/${d} + ${a - b}/${d} = ${a}/${d}`;
+      if (kind === 3) {
+        return {
+          prompt: w.basics.missing, q: `\\frac{${a}}{${d}} = \\frac{${b}}{${d}} + \\frac{\\square}{${d}}`,
+          answer: { ...num(a - b), traps: slips(a - b, [["partsAdded", a + b, { x: a + b, a, b, d, v: a - b }]]) },
+          show: String(a - b), plain: String(a - b), format: "number",
+          pic: wholeBars(1, d, a), steps: [`${a} - ${b} = ${a - b}`, `\\frac{${a}}{${d}} = \\frac{${b}}{${d}} + \\frac{${a - b}}{${d}}`],
+        };
+      }
+      const sumTex = (x: number, y: number, e: number) => `\\frac{${x}}{${e}} + \\frac{${y}}{${e}}`;
+      const split = d % 2 === 0 ? [{ tex: sumTex(b, a - b, d / 2), id: "bottomSplit" as const, vars: { d, right } }] : [];
+      const other = sumTex(b, a - b + 1, d);
+      return pickPart(r, fill(W.whichSum, { f: `${a}/${d}` }), sumTex(b, a - b, d), split, [other, ...(split.length ? [] : [sumTex(b + 1, a - b + 1, d)])], {
+        steps: [`${sumTex(b, a - b, d)} = \\frac{${b} + ${a - b}}{${d}} = \\frac{${a}}{${d}}`],
+      });
+    }
     if (kind === 2) {
       // 3 ÷ 4, and now and then more than one each: 5 ÷ 3.
       const b = r.int(2, 9);

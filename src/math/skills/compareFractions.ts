@@ -1,7 +1,12 @@
 // Practice: Comparing fractions.
+// The same bottom, then the same top, a half between and pieces short of a whole; then any two over a common bottom,
+// and (#702) stories: two teams painting one fence, and the same fraction of a small and a large whole.
 import { r2 } from "../chart";
 import { type FractionBarsSpec, fractionBarsSvg } from "../compare";
 import { type CompareSign, compareSign, type Frac as Fraction, fracSign, samePieces } from "../live";
+import { fill } from "../chart";
+import type { MistakeId } from "../mistakes";
+import { pickText } from "../mulDivKit";
 import { FLIP_SIGN, fracTex, signExercise } from "../practiceKit";
 import type { Gen, Trap } from "../practiceTypes";
 
@@ -87,7 +92,48 @@ const gen: Gen = (r, L, w) => {
       `${fracTex(a.d - a.n, a.d)} ${FLIP_SIGN[sign]} ${fracTex(b.d - b.n, b.d)} \\;\\Rightarrow\\; ${final(a, b, sign)}`,
     ]);
   }
-  if (r.next() < 0.2) {
+  const kind = r.int(0, 4);
+  if (kind === 3) {
+    // A story (#702): two teams paint the same fence. The same top (the bigger bottom taken for more), the same amount
+    // cut two ways (the bigger top taken for more), or the same bottom.
+    const W = w.fracLine;
+    const t = r.int(0, 2);
+    let a: Fraction, b: Fraction;
+    if (t === 0) {
+      const n = r.int(1, 3);
+      a = { n, d: r.int(n + 1, 8) };
+      b = { n, d: distinct(n + 1, 8, a.d) };
+    } else if (t === 1) {
+      const d = r.int(2, 4);
+      const n = r.int(1, d - 1);
+      a = { n, d };
+      b = { n: n * 2, d: d * 2 };
+    } else {
+      const d = r.int(4, 10);
+      a = { n: r.int(1, d - 1), d };
+      b = { n: distinct(1, d - 1, a.n), d };
+    }
+    if (swap) [a, b] = [b, a];
+    const sign = fracSign(a, b);
+    const team = (s: CompareSign) => (s === ">" ? W.red : s === "<" ? W.blue : W.same);
+    const slips: { text: string; id: MistakeId; vars: Record<string, string | number> }[] = [];
+    if (t === 0) slips.push({ text: team(compareSign(a.d, b.d)), id: "biggerBottom", vars: { n: a.n, d: Math.max(a.d, b.d), e: Math.min(a.d, b.d) } });
+    if (t === 1) {
+      const s = samePieces(a, b);
+      slips.push({ text: team(compareSign(a.n, b.n)), id: "biggerTop", vars: { a: plain(a), b: plain(b), x: s.a, y: s.b, d: s.d } });
+    }
+    const rest = [W.red, W.blue, W.same].filter((o) => o !== team(sign) && !slips.some((x) => x.text === o));
+    return pickText(r, fill(W.fence, { a: plain(a), b: plain(b) }), team(sign), slips, rest, { steps: common(a, b, sign) });
+  }
+  if (kind === 4) {
+    // The same fraction of two different wholes (#702): of the bigger whole it is more. Calling them the same is the slip.
+    const W = w.fracLine;
+    const d = r.int(2, 4);
+    const f = `1/${d}`;
+    const [small, large] = [fill(W.ofSmall, { f }), fill(W.ofLarge, { f })];
+    return pickText(r, fill(W.wholes, { f }), large, [{ text: W.sameAmount, id: "wholesIgnored", vars: { f } }], [small], { steps: [`\\frac{1}{${d}} = \\frac{1}{${d}}`, `\\text{${W.biggerWhole}}`] });
+  }
+  if (kind === 2) {
     // The same amount cut two ways.
     const d = r.int(2, 4);
     const n = r.int(1, d - 1);

@@ -295,6 +295,7 @@ test("comparing fractions: every question's sign is true, and its bars and steps
   for (const level of LEVELS)
     for (let seed = 1; seed <= 300; seed++) {
       const q = exercise("compareFractions", level, seed, w);
+      if (q.answer.k === "pick") continue; // the stories (#702; tests/fractionLine.test.ts)
       const [a, b] = q.q.split("\\;\\square\\;").map(frac);
       const sign = a.n * b.d < b.n * a.d ? "<" : a.n * b.d > b.n * a.d ? ">" : "=";
       assert.equal(q.plain, sign, `${level} #${seed}: ${q.q}`);
