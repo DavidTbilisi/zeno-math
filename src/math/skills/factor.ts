@@ -1,9 +1,75 @@
-// Practice: Factorising.
-import { parseE } from "../expr";
-import { bracket, gcd, pmul, polyStr, T } from "../practiceKit";
-import type { Gen } from "../practiceTypes";
+// Practice: Factorising. #719 added, at the easy level: the greatest common factor of two monomials, a monomial
+// divided by a factor given, a sum of two numbers written as the greatest common factor times a sum, and a negative
+// factor taken out. The higher powers taken, the power not reduced, a common factor that is not the greatest and the
+// signs inside not changed are slips.
+import { fill } from "../chart";
+import { parseE, tex } from "../expr";
+import { bracket, gcd, num, pmul, polyStr, T } from "../practiceKit";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+
+const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+const sup = (k: number) => (k === 1 ? "" : [...String(k)].map((c) => SUP[Number(c)]).join(""));
+/** c x^m y^n as read, "12x³y" (a power of 0 leaves the letter out). */
+const monoRead = (c: number, m: number, n = 0) => `${c === 1 ? "" : c === -1 ? "−" : String(c).replace("-", "−")}${m ? `x${sup(m)}` : ""}${n ? `y${sup(n)}` : ""}` || "1";
+const monoTyped = (c: number, m: number, n = 0) => `${c}${m ? `*x^${m}` : ""}${n ? `*y^${n}` : ""}`;
+const readOf = (s: string) => s.replace(/\^(\d+)/g, (_, d: string) => [...d].map((c) => SUP[Number(c)]).join("")).replace(/ - /g, " − ").replace(/^-/, "−");
+
+/** An expression in `vars` to type. */
+function exprPart(prompt: string, right: string, vars: string[], slips: [Trap["id"], string, Record<string, string | number>][], steps: string[]): Part {
+  const e = (t: string) => parseE(t, vars);
+  return {
+    prompt, q: "",
+    answer: { k: "expr", e: e(right), vars, traps: slips.map(([id, t, v]) => ({ id, a: { k: "expr", e: e(t), vars }, vars: v })) },
+    show: tex(e(right)), plain: right.replace(/\*/g, "").replace(/\^1(?!\d)/g, ""), format: "expr", steps,
+  };
+}
+
+/** The kinds #719 added. */
+function more(r: Rng, kind: number, w: PracticeWords): Part {
+  const W = w.fctP;
+  if (kind <= 6) {
+    // The GCF of two monomials: the greatest number, and each letter to its lower power.
+    const g = r.int(2, 6);
+    const [p, q] = r.pick([[1, 2], [2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [1, 3]]);
+    const [m1, m2] = [r.int(1, 4), r.int(1, 4)];
+    const [n1, n2] = [r.int(0, 3), r.int(1, 3)];
+    const [m, n] = [Math.min(m1, m2), Math.min(n1, n2)];
+    const right = monoTyped(g, m, n);
+    const high = monoTyped(g, Math.max(m1, m2), Math.max(n1, n2));
+    const slips: [Trap["id"], string, Record<string, string | number>][] = high === right ? [] : [["gcfHighestPower", high, { x: monoRead(g, Math.max(m1, m2), Math.max(n1, n2)), v: monoRead(g, m, n) }]];
+    return exprPart(fill(W.gcf, { a: monoRead(g * p, m1, n1), b: monoRead(g * q, m2, n2) }), right, ["x", "y"], slips, [`${tex(parseE(monoTyped(g, m, n), ["x", "y"]))}: ${g} = \\gcd(${g * p}, ${g * q}), \\; x^{${m}}, \\; y^{${n}}`]);
+  }
+  if (kind === 7) {
+    // A monomial divided by a factor: divide the numbers, take the powers away.
+    const [f, c, k, m] = [r.int(2, 6), r.int(2, 7), r.int(1, 2), r.int(3, 6)];
+    const right = monoTyped(c, m - k);
+    return exprPart(fill(W.mono, { e: monoRead(f * c, m), f: monoRead(f, k) }), right, ["x"], [["monomialPowerKept", monoTyped(c, m), { x: monoRead(c, m), v: monoRead(c, m - k), k, m }]],
+      [`${T(monoTyped(f * c, m))} \\div ${T(monoTyped(f, k))} = ${T(right)}`]);
+  }
+  if (kind === 8) {
+    // A sum of two numbers as the greatest common factor times a sum.
+    const g = r.pick([4, 6, 8, 9, 10, 12, 14, 15]);
+    const [a, b] = r.pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [5, 6], [3, 7], [4, 7]]);
+    const small = g / [2, 3, 5, 7].find((p) => g % p === 0)!;
+    return {
+      prompt: fill(W.numbers, { a: g * a, b: g * b }), q: "",
+      answer: { ...num(g), traps: [{ id: "notGreatestFactor", a: num(small), vars: { x: small, v: g, a: (g * a) / small, b: (g * b) / small, p: a, q: b } }] },
+      show: `${g * a} + ${g * b} = ${g}(${a} + ${b})`, plain: String(g), format: "number", steps: [`${g * a} + ${g * b} = ${g}(${a} + ${b})`],
+    };
+  }
+  // A negative factor taken out: every sign inside changes.
+  const [g, a, b] = [r.int(2, 6), r.int(1, 7), r.int(1, 9)];
+  const whole = polyStr([0, g * b, -g * a]);
+  const right = polyStr([-b, a]);
+  return exprPart(fill(W.negative, { e: readOf(whole), g: `−${g}x` }), right, ["x"], [["negFactorSign", polyStr([b, a]), { x: readOf(polyStr([b, a])), v: readOf(right), g: `−${g}x` }]],
+    [`${T(whole)} = -${g}x(${T(right)})`]);
+}
 
 const gen: Gen = (r, L, w) => {
+  if (L === 1) {
+    const extra = r.int(0, 9);
+    if (extra >= 5) return more(r, extra, w);
+  }
   let fac: string;
   let cs: number[];
   if (L === 1) {

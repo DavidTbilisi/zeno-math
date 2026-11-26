@@ -2017,6 +2017,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Polynomials, adding and multiplying (#719, grade 8): a negative number times a bracket, one bracket taken from
+    another, like terms with negative coefficients picked from four, and two monomials multiplied; polynomials added
+    and taken away, and the degree or leading coefficient of a polynomial written out of order; a monomial times a
+    polynomial, and a rectangle's area from an area model drawn in two parts. The bracket's second sign kept, −3x − 7x
+    taken as a difference, the powers multiplied, only the first term taken away, the first term taken as the leading
+    one, the powers not raised and one part of the area left out are named. Factorising gained at its easy level the
+    greatest common factor of two monomials, a monomial divided by a factor given, 36 + 48 written as 12(3 + 4), and
+    −6x² + 9x = −3x( … ); the higher powers taken, the power kept, a common factor that is not the greatest and the
+    signs inside unchanged are named
   - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
     and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
   - Negative numbers also (#706) ask the sign of a sum without working it out, the missing number in −1 + □ = 8, the
