@@ -2322,96 +2322,6 @@
       "note": "a letter, not a number"
     },
     {
-      "skill": "rounding",
-      "level": 1,
-      "seed": 7,
-      "input": "97710",
-      "label": "correct"
-    },
-    {
-      "skill": "rounding",
-      "level": 1,
-      "seed": 7,
-      "input": "9771",
-      "label": "wrong",
-      "mistake": "placeLost"
-    },
-    {
-      "skill": "rounding",
-      "level": 1,
-      "seed": 7,
-      "input": "97720",
-      "label": "wrong"
-    },
-    {
-      "skill": "rounding",
-      "level": 1,
-      "seed": 7,
-      "input": "97700",
-      "label": "wrong",
-      "note": "to the nearest 100"
-    },
-    {
-      "skill": "rounding",
-      "level": 2,
-      "seed": 7,
-      "input": "0.07",
-      "label": "correct"
-    },
-    {
-      "skill": "rounding",
-      "level": 2,
-      "seed": 7,
-      "input": ".07",
-      "label": "correct"
-    },
-    {
-      "skill": "rounding",
-      "level": 2,
-      "seed": 7,
-      "input": "0.073",
-      "label": "wrong",
-      "note": "2 significant figures"
-    },
-    {
-      "skill": "rounding",
-      "level": 2,
-      "seed": 7,
-      "input": "0.1",
-      "label": "wrong"
-    },
-    {
-      "skill": "rounding",
-      "level": 3,
-      "seed": 7,
-      "input": "196.5",
-      "label": "correct"
-    },
-    {
-      "skill": "rounding",
-      "level": 3,
-      "seed": 7,
-      "input": "196,5",
-      "label": "correct",
-      "note": "a decimal comma"
-    },
-    {
-      "skill": "rounding",
-      "level": 3,
-      "seed": 7,
-      "input": "197",
-      "label": "wrong",
-      "mistake": "fullUnit"
-    },
-    {
-      "skill": "rounding",
-      "level": 3,
-      "seed": 7,
-      "input": "195.5",
-      "label": "wrong",
-      "note": "the lower bound"
-    },
-    {
       "skill": "inequalities",
       "level": 1,
       "seed": 7,
@@ -18270,72 +18180,6 @@
       "label": "wrong"
     },
     {
-      "skill": "placeValue",
-      "level": 1,
-      "seed": 7,
-      "input": "90",
-      "label": "correct"
-    },
-    {
-      "skill": "placeValue",
-      "level": 1,
-      "seed": 7,
-      "input": "9",
-      "label": "wrong",
-      "mistake": "digitNotValue"
-    },
-    {
-      "skill": "placeValue",
-      "level": 1,
-      "seed": 7,
-      "input": "900",
-      "label": "wrong"
-    },
-    {
-      "skill": "placeValue",
-      "level": 2,
-      "seed": 7,
-      "input": "700",
-      "label": "correct"
-    },
-    {
-      "skill": "placeValue",
-      "level": 2,
-      "seed": 7,
-      "input": "7",
-      "label": "wrong",
-      "mistake": "digitNotValue"
-    },
-    {
-      "skill": "placeValue",
-      "level": 2,
-      "seed": 7,
-      "input": "70",
-      "label": "wrong"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 7,
-      "input": "7000",
-      "label": "correct"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 7,
-      "input": "7",
-      "label": "wrong",
-      "mistake": "digitNotValue"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 7,
-      "input": "70000",
-      "label": "wrong"
-    },
-    {
       "skill": "tables",
       "level": 1,
       "seed": 7,
@@ -28938,6 +28782,1053 @@
       "level": 3,
       "seed": 53,
       "input": "57",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 1,
+      "input": "505",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 1,
+      "input": "5005",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 1,
+      "input": "512",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 2,
+      "input": "307",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 2,
+      "input": "3007",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 2,
+      "input": "314",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 3,
+      "input": "501",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 3,
+      "input": "5001",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 3,
+      "input": "508",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 4,
+      "input": "321",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 4,
+      "input": "123",
+      "label": "wrong",
+      "mistake": "smallestForLargest"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 4,
+      "input": "328",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 5,
+      "input": "298",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 5,
+      "input": "20098",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 5,
+      "input": "305",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 6,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 6,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 7,
+      "input": "90",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 7,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "digitNotValue"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 7,
+      "input": "97",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 12,
+      "input": "109",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 12,
+      "input": "19",
+      "label": "wrong",
+      "mistake": "zeroPlaceSkipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 12,
+      "input": "116",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 15,
+      "input": "453",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 1,
+      "seed": 15,
+      "input": "460",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 1,
+      "input": "5707",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 1,
+      "input": "5000707",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 1,
+      "input": "5714",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 2,
+      "input": "3508",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 2,
+      "input": "3000508",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 2,
+      "input": "3515",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 3,
+      "input": "5006",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 3,
+      "input": "50006",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 3,
+      "input": "5013",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 4,
+      "input": "1023",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 4,
+      "input": "3210",
+      "label": "wrong",
+      "mistake": "largestForSmallest"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 4,
+      "input": "123",
+      "label": "wrong",
+      "mistake": "zeroFirst"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 4,
+      "input": "1030",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 5,
+      "input": "29079",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 5,
+      "input": "2900079",
+      "label": "wrong",
+      "mistake": "wordPartsJoined"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 5,
+      "input": "29086",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 6,
+      "input": "667",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 6,
+      "input": "674",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 7,
+      "input": "700",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "digitNotValue"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 7,
+      "input": "707",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 11,
+      "input": "612",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 11,
+      "input": "619",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 12,
+      "input": "6901",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 12,
+      "input": "691",
+      "label": "wrong",
+      "mistake": "zeroPlaceSkipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 2,
+      "seed": 12,
+      "input": "6908",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 1,
+      "input": "3.59",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 1,
+      "input": "2159/1000",
+      "label": "wrong",
+      "mistake": "regroupSideBySide"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 1,
+      "input": "10.59",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 2,
+      "input": "5.43",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 2,
+      "input": "0.0543",
+      "label": "wrong",
+      "mistake": "pointWrongWay"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 2,
+      "input": "12.43",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 4,
+      "input": "three hundred and ninety-seven thousand two hundred",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 4,
+      "input": "317200",
+      "label": "wrong",
+      "mistake": "formsComparedByLook"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 6,
+      "input": "0.06",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 6,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "zeroPlaceSkipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 6,
+      "input": "7.06",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 7,
+      "input": "7000",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "digitNotValue"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 7,
+      "input": "7007",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 10,
+      "input": "12.078",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 10,
+      "input": "639/50",
+      "label": "wrong",
+      "mistake": "zeroPlaceSkipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 10,
+      "input": "19.078",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 11,
+      "input": "22.06",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 11,
+      "input": "113/5",
+      "label": "wrong",
+      "mistake": "zeroPlaceSkipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 11,
+      "input": "29.06",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 12,
+      "input": "6.92",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 12,
+      "input": "13.92",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 13,
+      "input": "0.01",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 13,
+      "input": "1/10",
+      "label": "wrong",
+      "mistake": "zeroPlaceSkipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 13,
+      "input": "7.01",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 1,
+      "input": "1030",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 1,
+      "input": "1020",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 1,
+      "input": "1037",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 3,
+      "input": "420",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 3,
+      "input": "422",
+      "label": "wrong",
+      "mistake": "exactNotEstimate"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 3,
+      "input": "427",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 4,
+      "input": "9100",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 4,
+      "input": "91",
+      "label": "wrong",
+      "mistake": "placeLost"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 4,
+      "input": "9107",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 5,
+      "input": "19000",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 5,
+      "input": "19075",
+      "label": "wrong",
+      "mistake": "exactNotEstimate"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 5,
+      "input": "19007",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 7,
+      "input": "97690",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 7,
+      "input": "9769",
+      "label": "wrong",
+      "mistake": "placeLost"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 7,
+      "input": "97697",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 10,
+      "input": "94000",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 10,
+      "input": "94002",
+      "label": "wrong",
+      "mistake": "exactNotEstimate"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 10,
+      "input": "93000",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 10,
+      "input": "94007",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 11,
+      "input": "3200",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 11,
+      "input": "3209",
+      "label": "wrong",
+      "mistake": "exactNotEstimate"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 11,
+      "input": "3207",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 12,
+      "input": "58.4",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 12,
+      "input": "65.4",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 13,
+      "input": "1500",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 13,
+      "input": "1482",
+      "label": "wrong",
+      "mistake": "exactNotEstimate"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 13,
+      "input": "1300",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "rounding",
+      "level": 1,
+      "seed": 13,
+      "input": "1507",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 1,
+      "input": "6000",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 1,
+      "input": "5000",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 1,
+      "input": "6007",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 2,
+      "input": "1.5*10^8",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 2,
+      "input": "1.5*10^16",
+      "label": "wrong",
+      "mistake": "powersAddedForDivide"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 3,
+      "input": "2*10^7",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 3,
+      "input": "2*10^15",
+      "label": "wrong",
+      "mistake": "powersAddedForDivide"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 4,
+      "input": "4*10^-3",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 4,
+      "input": "4*10^-2",
+      "label": "wrong",
+      "mistake": "powerOneOut"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 5,
+      "input": "5.8*10^1",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 7,
+      "input": "0.07",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 7,
+      "input": "7.07",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 8,
+      "input": "630000",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 8,
+      "input": "620000",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 8,
+      "input": "63",
+      "label": "wrong",
+      "mistake": "placeLost"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 8,
+      "input": "630007",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 9,
+      "input": "8.66*10^8",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 2,
+      "seed": 14,
+      "input": "2.688*10^-3",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 1,
+      "input": "107.5",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 1,
+      "input": "108",
+      "label": "wrong",
+      "mistake": "fullUnit"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 1,
+      "input": "114.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 2,
+      "input": "93",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 2,
+      "input": "96",
+      "label": "wrong",
+      "mistake": "fullUnit"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 2,
+      "input": "100",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 5,
+      "input": "145",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 5,
+      "input": "150",
+      "label": "wrong",
+      "mistake": "fullUnit"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 5,
+      "input": "152",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 6,
+      "input": "133.5",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 6,
+      "input": "133",
+      "label": "wrong",
+      "mistake": "fullUnit"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 6,
+      "input": "140.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 8,
+      "input": "30.85",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 8,
+      "input": "309/10",
+      "label": "wrong",
+      "mistake": "fullUnit"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 8,
+      "input": "37.85",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 13,
+      "input": "7.95",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 13,
+      "input": "79/10",
+      "label": "wrong",
+      "mistake": "fullUnit"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 13,
+      "input": "14.95",
+      "label": "wrong"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 24,
+      "input": "185",
+      "label": "correct"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 24,
+      "input": "180",
+      "label": "wrong",
+      "mistake": "fullUnit"
+    },
+    {
+      "skill": "rounding",
+      "level": 3,
+      "seed": 24,
+      "input": "192",
       "label": "wrong"
     }
   ]

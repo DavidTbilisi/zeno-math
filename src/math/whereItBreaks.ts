@@ -294,8 +294,11 @@ function order(ex: Exercise): Version[] {
 function rounding(ex: Exercise): Version[] {
   const spec = ex.solution?.spec as Record<string, number | string | boolean>;
   const v = (ex.answer as { v: number }).v;
-  const traps = ex.answer.traps ?? [];
+  // Only the slips the working can show (an estimate's exact answer or a power one out is not worked here).
+  const traps = (ex.answer.traps ?? []).filter((t) => (POOLS.rounding as readonly string[]).includes(t.id));
   const trapV = (t: Trap) => (t.a as { v: number }).v;
+  // A number rounded to one digit times a power of ten: the working would be in decimals, the answer is not.
+  if (ex.plain.includes("*10^")) return [];
   if (spec.pic === "round") {
     const [m, p, k] = [spec.m, spec.p, spec.k] as number[];
     const full = fmtM(m, p), point = full.indexOf(".");

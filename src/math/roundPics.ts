@@ -5,7 +5,8 @@
 // to the nearer end. Estimating a product: that line for each number, to 1 significant figure. Bounds: the band of
 // lengths that round to x, shaded, its lower end in (a dot) and its upper end out (a ring), the one asked green; a
 // total's upper bound is that for one, n times over. Standard form: the point hops to just after the first digit that
-// isn't 0, the hops counted: the power of ten. Multiplying in standard form: the numbers together, the powers together.
+// isn't 0, the hops counted: the power of ten. Multiplying (or dividing) in standard form: the numbers together, the
+// powers together. Estimating a sum or difference: each number's line to its nearest ten, hundred or thousand.
 import { C, FONT, r2, texAt } from "./chart";
 
 export type RoundSolution =
@@ -18,8 +19,10 @@ export type RoundSolution =
   | { pic: "boundTotal"; n: number; x: number }
   /** The number as written (text), and its power of ten in standard form. */
   | { pic: "std"; text: string; e: number }
-  /** (a × 10^m1) × (b × 10^m2) = prod × 10^(m1 + m2) = mant × 10^e. */
-  | { pic: "stdMul"; a: string; m1: number; b: string; m2: number; prod: string; mant: string; e: number };
+  /** (a × 10^m1) × (b × 10^m2) = prod × 10^(m1 + m2) = mant × 10^e; with `div`, ÷ and m1 − m2. */
+  | { pic: "stdMul"; a: string; m1: number; b: string; m2: number; prod: string; mant: string; e: number; div?: boolean }
+  /** An estimate: each of ns rounded at place k (−1 tens, −2 hundreds, −3 thousands), then added or taken in turn. */
+  | { pic: "estimateSum"; ns: number[]; signs: ("+" | "-")[]; k: number };
 
 type Block = { body: string; w: number; h: number };
 const BLUE = { fill: "#a5d8ff", stroke: C.blue };
@@ -184,7 +187,10 @@ function stdSvg(t: string, e: number): Block {
   return { body: out.join(""), w: bx(digits.length) + 110, h: y + 18 };
 }
 
-/** The numbers together, the powers together, and the point moved on when the number reaches 10. */
+/**
+ * The numbers together, the powers together, and the point moved on when the number reaches 10 (or back when a
+ * quotient is under 1).
+ */
 function stdMulSvg(s: Extract<RoundSolution, { pic: "stdMul" }>): Block {
   const out: string[] = [];
   const tile = (x: number, y: number, w: number, tex: string, c: { fill: string; stroke: string }) => {
@@ -197,11 +203,13 @@ function stdMulSvg(s: Extract<RoundSolution, { pic: "stdMul" }>): Block {
   tile(xs[1], y1, 90, `10^{${s.m1}}`, ORANGE);
   tile(xs[2], y1, 90, s.b, BLUE);
   tile(xs[3], y1, 90, `10^{${s.m2}}`, ORANGE);
-  for (const x of [125, 245, 365]) out.push(texAt("\\times", x + 12, y1, "middle", 0.9).svg);
+  const op = s.div ? "\\div" : "\\times";
+  for (const x of [125, 245, 365]) out.push(texAt(x === 245 ? op : "\\times", x + 12, y1, "middle", 0.9).svg);
   const y2 = 130;
   const [gx1, gx2] = [30, 290];
-  tile(gx1, y2, 230, `${s.a} \\times ${s.b} = ${s.prod}`, BLUE);
-  tile(gx2, y2, 230, `10^{${s.m1} + ${s.m2 < 0 ? `(${s.m2})` : s.m2}} = 10^{${s.m1 + s.m2}}`, ORANGE);
+  const pow = s.div ? s.m1 - s.m2 : s.m1 + s.m2;
+  tile(gx1, y2, 230, `${s.a} ${op} ${s.b} = ${s.prod}`, BLUE);
+  tile(gx2, y2, 230, `10^{${s.m1} ${s.div ? "-" : "+"} ${s.m2 < 0 ? `(${s.m2})` : s.m2}} = 10^{${pow}}`, ORANGE);
   // The regrouping: each number down to the numbers, each power down to the powers.
   for (const [i, gx] of [[0, gx1], [2, gx1], [1, gx2], [3, gx2]] as const) {
     const c = i % 2 ? C.orange : C.blue;
@@ -212,7 +220,7 @@ function stdMulSvg(s: Extract<RoundSolution, { pic: "stdMul" }>): Block {
   }
   const y3 = 200;
   const moved = s.prod !== s.mant;
-  out.push(texAt(`${moved ? `${s.prod} \\times 10^{${s.m1 + s.m2}} = ` : ""}${s.mant} \\times 10^{${s.e}}`, 275, y3, "middle", 1.05, C.green).svg);
+  out.push(texAt(`${moved ? `${s.prod} \\times 10^{${pow}} = ` : ""}${s.mant} \\times 10^{${s.e}}`, 275, y3, "middle", 1.05, C.green).svg);
   return { body: out.join(""), w: 550, h: y3 + 24 };
 }
 
@@ -233,6 +241,15 @@ function blocks(s: RoundSolution): Block[] {
       return zoomLine(v, lo, hi, { lo: tidy(lo), hi: tidy(hi), mid: tidy(lo + e / 2), v: tidy(v) }, `${tidy(v)} \\approx ${tidy(v1)}`);
     };
     return [line(s.x, s.x1), line(s.y, s.y1)];
+  }
+  if (s.pic === "estimateSum") {
+    // Each number between its two round neighbours, hopping to the nearer; the round numbers are then worked with.
+    const step = 10 ** -s.k;
+    return s.ns.map((n) => {
+      const lo = Math.floor(n / step) * step;
+      const R = n - lo >= step / 2 ? lo + step : lo;
+      return zoomLine(n, lo, lo + step, { lo: String(lo), hi: String(lo + step), mid: String(lo + step / 2), v: String(n) }, `${n} \\approx ${R}`);
+    });
   }
   if (s.pic === "bound") return [boundSvg(s.x, s.unit, s.low)];
   if (s.pic === "boundTotal") {

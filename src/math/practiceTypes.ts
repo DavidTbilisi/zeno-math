@@ -1,6 +1,7 @@
 // The shapes of practice: a question (Exercise) and its parts, the kinds of answer and how they are checked, the
 // formats and solution kinds, and the words a question is written in (PracticeWords). Types only, plus the levels,
 // so any module can name a question without loading the generators.
+import type { NumberLang } from "./numberWords";
 import type { ArcWords } from "./arcs";
 import type { BarModelWords } from "./barProblems";
 import type { BreakWords } from "./whereItBreaks";
@@ -306,6 +307,24 @@ export type PracticeWords = {
     missing: string; digitValue: string; remainder: string;
     toDecimal: string; toPercent: string; toFraction: string;
     perimeter: string; area: string; sideFromArea: string; sideFromPerimeter: string; circumference: string; circleArea: string;
+  };
+  /**
+   * Place value in words (placeValue): the language its numbers are written out in (src/math/numberWords.ts), the
+   * prompts for a number or decimal from its words, the largest and smallest number from some digits, a number from
+   * counts of its places (with the places' names and the word before the last), and the larger of two forms.
+   */
+  place: {
+    lang: NumberLang;
+    toFigures: string; decimal: string; largest: string; smallest: string; regroup: string; larger: string; and: string;
+    places: Record<"thousands" | "hundreds" | "tens" | "ones" | "tenths" | "hundredths", string>;
+  };
+  /**
+   * Estimating (rounding): "the nearest ten" as the prompts say it, an estimate by rounding first, rounding in a
+   * story and a two-step story, standard form in two stories, and a number as one digit times a power of 10.
+   */
+  estimate: {
+    nearest: Record<"ten" | "hundred" | "thousand", string>;
+    sum: string; stadium: string; school: string; probe: string; grains: string; single: string;
   };
   /**
    * Addition and subtraction (addSubtract): the stories at each level, the prompts for the equal sign, a related fact,
