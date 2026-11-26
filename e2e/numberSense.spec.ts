@@ -264,7 +264,7 @@ test("prime slice: every number that isn't prime tapped as it flies, and no prim
 });
 
 test("a practice list of divisors tapped from its buttons, in any order", async ({ page, request }) => {
-  const r = 0.57;
+  const r = 0.59;
   const ex = exercise("divisibility", 3, Math.floor(r * 2 ** 31), w);
   const a = ex.answer;
   if (a.k !== "divisors") throw new Error("not a divisors question");

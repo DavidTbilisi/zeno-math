@@ -810,7 +810,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     and 10, then 3 and 9 as well, then 4, 6 and 8 too; every number divides by at least one. A divisor not offered is
     sent back; an even number taken for a multiple of 4, a multiple of 3 for one of 9, an odd multiple of 3 for one of
     6, and a multiple of 10 given without 2 and 5 are named; the worked solution is the Divisibility tab's table of
-    tests for those divisors
+    tests for those divisors. Factors and multiples are picked beside them (#701): the factor pair that makes a
+    number, a factor of it and a multiple of a number; then which way round "factor of" and "multiple of" go, the
+    prime among odd numbers and the factor pairs of a number to 100; then the composite number with 1 and 2 offered,
+    whether a number is prime or composite, and multiples of 12 to 18. A pair that adds up to the number, a multiple
+    for a factor and a factor for a multiple, the relation turned round, an odd number taken for prime, and 1 or 2
+    taken for composite are named
   - Kakooma: which of a few numbers is the sum of two others, typed or picked from buttons — four numbers to 10,
     five to 20, then five from the times tables and a product of two others. Exactly one number is made from two
     others, in one way; above easy most sets lay a trap and the answer is seldom the largest. One of the two parts

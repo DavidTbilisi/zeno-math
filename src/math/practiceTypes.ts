@@ -346,6 +346,11 @@ export type PracticeWords = {
     step: string; said: string; sumParity: string; below: string; above: string; inTable: string;
     words: Record<"yes" | "no" | "odd" | "even", string>;
   };
+  /** Factors, multiples, prime or composite (divisibility, #701). */
+  factors: {
+    pair: string; factor: string; multiple: string; relate: string; factorOf: string; multipleOf: string;
+    prime: string; composite: string; primeOrComposite: string; isPrime: string; isComposite: string;
+  };
   /**
    * Multiplication and division (tables, times, divide): the prompts over a picture of groups, an array or jumps, the
    * stories at each level, the multiplication that answers a division, a fact family and the equation of a story.
