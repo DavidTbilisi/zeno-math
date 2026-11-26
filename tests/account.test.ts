@@ -256,13 +256,21 @@ test("a forgotten password: the mailed link sets a new one, once, and signs the 
   assert.equal((await device().call("POST", "/api/account/session", { email: "luka@school.example", password: "second password" })).status, 200);
 
   // A second link stops the first; an address is mailed at most three times an hour.
+  // The mails go out side by side and can reach the inbox in either order, so each request asks for its own language
+  // and the links are told apart by it: the first request's (English) is the older link.
   const n = inbox.length;
-  for (let i = 0; i < 4; i++) assert.equal((await anyone.call("POST", "/api/account/reset", { email: "luka@school.example" })).status, 202);
+  for (const lang of ["en", "ka", "en", "ka"]) assert.equal((await anyone.call("POST", "/api/account/reset", { email: "luka@school.example", lang })).status, 202);
+  for (let i = 0; i < 100 && inbox.length < n + 2; i++) await new Promise((ok) => setTimeout(ok, 50));
   await new Promise((ok) => setTimeout(ok, 300));
-  const links = inbox.slice(n).map((m) => linkToken(Buffer.from(m.data.split("\r\n\r\n")[1].replace(/\r\n/g, ""), "base64").toString(), "reset")!);
-  assert.equal(links.length, 2, "three mails this hour, one of them above");
-  assert.equal((await device().call("PUT", "/api/account/reset", { token: links[0], password: "fourth password" })).status, 410);
-  assert.equal((await device().call("PUT", "/api/account/reset", { token: links[1], password: "fourth password" })).status, 200);
+  const mails = inbox.slice(n).map((m) => Buffer.from(m.data.split("\r\n\r\n")[1].replace(/\r\n/g, ""), "base64").toString());
+  assert.equal(mails.length, 2, "three mails this hour, one of them above");
+  const [older, newer] = ["Hello Luka", "გამარჯობა, Luka"].map((hi) => {
+    const mail = mails.find((m) => m.startsWith(hi));
+    assert.ok(mail, `a mail starting "${hi}"`);
+    return linkToken(mail, "reset")!;
+  });
+  assert.equal((await device().call("PUT", "/api/account/reset", { token: older, password: "fourth password" })).status, 410);
+  assert.equal((await device().call("PUT", "/api/account/reset", { token: newer, password: "fourth password" })).status, 200);
 });
 
 test("deleting the account needs the password and removes it", async () => {
