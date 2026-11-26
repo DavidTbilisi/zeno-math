@@ -33,13 +33,15 @@ export type LineOpts = {
   bar?: number;
   /** A second line below, the same wholes, cut into this many parts each, labelled at 0 and the wholes. */
   under?: number;
+  /** Equal jumps from 0 above the line: how many, and how many parts each (#703: 3 × 2/5 as three jumps of 2/5). */
+  jumps?: [number, number];
 };
 
 /** A number line from 0 over `wholes` wholes, marks at every part. */
 export function fracLine(o: LineOpts): Exercise["pic"] {
   const unit = Math.min(300, 600 / o.wholes);
   const [x0, w] = [24, unit * o.wholes];
-  const top = o.bar !== undefined ? (o.letters ? 70 : 50) : o.letters ? 26 : 12;
+  const top = o.bar !== undefined ? (o.letters ? 70 : 50) : o.letters ? 26 : o.jumps ? 40 : 12;
   const out: string[] = [];
   const at = (parts: number, d = o.d) => x0 + (parts / d) * unit;
   if (o.bar !== undefined)
@@ -55,6 +57,11 @@ export function fracLine(o: LineOpts): Exercise["pic"] {
   };
   line(top, o.d, o.labels);
   for (const [p, s] of o.letters ?? []) out.push(`<circle cx="${r2(at(p))}" cy="${top}" r="5" fill="${ASK}"/>${text(at(p), top - 10, s, { color: ASK, bold: true })}`);
+  if (o.jumps)
+    for (let i = 0; i < o.jumps[0]; i++) {
+      const [a, b] = [at(i * o.jumps[1]), at((i + 1) * o.jumps[1])];
+      out.push(`<path d="M ${r2(a)} ${top - 3} Q ${r2((a + b) / 2)} ${top - 34} ${r2(b)} ${top - 3}" fill="none" stroke="${ASK}" stroke-width="2"/><path d="M ${r2(b)} ${top - 3} l -7 -6 l 1 7 z" fill="${ASK}"/>`);
+    }
   if (o.dot !== undefined) out.push(`<circle cx="${r2(at(o.dot))}" cy="${top}" r="6.5" fill="${ASK}" stroke="#ffffff" stroke-width="1.5"/>`);
   let h = top + 46;
   if (o.under !== undefined) {
@@ -97,4 +104,28 @@ export function wholeBars(bars: number, d: number, n: number): Exercise["pic"] {
   for (let b = 0; b < bars; b++)
     for (let i = 0; i < d; i++) out.push(`<rect x="${r2((i * W) / d)}" y="${b * (H + gap)}" width="${r2(W / d)}" height="${H}" ${b * d + i < n ? SHADE : EMPTY}/>`);
   return pic(out.join(""), W + 2, bars * (H + gap) - gap + 2);
+}
+
+/** k bars, each one whole cut into d with the first n pieces shaded: k groups of n/d (#703). */
+export function groupBars(k: number, d: number, n: number): Exercise["pic"] {
+  const [W, H, gap] = [Math.min(200, 26 * d), 26, 10];
+  const out: string[] = [];
+  for (let b = 0; b < k; b++)
+    for (let i = 0; i < d; i++) out.push(`<rect x="${r2((i * W) / d)}" y="${b * (H + gap)}" width="${r2(W / d)}" height="${H}" ${i < n ? SHADE : EMPTY}/>`);
+  return pic(out.join(""), W + 2, k * (H + gap) - gap + 2);
+}
+
+/**
+ * A square metre cut into d1 columns and d2 rows, the a/d1 by b/d2 rectangle in its corner shaded and its sides
+ * labelled (#703: the area of a rectangle with fraction sides is the shaded share of the square).
+ */
+export function fracArea(a: number, d1: number, b: number, d2: number): Exercise["pic"] {
+  const [S, x0, y0] = [200, 46, 28];
+  const out: string[] = [`<rect x="${x0}" y="${y0}" width="${S}" height="${S}" ${EMPTY}/>`];
+  out.push(`<rect x="${x0}" y="${y0}" width="${r2((S * a) / d1)}" height="${r2((S * b) / d2)}" fill="#a5d8ff" stroke="${INK}" stroke-width="2.5"/>`);
+  for (let i = 1; i < d1; i++) out.push(`<line x1="${r2(x0 + (S * i) / d1)}" y1="${y0}" x2="${r2(x0 + (S * i) / d1)}" y2="${y0 + S}" stroke="${INK}" stroke-width="0.8" stroke-dasharray="4 3"/>`);
+  for (let i = 1; i < d2; i++) out.push(`<line x1="${x0}" y1="${r2(y0 + (S * i) / d2)}" x2="${x0 + S}" y2="${r2(y0 + (S * i) / d2)}" stroke="${INK}" stroke-width="0.8" stroke-dasharray="4 3"/>`);
+  out.push(label(x0 + (S * a) / d1 / 2, y0 + S + 4, `${a}/${d1}`, ASK), text(x0 + S + 24, y0 + S / 2 + 5, "1 m"), text(x0 + S / 2, y0 - 8, "1 m"));
+  out.push(label(x0 - 22, y0 + (S * b) / d2 / 2 - 18, `${b}/${d2}`, ASK));
+  return pic(out.join(""), x0 + S + 50, y0 + S + 40);
 }

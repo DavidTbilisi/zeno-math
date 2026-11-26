@@ -369,7 +369,7 @@ export type PracticeWords = {
   /** Multiplying and dividing decimals (decimalTimes): the point placed from a given product, more or less, two stories. */
   decTimes: { placePoint: string; moreOrLess: string; more: string; less: string; ribbon: string; jug: string };
   /** Fractions before grade 6 (fractionSums): a division as a fraction, a fraction of a number, three stories. */
-  fracSums: { asFraction: string; of: string; pizzas: string; cake: string; servings: string; whichSum: string };
+  fracSums: { asFraction: string; of: string; pizzas: string; cake: string; servings: string; whichSum: string } & Record<"lunch" | "ribbon" | "walk" | "plank" | "sameAs" | "laps" | "sugar" | "scale" | "more" | "less" | "equal" | "asks" | "howMany" | "partOf" | "howManyBig" | "area" | "ateOf", string>;
   /** Fractions as numbers on a line, equal parts, and fractions compared in stories (#702). */
   fracLine: {
     point: string; findOne: string; barToLine: string; toOne: string; sameLine: string; pastOne: string; equalParts: string;

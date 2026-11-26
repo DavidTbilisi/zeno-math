@@ -57,7 +57,7 @@ test("a sum, difference or quotient asked is the true one, and the fractions giv
         assert.equal(g(Number(n), Number(d)), 1, `${ex.q}: ${n}/${d} in lowest terms`);
       }
     }
-  assert.ok(seen > 500);
+  assert.ok(seen > 300, String(seen)); // with the stories and × kinds of #703 beside them
 });
 
 test("an answer not in lowest terms is sent back, and a mixed number is taken for an improper fraction", () => {
@@ -71,8 +71,9 @@ test("the easy level: the same bottoms, and a division written as a fraction wit
   let [same, division] = [0, 0];
   for (const seed of SEEDS) {
     const ex = exercise("fractionSums", 1, seed, w);
-    // A fraction broken into parts is worked in lines (#702; tests/fractionLine.test.ts).
-    if (!ex.solution) continue;
+    // A fraction broken into parts is worked in lines (#702; tests/fractionLine.test.ts), and the stories have no
+    // question line (#703; tests/fractionTimes.test.ts).
+    if (!ex.solution || ex.q === "") continue;
     const spec = (ex.solution as { spec: { op: string; a: string; b: string; pic?: string } }).spec;
     if (ex.prompt === w.fracSums.asFraction) {
       division++;
@@ -85,7 +86,7 @@ test("the easy level: the same bottoms, and a division written as a fraction wit
       assert.ok(ex.q.match(/\\frac\{\d+\}\{(\d+)\}.*\\frac\{\d+\}\{\1\}/), `${ex.q}: the same bottom`);
     }
   }
-  assert.ok(same > 100 && division > 50, `${same} ${division}`);
+  assert.ok(same > 70 && division > 30, `${same} ${division}`);
 });
 
 test("a fraction of a number: drawn on counters, and one part for all of them is the slip", () => {
@@ -100,13 +101,14 @@ test("a fraction of a number: drawn on counters, and one part for all of them is
     assert.equal((ex.solution as { spec: { pic?: string } }).spec.pic, "of");
     if (n > 1) assert.equal(check(ex, String(N / d), w).mistake, "onlyOnePart");
   }
-  assert.ok(seen > 50);
+  assert.ok(seen > 25, String(seen));
 });
 
 test("the hard level: a unit fraction shared, a whole number cut into unit fractions, and stories", () => {
   let [shared, fits, stories] = [0, 0, 0];
   for (const seed of SEEDS) {
     const ex = exercise("fractionSums", 3, seed, w);
+    if (!ex.solution) continue; // the kinds of #703, worked in lines (tests/fractionTimes.test.ts)
     const spec = (ex.solution as { spec: { a: string; b: string; pic?: string } }).spec;
     if (ex.q === "") stories++;
     else if (spec.a.includes("/")) shared++;
@@ -115,7 +117,7 @@ test("the hard level: a unit fraction shared, a whole number cut into unit fract
     else assert.equal(spec.pic, "share");
     assert.ok(trapInputs(ex).length >= 1, `${ex.prompt} ${ex.q}: a slip`);
   }
-  assert.ok(shared > 40 && fits > 40 && stories > 60, `${shared} ${fits} ${stories}`);
+  assert.ok(shared > 20 && fits > 20 && stories > 25, `${shared} ${fits} ${stories}`);
 });
 
 test("every worked solution is drawn, with its picture", async () => {
