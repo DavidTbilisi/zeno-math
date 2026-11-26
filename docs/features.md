@@ -1418,6 +1418,22 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     rule, a back bearing, a ship's two legs on bearings, and angles of elevation and depression from a tower or a
     cliff. Every figure is drawn to scale, and the worked solution marks the mirror angle, the back bearing or the
     angle inside the triangle
+  - Triangle trigonometry (#716, alongside the exact values, double angles and a sin x + b cos x already there):
+    without a calculator, a side from a ratio given as a fraction (grade 8), sin θ = cos a for the complement and
+    sin A = cos B for the two sharp angles of one right triangle, and the 45°-45°-90° and 30°-60°-90° triangles given
+    exactly; the Pythagorean identity with the quadrant's sign, the reciprocal ratios csc, sec and cot, sin and cos
+    of 180° − θ, 180° + θ, −θ and 90° − θ, sin and cos of A ± B from two ratios and, in new settings, the peak of
+    two notes sounding together and the tangent of a ski run's two slopes (grade 10); a side from two angles and the
+    side between them, a side from two sides and the angle between them, two ships' distance apart from their
+    bearings and a boat's distance from two lighthouses. The ratio upside down, the supplement for the complement,
+    the same angle's other ratio, the special triangles' sides swapped or doubled, the quadrant's sign lost, 1 − sin θ
+    unsquared, the wrong ratio turned over, a reflection's sign lost, sin and cos mixed, sin or cos taken inside the
+    sum, the middle sign swapped, the peaks added, 1 + tan A tan B below and the cosine rule without its 2bc cos A
+    are named. The piece *Trig rules: find them by moving a point* (Insert → Geometry → trigonometry, grades 10–12):
+    P is dragged round the unit circle (or pressed into place, or moved by the arrow keys) while sin²θ and cos²θ
+    keep adding to 1; then P′, its mirror, stays just as high, the three ratios a ÷ sin A, b ÷ sin B, c ÷ sin C stay
+    equal as C moves round the circle, and c² meets a² + b² only when the angle at C is 90°, missing by exactly
+    2ab cos C otherwise. Each rule is said only after the point has been moved and the right tile tapped
   - Triangle inequality (AoPS Introduction to Geometry ch. 10): which of four sets of lengths makes a triangle (one
     lies flat, a + b = c, named); the third side's range as an inequality (the ends included, or the short end left
     out, named) or how many whole lengths it can be; an isosceles triangle's perimeter when only one way closes, and
