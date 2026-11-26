@@ -9,9 +9,11 @@ import { bktStep, splitByStudent } from "../src/model/evaluate.ts";
 import { SKILL_IDEAS, TICK_PRIOR } from "../src/model/ideaState.ts";
 import { bktRule, fitRules, judge, streakRule } from "../src/model/mastery.ts";
 import {
-  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitIdeasByLikelihood, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, WORLD_SKILLS, type IdeaFit, type IdeaParams, type IdeaPractice,
+  carriedIdeas, compareIdeas, conjunctiveStep, diagnosis, fitIdeas, fitIdeasByLikelihood, fitTicks, gapIdea, IDEA_SKILLS, ideasCalibration, ideasOf, ideasRule, simulateIdeas, WORLD_SKILLS, worldExercise, type IdeaFit, type IdeaParams, type IdeaPractice,
 } from "../src/model/ideas.ts";
 import { rng } from "../src/model/random.ts";
+import { en } from "../src/locales/en.ts";
+import { exercise } from "../src/math/practice.ts";
 
 const params = { init: 0.3, learn: 0.1, guess: 0.2, slip: 0.1 };
 const fit: IdeaFit = { idea: () => params, question: () => params };
@@ -248,4 +250,16 @@ test("fitting each idea on the answers of the questions that needed it, within a
   for (const id of ideasOf("fractions")) for (const f of [afresh, across]) assert.ok(f(id).init > 0 && f(id).learn > 0);
   // An idea no question needed gets the pooled fit.
   assert.deepEqual(afresh("never"), afresh("nothing"));
+});
+
+test("the world's times questions stay the plain products the thesis's results were made with, whatever practice adds", () => {
+  for (const level of [1, 2, 3] as const)
+    for (let seed = 1; seed <= 50; seed++) {
+      const ex = worldExercise("times", level, seed);
+      assert.match(ex.q, /^\d+ \\times \d+$/);
+      assert.equal(ex.answer.traps, undefined);
+      const [a, b] = ex.q.split(" \\times ").map(Number);
+      assert.equal(ex.plain, String(a * b));
+    }
+  assert.equal(worldExercise("hcf", 2, 7).q, exercise("hcf", 2, 7, en.pracWords).q);
 });
