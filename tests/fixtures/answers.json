@@ -2022,28 +2022,28 @@
     {
       "skill": "ci",
       "level": 1,
-      "seed": 7,
+      "seed": 156543,
       "input": "(76.24, 82.16)",
       "label": "correct"
     },
     {
       "skill": "ci",
       "level": 1,
-      "seed": 7,
+      "seed": 156543,
       "input": "76.24; 82.16",
       "label": "correct"
     },
     {
       "skill": "ci",
       "level": 1,
-      "seed": 7,
+      "seed": 156543,
       "input": "[76.24, 82.16]",
       "label": "correct"
     },
     {
       "skill": "ci",
       "level": 1,
-      "seed": 7,
+      "seed": 156543,
       "input": "76.24 to 82.16",
       "label": "correct",
       "note": "written with to"
@@ -2051,35 +2051,35 @@
     {
       "skill": "ci",
       "level": 1,
-      "seed": 7,
+      "seed": 156543,
       "input": "(76.2, 82.2)",
       "label": "close"
     },
     {
       "skill": "ci",
       "level": 1,
-      "seed": 7,
+      "seed": 156543,
       "input": "(75.67, 82.73)",
       "label": "wrong"
     },
     {
       "skill": "ci",
       "level": 3,
-      "seed": 7,
+      "seed": 68,
       "input": "(0.723, 0.857)",
       "label": "correct"
     },
     {
       "skill": "ci",
       "level": 3,
-      "seed": 7,
+      "seed": 68,
       "input": "(0.72, 0.86)",
       "label": "close"
     },
     {
       "skill": "ci",
       "level": 3,
-      "seed": 7,
+      "seed": 68,
       "input": "(72.3, 85.7)",
       "label": "wrong",
       "note": "as percentages"
@@ -12533,14 +12533,14 @@
     {
       "skill": "limitTheorems",
       "level": 1,
-      "seed": 7,
+      "seed": 910,
       "input": "3/2",
       "label": "correct"
     },
     {
       "skill": "limitTheorems",
       "level": 1,
-      "seed": 7,
+      "seed": 910,
       "input": "3",
       "label": "wrong",
       "mistake": "varianceNotDivided"
@@ -12548,7 +12548,7 @@
     {
       "skill": "limitTheorems",
       "level": 1,
-      "seed": 7,
+      "seed": 910,
       "input": "3/4",
       "label": "wrong",
       "mistake": "rootNConfused"
@@ -12556,21 +12556,21 @@
     {
       "skill": "limitTheorems",
       "level": 1,
-      "seed": 7,
+      "seed": 910,
       "input": "9/4",
       "label": "wrong"
     },
     {
       "skill": "limitTheorems",
       "level": 2,
-      "seed": 7,
+      "seed": 3135,
       "input": "0.023",
       "label": "correct"
     },
     {
       "skill": "limitTheorems",
       "level": 2,
-      "seed": 7,
+      "seed": 3135,
       "input": "0.369",
       "label": "wrong",
       "mistake": "cltForgotRootN"
@@ -12578,7 +12578,7 @@
     {
       "skill": "limitTheorems",
       "level": 2,
-      "seed": 7,
+      "seed": 3135,
       "input": "0.977",
       "label": "wrong",
       "mistake": "normalWrongTail"
@@ -12586,21 +12586,21 @@
     {
       "skill": "limitTheorems",
       "level": 2,
-      "seed": 7,
+      "seed": 3135,
       "input": "0.5",
       "label": "wrong"
     },
     {
       "skill": "limitTheorems",
       "level": 3,
-      "seed": 7,
+      "seed": 12096,
       "input": "0.159",
       "label": "correct"
     },
     {
       "skill": "limitTheorems",
       "level": 3,
-      "seed": 7,
+      "seed": 12096,
       "input": "0.401",
       "label": "wrong",
       "mistake": "sumSdLinear"
@@ -12608,7 +12608,7 @@
     {
       "skill": "limitTheorems",
       "level": 3,
-      "seed": 7,
+      "seed": 12096,
       "input": "0.841",
       "label": "wrong",
       "mistake": "normalWrongTail"
@@ -12616,7 +12616,7 @@
     {
       "skill": "limitTheorems",
       "level": 3,
-      "seed": 7,
+      "seed": 12096,
       "input": "0.25",
       "label": "wrong"
     },
@@ -22397,58 +22397,58 @@
     {
       "skill": "twoSample",
       "level": 2,
-      "seed": 1,
-      "input": "11.66",
+      "seed": 7,
+      "input": "9.5",
       "label": "correct"
     },
     {
       "skill": "twoSample",
       "level": 2,
-      "seed": 1,
-      "input": "15.281795289545382",
+      "seed": 7,
+      "input": "12.655286480761049",
       "label": "wrong",
       "mistake": "seAdded"
     },
     {
       "skill": "twoSample",
       "level": 2,
-      "seed": 1,
-      "input": "18.66",
+      "seed": 7,
+      "input": "99",
       "label": "wrong"
     },
     {
       "skill": "twoSample",
       "level": 2,
-      "seed": 2,
-      "input": "-2.05",
+      "seed": 8,
+      "input": "8.67",
       "label": "correct"
     },
     {
       "skill": "twoSample",
       "level": 2,
-      "seed": 2,
-      "input": "-1.5229520301253843",
+      "seed": 8,
+      "input": "12.259642454604277",
       "label": "wrong",
       "mistake": "seAdded"
     },
     {
       "skill": "twoSample",
       "level": 2,
-      "seed": 2,
-      "input": "4.95",
+      "seed": 8,
+      "input": "99",
       "label": "wrong"
     },
     {
       "skill": "twoSample",
       "level": 3,
-      "seed": 1,
+      "seed": 9,
       "input": "Paired t test",
       "label": "correct"
     },
     {
       "skill": "twoSample",
       "level": 3,
-      "seed": 1,
+      "seed": 9,
       "input": "Two-sample t test",
       "label": "wrong",
       "mistake": "pairedAsTwoSample"
@@ -22456,14 +22456,14 @@
     {
       "skill": "twoSample",
       "level": 3,
-      "seed": 2,
+      "seed": 8,
       "input": "Two-sample t test",
       "label": "correct"
     },
     {
       "skill": "twoSample",
       "level": 3,
-      "seed": 2,
+      "seed": 8,
       "input": "Paired t test",
       "label": "wrong",
       "mistake": "twoSampleAsPaired"
@@ -22471,21 +22471,21 @@
     {
       "skill": "twoSample",
       "level": 3,
-      "seed": 5,
+      "seed": 45,
       "input": "One-proportion z test",
       "label": "correct"
     },
     {
       "skill": "twoSample",
       "level": 3,
-      "seed": 7,
+      "seed": 1752,
       "input": "No",
       "label": "correct"
     },
     {
       "skill": "twoSample",
       "level": 3,
-      "seed": 11,
+      "seed": 18,
       "input": "One-sample t test",
       "label": "correct"
     },
@@ -76017,22 +76017,22 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 2,
-      "input": "Independence fails: the sample is more than 10% of the population",
+      "seed": 13,
+      "input": "Random fails: the data are not a random sample",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 2,
-      "input": "Random fails: the data are not a random sample",
+      "seed": 13,
+      "input": "Independence fails: the sample is more than 10% of the population",
       "label": "wrong",
       "mistake": "conditionMixed"
     },
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 2,
+      "seed": 13,
       "input": "Normal fails: the sample is small and the data strongly skewed",
       "label": "wrong",
       "mistake": "conditionMixed"
@@ -76040,7 +76040,7 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 2,
+      "seed": 13,
       "input": "All the conditions are met",
       "label": "wrong",
       "mistake": "conditionsMissed"
@@ -76294,14 +76294,14 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 69,
+      "seed": 150,
       "input": "All the conditions are met",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 69,
+      "seed": 150,
       "input": "Random fails: the data are not a random sample",
       "label": "wrong",
       "mistake": "conditionMixed"
@@ -76309,7 +76309,7 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 69,
+      "seed": 150,
       "input": "Independence fails: the sample is more than 10% of the population",
       "label": "wrong",
       "mistake": "conditionMixed"
@@ -76317,7 +76317,7 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 69,
+      "seed": 150,
       "input": "Normal fails: the sample is small and the data strongly skewed",
       "label": "wrong",
       "mistake": "conditionMixed"
@@ -76325,14 +76325,14 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 97,
+      "seed": 69,
       "input": "All the conditions are met",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 97,
+      "seed": 69,
       "input": "Random fails: the data are not a random sample",
       "label": "wrong",
       "mistake": "conditionMixed"
@@ -76340,7 +76340,7 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 97,
+      "seed": 69,
       "input": "Independence fails: the sample is more than 10% of the population",
       "label": "wrong",
       "mistake": "conditionMixed"
@@ -76348,7 +76348,7 @@
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 97,
+      "seed": 69,
       "input": "Normal fails: the sample is small and the data strongly skewed",
       "label": "wrong",
       "mistake": "conditionMixed"
@@ -77005,6 +77005,2378 @@
       "input": "0.7338242652910164",
       "label": "wrong",
       "mistake": "dfCellsMinusOne"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 1,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 1,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 1,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 1,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 2,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 2,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 2,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 2,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 3,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 3,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 3,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 3,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 4,
+      "input": "Random fails: the data are not a random sample",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 4,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 4,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 4,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 5,
+      "input": "1.796",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 5,
+      "input": "1.7822875556493538",
+      "label": "wrong",
+      "mistake": "dfIsN"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 5,
+      "input": "1.6448536269515301",
+      "label": "wrong",
+      "mistake": "tStarAsZ"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 6,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 6,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 6,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 6,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 10,
+      "input": "3.012",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 10,
+      "input": "2.976842734370914",
+      "label": "wrong",
+      "mistake": "dfIsN"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 10,
+      "input": "2.575829303548929",
+      "label": "wrong",
+      "mistake": "tStarAsZ"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 11,
+      "input": "1.96",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 11,
+      "input": "1.6448536269515301",
+      "label": "wrong",
+      "mistake": "zStarOneTail"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 13,
+      "input": "1.282",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 13,
+      "input": "0.8416212335729156",
+      "label": "wrong",
+      "mistake": "zStarOneTail"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 16,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 16,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 16,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 16,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 17,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 17,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 17,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 17,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 22,
+      "input": "Random fails: the data are not a random sample",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 22,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 22,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 22,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 50,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 50,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 50,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 50,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 69,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 69,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 69,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 69,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 89,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 89,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 89,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 89,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 91,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 91,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 91,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 1,
+      "seed": 91,
+      "input": "Large counts fails: fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 1,
+      "input": "369",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 1,
+      "input": "368",
+      "label": "wrong",
+      "mistake": "sizeRoundedDown"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 1,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "sizeNotSquared"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 1,
+      "input": "376",
+      "label": "wrong"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 2,
+      "input": "53",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 2,
+      "input": "52",
+      "label": "wrong",
+      "mistake": "sizeRoundedDown"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "sizeNotSquared"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 2,
+      "input": "60",
+      "label": "wrong"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 3,
+      "input": "385",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 3,
+      "input": "384",
+      "label": "wrong",
+      "mistake": "sizeRoundedDown"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 3,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "sizeNotSquared"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 3,
+      "input": "392",
+      "label": "wrong"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 4,
+      "input": "877",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 4,
+      "input": "876",
+      "label": "wrong",
+      "mistake": "sizeRoundedDown"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 4,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "sizeNotSquared"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 4,
+      "input": "884",
+      "label": "wrong"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 5,
+      "input": "Yes: every plausible value is above 0.4",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 5,
+      "input": "No: values of 0.4 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 5,
+      "input": "No: every plausible value is below 0.4",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 10,
+      "input": "No: values of 60 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 10,
+      "input": "Yes: every plausible value is above 60",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 10,
+      "input": "No: every plausible value is below 60",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 11,
+      "input": "It gets wider",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 11,
+      "input": "It gets narrower",
+      "label": "wrong",
+      "mistake": "confidenceNarrows"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 11,
+      "input": "It stays the same width",
+      "label": "wrong",
+      "mistake": "confidenceNarrows"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 25,
+      "input": "Yes: every plausible value is above 50",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 25,
+      "input": "No: values of 50 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 25,
+      "input": "No: every plausible value is below 50",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 26,
+      "input": "No: every plausible value is below 0.6",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 26,
+      "input": "Yes: every plausible value is above 0.6",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 26,
+      "input": "No: values of 0.6 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 30,
+      "input": "Yes: every plausible value is above 50",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 30,
+      "input": "No: values of 50 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 30,
+      "input": "No: every plausible value is below 50",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 31,
+      "input": "No: values of 60 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 31,
+      "input": "Yes: every plausible value is above 60",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 31,
+      "input": "No: every plausible value is below 60",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 33,
+      "input": "No: values of 0.6 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 33,
+      "input": "Yes: every plausible value is above 0.6",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 33,
+      "input": "No: every plausible value is below 0.6",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 41,
+      "input": "It gets wider",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 41,
+      "input": "It gets narrower",
+      "label": "wrong",
+      "mistake": "confidenceNarrows"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 41,
+      "input": "It stays the same width",
+      "label": "wrong",
+      "mistake": "confidenceNarrows"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 48,
+      "input": "It is divided by 2",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 48,
+      "input": "It is divided by 4",
+      "label": "wrong",
+      "mistake": "marginByN"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 48,
+      "input": "It is multiplied by 2",
+      "label": "wrong",
+      "mistake": "marginGrows"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 88,
+      "input": "No: values of 0.5 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 88,
+      "input": "Yes: every plausible value is above 0.5",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 88,
+      "input": "No: every plausible value is below 0.5",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 143,
+      "input": "It is divided by 3",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 143,
+      "input": "It is divided by 9",
+      "label": "wrong",
+      "mistake": "marginByN"
+    },
+    {
+      "skill": "ci",
+      "level": 2,
+      "seed": 143,
+      "input": "It is multiplied by 3",
+      "label": "wrong",
+      "mistake": "marginGrows"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 1,
+      "input": "No: every plausible value is below 0",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 1,
+      "input": "Yes: every plausible value is above 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 1,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 2,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 2,
+      "input": "Yes: every plausible value is above 0",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 2,
+      "input": "No: every plausible value is below 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 3,
+      "input": "Yes: every plausible value is above 0",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 3,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 3,
+      "input": "No: every plausible value is below 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 5,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 5,
+      "input": "Yes: every plausible value is above 0",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 5,
+      "input": "No: every plausible value is below 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 10,
+      "input": "No: every plausible value is below 0",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 10,
+      "input": "Yes: every plausible value is above 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 10,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 11,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 11,
+      "input": "Yes: every plausible value is above 0",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 11,
+      "input": "No: every plausible value is below 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 16,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 16,
+      "input": "Yes: every plausible value is above 0",
+      "label": "wrong",
+      "mistake": "ciCentreOnly"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 16,
+      "input": "No: every plausible value is below 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 25,
+      "input": "No: every plausible value is below 0",
+      "label": "correct"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 25,
+      "input": "Yes: every plausible value is above 0",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "ci",
+      "level": 3,
+      "seed": 25,
+      "input": "No: values of 0 or less are plausible too",
+      "label": "wrong",
+      "mistake": "ciClaimMisread"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 1,
+      "input": "A parameter: it describes the whole population",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 1,
+      "input": "A statistic: it describes a sample",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 2,
+      "input": "A: centred at 20, standard deviation 8",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 2,
+      "input": "B: centred at 24, standard deviation 2",
+      "label": "wrong",
+      "mistake": "lowSpreadAsUnbiased"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 3,
+      "input": "A statistic: it describes a sample",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 3,
+      "input": "A parameter: it describes the whole population",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 4,
+      "input": "A: centred at 20, standard deviation 8",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 4,
+      "input": "B: centred at 17, standard deviation 1",
+      "label": "wrong",
+      "mistake": "lowSpreadAsUnbiased"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 5,
+      "input": "Yes: every count is at least 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 5,
+      "input": "No: the sample size is below 30",
+      "label": "wrong",
+      "mistake": "normalNeedsThirty"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 6,
+      "input": "A parameter: it describes the whole population",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 6,
+      "input": "A statistic: it describes a sample",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 10,
+      "input": "No: a count is below 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 10,
+      "input": "Yes: every count is at least 10",
+      "label": "wrong",
+      "mistake": "conditionsOneSide"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 11,
+      "input": "0.035",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 11,
+      "input": "0.0012",
+      "label": "wrong",
+      "mistake": "phatSdNoRoot"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 11,
+      "input": "6.928203230275509",
+      "label": "wrong",
+      "mistake": "phatCountSd"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 16,
+      "input": "A parameter: it describes the whole population",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 16,
+      "input": "A statistic: it describes a sample",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 22,
+      "input": "A statistic: it describes a sample",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 22,
+      "input": "A parameter: it describes the whole population",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 25,
+      "input": "No: a count is below 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 25,
+      "input": "Yes: every count is at least 10",
+      "label": "wrong",
+      "mistake": "conditionsOneSide"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 26,
+      "input": "0.069",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 26,
+      "input": "3/625",
+      "label": "wrong",
+      "mistake": "phatSdNoRoot"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 26,
+      "input": "3.4641016151377544",
+      "label": "wrong",
+      "mistake": "phatCountSd"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 34,
+      "input": "Yes: every count is at least 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 34,
+      "input": "No: the sample size is below 30",
+      "label": "wrong",
+      "mistake": "normalNeedsThirty"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 44,
+      "input": "A statistic: it describes a sample",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 44,
+      "input": "A parameter: it describes the whole population",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 47,
+      "input": "A statistic: it describes a sample",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 47,
+      "input": "A parameter: it describes the whole population",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 89,
+      "input": "A parameter: it describes the whole population",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 1,
+      "seed": 89,
+      "input": "A statistic: it describes a sample",
+      "label": "wrong",
+      "mistake": "statisticParameterSwapped"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 1,
+      "input": "0.006",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 1,
+      "input": "0.4502617751698871",
+      "label": "wrong",
+      "mistake": "phatForgotN"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 1,
+      "input": "0.9937903346742238",
+      "label": "wrong",
+      "mistake": "normalWrongTail"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 2,
+      "input": "0.994",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 2,
+      "input": "0.5987063256829237",
+      "label": "wrong",
+      "mistake": "phatForgotN"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 2,
+      "input": "0.006209665325776159",
+      "label": "wrong",
+      "mistake": "normalWrongTail"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 5,
+      "input": "Yes: every count is at least 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 10,
+      "input": "Yes: every count is at least 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 11,
+      "input": "0.068",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 11,
+      "input": "0.09573875405649049",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 11,
+      "input": "0.009128709291752789",
+      "label": "wrong",
+      "mistake": "diffVarSubtracted"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 13,
+      "input": "0.056",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 13,
+      "input": "0.07848562018666744",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 13,
+      "input": "0.032145502536643174",
+      "label": "wrong",
+      "mistake": "diffVarSubtracted"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 31,
+      "input": "No: a count is below 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 31,
+      "input": "Yes: every count is at least 10",
+      "label": "wrong",
+      "mistake": "normalCountMissed"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 61,
+      "input": "No: a count is below 10",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 61,
+      "input": "Yes: every count is at least 10",
+      "label": "wrong",
+      "mistake": "normalCountMissed"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 67,
+      "input": "0.031",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 142,
+      "input": "0.031",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 150,
+      "input": "0.038",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 150,
+      "input": "0.051336150082549034",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 178,
+      "input": "0.038",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 2,
+      "seed": 178,
+      "input": "0.051336150082549034",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 1,
+      "input": "0.977",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 1,
+      "input": "0.9234362744901654",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 1,
+      "input": "0.02275013194817921",
+      "label": "wrong",
+      "mistake": "normalWrongTail"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 2,
+      "input": "2.5",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 2,
+      "input": "7/2",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 2,
+      "input": "1.3228756555322954",
+      "label": "wrong",
+      "mistake": "diffVarSubtracted"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 3,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 3,
+      "input": "14/5",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 3,
+      "input": "1.0583005244258363",
+      "label": "wrong",
+      "mistake": "diffVarSubtracted"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 6,
+      "input": "0.691",
+      "label": "correct"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 6,
+      "input": "0.6395075690491647",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "limitTheorems",
+      "level": 3,
+      "seed": 6,
+      "input": "0.30853753872598677",
+      "label": "wrong",
+      "mistake": "normalWrongTail"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 1,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 1,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 1,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 1,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 2,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 2,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 2,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 2,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 3,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 3,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 3,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 3,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 4,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 4,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 4,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 4,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 5,
+      "input": "0.15",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 5,
+      "input": "0.21183399955084303",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 5,
+      "input": "0.05819154456942177",
+      "label": "wrong",
+      "mistake": "marginIsSe"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 6,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 6,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 6,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 6,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 10,
+      "input": "0.081",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 10,
+      "input": "0.1150882644062906",
+      "label": "wrong",
+      "mistake": "diffSdAdded"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 10,
+      "input": "0.04947095107232122",
+      "label": "wrong",
+      "mistake": "marginIsSe"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 11,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ ≠ 0",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 11,
+      "input": "H₀: p₁ − p₂ ≠ 0, H₁: p₁ − p₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 11,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ > 0",
+      "label": "wrong",
+      "mistake": "oneSidedForTwo"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 11,
+      "input": "H₀: p̂₁ − p̂₂ = 0, H₁: p̂₁ − p̂₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 13,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ < 0",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 13,
+      "input": "H₀: p₁ − p₂ < 0, H₁: p₁ − p₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 13,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 13,
+      "input": "H₀: p̂₁ − p̂₂ = 0, H₁: p̂₁ − p̂₂ < 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 16,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 16,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 16,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 16,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 17,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 17,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 17,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 17,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 20,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ ≠ 0",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 20,
+      "input": "H₀: p₁ − p₂ ≠ 0, H₁: p₁ − p₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 20,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ > 0",
+      "label": "wrong",
+      "mistake": "oneSidedForTwo"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 20,
+      "input": "H₀: p̂₁ − p̂₂ = 0, H₁: p̂₁ − p̂₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 22,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 22,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 22,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 22,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 44,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 44,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 44,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 44,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 47,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 47,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 47,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 47,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 48,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ < 0",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 48,
+      "input": "H₀: p₁ − p₂ < 0, H₁: p₁ − p₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 48,
+      "input": "H₀: p₁ − p₂ = 0, H₁: p₁ − p₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 48,
+      "input": "H₀: p̂₁ − p̂₂ = 0, H₁: p̂₁ − p̂₂ < 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 50,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 50,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 50,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 50,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 57,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 57,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 57,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 57,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 69,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 69,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 69,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 69,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 71,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 71,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 71,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 71,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 89,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 89,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 89,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 89,
+      "input": "Large counts fails: a group has fewer than 10 successes or failures",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 91,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 91,
+      "input": "Random fails: the groups are not random samples or randomly assigned",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 91,
+      "input": "Independence fails: a sample is more than 10% of its population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 2,
+      "seed": 91,
+      "input": "Normal fails: a group is small and its data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 1,
+      "input": "-2.62",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 1,
+      "input": "-2.7343437080986535",
+      "label": "wrong",
+      "mistake": "unpooledInTest"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 1,
+      "input": "4.38",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 2,
+      "input": "-2.69",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 2,
+      "input": "-2.8613701320242098",
+      "label": "wrong",
+      "mistake": "unpooledInTest"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 2,
+      "input": "4.3100000000000005",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 5,
+      "input": "Fail to reject H₀: there is not convincing evidence that the new medicine has a higher recovery rate",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 5,
+      "input": "Reject H₀: there is convincing evidence that the new medicine has a higher recovery rate",
+      "label": "wrong",
+      "mistake": "decisionFlipped"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 5,
+      "input": "Fail to reject H₀: there is convincing evidence that the two medicines have the same recovery rate",
+      "label": "wrong",
+      "mistake": "nullAccepted"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 10,
+      "input": "Fail to reject H₀: there is not convincing evidence that the new medicine has a higher recovery rate",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 10,
+      "input": "Reject H₀: there is convincing evidence that the new medicine has a higher recovery rate",
+      "label": "wrong",
+      "mistake": "decisionFlipped"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 10,
+      "input": "Fail to reject H₀: there is convincing evidence that the two medicines have the same recovery rate",
+      "label": "wrong",
+      "mistake": "nullAccepted"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 11,
+      "input": "0.043",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 11,
+      "input": "0.02169169376764676",
+      "label": "wrong",
+      "mistake": "zTailNotDoubled"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 13,
+      "input": "0.209",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 13,
+      "input": "0.41794017574320275",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 20,
+      "input": "0.023",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 20,
+      "input": "0.04550026389635837",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 41,
+      "input": "0.038",
+      "label": "correct"
+    },
+    {
+      "skill": "twoSample",
+      "level": 3,
+      "seed": 41,
+      "input": "0.019226172227517328",
+      "label": "wrong",
+      "mistake": "zTailNotDoubled"
     }
   ]
 }
