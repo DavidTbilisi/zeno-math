@@ -5736,38 +5736,6 @@
     },
     {
       "skill": "decimals",
-      "level": 1,
-      "seed": 7,
-      "input": "150.32",
-      "label": "correct"
-    },
-    {
-      "skill": "decimals",
-      "level": 1,
-      "seed": 7,
-      "input": "150,32",
-      "label": "correct",
-      "note": "decimal comma"
-    },
-    {
-      "skill": "decimals",
-      "level": 1,
-      "seed": 7,
-      "input": "62.39",
-      "label": "wrong",
-      "note": "last digits lined up",
-      "mistake": "alignedRight"
-    },
-    {
-      "skill": "decimals",
-      "level": 1,
-      "seed": 7,
-      "input": "150.3",
-      "label": "wrong",
-      "note": "the exact sum was asked"
-    },
-    {
-      "skill": "decimals",
       "level": 2,
       "seed": 7,
       "input": "0.5219",
@@ -5797,29 +5765,6 @@
       "input": "0.05219",
       "label": "wrong",
       "note": "a place too far"
-    },
-    {
-      "skill": "decimals",
-      "level": 3,
-      "seed": 7,
-      "input": "13.985",
-      "label": "correct"
-    },
-    {
-      "skill": "decimals",
-      "level": 3,
-      "seed": 7,
-      "input": "13985000",
-      "label": "wrong",
-      "note": "multiplied instead of divided",
-      "mistake": "pointWrongWay"
-    },
-    {
-      "skill": "decimals",
-      "level": 3,
-      "seed": 7,
-      "input": "1.3985",
-      "label": "wrong"
     },
     {
       "skill": "ratio",
@@ -28838,14 +28783,14 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 1,
+      "seed": 4135,
       "input": "3.59",
       "label": "correct"
     },
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 1,
+      "seed": 4135,
       "input": "2159/1000",
       "label": "wrong",
       "mistake": "regroupSideBySide"
@@ -28853,7 +28798,7 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 1,
+      "seed": 4135,
       "input": "10.59",
       "label": "wrong"
     },
@@ -28882,29 +28827,14 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 4,
-      "input": "three hundred and ninety-seven thousand two hundred",
-      "label": "correct"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 4,
-      "input": "317200",
-      "label": "wrong",
-      "mistake": "formsComparedByLook"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 6,
+      "seed": 892,
       "input": "0.06",
       "label": "correct"
     },
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 6,
+      "seed": 892,
       "input": "3/5",
       "label": "wrong",
       "mistake": "zeroPlaceSkipped"
@@ -28912,7 +28842,7 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 6,
+      "seed": 892,
       "input": "7.06",
       "label": "wrong"
     },
@@ -28941,36 +28871,14 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 10,
-      "input": "12.078",
-      "label": "correct"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 10,
-      "input": "639/50",
-      "label": "wrong",
-      "mistake": "zeroPlaceSkipped"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 10,
-      "input": "19.078",
-      "label": "wrong"
-    },
-    {
-      "skill": "placeValue",
-      "level": 3,
-      "seed": 11,
+      "seed": 1852,
       "input": "22.06",
       "label": "correct"
     },
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 11,
+      "seed": 1852,
       "input": "113/5",
       "label": "wrong",
       "mistake": "zeroPlaceSkipped"
@@ -28978,7 +28886,7 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 11,
+      "seed": 1852,
       "input": "29.06",
       "label": "wrong"
     },
@@ -28999,14 +28907,14 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 13,
+      "seed": 27,
       "input": "0.01",
       "label": "correct"
     },
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 13,
+      "seed": 27,
       "input": "1/10",
       "label": "wrong",
       "mistake": "zeroPlaceSkipped"
@@ -29014,7 +28922,7 @@
     {
       "skill": "placeValue",
       "level": 3,
-      "seed": 13,
+      "seed": 27,
       "input": "7.01",
       "label": "wrong"
     },
@@ -31934,6 +31842,812 @@
       "input": "1/2",
       "label": "wrong",
       "mistake": "fractionOfLeftOut"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 1,
+      "input": "0.5",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 1,
+      "input": "7.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 2,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 2,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 3,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 3,
+      "input": "=",
+      "label": "wrong",
+      "mistake": "sameDigitsSameValue"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 4,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 4,
+      "input": ">",
+      "label": "wrong",
+      "mistake": "longerDecimal"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 6,
+      "input": "3/5",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 6,
+      "input": "4/5",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 10,
+      "input": "0.77",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 10,
+      "input": "7/5",
+      "label": "wrong",
+      "mistake": "stepAsTenth"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 10,
+      "input": "7.77",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 14,
+      "input": "0.36",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 14,
+      "input": "18/5",
+      "label": "wrong",
+      "mistake": "gridAsTenths"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 14,
+      "input": "7.36",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 16,
+      "input": "7/10",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 16,
+      "input": "8/10",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 17,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 17,
+      "input": "=",
+      "label": "wrong",
+      "mistake": "sameDigitsSameValue"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 18,
+      "input": "21/100",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 18,
+      "input": "22/100",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 21,
+      "input": "0.39",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 21,
+      "input": "39/10",
+      "label": "wrong",
+      "mistake": "gridAsTenths"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 21,
+      "input": "7.39",
+      "label": "wrong"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 30,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 30,
+      "input": "=",
+      "label": "wrong",
+      "mistake": "sameDigitsSameValue"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 31,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 31,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 32,
+      "input": "21/25",
+      "label": "correct"
+    },
+    {
+      "skill": "convert",
+      "level": 1,
+      "seed": 32,
+      "input": "22/25",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 1,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 1,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 2,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 4,
+      "input": "12.3",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 4,
+      "input": "19.3",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 5,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 5,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 6,
+      "input": "0.81",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 6,
+      "input": "27/50",
+      "label": "wrong",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 6,
+      "input": "7.8100000000000005",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 10,
+      "input": "0.4",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 10,
+      "input": "7.4",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 11,
+      "input": "0.14",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 11,
+      "input": "7.14",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 13,
+      "input": "0.26",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 13,
+      "input": "17/100",
+      "label": "wrong",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 13,
+      "input": "7.26",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 30,
+      "input": "8.3",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 30,
+      "input": "41/5",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 30,
+      "input": "15.3",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 31,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 31,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 36,
+      "input": "8.9",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 36,
+      "input": "44/5",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 36,
+      "input": "15.9",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 41,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 41,
+      "input": "Gio",
+      "label": "wrong",
+      "mistake": "longerDecimal"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 43,
+      "input": "19.88",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 43,
+      "input": "26.88",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 44,
+      "input": "39.57",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 44,
+      "input": "1779/100",
+      "label": "wrong",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 44,
+      "input": "46.57",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 48,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 48,
+      "input": "Nino",
+      "label": "wrong",
+      "mistake": "longerDecimal"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 89,
+      "input": "50.08",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 89,
+      "input": "2551/100",
+      "label": "wrong",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 89,
+      "input": "57.08",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 104,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 104,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 104,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 109,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 109,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "truncated"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 109,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 7,
+      "input": "24.795",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 7,
+      "input": "31.795",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 8,
+      "input": "23.447",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 8,
+      "input": "12359/1000",
+      "label": "wrong",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 8,
+      "input": "30.447",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 9,
+      "input": "1.153",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 9,
+      "input": "8.153",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 15,
+      "input": "0.022",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 15,
+      "input": "7.022",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 19,
+      "input": "1.087",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 19,
+      "input": "8.087",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 23,
+      "input": "4.502",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 23,
+      "input": "11.501999999999999",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 46,
+      "input": "19.329",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 46,
+      "input": "18483/1000",
+      "label": "wrong",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 46,
+      "input": "26.329",
+      "label": "wrong"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 51,
+      "input": "11.283",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 51,
+      "input": "309/125",
+      "label": "wrong",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 51,
+      "input": "18.283",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 4,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 4,
+      "input": "1/10",
+      "label": "wrong",
+      "mistake": "placeRatioFlipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 36,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 36,
+      "input": "1/10",
+      "label": "wrong",
+      "mistake": "placeRatioFlipped"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 7,
+      "input": "99.82",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 7,
+      "input": "99,82",
+      "label": "correct",
+      "note": "decimal comma"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 7,
+      "input": "2867/50",
+      "label": "wrong",
+      "note": "last digits lined up",
+      "mistake": "alignedRight"
+    },
+    {
+      "skill": "decimals",
+      "level": 1,
+      "seed": 7,
+      "input": "99.8",
+      "label": "wrong",
+      "note": "the exact sum was asked"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 44,
+      "input": "12.732",
+      "label": "correct"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 44,
+      "input": "12732000",
+      "label": "wrong",
+      "note": "multiplied instead of divided",
+      "mistake": "pointWrongWay"
+    },
+    {
+      "skill": "decimals",
+      "level": 3,
+      "seed": 44,
+      "input": "1.2731999999999999",
+      "label": "wrong"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 20,
+      "input": "four hundred and eighty-three thousand six hundred",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 20,
+      "input": "443600",
+      "label": "wrong",
+      "mistake": "formsComparedByLook"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 18,
+      "input": "14.052",
+      "label": "correct"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 18,
+      "input": "363/25",
+      "label": "wrong",
+      "mistake": "zeroPlaceSkipped"
+    },
+    {
+      "skill": "placeValue",
+      "level": 3,
+      "seed": 18,
+      "input": "21.052",
+      "label": "wrong"
     }
   ]
 }
