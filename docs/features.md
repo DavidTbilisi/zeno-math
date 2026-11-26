@@ -946,14 +946,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       left out are named
     - Multiplication: two digits by one, then by two, then three digits by two, on the area model. The places split
       first (36 × 4 = 30 × 4 + ☐), then the four partial products of two two-digit numbers and those of a three- or
-      four-digit number by one digit, one missing; then stories of rows of seats and train carriages. The tens
-      multiplied as ones, a partial product's zeros left off and only tens by tens and ones by ones are named
+      four-digit number by one digit, one missing, on a drawn area model with that cell asked, and the best estimate
+      of a product (each number rounded to its first digit); then stories of rows of seats and train carriages, the
+      equation of a story in two steps and the smaller amount of a comparison (a tower 5 times as tall as a tree)
+      (#700). The tens multiplied as ones, a partial product's zeros left off, only tens by tens and ones by ones, the
+      numbers cut down for an estimate, a zero too many or too few and what is given away taken from each pack are
+      named
     - Division: the same tables turned round, then a missing number (☐ ÷ 6 = 7), then remainders, quotients past the
       tables as long division (84 ÷ 6) and multiples of ten (2400 ÷ 60). The quotient given for the remainder is named.
       Strawberries shared onto plates (drawn) and teams made, the multiplication that answers a division (4 × ☐ =
       20, so 20 ÷ 4 = ☐) and the facts of one family come first; then which equation a sharing story makes and packs
-      of pens; then rolls baked on trays and packed in bags, two steps. The divisor taken away once, the numbers
-      multiplied, the smaller divided by the larger and the first step given as the answer are named
+      of pens; then rolls baked on trays and packed in bags, two steps, three and four digits divided by one with a
+      remainder, a length found in parts on an area model (290 ÷ 5 = 50 + ☐) and a quotient estimated from a nearby
+      number the divisor goes into (#700). The divisor taken away once, the numbers multiplied, the smaller divided by
+      the larger, the first step given as the answer, a part's area put for its length and an estimate a zero out are
+      named
     - Squares, cubes and roots (in "Factors and primes"): the squares to 10² and their roots, a square drawn as its
       array; then to 20² and the first cubes; then cube roots, multiples of ten, tenths (0.3² = 0.09) and fractions.
       Doubling for squaring, halving for a root and a tenth squared left in tenths are named

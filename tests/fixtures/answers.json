@@ -30132,14 +30132,14 @@
       "skill": "times",
       "level": 2,
       "seed": 1,
-      "input": "900",
+      "input": "630",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 2,
       "seed": 1,
-      "input": "9",
+      "input": "63",
       "label": "wrong",
       "mistake": "partZerosDropped"
     },
@@ -30147,51 +30147,52 @@
       "skill": "times",
       "level": 2,
       "seed": 1,
-      "input": "907",
+      "input": "637",
       "label": "wrong"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 2,
-      "input": "300",
+      "seed": 4,
+      "input": "120",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 2,
-      "input": "3",
+      "seed": 4,
+      "input": "80",
       "label": "wrong",
-      "mistake": "partZerosDropped"
-    },
-    {
-      "skill": "times",
-      "level": 2,
-      "seed": 2,
-      "input": "307",
-      "label": "wrong"
+      "mistake": "estimateTruncated"
     },
     {
       "skill": "times",
       "level": 2,
       "seed": 4,
       "input": "1200",
+      "label": "wrong",
+      "mistake": "estimateZerosOff"
+    },
+    {
+      "skill": "times",
+      "level": 2,
+      "seed": 5,
+      "input": "14000",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 4,
-      "input": "12",
+      "seed": 5,
+      "input": "14",
       "label": "wrong",
       "mistake": "partZerosDropped"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 4,
-      "input": "1207",
+      "seed": 5,
+      "input": "14007",
       "label": "wrong"
     },
     {
@@ -30220,14 +30221,14 @@
       "skill": "times",
       "level": 2,
       "seed": 10,
-      "input": "450",
+      "input": "1600",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 2,
       "seed": 10,
-      "input": "45",
+      "input": "16",
       "label": "wrong",
       "mistake": "partZerosDropped"
     },
@@ -30235,42 +30236,64 @@
       "skill": "times",
       "level": 2,
       "seed": 10,
-      "input": "457",
+      "input": "1607",
       "label": "wrong"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 17,
-      "input": "2000",
+      "seed": 11,
+      "input": "490",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 17,
-      "input": "2",
+      "seed": 11,
+      "input": "49",
       "label": "wrong",
       "mistake": "partZerosDropped"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 17,
-      "input": "2007",
+      "seed": 11,
+      "input": "497",
       "label": "wrong"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 21,
-      "input": "120",
+      "seed": 13,
+      "input": "300",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 2,
-      "seed": 21,
+      "seed": 13,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "partZerosDropped"
+    },
+    {
+      "skill": "times",
+      "level": 2,
+      "seed": 13,
+      "input": "307",
+      "label": "wrong"
+    },
+    {
+      "skill": "times",
+      "level": 2,
+      "seed": 22,
+      "input": "1200",
+      "label": "correct"
+    },
+    {
+      "skill": "times",
+      "level": 2,
+      "seed": 22,
       "input": "12",
       "label": "wrong",
       "mistake": "partZerosDropped"
@@ -30278,66 +30301,111 @@
     {
       "skill": "times",
       "level": 2,
-      "seed": 21,
-      "input": "127",
+      "seed": 22,
+      "input": "1207",
       "label": "wrong"
     },
     {
       "skill": "times",
       "level": 3,
       "seed": 1,
-      "input": "5974",
+      "input": "3 × 9 − 8 = □",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 3,
       "seed": 1,
-      "input": "5981",
-      "label": "wrong"
-    },
-    {
-      "skill": "times",
-      "level": 3,
-      "seed": 7,
-      "input": "665",
-      "label": "correct"
-    },
-    {
-      "skill": "times",
-      "level": 3,
-      "seed": 7,
-      "input": "345",
+      "input": "3 × (9 − 8) = □",
       "label": "wrong",
-      "mistake": "crossProductsMissed"
+      "mistake": "takenFromEachGroup"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 4,
+      "input": "19",
+      "label": "correct"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 4,
+      "input": "475",
+      "label": "wrong",
+      "mistake": "multipliedForDivide"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 4,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "takenNotShared"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 4,
+      "input": "26",
+      "label": "wrong"
     },
     {
       "skill": "times",
       "level": 3,
       "seed": 7,
+      "input": "15132",
+      "label": "correct"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 7,
+      "input": "15139",
+      "label": "wrong"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 12,
       "input": "672",
-      "label": "wrong"
-    },
-    {
-      "skill": "times",
-      "level": 3,
-      "seed": 9,
-      "input": "1504",
       "label": "correct"
     },
     {
       "skill": "times",
       "level": 3,
-      "seed": 9,
-      "input": "1214",
+      "seed": 12,
+      "input": "412",
       "label": "wrong",
       "mistake": "crossProductsMissed"
     },
     {
       "skill": "times",
       "level": 3,
-      "seed": 9,
-      "input": "1511",
+      "seed": 12,
+      "input": "679",
+      "label": "wrong"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 18,
+      "input": "450",
+      "label": "correct"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 18,
+      "input": "240",
+      "label": "wrong",
+      "mistake": "crossProductsMissed"
+    },
+    {
+      "skill": "times",
+      "level": 3,
+      "seed": 18,
+      "input": "457",
       "label": "wrong"
     },
     {
@@ -30550,27 +30618,94 @@
       "skill": "divide",
       "level": 3,
       "seed": 1,
-      "input": "60",
+      "input": "1965",
       "label": "correct"
     },
     {
       "skill": "divide",
       "level": 3,
       "seed": 1,
-      "input": "67",
+      "input": "1972",
+      "label": "wrong"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 2,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 2,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "areaForLength"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 2,
+      "input": "15",
       "label": "wrong"
     },
     {
       "skill": "divide",
       "level": 3,
       "seed": 4,
-      "input": "10",
+      "input": "20",
       "label": "correct"
     },
     {
       "skill": "divide",
       "level": 3,
       "seed": 4,
+      "input": "200",
+      "label": "wrong",
+      "mistake": "quotientZerosOff"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 4,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "quotientZerosOff"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 5,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 5,
+      "input": "132",
+      "label": "wrong",
+      "mistake": "quotientForRemainder"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 6,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "divide",
+      "level": 3,
+      "seed": 6,
       "input": "30",
       "label": "wrong",
       "mistake": "secondStepMissed"
@@ -30578,30 +30713,22 @@
     {
       "skill": "divide",
       "level": 3,
-      "seed": 4,
+      "seed": 6,
       "input": "17",
       "label": "wrong"
     },
     {
       "skill": "divide",
       "level": 3,
-      "seed": 7,
-      "input": "2",
+      "seed": 8,
+      "input": "16",
       "label": "correct"
     },
     {
       "skill": "divide",
       "level": 3,
-      "seed": 7,
-      "input": "11",
-      "label": "wrong",
-      "mistake": "quotientForRemainder"
-    },
-    {
-      "skill": "divide",
-      "level": 3,
-      "seed": 7,
-      "input": "9",
+      "seed": 8,
+      "input": "23",
       "label": "wrong"
     }
   ]

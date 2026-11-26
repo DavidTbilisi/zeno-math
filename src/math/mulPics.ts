@@ -69,3 +69,25 @@ export function sharePic(n: number, b: number): Exercise["pic"] {
   for (let k = 0; k < b; k++) out.push(`<ellipse cx="${34 + k * 64}" cy="${y}" rx="28" ry="13" fill="#f8f9fa" stroke="#868e96" stroke-width="2"/>`);
   return pic(out.join(""), Math.max(10 * P, b * 64), y + 15);
 }
+
+/**
+ * An area model: a rectangle cut into cells, the lengths of its rows on the left and of its columns on top, each cell
+ * with its area written in it. A label or a cell given as "?" is the one asked, drawn orange.
+ */
+export function areaPic(side: string[], top: string[], cells: string[][]): Exercise["pic"] {
+  const [x0, y0, cw, rh] = [54, 28, 96, 52];
+  const asked = (s: string) => s === "?";
+  const label = (x: number, y: number, s: string, anchor = "middle") =>
+    `<text x="${x}" y="${y}" font-size="15" text-anchor="${anchor}" fill="${asked(s) ? "#e8590c" : INK}"${asked(s) ? ' font-weight="700"' : ""}>${s}</text>`;
+  const out: string[] = [];
+  top.forEach((t, j) => out.push(label(x0 + j * cw + cw / 2, y0 - 10, t)));
+  side.forEach((s, i) => out.push(label(x0 - 10, y0 + i * rh + rh / 2 + 5, s, "end")));
+  cells.forEach((row, i) =>
+    row.forEach((c, j) => {
+      const fill = asked(c) ? "#fff4e6" : ["#a5d8ff", "#b2f2bb", "#ffec99", "#eebefa"][j % 4];
+      out.push(`<rect x="${x0 + j * cw}" y="${y0 + i * rh}" width="${cw}" height="${rh}" fill="${fill}" stroke="${INK}" stroke-width="1.5"/>`);
+      out.push(label(x0 + j * cw + cw / 2, y0 + i * rh + rh / 2 + 5, c));
+    }),
+  );
+  return pic(out.join(""), x0 + top.length * cw + 4, y0 + side.length * rh + 4);
+}

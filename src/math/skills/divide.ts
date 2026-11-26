@@ -2,10 +2,11 @@
 // number, then remainders, quotients past the tables (84 ÷ 6, as long division) and multiples of ten (2400 ÷ 60).
 // Division as sharing out and as making groups, drawn as dots and plates; the multiplication that answers a division
 // (4 × □ = 20, so 20 ÷ 4 = □) and the facts of one family; which equation a sharing story makes and a story of packs;
-// then a story in two steps (trays of rolls packed in bags).
+// then a story in two steps (trays of rolls packed in bags), three and four digits divided by one with a remainder,
+// division on an area model (a length found in parts) and a quotient estimated from a number the divisor goes into.
 import { fill } from "../chart";
 import { pickPart } from "../mulDivKit";
-import { sharePic } from "../mulPics";
+import { areaPic, sharePic } from "../mulPics";
 import { num } from "../practiceKit";
 import type { Gen, Part, Trap } from "../practiceTypes";
 
@@ -54,7 +55,7 @@ const gen: Gen = (r, L, w) => {
     }
     return fact(r.pick([2, 3, 4, 5, 10]), r.int(2, 10));
   }
-  const kind = r.int(0, L === 2 ? 4 : 3);
+  const kind = r.int(0, L === 2 ? 4 : 6);
   if (L === 2) {
     if (kind === 3) {
       // Which equation a sharing story makes.
@@ -94,6 +95,46 @@ const gen: Gen = (r, L, w) => {
       traps: [{ id: "secondStepMissed", a: num(n), vars: { x: n, first: `${a} × ${b} = ${n}`, second: `${n} ÷ ${c} = ${v}`, v } }],
       steps: [`${a} \\times ${b} = ${n}`, `${n} \\div ${c} = ${v}`],
     });
+  }
+  if (kind === 4) {
+    // Three or four digits by one digit, with a remainder: the quotient, or what is left over.
+    const b = r.int(2, 9);
+    const k = r.next() < 0.5 ? r.int(21, 199) : r.int(201, 1999);
+    const rem = r.int(1, b - 1);
+    const a = b * k + rem;
+    const bracket = { kind: "model" as const, spec: { type: "division", style: "bracket", a, b, decimals: 0, step: 999 } };
+    if (r.next() < 0.5) return out("", k, { prompt: fill(w.written.fits, { a, b }), solution: bracket });
+    return out("", rem, { prompt: fill(w.basics.remainder, { a, b }), traps: [{ id: "quotientForRemainder", a: num(k), vars: { x: k, b, m: b * k, a, v: rem } }], solution: bracket });
+  }
+  if (kind === 5) {
+    // Division on an area model: the width b, the area a, the length found in parts. The part's area put for its
+    // length is the slip.
+    const b = r.int(3, 9);
+    const [h, rest] = r.next() < 0.5 ? [10 * r.int(1, 9), r.int(1, 9)] : [100 * r.int(1, 9), 10 * r.int(1, 9) + r.int(1, 9)];
+    const a = b * (h + rest);
+    return {
+      ...out(`${a} \\div ${b} = ${h} + \\square`, rest, {
+        prompt: w.basics.missing,
+        traps: [{ id: "areaForLength", a: num(b * rest), vars: { x: b * rest, b, v: rest } }],
+        steps: [`${b} \\times ${h} = ${b * h}`, `${a} - ${b * h} = ${b * rest}`, `${b * rest} \\div ${b} = ${rest}`, `${a} \\div ${b} = ${h} + ${rest} = ${h + rest}`],
+      }),
+      pic: areaPic([String(b)], [String(h), "?"], [[String(b * h), String(b * rest)]]),
+    };
+  }
+  if (kind === 6) {
+    // An estimate of a quotient: a rounded to a nearby number b goes into exactly (2384 ÷ 6 ≈ 2400 ÷ 6). A zero too
+    // many or too few is the slip.
+    const b = r.int(3, 9);
+    const e = r.next() < 0.5 ? 10 : 100;
+    const k = r.int(2, 9);
+    const c = b * k * e;
+    const a = c + r.int(1, Math.floor(e / 3)) * (r.next() < 0.5 ? 1 : -1);
+    const v = k * e;
+    const vars = { c, b, v };
+    return pickPart(r, fill(W.estimateQuotient, { a, b }), String(v), [
+      { tex: String(v * 10), id: "quotientZerosOff", vars },
+      { tex: String(v / 10), id: "quotientZerosOff", vars },
+    ], [String(v + e)], { steps: [`${a} \\approx ${c}`, `${c} \\div ${b} = ${v}`] });
   }
   if (kind === 1) {
     const [b, k] = [r.int(3, 9), r.int(11, 29)];
