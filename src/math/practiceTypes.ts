@@ -347,6 +347,15 @@ export type PracticeWords = {
     words: Record<"yes" | "no" | "odd" | "even", string>;
   };
   /**
+   * Multiplication and division (tables, times, divide): the prompts over a picture of groups, an array or jumps, the
+   * stories at each level, the multiplication that answers a division, a fact family and the equation of a story.
+   */
+  mulDiv: {
+    groupsTotal: string; whichTimes: string; otherFact: string;
+    bags: string; eggs: string; garden: string; pencils: string; timesAsTall: string; cinema: string; train: string;
+    share: string; teams: string; related: string; family: string; stickers: string; packs: string; baker: string;
+  };
+  /**
    * Written sums and long division (columnSums, longDivide): the prompts for a digit missing from a written sum, how
    * many times a number goes into another, a quotient as a decimal or a mixed number, and the stories in which the
    * remainder decides the answer.

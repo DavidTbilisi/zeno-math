@@ -45,7 +45,8 @@ test("sums, differences, products and quotients are what the question's own numb
         worked++;
         assert.equal(Number(ex.plain), v, `${skill} ${level} #${seed}: ${ex.q}`);
       }
-  assert.ok(worked > 800, `${worked} questions read`);
+  // Pictures, stories and properties take some draws (#697, #699), so fewer questions are plain sums.
+  assert.ok(worked > 400, `${worked} questions read`);
   // A missing number makes the equation true when it is put in the box.
   for (const skill of ["addSubtract", "tables", "divide", "placeValue"] as const)
     for (const level of LEVELS)

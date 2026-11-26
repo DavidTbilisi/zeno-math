@@ -128,6 +128,8 @@ const trapOf = (ex: Exercise, id: MistakeId) => ex.answer.traps?.find((t) => t.i
 /** a × b split by place value: the two-digit one into tens and ones, each part multiplied, the parts added. */
 function times(ex: Exercise): Version[] {
   const { a, b } = ex.solution?.spec as { a: number; b: number };
+  // Only the product itself is worked; a box in a sum of partial products asks for one part.
+  if (ex.q !== `${a} \\times ${b}`) return [];
   const splitA = b < 10;
   const [s, o] = splitA ? [a, b] : [b, a];
   const [tens, ones] = [s - (s % 10), s % 10];
