@@ -373,6 +373,7 @@ export type PracticeWords = {
   /** Decimals on grids and number lines, estimates and stories (#704). */
   decPics: Record<"gridDecimal" | "gridFraction" | "lineDecimal" | "lineFraction" | "bestEstimate" | "jug" | "rope" | "jump" | "nino" | "gio" | "pencil" | "apples" | "laps" | "faster" | "placeTimes", string>;
   signed: Record<"positive" | "negative" | "zero" | "signOfSum" | "signOfProduct" | "missing" | "lineSum" | "sameValue" | "equalTo" | "subst" | "riseExpr" | "apart" | "subUp" | "subDown" | "payIn" | "payOut" | "diver" | "share" | "tank" | "orderList" | "lineRead" | "less" | "greater" | "colder" | "warmer" | "smallest" | "farther" | "cave" | "hill" | "same" | "owes" | "ana" | "gio", string>;
+  pct: Record<"grid" | "bar" | "whichWay" | "whatPercent" | "walk" | "seeds" | "wholeOf" | "team" | "before" | "download" | "battery" | "storage" | "downloadPct", string>;
   measTime: Record<"ribbonsLong" | "ribbonsShort" | "ribbonsOrder" | "taller" | "same" | "handFoot" | "clipPencil" | "hands" | "feet" | "clips" | "pencils" | "sameCount" | "fewerFit" | "aboutLong" | "aboutHeavy" | "aboutHolds" | "aboutB" | "apples" | "glasses" | "jug" | "ribbonCut" | "rice" | "lineTime" | "homework" | "sec" | "days" | "aboutTime" | "film" | "song" | "trip", string> & {
     names: string[];
     things: Record<"pencil" | "book" | "shoe" | "crayon" | "door" | "bus" | "classroom" | "apple" | "clip" | "flour" | "dog" | "melon" | "egg" | "spoon" | "cup" | "bath" | "bucket" | "bottle" | "ant" | "rice" | "towns" | "marathon" | "pitch" | "finger", string>;
@@ -510,6 +511,7 @@ export type PracticeWords = {
   shop: {
     discount: string; tip: string; tax: string; interest: string; offOff: string; upDown: string; markup: string; bands: string;
     loans: string; loanA: string; loanB: string; packs: string; packSmall: string; packBig: string; per100: string;
+    commission: string; exprUp: string; exprDown: string; adds: string; takes: string;
   };
   /** Algebraic fractions and formulae: the prompts (src/math/formulae.ts). */
   formulae: { simplify: string; single: string; substitute: string; subject: string };

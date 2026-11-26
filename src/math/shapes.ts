@@ -2258,6 +2258,14 @@ function decGridPreview(): Piece[] {
   return [...cells, rect(0, 0, 10 * c, 10 * c, { color: "#1e1e1e", width: 1.5 }), text(5 * c, 10 * c + 14, "0.47", 13)];
 }
 
+function percentHandPreview(): Piece[] {
+  // A bar with 0 % to 100 % along its top, shaded to 30 % and cut into tenths, each worth 12.
+  const k = 18;
+  const out: Piece[] = [rect(0, 14, 10 * k, 20, { fill: "#ffffff", color: "#1e1e1e", width: 1.2 }), rect(0, 14, 3 * k, 20, { fill: "#b2f2bb", color: "#2f9e44", width: 1 })];
+  for (let i = 1; i < 10; i++) out.push(seg([i * k, 14], [i * k, 34], { color: "#1e1e1e", width: 0.6 }));
+  return [...out, text(0, 8, "0%", 10), text(10 * k, 8, "100%", 10), text(1.5 * k, 28, "30%", 10)];
+}
+
 function measureHandPreview(): Piece[] {
   // A pencil from 3 to 10 on a ruler that starts at 2: its ends read 3 and 10.
   const k = 12;
@@ -2655,6 +2663,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveRods", build: rodsPreview, live: "rods" },
   { id: "liveDecGrid", build: decGridPreview, live: "decGrid" },
   { id: "liveMeasureHand", build: measureHandPreview, live: "measureHand" },
+  { id: "livePercentHand", build: percentHandPreview, live: "percentHand" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

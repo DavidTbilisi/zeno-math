@@ -82,6 +82,7 @@ import { Rekenrek } from "./Rekenrek";
 import { Rods } from "./Rods";
 import { DecGrid } from "./DecGrid";
 import { MeasureHand } from "./MeasureHand";
+import { PercentHand } from "./PercentHand";
 import { AreaBlocks } from "./AreaBlocks";
 import { Counters } from "./Counters";
 import { SignArrow } from "./SignArrow";
@@ -226,6 +227,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   rods: Rods,
   decGrid: DecGrid,
   measureHand: MeasureHand,
+  percentHand: PercentHand,
   areaBlocks: AreaBlocks,
   counters: Counters,
   signArrow: SignArrow,

@@ -19,11 +19,18 @@ test("40% of 60 in chunks of 20% (12 each); 60 → 78 is three chunks of 10%; 13
 });
 
 test("every percentage question's chunks are whole amounts and add up to its answer", async () => {
+  let drawn = 0;
   for (const level of [1, 2, 3] as const)
     for (let seed = 1; seed <= 200; seed++) {
       const ex = exercise("percent", level, seed, w);
       const where = `level ${level} seed ${seed}`;
-      assert.equal(ex.solution?.kind, "percent", where);
+      // The kinds of #707 (a picture read, benchmarks, what percent, the whole from a part) are worked in lines.
+      if (!ex.solution) {
+        assert.ok(ex.steps?.length, where);
+        continue;
+      }
+      drawn++;
+      assert.equal(ex.solution.kind, "percent", where);
       const s = ex.solution!.spec as PercentSolution;
       const { step, p, whole, unit } = percentStep(s);
       assert.ok(Number.isInteger(unit) && 100 % step === 0 && p % step === 0, where);
@@ -34,4 +41,5 @@ test("every percentage question's chunks are whole amounts and add up to its ans
       assert.deepEqual(check(ex, ex.plain, w), { ok: true });
       if (seed <= 10) assert.ok(!(await renderSolution(ex.solution!, en)).svg.includes("NaN"), where);
     }
+  assert.ok(drawn > 150, `${drawn} drawn`);
 });

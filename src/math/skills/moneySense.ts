@@ -3,13 +3,16 @@
 // settings): income tax in bands, the cheaper of two loans, and the better value of two packs. The amount off given
 // as the price, the add-on alone, the per cent taken as money, one year's interest only, interest compounded, the two
 // percentages added, the mark-up over the selling price, the top rate on all the pay, the lower rate taken for the
-// cheaper loan, and the bigger pack taken for the better value are slips.
+// cheaper loan, and the bigger pack taken for the better value are slips. Also (#707) commission at the easy level
+// (the sales added to it a slip) and, at the medium, the expression for a price after a percent change (1.15p; the
+// percent part alone and the percent added as a number are slips).
 import type { NumSlip } from "../calculusTwo";
 import { fill } from "../chart";
 import { money } from "../finance";
 import { num } from "../practiceKit";
 import { cash } from "../moneySense";
 import type { Gen, Part, Trap } from "../practiceTypes";
+import { pickOf, word } from "../signedKit";
 
 const m2 = (v: number) => v.toFixed(2);
 
@@ -21,7 +24,18 @@ const gen: Gen = (r, L, w) => {
   };
 
   if (L === 1) {
-    const t = r.pick(["discount", "tip", "tax"] as const);
+    const t = r.pick(["discount", "tip", "tax", "commission"] as const);
+    if (t === "commission") {
+      // Commission (#707): a percent of the sales, paid on its own.
+      const p = 100 * r.pick([12, 18, 24, 30, 36, 45, 60, 75]);
+      const pc = r.pick([2, 3, 4, 5, 6, 8, 10, 12]);
+      const v = (p * pc) / 100;
+      return {
+        prompt: fill(W.commission, { p: m2(p), r: pc }), q: "",
+        ...money(v, [["commissionAdded", p + v, { r: pc, part: cash(v) }], ["percentAsMoney", pc, { r: pc, p: cash(p), part: cash(v) }]]),
+        steps: [`${pc}\\% \\times ${cash(p)} = ${m2(v)}`],
+      };
+    }
     const p = r.pick([12, 24, 36, 40, 45, 60, 80, 120, 150, 250]);
     const pc = t === "discount" ? r.pick([10, 15, 20, 25, 30, 40, 50]) : t === "tip" ? r.pick([10, 12, 15, 18, 20]) : r.pick([5, 6, 8, 10, 20]);
     const part = (p * pc) / 100;
@@ -37,7 +51,22 @@ const gen: Gen = (r, L, w) => {
   }
 
   if (L === 2) {
-    const t = r.pick(["interest", "twice", "markup"] as const);
+    const t = r.pick(["interest", "twice", "markup", "expr"] as const);
+    if (t === "expr") {
+      // A percent change written as an expression in the price p (#707): p + 0.15p = 1.15p, p − 0.2p = 0.8p.
+      const rate = r.pick([5, 10, 15, 20, 25, 30, 40]);
+      const up = r.next() < 0.5;
+      const d = String(rate / 100);
+      const k = String(Number((1 + (up ? rate : -rate) / 100).toFixed(2)));
+      const right = word(`${k}p`);
+      const part = word(`${d}p`);
+      const added = word(`p ${up ? "+" : "−"} ${rate}`);
+      const flip = word(`${Number((1 + (up ? -rate : rate) / 100).toFixed(2))}p`);
+      return pickOf(r, fill(up ? W.exprUp : W.exprDown, { r: rate }), right, [
+        { o: part, id: "pctExprPart", vars: { r: rate, s: up ? "+" : "−", right: right.text } },
+        { o: added, id: "pctExprAdded", vars: { r: rate, d, right: right.text, verb: up ? W.adds : W.takes } },
+      ], [flip], { steps: [`p ${up ? "+" : "-"} ${rate}\\% \\text{ of } p = p ${up ? "+" : "-"} ${d}p = ${k}p`] });
+    }
     if (t === "interest") {
       const P = r.pick([200, 400, 500, 800, 1000, 1500, 2500]);
       const rate = r.pick([2, 3, 4, 5, 6]);
