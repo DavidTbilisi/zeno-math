@@ -19634,14 +19634,14 @@
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 1,
+      "seed": 132,
       "input": "(-1; -5)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 1,
+      "seed": 132,
       "input": "(1, 5)",
       "label": "wrong",
       "mistake": "reflectWrongAxis"
@@ -19649,14 +19649,14 @@
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 2,
+      "seed": 5785,
       "input": "(2; 1)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 2,
+      "seed": 5785,
       "input": "(6, -3)",
       "label": "wrong",
       "mistake": "translateSwapped"
@@ -19664,14 +19664,14 @@
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 4,
+      "seed": 26400,
       "input": "(1; -4)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 4,
+      "seed": 26400,
       "input": "(3, -6)",
       "label": "wrong",
       "mistake": "translateSwapped"
@@ -19679,14 +19679,14 @@
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 5,
+      "seed": 4449,
       "input": "(3; -1)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 5,
+      "seed": 4449,
       "input": "(-2, 4)",
       "label": "wrong",
       "mistake": "translateSwapped"
@@ -19694,14 +19694,14 @@
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 6,
+      "seed": 716,
       "input": "(2; 3)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 1,
-      "seed": 6,
+      "seed": 716,
       "input": "(-2, -3)",
       "label": "wrong",
       "mistake": "reflectWrongAxis"
@@ -19709,14 +19709,14 @@
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 1,
+      "seed": 433,
       "input": "(6; -3)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 1,
+      "seed": 433,
       "input": "(5, 2)",
       "label": "wrong",
       "mistake": "enlargeAdded"
@@ -19724,14 +19724,14 @@
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 2,
+      "seed": 176,
       "input": "(-6; 4)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 2,
+      "seed": 176,
       "input": "(-1, 4)",
       "label": "wrong",
       "mistake": "enlargeAdded"
@@ -19739,14 +19739,14 @@
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 4,
+      "seed": 9,
       "input": "rotation",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 4,
+      "seed": 9,
       "input": "reflection",
       "label": "wrong",
       "mistake": "halfTurnIsFlip"
@@ -19754,14 +19754,14 @@
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 5,
+      "seed": 461,
       "input": "(2; 4)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 5,
+      "seed": 461,
       "input": "(3, 4)",
       "label": "wrong",
       "mistake": "enlargeAdded"
@@ -19769,14 +19769,14 @@
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 7,
+      "seed": 340,
       "input": "(1; 3)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 7,
+      "seed": 340,
       "input": "(-1, -3)",
       "label": "wrong",
       "mistake": "turnWrongWay"
@@ -19784,7 +19784,7 @@
     {
       "skill": "transformations",
       "level": 2,
-      "seed": 7,
+      "seed": 340,
       "input": "(1, -3)",
       "label": "wrong",
       "mistake": "rotateSwapOnly"
@@ -19792,14 +19792,14 @@
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 1,
+      "seed": 1696,
       "input": "(-3; 2)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 1,
+      "seed": 1696,
       "input": "(3, -2)",
       "label": "wrong",
       "mistake": "negativeScaleIgnored"
@@ -19807,14 +19807,14 @@
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 2,
+      "seed": 8,
       "input": "(-6; -2)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 2,
+      "seed": 8,
       "input": "(6, 2)",
       "label": "wrong",
       "mistake": "negativeScaleIgnored"
@@ -19822,14 +19822,14 @@
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 3,
+      "seed": 2237,
       "input": "(2; 3)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 3,
+      "seed": 2237,
       "input": "(-2, -3)",
       "label": "wrong",
       "mistake": "negativeScaleIgnored"
@@ -19837,14 +19837,14 @@
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 4,
+      "seed": 255,
       "input": "16",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 4,
+      "seed": 255,
       "input": "8",
       "label": "wrong",
       "mistake": "areaScaledOnce"
@@ -19852,21 +19852,21 @@
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 4,
+      "seed": 255,
       "input": "23",
       "label": "wrong"
     },
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 5,
+      "seed": 49,
       "input": "(2; -1)",
       "label": "correct"
     },
     {
       "skill": "transformations",
       "level": 3,
-      "seed": 5,
+      "seed": 49,
       "input": "(-2, 1)",
       "label": "wrong",
       "mistake": "negativeScaleIgnored"
@@ -46426,6 +46426,1789 @@
       "input": "y = 2/3x − 7",
       "label": "wrong",
       "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 1,
+      "input": "(5, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 1,
+      "input": "(-5, -4)",
+      "label": "wrong",
+      "mistake": "translationReversed"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 1,
+      "input": "(4, 5)",
+      "label": "wrong",
+      "mistake": "translateSwapped"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 2,
+      "input": "the x-axis",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 2,
+      "input": "the y-axis",
+      "label": "wrong",
+      "mistake": "reflectWrongAxis"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 3,
+      "input": "the x-axis",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 3,
+      "input": "the y-axis",
+      "label": "wrong",
+      "mistake": "reflectWrongAxis"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 4,
+      "input": "35",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 4,
+      "input": "125",
+      "label": "wrong",
+      "mistake": "angleTurnedToo"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 4,
+      "input": "42",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 5,
+      "input": "(1, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 5,
+      "input": "(-1, 4)",
+      "label": "wrong",
+      "mistake": "translationReversed"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 5,
+      "input": "(-4, 1)",
+      "label": "wrong",
+      "mistake": "translateSwapped"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 36,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 36,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 43,
+      "input": "35",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 43,
+      "input": "125",
+      "label": "wrong",
+      "mistake": "angleTurnedToo"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 43,
+      "input": "42",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 67,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 67,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 89,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 89,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 104,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 104,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 107,
+      "input": "55",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 107,
+      "input": "62",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 109,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 109,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 167,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 167,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 170,
+      "input": "75",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 170,
+      "input": "82",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 182,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 182,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 322,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 1,
+      "seed": 322,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 1,
+      "input": "70",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 1,
+      "input": "140",
+      "label": "wrong",
+      "mistake": "dilationAngleScaled"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 1,
+      "input": "77",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 2,
+      "input": "5/2",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 2,
+      "input": "2/5",
+      "label": "wrong",
+      "mistake": "scaleFactorInverted"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "scaleDifference"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 3,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 3,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "scaleFactorInverted"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 3,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "scaleDifference"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 4,
+      "input": "180",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 4,
+      "input": "187",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 5,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 5,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "enlargeAdded"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 5,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 6,
+      "input": "90° anticlockwise",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 6,
+      "input": "90° clockwise",
+      "label": "wrong",
+      "mistake": "turnWrongWay"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 10,
+      "input": "90° clockwise",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 10,
+      "input": "90° anticlockwise",
+      "label": "wrong",
+      "mistake": "turnWrongWay"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 11,
+      "input": "180°",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 13,
+      "input": "180°",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 16,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 16,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "enlargeAdded"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 16,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 30,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 30,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 36,
+      "input": "180",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 36,
+      "input": "187",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 41,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 41,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 47,
+      "input": "50",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 47,
+      "input": "100",
+      "label": "wrong",
+      "mistake": "dilationAngleScaled"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 47,
+      "input": "57",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 89,
+      "input": "120",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 89,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "interiorForTurn"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 89,
+      "input": "127",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 160,
+      "input": "120",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 160,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "interiorForTurn"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 160,
+      "input": "127",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 162,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 162,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "linesForOrder"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 162,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 195,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 195,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "linesForOrder"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 195,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 493,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 493,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "scaleFactorInverted"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 493,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 596,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 2,
+      "seed": 596,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 1,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "gapForMirror"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 2,
+      "input": "reflected in the x-axis, then translated by (-1, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 2,
+      "input": "translated by (-1, 2), then reflected in the x-axis",
+      "label": "wrong",
+      "mistake": "orderSwapped"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 3,
+      "input": "reflected in the x-axis, then translated by (3, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 3,
+      "input": "translated by (3, -1), then reflected in the x-axis",
+      "label": "wrong",
+      "mistake": "orderSwapped"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 4,
+      "input": "DE = AB",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 4,
+      "input": "DE ∥ AB",
+      "label": "wrong",
+      "mistake": "reflectionKeepsDirection"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 5,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "gapForMirror"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 5,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 6,
+      "input": "(1, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 6,
+      "input": "(-2, 0)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 10,
+      "input": "(2, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 10,
+      "input": "(0, -1)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 11,
+      "input": "(1, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 11,
+      "input": "(3, -3)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 13,
+      "input": "(-4, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 13,
+      "input": "(-7, -7)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 16,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 16,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "gapForMirror"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 16,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 25,
+      "input": "(1, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 25,
+      "input": "(-1, -2)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 26,
+      "input": "(0, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 26,
+      "input": "(4, -2)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 30,
+      "input": "yes",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 31,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 31,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "gapForMirror"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 31,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 33,
+      "input": "(1, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 33,
+      "input": "(3, 0)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 36,
+      "input": "DE = AB",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 36,
+      "input": "DE ∥ AB",
+      "label": "wrong",
+      "mistake": "reflectionKeepsDirection"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 36,
+      "input": "∠D = ∠A + 90°",
+      "label": "wrong",
+      "mistake": "angleTurnedToo"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 37,
+      "input": "(-4, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 37,
+      "input": "(-8, 6)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 41,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 41,
+      "input": "yes",
+      "label": "wrong",
+      "mistake": "sameDifferenceSimilar"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 43,
+      "input": "DE = AB",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 43,
+      "input": "DE ∥ AB",
+      "label": "wrong",
+      "mistake": "reflectionKeepsDirection"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 44,
+      "input": "yes",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 50,
+      "input": "(-1, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 50,
+      "input": "(-4, -1)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 64,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 64,
+      "input": "yes",
+      "label": "wrong",
+      "mistake": "sameDifferenceSimilar"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 78,
+      "input": "(-1, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 78,
+      "input": "(2, 4)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 97,
+      "input": "(3, 0)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 97,
+      "input": "(0, -3)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 104,
+      "input": "DE = AB",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 104,
+      "input": "DE ∥ AB",
+      "label": "wrong",
+      "mistake": "reflectionKeepsDirection"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 104,
+      "input": "∠D = ∠A + 90°",
+      "label": "wrong",
+      "mistake": "angleTurnedToo"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 126,
+      "input": "(-2, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 126,
+      "input": "(-4, -2)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 133,
+      "input": "(2, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 133,
+      "input": "(4, 5)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 165,
+      "input": "(-3, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 165,
+      "input": "(-1.5, 4)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 249,
+      "input": "(2, 0)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 249,
+      "input": "(-1, -1.5)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 263,
+      "input": "(3, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 263,
+      "input": "(0, 2)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 311,
+      "input": "(-1, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 311,
+      "input": "(-5, -2)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 335,
+      "input": "(-4, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 335,
+      "input": "(0, 8)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 488,
+      "input": "(2, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "transformations",
+      "level": 3,
+      "seed": 488,
+      "input": "(4, 0)",
+      "label": "wrong",
+      "mistake": "centreAsMidpoint"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 2,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 3,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 3,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 4,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 4,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 20,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 20,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 30,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 30,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 36,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 36,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 38,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 38,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 41,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 41,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "turnNotFold"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 41,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 43,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 43,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 44,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 44,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 48,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 48,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "turnNotFold"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 48,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 57,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 57,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 62,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 62,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 64,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 64,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 67,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 67,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 70,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 70,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 71,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 71,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 80,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 80,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "turnNotFold"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 80,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 88,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 88,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "turnNotFold"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 88,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 104,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 104,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "turnNotFold"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 104,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 107,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 107,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 109,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 109,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 111,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 111,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 119,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 119,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 120,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 120,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 143,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 143,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 162,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 162,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 167,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 167,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "turnNotFold"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 167,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 180,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 180,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 195,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 195,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 198,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 198,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 244,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 244,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 252,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 252,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 299,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 299,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 460,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 2,
+      "seed": 460,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 1,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "oneSideMirrored"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "matchedCounted"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "oneSideMirrored"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "matchedCounted"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 3,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 3,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "matchedCounted"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 3,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 4,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "matchedCounted"
+    },
+    {
+      "skill": "symmetryLines",
+      "level": 3,
+      "seed": 4,
+      "input": "9",
+      "label": "wrong"
     }
   ]
 }

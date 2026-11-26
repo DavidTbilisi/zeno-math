@@ -50,7 +50,10 @@ test("the lines offered: every mirror line, six in all or more, none too close, 
 
 test("in practice: the number of lines typed, the diagonals counted named, the lines drawn; the server agrees", async () => {
   for (const level of LEVELS) {
-    const ex = exercise("symmetryLines", level, 7, w);
+    // The first shape from seed 7 on (#713's letters and patterns have no drawn solution).
+    let seed = 7;
+    while (!exercise("symmetryLines", level, seed, w).solution) seed++;
+    const ex = exercise("symmetryLines", level, seed, w);
     assert.ok(ex.pic);
     assert.deepEqual(check(ex, ex.plain, w), { ok: true });
     const r = await renderSolution(ex.solution!, en);
