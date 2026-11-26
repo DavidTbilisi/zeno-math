@@ -79,7 +79,7 @@ test("in practice: the answer typed, the slips named; the server agrees", () => 
         named.add(t.id);
       }
     }
-  assert.deepEqual([...named].sort(), ["scaledOutput", "undoOrder"]);
+  assert.deepEqual([...named].sort(), ["patternGapAsRatio", "pointCoordsSwapped", "ruleOrderSwapped", "scaledOutput", "termNumberForValue", "undoOrder"]);
   const q = { skill: "findRule" as const, level: 1, seed: 7 };
   assert.deepEqual([mark(q, "22"), mark(q, "28")], ["correct", "wrong"]);
 });

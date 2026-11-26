@@ -4,9 +4,15 @@
 // A shared output taken for a break, one input with two outputs taken as fine, the graph read backwards, domain and
 // range swapped, the range from the ends, the intercepts swapped, positive taken for increasing, the change not divided
 // or divided upside down, increasing taken for linear, the gaps in x ignored and the start taken for the rate are slips.
+// #722 added (half the time at the easy and medium levels, three times in ten at the hard one): a function or not from
+// a table or a graph, the independent and the dependent variable, y from an equation for a given x; whether a point
+// solves a two-variable equation, the missing number of a solution, intercepts read from a table; and a linear
+// function written from a story. Two outputs for one input missed, the variables swapped, x and y swapped and the rate
+// and the start swapped are slips.
 import { fill } from "../chart";
-import { num } from "../practiceKit";
-import type { Gen, Part, Trap } from "../practiceTypes";
+import { fromPoly, tex } from "../expr";
+import { fr, num } from "../practiceKit";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 import { arrowsSvg, graphSvg, sgn, tableSvg, type Pt } from "../readFunction";
 import { pickPart } from "../tTails";
 
@@ -14,6 +20,7 @@ const place = (body: string) => (x: number, y: number) => `<g transform="transla
 const picOf = (p: { body: string; w: number; h: number }) => ({ svg: place(p.body), h: p.h, w: p.w });
 
 const gen: Gen = (r, L, w) => {
+  if (r.int(0, 9) >= (L === 3 ? 7 : 5)) return more(r, L, r.int(0, 9), w);
   const W = w.rfn;
   const withPic = (p: Part, pic: { body: string; w: number; h: number }): Part => ({ ...p, pic: picOf(pic) });
   const numQ = (prompt: string, v: number, traps: Trap[], steps: string[]): Part => ({
@@ -162,5 +169,125 @@ const gen: Gen = (r, L, w) => {
       fill(W.planQ, { r: ruleIsA ? "A" : "B", k, s, t: ruleIsA ? "B" : "A" }), [`\\text{${fill(W.planStep, { ra: ka, rb: kb })}}`]), tableSvg(ms, ms.map((m) => st + kt * m), [W.months, W.cost]));
   }
 };
+
+/** y = mx + c as read, with a true minus. */
+const lineSay = (m: number, c: number) => `y = ${m === 1 ? "" : m === -1 ? "−" : sgn(m)}x${c ? ` ${c < 0 ? "−" : "+"} ${Math.abs(c)}` : ""}`;
+const pt = (x: number, y: number) => `(${sgn(x)}, ${sgn(y)})`;
+
+function more(r: Rng, L: number, kind: number, w: PracticeWords): Part {
+  const W = w.rfn;
+  const P = w.rfnP;
+  const yesNo = [W.yesFn, W.noFn];
+  const numQ = (prompt: string, v: number, slips: [Trap["id"], number, Record<string, string | number>][], steps: string[]): Part => ({
+    prompt, q: "", answer: { ...num(v), traps: slips.filter(([, s]) => s !== v).map(([id, s, vars]) => ({ id, a: num(s), vars: { x: sgn(s), v: sgn(v), ...vars } })) }, show: sgn(v), plain: String(v), format: "number", steps,
+  });
+  if (L === 1) {
+    if (kind <= 2) {
+      // A table: one x with two different values of y is not a function; two x with one y is.
+      const xs = [-2, -1, 0, 1, 2, 3].slice(0, 5);
+      const ys = xs.map(() => r.int(-5, 9));
+      const broken = r.next() < 0.5;
+      const k = r.int(0, 3);
+      const tx = [...xs];
+      const ty = [...ys];
+      if (broken) {
+        tx[4] = tx[k];
+        if (ty[4] === ty[k]) ty[4] = ty[k] + r.pick([1, 2, 3]);
+      } else ty[4] = ty[k];
+      const t = tableSvg(tx, ty);
+      const traps = broken ? [{ id: "twoOutputsMissed" as const, at: 0, vars: { x: sgn(tx[k]), a: sgn(ty[k]), b: sgn(ty[4]) } }] : [{ id: "sameOutputNotFunction" as const, at: 1 }];
+      return withPicOf(pickPart(r, yesNo, broken ? 1 : 0, traps, P.tableFn, [`\\text{${P.fnRule}}`]), t);
+    }
+    if (kind <= 4) {
+      // A graph: a vertical line meets a function's graph once at most.
+      const shape = r.pick(["v", "bowl", "side", "circle"] as const);
+      const c = r.int(-3, 1);
+      const pts: Pt[] = shape === "v" ? [[-6, 6 + c], [0, c], [6, 6 + c]]
+        : shape === "bowl" ? [-3, -2, -1, 0, 1, 2, 3].map((x) => [x, (x * x) / 2 + c] as Pt)
+        : shape === "side" ? [[5, -6], [-1, 0], [5, 6]]
+        : Array.from({ length: 33 }, (_, i) => [4 * Math.cos((i * Math.PI) / 16), 4 * Math.sin((i * Math.PI) / 16)] as Pt);
+      const fn = shape === "v" || shape === "bowl";
+      const at = shape === "side" ? { x: 2, a: -3, b: 3 } : { x: 0, a: -4, b: 4 };
+      const traps = fn ? [{ id: "sameOutputNotFunction" as const, at: 1 }] : [{ id: "twoOutputsMissed" as const, at: 0, vars: { x: sgn(at.x), a: sgn(at.a), b: sgn(at.b) } }];
+      return withPicOf(pickPart(r, yesNo, fn ? 0 : 1, traps, P.graphFn, [`\\text{${P.vertical}}`]), graphSvg(pts, { lo: -6, hi: 6 }));
+    }
+    if (kind <= 6) {
+      // The independent variable (chosen) and the dependent one (that follows).
+      const st = r.pick([1, 2, 3] as const);
+      const [say, a, b] = [P[`dep${st}`], P[`dep${st}A`], P[`dep${st}B`]];
+      const indep = r.next() < 0.5;
+      return pickPart(r, [a, b], indep ? 0 : 1, [{ id: "dependentIndependentSwapped", at: indep ? 1 : 0, vars: { x: indep ? b : a, v: indep ? a : b, i: a } }],
+        `${say} ${indep ? P.indepQ : P.depQ}`, [`\\text{${a} → ${b}}`]);
+    }
+    // y from an equation for a given x: the x put in, not solved for.
+    for (;;) {
+      const m = r.pick([-3, -2, 2, 3, 4]);
+      const c = r.int(-6, 6);
+      const a = r.nz(-5, 6);
+      const back = (a - c) / m;
+      const y = m * a + c;
+      if (!Number.isInteger(back) || back === y) continue;
+      return numQ(fill(P.fromEq, { e: lineSay(m, c), a: sgn(a) }), y, [["readXForY", back, { a: sgn(a) }]], [`y = ${m} \\times (${a}) ${c < 0 ? "-" : "+"} ${Math.abs(c)} = ${y}`]);
+    }
+  }
+  if (L === 2) {
+    if (kind <= 3) {
+      // Is a point a solution? Put x and y in; the point that is a solution with x and y swapped is not one.
+      for (;;) {
+        const m = r.pick([-2, -1, 2, 3]);
+        const c = r.int(-4, 4);
+        const x = r.nz(-4, 4);
+        const y = m * x + c;
+        const e = lineSay(m, c);
+        if (r.next() < 0.4) {
+          if (y === x) continue;
+          return pickPart(r, yesNo, 0, [], fill(P.isSol, { p: pt(x, y), e }), [`${m}(${x}) ${c < 0 ? "-" : "+"} ${Math.abs(c)} = ${y}`]);
+        }
+        // (y, x) shown: it is a solution only if swapping were allowed.
+        if (y === x || m * y + c === x) continue;
+        return pickPart(r, yesNo, 1, [{ id: "pointCoordsSwapped", at: 0, vars: { x: W.yesFn, v: W.noFn, w: `${m} × ${sgn(y)} ${c < 0 ? "−" : "+"} ${Math.abs(c)} = ${sgn(m * y + c)} ≠ ${sgn(x)}` } }],
+          fill(P.isSol, { p: pt(y, x), e }), [`${m}(${y}) ${c < 0 ? "-" : "+"} ${Math.abs(c)} = ${m * y + c} \\ne ${x}`]);
+      }
+    }
+    if (kind <= 5) {
+      // The missing y of a solution of px + qy = k.
+      for (;;) {
+        const [p, q] = [r.pick([1, 2, 3, 4, 5]), r.pick([2, 3, 4, -2, -3])];
+        const a = r.nz(-6, 6);
+        const y = r.nz(-6, 6);
+        const k = p * a + q * y;
+        const back = (k - q * a) / p;
+        if (back === y) continue;
+        const e = `${p === 1 ? "" : p}x ${q < 0 ? "−" : "+"} ${Math.abs(q)}y = ${sgn(k)}`;
+        const slips: [Trap["id"], number, Record<string, string | number>][] = Number.isInteger(back) ? [["pairOrderSwapped", back, { a: sgn(a), w: `${p} × ${sgn(a)} ${q < 0 ? "−" : "+"} ${Math.abs(q)}y = ${sgn(k)}` }]] : [];
+        return numQ(fill(P.missing, { a: sgn(a), e }), y, slips, [`${p}(${a}) ${q < 0 ? "-" : "+"} ${Math.abs(q)}y = ${k}`, `y = ${y}`]);
+      }
+    }
+    // Intercepts from a table: y where x = 0, x where y = 0.
+    for (;;) {
+      const m = r.pick([-3, -2, -1, 1, 2, 3]);
+      const x0 = r.nz(-3, 3);
+      const c = -m * x0;
+      if (c === x0) continue;
+      const lo = Math.min(0, x0) - r.int(0, 1);
+      const xs = Array.from({ length: 6 }, (_, i) => lo + i);
+      if (!xs.includes(0) || !xs.includes(x0)) continue;
+      const yAsked = r.next() < 0.5;
+      return withPicOf(numQ(yAsked ? P.tYInt : P.tXInt, yAsked ? c : x0, [["interceptsSwapped", yAsked ? x0 : c, {}]], [yAsked ? `x = 0 \\Rightarrow y = ${c}` : `y = 0 \\Rightarrow x = ${x0}`]), tableSvg(xs, xs.map((x) => m * x + c)));
+    }
+  }
+  // A linear function written from a story: the change each unit times x, plus the start.
+  const pool = r.next() < 0.5;
+  const a = pool ? r.pick([20, 25, 40, 50]) : r.pick([2, 3, 4]);
+  const b = pool ? r.pick([100, 200, 300, 500]) : r.pick([20, 24, 30, 36]);
+  const m = pool ? a : -a;
+  const e = fromPoly([fr(b), fr(m)]);
+  const slipLine = (mm: number, cc: number) => ({ k: "expr" as const, e: fromPoly([fr(cc), fr(mm)]), mode: "line" as const });
+  const traps: Trap[] = [{ id: "rateStartSwapped", a: slipLine(b, m), vars: { x: lineSay(b, m), v: lineSay(m, b), a: sgn(m), b, u: pool ? P.minute : P.hour } }];
+  if (!pool) traps.push({ id: "slopeSignInContext", a: slipLine(a, b), vars: { x: lineSay(a, b), v: sgn(m) } });
+  return { prompt: fill(pool ? P.pool : P.candle, { a, b }), q: "", answer: { k: "expr", e, mode: "line", traps }, show: `y = ${tex(e)}`, plain: `y = ${m}x + ${b}`, format: "line", steps: [`y = ${tex(e)}`] };
+}
+
+const withPicOf = (p: Part, pic: { body: string; w: number; h: number }): Part => ({ ...p, pic: picOf(pic) });
 
 export default gen;
