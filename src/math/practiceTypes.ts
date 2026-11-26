@@ -469,6 +469,7 @@ export type PracticeWords = {
   qpm: { pointQ: string; removeQ: string; polarQ: string; slopeQ: string; speedQ: string; nameQ: string; circle: string; line: string; spiral: string; arcQ: string; areaQ: string; accelQ: string; ballQ: string; };
   /** Conic sections (conics): prompts and options. */
   conP: Record<"circleFrom" | "circleGraph" | "centreOf" | "pointQ" | "inside" | "on" | "outside" | "ellipseCentre" | "radiusAcross" | "radiusUp" | "ellipseFrom" | "ellipseGraph" | "opens" | "leftRight" | "upDown" | "vertex" | "hyperFrom", string>;
+  sxpP: Record<"constant" | "coefficient" | "evalOne" | "wordPens" | "wordBoxes" | "write" | "more" | "less" | "from" | "times" | "over" | "evalMulti" | "evalSquare" | "evalFrac" | "largest" | "smallest" | "taxi" | "gym" | "perKm" | "flagFall" | "taxiTotal" | "kms" | "perMonth" | "joining" | "gymTotal" | "months" | "timesSum" | "sumTimes" | "timesDiff" | "sumOver" | "change" | "factor" | "simplify" | "ball", string>;
   vecP: Record<"fromEnds" | "fromPolar" | "direction" | "length2" | "unit" | "addLen" | "addComp" | "plane" | "lineAt" | "lineT", string>;
   xplP: Record<"cross" | "triArea" | "planeD" | "normal" | "pointDist" | "planesDist", string>;
   trgP: Record<"ratioSide" | "cofunction" | "sinCos" | "special45" | "special30" | "quadrant" | "reciprocal" | "reflect" | "addition" | "waves" | "ski" | "asa" | "sas" | "ships" | "lighthouses", string>;

@@ -76,10 +76,11 @@ test("every question: four different options, the right one equal to the express
         named.add(t.id);
       }
     }
-  assert.deepEqual([...named].sort(), ["firstTermOnly", "joinedUnlike", "squareAsDouble"]);
-  const ex = exercise("sameExpression", 1, 7, w);
-  assert.equal(check(ex, "1 + 2x", w).why, "Pick one of the options offered: 2x + 1, 3x + 1, 3x, x + 2.");
-  const q = { skill: "sameExpression" as const, level: 2, seed: 7 };
+  // The kinds #718 added name slips of their own besides these.
+  for (const id of ["firstTermOnly", "joinedUnlike", "squareAsDouble"]) assert.ok(named.has(id), id);
+  const ex = exercise("sameExpression", 1, 821, w);
+  assert.equal(check(ex, "1 + 2x", w).why, "Pick one of the options offered: 3x + 1, x + 2, 2x + 1, 3x.");
+  const q = { skill: "sameExpression" as const, level: 2, seed: 68 };
   assert.deepEqual([mark(q, "5x - 5"), mark(q, "5x - 1"), mark(q, "5(x-1)")], ["correct", "wrong", "form"]);
 });
 

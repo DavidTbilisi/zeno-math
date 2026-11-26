@@ -118,12 +118,26 @@ test("equal expressions: a board paired with no misses earns three stars", async
 });
 
 test("equal expressions in practice: the equal one picked from the buttons", async ({ page, request }) => {
-  const r = 0.55;
+  const r = 0.6;
   const ex = exercise("sameExpression", 2, seedOf(r), w);
   if (ex.answer.k !== "pick") throw new Error();
   const best = ex.answer.options[ex.answer.right];
   await practise(page, request, { tab: "Algebra", skill: "Equal expressions", level: "medium", r, prompt: ex.prompt });
   await page.locator(".sign-picks").getByRole("button", { name: best.text, exact: true }).click();
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Correct!")).toBeVisible();
+});
+
+test("expressions read in practice (#718): a gym's price, the wrong number named, then the right one", async ({ page, request }) => {
+  const r = 0.05;
+  const ex = exercise("sameExpression", 2, seedOf(r), w);
+  if (ex.answer.k !== "pick") throw new Error();
+  await practise(page, request, { tab: "Algebra", skill: "Equal expressions", level: "medium", r, prompt: ex.prompt });
+  const picks = page.locator(".sign-picks");
+  await picks.getByRole("button", { name: "the cost of joining", exact: true }).click();
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText(/mixes the two numbers up/)).toBeVisible();
+  await picks.getByRole("button", { name: "the cost of each month", exact: true }).click();
   await page.getByRole("button", { name: "Check" }).click();
   await expect(page.getByText("Correct!")).toBeVisible();
 });
