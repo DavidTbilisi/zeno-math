@@ -2017,6 +2017,22 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Random variables in use (#739): in expected value, a distribution built from coins or from a table of homes'
+    cars, which list is a distribution, a bar chart read, and what an expected value means; the standard deviation, a
+    game's expected gain, which way of choosing is fair, and an expected value from survey results; then a new
+    setting, phone insurance judged by expected cost, with a variable transformed and two independent ones combined.
+    In distributions, which variables are binomial, binomial or geometric, a geometric probability; a binomial's
+    standard deviation, a cumulative geometric probability and the mean wait for a first success; and a binomial
+    probability estimated from simulations and a bus trip's two normal times added. The slips (outcomes counted as
+    equally likely, counts for probabilities, a list not adding to 1 or with a negative, the bar at k left out or
+    alone, an expected value as every result or the likeliest, the variance for the SD, the mean's square not taken
+    away, the cost ignored or the chance not weighed, unequal sides, the values' mean or count used, the loss not
+    weighed or overweighed, a shift dropped or added to the SD, a² for |a|, SDs added, variances subtracted,
+    geometric and binomial swapped, dependent trials, the power off by one, success and failure swapped, p left out,
+    one attempt for "within k", the complement left, p or the failures for the mean wait, k left out, a count for a
+    share, normal SDs added or a variance as SD) are named. A new piece, "Expected value: find the fair price", sets
+    a spinner's prizes as weights on a beam: the learner taps prices until it balances, a tally shows winnings
+    against pay over many games, and only in the last round is the rule said: the fair price is the expected value
   - Probability rules, sample spaces and counting (#738): in probability, an experiment's result, two bags compared,
     a prediction from a chance, a model's missing chance, which claim about a few coin flips is valid, and a chance
     estimated from a simulation's digits (grade 7); a sample space counted, the numbers in A ∩ B, A ∪ B or A′, the
