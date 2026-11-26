@@ -2017,6 +2017,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Matrices as data, maps of the plane, systems and determinants (#734): in matrices, a matrix times a number, a
+    difference, an entry of a data matrix, a shop's takings from its sales and the prices, a point moved by a matrix
+    and the matrix equation of a system (grade 10), a 3 × 3 or 4 × 4 matrix times a vector, the k that leaves a
+    matrix without an inverse, and a system solved with the inverse; in linear maps, the matrix of a reflection, a
+    stretch or a turn, a quarter turn about the x-axis in ℝ³, a projection onto a line, a matrix read from a picture
+    of where (1, 0) and (0, 1) land, a composition, the kernel and the image of a rank-one matrix and whether a map is
+    onto; in determinants, a triangular 3 × 3 or 4 × 4 matrix, the determinant after a row operation, the area of a
+    parallelogram and the area of a shape after a map. Twenty-seven slips are named, among them the number added
+    instead of multiplied, the matrix turned, ad + bc, the determinant not divided out, the turn the wrong way, the
+    composition in the wrong order, a row taken for the kernel, the swap's sign kept and a negative area. The piece
+    *Matrices: find where the plane goes by tapping points* (Insert → Algebra → matrices & complex numbers, grades
+    10–13): for a stretch, a quarter turn, a reflection, a shear and a matrix with determinant 3, the learner taps
+    where M sends (1, 0), then (0, 1), worked out from M(x, y); a row read across or the point left where it was is
+    named, and once both are found the square's image is drawn, M's columns take the colours of the two images, and
+    the rule is said: the columns are where (1, 0) and (0, 1) land, and the determinant is how much area is scaled
   - Sinusoids with a phase shift (#733): in trigonometric graphs, where y = a·sin(bx) + d first peaks or
     a·cos(bx) + d first dips after 0°, and the highest value a wave reaches (grade 10); then how a·sin(bx − k) + d is
     moved from a·sin(bx) + d, where a shifted sine first peaks, the equation of a shifted wave read from its graph or

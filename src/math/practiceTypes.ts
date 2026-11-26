@@ -495,6 +495,9 @@ export type PracticeWords = {
   afrM: Record<"checkQ" | "yes" | "noTerms" | "noIs" | "noFactor" | "pipesQ" | "pipesXQ" | "mixQ", string>;
   cxM: Record<"rootQ" | "powerQ" | "reQ" | "imQ" | "kindQ" | "kindReal" | "kindImag" | "kindBoth" | "diffQ" | "distQ" | "midQ" | "conjQ" | "zzQ" | "factorQ" | "turnQ", string>;
   tgP: Record<"firstMaxQ" | "firstMinQ" | "maxQ" | "moveQ" | "right" | "left" | "toRight" | "shiftMaxQ" | "graphQ" | "midSay" | "ampSay" | "riseSay" | "buildQ" | "tideQ" | "warmQ", string>;
+  matK: Record<"scalarQ" | "minusQ" | "entryQ" | "rowSay" | "colSay" | "takingsQ" | "pointQ" | "systemQ" | "vecQ" | "singularQ" | "solveQ", string>;
+  lmK: Record<"reflectQ" | "lineX" | "lineY" | "lineYX" | "lineYmX" | "stretchXQ" | "stretchYQ" | "turnQ" | "rot3Q" | "projQ" | "pictureQ" | "composeQ" | "kernelQ" | "imageQ" | "imgLine" | "imgPlane" | "imgZero" | "ontoQ" | "yes" | "no" | "whyTall" | "whyRank1" | "whyRank2", string>;
+  detK: Record<"rowQ" | "opSwap" | "opScale" | "opAdd" | "opWhole" | "areaQ" | "areaSay" | "scaleQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
