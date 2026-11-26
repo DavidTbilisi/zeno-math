@@ -1063,11 +1063,18 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     a triangle whose base × height is, is named as the mistake it is
   - Estimating angles: an angle drawn, and the nearest of a few sizes picked (30°, 90° or 150°; then four in 30s,
     turned any way; then reflex angles against sizes in 45s). The size a protractor's other scale gives (180° − the
-    angle) and the angle on the inside (360° − the angle) are among the options, and named when picked
+    angle) and the angle on the inside (360° − the angle) are among the options, and named when picked. Also (#710):
+    at the medium level, a protractor read (both scales printed, the arm along the base pointing either way), the arm
+    that makes an angle picked from three on a protractor, a fraction of a whole turn in degrees and which of three
+    angles is about a size; at the hard level, a reflex angle from the angle the protractor measures inside. The
+    other scale, a fraction of 180° for a fraction of a turn and the angle inside are named
   - Missing angles: a figure drawn to size with all its angles but one marked — on a straight line or in a right
     angle, then around a point or in a triangle, then an isosceles triangle's base angle from its top one, or a
     quadrilateral's last angle. The wrong total (360° for a line, 180° for a whole turn) and an isosceles triangle's
-    two base angles not shared out are named; the worked solution draws the figure with the angle filled in
+    two base angles not shared out are named; the worked solution draws the figure with the angle filled in. At the
+    hard level (#710) the angles can be written in x: the equation that gives x picked, x found on a straight line,
+    in a right angle or from the whole angle, and two lines crossing with opposite angles in x (x, or the angle). The
+    angle given for x, x given for the angle, the wrong total and opposite angles taken to add up to 180° are named
   - Angles on parallel lines (grade 7; #640): two lines crossing (vertically opposite, on a line), a right angle
     split in two and the complement or supplement of an angle; then two parallel lines and a transversal, an angle
     found at the other crossing (corresponding, alternate, co-interior) or the pair named; then a triangle's outside
@@ -1094,7 +1101,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     fit, and whether a sentence such as "a square is a rectangle" is true always, sometimes or never. A solid called
     by its face, the faces at the back left out, acute and obtuse swapped, any crossing taken for perpendicular, two
     equal sides missed, a triangle named by one of its acute angles, the names taken to shut each other out, one
-    example taken for always, a wider name for the most exact one and only one name for a shape are named
+    example taken for always, a wider name for the most exact one and only one name for a shape are named. Also
+    (#710): at the easy level, a shape cut along dashed lines and what it is made of; at the medium level, an angle
+    named by three letters (the corner's in the middle), how many angles rays from one point make, a triangle named
+    by its angles and its sides at once (a right isosceles triangle), the pairs of parallel sides, the right, acute or
+    obtuse angles of a shape counted, and which of three lines is perpendicular or parallel to a blue one. A letter
+    other than the corner's in the middle, only the angles side by side, sides counted for pairs, right angles
+    counted as acute and a line leaning a little taken for parallel are named
   - Moving shapes (grades 8 and 9–10; #642): where a point lands under a translation by a vector or a reflection in an
     axis; then a quarter or half turn about the origin, a reflection in y = x, an enlargement from the origin, and which
     one move takes a shape onto another; then two moves in a row, a half turn or an enlargement about a centre off the

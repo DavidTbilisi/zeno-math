@@ -37,7 +37,9 @@ test("guess the angle: a round guessed spot on earns three stars", async ({ page
 });
 
 test("estimating angles in practice: the nearest size picked from the buttons", async ({ page, request }) => {
-  const r = 0.33;
+  // A question that picks the nearest size (the medium level also has the protractor and turn kinds of #710).
+  let r = 0.33;
+  while (exercise("estimateAngle", 2, seedOf(r), w).answer.k !== "near") r = Math.round((r + 0.01) * 100) / 100;
   const ex = exercise("estimateAngle", 2, seedOf(r), w);
   if (ex.answer.k !== "near") throw new Error();
   await practise(page, request, { tab: TAB, skill: "Estimating angles", level: "medium", r, prompt: ex.prompt });

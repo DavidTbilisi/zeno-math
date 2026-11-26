@@ -2655,21 +2655,21 @@
     {
       "skill": "estimateAngle",
       "level": 2,
-      "seed": 7,
+      "seed": 6819,
       "input": "90",
       "label": "correct"
     },
     {
       "skill": "estimateAngle",
       "level": 2,
-      "seed": 7,
+      "seed": 6819,
       "input": "120",
       "label": "wrong"
     },
     {
       "skill": "estimateAngle",
       "level": 2,
-      "seed": 7,
+      "seed": 6819,
       "input": "94",
       "label": "form",
       "note": "the angle itself, not one of the sizes offered"
@@ -2677,14 +2677,14 @@
     {
       "skill": "estimateAngle",
       "level": 3,
-      "seed": 7,
+      "seed": 4899,
       "input": "180",
       "label": "correct"
     },
     {
       "skill": "estimateAngle",
       "level": 3,
-      "seed": 7,
+      "seed": 4899,
       "input": "225",
       "label": "wrong"
     },
@@ -2751,21 +2751,21 @@
     {
       "skill": "missingAngle",
       "level": 3,
-      "seed": 7,
+      "seed": 587,
       "input": "77",
       "label": "correct"
     },
     {
       "skill": "missingAngle",
       "level": 3,
-      "seed": 7,
+      "seed": 587,
       "input": "77.0",
       "label": "correct"
     },
     {
       "skill": "missingAngle",
       "level": 3,
-      "seed": 7,
+      "seed": 587,
       "input": "154",
       "label": "wrong",
       "mistake": "notHalved"
@@ -19058,14 +19058,14 @@
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 1,
+      "seed": 171,
       "input": "cube",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 1,
+      "seed": 171,
       "input": "square",
       "label": "wrong",
       "mistake": "faceForSolid"
@@ -19073,14 +19073,14 @@
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 4,
+      "seed": 24,
       "input": "6",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 4,
+      "seed": 24,
       "input": "3",
       "label": "wrong",
       "mistake": "onlyVisibleFaces"
@@ -19088,63 +19088,63 @@
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 4,
+      "seed": 24,
       "input": "13",
       "label": "wrong"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 7,
+      "seed": 57,
       "input": "3",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 7,
+      "seed": 57,
       "input": "10",
       "label": "wrong"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 19,
+      "seed": 22,
       "input": "4",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 19,
+      "seed": 22,
       "input": "11",
       "label": "wrong"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 20,
+      "seed": 5,
       "input": "12",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 1,
-      "seed": 20,
+      "seed": 5,
       "input": "19",
       "label": "wrong"
     },
     {
       "skill": "shapeKinds",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "isosceles",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "scalene",
       "label": "wrong",
       "mistake": "equalSidesMissed"
@@ -19152,28 +19152,28 @@
     {
       "skill": "shapeKinds",
       "level": 2,
-      "seed": 4,
+      "seed": 5877,
       "input": "acute triangle",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 2,
-      "seed": 6,
+      "seed": 21,
       "input": "line",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "acute",
       "label": "correct"
     },
     {
       "skill": "shapeKinds",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "obtuse",
       "label": "wrong",
       "mistake": "acuteObtuseSwapped"
@@ -19181,7 +19181,7 @@
     {
       "skill": "shapeKinds",
       "level": 2,
-      "seed": 12,
+      "seed": 68,
       "input": "parallel",
       "label": "correct"
     },
@@ -42645,6 +42645,1392 @@
       "level": 3,
       "seed": 69,
       "input": "261.47",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 7,
+      "input": "two triangles",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 1,
+      "seed": 8,
+      "input": "a square and a triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 1,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 2,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "sidesNotPairs"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 3,
+      "input": "acute scalene triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 4,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 4,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "crossingIsPerpendicular"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 5,
+      "input": "obtuse isosceles triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 5,
+      "input": "obtuse scalene triangle",
+      "label": "wrong",
+      "mistake": "equalSidesMissed"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 5,
+      "input": "acute isosceles triangle",
+      "label": "wrong",
+      "mistake": "oneAcuteAngle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 6,
+      "input": "∠BAC",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 6,
+      "input": "∠BCA",
+      "label": "wrong",
+      "mistake": "vertexNotMiddle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 6,
+      "input": "∠CBA",
+      "label": "wrong",
+      "mistake": "vertexNotMiddle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 6,
+      "input": "∠ABC",
+      "label": "wrong",
+      "mistake": "vertexNotMiddle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 10,
+      "input": "∠DEF",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 10,
+      "input": "∠EFD",
+      "label": "wrong",
+      "mistake": "vertexNotMiddle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 10,
+      "input": "∠FDE",
+      "label": "wrong",
+      "mistake": "vertexNotMiddle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 10,
+      "input": "∠EDF",
+      "label": "wrong",
+      "mistake": "vertexNotMiddle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 13,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 13,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 13,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 16,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 16,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 16,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 17,
+      "input": "acute scalene triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 20,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 20,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "sidesNotPairs"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 20,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 22,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 22,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 22,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 25,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 25,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 25,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 30,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 30,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 31,
+      "input": "obtuse scalene triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 31,
+      "input": "acute scalene triangle",
+      "label": "wrong",
+      "mistake": "oneAcuteAngle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 36,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 36,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "nearlyParallel"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 38,
+      "input": "obtuse isosceles triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 38,
+      "input": "obtuse scalene triangle",
+      "label": "wrong",
+      "mistake": "equalSidesMissed"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 38,
+      "input": "acute isosceles triangle",
+      "label": "wrong",
+      "mistake": "oneAcuteAngle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 41,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 41,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 42,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 42,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 42,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 43,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 43,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "crossingIsPerpendicular"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 44,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 44,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 47,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 47,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 47,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 48,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 48,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 61,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 61,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 61,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 73,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 73,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 82,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 82,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 88,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 88,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "rightAsAcute"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 88,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 91,
+      "input": "acute equilateral triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 91,
+      "input": "acute scalene triangle",
+      "label": "wrong",
+      "mistake": "equalSidesMissed"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 95,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 95,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 95,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 102,
+      "input": "right scalene triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 102,
+      "input": "acute scalene triangle",
+      "label": "wrong",
+      "mistake": "oneAcuteAngle"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 104,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 104,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "nearlyParallel"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 119,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 119,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 143,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 143,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 165,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 165,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 165,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 175,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 175,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 175,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 188,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 188,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "onlyAdjacentAngles"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 188,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 292,
+      "input": "acute equilateral triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 292,
+      "input": "acute scalene triangle",
+      "label": "wrong",
+      "mistake": "equalSidesMissed"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 329,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 329,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "rightAsAcute"
+    },
+    {
+      "skill": "shapeKinds",
+      "level": 2,
+      "seed": 329,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 1,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 1,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "wrongScale"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 2,
+      "input": "216",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 2,
+      "input": "108",
+      "label": "wrong",
+      "mistake": "fractionOf180"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 2,
+      "input": "223",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 3,
+      "input": "45",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 3,
+      "input": "52",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 4,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 4,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "acuteObtuse"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 5,
+      "input": "216",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 5,
+      "input": "108",
+      "label": "wrong",
+      "mistake": "fractionOf180"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 5,
+      "input": "223",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 6,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 6,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "wrongScale"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 14,
+      "input": "65",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 14,
+      "input": "115",
+      "label": "wrong",
+      "mistake": "wrongScale"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 14,
+      "input": "72",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 18,
+      "input": "45",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 18,
+      "input": "135",
+      "label": "wrong",
+      "mistake": "wrongScale"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 18,
+      "input": "52",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 30,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 30,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "acuteObtuse"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 82,
+      "input": "225",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 2,
+      "seed": 82,
+      "input": "232",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 3,
+      "seed": 7,
+      "input": "200",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 3,
+      "seed": 7,
+      "input": "160",
+      "label": "wrong",
+      "mistake": "insideAngle"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 3,
+      "seed": 7,
+      "input": "207",
+      "label": "wrong"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 3,
+      "seed": 8,
+      "input": "300",
+      "label": "correct"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 3,
+      "seed": 8,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "insideAngle"
+    },
+    {
+      "skill": "estimateAngle",
+      "level": 3,
+      "seed": 8,
+      "input": "307",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 1,
+      "input": "23",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 1,
+      "input": "115",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 1,
+      "input": "59",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 1,
+      "input": "30",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 2,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 2,
+      "input": "85",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 2,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 2,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 4,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 4,
+      "input": "58",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 4,
+      "input": "32",
+      "label": "wrong",
+      "mistake": "verticalAsSupplementary"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 4,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 5,
+      "input": "27",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 5,
+      "input": "66",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 5,
+      "input": "34",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 6,
+      "input": "2x + 124 = 180",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 6,
+      "input": "2x + 124 = 90",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 6,
+      "input": "2x + 124 = 360",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 10,
+      "input": "5x + 62 + 153 = 360",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 10,
+      "input": "5x + 62 + 153 = 90",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 10,
+      "input": "5x + 62 + 153 = 180",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 30,
+      "input": "134",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 30,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "xForAngle"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 30,
+      "input": "141",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 31,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 31,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 31,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 36,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 36,
+      "input": "41",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 36,
+      "input": "26",
+      "label": "wrong",
+      "mistake": "verticalAsSupplementary"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 36,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 38,
+      "input": "21",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 38,
+      "input": "63",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 38,
+      "input": "31",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 38,
+      "input": "28",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 40,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 40,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 40,
+      "input": "22",
+      "label": "wrong",
+      "mistake": "equationWrongTotal"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 40,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 41,
+      "input": "133",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 41,
+      "input": "23",
+      "label": "wrong",
+      "mistake": "xForAngle"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 41,
+      "input": "140",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 42,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 42,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 42,
+      "input": "21",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 43,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 43,
+      "input": "37",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 43,
+      "input": "21",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 44,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 44,
+      "input": "103",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 44,
+      "input": "29",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 64,
+      "input": "136",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 64,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "xForAngle"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 64,
+      "input": "143",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 81,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 81,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "xForAngle"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 81,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 145,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 145,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "angleForX"
+    },
+    {
+      "skill": "missingAngle",
+      "level": 3,
+      "seed": 145,
+      "input": "12",
       "label": "wrong"
     }
   ]
