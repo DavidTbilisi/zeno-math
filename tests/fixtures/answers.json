@@ -27447,6 +27447,302 @@
       "label": "wrong"
     },
     {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 1,
+      "input": "Too much",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 1,
+      "input": "Too little",
+      "label": "wrong",
+      "mistake": "overUnderSwapped"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 2,
+      "input": "24",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "midpointMissed"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 2,
+      "input": "31",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 6,
+      "input": "Too much",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 6,
+      "input": "Too little",
+      "label": "wrong",
+      "mistake": "overUnderSwapped"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 7,
+      "input": "34",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 7,
+      "input": "58",
+      "label": "wrong",
+      "mistake": "leftForRight"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 7,
+      "input": "17",
+      "label": "wrong",
+      "mistake": "widthForgotten"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 7,
+      "input": "41",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 9,
+      "input": "70",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 9,
+      "input": "50",
+      "label": "wrong",
+      "mistake": "leftForRight"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 9,
+      "input": "35",
+      "label": "wrong",
+      "mistake": "widthForgotten"
+    },
+    {
+      "skill": "accumulation",
+      "level": 1,
+      "seed": 9,
+      "input": "77",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 1,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "ftcChainForgotten"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 1,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 2,
+      "input": "134",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 2,
+      "input": "54",
+      "label": "wrong",
+      "mistake": "startForgotten"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 2,
+      "input": "170",
+      "label": "wrong",
+      "mistake": "rateTimesTime"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 2,
+      "input": "141",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 7,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 7,
+      "input": "29.1667",
+      "label": "wrong",
+      "mistake": "gForGPrime"
+    },
+    {
+      "skill": "accumulation",
+      "level": 2,
+      "seed": 7,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 1,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "totalAsNet"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 1,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 2,
+      "input": "59",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "startForgotten"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 2,
+      "input": "68",
+      "label": "wrong",
+      "mistake": "rectangleForTriangle"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 2,
+      "input": "66",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 6,
+      "input": "8.5",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 6,
+      "input": "15/2",
+      "label": "wrong",
+      "mistake": "netAsTotal"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 6,
+      "input": "15.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 7,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 7,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 9,
+      "input": "25",
+      "label": "correct"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 9,
+      "input": "125",
+      "label": "wrong",
+      "mistake": "averageNotDivided"
+    },
+    {
+      "skill": "accumulation",
+      "level": 3,
+      "seed": 9,
+      "input": "32",
+      "label": "wrong"
+    },
+    {
       "skill": "continuity",
       "level": 1,
       "seed": 1,

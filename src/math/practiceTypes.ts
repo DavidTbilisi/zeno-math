@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Accumulation and the fundamental theorem (accumulation): prompts and options. */
+  qac: { tableLeftQ: string; tableRightQ: string; overQ: string; increasing: string; decreasing: string; leftKind: string; rightKind: string; tooMuch: string; tooLittle: string; midQ: string; ftcQ: string; chainQ: string; netQ: string; averageQ: string; distanceQ: string; displacementQ: string; brakeQ: string; };
   /** Derivatives in context (derivContext): prompts and options. */
   qdc: { teaQ: string; teaRight: string; teaValue: string; teaTotal: string; tankQ: string; tankRight: string; tankValue: string; tankTotal: string; velocityQ: string; speedingQ: string; up: string; down: string; linearQ: string; maxQ: string; minQ: string; boxQ: string; fenceQ: string; closedQ: string; };
   /** Continuity and limits from graphs (continuity): prompts and options. */

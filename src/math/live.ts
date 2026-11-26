@@ -79,6 +79,7 @@ import { PIN_START, type LivePinString } from "./conics";
 import { TRACE_START, type LiveTracePath } from "./parametric";
 import { CLOSE_START, type LiveCloseIn } from "./continuity";
 import { FOLDBOX_START, type LiveFoldBox } from "./derivContext";
+import { FILL_START, type LiveFillUnder } from "./accumulation";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -668,6 +669,7 @@ export type LiveStates = {
   tracePath: LiveTracePath;
   closeIn: LiveCloseIn;
   foldBox: LiveFoldBox;
+  fillUnder: LiveFillUnder;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -835,6 +837,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   tracePath: [700, 540],
   closeIn: [700, 560],
   foldBox: [700, 540],
+  fillUnder: [700, 560],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -1004,6 +1007,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     tracePath: TRACE_START,
     closeIn: CLOSE_START,
     foldBox: FOLDBOX_START,
+    fillUnder: FILL_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

@@ -49,6 +49,7 @@ import { PinString } from "./PinString";
 import { TracePath } from "./TracePath";
 import { CloseIn } from "./CloseIn";
 import { FoldBox } from "./FoldBox";
+import { FillUnder } from "./FillUnder";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -268,6 +269,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   tracePath: TracePath,
   closeIn: CloseIn,
   foldBox: FoldBox,
+  fillUnder: FillUnder,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,
