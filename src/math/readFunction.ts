@@ -65,6 +65,20 @@ export function graphSvg(pts: readonly Pt[], o: { lo: number; hi: number; ends?:
   return { body: out.join(""), w: n * u + 40, h: n * u + 40 };
 }
 
+/** Two graphs on one grid: the first in blue, the second drawn over it in orange. */
+export function graph2Svg(one: readonly Pt[], two: readonly Pt[], o: { lo: number; hi: number }) {
+  const a = graphSvg(one, o);
+  const b = graphSvg(two, o);
+  return { ...a, body: a.body + b.body.slice(b.body.lastIndexOf("<polyline")).replace(/stroke="[^"]*"/, `stroke="${C.orange}"`) };
+}
+
+/** The part of y = mx + c inside the square grid from lo to hi, as its two ends. */
+export function lineIn(m: number, c: number, lo: number, hi: number): Pt[] {
+  if (m === 0) return [[lo, c], [hi, c]];
+  const xs = [lo, hi, (lo - c) / m, (hi - c) / m].filter((x) => x >= lo - 1e-9 && x <= hi + 1e-9 && m * x + c >= lo - 1e-9 && m * x + c <= hi + 1e-9).sort((p, q) => p - q);
+  return [[xs[0], m * xs[0] + c], [xs[xs.length - 1], m * xs[xs.length - 1] + c]];
+}
+
 /** The piece: the two points' inputs, whole numbers from 0 to 7. */
 export type LiveSecantRate = { a: number; b: number };
 export const SECANT_START: LiveSecantRate = { a: 1, b: 2 };

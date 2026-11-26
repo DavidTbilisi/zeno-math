@@ -2017,6 +2017,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Systems of equations (#724): whether a point solves a system, the solution read where two graphed lines cross,
+    and how many solutions two graphed lines give; how many solutions from the equations themselves, the number the
+    second equation is multiplied by so that adding removes y, and ticket and age stories; then the system a shop's
+    story makes, which of two lines a point is on, two gyms' costs that meet once, never or every month, and the k
+    that gives infinitely many solutions. Equations with roots also gain a linear equation solved where its two
+    sides' graphs cross, how many points a parabola and a line meet at (from b² − 4ac), a quadratic system's larger
+    x read off its graph, and when a thrown ball first reaches a drone's height. One equation checked only, the
+    count misread, the elimination factor's sign, the other unknown given, the story's prices swapped, the right
+    side not scaled, the meeting count misread and the later time given are named
   - Inequalities on a number line (#723): a number tested against x < t (the end point itself a slip when < or >
     leaves it out), the inequality a number line shows and the line an inequality has (the dot and the side),
     one-step inequalities (x + b, x − b, ax, x/a, and −ax turning the sign round), and "at least", "at most",

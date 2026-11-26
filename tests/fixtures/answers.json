@@ -802,35 +802,35 @@
     {
       "skill": "simultaneous",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "x = -6; y = -6",
       "label": "correct"
     },
     {
       "skill": "simultaneous",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "x=-6, y=-6",
       "label": "correct"
     },
     {
       "skill": "simultaneous",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "(-6, -6)",
       "label": "correct"
     },
     {
       "skill": "simultaneous",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "y = -6; x = -6",
       "label": "correct"
     },
     {
       "skill": "simultaneous",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "-6",
       "label": "form",
       "note": "only one value"
@@ -838,14 +838,14 @@
     {
       "skill": "simultaneous",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "x = 6; y = -6",
       "label": "wrong"
     },
     {
       "skill": "simultaneous",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "x = -6; y = 6",
       "label": "wrong"
     },
@@ -24210,14 +24210,14 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 1,
+      "seed": 333,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 1,
+      "seed": 333,
       "input": "20",
       "label": "wrong",
       "mistake": "fractionMultiplied"
@@ -24225,7 +24225,7 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 1,
+      "seed": 333,
       "input": "1/5",
       "label": "wrong",
       "mistake": "fractionUpsideDown"
@@ -24233,21 +24233,21 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 1,
+      "seed": 333,
       "input": "12",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 5,
+      "seed": 76,
       "input": "3",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 5,
+      "seed": 76,
       "input": "12",
       "label": "wrong",
       "mistake": "fractionMultiplied"
@@ -24255,21 +24255,21 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 5,
+      "seed": 76,
       "input": "10",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 6,
+      "seed": 387,
       "input": "58",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 6,
+      "seed": 387,
       "input": "16",
       "label": "wrong",
       "mistake": "rootNotSquared"
@@ -24277,7 +24277,7 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 6,
+      "seed": 387,
       "input": "40",
       "label": "wrong",
       "mistake": "constantAddedBack"
@@ -24285,21 +24285,21 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 6,
+      "seed": 387,
       "input": "65",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "12",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "0",
       "label": "wrong",
       "mistake": "rootNotSquared"
@@ -24307,7 +24307,7 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "20",
       "label": "wrong",
       "mistake": "constantAddedBack"
@@ -24315,21 +24315,21 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "19",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 14,
+      "seed": 1655,
       "input": "36",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 14,
+      "seed": 1655,
       "input": "6",
       "label": "wrong",
       "mistake": "rootNotSquared"
@@ -24337,21 +24337,21 @@
     {
       "skill": "rootEquations",
       "level": 1,
-      "seed": 14,
+      "seed": 1655,
       "input": "43",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 1,
+      "seed": 338,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 1,
+      "seed": 338,
       "input": "-2",
       "label": "wrong",
       "mistake": "excludedKept"
@@ -24359,21 +24359,21 @@
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 1,
+      "seed": 338,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 6,
+      "seed": 159,
       "input": "7",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 6,
+      "seed": 159,
       "input": "2",
       "label": "wrong",
       "mistake": "extraneousKept"
@@ -24381,21 +24381,21 @@
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 6,
+      "seed": 159,
       "input": "14",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 8,
+      "seed": 6,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 8,
+      "seed": 6,
       "input": "-2",
       "label": "wrong",
       "mistake": "extraneousKept"
@@ -24403,7 +24403,7 @@
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 8,
+      "seed": 6,
       "input": "8",
       "label": "wrong"
     },
@@ -24432,14 +24432,14 @@
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 16,
+      "seed": 37,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 16,
+      "seed": 37,
       "input": "4",
       "label": "wrong",
       "mistake": "excludedKept"
@@ -24447,21 +24447,21 @@
     {
       "skill": "rootEquations",
       "level": 2,
-      "seed": 16,
+      "seed": 37,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 1,
+      "seed": 21,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 1,
+      "seed": 21,
       "input": "0",
       "label": "wrong",
       "mistake": "extraneousKept"
@@ -24469,7 +24469,7 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 1,
+      "seed": 21,
       "input": "3",
       "label": "wrong",
       "mistake": "crossingYGiven"
@@ -24477,21 +24477,21 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 1,
+      "seed": 21,
       "input": "12",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 2,
+      "seed": 24,
       "input": "45",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 2,
+      "seed": 24,
       "input": "15",
       "label": "wrong",
       "mistake": "rootNotSquared"
@@ -24499,7 +24499,7 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 2,
+      "seed": 24,
       "input": "9/5",
       "label": "wrong",
       "mistake": "rootDividedNotTimes"
@@ -24507,21 +24507,21 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 2,
+      "seed": 24,
       "input": "52",
       "label": "wrong"
     },
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "4",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "2",
       "label": "wrong",
       "mistake": "lastSquareForgotten"
@@ -24529,7 +24529,7 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "11",
       "label": "wrong"
     },
@@ -24558,14 +24558,14 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 13,
+      "seed": 59,
       "input": "4",
       "label": "correct"
     },
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 13,
+      "seed": 59,
       "input": "1",
       "label": "wrong",
       "mistake": "extraneousKept"
@@ -24573,7 +24573,7 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 13,
+      "seed": 59,
       "input": "2",
       "label": "wrong",
       "mistake": "crossingYGiven"
@@ -24581,7 +24581,7 @@
     {
       "skill": "rootEquations",
       "level": 3,
-      "seed": 13,
+      "seed": 59,
       "input": "11",
       "label": "wrong"
     },
@@ -61137,6 +61137,661 @@
       "input": "0",
       "label": "wrong",
       "mistake": "orReadAsAnd"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 1,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 1,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "oneEquationChecked"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 2,
+      "input": "x = -2; y = 0",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 2,
+      "input": "(0, -2)",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 3,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 4,
+      "input": "x = -1; y = 2",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 4,
+      "input": "(2, -1)",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 5,
+      "input": "One solution",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 5,
+      "input": "No solution",
+      "label": "wrong",
+      "mistake": "linesCountMisread"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 6,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 6,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "oneEquationChecked"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 10,
+      "input": "Infinitely many solutions",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 10,
+      "input": "One solution",
+      "label": "wrong",
+      "mistake": "linesCountMisread"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 11,
+      "input": "x = 1; y = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 17,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 1,
+      "seed": 69,
+      "input": "x = 3; y = 3",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 1,
+      "input": "Infinitely many solutions",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 1,
+      "input": "No solution",
+      "label": "wrong",
+      "mistake": "linesCountMisread"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 2,
+      "input": "No solution",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 2,
+      "input": "Infinitely many solutions",
+      "label": "wrong",
+      "mistake": "linesCountMisread"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 5,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 5,
+      "input": "21",
+      "label": "wrong",
+      "mistake": "otherUnknownGiven"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 5,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 10,
+      "input": "23",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 10,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "otherUnknownGiven"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 10,
+      "input": "30",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 11,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 11,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "eliminationSignWrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 11,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 25,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 25,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "otherUnknownGiven"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 25,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 26,
+      "input": "26",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 26,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "otherUnknownGiven"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 26,
+      "input": "33",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 41,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 41,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "eliminationSignWrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 41,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 61,
+      "input": "24",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 61,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "otherUnknownGiven"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 61,
+      "input": "31",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 88,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 88,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "otherUnknownGiven"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 2,
+      "seed": 88,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 1,
+      "input": "x + y = 30; 4x + 9y = 195",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 1,
+      "input": "x + y = 30; 9x + 4y = 195",
+      "label": "wrong",
+      "mistake": "systemCoefficientsSwapped"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 2,
+      "input": "Line A only",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 2,
+      "input": "Both lines",
+      "label": "wrong",
+      "mistake": "oneEquationChecked"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 3,
+      "input": "x + y = 15; 4x + 9y = 120",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 3,
+      "input": "x + y = 15; 9x + 4y = 120",
+      "label": "wrong",
+      "mistake": "systemCoefficientsSwapped"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 4,
+      "input": "Line A only",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 4,
+      "input": "Both lines",
+      "label": "wrong",
+      "mistake": "oneEquationChecked"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 5,
+      "input": "-24",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 5,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "systemScaleMissed"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 5,
+      "input": "-17",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 10,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 10,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "systemScaleMissed"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 10,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 11,
+      "input": "Infinitely many solutions",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 11,
+      "input": "No solution",
+      "label": "wrong",
+      "mistake": "linesCountMisread"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 41,
+      "input": "Infinitely many solutions",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 41,
+      "input": "No solution",
+      "label": "wrong",
+      "mistake": "linesCountMisread"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 69,
+      "input": "Both lines",
+      "label": "correct"
+    },
+    {
+      "skill": "simultaneous",
+      "level": 3,
+      "seed": 78,
+      "input": "Both lines",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 1,
+      "seed": 1,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 1,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "crossingYGiven"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 1,
+      "seed": 2,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 1,
+      "seed": 2,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "crossingYGiven"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 1,
+      "seed": 2,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 2,
+      "seed": 1,
+      "input": "Two points",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 2,
+      "seed": 1,
+      "input": "One point",
+      "label": "wrong",
+      "mistake": "quadMeetCount"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 2,
+      "seed": 2,
+      "input": "Two points",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 2,
+      "seed": 2,
+      "input": "One point",
+      "label": "wrong",
+      "mistake": "quadMeetCount"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 1,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "crossingYGiven"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 2,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "crossingYGiven"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 5,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 5,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "laterMeetingGiven"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 30,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 30,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "laterMeetingGiven"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 30,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 47,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 47,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 48,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "rootEquations",
+      "level": 3,
+      "seed": 48,
+      "input": "9",
+      "label": "wrong"
     }
   ]
 }
