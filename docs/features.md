@@ -2017,6 +2017,18 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Inequalities on a number line (#723): a number tested against x < t (the end point itself a slip when < or >
+    leaves it out), the inequality a number line shows and the line an inequality has (the dot and the side),
+    one-step inequalities (x + b, x − b, ax, x/a, and −ax turning the sign round), and "at least", "at most",
+    "more than" and "no less than" written as inequalities; values tested in a two-step inequality, and two-step
+    stories asking at most how many tickets or at least how many games; then a compound inequality read off a line,
+    numbers tested against an "or", and the "or" a line shows. The end point taken in by < or >, the line read the
+    wrong way, the operation done again instead of undone, "at least" read as more than, a count rounded the wrong
+    way and "or" read as "and" are named. The piece *Inequalities: find the set by testing points* (Insert →
+    Algebra → functions & graphs, grades 6–10): numbers on the line are tapped (or reached with Tab and Enter) and
+    turn green where the inequality holds, red where it does not, with the working written out; the set (x < 3,
+    x ≥ 3, then −2x < 6 and 3 − x ≤ 1, where the sign turns round) counts only once both sides and the end have been
+    tested, and is then drawn on the line with its rule
   - Slope, lines and functions, the whole unit (#722): the slope of a line from a table, from two points and of a
     level or an upright line, then read from an equation in any form (y = mx + c with the number first, 5y = x + 2,
     4x − y = 6), and in a story, a draining tank's rate as a negative slope and what a taxi's or a candle's slope and

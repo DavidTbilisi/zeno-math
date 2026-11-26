@@ -476,6 +476,7 @@ export type PracticeWords = {
   lneP: Record<"graphEq" | "xInt" | "yInt" | "onLine" | "through" | "nextPt" | "pointSlope" | "standard" | "stdGraph" | "anyForm" | "plumber" | "phone" | "hour" | "gb" | "weeks" | "gel" | "tableAsk" | "graphAsk" | "grows" | "startTall" | "heightNow" | "weeksN" | "plant", string>;
   rfnP: Record<"tableFn" | "fnRule" | "graphFn" | "vertical" | "dep1" | "dep1A" | "dep1B" | "dep2" | "dep2A" | "dep2B" | "dep3" | "dep3A" | "dep3B" | "indepQ" | "depQ" | "fromEq" | "isSol" | "missing" | "tYInt" | "tXInt" | "pool" | "candle" | "minute" | "hour", string>;
   fndP: Record<"ruleMore" | "ruleLess" | "patterns" | "graphPts" | "termOf", string>;
+  inqP: Record<"smaller" | "larger" | "test" | "fromLine" | "lineSays" | "filled" | "open" | "left" | "right" | "toLine" | "solve" | "atLeast" | "atMost" | "moreThan" | "lessThan" | "noMore" | "noLess" | "story0" | "story1" | "story2" | "takesEnd" | "leavesEnd" | "testTwo" | "budget" | "points" | "overBudget" | "short" | "or", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
