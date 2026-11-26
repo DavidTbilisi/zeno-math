@@ -479,6 +479,8 @@ export type PracticeWords = {
   inqP: Record<"smaller" | "larger" | "test" | "fromLine" | "lineSays" | "filled" | "open" | "left" | "right" | "toLine" | "solve" | "atLeast" | "atMost" | "moreThan" | "lessThan" | "noMore" | "noLess" | "story0" | "story1" | "story2" | "takesEnd" | "leavesEnd" | "testTwo" | "budget" | "points" | "overBudget" | "short" | "or", string>;
   sysP: Record<"yes" | "no" | "one" | "none" | "many" | "isSol" | "graphSol" | "graphCount" | "whyCross" | "whyParallel" | "whySame" | "algCount" | "algCross" | "algParallel" | "algSame" | "eliminate" | "ticketsA" | "ticketsC" | "ages" | "shop" | "whichLine" | "both" | "onlyA" | "onlyB" | "neither" | "plans" | "plan" | "planSame" | "plansAsk" | "storyOne" | "storyNone" | "storySame" | "findK", string>;
   qreP: Record<"lineGraph" | "two" | "one" | "zero" | "meetCount" | "quadSystem" | "drone", string>;
+  rfnN: Record<"evalQ" | "timesOut" | "depthAt" | "depthWhen" | "inDomain" | "ctx0" | "ctx1" | "ctx2" | "say0" | "say1" | "say2" | "times" | "inOut" | "allReal" | "domainOf" | "relMax" | "absMin" | "relWhy" | "absWhy" | "orText" | "posQ" | "negQ" | "wholeTo" | "allTo" | "wholeFromTo" | "wholeUp" | "busQ" | "ovenQ", string>;
+  fnsP: Record<"tableComp" | "tableInv" | "findComp" | "invLin" | "yes" | "no" | "verify" | "invertible" | "allDiffer" | "restrict" | "turnsAt" | "invRat" | "fuel" | "graphInv", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

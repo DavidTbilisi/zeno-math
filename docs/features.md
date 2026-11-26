@@ -2017,6 +2017,18 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Functions: notation, domain, extrema, composite and inverse (#725): k·f(a) worked out and a tank's depth h(t)
+    read at a time or for a depth; which x is in a graph's domain (an open end left out) and what C(5) = 18 means in a
+    story; the domain of √(x − a) and of 1/(x − a), a relative maximum or the absolute minimum read off a graph, where
+    f is positive or negative, and the domain of a function that counts trays or passengers. Composite functions from
+    tables and as formulas, f⁻¹ read from a table and from a graph, the inverse of px + q and of (px + q)/(x + s)
+    picked, whether g undoes f, whether a table's function is invertible, the domain that makes a parabola invertible,
+    and the cost of the fuel for a drive as c(l(d)). The input scaled for the output, input and output swapped, the
+    notation read as a product, the open end taken in, the domain's sign flipped, √0 left out, the extremum's x given,
+    a relative extremum for an absolute one, climbing taken for positive, a count's domain taken as all numbers, the
+    order of a composite swapped, the functions multiplied, f⁻¹ read forwards, the inner constant not scaled, the
+    steps undone in the wrong order, the inverse taken as 1/f, a repeated output taken as invertible and the wrong
+    turning point are named
   - Systems of equations (#724): whether a point solves a system, the solution read where two graphed lines cross,
     and how many solutions two graphed lines give; how many solutions from the equations themselves, the number the
     second equation is multiplied by so that adding removes y, and ticket and age stories; then the system a shop's
