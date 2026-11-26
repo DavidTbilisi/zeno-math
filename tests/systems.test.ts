@@ -7,14 +7,14 @@ import { test } from "node:test";
 import { en } from "../src/locales/en.ts";
 import { ka } from "../src/locales/ka.ts";
 import { ru } from "../src/locales/ru.ts";
-import { check, exercise, trapInputs } from "../src/math/practice.ts";
+import { check, exercise, trapInputs, type SkillId } from "../src/math/practice.ts";
 
-const IDS = {
+const IDS: Partial<Record<SkillId, string[]>> = {
   simultaneous: ["oneEquationChecked", "pointCoordsSwapped", "linesCountMisread", "eliminationSignWrong", "otherUnknownGiven", "systemCoefficientsSwapped", "systemScaleMissed"],
   rootEquations: ["crossingYGiven", "quadMeetCount", "laterMeetingGiven"],
 };
 
-for (const [skill, ids] of Object.entries(IDS))
+for (const [skill, ids] of Object.entries(IDS) as [SkillId, string[]][])
   test(`${skill}: the new kinds' slips are named, their hints filled in`, () => {
     const named = new Set<string>();
     for (const words of [en, ka, ru])
