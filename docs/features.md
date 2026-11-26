@@ -847,7 +847,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     - *Decimals*: adding and subtracting with one or two places (the last digits lined up instead of the points
       named), then × and ÷ by 10, 100 or 1000 and by a one-digit number, then measurements from one unit to the other
       (km and m, m and cm, kg and g, ℓ and ml) and a whole number divided by a whole number as a decimal, exact or to 2
-      places, with the long division as the worked solution (the digits moved the wrong way named)
+      places, with the long division as the worked solution (the digits moved the wrong way named). At P4 also
+      (#704) adding and taking away on a hundredths grid (the second amount orange, or crossed out), the best estimate
+      of a sum or difference with each number rounded to a whole, and stories: juice in a jug and a bottle, rope cut
+      off, who jumped farther (2.4 m or 2.35 m), a pencil to the nearest tenth and apples to the nearest kilogram; the
+      hard level adds thousandths, bare and as times on a stopwatch (two laps, how much faster). The decimals cut off
+      instead of rounded and more digits taken for bigger are named
     - *Multiplying and dividing decimals* (grades 5 and 6; #637): tenths times tenths worked on the hundred grid and
       a decimal times a whole number; then a decimal times a decimal with the point placed by counting places or by
       an estimate (57 × 49 = 2793, so 5.7 × 4.9 = 27.93), and tenths past one on the grid; then dividing by a decimal
@@ -922,7 +927,8 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       thousands, 14 hundreds, 5 ones; then 2 ones, 13 tenths, 4 hundredths); multiplies and divides a decimal by a
       power of ten; and picks the larger of a number in figures and one in words. The parts written after each other
       (70 000 469), the opposite of the largest or smallest, a 0 put first, the counts set side by side and forms
-      compared by their look are named
+      compared by their look are named. The hardest level also compares place values (#704): the 3 in 0.32 is how
+      many times the 3 in 0.032; the ratio turned round is named
     - Addition and subtraction: the facts within 20 and the bonds to 10 and 20, worked with counters and a number
       bond; then two-digit sums and differences in the head and the bonds to 100; then three digits and a number
       missing from a subtraction. A carry left out, the smaller digit taken from the larger, 37 + 73 for a bond to
@@ -982,7 +988,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       hundredths as decimals and back; then percentages as decimals and fractions and back; then eighths, mixed
       numbers and percentages over 100 or under 1. A decimal typed back for a fraction (or a fraction for a decimal)
       is sent back rather than marked right; the fraction's digits read as a decimal, the wrong power of ten on the
-      bottom and the digits moved one place are named
+      bottom and the digits moved one place are named. At P4 (#704) a decimal or fraction is also read off a
+      hundredths grid (past 1 too) or a number line in tenths or hundredths (from 0, from a whole, from a tenth), and
+      two numbers are compared: decimals with different places, on grids now and then, or a decimal against a
+      fraction (0.2 and 2/100) or a half, quarter or fifth. Hundredths read as tenths, a whole grid left out, a
+      hundredths step read as a tenth, the line's start left out, more digits taken for bigger and the same digits
+      taken for the same value are named
     - Area and perimeter (geometry) from the measurements on a drawn shape: a rectangle or square's perimeter and
       area; then a side from the area or the perimeter and a triangle's area; then a circle's circumference and area.
       A unit may follow the answer (24 cm²). The other measure given, two sides for four, the triangle's half left
@@ -2555,6 +2566,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - *Number rods*: the ten coloured rods, length = number. A rod dragged from the tray goes into a row where it is let
     go, or starts a new row; rows of the same length read as equal sums (10 = 9 + 1 = 8 + 2), and a shorter row shows
     its gap as a dashed space with the question 7 + ? = 10, left for the pupil to fill
+  - *Hundredths grid* (#704, Fractions, grades 4–6): an amount is asked (0.07, 0.13, 0.3, 0.6, 0.47, 0.85, 1.2, 1.06)
+    and the pupil shades small squares by dragging across them, a drag begun on a shaded square taking squares off.
+    The amount shaded is written under the grids as a decimal all the while, so what a square, a column and a whole
+    grid are worth is found by trying; each rule (a square is 0.01, a column 0.1, a grid 1) is said only once its
+    amount is made, and stays listed. After the eighth the grids are free to shade. Arrow keys add or take away a
+    square, with Shift a column
   - *Multiplying with blocks*: a × b (up to 39 × 39) as a rectangle of base-ten blocks beside the box and the written
     sum. Each side is split into tens and ones; a part tapped is filled with flats, rods or cubes and its product is
     written into the box and a line of the sum. With "Your turn" each product is given first on digit tiles, a wrong

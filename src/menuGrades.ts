@@ -20,7 +20,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   mental: [1, 7], model: [2, 6], compare: [1, 7], dots: [2, 5], areaBlocks: [3, 6], numberLine: [1, 8], counters: [6, 8],
   signArrow: [6, 8], signPattern: [6, 8], division: [3, 6],
   // fractions and time
-  fractions: [2, 7], compareFractions: [2, 6], clock: [1, 4],
+  fractions: [2, 7], compareFractions: [2, 6], decGrid: [4, 6], clock: [1, 4],
   // Geometry
   geoLab: [3, 12], geometry: [5, 10], euclid: [7, 12], coord: [6, 12], vectors: [10, 13],
   trig: [10, 12], identities: LATE,

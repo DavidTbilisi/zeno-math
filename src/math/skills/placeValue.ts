@@ -8,6 +8,7 @@
 // the counts set side by side, the point moved the wrong way and two forms compared by their look are the slips.
 import { fill } from "../chart";
 import { decimalInWords, numberInWords } from "../numberWords";
+import { pickText } from "../mulDivKit";
 import { num, tidy } from "../practiceKit";
 import type { Gen, Part, Rng, Trap } from "../practiceTypes";
 
@@ -190,7 +191,22 @@ const gen: Gen = (r, L, w) => {
     if (way === 1) return out(w.prompts.times, `${m * f} \\div ${f}`, m, [`${m * f} \\div ${f} = ${m}`]);
     return groups(m, f);
   }
-  const kind = r.int(0, 6);
+  const kind = r.int(0, 7);
+  if (kind === 7) {
+    // Comparing place values (#704): the same digit one or two places apart, 0.47 and 0.047. How many times one is the
+    // other is a pick; the ratio turned round is the slip.
+    const g = r.int(1, 9);
+    const o = r.int(1, 9);
+    const gap = r.next() < 0.7 ? 1 : 2;
+    const hi = r.int(1, 2);
+    const asText = (places: number) => tidy((g * 10 + o) / 10 ** (places + 1));
+    const [a, b] = [asText(hi), asText(hi + gap)];
+    const [va, vb] = [tidy(g / 10 ** hi), tidy(g / 10 ** (hi + gap))];
+    const n = 10 ** gap;
+    return pickText(r, fill(w.decPics.placeTimes, { g, a, b }), String(n), [{ text: `1/${n}`, id: "placeRatioFlipped", vars: { x: `1/${n}`, g, a, b, va, vb, n } }], [String(10 ** (3 - gap))], {
+      steps: [`${va} = ${n} \\times ${vb}`],
+    });
+  }
   if (kind === 3) {
     const p = r.next() < 0.6 ? 2 : 3;
     // Thousandths end in a digit that isn't 0, so the words name the last place (not "fifty thousandths").

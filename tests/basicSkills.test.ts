@@ -117,6 +117,8 @@ test("a decimal typed back for a fraction is sent back, a fraction not cut down 
   for (const level of LEVELS)
     for (const seed of SEEDS) {
       const e = exercise("convert", level, seed, w);
+      // Read off a grid or a line, or two numbers compared (#704; tests/decimalGrids.test.ts).
+      if (!e.q || e.format === "sign") continue;
       const frac = e.q.match(/^(?:(\d+))?\\frac\{(\d+)\}\{(\d+)\}$/);
       const from = frac ? Number(frac[1] ?? 0) + Number(frac[2]) / Number(frac[3]) : e.q.endsWith("\\%") ? Number(e.q.replace("\\%", "")) / 100 : Number(e.q);
       const typed = e.plain.endsWith("%") ? Number(e.plain.slice(0, -1)) / 100 : e.plain.includes("/") ? Number(e.plain.split("/")[0]) / Number(e.plain.split("/")[1]) : Number(e.plain);
