@@ -1245,6 +1245,12 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   ruleOrderSwapped: ["findRule", [2]],
   patternGapAsRatio: ["findRule", [2]],
   termNumberForValue: ["findRule", [3]],
+  strictEndIncluded: ["inequalities", [1, 2, 3]],
+  rayDirectionSwapped: ["inequalities", [1]],
+  oneStepOpWrong: ["inequalities", [1]],
+  wordsEndMisread: ["inequalities", [1]],
+  roundedWrongWay: ["inequalities", [2]],
+  orReadAsAnd: ["inequalities", [3]],
   wholesIgnored: ["compareFractions", [3]],
   digitNotValue: ["placeValue", [1, 2, 3]],
   zeroPlaceSkipped: ["placeValue", [1, 2, 3]],
@@ -1667,6 +1673,14 @@ test("a number asked for, an expression given: sent back, not marked", () => {
   assert.match(check(lin, "x +", w).why ?? "", /Couldn't read/);
 });
 
+/** The first easy inequalities question that asks for one to be solved (since #723 half of them ask something else). */
+const solvingIneq = () => {
+  for (let seed = 1; ; seed++) {
+    const ex = exercise("inequalities", 1, seed, w);
+    if (ex.prompt === w.prompts.ineqSolve) return ex;
+  }
+};
+
 test("inequalities are read however they are written", () => {
   const ends = (s: string) => readIneq(s);
   assert.deepEqual(ends("x >= 4"), { lo: { v: 4, closed: true }, hi: null });
@@ -1685,7 +1699,7 @@ test("inequalities are read however they are written", () => {
   assert.deepEqual(ends("x > 1/2"), { lo: { v: 0.5, closed: false }, hi: null });
   for (const bad of ["x = 4", "4", "x", "1 < x > 3", "(1, 2, 3)", "(-∞, ∞)", "x > y"]) assert.equal(ends(bad), null, bad);
 
-  const ex = exercise("inequalities", 1, 1, w);
+  const ex = solvingIneq();
   assert.equal(check(ex, ex.plain.replace(">=", "≥").replace("<=", "≤"), w).ok, true);
   assert.equal(check(ex, ex.plain.replace(/^x (\S+) (\S+)$/, (_, r, v) => `${v} ${{ "<": ">", "<=": ">=", ">": "<", ">=": "<=" }[r as "<"]} x`), w).ok, true, "the number first");
   assert.equal(check(ex, "4", w).why, w.reasons.notIneq);
@@ -1720,7 +1734,7 @@ test("standard form: e-notation and × read where it is asked for, and the form 
 });
 
 test("the preview reads ∞ and inf as infinity, not as the variable", () => {
-  const ex = exercise("inequalities", 1, 1, w);
+  const ex = solvingIneq();
   assert.equal(preview(ex, "[4, inf)"), preview(ex, "x >= 4"));
   assert.equal(preview(ex, "(-infinity, 3]"), preview(ex, "x <= 3"));
   assert.equal(preview(ex, "y > 2"), "y > 2");

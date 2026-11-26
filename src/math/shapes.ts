@@ -2294,6 +2294,16 @@ function trigFindPreview(): Piece[] {
   ];
 }
 
+function ineqFindPreview(): Piece[] {
+  // A number line, red tests on the left, green on the right, and the set from an open dot to the right.
+  const out: Piece[] = [seg([0, 60], [240, 60], { color: "#1e1e1e", width: 2 })];
+  for (let i = 0; i <= 8; i++) out.push(seg([20 + i * 25, 54], [20 + i * 25, 66], { color: "#1e1e1e" }));
+  const dot = (cx: number, cy: number, r: number) => Array.from({ length: 13 }, (_, k) => [cx + r * Math.cos((k * Math.PI) / 6), cy + r * Math.sin((k * Math.PI) / 6)] as [number, number]);
+  for (const [i, ok] of [[1, false], [3, false], [6, true], [8, true]] as const) out.push(poly(dot(20 + i * 25, 30, 7), { fill: ok ? FILL.green : FILL.red, width: 1 }));
+  out.push(seg([128, 60], [236, 60], { color: "#2f9e44", width: 6 }), poly(dot(120, 60, 7), { width: 2.5, color: "#2f9e44" }));
+  return out;
+}
+
 function powerFindPreview(): Piece[] {
   // Two rows of squares, three over two, the first two of each crossed out: a quotient of powers cancelling.
   const k = 14;
@@ -2721,6 +2731,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveTrigFind", build: trigFindPreview, live: "trigFind" },
   { id: "liveVecFind", build: vecFindPreview, live: "vecFind" },
   { id: "livePowerFind", build: powerFindPreview, live: "powerFind" },
+  { id: "liveIneqFind", build: ineqFindPreview, live: "ineqFind" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

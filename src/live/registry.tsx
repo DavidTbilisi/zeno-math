@@ -86,6 +86,7 @@ import { PercentHand } from "./PercentHand";
 import { CircleHand } from "./CircleHand";
 import { TrigFind } from "./TrigFind";
 import { PowerFind } from "./PowerFind";
+import { IneqFind } from "./IneqFind";
 import { VecFind } from "./VecFind";
 import { SimHand } from "./SimHand";
 import { AreaBlocks } from "./AreaBlocks";
@@ -238,6 +239,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   trigFind: TrigFind,
   vecFind: VecFind,
   powerFind: PowerFind,
+  ineqFind: IneqFind,
   areaBlocks: AreaBlocks,
   counters: Counters,
   signArrow: SignArrow,
