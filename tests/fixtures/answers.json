@@ -18046,14 +18046,14 @@
     {
       "skill": "areaPerimeter",
       "level": 1,
-      "seed": 7,
+      "seed": 224,
       "input": "38",
       "label": "correct"
     },
     {
       "skill": "areaPerimeter",
       "level": 1,
-      "seed": 7,
+      "seed": 224,
       "input": "38 cm",
       "label": "correct",
       "note": "with its unit"
@@ -18061,7 +18061,7 @@
     {
       "skill": "areaPerimeter",
       "level": 1,
-      "seed": 7,
+      "seed": 224,
       "input": "90",
       "label": "wrong",
       "mistake": "areaNotPerimeter"
@@ -18069,7 +18069,7 @@
     {
       "skill": "areaPerimeter",
       "level": 1,
-      "seed": 7,
+      "seed": 224,
       "input": "19",
       "label": "wrong",
       "mistake": "twoSidesOnly"
@@ -18077,35 +18077,35 @@
     {
       "skill": "areaPerimeter",
       "level": 1,
-      "seed": 7,
+      "seed": 224,
       "input": "40",
       "label": "wrong"
     },
     {
       "skill": "areaPerimeter",
       "level": 2,
-      "seed": 7,
+      "seed": 487,
       "input": "7",
       "label": "correct"
     },
     {
       "skill": "areaPerimeter",
       "level": 2,
-      "seed": 7,
+      "seed": 487,
       "input": "8",
       "label": "wrong"
     },
     {
       "skill": "areaPerimeter",
       "level": 3,
-      "seed": 7,
+      "seed": 1445,
       "input": "12.57",
       "label": "correct"
     },
     {
       "skill": "areaPerimeter",
       "level": 3,
-      "seed": 7,
+      "seed": 1445,
       "input": "12.56",
       "label": "close",
       "note": "π taken as 3.14"
@@ -18113,7 +18113,7 @@
     {
       "skill": "areaPerimeter",
       "level": 3,
-      "seed": 7,
+      "seed": 1445,
       "input": "12.6",
       "label": "close",
       "note": "one decimal place"
@@ -18121,7 +18121,7 @@
     {
       "skill": "areaPerimeter",
       "level": 3,
-      "seed": 7,
+      "seed": 1445,
       "input": "6.28",
       "label": "wrong"
     },
@@ -41415,6 +41415,1237 @@
       "input": "Plan A",
       "label": "wrong",
       "mistake": "kInverted"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 1,
+      "input": "52",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 1,
+      "input": "64",
+      "label": "wrong",
+      "mistake": "boundingBox"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 1,
+      "input": "59",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 2,
+      "input": "33",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 2,
+      "input": "26",
+      "label": "wrong",
+      "mistake": "sideMissed"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 2,
+      "input": "40",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 3,
+      "input": "29",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 3,
+      "input": "26",
+      "label": "wrong",
+      "mistake": "sideMissed"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 3,
+      "input": "36",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 4,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 4,
+      "input": "the same",
+      "label": "wrong",
+      "mistake": "sameAreaSamePerimeter"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 5,
+      "input": "36",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 5,
+      "input": "42",
+      "label": "wrong",
+      "mistake": "boundingBox"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 5,
+      "input": "43",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 6,
+      "input": "7 × 5 + 7 × 4",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 6,
+      "input": "7 × 5 + 4",
+      "label": "wrong",
+      "mistake": "distributeOnce"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 10,
+      "input": "7 × 9 + 7 × 4",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 10,
+      "input": "7 × 9 + 4",
+      "label": "wrong",
+      "mistake": "distributeOnce"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 13,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 13,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "distributeOnce"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 13,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 14,
+      "input": "24",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 14,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "drawnSquaresOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 14,
+      "input": "31",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 18,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 18,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "drawnSquaresOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 18,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 24,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 25,
+      "input": "72",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 25,
+      "input": "57",
+      "label": "wrong",
+      "mistake": "distributeOnce"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 25,
+      "input": "79",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 30,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 30,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "areaNotPerimeter"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 30,
+      "input": "11",
+      "label": "wrong",
+      "mistake": "twoSidesOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 30,
+      "input": "29",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 36,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 36,
+      "input": "the same",
+      "label": "wrong",
+      "mistake": "sameAreaSamePerimeter"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 41,
+      "input": "66",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 41,
+      "input": "34",
+      "label": "wrong",
+      "mistake": "perimeterNotArea"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 41,
+      "input": "73",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 43,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 43,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "comparedByPerimeter"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 44,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 44,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "knownSidesSum"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 44,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 48,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 48,
+      "input": "19",
+      "label": "wrong",
+      "mistake": "knownSidesSum"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 48,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 49,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 60,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 60,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "longerNotBigger"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 64,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 64,
+      "input": "38",
+      "label": "wrong",
+      "mistake": "knownSidesSum"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 64,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 67,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 67,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "comparedByPerimeter"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 68,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 68,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "longerNotBigger"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 80,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 80,
+      "input": "42",
+      "label": "wrong",
+      "mistake": "knownSidesSum"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 80,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 143,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 143,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "areaNotPerimeter"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 143,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "twoSidesOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 143,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 187,
+      "input": "39",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 187,
+      "input": "32",
+      "label": "wrong",
+      "mistake": "perimeterNotArea"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 1,
+      "seed": 187,
+      "input": "46",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 1,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 1,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "pairNotHalved"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 1,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 2,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 2,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "pairNotHalved"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 4,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 4,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "slantForHeight"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 4,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "noHalf"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 4,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 20,
+      "input": "36",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 20,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "slantForHeight"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 20,
+      "input": "72",
+      "label": "wrong",
+      "mistake": "noHalf"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 2,
+      "seed": 20,
+      "input": "43",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 1,
+      "input": "113.1",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 1,
+      "input": "452.3893421169302",
+      "label": "wrong",
+      "mistake": "circlePartWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 1,
+      "input": "120.1",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 2,
+      "input": "1884.96",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 2,
+      "input": "3769.9111843077517",
+      "label": "wrong",
+      "mistake": "diameterForRadius"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 2,
+      "input": "1891.96",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 3,
+      "input": "703.72",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 3,
+      "input": "1407.4335088082273",
+      "label": "wrong",
+      "mistake": "diameterForRadius"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 3,
+      "input": "710.72",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 4,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 4,
+      "input": "35",
+      "label": "wrong",
+      "mistake": "shadedWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 4,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 6,
+      "input": "14.28",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 6,
+      "input": "6.283185307179586",
+      "label": "wrong",
+      "mistake": "arcOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 6,
+      "input": "21.28",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 9,
+      "input": "44",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 9,
+      "input": "55",
+      "label": "wrong",
+      "mistake": "slantForHeight"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 9,
+      "input": "22",
+      "label": "wrong",
+      "mistake": "parallelogramHalved"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 9,
+      "input": "51",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 10,
+      "input": "35.71",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 10,
+      "input": "15.707963267948966",
+      "label": "wrong",
+      "mistake": "arcOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 10,
+      "input": "42.71",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 12,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 12,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "parallelogramDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 12,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 13,
+      "input": "10.28",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 13,
+      "input": "6.283185307179586",
+      "label": "wrong",
+      "mistake": "arcOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 13,
+      "input": "17.28",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 14,
+      "input": "48",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 14,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "roofNotHalved"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 14,
+      "input": "55",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 15,
+      "input": "64",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 15,
+      "input": "80",
+      "label": "wrong",
+      "mistake": "slantForHeight"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 15,
+      "input": "32",
+      "label": "wrong",
+      "mistake": "parallelogramHalved"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 15,
+      "input": "71",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 16,
+      "input": "28.27",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 16,
+      "input": "113.09733552923255",
+      "label": "wrong",
+      "mistake": "circlePartWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 16,
+      "input": "35.269999999999996",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 18,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 18,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "heightNotDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 18,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 20,
+      "input": "153.94",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 20,
+      "input": "615.7521601035994",
+      "label": "wrong",
+      "mistake": "diameterForRadius"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 20,
+      "input": "160.94",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 21,
+      "input": "42",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 21,
+      "input": "54",
+      "label": "wrong",
+      "mistake": "roofNotHalved"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 21,
+      "input": "49",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 22,
+      "input": "25.13",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 22,
+      "input": "50.26548245743669",
+      "label": "wrong",
+      "mistake": "circlePartWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 22,
+      "input": "32.129999999999995",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 24,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 24,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "parallelogramDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 24,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 27,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 27,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "heightNotDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 27,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 30,
+      "input": "21.46",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 30,
+      "input": "100",
+      "label": "wrong",
+      "mistake": "shadedWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 30,
+      "input": "28.46",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 32,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 32,
+      "input": "3/2",
+      "label": "wrong",
+      "mistake": "heightNotDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 32,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 34,
+      "input": "56.55",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 34,
+      "input": "113.09733552923255",
+      "label": "wrong",
+      "mistake": "circlePartWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 34,
+      "input": "63.55",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 36,
+      "input": "90",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 36,
+      "input": "108",
+      "label": "wrong",
+      "mistake": "shadedWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 36,
+      "input": "97",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 37,
+      "input": "51.42",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 37,
+      "input": "31.41592653589793",
+      "label": "wrong",
+      "mistake": "arcOnly"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 37,
+      "input": "58.42",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 41,
+      "input": "42.06",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 41,
+      "input": "196",
+      "label": "wrong",
+      "mistake": "shadedWhole"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 41,
+      "input": "49.06",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 54,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 54,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "parallelogramDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 54,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 60,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 60,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "parallelogramDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 60,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 68,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 68,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "heightNotDoubled"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 68,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 69,
+      "input": "254.47",
+      "label": "correct"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 69,
+      "input": "1017.8760197630929",
+      "label": "wrong",
+      "mistake": "diameterForRadius"
+    },
+    {
+      "skill": "areaPerimeter",
+      "level": 3,
+      "seed": 69,
+      "input": "261.47",
+      "label": "wrong"
     }
   ]
 }

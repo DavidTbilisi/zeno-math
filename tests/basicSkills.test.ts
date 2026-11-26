@@ -127,20 +127,22 @@ test("a decimal typed back for a fraction is sent back, a fraction not cut down 
 });
 
 test("area and perimeter: a unit may follow the answer, and the other measure is named", () => {
-  const rect = SEEDS.map((s) => exercise("areaPerimeter", 1, s, w)).find((e) => e.prompt === w.basics.area && trapInputs(e).length > 0)!;
+  const rect = SEEDS.map((s) => exercise("areaPerimeter", 1, s, w)).find((e) => e.prompt === w.basics.area && trapInputs(e).some((t) => t.id === "perimeterNotArea"))!;
   const unit = rect.show.match(/\\text\{(\w+)\}/)![1];
   assert.equal(check(rect, `${rect.plain} ${unit}²`, w).ok, true);
   assert.equal(check(rect, `${rect.plain} ${unit}2`, w).ok, true);
   assert.equal(check(rect, `${rect.plain}${unit}^2`, w).ok, true);
-  assert.equal(check(rect, trapInputs(rect)[0].input, w).mistake, "perimeterNotArea");
+  assert.equal(check(rect, trapInputs(rect).find((t) => t.id === "perimeterNotArea")!.input, w).mistake, "perimeterNotArea");
   for (const level of LEVELS)
     for (const seed of SEEDS) {
       const e = exercise("areaPerimeter", level, seed, w);
-      assert.ok(e.pic && e.pic.w > 0 && e.pic.h > 0 && e.pic.svg(0, 0).includes("<g"), `areaPerimeter ${level} #${seed} has its drawing`);
-      assert.ok(Number(e.plain) > 0);
+      // The stories of #709 (a fence, a carpet, a pen, a wheel, two rectangles compared) say it all in words.
+      const story = Object.values(w.areaP).some((t) => t.length > 40 && e.prompt.startsWith(t.split("{")[0])) && !e.pic;
+      assert.ok(story || (e.pic && e.pic.w > 0 && e.pic.h > 0 && e.pic.svg(0, 0).includes("<g")), `areaPerimeter ${level} #${seed} has its drawing`);
+      if (e.format !== "pick") assert.ok(Number(e.plain) > 0);
     }
   // A circle: the true π, to two places; 3.14 is close and says so.
-  const circle = SEEDS.map((s) => exercise("areaPerimeter", 3, s, w)).find((e) => e.prompt === w.basics.circleArea && e.pic!.svg(0, 0).includes(">5 "))!;
+  const circle = Array.from({ length: 2000 }, (_, i) => exercise("areaPerimeter", 3, i + 1, w)).find((e) => e.prompt === w.basics.circleArea && e.pic!.svg(0, 0).includes(">5 "))!;
   assert.equal(circle.plain, "78.54");
   assert.equal(check(circle, "78.5", w).close, true);
 });
