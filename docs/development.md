@@ -255,6 +255,7 @@ src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
 src/math/cxPlane.ts       the complex plane piece: plot, add, multiply by i, conjugate, by tapping points
 src/math/matPlane.ts      the matrix plane piece: where (1, 0) and (0, 1) land, columns and determinant
+src/math/meanBalance.ts   the mean balance piece: rounds of dots, the pull each side, the median and midpoint named
 src/math/displays.ts      pictures of data to build from: a line plot of fractions, raw data, a table of counts, a mosaic plot
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/functions.ts     functions: domain & range, composites, inverses, transformations, curve sketching + pictures

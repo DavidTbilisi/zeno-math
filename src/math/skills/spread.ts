@@ -4,7 +4,11 @@
 // and to the median, and which of two box plots is more spread out. Counting the value itself as "more than", the
 // stack's height for the most common value, one bar of two, the middle of the unsorted list, the range for the IQR, the
 // median kept in the halves, signed distances, the total distance not shared out, the fence from the median, the whole
-// change for the mean, a median that moves, and the range for the spread are slips.
+// change for the mean, a median that moves, and the range for the spread are slips. Since #736 half the easy and hard
+// questions are new kinds: the shape of a dot plot and where its gap is (easy); which centre and spread suit a plot,
+// and how much higher one class's median is than another's, on two dot plots (hard). The peak's side named for the
+// skew, a short stack taken for a gap, the mean for a skewed plot, the median for a symmetric one, and the largest
+// values compared are the slips.
 import { fill } from "../chart";
 import { num } from "../practiceKit";
 import type { Gen, Part, Trap } from "../practiceTypes";
@@ -47,6 +51,59 @@ const gen: Gen = (r, L, w) => {
     }
     return a;
   };
+
+  const more = (): Part => {
+    const K = w.spK;
+    /** Dots from counts at lo, lo + 1, …. */
+    const dots = (lo: number, counts: readonly number[]) => counts.flatMap((c, i) => Array.from({ length: c }, () => lo + i));
+    const SKEW = [[2, 5, 4, 3, 2, 1, 1], [3, 6, 4, 2, 1, 1, 1], [1, 4, 5, 3, 2, 2, 1]];
+    const SYM = [[1, 2, 4, 6, 4, 2, 1], [1, 3, 5, 5, 3, 1], [2, 3, 4, 3, 2]];
+    if (L === 1) {
+      if (r.next() < 0.5) {
+        const kind = r.int(0, 2);
+        const base = kind === 2 ? r.pick(SYM) : r.pick(SKEW);
+        const counts = kind === 1 ? [...base].reverse() : base;
+        const lo = r.int(0, 10 - counts.length);
+        const traps: Trap[] = kind === 2 ? [] : [{ id: "skewSideSwapped", a: { k: "pick", options: [], right: 1 - kind }, vars: { s: [K.right, K.left][kind] } }];
+        return pick([K.skewRight, K.skewLeft, K.symmetric], kind, traps, K.shapeQ, [`\\text{${[K.whyRight, K.whyLeft, K.whySym][kind]}}`], picOf(dotPlotSvg(dots(lo, counts), 0, 10, K.score)));
+      }
+      // Two clusters with a gap between them, and a short stack inside the first.
+      const p = r.int(0, 2);
+      const gap = r.int(2, 3);
+      const q = p + 4 + gap;
+      const second = [r.int(2, 4), r.int(2, 4), r.int(2, 4)];
+      const vs = [...dots(p, [r.int(2, 3), r.int(3, 4), 1, r.int(2, 4)]), ...dots(q, second)];
+      // The three answers in a random order: o[i] is where answer i goes.
+      const o = shuffled([0, 1, 2]);
+      const opts = [fill(K.gapBetween, { a: p + 3, b: q }), fill(K.gapAt, { d: p + 2 }), K.noGap];
+      return pick(o.map((_, i) => opts[o.indexOf(i)]), o[0], [{ id: "lowStackAsGap", a: { k: "pick", options: [], right: o[1] }, vars: { d: p + 2 } }],
+        K.gapQ, [`\\text{${fill(K.gapWhy, { a: p + 3, b: q })}}`], picOf(dotPlotSvg(vs, 0, Math.max(12, q + 3), K.score)));
+    }
+    if (r.next() < 0.5) {
+      // Skewed (with a far value) or symmetric: which pair of centre and spread suits it.
+      const skew = r.next() < 0.5;
+      const base = skew ? r.pick(SKEW) : r.pick(SYM);
+      const vs = [...dots(1, base), ...(skew ? [r.int(10, 12)] : [])];
+      return pick([K.medIqr, K.meanSd], skew ? 0 : 1, [skew ? { id: "meanForSkewed", a: { k: "pick", options: [], right: 1 }, vars: {} } : { id: "medianForSymmetric", a: { k: "pick", options: [], right: 0 }, vars: {} }],
+        K.centreQ, [`\\text{${skew ? K.whyMedian : K.whyMean}}`], picOf(dotPlotSvg(vs, 0, 12, K.score)));
+    }
+    // Two classes' scores: how much higher A's median is than B's; the largest values differ by another amount.
+    for (;;) {
+      const a = values(9, 3, 12);
+      const b = values(9, 0, 9);
+      const [ma, mb] = [a[4], b[4]];
+      const top = a[8] - b[8];
+      if (ma <= mb || top === ma - mb) continue;
+      const pa = dotPlotSvg(a, 0, 12, K.classA);
+      const pb = dotPlotSvg(b, 0, 12, K.classB);
+      return {
+        prompt: K.compareQ, q: "", pic: picOf({ body: `${pa.body}<g transform="translate(0 ${pa.h + 10})">${pb.body}</g>`, w: Math.max(pa.w, pb.w), h: pa.h + pb.h + 10 }),
+        ...numWith(ma - mb, [trap("comparedLargest", top, { a: a[8], b: b[8], ma, mb, v: ma - mb })]),
+        steps: [`\\text{${fill(K.medians, { ma, mb })}}`, `${ma} - ${mb} = ${ma - mb}`],
+      };
+    }
+  };
+  if (L !== 2 && r.int(0, 9) >= 5) return more();
 
   if (L === 1) {
     const t = r.pick(["more", "mode", "hist"] as const);

@@ -2329,6 +2329,17 @@ function matPlanePreview(): Piece[] {
   ];
 }
 
+function meanBalancePreview(): Piece[] {
+  // A beam on its balance point at the mean, 4, with the dots 1, 2 and 9 on it.
+  const k = 12;
+  const X = (v: number) => k + v * k;
+  return [
+    seg([X(0), 5 * k], [X(10), 5 * k], { color: "#1e1e1e", width: 3 }),
+    seg([X(4), 5 * k], [X(3), 7 * k], { color: "#2f9e44", width: 2 }), seg([X(3), 7 * k], [X(5), 7 * k], { color: "#2f9e44", width: 2 }), seg([X(5), 7 * k], [X(4), 5 * k], { color: "#2f9e44", width: 2 }),
+    ...[1, 2, 9].map((v) => seg([X(v), 5 * k - 2], [X(v), 4 * k], { color: v < 4 ? "#e8590c" : "#1971c2", width: 8 })),
+  ];
+}
+
 function cxPlanePreview(): Piece[] {
   // Axes, z as an arrow from 0 and i·z a quarter turn on from it, with the corner of the turn.
   const k = 12;
@@ -2759,6 +2770,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveIneqFind", build: ineqFindPreview, live: "ineqFind" },
   { id: "liveCxPlane", build: cxPlanePreview, live: "cxPlane" },
   { id: "liveMatPlane", build: matPlanePreview, live: "matPlane" },
+  { id: "liveMeanBalance", build: meanBalancePreview, live: "meanBalance" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
