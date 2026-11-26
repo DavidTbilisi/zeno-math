@@ -92,6 +92,15 @@ export function gridDot(g: Grid, p: Pt, color: string, label = ""): string {
   return `<circle cx="${x}" cy="${y}" r="7" fill="${color}" stroke="#fff" stroke-width="2"/>${text}`;
 }
 
+/** A polygon on a grid from lo to hi, its corners named. */
+export function polyOnGrid(lo: number, hi: number, pts: Pt[], names = "ABCD", cell = 22): { svg: (x: number, y: number) => string; w: number; h: number } {
+  const g: Grid = { lo, hi, cell };
+  let body = gridSvg(g);
+  body += `<polygon points="${pts.map((p) => gridAt(g, p).join(",")).join(" ")}" fill="#d0ebff" fill-opacity="0.6" stroke="#1971c2" stroke-width="2.5"/>`;
+  pts.forEach((p, k) => (body += gridDot(g, p, "#1971c2", names[k])));
+  const side = gridSide(g);
+  return { svg: (px, py) => `<g transform="translate(${Math.round(px * 100) / 100} ${Math.round(py * 100) / 100})">${body}</g>`, w: side, h: side };
+}
 export const PLOT_CELL = 34;
 /**
  * The grid of a task, with a rectangle's three corners drawn (A, B, C), and: `asked`, the point to read (P, or the
