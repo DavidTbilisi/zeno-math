@@ -2284,6 +2284,16 @@ function circleHandPreview(): Piece[] {
   ];
 }
 
+function trigFindPreview(): Piece[] {
+  // A unit circle with P on it: the radius, and below it cos θ along and sin θ up.
+  const [cx, cy, r] = [40, 40, 34];
+  const P: Pt = [cx + r * Math.cos(Math.PI / 4.5), cy - r * Math.sin(Math.PI / 4.5)];
+  return [
+    ellipse(cx, cy, r, r, { color: "#1e1e1e", width: 1.4 }), seg([cx - r - 4, cy], [cx + r + 4, cy], { color: "#868e96", width: 1 }),
+    seg([cx, cy], P, { color: "#1e1e1e", width: 1.4 }), seg([cx, cy], [P[0], cy], { color: "#1971c2", width: 2 }), seg([P[0], cy], P, { color: "#2f9e44", width: 2 }), dot(P),
+  ];
+}
+
 function measureHandPreview(): Piece[] {
   // A pencil from 3 to 10 on a ruler that starts at 2: its ends read 3 and 10.
   const k = 12;
@@ -2684,6 +2694,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "livePercentHand", build: percentHandPreview, live: "percentHand" },
   { id: "liveSimHand", build: simHandPreview, live: "simHand" },
   { id: "liveCircleHand", build: circleHandPreview, live: "circleHand" },
+  { id: "liveTrigFind", build: trigFindPreview, live: "trigFind" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

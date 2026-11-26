@@ -1,5 +1,5 @@
 // Practice: Practical trigonometry.
-import righttri from "./righttri";
+import { old as righttri } from "./righttri";
 import { C, fill, r2 } from "../chart";
 import type { Answer, Gen } from "../practiceTypes";
 

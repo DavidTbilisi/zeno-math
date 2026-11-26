@@ -1252,28 +1252,28 @@
     {
       "skill": "righttri",
       "level": 2,
-      "seed": 7,
+      "seed": 710,
       "input": "43.86",
       "label": "correct"
     },
     {
       "skill": "righttri",
       "level": 2,
-      "seed": 7,
+      "seed": 710,
       "input": "43.862",
       "label": "correct"
     },
     {
       "skill": "righttri",
       "level": 2,
-      "seed": 7,
+      "seed": 710,
       "input": "43.9",
       "label": "close"
     },
     {
       "skill": "righttri",
       "level": 2,
-      "seed": 7,
+      "seed": 710,
       "input": "43.8",
       "label": "close",
       "note": "cut off, not rounded"
@@ -1281,7 +1281,7 @@
     {
       "skill": "righttri",
       "level": 2,
-      "seed": 7,
+      "seed": 710,
       "input": "44",
       "label": "close",
       "note": "rounded to a whole number"
@@ -1289,28 +1289,28 @@
     {
       "skill": "righttri",
       "level": 2,
-      "seed": 7,
+      "seed": 710,
       "input": "34.86",
       "label": "wrong"
     },
     {
       "skill": "righttri",
       "level": 3,
-      "seed": 7,
+      "seed": 32,
       "input": "41.81",
       "label": "correct"
     },
     {
       "skill": "righttri",
       "level": 3,
-      "seed": 7,
+      "seed": 32,
       "input": "41.81°",
       "label": "correct"
     },
     {
       "skill": "righttri",
       "level": 3,
-      "seed": 7,
+      "seed": 32,
       "input": "48.19",
       "label": "wrong",
       "note": "the other angle"
@@ -1488,21 +1488,21 @@
     {
       "skill": "identities",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "(sqrt(6) - sqrt(2))/4",
       "label": "correct"
     },
     {
       "skill": "identities",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "(√6 - √2)/4",
       "label": "correct"
     },
     {
       "skill": "identities",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "0.2588",
       "label": "form",
       "note": "a decimal for an exact value"
@@ -1510,7 +1510,7 @@
     {
       "skill": "identities",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "(sqrt(6) + sqrt(2))/4",
       "label": "wrong",
       "note": "that is cos 15°"
@@ -1518,14 +1518,14 @@
     {
       "skill": "identities",
       "level": 2,
-      "seed": 7,
+      "seed": 96,
       "input": "-24/7",
       "label": "correct"
     },
     {
       "skill": "identities",
       "level": 2,
-      "seed": 7,
+      "seed": 96,
       "input": "24/7",
       "label": "wrong",
       "mistake": "sign"
@@ -1533,7 +1533,7 @@
     {
       "skill": "identities",
       "level": 2,
-      "seed": 7,
+      "seed": 96,
       "input": "-48/14",
       "label": "form"
     },
@@ -4182,7 +4182,7 @@
     {
       "skill": "trigRules",
       "level": 2,
-      "seed": 1,
+      "seed": 2759,
       "input": "130.6°",
       "label": "correct",
       "note": "with the degree sign"
@@ -4190,7 +4190,7 @@
     {
       "skill": "trigRules",
       "level": 2,
-      "seed": 1,
+      "seed": 2759,
       "input": "49.4",
       "label": "wrong",
       "note": "the acute angle: the minus sign of the cosine dropped",
@@ -4199,7 +4199,7 @@
     {
       "skill": "trigRules",
       "level": 2,
-      "seed": 4,
+      "seed": 58888,
       "input": "14.32 cm²",
       "label": "correct",
       "note": "with the unit"
@@ -4207,7 +4207,7 @@
     {
       "skill": "trigRules",
       "level": 2,
-      "seed": 4,
+      "seed": 58888,
       "input": "21",
       "label": "wrong",
       "note": "½bc without sin A",
@@ -4216,7 +4216,7 @@
     {
       "skill": "trigRules",
       "level": 2,
-      "seed": 6,
+      "seed": 3224,
       "input": "93",
       "label": "wrong",
       "note": "x² from the cosine rule, no square root",
@@ -4225,14 +4225,14 @@
     {
       "skill": "trigRules",
       "level": 3,
-      "seed": 1,
+      "seed": 338,
       "input": "219.80",
       "label": "correct"
     },
     {
       "skill": "trigRules",
       "level": 3,
-      "seed": 1,
+      "seed": 338,
       "input": "29.12",
       "label": "wrong",
       "note": "the angle of depression measured from the cliff",
@@ -4241,8 +4241,8 @@
     {
       "skill": "trigRules",
       "level": 3,
-      "seed": 6,
-      "input": "6.46",
+      "seed": 14,
+      "input": "11.08",
       "label": "wrong",
       "note": "the turn between the bearings used as the angle inside",
       "mistake": "bearingTurnInside"
@@ -4250,7 +4250,7 @@
     {
       "skill": "trigRules",
       "level": 3,
-      "seed": 7,
+      "seed": 23,
       "input": "59.44",
       "label": "wrong",
       "note": "the acute angle of the ambiguous case",
@@ -4259,14 +4259,14 @@
     {
       "skill": "trigRules",
       "level": 3,
-      "seed": 12,
+      "seed": 1283,
       "input": "215",
       "label": "correct"
     },
     {
       "skill": "trigRules",
       "level": 3,
-      "seed": 12,
+      "seed": 1283,
       "input": "325",
       "label": "wrong",
       "note": "360° − 035° for the back bearing",
@@ -52303,6 +52303,1991 @@
       "level": 3,
       "seed": 126,
       "input": "92",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 1,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 1,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "ratioUpsideDown"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 2,
+      "input": "24",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 2,
+      "input": "2817/100",
+      "label": "wrong",
+      "mistake": "ratioUpsideDown"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 2,
+      "input": "31",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 3,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 3,
+      "input": "1667/100",
+      "label": "wrong",
+      "mistake": "ratioUpsideDown"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 3,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 4,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 4,
+      "input": "169/5",
+      "label": "wrong",
+      "mistake": "ratioUpsideDown"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 4,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 5,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 5,
+      "input": "3613/100",
+      "label": "wrong",
+      "mistake": "ratioUpsideDown"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 5,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 10,
+      "input": "21",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 10,
+      "input": "12343/50",
+      "label": "wrong",
+      "mistake": "ratioUpsideDown"
+    },
+    {
+      "skill": "righttri",
+      "level": 1,
+      "seed": 10,
+      "input": "28",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 1,
+      "input": "78",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 1,
+      "input": "168",
+      "label": "wrong",
+      "mistake": "supplementForComplement"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 1,
+      "input": "85",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 2,
+      "input": "57",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 2,
+      "input": "147",
+      "label": "wrong",
+      "mistake": "supplementForComplement"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 2,
+      "input": "64",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 3,
+      "input": "76",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 3,
+      "input": "166",
+      "label": "wrong",
+      "mistake": "supplementForComplement"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 3,
+      "input": "83",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 4,
+      "input": "5/13",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 4,
+      "input": "12/13",
+      "label": "wrong",
+      "mistake": "sameAngleRatio"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 6,
+      "input": "78",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 6,
+      "input": "168",
+      "label": "wrong",
+      "mistake": "supplementForComplement"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 6,
+      "input": "85",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 30,
+      "input": "7/25",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 30,
+      "input": "24/25",
+      "label": "wrong",
+      "mistake": "sameAngleRatio"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 41,
+      "input": "12/13",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 41,
+      "input": "5/13",
+      "label": "wrong",
+      "mistake": "sameAngleRatio"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 43,
+      "input": "4/5",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 2,
+      "seed": 43,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "sameAngleRatio"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 1,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 1,
+      "input": "1.4142135623730951",
+      "label": "wrong",
+      "mistake": "isoscelesHypDoubled"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 2,
+      "input": "4sqrt(3)",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "specialSidesSwapped"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 3,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 3,
+      "input": "3.4641016151377544",
+      "label": "wrong",
+      "mistake": "specialSidesSwapped"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 3,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 4,
+      "input": "4sqrt(3)",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 4,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "specialSidesSwapped"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 5,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 5,
+      "input": "5.656854249492381",
+      "label": "wrong",
+      "mistake": "isoscelesHypDoubled"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 5,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 6,
+      "input": "2sqrt(2)",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 6,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "isoscelesHypDoubled"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 10,
+      "input": "9sqrt(2)",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 10,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "isoscelesHypDoubled"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 20,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 20,
+      "input": "8.660254037844386",
+      "label": "wrong",
+      "mistake": "specialSidesSwapped"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 20,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 69,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 69,
+      "input": "4.618802153517007",
+      "label": "wrong",
+      "mistake": "specialSidesSwapped"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 69,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 73,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 73,
+      "input": "10.392304845413264",
+      "label": "wrong",
+      "mistake": "specialSidesSwapped"
+    },
+    {
+      "skill": "righttri",
+      "level": 3,
+      "seed": 73,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 1,
+      "input": "-3/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 1,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 1,
+      "input": "-1/5",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 2,
+      "input": "13/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 2,
+      "input": "12/5",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 3,
+      "input": "5/4",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 3,
+      "input": "5/3",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 4,
+      "input": "-12/13",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 4,
+      "input": "12/13",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 4,
+      "input": "-5/13",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 5,
+      "input": "7/25",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 5,
+      "input": "-7/25",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 5,
+      "input": "1/25",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 6,
+      "input": "-4/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 6,
+      "input": "4/5",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 6,
+      "input": "-2/5",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 10,
+      "input": "-24/25",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 10,
+      "input": "24/25",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 10,
+      "input": "-18/25",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 11,
+      "input": "-8/17",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 11,
+      "input": "8/17",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 11,
+      "input": "-2/17",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 13,
+      "input": "-12/13",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 13,
+      "input": "12/13",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 13,
+      "input": "-8/13",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 16,
+      "input": "3/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 16,
+      "input": "-3/5",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 16,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 17,
+      "input": "-3/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 17,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 17,
+      "input": "-1/5",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 20,
+      "input": "13/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 20,
+      "input": "13/12",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 22,
+      "input": "-3/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 22,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 22,
+      "input": "-1/5",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 30,
+      "input": "-24/25",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 30,
+      "input": "24/25",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 30,
+      "input": "-7/25",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 31,
+      "input": "24/25",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 31,
+      "input": "-24/25",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 31,
+      "input": "18/25",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 36,
+      "input": "-24/25",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 36,
+      "input": "24/25",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 36,
+      "input": "-7/25",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 37,
+      "input": "24/25",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 37,
+      "input": "-24/25",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 37,
+      "input": "18/25",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 38,
+      "input": "25/7",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 38,
+      "input": "24/7",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 41,
+      "input": "15/17",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 41,
+      "input": "-15/17",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 41,
+      "input": "8/17",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 42,
+      "input": "-12/13",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 42,
+      "input": "12/13",
+      "label": "wrong",
+      "mistake": "quadrantSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 42,
+      "input": "-8/13",
+      "label": "wrong",
+      "mistake": "identityNotSquared"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 43,
+      "input": "-5/13",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 43,
+      "input": "5/13",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 43,
+      "input": "-12/13",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 44,
+      "input": "4/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 44,
+      "input": "-4/5",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 44,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 48,
+      "input": "-8/17",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 48,
+      "input": "8/17",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 48,
+      "input": "-15/17",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 62,
+      "input": "5/4",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 62,
+      "input": "5/3",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 64,
+      "input": "5/13",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 64,
+      "input": "-5/13",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 64,
+      "input": "12/13",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 67,
+      "input": "-12/13",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 67,
+      "input": "12/13",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 67,
+      "input": "-5/13",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 69,
+      "input": "12/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 69,
+      "input": "13/12",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 70,
+      "input": "13/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 70,
+      "input": "13/12",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 71,
+      "input": "5/3",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 71,
+      "input": "3/4",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 73,
+      "input": "7/24",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 73,
+      "input": "25/24",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 80,
+      "input": "8/15",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 80,
+      "input": "17/15",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 82,
+      "input": "25/24",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 82,
+      "input": "24/7",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 88,
+      "input": "-8/17",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 88,
+      "input": "8/17",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 88,
+      "input": "-15/17",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 89,
+      "input": "3/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 89,
+      "input": "-3/5",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 89,
+      "input": "4/5",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 122,
+      "input": "5/12",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 122,
+      "input": "13/5",
+      "label": "wrong",
+      "mistake": "reciprocalMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 160,
+      "input": "4/5",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 160,
+      "input": "-4/5",
+      "label": "wrong",
+      "mistake": "reflectionSignLost"
+    },
+    {
+      "skill": "identities",
+      "level": 1,
+      "seed": 160,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "cofunctionMixed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 1,
+      "input": "84/85",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 1,
+      "input": "-7/85",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 1,
+      "input": "36/85",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 2,
+      "input": "220/221",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 2,
+      "input": "9/221",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 2,
+      "input": "140/221",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 3,
+      "input": "-33/65",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 3,
+      "input": "-21/65",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 3,
+      "input": "63/65",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 4,
+      "input": "63/65",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 4,
+      "input": "77/65",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 4,
+      "input": "-33/65",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 5,
+      "input": "44/125",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 5,
+      "input": "39/25",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 5,
+      "input": "4/5",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 6,
+      "input": "-36/85",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 6,
+      "input": "-24/85",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 6,
+      "input": "84/85",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 10,
+      "input": "-304/425",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 10,
+      "input": "319/425",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 10,
+      "input": "416/425",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 11,
+      "input": "304/425",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 11,
+      "input": "783/425",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 11,
+      "input": "416/425",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 13,
+      "input": "56/65",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 13,
+      "input": "64/65",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 13,
+      "input": "-16/65",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 16,
+      "input": "117/125",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 16,
+      "input": "27/25",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 16,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 17,
+      "input": "84/85",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 17,
+      "input": "108/85",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 17,
+      "input": "36/85",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 25,
+      "input": "304/425",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 25,
+      "input": "783/425",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 25,
+      "input": "416/425",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 26,
+      "input": "77/85",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 26,
+      "input": "-28/85",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 26,
+      "input": "-13/85",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 36,
+      "input": "253/325",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 36,
+      "input": "187/325",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 36,
+      "input": "323/325",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 47,
+      "input": "56/65",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 47,
+      "input": "27/65",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 47,
+      "input": "-16/65",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 64,
+      "input": "21/221",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 64,
+      "input": "9/221",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 2,
+      "seed": 64,
+      "input": "171/221",
+      "label": "wrong",
+      "mistake": "additionSignSwapped"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 1,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 1,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "peaksAdded"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 1,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 2,
+      "input": "13",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 2,
+      "input": "17",
+      "label": "wrong",
+      "mistake": "peaksAdded"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 2,
+      "input": "20",
+      "label": "wrong"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 4,
+      "input": "7/9",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 4,
+      "input": "7/11",
+      "label": "wrong",
+      "mistake": "tanAddDenomPlus"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 4,
+      "input": "7/10",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 30,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 30,
+      "input": "13/41",
+      "label": "wrong",
+      "mistake": "tanAddDenomPlus"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 30,
+      "input": "13/40",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 120,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 120,
+      "input": "5/7",
+      "label": "wrong",
+      "mistake": "tanAddDenomPlus"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 120,
+      "input": "5/6",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 120,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 182,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 182,
+      "input": "5/7",
+      "label": "wrong",
+      "mistake": "tanAddDenomPlus"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 182,
+      "input": "5/6",
+      "label": "wrong",
+      "mistake": "additionDistributed"
+    },
+    {
+      "skill": "identities",
+      "level": 3,
+      "seed": 182,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 1,
+      "input": "10.06",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 1,
+      "input": "12.360679774997894",
+      "label": "wrong",
+      "mistake": "sineRuleFlipped"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 1,
+      "input": "17.060000000000002",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 2,
+      "input": "10.88",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 2,
+      "input": "16.926342848617345",
+      "label": "wrong",
+      "mistake": "sineRuleFlipped"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 2,
+      "input": "17.880000000000003",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 4,
+      "input": "4.85",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 4,
+      "input": "9.219544457292887",
+      "label": "wrong",
+      "mistake": "cosineRuleNoCorrection"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 4,
+      "input": "23.56628906398967",
+      "label": "wrong",
+      "mistake": "noSquareRoot"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 4,
+      "input": "11.85",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 10,
+      "input": "15.99",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 10,
+      "input": "22.990000000000002",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 16,
+      "input": "7.2",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 16,
+      "input": "14.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 30,
+      "input": "11.35",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 30,
+      "input": "16.64331697709324",
+      "label": "wrong",
+      "mistake": "cosineRuleNoCorrection"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 30,
+      "input": "128.87811642229676",
+      "label": "wrong",
+      "mistake": "noSquareRoot"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 30,
+      "input": "18.35",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 300,
+      "input": "14.12",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 300,
+      "input": "199.4740024998468",
+      "label": "wrong",
+      "mistake": "noSquareRoot"
+    },
+    {
+      "skill": "trigRules",
+      "level": 2,
+      "seed": 300,
+      "input": "21.119999999999997",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 1,
+      "input": "30.76",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 1,
+      "input": "26.248809496813376",
+      "label": "wrong",
+      "mistake": "cosineRuleNoCorrection"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 1,
+      "input": "37.760000000000005",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 2,
+      "input": "30.32",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 2,
+      "input": "24.758836806279895",
+      "label": "wrong",
+      "mistake": "cosineRuleNoCorrection"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 2,
+      "input": "37.32",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 4,
+      "input": "8.17",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 4,
+      "input": "12.294770306211845",
+      "label": "wrong",
+      "mistake": "sineRuleFlipped"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 4,
+      "input": "15.17",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 30,
+      "input": "5.69",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 30,
+      "input": "7.040903109307447",
+      "label": "wrong",
+      "mistake": "sineRuleFlipped"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 30,
+      "input": "12.690000000000001",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 493,
+      "input": "27.54",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 493,
+      "input": "34.54",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 595,
+      "input": "32.66",
+      "label": "correct"
+    },
+    {
+      "skill": "trigRules",
+      "level": 3,
+      "seed": 595,
+      "input": "39.66",
       "label": "wrong"
     }
   ]

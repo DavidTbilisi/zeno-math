@@ -178,7 +178,7 @@ test("answers in other forms", () => {
   assert.equal(check(sim, `(${x}; ${y})`, w).ok, true, "as a point");
   assert.equal(check(sim, `(${y}; ${x})`, w).ok, false, "swapped");
 
-  const tri = find("righttri", 1, () => true);
+  const tri = find("righttri", 1, (ex) => ex.solution?.kind === "trig");
   assert.equal(check(tri, String(Math.round(Number(tri.plain))), w).ok, Math.abs(Math.round(Number(tri.plain)) - Number(tri.plain)) < 0.0051, "rounding");
   assert.equal(check(tri, (Number(tri.plain) + 0.03).toFixed(2), w).why, w.reasons.rounding, "nearly");
 
@@ -192,7 +192,10 @@ test("answers in other forms", () => {
 test("the right-triangle angle label lies inside the triangle, clear of the right-angle mark", () => {
   for (const level of LEVELS)
     for (let seed = 1; seed <= 300; seed++) {
-      const svg = exercise("righttri", level, seed, w).pic!.svg(0, 0);
+      // The kinds drawn with a marked angle (#716's ratio and special-triangle kinds are drawn as figures).
+      const ex = exercise("righttri", level, seed, w);
+      if (ex.solution?.kind !== "trig") continue;
+      const svg = ex.pic!.svg(0, 0);
       const [bx, by, cx, , , ay] = svg.match(/points="([^"]+)"/)![1].split(/[ ,]/).map(Number);
       const m = svg.match(/<text x="([\d.]+)" y="([\d.]+)"[^>]*fill="#e8590c"[^>]*>([^<]+)</)!;
       const [x, y, half] = [Number(m[1]), Number(m[2]) - 5.5, (m[3].length * 9) / 2];
