@@ -17,7 +17,7 @@ export const cards = {
       essence: "Adding puts amounts together and taking away finds what is left, place by place, carrying and borrowing tens.",
       like: "multiplying",
       test: "Adding joins two amounts once: 4 + 3 = 7. Multiplying repeats one amount: 4 × 3 = 4 + 4 + 4 = 12.",
-      failure: "A carried ten forgotten: 38 + 25 answered 53, not 63.",
+      failure: "Adding to undo an addition: −1 + □ = 8 answered 7, not 8 − (−1) = 9.",
     },
     multiplyFacts: {
       essence: "Any two numbers up to 12 multiplied, known by heart: 7 × 8 = 56.",

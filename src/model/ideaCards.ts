@@ -30,7 +30,7 @@ export type IdeaCard = {
 
 export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   // whole-number arithmetic
-  addWhole: { glyph: "+−", home: "times", like: "multiplyFacts" },
+  addWhole: { glyph: "+−", home: "times", like: "multiplyFacts", trap: "missingAdd" },
   multiplyFacts: { glyph: "7×8", home: "times", like: "addWhole" },
   multiplyLong: { glyph: "23×4", home: "times", like: "multiplyFacts" },
   divideExact: { glyph: "56÷8", home: "hcf" },
