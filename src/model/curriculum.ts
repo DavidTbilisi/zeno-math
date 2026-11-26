@@ -359,6 +359,7 @@ export const SYLLABUS: Readonly<Partial<Record<SkillId, readonly [Y, Y, Y]>>> = 
   sameExpression: [6, null, null], // like terms without brackets (P6); brackets
   shapeArea: [3, 5, 4], // rectangles (P3), triangles (P5), area and perimeter of rectilinear figures (P4)
   areaPerimeter: [3, 5, 6], // perimeter and area of a rectangle from its sides (P3); a side from them (P4), a triangle (P5); circles (P6)
+  volume: [5, null, null], // a box's volume, counted in unit cubes or from its edges (P5); cylinders and prisms come later
   estimateAngle: [3, 4, 5], // about a right angle, in degrees, angles at a point
   missingAngle: [5, 5, null], // on a line, at a point, in a triangle; any quadrilateral
   symmetryLines: [4, 4, 4],
@@ -435,7 +436,7 @@ export const LATER: Readonly<Partial<Record<SkillId, readonly [G, G, G]>>> = {
   righttri: [8, 8, 8], // sine, cosine and tangent of acute angles
   similarity: [8, 8, 10], // similar figures (Sec 2); ratios of areas and volumes (Sec 3/4)
   crossSections: [7, 10, 10], // the shape of a slice (Y7); solids swept by turning, Cavalieri (HS); density, people per km² (Sec 3/4)
-  volume: [7, 8, 8], // prisms and cylinders (Sec 1); pyramids, cones and spheres (Sec 2)
+  volume: [null, 7, 8], // prisms and cylinders, nets and surface area (Sec 1); pyramids, cones and spheres (Sec 2)
   probability: [8, 10, 10], // single events (Sec 2); combined events and tree diagrams (Sec 3/4)
   indices: [10, 10, 10], // zero, negative and fractional indices
   line: [10, 10, 10], // y = mx + c from two points; perpendicular lines (Additional Mathematics)
