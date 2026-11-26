@@ -21056,14 +21056,14 @@
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 1,
+      "seed": 3506,
       "input": "25",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 1,
+      "seed": 3506,
       "input": "-10",
       "label": "wrong",
       "mistake": "piecewiseWrongPiece"
@@ -21071,21 +21071,21 @@
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 1,
+      "seed": 3506,
       "input": "32",
       "label": "wrong"
     },
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 2,
+      "seed": 24,
       "input": "−2 − x",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 2,
+      "seed": 24,
       "input": "x + 2",
       "label": "wrong",
       "mistake": "absPieceSwapped"
@@ -21093,14 +21093,14 @@
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 5,
+      "seed": 28,
       "input": "3 − x",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 5,
+      "seed": 28,
       "input": "x − 3",
       "label": "wrong",
       "mistake": "absPieceSwapped"
@@ -21108,14 +21108,14 @@
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 6,
+      "seed": 1170,
       "input": "-9",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 6,
+      "seed": 1170,
       "input": "4",
       "label": "wrong",
       "mistake": "piecewiseWrongPiece"
@@ -21123,21 +21123,21 @@
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 6,
+      "seed": 1170,
       "input": "-2",
       "label": "wrong"
     },
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 7,
+      "seed": 5860,
       "input": "(6, 2)",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 3,
-      "seed": 7,
+      "seed": 5860,
       "input": "(-6, 2)",
       "label": "wrong",
       "mistake": "vertexSignH"
@@ -24588,28 +24588,28 @@
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 1,
+      "seed": 2006,
       "input": "-1",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 1,
+      "seed": 2006,
       "input": "6",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 2,
+      "seed": 1586,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 2,
+      "seed": 1586,
       "input": "5",
       "label": "wrong",
       "mistake": "shiftWrongWay"
@@ -24617,21 +24617,21 @@
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 2,
+      "seed": 1586,
       "input": "8",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 3,
+      "seed": 4711,
       "input": "6",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 3,
+      "seed": 4711,
       "input": "0",
       "label": "wrong",
       "mistake": "shiftWrongWay"
@@ -24639,21 +24639,21 @@
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 3,
+      "seed": 4711,
       "input": "13",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 5,
+      "seed": 6295,
       "input": "0",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 5,
+      "seed": 6295,
       "input": "4",
       "label": "wrong",
       "mistake": "shiftWrongWay"
@@ -24661,7 +24661,7 @@
     {
       "skill": "fnTransform",
       "level": 1,
-      "seed": 5,
+      "seed": 6295,
       "input": "7",
       "label": "wrong"
     },
@@ -24690,14 +24690,14 @@
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 1,
+      "seed": 6417,
       "input": "-24",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 1,
+      "seed": 6417,
       "input": "-6",
       "label": "wrong",
       "mistake": "stretchWrongAxis"
@@ -24705,21 +24705,21 @@
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 1,
+      "seed": 6417,
       "input": "-17",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 2,
+      "seed": 1586,
       "input": "-3",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 2,
+      "seed": 1586,
       "input": "3",
       "label": "wrong",
       "mistake": "reflectionAxesSwapped"
@@ -24727,21 +24727,21 @@
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 2,
+      "seed": 1586,
       "input": "4",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 5,
+      "seed": 5440,
       "input": "-2",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 5,
+      "seed": 5440,
       "input": "2",
       "label": "wrong",
       "mistake": "reflectionAxesSwapped"
@@ -24749,7 +24749,7 @@
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 5,
+      "seed": 5440,
       "input": "5",
       "label": "wrong"
     },
@@ -24778,14 +24778,14 @@
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 7,
+      "seed": 93,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 7,
+      "seed": 93,
       "input": "-2",
       "label": "wrong",
       "mistake": "shiftWrongWay"
@@ -24793,21 +24793,21 @@
     {
       "skill": "fnTransform",
       "level": 2,
-      "seed": 7,
+      "seed": 93,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 1,
+      "seed": 62661,
       "input": "Neither",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 1,
+      "seed": 62661,
       "input": "Odd",
       "label": "wrong",
       "mistake": "oddWithConstant"
@@ -24815,14 +24815,14 @@
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 2,
+      "seed": 2792,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 2,
+      "seed": 2792,
       "input": "13",
       "label": "wrong",
       "mistake": "insideFactorNotTaken"
@@ -24830,21 +24830,21 @@
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 2,
+      "seed": 2792,
       "input": "12",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 3,
+      "seed": 8660,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 3,
+      "seed": 8660,
       "input": "6",
       "label": "wrong",
       "mistake": "insideFactorNotTaken"
@@ -24852,21 +24852,21 @@
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 3,
+      "seed": 8660,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 4,
+      "seed": 20175,
       "input": "-9",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 4,
+      "seed": 20175,
       "input": "-14",
       "label": "wrong",
       "mistake": "stretchAfterShift"
@@ -24874,21 +24874,21 @@
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 4,
+      "seed": 20175,
       "input": "-2",
       "label": "wrong"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 5,
+      "seed": 7452,
       "input": "13",
       "label": "correct"
     },
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 5,
+      "seed": 7452,
       "input": "15",
       "label": "wrong",
       "mistake": "stretchAfterShift"
@@ -24896,7 +24896,7 @@
     {
       "skill": "fnTransform",
       "level": 3,
-      "seed": 5,
+      "seed": 7452,
       "input": "20",
       "label": "wrong"
     },
@@ -63140,6 +63140,414 @@
       "seed": 14,
       "input": "29",
       "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 1,
+      "input": "y = ∛(x − 4) + 3",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 1,
+      "input": "y = ∛(x + 4) + 3",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 1,
+      "input": "y = ∛(x − 3) + 4",
+      "label": "wrong",
+      "mistake": "shiftAxesSwapped"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 1,
+      "input": "y = √(x − 4) + 3",
+      "label": "wrong",
+      "mistake": "graphFamilyConfused"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 2,
+      "input": "y = ∛(x + 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 2,
+      "input": "y = ∛(x − 2)",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 2,
+      "input": "y = ∛(x) − 2",
+      "label": "wrong",
+      "mistake": "shiftAxesSwapped"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 1,
+      "seed": 2,
+      "input": "y = √(x + 2)",
+      "label": "wrong",
+      "mistake": "graphFamilyConfused"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 1,
+      "input": "Even",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 1,
+      "input": "Odd",
+      "label": "wrong",
+      "mistake": "parityMisread"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 2,
+      "input": "y = 3ˣ",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 2,
+      "input": "y = 3 · 1ˣ",
+      "label": "wrong",
+      "mistake": "baseStartSwapped"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 2,
+      "input": "y = (1/3)ˣ",
+      "label": "wrong",
+      "mistake": "growthDecayConfused"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 3,
+      "input": "y = 2 · 3ˣ",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 3,
+      "input": "y = 3 · 2ˣ",
+      "label": "wrong",
+      "mistake": "baseStartSwapped"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 3,
+      "input": "y = 2 · (1/3)ˣ",
+      "label": "wrong",
+      "mistake": "growthDecayConfused"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 5,
+      "input": "Even",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 2,
+      "seed": 5,
+      "input": "Odd",
+      "label": "wrong",
+      "mistake": "parityMisread"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 2,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 2,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "asymptoteForIntercept"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 3,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 3,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "asymptoteForIntercept"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 3,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "shiftWrongWay"
+    },
+    {
+      "skill": "fnTransform",
+      "level": 3,
+      "seed": 3,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 1,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "stepEndMisread"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 1,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 2,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "piecewiseWrongPiece"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 3,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 3,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "stepEndMisread"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 3,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 4,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 4,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "piecewiseWrongPiece"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 5,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 5,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "absOpensWrongWay"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 5,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "absScaleInverted"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 5,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 10,
+      "input": "0.5",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 10,
+      "input": "-1/2",
+      "label": "wrong",
+      "mistake": "absOpensWrongWay"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 10,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "absScaleInverted"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 10,
+      "input": "7.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 26,
+      "input": "y = −|x − 2| − 3",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 26,
+      "input": "y = −|x + 2| − 3",
+      "label": "wrong",
+      "mistake": "vertexSignH"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 26,
+      "input": "y = −|x + 3| + 2",
+      "label": "wrong",
+      "mistake": "shiftAxesSwapped"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 26,
+      "input": "y = |x − 2| − 3",
+      "label": "wrong",
+      "mistake": "absOpensWrongWay"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 33,
+      "input": "y = |x − 1| − 3",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 33,
+      "input": "y = |x + 1| − 3",
+      "label": "wrong",
+      "mistake": "vertexSignH"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 33,
+      "input": "y = |x + 3| + 1",
+      "label": "wrong",
+      "mistake": "shiftAxesSwapped"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 3,
+      "seed": 33,
+      "input": "y = −|x − 1| − 3",
+      "label": "wrong",
+      "mistake": "absOpensWrongWay"
     }
   ]
 }

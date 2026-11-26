@@ -2,12 +2,18 @@
 // |x − a| = b (two answers, b each side of a) and |x − a| < b as an inequality. Hard (new settings): the corner of
 // y = m|x − h| + k, a piecewise function evaluated, and |x − h| written in pieces. The sign kept, the sizes subtracted
 // across zero, one answer only, the centre read as +a, one side of the inequality only, the corner at −h, the wrong
-// piece used and the pieces of |x − h| swapped are slips.
+// piece used and the pieces of |x − h| swapped are slips. #726 added, half the time at the hard level: a parking fee
+// read off its step graph, a piecewise graph read at its joint, the equation of y = ±|x − h| + k picked from its graph,
+// and a in y = a|x| from its graph. The jump read on the wrong step, the wrong piece used, the corner at −h, the two
+// shifts swapped, the graph opening the wrong way and the stretch read upside down are slips.
 import { absLineSvg, signed } from "../absValue";
-import { fill } from "../chart";
+import { C, fill } from "../chart";
 import { compareSign } from "../live";
 import { ineqPlain, ineqTex, num, signExercise } from "../practiceKit";
 import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+import { graphSvg, sgn } from "../readFunction";
+import { pickPart } from "../tTails";
+import { polyText } from "../whichTool";
 import { mi, pickOf, word } from "../signedKit";
 
 const absTex = (a: number) => (a === 0 ? "|x|" : a > 0 ? `|x - ${a}|` : `|x + ${-a}|`);
@@ -85,6 +91,7 @@ const gen: Gen = (r, L, w) => {
     };
   }
 
+  if (r.int(0, 9) >= 5) return graphs(r, w);
   const t = r.pick(["corner", "piece", "split"] as const);
   if (t === "corner") {
     const m = r.pick([1, 2, 3, -1, -2, 0.5]);
@@ -171,6 +178,82 @@ function absCompare(r: Rng, t: "cmp" | "story", w: PracticeWords): Part {
   // The slip: the bigger number taken as farther, which is the one above 0.
   if (-a > b) return pickOf(r, prompt, A, [{ o: B, id: "absKeepsSign", vars: { v: mi(a), d: -a } }], [same], { steps });
   return pickOf(r, prompt, B, [], [A, same], { steps });
+}
+
+/** Grid positions for graphSvg's square grid from lo to hi. */
+const grid = (lo: number, hi: number) => ({ X: (x: number) => 20 + (x - lo) * 22, Y: (y: number) => 20 + (hi - y) * 22 });
+const dot = (g: ReturnType<typeof grid>, x: number, y: number, open: boolean) =>
+  `<circle cx="${g.X(x)}" cy="${g.Y(y)}" r="5" fill="${open ? "#fff" : C.blue}" stroke="${C.blue}" stroke-width="2.5"/>`;
+const seg = (g: ReturnType<typeof grid>, pts: [number, number][]) =>
+  `<polyline points="${pts.map(([x, y]) => `${g.X(x)},${g.Y(y)}`).join(" ")}" fill="none" stroke="${C.blue}" stroke-width="2.5"/>`;
+const picOf = (p: { body: string; w: number; h: number }) => ({ svg: place(p.body), w: p.w, h: p.h });
+const m = (v: number) => String(v).replace("-", "−");
+
+function graphs(r: Rng, w: PracticeWords): Part {
+  const W = w.absP;
+  const numQ = (prompt: string, v: number, traps: Trap[], steps: string[], pic: Part["pic"]): Part => ({
+    prompt, q: "", pic, show: sgn(v), plain: String(v), format: "number", steps,
+    answer: { ...num(v), traps: traps.filter((t, i) => t.a.k === "num" && t.a.v !== v && !traps.slice(0, i).some((u) => u.a.k === "num" && t.a.k === "num" && u.a.v === t.a.v)) },
+  });
+  const t = r.pick(["step", "piecewise", "equation", "stretch"] as const);
+  if (t === "step") {
+    // A new setting: parking at c GEL for each hour or part of one, for up to 6 hours: open dot on the left of each step.
+    const c = r.pick([1, 2]);
+    const base = graphSvg([[0, 0], [0, 0]], { lo: 0, hi: 12 });
+    const g = grid(0, 12);
+    const body = base.body.slice(0, base.body.lastIndexOf("<polyline")) + [1, 2, 3, 4, 5, 6].map((k) => seg(g, [[k - 1, c * k], [k, c * k]]) + dot(g, k - 1, c * k, true) + dot(g, k, c * k, false)).join("");
+    const at = r.next() < 0.6;
+    const k = r.int(1, 5);
+    const tt = at ? k : k + 0.5;
+    const v = c * Math.ceil(tt);
+    const slip = at ? c * (k + 1) : c * k;
+    return numQ(fill(W.parking, { c, t: m(tt) }), v, [{ id: "stepEndMisread", a: num(slip), vars: { t: m(tt), v } }], [`f(${tt}) = ${v}`], picOf({ ...base, body }));
+  }
+  if (t === "piecewise") {
+    // Two lines meeting at x = c with a jump: open dot on the left piece, filled on the right.
+    for (;;) {
+      const c = r.int(-2, 2);
+      const [m1, m2] = [r.pick([-1, 1, 2]), r.pick([-2, -1, 1])];
+      const [y1, y2] = [r.int(-4, 4), r.int(-4, 4)];
+      if (Math.abs(y1 - y2) < 2 || m1 === m2) continue;
+      const f1 = (x: number) => y1 + m1 * (x - c);
+      const f2 = (x: number) => y2 + m2 * (x - c);
+      const x1 = Math.max(-6, c - (m1 > 0 ? (y1 + 6) / m1 : (6 - y1) / -m1));
+      const x2 = Math.min(6, c + (m2 > 0 ? (6 - y2) / m2 : (y2 + 6) / -m2));
+      const base = graphSvg([[c, y2], [c, y2]], { lo: -6, hi: 6 });
+      const g = grid(-6, 6);
+      const body = base.body.slice(0, base.body.lastIndexOf("<polyline")) + seg(g, [[x1, f1(x1)], [c, y1]]) + seg(g, [[c, y2], [x2, f2(x2)]]) + dot(g, c, y1, true) + dot(g, c, y2, false);
+      return numQ(fill(W.pieceQ, { c: m(c) }), y2, [{ id: "piecewiseWrongPiece", a: num(y1), vars: { x: signed(c), c: signed(c), side: `x ≥ ${signed(c)}` } }], [`f(${c}) = ${y2}`], picOf({ ...base, body }));
+    }
+  }
+  if (t === "equation") {
+    // y = s|x − h| + k picked from its graph.
+    const [h, k] = [r.int(-4, 4) || 2, r.int(-3, 3)];
+    if (h === k) return graphs(r, w);
+    const s = r.pick([1, -1]);
+    const g = graphSvg([[-6, s * (h + 6) + k], [h, k], [6, s * (6 - h) + k]], { lo: -6, hi: 6 });
+    const eq = (ss: number, hh: number, kk: number) => `y = ${ss < 0 ? "−" : ""}|${polyText(-hh, 1)}|${kk ? ` ${kk < 0 ? "−" : "+"} ${Math.abs(kk)}` : ""}`;
+    const opts = [eq(s, h, k), eq(s, -h, k), eq(s, k, h), eq(-s, h, k)];
+    return { ...pickPart(r, opts, 0, [
+      { id: "vertexSignH", at: 1, vars: { e: `|${polyText(-h, 1)}|`, h: signed(h), nh: signed(-h) } },
+      { id: "shiftAxesSwapped", at: 2, vars: { h: m(h), k: m(k), v: opts[0] } },
+      { id: "absOpensWrongWay", at: 3, vars: { d: s > 0 ? W.up : W.down, v: opts[0] } },
+    ], W.eqQ, [`\\text{${fill(W.cornerAt, { h: m(h), k: m(k) })}}`]), pic: picOf(clip(g)) };
+  }
+  // a in y = a|x| from its graph: one step right of the corner goes a up.
+  const a = r.pick([2, 3, -2, -3, 0.5, -0.5]);
+  const g = graphSvg([[-6, a * 6], [0, 0], [6, a * 6]], { lo: -6, hi: 6 });
+  const inv = Math.sign(a) / Math.abs(a);
+  return numQ(W.stretchQ, a, [
+    { id: "absOpensWrongWay", a: num(-a), vars: { d: a > 0 ? W.up : W.down, v: m(a) } },
+    { id: "absScaleInverted", a: num(inv), vars: { a: m(Math.abs(a)), d: a > 0 ? W.upWord : W.downWord, v: m(a) } },
+  ], [`y(1) = ${a}`, `a = ${a}`], picOf(clip(g)));
+}
+
+/** A graph whose lines may run off the grid, clipped to it. */
+function clip(g: { body: string; w: number; h: number }) {
+  const id = `c${Math.round(g.w)}`;
+  return { ...g, body: `<defs><clipPath id="${id}"><rect x="20" y="20" width="${g.w - 40}" height="${g.h - 40}"/></clipPath></defs>${g.body.replace(/<polyline/, `<polyline clip-path="url(#${id})"`)}` };
 }
 
 export default gen;
