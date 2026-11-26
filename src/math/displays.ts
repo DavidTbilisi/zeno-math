@@ -135,3 +135,20 @@ export function probBarsSvg(xs: readonly number[], ps: readonly number[], top: n
   out.push(text(x0 + (xs.length * (bw + gap) + gap) / 2, y0 + h + 38, "x", 13, C.grey), text(8, 16, "P(X = x)", 12, C.grey, "start"));
   return { body: out.join(""), w: x0 + xs.length * (bw + gap) + gap + 8, h: y0 + h + 46 };
 }
+
+/** A density curve on an axis from 0 to b (#740): a uniform block, or a triangle falling from 0 to b; the part from c to d shaded. */
+export function densitySvg(kind: "uniform" | "triangle", b: number, c: number, d: number, height: string): Pic {
+  const [x0, y0, W, H] = [44, 20, 300, 120];
+  const X = (v: number) => x0 + (v / b) * W;
+  const top = (v: number) => (kind === "uniform" ? y0 : y0 + (v / b) * H);
+  const base = y0 + H;
+  const out: string[] = [];
+  out.push(`<path d="M${X(c)} ${base} L${X(c)} ${r2(top(c))} L${X(d)} ${r2(top(d))} L${X(d)} ${base} Z" fill="#a5d8ff"/>`);
+  out.push(kind === "uniform"
+    ? `<path d="M${X(0)} ${base} L${X(0)} ${y0} L${X(b)} ${y0} L${X(b)} ${base}" fill="none" stroke="${C.blue}" stroke-width="2.4"/>`
+    : `<path d="M${X(0)} ${base} L${X(0)} ${y0} L${X(b)} ${base}" fill="none" stroke="${C.blue}" stroke-width="2.4"/>`);
+  out.push(`<line x1="${x0 - 6}" y1="${base}" x2="${x0 + W + 16}" y2="${base}" stroke="${C.ink}" stroke-width="1.4"/>`, `<line x1="${x0}" y1="${base + 4}" x2="${x0}" y2="${y0 - 10}" stroke="${C.ink}" stroke-width="1.4"/>`);
+  for (const v of [...new Set([0, c, d, b])]) out.push(`<line x1="${X(v)}" y1="${base}" x2="${X(v)}" y2="${base + 5}" stroke="${C.ink}"/>`, text(X(v), base + 20, v, 14));
+  out.push(text(x0 - 8, y0 + 5, height, 13, C.grey, "end"));
+  return { body: out.join(""), w: x0 + W + 24, h: base + 30 };
+}

@@ -258,8 +258,9 @@ src/math/matPlane.ts      the matrix plane piece: where (1, 0) and (0, 1) land, 
 src/math/meanBalance.ts   the mean balance piece: rounds of dots, the pull each side, the median and midpoint named
 src/math/countTree.ts     the counting tree piece: outfit trees grown by taps, then counts predicted; the sum and a dropped stage named
 src/math/fairGame.ts      the fair game piece: a spinner's prizes as weights on a beam, balanced at the fair price (the expected value)
+src/math/normalCut.ts     the normal-curve piece: cuts dragged on a bell curve until the shaded share is 68%, 95%, 99.7% or a tail
 src/math/partKit.ts       practice parts with named slips: fractions, rounded numbers (slips in the rounding band dropped), picks in order
-src/math/displays.ts      pictures of data to build from: a line plot of fractions, raw data, a table of counts, a mosaic plot, a table of regression output, a Venn diagram, a probability bar chart
+src/math/displays.ts      pictures of data to build from: a line plot of fractions, raw data, a table of counts, a mosaic plot, a table of regression output, a Venn diagram, a probability bar chart, a flat or falling density curve with a part shaded
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/functions.ts     functions: domain & range, composites, inverses, transformations, curve sketching + pictures
 src/math/identities.ts    trig identities: exact values, R-form, proofs, equations (exact surds) + pictures

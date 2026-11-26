@@ -206,6 +206,7 @@ export const MENUS: MenuGroup[] = [
         title: "secStatistics", items: [
           { live: "meanBalance", icon: "⚖" },
           { live: "boxSplit", icon: "▭" },
+          { live: "normalCut", icon: "🔔" },
           { live: "tableShares", icon: "▦" },
           { live: "fitLine", icon: "⟋" },
           { live: "sampleField", icon: "🐟" },
