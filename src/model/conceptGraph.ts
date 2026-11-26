@@ -515,8 +515,9 @@ const leading = (v: number) => Math.round(v / 10 ** Math.floor(Math.log10(Math.a
 /**
  * The ideas a rounding question needs, read from its worked picture: rounding to a place needs the digit that decides,
  * a whole number rounded to tens or more the zeros that hold its places, to significant figures where they start;
- * standard form, and multiplying in it the index law and the product of the numbers; an estimate each number to one
- * significant figure and the product of their first digits; bounds half a unit, and for a total the product.
+ * standard form, and multiplying (or dividing) in it the index law and the product of the numbers; an estimate each
+ * number to one significant figure and the product of their first digits; an estimated sum each number rounded to a
+ * place and the round numbers added; bounds half a unit, and for a total the product.
  */
 export function roundingUses(ex: Exercise): Uses<RoundingNode> {
   const nodes = new Set<string>();
@@ -527,6 +528,11 @@ export function roundingUses(ex: Exercise): Uses<RoundingNode> {
       nodes.add("roundPlace");
       if (spec.k < 0) nodes.add("placeHolders");
       if (spec.sf) nodes.add("sigFigs");
+      // One digit times a power of ten: the answer is in standard form.
+      if (ex.plain?.includes("*10^")) nodes.add("stdForm");
+      break;
+    case "estimateSum":
+      nodes.add("roundPlace").add("placeHolders").add("addWhole");
       break;
     case "estimate":
       nodes.add("roundPlace").add("sigFigs");
@@ -588,6 +594,12 @@ export const ROUNDING_GAPS: Partial<Record<MistakeId, RoundingNode>> = {
   placeLost: "placeHolders",
   // the upper bound of 7 cm to the nearest cm answered 8: a whole unit, not half.
   fullUnit: "bounds",
+  // 546 + 484 estimated to the nearest ten answered 1030 exactly: the numbers worked before they were rounded.
+  exactNotEstimate: "roundPlace",
+  // (4.5 × 10¹²) ÷ (3 × 10⁴) answered 1.5 × 10¹⁶: the powers added, not taken away, for a division.
+  powersAddedForDivide: "powLaws",
+  // 0.0038 as 4 × 10⁻² : the power one out, the places to the first digit miscounted.
+  powerOneOut: "stdForm",
 };
 /** Every mistake that names an idea, from every graph's table; no mistake is in two. */
 export const GAPS: Partial<Record<MistakeId, IdeaNode | EdgeId>> = { ...FRACTIONS_GAPS, ...SIGNED_GAPS, ...POWERS_GAPS, ...BRACKETS_GAPS, ...ORDER_GAPS, ...ROUNDING_GAPS };
