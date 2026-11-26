@@ -58,6 +58,7 @@ export const MENUS: MenuGroup[] = [
           { live: "compareFractions", icon: "½" },
           { live: "decGrid", icon: "▦" },
           { live: "twoChanges", icon: "%" },
+          { live: "percentHand", icon: "▭" },
         ], shapes: ["fractionWall", "quarters", "eighths", "numberLine01"],
       },
       { title: "secTime", items: [{ live: "clock", icon: "🕒" }], shapes: ["clock"] },

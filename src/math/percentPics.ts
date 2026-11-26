@@ -145,3 +145,40 @@ export function renderPercent(spec: PercentSolution, steps: { svg: string; width
     height: h,
   };
 }
+
+// ---------- pictures a percent is read from (#707) ----------
+
+type Pic = { svg: (x: number, y: number) => string; h: number; w: number };
+const at = (body: string, w: number, h: number): Pic => ({ svg: (x, y) => `<g transform="translate(${r2(x)} ${r2(y)})">${body}</g>`, w, h });
+
+/** A hundred grid, the first n squares shaded, row by row. */
+export function hundredGrid(n: number): Pic {
+  const S = 20;
+  const out: string[] = [];
+  for (let i = 0; i < 100; i++) {
+    const [x, y] = [(i % 10) * S, Math.floor(i / 10) * S];
+    out.push(`<rect x="${x + 1}" y="${y + 1}" width="${S}" height="${S}" fill="${i < n ? BLUE.fill : "#ffffff"}" stroke="${C.ink}" stroke-width="0.8"/>`);
+  }
+  out.push(`<rect x="1" y="1" width="${10 * S}" height="${10 * S}" fill="none" stroke="${C.ink}" stroke-width="2"/>`);
+  return at(out.join(""), 10 * S + 2, 10 * S + 2);
+}
+
+/** A bar of one whole cut into d equal parts, the first k shaded. */
+export function partsBar(d: number, k: number): Pic {
+  const W = 420;
+  const out: string[] = [];
+  for (let i = 0; i < d; i++) out.push(`<rect x="${r2(1 + (i * W) / d)}" y="1" width="${r2(W / d)}" height="${BH}" fill="${i < k ? BLUE.fill : "#ffffff"}" stroke="${C.ink}" stroke-width="1.2"/>`);
+  out.push(`<rect x="1" y="1" width="${W}" height="${BH}" fill="none" stroke="${C.ink}" stroke-width="2"/>`);
+  return at(out.join(""), W + 2, BH + 2);
+}
+
+/** A progress bar filled to p %, with what it stands for written beside it (a download, a battery, a memory). */
+export function progressBar(p: number, label: string): Pic {
+  const [W, H] = [360, 28];
+  const body = [
+    `<rect x="1" y="1" width="${W}" height="${H}" rx="6" fill="#ffffff" stroke="${C.ink}" stroke-width="2"/>`,
+    `<rect x="1" y="1" width="${r2((W * p) / 100)}" height="${H}" rx="6" fill="${GREEN.fill}" stroke="${GREEN.stroke}" stroke-width="1.5"/>`,
+    text(W + 14, H / 2 + 6, label, 15, C.ink, true, "start"),
+  ];
+  return at(body.join(""), W + 14 + 9 * label.length, H + 2);
+}

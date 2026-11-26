@@ -1132,7 +1132,9 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     bands on a year's pay, the cheaper of two loans when the lower rate carries a fee, and the better value of two
     packs. The amount off given as the price, the extra alone, the per cent taken as money, one year's interest,
     interest compounded, the two percentages added, the mark-up over the selling price, the top rate on all the pay,
-    the lower rate taken for the cheaper loan and the bigger pack taken for better value are named. The piece *Two
+    the lower rate taken for the cheaper loan and the bigger pack taken for better value are named. Also (#707) a
+    salesperson's commission (the sales and the commission added named) and the expression for a price after a
+    percent change, 1.15p or 0.8p (the percent part alone and the percent added as a number named). The piece *Two
     changes in a row* (Insert → Number → fractions, grades 6–8) draws the price as a bar: drag the first bar's end
     to take a percentage off (or put one on), then the second bar's, whose tenths are tenths of the new price; a
     dashed bar is the one change of the two percentages added, and the gap shows that 20 % off then 10 % off is 72,
@@ -1880,6 +1882,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     level puts negative numbers in for the letters and works signed fractions with powers, a fraction bar holding its
     numbers together. Ordering fractions stays at grades 2–4 with no negatives, and the fractions skill is unchanged:
     its questions are the thesis's world of ideas
+  - Percentages (grades 5–6) also (#707) read the percent a hundred grid or a bar cut into parts has shaded, take
+    the benchmark percents 1 % and 125 %, 150 % or 200 % of a number, and pick the calculation that gives 30 % of 60;
+    then find what percent one number is of another and the whole from a part, bare or as pupils walking, seeds
+    growing and a team's wins; then the price before a discount, and progress bars, a new setting: a download, a
+    phone's battery and its memory. The shaded parts counted as the percent, the white part given, 1 % taken as a
+    tenth, only the part over 100 %, the percent used as a whole number or divided by, the count taken as the percent,
+    the two numbers the wrong way round, the percent taken of the part and the discount taken of the sale price are
+    named
   - Rounding also estimates sums and differences by rounding each number first (#698), each number drawn on its line
     to the nearer ten, hundred or thousand, and in stories (seats in a stadium, a school's pencils and pens); a space
     probe's signal time and a pile of grains are worked in standard form, the numbers together and the powers
@@ -2608,6 +2618,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     broken rulers with no 0. Scale: in the first round a 25 g weight dragged (or tapped) onto the pan moves the needle
     one small mark, which says what a small mark is worth; then a pear, an apple and a slice of melon are read off
     dials marked every 25, 50 and 20 g, each small mark taken for 1 g being one tile
+  - *Percent bar: shade it by hand* (#707, Number → Fractions, grades 5–7): a bar of a whole amount with 0 % to
+    100 % along its top. Its shade is dragged by the edge, set by pressing the bar, or moved by the arrow keys in 5 %
+    steps. Asked for 25 % of 80, a tile tapped before the shade is at 25 % is met with "drag the shade there first";
+    at 25 % the bar shows itself cut into quarters, each worth 20, and the right tile is followed by its rule
+    (25 % is 1 × 25 %, each 25 % is 80 ÷ 4 = 20). Then the whole from a known part: the shade starts at 40 % holding
+    36, cannot be dragged past it, and says what a smaller share holds (10 % holds 9); taking one share for the whole
+    is named. Last, what percent 18 is of 72, read off the top once the shade holds 18
   - *Multiplying with blocks*: a × b (up to 39 × 39) as a rectangle of base-ten blocks beside the box and the written
     sum. Each side is split into tens and ones; a part tapped is filled with flats, rods or cubes and its product is
     written into the box and a line of the sum. With "Your turn" each product is given first on digit tiles, a wrong

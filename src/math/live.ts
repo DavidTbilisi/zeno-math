@@ -42,6 +42,7 @@ import { REKENREK_START, type LiveRekenrek } from "./rekenrek";
 import { RODS_START, type LiveRods } from "./rods";
 import { DEC_GRID_START, type LiveDecGrid } from "./decGrid";
 import { MEASURE_HAND_START, type LiveMeasureHand } from "./measureHand";
+import { PERCENT_HAND_START, type LivePercentHand } from "./percentHand";
 import { AREA_START, type LiveAreaBlocks } from "./areaBlocks";
 import { COUNTERS_START, type LiveCounters } from "./counters";
 import { SIGN_ARROW_START, SIGN_PATTERN_START, type LiveSignArrow, type LiveSignPattern } from "./signs";
@@ -627,6 +628,7 @@ export type LiveStates = {
   rods: LiveRods;
   decGrid: LiveDecGrid;
   measureHand: LiveMeasureHand;
+  percentHand: LivePercentHand;
   areaBlocks: LiveAreaBlocks;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
@@ -798,6 +800,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   rods: [720, 520],
   decGrid: [720, 560],
   measureHand: [740, 640],
+  percentHand: [740, 520],
   areaBlocks: [780, 730],
   counters: [680, 600],
   signArrow: [680, 720],
@@ -971,6 +974,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     rods: RODS_START,
     decGrid: DEC_GRID_START,
     measureHand: MEASURE_HAND_START,
+    percentHand: PERCENT_HAND_START,
     areaBlocks: AREA_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,

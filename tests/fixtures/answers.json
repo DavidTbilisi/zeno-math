@@ -140,49 +140,49 @@
     {
       "skill": "percent",
       "level": 1,
-      "seed": 7,
+      "seed": 910,
       "input": "3",
       "label": "correct"
     },
     {
       "skill": "percent",
       "level": 1,
-      "seed": 7,
+      "seed": 910,
       "input": "3.0",
       "label": "correct"
     },
     {
       "skill": "percent",
       "level": 1,
-      "seed": 7,
+      "seed": 910,
       "input": "300",
       "label": "wrong"
     },
     {
       "skill": "percent",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "-5",
       "label": "correct"
     },
     {
       "skill": "percent",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "-5%",
       "label": "correct"
     },
     {
       "skill": "percent",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "-5 %",
       "label": "correct"
     },
     {
       "skill": "percent",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "5",
       "label": "wrong",
       "note": "the question asks for a negative decrease",
@@ -191,21 +191,21 @@
     {
       "skill": "percent",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "-3",
       "label": "wrong"
     },
     {
       "skill": "percent",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "-0.05",
       "label": "wrong"
     },
     {
       "skill": "percent",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "5% decrease",
       "label": "correct",
       "note": "said in words"
@@ -213,21 +213,21 @@
     {
       "skill": "percent",
       "level": 3,
-      "seed": 7,
+      "seed": 910,
       "input": "60",
       "label": "correct"
     },
     {
       "skill": "percent",
       "level": 3,
-      "seed": 7,
+      "seed": 910,
       "input": "60.0",
       "label": "correct"
     },
     {
       "skill": "percent",
       "level": 3,
-      "seed": 7,
+      "seed": 910,
       "input": "59.85",
       "label": "wrong",
       "note": "took 5 % off 63"
@@ -21145,14 +21145,14 @@
     {
       "skill": "moneySense",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "13.80",
       "label": "correct"
     },
     {
       "skill": "moneySense",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "9/5",
       "label": "wrong",
       "mistake": "addOnOnly"
@@ -21160,7 +21160,7 @@
     {
       "skill": "moneySense",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "27",
       "label": "wrong",
       "mistake": "percentAsMoney"
@@ -21168,7 +21168,7 @@
     {
       "skill": "moneySense",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "20.8",
       "label": "wrong"
     },
@@ -21219,14 +21219,14 @@
     {
       "skill": "moneySense",
       "level": 2,
-      "seed": 1,
+      "seed": 492,
       "input": "21.00",
       "label": "correct"
     },
     {
       "skill": "moneySense",
       "level": 2,
-      "seed": 1,
+      "seed": 492,
       "input": "18",
       "label": "wrong",
       "mistake": "percentsAdded"
@@ -21234,7 +21234,7 @@
     {
       "skill": "moneySense",
       "level": 2,
-      "seed": 1,
+      "seed": 492,
       "input": "28",
       "label": "wrong"
     },
@@ -21293,14 +21293,14 @@
     {
       "skill": "moneySense",
       "level": 2,
-      "seed": 13,
+      "seed": 513,
       "input": "79.20",
       "label": "correct"
     },
     {
       "skill": "moneySense",
       "level": 2,
-      "seed": 13,
+      "seed": 513,
       "input": "80",
       "label": "wrong",
       "mistake": "percentsAdded"
@@ -21308,7 +21308,7 @@
     {
       "skill": "moneySense",
       "level": 2,
-      "seed": 13,
+      "seed": 513,
       "input": "86.2",
       "label": "wrong"
     },
@@ -39677,6 +39677,742 @@
       "seed": 499,
       "input": "106",
       "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 1,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 1,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "onePercentTenth"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 1,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 2,
+      "input": "50",
+      "label": "wrong",
+      "mistake": "onePercentTenth"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 4,
+      "input": "0.4 × 50",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 4,
+      "input": "40 × 50",
+      "label": "wrong",
+      "mistake": "percentTimesWhole"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 4,
+      "input": "50 ÷ 40",
+      "label": "wrong",
+      "mistake": "divideByPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 12,
+      "input": "58%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 12,
+      "input": "42",
+      "label": "wrong",
+      "mistake": "percentUnshaded"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 14,
+      "input": "51%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 14,
+      "input": "49",
+      "label": "wrong",
+      "mistake": "percentUnshaded"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 18,
+      "input": "20%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 18,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "partsAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 18,
+      "input": "80",
+      "label": "wrong",
+      "mistake": "percentUnshaded"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 20,
+      "input": "0.4 × 100",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 20,
+      "input": "40 × 100",
+      "label": "wrong",
+      "mistake": "percentTimesWhole"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 20,
+      "input": "100 ÷ 40",
+      "label": "wrong",
+      "mistake": "divideByPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 24,
+      "input": "25%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 24,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "partsAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 1,
+      "seed": 24,
+      "input": "75",
+      "label": "wrong",
+      "mistake": "percentUnshaded"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 1,
+      "input": "5%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 1,
+      "input": "2000",
+      "label": "wrong",
+      "mistake": "percentFlipped"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 2,
+      "input": "100",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 2,
+      "input": "107",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 3,
+      "input": "140",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 3,
+      "input": "7/20",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 3,
+      "input": "147",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 4,
+      "input": "80",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 4,
+      "input": "16/5",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 4,
+      "input": "87",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 5,
+      "input": "80",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 5,
+      "input": "144/5",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 5,
+      "input": "87",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 6,
+      "input": "5%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 6,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 6,
+      "input": "2000",
+      "label": "wrong",
+      "mistake": "percentFlipped"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 10,
+      "input": "80%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 10,
+      "input": "112",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 10,
+      "input": "125",
+      "label": "wrong",
+      "mistake": "percentFlipped"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 11,
+      "input": "30%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 11,
+      "input": "39",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 13,
+      "input": "20%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 13,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 13,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "percentFlipped"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 14,
+      "input": "25%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 14,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 2,
+      "seed": 14,
+      "input": "400",
+      "label": "wrong",
+      "mistake": "percentFlipped"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 1,
+      "input": "220",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 1,
+      "input": "1089/5",
+      "label": "wrong",
+      "mistake": "percentOfAfter"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 1,
+      "input": "227",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 2,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 2,
+      "input": "24/5",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 2,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 3,
+      "input": "484",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 3,
+      "input": "1089/4",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 3,
+      "input": "491",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 4,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 4,
+      "input": "3/4",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 4,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 5,
+      "input": "25%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 5,
+      "input": "321",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 5,
+      "input": "400",
+      "label": "wrong",
+      "mistake": "percentFlipped"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 6,
+      "input": "270",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 6,
+      "input": "2673/10",
+      "label": "wrong",
+      "mistake": "percentOfAfter"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 6,
+      "input": "277",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 17,
+      "input": "828",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 17,
+      "input": "1863/4",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 17,
+      "input": "835",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 30,
+      "input": "60%",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 30,
+      "input": "267",
+      "label": "wrong",
+      "mistake": "countAsPercent"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 41,
+      "input": "145",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 41,
+      "input": "464/5",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 41,
+      "input": "152",
+      "label": "wrong"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 48,
+      "input": "35",
+      "label": "correct"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 48,
+      "input": "28/5",
+      "label": "wrong",
+      "mistake": "percentOfPart"
+    },
+    {
+      "skill": "percent",
+      "level": 3,
+      "seed": 48,
+      "input": "42",
+      "label": "wrong"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 4,
+      "input": "72.00",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 4,
+      "input": "2472",
+      "label": "wrong",
+      "mistake": "commissionAdded"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "percentAsMoney"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 20,
+      "input": "180.00",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 20,
+      "input": "3180",
+      "label": "wrong",
+      "mistake": "commissionAdded"
+    },
+    {
+      "skill": "moneySense",
+      "level": 1,
+      "seed": 20,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "percentAsMoney"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 4,
+      "input": "1.15p",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 4,
+      "input": "0.15p",
+      "label": "wrong",
+      "mistake": "pctExprPart"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 4,
+      "input": "p + 15",
+      "label": "wrong",
+      "mistake": "pctExprAdded"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 20,
+      "input": "0.85p",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 20,
+      "input": "0.15p",
+      "label": "wrong",
+      "mistake": "pctExprPart"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 20,
+      "input": "p − 15",
+      "label": "wrong",
+      "mistake": "pctExprAdded"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 30,
+      "input": "1.4p",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 30,
+      "input": "0.4p",
+      "label": "wrong",
+      "mistake": "pctExprPart"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 30,
+      "input": "p + 40",
+      "label": "wrong",
+      "mistake": "pctExprAdded"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 41,
+      "input": "0.8p",
+      "label": "correct"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 41,
+      "input": "0.2p",
+      "label": "wrong",
+      "mistake": "pctExprPart"
+    },
+    {
+      "skill": "moneySense",
+      "level": 2,
+      "seed": 41,
+      "input": "p − 20",
+      "label": "wrong",
+      "mistake": "pctExprAdded"
     }
   ]
 }
