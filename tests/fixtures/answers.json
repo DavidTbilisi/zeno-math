@@ -529,35 +529,35 @@
     {
       "skill": "factor",
       "level": 1,
-      "seed": 7,
+      "seed": 2835,
       "input": "(x - 9)(x - 8)",
       "label": "correct"
     },
     {
       "skill": "factor",
       "level": 1,
-      "seed": 7,
+      "seed": 2835,
       "input": "(x-8)(x-9)",
       "label": "correct"
     },
     {
       "skill": "factor",
       "level": 1,
-      "seed": 7,
+      "seed": 2835,
       "input": "(x - 9)*(x - 8)",
       "label": "correct"
     },
     {
       "skill": "factor",
       "level": 1,
-      "seed": 7,
+      "seed": 2835,
       "input": "(9 - x)(8 - x)",
       "label": "correct"
     },
     {
       "skill": "factor",
       "level": 1,
-      "seed": 7,
+      "seed": 2835,
       "input": "x^2 - 17x + 72",
       "label": "form",
       "note": "not factorised"
@@ -565,14 +565,14 @@
     {
       "skill": "factor",
       "level": 1,
-      "seed": 7,
+      "seed": 2835,
       "input": "(x + 9)(x + 8)",
       "label": "wrong"
     },
     {
       "skill": "factor",
       "level": 1,
-      "seed": 7,
+      "seed": 2835,
       "input": "(x - 9)(x + 8)",
       "label": "wrong"
     },
@@ -56045,6 +56045,478 @@
       "seed": 36,
       "input": "82",
       "label": "wrong"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 1,
+      "input": "-8x + 18",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 1,
+      "input": "4x + 18",
+      "label": "wrong",
+      "mistake": "negLikeAsDiff"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 2,
+      "input": "-8x + 12",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "negLikeAsDiff"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 4,
+      "input": "6x^5",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 4,
+      "input": "(6 * (x)^(6))",
+      "label": "wrong",
+      "mistake": "exponentsMultiplied"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 6,
+      "input": "4x - 8",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 6,
+      "input": "((4 * x) + ((-1) * 16))",
+      "label": "wrong",
+      "mistake": "negDistSign"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 7,
+      "input": "-10x - 8",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 7,
+      "input": "((((-1) * 10) * x) + 8)",
+      "label": "wrong",
+      "mistake": "negDistSign"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 30,
+      "input": "12x^8",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 30,
+      "input": "(12 * (x)^(15))",
+      "label": "wrong",
+      "mistake": "exponentsMultiplied"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 167,
+      "input": "30x^4",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 1,
+      "seed": 178,
+      "input": "18x^4",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 1,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "firstTermAsLeading"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "firstTermAsLeading"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 4,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 4,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "firstTermAsLeading"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 6,
+      "input": "3x^2 - 5x - 8",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 7,
+      "input": "3x^2 + 10x - 6",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 7,
+      "input": "((3 * (x)^(2)) + (8 * x) + ((-1) * 10))",
+      "label": "wrong",
+      "mistake": "subtractFirstOnly"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 8,
+      "input": "-3x",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 8,
+      "input": "((((-1) * 5) * x) + 4)",
+      "label": "wrong",
+      "mistake": "subtractFirstOnly"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 10,
+      "input": "7x^2 + 3x + 7",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 16,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 16,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "firstTermAsLeading"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 16,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 73,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 73,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 180,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 2,
+      "seed": 180,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 1,
+      "input": "8x^2 + 18x",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 1,
+      "input": "((8 * (x)^(2)) + 9)",
+      "label": "wrong",
+      "mistake": "areaPartMissed"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 2,
+      "input": "6x^2 + 18x",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 2,
+      "input": "((6 * (x)^(2)) + 6)",
+      "label": "wrong",
+      "mistake": "areaPartMissed"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 6,
+      "input": "-2x^3 + 2x^2 - 12x",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 6,
+      "input": "((((-1) * 2) * (x)^(2)) + ((-1) * (10 * x)))",
+      "label": "wrong",
+      "mistake": "powersNotAdded"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 7,
+      "input": "-6x^3 - 4x^2 + 8x",
+      "label": "correct"
+    },
+    {
+      "skill": "polyOps",
+      "level": 3,
+      "seed": 7,
+      "input": "((((-1) * 6) * (x)^(2)) + (4 * x))",
+      "label": "wrong",
+      "mistake": "powersNotAdded"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 1,
+      "input": "2x^4y",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 1,
+      "input": "((2 * (x)^(4)) * (y)^(2))",
+      "label": "wrong",
+      "mistake": "gcfHighestPower"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 2,
+      "input": "3x^4",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 2,
+      "input": "(3 * (x)^(6))",
+      "label": "wrong",
+      "mistake": "monomialPowerKept"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 3,
+      "input": "4x^5",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 3,
+      "input": "(4 * (x)^(6))",
+      "label": "wrong",
+      "mistake": "monomialPowerKept"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 4,
+      "input": "2x - 1",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 4,
+      "input": "((2 * x) + 1)",
+      "label": "wrong",
+      "mistake": "negFactorSign"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 5,
+      "input": "5xy^2",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 5,
+      "input": "((5 * (x)^(3)) * (y)^(3))",
+      "label": "wrong",
+      "mistake": "gcfHighestPower"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 30,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 30,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "notGreatestFactor"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 30,
+      "input": "21",
+      "label": "wrong"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 36,
+      "input": "2x - 2",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 36,
+      "input": "((2 * x) + 2)",
+      "label": "wrong",
+      "mistake": "negFactorSign"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 41,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 41,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "notGreatestFactor"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 41,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 98,
+      "input": "2xy^2",
+      "label": "correct"
+    },
+    {
+      "skill": "factor",
+      "level": 1,
+      "seed": 133,
+      "input": "6x^4y^2",
+      "label": "correct"
     }
   ]
 }

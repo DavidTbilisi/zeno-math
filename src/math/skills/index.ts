@@ -128,6 +128,7 @@ import identities from "./identities";
 import vectors from "./vectors";
 import dotangle from "./dotangle";
 import crossPlanes from "./crossPlanes";
+import polyOps from "./polyOps";
 import projection from "./projection";
 import differentiate from "./differentiate";
 import tangent from "./tangent";
@@ -416,6 +417,7 @@ export const GENS: Record<SkillId, Gen> = {
   vectors,
   dotangle,
   crossPlanes,
+  polyOps,
   projection,
   differentiate,
   tangent,
